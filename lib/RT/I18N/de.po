@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: RT 2.1.54\n"
 "POT-Creation-Date: 2002-06-22 06:06+0200\n"
 "PO-Revision-Date: 2003-02-20 04:47+0200\n"
-"Last-Translator: Florian Bischof <flo@fxb.de>\n"
+"Last-Translator: Karsten Konrad <karsten.konrad@uni-graz.at>\n"
 "Language-Team: RT German <rt@fxb.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -183,7 +183,7 @@ msgstr "%1 ist kein %2 dieses Stapels mehr."
 #: lib/RT/Ticket_Overlay.pm:1570
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 ist nicht mehr  %2 dieser Anfrage."
+msgstr "%1 ist nicht mehr %2 dieser Anfrage."
 
 #: lib/RT/Ticket_Overlay.pm:3527
 #. ($args{'Value'}, $cf->Name)
@@ -194,10 +194,23 @@ msgstr "%1 ist kein Wert des benutzerdefinierten Feldes %2 mehr"
 msgid "%1 isn't a valid Queue id."
 msgstr "%1 ist keine gültige Stapel-Id."
 
+#: RTFM
+msgid "%1 matches"
+msgstr "%1 enthält"
+
+
 #: html/Ticket/Elements/ShowBasics:36
 #. ($TimeWorked)
 msgid "%1 min"
 msgstr "%1 Min"
+
+#: html/RTFM/UpdatedArticles:19
+msgid "%1 most recently updated articles"
+msgstr "%1 zuletzt überarbeitete Artikel"
+
+#: RTFM
+msgid "%1 newest articles"
+msgstr "%1 neueste Artikel"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 not shown"
@@ -279,9 +292,17 @@ msgstr "(Keine benutzerdefinierten Felder)"
 msgid "(No members)"
 msgstr "(Keine Mitglieder)"
 
+#: html/RTFM/NewestArticles:35
+msgid "(no name)"
+msgstr "(kein Name)"
+
 #: html/Admin/Elements/EditScrips:32 html/Admin/Elements/ListGlobalScrips:32
 msgid "(No scrips)"
 msgstr "(Keine Scrips)"
+
+#: html/RTFM/UpdatedArticles.html:36
+msgid "(no Summary)"
+msgstr "keine Zusammenfassung"
 
 #: html/Admin/Elements/EditTemplates:31
 msgid "(No templates)"
@@ -552,6 +573,10 @@ msgstr "Administrative CC"
 msgid "Advanced Search"
 msgstr "Erweiterte Suche"
 
+#: RTFM
+msgid "Advanced Search Criteria"
+msgstr "Erweiterte Suchkriterien"
+
 #: html/Elements/SelectDateRelation:36
 msgid "After"
 msgstr "Nach dem"
@@ -564,6 +589,10 @@ msgstr "Alter"
 msgid "All Custom Fields"
 msgstr "Alle benutzerdefinierten Felder"
 
+#: html/RTFM/Admin/Classes/index.html:57
+msgid "All Classes"
+msgstr "Alle Klassen"
+
 #: html/Admin/Queues/index.html:53
 msgid "All Queues"
 msgstr "Alle Stapel"
@@ -571,6 +600,14 @@ msgstr "Alle Stapel"
 #: NOT FOUND IN SOURCE
 msgid "Always sends a message to the requestors independent of message sender"
 msgstr ""
+
+#: RTFM
+msgid "and is not"
+msgstr "und ist nicht"
+
+#: RTFM
+msgid "and not"
+msgstr "und nicht"
 
 #: html/Elements/Tabs:58
 msgid "Approval"
@@ -610,9 +647,41 @@ msgstr "Freigeben"
 msgid "Approver's notes: %1"
 msgstr "Notizen des Freigebenden: %1"
 
+#: html/RTFM/Admin/CustomFields/UserRights.html:117
+msgid "No Class defined"
+msgstr "Keine Klasse definiert"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:69
+msgid "No CustomField"
+msgstr "Kein benutzerdef. Feld"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:73
+msgid "No CustomField defined"
+msgstr "Kein benutzerdef. Feld definiert"
+
 #: lib/RT/Date.pm:414
 msgid "Apr."
 msgstr "Apr"
+
+#: RTFM
+msgid "Are you sure you want to delete this article?"
+msgstr "Sind Sie sicher, dass sie diesen Artikel löschen wollen?"
+
+#: html/RTFM/Article/delete.html:69
+msgid "Article #%1 deleted"
+msgstr "Artikel #%1 gelöscht"
+
+#: html/RTFM/Article/Display.html:46
+msgid "Article #%1: %2"
+msgstr "Artikel #%1: %2"
+
+#: html/RTFM/Article/Display.html:35
+msgid "Article not found"
+msgstr "Artikel wurde nicht gefunden"
+
+#: RTFM
+msgid "Articles"
+msgstr "Artikel"
 
 #: html/Elements/SelectSortOrder:35
 msgid "Ascending"
@@ -739,11 +808,11 @@ msgstr "Kann kein Ticket auf sich selbst verweisen lassen!"
 
 #: lib/RT/Ticket_Overlay.pm:2787
 msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr "Konnte das Ticket nicht in ein vereinigtes Ticket vereinigen. Diesen Fehler solltest du niemals sehen"
+msgstr "Konnte das Ticket nicht in ein vereinigtes Ticket vereinigen. Diesen Fehler sollten Sie niemals sehen"
 
 #: lib/RT/Ticket_Overlay.pm:2605 lib/RT/Ticket_Overlay.pm:2674
 msgid "Can't specifiy both base and target"
-msgstr "Du kannst nicht Basis und Ziel gleichzeitig angeben"
+msgstr "Sie können Basis und Ziel nicht gleichzeitig angeben"
 
 #: html/autohandler:112
 #. ($msg)
@@ -774,13 +843,33 @@ msgstr "Kinder"
 msgid "City"
 msgstr "Stadt"
 
+#: RTFM
+msgid "Class"
+msgstr "Klasse"
+
+#: RTFM
+msgid "Class is"
+msgstr "Klasse ist"
+
+#: RTFM
+msgid "Class Name"
+msgstr "Klassenname"
+
+#: RTFM
+msgid "Classes"
+msgstr "Klassen"
+
+#: share/html/SelfService/Closed.html:27
+msgid "closed"
+msgstr "geschlossenen"
+
 #: html/Ticket/Elements/ShowDates:47
 msgid "Closed"
 msgstr "Geschlossen"
 
 #: html/SelfService/Elements/Tabs:60
-msgid "Closed requests"
-msgstr "Geschossene Tickets"
+msgid "Closed tickets"
+msgstr "Geschlossene Anfragen"
 
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
@@ -999,6 +1088,14 @@ msgstr ""
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Konnte %1 nicht aus der Benutzerdatenbank laden.\\n"
 
+#: html/RTFM/Admin/CustomFields/UserRights.html:121
+msgid "Couldn't load Class %1"
+msgstr "Konnte die Klasse %1 nicht laden"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:77
+msgid "Couldn't load CustomField %1"
+msgstr "Konnte das benutzerdefinierte Feld %1 nicht laden"
+
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load RT config file '%1' %2"
 msgstr ""
@@ -1056,6 +1153,10 @@ msgstr "Erstellen"
 msgid "Create Tickets"
 msgstr "Erstelle Tickets"
 
+#: RTFM
+msgid "Create a Class"
+msgstr "Erstelle eine Klasse"
+
 #: html/Admin/Elements/EditCustomField:58
 msgid "Create a CustomField"
 msgstr "Erstelle ein benutzerdefiniertes Feld"
@@ -1068,6 +1169,10 @@ msgstr "Erstelle ein benutzerdef. Feld für Stapel %1"
 #: html/Admin/Global/CustomField.html:48
 msgid "Create a CustomField which applies to all queues"
 msgstr "Erstelle ein benutzerdef. Feld für alle Stapel"
+
+#: html/RTFM/Article/Create.html:19
+msgid "Create a new article"
+msgstr "Erstelle einen neuen Artikel"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new Custom Field"
@@ -1126,13 +1231,25 @@ msgstr "Erstelle ein Scrip für den Stapel %1"
 msgid "Create a template"
 msgstr "Erstelle eine Vorlage"
 
+#: html/SelfService/Create.html:24
+msgid "Create a ticket"
+msgstr "Neue Anfrage"
+
+#: RTFM
+msgid "Create an article"
+msgstr "Erstelle einen Artikel"
+
+#: RTFM
+msgid "Create an article in class..."
+msgstr "Erstelle einen Artikel in der Klasse..."
+
 #: etc/initialdata:130
 msgid "Create new tickets based on this scrip's template"
 msgstr "Erstelle neue Tickets basierend auf der Vorlage dieses Scrips"
 
 #: html/SelfService/Create.html:81
 msgid "Create ticket"
-msgstr "Ticket erstellen"
+msgstr "Übermitteln"
 
 #: lib/RT/Queue_Overlay.pm:84
 msgid "Create tickets in this queue"
@@ -1166,10 +1283,18 @@ msgstr ""
 msgid "Created"
 msgstr "Angelegt"
 
+#: RTFM
+msgid "Created by"
+msgstr "Angelegt von"
+
 #: html/Admin/Elements/EditCustomField:71
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "Erstelle ein benutzerdefiniertes Feld %1"
+
+#: RTFM
+msgid "Created during"
+msgstr "Erstellt zwischen"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -1316,7 +1441,7 @@ msgstr "Rechte weitergeben"
 
 #: lib/RT/System.pm:63
 msgid "Delegate specific rights which have been granted to you."
-msgstr "Dir gewährte Rechte weitergeben"
+msgstr "Ihnen gewährte Rechte weitergeben"
 
 #: lib/RT/System.pm:63
 msgid "DelegateRights"
@@ -1326,9 +1451,13 @@ msgstr ""
 msgid "Delegation"
 msgstr "Rechteweitergabe"
 
-#: NOT FOUND IN SOURCE
+#: RTFM
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
+
+#: html/RTFM/Article/delete.html:73
+msgid "Delete article #%1"
+msgstr "Lösche Artikel #%1"
 
 #: lib/RT/Queue_Overlay.pm:90
 msgid "Delete tickets"
@@ -1445,6 +1574,10 @@ msgstr ""
 msgid "Edit Custom Fields for %1"
 msgstr "Bearbeite benutzerdefinierte Felder für %1"
 
+#: html/RTFM/Admin/Classes/CustomFields.html:73
+msgid "Edit Custom Fields for Class %1"
+msgstr "Bearbeite benutzerdefinierte Felder für Klasse %1"
+
 #: html/Ticket/ModifyLinks.html:36
 msgid "Edit Relationships"
 msgstr "Bearbeite Beziehungen"
@@ -1465,6 +1598,10 @@ msgstr "Bearbeite Systemvorlagen"
 #: NOT FOUND IN SOURCE
 msgid "Edit templates for %1"
 msgstr ""
+
+#: html/RTFM/Admin/Classes/Modify:79
+msgid "Editing Configuration for Class %1"
+msgstr "Bearbeite Konfiguration für die Klasse %1"
 
 #: html/Admin/Elements/ModifyQueue:25 html/Admin/Queues/Modify.html:117
 #. ($QueueObj->Name)
@@ -1517,6 +1654,10 @@ msgstr "E-Mail-Adresse"
 msgid "EmailEncoding"
 msgstr "E-Mail-Kodierung"
 
+#: RTFM
+msgid "Enabled (Unchecking this box disables this Class)"
+msgstr "Aktiviert (Abwählen deaktiviert diese Klasse)"
+
 ### muss das überhaupt übersetzt werden???
 #: html/Admin/Elements/EditCustomField:36
 msgid "Enabled (Unchecking this box disables this custom field)"
@@ -1530,6 +1671,10 @@ msgstr "Aktiviert (Abwählen deaktiviert diese Gruppe)"
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "Aktiviert (Abwählen deaktiviert diesen Stapel)"
 
+#: RTFM
+msgid "Enabled Classes"
+msgstr "Aktivierte Klassen"
+
 #: html/Admin/Elements/EditCustomFields:99
 msgid "Enabled Custom Fields"
 msgstr "Aktivierte benutzerdefinierte Felder"
@@ -1542,6 +1687,10 @@ msgstr "Aktivierte Stapel"
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Status %1 aktiviert"
+
+#: RTFM
+msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
+msgstr "Artikel oder URIs getrennt durch Leerzeichen eingeben."
 
 #: lib/RT/CustomField_Overlay.pm:361
 msgid "Enter multiple values"
@@ -1594,6 +1743,14 @@ msgstr "ExternalContactInfoId"
 #: html/Admin/Users/Modify.html:73
 msgid "Extra info"
 msgstr "Zusatzinformationen"
+
+#: html/RTFM/Article/ExtractIntoClass.html:19
+msgid "Extract article from ticket #%1"
+msgstr "Extrahiere Artikel aus Anfrage #%1"
+
+#: html/RTFM/Article/ExtractFromTicket.html:19
+msgid "Extract article from ticket #%1 into class %2"
+msgstr "Extrahiere Artikel aus Anfrage #%1 in die Klasse %2"
 
 #: lib/RT/User_Overlay.pm:302
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -1729,7 +1886,7 @@ msgstr "Gehe zu Seite"
 
 #: html/Elements/GotoTicket:25 html/SelfService/Elements/GotoTicket:25
 msgid "Goto ticket"
-msgstr "Zeig' Ticket"
+msgstr "Zeige Anfrage"
 
 #: html/Ticket/Elements/AddWatchers:46 html/User/Elements/DelegateRights:78
 msgid "Group"
@@ -1793,6 +1950,10 @@ msgstr "Hallo %1"
 msgid "History"
 msgstr "Historie"
 
+#: html/RTFM/Article/History.html:22
+msgid "History for article #%1"
+msgstr "Historie für Artikel #%1"
+
 #: html/Admin/Elements/ModifyUser:68
 msgid "HomePhone"
 msgstr "TelefonZuhause"
@@ -1828,7 +1989,7 @@ msgstr "Wenn dieses Werkzeug 'setgid' wäre könnte ein feindlicher lokaler Benu
 
 #: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "If you've updated anything above, be sure to"
-msgstr "Wenn du irgend etwas aktualisiert hast, denke daran hier zu klicken"
+msgstr "Wenn Sie irgend etwas aktualisiert haben, denken Sie daran hier zu klicken"
 
 #: lib/RT/Interface/Web.pm:860
 msgid "Illegal value for %1"
@@ -1837,6 +1998,14 @@ msgstr "Unerlaubter Wert für %1"
 #: lib/RT/Interface/Web.pm:863
 msgid "Immutable field"
 msgstr "Unveränderbares Feld"
+
+#: RTFM
+msgid "in class %1"
+msgstr "%1"
+
+#: RTFM
+msgid "Include disabled classes in listing."
+msgstr "Zeige auch deaktivierte Klassen an."
 
 #: html/Admin/Elements/EditCustomFields:74
 msgid "Include disabled custom fields in listing."
@@ -2157,6 +2326,19 @@ msgstr "Mobil"
 msgid "MobilePhone"
 msgstr "Mobiltelefon"
 
+#: RTFM
+msgid "Modified"
+msgstr "Geändert"
+
+#: RTFM
+msgid "Modify"
+msgstr "Ändern"
+
+#: RTFM
+msgid "Modify article #%1"
+msgstr "Ändere Artikel #%1"
+
+
 #: lib/RT/Queue_Overlay.pm:70
 msgid "Modify Access Control List"
 msgstr "Ändere Zugriffskontrollliste"
@@ -2168,6 +2350,10 @@ msgstr ""
 #: html/Admin/Global/CustomFields.html:44 html/Admin/Global/index.html:51
 msgid "Modify Custom Fields which apply to all queues"
 msgstr "Ändere benutzdefinierte Felder für diesen Stapel"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:21
+msgid "Modify group rights for custom field %1"
+msgstr "Ändere Gruppenrechte für das benutzerdefinierte Feld %1"
 
 #: lib/RT/Queue_Overlay.pm:73
 msgid "Modify Scrip templates for this queue"
@@ -2374,7 +2560,11 @@ msgstr "Mehrere"
 
 #: lib/RT/User_Overlay.pm:179
 msgid "Must specify 'Name' attribute"
-msgstr "Du musst eine Angabe bei 'Name' machen"
+msgstr "Sie müssen eine Angabe bei 'Name' machen"
+
+#: share/html/SelfService/Elements/MyRequests:32
+msgid "My %1 tickets"
+msgstr "Meine %1 Anfragen"
 
 #: NOT FOUND IN SOURCE
 msgid "My Approvals"
@@ -2392,6 +2582,10 @@ msgstr "Name"
 msgid "Name in use"
 msgstr "Benutzername ist bereits in Gebrauch"
 
+#: RTFM
+msgid "Name matches"
+msgstr "Name enthält"
+
 #: NOT FOUND IN SOURCE
 msgid "Need approval from system administrator"
 msgstr ""
@@ -2403,6 +2597,15 @@ msgstr "Niemals"
 #: html/Elements/Quicksearch:30
 msgid "New"
 msgstr "Neu"
+
+#: RTFM
+msgid "New Article"
+msgstr "Neuer Artikel"
+
+#: RTFM
+msgid "New class"
+msgstr "Neue Klasse"
+
 
 #: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:93 html/User/Prefs.html:65
 msgid "New Password"
@@ -2441,8 +2644,8 @@ msgid "New queue"
 msgstr "Neuer Stapel"
 
 #: html/SelfService/Elements/Tabs:63
-msgid "New request"
-msgstr "Neues Ticket"
+msgid "New ticket"
+msgstr "Neue Anfrage"
 
 #: html/Admin/Elements/SelectRights:42
 msgid "New rights"
@@ -2496,9 +2699,17 @@ msgstr "Spitzname"
 msgid "Nickname"
 msgstr "Spitzname"
 
+#: RTFM
+msgid "No"
+msgstr "Nein"
+
 #: html/Admin/Elements/EditCustomField:73 html/Admin/Elements/EditCustomFields:105
 msgid "No CustomField"
 msgstr "Kein benutzerdefiniertes Feld"
+
+#: html/RTFM/Admin/CustomFields/GrroupRights.html:73
+msgid "No CustomField defined"
+msgstr "Kein benutzerdefiniertes Feld definiert"
 
 #: html/Admin/Groups/GroupRights.html:84 html/Admin/Groups/UserRights.html:71
 msgid "No Group defined"
@@ -2777,7 +2988,7 @@ msgid "Open it"
 msgstr "Öffnen"
 
 #: html/SelfService/Elements/Tabs:57
-msgid "Open requests"
+msgid "Open tickets"
 msgstr "Offene Anfragen"
 
 #: html/Admin/Users/Prefs.html:41
@@ -2808,6 +3019,10 @@ msgstr "Ursprüngliche Anfrage: #%1"
 #: html/Admin/Elements/ModifyQueue:55 html/Admin/Queues/Modify.html:69
 msgid "Over time, priority moves toward"
 msgstr "Mit der Zeit steigt die Priorität auf"
+
+#: html/RTFM/index.html:19
+msgid "Overview"
+msgstr "Übersicht"
 
 #: lib/RT/Queue_Overlay.pm:87
 msgid "Own tickets"
@@ -3000,6 +3215,10 @@ msgstr "Stapel nicht gefunden"
 msgid "Queues"
 msgstr "Stapel"
 
+#: RTFM
+msgid "Quick search"
+msgstr "Schnellsuche"
+
 #: html/Elements/Login:34
 #. ($RT::VERSION)
 msgid "RT %1"
@@ -3047,9 +3266,13 @@ msgstr "RT Fehler"
 msgid "RT Received mail (%1) from itself."
 msgstr ""
 
+#: html/RTFM/Error:36
+msgid "RTFM Error"
+msgstr "RTFM Fehler"
+
 #: html/SelfService/Closed.html:25
-msgid "RT Self Service / Closed Tickets"
-msgstr "RT Selbstbedienung / Geschlossene Anfragen"
+msgid "Closed Tickets"
+msgstr "Geschlossene Anfragen"
 
 #: html/index.html:25 html/index.html:28
 msgid "RT at a glance"
@@ -3082,12 +3305,16 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT has proccessed your commands"
-msgstr "RT hat Deine Befehle verarbeitet"
+msgstr "RT hat Ihre Befehle verarbeitet"
 
 #: html/Elements/Login:83
 #. ('2003')
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 msgstr "RT &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Vertrieben unter der <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+
+#: share/html/SelfService/Elements/Tabs:35
+msgid "RT Self Service"
+msgstr "RT Selbstbedienung"
 
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
@@ -3318,6 +3545,10 @@ msgstr ""
 msgid "Search for approvals"
 msgstr "Suche nach Freigaben"
 
+#: html/RTFM/Article/Search.html:19
+msgid "Search for articles"
+msgstr "Artikel suchen"
+
 #: bin/rt-crontool:188
 msgid "Security:"
 msgstr "Sicherheit:"
@@ -3325,6 +3556,14 @@ msgstr "Sicherheit:"
 #: lib/RT/Queue_Overlay.pm:67
 msgid "SeeQueue"
 msgstr ""
+
+#: RTFM
+msgid "Select a Class"
+msgstr "Wähle eine Klasse aus"
+
+#: RTFM
+msgid "Select a Custom Fields"
+msgstr "Wähle ein benutzerdefiniertes Feld aus"
 
 #: html/Admin/Groups/index.html:40
 msgid "Select a group"
@@ -3337,6 +3576,10 @@ msgstr ""
 #: html/Admin/Users/index.html:25 html/Admin/Users/index.html:28
 msgid "Select a user"
 msgstr "Wähle einen Benutzer aus"
+
+#: RTFM
+msgid "Select class"
+msgstr "Wähle eine Klasse"
 
 #: html/Admin/Global/CustomField.html:38 html/Admin/Global/CustomFields.html:36
 msgid "Select custom field"
@@ -3364,7 +3607,7 @@ msgstr "Wähle ein Scrip"
 
 #: html/Admin/Global/Template.html:57 html/Admin/Global/Templates.html:36 html/Admin/Queues/Template.html:55
 msgid "Select template"
-msgstr "Wähle ein Template"
+msgstr "Wähle eine Vorlage"
 
 #: html/Admin/Elements/UserTabs:49
 msgid "Select user"
@@ -3422,9 +3665,17 @@ msgstr "Schicke eine Mail an den Inhaber"
 msgid "Sep."
 msgstr "Sep"
 
+#: RTFM
+msgid "Seperate multiple URLs with spaces"
+msgstr "Mehrere URLs getrennt durch Leerzeichen eingeben"
+
 #: NOT FOUND IN SOURCE
 msgid "Show Results"
 msgstr ""
+
+#: RTFM
+msgid "Show advanced search options..."
+msgstr "Zeige erweiterte Suchoptionen an..."
 
 #: html/Approvals/Elements/PendingMyApproval:44
 msgid "Show approved requests"
@@ -3511,9 +3762,22 @@ msgstr "Sortierschlüssel"
 msgid "Sort results by"
 msgstr "Sortiere Ergebnisse nach"
 
+#: RTFM
+msgid "Sort Order"
+msgstr "Sortierreihenfolge"
+
 #: html/Admin/Elements/AddCustomFieldValue:25
 msgid "SortOrder"
 msgstr "Sortierreihenfolge"
+
+#: RTFM
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+#: RTFM
+msgid "Summary matches"
+msgstr "Zusammenfassung enthält"
+
 
 #: NOT FOUND IN SOURCE
 msgid "Stalled"
@@ -3585,6 +3849,10 @@ msgstr "Betreff wurde auf %1 geändert"
 #: html/Elements/Submit:59
 msgid "Submit"
 msgstr "Übermitteln"
+
+#: NOT FOUND IN SOURCE
+msgid "Submit Query"
+msgstr "Suchen"
 
 #: NOT FOUND IN SOURCE
 msgid "Submit Workflow"
@@ -3933,6 +4201,10 @@ msgstr "Arbeitszeit"
 msgid "Time left"
 msgstr "Übrige Zeit"
 
+#: RTFM
+msgid "till"
+msgstr "und"
+
 #: html/Elements/Footer:36
 msgid "Time to display"
 msgstr "Benötigte Zeit"
@@ -3989,6 +4261,10 @@ msgstr "Di"
 #: html/Admin/Elements/EditCustomField:34 html/Ticket/Elements/AddWatchers:33 html/Ticket/Elements/AddWatchers:44 html/Ticket/Elements/AddWatchers:54 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:959
 msgid "Type"
 msgstr "Typ"
+
+#: html/RTFM/Article/delete.html:59
+msgid "Unable to load article"
+msgstr "Artikel kann nicht geladen werden"
 
 #: lib/RT/ScripCondition_Overlay.pm:104
 msgid "Unimplemented"
@@ -4081,6 +4357,10 @@ msgstr "Aktualisierungstyp war weder Korrespondenz noch Kommentar."
 #: html/Elements/SelectDateType:33 html/Ticket/Elements/ShowDates:51 lib/RT/Ticket_Overlay.pm:1169
 msgid "Updated"
 msgstr "Aktualisiert"
+
+#: html/RTFM/Article/ExtractFromTicket.html:26
+msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
+msgstr "Über die Auswahllisten kann bestimmt werden welche Transaktionen in den neuen RTFM Artikel extrahiert werden"
 
 #: NOT FOUND IN SOURCE
 msgid "User %1 %2: %3\\n"
@@ -4223,6 +4503,14 @@ msgstr "Immer wenn ein neuer Kommentar eingeht"
 msgid "Whenever correspondence comes in"
 msgstr "Immer wenn neue Korrespondenz eingeht"
 
+#: html/RTFM/Article/Elements/ShowSearchCriteria:64
+msgid "Which refer to"
+msgstr "Beziehen sich auf"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:64
+msgid "Which are referred to by "
+msgstr "Bezogen von"
+
 #: html/Admin/Users/Modify.html:164 html/User/Prefs.html:52
 msgid "Work"
 msgstr "Arbeit"
@@ -4235,17 +4523,21 @@ msgstr "Arbeitstelefon"
 msgid "Worked"
 msgstr "Arbeitszeit"
 
+#: RTFM
+msgid "Yes"
+msgstr "Ja"
+
 #: lib/RT/Ticket_Overlay.pm:3056
 msgid "You already own this ticket"
-msgstr "Du besitzt diese Anfrage bereits"
+msgstr "Sie besitzen diese Anfrage bereits"
 
 #: html/autohandler:121
 msgid "You are not an authorized user"
-msgstr "Du bist kein authorisierter Benutzer"
+msgstr "Sie sind kein authorisierter Benutzer"
 
 #: lib/RT/Ticket_Overlay.pm:2930
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "Du kannst nur Anfragen ohne Inhaber zuweisen"
+msgstr "Sie können nur Anfragen ohne Inhaber zuweisen"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -4254,23 +4546,23 @@ msgstr ""
 #: docs/design_docs/string-extraction-guide.txt:47
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
-msgstr "Du hast %1 Anfragen in Stapel %2 gefunden"
+msgstr "Sie haben %1 Anfragen in Stapel %2 gefunden"
 
 #: html/NoAuth/Logout.html:31 html/REST/1.0/logout:25
 msgid "You have been logged out of RT."
-msgstr "Du wurdest von RT abgemeldet."
+msgstr "Sie wurden von RT abgemeldet."
 
 #: html/SelfService/Display.html:134
 msgid "You have no permission to create tickets in that queue."
-msgstr "Du hast kein Recht, Anfragen in diesen Stapel anzulegen."
+msgstr "Sie haben kein Recht, Anfragen in diesen Stapel anzulegen."
 
 #: lib/RT/Ticket_Overlay.pm:1895
 msgid "You may not create requests in that queue."
-msgstr "Du darfst in diesem Stapel keine Anfragen erstellen"
+msgstr "Sie dürfen in diesem Stapel keine Anfragen erstellen"
 
 #: html/NoAuth/Logout.html:36
 msgid "You're welcome to login again"
-msgstr "Du kannst dich gerne wieder anmelden"
+msgstr "Sie können sich gerne wieder anmelden"
 
 #: html/SelfService/Elements/MyRequests:25
 #. ($friendly_status)
@@ -4283,11 +4575,11 @@ msgstr ""
 
 #: etc/initialdata:429 etc/upgrade/2.1.71:146
 msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr "Deine Anfrage wurde von %1 freigegeben. Andere Freigaben können noch ausstehen."
+msgstr "Ihre Anfrage wurde von %1 freigegeben. Andere Freigaben können noch ausstehen."
 
 #: etc/initialdata:463 etc/upgrade/2.1.71:180
 msgid "Your request has been approved."
-msgstr "Deine Anfrage wurde freigegeben."
+msgstr "Ihre Anfrage wurde freigegeben."
 
 #: NOT FOUND IN SOURCE
 msgid "Your request was rejected"
@@ -4295,11 +4587,11 @@ msgstr ""
 
 #: etc/initialdata:384 etc/upgrade/2.1.71:101
 msgid "Your request was rejected."
-msgstr "Deine Anfrage wurde abgewiesen"
+msgstr "Ihre Anfrage wurde abgewiesen"
 
 #: html/autohandler:136 html/autohandler:142
 msgid "Your username or password is incorrect"
-msgstr "Dein Benutzername oder Passwort ist falsch"
+msgstr "Ihr Benutzername oder Passwort ist falsch"
 
 #: html/Admin/Elements/ModifyUser:84 html/Admin/Users/Modify.html:144 html/User/Prefs.html:96
 msgid "Zip"
