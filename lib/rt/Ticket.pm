@@ -1,5 +1,5 @@
-package RT::Ticket
-@ISA= qw(DBIx::Record);
+package RT::Ticket;
+@ISA= qw(RT::Record);
 
 sub new {
   my $proto = shift;

@@ -5,7 +5,7 @@
 # This code is not used yet.
 #
 package rt::Transaction;
-@ISA= qw(DBIx::RecordObject;
+@ISA= qw(RT::Record);
 
 sub new {
   my $proto = shift;
