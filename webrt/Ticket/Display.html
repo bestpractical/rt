@@ -3,6 +3,10 @@
 
 <& /Elements/Header, Title => "WebRT Ticket View (#".$Ticket->Id.")" &>
 
+% for (@Actions) {
+   <%$_%><br>
+% }
+
 
 <& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
 
@@ -20,19 +24,46 @@
 <& /Elements/Footer &>
 
 
-<%ARGS>
-$id => undef
-</%ARGS>
 <%INIT>
 
   if (!$ARGS{'id'}) {
     &mc_comp("/Elements/Error" , Why => "No ticket specified");
     $m->abort;
   }
+
 use RT::Ticket;
 use RT::CurrentUser;
+# Huh? Shouldn't this be $session{CurrentUser}? -- TobiX
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Ticket = RT::Ticket->new($CurrentUser);
+my $id=$ARGS{'id'};
+my @Actions=();
+
+  if ($id eq 'new') {
+    require MIME::Entity;
+    my ($Trans,$ErrMsg);
+    ($id, $Trans, $ErrMsg)=$Ticket->Create( 
+#TODO in Create_Details.html: priorities and due-date      
+      Queue=>$ARGS{queue},
+      Owner=>$ARGS{ValueOfOwner},
+      Requestors=>$ARGS{Requestors} || $CurrentUser->EmailAddress,
+      Subject=>$ARGS{Subject},
+      Status=>$ARGS{Status}||'open',
+      MIMEEntity => MIME::Entity->build
+        ( 
+	  Subject => $ARGS{Subject},
+	  From => $ARGS{Requestors},
+	  Cc => $ARGS{Cc},
+	  Data => $ARGS{Content}
+        )	  
+    );         
+    unless ($id && $Trans) {
+       &mc_comp("/Elements/Error" , Why => $ErrMsg);
+       $m->abort;
+    }
+    push(@Actions, $ErrMsg);
+  }
+
 unless ($Ticket->Load($id)) {
     &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
     $m->abort;
