@@ -287,6 +287,19 @@ P.map-also { font-style: italic; margin-left: 15%; text-align: right }
         background-color : #ccccee;
 }
 
+ul.topnav {
+	list-style: none;
+	margin-left: 0;
+ 	margin-right: 0.25em;		
+	padding-left: 0.25em;
+	padding-bottom: 0;	
+	padding-top:0;
+	margin-top: 0;
+	margin-bottom:0;
+};
+
+
 <%init>
-$r->header_out('Expires' ,'+30m');
+$r->content_type('text/css');
+#$r->header_out('Expires' ,'+30m');
 </%init>

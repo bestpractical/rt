@@ -29,7 +29,8 @@
     topactions => $topactions,
     tabs => $tabs,
     actions => $actions,
-    subactions => $subactions
+    subactions => $subactions,
+    title => $Title
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 

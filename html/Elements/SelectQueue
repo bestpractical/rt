@@ -45,7 +45,7 @@ $ShowNullOption => 1
 $ShowAllQueues => 1
 $Name => undef
 $Verbose => undef
-$Default => undef
+$Default => 0
 $Lite => 0
 </%ARGS>
 

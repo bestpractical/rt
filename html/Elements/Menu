@@ -1,51 +1,18 @@
-%# BEGIN LICENSE BLOCK
-%# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-%# 
-%# (Except where explictly superceded by other copyright notices)
-%# 
-%# This work is made available to you under the terms of Version 2 of
-%# the GNU General Public License. A copy of that license should have
-%# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org
-%# 
-%# This work is distributed in the hope that it will be useful, but
-%# WITHOUT ANY WARRANTY; without even the implied warranty of
-%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%# General Public License for more details.
-%# 
-%# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
-%# 
-%# 
-%# END LICENSE BLOCK
-%#
 %# font size depends on level
-% if ($level gt 0) {
 % if ($level ge 3) {
 %   $size = $basesize-(6);
-% } else {
+% } elsif ($level gt 0) {
 %   $size = $basesize-($level * 2);
-% }
 %   $padding = 2;
-% } else {
+% }
+%  else {
 %   $size = $basesize;
 %   $padding = 5;
 % }
-<table border=0 cellspacing=0 cellpadding=0 bordercolor=#FFFFFF width=100%>
-  <span class="topnav">
+<ul class="topnav" >
 % my $sep=0;
 % my $accesskey="1";
 % foreach $tab (sort keys %{$toptabs}) {
-% if ($sep) {
-    <tr><td height="2"></td></tr>
-    <tr><td height="1" bgcolor="#999999"></td></tr>
-    <tr><td height="2"></td></tr>
-% }
-% $sep=0;
 % my $current = $current_toptab;
 % my $path = $toptabs->{$tab}->{'path'};
 % $path =~ s#/index.html$##gi;
@@ -55,40 +22,35 @@
 % } else {
 %     $class="topnav"
 % } 
-    <tr>
-      <td height=<%$padding%>></td>
-    </tr>
-    <tr> 
-      <td class="blue" colspan=2 width=100%>
-        <A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" class="<%$class%>" style="font-size: <%$size%>" <% !$level && "accesskey='".$accesskey++."'" %>><% $toptabs->{$tab}->{'title'}%></A>
-      </td>
-    </tr>
+% my $style="";
+% if ($sep) {
+% $style="border-top: solid #999 1px; padding-top: .1em; margin-top: .5em;";
+% } elsif ($level == 0 ) {
+% $style="border-bottom: solid white 1px; padding-top: .25em; padding-bottom: .5em;" ;
+% }
 % if ($toptabs->{$tab}->{'separator'}) {
 % $sep=1;
+% } else {
+% $sep=0;
 % }
+<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" style="font-size: <%$size%>;" class="<%$class%>" <% !$level && "accesskey='".$accesskey++."'" %>><% $toptabs->{$tab}->{'title'}%></A>
 %# Second-level items
 %# if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
 %# commented out by jesse on 4 jan 2003 so that tickets/search and ticket/# can
 %# both have menu items
 % if ($toptabs->{$tab}->{'subtabs'}) {
-    <tr>
-      <td width=5></td>
-      <td>
         <& /Elements/Menu, level => $level+1, 
                 current_toptab => $toptabs->{$tab}->{'current_subtab'},
-                toptabs => $toptabs->{$tab}->{'subtabs'} &>
+                toptabs => $toptabs->{$tab}->{'subtabs'} &></li>
 % }
 %# }
 %# put a line after each top-level menu entry
 % if ($level eq 0) {
-    <tr><td height=<%$padding%>></td></tr>
-    <tr><td colspan=2 height=1 bgcolor="#FFFFFF"></td></tr>
+%#<li style="line-height: 5%;">&nbsp;</li>
+%#<li style="line-height: 5%;border-top: solid white 1px;">&nbsp;</li>
 % }
 % }
-      </td>
-    </TR>
-  </span>
-</TABLE>
+</ul>
 
 <%INIT>
 my ($tab, $subtab, $class, $size, $padding);

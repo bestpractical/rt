@@ -39,6 +39,8 @@ $m->comp('/Elements/SetupSessionCookie');
 
 if ($ARGS{'SessionType'}) {
         $session{'SessionType'} = $ARGS{'SessionType'};
+} else {
+        $session{'SessionType'} = 'Web';
 }
 
 if ($session{'SessionType'} =~ /REST/i) {

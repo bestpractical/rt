@@ -65,7 +65,7 @@ $r->header_out('Cache-control' => 'no-cache');
 <%ARGS>
 $Title => undef
 $Code => undef
-$Refresh => undef
+$Refresh => 0
 $Why => undef
 $BgColor => '#ffffff'
 $ShowBar => 1
