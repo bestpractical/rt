@@ -22,8 +22,8 @@ type="i"
 % }
 <BR>
 <%$article->ContentObj->Body |n%>
-% if ($session->{'currentuser'}->IsEditor) {
-<div align="right"><i><A href="<%$WebPath%>/edit/edit_article.html?id=<%$article->Id%>">Edit</a></i></div>
+% if ($session{'currentuser'}->IsEditor) {
+<div align="right"><i><A href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article->Id%>">Edit</a></i></div>
 %}
 
 % if ($Depth < 99) {
