@@ -435,18 +435,19 @@ sub FormCreate_Step2 {
 <TD align=\"right\">
 Queue:
 </TD>
-<TD> $queue_id *</TR>
-<TR><TD align=\"right\"> Created by:
+<TD> $queue_id </TD>
+<TD align=\"right\"> Created by:
+
 </TD> 
 <TD>
  $current_user
 </TD>
-</TR>\n";
+\n";
     $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
     $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
     if ($current_user){
 
-    print "<TR>
+    print "
 <TD align=\"right\">Area:
 </TD>
 <TD><select name=\"area\">
@@ -458,18 +459,18 @@ Queue:
     }
     print "</select>
 </TD>
-</TR>\n";
-
-print "
+</TR>
 <TR>
 <TD align=\"right\">Status:</TD>
 <TD><select name=\"status\">
 <option value=\"open\">open
 <option value=\"stalled\">stalled
 <option value=\"resolved\">resolved
-</select></TD></TR>";
-    
-print "<TR><TD align=\"right\">Owner:</TD><TD><select name=\"owner\">
+</select></TD>
+<TD align=\"right\">Owner:
+</TD>
+<TD>
+<select name=\"owner\">
 <option value=\"\">Nobody ";	
 	foreach $user_id ( sort keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
 	    if (&rt::can_manipulate_queue ($rt::ui::web::FORM{'queue_id'}, $user_id)) {
@@ -484,25 +485,25 @@ print "<TR><TD align=\"right\">Owner:</TD><TD><select name=\"owner\">
     print"<TR><TD align=\"right\">Priority:</TD><TD>";
     
     &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
-    print "</TR>
-<TR>
-<TD align=\"right\">
+    print "
+</TD><TD align=\"right\">
 Final priority:
 </TD>
 <TD>";
     &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
     print "</TD></TR>
-<TR><TD align=\"right\">Date Due:</TD><TD><input type=\"checkbox\" name=\"due\">";
+<TR><TD align=\"right\">Date Due:</TD><TD COLSPAN=5><input type=\"checkbox\" name=\"due\">";
     &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
     print "</TD></TR>
-<TR><TD align=\"right\">Requestor:</TD><TD><input name=\"requestors\" size=\"30\"";
+<TR><TD align=\"right\">Requestor:</TD><TD COLSPAN=5><input name=\"requestors\" size=\"30\"";
     if ($current_user ne 'anonymous') {
 	print "value=\"$rt::users{$current_user}{email}\"";
     }
     print "></TD></TR>
-<TR><TD align=\"right\">Subject:</TD><TD>  <input name=\"subject\" size=\"50\">
+<TR><TD align=\"right\">Subject:</TD><TD COLSPAN=5>  <input name=\"subject\" size=\"50\">
+
 </TD></TR>
-<TR><TD valign=\"top\" align=\"right\">Content:</TD><TD>
+<TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
 <font size=\"-1\">
 <textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $template

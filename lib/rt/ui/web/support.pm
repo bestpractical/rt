@@ -113,6 +113,7 @@ sub cgi_vars_in {
     foreach $pair (@pairs)   {
 	($name, $value) = split(/=/, $pair);
 	# Un-Webify plus signs and %-encoding
+	$name =~ tr/+/ /;
 	$value =~ tr/+/ /;
 	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$name  =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
