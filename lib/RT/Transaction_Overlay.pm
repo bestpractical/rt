@@ -94,11 +94,9 @@ sub Create {
         my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
         $TransAsSystem->Load( $self->id )
           || $RT::Logger->err(
-            "$self couldn't load a copy of itself as superuser\n");
-
+            "$self couldn't load a copy of itself as superuser\n"); 
         # {{{ Deal with Scrips
 
-        #Load a scripscopes object
         use RT::Scrips;
         my $PossibleScrips = RT::Scrips->new($RT::SystemUser);
 
@@ -135,61 +133,8 @@ sub Create {
         #Iterate through each script and check it's applicability.
 
         while ( my $Scrip = $PossibleScrips->Next() ) {
-
-            #TODO: properly deal with errors raised in this scrip loop
-
-            #$RT::Logger->debug("$self now dealing with ".$Scrip->Id. "\n");      
-            eval {
-                local $SIG{__DIE__} = sub { $RT::Logger->error( $_[0] ) };
-
-                #Load the scrip's Condition object
-                $Scrip->ConditionObj->LoadCondition(
-                    ScripObj        => $Scrip,
-                    TicketObj      => $TicketAsSystem,
-                    TransactionObj => $TransAsSystem
-                );
-
-                #If it's applicable, prepare and commit it
-
-                #$RT::Logger->debug( "$self: Checking condition " . $Scrip->ConditionObj->Name . "...\n" );
-
-                if ( $Scrip->IsApplicable() ) {
-
-                    #$RT::Logger->debug( "$self: Matches condition " . $Scrip->ConditionObj->Name . "...\n" );
-
-                    #TODO: handle some errors here
-
-                    $Scrip->ActionObj->LoadAction(
-                        ScripObj        => $Scrip,
-                        TicketObj      => $TicketAsSystem,
-                        TransactionObj => $TransAsSystem
-                    );
-
-                    if ( $Scrip->Prepare() ) {
-                        if ( $Scrip->Commit() ) {
-                        }
-                        else {
-                            $RT::Logger->info( "$self: Failed to commit "
-                                  . $Scrip->ActionObj->Name . "\n" );
-                        }
-                    }
-                    else {
-                        $RT::Logger->info( "$self: Failed to prepare "
-                              . $Scrip->ActionObj->Name . "\n" );
-                    }
-
-                    #We're done with it. lets clean up.
-                    #TODO: something else isn't letting these get garbage collected. check em out.
-                    $Scrip->ActionObj->DESTROY();
-                    $Scrip->ConditionObj->DESTROY();
-                }
-
-                else {
-                    # TODO: why doesn't this catch all the ScripObjs we create. 
-                    # and why do we explictly need to destroy them?
-                    $Scrip->ConditionObj->DESTROY;
-                }
-            };
+            $Scrip->Apply (TicketObj => $TicketAsSystem,
+                           TransactionObj => $TransAsSystem);
         }
 
         # }}}

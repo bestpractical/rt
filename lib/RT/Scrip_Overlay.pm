@@ -57,13 +57,6 @@ ok ($ticket2->Priority != '87', "Ticket priority is set right");
 
 no warnings qw(redefine);
 
-# {{{ sub _Init
-sub _Init  {
-    my $self = shift;
-    $self->{'table'} = "Scrips";
-    return ($self->SUPER::_Init(@_));
-}
-# }}}
 
 
 # {{{ sub Create 
@@ -229,6 +222,26 @@ sub ActionObj {
 
 # }}}
 
+# {{{ sub ConditionObj
+
+=head2 ConditionObj
+
+Retuns an RT::ScripCondition object with this Scrip's IsApplicable
+
+=cut
+
+sub ConditionObj {
+    my $self = shift;
+    
+    unless (defined $self->{'ScripConditionObj'})  {
+	require RT::ScripCondition;
+	$self->{'ScripConditionObj'} = RT::ScripCondition->new($self->CurrentUser);
+	$self->{'ScripConditionObj'}->Load($self->ScripCondition);
+    }
+    return ($self->{'ScripConditionObj'});
+}
+
+# }}}
 
 # {{{ sub TemplateObj
 =head2 TemplateObj
@@ -242,10 +255,104 @@ sub TemplateObj {
     
     unless (defined $self->{'TemplateObj'})  {
 	require RT::Template;
-	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
-	$self->{'TemplateObj'}->Load($self->Template);
+	    $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
+	    $self->{'TemplateObj'}->Load($self->Template);
     }
     return ($self->{'TemplateObj'});
+}
+
+# }}}
+
+
+# {{{ Dealing with this instance of a scrip
+
+=head2 Apply { TicketObj => undef, TransactionObj => undef}
+
+This method instantiates the ScripCondition and ScripAction objects for a
+single execution of this scrip. it then calls the IsApplicable method of the 
+ScripCondition.
+If that succeeds, it calls the Prepare method of the
+ScripAction. If that succeeds, it calls the Commit method of the ScripAction.
+
+Usually, the ticket and transaction objects passed to this method
+should be loaded by the SuperUser role
+
+=cut
+
+
+# {{{ sub Apply
+
+sub Apply {
+    my $self = shift;
+    my %args = ( TicketObj      => undef,
+                 TransactionObj => undef,
+                 @_ );
+    eval {
+
+        # We want to make sure that if a scrip dies, we don't get
+        # hurt
+        local $SIG{__DIE__} = sub {
+            $RT::Logger->error( $_[0] );
+            $self->ActionObj->DESTROY();
+            $self->ConditionObj->DESTROY();
+            return (undef);
+
+        };
+
+        #Load the scrip's Condition object
+        $self->ConditionObj->LoadCondition(
+                                      ScripObj       => $self,
+                                      TicketObj      => $args{'TicketObj'},
+                                      TransactionObj => $args{'TransactionObj'},
+        );
+
+        unless ( $self->IsApplicable() ) {
+            $self->ConditionObj->DESTROY;
+            return (undef);
+        }
+
+        #If it's applicable, prepare and commit it
+        $self->ActionObj->LoadAction( ScripObj => $self,
+                                      TicketObj      => $args{'TicketObj'},
+                                      TransactionObj => $args{'TransactionObj'},
+        );
+
+        unless ( $self->Prepare() ) {
+            $RT::Logger->info(
+                          "$self: Couldn't prepare " . $self->ActionObj->Name );
+            $self->ActionObj->DESTROY();
+            $self->ConditionObj->DESTROY();
+            return (undef);
+        }
+        unless ( $self->Commit() ) {
+            $RT::Logger->info(
+                           "$self: Couldn't commit " . $self->ActionObj->Name );
+            $self->ActionObj->DESTROY();
+            $self->ConditionObj->DESTROY();
+            return (undef);
+        }
+
+        #We're done with it. lets clean up.
+        #TODO: something else isn't letting these get garbage collected. check em out.
+        $self->ActionObj->DESTROY();
+        $self->ConditionObj->DESTROY();
+        return (1);
+    };
+
+}
+# }}}
+
+# {{{ sub IsApplicable
+
+=head2 IsApplicable
+
+Calls the  Condition object\'s IsApplicable method
+
+=cut
+
+sub IsApplicable {
+    my $self = shift;
+    return ($self->ConditionObj->IsApplicable(@_));
 }
 
 # }}}
@@ -277,40 +384,6 @@ sub Commit {
 }
 
 # }}}
-
-# {{{ sub ConditionObj
-
-=head2 ConditionObj
-
-Retuns an RT::ScripCondition object with this Scrip's IsApplicable
-
-=cut
-
-sub ConditionObj {
-    my $self = shift;
-    
-    unless (defined $self->{'ScripConditionObj'})  {
-	require RT::ScripCondition;
-	$self->{'ScripConditionObj'} = RT::ScripCondition->new($self->CurrentUser);
-	$self->{'ScripConditionObj'}->Load($self->ScripCondition);
-    }
-    return ($self->{'ScripConditionObj'});
-}
-
-# }}}
-
-# {{{ sub IsApplicable
-
-=head2 IsApplicable
-
-Calls the  Condition object\'s IsApplicable method
-
-=cut
-
-sub IsApplicable {
-    my $self = shift;
-    return ($self->ConditionObj->IsApplicable(@_));
-}
 
 # }}}
 
