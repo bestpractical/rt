@@ -70,7 +70,15 @@ no warnings qw(redefine);
 
 sub _OCFAlias {
     my $self = shift;
-    $self->{_sql_ocfalias} ||= $self->NewAlias('ObjectCustomFields');
+    unless ($self->{_sql_ocfalias}) {
+
+        $self->{'_sql_ocfalias'} = $self->NewAlias('ObjectCustomFields');
+    $self->Join( ALIAS1 => 'main',
+                FIELD1 => 'id',
+                ALIAS2 => $self->_OCFAlias,
+                FIELD2 => 'CustomField' );
+    }
+    return($self->{_sql_ocfalias});
 }
 
 
@@ -230,10 +238,6 @@ sub LimitToGlobalOrObjectId {
     my $self = shift;
     my $global_only = 1;
 
-    $self->Join( ALIAS1 => 'main',
-                FIELD1 => 'id',
-                ALIAS2 => $self->_OCFAlias,
-                FIELD2 => 'CustomField' );
 
     foreach my $id (@_) {
 	$self->Limit( ALIAS           => $self->_OCFAlias,
