@@ -253,7 +253,7 @@ sub text_html_umlauts_redef_sendmessage {
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
-                return unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
                 ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -261,5 +261,44 @@ sub text_html_umlauts_redef_sendmessage {
                  }';
 }
 
+# }}}
+
+
+# {{{ TEst a message containing a russian subject and NO content type
+
+unshift (@RT::EmailInputEncodings, 'koi8-r');
+$RT::EmailOutputEncoding = 'koi8-r';
+my $content =  `cat ./lib/t/data/russian-subject-no-content-type` || die "couldn't find new content";
+
+$parser->ParseMIMEEntityFromScalar($content);
+
+
+# be as much like the mail gateway as possible.
+&text_plain_russian_redef_sendmessage;
+RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/plain/, "We recorded the content type right");
+ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-plain");
+is ($tick->Subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
+sub text_plain_russian_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval 'sub RT::Action::SendEmail::SendMessage { 
+                my $self = shift; 
+                my $MIME = shift; 
+                use Data::Dumper;
+                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
+                 my $subject  = $MIME->head->get("subject");
+                chomp($subject);
+                is ( "=?KOI8-R?B?W2V4YW1wbGUuY29tICM2XSDUxdPUINTF09Q=?=" ,$subject  , "The subject is encoded correctly");
+                 }';
+}
+
+shift @RT::EmailInputEncodings;
 # }}}
 1;

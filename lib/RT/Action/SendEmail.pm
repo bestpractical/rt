@@ -30,7 +30,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
-use MIME::Words qw(encode_mimewords);
+use MIME::Words qw(encode_mimeword);
 
 =head1 NAME
 
@@ -218,7 +218,6 @@ sub Prepare {
 
             # l10n related header
             $self->SetHeaderAsEncoding( 'Subject', $RT::EmailOutputEncoding );
-            $self->SetHeaderAsEncoding( 'From',    $RT::EmailOutputEncoding );
         }
     }
 
@@ -414,9 +413,9 @@ sub SetReturnAddress {
 	    }
 
 	    $friendly_name =~ s/"/\\"/g;
-	    $self->SetHeader(
-		'From',
-		sprintf($RT::FriendlyFromLineFormat, $friendly_name, $replyto),
+	    $self->SetHeader( 'From',
+		        sprintf($RT::FriendlyFromLineFormat, 
+                $self->MIMEEncodeString( $friendly_name, $RT::EmailOutputEncoding ), $replyto),
 	    );
 	}
 	else {
@@ -610,16 +609,37 @@ sub SetHeaderAsEncoding {
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
 
     # don't bother if it's us-ascii
-    chomp $value;
-    return unless $value =~ /[^\x20-\x7e]/;
-
-    $value =~ s/\s*$//;
 
     # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
+
+    $value =  $self->MIMEEncodeString($value, $enc);
+
+    $self->TemplateObj->MIMEObj->head->replace( $field, $value );
+
+
+} 
+# }}}
+
+# {{{ MIMENcodeString
+
+=head2 MIMEEncodeString STRING ENCODING
+
+Takes a string and a possible encoding and returns the string wrapped in MIME goo.
+
+=cut
+
+sub MIMEEncodeString {
+    my  $self = shift;
+    my $value = shift;
+    my $enc = shift;
+
+    chomp $value;
+    return ($value) unless $value =~ /[^\x20-\x7e]/;
+
+    $value =~ s/\s*$//;
     Encode::_utf8_off($value);
     my $res = Encode::from_to( $value, "utf-8", $enc );
-    $value = encode_mimewords( $value, Encoding => 'b', Charset => $enc );
-    $self->TemplateObj->MIMEObj->head->replace( $field, $value );
+    $value = encode_mimeword( $value,  'B', $enc );
 }
 
 # }}}

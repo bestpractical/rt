@@ -349,7 +349,7 @@ all the time
 =cut
 
 sub SetMIMEHeadToEncoding {
-    my ($head, $enc, $charset)   = (shift, shift, shift);
+    my ($head, $charset, $enc)   = (shift, shift, shift);
 
     $charset = 'utf-8' if $charset eq 'utf8';
     $enc     = 'utf-8' if $enc     eq 'utf8';
