@@ -56,6 +56,7 @@ sub _Accessible  {
   
   Takes a hash. Creates a new Condition entry.
   should be better documented.
+
 =cut
 
 sub Create  {
