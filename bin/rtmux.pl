@@ -37,11 +37,16 @@ use DBIx::Handle;
 #TODO: need to identify the database user here....
 $Handle = new DBIx::Handle;
 
+{
+# I did get a stupid "Variable Used Only Once" message here.
+# Well, this ought to fix it.
+no warnings;
 $Handle->Connect(Host => $RT::DatabaseHost, 
 		     Database => $RT::DatabaseName, 
 		     User => $RT::DatabaseUser,
 		     Password => $RT::DatabasePassword,
 		     Driver => $RT::DatabaseType);
+}
 
 
 #Load up a user object for actions taken by RT itself
