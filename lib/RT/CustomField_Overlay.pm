@@ -24,7 +24,7 @@
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@TYPES %TYPES $RIGHTS);
+use vars qw(@TYPES %TYPES $RIGHTS %FRIENDLY_OBJECT_TYPES);
 
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
@@ -41,8 +41,16 @@ use RT::ObjectCustomFieldValues;
 # Populate a hash of types of easier validation
 for (@TYPES) { $TYPES{$_} = 1};
 
+
+%FRIENDLY_OBJECT_TYPES =  (
+    'RT::Queue-RT::Ticket'                 => "Tickets",
+    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",
+    'RT::User'                             => "Users",
+    'RT::Group'                            => "Groups",
+);
+
 $RIGHTS = {
-    SeeCustomField            => 'Can this principal see this custom field',       # loc_pair
+    SeeCustomField            => 'See custom fields',       # loc_pair
     AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
 };
 
@@ -103,6 +111,10 @@ sub Create {
 
     if ($args{TypeComposite}) {
 	@args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
+    }
+    elsif ($args{Type} =~ s/(?:(Single)|Multiple)$//) {
+	# old style Type string
+	$args{'MaxValues'} = $1 ? 1 : 0;
     }
     
     if ( !exists $args{'Queue'}) {
@@ -722,10 +734,15 @@ my @FriendlyObjectTypes = (
 
 sub FriendlyLookupType {
     my $self = shift;
-    my $lookup = shift;
+    my $lookup = shift || $self->LookupType;
+   
+    return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
+      	           if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
+
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
-		grep {defined and length}
-		split(/-/, $lookup || $self->LookupType) or return;
+      grep { defined and length }
+      split( /-/, $lookup )
+      or return;
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
