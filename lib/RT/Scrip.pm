@@ -123,9 +123,7 @@ sub TemplateObj {
   
   }
   
-}
-return ($self->{'TemplateObj'});
-
+  return ($self->{'TemplateObj'});
 }
 # }}}
 
