@@ -234,23 +234,26 @@ AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
 dnl Configure the output files, and generate them.
 
+dnl Binaries that should be +x
 AC_CONFIG_FILES([
 		 sbin/rt-dump-database
 		 sbin/rt-setup-database
 		 sbin/rt-test-dependencies
-		 Makefile
-		 etc/RT_Config.pm
-		 lib/RT.pm
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
- 		 bin/mason_handler.svc
  		 bin/rt-crontool
  		 bin/rt-mailgate
-		 bin/rt
- 		 bin/webmux.pl],
-		[chmod ug+x sbin/rt-test-dependencies
-		 chmod ug+x sbin/rt-dump-database
-		 chmod ug+x sbin/rt-setup-database]
+		 bin/rt],
+		[chmod ug+x $ac_file]
+               )
+
+dnl All other generated files
+AC_CONFIG_FILES([
+		 Makefile
+		 etc/RT_Config.pm
+		 lib/RT.pm
+ 		 bin/mason_handler.svc
+		 bin/webmux.pl],
                )
 AC_OUTPUT
