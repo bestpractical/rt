@@ -21,7 +21,6 @@ use lib "!!RT_ETC_PATH!!";
 use config;
 use Carp;
 use DBIx::Handle;
-use DBIx::Handle;
 use RT::Ticket;
 use RT::Tickets;
 use RT::Transaction;
