@@ -726,6 +726,16 @@ if ( $ARGS{'Save'} ) {
 
 # }}}
 
+# {{{ Push the updates into the session so we don't loose 'em
+$search_hash->{'SearchId'} = $SearchId;
+$search_hash->{'Format'} = $Format;
+$search_hash->{'Query'} = $Query;
+$search_hash->{'Description'} = $Description;
+$search_hash->{'Object'} = $search;
+
+$session{'CurrentSearchHash'} = $search_hash;
+# }}}
+
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
     $m->comp("Results.html" , Query => $Query, Format => $Format, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
@@ -744,16 +754,6 @@ if ($NewQuery) {
 	    Format => $Format,
 	    Rows =>$ARGS{'Rows'}) if ($Query);
 }
-# }}}
-
-# {{{ Push the updates into the session so we don't loose 'em
-$search_hash->{'SearchId'} = $SearchId;
-$search_hash->{'Format'} = $Format;
-$search_hash->{'Query'} = $Query;
-$search_hash->{'Description'} = $Description;
-$search_hash->{'Object'} = $search;
-
-$session{'CurrentSearchHash'} = $search_hash;
 # }}}
 
 </%INIT>
