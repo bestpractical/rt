@@ -48,9 +48,8 @@
 % foreach my $header (@headers) {
 % next unless ($display_headers{'_all'} || $display_headers{lc($header->{'Tag'})});
 <tr>
-<td align="right" class="message-header-key"><pre><%$header->{'Tag'}%>:</pre></td>
+<td align="right" class="message-header-key"><%$header->{'Tag'}%>:</td>
 <td class="message-header-value"><%$header->{'Value'}%></td>
-</td>
 </tr>
 % }
 </table>
