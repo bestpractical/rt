@@ -247,7 +247,7 @@ sub LoadByEmail {
     my $address = shift;
 
     $address = RT::CanonicalizeAddress($address);
-    $RT::Logger->debug("Trying to load an email address: $address\n");
+    #$RT::Logger->debug("Trying to load an email address: $address\n");
     return $self->LoadByCol("EmailAddress", $address);
 }
 # }}}

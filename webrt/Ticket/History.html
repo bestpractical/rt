@@ -17,11 +17,8 @@ $id => undef
 
   
 
-my $Ticket = new RT::Ticket($session{'CurrentUser'});
+my $Ticket = LoadTicket ($id);
 
-unless ($Ticket->Load($id)) {
-	Abort("Ticket couldn't be loaded");
-}	
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
 }

@@ -348,7 +348,7 @@ sub Import {
 		Queue => undef,
 		Requestor => undef,
 		Type => 'ticket',
-		Owner => $RT::Nobody->UserObj,
+		Owner => $RT::Nobody->Id,
 		Subject => '[no subject]',
 		InitialPriority => undef,
 		FinalPriority => undef,
@@ -375,15 +375,15 @@ sub Import {
     }
     
     #Can't create a ticket without a queue.
-    unless (defined ($QueueObj)) {
+    unless (defined ($QueueObj) and $QueueObj->Id) {
 	$RT::Logger->debug( "$self No queue given for ticket creation.");
-	return (0, 0,'Could not create ticket. Queue not set');
+	return (0,'Could not create ticket. Queue not set');
     }
     
     #Now that we have a queue, Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
 					      QueueObj => $QueueObj )) {
-	return (0,0,"No permission to create tickets in the queue '". 
+	return (0,"No permission to create tickets in the queue '". 
 		$QueueObj->Name."'.");
     }
     
@@ -391,17 +391,19 @@ sub Import {
 
 
     # {{{ Deal with setting the owner
-    
-    if ((ref($args{'Owner'}) and (ref($args{'Owner'}))) eq 'RT::User') {
-      $Owner = $args{'Owner'};
-    }
+      
     #If we've been handed an integer (aka an Id for the users table 
-    elsif ($args{'Owner'} =~ /^\d+$/) {
+    if (defined ($args{'Owner'})) { 
+    if ($args{'Owner'} =~ /^\d+$/) {
 	$Owner = new RT::User($self->CurrentUser);
 	$Owner->Load($args{'Owner'});
 	
     }
     
+    elsif ( ref($args{'Owner'}) ) {
+      	$Owner = $args{'Owner'};
+    }
+    } 
     #If we have a proposed owner and they don't have the right 
     #to own a ticket, scream about it and make them not the owner
     if ((defined ($Owner)) and
@@ -412,7 +414,7 @@ sub Import {
 	$RT::Logger->warning("$self user ".$Owner->Name . "(".$Owner->id .
 			     ") was proposed ".
 			     "as a ticket owner but has no rights to own ".
-			     "tickets in this queue\n");
+			     "tickets in '".$QueueObj->Name."'\n");
 	
 	$Owner = undef;
     }
@@ -426,7 +428,7 @@ sub Import {
     # }}}
 
     unless ($self->ValidateStatus($args{'Status'})) {
-	return (0,0,'Invalid value for status');
+	return (0,"'$args{'Status'}' is an invalid value for status");
     }
     
     $self->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };

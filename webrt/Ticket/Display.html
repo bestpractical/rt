@@ -82,9 +82,7 @@ if ($ARGS{'id'} eq 'new') {
 }
 
 else { 
-    unless ($Ticket->Load($ARGS{id})) {
-	Abort("Ticket couldn't be loaded");
-    }	
+    $Ticket = LoadTicket($ARGS{'id'});
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
     }

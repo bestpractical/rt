@@ -89,7 +89,11 @@ sub Abort {
 
 sub LoadTicket {
     my $id=shift;
-   
+
+    if (ref($id) eq "ARRAY")   {
+	$id =$id->[0];
+    }
+ 
     unless ($id) {
       Abort("No ticket specified");
     }

@@ -13,7 +13,11 @@ my $RT1HOST = "localhost";
 my $RT1DATA = "/opt/rt/transactions";
 my $EMAILDOMAIN = "example.com"; # user_id@EMAILDOMAIN for missing RT1 emails
 my $DEFAULTQUEUE = 'second'; #Qeuue to put tickets from deleted queues, etc. in.
-my $Debug = 2;
+
+# IF YOU DO NOT SET THE ABOVE VALUE TO A VALID QUEUE NAME, YOUR IMPORT WILL
+# FAIL AND YOU'LL BE REALLY REALLY UNHAPPY.
+
+my $Debug = 0;
 
 
 use strict;
@@ -433,6 +437,9 @@ sub MigrateTickets {
 			   Created => $created->ISO,
 			   Updated => $updated->ISO);
 	
+	unless ($id) {
+		croak $msg ."\n";
+	} 	
 
 	$queue = $ticket->QueueObj();
 	
@@ -542,9 +549,13 @@ sub MigrateTransactions {
 	    $trans_args{'NewValue'} = $new_user->Id;
 	    
 	    my $actor = new RT::User($RT::SystemUser);
+	    $row->{'actor'} = 'RT_System' if ($row->{'actor'} eq '_rt_system');
 	    $actor->Load($row->{'actor'});
 	    
 	    #take/give
+	
+	    $Owner = $RT::Nobody->Id unless ($Owner);
+
 	    if ( $Owner == $RT::Nobody->Id 
 		 && $row->{trans_data} eq $row->{actor} ) {
 		$trans_args{'Type'} = 'Take';
@@ -646,7 +657,7 @@ sub MigrateTransactions {
 	    
 	    $trans_file = -e $file ? $file : -e $file2 ? $file2 : -e $file3 ? $file3 : '' or
 	      warn "none of $file, $file2 or $file3 exist\n";
-	    warn "Content is in $trans_file\n";
+	    #warn "Content is in $trans_file\n";
 	}
 	# }}}
 	
@@ -703,7 +714,7 @@ sub MigrateTransactions {
 		    } else {
 			die "can't parse $header for boundry";
 		    }
-		    warn "looking for $boundary in body\n";
+		    warn "looking for $boundary in body\n" if $Debug;
 		    unless ( grep /^(\-\-)?\Q$boundary\E(\-\-)?$/, @body ) {
 			splice(@headers, 0, $two);
 			until ( !scalar(@headers) || $headers[0] =~ /^\S/ ) {
@@ -716,12 +727,12 @@ sub MigrateTransactions {
 		push @n_headers, $header;
 	    }
 	    
-	    warn "    parsing..\n";
+	    warn "    parsing..\n" if $Debug;
 	    my $parser = new MIME::Parser;
 	    $parser->output_to_core(1);
 	    $parser->extract_nested_messages(0);
 	    $MIMEObj = $parser->parse_data( [ @n_headers, "\n", "\n", @body ] );
-	    warn "    parsed\n";
+	    warn "    parsed\n" if $Debug;
 	} 
 
 	# }}}

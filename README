@@ -121,6 +121,9 @@ GENERAL INSTALLATION
 
 	Edit the configuration defaults in import-1.0-to-2.0
 
+	If you don't set $DEFAULTQUEUE to the name of one of your
+	RT 1.0 queues, THE IMPORT WILL FAIL.
+
 	perl ./import-1.0-to-2.0
 
 	The import tool will do its thing. If you're using postgres, you'll
