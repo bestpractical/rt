@@ -948,7 +948,6 @@ sub Limit {
     }
 
     if ($args{'FIELD'} eq 'Type') {
-    warn "We're loooking at the type";
         $self->{'looking_at_type'} = 1;
     }
 
