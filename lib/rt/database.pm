@@ -130,17 +130,19 @@ sub update_each_req {
  # how to scrub...but to do that, we'd have to read the field type for each field...which 
  # we don't do yet
  #
-    
-    $in_new_value =~ s/\'/\\\'/g; #we'd do this with scrub, but $in_field might be an int.
-    $in_new_value =~ s/\\/\\\\/g; #that would cause it to puke
+   
+    $in_new_value = $dbh->quote($in_new_value); 
+#    $in_new_value =~ s/\'/\\\'/g; #we'd do this with scrub, but $in_field might be an int.
+#    $in_new_value =~ s/\\/\\\\/g; #that would cause it to puke
                                   #so for now, we've got to resort to this EVIL hack
 
     # this if really means "single quote it if the field is not an int field....but
     # it's terribly non-obvious.
-    if (($in_field !~ /date/) and ($in_field !~ /time/) and ($in_field !~ /effective_sn/) and ($in_field !~ /priority/)) {
-    	$in_new_value = "\'$in_new_value\'";
-    }
-	$query_string="UPDATE each_req SET $in_field= $in_new_value WHERE effective_sn = $in_serial_num";
+ #   if (($in_field !~ /date/) and ($in_field !~ /time/) and ($in_field !~ /effective_sn/) and ($in_field !~ /priority/)) {
+  #  	$in_new_value = "\'$in_new_value\'";
+  #  }
+
+	$query_string="UPDATE each_req SET $in_field = $in_new_value WHERE effective_sn = $in_serial_num";
     #print "update_each_req: $query_string\n\n";
     $dbh->Query($query_string) or warn "[update_each_req] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
 }
