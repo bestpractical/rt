@@ -43,6 +43,9 @@ Class("list").define({
 	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
 	    && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
 
+	     if (src.childNodes[i].name.indexOf("Save") < 0)
+		 src.childNodes[i].type = "button";
+
 	     if(src.childNodes[i].name=="add")
 		 src.childNodes[i].onclick = new Function(this.name+".add();");
 	     if(src.childNodes[i].name=="remove") 
