@@ -1,15 +1,17 @@
-<& /RTFM/Elements/Header &>                                                     
-<& /RTFM/Elements/Tabs, current_toptab => "RTFM/index.html", Title => loc('RTFM Home') &>
-<h1>Create an article...</h1>                                                   
-<ul>                                                                            
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
-% $Classes->UnLimit;                                                            
-% while (my $Class = $Classes->Next) {                                          
-<li><a href="Article/Create.html?Class=<%$Class->Id%>">in class <%$Class->Name%>
-</a></li>                                                                       
-% }                                                                             
-                                                                                
-</ul>                                                                           
+<& /RTFM/Elements/Header &>                                                    
+<& /RTFM/Elements/Tabs, current_toptab => "RTFM/index.html", Title => loc('Overview') &>
+<TABLE width="100%">
+<TR>
+<TD VALIGN="TOP" width="70%">
+
 <& /RTFM/Elements/NewestArticles &>
 <BR>
 <& /RTFM/Elements/UpdatedArticles &>
+</TD>
+<TD>
+
+<TD VALIGN="TOP">
+<& /RTFM/Elements/QuickSearch &>
+<BR>
+<& /RTFM/Elements/CreateArticle &>
+</TD>

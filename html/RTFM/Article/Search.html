@@ -16,7 +16,7 @@ title => "Search for articles" &>
 <form target="Search.html" method="GET">
 <br>Class is <& ../Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
-<br>Class is not <& ../Elements/SelectClass, Name => 'Class!', Multiple =>1,
+and is not <& ../Elements/SelectClass, Name => 'Class!', Multiple =>1,
 Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
 <br>Name matches 
 <input name="Name~" value="<%$ARGS{'Name~'}%>">

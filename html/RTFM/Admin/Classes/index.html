@@ -44,9 +44,9 @@
 <TR>
 <TD VALIGN=TOP>
 
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/RTFM/Admin/Classes/">
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/RTFM/Admin/Classes/index.html">
 
-<input type="checkbox" name="FindDisabledClasses"> <&|/l&>Include disabled classes in listing.</&>
+<input type="checkbox" name="FindDisabledClasses" value="1"> <&|/l&>Include disabled classes in listing.</&>
 <BR>
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
@@ -57,13 +57,17 @@
 <%INIT>
 my ($Class, $caption);
 my $Classes = new RT::FM::ClassCollection($session{'CurrentUser'});
-$Classes->UnLimit();
+
+
 
 if ($FindDisabledClasses) {
-        $caption = loc("All Classes");
-        $Classes->{'find_disabled_rows'} = 1;
+    $caption = loc("All Classes");
+    $Classes->{'find_disabled_rows'} = 1;
+    $Classes->UnLimit();
 } else {
     $caption = loc("Enabled Classes");
+    $Classes->LimitToEnabled(); 
+
 }
 
 </%INIT>

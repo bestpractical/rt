@@ -23,11 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/PageLayout,
-    current_toptab => $current_toptab,
-    current_tab => $current_tab,
+    current_toptab => 'RTFM/index.html',
+    current_tab => $current_toptab,
+    current_subtab => $current_tab,
     toptabs => $toptabs,
+    tabs => $second_tabs,
     topactions => $topactions,
-    tabs => $tabs,
     actions => $actions,
     subactions => $subactions,
     title => $Title
@@ -38,16 +39,19 @@ my $action;
 
 my $toptabs = { a => { title => loc('RT'),
                        path  => '', },
-                aab => { title => loc('RTFM Home'),
-                       path  => 'RTFM/index.html' },
-                'articles' => { title => loc('Articles'),
-                       path  => 'RTFM/Article/Search.html' },
-                'd' => { title => loc('Configuration'),
-                       path  => 'RTFM/Admin/index.html' }, };
+                aab => { title   => loc('RTFM'),
+                         path    => 'RTFM/index.html'}
+                };
 
+my $second_tabs = { 'aab' => { title => loc('Overview'),
+                                               path  => 'RTFM/index.html' },
+                                      'articles' => { title => loc('Articles'),
+                                              path => 'RTFM/Article/Search.html' },
+                                      'd' => { title => loc('Configuration'),
+                                               path  => 'RTFM/Admin/index.html' } 
+                                 };
 
 my $topactions = {
-        #A => { html => $m->scomp('/Elements/CreateTicket')     },
         B => { html => $m->scomp('/RTFM/Elements/GotoArticle') }
         };
 
@@ -55,11 +59,12 @@ my $topactions = {
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', topactions => $topactions, toptabs => $toptabs, %ARGS);
 
-  foreach my $tab (sort keys %{$toptabs}) {
-    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
-      $toptabs->{$tab}->{"subtabs"} = $tabs;
-      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
+  foreach my $tab (sort keys %{$second_tabs}) {
+    if ($second_tabs->{$tab}->{'path'} eq $current_toptab) {
+      $second_tabs->{$tab}->{"subtabs"} = $tabs;
+      $second_tabs->{$tab}->{"current_subtab"} = $current_tab;
     }
+        
   }
 </%INIT>
 <%ARGS>

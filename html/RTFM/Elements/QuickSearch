@@ -1,0 +1,12 @@
+<& /Elements/TitleBoxStart, title => loc('Quick search') &>
+<ul>
+% while (my $class = $classes->Next) {
+<li><A HREF="<%$RT::WebPath%>/RTFM/Article/Search.html?Class=<%$class->Name%>&Parent=0"><%$class->Name%></a>
+% }
+</ul>
+<& /Elements/TitleBoxEnd &>
+<%init>
+my $classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+$classes->LimitToEnabled;
+</%init>
+
