@@ -93,7 +93,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
 }
 
 elsif ($program eq '!!WEBRT_CGI_BIN!!') {
-  die "This doesn't work - use the mod_perl version (webmux.pl) or mail tobix@fsck.com for updates about the work on a CGI version";
+  die "This doesn't work - use the mod_perl version (webmux.pl) or mail tobix\@fsck.com for updates about the work on a CGI version";
   require HTML::Mason;
   package HTML::Mason;
   my $parser = new HTML::Mason::Parser;
