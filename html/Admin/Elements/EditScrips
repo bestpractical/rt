@@ -48,7 +48,9 @@
 </TABLE>
 
 % }
-<& /Elements/Submit &>
+<& /Elements/Submit, 
+	Caption => loc("Delete selected scrips"), 
+	Label => loc("Delete") &>
 </form>
 <%init>
 my (@actions);
