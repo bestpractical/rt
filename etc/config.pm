@@ -87,11 +87,11 @@ $Logger->add(Log::Dispatch::File->new
 	 },
 
        { Header => 'Age',
-	 TicketAttribute => 'CreatedAsString'
+	 TicketAttribute => 'AgeAsString'
 	 },
 
        { Header => 'Last',
-	 TicketAttribute => 'LastUpdatedAsString'
+	 TicketAttribute => 'LongSinceUpdateAsString'
 	 },
 
        # TODO: It would be nice with a link here to the Owner and all

@@ -5,6 +5,7 @@ use DBIx::Record;
 @ISA= qw(DBIx::Record);
 
 # {{{ sub new 
+
 sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -12,6 +13,7 @@ sub new  {
   bless ($self, $class);
   return $self;
 }
+
 # }}}
 
 # {{{ sub _Init 
@@ -25,6 +27,7 @@ sub _Init  {
 
 
 # {{{ sub _MyCurrentUser 
+
 sub _MyCurrentUser  {
   my $self = shift;
   
@@ -35,6 +38,7 @@ sub _MyCurrentUser  {
     return(0);
   }
 }
+
 # }}}
 
 # {{{ sub _MyHandle 
@@ -112,33 +116,6 @@ sub CurrentUser  {
 }
 # }}}
 
-# {{{ AgeAsString
-sub AgeAsString {
-    # TODO: I'll deal with this one tomorrow, I hope :)
-    return "Stub";
-}
-# }}}
-
-# {{{ AgeAsString
-sub LastUpdatedAsString {
-    # TODO: I'll deal with this one tomorrow, I hope :)
-    return "Stub";
-}
-# }}}
-
-# {{{ AgeAsString
-sub CreatedAsString {
-    # TODO: I'll deal with this one tomorrow, I hope :)
-    return "Stub";
-}
-# }}}
-
-# {{{ LongSinceUpdateAsString
-sub LongSinceUpdateAsString {
-    # TODO: I'll deal with this one tomorrow, I hope :)
-    return "Stub";
-}
-# }}}
 
 1;
 

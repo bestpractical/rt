@@ -778,13 +778,6 @@ sub SinceTold {
 }
 # }}}
 
-# {{{ sub Age
-sub Age {
-  my $self = shift;
-  return("Ticket->Age unimplemented\n");
-}
-# }}}
-
 # }}}
 
 # {{{ Routines dealing with ticket relations

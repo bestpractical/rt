@@ -523,7 +523,7 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
         Owner: @{[$Ticket->Owner->UserId]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
-      Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->Age]}) ago)
+      Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
  Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->SinceTold]} ago)
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
