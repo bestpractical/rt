@@ -1735,12 +1735,10 @@ sub CustomFieldValues {
     my $field = shift;
 
     my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
-    $cf_values->LimitToObject($self);
-    $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-
-    # If we've been handed a value that contains a non-digit, it's a name. \
-    # Resolve it into an id.
-    if ( $field =~ /\D/ ) {
+    # If we've been handed a value that contains at least one non-digit, 
+    # it's a name.  Resolve it into an id.
+    #
+    if ( $field =~ /\D+/ ) {
 
         # Look up the field ID.
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
@@ -1755,7 +1753,15 @@ sub CustomFieldValues {
         }
     }
 
-    $cf_values->LimitToCustomField($field) if ( $field =~ /^\d+$/o);
+    # If we now have a custom field id, let's limit things down
+    # If we don't have a custom field ID, the $cf_values object will be empty
+    if ( $field =~ /^\d+$/o) {
+        $cf_values->LimitToCustomField($field) ;
+        $cf_values->LimitToObject($self);
+        $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+
+    } 
+
     return ($cf_values);
 }
 
