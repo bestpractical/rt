@@ -663,7 +663,7 @@ sub Import {
 sub Delete {
     my $self = shift;
     return ( 0,
-        $self->loc('Deleting this object would violate referential integrity. That\'s bad.') );
+        $self->loc("Deleting this object would violate referential integrity. That's bad.") );
 }
 
 # }}}

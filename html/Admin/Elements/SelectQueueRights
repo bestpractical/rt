@@ -3,7 +3,7 @@
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 %foreach $right (@rights) {
-<OPTION VALUE="<%$right%>" <%($Default eq $right) && 'SELECTED'%>><%$right%></OPTION>
+<OPTION VALUE="<%$right%>" <%($Default eq $right) && 'SELECTED'%>><% loc($right) %></OPTION>
 % }
 </SELECT>
 <%ONCE>

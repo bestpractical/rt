@@ -2,16 +2,16 @@
 <TR>
 <TD ALIGN=LEFT>
 % if ($ShowTitle) {
-<font size=+3>History</font>
+<font size=+3><&|/l&>History</&></font>
 % }
 &nbsp;</TD>
-<TD align=right><font size=-1>Display mode: 
+<TD align=right><font size=-1><&|/l&>Display mode</&>: 
 %  if ($ShowHeaders == $Ticket->Id) {
-[<A HREF="<%$URIFile%>?id=<%$Ticket->id%>">Brief headers</a>]
-<b>[Full headers]</b>
+[<A HREF="<%$URIFile%>?id=<%$Ticket->id%>"><&|/l&>Brief headers</&></a>]
+<b>[<&|/l&>Full headers</&>]</b>
 % } else {
-<b>[Brief headers]</b>
-[<A HREF="<%$URIFile%>?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>">Full headers</a>]
+<b>[<&|/l&>Brief headers</&>]</b>
+[<A HREF="<%$URIFile%>?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>"><&|/l&>Full headers</&></a>]
 %  }
 </font>
 </TD>

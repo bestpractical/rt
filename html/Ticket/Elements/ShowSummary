@@ -1,13 +1,13 @@
       <TABLE WIDTH="100%" >
       <TR>
 	<TD VALIGN=TOP >
-	  <& /Elements/TitleBoxStart, title => 'The Basics', 
+	  <& /Elements/TitleBoxStart, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	  <& /Elements/TitleBoxStart, title => 'Custom Fields', 
+	  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/CustomFields.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#993333" &>
@@ -15,7 +15,7 @@
 	  <& /Elements/TitleBoxEnd &>
 
 	<BR>
-	  <& /Elements/TitleBoxStart, title => 'Relationships', 
+	  <& /Elements/TitleBoxStart, title => loc('Relationships'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
@@ -25,14 +25,14 @@
 	<BR>
 	<TD VALIGN=TOP >
 
-	  <& /Elements/TitleBoxStart, title => "Dates",
+	  <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Elements/TitleBoxStart, title => 'People', 
+	  <& /Elements/TitleBoxStart, title => loc('People'), 
 		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#333399" &>

@@ -3,13 +3,13 @@
 %unless ($Default) {
  SELECTED
 %}
->Don't refresh this page.</OPTION>
+><&|/l&>Don't refresh this page.</&></OPTION>
 %foreach my $value (@refreshevery) {
 <OPTION VALUE="<%$value%>"
 % if ($value == $Default) {
 SELECTED 
 % }
->Refresh this page every <%$value/60%> minutes.
+><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&>
 %}
 </SELECT>
 

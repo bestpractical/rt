@@ -1,8 +1,8 @@
-<& /Admin/Elements/Header, Title => 'Admin queues' &>
+<& /Admin/Elements/Header, Title => loc("Admin queues") &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Queues/' &>
 
 
-<& /Elements/TitleBoxStart, title => 'Select a queue' &>
+<& /Elements/TitleBoxStart, title => loc("Select a queue") &>
 
 <TABLE>
 <TR>
@@ -10,22 +10,22 @@
 
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Queues/">
 
-<input type="checkbox" name="FindDisabledQueues"> Include disabled queues in listing.
+<input type="checkbox" name="FindDisabledQueues"> <&|/l&>Include disabled queues in listing.</&>
 <BR>
-<div align=right><input type=submit value="Go!"></div> 
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
 </TD>
 <TD VALIGN=TOP>
 <UL>
 % if ($session{'CurrentUser'}->HasSystemRight('AdminQueue')) {
-<LI><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1">Create a new queue</A><BR><BR></LI>
+<LI><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1"><&|/l&>Create a new queue</&></A><BR><BR></LI>
 </UL>
 % }
 
 <%$caption%><BR>
 <UL>
 %if ($queues->Count == 0) {
-<LI> <i>No queues matching search criteria found.</i>
+<LI> <i><&|/l&>No queues matching search criteria found.</&></i>
 % }
 %while ( $queue = $queues->Next) {
 <LI><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->Name%></a></LI>

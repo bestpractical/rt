@@ -3,16 +3,16 @@
 <%INIT>
   my $subtabs = {
 		
-	       A => { title => 'Scrips',
+	       A => { title => loc('Scrips'),
 			   path => 'Admin/Global/Scrips.html',
 			 },
-	       B => { title => 'Templates',
+	       B => { title => loc('Templates'),
 			path => 'Admin/Global/Templates.html',
 		      },
-	        C => { title => 'Group Rights',
+	        C => { title => loc('Group Rights'),
 			        path => 'Admin/Global/GroupRights.html',
 		      },
-	        D => { title => 'User Rights',
+	        D => { title => loc('User Rights'),
 			        path => 'Admin/Global/UserRights.html',
 		      }
 

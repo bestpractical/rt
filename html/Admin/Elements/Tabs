@@ -3,16 +3,16 @@
 <hr>
   
 <%INIT>
-  my $tabs = { Users => { title => 'Users',
+  my $tabs = { Users => { title => loc('Users'),
 			  path => 'Admin/Users/',
 			},
-	       Groups => { title => 'Groups',
+	       Groups => { title => loc('Groups'),
 			   path => 'Admin/Groups/',
 			 },
-	       Queues => { title => 'Queues',
+	       Queues => { title => loc('Queues'),
 			   path => 'Admin/Queues/',
 			 },
-	       System => { 'title' => 'Global',
+	       System => { 'title' => loc('Global'),
 			   path => 'Admin/Global/',
 			 },
 	     };

@@ -37,8 +37,8 @@ $color => "#336699"
 $Caption => undef
 $AlternateCaption => undef
 $AlternateLabel => undef
-$Label => 'Submit'
+$Label => loc('Submit')
 $Name => undef
 $Reset => undef
-$ResetLabel => 'Reset'
+$ResetLabel => loc('Reset')
 </%ARGS>

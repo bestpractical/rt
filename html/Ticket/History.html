@@ -1,7 +1,7 @@
 %# $Header: /raid/cvsroot/rt/webrt/Ticket/History.html,v 1.2 2001/11/06 23:07:07 jesse Exp $
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
-<& /Elements/Header, Title => "Ticket History #".$Ticket->Id ." ".$Ticket->Subject &>
+<& /Elements/Header, Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id  &>
 
 <BR>

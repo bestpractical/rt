@@ -1,9 +1,9 @@
 <div class="bpscredits">
-RT <%$RT::VERSION%> from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.
+<&|/l, $RT::VERSION &>RT [_1] from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.</&>
 </div>
 % if ($Debug) {
 <HR>
-<b><&|/l&>Time to display:</&> <%time - $m->{'rt_base_time'} %></b>
+<b><&|/l&>Time to display</&>: <%time - $m->{'rt_base_time'} %></b>
 % }
 % if ($Debug >= 2 ) {
 % require Data::Dumper;

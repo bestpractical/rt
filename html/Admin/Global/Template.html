@@ -1,4 +1,4 @@
-<& /Admin/Elements/Header, title => "Modify template ".$TemplateObj->id&>
+<& /Admin/Elements/Header, title => loc("Modify template [_1]", $TemplateObj->id) &>
 <& /Admin/Elements/SystemTabs &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -15,8 +15,8 @@
 <INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 
 
-Name: <input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=20><BR>
-Description: <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80><BR>
+<&|/l&>Name</&>: <input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=20><BR>
+<&|/l&>Description</&>: <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80><BR>
 
 <TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
 <%$TemplateObj->Content%></TEXTAREA>
@@ -33,7 +33,7 @@ my $TemplateObj = new RT::Template($session{'CurrentUser'});
 my  ($title, @results);
 
 if ($create) {
-  $title = "Create a template";
+  $title = loc("Create a template");
 }
 
 else {
@@ -41,11 +41,11 @@ else {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
       Abort("Could not create template: $msg") unless ($val);
      push @results, $msg;
-     $title = 'Created template ' . $TemplateObj->Name(); 
+     $title = loc('Created template [_1]', $TemplateObj->Name()); 
     }
     else {
        $TemplateObj->Load($template) || Abort('No Template');
-      $title = 'Editing template ' . $TemplateObj->Name(); 
+      $title = loc('Editing template [_1]', $TemplateObj->Name()); 
     }
   
     

@@ -1,0 +1,100 @@
+# $File: //depot/RT/l10n-guide.txt $ $Author: autrijus $
+# $Revision: #3 $ $Change: 4017 $ $DateTime: 2002/04/28 10:09:03 $
+
+Run 'p4 edit lib/RT/I18N/zh_tw.pm' and 'perl l10n.pl' to add new
+extractions to the zh_tw.pm.
+
+Edit lib/RT/I18N/zh_tw.pm for chinese counterparts.
+
+Attached is a copy of the freshly rewritten string extraction style guide.
+Please point out anything that's unclear or underspecified.   I
+localized a number of the core modules in RT 2.1.3 (Starting with 
+Queue_Overlay.pm). I only touched a couple of the web templates in the 
+Elements/ directory of the web ui.
+
+RT String extraction styleguide:
+
+Web templates:
+
+Templates should use the /l filtering component to call the localisation
+framework
+
+The string 		Foo!
+
+Should become		<&|/l&>Foo!</&>
+
+All newlines should be removed from localized strings, to make it easy to 
+grep the codebase for strings to be localized
+
+The string 		Foo
+			Bar
+			Baz
+			
+Should become		<&|/l&>Foo Bar Baz</&>
+
+
+Variable subsititutions should be moved to Locale::MakeText format
+
+The string		Hello, <%$name %>
+
+should become		<&|/l, $name &>Hello, [_1]</&>	
+
+
+Multiple variables work just like single variables
+ 
+The string		You found <%$num%> tickets in queue <%$queue%>
+
+should become		<&|/l, $num, $queue &>You found [_1] tickets in queue [_2]</&>
+
+When subcomponents are called in the middle of a phrase, they need to be escaped
+too:
+
+The string		 <input type="submit" value="New ticket in">&nbsp<& /Elements/SelectNewTicketQueue&>
+
+should become		<&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
+
+
+
+There are places inside the web ui where strings are defined, which need to be
+localised. it is important to note here that each localized string is split out
+onto its own line, but never split across two lines and two localized strings
+are never included on the same line. It is also important to note
+that this will genereate code which will not work in RT 2.1.3. I need
+to add a bit of framework to make it work in 2.1.4
+
+
+The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   $RT::rtname", title => 'Login' &>
+
+should become 	<& /Elements/TitleBoxStart, 
+			width=> "40%",
+			titleright => loc("RT [_1] for [_2]",$RT::VERSION, $RT::rtname),
+			title => loc('Login'),
+	      	&>
+	
+
+			
+
+
+
+Within RT's core code, every module has a localization handle available through the 'loc' method:
+
+The code 	return ( $id, "Queue created" );
+
+should become 	return ( $id, $self->loc("Queue created") );	
+
+When returning or localizing a single string, the "extra" set of parenthesis () should be omitted.
+
+The code  	return ("Subject changed to ". $self->Data );
+
+should become	 return $self->loc( "Subject changed to [_1]", $self->Data );
+
+
+It is important not to localize  the names of rights or statuses within RT's core, as there is logic that depends on them as string identifiers.  The proper place to localize these values is when they're presented for display in the web or commandline interfaces.
+
+
+
+
+
+-- 
+http://www.bestpractical.com/products/rt  -- Trouble Ticketing. Free.
+

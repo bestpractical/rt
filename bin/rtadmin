@@ -214,7 +214,7 @@ sub PickMode {
     elsif ($listqueues) { ListQueues() }
     elsif ($help)       { Help() }
     else {
-        print "No command found\n";
+        print loc("No command found\n");
     }
     exit(0);
 }
@@ -286,7 +286,7 @@ sub AdminUser {
         $user_obj->Load($user);
 
         unless ( $user_obj->id ) {
-            print "User '$user' not found\n";
+            print loc("User '[_1]' not found\n", $user);
             return ();
         }
 
@@ -312,7 +312,7 @@ sub AdminUser {
 
                 my $method = "Set$attrib";
                 my ( $val, $msg ) = $user_obj->$method( $args{"$attrib"} );
-                print "User " . $user_obj->Name . " $attrib:  $msg\n";
+                print loc("User [_1] [_2]: [_3]\n", $user_obj->Name, $attrib, $msg);
 
             }
         }
@@ -320,7 +320,7 @@ sub AdminUser {
         if ( exists( $args{'Password'} ) ) {
             my ( $code, $msg );
             ( $code, $msg ) = $user_obj->SetPassword( $args{'Password'} );
-            print "User " . $user_obj->Name . ' Password: ' . $msg . "\n";
+            print loc("User [_1] Password: [_2]\n", $user_obj->Name, $msg);
         }
 
         #Check if we need to display the user
@@ -387,7 +387,7 @@ sub AdminQueue {
         $queue_obj->Load($queue);
 
         unless ( $queue_obj->id ) {
-            print "Queue '$queue' not found\n";
+            print loc("Queue '[_1]' not found\n", $queue);
             return ();
         }
 
@@ -481,7 +481,7 @@ sub AdminGroup {
     use RT::Group;
     my $group_obj = new RT::Group($CurrentUser);
     unless ($group) {
-        print "Group not specified.\n";
+        print loc("Group not specified.\n");
         return ();
     }
 
@@ -501,7 +501,7 @@ sub AdminGroup {
 
     #If we have no group object, get the hell out
     unless ( $group_obj->Id ) {
-        print "Group not found.\n";
+        print loc("Group not found.\n");
     }
 
     if ( $args{'delete'} ) {
@@ -521,7 +521,7 @@ sub AdminGroup {
 
             my $method = "Set$attrib";
             my ( $val, $msg ) = $group_obj->$method( $args{"$attrib"} );
-            print "Group " . $group_obj->Name . " $attrib:  $msg\n";
+            print loc("Group [_1] [_2]: [_3]", $group_obj->Name, $attrib, $msg);
 
         }
     }
@@ -534,7 +534,7 @@ sub AdminGroup {
             print $msg. "\n";
         }
         else {
-            print "Couldn't find user\n";
+            print loc("Couldn't find user\n");
         }
     }
     foreach my $user ( @{ $args{'delete-user'} } ) {
@@ -546,7 +546,7 @@ sub AdminGroup {
             print $msg . "\n";
         }
         else {
-            print "Couldn't find user\n";
+            print loc("Couldn't find user\n");
         }
     }
 
@@ -559,7 +559,7 @@ sub AdminGroup {
             print $msg. "\n";
         }
         else {
-            print "Couldn't find group\n";
+            print loc("Couldn't find group\n");
         }
     }
     foreach my $group ( @{ $args{'delete-group'} } ) {
@@ -571,7 +571,7 @@ sub AdminGroup {
             print $msg . "\n";
         }
         else {
-            print "Couldn't find group\n";
+            print loc("Couldn't find group\n");
         }
     }
 
@@ -634,7 +634,7 @@ sub AdminTemplates {
 
     # {{{ List templates
     if ( $args{'list-templates'} ) {
-        print "Templates for $queue\n";
+        print loc("Templates for [_1]\n", $queue);
         require RT::Templates;
         my $templates = new RT::Templates($CurrentUser);
         if ( $queue != 0 ) {
@@ -657,7 +657,7 @@ sub AdminTemplates {
     if ( $args{'delete-template'} ) {
         $template->Load( $args{'delete-template'} );
         unless ( $template->id ) {
-            print "Couldn't load template";
+            print loc("Couldn't load template");
             return (undef);
         }
         my ( $val, $msg ) = $template->Delete();
@@ -687,7 +687,7 @@ sub AdminTemplates {
 
         $template->Load( $args{'modify-template'} );
         unless ( $template->Id() ) {
-            print "Template not found\n";
+            print loc("Template not found\n");
             return ();
         }
         my @attributes = qw( Name Description );
@@ -743,7 +743,7 @@ sub AdminScrips {
 
     # {{{ List entries
     if ( $args{'list-scrips'} ) {
-        print "Scrips for $queue\n";
+        print loc("Scrips for [_1]\n", $queue);
         require RT::Scrips;
         my $scrips = new RT::Scrips($CurrentUser);
         if ( $queue != 0 ) {
@@ -753,11 +753,13 @@ sub AdminScrips {
             $scrips->LimitToGlobal();
         }
         while ( my $scrip = $scrips->Next ) {
-            print $scrip->Id . ": If "
-              . $scrip->ConditionObj->Name . " then "
-              . $scrip->ActionObj->Name
-              . " with template "
-              . $scrip->TemplateObj->Name . "\n";
+            print loc(
+                "[_1]: If [_2] then [_3] with template [_4]\n",
+	        $scrip->Id,
+                $scrip->ConditionObj->Name,
+                $scrip->ActionObj->Name,
+                $scrip->TemplateObj->Name,
+            );
         }
     }
 
@@ -768,7 +770,7 @@ sub AdminScrips {
     if ( $args{'delete-scrip'} ) {
         $scrip->Load( $args{'delete-scrip'} );
         unless ( $scrip->id ) {
-            print "Couldn't load scrip";
+            print loc("Couldn't load scrip");
             return (undef);
         }
         my ( $val, $msg ) = $scrip->Delete();
@@ -832,12 +834,12 @@ sub AdminRights {
             print " " . $ace->AppliesToObj->Name
               if ( defined $ace->AppliesToObj );
 
-            print ": "
-              . $ace->PrincipalType . " "
-              . $ace->PrincipalObj->Name
-              . " has right "
-              . $ace->RightName . "\n";
-
+            print loc(
+                ": [_1] [_2] has right [_3]\n",
+                $ace->PrincipalType,
+                $ace->PrincipalObj->Name,
+                $ace->RightName
+            )
         }
     }
 

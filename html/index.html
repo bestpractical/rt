@@ -1,4 +1,4 @@
-<& /Elements/Header, Title=>"Start page", Refresh => $session{'home_refresh_interval'} &>
+<& /Elements/Header, Title=>loc("Start page"), Refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs, current_toptab => '' &>
 <TABLE BORDER=0 WIDTH=100%>
 <TR VALIGN=TOP>
@@ -13,7 +13,7 @@
 <BR>
 <form method=get action="index.html">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
-<div align=right><input type=submit value="Go!"></div>
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
 </form>
 </TD>
 </TR>

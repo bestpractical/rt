@@ -8,10 +8,10 @@
 
 <%ARGS>
 $Name => undef
-$Like => 'contains'
-$NotLike => "doesn't contain"
-$True => 'is'
-$False => "isn't"
+$Like => loc('contains')
+$NotLike => loc("doesn't contain")
+$True => loc('is')
+$False => loc("isn't")
 $Default => undef
 </%ARGS>
 <%INIT>

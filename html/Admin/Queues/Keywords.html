@@ -1,11 +1,11 @@
-<& /Admin/Elements/Header, Title => 'Edit keywords' &>
+<& /Admin/Elements/Header, Title => loc('Edit keywords') &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
 
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => $description &>
 
-<h2>Global Keyword Selections</h2>
+<h2><&|/l&>Global Keyword Selections</&></h2>
 <& /Admin/Elements/ListGlobalKeywordSelects &>
 <BR>
   
@@ -15,9 +15,9 @@
 % if ($KeywordSelects->Count > 0 ) {
 
 
-<h2>Queue Keyword Selections</h2>
+<h2><&|/l&>Queue Keyword Selections</&></h2>
 <TABLE>
-<TR><TD>Delete</TD></TR>
+<TR><TD><&|/l&>Delete</&></TD></TR>
 %  while (my $keywordselect = $KeywordSelects->Next ) {
 <TR>
   <TD><INPUT TYPE="CHECKBOX" NAME="KeywordSelect-<%$keywordselect->Id%>-Delete"></TD>
@@ -27,7 +27,7 @@
 </TABLE>
 % }
 
-Add a keyword selection to this queue:
+<&|/l&>Add a keyword selection to this queue</&>:
 %my $ks = new RT::KeywordSelect($session{'CurrentUser'});
 <ul>
 <li><& /Admin/Elements/SelectKeywordSelect, KeywordSelect => $ks, NamePrefix => 'new' &></li>

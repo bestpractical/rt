@@ -5,23 +5,23 @@
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
-<h3>New Relationships</h3>
-<i>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</i><br>
+<h3><&|/l&>New Relationships</&></h3>
+<i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
 <TABLE>
-<TR><TD>Merge into:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i>(only one ticket)</i></TD></TR>
-<TR><TD>Depends on:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
-<TR><TD>Depended on by:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
-<TR><TD>Parents:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
-<TR><TD>Children:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
-<TR><TD>Refers to:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
-<TR><TD>Referred to by:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
+<TR><TD><&|/l&>Merge into</&>:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD></TR>
+<TR><TD><&|/l&>Depends on</&>:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
+<TR><TD><&|/l&>Depended on by</&>:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
+<TR><TD><&|/l&>Parents</&>:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
+<TR><TD><&|/l&>Children</&>:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
 </TABLE>
 </TD>
 <TD VALIGN=TOP WIDTH=50%>
-<h3>Current Relationships</h3>
-<i>(Check boxes to delete)</i><br>
+<h3><&|/l&>Current Relationships</&></h3>
+<i><&|/l&>(Check boxes to delete)</&></i><br>
 
-Depends on:<BR>
+<&|/l&>Depends on</&>:<BR>
 <UL>
 % while (my $link = $Ticket->DependsOn->Next) {
 % my $member = $link->TargetObj;
@@ -33,7 +33,7 @@ Depends on:<BR>
 % }
 </UL>
 
-Depended on by:<BR>
+<&|/l&>Depended on by</&>:<BR>
 <UL>
 % while (my $link = $Ticket->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
@@ -44,7 +44,7 @@ Depended on by:<BR>
 % }
 </UL>
 
-Parents:<BR>
+<&|/l&>Parents</&>:<BR>
 <UL>
 % while (my $link = $Ticket->MemberOf->Next) {
 % my $member = $link->TargetObj;
@@ -56,7 +56,7 @@ Parents:<BR>
 % }
 </UL>
 
-Children:<BR>
+<&|/l&>Children</&>:<BR>
 <UL>
 % while (my $link = $Ticket->Members->Next) {
 <LI>
@@ -68,7 +68,7 @@ Children:<BR>
 </UL>
 
 
-Refers to:<BR>
+<&|/l&>Refers to</&>:<BR>
 <UL>
 % while (my $link = $Ticket->RefersTo->Next) {
 <LI>
@@ -83,7 +83,7 @@ Refers to:<BR>
 %}
 </UL>
 
-Referred to by:<BR>
+<&|/l&>Referred to by</&>:<BR>
 <UL>
 % while (my $link = $Ticket->ReferredToBy->Next) {
 <LI>

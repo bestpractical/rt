@@ -1,10 +1,10 @@
 %# $Header: /raid/cvsroot/rt/webrt/Search/Listing.html,v 1.2 2001/11/06 23:07:01 jesse Exp $
 %# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
-<& /Elements/Header, Title => "Search", Refresh => $session{'tickets_refresh_interval'} &>
+<& /Elements/Header, Title => loc("Search"), Refresh => $session{'tickets_refresh_interval'} &>
 <& /Elements/Tabs, current_toptab => 'Search/Listing.html' &>
 
 
-% unless ($ARGS{'Action'} eq 'Refine') {
+% unless ($ARGS{'Action'} eq loc('Refine')) {
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=1>
 <TR>
 %foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
@@ -64,17 +64,17 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 <div align=center>
 <font size=2>
-<a href="Listing.html?GotoPage=1">First page</a>
+<a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
-<a href="Listing.html?GotoPage=Prev">&lt;Previous page</a>
+<a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
-<a href="Listing.html?GotoPage=Next">Next page&gt;</a>
-%#&nbsp;&nbsp;<form method=get action="Listing.html">Goto page <input name=GotoPage size=2></form>
+<a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
 </div>
 % if ($session{'tickets'}->Count()) { 
 <div align=right>
-<a href="Bulk.html">Update all these tickets at once</a>
+<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
 </div>
 % }
 <HR>
@@ -83,10 +83,10 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TABLE WIDTH="100%">
 <TR>
 <TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => 'Search Criteria'&>
+<& /Elements/TitleBoxStart, title => loc('Search Criteria')&>
 
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1">New search</a><br>
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">Bookmarkable URL for this search</a>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1"><&|/l&>New search</&></a><br>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
 <BR>
 <BR>
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();

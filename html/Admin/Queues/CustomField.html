@@ -1,4 +1,4 @@
-<& /Admin/Elements/Header, title => "Modify Custom Field ".$CustomFieldObj->id&>
+<& /Admin/Elements/Header, title => loc("Modify Custom Field [_1]", $CustomFieldObj->id)&>
 <& /Admin/Elements/QueueTabs, id => $Queue &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -8,12 +8,12 @@
 <INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
 <INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 
-Name: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
-Description: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
-Type: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+<&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
+<&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
+<&|/l&>Type</&>: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
 <BR>
 % if ($CustomFieldObj->Id) {
-<H2>Values</H2>
+<H2><&|/l&>Values</&></H2>
 <BR>
 <font size=-1>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -32,7 +32,7 @@ my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
 my  ($title, @results, $id);
 
 if (! $CustomField ) { 
-  $title = "Create a CustomField";
+  $title = loc("Create a CustomField");
   $id = 'new';
 } else {
 
@@ -44,10 +44,10 @@ if (! $CustomField ) {
                                                  SortOrder => $SortOrder);
       Abort("Could not create CustomField: $msg") unless ($val);
      push @results, $msg;
-     $title = 'Created CustomField ' . $CustomFieldObj->Name(); 
+     $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
        $CustomFieldObj->Load($CustomField) || Abort('No CustomField');
-      $title = 'Editing CustomField ' . $CustomFieldObj->Name(); 
+      $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,

@@ -8,7 +8,7 @@
 <%ARGS>
 $Name => undef
 $Default => undef
-$Before => 'Before'
-$On => 	'On'
-$After => 'After'
+$Before => loc('Before')
+$On => 	loc('On')
+$After => loc('After')
 </%ARGS>

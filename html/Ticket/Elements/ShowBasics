@@ -1,18 +1,18 @@
  <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Id' , content => $Ticket->Id &>
+	  <& /Elements/ShadedBox, title => loc('Id') , content => $Ticket->Id &>
 	</TD>
-	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => 'Status' , content => $Ticket->Status &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-        <& /Elements/ShadedBox, title => 'Worked' , content => $TimeWorked ." min" &>
+	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => loc('Status') , content => $Ticket->Status &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Priority', content=> $Ticket->Priority."/".$Ticket->FinalPriority &>
+        <& /Elements/ShadedBox, title => loc('Worked') , content => loc('[_1] min', $TimeWorked) &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->QueueObj->Name &>
+	  <& /Elements/ShadedBox, title => loc('Priority'), content=> $Ticket->Priority."/".$Ticket->FinalPriority &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => loc('Queue'), content=> $Ticket->QueueObj->Name &>
 	</TD>	
 
 

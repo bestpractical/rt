@@ -9,14 +9,14 @@
         Abort("Corrupted attachment URL.");
         }
      my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
-     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
+     $AttachmentObj->Load($attach) || Abort(loc("Attachment '[_1]' could not be loaded"), $attach);
 
 
      unless ($AttachmentObj->id) {
-        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+        Abort(loc("Bad attachment id. Couldn't find attachment '[_1]'\n"), $attach);
     }
      unless ($AttachmentObj->TransactionId() == $trans ) {
-        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+        Abort(loc("Bad transaction number for attachment. [_1] should be [_2]\n", $trans, $AttachmentObj->TransactionId()));
 
      }
      my $content_type = $AttachmentObj->ContentType || 'text/plain';

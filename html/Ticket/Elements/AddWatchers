@@ -1,7 +1,7 @@
 <BR>
 <%$msg%><br>
 
-<&|/l&>Add new watchers:</&><br>
+<&|/l&>Add new watchers</&>:<br>
 
 <table>
 % if ($Users) {

@@ -15,12 +15,12 @@
 % }
 <TABLE>
 <TR><TD ALIGN=RIGHT>
-<&|/l&>Namea:</&> 
+<&|/l&>Name</&>:
 </TD>
 <TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Description:</&></TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
@@ -34,7 +34,7 @@ my (@results);
 my $Group = RT::Group->new($session{'CurrentUser'});
 
 if ($Create) {
-    $title = "Create a new group";
+    $title = loc("Create a new group");
 } 
 
 else {
@@ -51,13 +51,13 @@ else {
 
 
     if ($id) {
-	$title = "Modify the group ". $Group->Name;
+	$title = loc("Modify the group [_1]", $Group->Name);
 
     }	
 
     # If the create failed
     else {
-	$title = "Create a new group";
+	$title = loc("Create a new group");
 	$Create = 1;
     }    
     

@@ -304,7 +304,7 @@ EOUSAGE
 
 # Print version, and leave
 if ($version) {
-	print "RT $RT::VERSION. Copyright 1996-2002 Jesse Vincent <jesse\@bestpractical.com>\n";
+	print loc("RT [_1]. Copyright 1996-2002 Jesse Vincent <jesse\@bestpractical.com>\n", $RT::VERSION);
 	exit(0);
 }
 
@@ -752,7 +752,7 @@ else {
 		print $msg;
 	    }
 	    else {
-		print "Due date '$due' could not be parsed";
+		print loc("Due date '[_1]' could not be parsed", $due);
 	    }
 	}
 
@@ -765,7 +765,7 @@ else {
 		print $msg."\n";
 	    }
 	    else {
-		print "Starts date '$starts' could not be parsed";
+		print loc("Starts date '[_1]' could not be parsed", $starts);
 	    }
 	}
 	#set started
@@ -777,7 +777,7 @@ else {
 		print $msg."\n";
 	    }
 	    else {
-		print "Started date '$started' could not be parsed";
+		print loc("Started date '[_1]' could not be parsed", $started);
 	    }
 	}
 	#set contacted
@@ -789,7 +789,7 @@ else {
 		print $msg."\n";
 	    }
 	    else {
-		print "Contacted date '$contacted' could not be parsed";
+		print loc("Contacted date '[_1]' could not be parsed", $contacted);
 	    }
 	}
 
@@ -900,7 +900,7 @@ else {
 		&ShowHistory($Ticket);
 	    }
 	    else {
-		print "You don't have permission to view that ticket.\n";
+		print loc("You don't have permission to view that ticket.\n");
 	    }
 	}	
 
@@ -1114,12 +1114,12 @@ EOFORM
 
 
 #TODO: finish link  descriptions
-print "Dependencies: \n";
+print loc("Dependencies: \n");
    while (my $l=$Ticket->DependedOnBy->Next) {
-       print $l->BaseObj->id," (",$l->BaseObj->Subject,") ",$l->Type," this ticket\n";
+       print loc("[_1] ([_2]) [_3] this ticket\n", $l->BaseObj->id, $l->BaseObj->Subject, $l->Type);
    }
    while (my $l=$Ticket->DependsOn->Next) {
-       print "This ticket ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
+       print loc("This ticket [_1] [_2] ([_3])\n", $l->Type, $l->TargetObj->Id, $l->TargetObj->Subject);
    }
 }
 
@@ -1157,7 +1157,7 @@ EOFORM
     if ($message->ContentType =~ m{^(text/plain|message|text$)}) {
 	print $message->Content;
     } else {
-	print $message->ContentType, " not shown";
+	print loc("[_1] not shown", $message->ContentType);
     }
   }
   print "\n";

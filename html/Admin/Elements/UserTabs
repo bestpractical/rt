@@ -4,10 +4,10 @@
 <hr>
 <%INIT>
 my $subtabs = {
-	       Queues => { title => 'Basics',
+	       Queues => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
 			 },
-#	       Scrips => { title => 'Rights',
+#	       Scrips => { title => loc('Rights'),
 #			   path => "Admin/Users/Rights.html?id=".$id
 #			 }
 	       

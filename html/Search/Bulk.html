@@ -81,7 +81,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 
 
-<li> </&|/1&>Make date Starts</&> <& /Elements/SelectDate, Name => "Starts_Date", ShowTime => 0, Default => '' &>
+<li> <&|/l&>Make date Starts</&> <& /Elements/SelectDate, Name => "Starts_Date", ShowTime => 0, Default => '' &>
 <li> <&|/l&>Make date Started</&> <& /Elements/SelectDate, Name => "Started_Date", ShowTime => 0, Default => '' &>
 <li> <&|/l&>Make date Told</&> <& /Elements/SelectDate, Name => "Told_Date", ShowTime => 0, Default => '' &>
 <li> <&|/l&>Make date Due</&> <& /Elements/SelectDate, Name => "Due_Date", ShowTime => 0, Default => '' &>
@@ -126,7 +126,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
     
     
-    my @tempresults = (@watchresults, @basicresults, @selectresults);
+    my @tempresults = (@watchresults, @basicresults, @dateresults);
     @tempresults = map { "Ticket ".$Ticket->Id. ": ".$_ } @tempresults;
 
     @results = (@results, @tempresults);

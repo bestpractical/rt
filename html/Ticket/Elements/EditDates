@@ -1,7 +1,7 @@
 <TABLE>
 <TR>
 <TD>
-Starts: 
+<&|/l&>Starts</&>: 
 </TD>
 <TD>
 <& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
@@ -10,7 +10,7 @@ Starts:
 </TR>
 <TR>
 <TD>
-Started:
+<&|/l&>Started</&>:
 </TD>
 <TD>
 <& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)
@@ -22,7 +22,7 @@ Started:
 
 <TR>
 <TD>
-Last Contact:
+<&|/l&>Last Contact</&>:
 </TD>
 <TD>
 <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
@@ -31,7 +31,7 @@ Last Contact:
 </TR>
 <TR>
 <TD>
-Due:
+<&|/l&>Due</&>:
 </TD>
 <TD>
 

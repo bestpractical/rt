@@ -76,10 +76,10 @@ sub Create  {
 	my $QueueObj = new RT::Queue($self->CurrentUser);
 	$QueueObj->Load($args{'Queue'});
 	unless ($QueueObj->id()) {
-	    return (0,loc('Invalid queue'));
+	    return (0, $self->loc('Invalid queue'));
 	}
 	unless ($QueueObj->CurrentUserHasRight('ModifyScrips')) {
-	    return (0, $self->loc('Permssion Denied'));
+	    return (0, $self->loc('Permission Denied'));
 	}	
     }
 

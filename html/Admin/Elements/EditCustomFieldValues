@@ -4,7 +4,7 @@
 <input type="checkbox" name="CustomField-<%$CustomField->Id%>-DeleteValue" value="<%$v->id%>">
 <%$v->Name%>
 <i>(<%$v->Description%>)</i>
-<font size=-1 color="#cccccc">Sort key: <%$v->SortOrder%></font></li>
+<font size=-1 color="#cccccc"><&|/l&>Sort key</&>: <%$v->SortOrder%></font></li>
 % }
 </ul>
 <%init>

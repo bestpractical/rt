@@ -1,13 +1,13 @@
 
-<& /Admin/Elements/Header, Title => 'Admin/Groups' &>
+<& /Admin/Elements/Header, Title => loc('Admin/Groups') &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Groups/' &>
 
 <& /Elements/TitleBoxStart, title => loc('Select a group') &>
 
 
-<&|/l&>Groups:</&><BR>
+<&|/l&>Groups</&>:<BR>
 <UL>
-<LI><A HREF="Modify.html?Create=1">Create a new group</A><BR><BR></LI>
+<LI><A HREF="Modify.html?Create=1"><&|/l&>Create a new group</&></A><BR><BR></LI>
 %while ( my $Group = $Groups->Next) {
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}

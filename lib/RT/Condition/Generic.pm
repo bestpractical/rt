@@ -39,6 +39,9 @@ ok (require RT::Condition::Generic);
 
 package RT::Condition::Generic;
 
+# TODO XXX we need to make this an RT::Somethingorother object so it gets a loc method
+
+
 # {{{ sub new 
 sub new  {
   my $proto = shift;
@@ -137,7 +140,7 @@ sub ApplicableTransTypes  {
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (loc("No description for ") . ref $self);
+  return ($self->loc("No description for [_1]", ref $self));
 }
 # }}}
 

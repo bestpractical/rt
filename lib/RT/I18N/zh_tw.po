@@ -1,0 +1,2504 @@
+#: html/Elements/MyRequests html/Elements/MyTickets
+msgid "#"
+msgstr "#"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "%1 %2 changed to %3"
+msgstr "±q %1 %2 §ï¦¨ %3"
+
+#: bin/rt
+msgid "%1 (%2) %3 this ticket\\n"
+msgstr "%1 (%2) %3 ³o¥÷¥Ó½Ð³æ\\n"
+
+#: lib/RT/ScripAction_Overlay.pm
+msgid "%1 ScripAction loaded"
+msgstr "¸ü¤J¤âÄò %1"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "%1 added as a value for %2"
+msgstr "·s¼W %1 §@¬° %2 ªº­È"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "%1 aliases require a TicketId to work on"
+msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ð³æ½s¸¹"
+
+#: bin/rt-mailgate
+msgid "%1 aliases require a TicketId to work on "
+msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ð³æ½s¸¹ "
+
+#: bin/enhanced-mailgate
+msgid "%1 aliases require a TicketId to work on (from %2) %3"
+msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ð³æ½s¸¹¥H³B²z¡]¥X¦Û %2 ªº¡^%3"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "%1 by %2"
+msgstr "%1 ³Q %2 §ó°Ê"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "%1 changed from %2 to %3"
+msgstr "%1 ªº­È±q %2 §ï¦¨ %3"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "%1 couldn't init a transaction (%2)\\n"
+msgstr "%1 µLªkªì©l§ó·s³ø§i (%2)\\n"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
+msgstr "%1 µLªk±N²{ªp³]¦¨¤w¸Ñ¨M¡CRT ¸ê®Æ®w¤º®e¥i¯à¤£¤@­P¡C"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "%1 is no longer a %2 for this queue."
+msgstr "%1 ¤w¤£¦A¬O¦¹¦î¦Cªº %2¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "%1 is no longer a %2 for this ticket."
+msgstr "%1 ¤w¤£¦A¬O¦¹¥Ó½Ð³æªº %2¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "%1 is no longer a value for custom field %2"
+msgstr "%1 ¤w¤£¦A¬O¦Û­qÄæ¦ì %2 ªº­È¡C"
+
+#: html/Ticket/Elements/ShowBasics
+msgid "%1 min"
+msgstr "%1 ¤ÀÄÁ"
+
+#: bin/rt
+msgid "%1 not shown"
+msgstr "¨S¦³Åã¥Ü %1"
+
+#: bin/enhanced-mailgate
+msgid "%1 succeeded\\n"
+msgstr "%1 §¹¦¨\\n"
+
+#: bin/rt-mailgate
+msgid "%1 type unknown for $MessageId"
+msgstr "¤£ª¾¹D $MessageID ªº %1 Ãþ§O"
+
+#: bin/enhanced-mailgate
+msgid "%1 type unknown for %2"
+msgstr "¤£ª¾¹D %2 ªº %1 Ãþ§O"
+
+#: lib/RT/SearchBuilder.pm
+msgid "%1 was created without a CurrentUser\\n"
+msgstr "¦b¨S¦³ CurrentUser ªº±¡ªp¤U«Ø¥ß %1\\\\n"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "%1: no attachment specified"
+msgstr "%1¡G¨S¦³«ü©wªþ¥ó"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "'%1' not a recognized action. "
+msgstr "'%1'¬°µLªk¿ëÃÑªº°Ê§@¡C "
+
+#: html/Admin/Groups/Members.html
+msgid "(Check box to delete group member)"
+msgstr "¡]¿ï¾Ü±ý§R°£ªº¸s²Õ¦¨­û¡^"
+
+#: html/Ticket/Elements/EditPeople
+msgid "(Check box to delete)"
+msgstr "¡]¿ï¾Ü±ý§R°£¤H­û¡^"
+
+#: html/Ticket/Elements/EditLinks
+msgid "(Check boxes to delete)"
+msgstr "¡]¿ï¾Ü±ý§R°£Ãìµ²¡^"
+
+#: html/Ticket/Create.html
+msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgstr "¡]Áä¤J¥Ó½Ð³æ½s¸¹©Îºô§}¡A¥HªÅ¥Õ¤À¹j¡^"
+
+#: html/Ticket/Elements/EditCustomFields
+msgid "(No Value)"
+msgstr "¡]µL¡^"
+
+#: html/Admin/Groups/Members.html
+msgid "(No members)"
+msgstr "¡]¨S¦³¦¨­û¡^"
+
+#: html/Ticket/Update.html
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "¡]°e¥X¥»¥÷§ó·sªº±K¥ó°Æ¥»µ¹¦W³æ¤W¥H³r¸¹¹j¶}ªº¹q¤l¶l¥ó¦ì§}¡C½Ð<b>¤Å</b>§ó§ï±µ¦¬ªÌ¦W³æ¡C¡^"
+
+#: html/Ticket/Update.html
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "¡]°e¥X¥»¥÷§ó·sªº°Æ¥»µ¹¦W³æ¤W¥H³r¸¹¹j¶}ªº¹q¤l¶l¥ó¦ì§}¡C½Ð<b>¤Å</b>§ó§ï±µ¦¬ªÌ¦W³æ¡C¡^"
+
+#: html/Admin/Groups/index.html
+msgid "(empty)"
+msgstr "¡]ªÅ¥Õ¡^"
+
+#: lib/RT/Transaction_Overlay.pm html/Admin/Elements/SelectRights
+msgid "(no value)"
+msgstr "¡]µL¡^"
+
+#: html/Ticket/Elements/EditLinks
+msgid "(only one ticket)"
+msgstr "¡]¬é¦³¤@¥÷¥Ó½Ð³æ¡^"
+
+#: html/Admin/Users/Modify.html
+msgid "(required)"
+msgstr "¡]¥²¶ñ¡^"
+
+#: html/Elements/MyTickets
+msgid "25 highest priority tickets I own..."
+msgstr "«e 25 ¥÷«Ý³B²z¥Ó½Ð³æ..."
+
+#: html/Elements/MyRequests
+msgid "25 highest priority tickets I requested..."
+msgstr "«e 25 ¥÷°e¥Xªº¥Ó½Ð³æ..."
+
+#: html/Elements/CreateTicket
+msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"´£¥X¥Ó½Ð³æ\">&nbsp;%1"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "ACE Deleted"
+msgstr "§R°£ ACE ³]©w"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "ACE Loaded"
+msgstr "¸ü¤J ACE ³]©w"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "ACE could not be deleted"
+msgstr "µLªk§R°£ ACE ³]©w"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "ACE not found"
+msgstr "§ä¤£¨ì ACE ³]©w"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "ACEs can only be created and deleted."
+msgstr "¬é¯à«Ø¥ß©Î§R°£ ACE ³]©w"
+
+#: bin/enhanced-mailgate bin/rt-commit-handler
+msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgstr "Â÷¶}¥H§K¤£¤p¤ß­×§ï¨ì¥Ó½Ð³æ¡C\\n"
+
+#: html/Admin/Users/Modify.html
+msgid "Access control"
+msgstr "¦s¨úÅv­­"
+
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
+msgid "Action"
+msgstr "°Ê§@"
+
+#: lib/RT/Scrip_Overlay.pm
+msgid "Action %1 not found"
+msgstr "°Ê§@ %1 §ä¤£¨ì"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Add AdminCc"
+msgstr "·s¼WºÞ²z­û°Æ¥»¦¬¥ó¤H"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Add Cc"
+msgstr "·s¼W°Æ¥»¦¬¥ó¤H"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Add Requestor"
+msgstr "·s¼W¥Ó½Ð¤H"
+
+#: html/Admin/Queues/Keywords.html
+msgid "Add a keyword selection to this queue"
+msgstr "·s¼W¤@­ÓÃöÁä¦r¿ï¶µ¨ì¦¹¦î¦C"
+
+#: html/Admin/Queues/Scrips.html
+msgid "Add a scrip to this queue"
+msgstr "·s¼W¤@¹D¤âÄò¨ì¦¹¦î¦C"
+
+#: html/Admin/Global/Scrips.html
+msgid "Add a scrip which will apply to all queues"
+msgstr "·s¼W¤@¹D¥Î©ó©Ò¦³¦î¦Cªº¤âÄò"
+
+#: html/Admin/Groups/Members.html
+msgid "Add members"
+msgstr "·s¼W¦¨­û"
+
+#: html/Admin/Queues/People.html html/Ticket/Elements/AddWatchers
+msgid "Add new watchers"
+msgstr "·s¼Wµø¹î­û"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Added principal as a %1 for this queue"
+msgstr "·s¼W %1 ¬°¦¹¦î¦Cªº³æ¦ì"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Added principal as a %1 for this ticket"
+msgstr "·s¼W %1 ¬°¦¹¥Ó½Ð³æªº³æ¦ì"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Address1"
+msgstr "¦í§}¡G"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Address2"
+msgstr "¦í§}¡G"
+
+#: html/Ticket/Create.html
+msgid "Admin Cc"
+msgstr "ºÞ²z­û°Æ¥»"
+
+#: html/Admin/Queues/index.html
+msgid "Admin queues"
+msgstr "¦î¦CºÞ²z"
+
+#: html/Admin/Users/index.html
+msgid "Admin users"
+msgstr "¨Ï¥ÎªÌºÞ²z"
+
+#: html/Admin/Global/index.html
+msgid "Admin/Global configuration"
+msgstr "ºÞ²z/¾ãÅé³]©w"
+
+#: html/Admin/Groups/index.html
+msgid "Admin/Groups"
+msgstr "ºÞ²z/¸s²Õ"
+
+#: html/Admin/Queues/Modify.html
+msgid "Admin/Queue/Basics"
+msgstr "ºÞ²z/¦î¦C/°ò¥»¸ê°T"
+
+#: html/Ticket/Update.html html/Ticket/Elements/ShowPeople
+msgid "AdminCc"
+msgstr "ºÞ²z­û°Æ¥»"
+
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
+msgid "Administrative Cc"
+msgstr "ºÞ²z­û°Æ¥»"
+
+#: html/Elements/Quicksearch
+msgid "Advanced Search"
+msgstr "¶i¶¥·j´M"
+
+#: html/Elements/SelectDateRelation
+msgid "After"
+msgstr "±ß©ó"
+
+#: html/Elements/monthMenu
+msgid "Apr."
+msgstr "¥|¤ë"
+
+#: html/Elements/monthMenu
+msgid "April"
+msgstr "¥|¤ë"
+
+#: html/Elements/SelectSortOrder
+msgid "Ascending"
+msgstr "»¼¼W"
+
+#: html/SelfService/Update.html html/Ticket/ModifyAll.html html/Ticket/Update.html
+msgid "Attach"
+msgstr "ªþ¥ó"
+
+#: html/SelfService/Create.html html/Ticket/Create.html
+msgid "Attach file"
+msgstr "ªþ¥[ÀÉ®×"
+
+#: html/SelfService/Attachment/dhandler
+msgid "Attachment '%1' could not be loaded"
+msgstr "µLªk¸ü¤Jªþ¥ó '%1'"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Attachment created"
+msgstr "ªþ¥ó«Ø¥ß§¹¦¨"
+
+#: html/Elements/monthMenu
+msgid "Aug."
+msgstr "¤K¤ë"
+
+#: html/Elements/monthMenu
+msgid "August"
+msgstr "¤K¤ë"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "AuthSystem"
+msgstr "»{ÃÒ¤è¦¡"
+
+#: bin/enhanced-mailgate
+msgid "Bad PGP Signature: %1\\n"
+msgstr "¿ù»~ªº PGP Ã±³¹¡G%1\\n"
+
+#: html/SelfService/Attachment/dhandler
+msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
+msgstr "¿ù»~ªºªþ¥ó½s¸¹¡CµLªk§ä¨ìªþ¥ó '%1'\\n"
+
+#: bin/rt-commit-handler
+msgid "Bad data in %1"
+msgstr "%1 ªº¸ê®Æ¿ù»~"
+
+#: html/SelfService/Attachment/dhandler
+msgid "Bad transaction number for attachment. %1 should be %2\\n"
+msgstr "ªþ¥óªº³B²z¸¹½X¿ù»~¡C%1 À³¬° %2\\n"
+
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/UserTabs html/Ticket/Elements/Tabs
+msgid "Basics"
+msgstr "°ò¥»¸ê°T"
+
+#: html/Ticket/Update.html
+msgid "Bcc"
+msgstr "±K¥ó°Æ¥»"
+
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
+msgid "Be sure to save your changes"
+msgstr "°O±oÀx¦s­×§ï¡C"
+
+#: html/Elements/SelectDateRelation
+msgid "Before"
+msgstr "¦­©ó"
+
+#: html/Search/Listing.html
+msgid "Bookmarkable URL for this search"
+msgstr "±N·j´Mµ²ªGÂà¬°¥i©ñ¤J®ÑÅÒªººô§}"
+
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
+msgid "Brief headers"
+msgstr "ºëÂ²¼ÐÀYÀÉ"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Bulk ticket update"
+msgstr "§ó·s¾ã§å¥Ó½Ð³æ"
+
+#: lib/RT/User_Overlay.pm
+msgid "Can not modify system users"
+msgstr "µLªk­×§ï¨t²Î¨Ï¥ÎªÌ"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Can't link a ticket to itself"
+msgstr "¥Ó½Ð³æ¤£¯àÃìµ²¦Û¤v¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Can't merge into a merged ticket. You should never get this error"
+msgstr "¤£¯à¾ã¦X¶i¤w¾ã¦X¹Lªº¥Ó½Ð³æ¡C©p¤£¸Ó¥Ç³o­Ó¿ù»~¡C"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Can't specifiy both base and target"
+msgstr "¤£¯à¦P®É«ü©w°_©l¥Ó½Ð³æ»P¥Øªº¥Ó½Ð³æ"
+
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Update.html html/Ticket/Update.html html/Admin/Queues/People.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
+msgid "Cc"
+msgstr "°Æ¥»"
+
+#: html/SelfService/Prefs.html html/User/Prefs.html
+msgid "Change password"
+msgstr "­×§ï±K½X"
+
+#: html/Admin/Elements/SelectRights
+msgid "Check box to revoke right"
+msgstr "¿ï¾Ü±ýºM®øªºÅv§Q"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Children"
+msgstr "¤l¥Ó½Ð³æ"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "City"
+msgstr "©Ò¦b«°¥«"
+
+#: html/SelfService/Elements/Tabs
+msgid "Closed requests"
+msgstr "µ²§ôªº¥Ó½Ð"
+
+#: bin/enhanced-mailgate
+msgid "Command not understood!\\n"
+msgstr "«ü¥OµLªk¿ëÃÑ¡I\\n"
+
+#: html/Ticket/Elements/Tabs
+msgid "Comment"
+msgstr "µû½×"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Comment Address"
+msgstr "µû½×¹q¤l¶l¥ó¦a§}"
+
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate
+msgid "Comment not recorded"
+msgstr "µû½×¥¼³Q¬ö¿ý"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "Comments"
+msgstr "µû½×"
+
+#: html/Ticket/ModifyAll.html
+msgid "Comments (Not sent to requestors)"
+msgstr "µû½×¡]¤£°eµ¹¥Ó½Ð¤H¡^"
+
+#: html/Elements/ViewUser
+msgid "Comments about %1"
+msgstr "¹ï %1 ªºµû½×"
+
+#: html/Admin/Users/Modify.html html/Ticket/Elements/ShowRequestor
+msgid "Comments about this user"
+msgstr "¨Ï¥ÎªÌ´y­z"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Comments added"
+msgstr "·s¼Wµû½×§¹¦¨"
+
+#: html/Search/RestrictSearch.html
+msgid "Compile Restrictions"
+msgstr "³]©w·j´M±ø¥ó"
+
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
+msgid "Condition"
+msgstr "²{ªp"
+
+#: lib/RT/Scrip_Overlay.pm
+msgid "Condition not found"
+msgstr "¥¼§ä¨ì²Å¦Xªº²{ªp"
+
+#: html/Elements/Tabs
+msgid "Configuration"
+msgstr "³]©w"
+
+#: html/SelfService/Prefs.html html/User/Prefs.html
+msgid "Confirm"
+msgstr "½T»{±K½X"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "ContactInfoSystem"
+msgstr "³sµ¸¸ê°T¨t²Î"
+
+#: bin/rt
+msgid "Contacted date '%1' could not be parsed"
+msgstr "µLªk¸ÑÅªÁpµ¸¤é´Á '%1'"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Correspondence Address"
+msgstr "¥Ó½Ð³æ±H°e¦a§}"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Correspondence added"
+msgstr "·s¼W¥Ó½Ð³æ±H°e¦a§}"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "Correspondence not recorded"
+msgstr "¥¼¬ö¿ý¥Ó½Ð³æ±H°e¦a§}"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Could not add new custom field value for ticket. "
+msgstr "¤£¯à·s¼W¦Û­qÄæ¦ìªº­È "
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Could not add new custom field value for ticket. %1 "
+msgstr "¤£¯à·s¼W¦Û­qÄæ¦ìªº­È¡C%1 "
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Could not change owner. "
+msgstr "¤£¯à§ó§ï©Ó¿ì¤H¡C "
+
+#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm
+msgid "Could not create group"
+msgstr "µLªk«Ø¥ß·s¸s²Õ"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Could not create ticket. Queue not set"
+msgstr "µLªk«Ø¥ß¥Ó½Ð³æ¡C©|¥¼«ü©w¦î¦C¡C"
+
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "Could not create user"
+msgstr "µLªk«Ø¥ß¨Ï¥ÎªÌ"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Could not create watcher for requestor"
+msgstr "µLªk¬°¥Ó½Ð¤H«Ø¥ßµø¹î­û"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "Could not find a ticket with id %1"
+msgstr "§ä¤£¨ì½s¸¹ %1 ªº¥Ó½Ð³æ"
+
+#: bin/rtadmin
+msgid "Could not find group %1."
+msgstr "§ä¤£¨ì¸s²Õ %1¡C"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Could not find or create that user"
+msgstr "§ä¤£¨ì©ÎµLªk«Ø¥ß¸Ó¦W¨Ï¥ÎªÌ"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Could not find that principal"
+msgstr "§ä¤£¨ì¸Ó³æ¦ì"
+
+#: bin/rtadmin
+msgid "Could not find user %1."
+msgstr "§ä¤£¨ì¨Ï¥ÎªÌ %1¡C"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Could not make that principal a %1 for this queue"
+msgstr "µLªk±N¸Ó³æ¦ì³]¬°¦¹¦î¦Cªº %1¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Could not make that principal a %1 for this ticket"
+msgstr "µLªk±N¸Ó³æ¦ì³]¬°¦¹¥Ó½Ð³æªº %1¡C"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Could not remove that principal as a %1 for this queue"
+msgstr "µLªk±N³æ¦ì %1 ±q¦î¦C²¾°£¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Could not remove that principal as a %1 for this ticket"
+msgstr "µLªk±N³æ¦ì %1 ±q¥Ó½Ð³æ²¾°£¡C"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Couldn't add member to group"
+msgstr "µLªk·s¼W¦¨­û¦Ü¸s²Õ"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Couldn't create a transaction: %1"
+msgstr "µLªk«Ø¥ß§ó°Ê³ø§i"
+
+#: bin/enhanced-mailgate
+msgid "Couldn't figure out what to do from gpg's reply\\n"
+msgstr "µLªk±q gpg ¦^¨ç¿ëÃÑ¥X¸Ó±Ä¨úªº¦æ°Ê\\n"
+
+#: bin/rtadmin bin/rtadmin
+msgid "Couldn't find group\\n"
+msgstr "§ä¤£¨ì¸s²Õ\\n"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Couldn't find that principal"
+msgstr "§ä¤£¨ì¸Ó³æ¦ì"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Couldn't find that watcher"
+msgstr "§ä¤£¨ì¸Ó¦Wµø¹î­û"
+
+#: bin/rtadmin bin/rtadmin
+msgid "Couldn't find user\\n"
+msgstr "§ä¤£¨ì¨Ï¥ÎªÌ\\n"
+
+#: lib/RT/CurrentUser.pm
+msgid "Couldn't load %1 from the users database.\\n"
+msgstr "µLªk±q¨Ï¥ÎªÌ¸ê®Æ®w¸ü¤J %1¡C\\n"
+
+#: lib/RT.pm
+msgid "Couldn't load RT config file '%1' %2"
+msgstr "µLªk¸ü¤J RT ³]©wÀÉ '%1' %2"
+
+#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm
+msgid "Couldn't load link"
+msgstr "µLªk¸ü¤JÃìµ²¡C"
+
+#: bin/rtadmin
+msgid "Couldn't load scrip"
+msgstr "µLªk¸ü¤J¤âÄò"
+
+#: bin/rtadmin
+msgid "Couldn't load template"
+msgstr "µLªk¸ü¤J½d¥»"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Country"
+msgstr "°ê®a"
+
+#: html/Ticket/Create.html html/Ticket/Create.html html/Admin/Elements/CreateUserCalled
+msgid "Create"
+msgstr "«Ø¥ß"
+
+#: html/Admin/Queues/CustomField.html
+msgid "Create a CustomField"
+msgstr "«Ø¥ß·sªº¦Û­qÄæ¦ì"
+
+#: html/Admin/Queues/CustomFields.html
+msgid "Create a new Custom Field"
+msgstr "«Ø¥ß·sªº¦Û­qÄæ¦ì"
+
+#: html/Admin/Groups/index.html html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html
+msgid "Create a new group"
+msgstr "«Ø¥ß·s¸s²Õ"
+
+#: html/Admin/Queues/index.html
+msgid "Create a new queue"
+msgstr "«Ø¥ß·s¦î¦C"
+
+#: html/Admin/Global/Templates.html html/Admin/Queues/Templates.html
+msgid "Create a new template"
+msgstr "«Ø¥ß·s½d¥»"
+
+#: html/SelfService/Create.html html/Ticket/Create.html
+msgid "Create a new ticket"
+msgstr "«Ø¥ß·sªº¥Ó½Ð³æ"
+
+#: html/Admin/Users/index.html html/Admin/Users/Modify.html html/Admin/Users/Modify.html
+msgid "Create a new user"
+msgstr "«Ø¥ß·s¨Ï¥ÎªÌ"
+
+#: html/Admin/Queues/Create.html html/Admin/Queues/Create.html html/Admin/Queues/Modify.html
+msgid "Create a queue"
+msgstr "«Ø¥ß¦î¦C"
+
+#: html/Admin/Elements/CreateQueueCalled
+msgid "Create a queue called"
+msgstr "«Ø¥ß¦î¦C¦WºÙ"
+
+#: html/SelfService/Create.html
+msgid "Create a request"
+msgstr "´£¥X¥Ó½Ð"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "Create a template"
+msgstr "«Ø¥ß·s½d¥»"
+
+#: bin/rt-mailgate
+msgid "Create failed: %1 / %2 / %3 "
+msgstr "«Ø¥ß¥¢±Ñ¡G%1 / %2 / %3 "
+
+#: bin/enhanced-mailgate
+msgid "Create failed: %1/%2/%3"
+msgstr "«Ø¥ß¥¢±Ñ¡G%1/%2/%3"
+
+#: html/SelfService/Create.html
+msgid "Create ticket"
+msgstr "«Ø¥ß¥Ó½Ð³æ"
+
+#: html/Elements/SelectDateType html/Ticket/Elements/ShowDates
+msgid "Created"
+msgstr "«Ø¥ß¤é"
+
+#: html/Admin/Queues/CustomField.html
+msgid "Created CustomField %1"
+msgstr "¦Û­qÄæ¦ì %1 ¦¨¥\\«Ø¥ß"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "Created template %1"
+msgstr "½d¥» %1 ¦¨¥\\«Ø¥ß"
+
+#: html/Ticket/Elements/EditLinks
+msgid "Current Relationships"
+msgstr "¥Ø«eÃö«Y"
+
+#: html/Admin/Groups/Members.html
+msgid "Current members"
+msgstr "²{¦³¦¨­û"
+
+#: html/Admin/Elements/SelectRights
+msgid "Current rights"
+msgstr "²{¦³Åv­­"
+
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
+msgid "Current watchers"
+msgstr "²{¦³µø¹î­û"
+
+#: html/Admin/Elements/QueueTabs html/Ticket/Elements/ShowSummary
+msgid "Custom Fields"
+msgstr "¦Û­qÄæ¦ì"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Custom field not found"
+msgstr "§ä¤£¨ì¦Û­qÄæ¦ì"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Custom field value changed from %1 to %2"
+msgstr "¦Û­qÄæ¦ì­È±q %1 §ï¬° %2"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Data error"
+msgstr "¸ê®Æ¿ù»~"
+
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
+msgid "Dates"
+msgstr "¤é´Á"
+
+#: html/Elements/monthMenu
+msgid "Dec."
+msgstr "¤Q¤G¤ë"
+
+#: html/Elements/monthMenu
+msgid "December"
+msgstr "¤Q¤G¤ë"
+
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
+msgid "Delete"
+msgstr "§R°£"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Deleting this object could break referential integrity"
+msgstr "§R°£¦¹ª«¥ó¥i¯à¯}Ãa°Ñ¦Ò§¹¾ã©Ê"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Deleting this object would break referential integrity"
+msgstr "§R°£¦¹ª«¥ó¥i¯à¯}Ãa°Ñ¦Ò§¹¾ã©Ê"
+
+#: lib/RT/User_Overlay.pm
+msgid "Deleting this object would violate referential integrity"
+msgstr "§R°£¦¹ª«¥ó·|¹H¤Ï°Ñ¦Ò§¹¾ã©Ê"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Deleting this object would violate referential integrity. That's bad."
+msgstr "§R°£¦¹ª«¥ó·|¹H¤Ï°Ñ¦Ò§¹¾ã©Ê"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
+msgid "Depended on by"
+msgstr "¥i±µÄò³B²zªº¥Ó½Ð³æ"
+
+#: bin/rt
+msgid "Dependencies: \\n"
+msgstr "ªþÄÝ©Ê¡G\\n"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
+msgid "Depends on"
+msgstr "»Ý¥ý³B²zªº¥Ó½Ð³æ"
+
+#: html/Elements/SelectLinkType
+msgid "DependsOn"
+msgstr "»Ý¥ý³B²z"
+
+#: html/Elements/SelectSortOrder
+msgid "Descending"
+msgstr "»¼´î"
+
+#: html/SelfService/Create.html html/Ticket/Create.html
+msgid "Describe the issue below"
+msgstr "¦b¥H¤UÄæ¦ì´y­z¥DÃD"
+
+#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyQueue html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Modify.html html/Admin/Queues/Template.html
+msgid "Description"
+msgstr "´y­z"
+
+#: html/SelfService/Elements/MyRequests
+msgid "Details"
+msgstr "²Ó¸`"
+
+#: html/Elements/MyRequests html/Ticket/Elements/Tabs
+msgid "Display"
+msgstr "Åã¥Ü¤º®e"
+
+#: html/Ticket/Elements/ShowHistory
+msgid "Display mode"
+msgstr "Åã¥Ü¼Ò¦¡"
+
+#: html/SelfService/Display.html
+msgid "Display ticket #%1"
+msgstr "Åã¥Ü²Ä%1¸¹¥Ó½Ð³æ"
+
+#: html/Elements/Refresh
+msgid "Don't refresh this page."
+msgstr "¤£§ó·s¦¹­¶­±"
+
+#: html/Elements/SelectDateType html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
+msgid "Due"
+msgstr "¨ì´Á¤é"
+
+#: bin/rt
+msgid "Due date '%1' could not be parsed"
+msgstr "µLªk¸ÑÅª¤é´Á '%1'"
+
+#: bin/enhanced-mailgate bin/rt-commit-handler
+msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
+msgstr "µLªk¸ü¤J¥Ó½Ð³æ '%1'¡G%2.\\n"
+
+#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html
+msgid "Edit Custom Fields for %1"
+msgstr "½s¿è %1 ªº¦Û­qÄæ¦ì"
+
+#: html/Ticket/ModifyLinks.html
+msgid "Edit Relationships"
+msgstr "½s¿è¥Ó½Ð³æÃö«Y"
+
+#: html/Admin/Queues/Keywords.html
+msgid "Edit keywords"
+msgstr "½s¿èÃöÁä¦r"
+
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
+msgid "Edit scrips"
+msgstr "½s¿è¤âÄò"
+
+#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html
+msgid "Edit system templates"
+msgstr "½s¿è¨t²Î½d¥»"
+
+#: html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html
+msgid "Edit templates for %1"
+msgstr "½s¿è %1 ªº½d¥»"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Editing Configuration for queue %1"
+msgstr "½s¿è¦î¦C %1 ªº³]©w"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "Editing Configuration for user %1"
+msgstr "½s¿è¨Ï¥ÎªÌ %1 ªº³]©w"
+
+#: html/Admin/Queues/CustomField.html
+msgid "Editing CustomField %1"
+msgstr "½s¿è¦Û­qÄæ¦ì %1"
+
+#: html/Admin/Groups/Members.html
+msgid "Editing membership for group %1"
+msgstr "½s¿è¸s²Õ %1 ªº¦¨­û¸ê°T"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "Editing template %1"
+msgstr "½s¿è½d¥» %1"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Either base or target must be specified"
+msgstr "»Ý­n«ü©w°_©l¥Ó½Ð³æ©Î¥Øªº¥Ó½Ð³æ"
+
+#: html/Elements/SelectUsers html/Admin/Users/Modify.html html/Admin/Users/Prefs.html html/Ticket/Elements/AddWatchers
+msgid "Email"
+msgstr "¹q¤l¶l¥ó«H½c"
+
+#: lib/RT/User_Overlay.pm
+msgid "Email address in use"
+msgstr "¦¹¹q¤l¶l¥ó«H½c¤w³Q¨Ï¥Î"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "EmailAddress"
+msgstr "¹q¤l¶l¥ó«H½c¦ì§}"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "EmailEncoding"
+msgstr "¹q¤l¶l¥ó¤å¦r½s½X¤è¦¡"
+
+#: html/Admin/Queues/Modify.html
+msgid "Enabled (Unchecking this box disables this queue)"
+msgstr "¤£ÁôÂÃ¡]¨ú®ø¥´¤ÄÁôÂÃ¦¹¦î¦C¡^"
+
+#: html/Admin/Queues/Modify.html html/Admin/Users/Modify.html
+msgid "Enabled status %1"
+msgstr "±Ò¥Îª¬ºA %1"
+
+#: html/Ticket/Elements/EditLinks
+msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgstr "¿é¤J¥Ó½Ð³æ¥iÃìµ²¨ìªº¥Ó½Ð³æ½s¸¹©Îºô§}¡C¥HªÅ¥Õ¹j¶}¡C"
+
+#: html/Elements/Login html/SelfService/Error.html
+msgid "Error"
+msgstr "¿ù»~"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Error adding watcher"
+msgstr "·s¼Wµø¹î­û¦³»~"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Error in parameters to Queue->DelWatcher"
+msgstr "¦î¦C->§R°£µø¹î­ûªº°Ñ¼Æ¦³»~"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Error in parameters to Ticket->AddWatcher"
+msgstr "¥Ó½Ð³æ->·s¼Wµø¹î­ûªº°Ñ¼Æ¦³»~"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Error in parameters to Ticket->DelWatcher"
+msgstr "¥Ó½Ð³æ->§R°£µø¹î­ûªº°Ñ¼Æ¦³»~"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "ExternalAuthId"
+msgstr "¥~³¡»{ÃÒ±b¸¹"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "ExternalContactInfoId"
+msgstr "¥~³¡Ápµ¸¤è¦¡±b¸¹"
+
+#: html/Admin/Users/Modify.html
+msgid "Extra info"
+msgstr "³Æµù"
+
+#: html/Elements/monthMenu
+msgid "Feb."
+msgstr "¤G¤ë"
+
+#: html/Elements/monthMenu
+msgid "February"
+msgstr "¤G¤ë"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
+msgid "Final Priority"
+msgstr "³Ì§C¶¶¦ì"
+
+#: html/Elements/Quicksearch
+msgid "Find new/open tickets"
+msgstr "´M§ä/¶}±Ò¥Ó½Ð³æ"
+
+#: html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
+msgid "Find people whose"
+msgstr "´M§ä¤H­ûªº"
+
+#: html/Search/Listing.html
+msgid "First page"
+msgstr "²Ä¤@­¶"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "FreeformContactInfo"
+msgstr "Ápµ¸¤è¦¡"
+
+#:
+msgid "FreeformMultiple"
+msgstr "¦h­«¶ñªÅ"
+
+#:
+msgid "FreeformSingle"
+msgstr "³æ¤@¶ñªÅ"
+
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
+msgid "Full headers"
+msgstr "§¹¾ã¼ÐÀYÀÉ"
+
+#: bin/enhanced-mailgate
+msgid "Getting the current user from a pgp sig\\n"
+msgstr "¨ú±o¥Ø«e¨Ï¥ÎªÌªº pgp Ã±³¹\\n"
+
+#: html/Admin/Elements/Tabs
+msgid "Global"
+msgstr "¾ãÅé³]©w"
+
+#: html/Admin/Queues/Keywords.html
+msgid "Global Keyword Selections"
+msgstr "¥þ°ìÃöÁä¦r¿ï¾Ü"
+
+#: html/Admin/Queues/Scrips.html
+msgid "Global Scrips"
+msgstr "¾ãÅé¤âÄò"
+
+#: html/index.html html/Admin/Queues/index.html html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
+msgid "Go!"
+msgstr "°õ¦æ"
+
+#: bin/enhanced-mailgate
+msgid "Good pgp sig from %1\\n"
+msgstr "%1 ªº pgp Ã±³¹¬O¥¿½Tªº\\n"
+
+#: html/Search/Listing.html
+msgid "Goto page"
+msgstr "¨ì­¶­±"
+
+#: html/Elements/GotoTicket
+msgid "Goto ticket"
+msgstr "³s¨ì¥Ó½Ð³æ"
+
+#: bin/rtadmin
+msgid "Group %1 %2: %3"
+msgstr "¸s²Õ %1 %2¡G%3"
+
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs static/en_us/Admin/Global/GroupRights.html static/en_us/Admin/Global/index.html static/en_us/Admin/Global/Scrips.html static/en_us/Admin/Global/Templates.html static/en_us/Admin/Global/UserRights.html
+msgid "Group Rights"
+msgstr "¸s²ÕÅv­­"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Group already has member"
+msgstr "¸s²Õ¤º¤w¦³¦¨­û"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Group created"
+msgstr "¸s²Õ«Ø¥ß§¹¦¨"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Group not found"
+msgstr "§ä¤£¨ì¸s²Õ"
+
+#: bin/rtadmin
+msgid "Group not found.\\n"
+msgstr "§ä¤£¨ì¸s²Õ¡C\\n"
+
+#: bin/rtadmin
+msgid "Group not specified.\\n"
+msgstr "¨S¦³«ü©w¸s²Õ¡C\\n"
+
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Global/GroupRights.html html/Admin/Groups/index.html html/Admin/Groups/Members.html html/Admin/Queues/GroupRights.html
+msgid "Groups"
+msgstr "¸s²Õ"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Groups can't be members of their members"
+msgstr "¤£¯à±N¸s²Õ³]¬°¸s²Õ¤º¦¨­û"
+
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/Tabs
+msgid "History"
+msgstr "¬ö¿ý"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "HomePhone"
+msgstr "¦í³B¹q¸Ü"
+
+#: html/Elements/Tabs
+msgid "Homepage"
+msgstr "¥D­¶"
+
+#: lib/RT/Base.pm
+msgid "I have [quant,_1,concrete mixer]."
+msgstr "§Ú¦³ [quant,_1,concrete mixer]."
+
+#: html/Ticket/Elements/ShowBasics
+msgid "Id"
+msgstr "½s¸¹"
+
+#: html/Admin/Users/Modify.html
+msgid "Identity"
+msgstr "¨­¥÷"
+
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
+msgid "If you've updated anything above, be sure to"
+msgstr "­Y±z¤w§ó·s¥H¤W¸ê®Æ¡A½Ð°O±oÀx¦s"
+
+#: html/Admin/Queues/index.html
+msgid "Include disabled queues in listing."
+msgstr "¦C¥XÁôÂÃ¦î¦C"
+
+#: html/Admin/Users/index.html
+msgid "Include disabled users in search."
+msgstr "·j´Mµ²ªG¦C¥XÁôÂÃ¨Ï¥ÎªÌ"
+
+#: lib/RT/ScripAction_Overlay.pm
+msgid "Input error"
+msgstr "¿é¤J¿ù»~"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Interest noted"
+msgstr "·s¼Wµø¹î­û§¹¦¨"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Invalid Group Type"
+msgstr "¤£¦Xªkªº¸s²ÕÃþ§O"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Invalid Type"
+msgstr "¤£¦XªkªºÃþ§O"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Invalid owner. Defaulting to 'nobody'."
+msgstr "¤£¦Xªkªº©Ó¿ì¤H¡C§ï¦¨¹w³]©Ó¿ì¤H'µL'¡C"
+
+#: lib/RT/Scrip_Overlay.pm
+msgid "Invalid queue"
+msgstr "¤£¦Xªkªº¦î¦C"
+
+#: lib/RT/Record.pm
+msgid "Invalid value for %1"
+msgstr "%1 ªº­È¤£¦Xªk"
+
+#: html/Elements/monthMenu
+msgid "Jan."
+msgstr "¤@¤ë"
+
+#: html/Elements/monthMenu
+msgid "January"
+msgstr "¤@¤ë"
+
+#: html/Elements/monthMenu
+msgid "Jul."
+msgstr "¤C¤ë"
+
+#: html/Elements/monthMenu
+msgid "July"
+msgstr "¤C¤ë"
+
+#: html/Ticket/Elements/Tabs
+msgid "Jumbo"
+msgstr "¥þ³¡¸ê°T"
+
+#: html/Elements/monthMenu
+msgid "Jun."
+msgstr "¤»¤ë"
+
+#: html/Elements/monthMenu
+msgid "June"
+msgstr "¤»¤ë"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Keyword"
+msgstr "ÃöÁä¦r"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "Lang"
+msgstr "¨Ï¥Î»y¨¥"
+
+#: html/Ticket/Elements/EditDates
+msgid "Last Contact"
+msgstr "¤W¦¸Ápµ¸"
+
+#: html/Elements/SelectDateType
+msgid "Last Contacted"
+msgstr "¤W¦¸Ápµ¸¤é´Á"
+
+#: html/Elements/SelectDateType
+msgid "Last Updated"
+msgstr "¤W¦¸§ó·s"
+
+#:
+msgid "LastUpdated"
+msgstr "¤W¦¸§ó·s"
+
+#: html/Admin/Users/Modify.html
+msgid "Let this user access RT"
+msgstr "¤¹³\\³o¦W¨Ï¥ÎªÌµn¤JRT"
+
+#: html/Admin/Users/Modify.html
+msgid "Let this user be granted rights"
+msgstr "Åý³o¦W¨Ï¥ÎªÌ¾Ö¦³§¹¾ãÅv­­©"
+
+#: bin/rt
+msgid "Limiting owner to %1 %2"
+msgstr "­­¨î©Ó¿ì¤H¬° %1 %2"
+
+#: bin/rt
+msgid "Limiting queue to %1 %2"
+msgstr "­­¨î¦î¦C¬° %1 %2"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Link could not be created"
+msgstr "µLªk«Ø¥ßÃìµ²"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Link not found"
+msgstr "§ä¤£¨ìÃìµ²"
+
+#: html/Ticket/ModifyLinks.html
+msgid "Link ticket %1"
+msgstr "Ãìµ²¨ì¥Ó½Ð³æ %1"
+
+#: html/Ticket/Elements/Tabs
+msgid "Links"
+msgstr "Ãìµ²"
+
+#: html/Admin/Users/Modify.html
+msgid "Location"
+msgstr "¦ì¸m"
+
+#: lib/RT.pm
+msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
+msgstr "µn¤J¥Ø¿ý %1 §ä¤£¨ì©ÎµLªk¼g¤J\\n¡CµLªk°õ¦æ RT¡C"
+
+#: html/Elements/Login html/Elements/Login html/Elements/Login
+msgid "Login"
+msgstr "µn¤J"
+
+#: html/Elements/Header
+msgid "Logout"
+msgstr "µn¥X"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make Owner"
+msgstr "«Ø¥ß©Ó¿ì¤H"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make Status"
+msgstr "«Ø¥ß²{ªp"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make date Due"
+msgstr "«Ø¥ß¨ì´Á¤é"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make date Resolved"
+msgstr "«Ø¥ß¸Ñ¨M¤é´Á"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make date Started"
+msgstr "«Ø¥ß¹ê»Ú°_©l¤é´Á"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make date Starts"
+msgstr "«Ø¥ßÀ³°_©l¤é´Á"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make date Told"
+msgstr "«Ø¥ß³ø§i¤é´Á"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make priority"
+msgstr "«Ø¥ßÀu¥ý¶¶¦ì"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make queue"
+msgstr "«Ø¥ß¦î¦C"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Make subject"
+msgstr "«Ø¥ß¥DÃD"
+
+#: html/Elements/monthMenu
+msgid "Mar."
+msgstr "¤T¤ë"
+
+#: html/Elements/monthMenu
+msgid "March"
+msgstr "¤T¤ë"
+
+#: html/Elements/monthMenu
+msgid "May"
+msgstr "¤­¤ë"
+
+#: html/Elements/monthMenu
+msgid "May."
+msgstr "¤­¤ë"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Member added"
+msgstr "·s¼W¦¨­û§¹¦¨"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Member deleted"
+msgstr "¦¨­û¤w§R°£"
+
+#: lib/RT/Group_Overlay.pm
+msgid "Member not deleted"
+msgstr "¦¨­û¥¼³Q§R°£"
+
+#: html/Elements/SelectLinkType
+msgid "MemberOf"
+msgstr "ªþÄÝ©ó"
+
+#: html/Admin/Elements/GroupTabs
+msgid "Members"
+msgstr "¦¨­û"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Merge Successful"
+msgstr "¾ã¦X§¹¦¨"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Merge failed. Couldn't set EffectiveId"
+msgstr "¾ã¦X¥¢±Ñ¡CµLªk³]©w EffectiveId"
+
+#: html/Ticket/Elements/EditLinks
+msgid "Merge into"
+msgstr "¾ã¦X¶i"
+
+#: html/Admin/Users/Modify.html
+msgid "Mobile"
+msgstr "¦æ°Ê¹q¸Ü"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "MobilePhone"
+msgstr "¦æ°Ê¹q¸Ü"
+
+#: html/Admin/Queues/CustomField.html
+msgid "Modify Custom Field %1"
+msgstr "­×§ï¦Û­qÄæ¦ì %1"
+
+#: html/Admin/Global/GroupRights.html html/Admin/Global/UserRights.html
+msgid "Modify System ACLS"
+msgstr "­×§ï¨t²ÎACLS"
+
+#: html/Ticket/ModifyDates.html
+msgid "Modify dates for # %1"
+msgstr "­×§ï # %1 ªº¤é´Á"
+
+#: html/Ticket/ModifyDates.html
+msgid "Modify dates for ticket # %1"
+msgstr "­×§ï¥Ó½Ð³æ # %1 ªº¤é´Á"
+
+#: html/Admin/Global/GroupRights.html
+msgid "Modify global rights for groups"
+msgstr "­×§ï¸s²Õªº¾ãÅéÅv­­"
+
+#: html/Admin/Global/UserRights.html
+msgid "Modify global rights for users"
+msgstr "­×§ï¨Ï¥ÎªÌªº¾ãÅéÅv­­"
+
+#: html/Admin/Global/Scrips.html
+msgid "Modify global scrips"
+msgstr "­×§ï¾ãÅé¤âÄò"
+
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html
+msgid "Modify group rights for queue %1"
+msgstr "­×§ï¦î¦C %1 ªº¸s²ÕÅv­­"
+
+#: html/Admin/Queues/People.html
+msgid "Modify people related to queue %1"
+msgstr "­×§ïÃìµ²¨ì¦î¦C %1 ªº¤H­û¨"
+
+#: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html
+msgid "Modify people related to ticket #%1"
+msgstr "­×§ï¥Ó½Ð³æ #%1 Ãìµ²¨ìªº¤H­û"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "Modify template %1"
+msgstr "­×§ï½d¥» %1"
+
+#: html/Admin/Groups/Modify.html
+msgid "Modify the group %1"
+msgstr "­×§ï¸s²Õ %1"
+
+#: html/Admin/Users/Modify.html
+msgid "Modify the user %1"
+msgstr "­×§ï¨Ï¥ÎªÌ %1"
+
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html
+msgid "Modify ticket # %1"
+msgstr "­×§ï¥Ó½Ð³æ # %1"
+
+#: html/Ticket/Modify.html
+msgid "Modify ticket #%1"
+msgstr "­×§ï¥Ó½Ð³æ # %1"
+
+#: html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html
+msgid "Modify user rights for queue %1"
+msgstr "­×§ï¦î¦C %1 ªº¨Ï¥ÎªÌÅv­­"
+
+#: html/Admin/Queues/People.html
+msgid "Modify watchers for queue '%1'"
+msgstr "­×§ï '%1' ªºµø¹î­û"
+
+#: html/Ticket/Elements/ShowRequestor
+msgid "More about %1"
+msgstr "Ãö©ó %1 ªº¶i¤@¨B¸ê°T"
+
+#: html/Admin/Elements/SelectSingleOrMultiple
+msgid "Multiple"
+msgstr "¦h­«"
+
+#: lib/RT/User_Overlay.pm
+msgid "Must specify 'Name' attribute"
+msgstr "¥²¶·«ü©w 'Name' ªºÄÝ©Ê"
+
+#: html/Elements/SelectUsers html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Template.html
+msgid "Name"
+msgstr "¦WºÙ"
+
+#: lib/RT/User_Overlay.pm
+msgid "Name in use"
+msgstr "±b¸¹¤w¦³¤H¨Ï¥Î"
+
+#: html/Elements/Quicksearch
+msgid "New"
+msgstr "·s«Ø¥ß"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "New Password"
+msgstr "·sªº±K½X"
+
+#: html/Ticket/Elements/EditLinks
+msgid "New Relationships"
+msgstr "·sªºÃö«Y"
+
+#: html/SelfService/Prefs.html html/User/Prefs.html
+msgid "New password"
+msgstr "·sªº±K½X"
+
+#: lib/RT/User_Overlay.pm
+msgid "New password notification sent"
+msgstr "°e¥X·s±K½X³qª¾"
+
+#: html/SelfService/Elements/Tabs
+msgid "New request"
+msgstr "´£¥X·s¥Ó½Ð"
+
+#: html/Admin/Elements/SelectRights
+msgid "New rights"
+msgstr "·s¼WÅv­­"
+
+#: html/Search/Listing.html
+msgid "New search"
+msgstr "­«·s·j´M"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "New ticket doesn't exist"
+msgstr "¨S¦³·s¥Ó½Ð³æ"
+
+#: html/Admin/Elements/CreateUserCalled
+msgid "New user called"
+msgstr "·s¨Ï¥ÎªÌ¦W¦r"
+
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
+msgid "New watchers"
+msgstr "·sµø¹î­û"
+
+#: html/Admin/Users/Prefs.html
+msgid "New window setting"
+msgstr "§ó·sµøµ¡³]©w"
+
+#: html/Search/Listing.html
+msgid "Next page"
+msgstr "¤U¤@­¶"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "NickName"
+msgstr "¼ÊºÙ"
+
+#: html/Admin/Users/Modify.html
+msgid "Nickname"
+msgstr "¼ÊºÙ"
+
+#: bin/rt bin/rtadmin
+msgid "No RT user found. Please consult your RT administrator.\\n"
+msgstr "§ä¤£¨ì RT ¨Ï¥ÎªÌ¡C½Ð¦V RT ºÞ²z­û¬d¸ß¡C\\n"
+
+#: bin/rt-commit-handler
+msgid "No Ticket specified. Aborting ticket "
+msgstr "¨S¦³«ü©w¥Ó½Ð³æ¡C°h¥X¥Ó½Ð³æ "
+
+#: bin/enhanced-mailgate
+msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgstr "¨S¦³«ü©w¥Ó½Ð³æ¡C°h¥X¥Ó½Ð³æ­×§ï\\n\\n"
+
+#: bin/rtadmin
+msgid "No command found\\n"
+msgstr "§ä¤£¨ì©R¥O"
+
+#: html/Elements/ViewUser html/Ticket/Elements/ShowRequestor
+msgid "No comment entered about this user"
+msgstr "¨S¦³¹ï³o¦W¨Ï¥ÎªÌªºµû½×"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "No correspondence attached"
+msgstr "ªþ¥ó¨S¦³¨Ó«H"
+
+#: lib/RT/Condition/Generic.pm
+msgid "No description for %1"
+msgstr "¨S¦³¹ï %1 ªº´y­z"
+
+#: lib/RT/Users_Overlay.pm
+msgid "No group specified"
+msgstr "¨S¦³«ü©w¸s²Õ"
+
+#: lib/RT/User_Overlay.pm
+msgid "No password set"
+msgstr "¨S¦³³]©w±K½X"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "No permission to create queues"
+msgstr "¨S¦³«Ø¥ß¦î¦CªºÅv­­"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "No permission to create tickets in the queue '%1'"
+msgstr "¨S¦³¦b¦î¦C '%1' «Ø¥ß¥Ó½Ð³æªºÅv­­"
+
+#: lib/RT/User_Overlay.pm
+msgid "No permission to create users"
+msgstr "¨S¦³«Ø¥ß¨Ï¥ÎªÌªºÅv­­"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "No principal specified"
+msgstr "¨S¦³«ü©w³æ¦ì"
+
+#: html/Admin/Queues/People.html
+msgid "No principals selected."
+msgstr "¨S¦³«ü©w³æ¦ì"
+
+#: html/Admin/Queues/index.html
+msgid "No queues matching search criteria found."
+msgstr "§ä¤£¨ì²Å¦X·j´M±ø¥óªº¦î¦C"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "No ticket id specified"
+msgstr "¨S¦³«ü©w¥Ó½Ð³æ½s¸¹"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "No transaction type specified"
+msgstr "¨S¦³«ü©w§ó°Ê³ø§iÃþ§O"
+
+#: lib/RT/Watcher_Overlay.pm lib/RT/Watcher_Overlay.pm
+msgid "No user or email address specified"
+msgstr "¨S¦³«ü©w¨Ï¥ÎªÌ©Î¹q¤l¶l¥ó«H½c"
+
+#: html/Admin/Users/index.html
+msgid "No users matching search criteria found."
+msgstr "§ä¤£¨ì²Å¦X·j´M±ø¥óªº¨Ï¥ÎªÌ"
+
+#: bin/rt-commit-handler
+msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
+msgstr "§ä¤£¨ì¦X®æªº RT ¨Ï¥ÎªÌ¡CRT cvs ³B²z¾¹¤w°±¥Î¡C½Ð¦V RT ºÞ²zªÌ¸ß°Ý¡C\\n"
+
+#: html/Elements/Header html/SelfService/Elements/Header
+msgid "Not logged in."
+msgstr "©|¥¼µn¤J"
+
+#: html/NoAuth/Reminder.html
+msgid "Not yet implemented."
+msgstr "©|¥¼§¹¤u¡C"
+
+#: html/Admin/Groups/Rights.html
+msgid "Not yet implemented...."
+msgstr "©|¥¼§¹¤u..."
+
+#: lib/RT/User_Overlay.pm
+msgid "Notification could not be sent"
+msgstr "µLªk°e¥X³qª¾"
+
+#: html/Elements/monthMenu
+msgid "Nov."
+msgstr "¤Q¤@¤ë"
+
+#: html/Elements/monthMenu
+msgid "November"
+msgstr "¤Q¤@¤ë"
+
+#: html/Elements/monthMenu
+msgid "Oct."
+msgstr "¤Q¤ë"
+
+#: html/Elements/monthMenu
+msgid "October"
+msgstr "¤Q¤ë"
+
+#: html/Elements/SelectDateRelation
+msgid "On"
+msgstr "µ¥©ó"
+
+#: html/Elements/Quicksearch html/Ticket/Elements/Tabs
+msgid "Open"
+msgstr "¶}±Ò"
+
+#: html/SelfService/Elements/Tabs
+msgid "Open requests"
+msgstr "¶}±Òªº¥Ó½Ð³æ"
+
+#: html/Admin/Users/Prefs.html
+msgid "Open tickets (from listing) in a new window"
+msgstr "¦b·sµøµ¡¶}±Ò¡]¦Cªíªº¡^¥Ó½Ð³æ"
+
+#: html/Admin/Users/Prefs.html
+msgid "Open tickets (from listing) in another window"
+msgstr "¦b¥t¤@­Óµøµ¡¶}±Ò¡]¦Cªíªº¡^¥Ó½Ð³æ"
+
+#: html/Search/PickRestriction
+msgid "Ordering and sorting"
+msgstr "¶¶§Ç»P±Æ§Ç¤è¦¡"
+
+#: html/Elements/SelectUsers html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Organization"
+msgstr "©ÒÄÝ²ÕÂ´"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Over time, priority moves toward"
+msgstr "Àu¥ý¶¶¦ìÀH®É¶¡¼W¥[½Õ¬°"
+
+#: html/Elements/MyRequests html/Ticket/Create.html html/Ticket/Update.html html/SelfService/Elements/MyRequests html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
+msgid "Owner"
+msgstr "©Ó¿ì¤H"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Owner forcibly changed from %1 to %2"
+msgstr "±j¨î±N©Ó¿ì¤H±q %1 §ï¦¨ %2"
+
+#: html/Search/PickRestriction
+msgid "Owner is"
+msgstr "©Ó¿ì¤H"
+
+#: html/Admin/Users/Modify.html
+msgid "Pager"
+msgstr "©I¥s¾¹"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "PagerPhone"
+msgstr "©I¥s¾¹¸¹½X"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Parents"
+msgstr "¥À¥Ó½Ð³æ"
+
+#: html/Elements/Login
+msgid "Password"
+msgstr "±K½X"
+
+#: html/NoAuth/Reminder.html
+msgid "Password Reminder"
+msgstr "±K½X´£¥Ü"
+
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "Password too short"
+msgstr "±K½X¤Óµu"
+
+#: html/Admin/Users/Modify.html
+msgid "Password: %1"
+msgstr "±K½X: %1"
+
+#: html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
+msgid "People"
+msgstr "¤H­û"
+
+#: lib/RT/ACE_Overlay.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "Permission Denied"
+msgstr "Åv­­¤£¨¬"
+
+#: html/Admin/Users/Modify.html
+msgid "Phone numbers"
+msgstr "¹q¸Ü¸¹½X"
+
+#: html/Admin/Users/Rights.html
+msgid "Placeholder"
+msgstr "©|¥¼§¹¤u"
+
+#: html/Elements/Header html/SelfService/Prefs.html html/User/Prefs.html
+msgid "Preferences"
+msgstr "°¾¦n³]©w"
+
+#: html/Search/Listing.html
+msgid "Previous page"
+msgstr "«e¤@­¶"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "Principal %1 not found."
+msgstr "§ä¤£¨ì³æ¦ì %1"
+
+#: html/Search/PickRestriction html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
+msgid "Priority"
+msgstr "Àu¥ý¶¶¦ì"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Priority starts at"
+msgstr "Àu¥ý¶¶¦ì°_©l­È"
+
+#: html/Admin/Users/Modify.html
+msgid "Privileged status: %1"
+msgstr "¨ãÅv­­ª¬ºA: %1"
+
+#: html/Admin/Users/index.html
+msgid "Privileged users"
+msgstr "¨ãÅv­­ªº¨Ï¥ÎªÌ"
+
+#: html/Elements/MyRequests html/Elements/MyTickets html/Elements/Quicksearch html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
+msgid "Queue"
+msgstr "¦î¦C"
+
+#: bin/rtadmin
+msgid "Queue '%1' not found\\n"
+msgstr "§ä¤£¨ì¦î¦C '%1'\\n"
+
+#: html/Admin/Queues/Keywords.html
+msgid "Queue Keyword Selections"
+msgstr "¦î¦CÃöÁä¦r¿ï¾Ü"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Queue Name"
+msgstr "¦î¦C¦WºÙ"
+
+#: html/Admin/Queues/Scrips.html
+msgid "Queue Scrips"
+msgstr "¦î¦C¤âÄò"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Queue already exists"
+msgstr "¦î¦C¤w¦s¦b"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm
+msgid "Queue could not be created"
+msgstr "µLªk«Ø¥ß¦î¦C"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Queue created"
+msgstr "¦î¦C«Ø¥ß§¹¦¨"
+
+#: html/Admin/Elements/Tabs
+msgid "Queues"
+msgstr "¦î¦C"
+
+#: html/Elements/Login
+msgid "RT %1 for %2"
+msgstr "%2¡GRT %1 ª©"
+
+#: html/Elements/Footer
+msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+msgstr "RT %1 ª©¡A<a href=\"http://bestpractical.com\">Best Practical Solutions ¤½¥q</a>¥X«~¡C"
+
+#: bin/rt
+msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1¡Cª©Åv©Ò¦³ 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+
+#: html/Admin/index.html
+msgid "RT Administration"
+msgstr "RT ºÞ²z­¶­±"
+
+#: bin/enhanced-mailgate
+msgid "RT Authentication error."
+msgstr "RT »{ÃÒ¿ù»~"
+
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate
+msgid "RT Bounce: %1"
+msgstr "RT °h«H¡G%1"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT Configuration error"
+msgstr "RT ³]©w¿ù»~"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT Critical error. Message not recorded!"
+msgstr "RT ­P©R¿ù»~¡C°T®§¥¼³Q¬ö¿ý¡C"
+
+#: html/Elements/Error
+msgid "RT Error"
+msgstr "RT ¿ù»~"
+
+#: bin/rt-mailgate
+msgid "RT Received mail (%1) from itself."
+msgstr "RT ¦¬¨ì±q¦Û¤v±H¥Xªº¶l¥ó (%1)"
+
+#: bin/enhanced-mailgate
+msgid "RT Recieved mail (%1) from itself."
+msgstr "RT ¦¬¨ì±q¦Û¤v±H¥Xªº¶l¥ó (%1)"
+
+#: html/SelfService/Closed.html
+msgid "RT Self Service / Closed Tickets"
+msgstr "RT ¦Û§UªA°È/µ²§ôªº¥Ó½Ð³"
+
+#: bin/enhanced-mailgate
+msgid "RT couldn't authenticate you"
+msgstr "RT µLªk»{ÃÒ§A"
+
+#: bin/rt-mailgate
+msgid "RT couldn't find requestor via its external database lookup"
+msgstr "RT µLªk±q¥~³¡¸ê®Æ®w¬d¸ß§ä¨ì¥Ó½Ð¤H¸ê°T"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT couldn't find the queue: %1"
+msgstr "RT §ä¤£¨ì¦î¦C¡G%1"
+
+#: bin/enhanced-mailgate
+msgid "RT couldn't validate this PGP signature. \\n"
+msgstr "RT µLªk½T»{³o­Ó PGP Ã±³¹¡C\\n"
+
+#: bin/enhanced-mailgate
+msgid "RT has proccessed your commands"
+msgstr "RT ¤w°õ¦æ±zªº©R¥O"
+
+#: html/Elements/Login
+msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT ª©Åv©Ò¦³ 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;¡C<br>¥»³nÅé¨Ì <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU ³q¥Î¤½¦@±ÂÅv²Ä¤Gª©</a> ´²§G¡C"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT thinks this message may be a bounce"
+msgstr "RT »{¬°³o¬O°h«H"
+
+#: bin/enhanced-mailgate
+msgid "RT will process this message as if it were unsigned.\\n"
+msgstr "RT ¥H¥¼Ã±³¹¤è¦¡³B²z³o«Ê¶l¥ó¡C\\n"
+
+#: bin/enhanced-mailgate
+msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
+msgstr "RT ªº¹q¤l¶l¥ó©R¥O¼Ò¦¡¶·­n PGP »{ÃÒ¡C±z¥i¯à¨S¦³Ã±³¹¡A©Î¬O±zªºÃ±³¹µLªk¿ëÃÑ¡C"
+
+#: html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
+msgid "Real Name"
+msgstr "¯u¹ê©m¦W"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "RealName"
+msgstr "¯u¹ê©m¦W"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Referred to by"
+msgstr "³Q°Ñ¦Ò"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Refers to"
+msgstr "°Ñ¦Ò"
+
+#: html/Elements/SelectLinkType
+msgid "RefersTo"
+msgstr "°Ñ¦Ò"
+
+#: html/Search/Listing.html html/Search/PickRestriction
+msgid "Refine"
+msgstr "½Õ¾ã"
+
+#: html/Search/PickRestriction
+msgid "Refine Search"
+msgstr "½Õ¾ã·j´M±ø¥ó"
+
+#: html/Elements/Refresh
+msgid "Refresh this page every %1 minutes."
+msgstr "¨C %1 ¤ÀÄÁ§ó·s­¶­±"
+
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary
+msgid "Relationships"
+msgstr "Ãö«Y"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Remove AdminCc"
+msgstr "²¾°£ºÞ²z­û°Æ¥»"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Remove Cc"
+msgstr "²¾°£°Æ¥»"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Remove Requestor"
+msgstr "²¾°£¥Ó½Ð¤H"
+
+#: html/Ticket/Elements/Tabs
+msgid "Reply"
+msgstr "¦^ÂÐ"
+
+#: html/Ticket/Update.html
+msgid "Requestor"
+msgstr "¥Ó½Ð¤H"
+
+#: html/Search/PickRestriction
+msgid "Requestor email address"
+msgstr "¥Ó½Ð¤H¹q¤l¶l¥ó«H½c¦ì§}"
+
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
+msgid "Requestors"
+msgstr "¥Ó½Ð¤H"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Requests should be due in"
+msgstr "¥Ó½Ð³æ³B²z´Á­­"
+
+#: html/Elements/Submit
+msgid "Reset"
+msgstr "­«³]"
+
+#: html/Admin/Users/Modify.html
+msgid "Residence"
+msgstr "¦í³B"
+
+#: html/Ticket/Elements/Tabs
+msgid "Resolve"
+msgstr "¸Ñ¨M"
+
+#: html/Elements/SelectDateType
+msgid "Resolved"
+msgstr "¤w¸Ñ¨M"
+
+#: html/Ticket/ModifyAll.html
+msgid "Response to requestors"
+msgstr "¦^ÂÐ¥Ó½Ð¤H"
+
+#: html/Elements/ListActions
+msgid "Results"
+msgstr "µ²ªG"
+
+#: html/Search/PickRestriction
+msgid "Results per page"
+msgstr "¨C­¶¦C¥X´Xµ§µ²ªG"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Retype Password"
+msgstr "¦A¦¸¿é¤J±K½X"
+
+#: bin/rtadmin
+msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgstr "¦b %4 (%5) ªº½d³ò¤º§ä¤£¨ì %2 %3 ªº %1 Åv­­\\n"
+
+#: html/Admin/Elements/UserTabs
+msgid "Rights"
+msgstr "Åv­­"
+
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
+msgid "Save Changes"
+msgstr "Àx¦s­×§ï"
+
+#: html/Ticket/ModifyLinks.html
+msgid "Save changes"
+msgstr "Àx¦s­×§ï"
+
+#: lib/RT/Scrip_Overlay.pm
+msgid "Scrip Created"
+msgstr "¤âÄò«Ø¥ß§¹¦¨"
+
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs static/en_us/Admin/Global/GroupRights.html static/en_us/Admin/Global/index.html static/en_us/Admin/Global/Scrips.html static/en_us/Admin/Global/Templates.html static/en_us/Admin/Global/UserRights.html
+msgid "Scrips"
+msgstr "¤âÄò"
+
+#: bin/rtadmin
+msgid "Scrips for %1\\n"
+msgstr "%1 ªº¤âÄò\\n"
+
+#: html/Elements/Tabs html/Search/Listing.html
+msgid "Search"
+msgstr "·j´M"
+
+#: html/Search/Listing.html
+msgid "Search Criteria"
+msgstr "·j´M±ø¥ó"
+
+#: html/Admin/Groups/index.html
+msgid "Select a group"
+msgstr "¿ï¾Ü¸s²Õ"
+
+#: html/Admin/Queues/index.html
+msgid "Select a queue"
+msgstr "¿ï¾Ü¦î¦C"
+
+#: html/Admin/Users/index.html
+msgid "Select a user"
+msgstr "¿ï¾Ü¨Ï¥ÎªÌ"
+
+#:
+msgid "SelectMultiple"
+msgstr "¦h­«¿ï¶µ"
+
+#:
+msgid "SelectSingle"
+msgstr "³æ¤@¿ï¶µ"
+
+#: html/SelfService/index.html
+msgid "Self Service"
+msgstr "¦Û§UªA°È"
+
+#: html/Elements/monthMenu
+msgid "Sep."
+msgstr "¤E¤ë"
+
+#: html/Elements/monthMenu
+msgid "September"
+msgstr "¤E¤ë"
+
+#: html/Search/PickRestriction
+msgid "Show Results"
+msgstr "Åã¥Üµ²ªG"
+
+#: html/Ticket/Create.html html/Ticket/Create.html
+msgid "Show basics"
+msgstr "Åã¥Ü°ò¥»¸ê°T"
+
+#: html/Ticket/Create.html html/Ticket/Create.html
+msgid "Show details"
+msgstr "Åã¥Ü²Ó¸`"
+
+#: html/SelfService/Prefs.html html/User/Prefs.html html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
+msgid "Signature"
+msgstr "Ã±³¹"
+
+#: html/SelfService/Elements/Header
+msgid "Signed in as %1"
+msgstr "¥H %1 ¤§¦Wµn¤J"
+
+#: html/Elements/Header
+msgid "Signed in as <b>%1</b>"
+msgstr "¥H <b>%1</b> ¤§¦Wµn¤J"
+
+#: html/Admin/Elements/SelectSingleOrMultiple
+msgid "Single"
+msgstr "³æ¤@"
+
+#: html/Admin/Elements/EditCustomFieldValues
+msgid "Sort key"
+msgstr "±Æ§Ç¤è¦¡"
+
+#: html/Search/PickRestriction
+msgid "Sort results by"
+msgstr "µ²ªG±Æ§Ç¤è¦¡¥"
+
+#: html/Admin/Elements/AddCustomFieldValue
+msgid "SortOrder"
+msgstr "±Æ§Ç¶¶§Ç"
+
+#: html/Elements/Quicksearch
+msgid "Stalled"
+msgstr "©µÌX"
+
+#: html/index.html
+msgid "Start page"
+msgstr "­º­¶"
+
+#: html/Elements/SelectDateType html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
+msgid "Started"
+msgstr "¹ê»Ú°_©l¤é"
+
+#: bin/rt
+msgid "Started date '%1' could not be parsed"
+msgstr "µLªk¸ÑÅª°_©l¤é´Á '%1"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
+msgid "Starts"
+msgstr "À³°_©l¤é"
+
+#: html/Elements/SelectDateType
+msgid "Starts By"
+msgstr "À³°_©l¤é"
+
+#: bin/rt
+msgid "Starts date '%1' could not be parsed"
+msgstr "µLªk¸ÑÅª°_©l¤é´Á '%1"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "State"
+msgstr "¦{"
+
+#: html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Display.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/Update.html html/SelfService/Elements/MyRequests html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
+msgid "Status"
+msgstr "²{ªp"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Status changed from %1 to %2"
+msgstr "²{ªp±q %1 §ï¬° %2"
+
+#: html/Ticket/Elements/Tabs
+msgid "Steal"
+msgstr "±j¨î§ó´«©Ó¿ì¤H"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Stolen from %1 "
+msgstr "³Q %1 ±j¨î§ó´« "
+
+#: html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Update.html html/SelfService/Elements/MyRequests
+msgid "Subject"
+msgstr "¥DÃD"
+
+#: html/Elements/Submit
+msgid "Submit"
+msgstr "°e¥X"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "System Error. right not granted"
+msgstr "¨t²Î¿ù»~¡CÅv­­¤£³Q±µ¨ü"
+
+#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm
+msgid "TEST_STRING"
+msgstr "TEST_STRING"
+
+#: html/Ticket/Elements/Tabs
+msgid "Take"
+msgstr "¨ü²z"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Taken"
+msgstr "¤w¨ü²z"
+
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
+msgid "Template"
+msgstr "½d¥»"
+
+#: lib/RT/Scrip_Overlay.pm
+msgid "Template not found"
+msgstr "§ä¤£¨ì½d¥»"
+
+#: bin/rtadmin
+msgid "Template not found\\n"
+msgstr "§ä¤£¨ì½d¥»\\n"
+
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs static/en_us/Admin/Global/GroupRights.html static/en_us/Admin/Global/index.html static/en_us/Admin/Global/Scrips.html static/en_us/Admin/Global/Templates.html static/en_us/Admin/Global/UserRights.html
+msgid "Templates"
+msgstr "½d¥»"
+
+#: bin/rtadmin
+msgid "Templates for %1\\n"
+msgstr "§ä¤£¨ì %1 ªº½d¥»\\n"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That is the same value"
+msgstr "¦P¼Ëªº­È"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "That principal is already a %1 for this queue"
+msgstr "³o¹D¤âÄò¤w¸g¬O³o­Ó¦î¦Cªº %1"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That principal is already a %1 for this ticket"
+msgstr "³o¹D¤âÄò¤w¸g¬O³o¥÷¥Ó½Ð³æªº %1"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "That principal is not a %1 for this queue"
+msgstr "³o¹D¤âÄò¤£¬O³o­Ó¦î¦Cªº %1"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That principal is not a %1 for this ticket"
+msgstr "³o¹D¤âÄò¤£¬O³o¥÷¥Ó½Ð³æªº %1"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That queue does not exist"
+msgstr "¦¹¦î¦C¤£¦s¦b"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That user already owns that ticket"
+msgstr "¸Ó¨Ï¥ÎªÌ¤w¸g©Ó¿ì³o¥÷¥Ó½Ð³æ"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That user does not exist"
+msgstr "¨Ï¥ÎªÌ¤£¦s¦b"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "That user may not own tickets in that queue"
+msgstr "¨Ï¥ÎªÌ¥i¯à¨S¦³©Ó¿ì¦î¦C¸Ìªº¥Ó½Ð³æ"
+
+#: lib/RT/Link_Overlay.pm lib/RT/Watcher_Overlay.pm
+msgid "That's not a numerical id"
+msgstr "³o¤£¬O¤@­Ó¼Æ¦r½s¸¹"
+
+#: html/Ticket/Create.html html/Ticket/Elements/ShowSummary
+msgid "The Basics"
+msgstr "°ò¥»¸ê°T"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "The comment has been recorded"
+msgstr "µû½×¤w³Q¬ö¿ý"
+
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-commit-handler bin/rt-commit-handler
+msgid "The following commands were not proccessed:\\n\\n"
+msgstr "¥H¤U©R¥O¥¼³Q°õ¦æ¡G\\n\\n"
+
+#: html/Admin/Elements/EditUserComments
+msgid "These comments aren't generally visible to the user"
+msgstr "¸Ó¨Ï¥ÎªÌ¤£·|¬Ý¨£³o¨Çµû½×"
+
+#: bin/rt
+msgid "This ticket %1 %2 (%3)\\n"
+msgstr "¥Ó½Ð³æ %1 %2 (%3)\\n"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "This transaction appears to have no content"
+msgstr "¦¹¶µ§ó°Ê³ø§i¨S¦³¤º®e"
+
+#: html/Ticket/Elements/ShowRequestor
+msgid "This user's 25 highest priority tickets"
+msgstr "¨Ï¥ÎªÌ°e¥Xªº«e 25 ¥÷Àu¥ý³B²z¥Ó½Ð³æ"
+
+#: html/Ticket/Display.html
+msgid "Ticket # %1  %2"
+msgstr "¥Ó½Ð³æ # %1 %2"
+
+#: html/Ticket/ModifyAll.html
+msgid "Ticket # %1 Jumbo update: %2"
+msgstr "§ó·s¥Ó½Ð³æ # %1 ªº¥þ³¡¸ê°T¡G%2"
+
+#: bin/enhanced-mailgate bin/rt-commit-handler
+msgid "Ticket %1 loaded\\n"
+msgstr "¸ü¤J¥Ó½Ð³æ %1\\n"
+
+#: html/Ticket/History.html
+msgid "Ticket History # %1 %2"
+msgstr "¥Ó½Ð³æ³B²z¬ö¿ý # %1 %2"
+
+#: html/SelfService/Display.html
+msgid "Ticket Id"
+msgstr "¥Ó½Ð³æ½s¸¹"
+
+#: html/Search/PickRestriction
+msgid "Ticket content"
+msgstr "¥Ó½Ð³æ¤º®e"
+
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
+msgid "Ticket could not be created due to an internal error"
+msgstr "µLªk«Ø¥ß¥Ó½Ð³æ¡A¤º³¡¿ù»~¡C"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Ticket created"
+msgstr "¥Ó½Ð³æ«Ø¥ß§¹¦¨"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "Ticket creation failed"
+msgstr "¥Ó½Ð³æ«Ø¥ß¥¢±Ñ"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Ticket killed"
+msgstr "¥Ó½Ð³æ§R°£§¹¦¨"
+
+#: html/Ticket/Update.html
+msgid "Ticket watchers"
+msgstr "¥Ó½Ð³æµø¹î­û"
+
+#: html/Elements/ViewUser
+msgid "Tickets from %1"
+msgstr "%1 ªº¥Ó½Ð³æ"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
+msgid "Time Left"
+msgstr "³Ñ¾l®É¶¡"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
+msgid "Time Worked"
+msgstr "³B²z®É¶¡"
+
+#: html/Elements/Footer
+msgid "Time to display"
+msgstr "Åã¥Ü®É¶¡"
+
+#:
+msgid "TimeLeft"
+msgstr "³Ñ¾l®É¶¡"
+
+#:
+msgid "TimeWorked"
+msgstr "³B²z®É¶¡"
+
+#: bin/rt-commit-handler
+msgid "To generate a diff of this commit:"
+msgstr "²£¥Í³o¦¸§ó°Êªº®t²§ÀÉ¡G"
+
+#: bin/rt-commit-handler
+msgid "To generate a diff of this commit:\\n"
+msgstr "²£¥Í³o¦¸§ó°Êªº®t²§ÀÉ¡G\\n"
+
+#:
+msgid "Told"
+msgstr "§iª¾¤é´Á"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Transaction %1 purged"
+msgstr "²M°£§ó°Ê³ø§i %1"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Transaction Created"
+msgstr "§ó°Ê³ø§i¤w«Ø¥ß"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Transactions are immutable"
+msgstr "¤£¥i­×§ï§ó°Ê³ø§i"
+
+#: bin/rtadmin
+msgid "Trying to delete a right: %1"
+msgstr "¸Õ¹Ï§R°£¬Y¶µÅv­­¡G%1"
+
+#: html/Admin/Queues/CustomField.html html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers
+msgid "Type"
+msgstr "Ãþ§O"
+
+#: html/Admin/Users/Modify.html
+msgid "Unix login"
+msgstr "Unix µn¤J±b¸¹"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "UnixUsername"
+msgstr "Unix µn¤J±b¸¹"
+
+#: lib/RT/Attachment_Overlay.pm
+msgid "Unknown ContentEncoding %1"
+msgstr "¤£¥i¸Ñªº¤º®e¤å¦r½s½X¤è¦¡ %1"
+
+#: html/Elements/SelectResultsPerPage
+msgid "Unlimited"
+msgstr "¥þ¼ÆÅã¥Ü"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Untaken"
+msgstr "¥¼³Q¨ü²z"
+
+#: html/Elements/MyTickets html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Update"
+msgstr "§ó·s"
+
+#: html/Admin/Users/Prefs.html
+msgid "Update ID"
+msgstr "§ó·s½s¸¹"
+
+#: html/Ticket/ModifyAll.html html/Ticket/Update.html
+msgid "Update Type"
+msgstr "§ó·sÃþ§O"
+
+#: html/Search/Listing.html
+msgid "Update all these tickets at once"
+msgstr "¾ã§å§ó·s¥Ó½Ð³æ"
+
+#: html/Admin/Users/Prefs.html
+msgid "Update email"
+msgstr "§ó·s¹q¤l¶l¥ó«H½c"
+
+#: html/Admin/Users/Prefs.html
+msgid "Update name"
+msgstr "§ó·s±b¸¹"
+
+#: html/Search/Bulk.html html/Search/Bulk.html:
+msgid "Update selected tickets"
+msgstr "§ó·s¿ï¾Üªº¥Ó½Ð³æ"
+
+#: html/Admin/Users/Prefs.html
+msgid "Update signature"
+msgstr "§ó·sÃ±³¹"
+
+#: html/Ticket/ModifyAll.html
+msgid "Update ticket"
+msgstr "§ó·s¥Ó½Ð³æ¸"
+
+#: html/SelfService/Update.html
+msgid "Update ticket # %1"
+msgstr "§ó·s¥Ó½Ð³æ # %1"
+
+#: html/Ticket/Elements/ShowDates
+msgid "Updated"
+msgstr "§ó·s¤é´Á"
+
+#: bin/rtadmin
+msgid "User %1 %2: %3\\n"
+msgstr "¨Ï¥ÎªÌ %1 %2¡G%3\\n"
+
+#: bin/rtadmin
+msgid "User %1 Password: %2\\n"
+msgstr "¨Ï¥ÎªÌ %1 ±K½X¡G%2\\n"
+
+#: bin/rt
+msgid "User '%1' not found"
+msgstr "§ä¤£¨ì¨Ï¥ÎªÌ '%1'"
+
+#: bin/rt bin/rtadmin
+msgid "User '%1' not found\\n"
+msgstr "§ä¤£¨ì¨Ï¥ÎªÌ '%1'\\n"
+
+#: html/Admin/Users/Prefs.html
+msgid "User ID"
+msgstr "¨Ï¥ÎªÌ±b¸¹"
+
+#: html/Elements/SelectUsers
+msgid "User Id"
+msgstr "¨Ï¥ÎªÌ±b¸¹"
+
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs static/en_us/Admin/Global/GroupRights.html static/en_us/Admin/Global/index.html static/en_us/Admin/Global/Scrips.html static/en_us/Admin/Global/Templates.html static/en_us/Admin/Global/UserRights.html
+msgid "User Rights"
+msgstr "¨Ï¥ÎªÌÅv­­"
+
+#: html/Admin/Users/Modify.html
+msgid "User could not be created: %1"
+msgstr "µLªk«Ø¥ß¨Ï¥ÎªÌ: %1"
+
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "User created"
+msgstr "¨Ï¥ÎªÌ«Ø¥ß§¹¦¨"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "User notified"
+msgstr "¤w³qª¾¨Ï¥ÎªÌ"
+
+#: html/Admin/Users/Prefs.html
+msgid "User view"
+msgstr "¨Ï¥ÎªÌ¨p¤H¸ê®Æ"
+
+#: html/Elements/Login html/Admin/Users/Modify.html html/Ticket/Elements/AddWatchers
+msgid "Username"
+msgstr "±b¸¹"
+
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Groups/Members.html
+msgid "Users"
+msgstr "¨Ï¥ÎªÌ"
+
+#: html/Admin/Users/index.html
+msgid "Users matching search criteria"
+msgstr "²Å¦X·j´M±ø¥óªº¨Ï¥ÎªÌ"
+
+#: html/Search/PickRestriction
+msgid "ValueOfQueue"
+msgstr "¿ï¾Ü¦î¦C"
+
+#: html/Admin/Queues/CustomField.html
+msgid "Values"
+msgstr "­È"
+
+#: lib/RT/Watcher_Overlay.pm
+msgid "Watcher loaded"
+msgstr "¸ü¤Jµø¹î­û"
+
+#: html/Admin/Elements/QueueTabs
+msgid "Watchers"
+msgstr "µø¹î­û"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "WebEncoding"
+msgstr "ºô­¶¤å¦r½s½X¤è¦¡"
+
+#: html/Admin/Users/Modify.html
+msgid "Work"
+msgstr "¤½¥q"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "WorkPhone"
+msgstr "¤½¥q¹q¸Ü"
+
+#: html/SelfService/Display.html html/Ticket/Update.html html/Ticket/Elements/ShowBasics
+msgid "Worked"
+msgstr "³B²z®É¶¡"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "You already own this ticket"
+msgstr "±z¤w¬O³o¥÷¥Ó½Ð³æªº©Ó¿ì¤H"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "You can only reassign tickets that you own or that are unowned"
+msgstr "¬é¯à­«·s«ü¬£±z©Ò©Ó¿ì©Î¬O¨S¦³©Ó¿ì¤Hªº¥Ó½Ð³æ"
+
+#: bin/rt
+msgid "You don't have permission to view that ticket.\\n"
+msgstr "±z¨S¦³¬Ý¨º¥÷¥Ó½Ð³æªºÅv­­¡C\\n"
+
+#: html/NoAuth/Logout.html
+msgid "You have been logged out of RT."
+msgstr "±z¤wµn¥X RT¡C"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "You may not create requests in that queue."
+msgstr "±z¤£¯à¦b¸Ó¦î¦C¤¤´£¥X¥Ó½Ð¡C"
+
+#: html/NoAuth/Logout.html
+msgid "You're welcome to login again"
+msgstr "Åwªï¤U¦¸¦A¨Ó"
+
+#: html/SelfService/Elements/MyRequests
+msgid "Your %1 requests"
+msgstr "±z´£¥Xªº %1 ¥Ó½Ð"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
+msgstr "RT ºÞ²z­û¥i¯à³]¿ù¤F¥Ñ RT ±H¥Xªº¶l¥ó¦¬¥ó¤H¼ÐÀYÀÉ"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Zip"
+msgstr "¶l»¼°Ï¸¹"
+
+#: bin/enhanced-mailgate html/Elements/MyRequests html/Elements/MyTickets
+msgid "[no subject]"
+msgstr "[¨S¦³¥DÃD]"
+
+#: html/Elements/SelectMatch
+msgid "contains"
+msgstr "¥]§t"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "correspondence (probably) not sent"
+msgstr "¥Ó½Ð³æ¡]¥i¯à¡^¥¼³Q°e¥X"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "correspondence sent"
+msgstr "¥Ó½Ð³æ¤w°e¥X"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "days"
+msgstr "¤Ñ"
+
+#: html/Search/PickRestriction
+msgid "does not match"
+msgstr "¤£²Å¦X"
+
+#: html/Elements/SelectMatch
+msgid "doesn't contain"
+msgstr "¤£¥]§t"
+
+#: html/Elements/SelectEqualityOperator
+msgid "equal to"
+msgstr "µ¥©ó"
+
+#: html/Elements/SelectMatch
+msgid "false"
+msgstr "°²"
+
+#: html/Elements/SelectEqualityOperator
+msgid "greater than"
+msgstr "¤j©ó"
+
+#:
+msgid "id"
+msgstr "½s¸¹"
+
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
+msgid "is"
+msgstr "¬O"
+
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
+msgid "isn't"
+msgstr "¤£¬O"
+
+#: html/Elements/SelectEqualityOperator
+msgid "less than"
+msgstr "¤p©ó"
+
+#: html/Search/PickRestriction
+msgid "matches"
+msgstr "²Å¦X"
+
+#: html/Ticket/Update.html
+msgid "minutes"
+msgstr "¤ÀÄÁ"
+
+#: bin/rt-commit-handler
+msgid "modifications\\n\\n"
+msgstr "­×§ï\\n\\n"
+
+#: html/Elements/SelectEqualityOperator
+msgid "not equal to"
+msgstr "¤£µ¥©ó"
+
+#: html/Elements/SelectMatch
+msgid "notlike"
+msgstr "¤£²Å¦X"
+
+#: html/Elements/Error
+msgid "the calling component did not specify why"
+msgstr "©I¥s¤¸¥ó¥¼«ü©ú­ì¦]"
+
+#: html/Elements/SelectBoolean html/Elements/SelectBoolean html/Elements/SelectMatch
+msgid "true"
+msgstr "¯u"
+
+#: html/Admin/Global/Scrips.html
+msgid "with template %1"
+msgstr "¨Ï¥Î½d¥»%1"
+

@@ -1,7 +1,7 @@
 <TABLE>
 <TR>
 <TD>
-Created:
+<&|/l&>Created</&>:
 </TD>
 <TD>
 <% $Ticket->CreatedObj->AsString %>
@@ -9,7 +9,7 @@ Created:
 </TR>
 <TR>
 <TD>
-Starts: 
+<&|/l&>Starts</&>: 
 </TD>
 <TD>
 <% $Ticket->StartsObj->AsString %> <BR>
@@ -17,7 +17,7 @@ Starts:
 </TR>
 <TR>
 <TD>
-Started:
+<&|/l&>Started</&>:
 </TD>
 <TD>
 <% $Ticket->StartedObj->AsString %>
@@ -34,14 +34,14 @@ Started:
 </TR>
 <TR>
 <TD>
-Due:
+<&|/l&>Due</&>:
 </TD>
 <TD><% $Ticket->DueObj->AsString  %>
 </TD>
 </TR>
 <TR>
 <TD>
-Updated:
+<&|/l&>Updated</&>:
 </TD>
 <TD>
 <A HREF="#lasttrans">

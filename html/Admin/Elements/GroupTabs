@@ -2,12 +2,12 @@
 <hr>
 <%INIT>
 my $subtabs = { 
-             Basics => { title => 'Basics',
+             Basics => { title => loc('Basics'),
                          path => "Admin/Groups/Modify.html?id=". $GroupObj->id
                        }
 	};
 
-$subtabs->{'Members'} = { title => 'Members',
+$subtabs->{'Members'} = { title => loc('Members'),
                          path => "Admin/Groups/Members.html?id=".$GroupObj->id };
 
 </%INIT>

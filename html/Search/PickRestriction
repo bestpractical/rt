@@ -1,34 +1,34 @@
 %# $Header: /raid/cvsroot/rt/webrt/Search/PickRestriction,v 1.3 2001/11/29 08:50:56 jesse Exp $
 <FORM ACTION="Listing.html" METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
-<& /Elements/TitleBoxStart, title => 'Refine Search'&>
+<& /Elements/TitleBoxStart, title => loc('Refine Search')&>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>
-<li>Owner is  <& /Elements/SelectBoolean, Name => "OwnerOp", 
+<li><&|/l&>Owner is</&>  <& /Elements/SelectBoolean, Name => "OwnerOp", 
 					  TrueVal=> '=', 
 					  FalseVal => '!=' 
 &> 
 <& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
 <li>
-Requestor email address 
+<&|/l&>Requestor email address</&> 
 <& /Elements/SelectMatch, Name => "RequestorOp" &>
 <INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li>
-Subject <& /Elements/SelectMatch, Name => "SubjectOp" &> 
+<&|/l&>Subject</&> <& /Elements/SelectMatch, Name => "SubjectOp" &> 
 <INPUT Name="ValueOfSubject" SIZE=20>
 
-<li>Queue  <& /Elements/SelectBoolean,  Name => "QueueOp" , 
-					True => "is", 
-					False => "isn't", 
+<li><&|/l&>Queue</&>  <& /Elements/SelectBoolean,  Name => "QueueOp" , 
+					True => loc("is"), 
+					False => loc("isn't"), 
 					TrueVal=> '=', 
 					FalseVal => '!=' &>
-<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+<& /Elements/SelectQueue, Name => loc("ValueOfQueue") &>
 
 
-<li>Priority  <& /Elements/SelectEqualityOperator,  Name => "PriorityOp" &>
+<li><&|/l&>Priority</&>  <& /Elements/SelectEqualityOperator,  Name => "PriorityOp" &>
 
 <INPUT Name="ValueOfPriority" SIZE=5>
 
@@ -38,19 +38,19 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 
-<li>Ticket content 
+<li><&|/l&>Ticket content</&> 
 <& /Elements/SelectBoolean, Name => "ContentOp", 
-			    True => "matches", 
-			    False => "does not match", 
+			    True => loc("matches"), 
+			    False => loc("does not match"), 
 			    TrueVal => 'LIKE', 
 			    FalseVal => 'NOT LIKE' 
 &> 
 <Input Name="ValueOfContent" Size=20>
 
-<li>Status 
+<li><&|/l&>Status</&> 
 <& /Elements/SelectBoolean, Name => "StatusOp", 
-			    True => "is", 
-  			    False => "isn't", 
+			    True => loc("is"), 
+  			    False => loc("isn't"), 
 			    TrueVal=> '=', 
 			    FalseVal => '!=' 
 &>  
@@ -60,15 +60,15 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/TitleBoxStart, title => 'Ordering and sorting'&>
+<& /Elements/TitleBoxStart, title => loc('Ordering and sorting')&>
 
 <UL>
 
-<li>Results per page <& /Elements/SelectResultsPerPage, Name => "RowsPerPage", 
+<li><&|/l&>Results per page</&> <& /Elements/SelectResultsPerPage, Name => "RowsPerPage", 
 							Default => $session{'tickets_rows_per_page'} || '50'
 &>
 
-<li>Sort results by <& /Elements/SelectTicketSortBy, Name => "TicketsSortBy", 
+<li><&|/l&>Sort results by</&> <& /Elements/SelectTicketSortBy, Name => "TicketsSortBy", 
 						     Default => $session{'tickets_sort_by'} 
 &> 
 <& /Elements/SelectSortOrder, Name => 'TicketsSortOrder', Default => $session{'tickets_sort_order'} &>
@@ -85,7 +85,7 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => 'Show Results', AlternateLabel => 'Refine', Name => 'Action'&>
+<& /Elements/Submit, Label => loc('Show Results'), AlternateLabel => loc('Refine'), Name => 'Action'&>
 
 </FORM>
 

@@ -1,4 +1,4 @@
-<& /Admin/Elements/Header, Title => 'Admin/Queue/Basics' &>
+<& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -16,46 +16,46 @@
 
 <TABLE>
 <TR><TD ALIGN=RIGHT>
-<&|/l&>Queue Name:</&> 
+<&|/l&>Queue Name</&>: 
 </TD>
 <TD><INPUT name="Name" value="<%$QueueObj->Name%>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Description:</&></TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>
 <TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Correspondence Address:</&>
+<&|/l&>Correspondence Address</&>:
 </TD><TD>
 <INPUT name="CorrespondAddress" value="<%$QueueObj->CorrespondAddress%>">
 </TD>
 <TD ALIGN=RIGHT>
 
-<&|/l&>Comment Address:</&> </TD><TD>
+<&|/l&>Comment Address</&>: </TD><TD>
 <INPUT NAME="CommentAddress" value="<%$QueueObj->CommentAddress%>">
 </TD>
 </TR><TR>
 
 <TD ALIGN=RIGHT>
-<&|/l&>Priority starts at:</&> 
+<&|/l&>Priority starts at</&>: 
 </TD><TD><INPUT NAME="InitialPriority" value="<%$QueueObj->InitialPriority %>">
 </TD>
 <TD ALIGN=RIGHT>
-<&|/l&>Over time, priority moves toward:</&>
+<&|/l&>Over time, priority moves toward</&>:
 </TD><TD><INPUT NAME="FinalPriority" value="<%$QueueObj->FinalPriority %>">
 </TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Requests should be due in:</&>
+<&|/l&>Requests should be due in</&>:
 </TD><TD>
-<INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> days.
+<INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> <&|/l&>days</&>.
 </TD>
 </TR>
 <TR>
 <TD>
 </TD>
 <TD COLSPAN=4><INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> Enabled (Unchecking this box disables this queue)<BR>
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this queue)</&><BR>
 </TD>
 </TR>
 
@@ -72,7 +72,7 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my  ($title, @results, $Disabled, $EnabledChecked);
 
 if ($Create) {
-    $title = "Create a queue";
+    $title = loc("Create a queue");
 }
 
 else {
@@ -88,7 +88,7 @@ else {
      else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort("Couldn't load queue '$Name'");
     }
-        $title = 'Editing Configuration for queue '.$QueueObj->Name;
+        $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
     
 }
 if ($QueueObj->Id()) {
@@ -110,7 +110,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
     my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
-    push @results, 'Enabled status '. $msg;
+    push @results, loc('Enabled status [_1]', $msg);
 }
 
 unless ($QueueObj->Disabled()) {

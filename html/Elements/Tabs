@@ -98,7 +98,7 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 
 <%INIT>
 my ($tab, $action);
-my $toptabs = {    A => { title => loc('Home'),
+my $toptabs = {    A => { title => loc('Homepage'),
                            path => '',
                          },
                     B => { title => loc('Search'),

@@ -1,8 +1,8 @@
-<& /Admin/Elements/Header, Title => 'Admin users' &>
+<& /Admin/Elements/Header, Title => loc('Admin users') &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Users/' &>
 
 
-<& /Elements/TitleBoxStart, title => 'Select a user' &>
+<& /Elements/TitleBoxStart, title => loc('Select a user') &>
 
 <TABLE>
 <TR>
@@ -10,23 +10,23 @@
 
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
 
-Find people whose <& /Elements/SelectUsers &><BR>
-<input type="checkbox" name="FindDisabledUsers"> Include disabled users in search.
+<&|/l&>Find people whose</&> <& /Elements/SelectUsers &><BR>
+<input type="checkbox" name="FindDisabledUsers"> <&|/l&>Include disabled users in search.</&>
 <BR>
-<div align=right><input type=submit value="Go!"></div> 
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
 </TD>
 <TD VALIGN=TOP>
 <UL>
 % if ($session{'CurrentUser'}->HasSystemRight('AdminUsers')) {
-<LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
+<LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1"><&|/l&>Create a new user</&></A><BR><BR></LI>
 </UL>
 % }
 
 <%$caption%><BR>
 <UL>
 %if ($users->Count == 0) {
-<LI> <i>No users matching search criteria found.</i>
+<LI> <i><&|/l&>No users matching search criteria found.</&></i>
 % }
 %while ( $user = $users->Next) {
 <LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->Name%></a></LI>
@@ -48,10 +48,10 @@ if ($FindDisabledUsers) {
 
 unless (defined $UserString) {
     $users->LimitToPrivileged();
-    $caption = "Privileged users";
+    $caption = loc("Privileged users");
 }
 else {
-    $caption = "Users matching search criteria";
+    $caption = loc("Users matching search criteria");
 
   if ($UserString) {
 	$users->Limit( FIELD => $UserField,

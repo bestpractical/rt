@@ -1,11 +1,11 @@
-<& /Admin/Elements/Header, Title => 'Modify user rights for queue '. $QueueObj->Name &>
+<& /Admin/Elements/Header, Title => loc('Modify user rights for queue [_1]', $QueueObj->Name) &>
 <& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="UserRights.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
-<& /Elements/TitleBoxStart, title => 'Modify user rights for queue '.$QueueObj->Name &>
+<& /Elements/TitleBoxStart, title => loc('Modify user rights for queue [_1]', $QueueObj->Name) &>
       
 <TABLE>
         
@@ -25,7 +25,7 @@
       </TABLE>
             
       <& /Elements/TitleBoxEnd &>
-      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
       
   </FORM>
   

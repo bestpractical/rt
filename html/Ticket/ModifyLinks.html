@@ -1,7 +1,7 @@
 %# $Header: /raid/cvsroot/rt/webrt/Ticket/ModifyLinks.html,v 1.2 2001/11/06 23:07:07 jesse Exp $
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
-<& /Elements/Header, Title => "Link ticket ".$Ticket->Id &>
+<& /Elements/Header, Title => loc("Link ticket #[_1]", $Ticket->Id) &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket, current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->Id &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -9,10 +9,10 @@
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 
-<& /Elements/TitleBoxStart, title => 'Edit Relationships', color => "#336633"&>
+<& /Elements/TitleBoxStart, title => loc('Edit Relationships'), color => "#336633"&>
 <& Elements/EditLinks, Ticket => $Ticket &>
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, color => "#336633", Caption=> 'Save changes' &>
+<& /Elements/Submit, color => "#336633", Caption=> loc('Save changes') &>
 </form>
 
 

@@ -1,11 +1,11 @@
 <SELECT NAME="<%$Name%>">
-<OPTION VALUE="Created">Created</OPTION>
-<OPTION VALUE="Started">Started</OPTION>
-<OPTION VALUE="Resolved">Resolved</OPTION>
-<OPTION VALUE="Told">Last Contacted</OPTION>
-<OPTION VALUE="LastUpdated">Last Updated</OPTION>
-<OPTION VALUE="StartsBy">Starts By</OPTION>
-<OPTION VALUE="Due">Due</OPTION>
+<OPTION VALUE="Created"><&|/l&>Created</&></OPTION>
+<OPTION VALUE="Started"><&|/l&>Started</&></OPTION>
+<OPTION VALUE="Resolved"><&|/l&>Resolved</&></OPTION>
+<OPTION VALUE="Told"><&|/l&>Last Contacted</&></OPTION>
+<OPTION VALUE="LastUpdated"><&|/l&>Last Updated</&></OPTION>
+<OPTION VALUE="StartsBy"><&|/l&>Starts By</&></OPTION>
+<OPTION VALUE="Due"><&|/l&>Due</&></OPTION>
 </SELECT>
 <%ARGS>
 $Name => 'DateType'

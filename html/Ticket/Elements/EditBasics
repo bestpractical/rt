@@ -8,34 +8,34 @@
 <TR>
 <TD>
 <& /Elements/ShadedBox, 
-        title => 'Status',
+        title => loc('Status'),
         content => $SelectStatus
 &>
 </TD>
 <TD>
 
 <& /Elements/ShadedBox,
-	title => 'Time Worked',
+	title => loc('Time Worked'),
 	content => "<input name=TimeWorked value=\"".$TicketObj->TimeWorked."\" SIZE=5>" 
 &>
 
 </TD>
 <TD>
 <& /Elements/ShadedBox,
-	title => 'Time Left',
+	title => loc('Time Left'),
 	content => "<input name=TimeLeft value=\"".$TicketObj->TimeLeft."\" SIZE=5>" 
 &>
 </TD>
 <TD>
 <& /Elements/ShadedBox,
-	title => 'Priority',
+	title => loc('Priority'),
 	content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=3>"
 &>
 
 </TD>
 <TD>
 <& /Elements/ShadedBox,
-	title => 'Final Priority',
+	title => loc('Final Priority'),
 	content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=3>"
 &>
 
@@ -43,7 +43,7 @@
 </TD>
 <TD>
 <& /Elements/ShadedBox,
-        title => 'Queue',
+        title => loc('Queue'),
         content => "$SelectQueue"
  &>
 </TD>

@@ -30,13 +30,13 @@
 <hr>
 <%INIT>
 my ($tab);
-my $tabs = { A  => { title => 'Open requests',
+my $tabs = { A  => { title => loc('Open requests'),
                         path => 'SelfService/',
                       },
-             B => { title => 'Closed requests',
+             B => { title => loc('Closed requests'),
                          path => 'SelfService/Closed.html',
                        },
-             C => { title => 'New request',
+             C => { title => loc('New request'),
                     path => 'SelfService/Create.html'
                     }
            };

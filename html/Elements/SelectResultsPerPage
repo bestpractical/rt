@@ -12,7 +12,7 @@
 
 <%INIT>
 my @values = qw(0 10 25 50 100);
-my @labels = qw(Unlimited 10 25 50 100);
+my @labels = (loc('Unlimited'), qw(10 25 50 100));
 </%INIT>
 <%ARGS>
 

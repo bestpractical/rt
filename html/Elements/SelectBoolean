@@ -6,11 +6,11 @@
 
 <%ARGS>
 $Name => undef
-$True => "is"
+$True => loc("is")
 $Default => 'true'
 $TrueVal => 1
 $FalseVal => 0
-$False => "isn't"
+$False => loc("isn't")
 </%ARGS>
 
 <%INIT>

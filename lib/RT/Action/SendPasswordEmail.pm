@@ -82,8 +82,7 @@ sub Commit  {
     }
     else {
 	unless ($MIMEObj->send($RT::MailCommand, $RT::MailParams)) {
-	    $RT::Logger->crit(loc("[_1]: Could not send mail for [_2]\n ",
-			      $self, $self->TransactionObj));
+	    $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj."\n ");
 	    return(0);
 	}
     }

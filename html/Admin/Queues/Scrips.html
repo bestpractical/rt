@@ -1,20 +1,20 @@
-<& /Admin/Elements/Header, Title => 'Edit scrips' &>
+<& /Admin/Elements/Header, Title => loc('Edit scrips') &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
 
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => $description &>
  
-<h2>Global Scrips</h2>
+<h2><&|/l&>Global Scrips</&></h2>
 <& /Admin/Elements/ListGlobalScrips &>
 <BR> 
   <FORM METHOD=POST ACTION="Scrips.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE=<%$id%>>
-<h2>Queue Scrips</h2>
+<h2><&|/l&>Queue Scrips</&></h2>
 % if ($Scrips->Count > 0 ) {
 <TABLE>
 <TR>
-<TD>Delete
+<TD><&|/l&>Delete</&>
 </TD>
 <TD>
 </TR>
@@ -33,10 +33,10 @@
 </TABLE>
 % }
 <BR>
-<h2>Add a scrip to this queue</h2>
-Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
-	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
-	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $id &>
+<h2><&|/l&>Add a scrip to this queue</&></h2>
+<&|/l&>Condition</&>: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
+	  <&|/l&>Action</&>: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
+	  <&|/l&>Template</&>: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $id &>
 
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>

@@ -1,7 +1,7 @@
 %# $Header: /raid/cvsroot/rt/webrt/SelfService/Display.html,v 1.2 2001/11/06 23:07:02 jesse Exp $
 %# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-<& /SelfService/Elements/Header, Title => loc('Display ticket #').$Ticket->id &>
+<& /SelfService/Elements/Header, Title => loc('Display ticket #[_1]', $Ticket->id) &>
 
 
 <& /Elements/ListActions, actions => \@results &>

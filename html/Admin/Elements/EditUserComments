@@ -1,5 +1,5 @@
 <& /Elements/Header, Title => "Comments about $name" &>
-These comments aren't generally visible to the user:<br>
+<&|/l&>These comments aren't generally visible to the user</&>:<br>
 <input type="hidden" name="id" value="<%$id%>">
 <TEXTAREA COLS=60 ROWS=15 WRAP=SOFT NAME="Comments"><% $UserObj->Comments %></TEXTAREA>
 </FORM>

@@ -1,6 +1,6 @@
-SortOrder: <input name="CustomField-<%$CustomField->Id%>-AddValue-SortOrder" size="5"><BR>
-Name: <input size=20 name="CustomField-<%$CustomField->Id%>-AddValue-Name"><BR>
-Description: <input size="60" name="CustomField-<%$CustomField->Id%>-AddValue-Description"><BR>
+<&|/l&>SortOrder</&>: <input name="CustomField-<% $CustomField->Id %>-AddValue-SortOrder" size="5"><BR>
+<&|/l&>Name</&>: <input size=20 name="CustomField-<% $CustomField->Id %>-AddValue-Name"><BR>
+<&|/l&>Description</&>: <input size="60" name="CustomField-<% $CustomField->Id %>-AddValue-Description"><BR>
 
 <%init>
 </%init>

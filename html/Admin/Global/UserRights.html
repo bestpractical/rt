@@ -1,11 +1,11 @@
-<& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
+<& /Admin/Elements/Header, Title => loc('Modify System ACLS') &>
 <& /Admin/Elements/SystemTabs &>
   
 <& /Elements/ListActions, actions => \@results &>
   <FORM METHOD=POST action="UserRights.html">
       
 
-<h2>Modify global rights for users</h2>
+<h2><&|/l&>Modify global rights for users</&></h2>
 <TABLE>
 %	while (my $UserObj = $Users->Next()) {
   <TR ALIGN=RIGHT> 

@@ -4,28 +4,28 @@
   my $id = $Ticket->id();
   my $tabs_scalar = '';
   my $tabs = {
-		 A => { title => 'Display',
+		 A => { title => loc('Display'),
 			path => "Ticket/Display.html?id=".$id,
 		      },
 	      
-	      Ab => { title => 'History',
+	      Ab => { title => loc('History'),
 		      path => "Ticket/History.html?id=".$id,
 		       },
-	      B => { title => 'Basics',
+	      B => { title => loc('Basics'),
 		     path => "Ticket/Modify.html?id=".$id,
 		   },
 	      
-	      C => { title => 'Dates',
+	      C => { title => loc('Dates'),
 		     path => "Ticket/ModifyDates.html?id=".$id,
 		   },
 	      
-	      D => { title => 'People',
+	      D => { title => loc('People'),
 		     path => "Ticket/ModifyPeople.html?id=".$id,
 		   },
-	      E => { title => 'Links',
+	      E => { title => loc('Links'),
 		     path => "Ticket/ModifyLinks.html?id=".$id,
 		   },
-	      F => { title => 'Jumbo',
+	      F => { title => loc('Jumbo'),
 		     path => "Ticket/ModifyAll.html?id=".$id,
 		   },
 	      
@@ -36,7 +36,7 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket') or
     $Ticket->CurrentUserHasRight('CommentOnTicket')) {
     $actions->{'Comment'} = 
       { 
-       title => 'Comment',
+       title => loc('Comment'),
 	path => "Ticket/Update.html?Action=Comment&id=".$id,
       }
   };
@@ -45,7 +45,7 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket') or
     $Ticket->CurrentUserHasRight('ReplyToTicket')) {
     $actions->{'Reply'} = 
       { 
-       title => 'Reply',
+       title => loc('Reply'),
        path => "Ticket/Update.html?Action=Respond&id=".$id,
       }
   };
@@ -55,14 +55,14 @@ if ($Ticket->CurrentUserHasRight('OwnTicket')) {
 	$actions->{'Take'} = 	
 	  { 
 	   path => "Ticket/Display.html?Action=Take&id=".$id,
-	   title => 'Take'
+	   title => loc('Take')
 	  };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id) {
 	$actions->{'Steal'} = 	
 	  { 
 	   path => "Ticket/Display.html?Action=Steal&id=".$id,
-	   title => 'Steal' 
+	   title => loc('Steal') 
 	  };
     }
 }
@@ -73,14 +73,14 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 	  { 
 
            path => "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=".$id,
-	   title => 'Resolve'
+	   title => loc('Resolve')
 	  };
     }	
     if ($Ticket->Status ne 'open') {	
 	$actions->{'Open'} = 
 	  { 
 	   path => "Ticket/Display.html?Status=open&id=". $id,
-	   title => 'Open'
+	   title => loc('Open')
 	  };
     }
 }

@@ -1,7 +1,5 @@
 package RT::I18N::en;
-use RT::I18N;
-
-@ISA = qw(RT::I18N);
+# English language messages for Findgrep
+use base qw(RT::I18N);
+use Locale::Maketext::Lexicon (Gettext => 'en_us.po');
 1;
-# This class just zero-derives from the project base class.
-

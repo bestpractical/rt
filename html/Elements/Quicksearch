@@ -1,11 +1,11 @@
-<& /Elements/TitleBoxStart, title => "Find new/open tickets", titleright => "<A class='inverse' href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">Advanced Search</A>" &>
+<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"), titleright => "<A class='inverse' href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">".loc("Advanced Search")."</A>" &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          
-       <th align=left>Queue</th>                                         
-       <th align=left><font size=-1>New</font></th>
-       <th align=left><font size=-1>Open</font></th>          
-       <th align=left><font size=-1>Stalled</font></th>          
+       <th align=left><&|/l&>Queue</&></th>                                         
+       <th align=left><font size=-1><&|/l&>New</&></font></th>
+       <th align=left><font size=-1><&|/l&>Open</&></font></th>          
+       <th align=left><font size=-1><&|/l&>Stalled</&></font></th>          
 </tr>
 
 <%PERL>

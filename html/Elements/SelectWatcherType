@@ -2,7 +2,7 @@
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 %for my $option (@types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%$option%></OPTION>
+<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
 %}
 </SELECT>
 

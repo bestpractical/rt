@@ -1,9 +1,9 @@
-<& /Admin/Elements/Header, Title => 'Edit templates for '.$Queue->Name &>
+<& /Admin/Elements/Header, Title => loc('Edit templates for [_1]', $Queue->Name) &>
 <& /Admin/Elements/QueueTabs, id => $Queue->id &>
 
-<& /Elements/TitleBoxStart, title => 'Edit templates for '.$Queue->Name &>
+<& /Elements/TitleBoxStart, title => loc('Edit templates for [_1]', $Queue->Name) &>
 <UL>
-<LI><A href="Template.html?create=1&Queue=<%$Queue->id%>">Create a new template</A><BR><BR>
+<LI><A href="Template.html?create=1&Queue=<%$Queue->id%>"><&|/l&>Create a new template</&></A><BR><BR>
 
 %while  (my $TemplateObj = $Templates->Next) { 
 

@@ -1,4 +1,4 @@
-Depends on:<BR>
+<&|/l&>Depends on</&>:<BR>
 <UL>
 % while (my $Link = $Ticket->DependsOn->Next) {
 % my $member = $Link->TargetObj;
@@ -8,7 +8,7 @@ Depends on:<BR>
 % }
 </UL>
 
-Depended on by:<BR>
+<&|/l&>Depended on by</&>:<BR>
 <UL>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
 % my $member = $Link->BaseObj;
@@ -16,7 +16,7 @@ Depended on by:<BR>
 [<%$member->Status%>]
 % }
 </UL>
-Parents:<BR>	
+<&|/l&>Parents</&>:<BR>	
 <UL>
 % while (my $Link = $Ticket->MemberOf->Next) {
 % my $member = $Link->TargetObj;
@@ -26,10 +26,10 @@ Parents:<BR>
 % }
 </UL>
 
-Children:<BR>
+<&|/l&>Children</&>:<BR>
 <& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 <BR>
-Refers to:<BR>
+<&|/l&>Refers to</&>:<BR>
 <UL>
 % while (my $Link = $Ticket->RefersTo->Next) {
 <LI>
@@ -43,7 +43,7 @@ Refers to:<BR>
 %}
 </UL>
 
-Referred to by:<BR>
+<&|/l&>Referred to by</&>:<BR>
 <UL>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
 <LI>

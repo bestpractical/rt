@@ -2,21 +2,21 @@
      <TABLE BORDER=0>
 <TR>
 <TD valign=top>
-<h3>New rights</h3> 
+<h3><&|/l&>New rights</&></h3> 
 <SELECT SIZE=5  MULTIPLE  NAME="GrantACE-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
       <OPTION VALUE="<%$right%>"  
-	><%$right%></OPTION>
+	><% loc($right) %></OPTION>
 % }
-<OPTION VALUE="" SELECTED>(no value)</OPTION>
+<OPTION VALUE="" SELECTED><&|/l&>(no value)</&></OPTION>
 </SELECT>
 </TD>
 <TD valign=top> 
-<h3>Current rights</h3>
-<i>(Check box to revoke right)</i> <BR>
+<h3><&|/l&>Current rights</&></h3>
+<i>(<&|/l&>Check box to revoke right</&>)</i> <BR>
 % while (my $right = $ACLObj->Next()) {
 % if ($right->RightName) {
-<input type=checkbox value="<%$right->Id%>" name="RevokeACE"> <%$right->RightName%><br>
+<input type=checkbox value="<%$right->Id%>" name="RevokeACE"> <% loc($right->RightName) %><br>
 % }
 %  }
 </TD>

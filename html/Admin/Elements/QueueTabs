@@ -2,28 +2,28 @@
 <hr>
 <%INIT>
   my $subtabs = {
-		 A => { title => 'Basics',
+		 A => { title => loc('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
-		 B => { title => 'Watchers',
+		 B => { title => loc('Watchers'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
 
-		 C => { title => 'Scrips',
+		 C => { title => loc('Scrips'),
 			     path => "Admin/Queues/Scrips.html?id=".$id,
 			   },
-		 D => { title => 'Templates',
+		 D => { title => loc('Templates'),
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 E => { title => 'Custom Fields',
+                 E => { title => loc('Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?id='.$id,
                         },
 
-		 F => { title => 'Group Rights',
+		 F => { title => loc('Group Rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 G => { title => 'User Rights',
+		 G => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			},
 

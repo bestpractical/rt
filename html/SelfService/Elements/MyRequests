@@ -1,9 +1,9 @@
-<& /Elements/TitleBoxStart, title => "Your $friendly_status requests" &>
+<& /Elements/TitleBoxStart, title => loc("Your [_1] requests", $friendly_status) &>
 <TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
 <TR>
-<TH>Subject</TH>
-<TH>Status</TH>
-<TH>Owner</TH>
+<TH><&|/l&>Subject</&></TH>
+<TH><&|/l&>Status</&></TH>
+<TH><&|/l&>Owner</&></TH>
 <TH>&nbsp;</TH>
 </TR>
 <TR>
@@ -17,7 +17,7 @@
 </TD><TD>
 <%$Ticket->OwnerObj->Name%>
 </TD><TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>">Details</A>]
+[<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>"><&|/l&>Details</&></A>]
 </TD>
 </TR>
 % }

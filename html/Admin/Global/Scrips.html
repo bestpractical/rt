@@ -1,16 +1,16 @@
-<& /Admin/Elements/Header, Title => 'Edit scrips' &>
+<& /Admin/Elements/Header, Title => loc('Edit scrips') &>
 <& /Admin/Elements/SystemTabs &>
 
 <& /Elements/ListActions, actions => \@actions &>
 
-<& /Elements/TitleBoxStart, title => "Modify global scrips" &>
+<& /Elements/TitleBoxStart, title => loc("Modify global scrips") &>
   
   <FORM METHOD=POST ACTION="Scrips.html">
 
 % if ($Scrips->Count > 0 ) {
 <TABLE>
 <TR>
-<TD>Delete
+<TD><&|/l&>Delete</&>
 </TD>
 <TD>
 </TR>
@@ -23,7 +23,7 @@
 <TD>
 <% $scrip->ConditionObj->Name %> 
 <% $scrip->ActionObj->Name %> 
-with template <% $scrip->TemplateObj->Name %>
+<&|/l, $scrip->TemplateObj->Name &>with template [_1]</&>
 </TD>
 </TR>
 %   }
@@ -31,11 +31,11 @@ with template <% $scrip->TemplateObj->Name %>
 </TABLE>
 
 % }
-Add a scrip which will apply to all queues:
+<&|/l&>Add a scrip which will apply to all queues</&>:
 <ul>
-<li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
-	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
-	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate' &>
+<li><&|/l&>Condition</&>: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
+	  <&|/l&>Action</&>: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
+	  <&|/l&>Template</&>: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate' &>
 
 </ul>
 

@@ -1,4 +1,4 @@
-<& /Elements/Header, Title => 'Modify ticket #'.$TicketObj->Id &>
+<& /Elements/Header, Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
 <& /Ticket/Elements/Tabs, Ticket => $TicketObj, current_tab => "Ticket/Modify.html?id=".$TicketObj->Id  &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -6,13 +6,13 @@
 <INPUT TYPE=hidden name="Debug" value="2">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
-<& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
+<& /Elements/TitleBoxStart, title => loc('Modify ticket #[_1]',$TicketObj->Id), 
   color=> "#993333", width => "100%" &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#993333" &>
+<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
 <%INIT>
   

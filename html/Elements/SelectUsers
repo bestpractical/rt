@@ -1,8 +1,8 @@
 <select name="UserField">
-<option value="Name">User Id
-<option value="EmailAddress">Email
-<option value="RealName">Name
-<option value="Organization">Organization
+<option value="Name"><&|/l&>User Id</&>
+<option value="EmailAddress"><&|/l&>Email</&>
+<option value="RealName"><&|/l&>Name</&>
+<option value="Organization"><&|/l&>Organization</&>
 </select>
 <& /Elements/SelectMatch, Name=> 'UserOp' &>
 <input size=8 name="UserString">

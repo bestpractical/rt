@@ -8,7 +8,7 @@
 
 <%INIT>
 my @orders = qw (ASC DESC);
-my @order_names = qw (Ascending Descending);
+my @order_names = (loc('Ascending'), loc('Descending'));
 
 </%INIT>
 

@@ -1,0 +1,55 @@
+#: html/Admin/Users/Modify.html
+msgid "Residence"
+msgstr "Home"
+
+#: html/Elements/Tabs
+msgid "Homepage"
+msgstr "Home"
+
+#: html/Elements/monthMenu
+msgid "Jan."
+msgstr "Jan"
+
+#: html/Elements/monthMenu
+msgid "Feb."
+msgstr "Feb"
+
+#: html/Elements/monthMenu
+msgid "Mar."
+msgstr "Mar"
+
+#: html/Elements/monthMenu
+msgid "Apr."
+msgstr "Apr"
+
+#: html/Elements/monthMenu
+msgid "May."
+msgstr "May"
+
+#: html/Elements/monthMenu
+msgid "Jun."
+msgstr "Jun"
+
+#: html/Elements/monthMenu
+msgid "Jul."
+msgstr "Jul"
+
+#: html/Elements/monthMenu
+msgid "Aug."
+msgstr "Aug"
+
+#: html/Elements/monthMenu
+msgid "Sep."
+msgstr "Sep"
+
+#: html/Elements/monthMenu
+msgid "Oct."
+msgstr "Oct"
+
+#: html/Elements/monthMenu
+msgid "Nov."
+msgstr "Nov"
+
+#: html/Elements/monthMenu
+msgid "Dec."
+msgstr "Dec"

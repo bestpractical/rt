@@ -1,66 +1,66 @@
 
-<& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->Name &>
+<& /Elements/TitleBoxStart, title => loc('Editing Configuration for user [_1]', $UserObj->Name) &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 
-Name: <input name="Name" value="<%$UserObj->Name%>">
+<&|/l&>Name</&>: <input name="Name" value="<%$UserObj->Name%>">
 <BR>
-New Password: <input type=password name="Pass1"><BR>
-Retype Password: <input type=password name="Pass2"><BR>
+<&|/l&>New Password</&>: <input type=password name="Pass1"><BR>
+<&|/l&>Retype Password</&>: <input type=password name="Pass2"><BR>
 
-Comments: <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
+<&|/l&>Comments</&>: <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
 <%$UserObj->Comments%></TEXTAREA>
 
 <BR>
-Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
+<&|/l&>Signature</&>: <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
 <%$UserObj->Signature%></TEXTAREA>
 <BR>
-EmailAddress: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
+<&|/l&>EmailAddress</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
 <BR>
-FreeformContactInfo: <input name="FreeformContactInfo" value="<%$UserObj->FreeformContactInfo%>">
+<&|/l&>FreeformContactInfo</&>: <input name="FreeformContactInfo" value="<%$UserObj->FreeformContactInfo%>">
 <BR>
-Organization: <input name="Organization" value="<%$UserObj->Organization%>">
+<&|/l&>Organization</&>: <input name="Organization" value="<%$UserObj->Organization%>">
 <BR>
-RealName: <input name="RealName" value="<%$UserObj->RealName%>">
+<&|/l&>RealName</&>: <input name="RealName" value="<%$UserObj->RealName%>">
 <BR>
-NickName: <input name="NickName" value="<%$UserObj->NickName%>">
+<&|/l&>NickName</&>: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
-Lang: <input name="Lang" value="<%$UserObj->Lang%>">
+<&|/l&>Lang</&>: <input name="Lang" value="<%$UserObj->Lang%>">
 <BR>
-EmailEncoding: <input name="EmailEncoding" value="<%$UserObj->EmailEncoding%>">
+<&|/l&>EmailEncoding</&>: <input name="EmailEncoding" value="<%$UserObj->EmailEncoding%>">
 <BR>
-WebEncoding: <input name="WebEncoding" value="<%$UserObj->WebEncoding%>">
+<&|/l&>WebEncoding</&>: <input name="WebEncoding" value="<%$UserObj->WebEncoding%>">
 <BR>
-ExternalContactInfoId: <input name="ExternalContactInfoId" value="<%$UserObj->ExternalContactInfoId%>">
+<&|/l&>ExternalContactInfoId</&>: <input name="ExternalContactInfoId" value="<%$UserObj->ExternalContactInfoId%>">
 <BR>
-ContactInfoSystem: <input name="ContactInfoSystem" value="<%$UserObj->ContactInfoSystem%>">
+<&|/l&>ContactInfoSystem</&>: <input name="ContactInfoSystem" value="<%$UserObj->ContactInfoSystem%>">
 <BR>
-Gecos: <input name="Gecos" value="<%$UserObj->Gecos%>">
+<&|/l&>UnixUsername</&>: <input name="Gecos" value="<%$UserObj->Gecos%>">
 <BR>
-ExternalAuthId: <input name="ExternalAuthId" value="<%$UserObj->ExternalAuthId%>">
+<&|/l&>ExternalAuthId</&>: <input name="ExternalAuthId" value="<%$UserObj->ExternalAuthId%>">
 <BR>
-AuthSystem: <input name="AuthSystem" value="<%$UserObj->AuthSystem%>">
+<&|/l&>AuthSystem</&>: <input name="AuthSystem" value="<%$UserObj->AuthSystem%>">
 <BR>
-HomePhone: <input name="HomePhone" value="<%$UserObj->HomePhone%>">
+<&|/l&>HomePhone</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>">
 <BR>
-WorkPhone: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>">
+<&|/l&>WorkPhone</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>">
 <BR>
-MobilePhone: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>">
+<&|/l&>MobilePhone</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>">
 <BR>
-PagerPhone: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>">
+<&|/l&>PagerPhone</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>">
 <BR>
-Address1: <input name="Address1" value="<%$UserObj->Address1%>">
+<&|/l&>Address1</&>: <input name="Address1" value="<%$UserObj->Address1%>">
 <BR>
-Address2: <input name="Address2" value="<%$UserObj->Address2%>">
+<&|/l&>Address2</&>: <input name="Address2" value="<%$UserObj->Address2%>">
 <BR>
-City: <input name="City" value="<%$UserObj->City%>">
+<&|/l&>City</&>: <input name="City" value="<%$UserObj->City%>">
 <BR>
-State: <input name="State" value="<%$UserObj->State%>">
+<&|/l&>State</&>: <input name="State" value="<%$UserObj->State%>">
 <BR>
-Zip: <input name="Zip" value="<%$UserObj->Zip%>">
+<&|/l&>Zip</&>: <input name="Zip" value="<%$UserObj->Zip%>">
 <BR>
-Country: <input name="Country" value="<%$UserObj->Country%>">
+<&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
 <BR>
 <& /Elements/Submit &>
 </form>

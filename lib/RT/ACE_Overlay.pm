@@ -302,7 +302,7 @@ sub _BootstrapRight {
 	return ($id);
     }
     else {
-	$RT::Logger->err(loc('System error. right not granted.'));
+	$RT::Logger->err('System error. right not granted.');
 	return(undef);
     }
     

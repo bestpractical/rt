@@ -22,7 +22,7 @@
         <% $Values->HasEntry($value->Name) && 'SELECTED' %>
         ><% $value->Name%></option>
 % }
-<option value="" <%$Values->Count == 0 && 'SELECTED' %>>(No Value)</option>
+<option value="" <%$Values->Count == 0 && 'SELECTED' %>><&|/l&>(No Value)</&></option>
 </select>
 % }
 % }

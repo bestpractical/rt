@@ -1,9 +1,9 @@
 %# $Header: /raid/cvsroot/rt/webrt/Elements/SelectLinkType,v 1.2 2001/11/06 23:06:58 jesse Exp $
 
 <SELECT NAME ="<%$Name%>">
-% foreach ('MemberOf', 'DependsOn', 'RefersTo') { # TODO: Merging!
-<OPTION VALUE="<%$_%>"><%$_%></OPTION>
-% }
+<OPTION VALUE="MemberOf"><&|/l&>MemberOf</&></OPTION>
+<OPTION VALUE="DependsOn"><&|/l&>DependsOn</&></OPTION>
+<OPTION VALUE="RefersTo"><&|/l&>RefersTo</&></OPTION>
 </SELECT>
 
 <%ARGS>

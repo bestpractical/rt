@@ -14,40 +14,40 @@
 <TR>
 
 <TD VALIGN=TOP ROWSPAN=2>
-<& /Elements/TitleBoxStart, title => 'Identity' &>
+<& /Elements/TitleBoxStart, title => loc('Identity') &>
 
-Username: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b> <BR>
-Email: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
-Real Name: <input name="RealName" value="<%$UserObj->RealName%>"> <BR>
-Nickname: <input name="NickName" value="<%$UserObj->NickName%>">
+<&|/l&>Username</&>: <input name="Name" value="<%$UserObj->Name%>"> <b><&|/l&>(required)</&></b> <BR>
+<&|/l&>Email</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
+<&|/l&>Real Name</&>: <input name="RealName" value="<%$UserObj->RealName%>"> <BR>
+<&|/l&>Nickname</&>: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
-Unix login: <input name="Gecos" value="<%$UserObj->Gecos%>">
+<&|/l&>Unix login</&>: <input name="Gecos" value="<%$UserObj->Gecos%>">
 <BR>
-Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
+<&|/l&>Extra info</&>: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title => 'Access control' &>
+<& /Elements/TitleBoxStart, title => loc('Access control') &>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>>
-Let this user access RT<BR>
+<&|/l&>Let this user access RT</&><BR>
 
 
 <INPUT TYPE=HIDDEN NAME="SetPrivileged" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Let this user be granted rights<BR>
+<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> <&|/l&>Let this user be granted rights</&><BR>
 		    
 % unless ($RT::WebExternalAuth) {
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT>
-New Password:
+<&|/l&>New Password</&>:
 </TD>
 <TD ALIGN=LEFT>
 <input type=password name="Pass1">
 </TD>
 </TR>
 <TR><TD ALIGN=RIGHT>
-Retype Password:
+<&|/l&>Retype Password</&>:
 </TD>
 <TD>
 <input type=password name="Pass2">
@@ -60,20 +60,20 @@ Retype Password:
 <TR>
 
 <TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title => 'Location' &>
-Organization: <input name="Organization" value="<%$UserObj->Organization%>">
+<& /Elements/TitleBoxStart, title => loc('Location') &>
+<&|/l&>Organization</&>: <input name="Organization" value="<%$UserObj->Organization%>">
 <BR>
-Address1: <input name="Address1" value="<%$UserObj->Address1%>">
+<&|/l&>Address1</&>: <input name="Address1" value="<%$UserObj->Address1%>">
 <BR>
-Address2: <input name="Address2" value="<%$UserObj->Address2%>">
+<&|/l&>Address2</&>: <input name="Address2" value="<%$UserObj->Address2%>">
 <BR>
-City: <input name="City" value="<%$UserObj->City%>" size=14>
+<&|/l&>City</&>: <input name="City" value="<%$UserObj->City%>" size=14>
 
-State: <input name="State" value="<%$UserObj->State%>" size=3>
+<&|/l&>State</&>: <input name="State" value="<%$UserObj->State%>" size=3>
 
-Zip: <input name="Zip" value="<%$UserObj->Zip%>" size=9>
+<&|/l&>Zip</&>: <input name="Zip" value="<%$UserObj->Zip%>" size=9>
 <BR>
-Country: <input name="Country" value="<%$UserObj->Country%>">
+<&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
 <BR>
 
 
@@ -84,24 +84,24 @@ Country: <input name="Country" value="<%$UserObj->Country%>">
 <TD COLSPAN=2 VALIGN=TOP>
 
 
-<& /Elements/TitleBoxStart, title => 'Phone numbers' &>
-Home: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
+<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
+<&|/l&>Residence</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
 
-Work: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
+<&|/l&>Work</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
 
-Mobile: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
+<&|/l&>Mobile</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
 
-Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
+<&|/l&>Pager</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <& /Elements/TitleBoxEnd &>
 <BR>
-<& /Elements/TitleBoxStart, title => 'Comments about this user' &>
+<& /Elements/TitleBoxStart, title => loc('Comments about this user') &>
 <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 
 
 %if ($UserObj->Privileged) {
 <BR>
-<& /Elements/TitleBoxStart, title => 'Signature' &>
+<& /Elements/TitleBoxStart, title => loc('Signature') &>
 <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
 <%$UserObj->Signature%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
@@ -125,7 +125,7 @@ my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 my ($val, $msg);
 
 if ($Create) {
-    $title = "Create a new user";
+    $title = loc("Create a new user");
 } 
 else {
 
@@ -136,7 +136,7 @@ else {
 	if ($val) {
 		push @results, $msg;
 	} else {
-		push @results, 'User could not be created: '. $msg;
+		push @results, loc('User could not be created: [_1]', $msg);
 	}	
 	
     }
@@ -146,12 +146,12 @@ else {
     }
 
     if ($val) {
-	$title = "Modify the user ". $UserObj->Name;
+	$title = loc("Modify the user [_1]", $UserObj->Name);
     }	
 
     # If the create failed
     else {
-	$title = "Create a new user";
+	$title = loc("Create a new user");
 	$Create = 1;
     }    
 
@@ -181,7 +181,7 @@ if ($UserObj->Id) {
 # {{{ Deal with special fields: Privileged, Enabled and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
-     push @results, 'Privileged status: '. $msg;
+     push @results, loc('Privileged status: [_1]', $msg);
 }
 
 #we're asking about enabled on the web page but really care about disabled.
@@ -193,7 +193,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
     my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
-    push @results, 'Enabled status '. $msg;
+    push @results, loc('Enabled status [_1]', $msg);
 }
 
 
@@ -201,7 +201,7 @@ if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) {
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
     my ($code, $msg);
     ($code, $msg) = $UserObj->SetPassword($Pass1);
-    push @results, 'Password: '. $msg;
+    push @results, loc('Password: [_1]', $msg);
 }
 
 # }}}

@@ -1,29 +1,29 @@
 %# $Header: /raid/cvsroot/rt/webrt/Ticket/Create.html,v 1.2 2001/11/06 23:07:07 jesse Exp $
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> 
 
-<& /Elements/Header, Title => "Create a new ticket" &>
+<& /Elements/Header, Title => loc("Create a new ticket") &>
 <& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
 <FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
 	
 	
-[<a class="currenttab">Show basics</a>] [<A HREF="#detail">Show details</a>]
+[<a class="currenttab"><&|/l&>Show basics</&></a>] [<A HREF="#detail"><&|/l&>Show details</&></a>]
 <BR>
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket"&>
 <div align=right><input type=submit value="Create"></div>
 <TABLE border=0 cellpadding=0 cellspacing=0>
-<TR><TD>Queue</TD>
+<TR><TD><&|/l&>Queue</&></TD>
 <TD><% $QueueObj->Name %>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 </TD>
-<TD>Status:
+<TD><&|/l&>Status</&>:
 </TD>
 <TD>
 <& /Elements/SelectStatus, Name => "Status", Default=> 'new' &>
 </TD>
 <TD>
-Owner: 
+<&|/l&>Owner</&>:
 </TD>
 <TD>
 <& /Elements/SelectOwner, Name => "ValueOfOwner", QueueObj => $QueueObj &>
@@ -31,7 +31,7 @@ Owner:
 </TR>
 <TR>
 <TD>
-Requestors: 
+<&|/l&>Requestors</&>:
 </TD>
 <TD COLSPAN=5>
 <INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=40>
@@ -39,7 +39,7 @@ Requestors:
 </TR>
 <TR>
 <TD>
-Cc:
+<&|/l&>Cc</&>:
 </TD>
 <TD COLSPAN=5>
  <INPUT NAME="Cc" SIZE=40>
@@ -47,7 +47,7 @@ Cc:
 </TR>
 <TR>
 <TD>
-Admin Cc:
+<&|/l&>Admin Cc</&>:
 </TD>
 <TD COLSPAN=5>
  <INPUT NAME="AdminCc" SIZE=40>
@@ -55,7 +55,7 @@ Admin Cc:
 </TR>
 <TR>
 <TD>
-Subject:
+<&|/l&>Subject</&>:
 </TD>
 <TD COLSPAN=5>
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
@@ -63,7 +63,7 @@ Subject:
 </TR>
 <TR>
 <TD>
-Attach file:
+<&|/l&>Attach file</&>:
 </TD>
 <TD COLSPAN=5>
 <INPUT TYPE=FILE NAME="Attach">
@@ -71,7 +71,7 @@ Attach file:
 </TR>
 <TR>
 <TD COLSPAN=6>
-Describe the issue below:<br>
+<&|/l&>Describe the issue below</&>:<br>
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 
 <BR>
@@ -83,7 +83,7 @@ Describe the issue below:<br>
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Label => "Create"&>
+<& /Elements/Submit, Label => loc("Create")&>
 
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
@@ -92,20 +92,20 @@ Describe the issue below:<br>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 
 <A NAME="detail">
-	[<A HREF="#top">Show basics</a>] [<a class="currenttab">Show details</a>]
+	[<A HREF="#top"><&|/l&>Show basics</&></a>] [<a class="currenttab"><&|/l&>Show details</&></a>]
 <BR>
 <TABLE WIDTH="100%" BORDER=0>
 <TR>
 <TD WIDTH="50%" VALIGN=TOP>
 
-	  <& /Elements/TitleBoxStart, title => 'The Basics', 
+	  <& /Elements/TitleBoxStart, title => loc('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT>Priority:</TD><TD><input size=3 name="InitialPriority" value="<%$QueueObj->InitialPriority%>"></TD></TR>
-<TR><TD ALIGN=RIGHT>Final Priority:</TD><TD><input size=3 name="FinalPriority" value="<%$QueueObj->FinalPriority%>"></TD></TR>
-<TR><TD ALIGN=RIGHT>Time Worked:</TD><TD><input size=3 name="TimeWorked"></TD></TR>
-<TR><TD ALIGN=RIGHT>Time Left:</TD><TD><input size=3 name="TimeLeft"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<%$QueueObj->InitialPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<%$QueueObj->FinalPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
@@ -116,28 +116,28 @@ Describe the issue below:<br>
 </TD>
 
 <TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => "Dates",
+<& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT>Starts:</TD><TD><input size=10 name="Starts"></TD></TR>
-<TR><TD ALIGN=RIGHT>Due:</TD><TD><input size=10 name="Due"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due"></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
-<& /Elements/TitleBoxStart, title => 'Relationships', 
+<& /Elements/TitleBoxStart, title => loc('Relationships'), 
 	title_class=> 'inverse',  
 	titleright => '', color=> "#336633" &>
 
-<i>(Enter ticket ids or URLs, seperated with spaces)</i>
+<i><&|/l&>(Enter ticket ids or URLs, seperated with spaces)</&></i>
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT>Depends on</TD><TD><input size=10 name="new-DependsOn"></TD></TR>
-<TR><TD ALIGN=RIGHT>Depended on by</TD><TD><input size=10 name="DependsOn-new"></TD></TR>
-<TR><TD ALIGN=RIGHT>Parents</TD><TD><input size=10 name="new-MemberOf"></TD></TR>
-<TR><TD ALIGN=RIGHT>Children</TD><TD><input size=10 name="MemberOf-new"></TD></TR>
-<TR><TD ALIGN=RIGHT>Refers to</TD><TD><input size=10 name="new-RefersTo"></TD></TR>
-<TR><TD ALIGN=RIGHT>Referred to by</TD><TD><input size=10 name="RefersTo-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new"></TD></TR>
 
 
 </TABLE>
@@ -147,7 +147,7 @@ Describe the issue below:<br>
 </TD>
 </TR>
 </TABLE>
-<& /Elements/Submit, Label => "Create"&>
+<& /Elements/Submit, Label => loc("Create") &>
 </FORM>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>

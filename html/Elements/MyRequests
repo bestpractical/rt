@@ -1,11 +1,11 @@
 <& /Elements/TitleBoxStart, title => loc("25 highest priority tickets I requested...") &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
-<TH align=right>#</TH>
-<TH align=left>Subject</TH>
-<TH align=left>Queue</TH>
-<TH align=left>Status</TH>
-<TH align=left>Owner</TH>
+<TH align=right><&|/l&>#</&></TH>
+<TH align=left><&|/l&>Subject</&></TH>
+<TH align=left><&|/l&>Queue</&></TH>
+<TH align=left><&|/l&>Status</&></TH>
+<TH align=left><&|/l&>Owner</&></TH>
 <TH>&nbsp;</TH>
 </TR>
 % while (my $Ticket = $MyTickets->Next) {
@@ -15,7 +15,7 @@
 </TD>
 <TD>
 <A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || '[no subject]'%>
+<%$Ticket->Subject || loc('[no subject]')%>
 </A>
 </TD>
 <TD>

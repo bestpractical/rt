@@ -364,7 +364,7 @@ push @text, "";
 if ($RT_HANDLER) {
     rt_handler(
         @log_lines,                             "\n",
-        "To generate a diff of this commit:\n", "\n",
+        loc("To generate a diff of this commit:\n"), "\n",
         format_diffs( @modified_files, @added_files, @removed_files )
     );
 }
@@ -375,7 +375,7 @@ if ($COMMITLOG) {
 
 if ($do_diff) {
     push @text, "";
-    push @text, "To generate a diff of this commit:";
+    push @text, loc("To generate a diff of this commit:");
     push @text, format_diffs( @modified_files, @added_files, @removed_files );
     push @text, "";
 }

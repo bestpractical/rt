@@ -1,6 +1,6 @@
   <select name="<%$Name%>">
-    <option value="1" <%$SingleDefault%>>Single</option>
-    <option value="0" <%$MultipleDefault%>>Multiple</option>
+    <option value="1" <%$SingleDefault%>><&|/l&>Single</&></option>
+    <option value="0" <%$MultipleDefault%>><&|/l&>Multiple</&></option>
   </select>	
 
 

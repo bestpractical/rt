@@ -1,7 +1,7 @@
 
 <& /Elements/TitleBoxStart, 
-	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Tickets from $name</a>",
-	titleright=> "<a class='inverse' href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
+	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">".loc("Tickets from [_1]", $name)."</a>",
+	titleright=> "<a class='inverse' href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">".loc("Comments about [_1]", $name)."</a>" &>
 <TABLE WIDTH="100%">
 <tr>
 <td halign=left valign=top>
@@ -10,7 +10,7 @@
 %}
 </td>
 <td align=right valign=top>
-	<% ($User->Comments || "No comment entered about this user") %>
+	<% ($User->Comments || loc("No comment entered about this user")) %>
 </tr>
 </table>
 <& /Elements/TitleBoxEnd &>

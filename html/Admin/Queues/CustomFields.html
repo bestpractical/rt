@@ -1,9 +1,9 @@
-<& /Admin/Elements/Header, Title => 'Edit Custom Fields for '.$Queue->Name &>
+<& /Admin/Elements/Header, Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 <& /Admin/Elements/QueueTabs, id => $Queue->id &>
 
-<& /Elements/TitleBoxStart, title => 'Edit Custom Fields for '.$Queue->Name &>
+<& /Elements/TitleBoxStart, title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 <UL>
-<LI><A href="CustomField.html?create=1&Queue=<%$Queue->id%>">Create a new Custom Field</A><BR><BR>
+<LI><A href="CustomField.html?create=1&Queue=<%$Queue->id%>"><&|/l&>Create a new Custom Field</&></A><BR><BR>
 
 %while  (my $CustomFieldObj = $CustomFields->Next) { 
 
