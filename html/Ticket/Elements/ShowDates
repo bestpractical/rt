@@ -28,7 +28,7 @@
 <&|/l&>Created</&>:
 </TD>
 <TD>
-<% $Ticket->CreatedObj->AsString %>
+<% $Ticket->CreatedObj->AsString %> by <% $Ticket->CreatorObj->Name %>
 </TD>
 </TR>
 <TR>
