@@ -98,6 +98,8 @@ sub resolve_dependency {
 	my $version = shift;
         print "....$module$version not installed.";
     if ($mode =~ /-f/) {
+	$module = "DBD::mysql::Install" if ($module =~ /DBD::mysql/);
+	
         print "Installing with CPAN...";
         CPAN::install($module);
      }
