@@ -5,13 +5,14 @@
 % if ($article->ParentObj->Id) {
 <A href="article.html?id=<%$article->ParentObj->Id%>">[Up to parent article: <%$article->ParentObj->Summary%>]</a><br>
 % } 
-<& /Elements/ArticleHierarchy, parent => $article->Id , Depth => 1&>
+<& /Elements/ArticleHierarchy, parent => $article->Id , Depth => 99 &>
 <HR>
 <& /Elements/ArticleCustomFields, ArticleObj => $article &>
 
 <HR>
 <%$article->ContentObj->Body%>
 
+<& /Elements/ArticleContentHierarchy, parent => $article->Id , Depth => 99&>
 </body>
 </html>
 
