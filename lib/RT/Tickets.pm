@@ -599,9 +599,9 @@ sub LimitTimeLeft {
 
 # {{{ sub LimitKeyword
 
-=head2 KEY=>VALUE, ...
+=head2 LimitKeyword 
 
-Takes a list of key/value pairs with the following keys:
+Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
@@ -698,6 +698,7 @@ takes nothing.
 Returns a hash keyed by restriction id. 
 Each element of the hash is currently a one element hash that contains DESCRIPTION which
 is a description of the purpose of that TicketRestriction
+
 =cut
 
 sub DescribeRestrictions  {

@@ -12,7 +12,6 @@ RT/Action/SendEmail.pm
 RT/Action/StallDependent.pm
 RT/Action/Notify.pm
 RT/Action/ResolveMembers.pm
-RT/Action/Spam.pm
 RT/Attachment.pm
 RT/Attachments.pm
 RT/Condition/AnyTransaction.pm
