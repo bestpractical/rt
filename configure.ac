@@ -71,14 +71,6 @@ AC_DEFUN([ACRT_GROUP_GUESS],
    done
   ])
 
-dnl RTGROUP
-AC_ARG_WITH(rt-group,
-	    AC_HELP_STRING([--with-rt-group=GROUP],
-	    		   [group to own all files (default: rt)]),
-            RTGROUP=$withval,
-            ACRT_GROUP_GUESS([rt3 rt],[RTGROUP], [rt]))
-AC_SUBST(RTGROUP)
-
 dnl BIN_OWNER
 AC_ARG_WITH(bin-owner,
 	    AC_HELP_STRING([--with-bin-owner=OWNER],
@@ -199,6 +191,14 @@ AC_ARG_WITH(web-group,
             WEB_GROUP=$withval,
             ACRT_GROUP_GUESS([www www-data apache httpd nogroup nobody],[WEB_GROUP], [www]))
 AC_SUBST(WEB_GROUP)
+
+dnl RTGROUP
+AC_ARG_WITH(rt-group,
+	    AC_HELP_STRING([--with-rt-group=GROUP],
+	    		   [group to own all files (default: rt)]),
+            RTGROUP=$withval,
+            ACRT_GROUP_GUESS([rt3 rt $WEB_GROUP],[RTGROUP], [rt]))
+AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$(groups|cut -f1 -d' ')
