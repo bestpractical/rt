@@ -1,0 +1,626 @@
+#!/usr/bin/perl
+
+# $Header$
+
+#  RT 1.0 -> RT 2.0 import tool.
+#  RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
+
+
+my $RT1USER = "bje";
+my $RT1PASSWORD = undef;
+my $RT1DATABASE = "rt";
+my $RT1HOST = "localhost";
+my $RT1DATA = "/var/opt/rt";
+my $EMAILHOST = "apnic.net";	# user_id@EMAILHOST for missing RT1 emails
+
+
+
+use strict;
+use Carp;
+use Getopt::Long qw(:config pass_through);
+
+use lib "!!RT_LIB_PATH!!";
+use lib "!!RT_ETC_PATH!!";
+
+use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+			   GetCurrentUser GetMessageContent);
+
+#Clean out all the nasties from the environment
+CleanEnv();
+
+#Load etc/config.pm and drop privs
+LoadConfig();
+
+#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+DBConnect();
+
+#  open the rt1 database, too
+
+my $dsn = "DBI:mysql:database=$RT1DATABASE;host=$RT1HOST;";
+my $dbh = DBI->connect($dsn, $RT1USER, $RT1PASSWORD)
+    or die "Can't connect to RT1 database: ".$DBI::errstr;
+
+#  go through all system users and add them to rt2
+
+MigrateUsers();
+
+
+# lets create a place to put per-queue keywords. (areas)
+my $queue_keyword = RT::Keyword->new($RT::SystemUser);
+$queue_keyword->Create(Name => 'Queues', Parent => 0);
+
+#  go through all the RT1 queues and create rt2 queues
+
+MigrateQueues();
+
+
+#  import queue ACLs for RT1 queues.
+
+#  import tickets from RT1.
+#  foreach ticket, 
+#  get the ticket core data
+#  get the ticket transaction data
+#  get the transaction attachments
+
+
+
+sub MigrateQueues {
+    # Load the RT1 queues
+    my $sth = ExecStatement("select queue_id, mail_alias, comment_alias, 
+    default_prio, default_final_prio, default_due_in, m_owner_trans,
+    m_members_trans, m_user_trans, m_user_create, m_members_corresp,
+    m_members_comment, m_user_resolve, allow_user_create
+    from queues");
+    
+    #Iterate through our queues and create new queue objects
+    while (my @row = $sth->fetchrow_array()) {
+	my $queue = RT::Queue->new($RT::SystemUser);
+	my ($val, $msg) = $queue->Create(Name => $row[0],
+					 Description => 'Imported from RT 1.0',
+					 CorrespondAddress => $row[1],
+					 CommentAddress => $row[2],
+					  InitialPriority => $row[3],
+					 FinalPriority => $row[4],
+					 DefaultDueIn => $row[5]);
+	
+
+	if ($val == 0) {
+	    print "Can't add queue $row[0]: $msg\n";
+	    next;
+	}
+
+	print "Added ".$queue->Name;	
+
+	# TODO Add scrips to mimic RT1's behavior
+	if ($row[6]) { #m_owner_trans
+
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'Transaction',
+			    ScripAction => 'NotifyOwner',
+			    ScripCondition => 'OnTransaction');
+	}
+	if ($row[7] ) { # m_members_trans
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'Transaction',
+			    ScripAction => 'NotifyAdminCcs',
+			    ScripCondition => 'OnTransaction');   
+	    
+	}
+	if ($row[8] ) { # m_user_trans,
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'Transaction',
+			    ScripAction => 'NotifyRequestorsAndCcs',
+			    ScripCondition => 'OnTransaction');   
+	}
+	if ($row[9] ) {  # m_user_create
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'Autoreply',
+			    ScripAction => 'AutoreplyToRequestors',
+			    ScripCondition => 'OnCreate');
+	}
+	if ($row[10]) { # m_members_corresp
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'AdminCorrespondence',
+			    ScripAction => 'NotifyAdminCcs',
+			    ScripCondition => 'OnCorrespond');
+	}
+	if ($row[11]) { # m_members_comment
+	    my $scrip = new RT::Scrip($RT::SystemUser);
+	    $scrip->Create( Queue => $queue->id,
+			    Template => 'AdminComment',
+			    ScripAction => 'NotifyAdminCcsAsComment',
+			    ScripCondition => 'OnComment');
+	}
+
+	# Grant ACLs to 'Everyone' to create requests and see queue if 
+	# allow_user_create is granted.
+	if ($row[13]) {
+	    print "...allowing public ticket creation";
+	    my $everyone = RT::Group->new($RT::SystemUser);
+	    $everyone->Load('Everyone');
+	    $everyone->GrantQueueRight( RightName => 'SeeQueue', 
+					RightAppliesTo => $queue->id);
+	    $everyone->GrantQueueRight( RightName => 'CreateTicket', 
+					RightAppliesTo => $queue->id);
+	}
+
+
+	#Lets get the areas for this queue
+	MigrateAreas($queue);
+
+	print "\n";
+    }
+    
+}
+
+sub MigrateAreas {
+    my $queue = shift;
+    
+    #Find out what areas we have for this queue in RT1..
+    my $sth = ExecStatement(" select area from queue_areas where queue_id = ".$dbh->quote($queue->Name));
+    
+    my $rows = $sth->rows;
+
+    #If we have any...
+    if ($rows) {
+	#Create /QueueName
+	my $queue_keyword = RT::Keyword->new($RT::SystemUser);
+	my ($val, $msg) = $queue_keyword->Create('Name' => $queue->Name,
+			       'Description' => 'Keywords specific to queue' .$queue->Name,
+			       Parent => 'Queues');
+
+	
+	
+	#Create /QueueName/Area/
+	my $area_keyword = RT::Keyword->new($RT::SystemUser);
+	my ($area, $areamsg) = $area_keyword->Create('Name' => $queue->Name,
+			      Parent => $val);
+	
+	#Create all the areas underneath /QueueName/Area/
+	while my ($row = $sth->fetchrow()) {
+	    my $this_area = RT::Keyword->new($RT::SystemUser);
+	    $this_area->Create (Name => $row[0],
+				Description => 'Autocreated by RT 1.0 import',
+				Parent => $area);
+	}	
+	
+	#Create the 'Area' keyword select
+	my $ks = new RT::KeywordSelect($RT::SystemUser);
+	$ks->Create(Name => 'Area',
+		    Keyword => $area,
+		    ObjectType => 'Ticket',
+		    ObjectField => 'Queue',
+		    ObjectValue => $queue->id,
+		    Single => 1,
+		    Depth => 1);
+	
+    }
+}
+
+
+sub MigrateUsers {
+    
+    #load the RT1 users
+    my $sth = ExecStatement("select user_id, real_name, password, 
+         email, phone, office, comments, admin_rt from users 
+         where user_id != 'root' ");
+
+    while (my @row = $sth->fetchrow_array()) {
+	#iterate through the RT1 users list and create new RT2 users.
+	my $user = RT::User->new($RT::SystemUser);
+	
+	#clean up bogus email addresses
+	$row[3] = $row[0]."\@$EMAILHOST" if ($row[3] eq "");
+
+	my ($return, $msg) =  $user->Create( Name => $row[0],
+					     Gecos => $row[0],
+					     RealName => $row[1],
+					     Password => $row[2],
+					     EmailAddress => $row[3],
+					     WorkPhone => $row[4],
+					     Comments => $row[6],
+					     Privileged => 1);
+	if ($return == 0) {
+	    print "Can't add user $row[0]: $msg\n";
+	    next;
+	}
+	print "Added ".$user->Name;
+	if ($row[7]) {
+	    $user->GrantSystemRight('SuperUser');
+	    print " as superuser";
+	}
+	print "\n";
+    }
+    
+    $sth->finish();
+        
+}
+
+
+sub MigrateTickets {
+    my $sth = ExecStatement('select * from each_req');
+    
+    while (my $row = $sth->fetchrow_hashref()) {
+	my $ticket = new RT::Ticket($RT::SystemUser);
+	my ($id, $msg) = 
+	  $ticket->Import( id => $row->{'serial_num'},
+			   Queue => $row->{'queue_id'},
+			   Status => $row{'status'},
+			   Requestors => $row->{'requestors'},
+			   Owner => $row->{'owner'},
+			   Subject => $row->{'subject'},
+			   Priority => $row->{'Priority'},
+			   FinalPriority => $row->{'FinalPriority'},
+			   InitialPriority => $row->{'InitialPriority'},
+			   Due => $row->{'date_due'},
+			   Told => $row->{'date_told'},
+			   Created => $row->{'date_created'},
+			   Updated => $row->{'date_acted'});
+	
+	#
+	#
+	# +++ TODO: deal with merging. effective_sn
+	#
+	#
+
+	my $queue = $ticket->QueueObj();
+	my $area_select = $queue->KeywordSelect('Area');
+
+	my $areaobj = new RT::Keyword($RT::SystemUser);
+	$areaobj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
+			     '/Area/'.$row{'area'});
+	
+	# create the new objectkeyword. bypass the Ticketobj so we don't
+	# get a transaction created for us.
+	my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
+	my $result = $ObjectKeyword->Create( Keyword => $areaobj->id,
+					     ObjectType => 'Ticket',
+					     ObjectId => $ticket->Id,
+					     KeywordSelect => $area_Select->Id );
+	
+	
+    }
+    
+    ImportTransactions($ticket);
+    
+    
+}
+
+sub ImportTransactions {
+    my $ticket = shift;
+
+    my $sth = ExecStatement('SELECT * FROM transactions where serial_num = '.
+			    $ticket->id);
+    my $Status = "open";
+    my $Queue = "(unknown)";
+    my $Area = '';
+    my $Subject = '';
+    my $Owner = $RT::Nobody->Id;
+    
+    while (my $row = $sth->fetchrow_hashref()) {  
+	my %trans_args;
+	
+	$trans_args{'Created'}  = $row->{trans_date};
+	$trans_args{'Creator'} = $row->{actor};
+	
+	$trans_args{'MIMEObj'} = $MIMEObj if $load_content;
+		
+	warn "transaction $row->{id}\n" if $Debug;
+	
+	my $load_content = 0;
+	$trans_args{'Type'} = '';
+	$trans_args{'Field'} = '';
+
+	if ( $row->{type} eq 'create' ) {
+	    $load_content = 1;
+	    $trans_args{'Type'} = "Create";
+	} 
+	elsif ( $row->{type} eq 'status' ) {
+	    $trans_args{'Type'} = "Status";
+	    $trans_args{'Field'} = "Status";
+	    $trans_args{'OldValue'} = $Status;
+	    $trans_args{'NewValue'} = $row->{trans_data};
+	    $Status = $row->{trans_data};
+	} 
+	elsif ( $row->{type} eq 'correspond' ) {
+	    $load_content = 1;
+	    $trans_args{'Type'} = "Correspond";
+	} 
+	elsif ( $row->{type} eq 'comments' ) {
+	    $load_content = 1;
+	    $trans_args{'Type'} = "Comment";
+	} 
+	elsif ( $row->{type} eq 'queue_id' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} = "Queue";
+	    $trans_args{'OldValue'} = $Queue;
+	    $trans_args{'NewValue'} = $row->{trans_data};
+	    $Queue = $row->{trans_data};
+	} 
+	elsif ( $row->{type} eq 'owner' ) {
+
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} ="Owner";
+	    $trans_args{'OldValue'} = $Owner;
+	    $row->{trans_data} ||= 'Nobody';
+	    
+	    my $new_user = new RT::User($RT::SystemUser);
+	    $new_user->Load($row->{'trans_data'});
+	    $trans_args{'NewValue'} = $new_user->Id;
+	    
+	    my $actor = new RT::User($RT::System);
+	    $actor->Load($row->{'actor'});
+	    
+	    #take/give
+	    if ( $Owner == $RT::Nobody->Id 
+		 && $row->{trans_data} eq $row->{actor} ) {
+		$trans_args{'Type'} = 'Take';
+	    } elsif ( $Owner == $actor->Id ) {
+		$trans_args{'Type'} = 'Give'
+	    }
+	    
+	    $Owner = $new_user->Id;
+	    
+	} 
+	elsif ( $row->{type} eq 'effective_sn' ) {
+	    $trans_args{'Type'} = "AddLink";
+	    $trans_args{'Field'} ="MemberOf";
+	    $trans_args{'Data'} = "Ticket ". $Ticket->Id. " $trans_args{'Type'} ticket ". $row->{trans_data};
+
+	} 
+	elsif ( $row->{type} eq 'area' ) {
+	    $trans_args{'Type'} = "Keyword";
+	    $trans_args{'OldValue'} = $Area;
+	    $trans_args{'NewValue'} = $row->{trans_data};
+	    $Area = $row->{trans_data};
+	} 
+	elsif ( $row->{type} eq 'requestors' ) {
+	    $trans_args{'Type'} = "AddWatcher";
+	    $trans_args{'Field'} ="Requestor";
+	    $trans_args{'NewValue'} = $row->{trans_data};
+
+	} 
+	elsif ( $row->{type} eq 'date_due' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} ="Due";
+	    my $date = new RT::Date($RT::SystemUser);
+	    $date->Set( Format=>'unix', Value=>$row->{trans_data} );
+	    $trans_args{'NewValue'} = $date->ISO();
+	} 
+	elsif ( $row->{type} eq 'subject' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} ="Subject";
+	    $trans_args{'OldValue'} = $Subject;
+	    $trans_args{'NewValue'} = $row->{trans_data};
+	    $Subject = $row->{trans_data};
+	    
+	} 
+	elsif ( $row->{type} eq 'date_told' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} = "Told";
+	    
+	    my $date = new RT::Date($RT::SystemUser);
+	    $date->Set( Format=>'unix', Value=>$row->{trans_data} );
+	    $trans_args{'NewValue'} = $date->ISO();
+	    
+	} else {
+	    die "unrecognized transaction type: $row->{type}";
+	}
+	
+	my $MIMEObj;
+	if ( $load_content ) {
+	    my $file = 
+	      time2str(
+		       "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
+		       $row->{trans_date},
+		       'PST',
+		      );
+	    $file =~ s/ //;
+	    
+	    
+	    my $file2 = 
+	      time2str(
+		       "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
+		       $row->{trans_date} + 43200,
+		       'PST',
+		      );
+	    $file2 =~ s/ //;
+      my $file3 = 
+	time2str(
+		 "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
+		 $row->{trans_date} - 43200,
+		 'PST',
+		);
+	    $file3 =~ s/ //;
+	    
+	    my $trans_file;
+	    
+	    $trans_file = -e $file ? $file : -e $file2 ? $file2 : -e $file3 ? $file3 : '' or do {
+		warn "none of $file, $file2 or $file3 exist\n"; #ugh
+		my $rar = <STDIN>;
+		$load_content = 0;
+	    };
+	}
+	
+	# {{{ if we need to get the content out of the database
+	
+	if ( $load_content ) {
+	    warn "  file $trans_file\n" if $Debug;
+	    
+	    #parse $trans_file
+	    open(FILE,"<$trans_file") or die $!;
+	    
+	    
+	    my(@headers, @body);
+	    my $headers = 0;
+	    while (<FILE>) {
+		if ( /^--- Headers Follow ---$/ ) {
+		    $headers = 1;
+		    next;
+		} elsif ( $headers ) {
+		    next if /^\s*$/;
+		    next if /^>From /;
+		    push @headers, $_;
+		} else {
+		    push @body, $_;
+		}
+	    }
+	    
+	    #clean up files with false multipart Content-type
+	    my @n_headers;
+	    while ( my $header = shift @headers ) {
+		if ( $header =~ /^content-type: multipart\/(alternative|mixed|report|signed|digest|related)\s*;/i ) {
+		    my $two = 0;
+		    my $boundary;
+		    if ( $header =~ /;\s*boundary="?([\-\w\.\=\/\+\%]+)"?/i ) {
+			$boundary = $1;
+		    } elsif ( $header =~ /;\s*boundary=\s*$/i )  {
+			#special case for actual boundary on next line
+			die unless $headers[0] =~ /\s+"?([\-\w\.\=\/\+\%]+)"?/i;
+			$boundary = $1;
+			$two = 1;
+		    } elsif ( $headers[0] =~ /(^|;)\s*boundary="([ \-\w\.\=\/\+\%]+)"/i ) { #embedded space, quotes not optional
+			$boundary = $2;
+			$two = 1;
+		    } elsif ( $headers[0] =~ /(^|;)\s*boundary="?([\-\w\.\=\/\+\%]+)"?/i ) {
+			$boundary = $2;
+			$two = 1;
+		    } elsif ( $headers[1] =~ /(^|;)\s*boundary="?([\-\w\.\=\/\+\%]+)"?/i ) {
+			$boundary = $2;
+			$two = 2;
+		    } elsif ( $headers[2] =~ /(^|;)\s*boundary="?([\-\w\.\=\/\+\%]+)"?/i ) {
+			#terrible false laziness.
+			$boundary = $2;
+			$two = 3;
+		    } else {
+			die "can't parse $header for boundry";
+		    }
+		    warn "looking for $boundary in body\n";
+		    unless ( grep /^(\-\-)?\Q$boundary\E(\-\-)?$/, @body ) {
+			splice(@headers, 0, $two);
+			until ( !scalar(@headers) || $headers[0] =~ /^\S/ ) {
+			    warn "**WARNING throwing away header fragment: ". shift @headers;
+			}
+			warn "false Content-type: header removed\n";
+			next;
+		    }
+		}
+		push @n_headers, $header;
+	    }
+	    
+	    warn "    parsing..\n";
+	    my $parser = new MIME::Parser;
+	    $parser->output_to_core(1);
+	    $parser->extract_nested_messages(0);
+	    $MIMEObj = $parser->parse_data( [ @n_headers, "\n", "\n", @body ] );
+	    warn "    parsed\n";
+	} 
+
+	# }}}
+	
+	if ( $trans_args{'Type'} ) {
+	    
+	    warn "adding transaction..\n";
+	    (my $Trans, my $Msg, my $TransObj) = 
+	      NewTransaction( $Ticket, %trans_args );
+	    die unless $Trans;
+	    warn "    added\n";
+	}
+	else {
+	    die "Didn't understand transaction ". $row->{'id'};
+	}
+	
+    }
+}
+
+
+
+#
+# TODO: REFACTOR ME, DAMMIT
+#
+  
+sub NewTransaction {
+    my $ticket = shift;
+    my %args = (TimeTaken => 0,
+		Type => undef,
+		OldValue => undef,
+		NewValue => undef,
+		Data => undef,
+		Field => undef,
+		MIMEObj => undef,
+		@_);
+    
+    
+    
+    my $User = new RT::User($RT::SystemUser);
+    $User->LoadByCol( "UserId", $args{Creator} ) or do {
+	
+	my $Address = $args{Creator};
+	$Address .= '@mail-abuse.org' unless $Address =~ /\@/;
+	
+	my $NewUser = RT::User->new($RT::SystemUser);#Create a user as root 
+	my ($Val, $Message) = $NewUser->Create(UserId => $args{Creator},
+					       EmailAddress => $Address,
+					       Password => undef,
+					       Privileged => 0,
+					       Comments => undef
+					      );
+	
+	if (!$Val) {
+	    #TODO this should not just up and die.
+	    die "couldn't create User for $Address: $Message\n";
+	}
+    
+	$User = $NewUser;
+	
+    };
+    delete $args{Creator};
+    
+    if ( exists($args{Created}) ) {
+	my $created = new RT::Date($RT::SystemUser);
+	$created->Set( Format=>'unix', Value=>$args{Created} );
+	
+    }
+    
+    use RT::Transaction;
+    
+    my $trans = new RT::Transaction($User);
+    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
+    my ($transaction, $msg) = 
+      $trans->Create( Ticket => $ticket->Id,
+		      TimeTaken => $args{'TimeTaken'},
+		      Type => $args{'Type'},
+		      Data => $args{'Data'},
+		      Field => $args{'Field'},
+		      NewValue => $args{'NewValue'},
+		      OldValue => $args{'OldValue'},
+		      MIMEObj => $args{'MIMEObj'},
+		      Created => $created->ISO()
+		    );
+    
+    die($msg) unless $transaction;
+    
+    if (defined $args{'TimeTaken'} ) {
+	$ticket->_UpdateTimeTaken($args{'TimeTaken'}); 
+    }
+    return($transaction, $msg, $trans);
+    
+}
+
+sub ExecStatement {
+    my $statement = shift;
+    
+    my $sth = $dbh->prepare($statement);
+OA    
+    $sth->execute() or 
+      die("Can't exec statement: $statement\nReason:" . $DBI::errstr."\n");
+    
+    return ($sth);
+
+

@@ -165,52 +165,52 @@ my @queues = (
 my @ScripActions = (
 
 		    {
-		     Name => 'AutoreplyToRequestor',
-		     Description =>       'Always sends a message to the requestor independent of message sender',
+		     Name => 'AutoreplyToRequestors',
+		     Description =>       'Always sends a message to the requestors independent of message sender',
 		     ExecModule =>        'Autoreply',
 		     Argument =>          'Requestor'
 		    },
 		    {
-		     Name => 'NotifyRequestor',
-		     Description =>       'Sends a message to the requestor',
+		     Name => 'NotifyRequestors',
+		     Description =>       'Sends a message to the requestors',
 		     ExecModule =>        'Notify',
 		     Argument =>          'Requestor'
 		    },
 		    {
 		     Name =>	          'NotifyOwnerAsComment',
-		     Description =>       'Sends mail to owner',
+		     Description =>       'Sends mail to the owner',
 		     ExecModule =>        'NotifyAsComment',
 		     Argument =>          'Owner'
 		    },
 		    {
 		     Name =>	          'NotifyOwner',
-		     Description =>       'Sends mail to owner',
+		     Description =>       'Sends mail to the owner',
 		     ExecModule =>        'Notify',
 		     Argument =>          'Owner'
 		    },
 		    {
-		     Name =>	          'NotifyAdminWatchersAsComment',
-		     Description =>	  'Sends mail to administrative watchers as a comment',
+		     Name =>	          'NotifyAdminCcsAsComment',
+		     Description =>	  'Sends mail to the administrative Ccs as a comment',
 		     ExecModule =>	  'NotifyAsComment',
 		     Argument =>        'AdminCc'
 		    },
 		    {
-		     Name =>	          'NotifyAdminWatchers',
-		     Description =>	  'Sends mail to administrative watchers',
+		     Name =>	          'NotifyAdminCcs',
+		     Description =>	  'Sends mail to the administrative Ccs',
 		     ExecModule =>	  'Notify',
 		     Argument =>        'AdminCc'
 		    },
 		    
                     {
-                     Name =>             'NotifyRequestorAndCcsAsComment',
-                     Description =>      'Send mail to requestors as a comment',
+                     Name =>             'NotifyRequestorsAndCcsAsComment',
+                     Description =>      'Send mail to requestors and Ccs as a comment',
                      ExecModule =>       'NotifyAsComment',
                      Argument =>         'Requestor,Cc'
                     },
 		    
 		    {
 		     Name =>             'NotifyRequestorsAndCcs',
-		     Description =>      'Send mail to requestors',
+		     Description =>      'Send mail to requestors and Ccs',
 		     ExecModule =>       'Notify',
 		     Argument =>         'Requestor,Cc'
 		    },
@@ -332,13 +332,13 @@ you may reply to this message.
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->QueueObj->Name}
-     Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
+     Subject: {$Transaction->Subject || "(No subject given)"}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->Requestors->EmailsAsString()}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
-{$Transaction->Content() if $Transaction->Message()->First()}'},
+{$Transaction->Content()}'},
 
 
 {
@@ -346,7 +346,7 @@ Transaction: {$Transaction->Description}
                   Queue   => '0',
                   Name => 'AdminCorrespondence',
                   Description => 'Default admin correspondence template',
-                  Content => 'Subject: {$Transaction->Message()->First()->Subject}
+                  Content => 'Subject: {$Transaction->Subject|| "(No subject given)"}
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 
@@ -366,7 +366,7 @@ Transaction: {$Transaction->Description}
                   Queue   => '0',
                   Name => 'AdminComment',
                   Description => 'Default admin comment template',
-                  Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
+                  Content =>  'Subject: [Comment] {my $s=$Transaction->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
