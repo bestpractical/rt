@@ -47,7 +47,7 @@
 use strict;
 use Carp;
 
-use lib ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
 package RT;
 
