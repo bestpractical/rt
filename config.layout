@@ -57,3 +57,24 @@
   customlexdir:		${customdir}/local/po
   customlibdir:		${customdir}/local/lib
 </Layout>
+
+<Layout Win32>
+  prefix:		C:/Program Files/Request Tracker
+  exec_prefix:		${prefix}
+  bindir:		${exec_prefix}/bin
+  sbindir:		${exec_prefix}/sbin
+  sysconfdir:		${prefix}/etc
+  mandir:		${prefix}/man
+  libdir:		${prefix}/lib
+  datadir:		${prefix}
+  htmldir:		${datadir}/html
+  manualdir:		${datadir}/doc
+  localstatedir:	${prefix}/var
+  logfiledir:		${localstatedir}/log
+  masonstatedir:	${localstatedir}/mason_data
+  sessionstatedir:	${localstatedir}/session_data
+  customdir:		${prefix}/local
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
+</Layout>

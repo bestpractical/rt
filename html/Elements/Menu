@@ -33,7 +33,9 @@
 % } else {
 % $sep=0;
 % }
-<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" style="font-size: <%$size%>;" class="<%$class%>" <% !$level && "accesskey='".$accesskey++."'" %>><% $toptabs->{$tab}->{'title'}%></A>
+<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" style="font-size: <%$size%>;" class="<%$class%>" 
+<%($class eq 'currenttopnav') ? "name='focus'" : "" %> 
+<% !$level && "accesskey='".$accesskey++."'" %>><% $toptabs->{$tab}->{'title'}%></A>
 %# Second-level items
 %# if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
 %# commented out by jesse on 4 jan 2003 so that tickets/search and ticket/# can

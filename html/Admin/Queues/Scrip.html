@@ -36,6 +36,15 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
 my ($title, $current_subtab);
+my $subtabs = {                                                                               
+     A => { title => loc('Select scrip'),                                                     
+            path => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
+               },                                                                             
+     B => { title => loc('New scrip'),                                                        
+            path => "Admin/Queues/Scrip.html?Create=1&Queue=".$QueueObj->id,
+            separator => 1,                                                                   
+               }, 
+          };   
 
 unless($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
@@ -43,23 +52,13 @@ unless($QueueObj->id) {
 if ($id) {
     $current_subtab = "Admin/Queues/Scrip.html?id=".$id."&Queue=".$QueueObj->id;
     $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
-}else {
-    $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
+    $subtabs->{"C"} = { title => loc("#[_1]",$QueueObj->id),
+			path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id };
+} else {
+    $current_subtab = "Admin/Queues/Scrip.html?Create=1&Queue=".$QueueObj->id;
     $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
 }
                                                                                              
-my $subtabs = {                                                                               
-     A => { title => loc('Select scrip'),                                                     
-            path => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
-               },                                                                             
-     B => { title => loc('New scrip'),                                                        
-            path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
-            separator => 1,                                                                   
-               }, 
-    this => { title => loc("#[_1]",$id),
-            path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id, 
-            }
-          };   
 
 </%init>
 

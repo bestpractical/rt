@@ -35,7 +35,7 @@
 %if ($Create ) {
 <INPUT TYPE=HIDDEN NAME="Template" VALUE="new">
 % } else {
-<INPUT TYPE=HIDDEN NAME=template VALUE="<%$TemplateObj->Id%>">
+<INPUT TYPE=HIDDEN NAME="Template" VALUE="<%$TemplateObj->Id%>">
 % }
 
 %# hang onto the queue id
@@ -50,6 +50,16 @@ $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab);
+
+my $subtabs = {
+		 A => { title => loc('Select template'),
+  		     	path => "Admin/Queues/Templates.html?id=$Queue"
+			   },
+		 B => { title => loc('New template'),
+  		     	path => "Admin/Queues/Template.html?Create=1&Queue=$Queue",
+			separator => 1,
+			   }
+	      };
 
 if ($Create) {
   $title = loc("Create a template");
@@ -76,13 +86,12 @@ if ($TemplateObj->Id()) {
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
+  $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id();
+  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
+  		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id(),
+			};
   push @results, @aresults;
 }
-my $subtabs = {
-		 A => { title => loc('New template'),
-  		     	path => "Admin/Queues/Template.html?create=1&Queue=".$Queue
-			   }
-	      };
 
 </%INIT>
 <%ARGS>

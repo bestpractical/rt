@@ -152,6 +152,8 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 .othertab { margin: 0.2em; background: #efefef; }
 .oddline { background-color : #ccccee; }
 
+UL.topnav LI :focus { background-color: #000011; }
+
 TD.mainbody {
         padding-top: 0.5em;
         padding-left: 0.5em;
@@ -249,6 +251,7 @@ A IMG { color: white } /* The only way to hide the border in NS 4.x */
 a:link {  text-decoration: none}
 a:hover {  text-decoration: underline}
 a:visited {  text-decoration: none}
+a:focus { background-color: #ccccee }
 
 .hide {
   display: none;

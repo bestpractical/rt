@@ -33,7 +33,14 @@
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
-<BODY BGCOLOR="<%$BgColor%>">
+<BODY BGCOLOR="<%$BgColor%>"
+% if ($Focus) {
+ONLOAD="
+    var tmp = (document.getElementsByName('<% $Focus %>'));
+    if (tmp.length > 0) tmp[tmp.length-1].focus();
+"
+% }
+>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
     <td colspan=2><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></td>
@@ -62,6 +69,7 @@ $r->header_out('Cache-control' => 'no-cache');
 </%INIT>
 
 <%ARGS>
+$Focus => 'focus'
 $Title => undef
 $Code => undef
 $Refresh => 0

@@ -82,7 +82,7 @@ ok( $g->Id, "Found 'everybody'");
 my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 ok ($val, "Granted everybody the right to create tickets - $msg");
 
-sleep(10); # gotta sleep so the remote process' ACL cache times out
+sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;

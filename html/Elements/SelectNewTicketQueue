@@ -37,6 +37,7 @@
 <%INIT>
 unless ($session{'create_in_queues'}) { 
 
+@{$session{'create_in_queues'}} = ();
 my $q=new RT::Queues($session{'CurrentUser'});
 $q->UnLimit;
 while (my $queue=$q->Next) {
