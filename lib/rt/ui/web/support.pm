@@ -156,7 +156,7 @@ sub cgi_vars_in {
 	read(STDIN, $cgi_vars, $ENV{'CONTENT_LENGTH'});
 	$cgi_vars .= "&";
     }
-	$cgi_vars .= $$ENV{'QUERY_STRING'};
+	$cgi_vars .= $ENV{'QUERY_STRING'};
 	@pairs = split(/&/, $cgi_vars);
 
     
