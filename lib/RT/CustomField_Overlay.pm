@@ -10,7 +10,13 @@ use RT::CustomFieldValues;
 use RT::TicketCustomFieldValues;
 
 # Enumerate all valid types for this custom field
-@TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple );
+@TYPES = (
+    'SelectSingle',	# loc
+    'SelectMultiple',	# loc
+    'FreeformSingle',	# loc
+    'FreeformMultiple', # loc
+);
+
 # Populate a hash of types of easier validation
 for (@TYPES) { $TYPES{$_} = 1};
 

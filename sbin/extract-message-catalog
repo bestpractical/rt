@@ -14,7 +14,8 @@ $DEBUG = 1;
 
 foreach my $lang (@ARGV) {
     $lang =~ s|.*/||; $lang =~ s|\.po$||;
-    eval { update($lang) } or warn $@;
+    # eval { update($lang) } or warn $@;
+    update($lang);
 }
 
 sub update {
@@ -43,7 +44,7 @@ sub update {
     local $/;
     print "Done reading lexicon \n";
 
-    File::Find::find({wanted => \&extract_strings_from_code}, '.');
+    File::Find::find({wanted => \&extract_strings_from_code, follow => 1}, '.');
 
     sub extract_strings_from_code {
 	my $file = $_;
@@ -56,21 +57,34 @@ sub update {
 	while (s!<&\|/l.*?&>(.*?)</&>!!s) {
 	    my $u = $1; 
             $u =~ s/\\'/\'/g; 
-            $file{$u} .= " $r";
+            $file{$u}{$r}++;
 	}
 
 	while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) {
 	    my $u = substr($1, 1, -1); 
             $u =~ s/\\'/\'/g; 
-            $file{$u} .= " $r";
+            $file{$u}{$r}++;
 	}
 
 	while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) {
 	    my $u = substr($1, 1, -1); 
             $u =~ s/\\'/\'/g; 
-            $file{$u} .= " $r";
+            $file{$u}{$r}++;
+	}
+
+	while (s!($RE{delimited}{-delim=>"'"}{-esc}{-keep})[\}\)\],]*\s*\#\s*loc\s*\n!!s) {
+	    my $u = substr($1, 1, -1); 
+            $u =~ s/\\'/\'/g; 
+            $file{$u}{$r}++;
+	}
+
+	while (s!($RE{delimited}{-delim=>'"'}{-esc}{-keep})[\}\)\],]*\s*\#\s*loc\s*\n!!s) {
+	    my $u = substr($1, 1, -1); 
+            $u =~ s/\\'/\'/g; 
+            $file{$u}{$r}++;
 	}
     }
+
     foreach (sort keys %file) {
 	my $k = $file{$_};
 
@@ -87,7 +101,8 @@ sub update {
 
     delete $file{''};
     foreach (sort keys %Lexicon) {
-	my $f = $file{$_};
+	my $f = join(' ', sort keys %{$file{$_}});
+	$f = " $f" if length $f;
 	my $nospace = $_;
 	$nospace =~ s/ +$//;
 

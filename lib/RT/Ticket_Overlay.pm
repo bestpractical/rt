@@ -604,17 +604,17 @@ sub Import {
         EffectiveId     => $EffectiveId,
         Queue           => $QueueObj->Id,
         Owner           => $Owner->Id,
-        Subject         => $args{'Subject'},
-        InitialPriority => $args{'InitialPriority'},
-        FinalPriority   => $args{'FinalPriority'},
-        Priority        => $args{'InitialPriority'},
-        Status          => $args{'Status'},
-        TimeWorked      => $args{'TimeWorked'},
-        Type            => $args{'Type'},
-        Created         => $args{'Created'},
-        Told            => $args{'Told'},
-        LastUpdated     => $args{'Updated'},
-        Due             => $args{'Due'},
+        Subject         => $args{'Subject'},		# loc
+        InitialPriority => $args{'InitialPriority'},	# loc
+        FinalPriority   => $args{'FinalPriority'},	# loc
+        Priority        => $args{'InitialPriority'},	# loc
+        Status          => $args{'Status'},		# loc
+        TimeWorked      => $args{'TimeWorked'},		# loc
+        Type            => $args{'Type'},		# loc
+        Created         => $args{'Created'},		# loc
+        Told            => $args{'Told'},		# loc
+        LastUpdated     => $args{'Updated'},		# loc
+        Due             => $args{'Due'},		# loc
     );
 
     # If the ticket didn't have an id
@@ -655,7 +655,7 @@ sub Import {
 sub Delete {
     my $self = shift;
     return ( 0,
-        $self->loc("Deleting this object would violate referential integrity.") );
+        $self->loc("Deleting this object would violate referential integrity") );
 }
 
 # }}}

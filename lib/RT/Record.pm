@@ -293,7 +293,6 @@ sub _Set {
         Value => $args{'Value'},
         IsSQL => $args{'IsSQL'}
     );
-
 }
 
 # }}}
@@ -403,6 +402,7 @@ sub __Value {
 	return pack('U0A*', $value);
     }
     elsif ($] >= 5.006) {
+	eval '$value =~ tr/\0-\xFF//CU'; # avoid syntax error
 	return $value;
     }
     else {

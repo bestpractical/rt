@@ -15,7 +15,7 @@
 </TD>
 <TD>
 <A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('[no subject]')%>
+<%$Ticket->Subject || loc('(no subject)')%>
 </A>
 </TD>
 <TD>

@@ -345,43 +345,43 @@ $WebExternalAuto = undef;
      
      QueueListingCols => 
       [
-       { Header     => 'Id',
+       { Header     => 'Id',				# loc
 	 TicketLink => 1,
 	 TicketAttribute => 'Id'
 	 },
 
-      { Header     => 'Subject',
+      { Header     => 'Subject',			# loc
 	 TicketAttribute => 'Subject'
 	 },
-       { Header => 'Requestor(s)',
+       { Header => 'Requestor(s)',			# loc
 	 TicketAttribute => 'RequestorAddresses'
 	 },
-       { Header => 'Status',
+       { Header => 'Status',				# loc
 	 TicketAttribute => 'Status'
 	 },
 
 
-       { Header => 'Queue',
+       { Header => 'Queue',				# loc
 	 TicketAttribute => 'QueueObj->Name'
 	 },
 
 
 
-       { Header => 'Told',
+       { Header => 'Told',				# loc
 	 TicketAttribute => 'ToldObj->AgeAsString'
 	 },
 
-       { Header => 'Age',
+       { Header => 'Age',				# loc
 	 TicketAttribute => 'CreatedObj->AgeAsString'
 	 },
 
-       { Header => 'Last',
+       { Header => 'Last',				# loc
 	 TicketAttribute => 'LastUpdatedObj->AgeAsString'
 	 },
 
        # TODO: It would be nice with a link here to the Owner and all
        # other request owned by this Owner.
-       { Header => 'Owner',
+       { Header => 'Owner',				# loc
 	 TicketAttribute => 'OwnerObj->Name'
        },
    

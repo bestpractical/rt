@@ -44,7 +44,7 @@ else {
         my ($id, $msg) = $Group->CreatePersonalGroup(Name => "$Name", 
 					PrincipalId => $session{'CurrentUser'}->PrincipalId);
         unless ($id) {
-		Abort (loc("Coould not create group"));
+		Abort (loc("Could not create group"));
 	}
 	$id = $Group->Id;
     }

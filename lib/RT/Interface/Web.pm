@@ -127,6 +127,36 @@ sub loc {
 # }}}
 
 
+# {{{ loc_match
+
+=head2 loc_match ARRAY
+
+loc_match is for handling localizations of messages that may already
+contain interpolated variables, typically returned from libraries
+outside RT's control.  It takes the message string and extracts the
+variable array automatically by matching against the candidate entries
+passed as rest of @_.
+
+=cut
+
+sub loc_match {
+    my $self = shift;
+    my $msg  = shift;
+    
+    foreach my $entry (@_) {
+	my $regex = quotemeta($entry);
+	$regex =~ s/\\\[_\d\\\]/(.*?)/;
+	if (my @matched = ($msg =~ /^$regex$/)) {
+	    return $self->loc($entry, @matched);
+	}
+    }
+
+    return $self->loc($msg);
+}
+
+# }}}
+
+
 # {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
@@ -354,9 +384,11 @@ sub MakeMIMEEntity {
         Data    => [ $args{'Body'} ]
     );
 
-    my $cgi_object = $RT::Mason::CGI;
+    my $cgi_object = $r->cgi_object;
 
-    my $filehandle = eval { $cgi_object->upload( $args{'AttachmentFieldName'} ) } or return ($Message);
+    if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+
+
 
     use File::Temp qw(tempfile tempdir);
 
@@ -370,9 +402,13 @@ sub MakeMIMEEntity {
         print $fh $buffer;
     }
 
-    my $filename = "$filehandle";
-    $filename =~ s#^(.*)/##;
     my $uploadinfo = $cgi_object->uploadInfo($filehandle);
+
+    # Prefer the cached name first over CGI.pm stringification.
+    my $filename = $RT::Mason::CGI::Filename;
+    $filename = "$filehandle" unless defined($filename);
+		   
+    $filename =~ s#^.*/##;
     $Message->attach(
         Path     => $temp_file,
         Filename => $filename,
@@ -381,6 +417,9 @@ sub MakeMIMEEntity {
     close($fh);
 
     #	}
+
+    }
+
     $Message->make_singlepart();
     return ($Message);
 
@@ -671,13 +710,29 @@ sub UpdateRecordObject {
 
             my $method = "Set$attribute";
             my ( $code, $msg ) = $object->$method( $ARGSRef->{"$attribute"} );
-            push @results, "$attribute: $msg";
+
+	    push @results, $self->loc($attribute) . ': '. $self->loc_match(
+		$msg,
+"[_1] could not be set to [_2].",	# loc
+"That is already the current value",	# loc
+"No value sent to _Set!\n",		# loc
+"Illegal value for [_1]",		# loc
+"The new value has been set.",		# loc
+"No column specified",			# loc
+"Immutable field",			# loc
+"Nonexistant field?",			# loc
+"Invalid data",				# loc
+"Couldn't find row",			# loc
+"Missing a primary key?: [_1]",		# loc
+"Found Object",				# loc
+	    );
         }
     }
     return (@results);
 }
 
 # }}}
+
 
 # {{{ Sub ProcessCustomFieldUpdates
 

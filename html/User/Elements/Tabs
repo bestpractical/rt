@@ -4,7 +4,7 @@
   
 <%INIT>
   my $tabs = { a => { title => loc('Prefs'),
-			  path => 'Users/Prefs.html',
+			  path => 'User/Prefs.html',
 			},
 	       g => { title => loc('Groups'),
 			   path => 'User/Groups/index.html',

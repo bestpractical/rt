@@ -1065,7 +1065,7 @@ sub _CanonicalizePrincipal {
         $equiv_group->LoadACLEquivalenceGroup($princ_obj);
         unless ($equiv_group->Id) {
             $RT::Logger->crit("No ACL equiv group for princ ".$self->__Value('ObjectId'));
-            return(0,$self->loc('System Error. Right not granted.'));
+            return(0,$self->loc('System error. Right not granted.'));
         }
         $princ_obj = $equiv_group->PrincipalObj();
         $princ_type = 'Group';
