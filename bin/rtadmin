@@ -277,12 +277,11 @@ sub AdminUser {
 
     my $user_obj = new RT::User($CurrentUser);
     
-    $args{'Name'} = $user unless($args{'Name'});
  
     #Create the user if we need to 
     if ($args{'create'}) {
 	my ($status, $msg) = 
-	  $user_obj->Create( Name => $args{'Name'},
+	  $user_obj->Create( Name => ($args{'Name'} || $user),
 			     Gecos => $args{'Gecos'},
 			     Password => $args{'Password'},
 			     EmailAddress => $args{'EmailAddress'},
@@ -391,13 +390,11 @@ sub AdminQueue {
     use RT::Queue;
     my $queue_obj = new RT::Queue($CurrentUser);
     
-    $args{'Name'} = $queue unless ($args{'Name'});
-    
     #Create the queue if we need to 
     if ($args{'create'}) {
 	my ($status, $msg) = 
 	  $queue_obj->Create(
-			     Name => $args{'Name'},
+			     Name => ($args{'Name'} || $queue) ,
 			     CorrespondAddress => $args{'CorrespondAddress'},
 			     Description => $args{'Description'},
 			     CommentAddress  => $args{'CommentAddress'},
@@ -648,7 +645,7 @@ sub AdminGroup {
 
     GetOptions(\%args,
 	       'create', 'delete', 'display',
-	       'Name', 'Description',
+	       'Name=s', 'Description=s',
 	       	       
 	       'add-member=s@', 'delete-member=s@',
 	       'list-members'
@@ -662,11 +659,10 @@ sub AdminGroup {
 	return();
     }	
     
-    $args{'Name'} = $group unless ($args{'Name'});
 
     #Create the group if we need to
     if ($args{'create'}) {
-	my ($val, $msg) = $group_obj->Create( Name => $args{'Name'},
+	my ($val, $msg) = $group_obj->Create( Name => ($args{'Name'} || $group),
 					      Description => $args{'Description'} );
 	print $msg ."\n";
     }	
