@@ -179,6 +179,16 @@ sub ProcessStatusChangeQuery {
 }
 
 # {{{ sub ProcessSearchQuery
+
+=head2 ProcessSearchQuery
+
+  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Tickets can understand.
+
+TODO Doc exactly what comes in the paramhash
+
+
+=cut
+
 sub ProcessSearchQuery {
     my %args=@_;
     
@@ -188,11 +198,9 @@ sub ProcessSearchQuery {
 
     require RT::Tickets;
 
- 
-#TODO We'll do sticky searches later
+    #Searches are sticky.
     if (defined $session{'tickets'}) {
 	# Reset the old search
-
 	$session{'tickets'}->GotoFirstItem;
     } else {
 	# Init a new search
@@ -271,5 +279,7 @@ sub Config {
   my $key=shift;
   return $args->{$key} || $RT::WebOptions{$key};
 }
+
+
 
 1;
