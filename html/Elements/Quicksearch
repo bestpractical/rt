@@ -55,19 +55,16 @@
 <%PERL>
 my $i;
 while (my $queue = $Queues->Next) {
+       next unless ($queue->CurrentUserHasRight('ShowTicket'));
+
         my $new_q = "Queue = '".$queue->Name."' AND Status = 'new'";
         my $open_q = "Queue = '".$queue->Name."' AND Status = 'open'";
         my $all_q = "Queue = '".$queue->Name."' AND (Status = 'open' OR Status = 'new')";
 
-
-     $Tickets->ClearRestrictions;                                           
-     $Tickets->LimitStatus(VALUE => "open");                                
-     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
+    $Tickets->FromSQL($open_q);
      my $open = $Tickets->Count();
 
-     $Tickets->ClearRestrictions;                                           
-     $Tickets->LimitStatus(VALUE => "new");
-     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
+        $Tickets->FromSQL($new_q);
      my $new = $Tickets->Count();
 
 
