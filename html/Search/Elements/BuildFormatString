@@ -66,33 +66,52 @@ unless ($Format) {
 
 # All the things we can display in the format string by default
 my @fields = qw(
-    QueueName        
-    OwnerName
-    id               Status
-    Subject          ExtendedStatus
-    Priority         InitialPriority
-    FinalPriority    Type
-    TimeWorked       TimeLeft
-    TimeEstimated    Requestors
-    Cc               AdminCc
-    StartsRelative   StartedRelative
-    CreatedRelative  LastUpdatedRelative
-    ToldRelative     DueRelative
-    ResolvedRelative Starts
-    Started          Created
-    CreatedBy        LastUpdated
-    LastUpdatedBy    Told
-    Due              Resolved
-    NEWLINE          RefersTo
-    ReferredToBy     DependsOn
-    DependedOnBy     MemberOf
-    Members          Parents
-    Children         -
+  id
+  Status
+  ExtendedStatus
+  Subject
+  QueueName
+  OwnerName
+  Priority
+  InitialPriority
+  FinalPriority
+  Type
+  TimeWorked
+  TimeLeft
+  TimeEstimated
+  CreatedBy
+  LastUpdatedBy
+  Requestors
+  Cc
+  AdminCc
+  Starts
+  StartsRelative
+  Started
+  StartedRelative
+  Created
+  CreatedRelative
+  LastUpdated
+  LastUpdatedRelative
+  Told
+  ToldRelative
+  Due
+  DueRelative
+  Resolved
+  ResolvedRelative
+  RefersTo
+  ReferredToBy
+  DependsOn
+  DependedOnBy
+  MemberOf
+  Members
+  Parents
+  Children
+  NEWLINE
 );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach (keys %cfqueues) {
-    my $id = $_;
+foreach my $id (keys %cfqueues) {
+    # What does this _do_? What are the keys to cfqueues
     $id =~ s/^.'*(.*).'*$/$1/;
     # Gotta load up the $queue object, since queues get stored by name now.
     my $queue = RT::Queue->new($session{'CurrentUser'});
@@ -173,9 +192,7 @@ elsif ( $AddCol ) {
         $column{Suffix} .= "</a>";
     }
     elsif ( $Link eq "Take" ) {
-        $column{Prefix} .=
-            "<A HREF=\""
-          . $RT::WebPath
+        $column{Prefix} .= "<A HREF=\"" . $RT::WebPath
           . "/Ticket/Display.html?Action=Take&id=__id__\">";
         $column{Suffix} .= "</a>";
     }
