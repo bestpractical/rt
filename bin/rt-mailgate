@@ -472,7 +472,13 @@ sub GetCurrentUser  {
     my $CurrentUser = RT::CurrentUser->new();
     
     $CurrentUser->LoadByEmail($Address);
+  
+    #If we can't get it by email address, try by name.  
+    unless ($CurrentUser->Id) {
+	$CurrentUser->LoadByName($Address);
+    }
     
+
     unless ($CurrentUser->Id) {
 	#If it fails, create a user
 	
@@ -501,6 +507,12 @@ sub GetCurrentUser  {
 	
 	#Load the new user object
 	$CurrentUser->LoadByEmail($Address);
+	
+	unless ($CurrentUser->id) {
+		$RT::Logger->warn("Couldn't load user '$Address'.".
+			          " Defaulting to nobody");
+
+	$CurrentUser->Load($RT::Nobody->Id);
     }
     return ($CurrentUser);
 }
