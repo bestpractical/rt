@@ -10,13 +10,13 @@
 This is an unfriendly error message.
 <hr>
 <h1><%$Why%></h1>
-$Details
+<%$Details%>
 </body>
 </HTML>
 <%args>
 $Code => undef
-$Details => "(No details given)";
-$Title => "Some error";
+$Details => "(No details given)"
+$Title => "Some error"
 $Why => "the calling component did not specify why"
 </%args>
 <%INIT>

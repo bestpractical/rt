@@ -93,6 +93,7 @@ sub activate  {
        #print "Action is $Action\n";
       my $Ticket = new RT::Ticket($CurrentUser);
       $Ticket->Load($TicketId) || die "Could not load ticket";
+      $Ticket->Open; # Reopening it, if necessary
       # TODO: better error handling
       $Ticket->Comment(MIMEObj=>$entity);
     }
@@ -104,6 +105,7 @@ sub activate  {
       my $Ticket = RT::Ticket->new($CurrentUser);
       $Ticket->Load($TicketId);
 	#	print STDERR "Ticket loaded\n";
+      $Ticket->Open; # Reopening it, if necessary
       #TODO: Check for error conditions
       $Ticket->Correspond(MIMEObj => $entity);
    	#print STDERR "ticket correspond done\n"; 

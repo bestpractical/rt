@@ -88,10 +88,14 @@ sub IsApplicable  {
   # Loop check.  This header field might be added to the incoming mail
   # by RT::Interfaces::Email.pm if it might be a loop or result in
   # looping (typically a bounce) 
-  if ( my $m=$self->TransactionObj->Message->First 
-       and $m->Headers =~ /^RT-Mailing-Loop-Alarm/m) {
+  my $m=$self->TransactionObj->Message->First ;
+  if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
       warn "Aborting mailsending Scrip because of possible or potential mail loop";
       return 0;
+  }
+
+  if (!$m) {
+      warn "No transaction attachment";
   }
 
   # More work needs to be done here to avoid duplicates beeing sent,
