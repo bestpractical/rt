@@ -76,6 +76,25 @@ sub LimitToDeleted {
 }
 # }}}
 
+
+# {{{ sub Limit 
+
+=head2 Limit PARAMHASH
+
+This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 0, thus
+making sure that by default lots of things don't do extra work trying to 
+match lower(colname) agaist lc($val);
+
+=cut
+
+sub Limit {
+	my $self = shift;
+	my %args = ( CASESENSITIVE => 0,
+		     @_ );
+
+   return $self->SUPER::Limit(%args);
+}
+
 # {{{ sub CurrentUser 
 
 =head2 CurrentUser
