@@ -9,29 +9,21 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "each_req";
+  $self->{'table'} = "queues";
   $self->{'user'} = shift;
-  return $self;
+  $self->_init(@_);
+  return ($self);
 }
 
 
 sub create {
   my $self = shift;
-#  print STDERR "MKIA::Article::create::",join(", ",@_),"\n";
-  my $id = $self->SUPER::create(@_);
-  $self->load_by_reference($id);
 
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
-
-  #sub create is handled by the baseclass. we should be calling it like this:
-  #$id = $article->create( title => "This is a a title",
-  #		  mimetype => "text/plain",
-  #		  author => "jesse@arepa.com",
-  #		  summary => "this article explains how to from a widget",
-  #		  content => "lots and lots of content goes here. it doesn't 
-  #                              need to be preqoted");
-  # TODO: created is not autoset
+  print STDERR "In RT::Queue::create.pm\n";
+  my $id = $self->SUPER::Create(QueueId => @_);
+  print STDERR "Loading $id\n";
+  $self->load_by_id($id);
+  
 }
 
 sub delete {
@@ -62,6 +54,7 @@ sub delete {
 
 sub Create {
   my $self = shift;
+  print "In RT::Queue::Create\n";
   return($self->create(@_));
 }
 
@@ -90,7 +83,7 @@ sub QueueId {
 
 sub id {
   my $self = shift;
-  return($self->id);
+  return($self->_set_and_return('id'));
 }
 sub CommentAddress {
   my $self = shift;
@@ -101,7 +94,7 @@ sub CommentAddress {
 
 sub StartingPriority {
   my $self = shift;
-  $self->_set_and_return('StartingPriority',@_);
+  $self->_set_and_return('InitialPriority',@_);
 }
 sub FinalPriority {
   my $self = shift;
@@ -209,15 +202,15 @@ sub ACL {
  #
 #ACCESS CONTROL
 # 
-sub Display_Permitted {
+sub DisplayPermitted {
   my $self = shift;
 
   my $actor = shift;
   if (!$actor) {
    my $actor = $self->CurrentUser;
  }
-  if ($self->Queue->DisplayPermitted($actor)) {
-    
+#  if ($self->Queue->DisplayPermitted($actor)) {
+ if (1){   
     return(1);
   }
   else {
@@ -225,14 +218,14 @@ sub Display_Permitted {
     return(0);
   }
 }
-sub Modify_Permitted {
+sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
     my $actor = $self->CurrentUser;
   }
-  if ($self->Queue->ModifyPermitted($actor)) {
-    
+#  if ($self->Queue->ModifyPermitted($actor)) {
+ if (1) {   
     return(1);
   }
   else {
@@ -241,7 +234,7 @@ sub Modify_Permitted {
   }
 }
 
-sub Admin_Permitted {
+sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -249,8 +242,8 @@ sub Admin_Permitted {
   }
 
 
-  if ($self->Queue->AdminPermitted($actor)) {
-    
+#  if ($self->ACL->AdminPermitted($actor)) {
+ if (1) {   
     return(1);
   }
   else {

@@ -22,9 +22,9 @@ use Carp;
 use DBIx::Handle;
 
 #TODO: need to identify the database user here....
-my $Handle = new DBIx::Handle;
+$RT::Handle = new DBIx::Handle;
 
-$Handle->Connect(Host => $RT::DatabaseHost, 
+$RT::Handle->Connect(Host => $RT::DatabaseHost, 
 		      Database => $RT::DatabaseName, 
 		      User => $RT::DatabaseUser,
 		      Password => $RT::DatabasePassword,
@@ -42,13 +42,13 @@ if ($program eq '!!RT_ACTION_BIN!!') {
   require rt::ui::cli::support;
    require rt::ui::cli::manipulate;
 
-  &rt::ui::cli::manipulate::activate($Handle);
+  &rt::ui::cli::manipulate::activate();
 }
 elsif ($program eq '!!RT_QUERY_BIN!!') {
   # load rt-query
 
   require rt::ui::cli::query;
-  &rt::ui::cli::query::activate($Handle);
+  &rt::ui::cli::query::activate();
   
 }
 elsif ($program eq '!!RT_ADMIN_BIN!!') {
@@ -56,14 +56,14 @@ elsif ($program eq '!!RT_ADMIN_BIN!!') {
   require rt::support::utils;     
   require rt::ui::cli::support;
   require rt::ui::cli::admin;
-  &rt::ui::cli::admin::activate($Handle);
+  &rt::ui::cli::admin::activate();
 }
 elsif ($program eq '!!RT_WEB_QUERY_BIN!!') {
   # WebRT
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
-  &rt::ui::web::activate($Handle);
+  &rt::ui::web::activate();
 }
 elsif ($program eq '!!RT_WEB_ADMIN_BIN!!') {
   #load web-admin
@@ -71,7 +71,7 @@ elsif ($program eq '!!RT_WEB_ADMIN_BIN!!') {
   require rt::ui::web::auth;
   require rt::support::utils;   
   require rt::ui::web::admin;
-  &rt::ui::web::activate($Handle);
+  &rt::ui::web::activate();
 
 }
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
@@ -79,7 +79,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   require rt::support::utils;      
   require rt::support::mail;
   require rt::ui::mail::manipulate;
-  &rt::ui::mail::manipulate::activate($Handle);
+  &rt::ui::mail::manipulate::activate();
 }
 else {
   print STDERR "RT Has been launched with an illegal launch program ($program)\n";
@@ -87,4 +87,4 @@ else {
 }
 
 
-$Handle->Disconnect();
+$RT::Handle->Disconnect();

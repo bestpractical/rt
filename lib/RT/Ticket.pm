@@ -15,7 +15,8 @@ sub new {
   bless ($self, $class);
   $self->{'table'} = "each_req";
   $self->{'user'} = shift;
-  return $self;
+  $self->_init(@_);
+  return ($self);
 }
 
 
@@ -46,7 +47,7 @@ sub create {
 	      content => undef,
 	      @_);
 
-  my $id = $self->SUPER::create(id => $args{'id'},
+  my $id = $self->SUPER::Create(id => $args{'id'},
 				effective_id => $args{'effective_id'},
 				queue => $args{'queue'},
 				area => $args{'area'},

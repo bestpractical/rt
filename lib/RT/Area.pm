@@ -17,7 +17,8 @@ sub new {
 
   $self->{'table'} = "queue_areas";
   $self->{'user'} = shift;
-  return $self;
+  $self->_init(@_);
+  return ($self);
 }
 
 
@@ -34,7 +35,7 @@ sub create {
   # Return 0 if missing any critical values
   return (0) if ((!$args{'area'}) || (! $args{'queue'}));
   
-  my $id = $self->SUPER::create(queue => $args{'queue'},
+  my $id = $self->SUPER::Create(queue => $args{'queue'},
 				area => $args{'area'},
 				description => $args{'description'},
 				comment => $args{'comment'});

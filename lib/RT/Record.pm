@@ -9,28 +9,19 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "each_req";
-  $self->{'user'} = shift;
+  #  $self->{'table'} = "each_req";
+  #$self->{'user'} = shift;
   return $self;
 }
 
 
-sub create {
+sub Create {
   my $self = shift;
-  my $id = $self->SUPER::create(@_);
-  $self->load_by_reference($id);
+  print STDERR "In RT::Record->create\n";
+  my $id = $self->SUPER::Create(@_);
+  print STDERR "RT::Record->create Loading by Ref $id\n";
+  return($id);
 
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
-
-#sub create is handled by the baseclass. we should be calling it like this:
-#$id = $article->create( title => "This is a a title",
-#		  mimetype => "text/plain",
-#		  author => "jesse@arepa.com",
-#		  summary => "this article explains how to from a widget",
-#		  content => "lots and lots of content goes here. it doesn't 
-#                              need to be preqoted");
-# TODO: created is not autoset
 }
 
 
@@ -54,10 +45,6 @@ sub _set_and_return {
       #instantiate a transaction 
       #record what's being done in the transaction
  
-      #Figure out where to send mail
-      
-      $self->_update_date_acted;
-
       $self->SUPER::_set_and_return($field, @_);
     }
     else {
@@ -67,6 +54,10 @@ sub _set_and_return {
   
 }
 
+sub CurrentUser {
+  my $self = shift;
+  return ($self->{'user'});
+}
     
 
 1;

@@ -16,9 +16,9 @@ sub new {
   bless ($self, $class);
   $self->{'table'} = "users";
   $self->{'user'} = shift;
-  $self->{'DBIxHandle'} = shift;
-  print STDERR "Calling Super::NEW\n";
-#  $self->SUPER::new($proto, @_);
+  
+  $self->_init(@_);
+
   return($self);
 }
 
@@ -39,7 +39,7 @@ sub create {
   
   return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
-  my $id = $self->SUPER::create(%args);
+  my $id = $self->SUPER::Create(%args);
   $self->load_by_reference($id);
 
   #TODO: this is horrificially wasteful. we shouldn't commit 

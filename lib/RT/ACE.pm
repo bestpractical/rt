@@ -11,7 +11,8 @@ sub new {
   bless ($self, $class);
   $self->{'table'} = "queue_acls";
   $self->{'user'} = shift;
-  return $self;
+  $self->_init(@_);
+  return ($self);
 }
 
 sub User {

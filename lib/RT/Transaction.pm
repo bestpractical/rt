@@ -15,7 +15,8 @@ sub new {
 
   $self->{'table'} = "transactions";
   $self->{'user'} = shift;
-  return $self;
+  $self->init(@_);
+  return ($self);
 }
 
 
@@ -42,7 +43,7 @@ sub create {
   return (0) if (! $args{'ticket'});
 
   #lets create our parent object
-  my $id = $self->SUPER::create(ticket => $args{'ticket'},
+  my $id = $self->SUPER::Create(ticket => $args{'ticket'},
 				effective_ticket  => $args{'ticket'},
 				time_taken => $args{'TimeTaken'},
 				date => time(),

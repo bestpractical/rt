@@ -37,27 +37,27 @@ CREATE TABLE users (
 INSERT INTO users VALUES (0,'root','root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
 
 CREATE TABLE queues (
- id CHAR(40) NOT NULL PRIMARY KEY,
- mail_alias CHAR(40),
- comment_alias CHAR(40),
- m_owner_trans INT,             # notify owner on transaction
- m_members_trans INT,		# notify list members on transaction
- m_user_trans INT,		# notify requestor on transaction
- m_user_create INT,		# notify user on creation
- m_members_corresp INT,		# notify members on creation
- m_members_comment INT,		# notify members on comment
- m_user_resolve INT,		# mail user on resolution.  NOT YET IMPLEMENTED
- allow_user_create INT,		#let nonmembers create
- default_prio INT,
- default_final_prio INT,
- default_due_in INT		#reqs in this queue are due in X days by default
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+ QueueId CHAR(40) NOT NULL,
+ CorrespondAddress CHAR(40),
+ CommentAlias CHAR(40),
+ MailOwnerOnTransaction INT,             # notify owner on transaction
+ MailMembersOnTransaction INT,		# notify list members on transaction
+ MailRequestorOnTransaction INT,	# notify requestor on transaction
+ MailRequestorOnCreation INT,		# notify user on creation
+ MailMembersOnCorrespondence INT,		# notify members on creation
+ MailMembersOnComment INT,		# notify members on comment
+ PermitNonmemberCreate INT,		#let nonmembers create
+ InitialPriority INT,
+ FinalPriority INT,
+ DefaultDueIn INT		#reqs in this queue are due in X days by default
 )\g
 
 #
 # Table structure for table 'each_req'
 #
 
-CREATE TABLE ticket (
+CREATE TABLE tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_id INT,
   queue CHAR(40),
