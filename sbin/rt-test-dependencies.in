@@ -191,16 +191,19 @@ DBD::Pg
 .
 
 print "perl:\n";
-print "\t5.8.0";
-eval {require 5.008};
+print "\t5.8.3";
+eval {require 5.008003};
 if ($@) {
-print "...missing.\n";
-        eval {require 5.006001};
+print "...MISSING.\n";
+        eval {require 5.008000};
         if ($@) {
-            print " RT is known to be non-functional on versions of perl older than 5.6.1. Please upgrade to 5.8.0 or newer";
+            print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
             die;
-        } else {
-            print " RT is not supported on perl 5.6.1\n";
+        } 
+
+        eval {require 5.008003};
+        if ($@) {
+            print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
         }
 } else {
         print "...found\n";
