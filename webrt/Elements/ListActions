@@ -1,16 +1,14 @@
 % if (@actions ) {
 <& /Elements/TitleBoxStart, title => 'Results' &>
 <UL>
-% foreach $action (@actions) {
+% foreach my $action (@actions) {
+% next unless ($action);
 <LI><%$action%></LI>
 % }
 </UL>
 <& /Elements/TitleBoxEnd &>
 <BR>
 % }
-<%INIT>
-my $action;
-</%INIT>
 <%ARGS>
 @actions = undef
 </%ARGS>

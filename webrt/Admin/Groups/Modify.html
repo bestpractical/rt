@@ -1,6 +1,6 @@
 <& /Admin/Elements/Header, Title => $title &>
 
-<& /Admin/Elements/GroupTabs, id => $id &>
+<& /Admin/Elements/GroupTabs, GroupObj => $Group &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -28,8 +28,10 @@ Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Descri
 </form>
 <%INIT>
 
-my $Group = new RT::Group($session{'CurrentUser'});
 my ($title);
+my (@results);
+
+my $Group = new RT::Group($session{'CurrentUser'});
 
 if ($Create) {
     $title = "Create a new group";
@@ -70,7 +72,6 @@ eval $check;
 
 <%ARGS>
 $Create => undef
-@results => undef
 $Name => undef
 $Description => undef
 $id => undef

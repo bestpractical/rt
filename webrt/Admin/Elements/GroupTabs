@@ -2,19 +2,17 @@
 <hr>
 <%INIT>
 my $subtabs = { 
-             Queues => { title => 'Basics',
-                         path => "Admin/Groups/Modify.html?id=$id",
-                       },
-             Scrips => { title => 'Rights',
-                         path => "Admin/Groups/Rights.html?id=$id",
-                       },
-             Templates => { title => 'Members',
-                         path => "Admin/Groups/Members.html?id=$id",
-                       },
+             Basics => { title => 'Basics',
+                         path => "Admin/Groups/Modify.html?id=". $GroupObj->id
+                       }
+	};
 
-           };
+unless ($GroupObj->Pseudo) {
+$subtabs->{'Members'} = { title => 'Members',
+                         path => "Admin/Groups/Members.html?id=".$GroupObj->id };
+}
 </%INIT>
 
 <%ARGS>
-$id => undef
+$GroupObj => undef
 </%ARGS>

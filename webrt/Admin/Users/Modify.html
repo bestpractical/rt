@@ -122,7 +122,7 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <%INIT>
 
 my $UserObj = new RT::User($session{'CurrentUser'});
-my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled);
+my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 if ($Create) {
     $title = "Create a new user";
@@ -204,8 +204,6 @@ if ($UserObj->Privileged()) {
 
 <%ARGS>
 $id => undef
-$result => undef
-@results => undef
 $Name  => undef
 $Comments  => undef
 $Signature  => undef
