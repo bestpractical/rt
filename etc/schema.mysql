@@ -358,6 +358,9 @@ CREATE TABLE TicketCustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
+CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
+
 # }}}
 
 # {{{ CustomFields
@@ -399,6 +402,8 @@ CREATE TABLE CustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+ 
 # }}}
 
 # {{{ Sessions

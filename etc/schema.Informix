@@ -297,6 +297,8 @@ CREATE TABLE TicketCustomFieldValues (
         PRIMARY KEY (id)
 );
 
+CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
+CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
 
 CREATE TABLE CustomFields (
 	id		SERIAL,
@@ -328,6 +330,7 @@ CREATE TABLE CustomFieldValues (
         PRIMARY KEY (id)
 );
 
+CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 CREATE TABLE sessions (
 	id		VARCHAR(32) NOT NULL,
