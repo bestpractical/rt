@@ -66,9 +66,7 @@ unless ($Collapsed) {
       <TD>&nbsp;&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 <span class="message">
-	<PRE>
 <& ShowMessageHeaders, Headers => $headers, Transaction => $Transaction, DisplayHeaders => \@DisplayHeaders &>
-</PRE>
 % if ($ShowBody) {
 % if (!length($quoted) && $message->ContentType =~ m#^text/#) {
 <blockquote><i>
