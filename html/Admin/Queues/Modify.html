@@ -143,6 +143,12 @@ my @attribs= qw(Description CorrespondAddress CommentAddress Name
   if ($QueueObj->Disabled()) {
       $EnabledChecked ="";
   }
+
+    my @linkresults;
+    $m->comp('/Elements/Callback', results => \@linkresults, 
+	     RecordObj => $QueueObj, ARGSRef => \%ARGS, 
+	     _CallbackName => 'ProcessLinks');
+    push @results, @linkresults;
 }
 </%INIT>
 
