@@ -27,7 +27,9 @@
     Title => $title,
     Format => $Format,
     Query => $Query,
-    Rows => $ARGS{'Rows'} &>
+    Rows => $ARGS{'Rows'},
+    OrderBy => $ARGS{'OrderBy'},
+    Order => $ARGS{'Order'} &>
 <hr>
 <& /Elements/TicketList, 
     Query => $Query,
@@ -64,10 +66,12 @@ if ( $session{'tickets'}->Query()) {
 }
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',
-				Query => $Query,
-				Format => $Format,
-				Rows => $ARGS{'Rows'},
-				Page => $ARGS{'Page'});	
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $ARGS{'Rows'},
+                               OrderBy => $ARGS{'OrderBy'},
+                               Order => $ARGS{'Order'},
+                               Page => $ARGS{'Page'});
 
 
 

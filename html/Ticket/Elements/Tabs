@@ -159,9 +159,11 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 my $args = "?" . $m->comp(
     '/Elements/QueryString',
-    Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
-    Format => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
-    Rows   => $ARGS{'Rows'},
+    Query   => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
+    Format  => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
+    OrderBy => $ARGS{'OrderBy'},
+    Order   => $ARGS{'Order'},
+    Rows    => $ARGS{'Rows'},
   ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",

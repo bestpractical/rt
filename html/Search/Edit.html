@@ -27,7 +27,9 @@
     Title => $title,
     Format => $Format,
     Query => $Query,
-    Rows => $ARGS{'Rows'} &>
+    Rows => $ARGS{'Rows'},
+    OrderBy => $ARGS{'OrderBy'},
+    Order => $ARGS{'Order'} &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
@@ -43,7 +45,13 @@
 <%INIT>
 my $title = loc("Edit Query");
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-my $QueryString = $m->comp('/Elements/QueryString', Query=>$Query,Format=>$Format,Rows=>$ARGS{'Rows'});
+my $QueryString = $m->comp('/Elements/QueryString',
+                           Query   => $Query,
+                           Format  => $Format,
+                           Rows    => $ARGS{'Rows'},
+                           OrderBy => $ARGS{'OrderBy'},
+                           Order   => $ARGS{'Order'},
+                          );
 
 </%INIT>
 

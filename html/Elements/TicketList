@@ -45,14 +45,20 @@
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 
 <%perl>
-my $prev =  $m->comp('/Elements/QueryString', Query => $Query,
-                                Format => $Format,
-                                Rows => $Rows,
-                                Page => ($Page-1));
-my $next =  $m->comp('/Elements/QueryString', Query => $Query,
-                                Format => $Format,
-                                Rows => $Rows,
-                                Page => ($Page+1));
+my $prev =  $m->comp('/Elements/QueryString',
+                     Query => $Query,
+                     Format => $Format,
+                     Rows => $Rows,
+                     OrderBy => $OrderBy,
+                     Order => $Order,
+                     Page => ($Page-1));
+my $next =  $m->comp('/Elements/QueryString',
+                     Query => $Query,
+                     Format => $Format,
+                     Rows => $Rows,
+                     OrderBy => $OrderBy,
+                     Order => $Order,
+                     Page => ($Page+1));
 </%perl>
 % if ($Page > 1) {
 <A href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
@@ -432,7 +438,7 @@ $Page => 1
 $Title => 'Ticket Search'
 $Collection => undef
 $AllowSorting => undef
-$Order =>undef
+$Order => undef
 $OrderBy => undef
 $BaseURL => undef
 $Format => $RT::DefaultSearchResultFormat
