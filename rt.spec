@@ -10,7 +10,7 @@ Requires: perl
 Requires: mod_perl > 1.22
 Requires: perl-DBI >= 1.18
 Requires: perl-DBIx-DataSource >= 0.02
-Requires: perl-DBIx-SearchBuilder >= 0.40
+Requires: perl-DBIx-SearchBuilder >= 0.43
 Requires: perl-HTML-Parser
 Requires: perl-MLDBM
 Requires: perl-libnet
