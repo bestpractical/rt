@@ -1,0 +1,1 @@
+<FORM ACTION="/Ticket/Create.html"><input type=submit value="New ticket in">&nbsp;<& /Elements/SelectNewTicketQueue &></FORM>
