@@ -73,20 +73,14 @@
     $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
 
-    if (ref($Object) eq 'RT::Group') { 
+    if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
         %Rights = %{$Object->AvailableRights};
     } 
 
-    elsif (ref($Object) eq 'RT::Queue') { 
-        %Rights = %{$Object->AvailableRights};
-    } 
-    elsif (ref($Object) eq 'RT::System') {
-        my $q = RT::Queue->new($session{'CurrentUser'});
-        my $g = RT::Group->new($session{'CurrentUser'});
-        %Rights = (%{$Object->AvailableRights}, %{$q->AvailableRights}, %{$g->AvailableRights});
-    }
-
-    
+        else {
+                %Rights = { loc('System Error') => loc("No rights found")};
+        }
+        
     $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;
 </%INIT>
     

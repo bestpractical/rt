@@ -48,11 +48,35 @@ foreach my $right ( keys %{$RIGHTS} ) {
 
 Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
 
+=begin testing
+
+my $s = RT::System->new($RT::SystemUser);
+my $rights = $s->AvailableRights;
+ok ($rights, "Rights defined");
+ok ($rights->{'AdminUsers'},"AdminUsers right found");
+ok ($rights->{'CreateTicket'},"CreateTicket right found");
+ok ($rights->{'AdminGroupMembership'},"ModifyGroupMembers right found");
+ok (!$rights->{'CasdasdsreateTicket'},"bogus right not found");
+
+
+
+=end testing
+
+
 =cut
 
 sub AvailableRights {
     my $self = shift;
-    return($RIGHTS);
+
+    my $queue = RT::Queue->new($RT::SystemUser);
+    my $group = RT::Group->new($RT::SystemUser);
+
+    my $qr =$queue->AvailableRights();
+    my $gr = $group->AvailableRights();
+
+    # Build a merged list of all system wide rights, queue rights and group rights.
+    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr});
+    return(\%rights);
 }
 
 
