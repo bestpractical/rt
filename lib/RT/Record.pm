@@ -128,6 +128,8 @@ sub LoadByCols {
     if ($self->_Handle->CaseSensitive) {
 	 my %newhash;
 	 foreach my $key (keys %hash) {
+        # If we've been passed an empty value, we can't do the lookup. 
+        next unless defined($hash{$key});
 		# We don't need to explicitly downcase integers or an id.
 		if ($key =~ '^id$' || $hash{$key} =~/^\d+$/) {
 			$newhash{$key} = $hash{$key};
