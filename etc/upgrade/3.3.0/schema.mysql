@@ -48,7 +48,7 @@ CREATE TABLE ObjectCustomFields (
 ) TYPE=InnoDB;
 
 
-INSERT into ObjectCustomFields (id, CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields
+INSERT into ObjectCustomFields (id, CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
 
 alter table CustomFields add column LookupType varchar(255) NOT NULL;
 alter table CustomFields add column Repeated int2 NOT NULL DEFAULT 0 ;

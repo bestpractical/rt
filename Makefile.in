@@ -212,9 +212,9 @@ upgrade-instruct:
 	@echo ""
 	@echo "For each item in that directory whose name is greater than"
 	@echo "your previously installed RT version, run:"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action schema --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action acl --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action schema --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action acl --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action insert --datadir etc/upgrade/<version>"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct
