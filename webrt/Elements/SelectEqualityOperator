@@ -1,0 +1,18 @@
+%# $Header$
+<SELECT NAME ="<%$Name%>">
+% while (my $option = shift @Options) {
+% my $value = shift @Values;
+<OPTION VALUE="<%$value%>"
+% if ($Default eq '$value') {
+SELECTED
+% }
+><%$option%></OPTION>
+% }
+</SELECT>
+
+<%ARGS>
+$Name => undef
+@Options => ('less than', 'equal to', 'greater than', 'not equal to')
+@Values => qw(< = > !=)
+$Default => undef
+</%ARGS>

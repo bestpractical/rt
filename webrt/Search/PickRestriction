@@ -28,11 +28,7 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 <& /Elements/SelectQueue, Name => "ValueOfQueue" &>
 
 
-<li>Priority  <& /Elements/SelectBoolean,  Name => "PriorityOp" , 
-					True => "exceeds", 
-					False => "is less than", 
-					TrueVal=> '>', 
-					FalseVal => '<' &>
+<li>Priority  <& /Elements/SelectEqualityOperator,  Name => "PriorityOp" &>
 
 <INPUT Name="ValueOfPriority" SIZE=5>
 

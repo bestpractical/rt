@@ -2,7 +2,7 @@
 <OPTION VALUE="">-</OPTION>
 <OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
 %while ( my $User = $Users->Next())  {
-% if ((!defined $QueueObj) || ($QueueObj->HasRight( Principal => $User, Right => 'OwnTicket'))){
+% if ((!defined $QueueObj) || ($User->HasQueueRight(Right => 'OwnTicket', QueueObj => $QueueObj, TicketObj => $TicketObj))){
 <OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->Name()%></OPTION>
 % }
 %}
@@ -18,4 +18,5 @@ $QueueObj => undef
 $Name => undef
 $Default => undef
 $User => undef
+$TicketObj => undef
 </%ARGS>
