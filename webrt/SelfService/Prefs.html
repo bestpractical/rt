@@ -3,11 +3,13 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method=post>
 
+% unless ($RT::WebExternalAuth) {
 <& /Elements/TitleBoxStart, title => 'Change password'  &>
 New password: <input type=password name="NewPass1" size=16>
 Confirm: <input type=password name="NewPass2" size=16>
 <& /Elements/TitleBoxEnd &>
 <BR>
+% }
 <& /Elements/TitleBoxStart, title => 'Signature'  &>
 
 <TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{'CurrentUser'}->UserObj->Signature %></TEXTAREA>

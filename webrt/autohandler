@@ -7,6 +7,20 @@ if ($m->base_comp->path =~ '^/NoAuth/') {
         $m->call_next();
 	$m->abort();
 }
+
+# If RT is configured for external auth, let's get REMOTE_USER
+# We intentionally don't test for REMOTE_USER to meet our policy
+elsif ($RT::WebExternalAuth){
+
+    $user = $ENV{'REMOTE_USER'};
+    $session{'CurrentUser'} = RT::CurrentUser->new();
+    $session{'CurrentUser'}->Load($user);
+    unless ($session{'CurrentUser'}->id() ) {
+        delete $session{'CurrentUser'};
+        $m->comp('/Elements/Login', %ARGS, Error=> 'You are not an authorized user');
+        $m->abort();
+    }
+}
  
 # If the user is loging in, let's authenticate
 elsif (defined ($user) && defined ($pass)){

@@ -11,7 +11,7 @@
 contentbg=>"#cccccc" &>
 
 
-
+% unless ($RT::WebExternalAuth) {
 <FORM METHOD=POST >
 <TABLE BORDER=0 WIDTH=100%>
 <TR ALIGN=RIGHT>
@@ -41,6 +41,7 @@ contentbg=>"#cccccc" &>
 %}
 
 </FORM>
+% }
 </DIV>
 
 <BR>
