@@ -168,17 +168,18 @@ sub SetMIMEEntityToEncoding {
 
     SetMIMEHeadToEncoding($entity->head, $charset => $enc);
 
-    my ( $head, $body ) = ( $entity->head, $entity->bodyhandle );
+    my $head = $entity->head;
 
-    if ( $head->mime_type !~ /^text\/plain$/i ) {
-	# the entity is not text; convert at least MIME word encoded attachment filename
-	foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	    if ( my $name = $head->mime_attr($attr) ) {
-		$head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
-	    }
+    # convert at least MIME word encoded attachment filename
+    foreach my $attr (qw(content-type.name content-disposition.filename)) {
+	if ( my $name = $head->mime_attr($attr) ) {
+	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
 	}
-	return;
     }
+
+    return unless ( $head->mime_type =~ /^text\/plain$/i );
+
+    my $body = $entity->bodyhandle;
 
     if ( $enc ne $charset ) {
 	my @lines = $body->as_lines or return;
@@ -205,10 +206,6 @@ sub SetMIMEEntityToEncoding {
 
         my $new_body = MIME::Body::InCore->new( \@lines );
 
-	use Data::Dumper;
-	open X, ">/tmp/foo.txt" or die $!;
-	print X Data::Dumper::Dumper(\@lines);
-	close X;
         # set up the new entity
         $head->mime_attr( "content-type" => 'text/plain' )
           unless ( $head->mime_attr("content-type") );
@@ -316,8 +313,10 @@ sub _FindOrGuessCharset {
 	    $RT::Logger->debug("Guessed encoding: $charset");
 	    return $charset;
 	}
-	elsif ($decoder =~ /Encodings too ambiguous: (.+)/) {
+	elsif ($decoder =~ /(\S+ or .+)/) {
 	    my %matched = map { $_ => 1 } split(/ or /, $1);
+	    return 'utf-8' if $matched{'utf8'}; # one and only normalization
+
 	    foreach my $suspect (@RT::EmailInputEncodings) {
 		next unless $matched{$suspect};
 		$RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
