@@ -808,8 +808,10 @@ sub _SetupMIMEParser {
     # Set up output directory for files:
     $parser->output_dir("$AttachmentDir");
 
-    #If someone includes a message, don't extract it
+    #If someone includes a message, extract it
     $parser->extract_nested_messages(1);
+
+    $parser->extract_uuencode(1);           ### default is false
 
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
