@@ -366,6 +366,7 @@ sub cli_create_req  {
    # print "Message CC is ". $message->head->get('From');
 
     my ($id, $Transaction, $ErrStr) = $Ticket->Create ( QueueTag => $queue_id,
+#			       Alias => $alias,
 			       Owner => $Owner->id,
 			       Subject => $Subject,
 			       InitialPriority => $priority,
