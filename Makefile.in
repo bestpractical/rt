@@ -492,6 +492,7 @@ rpm:
 
 apachectl:
 	$(APACHECTL) stop
-	sleep 3
+	sleep 10
 	$(APACHECTL) start
+	sleep 5
 # }}}
