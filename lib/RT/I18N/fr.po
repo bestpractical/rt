@@ -275,8 +275,8 @@ msgstr ""
 
 #: html/Elements/MyRequests:25
 #. ($rows)
-msgid "%1 newest unowned tickets..."
-msgstr "les %1 derniers tickets sans propiétaire..."
+msgid "%1 newest unowned tickets"
+msgstr "les %1 derniers tickets sans propiétaire"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 not shown"

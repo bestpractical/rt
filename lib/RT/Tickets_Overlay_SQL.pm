@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 use strict;
 use warnings;
 
@@ -83,11 +83,19 @@ sub _InitSQL {
 }
 
 sub _SQLLimit {
+  my $self = shift;
+    my %args = (@_);
+    if ($args{'FIELD'} eq 'EffectiveId') {
+        $self->{'looking_at_effective_id'} = 1;
+    }      
+    
+    if ($args{'FIELD'} eq 'Type') {
+        $self->{'looking_at_type'} = 1;
+    }
+
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  my $this = shift;
-
-  $this->SUPER::Limit(@_,
+  $self->SUPER::Limit(%args,
                       SUBCLAUSE => 'ticketsql');
 }
 
@@ -111,14 +119,6 @@ sub _CloseParen {
 =head1 SQL Functions
 
 =cut
-
-sub _match {
-  # Case insensitive equality
-  my ($y,$x) = @_;
-  return 1 if $x =~ /^$y$/i;
-  #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
-  return 0;
-}
 
 =head2 Robert's Simple SQL Parser
 
@@ -227,11 +227,11 @@ sub _parser {
     my $current = 0;
 
     # Highest priority is last
-    $current = OP      if _match($re_op,$val) ;
-    $current = VALUE   if _match($re_value,$val);
-    $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
-    $current = AGGREG  if _match($re_aggreg,$val);
-    $current = PAREN   if _match($re_paren,$val);
+    $current = OP      if $val =~ /^$re_op$/io;
+    $current = VALUE   if $val =~ /^$re_value$/io;
+    $current = KEYWORD if $val =~ /^$re_keyword$/io && ($want & KEYWORD);
+    $current = AGGREG  if $val =~ /^$re_aggreg$/io;
+    $current = PAREN   if $val =~ /^$re_paren$/io;
     $current = COLUMN if _match($re_keyword,$val) && ($want & COLUMN);
     $current = WHERE if _match($re_where,$val) && ($want & WHERE);
     $current = SELECT if _match($re_select,$val);

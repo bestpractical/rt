@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,13 +42,13 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <& /Elements/Callback, %ARGS &>
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">
 <option value="" SELECTED>-</option>
-<option value="null"><&|/l&>(no value)</&></option>
+<option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
 <option value="<%$value->Name%>"><%$value->Name%></option>
 % }

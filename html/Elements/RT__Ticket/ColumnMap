@@ -1,0 +1,387 @@
+%# BEGIN LICENSE BLOCK;
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+
+<%ARGS>
+$Name => undef
+$Attr => undef
+</%ARGS>
+
+<%perl>
+return ColumnMap($Name, $Attr);
+</%perl>
+
+<%INIT>
+our ( $COLUMN_MAP, $CUSTOM_FIELD_MAP );
+
+sub ColumnMap {
+    my $name = shift;
+    my $attr = shift;
+
+    # First deal with the simple things from the map
+    if ( $COLUMN_MAP->{$name} ) {
+        return ( $COLUMN_MAP->{$name}->{$attr} );
+    }
+
+    # now, let's deal with harder things, like Custom Fields
+
+    elsif ( $name =~ /^(?:CF|CustomField).(.*)$/ ) {
+        my $field = $1;
+        my $cf;
+        if ( $CUSTOM_FIELD_MAP->{$field} ) {
+            $cf = $CUSTOM_FIELD_MAP->{$field};
+        }
+        else {
+
+            $cf = RT::CustomField->new( $session{'CurrentUser'} );
+
+            if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+                $cf->LoadByNameAndQueue( Queue => $1, Name => $2 );
+            }
+            else {
+                $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+                $cf->LoadByNameAndQueue( Queue => "0", Name => $field );
+            }
+            $CUSTOM_FIELD_MAP->{$field} = $cf if ( $cf->id );
+        }
+
+        unless ( $cf->id ) {
+            return undef;
+        }
+
+        if ( $attr eq 'attribute' ) {
+            return (undef);
+        }
+        elsif ( $attr eq 'title' ) {
+            return ( $cf->Name );
+        }
+        elsif ( $attr eq 'value' ) {
+            my $value = eval "sub {
+                    my \$values = \$_[0]->CustomFieldValues('" . $cf->id . "');
+                    return ( join( ', ', map { \$_->Content } \@{ \$values->ItemsArrayRef } ))
+                  }" || die $@;
+            return ($value);
+        }
+    }
+}
+
+$COLUMN_MAP = {
+    QueueName => {
+        attribute => 'Queue',
+        title     => 'Queue',
+        value     => sub { return $_[0]->QueueObj->Name }
+    },
+    OwnerName => {
+        title     => 'Owner',
+        attribute => 'Owner',
+        value     => sub { return $_[0]->OwnerObj->Name }
+    },
+    id => {
+        attribute => 'id',
+        align     => 'right',
+        value     => sub { return $_[0]->id }
+    },
+    Status => {
+        attribute => 'Status',
+        value     => sub { return $_[0]->Status }
+    },
+    Subject => {
+        attribute => 'Subject',
+        value => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
+    },
+    ExtendedStatus => {
+        title     => 'Status',
+        attribute => 'Status',
+        value     => sub {
+            my $Ticket = shift;
+
+            if ( $Ticket->HasUnresolvedDependencies ) {
+                if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
+                    or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
+                {
+                    return "<em>" . loc('(pending approval)') . "</em>";
+                }
+                else {
+                    return "<em>" . loc('(pending other Collection)') . "</em>";
+                }
+            }
+            else {
+                return loc( $Ticket->Status );
+            }
+
+          }
+    },
+    Priority => {
+        attribute => 'Priority',
+        value     => sub { return $_[0]->Priority }
+    },
+    InitialPriority => {
+        attribute => 'InitialPriority',
+        value     => sub { return $_[0]->InitialPriority }
+    },
+    FinalPriority => {
+        attribute => 'FinalPriority',
+        value     => sub { return $_[0]->FinalPriority }
+    },
+    EffectiveId => {
+        attribute => 'EffectiveId',
+        value     => sub { return $_[0]->EffectiveId }
+    },
+    Type => {
+        attribute => 'Type',
+        value     => sub { return $_[0]->Type }
+    },
+    TimeWorked => {
+        attribute => 'TimeWorked',
+        value     => sub { return $_[0]->TimeWorked }
+    },
+    TimeLeft => {
+        attribute => 'TimeLeft',
+        value     => sub { return $_[0]->TimeLeft }
+    },
+    TimeEstimated => {
+        attribute => 'TimeEstimated',
+        value     => sub { return $_[0]->TimeEstimated }
+    },
+    Requestors => {
+        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+    },
+    Cc => {
+        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+    },
+    AdminCc => {
+        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+    },
+    StartsRelative => {
+        title     => 'Starts',
+        attribute => 'Starts',
+        value     => sub { return $_[0]->StartsObj->AgeAsString }
+    },
+    StartedRelative => {
+        title     => 'Started',
+        attribute => 'Started',
+        value     => sub { return $_[0]->StartedObj->AgeAsString }
+    },
+    CreatedRelative => {
+        title     => 'Created',
+        attribute => 'Created',
+        value     => sub { return $_[0]->CreatedObj->AgeAsString }
+    },
+    LastUpdatedRelative => {
+        title     => 'LastUpdated',
+        attribute => 'LastUpdated',
+        value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
+    },
+    ToldRelative => {
+        title     => 'Told',
+        attribute => 'Told',
+        value     => sub { return $_[0]->ToldObj->AgeAsString }
+    },
+    DueRelative => {
+        title     => 'Due',
+        attribute => 'Due',
+        value     => sub { return $_[0]->DueObj->AgeAsString }
+    },
+    ResolvedRelative => {
+        title     => 'Resolved',
+        attribute => 'Resolved',
+        value     => sub { return $_[0]->ResolvedObj->AgeAsString }
+    },
+    Starts => {
+        attribute => 'Starts',
+        value     => sub { return $_[0]->StartsObj->AsString }
+    },
+    Started => {
+        attribute => 'Started',
+        value     => sub { return $_[0]->StartedObj->AsString }
+    },
+    Created => {
+        attribute => 'Created',
+        value     => sub { return $_[0]->CreatedObj->AsString }
+    },
+    CreatedBy => {
+        attribute => 'CreatedBy',
+        value     => sub { return $_[0]->CreatorObj->Name }
+    },
+    LastUpdated => {
+        attribute => 'LastUpdated',
+        value     => sub { return $_[0]->LastUpdatedObj->AsString }
+    },
+    LastUpdatedBy => {
+        attribute => 'LastUpdatedBy',
+        value     => sub { return $_[0]->LastUpdatedByObj->Name }
+    },
+    Told => {
+        attribute => 'Told',
+        value     => sub { return $_[0]->ToldObj->AsString }
+    },
+    Due => {
+        attribute => 'Due',
+        value     => sub { return $_[0]->DueObj->AsString }
+    },
+    Resolved => {
+        attribute => 'Resolved',
+        value     => sub { return $_[0]->ResolvedObj->AsString }
+    },
+
+    DependedOnBy => {
+        value => sub {
+            my $links = $_[0]->DependedOnBy;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    Members => {
+        value => sub {
+            my $links = $_[0]->Members;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    Children => {
+        value => sub {
+            my $links = $_[0]->Members;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    ReferredToBy => {
+        value => sub {
+            my $links = $_[0]->ReferredToBy;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+
+    DependsOn => {
+        value => sub {
+            my $links = $_[0]->DependsOn;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    MemberOf => {
+        value => sub {
+            my $links = $_[0]->MemberOf;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    Parents => {
+        value => sub {
+            my $links = $_[0]->MemberOf;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+    RefersTo => {
+        value => sub {
+            my $links = $_[0]->RefersTo;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef }
+                )
+            );
+          }
+    },
+
+    '_CLASS' => {
+        value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
+    },
+
+};
+
+
+
+# }}}
+$m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+</%INIT>

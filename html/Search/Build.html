@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
@@ -244,10 +244,10 @@ $currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ) {
+    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
 	# We're adding a $1 clause
 	my $field = $1;
-	my $keyword;
+	my ($keyword, $op, $value);
 
 	#figure out if it's a grouping
 	if ( $ARGS{ $field . "Field" } ) {
@@ -256,10 +256,27 @@ foreach my $arg ( keys %ARGS ) {
 	else {
 	    $keyword = $field;
 	}
+
+        $value = $ARGS{'ValueOf' . $field};
+        $op = $ARGS{ $field . 'Op' };
+	if ( $value eq 'NULL' && $op =~ /=/) {
+            if ($op eq '=') {
+                $op = "IS";
+            } elsif ($op eq '!=') {
+                $op = "IS NOT";
+            }
+
+            # This isn't "right", but...
+            # It has to be this way until #5182 is fixed
+            $value = "'NULL'";
+	} else {
+            $value = "'$value'";
+        }
+
 	my $clause = {
             Key   => $keyword,
-            Op    => $ARGS{ $field . 'Op' },
-            Value => "'$ARGS{'ValueOf' . $field}'"
+            Op    => $op,
+            Value => $value
         };
 	    
 	my $newnode = Tree::Simple->new($clause);

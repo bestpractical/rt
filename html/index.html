@@ -24,12 +24,12 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <!--
 % }
 
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -68,7 +68,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs, 
     current_toptab => '', 
@@ -86,7 +86,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <TD class="boxcontainer">
 <& /Elements/Quicksearch &>
 <BR>
-<form method=get action="index.html">
+<form method=get action="<%$RT::WebPath%>/index.html">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
 </form>

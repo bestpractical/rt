@@ -1,10 +1,10 @@
 #!@PERL@ -w
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -43,8 +43,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
-
+# }}} END BPS TAGGED BLOCK
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
@@ -109,15 +108,21 @@ if ( $args{'action'} eq 'init' ) {
         print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
     }
 
-    # MySQL must have InnoDB support
     if ($RT::DatabaseType eq "mysql") {
+        # Check which version we're running
+        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
+        print "*** Warning: RT is unsupported on MySQL versions before 4.0.x\n" if $version < 4;
+
+        # MySQL must have InnoDB support
         my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
         if ($innodb eq "NO") {
             die "RT requires that MySQL be compiled with InnoDB table support.\n".
               "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
         } elsif ($innodb eq "DISABLED") {
-            die "RT requires that MySQL be InnoDB table support be enabled.\n".
-              "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n"
+            die "RT requires that MySQL InnoDB table support be enabled.\n".
+              ($version < 4
+               ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
+               : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
         }
     }
     

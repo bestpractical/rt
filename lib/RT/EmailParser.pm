@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 package RT::EmailParser;
 
 
@@ -266,6 +266,216 @@ sub _PostProcessNewEntity {
 }
 
 # }}}
+
+# {{{ sub ParseTicketId 
+
+sub ParseTicketId {
+    my $self = shift;
+
+    my $Subject = shift;
+
+    if ( $Subject =~ s/\[\Q$RT::rtname\E\s+\#(\d+)\s*\]//i ) {
+        my $id = $1;
+        $RT::Logger->debug("Found a ticket ID. It's $id");
+        return ($id);
+    }
+    else {
+        return (undef);
+    }
+}
+
+# }}}
+
+
+
+# {{{ ParseCcAddressesFromHead 
+
+=head2 ParseCcAddressesFromHead HASHREF
+
+Takes a hashref object containing QueueObj, Head and CurrentUser objects.
+Returns a list of all email addresses in the To and Cc 
+headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
+email address  and anything that the $RTAddressRegexp matches.
+
+=cut
+
+sub ParseCcAddressesFromHead {
+
+    my $self = shift;
+
+    my %args = (
+        QueueObj    => undef,
+        CurrentUser => undef,
+        @_
+    );
+
+    my (@Addresses);
+
+    my @ToObjs = Mail::Address->parse( $self->Head->get('To') );
+    my @CcObjs = Mail::Address->parse( $self->Head->get('Cc') );
+
+    foreach my $AddrObj ( @ToObjs, @CcObjs ) {
+        my $Address = $AddrObj->address;
+        my $user = RT::User->new($RT::SystemUser);
+        $Address = $user->CanonicalizeEmailAddress($Address);
+        next if ( $args{'CurrentUser'}->EmailAddress   =~ /^$Address$/i );
+        next if ( $args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i );
+        next if ( $args{'QueueObj'}->CommentAddress    =~ /^$Address$/i );
+        next if ( IsRTAddress($Address) );
+
+        push ( @Addresses, $Address );
+    }
+    return (@Addresses);
+}
+
+# }}}
+
+# {{{ ParseSenderAdddressFromHead
+
+=head2 ParseSenderAddressFromHead
+
+Takes a MIME::Header object. Returns a tuple: (user@host, friendly name) 
+of the From (evaluated in order of Reply-To:, From:, Sender)
+
+=cut
+
+sub ParseSenderAddressFromHead {
+    my $self = shift;
+
+    #Figure out who's sending this message.
+    my $From = $self->Head->get('Reply-To')
+      || $self->Head->get('From')
+      || $self->Head->get('Sender');
+    return ( $self->ParseAddressFromHeader($From) );
+}
+
+# }}}
+
+# {{{ ParseErrorsToAdddressFromHead
+
+=head2 ParseErrorsToAddressFromHead
+
+Takes a MIME::Header object. Return a single value : user@host
+of the From (evaluated in order of Errors-To:,Reply-To:, From:, Sender)
+
+=cut
+
+sub ParseErrorsToAddressFromHead {
+    my $self = shift;
+
+    #Figure out who's sending this message.
+
+    foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
+
+        # If there's a header of that name
+        my $headerobj = $self->Head->get($header);
+        if ($headerobj) {
+            my ( $addr, $name ) = $self->ParseAddressFromHeader($headerobj);
+
+            # If it's got actual useful content...
+            return ($addr) if ($addr);
+        }
+    }
+}
+
+# }}}
+
+# {{{ ParseAddressFromHeader
+
+=head2 ParseAddressFromHeader ADDRESS
+
+Takes an address from $self->Head->get('Line') and returns a tuple: user@host, friendly name
+
+=cut
+
+sub ParseAddressFromHeader {
+    my $self = shift;
+    my $Addr = shift;
+
+    # Perl 5.8.0 breaks when doing regex matches on utf8
+    Encode::_utf8_off($Addr) if $] == 5.008;
+    my @Addresses = Mail::Address->parse($Addr);
+
+    my $AddrObj = $Addresses[0];
+
+    unless ( ref($AddrObj) ) {
+        return ( undef, undef );
+    }
+
+    my $Name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
+
+    #Lets take the from and load a user object.
+    my $Address = $AddrObj->address;
+
+    return ( $Address, $Name );
+}
+
+# }}}
+
+# {{{ IsRTAddress
+
+=item IsRTaddress ADDRESS
+
+Takes a single parameter, an email address. 
+Returns true if that address matches the $RTAddressRegexp.  
+Returns false, otherwise.
+
+=begin testing
+
+is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
+is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+
+=end testing
+
+=cut
+
+sub IsRTAddress {
+    my $self = shift;
+    my $address = shift;
+
+    # Example: the following rule would tell RT not to Cc 
+    #   "tickets@noc.example.com"
+    if ( defined($RT::RTAddressRegexp) &&
+                       $address =~ /$RT::RTAddressRegexp/ ) {
+        return(1);
+    } else {
+        return (undef);
+    }
+}
+
+# }}}
+
+
+# {{{ CullRTAddresses
+
+=item CullRTAddresses ARRAY
+
+Takes a single argument, an array of email addresses.
+Returns the same array with any IsRTAddress()es weeded out.
+
+=begin testing
+
+@before = ("rt\@example.com", "frt\@example.com");
+@after = ("frt\@example.com");
+ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
+
+=end testing
+
+=cut
+
+sub CullRTAddresses {
+    my $self = shift;
+    my @addresses= (@_);
+    my @addrlist;
+
+    foreach my $addr( @addresses ) {
+      push (@addrlist, $addr)    unless IsRTAddress("", $addr);
+    }
+    return (@addrlist);
+}
+
+# }}}
+
 
 # {{{ LookupExternalUserInfo
 

@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 package RT::Action::CreateTickets;
 require RT::Action::Generic;
 
@@ -772,7 +772,7 @@ sub Parse {
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
             $RT::Logger->debug("Line: $line");
-            if ( $line =~ /^===$/ ) {
+            if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
                 }
@@ -825,6 +825,9 @@ sub Parse {
                 $self->{'templates'}->{$template_id} .= $line . "\n";
             }
         }
+	if ( $template_id && !$queue && $args{'Queue'} ) {
+	    $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
+	}
     }
     elsif ( substr( $args{'Content'}, 0, 2 ) =~ /^id$/i ) {
         $RT::Logger->debug("Line: id");

@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 =head1 NAME
 
   RT::Date - a simple Object Oriented date.
@@ -352,7 +352,8 @@ sub DurationAsString {
         $s         = int( $duration / $YEAR );
         $time_unit = $self->loc("years");
     }
-    if (0) { # For now, never display the "AGO" # $negative) {
+
+    if ($negative) {
         return $self->loc( "[_1] [_2] ago", $s, $time_unit );
     }
     else {

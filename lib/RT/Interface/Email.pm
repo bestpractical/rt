@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 package RT::Interface::Email;
 
 use strict;
@@ -686,10 +686,10 @@ EOT
                 Explanation => "RT thinks this message may be a bounce",
                 MIMEObj     => $Message
             );
-
-            #Do we actually want to store it?
-            return ( 0, "Message Bounced", undef ) unless ($RT::StoreLoops);
         }
+
+        #Do we actually want to store it?
+        return ( 0, "Message Bounced", undef ) unless ($RT::StoreLoops);
     }
 
     # }}}

@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 # Major Changes:
 
 # - Decimated ProcessRestrictions and broke it into multiple
@@ -107,6 +107,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
+    DependedOnBy     => ['LINK' => From => 'DependsOn',],
     ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
@@ -118,7 +119,6 @@ my %FIELDS =
     LastUpdated	    => ['DATE' => 'LastUpdated',],
     Created	    => ['DATE' => 'Created',],
     Subject	    => ['STRING',],
-    Type	    => ['STRING',],
     Content	    => ['TRANSFIELD',],
     ContentType	    => ['TRANSFIELD',],
     Filename        => ['TRANSFIELD',],
@@ -852,7 +852,7 @@ sub _CustomFieldLimit {
   my $queue = 0;
 
     if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-        $queue = $1;
+    $queue =  $1;
     $field = $2;
    }
     $field = $1 if $field =~ /^{(.+)}$/; # trim { }
@@ -881,9 +881,9 @@ sub _CustomFieldLimit {
         $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
     }
 
-    my $cfid = $cf->id;
+  my $cfid = $cf->id;
 
-    die "No custom field named $field found\n" unless $cfid;
+  die "No custom field named $field found\n" unless $cfid;
 
 
     my $TicketCFs;

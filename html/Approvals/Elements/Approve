@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <tr bgcolor="#b9b9ff">
 <td colspan=2><font size="3">
 <a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font></td>

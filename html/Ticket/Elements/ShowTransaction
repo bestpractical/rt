@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,9 +42,9 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
-<TD rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A>&nbsp;</TD>
+<TD rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A><% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %></TD>
 <TD>&nbsp&nbsp;</TD>
 <TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
 % my $desc = $Transaction->BriefDescription;
@@ -76,6 +76,7 @@ $EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1
+$LastTransaction => 0
 </%ARGS>
 
 <%INIT>
@@ -157,7 +158,8 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
+        if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')
+             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
@@ -167,7 +169,8 @@ else {
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
+        if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')
+             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket

@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <%INIT>
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
@@ -84,7 +84,7 @@ my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLe
 my @header;
     foreach my $attr (@attrs) {
         my $label = $attr;
-        $label =~ s'Obj-.(AsString|Name)''g;
+        $label =~ s'Obj-.(AsString|Name|ISO)''g;
 	push @header, $label;
     }
     foreach my $id (sort keys %known_cfs) {
@@ -99,8 +99,10 @@ foreach my $row (@rows) {
         foreach my $attr(@attrs) {
                 push @row, $row->{"$attr"};
         }
-    foreach my $id (sort keys %known_cfs) {
-                push @row, $row->{'CustomField-'.$id};
+        foreach my $id (sort keys %known_cfs) {
+	        my $val = $row->{'CustomField-'.$id};
+                $val =~ s/(\n|\r)//g;
+                push @row, $val;
         }
         
         $m->out(join("\t",@row));

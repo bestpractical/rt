@@ -1,0 +1,81 @@
+%# BEGIN LICENSE BLOCK;
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+
+<%ARGS>
+$Format
+</%ARGS>
+
+<%init>
+use Regexp::Common qw(delimited);
+my @Columns;
+#my $quoted = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
+my $justquoted = qr[$RE{delimited}{-delim=>qq{\'\"}}];
+#my $quoted =        $RE{quoted}{-esc};
+my $word = qr [(?:\{|\}|\w|\.)+];
+
+while ($Format =~ /($justquoted|$word)/igx) {
+    my $col = $1;
+
+    if ($col =~ /^$RE{quoted}{-esc}$/) {
+        substr($col,0,1) = "";
+        substr($col,-1,1) = "";
+    }
+
+    my $colref;
+    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
+        $colref->{'style'} = $1;
+    }
+    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
+        $colref->{'class'} = $1;
+    }
+    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
+        $colref->{'title'} = $1;
+    }
+    if ( $col =~ /__(.*?)__/gio ) {
+        my @subcols;
+        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
+            push ( @subcols, $1 ) if ($1);
+            push ( @subcols, "__$2__" );
+            $colref->{'attribute'} = $2;
+        }
+        push ( @subcols, $col );
+        @{ $colref->{'output'} } = @subcols;
+    }
+    else {
+        @{ $colref->{'output'} } = ( "__" . $col . "__" );
+        $colref->{'attribute'} = $col;
+    }
+    
+    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
+        @{ $colref->{'output'} } )
+    {   
+        $colref->{'title'}     = $1;
+        $colref->{'attribute'} = $1;
+    }
+
+
+    push @Columns, $colref;
+}
+    return(@Columns);
+</%init>

@@ -1,10 +1,10 @@
 #!@PERL@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -43,8 +43,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
-
+# }}} END BPS TAGGED BLOCK
 use strict;
 use Carp;
 
@@ -224,19 +223,17 @@ sub help {
       )
       . "\n\n";
 
-    print " bin/rt-cron-tool \\\n";
-    print
-      "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print
-      "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
+    print " bin/rt-crontool \\\n";
+    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
+    print "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
     print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
     print "  --verbose\n";
 
     print "\n";
-    print loc("Escalate tickets");
-    print "rt-crontool \\\n";
-    print " --search RT::Search::ActiveTicketsInQueue  --search-arg thequeuename \\\n";
-    print " --action RT::Action::EscalatePriority \\\n";
+    print loc("Escalate tickets"). "\n";
+    print " bin/rt-crontool \\\n";
+    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
+    print "  --action RT::Action::EscalatePriority\n";
  
  
  

@@ -1,9 +1,9 @@
-%# BEGIN BPS TAGGED BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
 %#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-%#                                          <jesse.com>
+%#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
 %# 
@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -103,18 +103,26 @@ if (! $CustomField ) {
                                                  Type => $Type,
                                                  Description => $Description,
 						 );
-      Abort(loc("Could not create CustomField", $msg)) unless ($val);
-     push @results, $msg;
-     $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
-     $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
+      
+      # if there is an error, then abort.  But since at this point there's
+      # stuff already printed, clear it out.
+      # (This only works in conjunction with temporarily turning autoflush
+      #  off in the files that use this component.)
+      unless ($val) {
+	  $m->clear_buffer;
+	  Abort(loc("Could not create CustomField: [_1]", $msg));
+      }
+      push @results, $msg;
+      $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
+      $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
-       $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
+      $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
       $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,
                         ARGSRef => \%ARGS );
-     push @results, @aresults;
+      push @results, @aresults;
     }
 
 

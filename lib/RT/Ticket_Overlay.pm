@@ -1,9 +1,9 @@
-# BEGIN BPS TAGGED BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
 # COPYRIGHT:
 #  
 # This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
+#                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
 # 
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# END BPS TAGGED BLOCK
+# }}} END BPS TAGGED BLOCK
 # {{{ Front Material 
 
 =head1 SYNOPSIS
@@ -304,6 +304,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
+  Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
   Status -- any valid status (Defined in RT::Queue)
@@ -2787,6 +2788,10 @@ sub MergeInto {
 
     }
 
+    # Update time fields
+    $NewTicket->SetTimeEstimated(($NewTicket->TimeEstimated || 0) + ($self->TimeEstimated || 0));
+    $NewTicket->SetTimeWorked(   ($NewTicket->TimeWorked || 0)    + ($self->TimeWorked || 0));
+    $NewTicket->SetTimeLeft(     ($NewTicket->TimeLeft || 0)      + ($self->TimeLeft || 0));   
 
     #add all of this ticket's watchers to that ticket.
     my $requestors = $self->Requestors->MembersObj;
