@@ -37,6 +37,7 @@ Tie::IxHash
 Text::Wrapper 
 Text::Template
 File::Spec 0.8
+Errno
 File::Temp 
 Log::Dispatch 1.6
 );
