@@ -24,6 +24,7 @@ DBIx::DataSource 0.02
 DBIx::SearchBuilder 0.26
 HTML::Entities 
 MLDBM
+Params::Validate 0.02
 HTML::Mason 0.896
 CGI::Cookie 1.06
 Apache::Session 1.53
