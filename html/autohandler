@@ -23,8 +23,9 @@
 %# END LICENSE BLOCK
 <%INIT>
 local *session;
-$ARGS{$_} = Encode::decode_utf8($ARGS{$_}) foreach (keys %ARGS);
-
+foreach (keys %ARGS) {
+        $ARGS{$_} = Encode::decode('utf-8',$ARGS{$_}, Encode::FB_PERLQQ) ;
+}
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
         $m->{'rt_base_time'} = [Time::HiRes::gettimeofday()];
