@@ -1,8 +1,0 @@
-<%INIT>
-$r->content_type('text/html');
-$r->status($Status);
-$m->abort($Status) unless $ENV{FCGI_ROLE};
-</%INIT>
-<%ARGS>
-$Status => 500
-</%ARGS>

@@ -1,6 +1,0 @@
-%# [OPTIONS PostURI], [GET PostURI]
-%# On a container, returns the schema of objects acceptable by this container.
-%# On an object, returns the schema acceptable by the specified 'adverb'.
-%# 200: Success.  Body is schema in a format determined by content negotiation.
-%# 400: Request failed.  Body is error message in text/plain.
-%# 404: There is no container matching the specified URI.

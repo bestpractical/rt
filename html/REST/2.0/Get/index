@@ -1,5 +1,0 @@
-%# [GET EditURI]
-%# Get a representation of an object.
-%# 200: Success.  Body is the object, serialized as an AtomEntry.
-%# 400: Request failed.  Body is error message in text/plain.
-%# 404: There is no object matching the specified URI.
