@@ -788,6 +788,9 @@ print "
     if ($rt::req[$serial_num]{'status'} ne 'open') {  
       print &fdro_murl("do_req_open=true","summary","Open");
     }
+    print " | <A HREF=\"$ScriptURL?display=History&serial_num=" .
+	($serial_num + 1) . "\">Next</A>";
+
   }
 print "</FONT></TD>
 <TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
@@ -842,6 +845,8 @@ sub do_bar {
 	print " | " . 
 &fdro_murl("do_req_open=true","summary","Open");
       }
+      print " | <A HREF=\"$ScriptURL?display=History&serial_num=" .
+       ($serial_num + 1) . "\">Next</A>";
       
       print "</DIV>";
     }
