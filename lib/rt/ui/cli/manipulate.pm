@@ -48,6 +48,14 @@ sub parse_args {
     }
     
     
+	elsif ($ARGV[$i] eq "-trans") {
+
+		$serial = int($ARGV[++$i]);
+		$trans = int($ARGV[++$i]);
+		&rt::req_in($serial,$current_user);
+		&print_transaction($serial, $trans);	
+
+	}
 	
 	elsif ($ARGV[$i] eq "-comment")	{
 	    $arg=int($ARGV[++$i]);
@@ -287,6 +295,7 @@ sub cli_help_req {
     -finalprio <num <int> Change <num>'s final priority to <int>
     -notify <num>	  Note that <num>'s requestor was notified
     -merge <num1> <num2>  Merge <num1> into <num2>
+    -trans <ser> <trans>  Display ticket <ser> transaction <trans>
     -kill <num>           Permanently remove <num> from the database\n";
 
 }
