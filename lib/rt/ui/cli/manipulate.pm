@@ -207,7 +207,7 @@ sub cli_comment_req {
     my ($serial_num)=@_;
     my ($subject,$content,$trans,$message,$cc,$bcc );
    
-    if (&rt::can_manipulate_request($serial_num, $current_user)) {
+#    if (&rt::can_manipulate_request($serial_num, $current_user)) {
     $subject=&rt::ui::cli::question_string("Subject",);
     $cc=&rt::ui::cli::question_string("Cc",);
     $bcc=&rt::ui::cli::question_string("Bcc",);   
@@ -223,10 +223,10 @@ sub cli_comment_req {
     
     ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$current_user);
     print $message;
-	}
-	else {
-	print "You do not have permission to work with this request\n";
-	}
+#	}
+#	else {
+#	print "You do not have permission to work with this request\n";
+#	}
 }
 sub cli_respond_req {
     my ($serial_num)=@_;
