@@ -49,7 +49,7 @@ $Attr => undef
 </%ARGS>
 
 
-<%INIT>
+<%ONCE>
 our ( $COLUMN_MAP );
 
 sub ColumnMap {
@@ -298,5 +298,7 @@ $COLUMN_MAP = {
 
 # }}}
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+</%ONCE>
+<%init>
 return ColumnMap($Name, $Attr);
-</%INIT>
+</%init>
