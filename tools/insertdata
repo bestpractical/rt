@@ -53,7 +53,7 @@ my @users = (
 	      RealName => 'Enoch Root',
               Password => 'password',
 	      EmailAddress => "root\@localhost",
-	      Comments => 'Superuser',
+	      Comments => 'SuperUser',
 	      CanManipulate => '1',
 	     }
 	    );
@@ -64,7 +64,7 @@ my @users = (
 my @acl = ( 
 	   { PrincipalId => '0', 
 	     PrincipalType => 'Everyone',
-	     RightName => 'Superuser',
+	     RightName => 'SuperUser',
 	     RightScope => 'System',
 	     RightAppliesTo => '0'
 	   } 
@@ -334,6 +334,17 @@ further questions or concerns, simply respond to this message.
 
 
 
+
+print "Creating ACL...";
+use RT::ACE;
+for $item (@acl) {
+    my $new_entry = new RT::ACE($CurrentUser);
+    #Using an internal function. this should never be used outside of the bootstrap script
+    my $return = $new_entry->_BootstrapRight(%$item);
+    print $return.".";
+}
+print "done.\n";
+
 print "Creating users...";
 use RT::User;
 foreach $item (@users) {
@@ -343,16 +354,6 @@ foreach $item (@users) {
 }
 
 print "done.\n";
-
-print "Creating ACL...";
-use RT::ACE;
-for $item (@acl) {
-    my $new_entry = new RT::ACE($CurrentUser);
-    my $return = $new_entry->Create(%$item);
-    print $return.".";
-}
-print "done.\n";
-
 
 print "Creating queues...";
     use RT::Queue;

@@ -245,8 +245,8 @@ sub Create {
   my $due = new RT::Date($self->CurrentUser);
   $due->Set (Format => 'ISO',
 	     Value => $args{'Due'});
-
-  my $id = $self->SUPER::Create(Id => $args{'id'},
+         
+  my $id = $self->SUPER::Create(
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $Queue->Id,
 				Alias => $args{'Alias'},

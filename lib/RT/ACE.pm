@@ -140,9 +140,41 @@ sub Create {
     }
     else {
 	$RT::Logger->err('System error. right not granted.');
-	return(0);
+	return(undef);
     }
 }
+# }}}
+
+
+# {{{ sub _BootstrapRight 
+
+# Grant a right with no error checking and no ACL. this is _only_ for installation.
+# If you use this routine without jesse@fsck.com's explicit written approval, he will
+# hunt you down and make you spend eternity translating mozilla's code into FORTRAN
+# or intercal.
+
+sub _BootstrapRight {
+    my $self = shift;
+    my %args = @_;
+
+    my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
+              PrincipalType => $args{'PrincipalType'},
+              RightName => $args{'RightName'},
+              RightScope => $args {'RightScope'},
+              RightAppliesTo => $args{'RightAppliesTo'}
+            );
+
+
+    if ($id > 0 ) {
+     return ($id);
+    }
+    else {
+    $RT::Logger->err('System error. right not granted.');
+    return(undef);
+    }
+
+}
+
 # }}}
 
 # {{{ sub GrantQueueRight 

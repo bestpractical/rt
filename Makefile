@@ -72,7 +72,7 @@ RT_MAILGATE_BIN		=	rt-mailgate
 # "Oracle" is in the early stages of working.
 #	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
 
-DB_TYPE	        =	mysql
+DB_TYPE	        =	Pg
 
 # DB_HOME is where the Database's commandline tools live
 # Note: $DB_HOME/bin is where the database binary tools are installed.
@@ -84,7 +84,7 @@ DB_HOME	      	= /usr
 
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
-DB_DBA	           =	root
+DB_DBA	           =	postgres
 DB_DBA_PASSWORD	  =	
  
 #
