@@ -162,9 +162,9 @@ my $args = "?" . $m->comp(
     Query  => $ARGS{'Query'},
     Format => $ARGS{'Format'},
     Rows   => $ARGS{'Rows'}
-  );
+  ) if ($ARGS{'Query'});
 
-$tabs->{"f"} = { path      => "Search/Build.html",
+$tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
                  title     => loc('New Query'),
                  subtabs   => $searchtabs };
 $tabs->{"g"} = { path      => "Search/Build.html$args",

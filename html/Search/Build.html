@@ -76,6 +76,18 @@ my $search_hash = {};
 my $search;
 my $title = loc("Query Builder");
 
+if ($NewQuery) {
+    $Query = '';
+    $Format = '';
+    $Description = '';
+    undef $session{'CurrentSearchHash'};
+} else {
+    $search_hash = $session{'CurrentSearchHash'};
+    $Query ||= $search_hash->{'Query'};
+    $Format ||= $search_hash->{'Format'};
+    $Description ||= $search_hash->{'Description'};
+}
+
 my @actions        = ();
 my %queues;
 
@@ -123,7 +135,7 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
     $ARGS{'Format'} = $Format   = $search->SubValue('Format');
     $ARGS{'Query'} = $Query    = $search->SubValue('Query');
-
+    $SearchId = $ARGS{'LoadSavedSearch'};
 
 
 }
@@ -993,6 +1005,9 @@ if ( $ARGS{'Save'} ) {
 
         $search_hash->{'SearchId'} = $ARGS{'SearchId'};
         $search_hash->{'Object'}   = $search;
+        $search_hash->{'Format'} = $ARGS{'Format'};
+        $search_hash->{'Query'} = $ARGS{'Query'};
+        $search_hash->{'Description'} = $ARGS{'Description'};
 
     }
     elsif ( $ARGS{'SearchId'} eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
@@ -1077,13 +1092,28 @@ if ( $ARGS{'Delete'} ) {
 # Build a querystring for the tabs
 
 my $QueryString;
-$QueryString = '?' . $m->comp('/Elements/QueryString', Query => $Query,
-	Format => $Format,
-	Rows =>$ARGS{'Rows'}) if ($Query);
+if ($NewQuery) {
+    $QueryString = '?NewQuery=1';
+} else {
+    $QueryString = '?' . $m->comp('/Elements/QueryString', 
+            Query => $Query,
+	    Format => $Format,
+	    Rows =>$ARGS{'Rows'}) if ($Query);
+}
+
+if (!$search) {
+    $search_hash->{'SearchId'} = $SearchId;
+    $search_hash->{'Format'} = $Format;
+    $search_hash->{'Query'} = $Query;
+    $search_hash->{'Description'} = $Description || $ARGS{'Descripton'};
+}
+
+$session{'CurrentSearchHash'} = $search_hash;
 
 </%INIT>
 
 <%ARGS>
+$NewQuery => 0
 $SearchId => 'new'
 $Query => undef
 $Format => undef 
