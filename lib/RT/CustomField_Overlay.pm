@@ -48,30 +48,28 @@ package RT::CustomField;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@TYPES %TYPES $RIGHTS %FRIENDLY_OBJECT_TYPES);
+use vars qw(%TYPES $RIGHTS %FRIENDLY_OBJECT_TYPES);
 
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
 
 # Enumerate all valid types for this custom field
-@TYPES = (
-    'Freeform',	# loc
-    'Select',	# loc
-    'Text',     # loc
-    'Image',    # loc
-    'Binary',   # loc
+%TYPES = (
+    Freeform => 1,	# loc
+    Select => 1,	# loc
+    Text => 1,     # loc
+    Image => 1,    # loc
+    Binary => 1,   # loc
 );
 
-# Populate a hash of types of easier validation
-for (@TYPES) { $TYPES{$_} = 1};
 
+%FRIENDLY_OBJECT_TYPES =  ();
 
-%FRIENDLY_OBJECT_TYPES =  (
-    'RT::Queue-RT::Ticket'                 => "Tickets",		# loc
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",	# loc
-    'RT::User'                             => "Users",			# loc
-    'RT::Group'                            => "Groups",			# loc
-);
+RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
+RT::CustomField->_ForObjectType(
+    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", );    #loc
+RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
+RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
 $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
@@ -506,7 +504,7 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub Types {
-	return (@TYPES);
+	return (keys %TYPES);
 }
 
 # }}}
@@ -1047,6 +1045,30 @@ sub ValuesForObject {
 	return ($values);
 }
 
+
+=head2 _ForObjectType PATH FRIENDLYNAME
+
+Tell RT that a certain object accepts custom fields
+
+Examples:
+
+    'RT::Queue-RT::Ticket'                 => "Tickets",		# loc
+    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",	# loc
+    'RT::User'                             => "Users",			# loc
+    'RT::Group'                            => "Groups",			# loc
+
+This is a class method. 
+
+=cut
+
+sub _ForObjectType {
+    my $self = shift;
+    my $path = shift;
+    my $friendly_name = shift;
+
+    $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
+
+}
 
 # }}}
 
