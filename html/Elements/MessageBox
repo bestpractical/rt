@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=<%$Wrap%> NAME="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$signature%></TEXTAREA>
+<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=<%$Wrap%> NAME="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></TEXTAREA>
 <%INIT>
 
 my ($message);
@@ -44,5 +44,6 @@ $Name => 'Content'
 $Default => ''
 $Width => $RT::MessageBoxWidth
 $Wrap => $RT::MessageBoxWrap
+$IncludeSignature => 1
 </%ARGS>
 
