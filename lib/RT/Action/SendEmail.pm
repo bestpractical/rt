@@ -287,11 +287,11 @@ sub SetReturnAddress {
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
 
-      if ($friendly_name =~ /^\S+\@\S+$/) { # A "bare" mail address
-          $friendly_name =~ s/"/\\"/g;
-          $friendly_name = qq|"$friendly_name"|;
+      if ($friendly_name =~ /^"(.*)"$/) { # a quoted string
+          $friendly_name = $1;
       }
 
+       $friendly_name =~ s/"/\\"/g;
 
       # TODO: this "via RT" should really be site-configurable.
       $self->SetHeader('From', "\"$friendly_name via RT\" <$replyto>");

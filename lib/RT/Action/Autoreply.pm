@@ -50,6 +50,7 @@ sub SetReturnAddress {
     
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {
 	my $friendly_name=$self->TicketObj->QueueObj->Name;
+    $friendly_name =~ s/"/\\"/g;
 	$self->SetHeader('From', "\"$friendly_name\" <$replyto>");
     }
     
