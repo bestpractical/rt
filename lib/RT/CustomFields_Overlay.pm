@@ -213,7 +213,7 @@ sub LimitToGlobalOrObjectId {
                 ALIAS2 => $self->_OCFAlias,
                 FIELD2 => 'CustomField' );
 
-    foreach my $id (@ARGV) {
+    foreach my $id (@_) {
 	$self->Limit( ALIAS           => $self->_OCFAlias,
 		    FIELD           => 'ObjectId',
 		    OPERATOR        => '=',
