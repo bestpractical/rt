@@ -24,7 +24,7 @@ sub Commit {
   my $self = shift;
   #send the email
 
-  $self->{'Message'}->smtpsend;
+  $self->{'Message'}->smtpsend || die "could not send email";
 
 }
 

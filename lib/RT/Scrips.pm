@@ -33,8 +33,9 @@ sub LimitToType {
   my $type = shift;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
-		VALUE => "$Type");
-   $self->Limit (ENTRYAGGREGATOR => 'OR',
+		VALUE => "$Type")
+      if defined $Type;
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
 		VALUE => 'any');
   
@@ -44,8 +45,9 @@ sub LimitToQueue {
   my $queue = shift;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Scope',
-		VALUE => "$queue");
-   $self->Limit (ENTRYAGGREGATOR => 'OR',
+		VALUE => "$queue")
+      if defined $queue;
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Scope',
 		VALUE => 0);
   
