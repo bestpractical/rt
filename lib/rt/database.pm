@@ -69,7 +69,7 @@ sub add_request {
 	}
 	else
 	{
-		$query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+		$query_string="INSERT INTO each_req (id, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
 	}
 
 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
@@ -81,7 +81,7 @@ sub add_request {
 
 	$serial_num = &get_last_each_req_serial_num($sth);
 
-    	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE serial_num = $serial_num";
+    	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE id = $serial_num";
 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
 	$rv = $sth->execute  or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n";
 	}
@@ -151,7 +151,6 @@ sub add_transaction {
     $owner=$rt::req[$in_serial_num]{owner};
     &req_in($in_serial_num, $in_current_user);
 
-#	$query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ('', $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
 	$query_string = "INSERT INTO transactions (effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ($req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
 	$sth = $dbh->prepare($query_string) or warn "[add transaction] prepare had some problem: $DBI::errstr\nQuery: $query_string\n";
 	$rv = $sth->execute  or warn "[add transaction] execute had some problem: $DBI::errstr\nQuery: $query_string\n";
@@ -409,7 +408,7 @@ sub req_in
     $effective_sn = &normalize_sn($in_serial_num);
 
     
-    $query_string = "SELECT serial_num, effective_sn,  queue_id,  area, alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE serial_num = $effective_sn";
+    $query_string = "SELECT id, effective_sn,  queue_id,  area, alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE serial_num = $effective_sn";
     $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
 
@@ -423,7 +422,7 @@ sub get_queue {
     my ($in_criteria,$in_current_user) =@_;
     my $temp=0;
     
-    $query_string = "SELECT serial_num, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
+    $query_string = "SELECT id, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
     $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n$query_string\n";
 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n$query_string\n";
 

@@ -22,7 +22,7 @@ sub delete_user {
     
     if ($users{$in_current_user}{admin_rt}) {
       if ($in_user_id ne $in_current_user) {
-	  $query_string = "DELETE FROM users WHERE user_id = $user_id";
+	  $query_string = "DELETE FROM users WHERE id = $user_id";
 	  $sth = $dbh->prepare($query_string) or return (0, "[delete_user] prepare had some problem: $DBI::errstr\n$query_string\n");
 	  $sth->execute or return (0, "[delete_user] execute had some problem: $DBI::errstr\n$query_string\n");
 	  $query_string = "DELETE FROM queue_acl WHERE user_id = $user_id";
@@ -93,7 +93,7 @@ sub delete_queue {
     
     $queue_id=$rt::dbh->quote($in_queue_id);
     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
-	$query_string = "DELETE FROM queues WHERE queue_id = $in_queue_id";
+	$query_string = "DELETE FROM queues WHERE id = $in_queue_id";
 	$sth = $dbh->prepare($query_string) 
 	    or return (0, 
 		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
@@ -172,7 +172,7 @@ sub add_modify_queue_conf {
       $update_clause =~ s/,(\s),/, /g;
       
       if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
-	$query_string = "UPDATE queues SET $update_clause WHERE queue_id = $queue_id";
+	$query_string = "UPDATE queues SET $update_clause WHERE id = $queue_id";
 	
 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
 	$dbh->do($query_string) or warn "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n";
@@ -333,9 +333,6 @@ sub add_modify_user_info {
   my $passwd_err = "User create/modify failed: Use longer password ($user_passwd_min chars minimum)";
   
  
-
-  
-  #   print STDERR "in add_mod_user_info\n";
   
   if ($in_user_id) {
     $new_user_id = $rt::dbh->quote($in_user_id);
@@ -401,7 +398,7 @@ sub add_modify_user_info {
       #if the password length is too short and we're creating a user
       return (0,$passwd_err) if length($in_password) < $user_passwd_min;
       
-      $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
+      $query_string="INSERT INTO users (id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
        
       $sth = $dbh->prepare($query_string) 
 	  or warn "[add_modify_user_info] prepare had some problem: $DBI::errstr\n";
@@ -434,7 +431,7 @@ sub add_modify_user_info {
 	$update_clause .= "password = $new_password ";
       }
       if ($update_clause) {
-	$query_string = "UPDATE users SET $update_clause WHERE user_id = $new_user_id";
+	$query_string = "UPDATE users SET $update_clause WHERE id = $new_user_id";
 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
 	$dbh->do($query_string) or warn "[add_modify_user] Query had some problem: $DBI::errstr\n$query_string";
 	&rt::load_user_info();

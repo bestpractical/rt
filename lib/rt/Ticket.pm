@@ -14,7 +14,7 @@ sub new {
 
 sub create {
   my $self = shift;
-#  print STDERR "MKIA::Article::create::",join(", ",@_),"\n";
+#  print STDERR "RT::Article::create::",join(", ",@_),"\n";
   my $id = $self->SUPER::create(@_);
   $self->load_by_reference($id);
 
@@ -136,11 +136,25 @@ sub new_correspondence {
   #TODO implement
 }
 
+
+sub Transactions {
+  my $self = shift;
+  if (!$self->{'transactions'}) {
+    $self->{'transactions'} = new RT::Transactions($self->{'user'};
+    $self->{'transactions'}->Limit( FIELD => 'serial_num',
+                                    VALUE => $self->id() );
+  }
+  return($self->{'article_keys'});
+}
+
+
+
+
 #KEYWORDS IS NOT YET IMPLEMENTEd
 sub keywords {
   my $self = shift;
   if (!$self->{'article_keys'}) {
-    $self->{'article_keys'} = new MKIA::Article::Keywords;
+    $self->{'article_keys'} = new RT::Article::Keywords;
     $self->{'article_keys'}->Limit( FIELD => 'article',
 				    VALUE => $self->id() );
   }
@@ -153,7 +167,7 @@ sub new_keyword {
   
     my ($keyword);
   
-  $keyword = new MKIA::Article::Keyword;
+  $keyword = new RT::Article::Keyword;
   return($keyword->create( keyword => "$keyid",
 			   article => $self->id));
   
@@ -170,7 +184,7 @@ sub links {
   my $self= shift;
   
   if (! $self->{'pointer_to_links_object'}) {
-    $self->{'pointer_to_links_object'} = new MKIA::Article::URLs;
+    $self->{'pointer_to_links_object'} = new RT::Article::URLs;
     $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
 					      VALUE => $self->id);
   }
@@ -189,7 +203,7 @@ sub new_link {
  
   print STDERR "in article->newlink\n";
   
-  my $link = new MKIA::Article::URL;
+  my $link = new RT::Article::URL;
   print STDERR "made new link\n";
   
   $id = $link->create( url => $args{'url'},
