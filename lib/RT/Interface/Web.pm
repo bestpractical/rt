@@ -49,6 +49,7 @@ sub NewApacheHandler {
             [ local    => $RT::MasonLocalComponentRoot ],
             [ standard => $RT::MasonComponentRoot ]
         ],
+        args_method => "CGI",
         data_dir => "$RT::MasonDataDir");
     
     return ($ah);
