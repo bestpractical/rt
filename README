@@ -17,17 +17,6 @@ All of these works are distributed under the GPL
 REQUIRED PACKAGES:
 ------------------
 
-o   An MTA (Mail Transfer Agent), i.e. sendmail -- free.
-
-        RT 1.0.x needs to pipe the mail to some program that can send mail,
-	i.e. /usr/lib/sendmail. The installation guide below also assumes
-	that the _same computer_ as RT is running at is capable of
-	_receiving_ mail. It is possible to get it running with a remote
-	mailserver, i.e. by using fetchmail to fetch new mail from the
-	mailserver, or to let the mailserver execute RT remotely, i.e.
-	through ssh, or by having the data directory (transactions) at NFS,
-	and letting RT access the database remotely.
-
 o   Perl5.x ( http://www.perl.com ) -- free
 	
 	RT is written almost entirely in perl.
@@ -65,6 +54,20 @@ o   Digest::MD5 ( http://www.perl.com ) -- free
 	of files or strings, in this case, the password hashes used by 
 	the Web interface. It is required for web authentication to work.
 
+
+RECOMMENDED PACKAGES
+--------------------
+
+o   An MTA (Mail Transfer Agent), i.e. sendmail -- free.
+
+        RT 1.0 needs to pipe the mail to some program that can send mail,
+        i.e. /usr/lib/sendmail. The installation guide below also assumes
+        that the server RT is running on is capable of _receiving_ mail. 
+	It is possible to get it running with a remote mailserver, using
+	fetchmail to fetch incoming messages from the mailserver, or by
+	allowing the mailserver to execute RT remotely with ssh or by 
+	having the data directory (transactions) NFS accessable and letting
+	RT access the database remotely.
 
 INSTALL INSTRUCTIONS
 --------------------
