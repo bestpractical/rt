@@ -21,9 +21,9 @@ $mode = shift || &print_help;
 DBI 1.13
 DBIx::DataSource 0.02
 DBIx::DBSchema 0.14
-DBIx::SearchBuilder 0.20
+DBIx::SearchBuilder 0.21
 HTML::Entities 
-HTML::Mason 0.895
+HTML::Mason 0.896
 CGI::Cookie 1.06
 Apache::Session 1.53
 Date::Manip 
