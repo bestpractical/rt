@@ -5,22 +5,25 @@
 		 A => { title => 'Display',
 			     path => "Ticket/Display.html?id=".$id,
 			   },
-		 B => { title => 'Modify Basics',
+		 B => { title => 'Edit Basics',
 			  path => "Ticket/Modify.html?id=".$id,
 			},
 
-		 C => { title => 'Modify Dates',
+		 C => { title => 'Edit Dates',
 			  path => "Ticket/ModifyDates.html?id=".$id,
 			},
 
-		 D => { title => 'Modify People',
+
+		 D => { title => 'Edit People',
 			  path => "Ticket/ModifyPeople.html?id=".$id,
 			},
-
-		 E => { title => 'Comment',
+		 E => { title => 'Edit Links',
+			  path => "Ticket/ModifyLinks.html?id=".$id,
+			},
+		 F => { title => 'Comment',
 			     path => "Ticket/Update.html?Action=Comment&id=".$id,
 			   },
-		 F => { title => 'Reply',
+		 G => { title => 'Reply',
 				path => "Ticket/Update.html?Action=Respond&id=".$id,
 		      }
 };
