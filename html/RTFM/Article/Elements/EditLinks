@@ -30,9 +30,7 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 %     if ($link->TargetURI->IsLocal) {
-%       my $type = ref($member->Object);
-%       $type =~ s/^.*::(\w+)$/$1/;
-<a href="<%$member->Resolver->HREF%>"><% loc($type) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
@@ -56,9 +54,7 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 %     if ($link->BaseURI->IsLocal) {
-%       my $type = ref($member->Object);
-%       $type =~ s/^.*::(\w+)$/$1/;
-<a href="<%$member->Resolver->HREF%>"><% loc($type) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::can($member->Object, 'Subject')) {

@@ -24,11 +24,11 @@
 <TD>
 <%$caption%>:<BR>
 <UL>
-%if ($Classes->Count == 0) {
+% if (scalar @allowed_classes == 0) {
 <LI> <i><&|/l&>No Classes matching search criteria found.</&></i>
 % }
-%while ( $Class = $Classes->Next) {
-<LI><A HREF="Modify.html?id=<%$Class->id%>"><%$Class->Name%></a></LI>
+% foreach my $class ( @allowed_classes ) {
+<LI><A HREF="Modify.html?id=<%$class->id%>"><%$class->Name%></a></LI>
 %}
 
 </UL>
@@ -48,10 +48,9 @@
 </TABLE>
 
 <%INIT>
-my ($Class, $caption);
+my $caption;
 my $Classes = new RT::FM::ClassCollection($session{'CurrentUser'});
-
-
+my @allowed_classes;
 
 if ($FindDisabledClasses) {
     $caption = loc("All Classes");
@@ -61,6 +60,10 @@ if ($FindDisabledClasses) {
     $caption = loc("Enabled Classes");
     $Classes->LimitToEnabled(); 
 
+}
+# Limit to only those classes that the user may admin.
+while (my $class = $Classes->Next()) {
+    push(@allowed_classes, $class) if $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class);
 }
 
 </%INIT>

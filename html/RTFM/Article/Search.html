@@ -40,8 +40,9 @@ if ( $ARGS{'Class'} ) {
 }
 else {
     $customfields->LimitToGlobalOrObjectId();
-
 }
+$customfields->GroupByCols({FIELD => 'id'});
+
 
 my %dates;
 foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {

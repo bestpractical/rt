@@ -28,9 +28,7 @@
 % my $member = $link->TargetURI;
 <LI>
 % if ($link->TargetURI->IsLocal) {
-% my $type = ref($member->Object);
-% $type =~ s/^.*::(\w+)$/$1/;
-<a href="<%$member->Resolver->HREF%>"><% loc($type) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 % if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 % } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
@@ -51,7 +49,7 @@
 % my $member = $link->BaseURI;
 <LI>
 % if ($member->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectType) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 % if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 % } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
