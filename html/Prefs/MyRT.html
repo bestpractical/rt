@@ -49,48 +49,20 @@
     Title => $title
 &>
 
-<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/class.js"></script>
-<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/list.js"></script>
+<& /Widgets/SelectionBox:header &>
 
 <& /Elements/ListActions, actions => \@actions &>
 <a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
 
 % for my $pane (@panes) {
-<h2><% $pane %></h2>
-<FORM METHOD="POST" ACTION="MyRT.html" name="MyRT-<% $pane %>" id="MyRT-<% $pane %>">
-<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
-List of available items:<br>
-<select name="PortletList" multiple >
-% for (@items) {
-<option value="<% $_->[0] %>"><% $_->[1] %></option>
+<& /Widgets/SelectionBox:show, self => $pane &>
 % }
-</select>
-<input name="add" type="button" value="->"/>
-<select name="PortletList-<%$pane%>" multiple>
-% for (@{$current_portlets->{$pane}}) {
-<option value="<% $_ %>"><% $item_map{$_} %></option>
-% }
-</select>
- <input name="moveup" type="button" value="^"/>
- <input name="movedown" type="button" value="v"/>
- <input name="remove" type="button" value="X"/>
- <input name="submit" type="submit" value="submit"/>
-%#<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save' &>
-
-</form>
-% }
-<script type="text/javascript">
-% my $i = 1;
-% for my $pane (@panes) {
-var list<%$i%>	= new list(document.getElementById("MyRT-<% $pane %>"), 0, "list<%$i%>");
-% ++$i;
-% }
-</script>
 <%INIT>
 my @actions;
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
+
 my $title = loc("Customize").' '.loc("My RT");
 my $user = $session{'CurrentUser'}->UserObj;
+$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
@@ -130,33 +102,28 @@ for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
 }
 
 my %item_map = map {$_->[0] => $_->[1]} @items;
+my @panes;
+for my $pane ('main', 'right') {
+    push @panes,
+	$m->comp ('/Widgets/SelectionBox:new',
+		  Action => 'MyRT.html',
+		  Name => $pane,
+		  Available => \@items,
+		  OnSubmit =>
+		  sub { my $sel = shift;
+			$portlets->{$pane} =
+			    [map { m/(\w+)-(.*)$}/;
+				   { type => $1,
+				     name => $2,
+				 }} @{$sel->{Current}}];
+			$user->SetPreferences('My RT', $portlets);
+			push @actions, loc ('Preferences saved for [_1].', $pane);
+			delete $session{'my_rt_portlets'};
 
-my @panes = ('main', 'right');
-
-# build
-#if ($ARGS{'Save'}) {
-if ($ARGS{'submit'}) {
-    for my $pane (@panes) {
-	my $this = $ARGS{'PortletList-'.$pane};
-	$this = [$this] unless ref ($this);
-	next unless $ARGS{'PortletList-'.$pane};
-	$portlets->{$pane} =
-	    [map { m/(\w+)-(.*)$}/;
-		   # XXX: CHECK!
-		   { type => $1,
-		     name => $2,
-		 }} @$this];
-    }
-
-    $user->SetPreferences('My RT', $portlets);
-    push @actions, loc ('Preferences saved.');
-    delete $session{'my_rt_portlets'};
+		  },
+		  Selected => [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}]);
 }
 
-my $current_portlets;
-for my $pane (@panes) {
-    $current_portlets->{$pane}
-	= [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}];
-}
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_) for @panes;
 
 </%INIT>

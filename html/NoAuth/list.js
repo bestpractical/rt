@@ -7,63 +7,76 @@ Class("list").define({
  sels : null,
  list : function (src, esrc, name) { this.init(src, esrc, name); },
  read : function () {
-  var i		= 0;
-  if(this.xml.readyState!=4) { setTimeout(this.name+".read()", 100); }
-  else if(this.xml.status!=200) alert("Document not available.");
-  else {
-   var doc	= this.xml.responseXML;
-   var nNode	= null;
-   if(doc.childNodes[0].nodeName=="parseerror") alert("Parse Error.");
-   doc		= doc.getElementsByTagName("list")[0];
-   for(i=0;i<doc.childNodes.length;i++) {
-    if(doc.childNodes[i].childNodes.length>0) {
-     nNode	= document.createElement("option");
-     nNode.appendChild(document.createTextNode(doc.childNodes[i].childNodes[0].nodeValue));
-     this.sels[0].appendChild(nNode);
-    }
-   }
-  }
+     var i		= 0;
+     if(this.xml.readyState!=4) { setTimeout(this.name+".read()", 100); }
+     else if(this.xml.status!=200) alert("Document not available.");
+     else {
+	 var doc	= this.xml.responseXML;
+	 var nNode	= null;
+	 if(doc.childNodes[0].nodeName=="parseerror") alert("Parse Error.");
+	 doc		= doc.getElementsByTagName("list")[0];
+	 for(i=0;i<doc.childNodes.length;i++) {
+	     if(doc.childNodes[i].childNodes.length>0) {
+		 nNode	= document.createElement("option");
+		 nNode.appendChild(document.createTextNode(doc.childNodes[i].childNodes[0].nodeValue));
+		 this.sels[0].appendChild(nNode);
+	     }
+	 }
+     }
  },
-
+     
  init : function (src,esrc,name) {
-  if(!src) return;
-  this.name		= name;
-  this.sels		= new Array();
-  var i			= 0;
-  for(i=0;i<src.childNodes.length;i++) {
-   if(src.childNodes[i].nodeName=="select" || src.childNodes[i].nodeName=="SELECT") {
-    this.sels.push(src.childNodes[i]);
-   } if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
-     && (src.childNodes[i].type=="button" || src.childNodes[i].type=="BUTTON")) {
-    if(src.childNodes[i].name=="add") src.childNodes[i].onclick = new Function(this.name+".add();");
-    if(src.childNodes[i].name=="remove") 
-     src.childNodes[i].onclick = new Function(this.name+".remove();");
-    if(src.childNodes[i].name=="moveup") 
-     src.childNodes[i].onclick = new Function(this.name+".moveup();");
-    if(src.childNodes[i].name=="movedown") 
-     src.childNodes[i].onclick = new Function(this.name+".movedown();");
-   } if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
-     && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
-    src.childNodes[i].onclick = new Function(this.name+".selectAll();");
-   }
-  }
-  if (esrc) {
-  this.xml	= (window.navigator.appName!="Microsoft Internet Explorer"
-                   ?new XMLHttpRequest():new ActiveXObject("Microsoft.XMLHTTP"));
-  this.xml.open("GET", esrc);
-  this.xml.send("");
-  setTimeout(this.name+".read()", 100);
-  }
- },
+     if(!src) return;
+     this.name		= name;
+     this.sels		= new Array();
+     var i			= 0;
+     for(i=0;i<src.childNodes.length;i++) {
+	 if(src.childNodes[i].nodeName=="select" || src.childNodes[i].nodeName=="SELECT") {
+	     this.sels.push(src.childNodes[i]);
+	 } 
 
+	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
+	    && (src.childNodes[i].name=="fromjs")) {
+	     src.childNodes[i].value = 1;
+	 }
+
+	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
+	    && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
+
+	     if(src.childNodes[i].name != "submit") 
+		 src.childNodes[i].type = "button";
+
+	     if(src.childNodes[i].name=="add")
+		 src.childNodes[i].onclick = new Function(this.name+".add();");
+	     if(src.childNodes[i].name=="remove") 
+		 src.childNodes[i].onclick = new Function(this.name+".remove();");
+	     if(src.childNodes[i].name=="moveup") 
+		 src.childNodes[i].onclick = new Function(this.name+".moveup();");
+	     if(src.childNodes[i].name=="movedown") 
+		 src.childNodes[i].onclick = new Function(this.name+".movedown();");
+	     if(src.childNodes[i].type=="submit") {
+		 src.childNodes[i].onclick = new Function(this.name+".selectAll();");
+	     }
+
+	 } 
+     }
+     if (esrc) {
+	 this.xml	= (window.navigator.appName!="Microsoft Internet Explorer"
+			   ?new XMLHttpRequest():new ActiveXObject("Microsoft.XMLHTTP"));
+	 this.xml.open("GET", esrc);
+	 this.xml.send("");
+	 setTimeout(this.name+".read()", 100);
+     }
+ },
+     
  add : function() {
-  var i, j 	= 0;
-  var dNode	= null;
-  for(i=0;i<this.sels[0].length;i++) if(this.sels[0][i].selected) {
-   for(j=0;j<this.sels[1].length;j++) if(this.sels[1][j].value==this.sels[0][i].value) break;
-   if(j==this.sels[1].length) dNode	= this.sels[0][i].cloneNode(true), 
-    this.sels[1].appendChild(dNode);
-  }
+     var i, j 	= 0;
+     var dNode	= null;
+     for(i=0;i<this.sels[0].length;i++) if(this.sels[0][i].selected) {
+	 for(j=0;j<this.sels[1].length;j++) if(this.sels[1][j].value==this.sels[0][i].value) break;
+	 if(j==this.sels[1].length) dNode	= this.sels[0][i].cloneNode(true), 
+					this.sels[1].appendChild(dNode);
+     }
  },
 
  moveup : function() { this.move(-1); },
