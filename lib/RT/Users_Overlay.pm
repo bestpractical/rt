@@ -194,8 +194,8 @@ sub LimitToPrivileged {
 =begin testing
 
 ok(my $users = RT::Users->new($RT::SystemUser));
-ok( $users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser'));
-ok($users->Count == 1, "There is one privileged superuser - Found ". $users->Count);
+$users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser');
+ok($users->Count == 1, "There is one privileged superuser - Found ". $users->Count );
 # TODO: this wants more testing
 
 
@@ -221,7 +221,6 @@ sub WhoHaveRight {
                  IncludeSubgroupMembers => 1,
                  @_ );
 
-
     if (defined $args{'ObjectType'} || defined $args{'ObjectId'}) {
         $RT::Logger->crit("$self WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
         return(undef);
@@ -229,7 +228,7 @@ sub WhoHaveRight {
 
     my $users      = 'main';
     my $groups     = $self->NewAlias('Groups');
-    my $userprinc  = $self->NewAlias('Principals');
+    my $userprinc  = $self->{'princalias'};
     my $groupprinc = $self->NewAlias('Principals');
     my $acl        = $self->NewAlias('ACL');
     my $cgm;
@@ -292,10 +291,7 @@ sub WhoHaveRight {
                  ALIAS2 => $groupprinc,
                  FIELD2 => 'Id' );
 
-    $self->Limit( ALIAS    => $userprinc,
-                  FIELD    => 'PrincipalType',
-                  OPERATOR => '=',
-                  VALUE    => 'User' );
+    # $self->Limit( ALIAS    => $userprinc, FIELD    => 'PrincipalType', OPERATOR => '=', VALUE    => 'User' );
 
     if ( $args{'IncludeSuperusers'} ) {
         $self->Limit( ALIAS           => $acl,

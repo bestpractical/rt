@@ -457,7 +457,6 @@ ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
 
-
 ok ((my $add_id, $add_msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
