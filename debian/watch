@@ -1,0 +1,4 @@
+# Example watch control file for uscan
+# Rename this file to "watch" and then you can run the "uscan" command
+# to check for upstream updates and more.
+http://www.fsck.com /pub/rt/release/	rt-(.*)\.tar\.gz	debian	uupdate

@@ -1,0 +1,10 @@
+usr/bin
+usr/sbin
+etc/request-tracker
+usr/share/request-tracker/schema
+usr/lib/request-tracker/bin
+usr/lib/request-tracker/perl
+usr/local/share/request-tracker/WebRT/html
+usr/share/doc/request-tracker
+var/cache/request-tracker/session
+var/cache/request-tracker/mason

@@ -1,0 +1,108 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper. 
+# GNU copyright 1997 by Joey Hess.
+#
+
+# Uncomment this to turn on verbose mode. 
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
+TMP=debian/request-tracker
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	touch configure-stamp
+	-addgroup rt
+
+build: configure-stamp build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cp -rp ./tools/insertdata $(CURDIR)/$(TMP)/usr/lib/request-tracker/bin/
+	install -d $(CURDIR)/$(TMP)/usr/share/request-tracker/schema
+	#cp -rp ./etc/acl.* $(CURDIR)/$(TMP)/usr/share/request-tracker/acl
+	cp -rp ./etc/schema.* $(CURDIR)/$(TMP)/usr/share/request-tracker/schema
+	#cp -rp ./tools/initdb $(CURDIR)/$(TMP)/usr/lib/request-tracker/bin/
+	#cp -rp ./bin/initacls.* $(CURDIR)/$(TMP)/usr/lib/request-tracker/bin/
+	cp -rp ./lib/RT* $(CURDIR)/$(TMP)/usr/lib/request-tracker/perl
+	#chmod 755 $(CURDIR)/$(TMP)/usr/lib/request-tracker/*
+
+	cp -rp ./docs/* $(CURDIR)/$(TMP)/usr/share/doc/request-tracker
+	perl -p -i -e " s'!!RT_ETC_PATH!!'/etc/request-tracker'g;\
+		        s'!!RT_LIB_PATH!!'/usr/lib/request-tracker/perl/'g;"\
+			$(CURDIR)/$(TMP)/usr/lib/request-tracker/bin/insertdata
+	$(MAKE) dirs html-install bin-install config-replace fixperms \
+		DESTDIR=$(CURDIR)/$(TMP) \
+		RT_PATH=/usr/lib/request-tracker \
+		RT_CONFIG_PATH=/etc/request-tracker  \
+		RT_MAN_PATH=/usr/share/man \
+		RT_ETC_PATH=/etc/request-tracker   \
+		RT_LIB_PATH=/usr/lib/request-tracker/perl \
+		RT_CLI_BIN=/usr/bin/rt \
+		RT_CLI_ADMIN_BIN=/usr/sbin/rtadmin \
+		RT_MAILGATE_BIN=/usr/lib/request-tracker/rt-mailgate \
+		RT_FASTCGI_HANDLER=/usr/lib/request-tracker/bin/mason-handler.fcgi \
+		RT_MODPERL_HANDLER=/usr/lib/request-tracker/bin/webmux.pl \
+		WEB_USER=www-data \
+		WEB_GROUP=www-data \
+		MASON_HTML_PATH=/usr/share/request-tracker/WebRT/html \
+		MASON_LOCAL_HTML_PATH=/usr/local/share/request-tracker/WebRT/html \
+		MASON_DATA_PATH=/var/cache/request-tracker/mason \
+		MASON_SESSION_PATH=/var/cache/request-tracker/session 
+	find $(CURDIR)/$(TMP)/usr/share/request-tracker -type f | xargs chmod 644
+	find $(CURDIR)/$(TMP)/usr/lib/request-tracker/perl -type f | xargs chmod 644
+	chmod 0644 $(CURDIR)/$(TMP)/usr/lib/request-tracker/bin/webmux.pl 
+	chown root $(CURDIR)/$(TMP)/etc/request-tracker/config.pm
+	chgrp rt $(CURDIR)/$(TMP)/etc/request-tracker/config.pm
+	chmod 0440 $(CURDIR)/$(TMP)/etc/request-tracker/config.pm
+	dh_movefiles --sourcedir=$(TMP)
+
+# Build architecture-independent files here.
+# Pass -i to all debhelper commands in this target to reduce clutter.
+binary-indep: build install
+	dh_testdir 
+	dh_testroot 
+	dh_installdebconf  -prequest-tracker
+	dh_installdocs 
+	dh_installexamples  -prequest-tracker debian/apache.conf debian/etc.aliases
+	dh_installmenu 
+#	dh_installlogrotate 
+#	dh_installemacsen 
+#	dh_installpam 
+#	dh_installmime 
+#	dh_installinit 
+	dh_installcron 
+#	dh_installman 
+	dh_installinfo 
+	dh_undocumented  -prequest-tracker rt.1 rtadmin.1
+	dh_installchangelogs  
+	dh_link 
+	dh_compress 
+	dh_fixperms 
+	dh_installdeb 
+#	dh_perl 
+	dh_gencontrol 
+	dh_md5sums 
+	dh_builddeb 
+
+binary-arch: build install
+
+binary: binary-arch binary-indep
+
+.PHONY: build clean binary-indep binary-arch binary install configure

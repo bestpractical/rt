@@ -1,0 +1,3 @@
+rt:		"| /usr/lib/request-tracker/bin/rt-mailgate --queue general --action correspond"
+rt-comment:	"| /usr/lib/request-tracker/bin/rt-mailgate --queue general --action comment"
+

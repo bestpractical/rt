@@ -1,0 +1,219 @@
+#! /bin/sh
+# postinst script for rt
+#
+# see: dh_installdeb(1)
+
+set -e
+
+create_db() {	
+    perl -e"use DBIx::DataSource qw(create_database); \
+    	    my \$dsn = \"dbi:$rt_type:dbname=$rt_database\"; \
+	    \$dsn .= \";host=$rt_host\" if ($rt_host); \
+	    \$dsn .= \";port=$rt_port\" if ($rt_port); \
+	    create_database(\$dsn, $rt_dba, $rt_dba_password);";
+}
+
+insert_schema() {
+    perl -e"use DBI; \
+    	    my \$dsn = \"dbi:$rt_type:dbname=$rt_database\"; \
+	    \$dsn .= \";host=$rt_host\" if ($rt_host); \
+	    \$dsn .= \";port=$rt_port\" if ($rt_port); \
+	   my \$dbh = DBI->connect(\$dsn, $rt_dba, $rt_dba_password); \
+	   open(SCHEMA,\"/usr/share/request-tracker/schema/schema.$rt_type\"); \
+	   my (\$statement, @schema); \
+	   foreach my \$line (<SCHEMA>){ \
+		   \$statement .= \$line; \
+	 	  if (\$line =~ /;\$/) { \
+		  	\$statement =~ s/;\$//g;\
+			push @schema, \$statement; \
+			\$statement = \"\"; \
+		}\
+	}\
+	foreach my \$st (@schema) { \
+		\$dbh->do(\$st) || die \$dbh->errstr;
+	}";
+
+}
+
+
+acls(){
+
+
+if [ $rt_host ] ; then 
+     userathost="$rt_rtuser@$rt_host"
+     hostflag="--host=$rt_host"
+else
+	userathost="$rt_rtuser"
+	hostflag=""
+fi
+if [ $rt_port ] ; then 
+     port="--port=$rt_port"
+fi
+if [ $rt_dba_password ] ; then 
+     pass="-p$rt_dba_password"
+fi
+
+
+echo "DELETE FROM user WHERE user like '$rt_rtuser'; DELETE FROM db where db LIKE '$rt_database'; GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON $rt_database.* TO  $userathost IDENTIFIED BY '$rt_rtpass'" | mysql --user=$rt_dba $pass $hostflag $port mysql 
+
+mysqladmin --user=$rt_dba $pass $hostflag $port reload
+
+}
+
+case "$1" in
+    configure)
+
+	. /usr/share/debconf/confmodule
+	chmod 700 /var/cache/request-tracker/mason /var/cache/request-tracker/session
+	chown www-data /var/cache/request-tracker/mason /var/cache/request-tracker/session
+
+	db_set request-tracker/timezone `cat /etc/timezone`
+
+	perl -e 'require "/etc/request-tracker/config.pm";
+                use Debconf::Client::ConfModule qw(:all);  
+                %f = (rtname            => "rtname",       
+                      Organization      => "organization", 
+                      Timezone          => "timezone",     
+                      DatabaseType      => "db-type",      
+		      DatabasePort      => "db-port",      
+                      DatabaseUser      => "rt-db-user",   
+                      DatabasePassword  => "rt-db-pass", 
+                      DatabaseName      => "db-database",  
+                      OwnerEmail        => "owner-email",  
+                      CorrespondAddress => "corresp-addr", 
+                      CommentAddress    => "comment-addr", 
+                      DatabaseHost      => "db-host");     
+		for (keys %f) {                            
+		  if(exists $RT::{$_}) {                   
+                    set("request-tracker/" . $f{$_}, ${$RT::{$_}})}}'
+
+	db_input high request-tracker/rtname        || true
+	db_input high request-tracker/organization  || true
+	db_input high request-tracker/db-purge        || true
+	db_input low request-tracker/timezone       || true
+#	db_input medium request-tracker/db-type     || true
+	db_input medium request-tracker/db-host     || true
+	db_input medium request-tracker/db-port     || true
+	db_input high request-tracker/dba-password  || true
+	db_input low request-tracker/db-database    || true
+	db_input low request-tracker/rt-db-user     || true
+	db_input high request-tracker/rt-db-pass     || true
+	db_input medium request-tracker/owner-email    || true
+	db_input high request-tracker/config-apache    || true
+	db_go                                       || true
+
+	db_get request-tracker/corresp-addr
+	if [ "$RET" = "rt@localhost" ]; then
+	    db_set request-tracker/corresp-addr "rt"
+	fi
+
+	db_get request-tracker/comment-addr
+	if [ "$RET" = "rt-comment@localhost" ]; then
+	    db_set request-tracker/comment-addr "rt-comment"
+	fi
+
+	db_input medium request-tracker/corresp-addr || true
+	db_input medium request-tracker/comment-addr || true
+	db_go
+
+	db_get request-tracker/rtname
+	rt_name=$RET
+	db_get request-tracker/organization
+	rt_organization=$RET
+	db_get request-tracker/timezone
+	rt_timezone=$RET
+	#db_get request-tracker/db-type
+	rt_type=mysql
+	db_get request-tracker/db-host
+	rt_host=$RET 
+	if [ "$rt_host" = "" ]; then
+		rt_host="localhost"
+	fi
+	
+	db_get request-tracker/db-port
+	rt_port=$RET
+	if [ "$rt_type" = "Pg" ]; then
+	    rt_dba=postgres
+	fi
+	if [ "$rt_type" = "mysql" ]; then
+	    rt_dba=root
+	fi
+	db_get request-tracker/dba-password
+	rt_dba_password=$RET
+	db_get request-tracker/db-database
+	rt_database=$RET
+	db_get request-tracker/rt-db-user
+	rt_rtuser=$RET
+	db_get request-tracker/rt-db-pass
+	rt_rtpass="$RET"
+	db_get request-tracker/corresp-addr
+	rt_corraddr=$RET
+	db_get request-tracker/comment-addr
+	rt_commaddr=$RET
+	db_get request-tracker/owner-email
+	rt_owneremail=$RET
+
+	rt_webpath='/rt2'
+	rt_webbaseurl='http://`hostname`'
+
+        perl -p -i -e 's{#?\$rtname\s*=\s*['\''"][^'\''"]*['\''"]}{\$rtname="'$rt_name'"}g;
+          s{#?\$Organization\s*=\s*['\''"][^'\''"]*['\''"]}{\$Organization="'$rt_organization'"}g;
+	  s{#?\$Timezone\s*=\s*['\''"][^'\''"]*['\''"]}{\$Timezone="'$rt_timezone'"}g;
+	  s{#?\$DatabaseType\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabaseType="'$rt_type'"}g;
+	  s{#?\$DatabasePort\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabasePort="'$rt_port'"}g;
+	  s{#?\$DatabaseUser\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabaseUser="'$rt_rtuser'"}g;
+	  s{#?\$DatabasePassword\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabasePassword="'$rt_rtpass'"}g;
+	  s{#?\$DatabaseName\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabaseName="'$rt_database'"}g;
+	  s{#?\$OwnerEmail\s*=\s*['\''"][^'\''"]*['\''"]}{\$OwnerEmail="'$rt_owneremail'"}g;
+	  s{#?\$CorrespondAddress\s*=\s*['\''"][^'\''"]*['\''"]}{\$CorrespondAddress="'$rt_corraddr'"}g;
+	  s{#?\$CommentAddress\s*=\s*['\''"][^'\''"]*['\''"]}{\$CommentAddress="'$rt_commaddr'"}g;
+	  s{#?\$WebPath\s*=\s*['\''"][^'\''"]*['\''"]}{\$WebPath="'$rt_webpath'"}g;
+	  s{#?\$WebBaseURL\s*=\s*['\''"][^'\''"]*['\''"]}{\$WebBaseURL="'$rt_webbaseurl'"}g;
+	  s{#?\$DatabaseHost\s*=\s*['\''"][^'\''"]*['\''"]}{\$DatabaseHost="'$rt_host'"}g;' \
+          /etc/request-tracker/config.pm
+
+	  [ "'$rt_type'" = "'Pg'" ] && database=`echo \\\\l | psql template1 | grep -c $rt_database` || true
+	  [ "'$rt_type'" = "'mysql'" ] && database=`echo \\\\l | mysqlshow | grep -c $rt_database` || true
+
+	if [ $database -eq 0 ]; then
+
+          # Order is important here
+
+	  create_db
+
+	  [ "'$rt_type'" = "'Pg'" ] && insert_schema
+
+	  acls
+
+	  [ "'$rt_type'" = "'mysql'" ] && insert_schema
+
+	  perl /usr/lib/request-tracker/bin/insertdata
+
+	else
+	  echo "Database already exists... Skipping setup."
+	fi
+
+#	db_get request-tracker/config-apache
+#	config_apache=$RET
+
+#	if [ $config_apache='yes' ] ; then  
+#	  apache_configed=`echo \\\\l | grep -c "blah" ` || true
+#	fi
+
+	;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+	;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+	;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,12 @@
+request-tracker (2.0.14-1) unstable; urgency=low
+
+  * Overhauled installation, configuration, directory layout
+
+ -- Jesse Vincent <jesse@bestpractical.com>  Tue, 17 Jul 2002 07:58:05 -0500
+
+request-tracker2 (2.0.9-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Mark A. Hershberger <mah@everybody.org>  Mon, 17 Dec 2001 13:57:41 -0600
+

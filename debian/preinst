@@ -1,0 +1,5 @@
+#!/bin/sh
+
+addgroup rt || true
+
+##DEBHELPER##

@@ -1,0 +1,114 @@
+Template: request-tracker/rtname
+Type: string
+Default: example.com
+Description: A unique tag for your RT instance
+ This tag is used to uniquely identify your RT instance on the web and
+ in email headers.  Your domain name is recommended, so as not to pollute 
+ the namespace.
+ Once you start using a given tag, you should probably never change it.
+ (otherwise, mail for existing tickets won't get put in the right place
+
+Template: request-tracker/organization
+Type: string
+Default: example.com
+Description: Internal identifier for your RT instance
+ This tag is used internally by RT to identify tickets, as well as to
+ generate RFC compliant Message-Id headers. It MUST be an RFC-Compliant
+ DNS domain name.  You should set this to your organization's DNS domain name. 
+
+Template: request-tracker/timezone
+Type: string
+Default: US/Eastern
+Description: Timezone for request-tracker
+ Internally, RT treats times as GMT. For data entry and display
+ purposes, times are converted into local time as specified by this
+ timezone. This should be the name of a standard timezone, such as
+ US/Eastern or America/New_York
+
+Template: request-tracker/db-type
+Type: select
+Default: mysql
+Choices: mysql
+Description: Database type for RT to use
+ You need to specify which database RT should use.
+
+Template: request-tracker/db-host
+Type: string
+Default: localhost
+Description: Hostname of your database server
+ RT needs to be able to find your database server. If your database
+ server isn't running on localhost, enter its hostname here.
+
+Template: request-tracker/db-port
+Type: string
+Default: 
+Description: Port to connect to for the database
+ If you run your database on a non-standard port, specify it here.
+ If you leave it blank, the default port will be used.
+
+Template: request-tracker/dba-password
+Type: string
+Default: 
+Description: Database administrator's password
+ If you have set a password for your database administrator, RT
+ needs that password in order to complete the installation
+
+Template: request-tracker/db-database
+Type: string
+Default: rt2
+Description: Database name
+ This is the database that rt will create and use.
+ Leave this as the default unless you have a good reason to
+ change it.
+
+Template: request-tracker/rt-db-user
+Type: string
+Default: rt_user
+Description: RT database user
+ This is a user that request-tracker will create and use to
+ interact with its database.  In most cases, the default
+ should be fine.
+
+Template: request-tracker/rt-db-pass
+Type: string
+Default: rt_pass
+Description: request-tracker database password
+ This is a password that RT will associate with its
+ database user.  You should change this to something
+ secure.
+
+Template: request-tracker/owner-email
+Type: string
+Default: root
+Description: Email of request-tracker owner
+ This should be set to the email address of the person
+ responsible for managing RT. Certain critical errors
+ will be mailed to this user in the case of catastrophe.
+
+Template: request-tracker/corresp-addr
+Type: string
+Default: rt
+Description: request-tracker email address
+ RT is designed to make sure that any mail which already has
+ a ticket-id associated with it will get to the right place
+ automatically.
+ .
+ This is the default address that will be listed in From: and
+ Reply-To: headers of mail tracked by request-tracker unless
+ overridden by a queue-specific address.
+
+Template: request-tracker/comment-addr
+Type: string
+Default: rt-comment
+Description: request-tracker comment email address
+ This is the default address that will be listed in From: and
+ Reply-To: headers of mail tracked by RT unless
+ overridden by a queue-specific address.
+
+Template: request-tracker/db-purge
+Type: select
+Default: no
+Choices: no, yes
+Description: Purge database on package removal
+ When RT is removed from this system, you may optionally purge
+ RT's database from the system. This is not recommended.

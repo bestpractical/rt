@@ -1,0 +1,28 @@
+request-tracker for Debian
+-------------
+
+This package automatically installs RT and configures your database.
+It does not automatically configure your webserver, nor does it 
+automatically set up mail aliases.
+
+RT installs an example apache configuration in 
+	/usr/share/doc/request-tracker/examples/apache.conf
+
+You should manually add this stanza to your apache configuration and restart
+apache. At that point, RT should be accessible at http://localhost/rt2/
+
+
+RT installs example mail aliases in 
+	/usr/share/doc/request-tracker/examples/etc.aliases
+
+You should use these aliases as a template for your own local mail aliases
+for RT and then run your MTA's 'newaliases' command, which may or may not 
+be called 'newaliases'.
+
+At this point, it would probably be wise to consult RT's online documentation 
+at http://fsck.com/rtfm/
+
+	Best,
+
+	Jesse Vincent
+	<jesse@bestpractical.com>

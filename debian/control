@@ -1,0 +1,17 @@
+Source: request-tracker
+Section: misc
+Priority: optional
+Maintainer: Jesse Vincent <jesse@bestpractical.com>
+Build-Depends: debhelper (>> 3.0.0), perl (>= 5.6.1-1),
+Standards-Version: 3.5.6.1
+
+Package: request-tracker
+Architecture: any
+Depends: debconf, perl-suid, mysql-client, mysql-common, mysql-server, libmd5-perl, apache, libapache-mod-perl, libcgi-perl, libcgi-pm-perl, libapache-session-perl, libapache-dbi-perl, libapache-request-perl, libstorable-perl, libfreezethaw-perl, libhtml-mason-perl, libtext-template-perl, libtext-wrapper-perl, libtimedate-perl, libmime-perl, libtie-ixhash-perl, liblog-dispatch-perl, libdbix-datasource-perl, libdbix-searchbuilder-perl
+Description: Request Tracker, Enterprise-grade issue tracking system
+ Request Tracker helps you handle and track, bugs, outages, tasks, projects,
+ and problem reports, it features full web and commandline interface,
+ as well as complete email integration.
+   Be sure to read /usr/share/doc/request-tracker/README.Debian for 
+ instructions about how to set up the mod_perl based web interface, as well 
+ as the email gateway.

@@ -1,0 +1,78 @@
+#!/bin/sh
+
+acls(){
+
+
+if [ $rt_host ] ; then 
+     userathost="$rt_rtuser@$rt_host"
+     hostflag="--host=$rt_host"
+else
+	userathost="$rt_rtuser"
+	hostflag=""
+fi
+if [ $rt_port ] ; then 
+     port="--port=$rt_port"
+fi
+if [ $rt_pass ] ; then 
+     pass="-p$rt_dba_password"
+fi
+
+
+echo "DELETE FROM user WHERE user like '$rt_rtuser'; DELETE FROM db where db LIKE '$rt_database'; " | mysql --user=$rt_dba $pass $hostflag $port mysql 
+
+mysqladmin --force --user=$rt_dba $pass $hostflag $port drop $rt_database
+
+}
+case "$1" in
+
+    purge)
+
+
+
+   if [ -f /usr/share/debconf/confmodule ]; then
+	. /usr/share/debconf/confmodule
+
+	db_get request-tracker/db-purge
+	purge_db=$RET
+
+	if [ "$purge_db" = "yes" ]; then 
+
+		#db_get request-tracker/db-type
+		rt_type=mysql
+		db_get request-tracker/db-host
+		rt_host=$RET 
+		if [ "$rt_host" = "" ]; then
+			rt_host="localhost"
+		fi
+		
+		db_get request-tracker/db-port
+		rt_port=$RET
+		if [ "$rt_type" = "Pg" ]; then
+		    rt_dba=postgres
+		fi
+		if [ "$rt_type" = "mysql" ]; then
+		    rt_dba=root
+		fi
+		db_get request-tracker/dba-password
+		rt_dba_password=$RET
+		db_get request-tracker/db-database
+		rt_database=$RET
+		db_get request-tracker/rt-db-user
+		rt_rtuser=$RET
+		db_get request-tracker/rt-db-pass
+		rt_rtpass=$RET
+	
+		# got update them ACLS
+		acls
+	
+	fi
+
+	db_purge
+    fi
+
+    rm -rf /var/cache/request-tracker
+    ;;
+
+esac
+
+##DEBHELPER##

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+rmdir /usr/local/share/request-tracker/WebRT/html 2> /dev/null || true
+rmdir /usr/local/share/request-tracker/WebRT 2> /dev/null || true
+rmdir /usr/local/share/request-tracker 2> /dev/null || true
+
+
+##DEBHELPER##
