@@ -5,7 +5,7 @@
 
 <TEXTAREA NAME="<%$Name%>"  ROWS=5 COLS=20>
 % foreach my $item (@{$ArticleObj->CustomFieldValues($cf)->ItemsArrayRef}) {
-<%$item->Content%>
+<% $item && $item->Content%>
 % }
 </TEXTAREA>
 % } else { 
