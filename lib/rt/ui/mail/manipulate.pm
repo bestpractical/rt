@@ -96,9 +96,10 @@ sub parse_headers {
 	}
 	
 	
+
+        $current_user = $1 if (($line =~ /^Reply-To: (.*)/) and (!$current_user));  
 	$current_user = $1 if (($line =~ /^From: (.*)/) and (!$current_user));
-	$current_user = $1 if (($line =~ /^Reply-To: (.*)/) and (!$current_user));
-	#$current_user = $1 if (($line =~ /^Sender: (.*)/) and (!$current_user));
+	$current_user = $1 if (($line =~ /^Sender: (.*)/) and (!$current_user));
 	
 	
 	$time_in_text = $1 if ($line =~/^Date: (.*)/);
@@ -125,7 +126,7 @@ sub parse_headers {
     #FIX ME 
     # WARNING
     # is i the right flag there?
-    if ($current_user =~ /^mailer-daemon/i) {
+    if (($current_user =~ /^postmaster/i) or ($current_user =~ /^mailer-daemon/i)) {
 
 	#TODO perform a magic warning here..(auto-submit a req?)
 	exit(0);
