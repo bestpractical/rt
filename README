@@ -90,6 +90,10 @@ GENERAL INSTALLATION
 		 make install	(replace "make" with the local name for 
 				 Make, if you need to)
 
+                       
+                 make initialize-database 
+
+
 	If the make fails, type:
 		make dropdb 
 	and start over from step 5a

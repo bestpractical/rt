@@ -142,6 +142,7 @@ sub Create {
     my $self = shift;
     my %args = (
         Privileged => 0,
+        Disabled => 0,
         @_    # get the real argumentlist
     );
 
@@ -155,7 +156,12 @@ sub Create {
     my $privileged = $args{'Privileged'};
     delete $args{'Privileged'};
 
-    if ( !$args{'Password'} ) {
+
+    if ($args{'CryptedPassword'} ) {
+        $args{'Password'} = $args{'CryptedPassword'};
+        delete $args{'CryptedPassword'};
+    }
+    elsif ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
     }
     elsif ( length( $args{'Password'} ) < $RT::MinimumPasswordLength ) {
@@ -192,6 +198,7 @@ sub Create {
     # When creating this user, set up a principal Id for it.
     my $principal = RT::Principal->new($self->CurrentUser);
     my $principal_id = $principal->Create(PrincipalType => 'User',
+                                Disabled => $args{'Disabled'},
                                 ObjectId => '0');
     $principal->__Set(Field => 'ObjectId', Value => $principal_id);
     # If we couldn't create a principal Id, get the fuck out.
@@ -201,6 +208,7 @@ sub Create {
         return ( 0, $self->loc('Could not create user') );
     }
 
+    delete $args{'Disabled'};
 
     $self->SUPER::Create(id => $principal_id , %args);
     my $id = $self->Id;

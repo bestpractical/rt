@@ -71,6 +71,8 @@ CREATE TABLE Principals (
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+CREATE INDEX Principals2 ON Principals (ObjectId);
+
 # }}}
 
 # {{{ Groups
@@ -199,6 +201,9 @@ create table CachedGroupMembers (
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId);
+CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (GroupId);
+                                                                            
 # }}}
 
 # {{{ Users
@@ -232,6 +237,7 @@ CREATE TABLE Users (
   State varchar(100) NULL  ,
   Zip varchar(16) NULL  ,
   Country varchar(50) NULL  ,
+  Timezone varchar(50) NULL  ,
   PGPKey text NULL,
 
   Creator integer NULL  ,

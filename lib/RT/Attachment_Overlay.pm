@@ -233,6 +233,18 @@ sub Create {
 # }}}
 
 
+=head2 Import
+
+Create an attachment exactly as specified in the named parameters.
+
+=cut
+
+
+sub Import {
+    my $self = shift;
+    return($self->SUPER::Create(@_));
+}
+
 # {{{ sub Content
 
 =head2 Content

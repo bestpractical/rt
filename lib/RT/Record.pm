@@ -116,17 +116,15 @@ sub Create {
     }
     my $now = RT::Date->new( $self->CurrentUser );
     $now->Set( Format => 'unix', Value => time );
-    $attribs{'Created'} = $now->ISO()
-      if ( $self->_Accessible( 'Created', 'auto' ) );
+    $attribs{'Created'} = $now->ISO() if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
 
-    $attribs{'Creator'} = $self->CurrentUser->id
-      if $self->_Accessible( 'Creator', 'auto' );
+    $attribs{'Creator'} = $self->CurrentUser->id if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'});
 
     $attribs{'LastUpdated'} = $now->ISO()
-      if ( $self->_Accessible( 'LastUpdated', 'auto' ) );
+      if ( $self->_Accessible( 'LastUpdated', 'auto' ) && !$attribs{'LastUpdated'});
 
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id
-      if $self->_Accessible( 'LastUpdatedBy', 'auto' );
+      if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
     my $id = $self->SUPER::Create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {

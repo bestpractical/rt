@@ -73,8 +73,8 @@ if ($args{'prompt-for-dba-password'}) {
 }
 
 unless ($args{'action'} ) {
-	die;
 	help();
+	die;
 }
 if ($args{'action'} eq 'init') {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
@@ -119,8 +119,8 @@ sub insert_schema {
         foreach my $line (<SCHEMA>) {
 		$line =~ s/\#.*//g;
             $statement .= $line;
-            if ( $line =~ /;$/ ) {
-                $statement =~ s/;$//g;
+            if ( $line =~ /;(\s*)$/ ) {
+                $statement =~ s/;(\s*)$//g;
                 push @schema, $statement;
                 $statement = "";
             }

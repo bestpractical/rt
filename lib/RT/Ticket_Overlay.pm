@@ -305,6 +305,10 @@ sub Create {
                  Started         => undef,
                  Resolved        => undef,
                  MIMEObj         => undef,
+                 _RecordTransaction => 1,
+                 
+
+
                  @_ );
 
     my ( $ErrStr, $Owner, $resolved );
@@ -362,10 +366,10 @@ sub Create {
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $Due = new RT::Date( $self->CurrentUser );
 
-    if ( defined $args{'Due'} ) {
+    if ( $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value  => $args{'Due'} );
     }
-    elsif ( defined( $QueueObj->DefaultDueIn ) ) {
+    elsif (  $QueueObj->DefaultDueIn  ) {
         $Due->SetToNow;
         $Due->AddDays( $QueueObj->DefaultDueIn );
     }
@@ -438,7 +442,7 @@ sub Create {
 
     $RT::Handle->BeginTransaction();
 
-    my $id = $self->SUPER::Create( Queue           => $QueueObj->Id,
+    my %params =( Queue           => $QueueObj->Id,
                                    Owner           => $Owner->Id,
                                    Subject         => $args{'Subject'},
                                    InitialPriority => $args{'InitialPriority'},
@@ -454,6 +458,12 @@ sub Create {
                                    Resolved        => $Resolved->ISO,
                                    Due             => $Due->ISO );
 
+    # Parameters passed in during an import that we probably don't want to touch, otherwise
+    foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
+        $params{$attr} = $args{$attr} if ($args{$attr});
+    }
+
+    my $id = $self->SUPER::Create( %params);
     #Set the ticket's effective ID now that we've created it.
     my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => $id );
 
@@ -548,32 +558,43 @@ sub Create {
     }
     # }}}
 
-    # {{{ Add a transaction for the create
-    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+    if ( $args{'_RecordTransaction'} ) {
+        # {{{ Add a transaction for the create
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                      Type      => "Create",
                                                      TimeTaken => 0,
                                                      MIMEObj => $args{'MIMEObj'}
-    );
-    # }}}
-    
-    # {{{ Logging
-    if ( $self->Id && $Trans ) {
-        $ErrStr = $self->loc("Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name);
-        $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
+        );
 
-        $RT::Logger->info($ErrStr);
+
+        if ( $self->Id && $Trans ) {
+            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'",
+                                  $self->Id, $QueueObj->Name );
+            $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
+
+            $RT::Logger->info($ErrStr);
+        }
+        else {
+            $RT::Handle->Rollback();
+
+            # TODO where does this get errstr from?
+            $RT::Logger->error("Ticket couldn't be created: $ErrStr");
+            return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
+        }
+
+        $RT::Handle->Commit();
+        return ( $self->Id, $TransObj->Id, $ErrStr );
+        # }}}
     }
     else {
-        $RT::Handle->Rollback();
 
-        # TODO where does this get errstr from?
-        $RT::Logger->error("Ticket couldn't be created: $ErrStr");
-        return ( 0, 0,
-                 $self->loc( "Ticket could not be created due to an internal error") );
+        # Not going to record a transaction
+        $RT::Handle->Commit();
+        $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
+        $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
+        return ( $self->Id, $0, $ErrStr );
+
     }
-
-    $RT::Handle->Commit();
-    return ( $self->Id, $TransObj->Id, $ErrStr );
 }
 
 # }}}

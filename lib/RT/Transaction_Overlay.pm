@@ -92,8 +92,7 @@ sub Create {
     }
 
     #lets create our transaction
-    my $id = $self->SUPER::Create(
-        Ticket    => $args{'Ticket'},
+    my %params = (Ticket    => $args{'Ticket'},
         TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
@@ -102,6 +101,13 @@ sub Create {
         NewValue  => $args{'NewValue'},
         Created   => $args{'Created'}
     );
+
+    # Parameters passed in during an import that we probably don't want to touch, otherwise
+    foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
+        $params{$attr} = $args{$attr} if ($args{$attr});
+    }
+ 
+    my $id = $self->SUPER::Create(%params);
     $self->Load($id);
     $self->_Attach( $args{'MIMEObj'} )
       if defined $args{'MIMEObj'};
