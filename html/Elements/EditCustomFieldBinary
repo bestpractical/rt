@@ -25,7 +25,7 @@
 %# XXX - let user download the file(s) here?
 <input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br>
 % }
-% if (!$MaxValues or ($Values && $Values->Count) < $MaxValues) {
+% if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
 <input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload">
 % }
 <%ARGS>
