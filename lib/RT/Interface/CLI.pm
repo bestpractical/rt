@@ -238,4 +238,9 @@ sub debug {
 # }}}
 
 
+eval "require RT::Interface::CLI_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Local.pm}) {
+    die $@;
+};
+
 1;

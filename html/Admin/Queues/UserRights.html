@@ -33,7 +33,7 @@
       
       
 <TABLE>
-        
+<& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});

@@ -37,6 +37,8 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $BasePath
         $EtcPath
         $VarPath
+        $LocalPath
+	$LocalEtcPath
         $LocalLexiconPath
         $LogDir
         $MasonComponentRoot
@@ -53,6 +55,8 @@ $BasePath = '@RT_PATH@';
 
 $EtcPath = '@RT_ETC_PATH@';
 $VarPath = '@RT_VAR_PATH@';
+$LocalPath = '@RT_LOCAL_PATH@';
+$LocalEtcPath = '@LOCAL_ETC_PATH@';
 $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
 
 
@@ -283,5 +287,8 @@ ok ($RT::SystemUser->Name() ne 'noname', "The system user isn't noname");
 =end testing
 
 =cut
+
+eval "require RT_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT_Local.pm});
 
 1;

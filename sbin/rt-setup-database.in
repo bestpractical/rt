@@ -121,9 +121,13 @@ sub insert_schema {
     print "Creating database schema.\n";
 
     if ( -f $RT::EtcPath . "/schema." . $RT::DatabaseType ) {
+	no warnings 'unopened';
+
         open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
+        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
+
         my $statement = "";
-        foreach my $line (<SCHEMA>) {
+        foreach my $line (<SCHEMA>, <SCHEMA_LOCAL>) {
             $line =~ s/\#.*//g;
             $statement .= $line;
             if ( $line =~ /;(\s*)$/ ) {

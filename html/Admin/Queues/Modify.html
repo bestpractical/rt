@@ -81,6 +81,7 @@
 </TD>
 <TD COLSPAN=4><INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this queue)</&><BR>
+<& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 </TD>
 </TR>
 

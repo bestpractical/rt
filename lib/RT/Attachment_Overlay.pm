@@ -450,6 +450,27 @@ sub _Value  {
 
 # }}}
 
+sub ContentLength {
+    my $self = shift;
+
+
+	# XXX TODO: this really should be cashed. for a given attachment, it will never change. 
+	# how about a global hash, autrijus?
+
+    unless ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
+	     ($self->TransactionObj->Type eq 'Comment') )  or
+	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
+	return undef;
+    }
+
+    my $size = $self->_Handle->FetchResult(
+	"SELECT LENGTH(Content) FROM Attachments WHERE Id = ?", $self->Id
+    ) or return 0;
+
+    $size = int($size / 4 * 3) if $self->__Value('ContentEncoding') eq 'base64';
+    return $size;
+}
+
 # }}}
 
 1;

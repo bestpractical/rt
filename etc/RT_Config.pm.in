@@ -194,6 +194,15 @@ Set($SendmailArguments , "-oi -t");
 # !! If you did not # select 'sendmailpipe' above, this has no effect!!
 Set($SendmailPath , "/usr/sbin/sendmail");
 
+# By default, RT sets the outgoing mail's "From:" header to
+# "SenderName via RT".  Setting this option to 0 disables it.
+
+Set($UseFriendlyFromLine , 1);
+
+# sprintf() format of the friendly 'From:' header; its arguments
+# are SenderName and SenderEmailAddress.
+Set($FriendlyFromLineFormat , "\"%s via RT\" <%s>");
+
 # RT can optionally set a "Friendly" 'To:' header when sending messages to
 # Ccs or AdminCcs (rather than having a blank 'To:' header.
 
@@ -202,6 +211,10 @@ Set($SendmailPath , "/usr/sbin/sendmail");
 # you _must_ disable this option.
 
 Set($UseFriendlyToLine , 0);
+
+# sprintf() format of the friendly 'From:' header; its arguments
+# are WatcherType and TicketId.
+Set($FriendlyToLineFormat, "\"%s of $RT::rtname Ticket #%s\":;");
 
 # By default RT doesn't notify the person who performs an update, as they
 # already know what they've done. If you'd like to change this behaviour,
@@ -297,7 +310,7 @@ Set($WebExternalAuto , undef);
 # an attachment uses if not specified.  Must be recognized by
 # Encode::Guess.
 
-@EmailInputEncodings = qw(utf-8 iso-8859-1 us-ascii) unless (@EmailEncodings);
+@EmailInputEncodings = qw(utf-8 iso-8859-1 us-ascii) unless (@EmailInputEncodings);
 
 # The charset for localized email.  Must be recognized by Encode.
 

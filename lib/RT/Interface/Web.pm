@@ -879,7 +879,7 @@ sub UpdateRecordObject {
         }
 
             $value =~ s/\r\n/\n/gs;
-	# $value = $object->DecodeUTF8($value); # XXX - investigate!
+
         if ($value ne $object->$attribute()){
 
               my $method = "Set$attribute";
@@ -1338,5 +1338,10 @@ sub ProcessTicketLinks {
 }
 
 # }}}
+
+eval "require RT::Interface::Web_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm}) {
+    die $@;
+};
 
 1;

@@ -34,6 +34,7 @@
       
 <h1><&|/l&>System groups</&></h1>
 <TABLE>
+<& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {

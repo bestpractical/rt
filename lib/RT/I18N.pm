@@ -31,7 +31,7 @@ package RT::I18N;
 
 use strict;
 use Locale::Maketext 1.04;
-use Locale::Maketext::Lexicon 0.22;
+use Locale::Maketext::Lexicon 0.25;
 use base ('Locale::Maketext::Fuzzy');
 use vars qw( %Lexicon );
 

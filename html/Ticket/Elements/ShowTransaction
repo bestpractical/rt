@@ -37,7 +37,7 @@ unless ($Collapsed) {
  $attachments->GotoFirstItem;
  while (my $message=$attachments->Next) {
      #we don't want to show any empty transactions, unless they have kids
-     next unless ($message->Content || $message->Children->Count);
+     next unless ($message->ContentLength || $message->Children->Count);
      my ($headers, $content);
      
     </%PERL>
@@ -61,12 +61,9 @@ unless ($Collapsed) {
      # 13456 is a random # of about the biggest size we want to see inline text
      my $MAX_INLINE_BODY = 13456;
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
-				    length($message->Content)< $MAX_INLINE_BODY ) {
-
-	 $content = $message->Content;
-
-         use Text::Quoted;
-         $quoted = extract ($content); 
+				    $message->ContentLength < $MAX_INLINE_BODY ) {
+         require Text::Quoted;
+         $quoted = Text::Quoted::extract($message->Content); 
 
      }
      else {
@@ -91,7 +88,7 @@ unless ($Collapsed) {
 <BR>
 % }
 <%PERL>
-my $size = length($message->Content());
+my $size = $message->ContentLength;
 
 if ($size) {
     if ($size > 1024) {

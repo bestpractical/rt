@@ -377,15 +377,21 @@ sub SetReturnAddress {
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
-        if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-            $friendly_name = $1;
-        }
+	if ($RT::UseFriendlyFromLine) {
+	    my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
+	    if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+		$friendly_name = $1;
+	    }
 
-        $friendly_name =~ s/"/\\"/g;
-
-        # TODO: this "via RT" should really be site-configurable.
-        $self->SetHeader( 'From', "\"$friendly_name via RT\" <$replyto>" );
+	    $friendly_name =~ s/"/\\"/g;
+	    $self->SetHeader(
+		'From',
+		sprintf($RT::FriendlyFromLineFormat, $friendly_name, $replyto),
+	    );
+	}
+	else {
+	    $self->SetHeader( 'From', $replyto );
+	}
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {

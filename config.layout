@@ -32,6 +32,7 @@
   masonstatedir:	${localstatedir}/mason_data
   sessionstatedir:	${localstatedir}/session_data
   customdir:		${prefix}/local
+  custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
@@ -53,6 +54,7 @@
   masonstatedir:	${localstatedir}/mason_data
   sessionstatedir:	${localstatedir}/session_data
   customdir:		${prefix}/share+
+  custometcdir:		${customdir}/local/etc
   customhtmldir:	${customdir}/local/html
   customlexdir:		${customdir}/local/po
   customlibdir:		${customdir}/local/lib
@@ -74,6 +76,7 @@
   masonstatedir:	${localstatedir}/mason_data
   sessionstatedir:	${localstatedir}/session_data
   customdir:		${prefix}/local
+  custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib

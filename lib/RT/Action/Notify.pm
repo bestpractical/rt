@@ -95,9 +95,10 @@ sub SetRecipients {
 
     if ($RT::UseFriendlyToLine) {
         unless (@To) {
-            push ( @PseudoTo,
-                "\"$arg of $RT::rtname Ticket #"
-                  . $self->TicketObj->id . "\":;" );
+            push (
+		@PseudoTo,
+		sprintf($RT::FriendlyToLineFormat, $arg, $self->TicketObj->id),
+	    );
         }
     }
 

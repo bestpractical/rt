@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.0.2pre4], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [3.0.2pre5], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -178,6 +178,7 @@ AC_SUBST([RT_MAN_PATH],			${exp_mandir})
 AC_SUBST([MASON_DATA_PATH],		${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH],		${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH],		${exp_htmldir})
+AC_SUBST([LOCAL_ETC_PATH],		${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH],		${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH],		${exp_customlibdir})

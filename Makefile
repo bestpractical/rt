@@ -39,7 +39,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	3
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	2pre4
+RT_VERSION_PATCH	=	2pre5
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -78,6 +78,7 @@ RT_MAN_PATH		=	/opt/rt3/man
 RT_VAR_PATH		=	/opt/rt3/var
 RT_DOC_PATH		=	/opt/rt3/share/doc
 RT_LOCAL_PATH		=	/opt/rt3/local
+LOCAL_ETC_PATH		=	/opt/rt3/local/etc
 LOCAL_LEXICON_PATH	=	/opt/rt3/local/po
 MASON_HTML_PATH		=	/opt/rt3/share/html
 MASON_LOCAL_HTML_PATH	=	/opt/rt3/local/html
@@ -287,6 +288,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	mkdir -p $(DESTDIR)/$(LOCAL_ETC_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
@@ -397,6 +399,7 @@ bin-install:
 local-install:
 	-cp -rp ./local/html/* $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 	-cp -rp ./local/po/* $(DESTDIR)/$(LOCAL_LEXICON_PATH)
+	-cp -rp ./local/etc/* $(DESTDIR)/$(LOCAL_ETC_PATH)
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside

@@ -78,6 +78,7 @@ RT_MAN_PATH		=	@RT_MAN_PATH@
 RT_VAR_PATH		=	@RT_VAR_PATH@
 RT_DOC_PATH		=	@RT_DOC_PATH@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH@
+LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH@
 LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH@
 MASON_HTML_PATH		=	@MASON_HTML_PATH@
 MASON_LOCAL_HTML_PATH	=	@MASON_LOCAL_HTML_PATH@
@@ -287,6 +288,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	mkdir -p $(DESTDIR)/$(LOCAL_ETC_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
@@ -397,6 +399,7 @@ bin-install:
 local-install:
 	-cp -rp ./local/html/* $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 	-cp -rp ./local/po/* $(DESTDIR)/$(LOCAL_LEXICON_PATH)
+	-cp -rp ./local/etc/* $(DESTDIR)/$(LOCAL_ETC_PATH)
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside

@@ -340,7 +340,8 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by somebody.  Other approvals may be pending.
+Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Other approvals may be pending.
 '
     },
     {  Queue       => '___Approvals',
@@ -351,7 +352,7 @@ Your ticket has been approved by somebody.  Other approvals may be pending.
 
 Greetings,
 
-Your ticket has been approved by somebody.  Other approvals may be pending.
+Your ticket has been approved.  Its Owner may now start to act on it.
 '
     },
     {  Queue       => '___Approvals',
@@ -362,11 +363,10 @@ Your ticket has been approved by somebody.  Other approvals may be pending.
 
 Greetings,
 
-Your ticket has been rejected.  Have a nice day.
+Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
 '
     },
 );
-
 # }}}
 
 @Scrips = (
@@ -397,21 +397,18 @@ Your ticket has been rejected.  Have a nice day.
     {  ScripCondition => 'On Resolve',
        ScripAction    => 'Notify Requestors',
        Template       => 'Resolved' },
-    {  Description =>
-"When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
-       ,    # loc
+    {  Description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
        Queue          => '___Approvals',
        ScripCondition => 'User Defined',
        CustomIsApplicableCode => q[
 	    $self->TicketObj->Type eq 'approval'	and
 	    $self->TransactionObj->Field eq 'Status'	and
-	    $self->TransactionObj->NewValue eq 'open'
+	    $self->TransactionObj->NewValue eq 'open'   and
+	    eval { $T::Approving = ($self->TicketObj->AllDependedOnBy( Type => 'ticket' ))[0] }
        ],
        ScripAction    => 'Notify Owner',
        Template       => 'New Pending Approval' },
-    {  Description =>
-"If an approval is rejected, reject the original and delete pending approvals"
-       ,    # loc
+    {  Description => "If an approval is rejected, reject the original and delete pending approvals",    # loc
        Queue            => '___Approvals',
        ScripCondition   => 'On Status Change',
        ScripAction      => 'User Defined',
@@ -433,6 +430,9 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
 		Status	=> 'rejected',
 		Force	=> 1,
 	    );
+
+	    $T::Approval = $self->TicketObj; # so we can access it inside templates
+	    $self->{TicketObj} = $obj;  # we want the original id in the token line
 	    $rejected = 1;
 	}
 	else {
@@ -464,8 +464,7 @@ return $rejected;
 	],
        CustomCommitCode => '"never needed"',
        Template          => 'Approval Rejected', },
-    {  Description =>
-"When a ticket has been approved by any approver, add correspondence to the original ticket",    # loc
+    {  Description => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
        Queue             => '___Approvals',
        ScripCondition    => 'On Resolve',
        ScripAction       => 'User Defined',
@@ -476,7 +475,8 @@ return(0) unless ($self->TicketObj->Type eq 'approval');
 my $note;
 my $t = $self->TicketObj->Transactions;
 while (my $o = $t->Next) {
-    $note .= $o->Content . "\n" if $o->ContentObj;
+    $note .= $o->Content . "\n" if $o->ContentObj
+	    and $o->Content !~ /Default Approval/;
 }
 
 foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
@@ -487,6 +487,8 @@ foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
 	    $note
 	),
     );
+    $T::Approval = $self->TicketObj; # so we can access it inside templates
+    $self->{TicketObj} = $obj;  # we want the original id in the token line
 }
 
 # Now magically turn myself into a Requestor Notify object...
@@ -498,9 +500,7 @@ return 1;
 	],
        CustomCommitCode => '"never needed"',
        Template => 'Approval Passed' },
-    {  Description =>
-"When a ticket has been approved by all approvers, add correspondence to the original ticket"
-       ,    # loc
+    {  Description => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
        Queue             => '___Approvals',
        ScripCondition    => 'On Resolve',
        ScripAction       => 'User Defined',
@@ -521,6 +521,8 @@ while (my $link = $links->Next) {
 	$obj->Comment(
 	    Content	=> $self->loc("Your request has been approved."),
 	);
+	$T::Approval  = $Ticket;    # so we can access it inside templates
+	$self->{TicketObj} = $obj;  # we want the original id in the token line
 	$passed = 1;
     }
     elsif ($obj->Type eq 'approval') {

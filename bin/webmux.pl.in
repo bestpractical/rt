@@ -33,7 +33,7 @@ BEGIN {
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 }
 
-use lib ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 use RT;
 
 package RT::Mason;
