@@ -860,9 +860,9 @@ sub SetPassword {
         return ( 0, $self->loc("Password too short") );
     }
     else {
-        my $salt = join '',
-          ( '.', '/', 0 .. 9, 'A' .. 'Z', 'a' .. 'z' )[ rand 64, rand 64 ];
-        return ( $self->SUPER::SetPassword( crypt( $password, $salt ) ) );
+    my $md5 = Digest::MD5->new();
+    $md5->add($password);
+        return ( $self->SUPER::SetPassword( $md5->b64digest ) );
     }
 
 }
@@ -888,7 +888,8 @@ sub IsPassword {
     if ( ( !defined($value) ) or ( $value eq '' ) ) {
         return (undef);
     }
-    if ( $self->PrincipalObj->Disabled ) {
+
+   if ( $self->PrincipalObj->Disabled ) {
         $RT::Logger->info(
             "Disabled user " . $self->Name . " tried to log in" );
         return (undef);
@@ -899,14 +900,22 @@ sub IsPassword {
         return(undef);
      }
 
-    if ( $self->__Value('Password') eq
-        crypt( $value, $self->__Value('Password') ) )
-    {
+    # Passwords are MD5 sums.
+    my $md5 = Digest::MD5->new();
+    $md5->add($value);
+    if ($md5->b64digest eq $self->__Value('Password')) {
+        return(1);
+    }
+
+    #  if it's a historical password we say ok.
+
+    if ( $self->__Value('Password') eq crypt( $value, $self->__Value('Password') ) ) {
         return (1);
     }
-    else {
-        return (undef);
-    }
+
+    # no password check has succeeded. get out
+
+    return (undef);
 }
 
 # }}}

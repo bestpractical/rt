@@ -33,12 +33,13 @@ my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
 <h3><% $object_obj->Name %></h3>
 % }
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr>
         <th width=15%><&|/l&>Personal groups:</&></th>
 % while (my $pg = $personalgroups->Next) {
 <th><%$pg->Name%></th>
+% }
+</tr>
 <%perl>
-}
-
 my $i;
 foreach my $right (@{$objects->{$ObjectType}{$object}}) {
 my $delegations = RT::ACL->new($session{'CurrentUser'});
@@ -50,7 +51,9 @@ while ( my $delegation = $delegations->Next) {
         $del_hash->{$delegation->PrincipalId} = $delegation;
 }
 </%perl>
-<tr <%(++$i%2) && 'class="oddline"'%>
+% $i++;
+%
+<tr class="<%($i%2) && 'oddline'%>">
 <td>
 <% loc($right->RightName) %><br>
 <div align=right><font size="-2" color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font></div>
@@ -65,8 +68,9 @@ while ( my $delegation = $delegations->Next) {
 % }
 <td>&nbsp;</td>
 </tr>
-%} }
-</table>
+%}
+</table> 
+% }
 <%init>
 
 my $sectionheading = loc("[_1] rights", loc($ObjectType =~ /^RT::(.*)$/));

@@ -107,6 +107,7 @@ my %FIELDS =
     Watcher	    => ['WATCHERFIELD'],
     LinkedTo	    => ['LINKFIELD',],
     CustomFieldValue =>['CUSTOMFIELD',],
+    CF              => ['CUSTOMFIELD',],
   );
 
 # Mapping of Field Type to Function
@@ -250,7 +251,7 @@ Meta Data:
 sub _IntLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
-  die "Invalid Operator"
+  die "Invalid Operator $op for $field"
     unless $op =~ /^(=|!=|>|<|>=|<=)$/;
 
   $sb->_SQLLimit(
@@ -523,6 +524,7 @@ Meta Data:
 
 sub _WatcherLimit {
   my ($self,$field,$op,$value,@rest) = @_;
+  my %rest = @rest;
 
   $self->_OpenParen;
 
@@ -543,16 +545,12 @@ sub _WatcherLimit {
 
 
   $self->_SQLLimit(ALIAS => $users,
-#		      SUBCLAUSE => $subclause,
-		   FIELD => 'EmailAddress',
-#		      ENTRYAGGREGATOR => $aggregator,
+		   FIELD => $rest{SUBKEY} || 'EmailAddress',
 		   VALUE           => $value,
 		   OPERATOR        => $op,
 		   CASESENSITIVE   => 0,
 		   @rest,
 		  );
-
-
 
   # {{{ Tie to groups for tickets we care about
   $self->_SQLLimit(ALIAS => $groups,
@@ -661,8 +659,10 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$field,$op,$value,@rest) = @_;
+  my ($self,$_field,$op,$value,@rest) = @_;
 
+  my %rest = @rest;
+  my $field = $rest{SUBKEY} || die "No field specified";
 
   # For our sanity, we can only limit on one queue at a time
   my $queue = undef;
@@ -673,7 +673,7 @@ sub _CustomFieldLimit {
   #$CF->Load( $cfid} );
 
   my $q;
-  if ($field =~ /(.+?)_(.+)/) {
+  if ($field =~ /^(.+?)\.{(.+)}$/) {
     my $q = RT::Queue->new($self->CurrentUser);
     $q->Load($1);
     $field = $2;
@@ -1631,7 +1631,7 @@ sub LimitCustomField {
 
     $self->Limit( VALUE => $args{VALUE},
 		  FIELD => ( $q
-			     ? $q . "_" . $CF->Name
+			     ? $q . ".{" . $CF->Name . "}"
 			     : $CF->Name
 			   ),
 		  OPERATOR => $args{OPERATOR},

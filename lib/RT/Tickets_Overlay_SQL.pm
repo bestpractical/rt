@@ -116,7 +116,7 @@ my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
 
 my $re_aggreg = qr[(?i:AND|OR)];
 my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|\w+];
+my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
 my $re_paren  = qr'\(|\)';
 
@@ -148,6 +148,7 @@ sub _parser {
 
     unless ($current && $want & $current) {
       # Error
+      # FIXME: I will only print out the highest $want value
       die "Error near ->$val<- expecting a ", $tokens[((log $want)/(log 2))], " in $string\n";
     }
 
@@ -196,14 +197,24 @@ sub _parser {
       $val =~ s!\\(.)!$1!g;     
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
 
+
+   my $subkey;
+   if ($key =~ /^(.+?)\.(.+)$/) {
+     $key = $1;
+     $subkey = $2;
+   }
+
       my $class;
       my ($stdkey) = grep { /^$key$/i } (keys %FIELDS);
       if (exists $FIELDS{$stdkey}) {
         $class = $FIELDS{$key}->[0];
         $key = $stdkey;
       }
-      # fixme: "default class" is not Generic.
-      $class ||= "CUSTOMFIELD";
+   # no longer have a default, since CF's are now a real class, not fallthrough
+    # fixme: "default class" is not Generic.
+   # $class ||= "CUSTOMFIELD";
+ 
+   die "Unknown field: $key" unless $class;
 
       $self->{_sql_localdepth} = 0;
       die "No such dispatch method: $class"
@@ -216,6 +227,7 @@ sub _parser {
              $val,
              SUBCLAUSE =>  "",  # don't need anymore
              ENTRYAGGREGATOR => $ea || "",
+             SUBKEY => $subkey,
             );
 
       $self->{_sql_looking_at}{lc $key} = 1;

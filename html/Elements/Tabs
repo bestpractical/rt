@@ -49,15 +49,15 @@ my $basetabs = {     A => { title => loc('Homepage'),
                     B => { title => loc('Tickets'),
                         path => 'Search/Listing.html'
                       },
-                    D => { title => loc('Approval'),
-                           path => 'Approvals/'
-                         },
                     E => { title => loc('Configuration'),
                            path => 'Admin/'
                          },
-                    ZZ => { title => loc('Preferences'),
+                    K => { title => loc('Preferences'),
                         path => 'User/Prefs.html'
                       },
+                    P => { title => loc('Approval'),
+                           path => 'Approvals/'
+                         },
                  };
 
 if (!defined $toptabs) {

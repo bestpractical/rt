@@ -34,10 +34,7 @@
 <TD>
 &nbsp;
 </TD>
-<TD ALIGN=RIGHT VALIGN=CENTER>
-
-<FONT COLOR=#ffd800>
-
+<TD ALIGN=RIGHT VALIGN=CENTER><FONT COLOR=#ffd800>
 % if ($AlternateLabel) {
 <B><%$AlternateCaption%>
 <INPUT TYPE=SUBMIT
@@ -46,9 +43,7 @@ NAME="<%$Name%>"
 %}
 VALUE='<%$AlternateLabel%>'></B>
 % }
-
-<B><%$Caption%>
-<INPUT TYPE=SUBMIT
+<B><%$Caption%> <INPUT TYPE=SUBMIT
 %if ($Name) {
 NAME="<%$Name%>"
 % }

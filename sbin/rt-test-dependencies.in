@@ -43,6 +43,7 @@ exit(0);
 }
 $args{'with-MASON'} = 1;
 $args{'with-CORE'} = 1;
+$args{'with-DEV'} =1; 
 $args{'with-CLI'} =1; 
 $args{'with-MAILGATE'} =1; 
 if ($] < 5.007) {

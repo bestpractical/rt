@@ -43,9 +43,15 @@
         Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
 
      }
-     $r->content_type( $AttachmentObj->ContentType || 'text/plain');
+
+     my $content_type =  $AttachmentObj->ContentType || 'text/plain';
+        
+     unless ($RT::TrustHTMLAttachments) {
+         $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
+     }
+
+     $r->content_type( $content_type);
      $m->clear_buffer();
-     {
          # sometimes binary attachments is converted to utf-8.  this
          # seems to fix the problem.
          #
@@ -53,9 +59,10 @@
          # reload many many times to get a chance to see it.  That's
          # why I'm not sure if this will fix it for good.
          my $Content = $AttachmentObj->Content;
-         Encode::_utf8_on($Content);
+         if ($AttachmentObj->ContentType =~ /^text\//i) {
+                 Encode::_utf8_on($Content);
+         }
          $m->out($Content);
-     }
      $m->abort; 
 </%perl>
 
