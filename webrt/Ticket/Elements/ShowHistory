@@ -1,12 +1,15 @@
-<%ARGS>
-$Ticket => undef
-
-</%ARGS>
 %while (my $Transaction = $Ticket->Transactions->Next) {
+% $FullHeaders=1 if ($ShowHeaders eq $Transaction->Id);
 %	if ($Ticket->Transactions->IsLast) {
 	<a name="last<%$Ticket->Id%>">&nbsp;</a>	
 % 	}
-	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction &>
+	<& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders &>;
 <BR>
 %}
 
+
+<%ARGS>
+$Ticket => undef
+$ShowHeaders => undef
+$FullHeaders => undef
+</%ARGS>

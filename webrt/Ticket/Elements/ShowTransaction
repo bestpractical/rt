@@ -1,21 +1,18 @@
-      <& /Elements/TitleBoxStart, title => $Transaction->Description." at ".$Transaction->CreatedAsString, titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a href=\"Create.html?Queue=".$Transaction->TicketObj->QueueObj->id."&DependsOn=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">New Dependent Ticket</a>]&nbsp;|&nbsp;[<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Respond\">Reply</a>&nbsp;/&nbsp;<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Comment\">Comment</a>]</a>") : "" &>
-      
-%# This one is not pretty
+ <& /Elements/TitleBoxStart, title => $Transaction->Description." at ".$Transaction->CreatedAsString, titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a href=\"Create.html?Queue=".$Transaction->TicketObj->QueueObj->id."&DependsOn=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">New Dependent Ticket</a>]&nbsp;|&nbsp;[<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Respond\">Reply</a>&nbsp;/&nbsp;<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Comment\">Comment</a>]</a>") : "" &>
+
     <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="20%">
-        Id: <%$Transaction->Id %>
-
+	  <& /Elements/ShadedBox, title => 'Date' , content => $Transaction->CreatedAsString &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  Date: <%$Transaction->CreatedAsString %>
+	  <& /Elements/ShadedBox, title => 'Id' , content => $Transaction->Id &>
 	</TD>
-
 	<TD VALIGN=TOP WIDTH="20%"> 
-	  Actor: <% $Transaction->Creator->UserId %>
+	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Creator->UserId &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  Time Worked: <% $TimeTaken %>
+	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeTaken &>
 	</TD>
 	
 	
@@ -30,8 +27,15 @@
 
 
 <pre>
-<A HREF="Display.html?ShowHeaders=<%$message->Id%>">Full headers</a>
+%if ($FullHeaders) {
+<%$message->Headers %>
+<A HREF="Display.html?id=<%$Transaction->TicketObj->id%>">Brief headers</a>
+
+% } else {
 <%$message->NiceHeaders %>
+<A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
+%}
+
 </pre>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
@@ -56,14 +60,14 @@ Attachment: <A HREF="Display.html?ShowAttachment=<%$message->Id%>"><% $message->
 
 <%ARGS>
 $Transaction => undef
-$attachments => $Transaction->Attachments
 $TimeTaken => undef
-
+$FullHeaders => undef
 </%ARGS>
 
 <%INIT>
 if ($Transaction->TimeTaken > 0) {
 	$TimeTaken = $Transaction->TimeTaken." minutes"
 }
+my $attachments = $Transaction->Attachments;
 
 </%INIT>
