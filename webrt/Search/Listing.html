@@ -10,11 +10,15 @@
 %#<& QueueHeader format="$format" &>
 <TR>
 %foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
-   <TH><% $_->{Header} %>
+   <TH><% $_->{Header} %></TH>
 %}
+</TR>
 
+%my $cnt=0;
 %while (my $Ticket = $session{'tickets'}->Next) {
-<TR>
+%## This doesn't work very well in Netscape:
+%#<TR <% (($cnt++) % 2 == 1) && "class=\"oddline\"" %>>
+<TR <% (($cnt++) % 2 == 1) && "bgcolor=\"eeeeee\"" %>>
 
 %# The ticket view is controlled by config.pm, WebOptions
 
