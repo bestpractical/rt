@@ -47,7 +47,7 @@ if ($size) {
 </%PERL>
 
 <li><font <%$fontsize%>>
-        <A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionObj->Id%>/<%$rev->Id%>/<%$rev->Filename | u%>"><%$rev->CreatedAsString%> (<% $size %>)</a></font></li>
+        <A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>"><%$rev->CreatedAsString%> (<% $size %>)</a></font></li>
 % }
 % $fontsize='size="-2"';
 % }
@@ -60,20 +60,15 @@ if ($size) {
 
 <%INIT>
 my %documents;
-my $transactions = $Ticket->Transactions();
-while (my $trans = $transactions->Next()) {
-        my $attachments = $trans->Attachments();
-	$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
-        $attachments->Limit(FIELD => 'Filename', OPERATOR => 'IS NOT', VALUE => 'NULL', QUOTEVALUE => 0, ENTRYAGGREGATOR => 'AND');
-        $attachments->Limit(FIELD => 'Filename', OPERATOR => '!=', VALUE => '', ENTRYAGGREGATOR => 'AND');
-        while (my $attach = $attachments->Next()) {
-              next unless ($attach->Filename());
-              # most recent at the top
-              unshift (@{$documents{$attach->Filename}}, $attach);
-        }
+
+while ( my $attach = $Attachments->Next() ) {
+    next unless ($attach->Filename());
+   unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
+
 </%INIT>
 <%ARGS>
 $Ticket => undef
+$Attachments => undef
 </%ARGS>
 

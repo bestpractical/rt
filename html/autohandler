@@ -117,6 +117,7 @@ elsif ( $RT::WebExternalAuth ) {
 				       'HomePhone', 'WorkPhone', 'MobilePhone',
 				       'PagerPhone', 'Address1', 'Address2', 'City',
 				       'State', 'Zip', 'Country') {
+               $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'NewUser');
 		    
 		    my $method = "Set$attribute";
 		    $UserObj->$method($new_user_info->{$attribute}) 

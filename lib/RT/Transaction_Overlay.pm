@@ -633,6 +633,9 @@ sub BriefDescription {
             elsif ( $self->Field eq 'HasMember' ) {
                 return $self->loc( "Member [_1] added", $value );
             }
+            elsif ( $self->Field eq 'MergedInto' ) {
+                return $self->loc( "Merged into [_1]", $value );
+            }
         }
         else {
             return ( $self->Data );

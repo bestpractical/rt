@@ -177,8 +177,8 @@ else {
             $key = $simple{$key};
             $set = "Set$key";
 
-            next if $val eq $ticket->$key;
-            ($n, $s) = $ticket->$set($val);
+            next if (($val eq $ticket->$key)|| ($ticket->$key =~ /^\d+$/ && $val == $ticket->$key));
+            ($n, $s) = $ticket->$set("$val");
         }
         elsif (exists $dates{$key}) {
             $key = $dates{$key};
@@ -226,7 +226,7 @@ else {
                 $s =~ s/^# //;
             }
         }
-        elsif ($key ne 'id' && $key ne 'type') {
+        elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator') {
             $n = 0;
             $s = "Unknown field.";
         }

@@ -36,8 +36,7 @@
 <%PERL>
 
 unless ($Collapsed) {
-    $attachments->GotoFirstItem;
-    while ( my $message = $attachments->Next ) {
+ foreach my $message (@$Attachments) { 
 
         my $quoted;
         my $headers = $message->Headers;
@@ -111,6 +110,7 @@ $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
+$Attachments => undef
 $ShowBody => 1
 </%ARGS>
 
@@ -156,10 +156,12 @@ if ( $Ticket->Id != $Transaction->Ticket ) {
 if ( $Transaction->TimeTaken > 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";
 }
-my $attachments = $Transaction->Attachments;
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId)
-);
 
+unless ($Attachments) { 
+    my $attachments = $Transaction->Attachments;
+    $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $Attachments = $attachments->ItemsArrayRef();
+}
 my $titlebar_commands = '&nbsp;';
 
 my @DisplayHeaders=qw ( _all);
