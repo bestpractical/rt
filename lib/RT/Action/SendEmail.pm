@@ -326,15 +326,19 @@ the transaction's subject.
 
 sub SetSubject {
   my $self = shift;
-  unless ($self->TemplateObj->MIMEObj->head->get(Subject)) {
-      my $m=$self->TransactionObj->Message->First;
+  unless ($self->TemplateObj->MIMEObj->head->get('Subject')) {
+      my $message=$self->TransactionObj->Message->First;
       my $ticket=$self->TicketObj->Id;
-      ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
-	  if $m;
-      $self->{Subject}=$self->TicketObj->Subject()
-	  unless $self->{Subject};
+
+      if ($message) {
+          $self->{Subject} = ($message->Headers =~ /^Subject: (.*)$/m);
+      }
+      else {
+          $self->{Subject} = $self->TicketObj->Subject();
+      }
       
-      $self->TemplateObj->MIMEObj->head->add('Subject',"$$self{Subject}");
+     chomp $self->{'Subject'};
+     $self->TemplateObj->MIMEObj->head->add('Subject',"$$self{Subject}");
 
   }
 
