@@ -257,6 +257,10 @@ $COLUMN_MAP = {
         attribute => 'Created',
         value => sub { return $_[0]->CreatedObj->AsString }
     },
+    CreatedBy => {
+	attribute => 'CreatedBy',
+        value => sub { return $_[0]->CreatorObj->Name }
+    },
     LastUpdated => {
         attribute => 'LastUpdated',
         value => sub { return $_[0]->LastUpdatedObj->AsString }
