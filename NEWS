@@ -1,3 +1,8 @@
+2 Aug 1999
+----------
+
+Minor mailui change to hopefully better strip subjecgt lines
+
 27 July 1999
 ------------
 Added a fix to the mailgate that had problems with repeated headers, as
