@@ -1165,8 +1165,7 @@ sub _AddLink {
     my $direction;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug(
-"$self tried to delete a link. both base and target were specified\n" );
+        $RT::Logger->debug( "$self tried to create a link. both base and target were specified\n" );
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
