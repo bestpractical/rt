@@ -107,6 +107,10 @@ my %FIELDS =
     LinkedTo	    => ['LINKFIELD',],
     CustomFieldValue =>['CUSTOMFIELD',],
     CF              => ['CUSTOMFIELD',],
+    RequestorGroup  => ['MEMBERSHIPFIELD' => 'Requestor',],
+    CCGroup         => ['MEMBERSHIPFIELD' => 'Cc',],
+    AdminCCGroup    => ['MEMBERSHIPFIELD' => 'AdminCc',],
+    WatcherGroup    => ['MEMBERSHIPFIELD',],
   );
 
 # Mapping of Field Type to Function
@@ -119,8 +123,9 @@ my %dispatch =
     TRANSFIELD	    => \&_TransLimit,
     TRANSDATE	    => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
+    MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD    => \&_CustomFieldLimit,
+    CUSTOMFIELD     => \&_CustomFieldLimit,
   );
 my %can_bundle =
   ( WATCHERFIELD => "yeps",
@@ -639,6 +644,112 @@ sub _WatcherLimit {
  $self->_CloseParen;
 
 }
+
+=head2 _WatcherMembershipLimit
+
+Handle watcher membership limits, i.e. whether the watcher belongs to a
+specific group or not.
+
+Meta Data:
+  1: Field to query on
+
+SELECT DISTINCT main.*
+FROM
+    Tickets main,
+    Groups Groups_1,
+    CachedGroupMembers CachedGroupMembers_2,
+    Users Users_3
+WHERE (
+    (main.EffectiveId = main.id)
+) AND (
+    (main.Status != 'deleted')
+) AND (
+    (main.Type = 'ticket')
+) AND (
+    (
+	(Users_3.EmailAddress = '22')
+	    AND
+	(Groups_1.Domain = 'RT::Ticket-Role')
+	    AND
+	(Groups_1.Type = 'RequestorGroup')
+    )
+) AND
+    Groups_1.Instance = main.id
+AND
+    Groups_1.id = CachedGroupMembers_2.GroupId
+AND
+    CachedGroupMembers_2.MemberId = Users_3.id
+ORDER BY main.id ASC
+LIMIT 25
+=cut
+
+sub _WatcherMembershipLimit {
+  my ($self,$field,$op,$value,@rest) = @_;
+  my %rest = @rest;
+
+  $self->_OpenParen;
+
+  my $groups	    = $self->NewAlias('Groups');
+  my $groupmembers  = $self->NewAlias('CachedGroupMembers');
+  my $users	    = $self->NewAlias('Users');
+  my $memberships   = $self->NewAlias('CachedGroupMembers');
+
+  if (ref $field) { # gross hack
+    my @bundle = @$field;
+    $self->_OpenParen;
+    for my $chunk (@bundle) {
+      ($field,$op,$value,@rest) = @$chunk;
+      $self->_SQLLimit(ALIAS => $memberships,
+   		   FIELD => 'GroupId',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   @rest,
+   		  );
+    }
+    $self->_CloseParen;
+  } else {
+     $self->_SQLLimit(ALIAS => $memberships,
+   		   FIELD => 'GroupId',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   @rest,
+   		  );
+  }
+
+  # {{{ Tie to groups for tickets we care about
+  $self->_SQLLimit(ALIAS => $groups,
+		   FIELD => 'Domain',
+		   VALUE => 'RT::Ticket-Role',
+		   ENTRYAGGREGATOR => 'AND');
+
+  $self->Join(ALIAS1 => $groups, FIELD1 => 'Instance',
+	      ALIAS2 => 'main',   FIELD2 => 'id');
+  # }}}
+
+  # If we care about which sort of watcher
+  my $meta = $FIELDS{$field};
+  my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+  if ( $type ) {
+    $self->_SQLLimit(ALIAS => $groups,
+		     FIELD => 'Type',
+		     VALUE => $type,
+		     ENTRYAGGREGATOR => 'AND');
+  }
+
+  $self->Join (ALIAS1 => $groups,  FIELD1 => 'id',
+	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
+
+  $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
+	       ALIAS2 => $users, FIELD2 => 'id');
+
+  $self->Join( ALIAS1 => $memberships, FIELD1 => 'MemberId',
+	       ALIAS2 => $users, FIELD2 => 'id');
+
+ $self->_CloseParen;
+
+}
+
 
 sub _LinkFieldLimit {
   my $restriction;

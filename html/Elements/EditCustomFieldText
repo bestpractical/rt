@@ -28,6 +28,10 @@
 <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
 <textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"></textarea>
 % }
+<%INIT>
+# XXX - MultiValue textarea is for now outlawed.
+$MaxValues = 1;
+</%INIT>
 <%ARGS>
 $Object => undef
 $CustomField => undef

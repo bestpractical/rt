@@ -70,7 +70,8 @@ if ($Object) {
 my $Type = $CustomField->Type;
 my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 and $Object and $Values) {
-    $Default = ($Values->Count ? $Values->First->Content : '');
+    $Default = ($Values->First ? $Values->First->Content : '');
+    $Values->GotoFirstItem;
 }
 return $m->comp(
     "EditCustomField$Type",

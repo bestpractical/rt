@@ -793,7 +793,7 @@ sub _AddCustomFieldValue {
             Object  => $self,
             Content => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType => $args{'ContenType'},
+            ContentType => $args{'ContentType'},
         );
 
         unless ($new_value_id) {
@@ -840,7 +840,7 @@ sub _AddCustomFieldValue {
             Object  => $self,
             Content => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType => $args{'ContenType'},
+            ContentType => $args{'ContentType'},
         );
 
         unless ($new_value_id) {

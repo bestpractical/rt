@@ -21,39 +21,23 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title&>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Edit.html".$QueryString, 
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $ARGS{'Rows'} &>
-
-<& Elements/NewListActions, actions => \@actions &>
-
-<form method="post" action="Build.html">
-<input type="hidden" name="SearchId" value="<%$SearchId%>">
-<textarea name="Query" rows="8" cols="72"><%$Query%></textarea>
-<br>
-<textarea name="Format" rows="8" cols="72"><%$Format%></textarea>
-<br>
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
-</form>
+<SELECT NAME="<%$Name%>">
+% if ($AllowNull) {
+<OPTION VALUE="">-</OPTION>
+% }
+%while (my $group = $groups->Next) {
+<OPTION VALUE="<%$group->id%>" <%$group->id eq $Default && "SELECTED"%>><%$group->Name%></OPTION>
+%}
+</SELECT>
 
 <%INIT>
-my $title = "Edit Query";
-
-$Format =~ s/#/%23/g;
-$Format =~ s/&/%26/g;
-
-my $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
+my $groups = new RT::Groups($session{'CurrentUser'});
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
 
 </%INIT>
-
-
 <%ARGS>
-$Query => undef
-$Format => undef
-$SearchId => 'new'
-@actions => undef
+$AllowNull => 1
+$Default=>undef
+$Name => 'Group'
+$Domain => 'UserDefined';
 </%ARGS>

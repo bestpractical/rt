@@ -685,7 +685,7 @@ sub TypeComposite {
 
 sub TypeComposites {
     my $self = shift;
-    return map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/Text-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 sub LookupTypes {

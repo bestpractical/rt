@@ -26,7 +26,7 @@
 <OPTION VALUE="">-</OPTION>
 % }
 %for my $option (@types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
+<OPTION VALUE="<%"$option$Suffix"%>" <%"$option$Suffix" eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
 %}
 </SELECT>
 
@@ -43,5 +43,6 @@ else {
 $AllowNull => 1
 $Default=>undef
 $Scope => 'ticket'
+$Suffix => ''
 $Name => 'WatcherType'
 </%ARGS>

@@ -29,8 +29,8 @@ my @fields = (
     "Starts",              "Started",
     "Created",             "LastUpdated",
     "Told",                "Due",
-    "Resolved",            "NEWLINE",
-    "-",
+    "Resolved",            "RequestorGroup",
+    "NEWLINE",             "-",
 );
 
 my ( @seen);

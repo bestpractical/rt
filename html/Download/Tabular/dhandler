@@ -26,7 +26,7 @@ my ($class, $filename, @ids);
 my $arg = $m->dhandler_arg;                # get rest of path
 if ($arg =~ /^(\w+)\/([,\d]+)(?:\/([^\/]+))?/) {
     $class = "RT::$1";
-    $filename = $3 || lc("$1s.txt");
+    $filename = $3 || "$1s.tsv";
     @ids = sort split(/,+/, $2);
 }
 else {
