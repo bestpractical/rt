@@ -682,12 +682,33 @@ sub _WatcherLimit {
 
     $self->_OpenParen;
 
-    my $groups       = $self->NewAlias('Groups');
-    my $groupmembers = $self->NewAlias('CachedGroupMembers');
-    my $users        = $self->NewAlias('Users');
+    # Find out what sort of watcher we're looking for
+    my $fieldname;
+    if (ref $field) {
+        $fieldname = $field->[0]->[0]; 
+    } else {
+        $fieldname = $field;
+    }
+    my $meta = $FIELDS{$fieldname};
+    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+
+    # We only want _one_ clause for all of requestors, cc, admincc
+    # It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
+    my $groups       = $self->{'watcherlimit_'.('global')."_groups"} ||=  $self->NewAlias('Groups');
+    my $groupmembers = $self->{'watcherlimit_'.('global')."_groupmembers"} ||=  $self->NewAlias('CachedGroupMembers');
+    my $users        = $self->{'watcherlimit_'.('global')."_users"} ||= $self->NewAlias('Users');
+
+
+    # Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
+    $self->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'RT::Ticket-Role', ENTRYAGGREGATOR => 'AND');
+    $self->Join( ALIAS1 => $groups, FIELD1 => 'Instance', ALIAS2 => 'main', FIELD2 => 'id');
+    $self->Join( ALIAS1 => $groups, FIELD1 => 'id', ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
+    $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId', ALIAS2 => $users, FIELD2 => 'id');
+    
 
     # If we're looking for multiple watchers of a given type,
-    # TicketSQL will be handing it to us as an array of cluases in
+    # TicketSQL will be handing it to us as an array of clauses in
     # $field
     if ( ref $field ) {    # gross hack
         $self->_OpenParen;
@@ -699,8 +720,7 @@ sub _WatcherLimit {
                 VALUE         => $value,
                 OPERATOR      => $op,
                 CASESENSITIVE => 0,
-                %rest
-            );
+                %rest);
         }
         $self->_CloseParen;
     }
@@ -711,56 +731,12 @@ sub _WatcherLimit {
             VALUE         => $value,
             OPERATOR      => $op,
             CASESENSITIVE => 0,
-            %rest,
-        );
+            %rest);
     }
 
-    # {{{ Tie to groups for tickets we care about
-    $self->_SQLLimit(
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::Ticket-Role',
-        ENTRYAGGREGATOR => 'AND'
-    );
-
-    $self->_SQLJoin(
-        ALIAS1 => $groups,
-        FIELD1 => 'Instance',
-        ALIAS2 => 'main',
-        FIELD2 => 'id'
-    );
-
-    # }}}
-
-    # If we care about which sort of watcher
-    my $meta = $FIELDS{$field};
-    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
-
-    if ($type) {
-        $self->_SQLLimit(
-            ALIAS           => $groups,
-            FIELD           => 'Type',
-            VALUE           => $type,
-            ENTRYAGGREGATOR => 'AND'
-        );
-    }
-
-    $self->_SQLJoin(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $groupmembers,
-        FIELD2 => 'GroupId'
-    );
-
-    $self->_SQLJoin(
-        ALIAS1 => $groupmembers,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
-    );
+    $self->_SQLLimit( ALIAS => $groups, FIELD => 'Type', VALUE => $type, ENTRYAGGREGATOR => 'AND') if ($type); 
 
     $self->_CloseParen;
-
 }
 
 =head2 _WatcherMembershipLimit
