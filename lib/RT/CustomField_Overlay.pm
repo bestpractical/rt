@@ -198,6 +198,10 @@ sub AddValue {
 		     SortOrder => undef,
 		     @_ );
 
+    unless ($self->CurrentUserHasRight('AdminCustomFields')) {
+        return (0, $self->loc('Permission Denied'));
+    }
+
     unless ($args{'Name'}) {
         return(0, $self->loc("Can't add a custom field value without a name"));
     }
@@ -226,6 +230,9 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
 	my $self = shift;
     my $id = shift;
+    unless ($self->CurrentUserHasRight('AdminCustomFields')) {
+        return (0, $self->loc('Permission Denied'));
+    }
 
 	my $val_to_del = RT::CustomFieldValue->new($self->CurrentUser);
 	$val_to_del->Load($id);
@@ -258,6 +265,9 @@ Return a CustomFieldeValues object of all acceptable values for this Custom Fiel
 sub Values {
     my $self = shift;
 
+    unless ($self->CurrentUserHasRight('SeeQueue')) {
+        return (0, $self->loc('Permission Denied'));
+    }
     my $cf_values = RT::CustomFieldValues->new($self->CurrentUser);
     $cf_values->LimitToCustomField($self->Id);
     return ($cf_values);
@@ -472,20 +482,23 @@ sub SingleValue {
 
 # }}}
 
-# {{{ sub CurrentUserHasQueueRight
+# {{{ sub CurrentUserHasRight
 
-=item CurrentUserHasQueueRight
+=item CurrentUserHasRight
 
-Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
+Helper function to call the custom field's queue's CurrentUserHasRight with the passed in args.
 
 =cut
 
-sub CurrentUserHasQueueRight {
+sub CurrentUserHasRight {
     my $self = shift;
-
-    # If there is no queue, we certainly can't check if the user has the queue right
-    return undef unless ($self->Queue);
-    return ( $self->QueueObj->CurrentUserHasRight(@_) );
+    my $right = shift;
+    # if there's no queue, we want to know about a global right
+    if ( ( !defined $self->__Value('Queue') ) || ( $self->__Value('Queue') == 0 ) ) {
+         return $self->CurrentUser->HasRight( Object => $RT::System, Right => '$right'); 
+    } else {
+        return ( $self->QueueObj->CurrentUserHasRight($right) );
+    }
 }
 
 # }}}
@@ -495,19 +508,8 @@ sub CurrentUserHasQueueRight {
 sub _Set {
     my $self = shift;
 
-    # use super::value or we get acl blocked
-    if ( ( defined $self->SUPER::_Value('Queue') )
-        && ( $self->SUPER::_Value('Queue') == 0 ) )
-    {
-        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
-    }
-    else {
-
-        unless ( $self->CurrentUserHasQueueRight('AdminCustomFields') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
+    unless ( $self->CurrentUserHasRight('AdminCustomFields') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
     return ( $self->SUPER::_Set(@_) );
 
@@ -533,20 +535,12 @@ sub _Value {
     if ( $field eq 'Queue') {
           return ( $self->SUPER::_Value($field) );
      }
+
+
     #If the current user doesn't have ACLs, don't let em at it.  
-    #use super::value or we get acl blocked
-    if ( ( !defined $self->__Value('Queue') )
-        || ( $self->__Value('Queue') == 0 ) )
-    {
-        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'SeeQueue') ) {
+        unless ( $self->CurrentUserHasRight( 'SeeQueue')) {
             return (undef);
         }
-    }
-    else {
-        unless ( $self->CurrentUserHasQueueRight('SeeQueue') ) {
-            return (undef);
-        }
-    }
     return ( $self->__Value($field) );
 
 }
