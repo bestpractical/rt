@@ -35,10 +35,8 @@ package RT;
 
 #    -- Tobix
 
-use Log::Dispatch;
+use Log::Dispatch 1.2;
 use Log::Dispatch::File;
-
-Log::Dispatch::VERSION('1.2');
 
 $Logger=Log::Dispatch->new();
 $Logger->add(Log::Dispatch::File->new
