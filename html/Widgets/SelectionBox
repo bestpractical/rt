@@ -91,7 +91,9 @@ unless ($ARGS{$self->{Name}.'-Submit'}) {
 }
 
 $self->{Selected} = $ARGS{$self->{Name}.'-Selected'};
-$self->{Selected} = [$self->{Selected}] unless ref ($self->{Selected});
+if ($self->{Selected} && !ref($self->{Selected})) {
+    $self->{Selected} = [$self->{Selected}];
+}
 
 if ($ARGS{fromjs}) {
     $self->{Current} = $self->{Selected};
@@ -141,7 +143,7 @@ else {
 
 # XXX: Verify Current are within $self->{Available} here
 
-if ($ARGS{submit}) {
+if ($ARGS{$self->{Name}.'-Save'}) {
     $self->{OnSubmit}->($self);
     delete $self->{Modified};
 }
@@ -166,7 +168,7 @@ $self => undef
 </%method>
 
 <%method show>
-<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
+<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>" onSubmit="list_<% $name %>.selectAll();">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
 <input type="hidden" name="fromjs" value="0">
@@ -175,13 +177,13 @@ $self => undef
 <b><&|/l&>(Modified, Please save)</&></b>
 % }
 <br>
-<select name="<%$name%>-Available" multiple >
+<select name="<%$name%>-Available" id="<%$name%>-Available" multiple >
 % for (@{$self->{Available}}) {
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
 <input name="add" type="submit" value="->"/>
-<select name="<%$name%>-Selected" multiple>
+<select name="<%$name%>-Selected" id="<%$name%>-Selected" multiple>
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
 % if (exists $selected{$_}) {
@@ -193,10 +195,8 @@ SELECTED
  <input name="moveup" type="submit" value="^"/>
  <input name="movedown" type="submit" value="v"/>
  <input name="remove" type="submit" value="X"/>
- <input name="submit" type="submit" value="<&|/l&>Save</&>"/>
 
-%# the save button does not work because it's not direct child of the form element
-%#<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>
 
 </form>
 

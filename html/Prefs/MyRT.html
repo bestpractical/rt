@@ -127,6 +127,7 @@ for my $pane ('body', 'summary') {
 				   { type => $1,
 				     name => $2,
 				 }} @{$sel->{Current}}];
+			print "saving";
 			$user->SetPreferences('HomepageSettings', $portlets);
 			push @actions, loc ('Preferences saved for [_1].', $pane);
 			delete $session{'my_rt_portlets'};
