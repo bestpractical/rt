@@ -21,7 +21,7 @@ $dbd = shift || print_help();
 @modules = qw(
 DBI 1.13
 DBIx::DataSource 0.02
-DBIx::SearchBuilder 0.34
+DBIx::SearchBuilder 0.37
 HTML::Entities 
 MLDBM
 Params::Validate 0.02
