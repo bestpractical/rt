@@ -26,6 +26,8 @@ sub NewItem {
   my $self = shift;
   my $Handle = shift;
   my $item;
+
+  use RT::Transaction;
   $item = new RT::Transaction($self->{'user'});
   return($item);
 }

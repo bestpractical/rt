@@ -169,6 +169,14 @@ sub Description {
   if ($self->Type eq 'Create'){
     return("Request created by ".$self->Creator->UserId);
   }
+  elsif ($self->Type eq 'Set') {
+    if ($self->Field eq 'Owner') {
+      return ("Owner changed from " . $self->OldValue ." to ".$self->NewValue ." by ". $self->Creator->UserId);
+    }
+
+    #TODO Add the other Set types here.
+  }
+
   elsif ($self->Type eq 'Ccorrespond')    {
     return("Mail sent by ". $self->Creator->UserId);
   }

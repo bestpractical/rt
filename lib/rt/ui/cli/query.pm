@@ -60,8 +60,7 @@ sub ParseArgs {
      elsif ($field =~ /^r(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=9;}
-       printf "%-${length}.${length}s ", $Ticket->Requestors;
-     }
+       printf "%-${length}.${length}s ", $Ticket->RequestorsAsString;}
      elsif ($field =~ /^o(\d*)$/){ 
        $length = $1;
        my $Owner;

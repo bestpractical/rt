@@ -102,7 +102,7 @@ CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
    Ticket int(11),
    Email VARCHAR(255),
-   Type VARCHAR(16) #Requestor, Cc, Bcc
+   Type VARCHAR(16), #Requestor, Cc, Bcc
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),

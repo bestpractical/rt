@@ -20,7 +20,7 @@ sub new {
 
 sub Create {
   my $self = shift;
- 
+  
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
@@ -58,10 +58,10 @@ sub Create {
 			       );
   #Load 'er up.
   $self->Load($id);
-  #Now that we know the Id
-  $self->SUPER::_Set("EffectiveId",$id);
-
-
+  #Now that we know the self
+  $Id->SUPER::_Set("EffectiveId",$id);
+  
+  
   #Add the requestor to the list of watchers
   require RT::Watcher;
   my $Requestor = new RT::Watcher ($self->CurrentUser);
@@ -79,8 +79,8 @@ sub Create {
   if ($args{'Attachment'}){
     $Trans->Attach($args{'Attachment'});
   }
-
-    
+  
+  
   return($self->Id, $Trans, $ErrStr);
   
 }
@@ -126,18 +126,18 @@ sub Watchers {
   my $self = shift;
   if (! defined ($self->{'Watchers'})) {
     require RT::Watchers;
-    $self->{'Watchers'} = new RT::Watchers->($self->CurrentUser);
-
+    $self->{'Watchers'} = new RT::Watchers ($self->CurrentUser);
+    
   }
-  return($self->{'Watcherss'});
-
+  return($self->{'Watchers'});
+  
 }
 
 sub Requestors {
   my $self = shift;
   if (! defined ($self->{'Requestors'})) {
     require RT::Watchers;
-    $self->{'Requestors'} = new RT::Watchers->($self->CurrentUser);
+    $self->{'Requestors'} = new RT::Watchers ($self->CurrentUser);
     $self->{'Requestors'}->LimitToRequestors();
   }
   return($self->{'Requestors'});
@@ -147,8 +147,8 @@ sub RequestorsAsString {
   my $self = shift;
   if (!defined $self->{'RequestorsAsString'}) {
     $self->{'RequestorsAsString'} = "";
-    foreach $requestor ($self->Requestors) {
-      $self->{'RequestorsAsString'} . = $requestor->Email.", ";    
+    while (my $requestor = $self->Requestors->Next) {
+      $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
     }
     return ( $self->{'RequestorsAsString'});
   }
@@ -158,7 +158,7 @@ sub Cc {
   my $self = shift;
   if (! defined ($self->{'Cc'})) {
     require RT::Watchers;
-    $self->{'Cc'} = new RT::Watchers->($self->CurrentUser);
+    $self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
     $self->{'Cc'}->LimitToCc();
   }
   return($self->{'Cc'});
@@ -169,29 +169,31 @@ sub CcAsString {
   my $self = shift;
   if (!defined $self->{'CcAsString'}) {
     $self->{'CcAsString'} = "";
-    foreach $requestor ($self->Cc) {
-      $self->{'CcAsString'} . = $requestor->Email .", ";
+    while ($requestor = $self->Cc->Next) {
+      $self->{'CcAsString'} .= $requestor->Email .", ";
       
     }
     return ( $self->{'CcAsString'});
-
-
+    
+    
+  }
 }
 sub Bcc {
+  my $self = shift;
   if (! defined ($self->{'Bcc'})) {
     require RT::Watchers;
-    $self->{'Bcc'} = new RT::Watchers->($self->CurrentUser);
+    $self->{'Bcc'} = new RT::Watchers ($self->CurrentUser);
     $self->{'Bcc'}->LimitToBcc();
   }
   return($self->{'Bcc'});
-
+  
 }
 sub BccAsString {
   my $self = shift;
   if (!defined $self->{'BccAsString'}) {
     $self->{'BccAsString'} = "";
-    foreach $requestor ($self->Bcc) {
-      $self->{'BccAsString'} . = $requestor->Email .", ";
+    while (my $requestor = $self->Bcc->Next) {
+      $self->{'BccAsString'} .= $requestor->Email .", ";
       
     }
     return ( $self->{'BccAsString'});
@@ -256,12 +258,10 @@ sub Queue {
 sub Owner {
   my $self = shift;
   
-  
-  require RT::User;
-  $self->{'owner'} = RT::User->new($self->CurrentUser);
-
-  #If it's got an owner
-  if (!$self->{'owner'})  {
+  #If the owner object ain't loaded yet
+  if (! defined $self->{'owner'})  {
+    require RT::User;
+    $self->{'owner'} = new RT::User ($self->CurrentUser);
     $self->{'owner'}->Load($self->_Value('Owner'));
   }
   
@@ -275,9 +275,6 @@ sub Owner {
 
 sub Take {
   my $self = shift;
-  my ($package, $filename, $line) = caller;
-  print STDERR "RT::Ticket->Take called from $package, line $line with arguments (",@_,")\n";
-  print STDERR "Taking ".$self->CurrentUser->Id."\n";
   return($self->SetOwner($self->CurrentUser->Id));
 }
 
@@ -312,17 +309,21 @@ sub SetOwner {
   #TODO this routine dies when: we're trying to steal something
 
 
-  use RT::User;
+  require RT::User;
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   
   if (!$NewOwnerObj->Load($NewOwner)) {
+    print STDERR "That user does not exist\n";
     return (0, "That user does not exist");
   }
+  
   
   #If thie ticket has an owner and it's not the current user
   #TODO:this breaks stealing.
   
-  if (($self->Owner) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+
+  if (($self->Owner->Id != 0 ) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+    print STDERR  "You can only reassign tickets that you own or that are unowned\n";
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
   #If we've specified a new owner and that user can't modify the ticket
@@ -330,7 +331,7 @@ sub SetOwner {
     return (0, "That user may not own requests in that queue")
   }
   
-
+  
   #If the ticket has an owner and it's the new owner, we don't need
   #To do anything
   elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
@@ -347,6 +348,7 @@ sub SetOwner {
     #If we're giving the request to someone other than $self->CurrentUser
     #send them mail
   }
+
   return($self->_Set('Owner',$NewOwnerObj->Id));  
 }
 
@@ -640,7 +642,7 @@ sub _NewTransaction {
   
   $self->_UpdateDateActed;
   
-  if ($args{'TimeTaken'} > 0 ) {
+  if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($TimeTaken); 
   }
   return($trans);
@@ -704,6 +706,9 @@ sub _Set {
     my $Value = shift;
     my $TimeTaken = shift if @_;
     
+    if (!defined $TimeTaken) {
+      $TimeTaken = 0;
+    }
     #record what's being done in the transaction
     $self->_NewTransaction (Type => "Set",
 			    Field => "$Field",
@@ -712,7 +717,7 @@ sub _Set {
 			    TimeTaken => $TimeTaken
 			   );
     
-    $self->SUPER::_Set($field, $value);
+    $self->SUPER::_Set($Field, $Value);
     #Figure out where to send mail
   }
   

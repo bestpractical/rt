@@ -282,7 +282,7 @@ sub ParseArgs {
     $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     $area=&rt::ui::cli::question_string("Place Request in area",);
     $owner=&rt::ui::cli::question_string( "Give request to");
-    $Requestors=&rt::ui::cli::question_string("Requestor(s)",);
+    $Requestor = &rt::ui::cli::question_string("Requestor",);
     $Cc = &rt::ui::cli::question_string("Cc",);
     $Bcc =  &rt::ui::cli::question_string("Bcc",);
     $Subject=&rt::ui::cli::question_string("Subject",);
@@ -304,7 +304,7 @@ sub ParseArgs {
     }	 
     use MIME::Entity;
     $Message = MIME::Entity->build ( Subject => "$Subject",
-				     From => "$Requestors",
+				     From => "$Requestor",
 				     Cc => "$Cc",
 				     Bcc => "$Bcc",
 				     Data => "$content");
@@ -316,12 +316,16 @@ sub ParseArgs {
 			       Alias => $alias,
 			       Owner => $owner,
 			       Subject => $Subject,
+			       Requestor => $Requestor,
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
 			       Due => $date_due,
 	      		       Attachment => $Message			
 						      );
+
+#    $Ticket->AddWatcher (all the ccs)
+    #$Ticket->AddWatcher (all the Bccs)
     printf("Request %s created",$id);
   }
   

@@ -40,7 +40,7 @@ sub LimitToType {
 	       VALUE => "$type");
 }
 
-sub LimitToRequestor {
+sub LimitToRequestors {
   my $self = shift;
   $self->LimitToType("Requestor");
 }
