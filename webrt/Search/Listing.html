@@ -48,7 +48,7 @@
   }
 if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'}>0)) {
   
-  $session{'tickets'}->Rows ($ARGS{'ValueOfResultsPerPage'});
+  $session{'tickets'}->Rows($ARGS{'ValueOfResultsPerPage'});
 }
 
 
@@ -60,15 +60,26 @@ if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
 				      );
 }
 
-if (0) {
-  # TODO: this code requires some creative use of EasySearch that I'm not up to 
-  # right now
-  #if ($ARGS{'LimitRequestor'}) {
-  my $oper = $ARGS{'NegateRequestor'} ? "!=" : "="; 
-  $session{'tickets'}->NewRestriction (FIELD => 'Requestors',
-				       VALUE => $ARGS{'ValueOfRequestors'},
-				       OPERATOR => "$oper"
-				      )
+  if ($ARGS{'LimitRequestor'}) {
+    my $oper = $ARGS{'NegateRequestor'} ? "!=" : "=";
+    my $alias=$session{'tickets'}->NewRestriction 
+        (FIELD => 'Email',
+         VALUE => $ARGS{'ValueOfRequestors'},
+         TABLE => 'Watchers',
+	 OPERATOR => "$oper",
+	 EXT_LINKFIELD => 'Value');
+    # TODO:
+    # THIS BREAKS.  NewRestriction doesn't return alias.  More work is needed here.. :/
+    $session{'tickets'}->NewRestriction
+        (FIELD => 'Scope',
+         VALUE => 'Ticket',
+         ALIAS => $alias,
+	 OPERATOR => "=");
+    $session{'tickets'}->NewRestriction
+        (FIELD => 'Type',
+         VALUE => 'Requestor',
+         ALIAS => $alias,
+	 OPERATOR => "=");
 }
 
 

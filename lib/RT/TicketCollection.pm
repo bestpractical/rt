@@ -3,6 +3,8 @@
 package RT::TicketCollection;
 use RT::Tickets;
 
+# Some docs on what this package should do would be nice
+
 # {{{ sub new 
 
 #instantiate a new object.
@@ -76,12 +78,9 @@ sub NewRestriction {
   %{$self->{'restrictions'}{"$index"}} = (TABLE => 'Tickets',
 	      FIELD => undef,
 	      VALUE => undef,	
-	      ALIAS => undef,	     
 	      ENTRYAGGREGATOR => undef,
 	      OPERATOR => '=',
-	      INT_LINKFIELD => undef,
-	      EXT_LINKFIELD => undef,
-	      @_);  
+	      @_);
  }
 
 # }}}
