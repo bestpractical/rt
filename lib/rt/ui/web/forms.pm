@@ -429,12 +429,28 @@ sub FormReply{
 	print "target=\"summary\"";
     }
     print ">
-<H1>
-Enter your reply to the requestor below:
-</H1>
-<pre>
+<CENTER>
+<TABLE>
+<TR>
+<TD COLSPAN=2 BGCOLOR=\"#CCCCCC\" WIDTH=100%> 
+<FONT SIZE=+2>Comment on request $serial_num.</FONT> (".$rt::req[$serial_num]{'subject'}.")
+</TD>
+</TR>
+<TR><TD>
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
-Status:<select name=\"do_req_status\">\n";
+<FONT SIZE=-2>Give to:</FONT><BR><select name=\"do_req_give_to\">
+<option value=\"\">Nobody ";   
+    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
+       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+           print "<option ";
+               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+               print ">$user_id\n";
+           }
+       }
+    print "</select><input type=\"hidden\" name=\"do_req_give\" value=\"true\"></TD>
+
+<TD>
+<FONT SIZE=-2>Status:</FONT><BR><select name=\"do_req_status\">\n";
     print "<option value=\"open\" ";
     if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
     print ">open\n";
@@ -445,34 +461,27 @@ Status:<select name=\"do_req_status\">\n";
     if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
     print ">resolved\n";
     print "
-</select>
+</select></TD>
+</RE>
 
-Give to:<select name=\"do_req_give_to\">
-<option value=\"\">Nobody ";   
-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
-       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
-           print "<option ";
-               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
-               print ">$user_id\n";
-           }
-       }
-    print "</select>
-<input type=\"hidden\" name=\"do_req_give\" value=\"true\">
-
-
-To:       $rt::req[$serial_num]{requestors}
-Cc:	  <input name=\"cc\">
-Bcc:      <input name=\"bcc\">
-From:     $rt::users{$current_user}{email}
-Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
-</pre>
+<TR>
+<TD ALIGN=RIGHT>To:</TD><TD COLSPAN=2>$rt::req[$serial_num]{'requestors'}</TD></TR>
+<TR><TD ALIGN=RIGHT>Cc:</TD><TD COLSPAN=2><input name=\"cc\"></TD></TR>
+<TR><TD ALIGN=RIGHT>Bcc:</TD><TD COLSPAN=2><input name=\"bcc\"></TD></TR>
+<TR><TD ALIGN=RIGHT>From:</TD><TD COLSPAN=2>$rt::users{$current_user}{email}</TD></TR>
+<TR><TD ALIGN=RIGHT>Subject:</TD><TD COLSPAN=3><input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\"></TD></TR>
+<TR><TD COLSPAN=3>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"$MESSAGE_FONT\">
+Enter your response to the requestor below:
 <br><textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
-<center><input type=\"submit\" value=\"Send Response\"></center></form>";
+</TD></TR>
+<TR><TD COLSPAN=3 ALIGN=RIGHT><input type=\"submit\" value=\"Send Response\"></TD></TR>
+</TABLE>
+</center></form>";
 }
 
 sub FormCreate{   
@@ -508,80 +517,95 @@ sub FormCreate_Step2 {
     print ">";
       print "<table>
 <TR>
-<TD align=\"right\">
-Queue:
-</TD>
-<TD> $queue_id </TD>
-<TD align=\"right\"> Created by:
-
-</TD> 
-<TD>
- $current_user
-</TD>
-\n";
-    $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
-    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
-    if ($current_user){
-
-    print "
-<TD align=\"right\">Area:
-</TD>
-<TD><select name=\"area\">
-<option value=\"\">None ";	
-    if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
-	foreach $area (sort keys % {$rt::queues{$queue_id}{areas}}) {
-	    print "<option>$area\n";
-	}
-    }
-    print "</select>
+<TD COLSPAN=3 BGCOLOR=\"#CCCCCC\" WIDTH=100%>
+<FONT SIZE=+2>
+Create a new request in <b>$queue_id</b>.
+</FONT>
 </TD>
 </TR>
+<TR><TD></TD></TR>
 <TR>
-<TD align=\"right\">Status:</TD>
-<TD><select name=\"status\">
+<TD valign=top>
+<font size=-2>
+Queue:
+</font><BR>
+$queue_id </TD>
+
+\n";
+  
+   
+
+    print "
+<TD><FONT size=-2>Area:</FONT><BR>
+<select name=\"area\">
+<option value=\"\">None ";	
+
+   if ($current_user){
+      if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
+	foreach $area (sort keys % {$rt::queues{$queue_id}{areas}}) {
+	  print "<option>$area\n";
+	}
+      }
+    }
+    print "</select></TD>";
+    
+print "</TR>";
+
+
+print "<TR>
+<TD><FONT SIZE=-2>Status:</FONT><BR>
+<select name=\"status\">
 <option value=\"open\">open
 <option value=\"stalled\">stalled
 <option value=\"resolved\">resolved
 </select></TD>
-<TD align=\"right\">Owner:
-</TD>
-<TD>
+<TD><FONT SIZE=-2>Owner:</FONT><br>
 <select name=\"owner\">
 <option value=\"\">Nobody ";	
-	foreach $user_id ( sort keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
-	    if (&rt::can_manipulate_queue ($rt::ui::web::FORM{'queue_id'}, $user_id)) {
-		print "<option>$user_id\n";
-	    }
-	}
-	print "</select></TD></TR>\n";
-    }	
+   
+    if ($current_user) {
+       if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
+	 foreach $user_id ( sort keys % {$rt::queues{"$queue_id"}{acls}} ) {
+	   if (&rt::can_manipulate_queue ($queue_id, $user_id)) {
+	     print "<option>$user_id\n";
+	   }
+	 }
+       }
+     }
+      print "</select></TD>";
+  
 
-
-
-    print"<TR><TD align=\"right\">Priority:</TD><TD>";
-    
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio");
-    print "
-</TD><TD align=\"right\">
-Final priority:
-</TD>
-<TD>";
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio");
-    print "</TD></TR>
-<TR><TD align=\"right\">Date Due:</TD><TD COLSPAN=5><input type=\"checkbox\" name=\"due\">";
-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
-    print "</TD></TR>
-<TR><TD align=\"right\">Requestor:</TD><TD COLSPAN=5><input name=\"requestors\" size=\"30\"";
+    print "<TD colspan=4><FONT SIZE=-2>Requestor:</FONT><BR><input name=\"requestors\" size=\"30\"";
     if ($current_user ne 'anonymous') {
 	print "value=\"$rt::users{$current_user}{email}\"";
     }
-    print "></TD></TR>
-<TR><TD align=\"right\">Subject:</TD><TD COLSPAN=5>  <input name=\"subject\" size=\"50\">
+    print "></TD></TR>";
+
+
+    print"<TR><TD><FONT SIZE=-2>Priority:</FONT><BR>";
+    
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio");
+    print "
+</TD><TD>
+<FONT SIZE=-2>Final Priority:</FONT><BR>";
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio");
+    print "</TD>";
+
+    print "<TD><FONT SIZE=-2>Due Date:</FONT><BR><input type=\"checkbox\" name=\"due\">";
+    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
+    print "</TD></TR>";
+
+
+print "<TR><TD COLSPAN=4><FONT SIZE=-2>Subject:</FONT><BR><input name=\"subject\" size=\"50\">
 
 </TD></TR>
-<TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
-<font size=\"-1\">
-<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>$template</textarea>
+<TR><TD valign=\"top\" colspan=3><FONT SIZE=-1>Content:</FONT><BR>
+<font size=\"-1\">";
+    
+    $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
+    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
+    
+print "<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>$template</textarea>
 </TD></TR>
 </TABLE>
 </font>
@@ -607,23 +631,47 @@ sub FormComment{
 if ($rt::ui::web::frames) { print " target=\"summary\"";}
 
 print " >
-<H1>
-Enter your comments below:
-</H1>
-<pre>
-Summary: <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
-Cc:	 <input name=\"cc\">
-Bcc:	 <input name=\"bcc\"> 
-</pre>
+<CENTER>
+<TABLE>
+<TR>
+<TD COLSPAN=2 BGCOLOR=\"#CCCCCC\" WIDTH=100%> 
+<FONT SIZE=+2>Comment on request $serial_num.</FONT> (".$rt::req[$serial_num]{'subject'}.")
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+Subject:
+</TD>
+<TD>
+<input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
+</TD></TR>
+<TR>
+<TD ALIGN=RIGHT>Cc:
+</TD>
+<TD>
+<input name=\"cc\">
+<TR>
+<TD ALIGN=RIGHT>
+Bcc:
+</TD>
+<TD>
+<input name=\"bcc\"> 
+</TD></TR>
+<TR><TD COLSPAN=2>
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
 <br><font size=\"$MESSAGE_FONT\">
+Type your comments below:<br>
 <textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
-<center>
+</TD></TR>
+<TR><TD COLSPAN=2 ALIGN=RIGHT>
 <input type=\"submit\" value=\"Submit Comments\">
+</TD>
+</TR>
+</TABLE>
 </center>
 </form>";
 }

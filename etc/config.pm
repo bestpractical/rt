@@ -73,6 +73,12 @@
     # (TODO) Mail:Internet might need some configuration.
 
 
+    # Define the directory name to be used for images in rt web
+    # documents.
+
+    $WebrtImagePath = "!!WEB_IMAGE_PATH!!";
+
+
     # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use
     # for the web ui.  Valid choices are: "cookies" and "external".  Cookies
     # uses http cookies to keep track of authentication. External means that

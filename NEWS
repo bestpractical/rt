@@ -1,3 +1,16 @@
+8 Nov 1999
+----------
+*  Work on web_create and web ticket view
+
+*  WEB_IMAGE_PATH defines the directory name to be used for images in
+   the web documents.  This must match the ``Alias'' Apache config
+   option mentioned in the README. 
+			-- Adam Hammer <hammer@math.purdue.edu>
+
+* Some cleanup in web ui
+
+* Several bugfixes to admin backend. (there is no $dbh->Query in DBI)
+
 21 Oct 1999
 -----------
 

@@ -1,4 +1,4 @@
-# $Version$
+# $Tag$
 #
 # RT is (c) Copyright 1996-1999 Jesse Vincent
 # RT is distributed under the terms of the GNU General Public License
@@ -183,31 +183,36 @@ sub select_a_date{
     local (@MoY = ('Jan','Feb','Mar','Apr','May','Jun',
 	       	   'Jul','Aug','Sep','Oct','Nov','Dec'));
 
-    if (!$default) { # if we don't supply a default, say it will be done next week
+    if ($default == undef) { # if we don't supply a default, say it will be done next week
 	$default=$rt::time+604800;
     }
-   
-   ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($default);
+    
+ ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($default);
   print "<select name=\"".$name."_mday\">\n";
-    for ($counter=1;$counter<=31;$counter++) {
+  print "<option>No\n"; 
+   for ($counter=1;$counter<=31;$counter++) {
 	print "<option";
-	if ($mday==$counter) {print " SELECTED";}
+	if (($default > 0) and ($mday==$counter)) {print " SELECTED";}
 	print ">$counter\n";
     }
-    print "</select><select name=\"".$name."_month\">\n";
+  
+  print "</select><select name=\"".$name."_month\">\n";
+  print "<option>Date\n";
     for ($counter=0;$counter<=11;$counter++) {
 	print "<option value=\"$counter\" ";
-	if ($mon eq $MoY[$counter]) {print " SELECTED";}
+	if (($default > 0) and ($mon eq $MoY[$counter])) {print " SELECTED";}
 	print ">$MoY[$counter]\n";
     }
     print "</select><select name=\"".$name."_year\">\n";
+	  print "<option>Set\n";
     for ($counter=$now_year;$counter<=($now_year+5);$counter++) {
 	print "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
 	                                            #likes dates to be 2 digits
 	                                            #that sucks
-	if ($now_year==$counter) {print " SELECTED";}
+	if (($default > 0)  and ($now_year==$counter)) {print " SELECTED";}
 	print ">$counter\n";
     }
+
     print "</select>\n"; 
 
 }

@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	1pre
+RT_VERSION_PATCH	=	1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -149,6 +149,12 @@ RT_DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 # Web UI Configuration
 #
 
+# WEB_IMAGE_PATH defines the directory name to be used for images in
+# the web documents.  This must match the ``Alias'' Apache config
+# option mentioned in the README.
+
+WEB_IMAGE_PATH			=	/webrt
+
 # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use 
 # for the web ui.  Valid choices are: "cookies" and "external".  Cookies 
 # uses http cookies to keep track of authentication. External means that 
@@ -223,7 +229,7 @@ initialize: database acls
 
 
 database:
-	su -c "bin/initdb.$(RT_DB) $(DB_HOME) $(RT_DB_HOST) $(DBA) $(DBA_PASSWORD) $(RT_DATABASE)" $(DBA)
+	su -c "bin/initdb.$(RT_DB) '$(DB_HOME)' '$(RT_DB_HOST)' '$(DBA)' '$(DBA_PASSWORD)' '$(RT_DATABASE)'" $(DBA)
 
 acls:
 	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
@@ -234,7 +240,7 @@ acls:
 		s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
 		" $(RT_DB_ACL)
 
-	su -c "bin/initacls.$(RT_DB) $(DB_HOME) $(RT_DB_HOST) $(DBA) $(DBA_PASSWORD) $(RT_DATABASE) $(RT_DB_ACL)" $(DBA)
+	su -c "bin/initacls.$(RT_DB) '$(DB_HOME)' '$(RT_DB_HOST)' '$(DBA)' '$(DBA_PASSWORD)' '$(RT_DATABASE)' '$(RT_DB_ACL)'" $(DBA)
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -289,6 +295,7 @@ config-replace:
         s'!!RT_HOST!!'$(RT_HOST)'g;\
         s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
+	s'!!WEB_IMAGE_PATH!!'$(WEB_IMAGE_PATH)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\
 	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
