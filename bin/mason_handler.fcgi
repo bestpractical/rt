@@ -106,9 +106,6 @@ die "Can't read and write $RT::MasonSessionDir"
 
 RT::Init();
 
-#Drop setgidness
-RT::DropSetGIDPermissions();
-
 # Response loop
 while (my $cgi = new CGI::Fast) {
     
