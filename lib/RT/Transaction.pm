@@ -254,12 +254,11 @@ sub Description  {
   elsif ($self->Type eq 'queue_id'){
     return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
   }
-  elsif ($self->Type =~ /^(Take|Steal|Untake)$/){
-    # todo
-    if ($self->Data eq $self->Creator->UserId){
+  elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
+    if ($self->Type eq 'Take'){
       return( "Taken by ".$self->Creator->UserId);
     }
-    elsif ($self->Data eq ''){
+    elsif ($self->Type eq 'Untake'){
       return( "Untaken by ".$self->Creator->UserId);
     }
     

@@ -22,12 +22,13 @@ sub Prepare  {
 sub Commit {
     my $self = shift;
     # Find all Dependent
+    $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
     my $base;
-    if ($base_id eq "THIS") {
+    if ($1 eq "THIS") {
 	$base=$self->TicketObj;
     } else {
+	my $base_id=&RT::Link::_IsLocal($base_id) || return 0;
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
-	# TODO: only works if id is a plain ticket num:
 	$base->Load($base_id);
     }
     $base->Stall if $base->Status eq 'open';
@@ -46,9 +47,8 @@ sub IsApplicable  {
   $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
 
   # 2:
-  #TODO: I don't understand what this is supposed to do.
-  # Is it supposed to check the parent or the child. no matter. needs going over
-  #  &RT::Ticket::URIIsLocal($1) || return 0;
+  # (dirty!)
+  &RT::Link::_IsLocal(undef,$1) || return 0;
   
   return 1;
 }

@@ -12,8 +12,9 @@
        THIS <% $l->Type %> 
        <a href="<% $l->TargetAsHREF %>"><% $l->Target %></a> 
 %if ($l->TargetIsLocal) {
-	(<% $l->TargetObj->Subject %>) <br>
+	(<% $l->TargetObj->Subject %>)
 %}		
+<br>
 %   }
 
 <%ARGS>

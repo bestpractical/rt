@@ -137,15 +137,15 @@ sub activate  {
       next if /^$/;
       chomp;
       $RT::Logger->log(message=>"Action requested through email: $_", level=>'info');
-      my ($command, $arguments)=/^(?:\s*)((\w+|-))(?: (.*))?$/
-	  or die "syntax error";
+      my ($command, $arguments)=/^(?:\s*)((?:\w|-)+)(?: (.*))?$/
+	  or die "syntax error ($_)";
       if ($command =~ /^(Un)?[Ll]ink$/) {
 	  if ($1) {
 	      warn "Unlink not implemented yet: $_";
 	      next;
 	  }
-	  my ($from, $typ, $to)=$arguments =~ m|^(.+?) (\w+) (.+?)$|
-	      or die "syntax error in link command";
+	  my ($from, $typ, $to)=($arguments =~ m|^(.+?)(?:\s+)(\w+)(?:\s+)(.+?)$|)
+	      or die "syntax error in link command ($arguments)";
 	  my $dir='F';
 	  # dirty? yes. how to fix?
 	  $TicketId=RT::Link::_IsLocal(undef, $from);
@@ -161,6 +161,8 @@ sub activate  {
 	  $Ticket->Load($TicketId) || die "Could not load ticket";
 	  # dirty? yes. how to fix?
 	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
+	  $RT::Logger->log(level=>'info', 
+			   message=>$CurrentUser->UserId."did a linking action ($_)");
       } else {
 	  die "unknown command $command : $_";
       }

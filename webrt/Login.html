@@ -17,3 +17,17 @@ $pass => undef
 $goto => undef
 </%ARGS>
 
+<%INIT>
+# How do we deal with this?  Do we want to keep some session
+# information or what?
+
+my $o=tied(%HTML::Mason::Commands::session);
+if ($o) {
+  $o->delete;
+} else {
+  warn "It seems like there is something seriously broken with your perl!?!";
+  delete $session{CurrentUser}
+    if exists $session{CurrentUser};
+}
+
+</%INIT>

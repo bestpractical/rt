@@ -7,13 +7,19 @@ if (defined ($user) && defined ($pass)){
 		$m->abort;
 	}
 
+	$RT::Logger->log(level=>'info', message=>"$user successfully logged in");
+
         $m->call_next;
 }
 elsif (defined $session{'CurrentUser'}){
+	$RT::Logger->log(level=>'debug', 
+			 message=>join(' ',$session{CurrentUser}->UserId,'accessing',$r->uri));
 	$m->call_next;
 }
 else {
-$m->comp('/Login.html')
+        $RT::Logger->log(level=>'debug', 
+			 message=>$r->uri. " accessed by somebody who hasn't logged in");
+$m->comp('/Login.html');
  }
 </%PERL>
 
