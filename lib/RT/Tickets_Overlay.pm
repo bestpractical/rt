@@ -736,8 +736,9 @@ sub _CustomFieldLimit {
 
   my $cfid = 0;
 
+  # this is pretty inefficient for huge numbers of CFs...
   while ( my $CustomField = $CF->Next ) {
-    if ($CustomField->Name eq $field) {
+    if (lc $CustomField->Name eq lc $field) {
       $cfid = $CustomField->Id;
       last;
     }
