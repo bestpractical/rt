@@ -597,11 +597,16 @@ TD.collection-as-table {  text-align: left;
                           padding-right: .5em;
                         }
 
-SPAN.titleboxright a {
+
+SPAN.titleboxright  {
         font-size: 0.5em;
-        color: #ffffff;
+        color: #000000;
          vertical-align: top;
          text-align: right;
+        }
+
+SPAN.titleboxright a {
+        color: #ffffff;
         }
 
 textarea.signature {
