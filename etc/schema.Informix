@@ -103,20 +103,22 @@ CREATE TABLE ScripConditions (
 
 CREATE TABLE Transactions (
   	id 			SERIAL,
-  	EffectiveTicket 	INTEGER DEFAULT 0 NOT NULL,
-  	Ticket 			INTEGER DEFAULT 0 NOT NULL,
+  	ObjectType 		VARCHAR(255),
+  	ObjectId 		INTEGER DEFAULT 0 NOT NULL,
   	TimeTaken 		INTEGER DEFAULT 0 NOT NULL,
   	Type 			VARCHAR(20),
   	Field 			VARCHAR(40),
   	OldValue 		VARCHAR(255),
   	NewValue 		VARCHAR(255),
+  	ReferenceType 		VARCHAR(255),
+	OldReference		INTEGER DEFAULT 0,
+	NewReference		INTEGER DEFAULT 0,
   	Data 			VARCHAR(255),
   	Creator 		INTEGER DEFAULT 0 NOT NULL,
   	Created 		DATETIME YEAR TO SECOND,
         PRIMARY KEY (id)
 );
-CREATE INDEX Transactions1 ON Transactions (Ticket);
-CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 
 CREATE TABLE Scrips (
@@ -305,7 +307,9 @@ CREATE TABLE CustomFields (
 	id		SERIAL,
 	Name		VARCHAR(200),
 	Type		VARCHAR(200),
-	Queue		INTEGER DEFAULT 0 NOT NULL,
+	MaxValues	INTEGER DEFAULT 0 NOT NULL,
+	Pattern		VARCHAR(255),
+	LookupType	VARCHAR(255),
 	Description	VARCHAR(255),
 	SortOrder	INTEGER DEFAULT 0 NOT NULL,
 	Creator		INTEGER DEFAULT 0 NOT NULL,
@@ -315,7 +319,6 @@ CREATE TABLE CustomFields (
 	Disabled	SMALLINT DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX CustomFields1 ON CustomFields (Disabled, Queue);
 
 
 CREATE TABLE CustomFieldValues (

@@ -105,19 +105,21 @@ CREATE SEQUENCE TRANSACTIONS_seq;
 CREATE TABLE Transactions (
   	id 			NUMBER(11,0) 
 		CONSTRAINT Transactions_Key PRIMARY KEY,
-  	EffectiveTicket 	NUMBER(11,0) DEFAULT 0 NOT NULL,
-  	Ticket 			NUMBER(11,0) DEFAULT 0 NOT NULL,
+  	ObjectType 		VARCHAR2(255),
+  	ObjectId		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	TimeTaken 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Type 			VARCHAR2(20),
   	Field 			VARCHAR2(40),
   	OldValue 		VARCHAR2(255),
   	NewValue 		VARCHAR2(255),
+  	ReferenceType 		VARCHAR2(255),
+  	OldReference 		NUMBER(11,0),
+  	NewReference 		NUMBER(11,0),
   	Data 			VARCHAR2(255),
   	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 		DATE
 );
-CREATE INDEX Transactions1 ON Transactions (Ticket);
-CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 
 CREATE SEQUENCE SCRIPS_seq;
@@ -317,7 +319,9 @@ CREATE TABLE CustomFields (
 		CONSTRAINT CustomFields_Key PRIMARY KEY,
 	Name		VARCHAR2(200),
 	Type		VARCHAR2(200),
-	Queue		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	MaxValues	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Pattern		VARCHAR2(255),
+	LookupType	VARCHAR2(255),
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -326,7 +330,6 @@ CREATE TABLE CustomFields (
 	LastUpdated	DATE,
 	Disabled	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
-CREATE INDEX CustomFields1 ON CustomFields (Disabled, Queue);
 
 
 CREATE SEQUENCE CUSTOMFIELDVALUES_seq;
