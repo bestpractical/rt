@@ -3660,7 +3660,7 @@ sub CustomFieldValues {
 
 # }}}
 
-sub _LookupTypes {
+sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket";
 }
 
