@@ -38,21 +38,40 @@
 <& /Elements/TitleBoxStart, title => loc('Identity') &>
 
 <input type=hidden name="Name" value="<%$UserObj->Name%>">
-<&|/l&>Email</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
-<BR>
-<&|/l&>Real Name</&>: <input name="RealName" value="<%$UserObj->RealName%>"> 
-<BR>
-<&|/l&>Nickname</&>: <input name="NickName" value="<%$UserObj->NickName%>">
+<table callspacing=0 cellpadding=0>
+  <tr>
+    <td class=label><&|/l&>Email</&>: </td>
+    <td class=value><input name="EmailAddress" value="<%$UserObj->EmailAddress%>"></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Real Name</&>:</td>
+    <td class=value><input name="RealName" value="<%$UserObj->RealName%>"></td>  </tr>
+  <tr>
+    <td class=label><&|/l&>Nickname</&>:</td>
+    <td class=value><input name="NickName" value="<%$UserObj->NickName%>"></td>
+  </tr>
+</table>
 <& /Elements/TitleBoxEnd &>
 <br>
 <& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
-<&|/l&>Residence</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
-<BR>
-<&|/l&>Work</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
-<BR>
-<&|/l&>Mobile</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
-<BR>
-<&|/l&>Pager</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
+<table callspacing=0 cellpadding=0>
+  <tr>
+    <td class=label><&|/l&>Residence</&>:</td>
+    <td class=value><input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Work</&>:</td>
+    <td class=value><input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Mobile</&>:</td>
+    <td class=value><input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Pager</&>:</td>
+    <td class=value><input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13></td>
+  </tr>
+</table>
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TD VALIGN=TOP>
@@ -60,17 +79,17 @@
 <& /Elements/TitleBoxStart, title => loc('Password') &>
 <TABLE>
 <TR>
-<TD ALIGN=RIGHT>
+<TD class=label>
 <&|/l&>New Password</&>:
 </TD>
-<TD ALIGN=LEFT>
+<TD class=value>
 <input type=password name="Pass1">
 </TD>
 </TR>
-<TR><TD ALIGN=RIGHT>
+<TR><TD class=label>
 <&|/l&>Retype Password</&>:
 </TD>
-<TD>
+<TD class=value>
 <input type=password name="Pass2">
 </TD>
 </TR>
@@ -82,22 +101,36 @@
 
 <TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title => loc('Location') &>
-<&|/l&>Organization</&>: <input name="Organization" value="<%$UserObj->Organization%>">
-<BR>
-<&|/l&>Address1</&>: <input name="Address1" value="<%$UserObj->Address1%>">
-<BR>
-<&|/l&>Address2</&>: <input name="Address2" value="<%$UserObj->Address2%>">
-<BR>
-<&|/l&>City</&>: <input name="City" value="<%$UserObj->City%>" size=14>
-
-<&|/l&>State</&>: <input name="State" value="<%$UserObj->State%>" size=3>
-
-<&|/l&>Zip</&>: <input name="Zip" value="<%$UserObj->Zip%>" size=9>
-<BR>
-<&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
-<BR>
-
-
+<table callspacing=0 cellpadding=0>
+  <tr>
+    <td class=label><&|/l&>Organization</&>:</td>
+    <td class=value><input name="Organization" value="<%$UserObj->Organization%>"></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Address1</&>:</td>
+    <td class=value><input name="Address1" value="<%$UserObj->Address1%>"></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Address2</&>:</td>
+    <td class=value><input name="Address2" value="<%$UserObj->Address2%>"></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>City</&>:</td>
+    <td><input name="City" value="<%$UserObj->City%>" size=14></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>State</&>:</td>
+    <td class=value><input name="State" value="<%$UserObj->State%>" size=3></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Zip</&>:</td>
+    <td class=value><input name="Zip" value="<%$UserObj->Zip%>" size=9></td>
+  </tr>
+  <tr>
+    <td class=label><&|/l&>Country</&>:</td>
+    <td class=value><input name="Country" value="<%$UserObj->Country%>"></td>
+  </tr>
+</table>
 <& /Elements/TitleBoxEnd &>
 </TD>
 </TR>
