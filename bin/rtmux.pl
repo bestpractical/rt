@@ -22,7 +22,7 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::SearchBulilder::Handle;
+use DBIx::SearchBuilder::Handle;
 
 
 # {{{  Lets load up the Locale managment stuff
