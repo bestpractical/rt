@@ -54,7 +54,6 @@ elsif ($in_action eq 'correspond') {
 	}
     }   
     else {
-	
 	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
 	
     }
@@ -136,6 +135,9 @@ sub parse_headers {
 	
 	#TODO perform a magic warning here..(auto-submit a req?)
 	#if we don't do this, rt mail will loop. which is VERY VERY BAD
+	if ($debug) {
+	print "This mail came from RT. gnite.\n";
+	}
 	exit(0);
     }
 

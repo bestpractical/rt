@@ -135,6 +135,8 @@ sub add_correspondence {
     #  if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
     #	return (0,"You don't have permission to modify request \#$in_serial_num");
     #   }
+
+
     &req_in($in_serial_num, '_rt_system');
     $requestors=$rt::req[$in_serial_num]{'requestors'};
 
@@ -144,21 +146,23 @@ sub add_correspondence {
    
     
     if (($in_status ne '') and ($rt::req[$in_serial_num]{'status'} ne $in_status)) {
-      ($opentrans,$openmsg)=&rt::update_request($in_serial_num,'status','$in_status', '$in_current_user');
-      #print "Reopening the request $opentrans\n$openmsg\n";
+      #print STDERR "Status of $in_serial_num becoming $in_status\n";
+      $opentrans=&rt::update_request($in_serial_num,'status',"$in_status", "_rt_system");
+     #print "Reopening the request $opentrans\n$openmsg\n";
     }
+    
     #if it's coming from somebody other than the user, send them a copy
     #   if ( (&is_not_a_requestor($in_current_user,$in_serial_num))) {
     # for now, always send a copy to the user.
     &update_each_req($effective_sn, 'date_told', $rt::time);
-
+    
     $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
     #    }
     
     if ($queues{$queue_id}{m_members_correspond}) {
       &rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
-    
+  
     return ($transaction_num,"This correspondence has been recorded.");
   }
 sub import_correspondence {
