@@ -1,4 +1,4 @@
-#!/usr/bin/perl -d:DProf 
+#!/usr/bin/perl
 #
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
@@ -61,10 +61,10 @@ my ( @id,
      $history,
      $summary,
      $create,
-     $requestors,
-     $cc,
-     $admincc,
-     $status,
+     @requestors,
+     @cc,
+     @admincc,
+     @status,
      $subject,
      $owner,
      $queue,
@@ -75,12 +75,6 @@ my ( @id,
      $starts,
      $started,
      $contacted,
-     @add_requestor,
-     @del_requestor,
-     @del_cc,
-     @add_cc,
-     @del_admincc,
-     @add_admincc,
      $comment,
      $reply,
      $source,
@@ -101,48 +95,42 @@ my @args =("id=s", \@id,
 	   "limit-status=s", \@limit_status,
 	   "limit-owner=s", \@limit_owner,
 	   "limit-priority=s", \@limit_priority,
-	       "limit-final-priority=s", \@limit_final_priority,
-	       "limit-requestor=s", \@limit_requestor,
-	       "limit-subject=s", \@limit_subject,
-	       "limit-body=s",	\@limit_body,
-	       "limit-created=s", \@limit_created,
-	       "limit-due=s",	\@limit_due,
-	       "limit-starts=s", \@limit_starts,
-	       "limit-started=s", \@limit_started,
-	       "limit-first=i", \$limit_first,
-	       "limit-rows=i", \$limit_rows,
-	       "history|show", \$history,
-	       "summary:s", \$summary,
+	   "limit-final-priority=s", \@limit_final_priority,
+	   "limit-requestor=s", \@limit_requestor,
+	   "limit-subject=s", \@limit_subject,
+	   "limit-body=s",	\@limit_body,
+	   "limit-created=s", \@limit_created,
+	   "limit-due=s",	\@limit_due,
+	   "limit-starts=s", \@limit_starts,
+	   "limit-started=s", \@limit_started,
+	   "limit-first=i", \$limit_first,
+	   "limit-rows=i", \$limit_rows,
+	   "history|show", \$history,
+	   "summary:s", \$summary,
 	   "create", \$create,
-	       "requestors=s", \$requestors,
-	       "cc=s", \$cc,
-	       "admincc=s", \$admincc,
-	       "status=s", \$status,
-	       "subject=s", \$subject,
-	       "owner=s", \$owner,
-	       "queue=s", \$queue,
-	       "time-left=i", \$time_left,
-	       "priority=i", \$priority,
-	       "final-priority=i", \$final_priority,
-	       "due=s", \$due,
-	       "starts=s", \$starts,
-	       "started=s", \$started,
-	       "contacted=s", \$contacted,
-	       "add-requestor=s", \@add_requestor,
-	       "del-requestor=s", \@del_requestor,
-	       "del-cc=s", \@del_cc,
-	       "add-cc=s", \@add_cc,
-	       "del-admincc=s", \@del_admincc,
-	       "add-admincc=s", \@add_admincc,
-	       "comment", \$comment,
-	       "reply|respond", \$reply,
-	       "source=s", \$source,
-	       "edit!", \$edit,
-	       "depends-on=s", \@dependson,
-	       "member-of=s", \@memberof, 
-	       "related-to=s", \@relatedto,
-	       "time-taken=i", \$time_taken,
-	       "verbose+", \$verbose,
+	   "requestors=s", \@requestors,
+	   "cc=s", \@cc,
+	   "admincc=s", \@admincc,
+	   "status=s", \@status,
+	   "subject=s", \$subject,
+	   "owner=s", \$owner,
+	   "queue=s", \$queue,
+	   "time-left=i", \$time_left,
+	   "priority=i", \$priority,
+	   "final-priority=i", \$final_priority,
+	   "due=s", \$due,
+	   "starts=s", \$starts,
+	   "started=s", \$started,
+	   "contacted=s", \$contacted,
+	   "comment", \$comment,
+	   "reply|respond", \$reply,
+	   "source=s", \$source,
+	   "edit!", \$edit,
+	   "depends-on=s", \@dependson,
+	   "member-of=s", \@memberof, 
+	   "related-to=s", \@relatedto,
+	   "time-taken=i", \$time_taken,
+	   "verbose+", \$verbose,
 	   "debug", \$debug,
 	   "version", \$version,
 	   "help|h|usage", \$help
@@ -153,27 +141,57 @@ my @args =("id=s", \@id,
 
 GetOptions(@args);
 
-
-#Validate any options that were passed in. normalize them.
-
-
-#Check if we're creating, if so, create the ticket and be done
+#If they want it, print a usage message and get out
 if ($help) {
     print "This should be a usage message. it will be soon\n";
+    exit(0);
 }
 
+
+
+# {{{ Validate any options that were passed in. normalize them.
+
+
+
+
+#if a queue was specified
+if ($queue) {
+    # make sure that $queue is a valid queue and load it into $queue_obj
+}
+
+#For each date in: $due, $starts, $started
+
+# load up an RT::Date object and parse it into a normalized form
+# if it can't parse it, log an error and null out the variable
+
+# }}}
+
+
+
+
+# {{{ Check if we're creating, if so, create the ticket and be done
 if ($create) {
     debug("Creating a new ticket");
+
+    #Make sure the current user can create tickets in this queue
+    
+    #Make sure that the owner specified can own tickets in this queue
+
+    #see if we've specified an input file. if so, load it up
+
+    #If we haven't specified no-edit, get up an editor session,
+    #either with a temp file or the input file, if it exists.
     
     use RT::Ticket;
     my $Ticket=new RT::Ticket($CurrentUser);
-    $Ticket->Create(Queue => $queue,
+    my ($ticket, $trans, $msg) =
+      $Ticket->Create(Queue => $queue,
 		    Owner => $owner,
-		    Status => $status,
+		    Status => ,
 		    Subject => $subject,
-		    Requestors => $requestors,
-		    Cc => $cc,
-		    AdminCc => $admincc,
+		    Requestors => ,
+		    Cc => ,
+		    AdminCc => ,
 		    Due => $due,
 		    Starts => $starts,
 		    Started => $started,
@@ -181,8 +199,9 @@ if ($create) {
 		    Priority => $priority,
 		    FinalPriority => $final_priority,
 		    Contacted =>,
-		    
+		      
 		   );
+    print $msg . "\n";
 }
 
 else {
@@ -192,6 +211,8 @@ else {
     
     # {{{ Limit our search
     my $value; #to use when iterating through restrictions
+    
+    # {{{ limit on id
     if (@id) {
 	foreach $value (@id) {
 	    if ($value =~ /^\d+$/) {
@@ -201,16 +222,45 @@ else {
 	    }	
 	}
     }	
+
+    # }}}
+    
+    # {{{ limit on status
     if (@limit_status){
 	foreach $value (@limit_status) {
-	    if ($value =~ /^(new|open|stalled|resolved|dead)$/) {
-		$Tickets->LimitStatus(
-				 VALUE => "$value",
-				 OPERATOR => '=');
+	    if ($value =~ /^(.?)(new|open|stalled|resolved|dead)$/) {
+		my $op = $1;
+		my $val = $2;
+		
+		$op = ParseBooleanOp($op);
+		$Tickets->LimitStatus(VALUE => "$val",
+				      OPERATOR => "$op");
 	    }	
 	}
     }
+    # }}}
+
     if (@limit_owner) {
+	foreach $value (@limit_owner) {
+	    if ($value =~ /^(\W?)(.*?)$/i) {
+		my $op = $1;
+		my $val = $2;
+		
+		$op = ParseBooleanOp($op);
+
+		my $user_obj = new RT::User($RT::SystemUser);
+		
+		unless ($user_obj->Load($val)) {
+		    debug("User '$val' not found");
+		    return(-1);
+		}
+		$val = $user_obj->id();
+		
+		debug ("Limiting owner to $op $val");
+		$Tickets->LimitOwner(VALUE => "$val",
+				      OPERATOR => "$op");
+	    }	
+	}	
     }
     if (@limit_priority){
     }
@@ -242,17 +292,106 @@ while (my $Ticket = $Tickets->Next()) {
     
     #Run through all the ticket modifications we might want to do
     
-    #Perform ticket comments/replies
+    # {{{ deal with watchers
+    
+    # add / delete requestors
+    foreach $value (@requestors) {
+	if ($value =~ /^(\W?)(.*)$/) {
+	    my $op = $1;
+	    my $addr = $2;
+	    
+	    $Ticket->AddRequestor(Email => $addr) if ($op eq '+');
+	    $Ticket->DeleteWatcher( $addr) if ($op eq '-');
+	}	
+    }
+
+    # add / delete ccs
+    foreach $value (@cc) {
+	if ($value =~ /^(\W?)(.*)$/) {
+	    my $op = $1;
+	    my $addr = $2;
+	    
+	    $Ticket->AddCc(Email => $addr) if ($op eq '+');
+	    $Ticket->DeleteWatcher($addr) if ($op eq '-');
+	}	
+    }	
+
+    # add / delete adminccs
+    foreach $value (@admincc) {
+	if ($value =~ /^(\W?)(.*)$/) {
+	    my $op = $1;
+	    my $addr = $2;
+	    
+	    $Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
+	    $Ticket->DeleteWatcher($addr) if ($op eq '-');
+	}	
+    }	
+
+    # }}}
+
+    # {{{ deal with links
+
+    # add /delete depends-ons
+    
+    # add /delete member-of
+
+    # add / delete related-to
+    
+    # }}}
+
+    # {{{ deal with dates
+
+    #set due 
+    
+    #set starts
+
+    #set started
+
+    #set contacted
+    
+    # }}}
+
+    # {{{ set other attributes
+    
+    #Set priority
+
+    #Set final priority
+
+    #Set status
+    
+    #Set time left
+    
+    #Set owner
+
+    # }}}
+
+    # {{{ Perform ticket comments/replies
     if ($reply) {
 	debug("Replying to ticket ".$Ticket->Id);
+	
+	my @lines =GetMessageContent($edit, $source);
+	
+	#TODO build this entity
+	my $MIMEObj = MIME::Entity->build();
+	
+	$Ticket->Correspond( MIMEObj => $MIMEObj,
+			     TimeTaken => $time_taken);
     }	
     
-    if ($comment) {
+    elsif ($comment) {
 	debug("Commenting on ticket ".$Ticket->Id);
+	my @lines =GetMessageContent($edit, $source);
+	
+	#TODO build this entity
+	my $MIMEObj = MIME::Entity->build();
+	
+	$Ticket->Comment( MIMEObj => $MIMEObj,
+			  TimeTaken => $time_taken);
     }
     
-    #Display whatever we need to display
-    #Display a full ticket listing and history
+    # }}}
+    # {{{ Display whatever we need to display
+    # {{{ Display a full ticket listing and history
     if ($history) {
 	#Display the history
 	debug("Show history for ".$Ticket->id);
@@ -266,13 +405,16 @@ while (my $Ticket = $Tickets->Next()) {
 	    print "You don't have permission to view that ticket.\n";
 	}
     }	
+    # }}}
     
-    #Display a summary if we need to
+    # {{{ Display a summary if we need to
     if (defined $summary) {
 	my $format = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "default_format";
 	debug ("Show ticket summary with format $format")
     }	
+    # }}}
     
+    # }}}
     
 }
 # }}}
@@ -309,6 +451,35 @@ sub GetCurrentUser  {
 }
 # }}}
 
+# {{{ sub GetMessageContent
+
+=head2 GetMessageContent
+
+Takes two arguments a source file and a boolean "edit".  If the source file is undef or "",
+assumes an empty file.  Returns an edited file as an array of lines.
+
+=cut
+
+sub GetMessageContent {
+    my $source = shift;
+    my $edit = shift;
+    
+    my @lines;
+    
+    if ($source) {
+	#Load the sourcefile
+    }
+    if ($edit) {
+	#write to a tmpfile and launch $EDITOR || /bin/vi
+    }	
+    
+    return(@lines);
+
+}
+
+# }}}
+
+# {{{ sub debug
 sub debug {
     my $val = shift;
     $RT::Logger->debug($val."\n");
@@ -316,7 +487,30 @@ sub debug {
 	print STDERR "$val\n";
     }
 }
+# }}}
 
+# {{{ ParseBooleanOp
+=head2 ParseBooleanOp
+
+  Takes an option modifier. returns the apropriate SQL operator.
+  If it's handed ! or -, returns !=.  Otherwise returns =.
+
+=cut
+sub ParseBooleanOp {
+    
+    my $op = shift;
+    
+    #so that !new limits to not new, etc
+    if ($op =~ /^(\!|-)/) {
+	$op = "!=";
+    }
+    else {
+	$op = "=";
+    }
+    
+    return($op);
+}
+# }}}
 
 # {{{ sub ShowSummary 
 sub ShowSummary  {
