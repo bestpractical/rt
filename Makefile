@@ -31,7 +31,8 @@ RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
-RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
+# This one shouldn't be used anymore?
+#RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
 
 # Where you keep the templates for your various queues
 RT_TEMPLATE_PATH	=	$(RT_ETC_PATH)/templates
