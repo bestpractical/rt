@@ -82,9 +82,9 @@ sub FormQueueOptions{
 	else
 	{
 		my $u = 0;
-		for( @qs )
+		foreach $queue ( @qs )
 		{
-			next if &rt::can_display_queue($_, $user_id) != 1;
+			next if &rt::can_display_queue($queue, $user_id) != 1;
 			$u = 1;
 			last;
 		}
