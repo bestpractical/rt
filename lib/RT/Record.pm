@@ -22,7 +22,6 @@ sub new  {
 
 sub _Init  {
   my $self = shift;
-  $self->_Handle();
   $self->_MyCurrentUser(@_);
   
 }
@@ -47,7 +46,7 @@ sub _MyCurrentUser  {
 # {{{ sub _Handle 
 sub _Handle  {
   my $self = shift;
-  $self->SUPER::_Handle( $RT::Handle );
+  return($RT::Handle);
 }
 # }}}
 

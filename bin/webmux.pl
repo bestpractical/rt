@@ -42,6 +42,7 @@ use DBIx::SearchBuilder::Handle;
     use RT::Templates;
     use RT::Queue;
     use RT::Queues;
+    use RT::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;
     use CGI::Cookie;
@@ -54,84 +55,70 @@ use DBIx::SearchBuilder::Handle;
 #TODO: need to identify the database user here....
 
 
-my $parser = new HTML::Mason::Parser(        default_escape_flags=>'h',
+my $parser = &RT::Interface::Web::NewParser();
 
-					);
+my $interp = &RT::Interface::Web::NewInterp($parser);
 
+my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 
-
-
-#TODO: Make this draw from the config file
-
-#We allow recursive autohandlers to allow for RT auth.
-my $interp = new HTML::Mason::Interp (
-            allow_recursive_autohandlers =>1, 
-	
-	    parser=>$parser,
-            comp_root=>'!!WEBRT_HTML_PATH!!',
-            data_dir=>'!!WEBRT_DATA_PATH!!');
-my $ah = new HTML::Mason::ApacheHandler (interp=>$interp);
 chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
         $interp->files_written );   # chown nobody
 
+
 sub handler {
     my ($r) = @_;
-
-
-    $RT::Handle = new DBIx::SearchBuilder::Handle;
     
-    $RT::Handle->Connect(Host => $RT::DatabaseHost, 
-			 Database => $RT::DatabaseName, 
-			 User => $RT::DatabaseUser,
-			 Password => $RT::DatabasePassword,
-			 Driver => $RT::DatabaseType);
-   
 
-	use RT::CurrentUser;
-	#RT's system user is a genuine database user. its id lives here
+    $RT::Handle = new RT::Handle;
+    
+    $RT::Handle->Connect;
+    
 
-	$RT::SystemUser = new RT::CurrentUser(1);
+    use RT::CurrentUser;
+    #RT's system user is a genuine database user. its id lives here
+    
+    $RT::SystemUser = new RT::CurrentUser(1);
 
-	#RT's "nobody user" is a genuine database user. its ID lives here.
-	$RT::Nobody = new RT::CurrentUser(2);
+    #RT's "nobody user" is a genuine database user. its ID lives here.
+    $RT::Nobody = new RT::CurrentUser(2);
+    
+    
  
     # We don't need to handle non-text items
     return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;
     
-    
-    
-    
     #This is all largely cut and pasted from mason's session_handler.pl
-
+    
     my %cookies = parse CGI::Cookie($r->header_in('Cookie'));
     
     
     eval { 
-      tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-      ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef );
-  };
+	tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+	( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef );
+    };
     
     if ( $@ ) {
-      # If the session is invalid, create a new session.
-      if ( $@ =~ m#^Object does not exist in the data store# ) {
-	   tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef;
-	   undef $cookies{'AF_SID'};
-      }
+	# If the session is invalid, create a new session.
+	if ( $@ =~ m#^Object does not exist in the data store# ) {
+	     tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef;
+	     undef $cookies{'AF_SID'};
+	}
     }
     
     if ( !$cookies{'AF_SID'} ) {
-      my $cookie = new CGI::Cookie(-name=>'AF_SID', 
-				   -value=>$HTML::Mason::Commands::session{_session_id}, 
-				   -path => '/',);
-      $r->header_out('Set-Cookie', => $cookie);
+	my $cookie = new CGI::Cookie(-name=>'AF_SID', 
+				     -value=>$HTML::Mason::Commands::session{_session_id}, 
+				     -path => '/',);
+	$r->header_out('Set-Cookie', => $cookie);
     }
     
-        my $status = $ah->handle_request($r);
-
+    
+    my $status = $ah->handle_request($r);
+    
     untie %HTML::Mason::Commands::session;
-  
+    
     return $status;
-
+    
   }
 1;
 

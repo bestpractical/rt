@@ -1,5 +1,5 @@
 % while (($w=$Ticket->Requestors->Next) && (ref $w)) {
-%if (my $u=$w->UserObj) {
+%if (my $u=$w->OwnerObj) {
 <& /Elements/ViewUser, User=>$u &>
 % } }
 

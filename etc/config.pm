@@ -21,6 +21,10 @@ $user_passwd_min = "5";
 # default.
 $ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
 
+
+# RootDir is the root of the RT installation
+$RootDir = "!!ROOTDOR!!";
+
 # }}}
 
 # {{{ Database Configuration
@@ -70,6 +74,7 @@ sub CanonicalizeAddress {
 	#$email =~ s/\@(.*).foo.com/\@foo.com/;
 	return ($email)
 }
+
 # }}}
 
 # {{{ Outgoing mail configuration
@@ -99,9 +104,6 @@ $SendmailArguments="-oi -t  ";
 #For sendmail 8, you want the following options
 #$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
 
-
-
-
 # }}}
 
 # {{{ Logging
@@ -129,7 +131,7 @@ $Logger->add(Log::Dispatch::File->new
 	     ));
 $Logger->add(Log::Dispatch::Screen->new
 	     ( name => 'screen',
-	       min_level => 'err',
+	       min_level => 'debug',
 	       stderr => 1
 	     ));
 # }}}
@@ -153,6 +155,15 @@ $WebPath = "";
 $WebBaseURL = "http://RT::WebBaseURL.not.configured:80/";
 
 $WebURL = $WebBaseURL . $WebPath. "/";
+
+
+#MasonComponentRoot is where your rt instance keeps its mason 
+#html files
+$MasonComponentRoot = "!!MASON_HTML_PATH!!";
+
+#Where mason keeps its datafiles
+$MasonDataDir = "!!MASON_DATA_PATH!!";
+
 
 #This is from tobias' prototype web search UI. it may stay and it may go.
 %WebOptions=
@@ -285,15 +296,13 @@ $LocalePath = "!!LOCALE_PATH!!";
 
 # }}}
 
-# {{{  No User servicable parts inside 
-
 # }}}
 
-#RT's "nobody user" is a genuine database user. its ID lives here.
-$Nobody=2;
+# {{{  No User servicable parts inside 
 
 
 
+# {{{ Signal handlers
 ## This is the default handling of warnings and die'ings in the code
 ## (including other used modules - maybe except for errors catched by
 ## Mason).  It will log all problems through the standard logging

@@ -5,8 +5,66 @@
 ## This is a library of static subs to be used by the Mason web
 ## interface to RT
 
-package HTML::Mason::Commands;
+package RT::Interface::Web;
 use strict;
+
+
+# {{{ sub NewParser
+
+=head2 NewParser
+
+  returns a new Mason::Parser object
+
+=cut
+
+sub NewParser {
+    
+    my $parser = new HTML::Mason::Parser( default_escape_flags=>'h',
+					);
+    return($parser);
+}
+
+# }}}
+
+# {{{ sub NewInterp
+
+=head2 NewInterp 
+
+  Takes a mason::parser object
+  returns a new Mason::Interp object
+
+=cut
+
+sub NewInterp {
+
+    my $parser=shift;
+    
+#We allow recursive autohandlers to allow for RT auth.
+    my $interp = new HTML::Mason::Interp( allow_recursive_autohandlers =>1, 
+					  parser=>$parser,
+					  comp_root=>"$RT::MasonComponentRoot",
+					  data_dir=>"$RT::MasonDataDir");
+    
+}
+
+# }}}
+
+# {{{ sub NewApacheHandler 
+
+=head2 NewApacheHandler
+
+  Takes a Mason::Interp object
+  Returns a new Mason::ApacheHandler object
+
+=cut
+
+sub NewApacheHandler {
+    my $interp=shift;
+    my $ah = new HTML::Mason::ApacheHandler (interp=>$interp);
+    return($ah);
+}
+
+package HTML::Mason::Commands;
 
 # {{{ sub Error - calls Error and aborts
 sub Abort {

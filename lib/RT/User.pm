@@ -472,7 +472,7 @@ sub _HasRight {
 
 	my ($hitcount);
 #	$RT::Logger->debug("Now Trying $query_string_1\n");	
-	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
+	$hitcount = $self->_Handle->FetchResult($query_string_1);
   
 	#if there's a match, the right is granted
 	if ($hitcount) {
@@ -483,7 +483,8 @@ sub _HasRight {
 	
 
 	
-	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
+	$hitcount = $self->_Handle->FetchResult($query_string_2);
+
 	if ($hitcount) {
 	    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
 	    return (1);

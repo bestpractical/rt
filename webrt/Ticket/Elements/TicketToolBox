@@ -1,4 +1,4 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $subj, titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last$id\">Last transaction</a> | $take $open <a href=\"Display.html?Action=Kill&id=$id\">Kill</a> | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "<font size=+3>#$id: $subj</font>", titleright=> "<a href=\"../Search/Listing.html\">Back to listing</a> / <a href=\"#last$id\">Last transaction</a> | $take $open | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
 
 
 <%ARGS>

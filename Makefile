@@ -28,8 +28,8 @@ RT_PATH			=	/opt/rt-1.3
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
-WEBRT_HTML_PATH		=	$(RT_PATH)/WebRT/html
-WEBRT_DATA_PATH		=       $(RT_PATH)/WebRT/data
+MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
+MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
 
 # The location of your rt configuration file
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
@@ -37,8 +37,11 @@ RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 # The rtmux is the script which invokes whichever rt program it needs to.
 RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 
-# RT_WEB_MUX is the mason handler script for apache 
-RT_WEB_MUX		=	$(RT_BIN_PATH)/webmux.pl
+# RT_MODPERL_HANDLER is the mason handler script for apache 
+RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
+
+# RT_FASTCGI_HANDLER is the mason handler script for fcgi
+RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/fastcgi_handler.cgi
 
 # The following are the names of the various binaries which make up RT 
 
@@ -154,12 +157,12 @@ fixperms:
 	chmod -R 0750 $(RT_ETC_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 4755 $(RT_PERL_MUX)
-	chmod 700  $(WEBRT_DATA_PATH)
-	chown -R $(WEB_USER) $(WEBRT_DATA_PATH)
+	chmod 700  $(MASON_DATA_PATH)
+	chown -R $(WEB_USER) $(MASON_DATA_PATH)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
-	mkdir -p $(WEBRT_DATA_PATH)
+	mkdir -p $(MASON_DATA_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
 
@@ -169,9 +172,9 @@ libs-install:
 	chmod -R 0755 $(RT_LIB_PATH)
 
 html-install:
-	mkdir -p $(WEBRT_HTML_PATH)
-	cp -rp ./webrt/* $(WEBRT_HTML_PATH)
-	chmod -R 0755 $(WEBRT_HTML_PATH)
+	mkdir -p $(MASON_HTML_PATH)
+	cp -rp ./webrt/* $(MASON_HTML_PATH)
+	chmod -R 0755 $(MASON_HTML_PATH)
 
 initialize: database acls
 
@@ -191,7 +194,8 @@ acls:
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
-	cp -rp ./bin/webmux.pl $(RT_WEB_MUX)
+	cp -rp ./bin/webmux.pl $(RT_MODPERL_HANDLER)
+	cp -rp ./bin/fastcgi_handler.cgi $(RT_FASTCGI_HANDLER)
 
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
@@ -200,10 +204,9 @@ mux-install:
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!RT_CGI_BIN!!'$(RT_CGI_BIN)'g;\
-				s'!!WEBRT_HTML_PATH!!'$(WEBRT_HTML_PATH)'g;\
-				s'!!WEBRT_DATA_PATH!!'$(WEBRT_DATA_PATH)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX) $(RT_WEB_MUX)
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
+					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER)
 
 mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
@@ -235,6 +238,8 @@ config-replace:
 	s'!!RT_USER!!'$(RT_USER)'g;\
 	s'!!RT_GROUP!!'$(RT_GROUP)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
+	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
+	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
 	" $(RT_CONFIG)
 
 

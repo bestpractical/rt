@@ -22,41 +22,20 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::SearchBuilder::Handle;
 
-
-# {{{  Lets load up the Locale managment stuff
-#TODO get a few files to try some translations
-#use Locale::PGetText;
-
-#Locale::PGetText::setLocaleDir("$RT::LocalePath");
-#Locale::PGetText::setLanguage("$RT::DefaultLocale");
-
-# }}}
-
-#TODO: need to identify the database user here....
-$Handle = new DBIx::SearchBuilder::Handle;
-
+use RT::Handle;
+$RT::Handle = new RT::Handle;
 {
-# I did get a stupid "Variable Used Only Once" message here.
-# Well, this ought to fix it.
-#no warnings;
-$Handle->Connect(Host => $RT::DatabaseHost, 
-		     Database => $RT::DatabaseName, 
-		     User => $RT::DatabaseUser,
-		     Password => $RT::DatabasePassword,
-		     Driver => $RT::DatabaseType);
+$RT::Handle->Connect();
 }
-
 
 use RT::CurrentUser;
 #RT's system user is a genuine database user. its id lives here
 
-$SystemUser = new RT::CurrentUser(1);
+$RT::SystemUser = new RT::CurrentUser(1);
 
 #RT's "nobody user" is a genuine database user. its ID lives here.
-$Nobody = new RT::CurrentUser(2);
-
+$RT::Nobody = new RT::CurrentUser(2);
 
 
 my $program = $0; 
@@ -90,46 +69,6 @@ elsif ($program eq '!!RT_ADMIN_BIN!!') {
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   require RT::Interface::Email;
   &RT::Interface::Email::activate();
-}
-
-elsif ($program eq '!!RT_CGI_BIN!!') {
-  die "This doesn't work - use the mod_perl version (webmux.pl) or mail tobix\@fsck.com for updates about the work on a CGI version";
-  require HTML::Mason;
-  package HTML::Mason;
-  my $parser = new HTML::Mason::Parser;
-  
-  #TODO: Make this draw from the config file
-  my $interp = new HTML::Mason::Interp (
-					parser=>$parser,
-					comp_root=>'!!WEBRT_HTML_PATH!!',
-					data_dir=>'!!WEBRT_DATA_PATH!!');
-  chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
-	  $interp->files_written );   # chown nobody
-  
-  require CGI;
-  my $q = new CGI;
-  
-  # This routine comes from ApacheHandler.pm:
-  my (%args);
-  foreach my $key ( $q->param ) {
-    foreach my $value ( $q->param($key) ) {
-      if (exists($args{$key})) {
-	if (ref($args{$key})) {
-	  $args{$key} = [@{$args{$key}}, $value];
-	} else {
-	  $args{$key} = [$args{$key}, $value];
-          }
-      } else {
-	$args{$key} = $value;
-      }
-    }
-    
-  }
-  my $comp = $ENV{'PATH_TRANSLATED'};
-  my $root = $interp->comp_root;
-  $comp =~ s/^$root//  or die "Component outside comp_root";
-  
-  $interp->exec($comp, %args);
 }
 
 else {
