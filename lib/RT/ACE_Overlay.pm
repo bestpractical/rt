@@ -580,7 +580,7 @@ sub Delegate {
     unless ( $concurrency_check->Id ) {
         $RT::Logger->crit(
                    "Trying to delegate a right which had already been deleted");
-        return ( 0, $self->Loc('Permission Denied') );
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     my $delegated_ace = RT::ACE->new( $self->CurrentUser );
