@@ -38,8 +38,8 @@ $LogDir = "!!RT_LOG_PATH!!";
 # Database driver beeing used - i.e. MySQL.
 $DatabaseType="!!DB_TYPE!!";
 
-# host is the domain name of your database server
-# if it's on localhost, leave it blank for enhanced performance
+# The domain name of your database server
+# If it's on localhost, leave it blank for enhanced performance
 $DatabaseHost="!!DB_HOST!!";
 
 #The name of the database user (inside the database) 
@@ -101,7 +101,11 @@ $DropLongAttachments = undef;
 
 $ParseNewMessageForTicketCcs = undef;
 
-# IsRTAddress
+
+
+# IsRTAddress is used to make sure RT doesn't add itself as a tickeet CC if
+# the setting above is enabled.
+
 sub IsRTAddress {
     my $address = shift;
 
