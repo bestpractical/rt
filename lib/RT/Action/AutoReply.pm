@@ -20,6 +20,8 @@ sub Commit  {
   # Here's where you'd do any special things you want to 
   # to on commit.
 
+  # TODO: Add this autoreply to the AutoReplies table!
+
   #You must _always_ call Super::Commit();
   return($self->SUPER::Commit());
 }
@@ -89,6 +91,14 @@ sub SetReturnAddress {
 
 # }}}
 
+# {{{ sub IsApplicable 
+sub IsApplicable  {
+    return 1
+    # TODO: Check the AutoReplies table if we have already sent an
+    # autoreply.
+      && SUPER::IsApplicable;
+}
+# }}}
 1;
 
 
