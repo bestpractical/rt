@@ -11,7 +11,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	27
+RT_VERSION_PATCH	=	28
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -257,7 +257,7 @@ config-install:
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
 test: 
-	$(PERL) -Ilib lib/t/smoke.t
+	$(PERL) -Ilib lib/t/00smoke.t
 
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
 	$(PERL) lib/t/02regression.t

@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"), titleright => "<A class='inverse' href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">".loc("Advanced Search")."</A>" &>
+<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"),  &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          

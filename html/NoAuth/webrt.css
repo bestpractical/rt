@@ -1,3 +1,77 @@
+.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 12px;
+	 color: #FFFFFF;
+	 text-decoration: none}
+.currentnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 12px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none}
+.topnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 13px;
+	 color: #FFFFFF;
+	 text-decoration: none}
+.currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 13px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none}
+.subnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 color: #FFFFFF;
+	 text-decoration: none}
+.currentsubnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none}
+.error {  background-color: #ff0000;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: left;
+         }
+.blue {  background-color: #0066CC;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: left;
+         }
+.darkblue {  background-color: #003399;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: left;
+         }
+.darkblueright {  background-color: #003399;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: right;
+         }
+td {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 background-position: left top;
+         }
+.black { background-color: #000000;
+	 background-position: left top;
+         }
+.header {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 12px;
+	 font-weight: bold;
+	 color: #0066CC}
+.subheader { font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 font-weight: bold;
+	 color: #0066CC }
+.value {       font-weight: bold; }
+.productnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 color: #000000;
+	 text-align: center;
+	 vertical-align: middle;
+	 text-decoration: none}
+.rtblue { background-color: #3399FF;
+         margin-top: 0.2em;
+	 background-position: left top;
+	 vertical-align: top }
+
 BODY, TD {font-family: Helvetica, Arial, sans-serif}
 TD {border-color: #cccccc }
 
@@ -49,9 +123,8 @@ DIV.endmatter { margin-left: -7% }
              }
 
 
-A { font-weight: bold; 
-      		color: #000000;
-	    /* border: none -- breaks NS 4.x */ }
+A { font-weight: bold; color: #000000;
+            }
 
 .currenttab { color: #ffffff;}
 .othertab { color: #336699; }
@@ -64,6 +137,10 @@ A:link IMG, A:visited IMG { border-style: none }
 
 A IMG { color: white } /* The only way to hide the border in NS 4.x */
 
+a:link {  text-decoration: none}
+a:hover {  text-decoration: underline}
+a:visited {  text-decoration: none}
+
 .hide {
   display: none;
   color: white;
@@ -71,6 +148,11 @@ A IMG { color: white } /* The only way to hide the border in NS 4.x */
 
 SPAN.date { font-size: 0.8em }
 
+span.title { font-size: 1.6em;
+	 vertical-align: middle;
+             color: #ffffff;}
+span.productname { font-size: 2em;
+             color: #0066cc;}
 SPAN.titleboxtitle {
         font-size: 1.2em;
         color: #ffffff;
@@ -110,17 +192,11 @@ BLOCKQUOTE ADDRESS {
   margin: 0;
 }
 
-.motto, .motto A {font: italic 120%/1.3 Georgia, serif; color: #990}
 
 .emphasized {
   font-weight: bold
 }
 
-/* Why o why does this break Netscape 4.x?
-IMG { 
-  border: none
-}
-*/
 
 P.map-also { font-style: italic; margin-left: 15%; text-align: right }
 

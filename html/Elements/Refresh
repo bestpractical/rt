@@ -9,7 +9,7 @@
 % if ($value == $Default) {
 SELECTED 
 % }
-><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&>
+><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></OPTION>
 %}
 </SELECT>
 

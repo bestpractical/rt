@@ -1,4 +1,4 @@
-<div align="left"><span class=label><%$title |n %></span><br><b><%$content |n %></b></div>
+<div align="left"><span class=label><%$title |n %>: <b><%$content |n %></b></div><br>
 <%ARGS>
 $title => undef
 $content => "&nbsp;"

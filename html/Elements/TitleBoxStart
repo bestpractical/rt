@@ -1,11 +1,24 @@
 <TABLE CLASS="<%$class%>" 
         BGCOLOR="<%$color%>" 
-        CELLSPACING=0 
+        CELLSPACING=0
         BORDER=0
         WIDTH="<%$width%>"
-        CELLPADDING="2">
+        CELLPADDING="0">
+<tr><td class="black" colspan="5"><img alt="" height="1"></td></tr>
+<TR><TD colspan="5" 
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+><img alt="" height="3"></TD></TR>
 <TR>
-<TD valign=middle align=left bgcolor="<%$color%>">
+<TD 
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+><img alt="" width="3"></TD>
+<TD valign=middle align=left
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+
+>
         <span class="titleboxtitle">
         <b>
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
@@ -14,20 +27,27 @@
 <TD  ALIGN="right" 
      VALIGN=middle 
      COLSPAN=2       
-     BGCOLOR="<%$color%>">
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+        >
         <span class="titleboxright">
         <%$titleright |n %>
         </span>
      &nbsp;
 </TD>
+<TD 
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+><img alt="" width="3"></TD>
 </TR>
-<TR>
-<TD
-        COLSPAN="3"
-        BGCOLOR="<%$contentbg%>">
-<IMG SRC="<%$RT::WebImagesURL%>spacer.gif" 
-                        width=1 
-                        height=1 >
+<TR><TD colspan="5" 
+        <%$color && "bgcolor=\"$color\""%>
+        <%$class && "class=\"$class\""%>
+
+><img alt="" height="3"></TD></TR>
+<tr><td class="black" colspan="5"><img alt="" height="1"></td></tr>
+<tr>
+<td bgcolor="<%$contentbg%>" colspan="5" >
 <%ARGS>
 $width => "100%"
 $class => undef
@@ -39,5 +59,5 @@ $title_class => undef
 $titleright_href => undef
 $titleright => undef
 $contentbg => "#dddddd"
-$color => "#336699"
+$color => "#0066CC"
 </%ARGS>

@@ -1,6 +1,6 @@
 <& /Elements/Header, Code => $Code, Why => $Why &>
 <& /Elements/Tabs &>
-<& /Elements/TitleBoxStart, title => $Title &>
+<& /Elements/TitleBoxStart, class=> "error",  title => $Title &>
 <%$Why%>
 <br>
 <font size=-1>

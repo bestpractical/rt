@@ -33,6 +33,7 @@ use Carp;
 {
 
     package HTML::Mason::Commands;
+    use vars qw(%session);
 
     use RT::Tickets;
     use RT::Transactions;
@@ -59,10 +60,6 @@ use Carp;
     #TODO: make this use DBI
     use Apache::Session::File;
 
-    # Set this page's content type to whatever we are called with
-    sub CGIObject {
-        #$m->cgi_object();
-    }
 
 }
 
@@ -73,8 +70,6 @@ my $ah = &RT::Interface::Web::NewApacheHandler();
 # Resets ownership of all files created by Mason at startup.
 #
 chown( Apache->server->uid, Apache->server->gid, [$RT::MasonSessionDir] );
-
-#chown( Apache->server->uid, Apache->server->gid, $interp->files_written );
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
@@ -89,9 +84,9 @@ sub handler {
 
     # We don't need to handle non-text items
     return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
-
+    my %session;
     my $status = $ah->handle_request($r);
-
+    undef (%session);
     return $status;
 
 }

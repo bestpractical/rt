@@ -1,5 +1,4 @@
 <%INIT>
-
 local *session;
 
 if ($ARGS{'Debug'}) {

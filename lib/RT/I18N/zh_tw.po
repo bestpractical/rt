@@ -25,1282 +25,1282 @@ msgstr "%1 %2 %3 %4:%5:%6 %7"
 #: lib/RT/Transaction_Overlay.pm:579
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
-msgstr "å¾? %1 %2 ??¹æ?? %3"
+msgstr "å¾ %1 %2 æ”¹æˆ %3"
 
 #: bin/rt:1119
 #. ($l->BaseObj->id, $l->BaseObj->Subject, $l->Type)
 msgid "%1 (%2) %3 this ticket\\n"
-msgstr "%1 (%2) %3 ???ä»½ç?³è????®\\n"
+msgstr "%1 (%2) %3 é€™ä»½ç”³è«‹å–®\\n"
 
 #: lib/RT/ScripAction_Overlay.pm:101
 #. ($self->Id)
 msgid "%1 ScripAction loaded"
-msgstr "è¼???¥æ??çº? %1"
+msgstr "è¼‰å…¥æ‰‹çºŒ %1"
 
 #: lib/RT/Ticket_Overlay.pm:2785
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
-msgstr "??°å?? %1 ä½???? %2 ??????"
+msgstr "æ–°å¢ %1 ä½œç‚º %2 çš„å€¼"
 
 #: bin/enhanced-mailgate:294 bin/rt-mailgate:260
 #. ($Action)
 msgid "%1 aliases require a TicketId to work on"
-msgstr "??¥å?? %1 ???è¦???¯ç?¨ç????³è????®ç·¨???"
+msgstr "åˆ¥å %1 é ˆè¦å¯ç”¨çš„ç”³è«‹å–®ç·¨è™Ÿ"
 
 #: bin/enhanced-mailgate:298
 #. ($Action, $CurrentUser->UserObj->EmailAddress, $MessageId)
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
-msgstr "??¥å?? %1 ???è¦???¯ç?¨ç????³è????®ç·¨???ä»¥è?????ï¼???ºè?? %2 ???ï¼?%3"
+msgstr "åˆ¥å %1 é ˆè¦å¯ç”¨çš„ç”³è«‹å–®ç·¨è™Ÿä»¥è™•ç†ï¼ˆå‡ºè‡ª %2 çš„ï¼‰%3"
 
 #: lib/RT/Transaction_Overlay.pm:499
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 msgid "%1 by %2"
-msgstr "%1 è¢? %2 ??´å??"
+msgstr "%1 è¢« %2 æ›´å‹•"
 
 #: lib/RT/Transaction_Overlay.pm:642
 #. ($self->Field , $q1->Name , $q2->Name)
 msgid "%1 changed from %2 to %3"
-msgstr "%1 ?????¼å?? %2 ??¹æ?? %3"
+msgstr "%1 çš„å€¼å¾ %2 æ”¹æˆ %3"
 
 #:
 msgid "%1 could not be set to %2."
-msgstr "??¡æ??å°? %1 è¨­å????? %2???"
+msgstr "ç„¡æ³•å°‡ %1 è¨­å®šç‚º %2ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:1778
 #. ($self, $msg)
 msgid "%1 couldn't init a transaction (%2)\\n"
-msgstr "%1 ??¡æ?????å§???´æ?°å?±å?? (%2)\\n"
+msgstr "%1 ç„¡æ³•åˆå§‹æ›´æ–°å ±å‘Š (%2)\\n"
 
 #: lib/RT/Ticket_Overlay.pm:2240
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 ??¡æ??å°???¾æ??è¨­æ??å·²è§£æ±ºã??RT è³????åº«å?§å®¹??¯è?½ä??ä¸???´ã??"
+msgstr "%1 ç„¡æ³•å°‡ç¾æ³è¨­æˆå·²è§£æ±ºã€‚RT è³‡æ–™åº«å…§å®¹å¯èƒ½ä¸ä¸€è‡´ã€‚"
 
 #: lib/RT/Queue_Overlay.pm:602
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 å·²ä???????¯æ­¤ä½??????? %2???"
+msgstr "%1 å·²ä¸å†æ˜¯æ­¤ä½‡åˆ—çš„ %2ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:1033
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 å·²ä???????¯æ­¤??³è????®ç?? %2???"
+msgstr "%1 å·²ä¸å†æ˜¯æ­¤ç”³è«‹å–®çš„ %2ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:2841
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
-msgstr "%1 å·²ä???????¯è?ªè??æ¬?ä½? %2 ?????¼ã??"
+msgstr "%1 å·²ä¸å†æ˜¯è‡ªè¨‚æ¬„ä½ %2 çš„å€¼ã€‚"
 
 #: html/Admin/Queues/Scrips.html:49
 #. ($id)
 msgid "%1 isn't a valid Queue id."
-msgstr "%1 ä¸???¯ä????????æ³????ä½????ç·¨è?????"
+msgstr "%1 ä¸æ˜¯ä¸€å€‹åˆæ³•çš„ä½‡åˆ—ç·¨è™Ÿã€‚"
 
 #: html/Ticket/Elements/ShowBasics:9
 #. ($TimeWorked)
 msgid "%1 min"
-msgstr "%1 ??????"
+msgstr "%1 åˆ†é˜"
 
 #: bin/rt:1160
 #. ($message->ContentType)
 msgid "%1 not shown"
-msgstr "æ²????é¡¯ç¤º %1"
+msgstr "æ²’æœ‰é¡¯ç¤º %1"
 
 #: bin/enhanced-mailgate:652
 #. ($msg)
 msgid "%1 succeeded\\n"
-msgstr "%1 å®????\\n"
+msgstr "%1 å®Œæˆ\\n"
 
 #: bin/rt-mailgate:328
 #. ($Action)
 msgid "%1 type unknown for $MessageId"
-msgstr "ä¸???¥é?? $MessageID ??? %1 é¡????"
+msgstr "ä¸çŸ¥é“ $MessageID çš„ %1 é¡åˆ¥"
 
 #: bin/enhanced-mailgate:362
 #. ($Action, $MessageId)
 msgid "%1 type unknown for %2"
-msgstr "ä¸???¥é?? %2 ??? %1 é¡????"
+msgstr "ä¸çŸ¥é“ %2 çš„ %1 é¡åˆ¥"
 
 #: lib/RT/Action/ResolveMembers.pm:15
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 ???è§?æ±ºå?¨å·²è§?æ±ºç¾¤çµ?è£¡æ????¡ç????³è????®ã??"
+msgstr "%1 æœƒè§£æ±ºåœ¨å·²è§£æ±ºç¾¤çµ„è£¡æˆå“¡çš„ç”³è«‹å–®ã€‚"
 
 #: lib/RT/Action/StallDependent.pm:13
 #. (ref $self)
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
-msgstr "å¦???? %1 èµ·å????³è????®ä??è³´æ?¼æ????????çµ?ï¼??????¯æ????????çµ?????????¡ï??å®?å°????è¢«å»¶å®????"
+msgstr "å¦‚æœ %1 èµ·å§‹ç”³è«‹å–®ä¾è³´æ–¼æŸå€‹éˆçµï¼Œæˆ–æ˜¯æŸå€‹éˆçµçš„æˆå“¡ï¼Œå®ƒå°‡æœƒè¢«å»¶å®•ã€‚"
 
 #: lib/RT/Transaction_Overlay.pm:451
 #. ($self)
 msgid "%1: no attachment specified"
-msgstr "%1ï¼?æ²???????å®????ä»?"
+msgstr "%1ï¼šæ²’æœ‰æŒ‡å®šé™„ä»¶"
 
 #: lib/RT/Ticket_Overlay.pm:611
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
-msgstr "'%1' ä¸???¯ä????????æ³?????????????"
+msgstr "'%1' ä¸æ˜¯ä¸€å€‹åˆæ³•çš„ç‹€æ…‹å€¼"
 
 #: bin/enhanced-mailgate:358 bin/rt-mailgate:323
 #. ($Action)
 msgid "'%1' not a recognized action. "
-msgstr "'%1'??ºç?¡æ??è¾¨è????????ä½???? "
+msgstr "'%1'ç‚ºç„¡æ³•è¾¨è­˜çš„å‹•ä½œã€‚ "
 
 #: html/Admin/Global/Scrips.html:15
 msgid "(Check box to delete scrip)"
-msgstr "ï¼?é»???¸æ¬²??ªé?¤ç?????ç¨¿ï??"
+msgstr "ï¼ˆé»é¸æ¬²åˆªé™¤çš„æ‰‹ç¨¿ï¼‰"
 
 #: html/Admin/Groups/Members.html:26 html/Ticket/Elements/EditLinks:22 html/Ticket/Elements/EditPeople:17 html/User/Groups/Members.html:29
 msgid "(Check box to delete)"
-msgstr "ï¼???¸æ??æ¬²å?ªé?¤äºº??¡ï??"
+msgstr "ï¼ˆé¸æ“‡æ¬²åˆªé™¤äººå“¡ï¼‰"
 
 #: html/Ticket/Create.html:133 html/Ticket/DetailedCreate.html:60
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
-msgstr "ï¼???µå?¥ç?³è????®ç·¨??????ç¶²å??ï¼?ä»¥ç©º??½å?????ï¼?"
+msgstr "ï¼ˆéµå…¥ç”³è«‹å–®ç·¨è™Ÿæˆ–ç¶²å€ï¼Œä»¥ç©ºç™½åˆ†éš”ï¼‰"
 
 #: html/Admin/Groups/Members.html:24 html/User/Groups/Members.html:27
 msgid "(No members)"
-msgstr "ï¼?æ²?????????¡ï??"
+msgstr "ï¼ˆæ²’æœ‰æˆå“¡ï¼‰"
 
 #: html/Admin/Global/Scrips.html:13
 msgid "(No scrips)"
-msgstr "ï¼?æ²???????çº?ï¼?"
+msgstr "ï¼ˆæ²’æœ‰æ‰‹çºŒï¼‰"
 
 #: html/Ticket/Update.html:55
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "ï¼??????ºæ?¬ä»½??´æ?°ç??å¯?ä»¶å?¯æ?¬çµ¦?????®ä??ä»¥é????????????????»å????µä»¶ä½???????è«?<b>???</b>??´æ?¹æ?¥æ?¶è???????®ã??ï¼?"
+msgstr "ï¼ˆé€å‡ºæœ¬ä»½æ›´æ–°çš„å¯†ä»¶å‰¯æœ¬çµ¦åå–®ä¸Šä»¥é€—è™Ÿéš”é–‹çš„é›»å­éƒµä»¶ä½å€ã€‚è«‹<b>å‹¿</b>æ›´æ”¹æ¥æ”¶è€…åå–®ã€‚ï¼‰"
 
 #: html/Ticket/Update.html:51
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "ï¼??????ºæ?¬ä»½??´æ?°ç????¯æ?¬çµ¦?????®ä??ä»¥é????????????????»å????µä»¶ä½???????è«?<b>???</b>??´æ?¹æ?¥æ?¶è???????®ã??ï¼?"
+msgstr "ï¼ˆé€å‡ºæœ¬ä»½æ›´æ–°çš„å‰¯æœ¬çµ¦åå–®ä¸Šä»¥é€—è™Ÿéš”é–‹çš„é›»å­éƒµä»¶ä½å€ã€‚è«‹<b>å‹¿</b>æ›´æ”¹æ¥æ”¶è€…åå–®ã€‚ï¼‰"
 
 #: html/Admin/Groups/index.html:13 html/User/Groups/index.html:8
 msgid "(empty)"
-msgstr "ï¼?ç©ºç?½ï??"
+msgstr "ï¼ˆç©ºç™½ï¼‰"
 
 #: html/Elements/MyRequests:18 html/Elements/MyTickets:17
 msgid "(no subject)"
-msgstr "(æ²????ä¸»é??)"
+msgstr "(æ²’æœ‰ä¸»é¡Œ)"
 
 #: html/Admin/Elements/SelectRights:24 html/Elements/SelectCustomFieldValue:5 html/Ticket/Elements/EditCustomFieldValues:26 html/Ticket/Elements/EditCustomFields:25 html/Ticket/Elements/ShowCustomFields:10 lib/RT/Transaction_Overlay.pm:549
 msgid "(no value)"
-msgstr "ï¼???¡ï??"
+msgstr "ï¼ˆç„¡ï¼‰"
 
 #: html/Ticket/Elements/EditLinks:11
 msgid "(only one ticket)"
-msgstr "ï¼?ç¥????ä¸?ä»½ç?³è????®ï??"
+msgstr "ï¼ˆç¥‡æœ‰ä¸€ä»½ç”³è«‹å–®ï¼‰"
 
 #: html/Admin/Users/Modify.html:19
 msgid "(required)"
-msgstr "ï¼?å¿?å¡«ï??"
+msgstr "ï¼ˆå¿…å¡«ï¼‰"
 
 #: html/Elements/MyTickets:1
 msgid "25 highest priority tickets I own..."
-msgstr "??? 25 ä»½å??????????³è?????..."
+msgstr "å‰ 25 ä»½å¾…è™•ç†ç”³è«‹å–®..."
 
 #: html/Elements/MyRequests:1
 msgid "25 highest priority tickets I requested..."
-msgstr "??? 25 ä»½é????ºç????³è?????..."
+msgstr "å‰ 25 ä»½é€å‡ºçš„ç”³è«‹å–®..."
 
 #: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:2
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"?????ºç?³è????®\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"æå‡ºç”³è«‹å–®\">&nbsp;%1"
 
 #: lib/RT/ACE_Overlay.pm:159 lib/RT/Principal_Overlay.pm:145
 msgid "ACE not found"
-msgstr "??¾ä????? ACE è¨­å??"
+msgstr "æ‰¾ä¸åˆ° ACE è¨­å®š"
 
 #: lib/RT/ACE_Overlay.pm:868
 msgid "ACEs can only be created and deleted."
-msgstr "ç¥???½å»ºç«??????ªé?? ACE è¨­å?????"
+msgstr "ç¥‡èƒ½å»ºç«‹æˆ–åˆªé™¤ ACE è¨­å®šã€‚"
 
 #: bin/enhanced-mailgate:599 bin/rt-commit-handler:731
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "??¢é??ä»¥å??ä¸?å°?å¿?ä¿®æ?¹å?°ç?³è????®ã??\\n"
+msgstr "é›¢é–‹ä»¥å…ä¸å°å¿ƒä¿®æ”¹åˆ°ç”³è«‹å–®ã€‚\\n"
 
 #: html/Admin/Users/Modify.html:30
 msgid "Access control"
-msgstr "å­????æ¬????"
+msgstr "å­˜å–æ¬Šé™"
 
 #: html/Admin/Global/Scrip.html:21 html/Admin/Queues/Scrips.html:38
 msgid "Action"
-msgstr "???ä½?"
+msgstr "å‹•ä½œ"
 
 #: lib/RT/Scrip_Overlay.pm:92
 #. ($args{ScripAction})
 msgid "Action %1 not found"
-msgstr "???ä½? %1 ??¾ä?????"
+msgstr "å‹•ä½œ %1 æ‰¾ä¸åˆ°"
 
 #: html/Search/Bulk.html:70
 msgid "Add AdminCc"
-msgstr "??°å??ç®¡ç????¡å?¯æ?¬æ?¶ä»¶äº?"
+msgstr "æ–°å¢ç®¡ç†å“¡å‰¯æœ¬æ”¶ä»¶äºº"
 
 #: html/Search/Bulk.html:68
 msgid "Add Cc"
-msgstr "??°å????¯æ?¬æ?¶ä»¶äº?"
+msgstr "æ–°å¢å‰¯æœ¬æ”¶ä»¶äºº"
 
 #: html/Search/Bulk.html:66
 msgid "Add Requestor"
-msgstr "??°å????³è??äº?"
+msgstr "æ–°å¢ç”³è«‹äºº"
 
 #: html/Admin/Global/Scrip.html:6
 msgid "Add a new a global scrip"
-msgstr "??°å????´é?????çº?"
+msgstr "æ–°å¢æ•´é«”æ‰‹çºŒ"
 
 #: html/Admin/Queues/Scrips.html:36
 msgid "Add a scrip to this queue"
-msgstr "??°å??ä¸???????çº???°æ­¤ä½????"
+msgstr "æ–°å¢ä¸€é“æ‰‹çºŒåˆ°æ­¤ä½‡åˆ—"
 
 #: html/Admin/Global/Scrip.html:10
 msgid "Add a scrip which will apply to all queues"
-msgstr "??°å??ä¸??????¨æ?¼æ?????ä½??????????çº?"
+msgstr "æ–°å¢ä¸€é“ç”¨æ–¼æ‰€æœ‰ä½‡åˆ—çš„æ‰‹çºŒ"
 
 #: html/Search/Bulk.html:96
 msgid "Add comments or replies to selected tickets"
-msgstr "??°å??è©?è«??????¶ä»¶äººå?°æ??å®??????³è?????"
+msgstr "æ–°å¢è©•è«–æˆ–æ”¶ä»¶äººåˆ°æŒ‡å®šçš„ç”³è«‹å–®"
 
 #: html/Admin/Groups/Members.html:16 html/User/Groups/Members.html:13
 msgid "Add members"
-msgstr "??°å????????"
+msgstr "æ–°å¢æˆå“¡"
 
 #: html/Admin/Queues/People.html:34 html/Ticket/Elements/AddWatchers:4
 msgid "Add new watchers"
-msgstr "??°å??è¦?å¯????"
+msgstr "æ–°å¢è¦–å¯Ÿå“¡"
 
 #: lib/RT/Queue_Overlay.pm:502
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
-msgstr "??°å?? %1 ??ºæ­¤ä½?????????®ä??"
+msgstr "æ–°å¢ %1 ç‚ºæ­¤ä½‡åˆ—çš„å–®ä½"
 
 #: lib/RT/Ticket_Overlay.pm:924
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this ticket"
-msgstr "??°å?? %1 ??ºæ­¤??³è????®ç????®ä??"
+msgstr "æ–°å¢ %1 ç‚ºæ­¤ç”³è«‹å–®çš„å–®ä½"
 
 #: html/Admin/Elements/ModifyUser:53 html/Admin/Users/Modify.html:66
 msgid "Address1"
-msgstr "ä½????ï¼?"
+msgstr "ä½å€ï¼š"
 
 #: html/Admin/Elements/ModifyUser:55 html/Admin/Users/Modify.html:68
 msgid "Address2"
-msgstr "ä½????ï¼?"
+msgstr "ä½å€ï¼š"
 
 #: html/Ticket/Create.html:50 html/Ticket/DetailedCreate.html:46
 msgid "Admin Cc"
-msgstr "ç®¡ç????¡å?¯æ??"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
 #: html/Admin/Queues/index.html:1
 msgid "Admin queues"
-msgstr "ä½????ç®¡ç??"
+msgstr "ä½‡åˆ—ç®¡ç†"
 
 #: html/Admin/Users/index.html:1
 msgid "Admin users"
-msgstr "ä½¿ç?¨è??ç®¡ç??"
+msgstr "ä½¿ç”¨è€…ç®¡ç†"
 
 #: html/Admin/Global/index.html:1
 msgid "Admin/Global configuration"
-msgstr "ç®¡ç??/??´é??è¨­å??"
+msgstr "ç®¡ç†/æ•´é«”è¨­å®š"
 
 #: html/Admin/Groups/index.html:2
 msgid "Admin/Groups"
-msgstr "ç®¡ç??/ç¾¤ç??"
+msgstr "ç®¡ç†/ç¾¤çµ„"
 
 #: html/Admin/Queues/Modify.html:1
 msgid "Admin/Queue/Basics"
-msgstr "ç®¡ç??/ä½????/??ºæ?¬è??è¨?"
+msgstr "ç®¡ç†/ä½‡åˆ—/åŸºæœ¬è³‡è¨Š"
 
 #: html/Ticket/Elements/ShowPeople:7 html/Ticket/Update.html:22
 msgid "AdminCc"
-msgstr "ç®¡ç????¡å?¯æ??"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
 #: html/Admin/Queues/People.html:22 html/Ticket/Elements/EditPeople:25
 msgid "Administrative Cc"
-msgstr "ç®¡ç????¡å?¯æ??"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
 #: html/Elements/Quicksearch:1
 msgid "Advanced Search"
-msgstr "??²é?????å°?"
+msgstr "é€²éšæœå°‹"
 
 #: html/Elements/SelectDateRelation:13
 msgid "After"
-msgstr "??????"
+msgstr "æ™šæ–¼"
 
 #:
 msgid "Age"
-msgstr "ç¶?æ­·æ?????"
+msgstr "ç¶“æ­·æ™‚é–“"
 
 #: html/Admin/Queues/index.html:46
 msgid "All Queues"
-msgstr "??????ä½????"
+msgstr "æ‰€æœ‰ä½‡åˆ—"
 
 #:
 msgid "Apr"
-msgstr "??????"
+msgstr "å››æœˆ"
 
 #: lib/RT/Date.pm:379
 msgid "Apr."
-msgstr "??????"
+msgstr "å››æœˆ"
 
 #:
 msgid "April"
-msgstr "??????"
+msgstr "å››æœˆ"
 
 #: html/Elements/SelectSortOrder:11
 msgid "Ascending"
-msgstr "???å¢?"
+msgstr "éå¢"
 
 #: html/Search/Bulk.html:105 html/SelfService/Update.html:11 html/Ticket/ModifyAll.html:48 html/Ticket/Update.html:57
 msgid "Attach"
-msgstr "???ä»?"
+msgstr "é™„ä»¶"
 
 #: html/SelfService/Create.html:46 html/Ticket/Create.html:66 html/Ticket/DetailedCreate.html:71
 msgid "Attach file"
-msgstr "??????æª?æ¡?"
+msgstr "é™„åŠ æª”æ¡ˆ"
 
 #: html/SelfService/Attachment/dhandler:12
 msgid "Attachment '%1' could not be loaded"
-msgstr "??¡æ??è¼???¥é??ä»? '%1'"
+msgstr "ç„¡æ³•è¼‰å…¥é™„ä»¶ '%1'"
 
 #: lib/RT/Transaction_Overlay.pm:459
 msgid "Attachment created"
-msgstr "???ä»¶å»ºç«?å®????"
+msgstr "é™„ä»¶å»ºç«‹å®Œæˆ"
 
 #: lib/RT/Tickets_Overlay.pm:494
 msgid "Attachment filename"
-msgstr "???ä»¶æ?????"
+msgstr "é™„ä»¶æª”å"
 
 #: html/Ticket/Elements/ShowAttachments:2
 msgid "Attachments"
-msgstr "???ä»?"
+msgstr "é™„ä»¶"
 
 #:
 msgid "Aug"
-msgstr "??«æ??"
+msgstr "å…«æœˆ"
 
 #: lib/RT/Date.pm:383
 msgid "Aug."
-msgstr "??«æ??"
+msgstr "å…«æœˆ"
 
 #:
 msgid "August"
-msgstr "??«æ??"
+msgstr "å…«æœˆ"
 
 #: html/Admin/Elements/ModifyUser:43
 msgid "AuthSystem"
-msgstr "èª?è­???¹å??"
+msgstr "èªè­‰æ–¹å¼"
 
 #: bin/enhanced-mailgate:462
 #. ($line)
 msgid "Bad PGP Signature: %1\\n"
-msgstr "??¯èª¤??? PGP ç°½ç??ï¼?%1\\n"
+msgstr "éŒ¯èª¤çš„ PGP ç°½ç« ï¼š%1\\n"
 
 #: html/SelfService/Attachment/dhandler:16
 msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
-msgstr "??¯èª¤??????ä»¶ç·¨????????¡æ????¾å?°é??ä»? '%1'\\n"
+msgstr "éŒ¯èª¤çš„é™„ä»¶ç·¨è™Ÿã€‚ç„¡æ³•æ‰¾åˆ°é™„ä»¶ '%1'\\n"
 
 #: bin/rt-commit-handler:803
 #. ($val)
 msgid "Bad data in %1"
-msgstr "%1 ???è³??????¯èª¤"
+msgstr "%1 çš„è³‡æ–™éŒ¯èª¤"
 
 #: html/SelfService/Attachment/dhandler:19
 #. ($trans, $AttachmentObj->TransactionId())
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
-msgstr "???ä»¶ç???????????ç¢¼é?¯èª¤???%1 ?????? %2\\n"
+msgstr "é™„ä»¶çš„è™•ç†è™Ÿç¢¼éŒ¯èª¤ã€‚%1 æ‡‰ç‚º %2\\n"
 
 #: html/Admin/Elements/GroupTabs:5 html/Admin/Elements/QueueTabs:5 html/Admin/Elements/UserTabs:7 html/Ticket/Elements/Tabs:14 html/User/Elements/GroupTabs:5
 msgid "Basics"
-msgstr "??ºæ?¬è??è¨?"
+msgstr "åŸºæœ¬è³‡è¨Š"
 
 #: html/Ticket/Update.html:53
 msgid "Bcc"
-msgstr "å¯?ä»¶å?¯æ??"
+msgstr "å¯†ä»¶å‰¯æœ¬"
 
 #: html/Admin/Global/GroupRights.html:59 html/Admin/Global/Scrip.html:37 html/Admin/Global/Template.html:20 html/Admin/Global/UserRights.html:29 html/Admin/Groups/GroupRights.html:48 html/Admin/Groups/Members.html:55 html/Admin/Groups/Modify.html:26 html/Admin/Groups/UserRights.html:29 html/Admin/Queues/GroupRights.html:63 html/Admin/Queues/Template.html:46 html/Admin/Queues/UserRights.html:30
 msgid "Be sure to save your changes"
-msgstr "è¨?å¾???²å??ä¿®æ?¹ã??"
+msgstr "è¨˜å¾—å„²å­˜ä¿®æ”¹ã€‚"
 
 #: html/Elements/SelectDateRelation:11
 msgid "Before"
-msgstr "??©æ??"
+msgstr "æ—©æ–¼"
 
 #: html/Search/Listing.html:92
 msgid "Bookmarkable URL for this search"
-msgstr "å°????å°?çµ????è½???ºå?¯æ?¾å?¥æ?¸ç±¤???ç¶²å??"
+msgstr "å°‡æœå°‹çµæœè½‰ç‚ºå¯æ”¾å…¥æ›¸ç±¤çš„ç¶²å€"
 
 #: html/Ticket/Elements/ShowHistory:10 html/Ticket/Elements/ShowHistory:13
 msgid "Brief headers"
-msgstr "ç²¾ç°¡æ¨???­æ??"
+msgstr "ç²¾ç°¡æ¨™é ­æª”"
 
 #: html/Search/Bulk.html:3
 msgid "Bulk ticket update"
-msgstr "??´æ?°æ?´æ?¹ç?³è?????"
+msgstr "æ›´æ–°æ•´æ‰¹ç”³è«‹å–®"
 
 #: lib/RT/User_Overlay.pm:1474
 msgid "Can not modify system users"
-msgstr "??¡æ??ä¿®æ?¹ç³»çµ±ä½¿??¨è??"
+msgstr "ç„¡æ³•ä¿®æ”¹ç³»çµ±ä½¿ç”¨è€…"
 
 #: lib/RT/CustomField_Overlay.pm:119
 msgid "Can't add a custom field value without a name"
-msgstr "ä¸???½æ?°å??æ²???????ç¨±ç????ªè??æ¬?ä½????"
+msgstr "ä¸èƒ½æ–°å¢æ²’æœ‰åç¨±çš„è‡ªè¨‚æ¬„ä½å€¼"
 
 #: lib/RT/Ticket_Overlay.pm:2114
 msgid "Can't link a ticket to itself"
-msgstr "??³è????®ä????½é??çµ???ªå·±???"
+msgstr "ç”³è«‹å–®ä¸èƒ½éˆçµè‡ªå·±ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:2214
 msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr "ä¸???½æ?´å????²å·²??´å??????????³è????®ã??å¦³ä??è©²ç?¯é???????¯èª¤???"
+msgstr "ä¸èƒ½æ•´åˆé€²å·²æ•´åˆéçš„ç”³è«‹å–®ã€‚å¦³ä¸è©²çŠ¯é€™å€‹éŒ¯èª¤ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:2027 lib/RT/Ticket_Overlay.pm:2100
 msgid "Can't specifiy both base and target"
-msgstr "ä¸???½å????????å®?èµ·å????³è????®è????®ç????³è?????"
+msgstr "ä¸èƒ½åŒæ™‚æŒ‡å®šèµ·å§‹ç”³è«‹å–®èˆ‡ç›®çš„ç”³è«‹å–®"
 
 #: html/autohandler:76
 #. ($msg)
 msgid "Cannot create user: %1"
-msgstr "??¡æ??å»ºç??ä½¿ç?¨è??ï¼?%1"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…ï¼š%1"
 
 #: html/Admin/Queues/People.html:18 html/SelfService/Create.html:30 html/SelfService/Display.html:28 html/Ticket/Create.html:42 html/Ticket/DetailedCreate.html:43 html/Ticket/Elements/EditPeople:22 html/Ticket/Elements/ShowPeople:5 html/Ticket/Update.html:17 html/Ticket/Update.html:49
 msgid "Cc"
-msgstr "??¯æ??"
+msgstr "å‰¯æœ¬"
 
 #: html/SelfService/Prefs.html:7 html/User/Prefs.html:8
 msgid "Change password"
-msgstr "ä¿®æ?¹å??ç¢?"
+msgstr "ä¿®æ”¹å¯†ç¢¼"
 
 #: html/Admin/Elements/SelectRights:7
 msgid "Check box to revoke right"
-msgstr "??¸æ??æ¬²æ?¤æ?????æ¬????"
+msgstr "é¸æ“‡æ¬²æ’¤æ¶ˆçš„æ¬Šåˆ©"
 
 #: html/Ticket/Create.html:138 html/Ticket/DetailedCreate.html:65 html/Ticket/Elements/EditLinks:15 html/Ticket/Elements/EditLinks:59 html/Ticket/Elements/ShowLinks:29
 msgid "Children"
-msgstr "å­???³è?????"
+msgstr "å­ç”³è«‹å–®"
 
 #: html/Admin/Elements/ModifyUser:57 html/Admin/Users/Modify.html:70
 msgid "City"
-msgstr "?????¨å??å¸?"
+msgstr "æ‰€åœ¨åŸå¸‚"
 
 #: html/SelfService/Elements/Tabs:36
 msgid "Closed requests"
-msgstr "çµ?????????³è??"
+msgstr "çµæŸçš„ç”³è«‹"
 
 #: bin/enhanced-mailgate:657
 msgid "Command not understood!\\n"
-msgstr "???ä»¤ç?¡æ??è¾¨è??ï¼?\\n"
+msgstr "æŒ‡ä»¤ç„¡æ³•è¾¨è­˜ï¼\\n"
 
 #: html/Ticket/Elements/Tabs:39
 msgid "Comment"
-msgstr "è©?è«?"
+msgstr "è©•è«–"
 
 #: html/Admin/Elements/ModifyQueue:22 html/Admin/Queues/Modify.html:33
 msgid "Comment Address"
-msgstr "è©?è«???»å????µä»¶??°å??"
+msgstr "è©•è«–é›»å­éƒµä»¶åœ°å€"
 
 #: bin/enhanced-mailgate:317 bin/enhanced-mailgate:328 bin/rt-mailgate:283 bin/rt-mailgate:294
 msgid "Comment not recorded"
-msgstr "è©?è«???ªè¢«ç´????"
+msgstr "è©•è«–æœªè¢«ç´€éŒ„"
 
 #: html/Admin/Elements/ModifyUser:12
 msgid "Comments"
-msgstr "è©?è«?"
+msgstr "è©•è«–"
 
 #: html/Ticket/ModifyAll.html:39 html/Ticket/Update.html:41
 msgid "Comments (Not sent to requestors)"
-msgstr "è©?è«?ï¼?ä¸????çµ¦ç?³è??äººï??"
+msgstr "è©•è«–ï¼ˆä¸é€çµ¦ç”³è«‹äººï¼‰"
 
 #: html/Search/Bulk.html:100
 msgid "Comments (not sent to requestors)"
-msgstr "è©?è«?ï¼?ä¸????çµ¦ç?³è??äººï??"
+msgstr "è©•è«–ï¼ˆä¸é€çµ¦ç”³è«‹äººï¼‰"
 
 #: html/Elements/ViewUser:4
 #. ($name)
 msgid "Comments about %1"
-msgstr "å°? %1 ???è©?è«?"
+msgstr "å° %1 çš„è©•è«–"
 
 #: html/Admin/Users/Modify.html:97 html/Ticket/Elements/ShowRequestor:19
 msgid "Comments about this user"
-msgstr "ä½¿ç?¨è?????è¿?"
+msgstr "ä½¿ç”¨è€…æè¿°"
 
 #: lib/RT/Transaction_Overlay.pm:558
 msgid "Comments added"
-msgstr "??°å??è©?è«?å®????"
+msgstr "æ–°å¢è©•è«–å®Œæˆ"
 
 #: lib/RT/Action/Generic.pm:104
 msgid "Commit Stubbed"
-msgstr "æ¶???¤æ?´å??å®????"
+msgstr "æ¶ˆé™¤æ›´å‹•å®Œæˆ"
 
 #: html/Search/RestrictSearch.html:1
 msgid "Compile Restrictions"
-msgstr "è¨­å?????å°?æ¢?ä»?"
+msgstr "è¨­å®šæœå°‹æ¢ä»¶"
 
 #: html/Admin/Global/Scrip.html:14 html/Admin/Queues/Scrips.html:37
 msgid "Condition"
-msgstr "??¾æ??"
+msgstr "ç¾æ³"
 
 #: lib/RT/Scrip_Overlay.pm:104
 msgid "Condition not found"
-msgstr "??ªæ?¾å?°ç¬¦????????¾æ??"
+msgstr "æœªæ‰¾åˆ°ç¬¦åˆçš„ç¾æ³"
 
 #: html/Elements/Tabs:99
 msgid "Configuration"
-msgstr "è¨­å??"
+msgstr "è¨­å®š"
 
 #: html/SelfService/Prefs.html:9 html/User/Prefs.html:10
 msgid "Confirm"
-msgstr "ç¢ºè??å¯?ç¢?"
+msgstr "ç¢ºèªå¯†ç¢¼"
 
 #: html/Admin/Elements/ModifyUser:37
 msgid "ContactInfoSystem"
-msgstr "???çµ¡è??è¨?ç³»çµ±"
+msgstr "é€£çµ¡è³‡è¨Šç³»çµ±"
 
 #: bin/rt:792
 #. ($contacted)
 msgid "Contacted date '%1' could not be parsed"
-msgstr "??¡æ??è§?è®???¯çµ¡??¥æ?? '%1'"
+msgstr "ç„¡æ³•è§£è®€è¯çµ¡æ—¥æœŸ '%1'"
 
 #: html/Admin/Elements/ModifyTemplate:20 html/Admin/Queues/Template.html:36
 msgid "Content"
-msgstr "??§å®¹"
+msgstr "å…§å®¹"
 
 #: html/Admin/Elements/ModifyQueue:16 html/Admin/Queues/Modify.html:27
 msgid "Correspondence Address"
-msgstr "??³è????®å???????°å??"
+msgstr "ç”³è«‹å–®å¯„é€åœ°å€"
 
 #: lib/RT/Transaction_Overlay.pm:554
 msgid "Correspondence added"
-msgstr "??°å????³è????®å???????°å??"
+msgstr "æ–°å¢ç”³è«‹å–®å¯„é€åœ°å€"
 
 #: bin/enhanced-mailgate:346 bin/rt-mailgate:312
 msgid "Correspondence not recorded"
-msgstr "??ªç???????³è????®å???????°å??"
+msgstr "æœªç´€éŒ„ç”³è«‹å–®å¯„é€åœ°å€"
 
 #: lib/RT/Ticket_Overlay.pm:2772
 msgid "Could not add new custom field value for ticket. "
-msgstr "ä¸???½æ?°å????ªè??æ¬?ä½??????? "
+msgstr "ä¸èƒ½æ–°å¢è‡ªè¨‚æ¬„ä½çš„å€¼ "
 
 #:
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "ä¸???½æ?°å????ªè??æ¬?ä½??????¼ã??%1 "
+msgstr "ä¸èƒ½æ–°å¢è‡ªè¨‚æ¬„ä½çš„å€¼ã€‚%1 "
 
 #: lib/RT/Ticket_Overlay.pm:2388 lib/RT/Ticket_Overlay.pm:2394
 msgid "Could not change owner. "
-msgstr "ä¸???½æ?´æ?¹æ?¿è¾¦äººã?? "
+msgstr "ä¸èƒ½æ›´æ”¹æ‰¿è¾¦äººã€‚ "
 
 #: html/Admin/Queues/CustomField.html:45
 #. ($msg)
 msgid "Could not create CustomField"
-msgstr "??¡æ??å»ºç????ªè??æ¬?ä½?"
+msgstr "ç„¡æ³•å»ºç«‹è‡ªè¨‚æ¬„ä½"
 
 #: html/User/Groups/Modify.html:47 lib/RT/Group_Overlay.pm:393 lib/RT/Group_Overlay.pm:402
 msgid "Could not create group"
-msgstr "??¡æ??å»ºç????°ç¾¤çµ?"
+msgstr "ç„¡æ³•å»ºç«‹æ–°ç¾¤çµ„"
 
 #: html/Admin/Global/Template.html:37 html/Admin/Queues/Template.html:62
 #. ($msg)
 msgid "Could not create template: %1"
-msgstr "??¡æ??å»ºç??ç¯???¬ï??%1"
+msgstr "ç„¡æ³•å»ºç«‹ç¯„æœ¬ï¼š%1"
 
 #: lib/RT/Ticket_Overlay.pm:258 lib/RT/Ticket_Overlay.pm:544
 msgid "Could not create ticket. Queue not set"
-msgstr "??¡æ??å»ºç????³è????®ã??å°???ªæ??å®?ä½???????"
+msgstr "ç„¡æ³•å»ºç«‹ç”³è«‹å–®ã€‚å°šæœªæŒ‡å®šä½‡åˆ—ã€‚"
 
 #: lib/RT/User_Overlay.pm:177 lib/RT/User_Overlay.pm:188 lib/RT/User_Overlay.pm:206 lib/RT/User_Overlay.pm:382
 msgid "Could not create user"
-msgstr "??¡æ??å»ºç??ä½¿ç?¨è??"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…"
 
 #: bin/enhanced-mailgate:318 bin/rt-mailgate:284
 #. ($TicketId)
 msgid "Could not find a ticket with id %1"
-msgstr "??¾ä????°ç·¨??? %1 ?????³è?????"
+msgstr "æ‰¾ä¸åˆ°ç·¨è™Ÿ %1 çš„ç”³è«‹å–®"
 
 #: bin/rtadmin:863
 #. ($group)
 msgid "Could not find group %1."
-msgstr "??¾ä????°ç¾¤çµ? %1???"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„ %1ã€‚"
 
 #: lib/RT/Queue_Overlay.pm:480 lib/RT/Ticket_Overlay.pm:893
 msgid "Could not find or create that user"
-msgstr "??¾ä????°æ????¡æ??å»ºç??è©²å??ä½¿ç?¨è??"
+msgstr "æ‰¾ä¸åˆ°æˆ–ç„¡æ³•å»ºç«‹è©²åä½¿ç”¨è€…"
 
 #: lib/RT/Queue_Overlay.pm:541 lib/RT/Ticket_Overlay.pm:964
 msgid "Could not find that principal"
-msgstr "??¾ä????°è©²??®ä??"
+msgstr "æ‰¾ä¸åˆ°è©²å–®ä½"
 
 #: bin/rtadmin:876
 #. ($user)
 msgid "Could not find user %1."
-msgstr "??¾ä????°ä½¿??¨è?? %1???"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… %1ã€‚"
 
 #: html/Admin/Groups/Members.html:62 html/User/Groups/Members.html:65 html/User/Groups/Modify.html:52
 msgid "Could not load group"
-msgstr "??¡æ??è¼???¥ç¾¤çµ?"
+msgstr "ç„¡æ³•è¼‰å…¥ç¾¤çµ„"
 
 #: lib/RT/Queue_Overlay.pm:500
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
-msgstr "??¡æ??å°?è©²å?®ä??è¨­ç?ºæ­¤ä½??????? %1???"
+msgstr "ç„¡æ³•å°‡è©²å–®ä½è¨­ç‚ºæ­¤ä½‡åˆ—çš„ %1ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:913
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this ticket"
-msgstr "??¡æ??å°?è©²å?®ä??è¨­ç?ºæ­¤??³è????®ç?? %1???"
+msgstr "ç„¡æ³•å°‡è©²å–®ä½è¨­ç‚ºæ­¤ç”³è«‹å–®çš„ %1ã€‚"
 
 #: lib/RT/Queue_Overlay.pm:599
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
-msgstr "??¡æ??å°???®ä?? %1 å¾?ä½????ç§»é?¤ã??"
+msgstr "ç„¡æ³•å°‡å–®ä½ %1 å¾ä½‡åˆ—ç§»é™¤ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:1022
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "??¡æ??å°???®ä?? %1 å¾???³è????®ç§»??¤ã??"
+msgstr "ç„¡æ³•å°‡å–®ä½ %1 å¾ç”³è«‹å–®ç§»é™¤ã€‚"
 
 #: lib/RT/Group_Overlay.pm:805
 msgid "Couldn't add member to group"
-msgstr "??¡æ????°å???????¡è?³ç¾¤çµ?"
+msgstr "ç„¡æ³•æ–°å¢æˆå“¡è‡³ç¾¤çµ„"
 
 #: lib/RT/Ticket_Overlay.pm:2838
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
-msgstr "??¡æ??å»ºç????´å????±å??"
+msgstr "ç„¡æ³•å»ºç«‹æ›´å‹•å ±å‘Š"
 
 #: bin/enhanced-mailgate:473
 msgid "Couldn't figure out what to do from gpg's reply\\n"
-msgstr "??¡æ??å¾? gpg ?????½è¾¨è­???ºè©²??¡å?????è¡????\\n"
+msgstr "ç„¡æ³•å¾ gpg å›å‡½è¾¨è­˜å‡ºè©²æ¡å–çš„è¡Œå‹•\\n"
 
 #: bin/rtadmin:562 bin/rtadmin:574
 msgid "Couldn't find group\\n"
-msgstr "??¾ä????°ç¾¤çµ?\\n"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„\\n"
 
 #:
 msgid "Couldn't find row"
-msgstr "??¾ä????°æ­¤???è³????"
+msgstr "æ‰¾ä¸åˆ°æ­¤åˆ—è³‡æ–™"
 
 #: lib/RT/Group_Overlay.pm:780
 msgid "Couldn't find that principal"
-msgstr "??¾ä????°è©²??®ä??"
+msgstr "æ‰¾ä¸åˆ°è©²å–®ä½"
 
 #: lib/RT/CustomField_Overlay.pm:150
 msgid "Couldn't find that value"
-msgstr "??¾ä????°è©²???"
+msgstr "æ‰¾ä¸åˆ°è©²å€¼"
 
 #: bin/rtadmin:537 bin/rtadmin:549
 msgid "Couldn't find user\\n"
-msgstr "??¾ä????°ä½¿??¨è??\\n"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€…\\n"
 
 #: lib/RT/CurrentUser.pm:88
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
-msgstr "??¡æ??å¾?ä½¿ç?¨è??è³????åº«è????? %1???\\n"
+msgstr "ç„¡æ³•å¾ä½¿ç”¨è€…è³‡æ–™åº«è¼‰å…¥ %1ã€‚\\n"
 
 #: lib/RT.pm:34
 #. ($config_file, $@)
 msgid "Couldn't load RT config file '%1' %2"
-msgstr "??¡æ??è¼???? RT è¨­å??æª? '%1' %2"
+msgstr "ç„¡æ³•è¼‰å…¥ RT è¨­å®šæª” '%1' %2"
 
 #: html/Admin/Queues/Scrips.html:53
 msgid "Couldn't load Scrips."
-msgstr "??¡æ??è¼???¥æ??çº????"
+msgstr "ç„¡æ³•è¼‰å…¥æ‰‹çºŒã€‚"
 
 #: html/Admin/Groups/GroupRights.html:63 html/Admin/Groups/UserRights.html:49
 #. ($id)
 msgid "Couldn't load group %1"
-msgstr "??¡æ??è¼???¥æ??çº? %1"
+msgstr "ç„¡æ³•è¼‰å…¥æ‰‹çºŒ %1"
 
 #: lib/RT/Link_Overlay.pm:107 lib/RT/Link_Overlay.pm:112
 msgid "Couldn't load link"
-msgstr "??¡æ??è¼???¥é??çµ????"
+msgstr "ç„¡æ³•è¼‰å…¥éˆçµã€‚"
 
 #: html/Admin/Queues/People.html:71
 #. ($id)
 msgid "Couldn't load queue"
-msgstr "??¡æ??è¼???¥ä?????"
+msgstr "ç„¡æ³•è¼‰å…¥ä½‡åˆ—"
 
 #: html/Admin/Queues/GroupRights.html:78 html/Admin/Queues/UserRights.html:48
 #. ($id)
 msgid "Couldn't load queue %1"
-msgstr "??¡æ??è¼???¥ä????? %1"
+msgstr "ç„¡æ³•è¼‰å…¥ä½‡åˆ— %1"
 
 #: bin/rtadmin:773
 msgid "Couldn't load scrip"
-msgstr "??¡æ??è¼???¥æ??çº?"
+msgstr "ç„¡æ³•è¼‰å…¥æ‰‹çºŒ"
 
 #: bin/rtadmin:660
 msgid "Couldn't load template"
-msgstr "??¡æ??è¼???¥ç?????"
+msgstr "ç„¡æ³•è¼‰å…¥ç¯„æœ¬"
 
 #: html/Admin/Users/Prefs.html:53
 #. ($id)
 msgid "Couldn't load that user (%1)"
-msgstr "??¡æ??è¼???¥è©²???ä½¿ç?¨è??ï¼?%1ï¼?"
+msgstr "ç„¡æ³•è¼‰å…¥è©²åä½¿ç”¨è€…ï¼ˆ%1ï¼‰"
 
 #: html/SelfService/Display.html:144
 #. ($id)
 msgid "Couldn't load ticket '%1'"
-msgstr "??¡æ??è¼???¥ç?³è????? '%1'"
+msgstr "ç„¡æ³•è¼‰å…¥ç”³è«‹å–® '%1'"
 
 #: html/Admin/Elements/ModifyUser:63 html/Admin/Users/Modify.html:76
 msgid "Country"
-msgstr "???å®?"
+msgstr "åœ‹å®¶"
 
 #: html/Admin/Elements/CreateUserCalled:2 html/Ticket/Create.html:14 html/Ticket/Create.html:150 html/Ticket/Create.html:86 html/Ticket/DetailedCreate.html:86
 msgid "Create"
-msgstr "å»ºç??"
+msgstr "å»ºç«‹"
 
 #: html/Admin/Queues/CustomField.html:35
 msgid "Create a CustomField"
-msgstr "å»ºç????°ç????ªè??æ¬?ä½?"
+msgstr "å»ºç«‹æ–°çš„è‡ªè¨‚æ¬„ä½"
 
 #: html/Admin/Queues/CustomFields.html:6
 msgid "Create a new Custom Field"
-msgstr "å»ºç????°ç????ªè??æ¬?ä½?"
+msgstr "å»ºç«‹æ–°çš„è‡ªè¨‚æ¬„ä½"
 
 #: html/Admin/Global/Scrips.html:9
 msgid "Create a new global scrip"
-msgstr "å»ºç????°ç????´é?????çº?"
+msgstr "å»ºç«‹æ–°çš„æ•´é«”æ‰‹çºŒ"
 
 #: html/Admin/Groups/Modify.html:36 html/Admin/Groups/Modify.html:59 html/Admin/Groups/index.html:7
 msgid "Create a new group"
-msgstr "å»ºç????°ç¾¤çµ?"
+msgstr "å»ºç«‹æ–°ç¾¤çµ„"
 
 #: html/User/Groups/Modify.html:37 html/User/Groups/Modify.html:63 html/User/Groups/index.html:6
 msgid "Create a new personal group"
-msgstr "å»ºç????°ç?????äººç¾¤çµ?"
+msgstr "å»ºç«‹æ–°çš„å€‹äººç¾¤çµ„"
 
 #: html/Admin/Queues/index.html:8
 msgid "Create a new queue"
-msgstr "å»ºç????°ä?????"
+msgstr "å»ºç«‹æ–°ä½‡åˆ—"
 
 #: html/Admin/Global/Templates.html:5 html/Admin/Queues/Templates.html:6
 msgid "Create a new template"
-msgstr "å»ºç????°ç?????"
+msgstr "å»ºç«‹æ–°ç¯„æœ¬"
 
 #: html/SelfService/Create.html:9 html/Ticket/Create.html:13 html/Ticket/Create.html:4 html/Ticket/DetailedCreate.html:1 html/Ticket/DetailedCreate.html:9
 msgid "Create a new ticket"
-msgstr "å»ºç????°ç????³è?????"
+msgstr "å»ºç«‹æ–°çš„ç”³è«‹å–®"
 
 #: html/Admin/Users/Modify.html:128 html/Admin/Users/Modify.html:154 html/Admin/Users/index.html:8
 msgid "Create a new user"
-msgstr "å»ºç????°ä½¿??¨è??"
+msgstr "å»ºç«‹æ–°ä½¿ç”¨è€…"
 
 #: html/Admin/Queues/Create.html:1 html/Admin/Queues/Create.html:2 html/Admin/Queues/Modify.html:75
 msgid "Create a queue"
-msgstr "å»ºç??ä½????"
+msgstr "å»ºç«‹ä½‡åˆ—"
 
 #: html/Admin/Elements/CreateQueueCalled:2
 msgid "Create a queue called"
-msgstr "å»ºç??ä½???????ç¨?"
+msgstr "å»ºç«‹ä½‡åˆ—åç¨±"
 
 #: html/SelfService/Create.html:4
 msgid "Create a request"
-msgstr "?????ºç?³è??"
+msgstr "æå‡ºç”³è«‹"
 
 #: html/Admin/Global/Template.html:31 html/Admin/Queues/Template.html:56
 msgid "Create a template"
-msgstr "å»ºç????°ç?????"
+msgstr "å»ºç«‹æ–°ç¯„æœ¬"
 
 #: html/SelfService/Create.html:60
 msgid "Create ticket"
-msgstr "å»ºç????³è?????"
+msgstr "å»ºç«‹ç”³è«‹å–®"
 
 #: bin/rt:1235 html/Elements/SelectDateType:2 html/Ticket/Elements/ShowDates:4
 msgid "Created"
-msgstr "å»ºç?????"
+msgstr "å»ºç«‹æ—¥"
 
 #: html/Admin/Queues/CustomField.html:47
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
-msgstr "??ªè??æ¬?ä½? %1 ??????\å»ºç??"
+msgstr "è‡ªè¨‚æ¬„ä½ %1 æˆåŠŸ\å»ºç«‹"
 
 #: html/Admin/Global/Template.html:39 html/Admin/Queues/Template.html:64
 #. ($TemplateObj->Name())
 msgid "Created template %1"
-msgstr "ç¯???? %1 ??????\å»ºç??"
+msgstr "ç¯„æœ¬ %1 æˆåŠŸ\å»ºç«‹"
 
 #: html/Ticket/Elements/EditLinks:21
 msgid "Current Relationships"
-msgstr "??®å?????ä¿?"
+msgstr "ç›®å‰é—œä¿‚"
 
 #: html/Admin/Groups/Members.html:13 html/User/Groups/Members.html:16
 msgid "Current members"
-msgstr "??¾æ????????"
+msgstr "ç¾æœ‰æˆå“¡"
 
 #: html/Admin/Elements/SelectRights:5
 msgid "Current rights"
-msgstr "??¾æ??æ¬????"
+msgstr "ç¾æœ‰æ¬Šé™"
 
 #: html/Admin/Queues/People.html:15 html/Ticket/Elements/EditPeople:16
 msgid "Current watchers"
-msgstr "??¾æ??è¦?å¯????"
+msgstr "ç¾æœ‰è¦–å¯Ÿå“¡"
 
 #: html/Admin/Elements/QueueTabs:19 html/Ticket/DetailedCreate.html:28 html/Ticket/Elements/ShowSummary:10
 msgid "Custom Fields"
-msgstr "??ªè??æ¬?ä½?"
+msgstr "è‡ªè¨‚æ¬„ä½"
 
 #: lib/RT/Tickets_Overlay.pm:918
 #. ($CF->Name , $args{OPERATOR} , $args{VALUE})
 msgid "Custom field %1 %2 %3"
-msgstr "??ªè??æ¬?ä½? %1 %2 %3"
+msgstr "è‡ªè¨‚æ¬„ä½ %1 %2 %3"
 
 #: lib/RT/Tickets_Overlay.pm:913
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
-msgstr "??ªè??æ¬?ä½? %1 å·²æ?????"
+msgstr "è‡ªè¨‚æ¬„ä½ %1 å·²æœ‰å€¼"
 
 #: lib/RT/Tickets_Overlay.pm:910
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
-msgstr "??ªè??æ¬?ä½? %1 æ²???????"
+msgstr "è‡ªè¨‚æ¬„ä½ %1 æ²’æœ‰å€¼"
 
 #: lib/RT/Ticket_Overlay.pm:2687
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
-msgstr "??¾ä????°è?ªè??æ¬?ä½? %1"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½ %1"
 
 #: lib/RT/Ticket_Overlay.pm:2824
 msgid "Custom field not found"
-msgstr "??¾ä????°è?ªè??æ¬?ä½?"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½"
 
 #: lib/RT/CustomField_Overlay.pm:260
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr "??¡æ??å¾???ªè??æ¬?ä½? %2 ä¸­æ?¾å?? %1 ??????æ¬?ä½????"
+msgstr "ç„¡æ³•å¾è‡ªè¨‚æ¬„ä½ %2 ä¸­æ‰¾åˆ° %1 é€™å€‹æ¬„ä½å€¼"
 
 #: lib/RT/Ticket_Overlay.pm:2759
 #. ($old_value, $new_value->Content)
 msgid "Custom field value changed from %1 to %2"
-msgstr "??ªè??æ¬?ä½???¼å?? %1 ??¹ç?? %2"
+msgstr "è‡ªè¨‚æ¬„ä½å€¼å¾ %1 æ”¹ç‚º %2"
 
 #: lib/RT/CustomField_Overlay.pm:160
 msgid "Custom field value could not be deleted"
-msgstr "??¡æ????ªé?¤è?ªè??æ¬?ä½????"
+msgstr "ç„¡æ³•åˆªé™¤è‡ªè¨‚æ¬„ä½å€¼"
 
 #: lib/RT/CustomField_Overlay.pm:266
 msgid "Custom field value could not be found"
-msgstr "??¾ä????°è?ªè??æ¬?ä½????"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½å€¼"
 
 #: lib/RT/CustomField_Overlay.pm:158 lib/RT/CustomField_Overlay.pm:268
 msgid "Custom field value deleted"
-msgstr "??ªè??æ¬?ä½???¼å?ªé?¤æ?????"
+msgstr "è‡ªè¨‚æ¬„ä½å€¼åˆªé™¤æˆåŠŸ"
 
 #: html/Ticket/Create.html:119 html/Ticket/DetailedCreate.html:54 html/Ticket/Elements/ShowSummary:28 html/Ticket/Elements/Tabs:18 html/Ticket/ModifyAll.html:16
 msgid "Dates"
-msgstr "??¥æ??"
+msgstr "æ—¥æœŸ"
 
 #:
 msgid "Dec"
-msgstr "???äº????"
+msgstr "åäºŒæœˆ"
 
 #: lib/RT/Date.pm:387
 msgid "Dec."
-msgstr "???äº????"
+msgstr "åäºŒæœˆ"
 
 #:
 msgid "December"
-msgstr "???äº????"
+msgstr "åäºŒæœˆ"
 
 #: html/User/Delegation.html:1
 msgid "Delegate rights"
-msgstr "ä»?è¡¨å??æ¬????"
+msgstr "ä»£è¡¨åœ˜æ¬Šé™"
 
 #: html/Admin/Queues/Scrips.html:17
 msgid "Delete"
-msgstr "??ªé??"
+msgstr "åˆªé™¤"
 
 #: lib/RT/Transaction_Overlay.pm:216
 msgid "Deleting this object could break referential integrity"
-msgstr "??ªé?¤æ­¤??©ä»¶??¯è?½ç?´å????????å®???´æ??"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶å¯èƒ½ç ´å£åƒè€ƒå®Œæ•´æ€§"
 
 #: lib/RT/Queue_Overlay.pm:168
 msgid "Deleting this object would break referential integrity"
-msgstr "??ªé?¤æ­¤??©ä»¶??¯è?½ç?´å????????å®???´æ??"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶å¯èƒ½ç ´å£åƒè€ƒå®Œæ•´æ€§"
 
 #: lib/RT/User_Overlay.pm:398
 msgid "Deleting this object would violate referential integrity"
-msgstr "??ªé?¤æ­¤??©ä»¶???????????????å®???´æ??"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶æœƒé•ååƒè€ƒå®Œæ•´æ€§"
 
 #: html/Ticket/Create.html:136 html/Ticket/DetailedCreate.html:63 html/Ticket/Elements/EditLinks:13 html/Ticket/Elements/EditLinks:36 html/Ticket/Elements/ShowDependencies:8 html/Ticket/Elements/ShowLinks:11
 msgid "Depended on by"
-msgstr "??¯æ?¥ç?????????????³è?????"
+msgstr "å¯æ¥çºŒè™•ç†çš„ç”³è«‹å–®"
 
 #: bin/rt:1117
 msgid "Dependencies: \\n"
-msgstr "???å±¬æ?§ï??\\n"
+msgstr "é™„å±¬æ€§ï¼š\\n"
 
 #: html/Elements/SelectLinkType:5 html/Ticket/Create.html:135 html/Ticket/DetailedCreate.html:62 html/Ticket/Elements/EditLinks:12 html/Ticket/Elements/EditLinks:24 html/Ticket/Elements/ShowDependencies:1 html/Ticket/Elements/ShowLinks:1
 msgid "Depends on"
-msgstr "????????????"
+msgstr "éœ€å…ˆè™•ç†"
 
 #: html/Elements/SelectSortOrder:11
 msgid "Descending"
-msgstr "???æ¸?"
+msgstr "éæ¸›"
 
 #: html/SelfService/Create.html:54 html/Ticket/Create.html:74 html/Ticket/DetailedCreate.html:78
 msgid "Describe the issue below"
-msgstr "??¨ä»¥ä¸?æ¬?ä½????è¿°ä¸»é¡?"
+msgstr "åœ¨ä»¥ä¸‹æ¬„ä½æè¿°ä¸»é¡Œ"
 
 #: html/Admin/Elements/AddCustomFieldValue:3 html/Admin/Elements/ModifyQueue:13 html/Admin/Elements/ModifyTemplate:12 html/Admin/Groups/Modify.html:23 html/Admin/Queues/CustomField.html:12 html/Admin/Queues/Modify.html:24 html/Admin/Queues/Template.html:28 html/User/Groups/Modify.html:23
 msgid "Description"
-msgstr "???è¿?"
+msgstr "æè¿°"
 
 #: html/SelfService/Elements/MyRequests:20
 msgid "Details"
-msgstr "ç´°ç??"
+msgstr "ç´°ç¯€"
 
 #:
 msgid "Disabled"
-msgstr "å·²å?????"
+msgstr "å·²åœç”¨"
 
 #: html/Ticket/Elements/Tabs:7
 msgid "Display"
-msgstr "é¡¯ç¤º??§å®¹"
+msgstr "é¡¯ç¤ºå…§å®¹"
 
 #: html/Ticket/Elements/ShowHistory:8
 msgid "Display mode"
-msgstr "é¡¯ç¤ºæ¨¡å??"
+msgstr "é¡¯ç¤ºæ¨¡å¼"
 
 #: html/SelfService/Display.html:4
 #. ($Ticket->id)
 msgid "Display ticket #%1"
-msgstr "é¡¯ç¤ºç¬?%1?????³è?????"
+msgstr "é¡¯ç¤ºç¬¬%1è™Ÿç”³è«‹å–®"
 
 #: html/Elements/Refresh:6
 msgid "Don't refresh this page."
-msgstr "ä¸???´æ?°æ­¤?????¢ã??"
+msgstr "ä¸æ›´æ–°æ­¤é é¢ã€‚"
 
 #: html/Ticket/Elements/ShowTransaction:78
 msgid "Download"
-msgstr "ä¸?è¼?"
+msgstr "ä¸‹è¼‰"
 
 #: bin/rt:1245 html/Elements/SelectDateType:8 html/Ticket/Create.html:125 html/Ticket/DetailedCreate.html:56 html/Ticket/Elements/EditDates:34 html/Ticket/Elements/ShowDates:37
 msgid "Due"
-msgstr "??°æ?????"
+msgstr "åˆ°æœŸæ—¥"
 
 #: bin/rt:755
 #. ($due)
 msgid "Due date '%1' could not be parsed"
-msgstr "??¡æ??è§?è®???¥æ?? '%1'"
+msgstr "ç„¡æ³•è§£è®€æ—¥æœŸ '%1'"
 
 #: bin/enhanced-mailgate:598 bin/rt-commit-handler:730
 #. ($1, $msg)
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
-msgstr "??¡æ??è¼???¥ç?³è????? '%1'ï¼?%2.\\n"
+msgstr "ç„¡æ³•è¼‰å…¥ç”³è«‹å–® '%1'ï¼š%2.\\n"
 
 #: html/Admin/Queues/CustomFields.html:1 html/Admin/Queues/CustomFields.html:4
 #. ($Queue->Name)
 msgid "Edit Custom Fields for %1"
-msgstr "ç·¨è¼¯ %1 ?????ªè??æ¬?ä½?"
+msgstr "ç·¨è¼¯ %1 çš„è‡ªè¨‚æ¬„ä½"
 
 #: html/Ticket/ModifyLinks.html:12
 msgid "Edit Relationships"
-msgstr "ç·¨è¼¯??³è????®é??ä¿?"
+msgstr "ç·¨è¼¯ç”³è«‹å–®é—œä¿‚"
 
 #: html/Admin/Global/Scrip.html:1 html/Admin/Global/Scrips.html:1 html/Admin/Queues/Scrips.html:1
 msgid "Edit scrips"
-msgstr "ç·¨è¼¯???çº?"
+msgstr "ç·¨è¼¯æ‰‹çºŒ"
 
 #: html/Admin/Global/Templates.html:1 html/Admin/Global/Templates.html:4
 msgid "Edit system templates"
-msgstr "ç·¨è¼¯ç³»çµ±ç¯????"
+msgstr "ç·¨è¼¯ç³»çµ±ç¯„æœ¬"
 
 #: html/Admin/Queues/Templates.html:1 html/Admin/Queues/Templates.html:4
 #. ($Queue->Name)
 msgid "Edit templates for %1"
-msgstr "ç·¨è¼¯ %1 ???ç¯????"
+msgstr "ç·¨è¼¯ %1 çš„ç¯„æœ¬"
 
 #: html/Admin/Elements/ModifyQueue:2 html/Admin/Queues/Modify.html:91
 #. ($QueueObj->Name)
 #. ($QueueObj->Id)
 msgid "Editing Configuration for queue %1"
-msgstr "ç·¨è¼¯ä½???? %1 ???è¨­å??"
+msgstr "ç·¨è¼¯ä½‡åˆ— %1 çš„è¨­å®š"
 
 #: html/Admin/Elements/ModifyUser:2
 #. ($UserObj->Name)
 msgid "Editing Configuration for user %1"
-msgstr "ç·¨è¼¯ä½¿ç?¨è?? %1 ???è¨­å??"
+msgstr "ç·¨è¼¯ä½¿ç”¨è€… %1 çš„è¨­å®š"
 
 #: html/Admin/Queues/CustomField.html:50
 #. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
-msgstr "ç·¨è¼¯??ªè??æ¬?ä½? %1"
+msgstr "ç·¨è¼¯è‡ªè¨‚æ¬„ä½ %1"
 
 #: html/Admin/Groups/Members.html:6
 #. ($Group->Name)
 msgid "Editing membership for group %1"
-msgstr "ç·¨è¼¯ç¾¤ç?? %1 ????????¡è??è¨?"
+msgstr "ç·¨è¼¯ç¾¤çµ„ %1 çš„æˆå“¡è³‡è¨Š"
 
 #: html/User/Groups/Members.html:103
 #. ($Group->Name)
 msgid "Editing membership for personal group %1"
-msgstr "ç·¨è¼¯???äººç¾¤çµ? %1 ????????¡è??è¨?"
+msgstr "ç·¨è¼¯å€‹äººç¾¤çµ„ %1 çš„æˆå“¡è³‡è¨Š"
 
 #: html/Admin/Global/Template.html:43 html/Admin/Queues/Template.html:68
 #. ($TemplateObj->Name())
 msgid "Editing template %1"
-msgstr "ç·¨è¼¯ç¯???? %1"
+msgstr "ç·¨è¼¯ç¯„æœ¬ %1"
 
 #:
 msgid "EffectiveId"
-msgstr "??????ç·¨è??"
+msgstr "æœ‰æ•ˆç·¨è™Ÿ"
 
 #: lib/RT/Ticket_Overlay.pm:2037 lib/RT/Ticket_Overlay.pm:2109
 msgid "Either base or target must be specified"
-msgstr "???è¦????å®?èµ·å????³è????®æ????®ç????³è?????"
+msgstr "éœ€è¦æŒ‡å®šèµ·å§‹ç”³è«‹å–®æˆ–ç›®çš„ç”³è«‹å–®"
 
 #: html/Admin/Users/Modify.html:20 html/Admin/Users/Prefs.html:20 html/Elements/SelectUsers:3 html/Ticket/Elements/AddWatchers:21
 msgid "Email"
-msgstr "??»å????µä»¶ä¿¡ç®±"
+msgstr "é›»å­éƒµä»¶ä¿¡ç®±"
 
 #: lib/RT/User_Overlay.pm:158
 msgid "Email address in use"
-msgstr "æ­¤é?»å????µä»¶ä¿¡ç®±å·²è¢«ä½¿ç??"
+msgstr "æ­¤é›»å­éƒµä»¶ä¿¡ç®±å·²è¢«ä½¿ç”¨"
 
 #: html/Admin/Elements/ModifyUser:19
 msgid "EmailAddress"
-msgstr "??»å????µä»¶ä¿¡ç®±ä½????"
+msgstr "é›»å­éƒµä»¶ä¿¡ç®±ä½å€"
 
 #: html/Admin/Elements/ModifyUser:31
 msgid "EmailEncoding"
-msgstr "??»å????µä»¶???å­?ç·¨ç¢¼??¹å??"
+msgstr "é›»å­éƒµä»¶æ–‡å­—ç·¨ç¢¼æ–¹å¼"
 
 #: html/Admin/Queues/Modify.html:58
 msgid "Enabled (Unchecking this box disables this queue)"
-msgstr "ä¸???±è??ï¼????æ¶??????¾é?±è??æ­¤ä?????ï¼?"
+msgstr "ä¸éš±è—ï¼ˆå–æ¶ˆæ‰“å‹¾éš±è—æ­¤ä½‡åˆ—ï¼‰"
 
 #: html/Admin/Queues/index.html:49
 msgid "Enabled Queues"
-msgstr "?????¨ä?????"
+msgstr "å•Ÿç”¨ä½‡åˆ—"
 
 #: html/Admin/Queues/Modify.html:113 html/Admin/Users/Modify.html:196
 #. ($msg)
 msgid "Enabled status %1"
-msgstr "?????¨ç????? %1"
+msgstr "å•Ÿç”¨ç‹€æ…‹ %1"
 
 #: html/Ticket/Elements/EditLinks:9
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
-msgstr "è¼¸å?¥ç?³è????®å?¯é??çµ???°ç????³è????®ç·¨??????ç¶²å?????ä»¥ç©º??½é????????"
+msgstr "è¼¸å…¥ç”³è«‹å–®å¯éˆçµåˆ°çš„ç”³è«‹å–®ç·¨è™Ÿæˆ–ç¶²å€ã€‚ä»¥ç©ºç™½éš”é–‹ã€‚"
 
 #: html/Elements/Login:5 html/SelfService/Error.html:1
 msgid "Error"
-msgstr "??¯èª¤"
+msgstr "éŒ¯èª¤"
 
 #: lib/RT/Queue_Overlay.pm:414
 msgid "Error in parameters to Queue->AddWatcher"
-msgstr "ä½????->??°å??è¦?å¯???¡ç???????¸æ??èª?"
+msgstr "ä½‡åˆ—->æ–°å¢è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
 #: lib/RT/Queue_Overlay.pm:572
 msgid "Error in parameters to Queue->DelWatcher"
-msgstr "ä½????->??ªé?¤è??å¯???¡ç???????¸æ??èª?"
+msgstr "ä½‡åˆ—->åˆªé™¤è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
 #: lib/RT/Ticket_Overlay.pm:827
 msgid "Error in parameters to Ticket->AddWatcher"
-msgstr "??³è?????->??°å??è¦?å¯???¡ç???????¸æ??èª?"
+msgstr "ç”³è«‹å–®->æ–°å¢è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
 #: lib/RT/Ticket_Overlay.pm:995
 msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "??³è?????->??ªé?¤è??å¯???¡ç???????¸æ??èª?"
+msgstr "ç”³è«‹å–®->åˆªé™¤è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
 #: html/Admin/Elements/ModifyUser:41
 msgid "ExternalAuthId"
-msgstr "å¤???¨è??è­?å¸³è??"
+msgstr "å¤–éƒ¨èªè­‰å¸³è™Ÿ"
 
 #: html/Admin/Elements/ModifyUser:35
 msgid "ExternalContactInfoId"
-msgstr "å¤???¨è?¯çµ¡??¹å??å¸³è??"
+msgstr "å¤–éƒ¨è¯çµ¡æ–¹å¼å¸³è™Ÿ"
 
 #: html/Admin/Users/Modify.html:26
 msgid "Extra info"
-msgstr "???è¨?"
+msgstr "å‚™è¨»"
 
 #: lib/RT/User_Overlay.pm:270
 msgid "Failed to find 'Privileged' users pseudogroup."
-msgstr "??¾ä????? '??·æ?????' ä½¿ç?¨è????? pseudogroup???"
+msgstr "æ‰¾ä¸åˆ° 'å…·æ¬Šé™' ä½¿ç”¨è€…çš„ pseudogroupã€‚"
 
 #: lib/RT/User_Overlay.pm:277
 msgid "Failed to find 'Unprivileged' users pseudogroup"
-msgstr "??¾ä????? '??¡æ?????' ä½¿ç?¨è????? pseudogroup???"
+msgstr "æ‰¾ä¸åˆ° 'ç„¡æ¬Šé™' ä½¿ç”¨è€…çš„ pseudogroupã€‚"
 
 #:
 msgid "Feb"
-msgstr "äº????"
+msgstr "äºŒæœˆ"
 
 #: lib/RT/Date.pm:377
 msgid "Feb."
-msgstr "äº????"
+msgstr "äºŒæœˆ"
 
 #:
 msgid "February"
-msgstr "äº????"
+msgstr "äºŒæœˆ"
 
 #: bin/rt:1203
 msgid "Fin"
-msgstr "???çµ?"
+msgstr "æœ€çµ‚"
 
 #: html/Ticket/Create.html:106 html/Ticket/DetailedCreate.html:23 html/Ticket/Elements/EditBasics:38 lib/RT/Tickets_Overlay.pm:396
 msgid "Final Priority"
-msgstr "???ä½????ä½?"
+msgstr "æœ€ä½é †ä½"
 
 #:
 msgid "FinalPriority"
-msgstr "???ä½????ä½?"
+msgstr "æœ€ä½é †ä½"
 
 #: html/Elements/Quicksearch:1
 msgid "Find new/open tickets"
-msgstr "å°????/????????³è?????"
+msgstr "å°‹æ‰¾/é–‹å•Ÿç”³è«‹å–®"
 
 #: html/Admin/Queues/People.html:30 html/Admin/Users/index.html:17 html/Ticket/Elements/EditPeople:7
 msgid "Find people whose"
-msgstr "å°???¾äºº??¡ç??"
+msgstr "å°‹æ‰¾äººå“¡çš„"
 
 #: html/Ticket/Elements/Tabs:102
 msgid "First"
-msgstr "ç¬¬ä?????"
+msgstr "ç¬¬ä¸€é …"
 
 #: html/Search/Listing.html:70
 msgid "First page"
-msgstr "ç¬¬ä?????"
+msgstr "ç¬¬ä¸€é "
 
 #: docs/design_docs/string-extraction-guide.txt:33
 msgid "Foo Bar Baz"
-msgstr "??? ä¹? ä¸?"
+msgstr "ç”² ä¹™ ä¸™"
 
 #: docs/design_docs/string-extraction-guide.txt:24
 msgid "Foo!"
-msgstr "??²ï??"
+msgstr "ç”²ï¼"
 
 #: html/Search/Bulk.html:65
 msgid "Force change"
-msgstr "å¼·å?¶æ?´æ??"
+msgstr "å¼·åˆ¶æ›´æ–°"
 
 #:
 msgid "Found Object"
-msgstr "å·²æ?¾å?°ç?©ä»¶"
+msgstr "å·²æ‰¾åˆ°ç‰©ä»¶"
 
 #: html/Admin/Elements/ModifyUser:21
 msgid "FreeformContactInfo"
-msgstr "??¯çµ¡??¹å??"
+msgstr "è¯çµ¡æ–¹å¼"
 
 #:
 msgid "FreeformMultiple"
-msgstr "å¤????å¡«ç©º"
+msgstr "å¤šé‡å¡«ç©º"
 
 #:
 msgid "FreeformSingle"
-msgstr "??®ä??å¡«ç©º"
+msgstr "å–®ä¸€å¡«ç©º"
 
 #:
 msgid "Fri"
-msgstr "??????äº?"
+msgstr "æ˜ŸæœŸäº”"
 
 #: lib/RT/Date.pm:357
 msgid "Fri."
-msgstr "??????äº?"
+msgstr "æ˜ŸæœŸäº”"
 
 #: html/Ticket/Elements/ShowHistory:11 html/Ticket/Elements/ShowHistory:14
 msgid "Full headers"
-msgstr "å®???´æ????­æ??"
+msgstr "å®Œæ•´æ¨™é ­æª”"
 
 #:
 msgid "Gecos"
-msgstr "Unix ??»å?¥å¸³???"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
 
 #: bin/enhanced-mailgate:386
 msgid "Getting the current user from a pgp sig\\n"
-msgstr "???å¾???®å??ä½¿ç?¨è????? pgp ç°½ç??\\n"
+msgstr "å–å¾—ç›®å‰ä½¿ç”¨è€…çš„ pgp ç°½ç« \\n"
 
 #: html/Admin/Elements/Tabs:15
 msgid "Global"
-msgstr "??´é??è¨­å??"
+msgstr "æ•´é«”è¨­å®š"
 
 #: html/Admin/Global/Scrips.html:11 html/Admin/Queues/Scrips.html:8
 msgid "Global Scrips"
-msgstr "??´é?????çº?"
+msgstr "æ•´é«”æ‰‹çºŒ"
 
 #: html/Admin/Queues/People.html:32 html/Admin/Queues/index.html:19 html/Admin/Users/index.html:20 html/Ticket/Elements/EditPeople:9 html/index.html:16
 msgid "Go!"
-msgstr "??·è??"
+msgstr "åŸ·è¡Œ"
 
 #: bin/enhanced-mailgate:439
 #. ($userid)
 msgid "Good pgp sig from %1\\n"
-msgstr "%1 ??? pgp ç°½ç????¯æ­£ç¢ºç??\\n"
+msgstr "%1 çš„ pgp ç°½ç« æ˜¯æ­£ç¢ºçš„\\n"
 
 #: html/Search/Listing.html:75
 msgid "Goto page"
-msgstr "??°é?????"
+msgstr "åˆ°é é¢"
 
 #: html/Elements/GotoTicket:1 html/SelfService/Elements/GotoTicket:1
 msgid "Goto ticket"
-msgstr "?????°ç?³è?????"
+msgstr "é€£åˆ°ç”³è«‹å–®"
 
 #: bin/rtadmin:524
 #. ($group_obj->Name, $attrib, $msg)
 msgid "Group %1 %2: %3"
-msgstr "ç¾¤ç?? %1 %2ï¼?%3"
+msgstr "ç¾¤çµ„ %1 %2ï¼š%3"
 
 #: html/Admin/Elements/GroupTabs:12 html/Admin/Elements/QueueTabs:23 html/Admin/Elements/SystemTabs:12
 msgid "Group Rights"
-msgstr "ç¾¤ç??æ¬????"
+msgstr "ç¾¤çµ„æ¬Šé™"
 
 #: lib/RT/Group_Overlay.pm:786
 msgid "Group already has member"
-msgstr "ç¾¤ç????§å·²?????????"
+msgstr "ç¾¤çµ„å…§å·²æœ‰æˆå“¡"
 
 #: lib/RT/Group_Overlay.pm:406
 msgid "Group created"
-msgstr "ç¾¤ç??å»ºç??å®????"
+msgstr "ç¾¤çµ„å»ºç«‹å®Œæˆ"
 
 #: lib/RT/Group_Overlay.pm:766 lib/RT/Queue_Overlay.pm:487 lib/RT/Queue_Overlay.pm:547 lib/RT/Ticket_Overlay.pm:900 lib/RT/Ticket_Overlay.pm:970
 msgid "Group not found"
-msgstr "??¾ä????°ç¾¤çµ?"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„"
 
 #: bin/rtadmin:504
 msgid "Group not found.\\n"
-msgstr "??¾ä????°ç¾¤çµ????\\n"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„ã€‚\\n"
 
 #: bin/rtadmin:484
 msgid "Group not specified.\\n"
-msgstr "æ²???????å®?ç¾¤ç?????\\n"
+msgstr "æ²’æœ‰æŒ‡å®šç¾¤çµ„ã€‚\\n"
 
 #: html/Admin/Elements/SelectNewGroupMembers:6 html/Admin/Elements/Tabs:9 html/Admin/Groups/Members.html:38 html/Admin/Groups/index.html:10 html/User/Elements/Tabs:9 html/User/Groups/Members.html:41
 msgid "Groups"
-msgstr "ç¾¤ç??"
+msgstr "ç¾¤çµ„"
 
 #: lib/RT/Group_Overlay.pm:792
 msgid "Groups can't be members of their members"
-msgstr "ä¸???½å??ç¾¤ç??è¨­ç?ºç¾¤çµ???§æ?????"
+msgstr "ä¸èƒ½å°‡ç¾¤çµ„è¨­ç‚ºç¾¤çµ„å…§æˆå“¡"
 
 #: lib/RT/Interface/CLI.pm:52 lib/RT/Interface/CLI.pm:52
 msgid "Hello!"
-msgstr "??¨ï??"
+msgstr "å—¨ï¼"
 
 #: docs/design_docs/string-extraction-guide.txt:40
 #. ($name)
 msgid "Hello, %1"
-msgstr "??¨ï??%1"
+msgstr "å—¨ï¼Œ%1"
 
 #: html/Ticket/Elements/ShowHistory:5 html/Ticket/Elements/Tabs:11
 msgid "History"
-msgstr "ç´????"
+msgstr "ç´€éŒ„"
 
 #: html/Admin/Elements/ModifyUser:45
 msgid "HomePhone"
-msgstr "ä½??????»è©±"
+msgstr "ä½è™•é›»è©±"
 
 #: html/Elements/Tabs:92
 msgid "Homepage"
-msgstr "ä¸»é??"
+msgstr "ä¸»é "
 
 #: lib/RT/Base.pm:43
 #. (6)
 msgid "I have [quant,_1,concrete mixer]."
-msgstr "?????? [quant,_1,ä»½å?ºé????ªæ????¨]???"
+msgstr "æˆ‘æœ‰ [quant,_1,ä»½å›ºé«”æ”ªæ‹Œå™¨]ã€‚"
 
 #: html/Ticket/Elements/ShowBasics:4 lib/RT/Tickets_Overlay.pm:323
 msgid "Id"
-msgstr "ç·¨è??"
+msgstr "ç·¨è™Ÿ"
 
 #: html/Admin/Users/Modify.html:17
 msgid "Identity"
@@ -1308,1281 +1308,1281 @@ msgstr "èº«ä»½"
 
 #: html/Admin/Queues/People.html:56 html/Ticket/Modify.html:15 html/Ticket/ModifyAll.html:53 html/Ticket/ModifyPeople.html:11
 msgid "If you've updated anything above, be sure to"
-msgstr "??¥æ?¨å·²??´æ?°ä»¥ä¸?è³????ï¼?è«?è¨?å¾???²å??"
+msgstr "è‹¥æ‚¨å·²æ›´æ–°ä»¥ä¸Šè³‡æ–™ï¼Œè«‹è¨˜å¾—å„²å­˜"
 
 #:
 msgid "Illegal value for %1"
-msgstr "%1 ?????¼é?¯èª¤"
+msgstr "%1 çš„å€¼éŒ¯èª¤"
 
 #:
 msgid "Immutable field"
-msgstr "æ­¤æ??ä½???¼ä????¯æ?´å??"
+msgstr "æ­¤æ¬„ä½å€¼ä¸å¯æ›´å‹•"
 
 #: html/Admin/Queues/index.html:17
 msgid "Include disabled queues in listing."
-msgstr "?????ºé?±è??ä½????"
+msgstr "åˆ—å‡ºéš±è—ä½‡åˆ—"
 
 #: html/Admin/Users/index.html:18
 msgid "Include disabled users in search."
-msgstr "???å°?çµ?????????ºé?±è??ä½¿ç?¨è??"
+msgstr "æœå°‹çµæœåˆ—å‡ºéš±è—ä½¿ç”¨è€…"
 
 #: lib/RT/Tickets_Overlay.pm:372
 msgid "Initial Priority"
-msgstr "???å§???ªå??æ¬?"
+msgstr "åˆå§‹å„ªå…ˆæ¬Š"
 
 #:
 msgid "InitialPriority"
-msgstr "???å§???ªå??æ¬?"
+msgstr "åˆå§‹å„ªå…ˆæ¬Š"
 
 #: lib/RT/ScripAction_Overlay.pm:84
 msgid "Input error"
-msgstr "è¼¸å?¥é?¯èª¤"
+msgstr "è¼¸å…¥éŒ¯èª¤"
 
 #: lib/RT/Group_Overlay.pm:552
 msgid "Invalid Group Type"
-msgstr "??¯èª¤???ç¾¤ç??é¡????"
+msgstr "éŒ¯èª¤çš„ç¾¤çµ„é¡åˆ¥"
 
 #:
 msgid "Invalid data"
-msgstr "??¯èª¤???è³????"
+msgstr "éŒ¯èª¤çš„è³‡æ–™"
 
 #: lib/RT/Ticket_Overlay.pm:324 lib/RT/Ticket_Overlay.pm:349
 msgid "Invalid owner. Defaulting to 'nobody'."
-msgstr "??¯èª¤?????¿è¾¦äººã????¹æ?????è¨­æ?¿è¾¦äººã??nobody??????"
+msgstr "éŒ¯èª¤çš„æ‰¿è¾¦äººã€‚æ”¹æˆé è¨­æ‰¿è¾¦äººã€Œnobodyã€ã€‚"
 
 #: lib/RT/Scrip_Overlay.pm:79 lib/RT/Template_Overlay.pm:213
 msgid "Invalid queue"
-msgstr "??¯èª¤???ä½????"
+msgstr "éŒ¯èª¤çš„ä½‡åˆ—"
 
 #: lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:260 lib/RT/ACE_Overlay.pm:265 lib/RT/ACE_Overlay.pm:270
 msgid "Invalid right"
-msgstr "??¯èª¤???æ¬????"
+msgstr "éŒ¯èª¤çš„æ¬Šé™"
 
 #: lib/RT/Record.pm:103
 #. ($key)
 msgid "Invalid value for %1"
-msgstr "%1 ?????¼é?¯èª¤"
+msgstr "%1 çš„å€¼éŒ¯èª¤"
 
 #: lib/RT/Ticket_Overlay.pm:2694
 msgid "Invalid value for custom field"
-msgstr "??¯èª¤?????ªè??æ¬?ä½????"
+msgstr "éŒ¯èª¤çš„è‡ªè¨‚æ¬„ä½å€¼"
 
 #: lib/RT/Ticket_Overlay.pm:363
 msgid "Invalid value for status"
-msgstr "??¯èª¤????????????"
+msgstr "éŒ¯èª¤çš„ç‹€æ…‹å€¼"
 
 #:
 msgid "IssueStatement"
-msgstr "?????ºé?³è¿°"
+msgstr "é€å‡ºé™³è¿°"
 
 #:
 msgid "Jan"
-msgstr "ä¸????"
+msgstr "ä¸€æœˆ"
 
 #: lib/RT/Date.pm:376
 msgid "Jan."
-msgstr "ä¸????"
+msgstr "ä¸€æœˆ"
 
 #:
 msgid "January"
-msgstr "ä¸????"
+msgstr "ä¸€æœˆ"
 
 #:
 msgid "Jul"
-msgstr "ä¸????"
+msgstr "ä¸ƒæœˆ"
 
 #: lib/RT/Date.pm:382
 msgid "Jul."
-msgstr "ä¸????"
+msgstr "ä¸ƒæœˆ"
 
 #:
 msgid "July"
-msgstr "ä¸????"
+msgstr "ä¸ƒæœˆ"
 
 #: html/Ticket/Elements/Tabs:28
 msgid "Jumbo"
-msgstr "??¨é?¨è??è¨?"
+msgstr "å…¨éƒ¨è³‡è¨Š"
 
 #:
 msgid "Jun"
-msgstr "??­æ??"
+msgstr "å…­æœˆ"
 
 #: lib/RT/Date.pm:381
 msgid "Jun."
-msgstr "??­æ??"
+msgstr "å…­æœˆ"
 
 #:
 msgid "June"
-msgstr "??­æ??"
+msgstr "å…­æœˆ"
 
 #: lib/RT/Transaction_Overlay.pm:563
 msgid "Keyword"
-msgstr "?????µå??"
+msgstr "é—œéµå­—"
 
 #: html/Admin/Elements/ModifyUser:29
 msgid "Lang"
-msgstr "ä½¿ç?¨è??è¨?"
+msgstr "ä½¿ç”¨èªè¨€"
 
 #: html/Ticket/Elements/Tabs:120
 msgid "Last"
-msgstr "ä¸?æ¬¡æ?´æ??"
+msgstr "ä¸Šæ¬¡æ›´æ–°"
 
 #: html/Ticket/Elements/EditDates:25 html/Ticket/Elements/ShowDates:29
 msgid "Last Contact"
-msgstr "ä¸?æ¬¡è?¯çµ¡"
+msgstr "ä¸Šæ¬¡è¯çµ¡"
 
 #: html/Elements/SelectDateType:5
 msgid "Last Contacted"
-msgstr "ä¸?æ¬¡è?¯çµ¡??¥æ??"
+msgstr "ä¸Šæ¬¡è¯çµ¡æ—¥æœŸ"
 
 #: html/Elements/SelectDateType:6
 msgid "Last Updated"
-msgstr "ä¸?æ¬¡æ?´æ??"
+msgstr "ä¸Šæ¬¡æ›´æ–°"
 
 #: bin/rt:1213
 msgid "Left"
-msgstr "??©é????????"
+msgstr "å‰©é¤˜æ™‚é–“"
 
 #: html/Admin/Users/Modify.html:33
 msgid "Let this user access RT"
-msgstr "???è¨±\??????ä½¿ç?¨è????»å?¥RT"
+msgstr "å…è¨±\é€™åä½¿ç”¨è€…ç™»å…¥RT"
 
 #: html/Admin/Users/Modify.html:37
 msgid "Let this user be granted rights"
-msgstr "è®???????ä½¿ç?¨è????????å®???´æ?????"
+msgstr "è®“é€™åä½¿ç”¨è€…æ“æœ‰å®Œæ•´æ¬Šé™"
 
 #: bin/rt:458
 #. ($op, $val)
 msgid "Limiting owner to %1 %2"
-msgstr "?????¶æ?¿è¾¦äººç?? %1 ???%2"
+msgstr "é™åˆ¶æ‰¿è¾¦äººç‚º %1 åˆ°%2"
 
 #: bin/rt:435
 #. ($ op, $queue_obj->Name)
 msgid "Limiting queue to %1 %2"
-msgstr "?????¶ä???????? %1 ??? %2"
+msgstr "é™åˆ¶ä½‡åˆ—ç‚º %1 åˆ° %2"
 
 #: lib/RT/Ticket_Overlay.pm:2127
 msgid "Link already exists"
-msgstr "æ­¤é??çµ?å·²å?????"
+msgstr "æ­¤éˆçµå·²å­˜åœ¨"
 
 #: lib/RT/Ticket_Overlay.pm:2141
 msgid "Link could not be created"
-msgstr "??¡æ??å»ºç?????çµ?"
+msgstr "ç„¡æ³•å»ºç«‹éˆçµ"
 
 #: lib/RT/Ticket_Overlay.pm:2156
 #. ($TransString)
 msgid "Link created (%1)"
-msgstr "???çµ?ï¼?%1ï¼?å»ºç??å®????"
+msgstr "éˆçµï¼ˆ%1ï¼‰å»ºç«‹å®Œæˆ"
 
 #: lib/RT/Ticket_Overlay.pm:2062
 #. ($TransString)
 msgid "Link deleted (%1)"
-msgstr "???çµ?ï¼?%1ï¼???ªé?¤å?????"
+msgstr "éˆçµï¼ˆ%1ï¼‰åˆªé™¤å®Œæˆ"
 
 #: lib/RT/Ticket_Overlay.pm:2068
 msgid "Link not found"
-msgstr "??¾ä????°é??çµ?"
+msgstr "æ‰¾ä¸åˆ°éˆçµ"
 
 #: html/Ticket/ModifyLinks.html:4
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
-msgstr "???çµ???³è????? #%1"
+msgstr "éˆçµç”³è«‹å–® #%1"
 
 #: html/Ticket/Elements/Tabs:25
 msgid "Links"
-msgstr "???çµ?"
+msgstr "éˆçµ"
 
 #: html/Admin/Users/Modify.html:63
 msgid "Location"
-msgstr "ä½?ç½?"
+msgstr "ä½ç½®"
 
 #: lib/RT.pm:84
 #. ($RT::LogDir)
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr "??»å?¥ç?®é?? %1 ??¾ä????°æ????¡æ??å¯«å?¥\\n?????¡æ????·è?? RT???"
+msgstr "ç™»å…¥ç›®éŒ„ %1 æ‰¾ä¸åˆ°æˆ–ç„¡æ³•å¯«å…¥\\nã€‚ç„¡æ³•åŸ·è¡Œ RTã€‚"
 
 #: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:1 html/Elements/Login:10 html/Elements/Login:21
 msgid "Login"
-msgstr "??»å??"
+msgstr "ç™»å…¥"
 
 #: html/Elements/Header:36
 msgid "Logout"
-msgstr "??»å??"
+msgstr "ç™»å‡º"
 
 #: html/Search/Bulk.html:64
 msgid "Make Owner"
-msgstr "å»ºç????¿è¾¦äº?"
+msgstr "å»ºç«‹æ‰¿è¾¦äºº"
 
 #: html/Search/Bulk.html:80
 msgid "Make Status"
-msgstr "å»ºç????¾æ??"
+msgstr "å»ºç«‹ç¾æ³"
 
 #: html/Search/Bulk.html:87
 msgid "Make date Due"
-msgstr "å»ºç????°æ?????"
+msgstr "å»ºç«‹åˆ°æœŸæ—¥"
 
 #: html/Search/Bulk.html:88
 msgid "Make date Resolved"
-msgstr "å»ºç??è§?æ±ºæ?¥æ??"
+msgstr "å»ºç«‹è§£æ±ºæ—¥æœŸ"
 
 #: html/Search/Bulk.html:85
 msgid "Make date Started"
-msgstr "å»ºç??å¯¦é??èµ·å????¥æ??"
+msgstr "å»ºç«‹å¯¦éš›èµ·å§‹æ—¥æœŸ"
 
 #: html/Search/Bulk.html:84
 msgid "Make date Starts"
-msgstr "å»ºç?????èµ·å????¥æ??"
+msgstr "å»ºç«‹æ‡‰èµ·å§‹æ—¥æœŸ"
 
 #: html/Search/Bulk.html:86
 msgid "Make date Told"
-msgstr "å»ºç????±å????¥æ??"
+msgstr "å»ºç«‹å ±å‘Šæ—¥æœŸ"
 
 #: html/Search/Bulk.html:77
 msgid "Make priority"
-msgstr "å»ºç????ªå?????ä½?"
+msgstr "å»ºç«‹å„ªå…ˆé †ä½"
 
 #: html/Search/Bulk.html:78
 msgid "Make queue"
-msgstr "å»ºç??ä½????"
+msgstr "å»ºç«‹ä½‡åˆ—"
 
 #: html/Search/Bulk.html:76
 msgid "Make subject"
-msgstr "å»ºç??ä¸»é??"
+msgstr "å»ºç«‹ä¸»é¡Œ"
 
 #:
 msgid "Mar"
-msgstr "ä¸????"
+msgstr "ä¸‰æœˆ"
 
 #: lib/RT/Date.pm:378
 msgid "Mar."
-msgstr "ä¸????"
+msgstr "ä¸‰æœˆ"
 
 #:
 msgid "March"
-msgstr "ä¸????"
+msgstr "ä¸‰æœˆ"
 
 #:
 msgid "May"
-msgstr "äº????"
+msgstr "äº”æœˆ"
 
 #: lib/RT/Date.pm:380
 msgid "May."
-msgstr "äº????"
+msgstr "äº”æœˆ"
 
 #: lib/RT/Group_Overlay.pm:802
 msgid "Member added"
-msgstr "??°å???????¡å?????"
+msgstr "æ–°å¢æˆå“¡å®Œæˆ"
 
 #: lib/RT/Group_Overlay.pm:960
 msgid "Member deleted"
-msgstr "?????¡å·²??ªé??"
+msgstr "æˆå“¡å·²åˆªé™¤"
 
 #: lib/RT/Group_Overlay.pm:964
 #. ()
 msgid "Member not deleted"
-msgstr "?????¡æ?ªè¢«??ªé??"
+msgstr "æˆå“¡æœªè¢«åˆªé™¤"
 
 #: html/Elements/SelectLinkType:4
 msgid "Member of"
-msgstr "???å±¬æ??"
+msgstr "é™„å±¬æ–¼"
 
 #: html/Admin/Elements/GroupTabs:9 html/User/Elements/GroupTabs:9
 msgid "Members"
-msgstr "??????"
+msgstr "æˆå“¡"
 
 #: lib/RT/Ticket_Overlay.pm:2268
 msgid "Merge Successful"
-msgstr "??´å??å®????"
+msgstr "æ•´åˆå®Œæˆ"
 
 #: lib/RT/Ticket_Overlay.pm:2231
 msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "??´å??å¤±æ???????¡æ??è¨­å?? EffectiveId"
+msgstr "æ•´åˆå¤±æ•—ã€‚ç„¡æ³•è¨­å®š EffectiveId"
 
 #: html/Ticket/Elements/EditLinks:11
 msgid "Merge into"
-msgstr "??´å?????"
+msgstr "æ•´åˆé€²"
 
 #:
 msgid "Missing a primary key?: %1"
-msgstr "ç¼ºå??ä¸»é?µå???: %1"
+msgstr "ç¼ºå°‘ä¸»éµå€¼?: %1"
 
 #: html/Admin/Users/Modify.html:92
 msgid "Mobile"
-msgstr "è¡??????»è©±"
+msgstr "è¡Œå‹•é›»è©±"
 
 #: html/Admin/Elements/ModifyUser:49
 msgid "MobilePhone"
-msgstr "è¡??????»è©±"
+msgstr "è¡Œå‹•é›»è©±"
 
 #: html/Admin/Queues/CustomField.html:1
 #. ($CustomFieldObj->id)
 msgid "Modify Custom Field %1"
-msgstr "ä¿®æ?¹è?ªè??æ¬?ä½? %1"
+msgstr "ä¿®æ”¹è‡ªè¨‚æ¬„ä½ %1"
 
 #: html/Ticket/ModifyDates.html:1
 #. ($TicketObj->Id)
 msgid "Modify dates for #%1"
-msgstr "ä¿®æ?? #%1 ?????¥æ??"
+msgstr "ä¿®æ”¹ #%1 çš„æ—¥æœŸ"
 
 #: html/Ticket/ModifyDates.html:8
 #. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
-msgstr "ä¿®æ?¹ç?³è????? # %1 ?????¥æ??"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1 çš„æ—¥æœŸ"
 
 #: html/Admin/Global/GroupRights.html:1
 msgid "Modify global group rights"
-msgstr "ä¿®æ?¹æ?´é??è¨­å?????ç¾¤ç??æ¬????"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ç¾¤çµ„æ¬Šé™"
 
 #: html/Admin/Global/GroupRights.html:7
 msgid "Modify global group rights."
-msgstr "ä¿®æ?¹æ?´é??è¨­å?????ç¾¤ç??æ¬????"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ç¾¤çµ„æ¬Šé™"
 
 #: html/Admin/Global/Scrips.html:6 html/Admin/Queues/Scrips.html:63
 msgid "Modify global scrips"
-msgstr "ä¿®æ?¹æ?´é?????çº?"
+msgstr "ä¿®æ”¹æ•´é«”æ‰‹çºŒ"
 
 #: html/Admin/Global/UserRights.html:1 html/Admin/Global/UserRights.html:7
 msgid "Modify global user rights."
-msgstr "ä¿®æ?¹æ?´é??è¨­å?????ä½¿ç?¨è??æ¬???????"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ä½¿ç”¨è€…æ¬Šé™ã€‚"
 
 #: html/Admin/Groups/GroupRights.html:1 html/Admin/Groups/GroupRights.html:8
 #. ($GroupObj->Name)
 msgid "Modify group rights for group %1"
-msgstr "ä¿®æ?? %1 ???ç¾¤ç??æ¬????"
+msgstr "ä¿®æ”¹ %1 çš„ç¾¤çµ„æ¬Šé™"
 
 #: html/Admin/Queues/GroupRights.html:1 html/Admin/Queues/GroupRights.html:8
 #. ($QueueObj->Name)
 msgid "Modify group rights for queue %1"
-msgstr "ä¿®æ?¹ä?????ä½???? %1 ???ç¾¤ç??æ¬????"
+msgstr "ä¿®æ”¹ä½‡åˆ—ä½‡åˆ— %1 çš„ç¾¤çµ„æ¬Šé™"
 
 #: html/Admin/Queues/People.html:1
 #. ($QueueObj->Name)
 msgid "Modify people related to queue %1"
-msgstr "ä¿®æ?¹é??çµ???°ä????? %1 ???äººå??"
+msgstr "ä¿®æ”¹éˆçµåˆ°ä½‡åˆ— %1 çš„äººå“¡"
 
 #: html/Ticket/ModifyPeople.html:1 html/Ticket/ModifyPeople.html:8
 #. ($Ticket->id)
 #. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
-msgstr "ä¿®æ?¹ç?³è????? #%1 ???çµ???°ç??äººå??"
+msgstr "ä¿®æ”¹ç”³è«‹å–® #%1 éˆçµåˆ°çš„äººå“¡"
 
 #: html/Admin/Queues/Scrips.html:60
 #. ($QueueObj->Name)
 msgid "Modify scrips for queue %1"
-msgstr "ä¿®æ?¹ä????? %1 ??????çº?"
+msgstr "ä¿®æ”¹ä½‡åˆ— %1 çš„æ‰‹çºŒ"
 
 #: html/Admin/Global/Template.html:1 html/Admin/Queues/Template.html:1
 #. ($TemplateObj->id)
 msgid "Modify template %1"
-msgstr "ä¿®æ?¹ç????? %1"
+msgstr "ä¿®æ”¹ç¯„æœ¬ %1"
 
 #: html/Admin/Groups/Modify.html:53 html/User/Groups/Modify.html:57
 #. ($Group->Name)
 msgid "Modify the group %1"
-msgstr "ä¿®æ?¹ç¾¤çµ? %1"
+msgstr "ä¿®æ”¹ç¾¤çµ„ %1"
 
 #: html/Admin/Users/Modify.html:149
 #. ($UserObj->Name)
 msgid "Modify the user %1"
-msgstr "ä¿®æ?¹ä½¿??¨è?? %1"
+msgstr "ä¿®æ”¹ä½¿ç”¨è€… %1"
 
 #: html/Ticket/ModifyAll.html:10
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
-msgstr "ä¿®æ?¹ç?³è????? # %1"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1"
 
 #: html/Ticket/Modify.html:1 html/Ticket/Modify.html:9
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
-msgstr "ä¿®æ?¹ç?³è????? # %1"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1"
 
 #: html/Admin/Groups/UserRights.html:1 html/Admin/Groups/UserRights.html:8
 #. ($GroupObj->Name)
 msgid "Modify user rights for group %1"
-msgstr "ä¿®æ?¹ç¾¤çµ? %1 ???ä½¿ç?¨è??æ¬????"
+msgstr "ä¿®æ”¹ç¾¤çµ„ %1 çš„ä½¿ç”¨è€…æ¬Šé™"
 
 #: html/Admin/Queues/UserRights.html:1 html/Admin/Queues/UserRights.html:8
 #. ($QueueObj->Name)
 msgid "Modify user rights for queue %1"
-msgstr "ä¿®æ?¹ä????? %1 ???ä½¿ç?¨è??æ¬????"
+msgstr "ä¿®æ”¹ä½‡åˆ— %1 çš„ä½¿ç”¨è€…æ¬Šé™"
 
 #: html/Admin/Queues/People.html:9
 #. ($QueueObj->Name)
 msgid "Modify watchers for queue '%1'"
-msgstr "ä¿®æ?? '%1' ???è¦?å¯????"
+msgstr "ä¿®æ”¹ '%1' çš„è¦–å¯Ÿå“¡"
 
 #:
 msgid "Mon"
-msgstr "??????ä¸?"
+msgstr "æ˜ŸæœŸä¸€"
 
 #: lib/RT/Date.pm:353
 msgid "Mon."
-msgstr "??????ä¸?"
+msgstr "æ˜ŸæœŸä¸€"
 
 #: html/Ticket/Elements/ShowRequestor:17
 #. ($name)
 msgid "More about %1"
-msgstr "?????? %1 ?????²ä??æ­¥è??è¨?"
+msgstr "é—œæ–¼ %1 çš„é€²ä¸€æ­¥è³‡è¨Š"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:3
 msgid "Multiple"
-msgstr "å¤????"
+msgstr "å¤šé‡"
 
 #: lib/RT/User_Overlay.pm:149
 msgid "Must specify 'Name' attribute"
-msgstr "å¿???????å®? 'Name' ???å±¬æ??"
+msgstr "å¿…é ˆæŒ‡å®š 'Name' çš„å±¬æ€§"
 
 #: html/Admin/Elements/AddCustomFieldValue:2 html/Admin/Elements/ModifyTemplate:4 html/Admin/Elements/ModifyUser:7 html/Admin/Groups/Modify.html:18 html/Admin/Queues/CustomField.html:11 html/Admin/Queues/Template.html:20 html/Elements/SelectUsers:4 html/User/Groups/Modify.html:18
 msgid "Name"
-msgstr "???ç¨?"
+msgstr "åç¨±"
 
 #: lib/RT/User_Overlay.pm:156
 msgid "Name in use"
-msgstr "å¸³è??å·²æ??äººä½¿???"
+msgstr "å¸³è™Ÿå·²æœ‰äººä½¿ç”¨"
 
 #: html/Elements/Quicksearch:6
 msgid "New"
-msgstr "??°å»ºç«?"
+msgstr "æ–°å»ºç«‹"
 
 #: html/Admin/Elements/ModifyUser:9 html/Admin/Users/Modify.html:43
 msgid "New Password"
-msgstr "??°ç??å¯?ç¢?"
+msgstr "æ–°çš„å¯†ç¢¼"
 
 #: html/Ticket/Elements/EditLinks:8
 msgid "New Relationships"
-msgstr "??°ç?????ä¿?"
+msgstr "æ–°çš„é—œä¿‚"
 
 #: html/SelfService/Prefs.html:8 html/User/Prefs.html:9
 msgid "New password"
-msgstr "??°ç??å¯?ç¢?"
+msgstr "æ–°çš„å¯†ç¢¼"
 
 #: lib/RT/User_Overlay.pm:607
 msgid "New password notification sent"
-msgstr "?????ºæ?°å??ç¢¼é?????"
+msgstr "é€å‡ºæ–°å¯†ç¢¼é€šçŸ¥"
 
 #: html/SelfService/Elements/Tabs:39
 msgid "New request"
-msgstr "?????ºæ?°ç?³è??"
+msgstr "æå‡ºæ–°ç”³è«‹"
 
 #: html/Admin/Elements/SelectRights:18
 msgid "New rights"
-msgstr "??°å??æ¬????"
+msgstr "æ–°å¢æ¬Šé™"
 
 #: html/Search/Listing.html:91
 msgid "New search"
-msgstr "?????°æ??å°?"
+msgstr "é‡æ–°æœå°‹"
 
 #: lib/RT/Ticket_Overlay.pm:2198
 msgid "New ticket doesn't exist"
-msgstr "æ²??????°ç?³è?????"
+msgstr "æ²’æœ‰æ–°ç”³è«‹å–®"
 
 #: html/Admin/Elements/CreateUserCalled:2
 msgid "New user called"
-msgstr "??°ä½¿??¨è?????å­?"
+msgstr "æ–°ä½¿ç”¨è€…åå­—"
 
 #: html/Admin/Queues/People.html:29 html/Ticket/Elements/EditPeople:6
 msgid "New watchers"
-msgstr "??°è??å¯????"
+msgstr "æ–°è¦–å¯Ÿå“¡"
 
 #: html/Admin/Users/Prefs.html:16
 msgid "New window setting"
-msgstr "??´æ?°è??çª?è¨­å??"
+msgstr "æ›´æ–°è¦–çª—è¨­å®š"
 
 #: html/Ticket/Elements/Tabs:116
 msgid "Next"
-msgstr "ä¸?ä¸????"
+msgstr "ä¸‹ä¸€é …"
 
 #: html/Search/Listing.html:74
 msgid "Next page"
-msgstr "ä¸?ä¸????"
+msgstr "ä¸‹ä¸€é "
 
 #: html/Admin/Elements/ModifyUser:27
 msgid "NickName"
-msgstr "??±ç¨±"
+msgstr "æš±ç¨±"
 
 #: html/Admin/Users/Modify.html:22
 msgid "Nickname"
-msgstr "??±ç¨±"
+msgstr "æš±ç¨±"
 
 #: html/Admin/Queues/CustomField.html:49
 msgid "No CustomField"
-msgstr "??¡è?ªè??æ¬?ä½?"
+msgstr "ç„¡è‡ªè¨‚æ¬„ä½"
 
 #: html/Admin/Groups/GroupRights.html:59 html/Admin/Groups/UserRights.html:45
 msgid "No Group defined"
-msgstr "å°???ªå??ç¾©ç¾¤çµ?"
+msgstr "å°šæœªå®šç¾©ç¾¤çµ„"
 
 #: html/Admin/Queues/GroupRights.html:74 html/Admin/Queues/UserRights.html:44
 msgid "No Queue defined"
-msgstr "æ²????å®?ç¾©å¥½???ä½????"
+msgstr "æ²’æœ‰å®šç¾©å¥½çš„ä½‡åˆ—"
 
 #: bin/rt:33 bin/rtadmin:30
 msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "??¾ä????? RT ä½¿ç?¨è?????è«???? RT ç®¡ç????¡æ?¥è©¢???\\n"
+msgstr "æ‰¾ä¸åˆ° RT ä½¿ç”¨è€…ã€‚è«‹å‘ RT ç®¡ç†å“¡æŸ¥è©¢ã€‚\\n"
 
 #: html/Admin/Global/Template.html:42 html/Admin/Queues/Template.html:67
 msgid "No Template"
-msgstr "æ²????ç¯????"
+msgstr "æ²’æœ‰ç¯„æœ¬"
 
 #: bin/rt-commit-handler:740
 msgid "No Ticket specified. Aborting ticket "
-msgstr "æ²???????å®???³è????®ã???????ºç?³è????? "
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ã€‚é€€å‡ºç”³è«‹å–® "
 
 #: bin/enhanced-mailgate:609
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "æ²???????å®???³è????®ã???????ºç?³è????®ä¿®??¹\\n\\n"
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ã€‚é€€å‡ºç”³è«‹å–®ä¿®æ”¹\\n\\n"
 
 #:
 msgid "No column specified"
-msgstr "æ²???????å®?æ¬?ä½?"
+msgstr "æ²’æœ‰æŒ‡å®šæ¬„ä½"
 
 #: bin/rtadmin:217
 msgid "No command found\\n"
-msgstr "??¾ä????°å?½ä»¤"
+msgstr "æ‰¾ä¸åˆ°å‘½ä»¤"
 
 #: html/Elements/ViewUser:13 html/Ticket/Elements/ShowRequestor:20
 msgid "No comment entered about this user"
-msgstr "æ²????å°???????ä½¿ç?¨è?????è©?è«?"
+msgstr "æ²’æœ‰å°é€™åä½¿ç”¨è€…çš„è©•è«–"
 
 #: lib/RT/Ticket_Overlay.pm:1686 lib/RT/Ticket_Overlay.pm:1739
 msgid "No correspondence attached"
-msgstr "æ²???????ä¸?å¿?è¦????è³?è¨?"
+msgstr "æ²’æœ‰é™„ä¸Šå¿…è¦çš„è³‡è¨Š"
 
 #: lib/RT/Action/Generic.pm:114 lib/RT/Condition/Generic.pm:142
 #. (ref $self)
 msgid "No description for %1"
-msgstr "æ²????å°? %1 ??????è¿?"
+msgstr "æ²’æœ‰å° %1 çš„æè¿°"
 
 #: lib/RT/Users_Overlay.pm:97
 msgid "No group specified"
-msgstr "æ²???????å®?ç¾¤ç??"
+msgstr "æ²’æœ‰æŒ‡å®šç¾¤çµ„"
 
 #: lib/RT/User_Overlay.pm:825
 msgid "No password set"
-msgstr "æ²????è¨­å??å¯?ç¢?"
+msgstr "æ²’æœ‰è¨­å®šå¯†ç¢¼"
 
 #: lib/RT/Queue_Overlay.pm:135
 msgid "No permission to create queues"
-msgstr "æ²????å»ºç??ä½???????æ¬????"
+msgstr "æ²’æœ‰å»ºç«‹ä½‡åˆ—çš„æ¬Šé™"
 
 #:
 msgid "No permission to create tickets in the queue '%1'"
-msgstr "æ²??????¨ä????? '%1' å»ºç????³è????®ç??æ¬????"
+msgstr "æ²’æœ‰åœ¨ä½‡åˆ— '%1' å»ºç«‹ç”³è«‹å–®çš„æ¬Šé™"
 
 #: lib/RT/User_Overlay.pm:126
 msgid "No permission to create users"
-msgstr "æ²????å»ºç??ä½¿ç?¨è?????æ¬????"
+msgstr "æ²’æœ‰å»ºç«‹ä½¿ç”¨è€…çš„æ¬Šé™"
 
 #: html/SelfService/Display.html:152
 msgid "No permission to display that ticket"
-msgstr "æ²????é¡¯ç¤ºè©²ç?³è????®ç??æ¬????"
+msgstr "æ²’æœ‰é¡¯ç¤ºè©²ç”³è«‹å–®çš„æ¬Šé™"
 
 #: html/SelfService/Update.html:30
 msgid "No permission to view update ticket"
-msgstr "æ²????æª¢è????³è????®æ?´æ?°ç??æ¬????"
+msgstr "æ²’æœ‰æª¢è¦–ç”³è«‹å–®æ›´æ–°çš„æ¬Šé™"
 
 #: lib/RT/Queue_Overlay.pm:534 lib/RT/Ticket_Overlay.pm:957
 msgid "No principal specified"
-msgstr "æ²???????å®???®ä??"
+msgstr "æ²’æœ‰æŒ‡å®šå–®ä½"
 
 #: html/Admin/Queues/People.html:104
 msgid "No principals selected."
-msgstr "æ²???????å®???®ä?????"
+msgstr "æ²’æœ‰æŒ‡å®šå–®ä½ã€‚"
 
 #: html/Admin/Queues/index.html:28
 msgid "No queues matching search criteria found."
-msgstr "??¾ä????°ç¬¦??????å°?æ¢?ä»¶ç??ä½???????"
+msgstr "æ‰¾ä¸åˆ°ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½‡åˆ—ã€‚"
 
 #: html/Admin/Elements/SelectRights:9
 msgid "No rights granted."
-msgstr "æ²??????¸å??æ¬????"
+msgstr "æ²’æœ‰é¸å®šæ¬Šé™"
 
 #: html/Search/Bulk.html:127
 msgid "No search to operate on."
-msgstr "æ²????è¦???²è????????å°?"
+msgstr "æ²’æœ‰è¦é€²è¡Œçš„æœå°‹"
 
 #: bin/enhanced-mailgate:293 bin/rt-mailgate:259
 msgid "No ticket id specified"
-msgstr "æ²???????å®???³è????®ç·¨???"
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ç·¨è™Ÿ"
 
 #: lib/RT/Transaction_Overlay.pm:496 lib/RT/Transaction_Overlay.pm:531
 msgid "No transaction type specified"
-msgstr "æ²???????å®???´å????±å??é¡????"
+msgstr "æ²’æœ‰æŒ‡å®šæ›´å‹•å ±å‘Šé¡åˆ¥"
 
 #: html/Admin/Users/index.html:30
 msgid "No users matching search criteria found."
-msgstr "??¾ä????°ç¬¦??????å°?æ¢?ä»¶ç??ä½¿ç?¨è?????"
+msgstr "æ‰¾ä¸åˆ°ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½¿ç”¨è€…ã€‚"
 
 #: bin/rt-commit-handler:620
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
-msgstr "??¾ä????°å????¼ç?? RT ä½¿ç?¨è?????RT cvs ????????¨å·²?????¨ã??è«???? RT ç®¡ç?????è©¢å?????\\n"
+msgstr "æ‰¾ä¸åˆ°åˆæ ¼çš„ RT ä½¿ç”¨è€…ã€‚RT cvs è™•ç†å™¨å·²åœç”¨ã€‚è«‹å‘ RT ç®¡ç†è€…è©¢å•ã€‚\\n"
 
 #:
 msgid "No value sent to _Set!\\n"
-msgstr "_Set æ²??????¶å?°ä»»ä½????!\\n"
+msgstr "_Set æ²’æœ‰æ”¶åˆ°ä»»ä½•å€¼!\\n"
 
 #:
 msgid "Nonexistant field?"
-msgstr "æ¬?ä½?ä¸?å­?????"
+msgstr "æ¬„ä½ä¸å­˜åœ¨?"
 
 #: html/Elements/Header:39 html/SelfService/Elements/Header:34
 msgid "Not logged in."
-msgstr "å°???ªç?»å??"
+msgstr "å°šæœªç™»å…¥"
 
 #: lib/RT/Date.pm:332
 msgid "Not set"
-msgstr "å°???ªè¨­å®?"
+msgstr "å°šæœªè¨­å®š"
 
 #: html/NoAuth/Reminder.html:3
 msgid "Not yet implemented."
-msgstr "å°???ªå??å·¥ã??"
+msgstr "å°šæœªå®Œå·¥ã€‚"
 
 #: html/Admin/Groups/Rights.html:1
 msgid "Not yet implemented...."
-msgstr "å°???ªå??å·?..."
+msgstr "å°šæœªå®Œå·¥..."
 
 #: lib/RT/User_Overlay.pm:610
 msgid "Notification could not be sent"
-msgstr "??¡æ???????ºé?????"
+msgstr "ç„¡æ³•é€å‡ºé€šçŸ¥"
 
 #:
 msgid "Nov"
-msgstr "???ä¸????"
+msgstr "åä¸€æœˆ"
 
 #: lib/RT/Date.pm:386
 msgid "Nov."
-msgstr "???ä¸????"
+msgstr "åä¸€æœˆ"
 
 #:
 msgid "November"
-msgstr "???ä¸????"
+msgstr "åä¸€æœˆ"
 
 #:
 msgid "Oct"
-msgstr "??????"
+msgstr "åæœˆ"
 
 #: lib/RT/Date.pm:385
 msgid "Oct."
-msgstr "??????"
+msgstr "åæœˆ"
 
 #:
 msgid "October"
-msgstr "??????"
+msgstr "åæœˆ"
 
 #: html/Elements/SelectDateRelation:12
 msgid "On"
-msgstr "ç­????"
+msgstr "ç­‰æ–¼"
 
 #: html/Elements/Quicksearch:7
 msgid "Open"
-msgstr "??????"
+msgstr "é–‹å•Ÿ"
 
 #: html/Ticket/Elements/Tabs:83
 msgid "Open it"
-msgstr "??????"
+msgstr "é–‹å•Ÿ"
 
 #: html/SelfService/Elements/Tabs:33
 msgid "Open requests"
-msgstr "???????????³è?????"
+msgstr "é–‹å•Ÿçš„ç”³è«‹å–®"
 
 #: html/Admin/Users/Prefs.html:15
 msgid "Open tickets (from listing) in a new window"
-msgstr "??¨æ?°è??çª???????ï¼????è¡¨ç??ï¼???³è?????"
+msgstr "åœ¨æ–°è¦–çª—é–‹å•Ÿï¼ˆåˆ—è¡¨çš„ï¼‰ç”³è«‹å–®"
 
 #: html/Admin/Users/Prefs.html:14
 msgid "Open tickets (from listing) in another window"
-msgstr "??¨å?¦ä?????è¦?çª???????ï¼????è¡¨ç??ï¼???³è?????"
+msgstr "åœ¨å¦ä¸€å€‹è¦–çª—é–‹å•Ÿï¼ˆåˆ—è¡¨çš„ï¼‰ç”³è«‹å–®"
 
 #: html/Search/PickRestriction:78
 msgid "Ordering and sorting"
-msgstr "???åº???????åº???¹å??"
+msgstr "é †åºèˆ‡æ’åºæ–¹å¼"
 
 #: html/Admin/Elements/ModifyUser:23 html/Admin/Users/Modify.html:64 html/Elements/SelectUsers:5
 msgid "Organization"
-msgstr "???å±¬ç??ç¹?"
+msgstr "æ‰€å±¬çµ„ç¹”"
 
 #: html/Admin/Elements/ModifyQueue:32 html/Admin/Queues/Modify.html:43
 msgid "Over time, priority moves toward"
-msgstr "??ªå?????ä½???¨æ?????å¢????èª¿ç??"
+msgstr "å„ªå…ˆé †ä½éš¨æ™‚é–“å¢åŠ èª¿ç‚º"
 
 #: bin/rt:1225 html/Elements/MyRequests:8 html/SelfService/Elements/MyRequests:6 html/Ticket/Create.html:26 html/Ticket/DetailedCreate.html:38 html/Ticket/Elements/EditPeople:14 html/Ticket/Elements/EditPeople:15 html/Ticket/Elements/ShowPeople:1 html/Ticket/Update.html:35 lib/RT/Tickets_Overlay.pm:548
 msgid "Owner"
-msgstr "??¿è¾¦äº?"
+msgstr "æ‰¿è¾¦äºº"
 
 #: lib/RT/Transaction_Overlay.pm:597
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
-msgstr "å¼·å?¶å????¿è¾¦äººå?? %1 ??¹æ?? %2"
+msgstr "å¼·åˆ¶å°‡æ‰¿è¾¦äººå¾ %1 æ”¹æˆ %2"
 
 #: html/Search/PickRestriction:8
 msgid "Owner is"
-msgstr "??¿è¾¦äº?"
+msgstr "æ‰¿è¾¦äºº"
 
 #: html/Admin/Users/Modify.html:94
 msgid "Pager"
-msgstr "??¼å?«å??"
+msgstr "å‘¼å«å™¨"
 
 #: html/Admin/Elements/ModifyUser:51
 msgid "PagerPhone"
-msgstr "??¼å?«å?¨è??ç¢?"
+msgstr "å‘¼å«å™¨è™Ÿç¢¼"
 
 #: html/Ticket/Create.html:137 html/Ticket/DetailedCreate.html:64 html/Ticket/Elements/EditLinks:14 html/Ticket/Elements/EditLinks:47 html/Ticket/Elements/ShowLinks:19
 msgid "Parents"
-msgstr "æ¯???³è?????"
+msgstr "æ¯ç”³è«‹å–®"
 
 #: html/Elements/Login:19
 msgid "Password"
-msgstr "å¯?ç¢?"
+msgstr "å¯†ç¢¼"
 
 #: html/NoAuth/Reminder.html:1
 msgid "Password Reminder"
-msgstr "å¯?ç¢¼æ??ç¤?"
+msgstr "å¯†ç¢¼æç¤º"
 
 #: lib/RT/User_Overlay.pm:138 lib/RT/User_Overlay.pm:828
 msgid "Password too short"
-msgstr "å¯?ç¢¼å¤ª???"
+msgstr "å¯†ç¢¼å¤ªçŸ­"
 
 #: html/Admin/Users/Modify.html:204
 #. ($msg)
 msgid "Password: %1"
-msgstr "å¯?ç¢?: %1"
+msgstr "å¯†ç¢¼: %1"
 
 #: html/Ticket/DetailedCreate.html:37 html/Ticket/Elements/ShowSummary:35 html/Ticket/Elements/Tabs:22 html/Ticket/ModifyAll.html:23
 msgid "People"
-msgstr "äººå??"
+msgstr "äººå“¡"
 
 #: lib/RT/ACE_Overlay.pm:220 lib/RT/ACE_Overlay.pm:232 lib/RT/ACE_Overlay.pm:243 lib/RT/ACE_Overlay.pm:565 lib/RT/ACE_Overlay.pm:572 lib/RT/ACE_Overlay.pm:645 lib/RT/CurrentUser.pm:60 lib/RT/CurrentUser.pm:68 lib/RT/CustomField_Overlay.pm:393 lib/RT/CustomField_Overlay.pm:399 lib/RT/Group_Overlay.pm:346 lib/RT/Group_Overlay.pm:427 lib/RT/Group_Overlay.pm:504 lib/RT/Group_Overlay.pm:512 lib/RT/Group_Overlay.pm:730 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:747 lib/RT/Group_Overlay.pm:914 lib/RT/Group_Overlay.pm:918 lib/RT/Group_Overlay.pm:927 lib/RT/Group_Overlay.pm:979 lib/RT/Group_Overlay.pm:983 lib/RT/Group_Overlay.pm:989 lib/RT/Queue_Overlay.pm:399 lib/RT/Queue_Overlay.pm:409 lib/RT/Queue_Overlay.pm:423 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:567 lib/RT/Queue_Overlay.pm:580 lib/RT/Queue_Overlay.pm:790 lib/RT/Scrip_Overlay.pm:130 lib/RT/Scrip_Overlay.pm:285 lib/RT/Scrip_Overlay.pm:72 lib/RT/Scrip_Overlay.pm:82 lib/RT/Template_Overlay.pm:246 lib/RT/Template_Overlay.pm:65 lib/RT/Template_Overlay.pm:71 lib/RT/Ticket_Overlay.pm:1003 lib/RT/Ticket_Overlay.pm:1341 lib/RT/Ticket_Overlay.pm:1502 lib/RT/Ticket_Overlay.pm:1682 lib/RT/Ticket_Overlay.pm:1735 lib/RT/Ticket_Overlay.pm:2018 lib/RT/Ticket_Overlay.pm:2093 lib/RT/Ticket_Overlay.pm:2189 lib/RT/Ticket_Overlay.pm:2204 lib/RT/Ticket_Overlay.pm:2335 lib/RT/Ticket_Overlay.pm:2511 lib/RT/Ticket_Overlay.pm:2664 lib/RT/Ticket_Overlay.pm:2813 lib/RT/Ticket_Overlay.pm:2865 lib/RT/Ticket_Overlay.pm:3028 lib/RT/Ticket_Overlay.pm:812 lib/RT/Ticket_Overlay.pm:822 lib/RT/Ticket_Overlay.pm:836 lib/RT/Ticket_Overlay.pm:981 lib/RT/Ticket_Overlay.pm:990 lib/RT/Transaction_Overlay.pm:484 lib/RT/Transaction_Overlay.pm:491 lib/RT/Transaction_Overlay.pm:519 lib/RT/Transaction_Overlay.pm:526 lib/RT/User_Overlay.pm:1477 lib/RT/User_Overlay.pm:530 lib/RT/User_Overlay.pm:565 lib/RT/User_Overlay.pm:821
 msgid "Permission Denied"
-msgstr "æ¬????ä¸?è¶?"
+msgstr "æ¬Šé™ä¸è¶³"
 
 #: html/User/Groups/index.html:16 html/User/Groups/index.html:4
 msgid "Personal groups"
-msgstr "???äººç¾¤çµ?"
+msgstr "å€‹äººç¾¤çµ„"
 
 #: html/User/Elements/DelegateRights:12
 msgid "Personal groups:"
-msgstr "???äººç¾¤çµ?ï¼?"
+msgstr "å€‹äººç¾¤çµ„ï¼š"
 
 #: html/Admin/Users/Modify.html:87
 msgid "Phone numbers"
-msgstr "??»è©±???ç¢?"
+msgstr "é›»è©±è™Ÿç¢¼"
 
 #: html/Admin/Users/Rights.html:1
 msgid "Placeholder"
-msgstr "å°???ªå??å·?"
+msgstr "å°šæœªå®Œå·¥"
 
 #: html/Elements/Header:34 html/SelfService/Prefs.html:1 html/User/Prefs.html:1
 msgid "Preferences"
-msgstr "???å¥½è¨­å®?"
+msgstr "åå¥½è¨­å®š"
 
 #: html/User/Elements/Tabs:6
 msgid "Prefs"
-msgstr "???å¥½è¨­å®?"
+msgstr "åå¥½è¨­å®š"
 
 #: lib/RT/Action/Generic.pm:124
 msgid "Prepare Stubbed"
-msgstr "?????????ä½?å®????"
+msgstr "é å‚™å‹•ä½œå®Œæˆ"
 
 #: html/Ticket/Elements/Tabs:106
 msgid "Prev"
-msgstr "ä¸?ä¸????"
+msgstr "ä¸Šä¸€é …"
 
 #: html/Search/Listing.html:72
 msgid "Previous page"
-msgstr "???ä¸????"
+msgstr "å‰ä¸€é "
 
 #: bin/rt:1198
 msgid "Pri"
-msgstr "??ªå?????ä½?"
+msgstr "å„ªå…ˆé †ä½"
 
 #: html/Search/PickRestriction:31 html/SelfService/Display.html:54 html/Ticket/Create.html:105 html/Ticket/DetailedCreate.html:22 html/Ticket/Elements/EditBasics:31 html/Ticket/Elements/ShowBasics:12 lib/RT/Tickets_Overlay.pm:347
 msgid "Priority"
-msgstr "??ªå?????ä½?"
+msgstr "å„ªå…ˆé †ä½"
 
 #: html/Admin/Elements/ModifyQueue:28 html/Admin/Queues/Modify.html:39
 msgid "Priority starts at"
-msgstr "??ªå?????ä½?èµ·å?????"
+msgstr "å„ªå…ˆé †ä½èµ·å§‹å€¼"
 
 #: html/Admin/Users/Modify.html:184
 #. ($msg)
 msgid "Privileged status: %1"
-msgstr "??·æ???????????: %1"
+msgstr "å…·æ¬Šé™ç‹€æ…‹: %1"
 
 #: html/Admin/Users/index.html:52
 msgid "Privileged users"
-msgstr "??·æ????????ä½¿ç?¨è??"
+msgstr "å…·æ¬Šé™çš„ä½¿ç”¨è€…"
 
 #: bin/rt:1188 html/Elements/MyRequests:6 html/Elements/MyTickets:6 html/Elements/Quicksearch:5 html/Search/PickRestriction:23 html/SelfService/Create.html:14 html/SelfService/Display.html:46 html/Ticket/Create.html:16 html/Ticket/DetailedCreate.html:13 html/Ticket/Elements/EditBasics:46 html/Ticket/Elements/ShowBasics:15 lib/RT/Tickets_Overlay.pm:213
 msgid "Queue"
-msgstr "ä½????"
+msgstr "ä½‡åˆ—"
 
 #: bin/rtadmin:390
 #. ($queue)
 msgid "Queue '%1' not found\\n"
-msgstr "??¾ä????°ä????? '%1'\\n"
+msgstr "æ‰¾ä¸åˆ°ä½‡åˆ— '%1'\\n"
 
 #: html/Admin/Elements/ModifyQueue:8 html/Admin/Queues/Modify.html:19
 msgid "Queue Name"
-msgstr "ä½???????ç¨?"
+msgstr "ä½‡åˆ—åç¨±"
 
 #: html/Admin/Queues/Scrips.html:13
 msgid "Queue Scrips"
-msgstr "ä½???????çº?"
+msgstr "ä½‡åˆ—æ‰‹çºŒ"
 
 #: lib/RT/Queue_Overlay.pm:139
 msgid "Queue already exists"
-msgstr "ä½????å·²å?????"
+msgstr "ä½‡åˆ—å·²å­˜åœ¨"
 
 #: lib/RT/Queue_Overlay.pm:148 lib/RT/Queue_Overlay.pm:154
 msgid "Queue could not be created"
-msgstr "??¡æ??å»ºç??ä½????"
+msgstr "ç„¡æ³•å»ºç«‹ä½‡åˆ—"
 
 #: html/Ticket/Create.html:160 html/Ticket/DetailedCreate.html:91
 msgid "Queue could not be loaded."
-msgstr "??¡æ??è¼???¥ä?????"
+msgstr "ç„¡æ³•è¼‰å…¥ä½‡åˆ—"
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:158
 msgid "Queue created"
-msgstr "ä½????å»ºç??å®????"
+msgstr "ä½‡åˆ—å»ºç«‹å®Œæˆ"
 
 #: html/SelfService/Display.html:107
 msgid "Queue not found"
-msgstr "??¾ä????°ä?????"
+msgstr "æ‰¾ä¸åˆ°ä½‡åˆ—"
 
 #: html/Admin/Elements/Tabs:12
 msgid "Queues"
-msgstr "ä½????"
+msgstr "ä½‡åˆ—"
 
 #: docs/design_docs/string-extraction-guide.txt:70 html/Elements/Login:10
 #. ($RT::VERSION, $RT::rtname)
 msgid "RT %1 for %2"
-msgstr "%2ï¼?RT %1 ???"
+msgstr "%2ï¼šRT %1 ç‰ˆ"
 
 #: html/Elements/Footer:2
 #. ($RT::VERSION)
 msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
-msgstr "RT %1 ???ï¼?<a href=\"http://bestpractical.com\">Best Practical Solutions ??¬å??</a>??ºå?????"
+msgstr "RT %1 ç‰ˆï¼Œ<a href=\"http://bestpractical.com\">Best Practical Solutions å…¬å¸</a>å‡ºå“ã€‚"
 
 #: bin/rt:307
 #. ($RT::VERSION)
 msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr "RT %1??????æ¬??????? 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1ã€‚ç‰ˆæ¬Šæ‰€æœ‰ 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 
 #: html/Admin/index.html:1
 msgid "RT Administration"
-msgstr "RT ç®¡ç????????"
+msgstr "RT ç®¡ç†é é¢"
 
 #: bin/enhanced-mailgate:465
 msgid "RT Authentication error."
-msgstr "RT èª?è­???¯èª¤???"
+msgstr "RT èªè­‰éŒ¯èª¤ã€‚"
 
 #: bin/enhanced-mailgate:144 bin/enhanced-mailgate:178 bin/rt-mailgate:128 bin/rt-mailgate:168 bin/rt-mailgate:208
 #. ($Subject)
 msgid "RT Bounce: %1"
-msgstr "RT ???ä¿¡ï??%1"
+msgstr "RT é€€ä¿¡ï¼š%1"
 
 #: bin/enhanced-mailgate:357 bin/rt-mailgate:322
 msgid "RT Configuration error"
-msgstr "RT è¨­å????¯èª¤"
+msgstr "RT è¨­å®šéŒ¯èª¤"
 
 #: bin/enhanced-mailgate:497 bin/rt-mailgate:348
 msgid "RT Critical error. Message not recorded!"
-msgstr "RT ??´å?½é?¯èª¤???è¨???¯æ?ªè¢«ç´???????"
+msgstr "RT è‡´å‘½éŒ¯èª¤ã€‚è¨Šæ¯æœªè¢«ç´€éŒ„ã€‚"
 
 #: html/Elements/Error:17 html/SelfService/Error.html:16
 msgid "RT Error"
-msgstr "RT ??¯èª¤"
+msgstr "RT éŒ¯èª¤"
 
 #: bin/enhanced-mailgate:173
 #. ($MessageId)
 msgid "RT Received mail (%1) from itself."
-msgstr "RT ??¶å?°å????ªå·±å¯???ºç????µä»¶ (%1)???"
+msgstr "RT æ”¶åˆ°å¾è‡ªå·±å¯„å‡ºçš„éƒµä»¶ (%1)ã€‚"
 
 #: html/SelfService/Closed.html:1
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT ??ªå?©æ?????/çµ?????????³è??"
+msgstr "RT è‡ªåŠ©æœå‹™/çµæŸçš„ç”³è«‹"
 
 #: bin/enhanced-mailgate:226
 msgid "RT couldn't authenticate you"
-msgstr "RT ??¡æ??èª?è­?ä½?"
+msgstr "RT ç„¡æ³•èªè­‰ä½ "
 
 #: bin/rt-mailgate:209
 msgid "RT couldn't find requestor via its external database lookup"
-msgstr "RT ??¡æ??å¾?å¤???¨è?????åº«æ?¥è©¢??¾å?°ç?³è??äººè??è¨?"
+msgstr "RT ç„¡æ³•å¾å¤–éƒ¨è³‡æ–™åº«æŸ¥è©¢æ‰¾åˆ°ç”³è«‹äººè³‡è¨Š"
 
 #: bin/enhanced-mailgate:145 bin/rt-mailgate:129
 #. ($Queue)
 msgid "RT couldn't find the queue: %1"
-msgstr "RT ??¾ä????°ä?????ï¼?%1"
+msgstr "RT æ‰¾ä¸åˆ°ä½‡åˆ—ï¼š%1"
 
 #: bin/enhanced-mailgate:466
 msgid "RT couldn't validate this PGP signature. \\n"
-msgstr "RT ??¡æ??ç¢ºè???????? PGP ç°½ç?????\\n"
+msgstr "RT ç„¡æ³•ç¢ºèªé€™å€‹ PGP ç°½ç« ã€‚\\n"
 
 #: bin/enhanced-mailgate:219
 msgid "RT has proccessed your commands"
-msgstr "RT å·²å?·è????¨ç????½ä»¤"
+msgstr "RT å·²åŸ·è¡Œæ‚¨çš„å‘½ä»¤"
 
 #: html/Elements/Login:56
 msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT ???æ¬??????? 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;???<br>??¬è??é«?ä¾? <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU ?????¨å?¬å?±æ??æ¬?ç¬¬ä?????</a> ???ä½????"
+msgstr "RT ç‰ˆæ¬Šæ‰€æœ‰ 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;ã€‚<br>æœ¬è»Ÿé«”ä¾ <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU é€šç”¨å…¬å…±æˆæ¬Šç¬¬äºŒç‰ˆ</a> æ•£ä½ˆã€‚"
 
 #: bin/enhanced-mailgate:179 bin/rt-mailgate:169
 msgid "RT thinks this message may be a bounce"
-msgstr "RT èª???ºé????¯é??ä¿?"
+msgstr "RT èªç‚ºé€™æ˜¯é€€ä¿¡"
 
 #: bin/enhanced-mailgate:467
 msgid "RT will process this message as if it were unsigned.\\n"
-msgstr "RT ä»¥æ?ªç°½ç«???¹å???????????å°???µä»¶???\\n"
+msgstr "RT ä»¥æœªç°½ç« æ–¹å¼è™•ç†é€™å°éƒµä»¶ã€‚\\n"
 
 #: bin/enhanced-mailgate:229
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
-msgstr "RT ?????»å????µä»¶??½ä»¤æ¨¡å?????è¦? PGP èª?è­??????¨å?¯è?½æ?????ç°½ç??ï¼??????¯æ?¨ç??ç°½ç????¡æ??è¾¨è?????"
+msgstr "RT çš„é›»å­éƒµä»¶å‘½ä»¤æ¨¡å¼é ˆè¦ PGP èªè­‰ã€‚æ‚¨å¯èƒ½æ²’æœ‰ç°½ç« ï¼Œæˆ–æ˜¯æ‚¨çš„ç°½ç« ç„¡æ³•è¾¨è­˜ã€‚"
 
 #: html/Admin/Users/Modify.html:21 html/Admin/Users/Prefs.html:26
 msgid "Real Name"
-msgstr "???å¯¦å?????"
+msgstr "çœŸå¯¦å§“å"
 
 #: html/Admin/Elements/ModifyUser:25
 msgid "RealName"
-msgstr "???å¯¦å?????"
+msgstr "çœŸå¯¦å§“å"
 
 #: html/Ticket/Create.html:140 html/Ticket/DetailedCreate.html:67 html/Ticket/Elements/EditLinks:17 html/Ticket/Elements/EditLinks:86 html/Ticket/Elements/ShowLinks:46
 msgid "Referred to by"
-msgstr "è¢«å?????"
+msgstr "è¢«åƒè€ƒ"
 
 #: html/Elements/SelectLinkType:6 html/Ticket/Create.html:139 html/Ticket/DetailedCreate.html:66 html/Ticket/Elements/EditLinks:16 html/Ticket/Elements/EditLinks:71 html/Ticket/Elements/ShowLinks:32
 msgid "Refers to"
-msgstr "??????"
+msgstr "åƒè€ƒ"
 
 #: html/Search/Listing.html:7 html/Search/PickRestriction:103
 msgid "Refine"
-msgstr "??¨ç?????ç¯??????§æ?¥è©¢"
+msgstr "åœ¨çµæœç¯„åœå…§æŸ¥è©¢"
 
 #: html/Search/PickRestriction:4
 msgid "Refine Search"
-msgstr "èª¿æ?´æ??å°?æ¢?ä»?"
+msgstr "èª¿æ•´æœå°‹æ¢ä»¶"
 
 #: html/Elements/Refresh:12
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "æ¯? %1 ????????´æ?°é?????"
+msgstr "æ¯ %1 åˆ†é˜æ›´æ–°é é¢"
 
 #: html/Ticket/Create.html:129 html/Ticket/DetailedCreate.html:59 html/Ticket/Elements/ShowSummary:18 html/Ticket/ModifyAll.html:29
 msgid "Relationships"
-msgstr "???ä¿?"
+msgstr "é—œä¿‚"
 
 #: html/Search/Bulk.html:71
 msgid "Remove AdminCc"
-msgstr "ç§»é?¤ç®¡?????¡å?¯æ??"
+msgstr "ç§»é™¤ç®¡ç†å“¡å‰¯æœ¬"
 
 #: html/Search/Bulk.html:69
 msgid "Remove Cc"
-msgstr "ç§»é?¤å?¯æ??"
+msgstr "ç§»é™¤å‰¯æœ¬"
 
 #: html/Search/Bulk.html:67
 msgid "Remove Requestor"
-msgstr "ç§»é?¤ç?³è??äº?"
+msgstr "ç§»é™¤ç”³è«‹äºº"
 
 #: html/Ticket/Elements/Tabs:48
 msgid "Reply"
-msgstr "???è¦?"
+msgstr "å›è¦†"
 
 #: bin/rt:1230 html/Ticket/Update.html:12
 msgid "Requestor"
-msgstr "??³è??äº?"
+msgstr "ç”³è«‹äºº"
 
 #: html/Search/PickRestriction:15
 msgid "Requestor email address"
-msgstr "??³è??äººé?»å????µä»¶ä¿¡ç®±ä½????"
+msgstr "ç”³è«‹äººé›»å­éƒµä»¶ä¿¡ç®±ä½å€"
 
 #:
 msgid "Requestor(s)"
-msgstr "??³è??äº?"
+msgstr "ç”³è«‹äºº"
 
 #: html/SelfService/Create.html:22 html/SelfService/Display.html:20 html/Ticket/Create.html:34 html/Ticket/DetailedCreate.html:40 html/Ticket/Elements/EditPeople:19 html/Ticket/Elements/ShowPeople:3
 msgid "Requestors"
-msgstr "??³è??äº?"
+msgstr "ç”³è«‹äºº"
 
 #: html/Admin/Elements/ModifyQueue:38 html/Admin/Queues/Modify.html:49
 msgid "Requests should be due in"
-msgstr "??³è????®è???????????"
+msgstr "ç”³è«‹å–®è™•ç†æœŸé™"
 
 #: html/Elements/Submit:43
 msgid "Reset"
-msgstr "???è¨?"
+msgstr "é‡è¨­"
 
 #: html/Admin/Users/Modify.html:88
 msgid "Residence"
-msgstr "ä½????"
+msgstr "ä½è™•"
 
 #:
 msgid "Resolution"
-msgstr "è§?æ±ºç?????"
+msgstr "è§£æ±ºç‹€æ…‹"
 
 #: html/Ticket/Elements/Tabs:76 html/Ticket/Update.html:81
 msgid "Resolve"
-msgstr "è§?æ±?"
+msgstr "è§£æ±º"
 
 #: html/Elements/SelectDateType:4
 msgid "Resolved"
-msgstr "å·²è§£æ±?"
+msgstr "å·²è§£æ±º"
 
 #: html/Search/Bulk.html:101 html/Ticket/ModifyAll.html:42 html/Ticket/Update.html:44
 msgid "Response to requestors"
-msgstr "???è¦???³è??äº?"
+msgstr "å›è¦†ç”³è«‹äºº"
 
 #: html/Elements/ListActions:2
 msgid "Results"
-msgstr "çµ????"
+msgstr "çµæœ"
 
 #: html/Search/PickRestriction:82
 msgid "Results per page"
-msgstr "æ¯?????????ºå¹¾ç­?çµ????"
+msgstr "æ¯é åˆ—å‡ºå¹¾ç­†çµæœ"
 
 #: html/Admin/Elements/ModifyUser:10 html/Admin/Users/Modify.html:50
 msgid "Retype Password"
-msgstr "???æ¬¡è¼¸??¥å??ç¢?"
+msgstr "å†æ¬¡è¼¸å…¥å¯†ç¢¼"
 
 #: bin/rtadmin:895
 #. ($right, $principal->{'type'}, $principal->{'id'}, $scope, $appliesto)
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
-msgstr "??? %4 (%5) ???ç¯??????§æ?¾ä????? %2 %3 ??? %1 æ¬????\\n"
+msgstr "åœ¨ %4 (%5) çš„ç¯„åœå…§æ‰¾ä¸åˆ° %2 %3 çš„ %1 æ¬Šé™\\n"
 
 #: lib/RT/ACE_Overlay.pm:613
 msgid "Right Delegated"
-msgstr "æ¬????ä»????å®????"
+msgstr "æ¬Šé™ä»£ç†å®Œæˆ"
 
 #: lib/RT/ACE_Overlay.pm:305
 msgid "Right Granted"
-msgstr "æ¬????è¨­å??å®????"
+msgstr "æ¬Šé™è¨­å®šå®Œæˆ"
 
 #: lib/RT/ACE_Overlay.pm:162
 msgid "Right Loaded"
-msgstr "æ¬????è¼???¥å?????"
+msgstr "æ¬Šé™è¼‰å…¥å®Œæˆ"
 
 #: lib/RT/ACE_Overlay.pm:675 lib/RT/ACE_Overlay.pm:690
 msgid "Right could not be revoked"
-msgstr "??¡æ????¤æ??æ¬????"
+msgstr "ç„¡æ³•æ’¤æ¶ˆæ¬Šé™"
 
 #: html/User/Delegation.html:38
 msgid "Right not found"
-msgstr "??¾ä????°æ?????"
+msgstr "æ‰¾ä¸åˆ°æ¬Šé™"
 
 #: lib/RT/ACE_Overlay.pm:547 lib/RT/ACE_Overlay.pm:638
 msgid "Right not loaded."
-msgstr "æ¬????ä¸¦æ?ªè????¥ã??"
+msgstr "æ¬Šé™ä¸¦æœªè¼‰å…¥ã€‚"
 
 #: lib/RT/ACE_Overlay.pm:686
 msgid "Right revoked"
-msgstr "æ¬??????¤æ??å®????"
+msgstr "æ¬Šé™æ’¤æ¶ˆå®Œæˆ"
 
 #: html/Admin/Elements/UserTabs:10 html/User/Elements/Tabs:12
 msgid "Rights"
-msgstr "æ¬????"
+msgstr "æ¬Šé™"
 
 #: html/Admin/Global/GroupRights.html:25 html/Admin/Queues/GroupRights.html:27
 msgid "Roles"
-msgstr "è§????"
+msgstr "è§’è‰²"
 
 #:
 msgid "Sat"
-msgstr "?????????"
+msgstr "æ˜ŸæœŸå…­"
 
 #: lib/RT/Date.pm:358
 msgid "Sat."
-msgstr "?????????"
+msgstr "æ˜ŸæœŸå…­"
 
 #: html/Admin/Queues/People.html:56 html/Ticket/Modify.html:15 html/Ticket/ModifyAll.html:53 html/Ticket/ModifyPeople.html:11
 msgid "Save Changes"
-msgstr "??²å??ä¿®æ??"
+msgstr "å„²å­˜ä¿®æ”¹"
 
 #: html/Ticket/ModifyLinks.html:15
 msgid "Save changes"
-msgstr "??²å??ä¿®æ??"
+msgstr "å„²å­˜ä¿®æ”¹"
 
 #: lib/RT/Scrip_Overlay.pm:113
 msgid "Scrip Created"
-msgstr "???çº?å»ºç??å®????"
+msgstr "æ‰‹çºŒå»ºç«‹å®Œæˆ"
 
 #: html/Admin/Elements/QueueTabs:12 html/Admin/Elements/SystemTabs:6
 msgid "Scrips"
-msgstr "???çº?"
+msgstr "æ‰‹çºŒ"
 
 #: bin/rtadmin:746
 #. ($queue)
 msgid "Scrips for %1\\n"
-msgstr "%1 ??????çº?\\n"
+msgstr "%1 çš„æ‰‹çºŒ\\n"
 
 #: html/Elements/Tabs:95 html/Search/Listing.html:3
 msgid "Search"
-msgstr "???å°?"
+msgstr "æœå°‹"
 
 #: html/Search/Listing.html:89
 msgid "Search Criteria"
-msgstr "???å°?æ¢?ä»?"
+msgstr "æœå°‹æ¢ä»¶"
 
 #: html/Admin/Groups/index.html:5
 msgid "Select a group"
-msgstr "??¸æ??ç¾¤ç??"
+msgstr "é¸æ“‡ç¾¤çµ„"
 
 #: html/Admin/Queues/index.html:5
 msgid "Select a queue"
-msgstr "??¸æ??ä½????"
+msgstr "é¸æ“‡ä½‡åˆ—"
 
 #: html/Admin/Users/index.html:5
 msgid "Select a user"
-msgstr "??¸æ??ä½¿ç?¨è??"
+msgstr "é¸æ“‡ä½¿ç”¨è€…"
 
 #:
 msgid "SelectMultiple"
-msgstr "å¤??????¸é??"
+msgstr "å¤šé‡é¸é …"
 
 #:
 msgid "SelectSingle"
-msgstr "??®ä????¸é??"
+msgstr "å–®ä¸€é¸é …"
 
 #: html/SelfService/index.html:1
 msgid "Self Service"
-msgstr "??ªå?©æ?????"
+msgstr "è‡ªåŠ©æœå‹™"
 
 #:
 msgid "Sep"
-msgstr "ä¹????"
+msgstr "ä¹æœˆ"
 
 #: lib/RT/Date.pm:384
 msgid "Sep."
-msgstr "ä¹????"
+msgstr "ä¹æœˆ"
 
 #:
 msgid "September"
-msgstr "ä¹????"
+msgstr "ä¹æœˆ"
 
 #: html/Search/PickRestriction:103
 msgid "Show Results"
-msgstr "é¡¯ç¤ºçµ????"
+msgstr "é¡¯ç¤ºçµæœ"
 
 #: html/Ticket/Create.html:11 html/Ticket/Create.html:95
 msgid "Show basics"
-msgstr "é¡¯ç¤º??ºæ?¬è??è¨?"
+msgstr "é¡¯ç¤ºåŸºæœ¬è³‡è¨Š"
 
 #: html/Ticket/Create.html:11 html/Ticket/Create.html:95
 msgid "Show details"
-msgstr "é¡¯ç¤ºç´°ç??"
+msgstr "é¡¯ç¤ºç´°ç¯€"
 
 #: html/Admin/Elements/ModifyUser:16 html/Admin/Users/Modify.html:104 html/Admin/Users/Prefs.html:6 html/SelfService/Prefs.html:13 html/User/Prefs.html:14
 msgid "Signature"
-msgstr "ç°½ç??"
+msgstr "ç°½ç« "
 
 #: html/SelfService/Elements/Header:28
 #. ($session{'CurrentUser'}->Name)
 msgid "Signed in as %1"
-msgstr "ä½¿ç?¨è??ï¼?%1"
+msgstr "ä½¿ç”¨è€…ï¼š%1"
 
 #: html/Elements/Header:32
 #. ($session{'CurrentUser'}->Name)
 msgid "Signed in as <b>%1</b>"
-msgstr "ä½¿ç?¨è??ï¼?<b>%1</b>"
+msgstr "ä½¿ç”¨è€…ï¼š<b>%1</b>"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:2
 msgid "Single"
-msgstr "??®ä??"
+msgstr "å–®ä¸€"
 
 #: html/Admin/Elements/EditCustomFieldValues:7
 msgid "Sort key"
-msgstr "???åº???¹å??"
+msgstr "æ’åºæ–¹å¼"
 
 #: html/Search/PickRestriction:86
 msgid "Sort results by"
-msgstr "çµ???????åº???¹å??"
+msgstr "çµæœæ’åºæ–¹å¼"
 
 #: html/Admin/Elements/AddCustomFieldValue:1
 msgid "SortOrder"
-msgstr "???åº????åº?"
+msgstr "æ’åºé †åº"
 
 #: html/Elements/Quicksearch:8
 msgid "Stalled"
-msgstr "å»¶å??"
+msgstr "å»¶å®•"
 
 #: html/index.html:1
 msgid "Start page"
-msgstr "é¦????"
+msgstr "é¦–é "
 
 #: html/Elements/SelectDateType:3 html/Ticket/Elements/EditDates:13 html/Ticket/Elements/ShowDates:20
 msgid "Started"
-msgstr "å¯¦é??èµ·å?????"
+msgstr "å¯¦éš›èµ·å§‹æ—¥"
 
 #: bin/rt:780
 #. ($started)
 msgid "Started date '%1' could not be parsed"
-msgstr "??¡æ??è§?è®?èµ·å????¥æ?? '%1"
+msgstr "ç„¡æ³•è§£è®€èµ·å§‹æ—¥æœŸ '%1"
 
 #: html/Ticket/Create.html:124 html/Ticket/DetailedCreate.html:55 html/Ticket/Elements/EditDates:4 html/Ticket/Elements/ShowDates:12
 msgid "Starts"
-msgstr "???èµ·å?????"
+msgstr "æ‡‰èµ·å§‹æ—¥"
 
 #: html/Elements/SelectDateType:7
 msgid "Starts By"
-msgstr "???èµ·å?????"
+msgstr "æ‡‰èµ·å§‹æ—¥"
 
 #: bin/rt:768
 #. ($starts)
 msgid "Starts date '%1' could not be parsed"
-msgstr "??¡æ??è§?è®?èµ·å????¥æ?? '%1"
+msgstr "ç„¡æ³•è§£è®€èµ·å§‹æ—¥æœŸ '%1"
 
 #: html/Admin/Elements/ModifyUser:59 html/Admin/Users/Modify.html:72
 msgid "State"
-msgstr "å·?"
+msgstr "å·"
 
 #: bin/rt:1220 html/Elements/MyRequests:7 html/Elements/MyTickets:7 html/Search/PickRestriction:51 html/SelfService/Display.html:37 html/SelfService/Elements/MyRequests:5 html/SelfService/Update.html:6 html/Ticket/Create.html:20 html/Ticket/DetailedCreate.html:19 html/Ticket/Elements/EditBasics:11 html/Ticket/Elements/ShowBasics:6 html/Ticket/Update.html:32 lib/RT/Tickets_Overlay.pm:238
 msgid "Status"
-msgstr "??¾æ??"
+msgstr "ç¾æ³"
 
 #: lib/RT/Transaction_Overlay.pm:543
 #. ($self->OldValue , $self->NewValue)
 msgid "Status changed from %1 to %2"
-msgstr "??¾æ??å¾? %1 ??¹ç?? %2"
+msgstr "ç¾æ³å¾ %1 æ”¹ç‚º %2"
 
 #: html/Ticket/Elements/Tabs:65
 msgid "Steal"
-msgstr "å¼·å?¶æ?´æ????¿è¾¦äº?"
+msgstr "å¼·åˆ¶æ›´æ›æ‰¿è¾¦äºº"
 
 #: lib/RT/Transaction_Overlay.pm:602
 #. ($Old->Name)
 msgid "Stolen from %1 "
-msgstr "è¢? %1 å¼·å?¶æ?´æ?? "
+msgstr "è¢« %1 å¼·åˆ¶æ›´æ› "
 
 #: bin/rt:1193 html/Elements/MyRequests:5 html/Elements/MyTickets:5 html/Search/Bulk.html:104 html/Search/PickRestriction:20 html/SelfService/Create.html:38 html/SelfService/Elements/MyRequests:4 html/SelfService/Update.html:10 html/Ticket/Create.html:58 html/Ticket/DetailedCreate.html:16 html/Ticket/Elements/EditBasics:4 html/Ticket/ModifyAll.html:47 html/Ticket/Update.html:48 lib/RT/Tickets_Overlay.pm:292
 msgid "Subject"
-msgstr "ä¸»é??"
+msgstr "ä¸»é¡Œ"
 
 #: html/Elements/Submit:40
 msgid "Submit"
-msgstr "??????"
+msgstr "é€å‡º"
 
 #:
 msgid "Sun"
-msgstr "?????????"
+msgstr "æ˜ŸæœŸæ—¥"
 
 #: lib/RT/Date.pm:359
 msgid "Sun."
-msgstr "?????????"
+msgstr "æ˜ŸæœŸæ—¥"
 
 #: lib/RT/ACE_Overlay.pm:569
 msgid "System Error"
-msgstr "ç³»çµ±??¯èª¤"
+msgstr "ç³»çµ±éŒ¯èª¤"
 
 #: lib/RT/ACE_Overlay.pm:616
 msgid "System error. Right not delegated."
-msgstr "ç³»çµ±??¯èª¤???æ¬????ä»????å¤±æ?????"
+msgstr "ç³»çµ±éŒ¯èª¤ã€‚æ¬Šé™ä»£ç†å¤±æ•—ã€‚"
 
 #: lib/RT/ACE_Overlay.pm:1070 lib/RT/ACE_Overlay.pm:212 lib/RT/ACE_Overlay.pm:308
 msgid "System error. Right not granted."
-msgstr "ç³»çµ±??¯èª¤???è¨­å??æ¬????å¤±æ?????"
+msgstr "ç³»çµ±éŒ¯èª¤ã€‚è¨­å®šæ¬Šé™å¤±æ•—ã€‚"
 
 #: html/Admin/Global/GroupRights.html:9 html/Admin/Groups/GroupRights.html:10 html/Admin/Queues/GroupRights.html:10
 msgid "System groups"
-msgstr "ç³»çµ±ç¾¤ç??"
+msgstr "ç³»çµ±ç¾¤çµ„"
 
 #: lib/RT/CurrentUser.pm:331 lib/RT/CurrentUser.pm:333
 msgid "TEST_STRING"
@@ -2590,685 +2590,685 @@ msgstr "TEST_STRING"
 
 #: html/Ticket/Elements/Tabs:58
 msgid "Take"
-msgstr "??????"
+msgstr "å—ç†"
 
 #: lib/RT/Transaction_Overlay.pm:588
 msgid "Taken"
-msgstr "å·²å?????"
+msgstr "å·²å—ç†"
 
 #: html/Admin/Global/Scrip.html:29 html/Admin/Queues/Scrips.html:39
 msgid "Template"
-msgstr "ç¯????"
+msgstr "ç¯„æœ¬"
 
 #: lib/RT/Scrip_Overlay.pm:97
 msgid "Template not found"
-msgstr "??¾ä????°ç?????"
+msgstr "æ‰¾ä¸åˆ°ç¯„æœ¬"
 
 #: bin/rtadmin:690
 msgid "Template not found\\n"
-msgstr "??¾ä????°ç????¬\\n"
+msgstr "æ‰¾ä¸åˆ°ç¯„æœ¬\\n"
 
 #: lib/RT/Template_Overlay.pm:296
 msgid "Template parsed"
-msgstr "ç¯???¬å?????å®????"
+msgstr "ç¯„æœ¬å‰–æå®Œæˆ"
 
 #: html/Admin/Elements/QueueTabs:15 html/Admin/Elements/SystemTabs:9 html/Admin/Global/Templates.html:8
 msgid "Templates"
-msgstr "ç¯????"
+msgstr "ç¯„æœ¬"
 
 #: bin/rtadmin:637
 #. ($queue)
 msgid "Templates for %1\\n"
-msgstr "??¾ä????? %1 ???ç¯???¬\\n"
+msgstr "æ‰¾ä¸åˆ° %1 çš„ç¯„æœ¬\\n"
 
 #:
 msgid "That is already the current value"
-msgstr "å·²ç????¯ç?®å??æ¬?ä½???????"
+msgstr "å·²ç¶“æ˜¯ç›®å‰æ¬„ä½çš„å€¼"
 
 #: lib/RT/CustomField_Overlay.pm:153
 msgid "That is not a value for this custom field"
-msgstr "???ä¸???¯è©²??ªè??æ¬?ä½???????"
+msgstr "é€™ä¸æ˜¯è©²è‡ªè¨‚æ¬„ä½çš„å€¼"
 
 #: lib/RT/Ticket_Overlay.pm:1352
 msgid "That is the same value"
-msgstr "???æ¨???????"
+msgstr "åŒæ¨£çš„å€¼"
 
 #: lib/RT/Queue_Overlay.pm:492
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
-msgstr "?????????çº?å·²ç????¯é?????ä½??????? %1"
+msgstr "é€™é“æ‰‹çºŒå·²ç¶“æ˜¯é€™å€‹ä½‡åˆ—çš„ %1"
 
 #: lib/RT/Ticket_Overlay.pm:905
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this ticket"
-msgstr "?????????çº?å·²ç????¯é??ä»½ç?³è????®ç?? %1"
+msgstr "é€™é“æ‰‹çºŒå·²ç¶“æ˜¯é€™ä»½ç”³è«‹å–®çš„ %1"
 
 #: lib/RT/Queue_Overlay.pm:591
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
-msgstr "?????????çº?ä¸???¯é?????ä½??????? %1"
+msgstr "é€™é“æ‰‹çºŒä¸æ˜¯é€™å€‹ä½‡åˆ—çš„ %1"
 
 #: lib/RT/Ticket_Overlay.pm:1014
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
-msgstr "?????????çº?ä¸???¯é??ä»½ç?³è????®ç?? %1"
+msgstr "é€™é“æ‰‹çºŒä¸æ˜¯é€™ä»½ç”³è«‹å–®çš„ %1"
 
 #: lib/RT/Ticket_Overlay.pm:1348
 msgid "That queue does not exist"
-msgstr "æ­¤ä?????ä¸?å­????"
+msgstr "æ­¤ä½‡åˆ—ä¸å­˜åœ¨"
 
 #: lib/RT/Ticket_Overlay.pm:2515
 msgid "That ticket has unresolved dependencies"
-msgstr "???ä»½ç?³è????®æ??å°???ªè§£æ±ºç?????å±¬ç?³è?????"
+msgstr "é€™ä»½ç”³è«‹å–®æœ‰å°šæœªè§£æ±ºçš„é™„å±¬ç”³è«‹å–®"
 
 #: lib/RT/ACE_Overlay.pm:287 lib/RT/ACE_Overlay.pm:597
 msgid "That user already has that right"
-msgstr "ä½¿ç?¨è??å·²å?·æ??è©²é??æ¬????"
+msgstr "ä½¿ç”¨è€…å·²å…·æœ‰è©²é …æ¬Šé™"
 
 #: lib/RT/Ticket_Overlay.pm:2377
 msgid "That user already owns that ticket"
-msgstr "è©²ä½¿??¨è??å·²ç????¿è¾¦???ä»½ç?³è?????"
+msgstr "è©²ä½¿ç”¨è€…å·²ç¶“æ‰¿è¾¦é€™ä»½ç”³è«‹å–®"
 
 #: lib/RT/Ticket_Overlay.pm:2342
 msgid "That user does not exist"
-msgstr "ä½¿ç?¨è??ä¸?å­????"
+msgstr "ä½¿ç”¨è€…ä¸å­˜åœ¨"
 
 #: lib/RT/User_Overlay.pm:283
 msgid "That user is already privileged"
-msgstr "??????ä½¿ç?¨è??å·²ç????¯å?·æ?????ç¾¤ç?????ä½¿ç?¨è??"
+msgstr "é€™åä½¿ç”¨è€…å·²ç¶“æ˜¯å…·æ¬Šé™ç¾¤çµ„çš„ä½¿ç”¨è€…"
 
 #: lib/RT/User_Overlay.pm:300
 msgid "That user is already unprivileged"
-msgstr "??????ä½¿ç?¨è????¯ç?¡æ?????ç¾¤ç?????ä½¿ç?¨è??"
+msgstr "é€™åä½¿ç”¨è€…æ˜¯ç„¡æ¬Šé™ç¾¤çµ„çš„ä½¿ç”¨è€…"
 
 #: lib/RT/User_Overlay.pm:295
 msgid "That user is now privileged"
-msgstr "ä½¿ç?¨è???????¥å?·æ?????ç¾¤ç??å®????"
+msgstr "ä½¿ç”¨è€…åŠ å…¥å…·æ¬Šé™ç¾¤çµ„å®Œæˆ"
 
 #: lib/RT/User_Overlay.pm:312
 msgid "That user is now unprivileged"
-msgstr "??????ä½¿ç?¨è????®å????¯ç?¡æ?????ç¾¤ç?????ä½¿ç?¨è??"
+msgstr "é€™åä½¿ç”¨è€…ç›®å‰æ˜¯ç„¡æ¬Šé™ç¾¤çµ„çš„ä½¿ç”¨è€…"
 
 #:
 msgid "That user is now unprivilegedileged"
-msgstr "ä½¿ç?¨è???????¥ç?¡æ?????ç¾¤ç??å®????"
+msgstr "ä½¿ç”¨è€…åŠ å…¥ç„¡æ¬Šé™ç¾¤çµ„å®Œæˆ"
 
 #: lib/RT/Ticket_Overlay.pm:2369
 msgid "That user may not own tickets in that queue"
-msgstr "ä½¿ç?¨è????¯è?½æ???????¿è¾¦ä½????è£¡ç????³è?????"
+msgstr "ä½¿ç”¨è€…å¯èƒ½æ²’æœ‰æ‰¿è¾¦ä½‡åˆ—è£¡çš„ç”³è«‹å–®"
 
 #: lib/RT/Link_Overlay.pm:115
 msgid "That's not a numerical id"
-msgstr "???ä¸???¯ä???????¸å??ç·¨è??"
+msgstr "é€™ä¸æ˜¯ä¸€å€‹æ•¸å­—ç·¨è™Ÿ"
 
 #: html/Ticket/Create.html:101 html/Ticket/DetailedCreate.html:12 html/Ticket/Elements/ShowSummary:4
 msgid "The Basics"
-msgstr "??ºæ?¬è??è¨?"
+msgstr "åŸºæœ¬è³‡è¨Š"
 
 #: lib/RT/Ticket_Overlay.pm:1705
 msgid "The comment has been recorded"
-msgstr "è©?è«?å·²è¢«ç´????"
+msgstr "è©•è«–å·²è¢«ç´€éŒ„"
 
 #: bin/enhanced-mailgate:600 bin/enhanced-mailgate:610 bin/rt-commit-handler:732 bin/rt-commit-handler:742
 msgid "The following commands were not proccessed:\\n\\n"
-msgstr "ä»¥ä????½ä»¤??ªè¢«??·è??ï¼?\\n\\n"
+msgstr "ä»¥ä¸‹å‘½ä»¤æœªè¢«åŸ·è¡Œï¼š\\n\\n"
 
 #:
 msgid "The new value has been set."
-msgstr "??°ç??æ¬?ä½???¼è¨­å®?å®???????"
+msgstr "æ–°çš„æ¬„ä½å€¼è¨­å®šå®Œæˆã€‚"
 
 #: html/Admin/Elements/EditUserComments:2
 msgid "These comments aren't generally visible to the user"
-msgstr "è©²ä½¿??¨è??ä¸???????è¦????äº?è©?è«?"
+msgstr "è©²ä½¿ç”¨è€…ä¸æœƒçœ‹è¦‹é€™äº›è©•è«–"
 
 #: bin/rt:1122
 #. ($l->Type, $l->TargetObj->Id, $l->TargetObj->Subject)
 msgid "This ticket %1 %2 (%3)\\n"
-msgstr "??³è????? %1 %2 (%3)\\n"
+msgstr "ç”³è«‹å–® %1 %2 (%3)\\n"
 
 #: lib/RT/Transaction_Overlay.pm:319
 msgid "This transaction appears to have no content"
-msgstr "æ­¤é????´å????±å??æ²??????§å®¹"
+msgstr "æ­¤é …æ›´å‹•å ±å‘Šæ²’æœ‰å…§å®¹"
 
 #: html/Ticket/Elements/ShowRequestor:22
 msgid "This user's 25 highest priority tickets"
-msgstr "ä½¿ç?¨è???????ºç????? 25 ä»½å?ªå??????????³è?????"
+msgstr "ä½¿ç”¨è€…é€å‡ºçš„å‰ 25 ä»½å„ªå…ˆè™•ç†ç”³è«‹å–®"
 
 #:
 msgid "Thu"
-msgstr "?????????"
+msgstr "æ˜ŸæœŸå››"
 
 #: lib/RT/Date.pm:356
 msgid "Thu."
-msgstr "?????????"
+msgstr "æ˜ŸæœŸå››"
 
 #: html/Ticket/Display.html:4
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket # %1  %2"
-msgstr "??³è????? # %1 %2"
+msgstr "ç”³è«‹å–® # %1 %2"
 
 #: html/Ticket/ModifyAll.html:1
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "??´æ?°ç?³è????? #%1 ?????¨é?¨è??è¨?ï¼?%2"
+msgstr "æ›´æ–°ç”³è«‹å–® #%1 çš„å…¨éƒ¨è³‡è¨Šï¼š%2"
 
 #: lib/RT/Ticket_Overlay.pm:471
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
-msgstr "??³è????? #%1 ??????å»ºç????? '%2' ä½????"
+msgstr "ç”³è«‹å–® #%1 æˆåŠŸå»ºç«‹æ–¼ '%2' ä½‡åˆ—"
 
 #: bin/enhanced-mailgate:604 bin/rt-commit-handler:736
 #. ($Ticket->Id)
 msgid "Ticket %1 loaded\\n"
-msgstr "è¼???¥ç?³è????? %1\\n"
+msgstr "è¼‰å…¥ç”³è«‹å–® %1\\n"
 
 #: html/Search/Bulk.html:159
 #. ($Ticket->Id,$_)
 msgid "Ticket %1: %2"
-msgstr "??³è????? %1ï¼?%2"
+msgstr "ç”³è«‹å–® %1ï¼š%2"
 
 #: html/Ticket/History.html:4
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
-msgstr "??³è????®è?????ç´???? # %1 %2"
+msgstr "ç”³è«‹å–®è™•ç†ç´€éŒ„ # %1 %2"
 
 #: html/SelfService/Display.html:12
 msgid "Ticket Id"
-msgstr "??³è????®ç·¨???"
+msgstr "ç”³è«‹å–®ç·¨è™Ÿ"
 
 #: html/Search/PickRestriction:40
 msgid "Ticket attachment"
-msgstr "??³è????®é??ä»?"
+msgstr "ç”³è«‹å–®é™„ä»¶"
 
 #: html/Ticket/DetailedCreate.html:70 lib/RT/Tickets_Overlay.pm:471
 msgid "Ticket content"
-msgstr "??³è????®å?§å®¹"
+msgstr "ç”³è«‹å–®å…§å®¹"
 
 #: lib/RT/Tickets_Overlay.pm:517
 msgid "Ticket content type"
-msgstr "??³è????®å?§å®¹é¡????"
+msgstr "ç”³è«‹å–®å…§å®¹é¡åˆ¥"
 
 #: lib/RT/Transaction_Overlay.pm:535
 msgid "Ticket created"
-msgstr "??³è????®å»ºç«?å®????"
+msgstr "ç”³è«‹å–®å»ºç«‹å®Œæˆ"
 
 #: bin/enhanced-mailgate:281 bin/rt-mailgate:246
 msgid "Ticket creation failed"
-msgstr "??³è????®å»ºç«?å¤±æ??"
+msgstr "ç”³è«‹å–®å»ºç«‹å¤±æ•—"
 
 #: lib/RT/Transaction_Overlay.pm:540
 msgid "Ticket deleted"
-msgstr "??³è????®å?ªé?¤å?????"
+msgstr "ç”³è«‹å–®åˆªé™¤å®Œæˆ"
 
 #:
 msgid "Ticket killed"
-msgstr "??³è????®å?ªé?¤å?????"
+msgstr "ç”³è«‹å–®åˆªé™¤å®Œæˆ"
 
 #: html/Ticket/Update.html:11
 msgid "Ticket watchers"
-msgstr "??³è????®è??å¯????"
+msgstr "ç”³è«‹å–®è¦–å¯Ÿå“¡"
 
 #: html/Elements/ViewUser:3
 #. ($name)
 msgid "Tickets from %1"
-msgstr "%1 ?????³è?????"
+msgstr "%1 çš„ç”³è«‹å–®"
 
 #: html/Ticket/Create.html:108 html/Ticket/DetailedCreate.html:25 html/Ticket/Elements/EditBasics:25
 msgid "Time Left"
-msgstr "??©é????????"
+msgstr "å‰©é¤˜æ™‚é–“"
 
 #: html/Ticket/Create.html:107 html/Ticket/DetailedCreate.html:24 html/Ticket/Elements/EditBasics:18
 msgid "Time Worked"
-msgstr "????????????"
+msgstr "è™•ç†æ™‚é–“"
 
 #: lib/RT/Tickets_Overlay.pm:444
 msgid "Time left"
-msgstr "??©é????????"
+msgstr "å‰©é¤˜æ™‚é–“"
 
 #: html/Elements/Footer:6
 msgid "Time to display"
-msgstr "é¡¯ç¤º??????"
+msgstr "é¡¯ç¤ºæ™‚é–“"
 
 #: lib/RT/Tickets_Overlay.pm:420
 msgid "Time worked"
-msgstr "å·²è???????????"
+msgstr "å·²è™•ç†æ™‚é–“"
 
 #:
 msgid "TimeLeft"
-msgstr "??©é????????"
+msgstr "å‰©é¤˜æ™‚é–“"
 
 #:
 msgid "TimeWorked"
-msgstr "å·²è???????????"
+msgstr "å·²è™•ç†æ™‚é–“"
 
 #: bin/rt-commit-handler:378
 msgid "To generate a diff of this commit:"
-msgstr "??¢ç?????æ¬¡æ?´å?????å·®ç?°æ??ï¼?"
+msgstr "ç”¢ç”Ÿé€™æ¬¡æ›´å‹•çš„å·®ç•°æª”ï¼š"
 
 #: bin/rt-commit-handler:367
 msgid "To generate a diff of this commit:\\n"
-msgstr "??¢ç?????æ¬¡æ?´å?????å·®ç?°æ??ï¼?\\n"
+msgstr "ç”¢ç”Ÿé€™æ¬¡æ›´å‹•çš„å·®ç•°æª”ï¼š\\n"
 
 #: bin/rt:1250
 msgid "Told"
-msgstr "?????¥æ?¥æ??"
+msgstr "å‘ŠçŸ¥æ—¥æœŸ"
 
 #: lib/RT/Transaction_Overlay.pm:649
 #. ($self->Data)
 msgid "Transaction %1 purged"
-msgstr "æ¸???¤æ?´å????±å?? %1"
+msgstr "æ¸…é™¤æ›´å‹•å ±å‘Š %1"
 
 #: lib/RT/Transaction_Overlay.pm:206
 msgid "Transaction Created"
-msgstr "??´å????±å??å·²å»ºç«?"
+msgstr "æ›´å‹•å ±å‘Šå·²å»ºç«‹"
 
 #: lib/RT/Transaction_Overlay.pm:708
 msgid "Transactions are immutable"
-msgstr "ä¸???¯ä¿®??¹æ?´å????±å??"
+msgstr "ä¸å¯ä¿®æ”¹æ›´å‹•å ±å‘Š"
 
 #: bin/rtadmin:887
 #. ($right \n)
 msgid "Trying to delete a right: %1"
-msgstr "è©¦å????ªé?¤æ?????æ¬????ï¼?%1"
+msgstr "è©¦åœ–åˆªé™¤æŸé …æ¬Šé™ï¼š%1"
 
 #:
 msgid "Tue"
-msgstr "??????äº?"
+msgstr "æ˜ŸæœŸäºŒ"
 
 #: lib/RT/Date.pm:354
 msgid "Tue."
-msgstr "??????äº?"
+msgstr "æ˜ŸæœŸäºŒ"
 
 #: html/Admin/Queues/CustomField.html:13 html/Ticket/Elements/AddWatchers:19 html/Ticket/Elements/AddWatchers:9 lib/RT/Tickets_Overlay.pm:264
 msgid "Type"
-msgstr "é¡????"
+msgstr "é¡åˆ¥"
 
 #: lib/RT/ScripCondition_Overlay.pm:83
 msgid "Unimplemented"
-msgstr "å°???¡å¯¦ä½?"
+msgstr "å°šç„¡å¯¦ä½œ"
 
 #: html/Admin/Users/Modify.html:24
 msgid "Unix login"
-msgstr "Unix ??»å?¥å¸³???"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
 
 #: html/Admin/Elements/ModifyUser:39
 msgid "UnixUsername"
-msgstr "Unix ??»å?¥å¸³???"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
 
 #: lib/RT/Attachment_Overlay.pm:223
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
-msgstr "ä¸???¯è§£?????§å®¹???å­?ç·¨ç¢¼??¹å?? %1"
+msgstr "ä¸å¯è§£çš„å…§å®¹æ–‡å­—ç·¨ç¢¼æ–¹å¼ %1"
 
 #: html/Elements/SelectResultsPerPage:15
 msgid "Unlimited"
-msgstr "??¨æ?¸é¡¯ç¤?"
+msgstr "å…¨æ•¸é¡¯ç¤º"
 
 #: lib/RT/Transaction_Overlay.pm:584
 msgid "Untaken"
-msgstr "??ªè¢«??????"
+msgstr "æœªè¢«å—ç†"
 
 #: html/Elements/MyTickets:26 html/Search/Bulk.html:11 html/Ticket/Update.html:83
 msgid "Update"
-msgstr "??´æ??"
+msgstr "æ›´æ–°"
 
 #: html/Admin/Users/Prefs.html:36
 msgid "Update ID"
-msgstr "??´æ?°ç·¨???"
+msgstr "æ›´æ–°ç·¨è™Ÿ"
 
 #: html/Search/Bulk.html:98 html/Ticket/ModifyAll.html:37 html/Ticket/Update.html:38
 msgid "Update Type"
-msgstr "??´æ?°é?????"
+msgstr "æ›´æ–°é¡åˆ¥"
 
 #: html/Search/Listing.html:80
 msgid "Update all these tickets at once"
-msgstr "??´æ?¹æ?´æ?°ç?³è?????"
+msgstr "æ•´æ‰¹æ›´æ–°ç”³è«‹å–®"
 
 #: html/Admin/Users/Prefs.html:23
 msgid "Update email"
-msgstr "??´æ?°é?»å????µä»¶ä¿¡ç®±"
+msgstr "æ›´æ–°é›»å­éƒµä»¶ä¿¡ç®±"
 
 #: html/Admin/Users/Prefs.html:29
 msgid "Update name"
-msgstr "??´æ?°å¸³???"
+msgstr "æ›´æ–°å¸³è™Ÿ"
 
 #: lib/RT/Interface/Web.pm:351
 msgid "Update not recorded."
-msgstr "??´æ?°æ?ªè¢«è¨????"
+msgstr "æ›´æ–°æœªè¢«è¨˜éŒ„"
 
 #: html/Search/Bulk.html:59
 msgid "Update selected tickets"
-msgstr "??´æ?°é?¸æ???????³è?????"
+msgstr "æ›´æ–°é¸æ“‡çš„ç”³è«‹å–®"
 
 #: html/Admin/Users/Prefs.html:10
 msgid "Update signature"
-msgstr "??´æ?°ç°½ç«?"
+msgstr "æ›´æ–°ç°½ç« "
 
 #: html/Ticket/ModifyAll.html:35
 msgid "Update ticket"
-msgstr "??´æ?°ç?³è?????"
+msgstr "æ›´æ–°ç”³è«‹å–®"
 
 #: html/SelfService/Update.html:1
 #. ($Ticket->id)
 msgid "Update ticket # %1"
-msgstr "??´æ?°ç?³è????? # %1"
+msgstr "æ›´æ–°ç”³è«‹å–® # %1"
 
 #: html/SelfService/Update.html:25
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "??´æ?°ç?³è????? #%1"
+msgstr "æ›´æ–°ç”³è«‹å–® #%1"
 
 #: lib/RT/Interface/Web.pm:349
 msgid "Update type was neither correspondence nor comment."
-msgstr "??´æ?°ç????§å®¹ä¸¦é????³è????®å???????°å??ä¹?ä¸???¯è??è«?"
+msgstr "æ›´æ–°çš„å…§å®¹ä¸¦éç”³è«‹å–®å¯„é€åœ°å€ä¹Ÿä¸æ˜¯è©•è«–"
 
 #: bin/rt:1240 html/Elements/SelectDateType:9 html/Ticket/Elements/ShowDates:44
 msgid "Updated"
-msgstr "??´æ?°æ?¥æ??"
+msgstr "æ›´æ–°æ—¥æœŸ"
 
 #: bin/rtadmin:315
 #. ($user_obj->Name, $attrib, $msg)
 msgid "User %1 %2: %3\\n"
-msgstr "ä½¿ç?¨è?? %1 %2ï¼?%3\\n"
+msgstr "ä½¿ç”¨è€… %1 %2ï¼š%3\\n"
 
 #: bin/rtadmin:323
 #. ($user_obj->Name, $msg)
 msgid "User %1 Password: %2\\n"
-msgstr "ä½¿ç?¨è?? %1 å¯?ç¢¼ï??%2\\n"
+msgstr "ä½¿ç”¨è€… %1 å¯†ç¢¼ï¼š%2\\n"
 
 #: bin/rt:452
 #. ($val)
 msgid "User '%1' not found"
-msgstr "??¾ä????°ä½¿??¨è?? '%1'"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… '%1'"
 
 #: bin/rt:453 bin/rtadmin:289
 #. ($user)
 #. ($val)
 msgid "User '%1' not found\\n"
-msgstr "??¾ä????°ä½¿??¨è?? '%1'\\n"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… '%1'\\n"
 
 #: html/Admin/Users/Prefs.html:33
 msgid "User ID"
-msgstr "ä½¿ç?¨è??å¸³è??"
+msgstr "ä½¿ç”¨è€…å¸³è™Ÿ"
 
 #: html/Elements/SelectUsers:2
 msgid "User Id"
-msgstr "ä½¿ç?¨è??å¸³è??"
+msgstr "ä½¿ç”¨è€…å¸³è™Ÿ"
 
 #: html/Admin/Elements/GroupTabs:15 html/Admin/Elements/QueueTabs:26 html/Admin/Elements/SystemTabs:15
 msgid "User Rights"
-msgstr "ä½¿ç?¨è??æ¬????"
+msgstr "ä½¿ç”¨è€…æ¬Šé™"
 
 #: html/Admin/Users/Modify.html:139
 #. ($msg)
 msgid "User could not be created: %1"
-msgstr "??¡æ??å»ºç??ä½¿ç?¨è??: %1"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…: %1"
 
 #: lib/RT/User_Overlay.pm:230
 msgid "User created"
-msgstr "ä½¿ç?¨è??å»ºç??å®????"
+msgstr "ä½¿ç”¨è€…å»ºç«‹å®Œæˆ"
 
 #: html/Admin/Global/GroupRights.html:41 html/Admin/Groups/GroupRights.html:28 html/Admin/Queues/GroupRights.html:44
 msgid "User defined groups"
-msgstr "ä½¿ç?¨è??å®?ç¾©ç??ç¾¤ç??"
+msgstr "ä½¿ç”¨è€…å®šç¾©çš„ç¾¤çµ„"
 
 #: lib/RT/Transaction_Overlay.pm:627
 msgid "User notified"
-msgstr "å·²é????¥ä½¿??¨è??"
+msgstr "å·²é€šçŸ¥ä½¿ç”¨è€…"
 
 #: html/Admin/Users/Prefs.html:1
 msgid "User view"
-msgstr "ä½¿ç?¨è??ç§?äººè?????"
+msgstr "ä½¿ç”¨è€…ç§äººè³‡æ–™"
 
 #: html/Admin/Users/Modify.html:19 html/Elements/Login:18 html/Ticket/Elements/AddWatchers:11
 msgid "Username"
-msgstr "å¸³è??"
+msgstr "å¸³è™Ÿ"
 
 #: html/Admin/Elements/SelectNewGroupMembers:2 html/Admin/Elements/Tabs:6 html/Admin/Groups/Members.html:29 html/User/Groups/Members.html:32
 msgid "Users"
-msgstr "ä½¿ç?¨è??"
+msgstr "ä½¿ç”¨è€…"
 
 #: html/Admin/Users/index.html:55
 msgid "Users matching search criteria"
-msgstr "ç¬¦å?????å°?æ¢?ä»¶ç??ä½¿ç?¨è??"
+msgstr "ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½¿ç”¨è€…"
 
 #: html/Search/PickRestriction:28
 msgid "ValueOfQueue"
-msgstr "??¸æ??ä½????"
+msgstr "é¸æ“‡ä½‡åˆ—"
 
 #: html/Admin/Queues/CustomField.html:16
 msgid "Values"
-msgstr "???"
+msgstr "å€¼"
 
 #: html/Admin/Elements/QueueTabs:8
 msgid "Watchers"
-msgstr "è¦?å¯????"
+msgstr "è¦–å¯Ÿå“¡"
 
 #: html/Admin/Elements/ModifyUser:33
 msgid "WebEncoding"
-msgstr "ç¶²é?????å­?ç·¨ç¢¼??¹å??"
+msgstr "ç¶²é æ–‡å­—ç·¨ç¢¼æ–¹å¼"
 
 #:
 msgid "Wed"
-msgstr "??????ä¸?"
+msgstr "æ˜ŸæœŸä¸‰"
 
 #: lib/RT/Date.pm:355
 msgid "Wed."
-msgstr "??????ä¸?"
+msgstr "æ˜ŸæœŸä¸‰"
 
 #: html/Admin/Users/Modify.html:90
 msgid "Work"
-msgstr "??¬å??"
+msgstr "å…¬å¸"
 
 #: html/Admin/Elements/ModifyUser:47
 msgid "WorkPhone"
-msgstr "??¬å?¸é?»è©±"
+msgstr "å…¬å¸é›»è©±"
 
 #: bin/rt:1208 html/SelfService/Display.html:64 html/Ticket/Elements/ShowBasics:9 html/Ticket/Update.html:37
 msgid "Worked"
-msgstr "????????????"
+msgstr "è™•ç†æ™‚é–“"
 
 #: lib/RT/Ticket_Overlay.pm:2458
 msgid "You already own this ticket"
-msgstr "??¨å·²??¯é??ä»½ç?³è????®ç????¿è¾¦äº?"
+msgstr "æ‚¨å·²æ˜¯é€™ä»½ç”³è«‹å–®çš„æ‰¿è¾¦äºº"
 
 #: html/autohandler:86
 msgid "You are not an authorized user"
-msgstr "??¨ä????¯è¢«???æ¬????ä½¿ç?¨è??"
+msgstr "æ‚¨ä¸æ˜¯è¢«æˆæ¬Šçš„ä½¿ç”¨è€…"
 
 #: lib/RT/Ticket_Overlay.pm:2354
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "ç¥???½é????°æ??æ´¾æ?¨æ????¿è¾¦?????¯æ???????¿è¾¦äººç????³è?????"
+msgstr "ç¥‡èƒ½é‡æ–°æŒ‡æ´¾æ‚¨æ‰€æ‰¿è¾¦æˆ–æ˜¯æ²’æœ‰æ‰¿è¾¦äººçš„ç”³è«‹å–®"
 
 #: bin/rt:903
 msgid "You don't have permission to view that ticket.\\n"
-msgstr "??¨æ???????????ä»½ç?³è????®ç??æ¬???????\\n"
+msgstr "æ‚¨æ²’æœ‰çœ‹é‚£ä»½ç”³è«‹å–®çš„æ¬Šé™ã€‚\\n"
 
 #: docs/design_docs/string-extraction-guide.txt:47
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
-msgstr "??¨æ????¨ä????? %2 ??¾å?? %1 ?????³è?????"
+msgstr "æ‚¨æœƒåœ¨ä½‡åˆ— %2 æ‰¾åˆ° %1 çš„ç”³è«‹å–®"
 
 #: html/NoAuth/Logout.html:7
 msgid "You have been logged out of RT."
-msgstr "??¨å·²??»å?? RT???"
+msgstr "æ‚¨å·²ç™»å‡º RTã€‚"
 
 #: html/SelfService/Display.html:112
 msgid "You have no permission to create tickets in that queue."
-msgstr "??¨æ???????¨è©²ä½????å»ºç????³è????®ç??æ¬???????"
+msgstr "æ‚¨æ²’æœ‰åœ¨è©²ä½‡åˆ—å»ºç«‹ç”³è«‹å–®çš„æ¬Šé™ã€‚"
 
 #: lib/RT/Ticket_Overlay.pm:1361
 msgid "You may not create requests in that queue."
-msgstr "??¨ä????½å?¨è©²ä½????ä¸­æ????ºç?³è?????"
+msgstr "æ‚¨ä¸èƒ½åœ¨è©²ä½‡åˆ—ä¸­æå‡ºç”³è«‹ã€‚"
 
 #: html/NoAuth/Logout.html:12
 msgid "You're welcome to login again"
-msgstr "æ­¡è??ä¸?æ¬¡å??ä¾?"
+msgstr "æ­¡è¿ä¸‹æ¬¡å†ä¾†"
 
 #: html/SelfService/Elements/MyRequests:1
 #. ($friendly_status)
 msgid "Your %1 requests"
-msgstr "??¨æ????ºç?? %1 ??³è??"
+msgstr "æ‚¨æå‡ºçš„ %1 ç”³è«‹"
 
 #: bin/enhanced-mailgate:359 bin/rt-mailgate:324
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
-msgstr "RT ç®¡ç????¡å?¯è?½è¨­??¯ä????? RT å¯???ºç????µä»¶??¶ä»¶äººæ????­æ??"
+msgstr "RT ç®¡ç†å“¡å¯èƒ½è¨­éŒ¯äº†ç”± RT å¯„å‡ºçš„éƒµä»¶æ”¶ä»¶äººæ¨™é ­æª”"
 
 #: html/autohandler:101 html/autohandler:107
 msgid "Your username or password is incorrect"
-msgstr "??¨ç??å¸³è?????å¯?ç¢¼æ??èª?"
+msgstr "æ‚¨çš„å¸³è™Ÿæˆ–å¯†ç¢¼æœ‰èª¤"
 
 #: html/Admin/Elements/ModifyUser:61 html/Admin/Users/Modify.html:74
 msgid "Zip"
-msgstr "??µé????????"
+msgstr "éƒµéå€è™Ÿ"
 
 #:
 msgid "ago"
-msgstr "??????"
+msgstr "éæœŸ"
 
 #: html/User/Elements/DelegateRights:32
 #. ($right->PrincipalObj->Object->SelfDescription)
 msgid "as granted to %1"
-msgstr "æ¬??????? %1"
+msgstr "æ¬Šé™åŒ %1"
 
 #: html/Elements/SelectMatch:11
 msgid "contains"
-msgstr "??????"
+msgstr "åŒ…å«"
 
 #: lib/RT/Ticket_Overlay.pm:1779
 msgid "correspondence (probably) not sent"
-msgstr "??³è????®ï????¯è?½ï????ªè¢«??????"
+msgstr "ç”³è«‹å–®ï¼ˆå¯èƒ½ï¼‰æœªè¢«é€å‡º"
 
 #: lib/RT/Ticket_Overlay.pm:1790
 msgid "correspondence sent"
-msgstr "??³è????®å·²??????"
+msgstr "ç”³è«‹å–®å·²é€å‡º"
 
 #: html/Admin/Elements/ModifyQueue:40 html/Admin/Queues/Modify.html:51 lib/RT/Date.pm:282
 msgid "days"
-msgstr "å¤?"
+msgstr "å¤©"
 
 #:
 msgid "dead"
-msgstr "???çµ???????"
+msgstr "æ‹’çµ•è™•ç†"
 
 #: html/Search/Listing.html:97
 msgid "delete"
-msgstr "??ªé??"
+msgstr "åˆªé™¤"
 
 #: lib/RT/Queue_Overlay.pm:38
 msgid "deleted"
-msgstr "å·²å?ªé??"
+msgstr "å·²åˆªé™¤"
 
 #: html/Search/PickRestriction:45
 msgid "does not match"
-msgstr "ä¸?ç¬¦å??"
+msgstr "ä¸ç¬¦åˆ"
 
 #: html/Elements/SelectMatch:12
 msgid "doesn't contain"
-msgstr "ä¸???????"
+msgstr "ä¸åŒ…å«"
 
 #: html/Elements/SelectEqualityOperator:15
 msgid "equal to"
-msgstr "ç­????"
+msgstr "ç­‰æ–¼"
 
 #:
 msgid "false"
-msgstr "???"
+msgstr "å‡"
 
 #: html/Elements/SelectEqualityOperator:15
 msgid "greater than"
-msgstr "å¤§æ??"
+msgstr "å¤§æ–¼"
 
 #: lib/RT/Group_Overlay.pm:137
 #. ($self->Name)
 msgid "group '%1'"
-msgstr "ç¾¤ç?? '%1'"
+msgstr "ç¾¤çµ„ '%1'"
 
 #: lib/RT/Date.pm:278
 msgid "hours"
-msgstr "å°????"
+msgstr "å°æ™‚"
 
 #: bin/rt:1182
 msgid "id"
-msgstr "ç·¨è??"
+msgstr "ç·¨è™Ÿ"
 
 #: html/Elements/SelectBoolean:9 html/Elements/SelectMatch:13 html/Search/PickRestriction:24 html/Search/PickRestriction:53 html/Search/PickRestriction:65
 msgid "is"
-msgstr "???"
+msgstr "æ˜¯"
 
 #: html/Elements/SelectBoolean:13 html/Elements/SelectMatch:14 html/Search/PickRestriction:25 html/Search/PickRestriction:54 html/Search/PickRestriction:66
 msgid "isn't"
-msgstr "ä¸????"
+msgstr "ä¸æ˜¯"
 
 #: html/Elements/SelectEqualityOperator:15
 msgid "less than"
-msgstr "å°????"
+msgstr "å°æ–¼"
 
 #: html/Search/PickRestriction:44
 msgid "matches"
-msgstr "ç¬¦å??"
+msgstr "ç¬¦åˆ"
 
 #: lib/RT/Date.pm:274
 msgid "min"
-msgstr "???"
+msgstr "åˆ†"
 
 #: html/Ticket/Update.html:37
 msgid "minutes"
-msgstr "??????"
+msgstr "åˆ†é˜"
 
 #: bin/rt-commit-handler:741
 msgid "modifications\\n\\n"
-msgstr "ä¿®æ?¹\\n\\n"
+msgstr "ä¿®æ”¹\\n\\n"
 
 #: lib/RT/Date.pm:290
 msgid "months"
-msgstr "???"
+msgstr "æœˆ"
 
 #: lib/RT/Queue_Overlay.pm:33
 msgid "new"
-msgstr "??°å»ºç«?"
+msgstr "æ–°å»ºç«‹"
 
 #: html/Ticket/Elements/EditWatchers:5
 msgid "none"
-msgstr "???"
+msgstr "ç„¡"
 
 #: html/Elements/SelectEqualityOperator:15
 msgid "not equal to"
-msgstr "ä¸?ç­????"
+msgstr "ä¸ç­‰æ–¼"
 
 #:
 msgid "notlike"
-msgstr "ä¸?ç¬¦å??"
+msgstr "ä¸ç¬¦åˆ"
 
 #: lib/RT/Queue_Overlay.pm:34
 msgid "open"
-msgstr "??????"
+msgstr "é–‹å•Ÿ"
 
 #: lib/RT/Group_Overlay.pm:142
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
-msgstr "'%1'??¯ä½¿??¨è?? '%2'??????äººç¾¤çµ?"
+msgstr "'%1'æ˜¯ä½¿ç”¨è€… '%2'çš„å€‹äººç¾¤çµ„"
 
 #: lib/RT/Group_Overlay.pm:150
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
-msgstr "ä½???? %1 %2"
+msgstr "ä½‡åˆ— %1 %2"
 
 #: lib/RT/Queue_Overlay.pm:37
 msgid "rejected"
-msgstr "???çµ?"
+msgstr "æ‹’çµ•"
 
 #: lib/RT/Queue_Overlay.pm:36
 msgid "resolved"
-msgstr "å·²è§£æ±?"
+msgstr "å·²è§£æ±º"
 
 #: lib/RT/Date.pm:270
 msgid "sec"
-msgstr "ç§?"
+msgstr "ç§’"
 
 #: lib/RT/Queue_Overlay.pm:35
 msgid "stalled"
-msgstr "å»¶å??"
+msgstr "å»¶å®•"
 
 #: lib/RT/Group_Overlay.pm:145
 #. ($self->Type)
@@ -3278,41 +3278,41 @@ msgstr "ç³»çµ± %1"
 #: lib/RT/Group_Overlay.pm:156
 #. ($self->Type)
 msgid "system group '%1'"
-msgstr "ç³»çµ±ç¾¤ç?? '%1'"
+msgstr "ç³»çµ±ç¾¤çµ„ '%1'"
 
 #: html/Elements/Error:18 html/SelfService/Error.html:17
 msgid "the calling component did not specify why"
-msgstr "??¼å?«å??ä»¶æ?ªæ???????????"
+msgstr "å‘¼å«å…ƒä»¶æœªæŒ‡æ˜åŸå› "
 
 #: lib/RT/Group_Overlay.pm:153
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
-msgstr "??³è????? #%1 %2"
+msgstr "ç”³è«‹å–® #%1 %2"
 
 #:
 msgid "true"
-msgstr "???"
+msgstr "çœŸ"
 
 #: lib/RT/Group_Overlay.pm:159
 #. ($self->Id)
 msgid "undescripbed group %1"
-msgstr "æ²???????è¿°ç??ç¾¤ç?? %1"
+msgstr "æ²’æœ‰æè¿°çš„ç¾¤çµ„ %1"
 
 #: lib/RT/Group_Overlay.pm:134
 #. ($user->Object->Name)
 msgid "user %1"
-msgstr "ä½¿ç?¨è?? %1"
+msgstr "ä½¿ç”¨è€… %1"
 
 #: lib/RT/Date.pm:286
 msgid "weeks"
-msgstr "???"
+msgstr "é€±"
 
 #: html/Admin/Global/Scrips.html:25
 #. ($scrip->TemplateObj->Name)
 msgid "with template %1"
-msgstr "ä½¿ç?¨ç?????%1"
+msgstr "ä½¿ç”¨ç¯„æœ¬%1"
 
 #: lib/RT/Date.pm:294
 msgid "years"
-msgstr "å¹?"
+msgstr "å¹´"
 

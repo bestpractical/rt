@@ -1,5 +1,4 @@
-<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, tabs_scalar => $tabs_scalar &>
-<%INIT>
+<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, tabs_scalar => $tabs_scalar, current_toptab => "Search/Listing.html" &> <%INIT>
 	
   my $id = $Ticket->id();
   my $tabs_scalar = '';
@@ -18,12 +17,7 @@
 	      C => { title => loc('Dates'),
 		     path => "Ticket/ModifyDates.html?id=".$id,
 		   },
-	      
-	      D => { title => loc('People'),
-		     path => "Ticket/ModifyPeople.html?id=".$id,
-		   },
-	      E => { title => loc('Links'),
-		     path => "Ticket/ModifyLinks.html?id=".$id,
+	      D => { title => loc('People'), path => "Ticket/ModifyPeople.html?id=".$id, }, E => { title => loc('Links'), path => "Ticket/ModifyLinks.html?id=".$id,
 		   },
 	      F => { title => loc('Jumbo'),
 		     path => "Ticket/ModifyAll.html?id=".$id,
@@ -87,7 +81,6 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 
 
 
-
 if (defined $session{'tickets'}) {
     my $items = $session{'tickets'}->ItemsArrayRef();
     my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
@@ -97,31 +90,31 @@ if (defined $session{'tickets'}) {
     if ($items->[$indexs[0]]->id == $Ticket->Id) {
 	# Don't display prev links if we're on the first ticket
  	if ( $items->[0]->id != $Ticket->id ) {
-	    $tabs_scalar .= '<A HREF="Display.html?id='.
-	      $items->[0]->id.
-		'">&lt;&lt; '.loc('First').'</a> ';
-            $tabs_scalar .= " | ";
-	    $tabs_scalar .= ' <A HREF="Display.html?id='.
-	      $items->[$indexs[0]-1]->id.
-		'">&lt; '.loc('Prev').'</a> ';
+	    $tabs_scalar .= ' | <A class="nav" HREF="Display.html?id='.
+	      $items->[0]->id.  '">&lt;&lt; '.loc('First').'</a> ';
+	    $tabs_scalar .= ' | <A class="nav" HREF="Display.html?id='.
+	      $items->[$indexs[0]-1]->id.  '">&lt; '.loc('Prev').'</a> ';
 	}
- 	if (( $items->[0]->id != $Ticket->id ) && 
-            ( $Ticket->id != $items->[-1]->id )) {
-            $tabs_scalar .= " | ";
+ 	#if (( $items->[0]->id != $Ticket->id ) && 
+        #    ( $Ticket->id != $items->[-1]->id )) {
+        #    $tabs_scalar .= " | ";
+        #}
         }
+        }
+
+        $tabs_scalar .= " | <span class=\"currentnav\">#".$Ticket->Id."</span> | ";
+
+    if ($items->[0]) {
 	# Don't display next links if we're on the last ticket
 	if ( $Ticket->id != $items->[-1]->id ) {
-	    $tabs_scalar .= ' <A HREF="Display.html?id='.
-	      $items->[$indexs[0]+1]->id.
-		'">'.loc('Next').' &gt;</a> ';
-            $tabs_scalar .= " | ";
-	    $tabs_scalar .= ' <A HREF="Display.html?id='.
-	      $items->[-1]->id.
-		'">'.loc('Last').' &gt;&gt</a>';
+	    $tabs_scalar .= '<A class="nav" HREF="Display.html?id='.
+	      $items->[$indexs[0]+1]->id.  '">'.loc('Next').' &gt;</a> | ';
+	    $tabs_scalar .= '<A class="nav" HREF="Display.html?id='.
+	      $items->[-1]->id.  '">'.loc('Last').' &gt;&gt</a> | ';
 	}
-	$tabs_scalar .= "<BR><BR>";
     }
-    }
+} else {
+        $tabs_scalar .= "| <span class=\"currentnav\">#".$Ticket->Id."</span> |";
 }
 </%INIT>
 

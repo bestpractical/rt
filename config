@@ -221,32 +221,9 @@ merge_command =
 file_template =
 [
 	{
-		pattern = [ "*.[cyl]" ];
-		body = "${read_file ${source etc/template/c abs}}";
-	},
-	{
-		pattern = [ "*.h" ];
-		body = "${read_file ${source etc/template/h abs}}";
-	},
-	{
-		pattern = [ "test/*/*.sh" ];
-		body = "${read_file ${source etc/template/test abs}}";
-	},
-	{
-		pattern = [ "*.sh" ];
-		body = "${read_file ${source etc/template/sh abs}}";
-	},
-	{
-		pattern = [ "*.man", "*.[12345678]" ];
-		body = "${read_file ${source etc/template/man abs}}";
-	},
-	{
-		pattern = [ "*.so", "*.ms", "*.me" ];
-		body = "${read_file ${source etc/template/ms abs}}";
-	},
-	{
 		pattern = [ "*" ];
-		body = "${read_file ${source etc/template/generic abs}}";
+                body = "${read_file ${source etc/template/generic abs}}";
+
 	}
 ];
 
@@ -276,3 +253,4 @@ build_covers_all_architectures = true;
 
 test_command = "make test";
 
+build_time_adjust=dont_adjust;

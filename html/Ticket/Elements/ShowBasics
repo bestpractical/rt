@@ -1,27 +1,34 @@
- <TABLE WIDTH="100%">
-      <TR>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => loc('Id') , content => $Ticket->Id &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => loc('Status') , content => loc($Ticket->Status) &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-        <& /Elements/ShadedBox, title => loc('Worked') , content => loc('[_1] min', $TimeWorked) &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => loc('Priority'), content=> $Ticket->Priority."/".$Ticket->FinalPriority &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => loc('Queue'), content=> $Ticket->QueueObj->Name &>
-	</TD>	
-
-
-      </TR>
-    </TABLE>
+<table>
+<tr><td>
+<&|/l&>Id</&> 
+</td><td class="value">
+<%$Ticket->Id %>
+</td></tr>
+<tr><td>
+<&|/l&>Status</&>
+</td><td class="value">
+<&|/l&><% $Ticket->Status%></&>
+</td></tr>
+<tr><td>
+<&|/l&>Worked</&>
+</td><td class="value">
+<&|/l, $TimeWorked &>[_1] min</&>
+</td></tr>
+<tr><td>
+<&|/l&>Priority</&>
+</td><td class="value">
+<%$Ticket->Priority%>/<%$Ticket->FinalPriority %>
+</td></tr>
+<tr><td>
+<&|/l&>Queue</&>
+</td><td class="value">
+<%$Ticket->QueueObj->Name%>
+</td></tr>
+</table>
 <%INIT>
 my $TimeWorked = $Ticket->TimeWorked;
 if ($Ticket->TimeLeft > 0 ) {
-        $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
+  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
 }
 </%INIT>
 <%ARGS>

@@ -9,23 +9,17 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
-% if ($ShowBar) {
-<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=2 BGCOLOR="#993333">
-<TR VALIGN=TOP>
-<TD><IMG SRC="<%$RT::LogoURL%>" alt="RT"></TD>
-<TD VALIGN=CENTER ALIGN=LEFT>
-<font size=+1 color="#ffffff">
-<B>
-<%$Title%>
-</B>
-</font>
-</TD>
-<TD ALIGN=RIGHT>
-<font color="#ffffff" size=-2>
+%#leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('/NoAuth/images/indicator.gif')">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+  <tr> 
+    <td colspan=2><img src="/NoAuth/images/bplogo.gif" alt="" width="230" height="50"></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td width="20%" align="right">
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
-<A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
+<A  HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-&nbsp;|&nbsp;<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
+&nbsp;|&nbsp;<A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 % }
 <BR>
 <&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
@@ -33,11 +27,15 @@
 <&|/l&>Not logged in.</&>
 % }
 </font>
-</TD>
-</TR>
-</TABLE>
-<BR>
-% }
+    </td>
+  </tr>
+  <tr><td class="black" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="1"></td></tr>
+<tr valign="middle">
+        <td class="blue" align="left" valign="middle" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
+</tr>
+  <tr><td class="blue" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="3"></td></tr>
+  <tr><td class="black" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="1"></td></tr>
+</table>
 <%INIT>
 
 $r->header_out('Pragma' => 'no-cache');
