@@ -216,8 +216,37 @@ else {
 
     $current_tab = 'Admin/Users/Modify.html?id='.$id;
     if ($id eq 'new') {
-	($val, $msg) = $UserObj->Create( Name => $Name,
-					 EmailAddress => $ARGS{'EmailAddress'}
+    ( $val, $msg ) = $UserObj->Create(
+        Name                  => $Name,
+        EmailAddress          => $ARGS{'EmailAddress'},
+        Name                  => $ARGS{'Name'},
+        Comments              => $ARGS{'Comments'},
+        Signature             => $ARGS{'Signature'},
+        EmailAddress          => $ARGS{'EmailAddress'},
+        FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
+        Organization          => $ARGS{'Organization'},
+        RealName              => $ARGS{'RealName'},
+        NickName              => $ARGS{'NickName'},
+        Lang                  => $ARGS{'Lang'},
+        EmailEncoding         => $ARGS{'EmailEncoding'},
+        WebEncoding           => $ARGS{'WebEncoding'},
+        ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
+        ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
+        Gecos                 => $ARGS{'Gecos'},
+        ExternalAuthId        => $ARGS{'ExternalAuthId'},
+        AuthSystem            => $ARGS{'AuthSystem'},
+        HomePhone             => $ARGS{'HomePhone'},
+        WorkPhone             => $ARGS{'WorkPhone'},
+        MobilePhone           => $ARGS{'MobilePhone'},
+        PagerPhone            => $ARGS{'PagerPhone'},
+        Address1              => $ARGS{'Address1'},
+        Address2              => $ARGS{'Address2'},
+        City                  => $ARGS{'City'},
+        State                 => $ARGS{'State'},
+        Zip                   => $ARGS{'Zip'},
+        Country               => $ARGS{'Country'},
+        Privileged           => $ARGS{'Privileged'},
+        Disabled            => ($ARGS{'Enabled'} ? 0 : 1) 
 				       );
 	if ($val) {
 		push @results, $msg;
@@ -227,7 +256,6 @@ else {
 
 	# set the id, so the the menu will have the right info
 	$id = $UserObj->Id;	
-
     } else {
 	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
 	$val = $UserObj->Id();
@@ -251,7 +279,7 @@ else {
 
 
 # If we have a user to modify, lets try. 
-if ($UserObj->Id) {
+if ($UserObj->Id && $id ne 'new') {
     
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
