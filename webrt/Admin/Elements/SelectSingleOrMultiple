@@ -1,0 +1,20 @@
+  <select name="<%$Name%>">
+    <option value="1" <%$SingleDefault%>>Single</option>
+    <option value="0" <%$MultipleDefault%>>Multiple</option>
+  </select>	
+
+
+<%INIT>
+my ($SingleDefault, $MultipleDefault);
+if ($Default == 1) {
+    $SingleDefault = "SELECTED";
+}
+elsif ($Default == 0 ) {
+    $MultipleDefault = "SELECTED";
+}
+
+</%INIT>
+<%ARGS>
+$Name => 'Single'
+$Default => 1
+</%ARGS>

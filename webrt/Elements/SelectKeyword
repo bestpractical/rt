@@ -1,20 +1,32 @@
-<SELECT NAME="<%$name%>" <%$multiple%> <%$size%>>
-<OPTION VALUE="">-</OPTION>
-<& SelectKeywordOptions, root=>$root &> 
+<SELECT NAME=<%$Name%> <%$Size%> <%$Multiple%>>
+%   foreach my $kid ( keys %{$Descendents} ) {
+<OPTION VALUE="<% $kid %>" 
+%if ($kid == $Default) {
+SELECTED
+%}
+><% $Descendents->{$kid} %></OPTION>
+% }
 </SELECT>
 
+
 <%INIT>
-if ($multiple) {
-	$multiple = "MULTIPLE";
+my $KeywordObj = new RT::Keyword($session{'CurrentUser'});
+$KeywordObj->Load($Root);
+my $Descendents = $KeywordObj->Descendents();
+
+if ($Multiple) {
+	$Multiple = "MULTIPLE";
 }
-if ($size) {
-	$size="SIZE=$size";
+if ($Size) {
+	$Size="SIZE=$Size";
 }	
+
+
 </%INIT>
 <%ARGS>
-$multiple => undef
-$size => undef
-$name => 'Keyword'
-$root => 0
-
+$Multiple => undef
+$Size => undef
+$Name => 'Keyword'
+$Root => 0
+$Default => undef
 </%ARGS>

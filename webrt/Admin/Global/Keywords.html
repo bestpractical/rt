@@ -8,105 +8,94 @@
 
 % if ($KeywordSelects->Count > 0 ) {
 <TABLE>
+<TR><TD>Delete</TD></TR>
+%  while (my $keywordselect = $KeywordSelects->Next ) {
 <TR>
-<TD>Delete
-</TD>
-<TD>
+  <TD><INPUT TYPE="CHECKBOX" NAME="KeywordSelect-<%$keywordselect->Id%>-Delete"></TD>
+  <TD><& /Admin/Elements/SelectKeywordSelect, KeywordSelect => $keywordselect &></TD>
 </TR>
-% while (my $keywordselect = $KeywordSelects->Next ) {
-<TR>
-<TD>
-<INPUT TYPE="CHECKBOX" NAME="DeleteKeywordSelect-<%$keywordselect->Id%>">
-</TD>
-<TD>
-<B><% $keywordselect->Name %></B>:
-% if ($keywordselect->Single) {
-Single
-% } else {
-Multiple
-% }
-	    children of
-	    <% $keywordselect->KeywordObj->Path %>
-% if ($keywordselect->Depth) {
-	    up to <%$keywordselect->Depth%> levels deep.
-% }
-</TD>
-</TR>
-% }
+%  }
 </TABLE>
 % }
 
 Add a keyword selection to this queue:
+%my $ks = new RT::KeywordSelect($session{'CurrentUser'});
 <ul>
-	<li>Name: <input size=10 name="Name">
-	  <select name="Single">
-	    <option value='1'>Single</option>
-	    <option value='0'>Multiple</option>
-	  </select>
-	  children of
-	  <& /Elements/SelectKeyword, root => '0', name => 'Keyword' &>
-	  up to <input name="Depth" size=2> levels deep.
-	</li>
-      </ul>
+<li><& /Admin/Elements/SelectKeywordSelect, KeywordSelect => $ks, NamePrefix => 'new' &></li>
+</ul>
+
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </FORM>
+
+
+
 <%init>
-my (@actions, $description);
+my (@actions);
+
+my $description = "Modify global Keyword selections";
 
 my $KeywordSelects = new RT::KeywordSelects ($session{'CurrentUser'});
-  
-  unless ($KeywordSelects->LimitToGlobals()) {
-  Abort("Couldn't load KeywordSelects.");
-  }
 
-
-    $description = "Modify global Keyword selections";
-
-
-
-if (($Keyword) && ($Keyword ne '' )){
-  my $NewKeywordSelect = new RT::KeywordSelect($session{'CurrentUser'});
-    
-
-  my $retval = $NewKeywordSelect->Create ( Keyword => $Keyword,
-                                           ObjectField => 'Queue',
-                                           ObjectType => 'Ticket',
-                                           ObjectValue => 0,
-                                           Name => $Name,
-                                           Single => $Single,
-					   Depth => $Depth,
-                                            );
-    if (defined $retval) {
-        push @actions, "KeywordSelect added across all queues";
-    }
-    else {
-        push @actions, "KeywordSelect could not be added to queue";
-    }
+unless ($KeywordSelects->LimitToGlobals()) {
+    Abort("Couldn't load KeywordSelects.");
 }
 
-# {{{ deal with modifying and deleting existing scrips
-my ($key);
-foreach $key (keys %ARGS) {
-    # {{{ if we're trying to delete the keywordselect
-    if ($key =~ /^DeleteKeywordSelect-(\d+)/) {
-	my $id = $1;
-	my $keywordselect = new RT::KeywordSelect($session{'CurrentUser'});
-	$keywordselect->Load($id);
-	$keywordselect->SetDisabled(1) || Abort("Couldn't delete keyword select");
-    }
 
-  # }}}
-  
+# {{{ if we're trying to create a new keyword select
+
+if ($ARGS{'KeywordSelect-new-Name'}) {
+    my $NewKeywordSelect = new RT::KeywordSelect($session{'CurrentUser'});
     
+    my $retval = $NewKeywordSelect->Create ( Keyword => $ARGS{'KeywordSelect-new-Keyword'},
+					     ObjectField => 'Queue',
+					     ObjectType => 'Ticket',
+					     ObjectValue => 0,
+					     Name => $ARGS{'KeywordSelect-new-Name'},
+					     Single => $ARGS{'KeywordSelect-new-Single'},
+					     Depth => $ARGS{'KeywordSelect-new-Depth'}
+					   );
+    if (defined $retval) {
+	push @actions, "KeywordSelect added.";
+	}
+    else {
+	push @actions, "KeywordSelect could not be added.";
+    }
 }
 # }}}
+# {{{ if we're trying to delete the keywordselect
+foreach my $key (keys %ARGS) {
+    if ($key =~ /^KeywordSelect-(\d+)-Delete$/) {
+	my $id = $1;
+	my $keywordselect = new RT::KeywordSelect($session{'CurrentUser'});
+	$keywordselect->Load($id) || push @actions, "Couldn't load keywordSelect";
+	my ($val, $msg) = $keywordselect->SetDisabled(1);
+	if ($val) {
+	    push @actions, 'KeywordSelect disabled.';
+	}	
+	else {
+	    push @actions, $msg;
+	}	
+    }
+}
+# }}}
+# {{{ if we're modifying keyword selects
+my @fields = qw(Name Keyword Single Depth);
+
+while (my $ks = $KeywordSelects->Next) {
+    foreach my $field (@fields) {
+	if (defined ($ARGS{"KeywordSelect-".$ks->Id."-".$field}) &&
+	    ($ARGS{"KeywordSelect-".$ks->Id."-".$field} ne $ks->$field())) {
+	    
+	    my $method = "Set$field";
+	    my ($val, $msg) = $ks->$method($ARGS{"KeywordSelect-".$ks->Id."-".$field});
+	    push @actions, "Keyword Select ". $ks->Name."/$field:".$msg;
+	}	
+    }
+}
+# }}}
+
 </%init>
 
 <%ARGS>
-
-$Keyword => undef
-$Single => undef
-$Depth => undef
-$Name => undef
 </%ARGS>

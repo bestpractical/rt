@@ -1,4 +1,8 @@
-%while (my $keyword = $keywords->Next()) {
+<PERL>
+while (my $keyword = $keywords->Next()) {
+    my ($selected);
+    if $keyword->Id == $default
+</PERL>
 <OPTION VALUE="<%$keyword->id%>"><% '-' x $depth %><%$keyword->Name%></OPTION>
 <& SelectKeywordOptions, depth => ($depth+1), root => $keyword->id &>
 %}

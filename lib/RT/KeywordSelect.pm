@@ -296,6 +296,7 @@ sub CurrentUserHasQueueRight {
 # }}}
 
 # {{{ sub CurrentUserHasSystemRight 
+
 =head2 CurrentUserHasSystemRight RIGHTNAME
 
 Check to see whether the current user has the specified right for the 'system' scope.
@@ -305,10 +306,11 @@ Check to see whether the current user has the specified right for the 'system' s
 sub CurrentUserHasSystemRight {
     my $self = shift;
     my $right = shift;
+    $RT::Logger->debug("$self in hashsysright for right $right\n");
     return ($self->HasRight( Right => $right,
+			     System => 1,
 			     Principal => $self->CurrentUser->UserObj));
 }
-
 
 # }}}
 
@@ -348,7 +350,7 @@ sub HasRight {
     my %args = ( Right => undef,
                  Principal => undef,
 		 Queue => undef,
-		 System => undef
+		 System => undef,
                  @_ );
 
     #If we're explicitly specifying a queue, as we need to do on create
@@ -373,6 +375,7 @@ sub HasRight {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }
 }
+
 # }}}
 
 =back

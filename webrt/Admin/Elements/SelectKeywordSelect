@@ -1,0 +1,22 @@
+<input size=10 name="<%$NamePrefix%>-Name" value="<% $KeywordSelect->Name %>">:
+<& /Admin/Elements/SelectSingleOrMultiple, 
+	  Name => $NamePrefix.'-Single',
+	  Default => $KeywordSelect->Single &>
+	  
+children of
+<& /Elements/SelectKeyword, Root => '0', 
+	                    Name => $NamePrefix.'-Keyword',
+                            Default => $KeywordSelect->KeywordObj->Id &>
+	  up to <input name="<%$NamePrefix%>-Depth" size=2 value="<%$KeywordSelect->Depth%>"> levels deep.
+<%INIT>
+unless ($NamePrefix) {
+	$NamePrefix = $KeywordSelect->Id;
+}
+$NamePrefix = "KeywordSelect-$NamePrefix";
+
+</%INIT>
+
+<%ARGS>
+$KeywordSelect => undef
+$NamePrefix => undef
+</%ARGS>

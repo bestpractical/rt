@@ -296,18 +296,23 @@ sub Descendents {
     my $exclude = shift || {};
     my %results;
     
+
     tie %results, 'Tie::IxHash';
     my $Keywords = new RT::Keywords($self->CurrentUser);
-    $Keywords->LimitToParent($self->id);
+    $Keywords->LimitToParent($self->id || 0 ); #If we have no id, start at the top
     
     while ( my $Keyword = $Keywords->Next ) {
+	
 	next if defined $exclude->{ $Keyword->id };
 	$results{ $Keyword->id } = $Keyword->Name;
+		
 	if ( $generations == 0 || $generations > 1 ) {
-	    my $kids = $Keyword->Descendents($generations-1, \%results);
+	    #if we're limiting to some number of generations,
+	    # decrement the number of generations
+	    $generations-- if ( $generations > 1 );
+	    my $kids = $Keyword->Descendents($generations, \%results);
 	    
-	    my $kid;
-	    foreach $kid ( keys %{$kids}) {
+	    foreach my $kid ( keys %{$kids}) {
 		$results{"$kid"} = $Keyword->Name. "/". $kids->{"$kid"};
 	    }
 	}
