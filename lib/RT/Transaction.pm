@@ -60,7 +60,7 @@ sub Create  {
         
     #We're really going to need a non-acled ticket for the scrips to work
     #TODO this MUST be as the "System" principal or it all breaks
-    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser->UserObj);
+    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
     $TicketAsSystem->Load($args{'Ticket'}) || $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
    
     # Deal with Scrips
