@@ -3457,7 +3457,7 @@ sub _AddCustomFieldValue {
         $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
-	if ($old_value) {
+	if (defined $old_value) {
 	    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $old_value);
 	    unless ($val) { 
 	    		return (0,$msg);
