@@ -1,5 +1,5 @@
 # $Header$
-# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 
 package RT::Watchers;
@@ -21,6 +21,14 @@ sub new  {
 # }}}
 
 # {{{ sub Limit 
+
+=head2 Limit
+
+  A wrapper around RT::EasySearch::Limit which sets
+the default entry aggregator to 'AND'
+
+=cut
+
 sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
@@ -31,6 +39,14 @@ sub Limit  {
 # }}}
 
 # {{{ sub LimitToTicket
+
+=head2 LimitToTicket
+
+Takes a single arg which is a ticket id
+Limits to watchers of that ticket
+
+=cut
+
 sub LimitToTicket { 
   my $self = shift;
   my $ticket = shift;
@@ -44,6 +60,14 @@ sub LimitToTicket {
 # }}}
 
 # {{{ sub LimitToQueue 
+
+=head2 LimitToQueue
+
+Takes a single arg, which is a QueueId
+Limits to watchers of that queue.
+
+=cut
+
 sub LimitToQueue  {
   my $self = shift;
   my $queue = shift;
@@ -57,6 +81,16 @@ sub LimitToQueue  {
 # }}}
 
 # {{{ sub LimitToType 
+
+=head2 LimitToType
+
+Takes a single string as its argument. That string is a watcher type
+which is one of 'Requestor', 'Cc' or 'AdminCc'
+Limits to watchers of that type
+
+=cut
+
+
 sub LimitToType  {
   my $self = shift;
   my $type = shift;
@@ -66,6 +100,13 @@ sub LimitToType  {
 # }}}
 
 # {{{ sub LimitToRequestors 
+
+=head2 LimitToRequestors
+
+Limits to watchers of type 'Requestor'
+
+=cut
+
 sub LimitToRequestors  {
   my $self = shift;
   $self->LimitToType("Requestor");
@@ -73,6 +114,13 @@ sub LimitToRequestors  {
 # }}}
 
 # {{{ sub LimitToCc 
+
+=head2 LimitToCc
+
+Limits to watchers of type 'Cc'
+
+=cut
+
 sub LimitToCc  {
     my $self = shift;
     $self->LimitToType("Cc");
@@ -80,6 +128,13 @@ sub LimitToCc  {
 # }}}
 
 # {{{ sub LimitToAdminCc 
+
+=head2 LimitToAdminCc
+
+Limits to watchers of type AdminCc
+
+=cut
+
 sub LimitToAdminCc  {
     my $self = shift;
     $self->LimitToType("AdminCc");
@@ -92,11 +147,9 @@ sub LimitToAdminCc  {
 # Return a (reference to a) list of emails
 sub Emails  {
     my $self = shift;
-    my $type = shift;
 
     $self->{is_modified}++;
-    $self->LimitToType($type)
-	if $type;
+
     # List is a list of watcher email addresses
     my @list;
     # Here $w is a RT::WatcherObject
@@ -111,19 +164,21 @@ sub Emails  {
 
 # Returns the RT::Watchers->Emails as a comma seperated string
 sub EmailsAsString {
-  my $self = shift;
-  return(join(", ",@{$self->Emails}));
+    my $self = shift;
+    return(join(", ",@{$self->Emails}));
 }
 # }}}
 
 # {{{ sub NewItem 
+
+
+
 sub NewItem  {
-  my $self = shift;
-  my $Handle = shift;
-  my $item;
- use RT::Watcher;
-  $item = new RT::Watcher($self->CurrentUser);
-  return($item);
+    my $self = shift;
+    
+    use RT::Watcher;
+    my  $item = new RT::Watcher($self->CurrentUser);
+    return($item);
 }
 # }}}
 1;

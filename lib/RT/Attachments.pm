@@ -32,8 +32,8 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 sub ChildrenOf  {
   my $self = shift;
   my $attachment = shift;
-  $self->Limit ( Field => 'Parent',
-		 Value => "$attachment");
+  $self->Limit ( FIELD => 'Parent',
+		 VALUE => "$attachment");
 }
 # }}}
 

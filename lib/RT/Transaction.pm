@@ -1,8 +1,7 @@
+# $Header$
 # Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-# $Header$
-#
-#
+
 package RT::Transaction;
 use RT::Record;
 @ISA= qw(RT::Record);
@@ -24,27 +23,32 @@ sub new  {
 
 # {{{ sub Create 
 
-#This is "Create Transaction"
-sub Create  {
-    my $self = shift;
-    my %args = ( id => undef,
-		 TimeTaken => 0,
-		 Ticket => 0 ,
-		 Type => 'undefined',
-		 Data => '',
-		 Field => undef,
-		 OldValue => undef,
-		 NewValue => undef,
-		 MIMEObj => undef,
-		 @_
-	       );
+=head2 Create
 
-    #if we didn't specify a ticket, we need to bail
-    unless ( $args{'Ticket'} ) {
-	return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
-    }
-    
-    #lets create our parent object
+Create a new transaction
+TODO: Document what gets passed to this
+=cut
+
+sub Create  {
+  my $self = shift;
+  my %args = ( id => undef,
+	       TimeTaken => 0,
+	       Ticket => 0 ,
+	       Type => 'undefined',
+	       Data => '',
+	       Field => undef,
+	       OldValue => undef,
+	       NewValue => undef,
+	       MIMEObj => undef,
+	       @_
+	       );
+  
+  #if we didn't specify a ticket, we need to bail
+  unless ( $args{'Ticket'} ) {
+    return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
+  }
+  
+  #lets create our parent object
     my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				  EffectiveTicket  => $args{'Ticket'},
 				  TimeTaken => $args{'TimeTaken'},
@@ -57,68 +61,89 @@ sub Create  {
     $self->Load($id);
     $self->_Attach($args{'MIMEObj'})
       if defined $args{'MIMEObj'};
-        
+    
     #We're really going to need a non-acled ticket for the scrips to work
     #TODO this MUST be as the "System" principal or it all breaks
     my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
-    $TicketAsSystem->Load($args{'Ticket'}) || $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
-   
-    # Deal with Scrips
+    $TicketAsSystem->Load($args{'Ticket'}) || 
+      $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
     
-    #Load a scrips object
+    # {{{ Deal with Scrips
+    
+    #Load a scripscopes object
     use RT::ScripScopes;
-    my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
-    $ScripScopes->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueObj->Id
+    my $PossibleScrips = RT::ScripScopes->new($RT::SystemUser);
+    $PossibleScrips->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueObj->Id
     
-    #Load a ScripsScopes object
+    my $ScripsAlias = $PossibleScrips->NewAlias(Scrips);
+    
+  $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'Scrip',
+			   ALIAS2 => $ScripsAlias, FIELD2=> 'id');
+    
+    
+    #We only want things where the scrip applies to this sort of transaction
+    $PossibleScrips->Limit(ALIAS=> $ScripsAlias,
+			   FIELD=>'Type',
+			   OPERATOR => 'LIKE',
+			   VALUE => $args{'Type'},
+			   ENTRYAGGREGATOR => 'OR',
+			  );
+    
+    # Or where the scrip applies to any transaction
+    $PossibleScrips->Limit(ALIAS=> $ScripsAlias,
+			   FIELD=>'Type',
+			   OPERATOR => 'LIKE',
+			   VALUE => "Any",
+			   ENTRYAGGREGATOR => 'OR',
+			  );			    
+    
+    $RT::Logger->debug("$self: Searching for scrips for transaction #".$self->Id.
+		       " (".$self->Type()."), ticket #".$TicketAsSystem->Id."\n");
+    
     #Iterate through each script and check it's applicability.
-    $RT::Logger->debug("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id."\n");
-   
-    while (my $Scope = $ScripScopes->Next()) {
+    
+    while (my $Scrip = $PossibleScrips->Next()) {
+      
+      #TODO: properly deal with errors raised in this scrip loop
+      
+      eval {
+	#local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
 	
-	# TODO: we're really doing a lot of unneccessary
-	# TODO: loading here. I think we really should do a search on two
-	# TODO: tables. 
+	#Load the scrip's action;
+	$Scrip->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
+				     TemplateObj => $Scrip->ScripObj->TemplateObj,
+				     TransactionObj => $self);
 	
-	$RT::Logger->debug("Checking Scrip: ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")\n");
-	if ($Scope->ScripObj->Type && 
-	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
-
-	    #TODO: properly deal with errors raised in this scrip loop
-
-	    eval {
-		local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
-		#Load the scrip's action;
-		$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-					     TemplateObj => $Scope->ScripObj->TemplateObj,
-					     TransactionObj => $self);
 	
-		#If it's applicable, prepare and commit it
-		$RT::Logger->debug("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id."\n");
-
-		if ( $Scope->ScripObj->IsApplicable() ) {
-
-		    $RT::Logger->debug("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id."\n");
-
-
-		    #TODO: handle some errors here
-
-		    $Scope->ScripObj->Prepare() &&   
-		    $Scope->ScripObj->Commit() &&
-		    $RT::Logger->info("Successfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id."\n");
-		   
-		    #We're done with it. lets clean up.
-		    #TODO: why the fuck do we need to do this? 
-		    $Scope->ScripObj->DESTROY();
-		}
-	    }
-	} else {
-	    #TODO: why the fuck does this not catch all
-	    # ScripObjs we create. and why do we explictly need to destroy them?
-	    $Scope->ScripObj->DESTROY;
+	#If it's applicable, prepare and commit it
+	$RT::Logger->debug ("$self: Checking $Scrip ".$Scrip->ScripObj->id. " (ScripScope: ".$Scrip->id .")\n");
+	
+	if ( $Scrip->ScripObj->IsApplicable() ) {
+	  
+	  $RT::Logger->debug ("$self: Preparing $Scrip\n");
+	  
+	  #TODO: handle some errors here
+	  
+	  $Scrip->ScripObj->Prepare() &&   
+	    $Scrip->ScripObj->Commit() &&
+	      $RT::Logger->info("$self: Committed $Scrip\n");
+	  
+	  #We're done with it. lets clean up.
+	  #TODO: why the fuck do we need to do this? 
+	  $Scrip->ScripObj->DESTROY();
 	}
-    }    
-    return ($id, "Transaction Created");
+	
+	
+	else {
+	  #TODO: why the fuck does this not catch all
+	  # ScripObjs we create. and why do we explictly need to destroy them?
+	  $Scrip->ScripObj->DESTROY;
+	}
+      }	
+    }
+  
+  # }}}
+  return ($id, "Transaction Created");
 }
 # }}}
 
@@ -212,14 +237,14 @@ sub Description  {
   elsif ($self->Type =~ /Status/) {
     if ($self->Field eq 'Status') {
       if ($self->NewValue eq 'dead') {
-        return ("Request killed by ". $self->Creator->UserId);
+	  return ("Request killed by ". $self->Creator->UserId);
       }
       else {
-        return( "Status changed from ".  $self->OldValue . 
-	        " to ". $self->NewValue.
-	        " by ".$self->Creator->UserId);
+	  return( "Status changed from ".  $self->OldValue . 
+		  " to ". $self->NewValue.
+		  " by ".$self->Creator->UserId);
       }
-    }
+  }
     # Generic:
     return $self->Field." changed from ".($self->OldValue||"(empty value)")." to ".$self->NewValue." by ".$self->Creator->UserId;
   }
@@ -232,11 +257,6 @@ sub Description  {
     return( "Comments added by ".$self->Creator->UserId);
   }
   
-  elsif ($self->Type eq 'area')  {
-    my $to = $self->{'data'};
-    $to = 'none' if ! $to;
-    return( "Area changed to $to by". $self->Creator->UserId);
-  }
   
   elsif ($self->Type eq 'queue_id'){
     return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
@@ -292,17 +312,15 @@ sub Description  {
   elsif ($self->Type eq 'Told') {
     return( "User notified by ".$self->Creator->UserId);
       }
-  elsif ($self->Type eq 'effective_sn') {
-    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Creator->UserId);
-  }
-  elsif ($self->Type eq 'subreqrsv') {
-    return "Subrequest #".$self->Data." resolved by ".$self->Creator->UserId;
-  }
+  
   elsif ($self->Type eq 'Link') {
     #TODO: make pretty output.
-    
-    return "Linked up.  (  ". $self->Data. "  )";
+      
+      return "Linked up.  (  ". $self->Data. "  )";
   }
+  elsif ($self->Type eq 'Set') {
+      return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
+  }	
   else {
     return($self->Type . " modified. RT Should be more explicit about this!");
   }
@@ -343,10 +361,12 @@ sub _Accessible  {
 # Arguably, that's the right action, as the goal of this routine
 # is to notify the requestor if someone other than the requestor
 # performs an action, right?  -- jesse
+
 sub IsInbound {
   my $self=shift;
   return ($self->TicketObj->IsRequestor($self->Creator));
 }
+
 # }}}
 
 # }}}

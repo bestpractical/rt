@@ -262,7 +262,7 @@ sub ParseArgs  {
       elsif ($ARGV[$i] eq "-notify") {
 	my $id = int($ARGV[++$i]);
 	my $Ticket = &LoadTicket($id);
-	$Message .= $Ticket->UpdateTold();
+	$Message .= $Ticket->SetTold();
 
       }
       

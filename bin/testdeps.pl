@@ -31,6 +31,7 @@ CGI::Cookie 1.06
 Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
+Text::Template
 DBIx::SearchBuilder
 Apache::Session 1.03
 );

@@ -122,7 +122,7 @@ sub ProcessSimpleActions {
     my %args=@_;
     # TODO: What if there are more Actions?
     if (exists $args{ARGS}->{Action}) {
-	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|UpdateTold)$/;
+	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|SetTold)$/;
 	my ($res, $msg)=eval('$args{Ticket}->'.$action);
 	push(@{$args{Actions}}, $msg);
     }

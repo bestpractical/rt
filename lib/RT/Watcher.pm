@@ -69,30 +69,32 @@ sub Load  {
 }
 # }}}
 
-# {{{ sub UserObj 
-sub UserObj  {
+# {{{ sub OwnerObj 
+sub OwnerObj  {
     my $self = shift;
-    if (!defined $self->{'UserObj'}) {
+    if (!defined $self->{'OwnerObj'}) {
 	require RT::User;
-	$self->{'UserObj'} = RT::User->new($self->CurrentUser);
+	$self->{'OwnerObj'} = RT::User->new($self->CurrentUser);
 	if ($self->Owner) {
-	    $self->{'UserObj'}->Load($self->Owner);
+	    $self->{'OwnerObj'}->Load($self->Owner);
 	} else {
 	    return undef;
 	}
     }
-    return ($self->{'UserObj'});
-}
-# }}}
-
-# {{{ sub OwnerObj
-sub OwnerObj {
-  my $self = shift;
-  return ($self->UserObj);
+    return ($self->{'OwnerObj'});
 }
 # }}}
 
 # {{{ sub Email
+=head2 Email
+
+This custom data accessor does the right thing and returns
+the 'Email' attribute of this Watcher object. If that's undefined,
+it returns the 'EmailAddress' attribute of its 'Owner' object, which is
+an RT::User object.
+
+=cut
+
 sub Email {
   my $self = shift;
 
