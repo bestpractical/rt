@@ -490,6 +490,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NULL  ,
+  ObjectId int NOT NULL  ,
   Current int DEFAULT 1,
   Content varchar(255) NULL  ,
   LargeContent text NULL,
