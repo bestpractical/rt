@@ -14,7 +14,6 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 
 package RT::Mason;
-use Apache::DBI; #before we touch anythign DBI related, we want that persistent connection
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 use HTML::Mason::ApacheHandler;
 
@@ -86,7 +85,7 @@ use Carp;
 #TODO: need to identify the database user here....
 
 
-my $parser = &RT::Interface::Web::NewParser();
+my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
 my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
 

@@ -167,6 +167,7 @@ Apache
 <VirtualHost your.ip.address>
 DocumentRoot /opt/rt/WebRT/html
 ServerName your.rt.server.hostname
+PerlModule Apache::DBI
 PerlRequire /opt/rt/bin/webmux.pl
 <Location />
  SetHandler perl-script
