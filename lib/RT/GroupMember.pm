@@ -65,7 +65,7 @@ sub Create {
 		 @_
 	       );
     
-    unless( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
+    unless( $self->CurrentUser->HasSystemRight('AdminGroups')) {
 	return (0, 'Permission Denied');
     }
 
