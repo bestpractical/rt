@@ -34,14 +34,19 @@ documentation, send a mail to rt-docs@fsck.com
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.005_03 or later ( http://www.perl.com )
+o   Perl5.005_03 or later with support for setgid perl scripts ( http://www.perl.com )
+        RT's command line and mail gateway tools run setgid to the 'rt' group
+	to protect RT's database password.  You may need to install a special "suidperl"
+	package or reconfigure your perl setup to support "setuid scripts".
 
-o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- free
-        Currently supported:    Mysql 3.23, Postgres 7.1
+o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
+        Currently supported:    Mysql 3.23, Postgres 7.1, Oracle 8i
+	(Mysql is known to be a more solid base for RT than postgres and oracle
+	 at this time)
 
-o   Apache + mod_perl -- ( http://perl.apache.org) free
+o   Apache + mod_perl -- ( http://perl.apache.org) 
 
-o    Various and sundry perl modules (see below) -- free 
+o    Various and sundry perl modules (see below) 
 	
 
 INSTALLATION INSTRUCTIONS
