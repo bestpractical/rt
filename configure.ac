@@ -259,6 +259,7 @@ AC_CONFIG_FILES([
 		 bin/rt
  		 bin/webmux.pl],
 		[chmod ug+x sbin/rt-test-dependencies
+		 chmod ug+x sbin/rt-dump-database
 		 chmod ug+x sbin/rt-setup-database]
                )
 AC_OUTPUT
