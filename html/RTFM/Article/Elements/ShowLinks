@@ -49,7 +49,7 @@
 % while (my $link = $referredtoby->Next) {
 % my $member = $link->BaseURI;
 <LI>
-% if ($member->URI->IsLocal) {
+% if ($member->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
 % if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
