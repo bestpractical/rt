@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+u#!/usr/bin/perl -w
 
 # $Header$
 
@@ -730,15 +730,20 @@ sub MigrateTransactions {
 		    my $Address = $row->{'actor'};
 		    $Address .= "\@$EMAILDOMAIN" unless $Address =~ /\@/;
 		    
-		    my ($Val, $Message) = $User->Create(Name => $row->{'actor'},
-							EmailAddress => $Address,
-							Password => undef,
-							Privileged => 0,
-							Comments => undef
-						       );
+		    $User->LoadByEmail($Address);
 		    
-		    unless($Val) {
-			die "couldn't create User for $Address: $Message\n";
+		    unless ($User->Id) {
+			
+			my ($Val, $Message) = $User->Create(Name => $row->{'actor'},
+							    EmailAddress => $Address,
+							    Password => undef,
+							    Privileged => 0,
+							    Comments => undef
+							   );
+			
+			unless($Val) {
+			    die "couldn't create User for $Address: $Message\n";
+			}
 		    }
 		};
 		
