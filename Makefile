@@ -45,6 +45,16 @@ RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 RT_WRAPPER		=	$(RT_BIN_PATH)/suid_wrapper
 
 #
+# The following are the names of the various binaries which make up RT 
+#
+RT_ACTION_BIN		=	rt
+RT_QUERY_BIN		=	rtq
+RT_ADMIN_BIN		=	rtadmin
+RT_MAILGATE_BIN		=	rt-mailgate
+RT_WEB_QUERY_BIN	=	nph-webrt.cgi
+RT_WEB_ADMIN_BIN	=	nph-admin-webrt.cgi
+
+#
 # The location of your rt configuration file
 #
 
@@ -157,7 +167,6 @@ fixperms:
 	chmod -R 755 $(RT_LIB_PATH)
 	chmod -R 0700 $(RT_ETC_PATH)
 	chmod 0755 $(RT_PATH)
-	
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
 	chmod 0755 $(RT_PERL_MUX)
@@ -200,23 +209,39 @@ acls:
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
-			      s'!!RT_VERSION!!'$(RT_VERSION)'g;" $(RT_PERL_MUX)
+			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
+				s'!!RT_ACTION_BIN!!'$(RT_ACTION_BIN)'g;\
+				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
+				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
+				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
+				s'!!RT_WEB_QUERY_BIN!!'$(RT_WEB_QUERY_BIN)'g;\
+				s'!!RT_WEB_ADMIN_BIN!!'$(RT_WEB_ADMIN_BIN)'g;\
+				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
 
 mux-links: suid-wrapper
-	rm -f $(RT_BIN_PATH)/rt
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt
-	rm -f $(RT_BIN_PATH)/rtadmin
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rtadmin
-	rm -f $(RT_BIN_PATH)/rtq
-	ln -s  $(RT_WRAPPER) $(RT_BIN_PATH)/rtq
-	rm -f $(RT_BIN_PATH)/rt-mailgate
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt-mailgate
-	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-webrt.cgi
-	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	chmod 4755 $(RT_CGI_PATH)/nph-webrt.cgi
-	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
+	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ACTION_BIN)
+
+	rm -f $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
+
+	rm -f $(RT_BIN_PATH)/$(RT_QUERY_BIN)
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_QUERY_BIN)
+
+	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
+
+
+
+
+	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
+	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
+
+	rm -f $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
+	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 
 config-replace:
 	mv $(RT_ETC_PATH)/config.pm $(RT_ETC_PATH)/config.pm.old
