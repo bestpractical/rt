@@ -201,15 +201,11 @@ elsif ( $id eq 'new' ) {
                         }
 
                     }
+                    $cf_values = $Article->CustomFieldValues($cf);
                     while ( my $cf_value = $cf_values->Next ) {
                         unless ( $values_hash{ $cf_value->Content } == 1 ) {
-                            my ( $val, $msg ) =
-                              $Article->DeleteCustomFieldValue(
-                                                   Field   => $cf,
-                                                   Content => $cf_value->Content
-                              );
+                            my ( $val, $msg ) = $Article->DeleteCustomFieldValue( Field   => $cf, Content => $cf_value->Content);
                             push ( @results, $msg );
-
                         }
 
                     }

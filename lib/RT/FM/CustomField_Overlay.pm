@@ -448,25 +448,17 @@ sub DeleteValueForArticle {
                  Content => undef,
                  @_ );
 
-    my $oldval = RT::FM::ArticleCFValue->new( $self->CurrentUser );
-    $oldval->LoadByCols( Article      => $args{'Article'},
-                                                Content     => $args{'Content'},
-                                                CustomField => $self->Id );
 
-    # check ot make sure we found it
-    unless ( $oldval->Id ) {
-        return (
-            0,
-            $self->loc(
-                "Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name ) );
+
+
+    my $article_values = $self->ValuesForArticle($args{'Article'});
+        
+    # get the actual values for the custom field as an array and see if it has this entry
+    my @values = grep { $_->Content eq $args{'Content'}} @{$article_values->ItemsArrayRef};
+    foreach my $val (@values) {
+	$val->Delete();
     }
 
-    # delete it
-
-    my $ret = $oldval->Delete();
-    unless ($ret) {
-        return ( 0, $self->loc("Custom field value could not be found") );
-    }
     return ( 1, $self->loc("Custom field value deleted") );
 }
 

@@ -1,6 +1,6 @@
 # mysql doesn't need new acls
 sub acl {
-	return ('select sysdate from DUAL;');
+	return ('select id from Users where id = 1');
 }
 1;
 

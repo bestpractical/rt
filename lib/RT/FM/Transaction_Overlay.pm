@@ -31,7 +31,7 @@ sub Create {
 
           @_);
 
-    foreach my $field qw(ChangeLog Type OldContent NewContent) {
+    foreach my $field qw(ChangeLog Type OldContent NewContent Field) {
         $args{$field} = '' unless ($args{$field});
 
     }
