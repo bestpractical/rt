@@ -353,7 +353,7 @@ ok ($lh != undef);
 ok ($lh->isa('Locale::Maketext'));
 ok ($cu->loc('TEST_STRING') eq "Concrete Mixer", "Localized TEST_STRING into English");
 ok ($lh = $cu->LanguageHandle('fr'));
-ok ($cu->loc('TEST_STRING') eq "Feche la vache", "Localized TEST_STRING into Frenc");
+ok ($cu->loc('Before') eq "Avant", "Localized TEST_STRING into Frenc");
 
 =end testing
 
