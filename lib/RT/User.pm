@@ -199,6 +199,15 @@ sub LoadByEmail {
 #used to check if a password is correct
 # {{{ sub IsPassword
 
+=head2 IsPassword
+
+Returns true if the passed in value is this user's password.
+Returns undef otherwise.
+
+=cut
+
+
+
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
@@ -218,35 +227,6 @@ sub IsPassword {
   else {
     return (undef);
   }
-}
-# }}}
-
-# {{{ sub Signature 
-
-sub Signature {
-    my $self=shift;
-    return ($self->SUPER::Signature);
-    
-    ## TODO: The stuff below might be a nice feature, but since we don't need it
-    ## at the moment, it's left out.
-	
-    if (0) {
-		my @entry=getpwnam($self->Gecos || $self->UserId);
-		my $home=$entry[7];
-		## TODO: Check if the commented out line might work better
-		#       for my $trythis (@RT::signature) {
-		for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
-			if (-r $trythis) {
-				local($/);
-				undef $/;
-				open(SIGNATURE, "<$trythis"); 
-				$signature=<SIGNATURE>;
-				close(SIGNATURE);
-				return $signature;
-			}
-		}
-		return undef;
-    }
 }
 # }}}
 
@@ -317,7 +297,6 @@ sub HasQueueRight {
 }
 
 # }}}
-
 
 # {{{ sub HasTicketRight
 

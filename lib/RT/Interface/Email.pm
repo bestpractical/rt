@@ -35,9 +35,6 @@ sub activate  {
       if (($flag eq '-a') or ($flag eq '--action')) {
 	$Action = shift @ARGV;
       } 
-      if (($flag eq '-r') or ($flag eq '--area')) {
-	$area = shift @ARGV;
-      }    
       
 
   }
