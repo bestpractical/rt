@@ -304,7 +304,7 @@ files-install: libs-install etc-install bin-install sbin-install html-install lo
 
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	-cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
 	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || cp etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
 
 	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)
