@@ -242,22 +242,15 @@ foreach my $arg ( keys %ARGS ) {
 	my $newnode = Tree::Simple->new($clause);
 	if ($currentkey) {
 	    my $newindex = $currentkey->getIndex() + 1;
-	    if ($currentkey->getParent()->getParent()->isRoot()) {
-		my $newparent = Tree::Simple->new($ARGS{'AndOr'});
-		$newparent->addChild($newnode);
-		$newnode = $newparent;
-	    }
-	    else {
+	    if (!$currentkey->getParent->getParent()->isRoot()) {
 		$currentkey->getParent()->setNodeValue($ARGS{'AndOr'});
 	    }
 	    $currentkey->insertSibling($newindex, $newnode);
 	    $currentkey = $newnode;
 	}
 	else {
-	    my $newparent = Tree::Simple->new($ARGS{'AndOr'});
-	    $newparent->addChild($newnode);
-	    $tree->getChild(0)->addChild($newparent);
-	    $currentkey = $newparent;
+	    $tree->getChild(0)->addChild($newnode);
+	    $currentkey = $newnode;
 	}
     }
 }
@@ -357,21 +350,12 @@ elsif ( $ARGS{"Toggle"} ) {
 	my $value = $currentkey->getNodeValue();
 	my $parent = $currentkey->getParent();
 	my $parentvalue = $parent->getNodeValue();
-	if (ref($value)) {
-	    if ( $parentvalue eq 'AND') {
-		$parent->setNodeValue('OR');
-	    }
-	    else {
-		$parent->setNodeValue('AND');
-	    }
+
+	if ( $parentvalue eq 'AND') {
+            $parent->setNodeValue('OR');
 	}
-	else {
-	    if ($value eq 'AND') {
-		$currentkey->setNodeValue('OR');
-	    }
-	    else {
-		$currentkey->setNodeValue('AND');
-	    }
+        else {
+	    $parent->setNodeValue('AND');
 	}
     }
     else {
