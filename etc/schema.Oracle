@@ -323,9 +323,9 @@ CREATE TABLE ACL (
 	id 		NUMBER(11,0) PRIMARY KEY,
 	PrincipalId 	NUMBER(11,0),
 	PrincipalType 	VARCHAR2(25),
-	Right 		VARCHAR2(25),
-	Scope 		VARCHAR2(25),
-	AppliesTo  	NUMBER(11,0)
+	RightName 	VARCHAR2(25),
+	RightScope 	VARCHAR2(25),
+	RightAppliesTo  NUMBER(11,0)
 );
 
 CREATE OR REPLACE TRIGGER ACL_AUTOINCREMENT
@@ -389,7 +389,7 @@ CREATE TABLE Scrips (
   	Name 		VARCHAR2(255),	    		/*Textual string*/
   	Description 	VARCHAR2(255), 			/*another longer textual string*/
   	Type 		VARCHAR2(60),	    		/*Transaction type or 'any'	*/
-  	Action 		VARCHAR2(60),	    		/*Name of a perl module. inside RT::Action*/
+  	ExecModule	VARCHAR2(60),	    		/*Name of a perl module. inside RT::Action*/
   	DefaultTemplate NUMBER(11,0),  			/*Link to the templates table of template to pass in.*/
   	Argument 	VARCHAR2(255),    		/*an argument to pass in.*/
   	Creator 	NUMBER(11,0),

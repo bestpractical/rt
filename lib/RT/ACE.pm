@@ -10,7 +10,7 @@ use vars qw (%SCOPE
 	     %SYSTEMRIGHTS
 	     %METAPRINCIPALS); 
 
-%SCOPE = ( System => 'System-level right',
+%SCOPES = ( System => 'System-level right',
 	   Queue => 'Queue-level right'
 		 );
 
@@ -73,11 +73,13 @@ sub _Create {
 my $self = shift;
 my %args = ( PrincipalId => undef,
 	     PrincipalType => undef,
-	     Right => undef,
-	     Scope => undef,
-	     AppliesTo => undef
+	     RightName => undef,
+	     RightScope => undef,
+	     RightAppliesTo => undef
 	   );
+	use Carp;
 
+	Carp::confess "RT::ACE::_Create not yet implemented\n";
 return (1, 'Granted');
 }
 # }}}
@@ -92,7 +94,7 @@ sub GrantQueueRight {
 				 @_);
 	
 	
-	if ($args->{'Scope'} ne 'Queue') {
+	if ($args->{'RightScope'} ne 'Queue') {
 		return (0, 'Scope must be queue for queue rights');
 	}
 	
@@ -110,7 +112,7 @@ sub GrantQueueRight {
 
 sub GrantGlobalQueueRight {
   my $self = shift;
-  my %args = ( AppliesTo => 0,
+  my %args = ( RightAppliesTo => 0,
 	       @_);
 
   return ($self->GrantQueueRight($args));
@@ -122,8 +124,8 @@ sub GrantGlobalQueueRight {
 
 sub GrantSystemRight {
   my $self = shift;
-  my %args = (Scope => 'System',
-	      AppliesTo => 0,
+  my %args = (RightScope => 'System',
+	      RightAppliesTo => 0,
 	      @_);
   
   #If the user can't grant system rights, 
@@ -142,9 +144,9 @@ sub _Accessible  {
   my %Cols = (
 	      PrincipalId => 'read/write',
 	      PrincipalType => 'read/write',
-	      Right => 'read/write', 
-	      Scope => 'read/write',
-	      AppliesTo => 'read/write'
+	      RightName => 'read/write', 
+	      RightScope => 'read/write',
+	      RightAppliesTo => 'read/write'
 	    );
   return($self->SUPER::_Accessible(@_, %Cols));
 }

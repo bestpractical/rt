@@ -72,11 +72,11 @@ sub LimitScopeToQueue {
   my $queue = shift;
   
   
-  $self->Limit( FIELD =>'Scope',
+  $self->Limit( FIELD =>'RightScope',
 		VALUE => 'Queue');
   
   $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'AppliesTo',
+	       FIELD => 'RightAppliesTo',
 	       VALUE => $queue );
   
 }
@@ -89,11 +89,11 @@ Limit the ACL to global queue rights. (Rights granted across all queues)
 sub LimitScopeToAllQueues {
   my $self = shift;
   
-  $self->Limit( FIELD =>'Scope',
+  $self->Limit( FIELD =>'RightScope',
 		VALUE => 'Queue');
   
   $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'AppliesTo',
+	       FIELD => 'RightAppliesTo',
 	       VALUE => 0 );
 }
 
@@ -107,7 +107,7 @@ Limit the ACL to system rights
 sub LimitScopeToSystem {
   my $self = shift;
   
-  $self->Limit( FIELD =>'Scope',
+  $self->Limit( FIELD =>'RightScope',
 		VALUE => 'System');
 }
 
@@ -124,7 +124,7 @@ sub LimitRightTo {
   my $right = shift;
   
   $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'Right',
+	       FIELD => 'RightName',
 	       VALUE => $right );
   
 }

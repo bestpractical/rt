@@ -24,7 +24,7 @@ sub _Accessible  {
   my %Cols = ( Name  => 'read/write',
 	       Description => 'read/write',
 	       Type	 => 'read/write',
-	       Action  => 'read/write',
+	       ExecModule  => 'read/write',
 	       DefaultTemplate => 'read/write',
 	       Argument  => 'read/write'
 	     );
@@ -96,7 +96,7 @@ sub LoadAction  {
 	       @_ );
 
   #TODO: Put this in an eval  
-  my $type = "RT::Action::". $self->Action;
+  my $type = "RT::Action::". $self->ExecModule;
  
   $RT::Logger->debug("now requiring $type\n"); 
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";

@@ -262,10 +262,10 @@ user will fail.
 =cut 
 
 sub Disable {
-        my $self = shift;
-			   if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-				   return($self->_Set(Field => 'Disabled', Value => 1));
-			   }
+    my $self = shift;
+    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+	return($self->_Set(Field => 'Disabled', Value => 1));
+    }
 }
 
 # }}}
@@ -289,6 +289,7 @@ sub Enable {
 }
 
 # }}}
+
 # {{{ sub HasQueueRight
 =head2 HasQueueRight( QueueObj => RT::Queue, Right => 'Right' )
 
@@ -436,14 +437,14 @@ sub _HasRight {
 	    return  ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
 	}
 
-	my $RightClause = "(Right = '$args{'Right'}')";
+	my $RightClause = "(RightName = '$args{'Right'}')";
 	
-	my $ScopeClause = "(Scope = '$args{'Scope'}')";
+	my $ScopeClause = "(RightScope = '$args{'Scope'}')";
 	
 	#If an AppliesTo was passed in, we should pay attention to it.
 	#otherwise, none is needed
 
-	$ScopeClause = "($ScopeClause AND ((AppliesTo = 0) OR (AppliesTo = $args{'AppliesTo'})))"
+	$ScopeClause = "($ScopeClause AND ((RightAppliesTo = 0) OR (RightAppliesTo = $args{'AppliesTo'})))"
 	  if ($args{'AppliesTo'});
 	
 	
@@ -452,7 +453,7 @@ sub _HasRight {
 	my $PrincipalsClause =  "(((PrincipalType = 'User') AND (PrincipalId = ".$self->Id.")) OR (PrincipalType = 'Everyone'))";
     
 	# If the user is the superuser, grant them the damn right ;)
-	my $SuperUserClause = "(Right = 'SuperUser') AND (Scope = 'System') AND (AppliesTo = 0)";
+	my $SuperUserClause = "(RightName = 'SuperUser') AND (RightScope = 'System') AND (RightAppliesTo = 0)";
 	
 	# If we've been passed in an extended principals clause, we should lump it
 	# on to the existing principals clause. it'll make life easier
