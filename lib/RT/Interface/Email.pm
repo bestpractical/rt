@@ -74,7 +74,7 @@ sub activate {
     #    open a new ticket 
     my $Ticket = new RT::Ticket($CurrentUser); #TODO we need an anonymous user
     my ($id, $Transaction, $ErrStr) = 
-      $Ticket->Create ( Queue => $Queue,
+      $Ticket->Create ( QueueTag => $Queue,
 			Area => $Area,
 			Subject => $Subject,
 			MIMEEntity => $entity
@@ -84,7 +84,12 @@ sub activate {
   else { #If we have a ticketid
     #print STDERR "We know we've got a ticketId\n";
     #   If the message contains commands, execute them
-    
+    # TODO / Stub!
+
+    # It might be worth considerating to allow both the old style (%RT
+    # command parameter(s)) and an alternative style where the
+    # commands are injected into the header.
+
     #   If the mail message is a comment, add a comment.
     if ($Action =~ /comment/i){
        #print "Action is $Action\n";
@@ -158,7 +163,7 @@ sub GetCurrentUser {
   my $CurrentUser = new RT::CurrentUser($FromObj->address);
   
   #Lets take the from and load a user object.
-  if ($CurrentUser->Id == 0) {
+  unless ($CurrentUser->Id) {
     #If it fails, create a user
     
     use RT::User;
