@@ -49,7 +49,8 @@ ok(!$agent->find_link( url => '/Admin/',
 ok(!$agent->find_link( url => '/User/Prefs.html',
 		       text => 'Preferences'), "No prefs pane" );
 
-# Now test for their presence, one at a time.
+# Now test for their presence, one at a time.  Sleep for a bit after
+# ACL changes, thanks to the 10s ACL cache.
 $user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab');
 sleep(10);
 $agent->reload();
@@ -107,12 +108,14 @@ $group_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',
 				     Object => $queue_obj);
 $group_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',
 				     Object => $queue_obj);
+sleep(10);
 
 # Now.  When we look at the search page we should be able to see
 # ourself in the list of possible owners.
-# TODO: Fix
-# $agent->reload();
-# ok($agent->field( 'ValueOfActor', 'customer'),
-#    "Found self in the actor listing");
+
+$agent->reload();
+ok($agent->form_name('BuildQuery'), "Yep, form is still there");
+my $input = $agent->current_form->find_input('ValueOfActor');
+ok(grep(/customer/, $input->value_names()), "Found self in the actor listing");
 
 1;
