@@ -100,8 +100,6 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <b>Deleted Duplicate Restriction <i><%$tmp%></i></b><br>
 % }
 % $seen_restrictions{"$tmp"}++;
-
-<%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
 %}
 <& /Elements/TitleBoxEnd&>
 </TD>
