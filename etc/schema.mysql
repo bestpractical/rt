@@ -369,7 +369,7 @@ INSERT INTO Scrips VALUES (9, 'StallDependentOnLink',
 		           'Stalls the dependent when a DependsOn link is made',
 			   'Link', 'StallDependent',NULL,NULL,1,NULL,1,NULL);
 
-INSERT INTO Scrips VALUES (9, 'StallMemberOnLink', 
+INSERT INTO Scrips VALUES (14, 'StallMemberOnLink', 
 		           'Stalls the member when a MemberOf link is made',
 			   'Link', 'StallDependent',NULL,'MemberOf',1,NULL,1,NULL);
 
