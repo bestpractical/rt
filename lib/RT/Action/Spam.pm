@@ -17,9 +17,24 @@ sub Describe  {
 # }}}
 
 
-sub SetRecipients {
+sub Prepare {
+    # we'll deal with everything in the commit sub
+    return 1;
+}
+
+sub FixSubject {
+  my $self=shift;
+  my $tag = "[$RT::rtname #".$self->{TicketId}."]";
+  my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
+  $sub =~ s/\[\Q$RT::rtname\E #(\d)\]//;
+  $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub");
+}
+
+sub Commit {
 
     my $self = shift;
+
+    my $cnt=0;
 
     my $Links=RT::Links->new($RT::SystemUser);
     $Links->Limit(FIELD => 'Type', VALUE => 'MemberOf');
@@ -32,17 +47,18 @@ sub SetRecipients {
 	# Todo: Only work if Base is a plain ticket num:
 	$base->Load($Link->Base);
 
-	# TODO:
-	# This is baaad - all requestors are in the "To" field.  It
-	# would be more correct to either have them in the BCC field
-	# or send one email for each requestor.  I will deal with it
-	# when somebody complains (: -- TobiX
-	push(@{$self->{To}}, $base->RequestorsAsString);
-	push(@{$self->{Cc}}, $base->CcAsString);
+	
+	$self->{To}=[$base->RequestorsAsString];
+	$self->{Cc}=[$base->CcAsString];
+	$self->{TicketId}=$base->id;
+
+	$self->SUPER::Prepare;
+	$self->SUPER::Commit;
+
+	$cnt++;
     }
 
-    return $self->SUPER::SetRecipients;
-    
+    return $cnt;
 }
 
 
