@@ -796,9 +796,9 @@ sub _HasRight {
 	    ($self->{'rights'}{"$hashkey"} == 1 ) &&
         (defined $self->{'rights'}{"$hashkey"}{'set'} ) &&
 	    ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
-	  $RT::Logger->debug("Cached ACL win for ". 
-			     $args{'Right'}.$args{'Scope'}.
-			     $args{'AppliesTo'}."\n");	    
+#	  $RT::Logger->debug("Cached ACL win for ". 
+#			     $args{'Right'}.$args{'Scope'}.
+#			     $args{'AppliesTo'}."\n");	    
 	return ($self->{'rights'}{"$hashkey"});
     }
     elsif ((defined $self->{'rights'}{"$hashkey"}) &&
@@ -806,9 +806,9 @@ sub _HasRight {
            (defined $self->{'rights'}{"$hashkey"}{'set'}) &&
 	       ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
 	
-	$RT::Logger->debug("Cached ACL loss decision for ". 
-			   $args{'Right'}.$args{'Scope'}.
-			   $args{'AppliesTo'}."\n");	    
+#	$RT::Logger->debug("Cached ACL loss decision for ". 
+#			   $args{'Right'}.$args{'Scope'}.
+#			   $args{'AppliesTo'}."\n");	    
 	
 	return(undef);
     }

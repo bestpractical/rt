@@ -168,11 +168,11 @@ WatchersAsString ...
 sub WatchersAsString {
     my $self=shift;
 
-    return (0, "Permission Denied")
+    return (undef)
       unless ($self->CurrentUserHasRight('ExploreQueue'));
-    
-    return ($self->_CleanAddressesAsString ($self->Watchers->EmailsAsString() ));
+    return($self->Watchers->EmailsAsString());
 }
+
 
 # {{{ sub AdminCcAsString 
 
@@ -186,15 +186,16 @@ Takes nothing. returns a string: All Ticket/Queue AdminCcs.
 sub AdminCcAsString {
     my $self=shift;
     
-    return (0, "Permission Denied")
+    return (undef)
       unless ($self->CurrentUserHasRight('ExploreQueue'));
-        
-    return ($self->_CleanAddressesAsString ($self->AdminCc->EmailsAsString() ));
+    
+    return($self->AdminCc->EmailsAsString());
   }
 
 # }}}
 
 # {{{ sub CcAsString
+
 =head2 CcAsString
 
 =item B<Takes>  I<nothing>
@@ -206,29 +207,10 @@ sub AdminCcAsString {
 sub CcAsString {
     my $self=shift;
     
-    return (0, "Permission Denied")
+    return (undef)
       unless ($self->CurrentUserHasRight('ExploreQueue'));
-        
-    return ($self->_CleanAddressesAsString ($self->Cc->EmailsAsString() ));
-}
-
-# }}}
-
-# {{{ sub _CleanAddressesAsString
-=head2 _CleanAddressesAsString
-
-=item B<Takes> String: A comma delineated address list
-
-=item B<Returns> String: A comma delineated address list
-
-=cut
-
-sub _CleanAddressesAsString {
-    my $i=shift;
-    $i =~ s/^, //;
-    $i =~ s/, $//;
-    $i =~ s/, ,/,/g;
-    return $i;
+    
+    return ($self->Cc->EmailsAsString());
 }
 
 # }}}
@@ -263,7 +245,6 @@ sub _Cc {
     return($cc);
     
 }
-
 
 # }}}
 
@@ -644,7 +625,7 @@ sub KeywordSelects {
   $KeywordSelects->LimitToQueue($self->id);
   $KeywordSelects->IncludeGlobals();
 
-  return ($KeywordSelects)
+  return ($KeywordSelects);
 }
 # }}}
 
@@ -768,5 +749,3 @@ sub Grant {
 
 # }}}
 1;
-
-
