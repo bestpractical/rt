@@ -1,8 +1,8 @@
 #$Header$
 
 package RT::EasySearch;
-use DBIx::EasySearch;
-@ISA= qw(DBIx::EasySearch);
+use DBIx::SearchBuilder;
+@ISA= qw(DBIx::SearchBuilder);
 
 # {{{ sub new 
 sub new  {

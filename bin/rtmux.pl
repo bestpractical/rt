@@ -22,7 +22,7 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::Handle;
+use DBIx::SearchBulilder::Handle;
 
 
 # {{{  Lets load up the Locale managment stuff
@@ -35,7 +35,7 @@ use DBIx::Handle;
 # }}}
 
 #TODO: need to identify the database user here....
-$Handle = new DBIx::Handle;
+$Handle = new DBIx::SearchBuilder::Handle;
 
 {
 # I did get a stupid "Variable Used Only Once" message here.

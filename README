@@ -53,7 +53,7 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 GENERAL INSTALLATION
 --------------------
 
-0   Install JVDBIx
+0   Install DBIx-SearchBuilder from fsck.com (We're waiting on CPAN approval)
 
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 

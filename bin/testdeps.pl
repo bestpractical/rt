@@ -22,7 +22,7 @@ $mode = shift || &print_help;
 
 @modules = qw(
 DBI 1.13
-HTML::Mason 0.81
+HTML::Mason 0.87
 Date::Manip
 Date::Format
 MIME::Entity 5.108
@@ -31,9 +31,7 @@ CGI::Cookie 1.06
 Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
-DBIx::Handle
-DBIx::Record
-DBIx::EasySearch
+DBIx::SearchBuilder
 Apache::Session 1.03
 );
 use CPAN;

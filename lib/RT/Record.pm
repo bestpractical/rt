@@ -1,10 +1,10 @@
 #$Header$
 
 package RT::Record;
-use DBIx::Record;
+use DBIx::SearchBuilder::Record;
 use RT::Date;
 
-@ISA= qw(DBIx::Record);
+@ISA= qw(DBIx::SearchBuilder::Record);
 
 # {{{ sub new 
 

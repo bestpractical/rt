@@ -25,7 +25,7 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::Handle;
+use DBIx::SearchBuilder::Handle;
 
 {  
     package HTML::Mason::Commands;
@@ -78,7 +78,7 @@ sub handler {
     my ($r) = @_;
 
 
-    $RT::Handle = new DBIx::Handle;
+    $RT::Handle = new DBIx::SearchBuilder::Handle;
     
     $RT::Handle->Connect(Host => $RT::DatabaseHost, 
 			 Database => $RT::DatabaseName, 
