@@ -115,7 +115,7 @@ sub Create  {
     #Get the filename
     my $Filename = $Attachment->head->recommended_filename;
     
-    if ($Attachment->is_multipart) {
+    if ($Attachment->parts) {
 	$id = $self->SUPER::Create(TransactionId => $args{'TransactionId'},
 				   Parent => 0,
 				   ContentType  => $Attachment->mime_type,
@@ -123,18 +123,11 @@ sub Create  {
 				   Subject => $Subject,
 				   
 				  );
-	
-	for (my $Counter = 0; $Counter < $Attachment->parts(); $Counter++) {
+ 	foreach my $part ($Attachment->parts) {	
 	    my $SubAttachment = new RT::Attachment($self->CurrentUser);
 	    $SubAttachment->Create(TransactionId => $args{'TransactionId'},
-				   Parent => "$id",
-				   
-				   # This was "part", and has always worked
-				   # until I upgraded MIME::Entity.  seems
-				   # like "parts" should work according to
-				   # the doc?
-				   
-				   Attachment => $Attachment->parts($Counter),
+				   Parent => $id,
+				   Attachment => $part,
 				   ContentType  => $Attachment->mime_type,
 				   Headers => $Attachment->head->as_string(),
 				   
