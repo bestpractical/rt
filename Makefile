@@ -43,7 +43,7 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
 
 # This is the group that all of the installed files will be chgrp'ed to.
-RTGROUP			=	www
+RTGROUP			=	rt
 
 
 # User which should own rt binaries.
@@ -312,13 +312,16 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/00smoke.t
 
-regression-nosetgid-quiet: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
+regression-install: config-install
+	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
+
+regression-nosetgid-quiet: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
 	$(PERL) sbin/regression_harness
 
-regression-nosetgid: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
+regression-nosetgid: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
 	$(PERL) lib/t/02regression.t
 
-regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods apachectl
+regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods apachectl
 	$(PERL) lib/t/02regression.t
 
 regression-quiet:
