@@ -1,0 +1,5 @@
+sub acl {
+return  (
+"GRANT RESOURCE TO ${RT::DatabaseUser};");
+}
+1;

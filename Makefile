@@ -36,7 +36,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	3
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	7pre1
+RT_VERSION_PATCH	=	7pre2
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -126,6 +126,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
 # "Pg" is known to work
+# "Informix" is known to work
 
 DB_TYPE			=	mysql
 
@@ -137,6 +138,7 @@ DB_TYPE			=	mysql
 # For mysql, you probably want 'root'
 # For Pg, you probably want 'postgres' 
 # For Oracle, you want 'system'
+# For Informix, you want 'informix'
 
 DB_DBA			=	root
 

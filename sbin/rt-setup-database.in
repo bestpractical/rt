@@ -154,7 +154,7 @@ sub insert_schema {
         }
 
         foreach my $statement (@schema) {
-            print STDERR $statement if $args{'debug'};
+            print STDERR "SQL: $statement\n" if defined $args{'debug'};
             my $sth = $dbh->prepare($statement) or die $dbh->errstr;
             unless ( $sth->execute ) {
                 die "Problem with statement:\n $statement\n" . $sth->errstr;
@@ -217,6 +217,10 @@ sub create_db {
     elsif ($RT::DatabaseType eq 'Oracle') {
         insert_acl();
     }
+    elsif ( $RT::DatabaseType eq 'Informix' ) {
+	$ENV{DB_LOCALE} = 'en_us.utf8';
+        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
+    }
     else {
         $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
     }
@@ -267,6 +271,10 @@ sub insert_acl {
         do $base_path . "/acl.mysql"
           || die "Couldn't find ACLS for mysql in " . $RT::EtcPath . "\n" . $@;
     }
+    elsif ( $RT::DatabaseType =~ /^informix$/i ) {
+        do $base_path . "/acl.Informix"
+          || die "Couldn't find ACLS for Informix in " . $RT::EtcPath . "\n" . $@;
+    }
     elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
         return;
     }
@@ -306,6 +314,10 @@ sub get_system_dsn {
     elsif ( $RT::DatabaseType eq 'Pg' ) {
         $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
     }
+    elsif ( $RT::DatabaseType eq 'Informix' ) {
+	# with Informix, you want to connect sans database:
+	$dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
+    }
     return $dsn;
 }
 
@@ -321,7 +333,7 @@ sub insert_initial_data {
     #Put together a current user object so we can create a User object
     my $CurrentUser = new RT::CurrentUser();
 
-    print "Checking for existing system user...";
+    print "Checking for existing system user ($CurrentUser)...";
     my $test_user = RT::User->new($CurrentUser);
     $test_user->Load('RT_System');
     if ( $test_user->id ) {
@@ -349,7 +361,7 @@ sub insert_initial_data {
         exit(1);
     }
     print "done.\n";
-    $RT::Handle->dbh->disconnect();
+    $RT::Handle->Disconnect();
 
 }
 

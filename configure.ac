@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.0.7pre1], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [3.0.7pre2], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -75,11 +75,11 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AC_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql) (mysql, Oracle and Pg are valid)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and Informix are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle'; then
-	AC_MSG_ERROR([Only Oracle, Pg and mysql are valid db types])
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' ; then
+	AC_MSG_ERROR([Only Oracle, Informix, Pg and mysql are valid db types])
 fi
 AC_SUBST(DB_TYPE)
 

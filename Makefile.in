@@ -126,6 +126,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
 # "Pg" is known to work
+# "Informix" is known to work
 
 DB_TYPE			=	@DB_TYPE@
 
@@ -137,6 +138,7 @@ DB_TYPE			=	@DB_TYPE@
 # For mysql, you probably want 'root'
 # For Pg, you probably want 'postgres' 
 # For Oracle, you want 'system'
+# For Informix, you want 'informix'
 
 DB_DBA			=	@DB_DBA@
 
