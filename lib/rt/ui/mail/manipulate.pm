@@ -15,13 +15,25 @@ sub activate {
     
   #Load message into a Message::Internet message?
 
-  #THIS IS PLACEHOLDER CODE
-  #DO we even want MIME::Parser?  
-  # Create a new MIME parser:
-  my $parser = new MIME::Parser;
-  
-  # Read the MIME message:
-  $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
+ my $time = time;
+ mkdir (0777, "/tmp/rt/$time");
+ # Create a new parser object:
+ my $parser = new MIME::Parser;
+
+ # Set up output directory for files:
+ $parser->output_dir("/tmp/rt/$time");
+
+ # Set up the prefix for files with auto-generated names:
+ $parser->output_prefix("part");
+
+ # If content length is <= 20000 bytes, store each msg as in-core scalar;
+ # Else, write to a disk file (the default action):
+ $parser->output_to_core(20000);
+
+ # Parse an input stream:
+ $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
+
+ 
 
 
 
@@ -178,27 +190,27 @@ sub parse_actions {
         
 	#parse for doublequoted strings
         if ($line =~ /^\"(.?)\"\s?(.*)/) {
-          $arg[$count++]=$1;
-          $line = $2;
+$arg[$count++]=$1;
+$line = $2;
         }
         
 	#parse singlequoted strings
         elsif ($line =~ /^\'(.?)\'\s?(.*)/) {
-          $arg[$count++]=$1;
-          
-          $line = $2;
+$arg[$count++]=$1;
+
+$line = $2;
 	  #		if ($debug) {print "singlequote: $1 is arg $count\nline is $line\n.";}
         }
         
 	#parse for delineation w/ whitespace
         elsif ($line =~ s/^(\S*)\s(.*)/$2/) {
-          $arg[$count++]=$1;
+$arg[$count++]=$1;
 	  #			$line = $2;
 	  #			if ($debug) {print "space deliniated: $arg[($count-1)]  is arg line is $line\n.";}
         }
         else {
-          $arg[$count++] = $line;
-          $line = "";
+$arg[$count++] = $line;
+$line = "";
         }
       }
       
@@ -297,12 +309,12 @@ sub parse_actions {
         $password = $arg[1];
         
         if (!$username) {      # If none is supplied, try the sender
-          $username = (split(/\@/, $real_current_user))[0];
+$username = (split(/\@/, $real_current_user))[0];
         }
         if ($username) {
 	  #check the authentication state
-          if (!(&rt::is_password($username, $password))) {
-            if ($debug) {print "$password is not $username\'s password.\n (1:$arg[0] 2:$arg[1] 3:$arg[2]";}
+if (!(&rt::is_password($username, $password))) {
+  if ($debug) {print "$password is not $username\'s password.\n (1:$arg[0] 2:$arg[1] 3:$arg[2]";}
 	    $message = "Bad Login for $username.";
 	    $trans = 0;
 	  }
@@ -341,9 +353,9 @@ sub parse_actions {
 	    $resolve_nums[$#resolve_nums++]=$arg[1];
 	  }
 	  else {
-              $resolve_nums[$#resolve_nums]=$arg[1];
-            }
-	  #                   $message = "Batching resolve of $resolve_nums[$#resolve_nums].";
+    $resolve_nums[$#resolve_nums]=$arg[1];
+  }
+	  #         $message = "Batching resolve of $resolve_nums[$#resolve_nums].";
 	}
 	else {
 	  $message = "No ticket number found.";
@@ -366,7 +378,7 @@ sub parse_actions {
 	}
 	else {
 	  $into = $arg[2];
-          }
+}
 	($trans,  $message)=&rt::merge($serial_num, $into, $current_user);
       }
       
@@ -383,8 +395,8 @@ sub parse_actions {
       #deal with untake commands
       
         elsif ($arg[0] =~ /^untake/i) {
-          $serial_num=$arg[1];
-          ($trans,  $message)=&rt::untake($serial_num, $current_user);
+$serial_num=$arg[1];
+($trans,  $message)=&rt::untake($serial_num, $current_user);
         }
       
       
@@ -401,11 +413,11 @@ sub parse_actions {
 	
 	#deal w/ SET OWNER commands
 	if ($arg[1] =~ /^own/) {
-            $serial_num=int($arg[2]);
-            $owner=$arg[3];
-            ($trans,  $message)=&rt::give($serial_num, $owner, $current_user);
-            
-          }
+  $serial_num=int($arg[2]);
+  $owner=$arg[3];
+  ($trans,  $message)=&rt::give($serial_num, $owner, $current_user);
+  
+}
 	
 	# deal with SET USER commands
 	if (($arg[1] =~ /^user/) or ($arg[1] =~ /^requestor/)) {
@@ -423,7 +435,7 @@ sub parse_actions {
 	#deal with SET QUEUE commands
 	if ($arg[1] =~ /^queue/) {
 	  $serial_num=int($arg[2]);
-            $queue=$arg[3];
+  $queue=$arg[3];
 	  ($trans,  $message)=&rt::change_queue ($serial_num, $queue, $current_user);
 	}
 	
@@ -432,16 +444,16 @@ sub parse_actions {
 	if ($arg[1] =~ /^area/) {
 	  $serial_num=int($arg[2]);
 	  $area=$arg[3];
-            ($trans,  $message)=&rt::change_area ($serial_num, $area, $current_user);
+  ($trans,  $message)=&rt::change_area ($serial_num, $area, $current_user);
 	}
 	
 	#deal with SET PRIO commands
 	
 	if ($arg[1] =~ /^prio/) {
-            $serial_num=int($arg[2]);
-            $prio=$arg[3];
-            ($trans,  $message)=&rt::change_priority ($serial_num, $prio, $current_user);
-          }
+  $serial_num=int($arg[2]);
+  $prio=$arg[3];
+  ($trans,  $message)=&rt::change_priority ($serial_num, $prio, $current_user);
+}
 	
 	
 	#deal with SET FINAL commands
@@ -464,29 +476,29 @@ sub parse_actions {
 	
 	#deal with SET STATUS commands
 	
-          if ($arg[1] =~ /^status/) {
-            $serial_num=int($arg[2]);
-            $status=$arg[3];
-            $confirmation=$arg[4];
-            
-            
-            
-            if ($status =~ /stall/i) {
-              ($trans,  $message)=&rt::stall($serial_num, $current_user);
-            }
-            
-            elsif ($status =~ /open/i) {
-              ($trans,  $message)=&rt::open($serial_num, $current_user);
-            }
-            
-            elsif ($status =~ /resolv/i)  {
-              ($trans,  $message)=&rt::resolve($serial_num, $current_user);
-            }
-            
-            elsif (($status =~ /dead/i) and ($confirmation =~ /^yes/)){
-              ($trans,  $message)=&rt::kill($serial_num, $current_user);
-            }
-          }
+if ($arg[1] =~ /^status/) {
+  $serial_num=int($arg[2]);
+  $status=$arg[3];
+  $confirmation=$arg[4];
+  
+  
+  
+  if ($status =~ /stall/i) {
+    ($trans,  $message)=&rt::stall($serial_num, $current_user);
+  }
+  
+  elsif ($status =~ /open/i) {
+    ($trans,  $message)=&rt::open($serial_num, $current_user);
+  }
+  
+  elsif ($status =~ /resolv/i)  {
+    ($trans,  $message)=&rt::resolve($serial_num, $current_user);
+  }
+  
+  elsif (($status =~ /dead/i) and ($confirmation =~ /^yes/)){
+    ($trans,  $message)=&rt::kill($serial_num, $current_user);
+  }
+}
 	
 	
       }
