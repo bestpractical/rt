@@ -34,9 +34,11 @@ $MasonDataDir = "/var/run/rtfm/mason";
 $WebPath = "/fm";
 
 # Where mason looks for local components
-$RT::FM::MasonLocalComponentRoot = "/home/jesse/projects/fm/local/html";
+$MasonLocalComponentRoot = "/home/jesse/projects/fm/local/html";
 
 # Where mason looks for components
-$RT::FM::MasonComponentRoot = "/home/jesse/projects/fm/html";
+$MasonComponentRoot = "/home/jesse/projects/fm/html";
+
+$LogToApacheLog = 'debug';
 
 1;
