@@ -7,22 +7,21 @@ use RT::Record;
 
 @ISA= qw(RT::Record);
 
-#
-# The new plan for RT::Template is that it's a subclass of MIME::Entity, which is
-# itself a subclass of Mail::Internet. This means we'll just be able to $Template->send()
-# etcetera.
-#
 
-# {{{ sub new 
-sub new  {
-  my $pkg=shift;
-    my $self=RT::Record::new($pkg);
-  
-  $self->{'table'}="Templates";
+# {{{ sub new
+
+sub new {
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self  = {};
+  bless ($self, $class);
+  $self->{'table'} = "Templates";
   $self->_Init(@_);
-  return $self;
+  return ($self);
 }
+
 # }}}
+
 
 # {{{ sub _Accessible 
 sub _Accessible  {

@@ -20,18 +20,9 @@ use RT::Users;
 
 # TODO: respect the ACLs
 
-my $CurrentUser = RT::CurrentUser->new(2);
-my $Users = RT::Users->new($CurrentUser);
+my $Users = RT::Users->new($session{CurrentUser});
 $Users->Limit( FIELD => 'id',
 		OPERATOR => "!=",
-	        VALUE => 1
-		);
-
-# TODO: Does this one makes sense?  I'd daresay that, but anyway it
-# should be obsoleted by proper access control. -- TobiX
-
-$Users->Limit( FIELD => 'CanManipulate',
-		OPERATOR => "=",
 	        VALUE => 1
 		);
 </%INIT>

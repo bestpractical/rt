@@ -52,7 +52,10 @@ use RT::Interface::Web;
 
 my @Actions;
 
-my $Ticket = &CreateOrLoad(id=>$id, ARGS=>\%ARGS, Actions=>\@Actions);
+my $Ticket = &CreateOrLoad(CurrentUser => $session{'CurrentUser'},
+			   id=>$id, 
+			   ARGS=>\%ARGS, 
+			   Actions=>\@Actions);
 $id=$Ticket->Id;
 
 # Eventually, link up the ticket:

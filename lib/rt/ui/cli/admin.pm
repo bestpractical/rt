@@ -492,7 +492,7 @@ sub UserACLList {
 	my $userid = shift;
 
                 require RT::ACL;
-                my $ACLObj = new RT::ACL;
+                my $ACLObj = new RT::ACL($CurrentUser);
 
 
 	# If they're looking for rights that apply to all users.
@@ -500,7 +500,7 @@ sub UserACLList {
 		$ACLObj->LimitPrincipalsToUser(0);
 	}
 	else {
-		my $UserObj = new RT::User;
+		my $UserObj = new RT::User($CurrentUser);
 		$UserObj->Load($userid);
 		$ACLObj->LimitPrincipalsToUser($UserObj->Id());
 	}	
@@ -517,11 +517,11 @@ sub QueueACLList {
 	# if they're looking for things that apply to 'all queues'
         if ($queueid eq '-global') {
                 require RT::ACL;
-                $ACLObj = new RT::ACL;
+                $ACLObj = new RT::ACL($CurrentUser);
 		$ACLObj->LimitScopeToQueue(0);
         }
         else {
-        	$QueueObj = new RT::Queue;
+        	$QueueObj = new RT::Queue($CurrentUser);
        		$QueueObj->Load($queueid);
 		$ACLObj =$QueueObj->ACL;	
 	}
@@ -544,7 +544,7 @@ sub ACLAdd {
 
   if ($action =~ /add/) {
     use RT::ACE;
-    my $ACE = new RT::ACE;
+    my $ACE = new RT::ACE($CurrentUser);
     $ACE->Create( PrincipalType => $princtype,
 		  PrincipalId => $princid,
 		  Right => $right,

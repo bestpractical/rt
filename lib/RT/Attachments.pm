@@ -43,7 +43,7 @@ sub NewItem  {
   my $Handle = shift;
   my $item;
   use RT::Attachment;
-  $item = new RT::Attachment($self->{'user'});
+  $item = new RT::Attachment($self->CurrentUser);
   return($item);
 }
 # }}}

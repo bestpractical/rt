@@ -16,6 +16,6 @@ $Default => undef
 <%INIT>
 # TODO handle Default
 use RT::Queues;
-my $q=new RT::Queues;
+my $q=new RT::Queues($session{'CurrentUser'});
 $q->UnLimit;
 </%INIT>

@@ -53,7 +53,7 @@ sub NewItem  {
   my $item;
 
   use RT::ScripScope;
-  $item = new RT::ScripScope();
+  $item = new RT::ScripScope($self->CurrentUser);
   return($item);
 }
 # }}}

@@ -82,7 +82,7 @@ sub _TicketObj {
   
   unless (exists $self->{$tag}) {
     if ($self->_IsLocal($ref)) {
-      $self->{$tag}=RT::Ticket->new;
+      $self->{$tag}=RT::Ticket->new($self->CurrentUser);
       $self->{$tag}->Load($ref);
     }
     else {

@@ -99,7 +99,7 @@ sub Create {
 	      FinalPriority => 0,
 	      Status => 'open',
 	      TimeWorked => 0,
-	      Due => undef,
+	      Due => 0,
 	      MIMEObj => undef,
 	      @_);
 
@@ -130,7 +130,7 @@ sub Create {
 
   #TODO we should see what sort of due date we're getting, rather
   # than assuming it's in ISO format.
-  my $due = new RT::Date;
+  my $due = new RT::Date($self->CurrentUser);
   $due->Set (Format => 'ISO',
 	     Value => $args{'Due'});
 
@@ -725,7 +725,7 @@ sub GraceTimeAsString {
     my $self=shift;
 
     if ($self->Due) {
-	my $now=new RT::Date;
+	my $now=new RT::Date($self->CurrentUser);
 	$now->SetToNow();	
 	return($now->DiffAsString($self->DueObj));
     } else {
@@ -739,7 +739,7 @@ sub GraceTimeAsString {
 sub DueObj {
     my $self = shift;
     
-    my $time = RT::Date->new;
+    my $time = new RT::Date($self->CurrentUser);
 
     # -1 is RT::Date slang for never
     if ($self->Due) {
@@ -758,7 +758,7 @@ sub DueObj {
 sub ToldObj {
   my $self = shift;
   
-  my $time = new RT::Date;
+  my $time = new RT::Date($self->CurrentUser);
   $time->Set(Format => 'sql', Value => $self->Told);
   return $time;
 }
@@ -771,7 +771,7 @@ sub LongSinceToldAsString {
   my $self = shift;
 
   if ($self->Told) {
-      my $now = new RT::Date;
+      my $now = new RT::Date($self->CurrentUser);
       $now->SetToNow();
       return $now->DiffAsString($self->ToldObj);
   } else {
@@ -796,7 +796,7 @@ sub ToldAsString {
 sub LastUpdatedByObj {
   my $self=shift;
   unless (exists $self->{LastUpdatedByObj}) {
-    $self->{LastUpdatedByObj}=RT::User->new;
+    $self->{LastUpdatedByObj}=RT::User->new($self->CurrentUser);
     $self->{LastUpdatedByObj}->Load($self->LastUpdatedBy);
   }
   return $self->{LastUpdatedByObj};
@@ -811,7 +811,7 @@ sub TimeWorkedAsString {
     #This is not really a date object, but if we diff a number of seconds 
     #vs the epoch, we'll get a nice description of time worked.
     
-    my $worked = new RT::Date;
+    my $worked = new RT::Date($self->CurrentUser);
     #return the  #of minutes worked turned into seconds and written as
     # a simple text string
     return($worked->DurationAsString($self->TimeWorked*60));
@@ -931,7 +931,7 @@ sub NewKeyword {
   
     my ($keyword);
   
-  $keyword = new RT::Article::Keyword;
+  $keyword = new RT::Article::Keyword($self->CurrentUser);
   return($keyword->create( keyword => "$keyid",
 			   article => $self->id));
   
@@ -993,7 +993,7 @@ sub _Links {
   my $field = shift;
   my $type =shift || "";
     unless (exists $self->{"$field$type"}) {
-	$self->{"$field$type"} = new RT::Links;
+	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
 	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->id);
 	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
     }
@@ -1012,7 +1012,7 @@ sub AllLinks {
   die "Stub!";
   
 #  if (! $self->{'all_links'}) {
-#      $self->{'all_links'} = new RT::Links;
+#      $self->{'all_links'} = new RT::Links($self->CurrentUser);
 #    $self->{'all_links'}->Limit(FIELD => 'article',
 #					      VALUE => $self->id);
 #  }
@@ -1339,7 +1339,7 @@ sub Resolve {
 sub UpdateTold {
     my $self=shift;
     my $timetaken=shift || 0;
-    my $now = new RT::Date;
+    my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow(); 
     #TODO: Update _Set's syntax. we need to deal with the ugly format.
     return($self->_Set('Told',$now->ISO,$timetaken,
@@ -1351,7 +1351,7 @@ sub UpdateTold {
 
 sub _UpdateTold {
     my $self=shift;
-    my $now = new RT::Date;
+    my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
     return($self->SUPER::_Set('Told',$now->ISO,1));
 }
@@ -1557,8 +1557,8 @@ sub _UpdateDateActed {
 sub CurrentUserHasRight {
   my $self = shift;
   my $right = shift;
-
-  return ($self->HasRight( Principal=> $self->CurrentUser,
+  
+  return ($self->HasRight( Principal=> $self->CurrentUser->UserObj(),
 			    Right => "$right"));
 
 }
@@ -1567,16 +1567,17 @@ sub CurrentUserHasRight {
 
 # {{{ sub HasRight 
 
-# TAKES: Right and optional "Actor" which defaults to the current user
+# TAKES: Right and optional "Principal" 
 sub HasRight {
     my $self = shift;
 	my %args = ( Right => undef,
 		     Principal => undef,
 	 	     @_);
-	unless(defined $args{'Principal'}) {
-		croak;
-		#$RT::Logger->warn("Principal attrib undefined for Ticket::HasRight");
+
+	unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
+		$RT::Logger->warn("Principal attrib undefined for Ticket::HasRight");
 	}
+        
 	return($args{'Principal'}->HasTicketRight(TicketObj => $self, 
 											  Right => $args{'Right'}));
 	

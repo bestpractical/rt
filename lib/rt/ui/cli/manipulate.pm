@@ -236,7 +236,7 @@ sub ParseArgs  {
 	require Date::Manip;
 	$due_date = &Date::Manip::UnixDate($due_string, "%s");
 	
-	my $date = new RT::Date;
+	my $date = new RT::Date($CurrentUser);
 	$date->Set(Format => 'unix',
 		   Value => $due_date);
 		
@@ -349,15 +349,14 @@ sub cli_create_req  {
 	require Date::Manip;
 	$date_due = &Date::Manip::UnixDate($due_string, "%s");
       }  
-      $due = new RT::Date;
+      $due = new RT::Date($CurrentUser);
       $due->Set(Format => 'unix',
 		 Value => $date_due);
       
       $due_iso = $due->ISO;  
     }
     else {
-	$Owner = new RT::User;
-	$Owner->Load('Nobody');
+	$Owner = $RT::Nobody->UserObj;
     }
 
     $Requestor = &rt::ui::cli::question_string("Requestor",);

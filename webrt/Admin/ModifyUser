@@ -1,6 +1,6 @@
 <%INIT>
 # Load the user in
-my $user = RT::User->new($CurrentUser);
+my $user = RT::User->new($session{CurrentUser});
 $user->Load($args{'id'});
 </%INIT>
 <HTML>

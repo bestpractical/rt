@@ -37,7 +37,7 @@ sub _MyCurrentUser  {
   $self->{'user'} = shift;
   
   if(!defined($self->CurrentUser)) {
-    my ($package, $filename, $line) = caller;
+    $RT::Logger->err("$self was created without a CurrentUser\n"); 
     return(0);
   }
 }
@@ -55,7 +55,7 @@ sub _Handle  {
 sub Create  {
   my $self = shift;
       if ($self->_Accessible('Created', 'auto')) {
-	my $now = new RT::Date;
+	my $now = new RT::Date($self->CurrentUser);
 	$now->Set(Format=> 'unix', Value => time);
 	   push @_, 'Created', $now->ISO();
 	}
@@ -75,7 +75,7 @@ sub Create  {
 
 sub LastUpdatedObj {
     my $self=shift;
-    my $obj = new RT::Date;
+    my $obj = new RT::Date($self->CurrentUser);
     
     $obj->Set(Format => 'sql', Value => $self->LastUpdated);
     return $obj;
@@ -87,7 +87,7 @@ sub LastUpdatedObj {
 
 sub CreatedObj {
     my $self=shift;
-    my $obj = new RT::Date;
+    my $obj = new RT::Date($self->CurrentUser);
     
     $obj->Set(Format => 'sql', Value => $self->Created);
 
@@ -145,11 +145,12 @@ sub _Set  {
   my $self = shift;
   my $field = shift;
   #if the user is trying to modify the record
-  $RT::Logger->debug("in RT::Record::Set for $self ".$self->Id ."\n"); 
+  $RT::Logger->err("in RT::Record::Set for $self ".$self->Id ."\n"); 
 
-  my $now = new RT::Date;
+  use RT::Date;
+  my $now = new RT::Date($self->CurrentUser);
   $now->SetToNow();
-
+  
   $error_condition = $self->_Handle->UpdateTableValue($self->{'table'}, 'LastUpdated',$now->ISO,$self->id)
     if ($self->_Accessible('LastUpdated','auto'));
 

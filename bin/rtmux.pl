@@ -13,7 +13,7 @@ $ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
 
 package RT;
 use strict;
-use vars qw($VERSION $Handle $SystemUser);
+use vars qw($VERSION $Handle $Nobody $SystemUser);
 
 $VERSION="!!RT_VERSION!!";
 
@@ -50,10 +50,14 @@ $Handle->Connect(Host => $RT::DatabaseHost,
 }
 
 
-#Load up a user object for actions taken by RT itself
 use RT::CurrentUser;
-#TODO abstract out the ID of the RT SystemUser
-$SystemUser = RT::CurrentUser->new(1);
+#RT's system user is a genuine database user. its id lives here
+
+$SystemUser = new RT::CurrentUser(1);
+
+#RT's "nobody user" is a genuine database user. its ID lives here.
+$Nobody = new RT::CurrentUser(2);
+
 
 
 my $program = $0; 

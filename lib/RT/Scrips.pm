@@ -55,7 +55,7 @@ sub NewItem  {
   my $item;
 
   use RT::Scrip;
-  $item = new RT::Scrip();
+  $item = new RT::Scrip($self->CurrentUser);
   return($item);
 }
 # }}}

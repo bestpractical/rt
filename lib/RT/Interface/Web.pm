@@ -18,7 +18,8 @@ sub Error {
 #{{{ sub LoadTicket - loads a ticket
 sub LoadTicket {
     my $id=shift;
-    my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+    my $CurrentUser = shift;
+    my $Ticket = RT::Ticket->new($CurrentUser);
     unless ($Ticket->Load($id)) {
 	&Error("Could not load ticket $id");
     }
@@ -28,12 +29,24 @@ sub LoadTicket {
 
 #{{{ sub CreateOrLoad - will create or load a ticket
 sub CreateOrLoad {
-    my $Ticket=RT::Ticket->new($session{'CurrentUser'});
-    my %args=@_;
+    my %args=(@_);
+    my $CurrentUser = $args{'CurrentUser'};
+
+
+    my $Ticket = new RT::Ticket($CurrentUser);
     if ($args{id} eq 'new') { 
-	use RT::Date;
-	my $now = new RT::Date;
-	$now->SetToNow();
+	
+	require RT::Queue;
+	my $Queue = new RT::Queue($CurrentUser);	
+	unless ($Queue->Load($args{'ARGS'}->{'queue'})) {
+		&mc_comp("/Elements/Error", Why => 'Queue not found');
+		$m->abort;
+	}
+
+	unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+		&mc_comp("/Elements/Error", Why => 'Permission Denied');
+		$m->abort;
+	}
 	require MIME::Entity;
 	#TODO in Create_Details.html: priorities and due-date      
 	my ($id, $Trans, $ErrMsg)=
@@ -41,11 +54,10 @@ sub CreateOrLoad {
 			     Queue=>$args{ARGS}->{queue},
 			     Owner=>$args{ARGS}->{ValueOfOwner},
 			     Requestor=>($args{ARGS}->{Requestors} 
-					 ? undef : $session{CurrentUser}),
+					 ? undef : $session{CurrentUser}->UserObj()),
 			     RequestorEmail=>$args{ARGS}->{Requestors}||undef,
 			     Subject=>$args{ARGS}->{Subject},
 			     Status=>$args{ARGS}->{Status}||'open',
-			     Date => $now->ISO(),
 			     MIMEObj => MIME::Entity->build
 			     ( 
 			       Subject => $args{ARGS}->{Subject},

@@ -62,14 +62,15 @@ sub Create  {
     use RT::Ticket;
     #TODO this MUST be as the "System" principal or it all breaks
     my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
-    $TicketAsSystem->Load($self->Ticket);
-    
+    $TicketAsSystem->Load($args{'Ticket'}) || $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
+   
+    $RT::Logger->err("RT::Transaction::Create is about to limit to queue: ".$TicketAsSystem->Queue."\n"); 
     # Deal with Scrips
     
     #Load a scrips object
     use RT::ScripScopes;
     my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
-    $ScripScopes->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
+    $ScripScopes->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueId
     
     #Load a ScripsScopes object
     #Iterate through each script and check it's applicability.
@@ -197,7 +198,7 @@ sub _Attach  {
 # {{{ sub TicketObj
 sub TicketObj {
     my $self=shift;
-    my $ticket=new RT::Ticket;
+    my $ticket=new RT::Ticket($self->CurrentUser);
     return $self->{'TicketObj'}
         if exists $self->{'TicketObj'};
     $ticket->Load($self->Ticket);

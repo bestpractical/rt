@@ -219,7 +219,7 @@ sub ACL  {
   my $self = shift;
   if (!$self->{'acl'}) {
     use RT::ACL;
-    $self->{'acl'} = new RT::ACL;
+    $self->{'acl'} = new RT::ACL($self->CurrentUser);
     $self->{'acl'}->LimitScopeToQueue($self->Id);
   }
   
@@ -279,7 +279,7 @@ sub Grant {
 		     @_
 		    );
 	use RT::ACE;
-	my $ACE = new RT::ACE;
+	my $ACE = new RT::ACE($self->CurrentUser);
 	return($ACE->Create(PrincipalType => $args{'PrinicpalType'},
 			    PrincipalId =>   $args{'PrincipalId'},
 			    Right => $args{'Right'},

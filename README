@@ -177,6 +177,8 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
+TODO: THE CALLING CONVENTION FOR THE MAILGATE HAS CHANGED
+
     rt-comment: |"/path/to/rt/bin/rt-mailgate general comment"
     rt:         |"/path/to/rt/bin/rt-mailgate general correspond"
                                                     |          |
@@ -267,13 +269,10 @@ those above.
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
 your questions are best not asked publically, send them personally to
-jesse@fsck.com (eventually tobix@fsck.com, he's usually awake when Jesse is
-sleeping).
+jesse@fsck.com.
 
-There is also a mailing list rt-commit where all CVS updates are
-mailed, it might be quite useful for developers, wanna-be developers
-and those who always want the freshest version.
-
+If you want to be informed of every commit to the CVS repository,
+subscribe to rt-commit@fsck.com using similar instructions to those above.
 
 RT WEBSITE
 ----------

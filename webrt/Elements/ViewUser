@@ -21,7 +21,7 @@ $User=>undef
 
 <%INIT>
 use RT::Watchers;
-my $as_requestor=RT::Watchers->new;
+my $as_requestor=RT::Watchers->new($session{'CurrentUser'});
 $as_requestor->Limit(FIELD=>'Scope', VALUE=>'Ticket');
 $as_requestor->Limit(FIELD=>'Type', VALUE=>'Requestor');
 $as_requestor->Limit(FIELD=>'Owner', VALUE=>$User->Id);

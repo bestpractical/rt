@@ -6,6 +6,7 @@
 
 RT Date is a simple Date Object designed to be speedy and easy for RT to use
 
+The fact that it assumes that a time of 0 means "never" is probably a bug.
 =cut
 
 package RT::Date;
@@ -34,7 +35,11 @@ sub new  {
 
 =head2 sub Set
 
-Takes the number of seconds since the epoch
+Takes the number of seconds since the epoch as Value if Format is 'unix'
+If $args->{'Format'} is ISO, tries to parse an ISO date.
+
+If $args->{'Value'}  is 0, assumes you mean never.
+
 
 =cut
 
@@ -43,6 +48,11 @@ sub Set {
     my %args = ( Format => 'unix',
 		 Value => time,
 		 @_);
+    if ($args{'Value'} == 0) {
+	$self->{'time'} = 0;
+	return($self->Unix());
+    }
+
     if ($args{'Format'} =~ /^unix$/i) {
 	$self->{'time'} = $args{'Value'};
     }
@@ -122,6 +132,13 @@ sub DiffAsString {
     my $self = shift;
     my $other = shift;
 
+
+    if ($other == 0) {
+	return ("");
+    }
+    if ($self->Unix == 0) {
+	return("");
+    }
     my $diff = $self->Diff($other);
 
     return ($self->DurationAsString($diff));

@@ -15,6 +15,7 @@ sub new  {
   
   $self->{'table'} = "Watchers";
   $self->{'primary_key'} = "id";
+  $self->_Init(@_);
   return($self);
 }
 # }}}
@@ -121,7 +122,7 @@ sub NewItem  {
   my $Handle = shift;
   my $item;
  use RT::Watcher;
-  $item = new RT::Watcher($self->{'user'}, $Handle);
+  $item = new RT::Watcher($self->CurrentUser);
   return($item);
 }
 # }}}

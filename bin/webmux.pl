@@ -11,7 +11,7 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 package RT::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 
-use vars qw($VERSION %session);
+use vars qw($VERSION %session $Nobody $SystemUser);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -30,7 +30,7 @@ use DBIx::Handle;
 {  
     package HTML::Mason::Commands;
     use vars qw(%session);
-    
+   
     use RT::Ticket;
     use RT::Tickets;
     use RT::Transaction;
@@ -84,7 +84,16 @@ sub handler {
 			 User => $RT::DatabaseUser,
 			 Password => $RT::DatabasePassword,
 			 Driver => $RT::DatabaseType);
-    
+   
+
+	use RT::CurrentUser;
+	#RT's system user is a genuine database user. its id lives here
+
+	$RT::SystemUser = new RT::CurrentUser(1);
+
+	#RT's "nobody user" is a genuine database user. its ID lives here.
+	$RT::Nobody = new RT::CurrentUser(2);
+ 
     # We don't need to handle non-text items
     return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;
     

@@ -30,7 +30,7 @@ $id => undef
   }
 use RT::Ticket;
 use HTML::Entities;
-my $Ticket = RT::Ticket->new($RT::CurrentUser);
+my $Ticket = RT::Ticket->new($session{CurrentUser});
 unless ($Ticket->Load($id)) {
     &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
     $m->abort;

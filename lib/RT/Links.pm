@@ -33,7 +33,7 @@ sub NewItem  {
   my $item;
 
   use RT::Link;
-  $item = new RT::Link($self->{'user'});
+  $item = new RT::Link($self->CurrentUser);
   return($item);
 }
 # }}}

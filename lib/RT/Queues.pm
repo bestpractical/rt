@@ -42,7 +42,7 @@ sub NewItem  {
   my $item;
 
   use RT::Queue;
-  $item = new RT::Queue($self->{'user'});
+  $item = new RT::Queue($self->CurrentUser);
   return($item);
 }
 # }}}

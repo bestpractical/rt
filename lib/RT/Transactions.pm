@@ -33,7 +33,7 @@ sub NewItem  {
   my $item;
 
   use RT::Transaction;
-  $item = new RT::Transaction($self->{'user'});
+  $item = new RT::Transaction($self->CurrentUser);
   return($item);
 }
 # }}}
