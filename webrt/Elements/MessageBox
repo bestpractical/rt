@@ -31,7 +31,7 @@ if ($QuoteTransaction) {
 
 my $Signature = '';
 if ($session{'CurrentUser'}->UserObj->Signature) {
-	$Signature = "--\n".$session{'CurrentUser'}->UserObj->Signature;
+	$Signature = "-- \n".$session{'CurrentUser'}->UserObj->Signature;
 }
 
 </%INIT>
