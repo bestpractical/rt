@@ -1673,13 +1673,14 @@ sub MergeInto {
 					Email => $watcher->Email(),
 					Id => $watcher->Owner())) {
 	    $RT::Logger->debug("adding watcher to new ticket: email" .$watcher->Email() . " and owner ". $watcher->Owner() ."...");
-	    $NewTicket->AddWatcher( Type => $watcher->Type, 
+	    $NewTicket->_AddWatcher(Silent => 1, 
+				    Type => $watcher->Type, 
 				    Email => $watcher->Email(),
 				    Owner => $watcher->Owner());
 	}
     }
-
-
+    
+    
     $RT::Logger->debug("updating old merges...");
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets($self->CurrentUser);
