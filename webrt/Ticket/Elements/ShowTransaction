@@ -59,7 +59,7 @@ else {
 </pre>
 %    }  
 % elsif ($message->ContentType =~ m{^multipart}) {
-This is a multipart message
+<i>This is a multipart message</i>
 % } 
 
 % }
@@ -89,7 +89,8 @@ my $attachments = $Transaction->Attachments;
 
 my $titlebar_commands='';
 
-if ($Transaction->Content) {
+# If the transaction has anything attached to it at all
+if ($Transaction->Message) {
 	if ($Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')) {
 		$titlebar_commands .= 
 	  	  "[<a class='inverse' href=\"Update.html?id=".
