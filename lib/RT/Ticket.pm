@@ -554,7 +554,7 @@ sub _UpdateTimeTaken {
   my ($Total);
   
   $Total = $self->_Value("TimeWorked");
-  $Total = $Total + $Minutes;
+  $Total = ($Total || 0) + ($Minutes || 0);
   $self->SUPER::_Set("TimeWorked", $Total);
   return ($Total);
 }

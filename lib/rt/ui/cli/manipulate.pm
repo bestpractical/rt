@@ -303,9 +303,11 @@ sub ParseArgs {
     }
     
     use MIME::Entity;
-    $Message = MIME::Entity->build ( Subject => "$subject",
-				     Cc => "$cc",
-				     Bcc => "$Bcc",
+
+    # I managed to avoid an annoying warning this way:
+    $Message = MIME::Entity->build ( Subject => $subject || "",
+				     Cc => $cc || "",
+				     Bcc => $Bcc || "",
 				     Data => @content);
 
     ($Transaction, $Description) = $Ticket->Comment( MIMEObj => $Message,

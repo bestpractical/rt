@@ -38,7 +38,7 @@ sub question_int {
     }
     else {
 	print "$question: ";
-    }    $response=&input_int($default);
+    }    $response=&input_int($default||0);
     return($response);
 }
 
@@ -75,12 +75,8 @@ sub input_int {
     local ($default) =@_;
     local ($input);
     
-    chop($input=<STDIN>);
-    $input=int($input);
-    if (!$input) {
-	$input=int($default);
-    }
-    return($input);
+    chop($input=<STDIN>); 
+    return $input eq "" ? $default : int($input);
 }
 
 1;
