@@ -385,7 +385,7 @@ sub build_array {
 	    if (!$ea) {
 		$ea = $values{EA};
 	    }
-
+	    
 	    my $depth = $i;
 
 	    my $subkey = $values{Subkey};
@@ -524,6 +524,7 @@ sub ParseQuery {
 
 	} else {
 	    $depth--;
+	    $num = $depths{$depth} + 1;
 	}
 	$want = KEYWORD | PAREN | AGGREG;
     }
@@ -864,6 +865,11 @@ sub swap {
     eval "\$localhash$key2 = \\%temp";
 
     return 1;
+}
+
+sub debug {
+    my $message = shift;
+    $m->print("$message<br>");
 }
 
 unless ($Format) {
