@@ -5,10 +5,9 @@ my $gratuitous = {
 'Groups' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'Name', 'varchar', 'NULL', '16', '', '',
-    'Pseudo', 'integer', '0', '1', '', '',
-
+   'Name', 'varchar', 'NULL', '16', '', '',
     'Description', 'varchar', 'NULL', '64', '', '',
+    'Pseudo', 'integer', null, '', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [ ['Name'] ],
