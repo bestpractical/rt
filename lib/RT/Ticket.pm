@@ -142,15 +142,12 @@ sub Create {
     my $head = $args{'MIMEEntity'}->head;
     
     require Mail::Address;
-    require RT::Watcher;
 
     #Add the requestor to the list of watchers
     my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
     my @From = Mail::Address->parse($FromLine);
     
     foreach $From (@From) {
-      my $Watcher = RT::Watcher->new($self->CurrentUser);
-      
       $self->AddWatcher ( Email => $From->address,
 			  Type => "Requestor");
     }
