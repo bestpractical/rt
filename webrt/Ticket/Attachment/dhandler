@@ -2,17 +2,22 @@
      my ($ticket, $trans,$attach, $filename);
      my $arg = $m->dhandler_arg;                # get rest of path
      if ($arg =~ '^(\d+)/(\d+)/') {
-        $trans = $2;
-        $attach = $3;
+        $trans = $1;
+        $attach = $2;
      }
      else {
         Abort("The attachment could not be found. Please contact your RT Administrator");
         }
      my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
-     $AttachmentObj->Load($attach) || Abort('Attachment could not be loaded');
+     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
 
+
+     unless ($AttachmentObj->id) {
+        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+    }
      unless ($AttachmentObj->TransactionId() == $trans ) {
         Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+
      }
      my $content_type = $AttachmentObj->ContentType || 'text/html';
      $r->content_type($content_type);
