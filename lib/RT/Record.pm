@@ -162,7 +162,9 @@ sub AddAttribute {
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );
 
-    $self->Attributes->RedoSearch;
+                                     
+    # XXX TODO: Why won't RedoSearch work here?                                     
+    $self->Attributes->_DoSearch;
     
     return ($id, $msg);
 }
