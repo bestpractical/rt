@@ -97,8 +97,8 @@ ONLOAD="
 </table>
 <%INIT>
 
-$r->header_out('Pragma' => 'no-cache');
-$r->header_out('Cache-control' => 'no-cache');
+$r->headers_out->{'Pragma'} = 'no-cache';
+$r->headers_out->{'Cache-control'} = 'no-cache';
 </%INIT>
 
 <%ARGS>
