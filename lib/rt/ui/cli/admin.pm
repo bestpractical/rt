@@ -10,8 +10,12 @@ sub activate {
   require RT::User;  
   ($current_user,$tmp)=getpwuid($<);
   $CurrentUser = new RT::User($current_user,$Handle);
-  $CurrentUser->load($current_user);
+  if (!$CurrentUser->load($current_user)) {
+    print "You have no RT access.\n";
+  }
+
   
+
   print "Your email address is",$CurrentUser->EmailAddress,"\n";
   
 
