@@ -83,7 +83,6 @@ my $string;
 
 my $requestoraddress = $ARGS{'requestoraddress'};
 my $qname = $ARGS{'qname'};
-$RT::Logger->crit("          ********** requestor: " . $requestoraddress);
 
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $ARGS{'string'} = "";
