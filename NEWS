@@ -1,3 +1,7 @@
+3 Mar 99
+--------
+Fixed a spacing bug in the mail interface
+
 26 Feb 99
 ---------
 Added make upgrade-noclobber that doesn't clobber the config.pm

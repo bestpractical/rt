@@ -91,7 +91,7 @@ sub parse_headers {
 	if (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){	
 	    $serial_num=$2;
 	    $subject=$3;
-	    $subject =~ s/\($in_queue\)//i;     
+	    $subject =~ s/\($in_queue\)\s//i; 
 	}
 	elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
 	    $subject=$1;
