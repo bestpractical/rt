@@ -409,8 +409,8 @@ sub SetStatus {
   my $self = shift;
    my $status = shift;
   
-  if (($status != 'open') and ($status != 'stalled') and 
-      ($status != 'resolved') and ($status != 'dead') ) {
+  if (($status ne 'open') and ($status ne 'stalled') and 
+      ($status ne 'resolved') and ($status ne 'dead') ) {
     return (0,"That status is not valid.");
   }
   
