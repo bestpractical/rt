@@ -12,9 +12,10 @@ What can an Action do?
 - commit
 - describe itself
 
-...and if it's a subclass of SendEmail, you can also override:
+...and if it's a subclass of SendEmail, you can also override a lot.
 
-- SetReceipients
+Currently the schema.mysql contains a list of the basic subscription-related
+actions that will be bundled with RT.
 
 
 What is a Scrip?
