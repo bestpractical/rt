@@ -9,6 +9,8 @@ RT 1.1 started as plain featureadding to the existing 1.0 code base,
 until Jesse rocked it seriously up, starting to do an object oriented
 approach.  Personally I think the timing was quite bad; anyway the
 new code is very nice to work with.
+[ed note: _I_ think the timing was just fine.  -- jesse]
+
 
 There are still some elements from the code of the old 1.0, but most
 of the code is fresh.  The new object oriented code is mainly placed
@@ -17,7 +19,7 @@ in the lib/RT/ directory, while the old code mainly remains in lib/rt
 
 Because of this development path, there might be both new and old
 elements of code/documentation that is either not beeing used or
-outdated.  Just drop a note at the devel list if you find anything
+outdated.  Just drop a note to rt-devel@fsck.com if you find anything
 like that.
 
 
