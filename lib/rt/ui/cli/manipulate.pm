@@ -46,7 +46,7 @@ sub ParseArgs  {
       my ($Ticket);
       
       $Ticket=&LoadTicket($id);
-     if ($Ticket) {
+      if ($Ticket) {
 	  
 	  if ($Ticket->DisplayPermitted) {
 	    &ShowSummary($Ticket);
@@ -516,7 +516,7 @@ sub ShowSummary  {
     my $Ticket = shift;
 
     use Time::Local;
-    print <<EOFORM
+    print <<EOFORM;
 Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
       Subject: @{[$Ticket->Subject]}
    Requestors: @{[$Ticket->RequestorsAsString]}
@@ -529,8 +529,14 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
  Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->SinceTold]} ago)
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
-
 EOFORM
+
+   while (my $l=$Ticket->Children->Next) {
+       print $l->BaseObj->id," (",$l->BaseObj->Subject,") ",$l->Type," THIS\n";
+   }
+   while (my $l=$Ticket->Parents->Next) {
+       print "THIS ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
+   }
 }
 # }}}
 

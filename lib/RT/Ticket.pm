@@ -6,6 +6,7 @@
 package RT::Ticket;
 use RT::Record;
 use RT::Link;
+use RT::Links;
 @ISA= qw(RT::Record);
 
 =head1 NAME
@@ -918,6 +919,27 @@ sub NewKeyword {
 
 # - (all) parent(s)/group ticket ...
 
+# Gets all (local) links where we're the TARGET
+sub Children {
+    return $_[0]->_Links('Target');
+}
+
+# Gets all (local) links where we're the BASE
+sub Parents {
+    return $_[0]->_Links('Base');
+}
+
+sub _Links {
+    my ($self, $f, $t)=(shift, shift, shift||"");
+    unless (exists $self->{"$f$t"}) {
+	$self->{"$f$t"} = new RT::Links;
+	$self->{"$f$t"}->Limit(FIELD=>$f, VALUE=>$self->id);
+	$self->{"$f$t"}->Limit(FIELD=>'Type', VALUE=>$t)
+	    if ($t);
+    }
+    return $self->{"$f$t"}
+}
+
 #
 # {{{ sub AllLinks
 sub AllLinks {
@@ -985,6 +1007,8 @@ sub _NewLink {
 	       Base => '',
 	       Type => '',
 	       @_ );
+
+  # TODO: Check if the link exists or not
  
   # Storing the link in the DB.
   my $link = RT::Link->new($self->CurrentUser);

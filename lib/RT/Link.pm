@@ -59,6 +59,24 @@ sub Load  {
 }
 # }}}
 
+sub TargetObj {
+    return $_[0]->_Obj("Target");
+}
+
+sub BaseObj {
+    return $_[0]->_Obj("Base");
+}
+
+sub _Obj {
+    my ($self,$w)=@_;
+    my $tag="$w\_obj";
+    unless ($self->{$tag}) {
+	$self->{$tag}=RT::Ticket->new;
+	$self->{$tag}->Load($w eq "Target" ? $self->Target : $self->Base);
+    }
+    return $self->{$tag};
+}
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;
