@@ -55,16 +55,16 @@ $Scrips->LimitToGlobal();
 if ($NewScripAction and $NewScripCondition) {
     my $NewScrip = new RT::Scrip($session{'CurrentUser'});
     
-    my $retval = $NewScrip->Create ( ScripAction => $NewScripAction,
+    my ($retval, $msg) = $NewScrip->Create ( ScripAction => $NewScripAction,
 				     ScripCondition => $NewScripCondition,
 				     Stage => 'TransactionCreate',
 				     Queue => $Queue,
 				     Template => $NewScripTemplate);
     if (defined $retval) {
-        push @actions, "Scrip added.";
+        push @actions, $msg;
     }
     else {
-        push @actions, "Scrip could not be added";
+        push @actions, $msg;
     }
 }
 
@@ -76,7 +76,12 @@ foreach $key (keys %ARGS) {
             my $id = $1;
 	        my $scrip = new RT::Scrip($session{'CurrentUser'});
 	        $scrip->Load($id);
-            $scrip->Delete;
+            my $retval = $scrip->Delete;
+	    if ($retval) {
+	       push @actions, "Scrip deleted";
+	    }
+	    else {
+	       push @actions, "Scrip could not be deleted";
 	}
 	# }}}
 

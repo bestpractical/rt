@@ -46,6 +46,9 @@ sub _Accessible  {
 Creates a new entry in the Scrips table. Takes a paramhash with three
 fields, Queue, Template and Action.
 
+Returns (retval, msg);
+retval is 0 for failure or scrip id.  msg is a textual description of what happened.
+
 =cut
 
 sub Create  {
@@ -58,12 +61,23 @@ sub Create  {
 		 @_
 	       );
     
-    
-
-    unless ($self->CurrentUserHasRight('ModifyScrips')) {
-	return (0, 'Permission Denied');
+      
+    if ($args{'Queue'} == 0 ) { 
+	unless ($self->CurrentUser->HasSystemRight('ModifyScrips')) {
+	    return (0, 'Permission denied');
+ 	}	
     }
-    
+    else {
+	my $QueueObj = new RT::Queue($self->CurrentUser);
+	$QueueObj->Load($args{'Queue'});
+	unless ($QueueObj->id()) {
+	    return (0,'Invalid queue');
+	}
+	unless ($QueueObj->CurrentUserHasRight('ModifyScrips')) {
+	    return (0, 'Permssion denied');
+	}	
+    }
+
     #TODO +++ validate input 
     #TODO: Allow loading Template, ScripAction and ScripCondition by name
 
