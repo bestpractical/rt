@@ -14,18 +14,17 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
 BRANCH			=	HEAD
 
-
+# This is the group that all of the installed files will be chgrp'ed to.
 RTGROUP			=	rt
 
 
-
-# User which should own rt binaries
+# User which should own rt binaries.
 BIN_OWNER		=	root
 
-# User that should own all of RT's libraries. generally root.
+# User that should own all of RT's libraries, generally root.
 LIBS_OWNER 		=	root
 
-# Group that should own all of RT's libraries. generally root.
+# Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
 
@@ -65,8 +64,8 @@ MASON_SESSION_PATH	=       $(RT_PATH)/WebRT/sessiondata
 
 RT_LOG_PATH             =       /tmp
 
-# RT_READABLE_DIR_MODE is the mode of directories that are generally meant to be
-# accessable
+# RT_READABLE_DIR_MODE is the mode of directories that are generally meant
+# to be accessable
 RT_READABLE_DIR_MODE	=	0755
 
 
@@ -75,15 +74,15 @@ RT_READABLE_DIR_MODE	=	0755
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
-RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
+RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
 
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 # THIS HANDLER IS NOT CURRENTLY SUPPORTED
-RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.fcgi
+RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
 
 # RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
 # THIS HANDLER IS NOT CURRENTLY SUPPORTED
-RT_SPEEDYCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.scgi
+RT_SPEEDYCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.scgi
 
 # The following are the names of the various binaries which make up RT 
 
@@ -101,13 +100,13 @@ RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 # "Pg" is known to work
 # "Oracle" is in the early stages of working.
 
+DB_TYPE			=	mysql
 
-DB_TYPE	        =	mysql
+# DB_HOME is where the Database's commandline tools live.  $DB_HOME/bin
+# should contain the binaries themselves, e.g. if "which mysql" gives
+# "/usr/local/mysql/bin/mysql", $DB_HOME should be "/usr/local/mysql"
 
-# DB_HOME is where the Database's commandline tools live
-# Note: $DB_HOME/bin is where the database binary tools are installed.
- 
-DB_HOME	      	= /usr
+DB_HOME			= /usr
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL tools
@@ -120,45 +119,45 @@ DB_HOME	      	= /usr
 # For Pg, you probably want 'postgres' 
 # For oracle, you want 'system'
 
-DB_DBA	           =	root
-DB_DBA_PASSWORD	  =	
+DB_DBA			=	root
+DB_DBA_PASSWORD		=	
  
 #
 # Set this to the Fully Qualified Domain Name of your database server.
 # If the database is local, rather than on a remote host, using "localhost" 
 # will greatly enhance performance.
 
-DB_HOST		=	localhost
+DB_HOST			=	localhost
 
 # If you're not running your database server on its default port, 
 # specifiy the port the database server is running on below.
 # It's generally safe to leave this blank 
 
-DB_PORT		=	
+DB_PORT			=	
 
 #
 # Set this to the canonical name of the interface RT will be talking to the 
-# database on. # If you said that the RT_DB_HOST above was "localhost," this 
+# database on.  If you said that the RT_DB_HOST above was "localhost," this 
 # should be too. This value will be used to grant rt access to the database.
 # If you want to access the RT database from multiple hosts, you'll need
 # to grant those database rights by hand.
 #
 
-DB_RT_HOST	=	localhost
+DB_RT_HOST		=	localhost
 
 # set this to the name you want to give to the RT database in 
 # your database server. For Oracle, this should be the name of your sid
 
-DB_DATABASE	=	rt2
+DB_DATABASE		=	rt2
 
 # Set this to the name of the rt database user
 
-DB_RT_USER	=	rt_user
+DB_RT_USER		=	rt_user
 
 # Set this to the password used by the rt database user
 # *** Change This Before Installation***
 
-DB_RT_PASS      =      rt_pass
+DB_RT_PASS		=	rt_pass
 
 # }}}
 
@@ -167,8 +166,8 @@ DB_RT_PASS      =      rt_pass
 # The user your webserver runs as. needed so that webrt can cache mason
 # objectcode
 
-WEB_USER			=	www-data
-WEB_GROUP			=	rt
+WEB_USER		=	www-data
+WEB_GROUP		=	rt
 
 # }}}
 
