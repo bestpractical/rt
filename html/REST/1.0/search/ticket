@@ -1,0 +1,49 @@
+%# REST/1.0/search/ticket
+%#
+<%ARGS>
+$query
+$format => undef
+</%ARGS>
+<%INIT>
+my $output = "";
+my $status = "200 Ok";
+my $tickets = new RT::Tickets $session{CurrentUser};
+
+$format ||= "s";
+if ($format !~ /^[isl]$/) {
+    $status = "400 Bad request";
+    $output = "Unknown listing format: $format. (Use i, s, or l.)\n";
+    goto OUTPUT;
+}
+
+my ($n, $s) = $tickets->FromSQL($query);
+if ($n == 0) {
+    $status = "400 Bad request";
+    $output = "Invalid query: '$s'.\n";
+    goto OUTPUT;
+}
+
+$n = 0;
+while (my $ticket = $tickets->Next) {
+    $n++;
+
+    if ($format eq "i") {
+        $output .= $ticket->Id . "\n";
+    }
+    elsif ($format eq "s") {
+        $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+    }
+    else {
+        # XXX: Should think of a meaningful -l format.
+        $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+    }
+}
+if ($n == 0 && $format ne "i") {
+    $output = "No matching results.\n";
+}
+
+OUTPUT:
+</%INIT>
+RT/<% $RT::VERSION %> <% $status %>
+
+<% $output |n %>

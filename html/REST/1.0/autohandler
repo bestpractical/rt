@@ -1,0 +1,8 @@
+%# REST/1.0/autohandler
+%#
+<%INIT>
+$r->content_type('text/plain');
+$m->error_format('text');
+$m->call_next();
+$m->abort();
+</%INIT>

@@ -1,0 +1,84 @@
+%# REST/1.0/Forms/queue/default
+%#
+<%ARGS>
+$id
+$format => 's'
+$changes => undef
+</%ARGS>
+<%perl>
+my @data;
+my $queue = new RT::Queue $session{CurrentUser};
+
+if ($id ne 'new') {
+    $queue->Load($id);
+    if (!$queue->Id) {
+        return [ "# Queue $id does not exist.", [], {}, 1 ];
+    }
+}
+else {
+    # XXX: Can this fail? What if the queue already exists?
+    $queue->Create(Name => 'New queue');
+}
+
+my ($c, $o, $k, $e) = ("", [], {}, 0);
+my @fields = qw(Name Description CorrespondAddress CommentAddress
+                InitialPriority FinalPriority DefaultDueIn Disabled);
+my %fields = map { lc $_ => $_ } @fields;
+
+if ($changes) {
+    my ($get, $set, $key, $val, $n, $s);
+    my %data = %$changes;
+    my @comments;
+
+    foreach $key (keys %data) {
+        $val = $data{$key};
+        $key = lc $key;
+        $n = 1;
+
+        if ($key eq 'name' && $val eq 'New queue') {
+            $n = 0;
+            $s = "Please set the Queue name.";
+            goto SET;
+        }
+
+        if (exists $fields{$key}) {
+            $key = $fields{$key};
+            $set = "Set$key";
+
+            next if $val eq $queue->$key;
+            ($n, $s) = $queue->$set($val);
+        }
+        elsif ($key ne 'id') {
+            $n = 0;
+            $s = "Unknown field: $key";
+        }
+
+    SET:
+        if ($n == 0) {
+            $e = 1;
+            push @comments, "# $key: $s";
+            unless (@$o) {
+                @$o = ("id", @fields);
+                %$k = %data;
+            }
+        }
+    }
+
+    push(@comments, "# Queue $id updated.") unless @comments;
+    $c = join("\n", @comments) if @comments;
+}
+else {
+    my @data;
+
+    push @data, [ id => $queue->Id ];
+    foreach my $key (@fields) {
+        push @data, [ $key => $queue->$key ];
+    }
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+}
+
+return [ $c, $o, $k, $e ];
+</%perl>

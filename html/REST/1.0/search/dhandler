@@ -1,0 +1,9 @@
+%# REST/1.0/search/dhandler
+%#
+<%INIT>
+my $status = "500 Server Error";
+my $output = "Unsupported object type.";
+</%INIT>
+RT/<% $RT::VERSION %> <% $status %>
+
+<% $output |n %>

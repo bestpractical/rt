@@ -1,0 +1,171 @@
+%# REST/1.0/Forms/ticket/default
+%#
+<%ARGS>
+$id
+$changes => undef
+</%ARGS>
+<%perl>
+my @data;
+my $ticket = new RT::Ticket $session{CurrentUser};
+
+if ($id ne 'new') {
+    $ticket->Load($id);
+    if (!$ticket->Id) {
+        return [ "# Ticket $id does not exist.", [], {}, 1 ];
+    }
+    elsif (!$ticket->CurrentUserHasRight('ShowTicket') ||
+           ($changes && !$ticket->CurrentUserHasRight('ModifyTicket')))
+    {
+        my $act = $changes ? "modify" : "display";
+        return [ "# You are not allowed to $act ticket $id.", [], {}, 1 ];
+    }
+}
+else {
+    # XXX: Can this fail?
+    $ticket->Create(Queue => 'general');
+}
+
+my ($c, $o, $k, $e) = ("", [], {}, 0);
+
+my @dates  = qw(Starts Started Due Resolved Told);
+my @people = qw(Requestors Cc AdminCc);
+my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
+                TimeLeft InitialPriority FinalPriority);
+
+my %dates  = map {lc $_ => $_} @dates;
+my %people = map {lc $_ => $_} @people;
+my %simple = map {lc $_ => $_} @simple;
+
+if ($changes) {
+    my ($get, $set, $key, $val, $n, $s);
+    my %data = %$changes;
+    my @comments;
+
+    foreach $key (keys %data) {
+        $val = $data{$key};
+        $key = lc $key;
+        $n = 1;
+
+        if (ref $val eq 'ARRAY') {
+            unless ($key =~ /^(?:Requestors|Cc|AdminCc)$/i) {
+                $n = 0;
+                $s = "$key may have only one value.";
+                goto SET;
+            }
+        }
+
+        if ($key =~ /^queue$/i) {
+            next if $val eq $ticket->QueueObj->Name;
+            ($n, $s) = $ticket->SetQueue($val);
+        }
+        elsif ($key =~ /^owner$/i) {
+            next if $val eq $ticket->OwnerObj->Name;
+            ($n, $s) = $ticket->SetOwner($val);
+        }
+        elsif (exists $simple{$key}) {
+            $key = $simple{$key};
+            $set = "Set$key";
+
+            next if $val eq $ticket->$key;
+            ($n, $s) = $ticket->$set($val);
+        }
+        elsif (exists $dates{$key}) {
+            $key = $dates{$key};
+            $set = "Set$key";
+
+            my $time = new RT::Date $session{CurrentUser};
+            $time->Set(Format => 'sql', Value => $ticket->$key);
+            next if ($val =~ /^not set$/i || $val eq $time->AsString);
+            ($n, $s) = $ticket->$set($val);
+        }
+        elsif (exists $people{$key}) {
+            $key = $people{$key};
+            my ($p, @msgs);
+
+            my %new  = map {$_=>1} @{ vsplit($val) };
+            my %old  = map {$_=>1} $ticket->$key->MemberEmailAddresses;
+            my $type = $key eq 'Requestors' ? 'Requestor' : $key;
+
+            foreach $p (keys %old) {
+                unless (exists $new{$p}) {
+                    ($s, $n) = $ticket->DeleteWatcher(Type => $type,
+                                                      Email => $p);
+                    push @msgs, [ $s, $n ];
+                }
+            }
+            foreach $p (keys %new) {
+                # XXX: This is a stupid test.
+                unless ($p =~ /^[\w.+-]+\@([\w.-]+\.)*\w+.?$/) {
+                    $s = 0;
+                    $n = "$p is not a valid email address.";
+                    push @msgs, [ $s, $n ];
+                    next;
+                }
+                unless ($ticket->IsWatcher(Type => $type, Email => $p)) {
+                    ($s, $n) = $ticket->AddWatcher(Type => $type,
+                                                   Email => $p);
+                    push @msgs, [ $s, $n ];
+                }
+            }
+
+            $n = 1;
+            if (@msgs = grep {$_->[0] == 0} @msgs) {
+                $n = 0;
+                $s = join "\n", map {"# ".$_->[1]} @msgs;
+                $s =~ s/^# //;
+            }
+        }
+        elsif ($key ne 'id' && $key ne 'type') {
+            $n = 0;
+            $s = "Unknown field: $key";
+        }
+
+    SET:
+        if ($n == 0) {
+            $e = 1;
+            push @comments, "# $key: $s";
+            unless (@$o) {
+                @$o = ("id", keys %data);
+                %$k = %data;
+            }
+        }
+    }
+
+    push(@comments, "# Ticket $id updated.") unless @comments;
+    $c = join("\n", @comments) if @comments;
+}
+else {
+    my ($time, $key, $val, @data);
+
+    push @data, [ id    => $ticket->Id             ];
+    push @data, [ Queue => $ticket->QueueObj->Name ];
+    push @data, [ Owner => $ticket->OwnerObj->Name ];
+
+    foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
+        push @data, [$_ => $ticket->$_ ];
+    }
+
+    foreach $key (@people) {
+        push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
+    }
+
+    $time = new RT::Date ($session{CurrentUser});
+    foreach $key (@dates) {
+        $time->Set(Format => 'sql', Value => $ticket->$key);
+        push @data, [ $key => $time->AsString ];
+    }
+
+    $time = new RT::Date ($session{CurrentUser});
+    foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
+        $val = $ticket->$key || 0;
+        $val = $time->DurationAsString($val*60) if $val;
+        push @data, [ $key => $val ];
+    }
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+}
+
+return [ $c, $o, $k, $e ];
+</%perl>

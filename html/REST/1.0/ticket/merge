@@ -1,0 +1,55 @@
+%# REST/1.0/ticket/merge
+%#
+<%ARGS>
+$id => undef
+$into
+</%ARGS>
+<%INIT>
+use RT::Interface::REST;
+
+my $output;
+my $status = "200 Ok";
+my $ticket = new RT::Ticket $session{CurrentUser};
+my $object = $r->path_info;
+
+# http://.../REST/1.0/ticket/merge/1
+
+$object =~ s#^/##;
+if ($id && $object && $id != $object) {
+    $output = "Different ids in URL (`$object') and submitted form (`$id').\n";
+    $status = "400 Bad Request";
+    goto OUTPUT;
+}
+$id ||= $object;
+unless ($id =~ /^\d+$/ && $into =~ /^\d+$/) {
+    my $bad = ($id !~ /^\d+$/) ? $id : $into;
+    $output = $r->path_info. "\n";
+    $output .= "Invalid ticket id: `$bad'.\n";
+    $status = "400 Bad Request";
+    goto OUTPUT;
+}
+
+$ticket->Load($id);
+unless ($ticket->Id) {
+    $output = "Couldn't load ticket id: `$id'.\n";
+    $status = "404 Ticket not found";
+    goto OUTPUT;
+}
+unless ($ticket->CurrentUserHasRight('ModifyTicket')) {
+    $output = "You are not allowed to modify ticket $id.\n";
+    $status = "403 Permission denied";
+    goto OUTPUT;
+}
+
+my ($n, $s) = $ticket->MergeInto($into);
+
+if ($n == 0) {
+    $status = "500 Error";
+}
+$output = $s;
+
+OUTPUT:
+</%INIT>
+RT/<% $RT::VERSION %> <% $status %>
+
+<% $output |n %>

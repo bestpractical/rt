@@ -1,0 +1,54 @@
+%# REST/1.0/Forms/ticket/attachments
+%#
+<%ARGS>
+$id
+$args => undef
+</%ARGS>
+<%perl>
+my @data;
+my ($c, $o, $k, $e) = ("", [], {}, "");
+my $ticket = new RT::Ticket $session{CurrentUser};
+
+$ticket->Load($id);
+unless ($ticket->Id) {
+    return [ "# Ticket $id does not exist.", [], {}, 1 ];
+}
+if ($args) {
+    unless ($args =~ /^\d+$/) {
+        return [ "# Invalid attachment id: $args", [], {}, 1 ];
+    }
+}
+
+if ($args) {
+    my $attachment = new RT::Attachment $session{CurrentUser};
+    $attachment->Load($args);
+    unless ($attachment->Id eq $args) {
+        return [ "# Invalid attachment id: $args", [], {}, 1 ];
+    }
+    $c = $attachment->Content;
+}
+else {
+    my @attachments;
+    my $transactions = $ticket->Transactions;
+    while (my $t = $transactions->Next) {
+        my $attachments = $t->Attachments;
+        while (my $a = $attachments->Next) {
+            next unless $a->Filename;
+            my $size = length($a->Content);
+            if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
+            else              { $size .= "b" }
+            push @attachments, $a->Id.": ".$a->Filename." (".$size.")";
+        }
+    }
+
+    if (@attachments) {
+        $o = [ "id", "Attachments" ];
+        $k = {
+            id => $ticket->Id,
+            Attachments => \@attachments
+        };
+    }
+}
+
+return [ $c, $o, $k, $e ];
+</%perl>

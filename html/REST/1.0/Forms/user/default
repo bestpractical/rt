@@ -1,0 +1,108 @@
+%# REST/1.0/Forms/user/default
+%#
+<%ARGS>
+$id
+$format => 's'
+$changes => undef
+</%ARGS>
+<%perl>
+my @data;
+my $user = new RT::User $session{CurrentUser};
+
+if ($id ne 'new') {
+    $user->Load($id);
+    if (!$user->Id) {
+        return [ "# User $id does not exist.", [], {}, 1 ];
+    }
+}
+else {
+    # XXX: Can this fail? What if the user already exists?
+    $user->Create(Name => 'New user');
+}
+
+my ($c, $o, $k, $e) = ("", [], {}, 0);
+my @fields = qw(RealName NickName Gecos Organization Address1 Address2 City
+                State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
+                FreeformContactInfo Comments Signature Lang EmailEncoding
+                WebEncoding ExternalContactInfoId ContactInfoSystem
+                ExternalAuthId AuthSystem);
+my %fields = map { lc $_ => $_ } @fields;
+
+if ($changes) {
+    my ($get, $set, $key, $val, $n, $s);
+    my %data = %$changes;
+    my @comments;
+
+    foreach $key (keys %data) {
+        $val = $data{$key};
+        $key = lc $key;
+        $n = 1;
+
+        if ($key eq 'name' && $val eq 'New user') {
+            $n = 0;
+            $s = "Please set the User name.";
+            goto SET;
+        }
+
+        if ($key eq 'name' || $key eq 'emailaddress' ||
+            $key eq 'contactinfo' || exists $fields{$key})
+        {
+            if (exists $fields{$key}) {
+                $key = $fields{$key};
+            }
+            else {
+                $key = "FreeformContactInfo" if $key eq 'contactinfo';
+                $key = "EmailAddress" if $key eq 'emailaddress';
+                $key = "Name" if $key eq 'name';
+            }
+            $set = "Set$key";
+
+            next if $val eq $user->$key;
+            ($n, $s) = $user->$set($val);
+        }
+        elsif ($key eq 'password') {
+            ($n, $s) = $user->SetPassword($val) unless $val =~ /^\**$/;
+        }
+        elsif ($key ne 'id') {
+            $n = 0;
+            $s = "Unknown field: $key";
+        }
+
+    SET:
+        if ($n == 0) {
+            $e = 1;
+            push @comments, "# $key: $s";
+            unless (@$o) {
+                @$o = ("id", @fields);
+                %$k = %data;
+            }
+        }
+    }
+
+    push(@comments, "# User $id updated.") unless @comments;
+    $c = join("\n", @comments) if @comments;
+}
+else {
+    my @data;
+
+    push @data, [ id => $user->Id ];
+    push @data, [ Name => $user->Name ];
+    push @data, [ Password => '********' ];
+    push @data, [ EmailAddress => $user->EmailAddress ];
+
+    foreach my $key (@fields) {
+        my $val = $user->$key;
+
+        if ($format eq 'l' || (defined $val && $val ne '')) {
+            $key = "ContactInfo" if $key eq 'FreeformContactInfo';
+            push @data, [ $key => $val ];
+        }
+    }
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+}
+
+return [ $c, $o, $k, $e ];
+</%perl>

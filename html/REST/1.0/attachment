@@ -1,0 +1,53 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<%perl>
+     my ($ticket, $trans,$attach, $filename);
+     if ($arg =~ '^(\d+)-(\d+)-(\d+)$') {
+        $ticket = $1;
+        $trans = $2;
+        $attach = $3;
+     }
+    else {
+        Abort("Corrupted attachment URL.");
+        }
+     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
+     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
+
+
+     unless ($AttachmentObj->id) {
+        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+    }
+     unless ($AttachmentObj->TransactionId() == $trans ) {
+        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+
+     }
+     $r->content_type( $AttachmentObj->ContentType || 'text/plain');
+     $m->clear_buffer();
+     $m->out($AttachmentObj->Content); 
+     $m->abort; 
+</%perl>
+<%args>
+$arg => undef
+</%args>
+
