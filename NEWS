@@ -1,5 +1,10 @@
 20 Oct 1999
 -----------
+
+* When a message comes into the mailgate, RT is now more careful about whether 
+  or not to send it to the user. (This fixes a bug introduced in last night's 
+  build)
+
 * RT now uses a queue's mail alias when sending mail.
 
 * Using the web UI to send correspondence should no longer not

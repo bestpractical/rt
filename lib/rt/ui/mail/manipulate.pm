@@ -47,7 +47,15 @@ sub activate {
       
     }
     else {
-      ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
+
+	if (&is_not_a_requestor($current_user, $serial_num)){
+	$notify_requestor = 1;
+	}
+	else {
+	$notify_requestor = 0;
+	}	
+      ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,
+							  "open", $notify_requestor, $current_user);
       
     }
   }
