@@ -1,27 +1,3 @@
-%# BEGIN LICENSE BLOCK
-%# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-%# 
-%# (Except where explictly superceded by other copyright notices)
-%# 
-%# This work is made available to you under the terms of Version 2 of
-%# the GNU General Public License. A copy of that license should have
-%# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org
-%# 
-%# This work is distributed in the hope that it will be useful, but
-%# WITHOUT ANY WARRANTY; without even the implied warranty of
-%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%# General Public License for more details.
-%# 
-%# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
-%# 
-%# 
-%# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify group rights for Class [_1]', $ClassObj->Name) &>
 <& /RTFM/Admin/Elements/ClassTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
@@ -41,8 +17,7 @@
 	    <% loc($Group->Type) %>
 		  </TD>
 	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        Object => $ClassObj  &>
+	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId, Object => $ClassObj  &>
 	  </TD>
 	</TR>
 % }
@@ -57,8 +32,7 @@
 	    <% $Group->Name %>
 		  </TD>
 	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        Object => $ClassObj  &>
+	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId, Object => $ClassObj  &>
 	  </TD>
 	</TR>
 % }
@@ -71,12 +45,16 @@
   
 <%INIT>
  
+
+if (!defined $id) {
+    Abort(loc("No Class defined"));
+}
+
+my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+$ClassObj->Load($id) || Abort(loc("Couldn't load Class [_1]",$id));
+
+my $Groups;
   #Update the acls.
-
-
-
-  my @results
-  
   
   my ( $ACL, @results );
 
@@ -91,15 +69,9 @@
             $principal->Load($principal_id);
             my $obj;
 
-            if ($object_type eq 'RT::Queue') {
-                $obj = RT::Queue->new($session{'CurrentUser'});
+            if ($object_type eq 'RT::FM::Class') {
+                $obj = RT::FM::Class->new($session{'CurrentUser'});
                 $obj->Load($object_id);
-            } elsif ($object_type eq 'RT::Group') {
-                $obj = RT::Group->new($session{'CurrentUser'});
-                $obj->Load($object_id);
-
-            } elsif ($object_type eq 'RT::System') {
-                $obj = $RT::System;
             } else {
                 push (@results, loc("System Error").
                                 loc("Rights could not be granted for [_1]", $object_type));
@@ -136,15 +108,6 @@
             push (@results, $msg);
         }
 } 
-
-if (!defined $id) {
-    Abort(loc("No Class defined"));
-}
-
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
-$ClassObj->Load($id) || Abort(loc("Couldn't load Class [_1]",$id));
-
-my $Groups;
     
 </%INIT>
 

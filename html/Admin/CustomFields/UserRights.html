@@ -22,14 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
+<& /Admin/Elements/Header, Title => loc('Modify user rights for custom field [_1]', $CustomFieldObj->Name) &>
 <& /RTFM/Admin/Elements/ClassTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="UserRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $ClassObj->id %>">
+    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
       
-<& /Elements/TitleBoxStart, title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
+<& /Elements/TitleBoxStart, title => loc('Modify user rights for custom field [_1]', $CustomFieldObj->Name) &>
       
 <TABLE>
         
@@ -43,7 +43,7 @@
 		  </TD>
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
-        Object => $ClassObj  &>
+        Object => $CustomFieldObj  &>
 	  </TD>
 	</TR>
 % }
@@ -69,9 +69,10 @@ foreach my $arg (keys %ARGS) {
             $principal->Load($principal_id);
             my $obj;
 
-            if ($object_type eq 'RT::FM::Class') {
-                $obj = RT::FM::Class->new($session{'CurrentUser'});
+            if ($object_type eq 'RT::FM::CustomField') {
+                $obj = RT::FM::CustomField->new($session{'CurrentUser'});
                 $obj->Load($object_id);
+
             } else {
                 push (@results, loc("System Error").
                                 loc("Rights could not be granted for [_1]",
@@ -123,8 +124,8 @@ if (!defined $id) {
     Abort(loc("No Class defined"));
 }
 
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
-$ClassObj->Load($id) || Abort(loc("Couldn't load Class [_1]",$id));
+my $CustomFieldObj = RT::FM::CustomField->new($session{'CurrentUser'});
+$CustomFieldObj->Load($id) || Abort(loc("Couldn't load Class [_1]",$id));
 
 # Find out which users we want to display ACL selects for
 my $Privileged = RT::Group->new($session{'CurrentUser'});

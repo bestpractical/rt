@@ -1,0 +1,95 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /RTFM/Admin/Elements/Header, title => loc("Modify Custom Field [_1]", $CustomFieldObj->id)&>
+<& /RTFM/Admin/Elements/CustomFieldTabs, id => $CustomFieldObj->Id &>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Elements/TitleBoxStart, title => $title &>
+
+<FORM METHOD=GET ACTION="Basics.html">
+<INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
+
+<&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
+<&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
+<&|/l&>Type</&>: <& /RTFM/Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+<BR>
+% if ($CustomFieldObj->Id) {
+<H2><&|/l&>Values</&></H2>
+<BR>
+<font size=-1>
+%#<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+%#<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+</font>
+% }
+<& /Elements/TitleBoxEnd&>
+<&/Elements/Submit&>
+</FORM>
+
+
+
+<%INIT>
+
+my $CustomFieldObj = RT::FM::CustomField->new( $session{'CurrentUser'} );
+my ( $title, @results, $id );
+
+if ( !$CustomField ) {
+    $title = loc("Create a CustomField");
+    $id    = 'new';
+}
+else {
+
+    if ( $CustomField eq 'new' ) {
+        my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
+                                                    Type        => $Type,
+                                                    Description => $Description,
+                                                    SortOrder   => $SortOrder );
+        Abort( loc( "Could not create CustomField", $msg ) ) unless ($val);
+        push @results, $msg;
+        $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name() );
+    }
+    else {
+        $CustomFieldObj->Load($CustomField) || Abort( loc('No CustomField') );
+        $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
+
+        my @attribs = qw( Name Type Description SortOrder);
+        my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
+                                           Object        => $CustomFieldObj,
+                                           ARGSRef       => \%ARGS );
+
+        push @results, @aresults;
+    }
+
+    $id = $CustomFieldObj->id;
+}
+
+
+</%INIT>
+<%ARGS>
+$CustomField => undef
+$Type => undef
+$SortOrder => undef
+$Description => undef
+$Name => undef
+</%ARGS>
