@@ -1,15 +1,32 @@
+<TABLE BORDER=0 width="100%">
+<TR>
+<TD ALIGN=LEFT><font size=+3>History</font></TD>
+<TD align=right>Display mode: 
+%  if ($ShowHeaders == $Ticket->Id) {
+[<A HREF="Display.html?id=<%$Ticket->id%>">Brief headers</a>]
+<b>[Full headers]</b>
+% } else {
+<b>[Brief headers]</b>
+[<A HREF="Display.html?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>">Full headers</a>]
+%  }
+</TD>
+</TR>
+</TABLE>
 
-%while (my $Transaction = $Transactions->Next) {
+<TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
+% while (my $Transaction = $Transactions->Next) {
+% $i++;
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans">
 % 	}
-	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed &>
-<BR>
-%}
-
+	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i  &>
+% }
+</TABLE>
 <%INIT>
 
 my $Transactions = $Ticket->Transactions;
+my $i;
+
 
 </%INIT>
 <%ARGS>

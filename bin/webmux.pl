@@ -76,6 +76,7 @@ use Carp;
 	    use RT::Handle;
 	    use RT::Interface::Web;    
 	    use MIME::Entity;
+	    use Text::Wrapper;
 	    use Apache::Cookie;
 	    use Date::Parse;
 	    use HTML::Entities;

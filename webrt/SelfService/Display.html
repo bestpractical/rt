@@ -88,6 +88,7 @@
 
 
 	</TABLE>
+<TABLE>
 %while (my $Transaction = $Transactions->Next) {
 
 %	if ($Transactions->IsLast) {
@@ -96,9 +97,8 @@
 	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction, 
 					     Ticket => $Ticket &>
 
-<BR>
 %}
-
+</TABLE>
 
 
 <%INIT>

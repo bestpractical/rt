@@ -1,42 +1,48 @@
 <A NAME="#<%$Transaction->Id%>">
-<!-- Transaction <%$Ticket->Id%>/<%$Transaction->Id%> -->
-<& /Elements/TitleBoxStart, 
-	title => 
-		$Transaction->CreatedAsString. " " .  $TicketString . 
- 		$Transaction->Description.  $TimeTaken,
+<TR bgcolor="<%$rowbgcolor%>">
 
-	titleright=> $titlebar_commands &>
+<TD bgcolor="<%$bgcolor%>">&nbsp&nbsp;</TD>
+<TD>&nbsp&nbsp;</TD>
+<TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
+<TD ALIGN="LEFT"><b><%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$Transaction->BriefDescription%>
 
+</b></TD>
+<TD><%$TimeTaken%>&nbsp;</TD>
+<TD ALIGN="RIGHT"><font size=-1><%$titlebar_commands|n%></font></TD>
+</TR>
 % unless ($Collapsed) {
 
 %# I had to temporarly move this one because the box grew too wide when a message was too wide.
 
 % $attachments->GotoFirstItem;
 %  while (my $message=$attachments->Next) {
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN=TOP>
+% next unless ($message->Content);
+<TR BGCOLOR="<%$rowbgcolor%>">
+<TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
+<TD>&nbsp&nbsp;</TD>
+<TD COLSPAN=3 VALIGN=TOP>
 <pre>
-% if ($message->Parent == 0 ) {
-%if ($ShowHeaders == $Transaction->Id) {
+% if ($message->Parent == 0) {
+%if ($ShowHeaders == $Ticket->Id) {
 <%$message->Headers %>
 % } else {
 <%$message->NiceHeaders %>
 %}
 % }
-</pre>
 % # 13456 is a random # of about the biggest size we'd want to see inline text
-%   if ($message->ContentType =~ m{^(text/plain|message|text$)}i && length($message->Content)<13456) {
-<pre><% $message->Content %></pre>
+%   if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
+%	length($message->Content)<13456) {
+% 	my $wrapper = new Text::Wrapper (columns=>85);
+<% $wrapper->wrap( $message->Content) %>
 %    }  
+% else {
+&nbsp;
+% }
+</PRE>
 </TD>
 <TD VALIGN=TOP ALIGN=RIGHT>
 % if ($message->Parent == 0  ) {
-%  if ($ShowHeaders == $Transaction->Id) {
-<A HREF="Display.html?id=<%$Transaction->TicketObj->id%>">Brief headers</a>
-% } else {
-<A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
-%  }
+
 <BR>
 % }
 <%PERL>
@@ -51,14 +57,13 @@ else {
 	$size = $size ."b";
 }
 </%PERL>
-<A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename%></a> <% $size %><br>
+<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename|| '(untitled)'%></a> <% $size %></font>
 % }
 </TD>
 </TR>
-</TABLE>
 % }
 % }
-<& /Elements/TitleBoxEnd &>
+
 
 
 <%ARGS>
@@ -66,33 +71,69 @@ $Ticket => undef
 $Transaction => undef
 $ShowHeaders => undef
 $Collapsed => undef
+$RowNum => 1
 </%ARGS>
 
 <%INIT>
-my ($TimeTaken, $TicketString);
+
+
+my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor);
+
+my $transdate = $Transaction->CreatedAsString();
+$transdate =~ s/\s/&nbsp;/g;
+
+if ($RowNum % 2) {
+	$rowbgcolor="#cccccc";
+} else {
+	$rowbgcolor="#ffffff";
+}
+
+if ($Transaction->Type =~ /^(Create|Correspond|Comment$)/) {
+	if ($Transaction->IsInbound) {
+		$bgcolor="#336699";
+	}
+	else {
+		$bgcolor="#339999";
+	}
+} elsif ($Transaction->Type =~ /^(Take|Untake|Steal|Give|AddWatcher|DelWatcher)$/) {
+	$bgcolor="#333399";
+
+} elsif ($Transaction->Type =~ /^(AddLink|DeleteLink)$/) {
+	$bgcolor="#336633";
+} elsif ($Transaction->Type =~ /^(Status|Set|Keyword|Told)$/) {
+	if ($Transaction->Field =~ /^(Told|Starts|Started|Due)$/) {
+		$bgcolor="#663366";	
+	}
+	else {
+		$bgcolor="#993333";
+	}
+}
+else {
+	$bgcolor="#cccccc";
+}
 
 if ($Ticket->Id != $Transaction->Ticket) {
-	$TicketString = "(Ticket ".$Transaction->Ticket .") ";
+	$TicketString = "Ticket ".$Transaction->Ticket .": ";
 }
 
 if ($Transaction->TimeTaken > 0) {
-	$TimeTaken = " (". $Transaction->TimeTaken." min) "
+	$TimeTaken = $Transaction->TimeTaken." min"
 }
 my $attachments = $Transaction->Attachments;
 
-my $titlebar_commands='';
+my $titlebar_commands='&nbsp;';
 
 # If the transaction has anything attached to it at all
-if ($Transaction->Message) {
+if ($Transaction->Message->First) {
 	if ($Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')) {
 		$titlebar_commands .= 
-	  	  "[<a class='inverse' href=\"Update.html?id=".
+	  	  "[<a href=\"Update.html?id=".
 		  $Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id.
-		  "&Action=Respond\">Reply</a>] ";
+		  "&Action=Respond\">Reply</a>]&nbsp;";
 	}
 	if ($Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')) {
 	     $titlebar_commands .= 
-	     "[<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket. 
+	     "[<a href=\"Update.html?id=".$Transaction->Ticket. 
 	     "&QuoteTransaction=".$Transaction->Id.
 	     "&Action=Comment\">Comment</a>]";
 	}

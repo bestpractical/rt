@@ -52,11 +52,6 @@
 	</TD>
       </TR>
     </TABLE>
-      
-      
- 
-
-
 <%ARGS>
 $Ticket => undef
 </%ARGS>

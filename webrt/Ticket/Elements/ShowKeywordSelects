@@ -7,8 +7,8 @@
       <TD VALIGN=TOP>
 	<UL>
 % my $Keywords = $Ticket->KeywordsObj($KeywordSelect->Id);
-% while (my $Keyword = $Keywords->Next) {
-	<li><% $Keyword->KeywordObj->Path |n %></li>
+% while (my $Keyword = $Keywords->Next) { 
+	<li><% $Keyword->KeywordObj->RelativePath($KeywordSelect->KeywordObj) |n %></li>
 
 %   }
 	</ul>
