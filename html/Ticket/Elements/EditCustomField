@@ -52,6 +52,8 @@
         <option value="<%$value->Name%>" 
 % if ($TicketObj) {
             <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
+% } elsif ($Default) {
+            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
 % }
             ><% $value->Name%></option>
 % }
@@ -64,4 +66,5 @@ $CustomField => undef
 $NamePrefix => undef
 $Rows => 5
 $Cols=> 15
+$Default => undef
 </%ARGS>

@@ -463,7 +463,7 @@ sub Create {
                                    TimeLeft        => $args{'TimeLeft'},
                                    Type            => $args{'Type'},
                                    Starts          => $Starts->ISO,
-                                   Starts          => $Started->ISO,
+                                   Started         => $Started->ISO,
                                    Resolved        => $Resolved->ISO,
                                    Due             => $Due->ISO );
 
