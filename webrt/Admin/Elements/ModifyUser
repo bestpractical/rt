@@ -9,13 +9,13 @@ UserId: <input name="UserId" value="<%$UserObj->UserId%>">
 New Password: <input type=password name="Pass1"><BR>
 Retype Password: <input type=password name="Pass2"><BR>
 
-Comments: <TEXTAREA name="Comments" COLS=20 ROWS=5>
+Comments: <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
 <%$UserObj->Comments%>
 </TEXTAREA>
 
 <BR>
-Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature">
-<%$UserObj->Signature%>">
+Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
+<%$UserObj->Signature%>
 </TEXTAREA>
 <BR>
 EmailAddress: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
@@ -64,8 +64,7 @@ Zip: <input name="Zip" value="<%$UserObj->Zip%>">
 <BR>
 Country: <input name="Country" value="<%$UserObj->Country%>">
 <BR>
-
-<input type=submit>
+<& /Elements/Submit &>
 </form>
 <& /Elements/TitleBoxEnd &>
 
