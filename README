@@ -61,61 +61,6 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- semifree
 	supported by this README, nor by the code as of today (June 2000).
 	We rely on contributors to fix the porting.
 
-o   GNU Make ( http://www.gnu.org )
-
-	I know for sure that GNU Make supports the conditionals syntax RT's
-	Makefile uses. I can't be sure about anything else.  If you don't have 
-	GNU Make, but feel reasonably comfortable with Makefiles, you probably
-	can get by without it.
-
-o   Msql-Mysql-modules ( CPAN or ftp://ftp.mysql.com/pub/mysql/Contrib )
-
-	Please note that Msql-Mysql-modules requires DBD to be
-	installed to function. See the Msql-Mysql-modules
-	documentation for more information.
-
-o   CGI.pm ( CPAN or http://www.perl.com )
-	
-	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
-	We recommend that you use at least 2.53 as we know that version works.
-
-o   Digest::MD5 ( CPAN or http://www.perl.com )
-	
-	Digest::MD5 is a perl module used for generating MD5 hashes 
-	of files or strings, in this case, the password hashes used by 
-	the Web interface. It is required for web authentication to work.
-
-o   Text::Wrapper ( CPAN or http://www.perl.com )
-
-	For quoting and eventually wrapping messages in the WebRT
-	reply textarea.
-
-o   Mail::Internet ( CPAN or http://www.perl.com )
-
-	For sending email. Earlier versions used an external mail
-	program (like sendmail). Mail::Internet usually works right
-	out of the box, but if it doesn't, complain to
-	rt-devel@lists.fsck.com.
-
-o   MIME::Tools ( CPAN or http://www.perl.com )
-	
-	For parsing incoming mail messages.
-
-o   Libwww-perl / LWP::UserAgent and HTTP::Request 
-	( http://www.perl.com or CPAN )
-
-	You will only eventually need this if you need RT to maintain
-	links from external web-based databases.
-
-o   DBIx::Record and DBIx::EasySearch
-        ( ftp://ftp.fsck.com/pub/rt/devel ) 
-
-	These will be used for RT's new Object interface...
-
-o   HTML::Mason (CPAN) 
-
-        For the web ui
-
 o   Log::Dispatch (CPAN)
 
         Check the config.pm and the POD about how to configure the logging.
@@ -126,16 +71,17 @@ o   Log::Dispatch (CPAN)
 	around this by making a symlink.  Anyway, if you can track down the
 	real reason why those are called, I'd be very happy.
 
-o   Locale::Maketext (CPAN) -- not in use yet
-
-        Will probably be used by RT for localization in the future.
-
 o   Date::Kronos -- http://sourceforge.net/cvs/?group_id=3821
 
         This is an object oriented approach to timestamps. I'm a bit
 	uncertain about this package (though I've programmed most of it
 	myself).  It will appear on CPAN upon positive feedback, or I will
 	eventually trash it upon negative feedback.
+
+
+	For now, ftp://ftp.fsck.com/pub/rt/devel/DateKronos.tar contains a tarball
+	which should be extracted to site_perl/5.005/
+
 
 o   Apache + mod_perl -- free, optional
 
@@ -158,6 +104,10 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 GENERAL INSTALLATION
 --------------------
 
+0   Install JVDBIx
+
+0.1 Install Date::Kronos
+
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
         Granted, you've already got it open. To do this cleanly:
@@ -165,6 +115,11 @@ GENERAL INSTALLATION
         	tar xzvf rt.tar.gz -C /tmp
 
 2   Read the documentation in /tmp/rt/docs. All of it.
+
+2.1   perl rt/bin/testdeps.pl -warn
+
+2.2   If there are unsatisfied dependencies, install them by hand or
+      run rt/bin/testdeps.pl -fix
 
 3   Create a user rt with primary group rt
 
@@ -299,8 +254,8 @@ THE CLI
         All three of these programs take --help as an option.
 	
 
-TROUBLE SHOOTING
-----------------
+TROUBLESHOOTING
+---------------
 
 All errors will be appended to a logfile.  Check etc/config.pm for details.
 Check if the error is covered in docs/FAQ.  And if it isn't, send a mail to
