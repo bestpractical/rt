@@ -5,14 +5,9 @@
 
 <FORM METHOD="GET" ACTION="Create_Detail.html">
 
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "What queue should the new request be putted into?" &>
-<& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket" &>
+Queue: <& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
 <& /Elements/TitleBoxEnd &><BR><BR>
-
-%# LINKING
-%# I'd like to have it here, rather than at the next page, because it
-%# might be that we'd like to draw the subject and message into the
-%# create dialogue.  I'll explain better later.
 
 
 <INPUT TYPE=SUBMIT VALUE="Next">

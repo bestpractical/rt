@@ -257,22 +257,22 @@ sub Description  {
       }
 
       if ($self->Type eq "Steal") {
-	  my $Old = RT::User->new($CurrentUser);
+	  my $Old = RT::User->new($self->CurrentUser);
 	  $Old->Load($self->OldValue);
 	  return "Request stolen from ".$Old->UserId." by ".$self->Creator->UserId;
       }
 
       if ($self->Type eq "Give") {
 	  
-	  my $New = RT::User->new($CurrentUser);
+	  my $New = RT::User->new($self->CurrentUser);
 	  $New->Load($self->NewValue);
 
 	  return( "Request given to ".$New->UserId." by ". $self->Creator->UserId);
       }
 
-      my $New = RT::User->new($CurrentUser);
+      my $New = RT::User->new($self->CurrentUser);
       $New->Load($self->NewValue);
-      my $Old = RT::User->new($CurrentUser);
+      my $Old = RT::User->new($self->CurrentUser);
       $Old->Load($self->OldValue);
 
       return "Owner changed from ".$New->UserId." to ".$Old->UserId." by ".$self->Creator->UserId;
