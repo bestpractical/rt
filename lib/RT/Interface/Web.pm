@@ -1239,7 +1239,7 @@ sub ProcessTicketWatchers {
     foreach my $key ( keys %$ARGSRef ) {
 
         # {{{ Delete deletable watchers
-        if ( ( $key =~ /^Ticket-DelWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
+        if ( ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
             my ( $code, $msg ) = 
                 $Ticket->DeleteWatcher(PrincipalId => $2,
                                        Type => $1);

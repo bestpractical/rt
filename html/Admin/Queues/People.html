@@ -125,7 +125,7 @@ $QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
 foreach my $key (keys %ARGS) {
         my $id = $QueueObj->Id;
 
-    if (($key =~ /^Queue-$id-DelWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
+    if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
 	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
                                                     PrincipalId => $2);
 	    push @results, $msg;
