@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [2.1.70], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [2.1.71], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -185,7 +185,6 @@ AC_CONFIG_FILES([
                  lib/t/01harness.t
                  lib/t/02regression.t
                  lib/t/03web.pl
- 		 sbin/insert_approval_scrips
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.svc
  		 bin/rt-commit-handler

@@ -1,34 +1,90 @@
-
-#This drags in  RT's config.pm
-# {{{ Queues
-my $approvals_queue = RT::Queue->new($CurrentUser);
-unless ($approvals_queue->Id) {
-    my ($val, $msg) = $approvals_queue->Create(
+@Queues = ( {
         Name        => '___Approvals',
-        Description => 'A system-internal queue for the approvals system',
-	Disabled    => 2,
-    );
+    Description => 'A system-internal queue for the approvals system',
+        Disabled    => 2,
+        }
+);
 
-    unless ($val) {
-        warn $msg . "\n";
-    }
-}
+
+
+
+
+# {{{ Templates
+@Templates = (
+    {
+        Queue       => '___Approvals',
+        Name        => "New Pending Approval", # loc
+        Description => "Notify Owners and AdminCcs of new items pending their approval", # loc
+	Content     => 'Subject: New Pending Approval: {$Ticket->Subject}
+
+Greetings,
+
+There is a new item pending your approval: "{$Ticket->Subject()}", 
+a summary of which appears below.
+
+Please visit {$RT::WebURL}Approvals/Display.html?id={$Ticket->id}
+to approve or reject this ticket, or {$RT::WebURL}Approvals/ to
+batch-process all your pending approvals.
+
+-------------------------------------------------------------------------
+{$Transaction->Content()}
+'
+    },
+);
 
 # }}}
 
-# {{{ Scrips
+1;
 
-my @scrips = (
+@ScripActions = (
+     { Name => 'Open Tickets',
+       Description => 'Open tickets on correspondence',
+        ExecModule => 'AutoOpen' },
+
+);
+
+ @Scrips = (
+        { ScripCondition => 'On Correspond',
+          ScripAction => 'Open Tickets',
+          Template => 'Blank',
+          Queue => '0'
+        }, 
+    {  ScripCondition => 'On Create',
+       ScripAction    => 'AutoReply To Requestors',
+       Template       => 'AutoReply' },
+    {  ScripCondition => 'On Create',
+       ScripAction    => 'Notify AdminCcs',
+       Template       => 'Transaction' },
+    {  ScripCondition => 'On Correspond',
+       ScripAction    => 'Notify AdminCcs',
+       Template       => 'Admin Correspondence' },
+    {  ScripCondition => 'On Correspond',
+       ScripAction    => 'Notify Requestors And Ccs',
+       Template       => 'Correspondence' },
+    {  ScripCondition => 'On Correspond',
+       ScripAction    => 'Notify Other Recipients',
+       Template       => 'Correspondence' },
+    {  ScripCondition => 'On Comment',
+       ScripAction    => 'Notify AdminCcs As Comment',
+       Template       => 'Admin Comment' },
+    {  ScripCondition => 'On Comment',
+       ScripAction    => 'Notify Other Recipients As Comment',
+       Template       => 'Correspondence' },
+    {  ScripCondition => 'On Resolve',
+       ScripAction    => 'Notify Requestors',
+       Template       => 'Resolved' },
+
+
     {
         Description    => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval", # loc
-        Queue          => $approvals_queue->Id,
+        Queue          => '___Approvals',
         ScripCondition => 'On Create',
         ScripAction    => 'Notify AdminCcs',
         Template       => 'New Pending Approval'
     },
     {
         Description	       => "If an approval is rejected, reject the original and delete pending approvals",	# loc
-        Queue                  => $approvals_queue->Id,
+        Queue                  => '___Approvals',
         ScripCondition         => 'On Status Change',
         ScripAction            => 'User Defined',
         CustomCommitCode       => q[
@@ -73,11 +129,11 @@ return 1;
 # ------------------------------------------------------------------- #
 	],
         CustomPrepareCode => '1',
-        Template          => 'AdminComment',
+        Template          => 'Admin Comment',
     },
     {
         Description	  => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
-        Queue             => $approvals_queue->Id,
+        Queue             => '___Approvals',
         ScripCondition    => 'On Resolve',
         ScripAction       => 'User Defined',
         CustomPrepareCode => 'return(1);',
@@ -99,11 +155,11 @@ foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
 return 1;
 # ------------------------------------------------------------------- #
 	],
-	Template => 'AdminComment'
+	Template => 'Admin Comment'
     },
     {
         Description	  => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
-        Queue             => $approvals_queue->Id,
+        Queue             => '___Approvals',
         ScripCondition    => 'On Resolve',
         ScripAction       => 'User Defined',
         CustomPrepareCode => 'return(1);',
@@ -147,36 +203,9 @@ while (my $link = $links->Next) {
 return 1;
 # ------------------------------------------------------------------- #
 	],
-        Template    => 'AdminComment',
+        Template    => 'Admin Comment',
     },
 );
 
 # }}}
-
-# {{{ Templates
-my @templates = (
-    {
-        Queue       => $approvals_queue->Id,
-        Name        => "New Pending Approval", # loc
-        Description => "Notify Owners and AdminCcs of new items pending their approval", # loc
-	Content     => 'Subject: New Pending Approval: {$Ticket->Subject}
-
-Greetings,
-
-There is a new item pending your approval: "{$Ticket->Subject()}", 
-a summary of which appears below.
-
-Please visit {$RT::WebURL}Approvals/Display.html?id={$Ticket->id}
-to approve or reject this ticket, or {$RT::WebURL}Approvals/ to
-batch-process all your pending approvals.
-
--------------------------------------------------------------------------
-{$Transaction->Content()}
-'
-    },
-);
-
-# }}}
-
-1;
 

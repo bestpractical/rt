@@ -202,8 +202,10 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "	   $(RT_SBIN_PATH)/rt-update-database <version>"
-	@echo "where <version> is the version of RT you're upgrading from."
+	@echo "   ls etc/upgrade"
+	@echo "For each file in that directory whose name is greater than"
+	@echo "your previously installed RT version, run:"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datafile etc/upgrade/<version>"
 
 
 upgrade: dirs upgrade-noclobber  upgrade-instruct

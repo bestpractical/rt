@@ -120,12 +120,12 @@ sub Create {
         @_
     );
 
-    $args{'Queue'} ||= 0;		# avoid undef sneaking in
 
-    if ( $args{'Queue'} == 0 ) {
+    if (! $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ModifyScrips') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
+        $args{'Queue'} = 0;		# avoid undef sneaking in
     }
     else {
         my $QueueObj = new RT::Queue( $self->CurrentUser );
@@ -136,6 +136,7 @@ sub Create {
         unless ( $QueueObj->CurrentUserHasRight('ModifyScrips') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
+        $args{'Queue'} = $QueueObj->id();
     }
 
     #TODO +++ validate input 

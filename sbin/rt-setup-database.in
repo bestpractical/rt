@@ -1,27 +1,27 @@
 #!@PERL@ -w
 # BEGIN LICENSE BLOCK
-#
+# 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-#
+# 
 # (Except where explictly superceded by other copyright notices)
-#
+# 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org
-#
+# 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-#
-#
+# 
+# 
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-#
-#
+# 
+# 
 # END LICENSE BLOCK
 
 use strict;
@@ -323,6 +323,9 @@ sub insert_data {
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');
 
+
+   if ($datafile eq $RT::EtcPath . "/initialdata" )  {
+
     print "Creating Superuser  ACL...";
 
     my $superuser_ace = RT::ACE->new($CurrentUser);
@@ -332,6 +335,8 @@ sub insert_data {
                              RightName     => 'SuperUser',
                              ObjectType    => 'RT::System',
                              ObjectId      => '1' );
+
+    }
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     # @groups, @users, @acl, @queues, @ScripActions, @ScripConditions, @templates

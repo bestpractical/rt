@@ -238,24 +238,25 @@ sub Create {
         @_
     );
 
-    if ( $args{'Queue'} == 0 ) {
+    if ( !$args{'Queue'}  ) {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return (undef);
         }
+        $args{'Queue'} = 0;
     }
     else {
         my $QueueObj = new RT::Queue( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} ) || return ( 0, $self->loc('Invalid queue') );
-
+    
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
             return (undef);
         }
+        $args{'Queue'} = $QueueObj->Id;
     }
 
     my $result = $self->SUPER::Create(
         Content => $args{'Content'},
-        Queue   => $args{'Queue'},
-        ,
+        Queue   =>  $args{'Queue'},
         Description => $args{'Description'},
         Name        => $args{'Name'}
     );

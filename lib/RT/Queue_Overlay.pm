@@ -322,7 +322,7 @@ sub Load {
         return (undef);
     }
 
-    if ( $identifier !~ /\D/ ) {
+    if ( $identifier =~ /^(\d+)$/ ) {
         $self->SUPER::LoadById($identifier);
     }
     else {
