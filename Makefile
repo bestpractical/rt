@@ -105,53 +105,21 @@ RT_USER_PASSWD_MIN	=	5
 DB_HOME               = /usr/bin
 RT_DB                 = mysql
 
-# define MYSQL_DBADMIN to the name of a MySQL user with permission to
+# define DBA to the name of a DB user with permission to
 # create new databases 
 DBA                   = root
 DBA_PASSWORD          = yawn
  
-
-#
-# This is where your mysql binaries are located [do we need this??]
-#
-MYSQLDIR		=	/usr/bin
-
-
-# Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
-# $rtuser and $rtpass are passed to MysqlPerl.  
-# [do we need this?]
-
-MYSQL_VERSION		= 	3.22
-
-MYSQL_DBADMIN		=	root
-#
-# If you have defined a password for this Mysql user,
-# you must either replace "somepassword" below with the mysql password
-# of that user and uncomment the line.
-#
-# If you put the password in this Makefile you should REMOVE IT
-# AS SOON AS "make install" FINISHES
-#
-#DBADMIN_MYSQL_PASS		=	somepassword
-
-#
-# this password is what RT will use to authenticate itself to mysql
-# change this password so nobody else can get into your rt databases
-# (be sure not to use #, @ or $ characters)
-#
-
-RT_MYSQL_PASS           =       My!word%z0t
-
 #
 # Set this to the domain name of your Mysql server
 # If the database is local, rather than on a remote host, using "localhost" 
 # will greatly enhance performance.
 #
-RT_MYSQL_HOST		=	localhost
+RT_DB_HOST		=	localhost
 
 #
 # Set this to the canonical name of the interface RT will be talking to the mysql database on.
-# If you said that the RT_MYSQL_HOST above was "localhost," this should be too.
+# If you said that the RT_DB_HOST above was "localhost," this should be too.
 # This value will be used by mysql to grant  rt on your RT server access to the Mysql database.
 #
 
@@ -161,13 +129,13 @@ RT_HOST			=	localhost
 # set this to the name you want to give to the RT database in mysql
 #
 
-RT_MYSQL_DATABASE	=	rt
+RT_DATABASE	=	rt
 
 #
 # if you want to give the rt user different default privs, modify this file
 #
 
-RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
+RT_DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 
 #
@@ -193,10 +161,10 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
 
-ifdef DBADMIN_MYSQL_PASS
-DBADMIN_MYSQL_PASS_STRING = -p$(DBADMIN_MYSQL_PASS)
+ifdef DBA_PASSWORD
+DBA_PASS_STRING = -p$(DBADMIN_PASS)
 else 
-DBADMIN_MYSQL_PASS_STRING = 
+DBA_PASS_STRING = 
 endif
 
 
@@ -248,19 +216,19 @@ initialize: database acls
 
 
 database:
-#	$(MYSQLDIR)/mysqladmin drop $(RT_MYSQL_DATABASE)
-	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) create $(RT_MYSQL_DATABASE)
-	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
+	su -c "bin/initdb.$(RT_DB) $(DB_HOME) $(RT_DB_HOST) $(DBA) $(DBA_PASSWORD) $(RT_DATABASE)" $(DBA)
 
 acls:
 	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
-		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
+		s'!!RT_DB_PASS!!'$(RT_DB_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
-		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
-		" $(RT_MYSQL_ACL)
-	$(MYSQLDIR)/mysql $(DBADMIN_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
-	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) reload
+		s'!!RT_DB_HOST!!'$(RT_DB_HOST)'g;\
+		s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
+		" $(RT_DB_ACL)
+
+	su -c "bin/initacls.$(RT_DB) $(DB_HOME) $(RT_DB_HOST) $(DBA) $(DBA_PASSWORD) $(RT_DATABASE) $(RT_DB_ACL)" $(DBA)
+
 
 
 mux-install:
