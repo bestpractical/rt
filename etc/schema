@@ -23,7 +23,7 @@ CREATE TABLE users (
   user_id CHAR(40) NOT NULL PRIMARY KEY, 
   real_name CHAR(40),
   password CHAR(40), 			
-  email CHAR(40),
+  email CHAR(120),
   phone CHAR(15),
   office CHAR(30),
   comments CHAR(120),

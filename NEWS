@@ -1,3 +1,9 @@
+14 Jan 2000
+-----------
+* Changed the max queue member email address length to 120 characters to deal
+  with queue members with long email addresses.
+
+
 23 Dec 1999
 -----------
 
