@@ -370,8 +370,8 @@ sub FormReply{
 
     &FormHeader("Reply to $rt::req[$serial_num]{requestors}");
     
-    print "<form action=\"$ScriptURL\" method=\"post\" $target>";
-
+    print "<form action=\"$ScriptURL\" method=\"post\" $target>
+<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">";
     &UpdateOptions();
 
 print "<input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
