@@ -52,10 +52,8 @@ sub delete  {
   my ($query_string,$update_clause);
   
   die ("Queue->Delete not implemented yet");
-    
-    
-    if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
-      
+
+#If the user is an RT admin      
 
       #TODO:  DO ALL THESE
       $query_string = "DELETE FROM queues WHERE id = $in_queue_id";
@@ -154,7 +152,7 @@ sub DeleteWatcher {
   my ($Watcher);
   
   while ($Watcher = $self->Watchers->Next) {
-    if ($Watcher->Email =~ /$email/) {
+    if ($Watcher->Email =~ /$email/) 
       $Watcher->Delete();
     }
   }

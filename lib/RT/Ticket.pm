@@ -191,6 +191,12 @@ sub DeleteWatcher {
 # the current AdminCcAsString and CcAsString subs (which are used for
 # mail sending) is using this sub. -- TobiX
 
+# It should return only the ticket watchers. the actual FooAsString
+# methods capture the queue watchers too. I don't feel thrilled about this,
+# but we don't want the Cc Requestors and AdminCc objects to get filled up
+# with all the queue watchers too. we've got seperate objects for that.
+# should we rename these as s/(.*)AsString/$1Addresses/ or somesuch?
+
 sub Watchers {
   my $self = shift;
   if (! defined ($self->{'Watchers'}) 
@@ -198,54 +204,39 @@ sub Watchers {
     require RT::Watchers;
     $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
     $self->{'Watchers'}->LimitToTicket($self->id);
-#    $self->{'Watchers'}->LimitToQueue($self->_Value('Queue'));
+
   }
   return($self->{'Watchers'});
   
 }
 # }}}
 
-# {{{ sub ...AsString
-
-sub WatcherClassAsString {
-  my $self  = shift;
-  my $class = shift || "";
-  my $o = ($class||"Watchers").'AsString';
-  if (!defined $self->{$o}) {
-    my @w=();
-    $self->{$o} = "";
-    while (my $watcher = $self->Watchers->Next) {
-      push(@w, $watcher->Email)
-	if ($watcher->Type =~ /\b$class\b/)
-    }
-    $self->{'WatchersAsString'}=join(",",@w);
-  }
-  return ( $self->{'WatchersAsString'});
-  
-}
+# {{{ a set of  ...AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
 sub RequestorsAsString {
     my $self=shift;
-    return $self->WatcherClassAsString('Requestor');
+    return ($self->Requestors->EmailsAsString() );
 }
 
 sub WatchersAsString {
     my $self=shift;
-    return $self->WatcherClassAsString();
+    return ($self->Watchers->EmailsAsString() . ", " .
+	    $self->Queue->Watchers->EmailsAsString());
 }
 
 sub AdminCcAsString {
     my $self=shift;
-    return $self->WatcherClassAsString('AdminCc');
-}
+    return ($self->AdminCc->EmailsAsString() . ", " .
+	    $self->Queue->AdminCc->EmailsAsString());
+  }
 
 sub CcAsString {
     my $self=shift;
-    return $self->WatcherClassAsString('Cc');
+    return ($self->Cc->EmailsAsString() . ", ".
+	    $self->Queue->Cc->EmailsAsString());
 }
 
 # }}}
-
 
 # {{{ sub Requestors
 sub Requestors {

@@ -85,8 +85,10 @@ sub LimitToAdminCc  {
 }
 # }}}
 
-# Return a (reference to a) list of emails
+
 # {{{ sub Emails 
+
+# Return a (reference to a) list of emails
 sub Emails  {
     my $self = shift;
     my $type = shift;
@@ -94,11 +96,22 @@ sub Emails  {
     $self->{is_modified}++;
     $self->LimitToType($type)
 	if $type;
+    # List is a list of watcher email addresses
     my @list;
+    # Here $w is a RT::WatcherObject
     while (my $w=$self->Next()) {
 	push(@list, $w->Email);
     }
     return \@list;
+}
+# }}}
+
+# {{{ sub EmailsAsString
+
+# Returns the RT::Watchers->Emails as a comma seperated string
+sub EmailsAsString {
+  my $self = shift;
+  return(join(", ",$self->Emails));
 }
 # }}}
 
