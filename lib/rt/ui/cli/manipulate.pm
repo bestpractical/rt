@@ -52,6 +52,7 @@ sub ParseArgs  {
 	  
 	  if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 	    &ShowSummary($Ticket);
+	    print "\n";
 	    &ShowHistory($Ticket);
 	  }
 	  else {
@@ -229,10 +230,16 @@ sub ParseArgs  {
 	my $Ticket = &LoadTicket($id);
 	
 	my $due_string=$ARGV[++$i];
-	my $due_date = &rt::DateParse($due_string);
-	
-	$Message .= $Ticket->SetDue($id, $due_date, $CurrentUser->Id);
 
+	require Date::Manip;
+	$due_date = &Date::Manip::ParseDate($due_string);	
+	
+	my $date = new RT::Date;
+	$date->Set(Format => 'DateManip',
+		   Value => $due_date);
+		
+	$Message .= $Ticket->SetDue($date->ISO, $CurrentUser->Id);
+	
 	}
       
       elsif ($ARGV[$i] eq "-prio") {
@@ -341,6 +348,10 @@ sub cli_create_req  {
 	require Date::Manip;
 	$date_due = &Date::Manip::ParseDate($due_string);
       }  
+      my $due = new RT::Date;
+      $due->Set(Format => 'DateManip',
+		 Value => $due_date);
+      
       
     }
 
@@ -376,7 +387,7 @@ sub cli_create_req  {
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       Due => $date_due,
+			       Due => $due->ISO,
 	      		       MIMEObj => $Message			
 						      );
 
@@ -521,7 +532,7 @@ EOFORM
 sub ShowSummary  {
     my $Ticket = shift;
 
-    require Time::Local;
+
     print <<EOFORM;
 Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
       Subject: @{[$Ticket->Subject]}
@@ -532,7 +543,7 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
       Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
- Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]} ago)
+ Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]})
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
 EOFORM
@@ -569,6 +580,7 @@ EOFORM
 	print $message->ContentType, " not shown";
     }
   }
+  print "\n";
   return();
 }
 # }}}

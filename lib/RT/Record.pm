@@ -2,6 +2,8 @@
 
 package RT::Record;
 use DBIx::Record;
+use RT::Date;
+
 @ISA= qw(DBIx::Record);
 
 # {{{ sub new 
@@ -62,6 +64,77 @@ sub Create  {
 }
 # }}}
 
+# {{{ Datehandling
+
+# There is room for optimizations in most of those subs:
+
+# {{{ LastUpdatedObj
+
+sub LastUpdatedObj {
+    my $self=shift;
+    my $obj = new RT::Date;
+    
+    $obj->Set(Format => 'sql', Value => $self->LastUpdated);
+    return $obj;
+}
+
+# }}}
+
+# {{{ CreatedObj
+
+sub CreatedObj {
+    my $self=shift;
+    my $obj = new RT::Date;
+    
+    $obj->Set(Format => 'sql', Value => $self->Created);
+
+    
+    return $obj;
+}
+
+# }}}
+
+# {{{ AgeAsString
+sub AgeAsString {
+    my $self=shift;
+    return($self->CreatedObj->AgeAsString());
+}
+# }}}
+
+# {{{ LastUpdatedAsString
+
+sub LastUpdatedAsString {
+    my $self=shift;
+    if ($self->LastUpdated) {
+	return ($self->LastUpdatedObj->AsString());
+	  
+    } else {
+	return "never";
+    }
+}
+
+# }}}
+
+# {{{ CreatedAsString
+sub CreatedAsString {
+    my $self = shift;
+    return ($self->CreatedObj->AsString());
+}
+# }}}
+
+# {{{ LongSinceUpdateAsString
+sub LongSinceUpdateAsString {
+    my $self=shift;
+    if ($self->LastUpdated) {
+	return ($self->LastUpdatedObj->AsString());
+	
+    } else {
+	return "never";
+    }
+}
+# }}}
+
+# }}} Datehandling
 
 
 # {{{ sub _Set 

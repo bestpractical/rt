@@ -25,8 +25,6 @@ DBI 1.13
 HTML::Mason 0.81
 Date::Manip
 Date::Format
-Time::Seconds
-Date::Kronos
 MIME::Entity 5.108
 Mail::Mailer 1.19
 CGI::Cookie 1.06

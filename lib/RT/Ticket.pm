@@ -7,6 +7,7 @@ package RT::Ticket;
 use RT::Record;
 use RT::Link;
 use RT::Links;
+use RT::Date;
 use Carp;
 
 @ISA= qw(RT::Record);
@@ -71,8 +72,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
     FinalPriority -- an integer from 0 to 99
     Status -- a textual tag. one of 'open' 'stalled' 'resolved' for now
     TimeWorked -- an integer
-    Told -- a unix time or a Date::Kronos object. time of last contact (stubbed!)
-    Due -- a unix time or a Date::Kronos object describing the due date (stubbed!)
+    Told -- a unix time. time of last contact (stubbed!)
+    Due -- a unix time or an RT::Time object describing the due date (stubbed!)
     MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
 
 Returns: TICKETID, Transaction Object, Error Message
@@ -123,6 +124,12 @@ sub Create {
     return (0, 0,'Queue not set');
   }
 
+  #TODO we should see what sort of due date we're getting, rather
+  # than assuming it's in ISO format.
+  my $due = new RT::Date;
+  $due->Set (Format => 'ISO',
+	     Value => $args{'Due'});
+
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $args{'Queue'},
@@ -134,7 +141,8 @@ sub Create {
 				Priority => $args{'InitialPriority'},
 				Status => $args{'Status'},
 				TimeWorked => $args{'TimeWorked'},
-				Due => undef
+				Due => $due->ISO
+				
 			       );
   
   #Load 'er up.
@@ -699,81 +707,85 @@ sub Queue {
 
 # Created and LastUpdated belongs to the DBIx::Record layer (and maybe even deeper)
 
+
 # {{{ sub DueAsString 
+
 sub DueAsString {
   my $self = shift;
-  if ($self->Due) {
-      my $time=$self->DueObj;
-      return $time->Gregorian->stringify();
-  }
-  else {
-    return("Never");
-  }
+#  if ($self->Due) {
+      return $self->DueObj->AsString();
+ # }
+ # else {
+ #     return("Never");
+ # }
 }
+
 # }}}
 
 # {{{ sub GraceTimeAsString 
+
 # This really means "time until due"
 sub GraceTimeAsString {
     my $self=shift;
-    require Date::Kronos;
+
     if ($self->Due) {
-	my $now=Date::Kronos->new(cal_type=>'Unix');
-	my $diff=$now - $self->DueObj;
-	return $diff->stringify or warn;
+	my $now=new RT::Date;
+	$now->Set(Format => 'unix',
+		  Value => time);
+	return($now->DiffAsString($self->DueObj));
     } else {
-	return "Forever";
+	return "";
     }
 }
+
 # }}}
 
 # {{{ sub DueObj
 sub DueObj {
-  $self->Due || return undef;
-  require Date::Kronos;
-  my $self = shift;
-  my $time = Date::Kronos->new;
-  $time->Gregorian->sql_timestamp($self->Due);
-  return $time;
+    my $self = shift;
+    
+    my $time = RT::Date->new;
+    $time->Set(Format => 'sql', Value => $self->Due);
+    return $time;
 }
 # }}}
 
 # {{{ sub ToldObj
+
 sub ToldObj {
   my $self = shift;
-  return undef unless $self->Told;
-  require Date::Kronos;
-  my $time = Date::Kronos->new;
-  $time->Gregorian->sql_timestamp($self->Told);
+  
+  my $time = new RT::Date;
+  $time->Set(Format => 'sql', Value => $self->Told);
   return $time;
 }
+
 # }}}
 
 # {{{ sub LongSinceToldAsString
 # TODO This should be called SinceToldAsString
 sub LongSinceToldAsString {
   my $self = shift;
-  require Date::Kronos;
+
   if ($self->Told) {
-    my $now=Date::Kronos->new(cal_type=>'Unix');
-    my $diff=$now - $self->ToldObj;
-    return $diff->Unix->stringify;
+
+      my $now = new RT::Date;
+      return $now->DiffAsString($self->ToldObj);
   } else {
-    return "Never";
+      return "Never";
   }
 }
-
+# }}}
 
 # {{{ sub ToldAsString
 sub ToldAsString {
-  my $self = shift;
-  if ($self->Told) {
-    my $time=$self->ToldObj;
-    return $time->Gregorian->stringify() || warn;
-  }
-  else {
-    return("Never");
-  }
+    my $self = shift;
+    if ($self->Told) {
+	return $self->ToldObj->AsString();
+    }
+    else {
+	return("Never");
+    }
 }
 # }}}
 
@@ -793,12 +805,17 @@ sub LastUpdatedByObj {
 # {{{ sub TimeWorkedAsString
 sub TimeWorkedAsString {
     my $self=shift;
-    return "-" unless $self->TimeWorked;
-    require Date::Kronos;
-    my $diff=Date::Kronos->new(cal_type=>Unix, value=>($self->TimeWorked*60));
-    $diff->delta(1);
-    return $diff->stringify;
+    return "0" unless $self->TimeWorked;
+    
+    #This is not really a date object, but if we diff a number of seconds 
+    #vs the epoch, we'll get a nice description of time worked.
+    
+    my $worked = new RT::Date;
+    #return the  #of minutes worked turned into seconds and written as
+    # a simple text string
+    return($worked->DurationAsString($self->TimeWorked*60));
 }
+
 # }}}
 
 # }}}
@@ -1119,7 +1136,7 @@ sub _NewLink {
 }
 
 # }}}
- 
+
 # }}}
 
 # {{{ Actions + Routines dealing with transactions
@@ -1593,6 +1610,3 @@ sub HasRight {
 # }}}
 
 1;
-
-
-
