@@ -29,4 +29,15 @@ sub _Accessible {
   return $self->SUPER::_Accessible(@_, %Cols);
 }
 
+sub Parse {
+    my $self=shift;
+    my $object=shift;
+
+    # Might be subject to change
+    require Text::Template;
+
+    $template=Text::Template->new(TYPE=>STRING, SOURCE=>$self->content);
+    return $template->fill_in(HASH=>$object);
+}
+
 1;
