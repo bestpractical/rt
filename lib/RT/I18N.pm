@@ -30,7 +30,7 @@ RT::I18N - a base class for localization of RT
 package RT::I18N;
 
 use strict;
-use Locale::Maketext 1.04;
+use Locale::Maketext 1.01;
 use Locale::Maketext::Lexicon 0.10;
 use base ('Locale::Maketext::Fuzzy');
 use vars qw( %Lexicon );
@@ -78,11 +78,11 @@ ok(RT::I18N->Init);
 sub Init {
     # Load language-specific functions
     foreach my $language ( glob(substr(__FILE__, 0, -3) . "/*.pm")) {
-        if ($language =~ /^([-\w.\/\\]+)$/) {
-           require "$1";
+        if ($language =~ /\b([-\w.\/\\]+)$/) {
+            require $language;
         }
         else {
-            $RT::Logger->warning("$language is tainted. not loading");
+	    warn("$language is tainted. not loading");
         } 
     }
     # Acquire all .po files and iterate them into lexicons
@@ -104,9 +104,9 @@ sub Init {
 		    $1 => [Gettext => $File::Find::name],
 		});
 	    },
-	    follow		=> 1,
-	    untaint		=> 1,
-	    untaint_skip	=> 1,
+	    follow		=> ($^O ne 'MSWin32'),
+	    untaint		=> ($^O ne 'MSWin32'),
+	    untaint_skip	=> ($^O ne 'MSWin32'),
 	}, $RT::LocalLexiconPath );
     }
 
@@ -221,9 +221,9 @@ sub SetMIMEEntityToUTF8 {
 =head2 SetMIMEEntityToEncoding $entity, $encoding
 
 An utility method which will try to convert entity body into specified
-charset encoding.  It will iterate all the entities in $entity, and
-try to convert each one into specified charset if whose Content-Type
-is 'text/plain'.
+charset encoding (encoded as octets, *not* unicode-strings).  It will
+iterate all the entities in $entity, and try to convert each one into
+specified charset if whose Content-Type is 'text/plain'.
 
 This method doesn't return anything meaningful.
 
@@ -281,7 +281,9 @@ sub SetMIMEEntityToEncoding {
                 Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
 
                 if ( $enc eq 'utf-8' ) {
-                    $lines[$_] = Encode::decode( $charset, $lines[$_] ) foreach ( 0 .. $#lines );
+                    $lines[$_] = Encode::encode_utf8(
+			Encode::decode( $charset, $lines[$_] )
+		    ) foreach ( 0 .. $#lines );
                 }
                 else {
                     Encode::from_to( $lines[$_], $charset => $enc ) foreach ( 0 .. $#lines );
@@ -299,12 +301,11 @@ sub SetMIMEEntityToEncoding {
                 }
             }
         }
-        elsif ( $enc eq 'utf-8' ) {
-            Encode::_utf8_on( $lines[$_] ) foreach ( 0 .. $#lines );
-        }
-        my $new_body = MIME::Body::InCore->new( [                                              
-            map Encode::encode_utf8($_), @lines                                                
-        ] ); 
+#       elsif ( $enc eq 'utf-8' ) {
+#           Encode::_utf8_on( $lines[$_] ) foreach ( 0 .. $#lines );
+#       }
+
+        my $new_body = MIME::Body::InCore->new( \@lines );
 
         # set up the new entity
         $head->mime_attr( "content-type.charset" => $enc );
