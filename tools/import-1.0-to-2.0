@@ -26,10 +26,10 @@ use strict;
 use Carp;
 use Getopt::Long qw(:config pass_through);
 
-#use lib "/opt/rt2/lib";
-#use lib "/opt/rt2/etc";
-use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
+use lib "/opt/rt2/lib";
+use lib "/opt/rt2/etc";
+#use lib "!!RT_LIB_PATH!!";
+#use lib "!!RT_ETC_PATH!!";
 
 use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 			   GetCurrentUser GetMessageContent);
@@ -82,6 +82,9 @@ MigrateTickets();
 
 
 sub MigrateQueues {
+
+    print "Now adding queues...\n";
+
     # Load the RT1 queues
     my $sth = ExecStatement("select queue_id, mail_alias, comment_alias, 
     default_prio, default_final_prio, default_due_in, m_owner_trans,
@@ -92,28 +95,32 @@ sub MigrateQueues {
     #Iterate through our queues and create new queue objects
     while (my @row = $sth->fetchrow_array()) {
 	my $queue = RT::Queue->new($RT::SystemUser);
-	
+
+	print "Adding queue ".$row[0]."...";
+
 	# Try to load up the current queue by name. avoids duplication.
 	$queue->Load($row[0]);
 	
 	#if the queue isn't there, create one.
 	unless ($queue->id) {
-	    my ($val, $msg) = $queue->Create(Name => $row[0],
-					     Description => 'Imported from RT 1.0',
-					     CorrespondAddress => $row[1],
-					     CommentAddress => $row[2],
-					     InitialPriority => $row[3],
-					     FinalPriority => $row[4],
-					     DefaultDueIn => $row[5]);
-	    
-	    
+	    my ($val, $msg) = 
+	      $queue->Create(Name => $row[0],
+			     Description => 'Imported from RT 1.0',
+			     CorrespondAddress => $row[1],
+			     CommentAddress => $row[2],
+			     InitialPriority => $row[3],
+			     FinalPriority => $row[4],
+			     DefaultDueIn => $row[5]);
+	    	    
 	    if ($val == 0) {
-		warn "Can't add queue $row[0]: $msg\nContinuing...";
+		warn "failed: $msg\n";
 	    }
 	    else {
-		print "Added ".$queue->Name;	
+		print "...added\n";
 	    }
 	}
+	
+	print "Adding scrips for queue ".$queue->Name . "...";
 	
 	# Add scrips to mimic RT1's behavior
 	if ($row[6]) { #m_owner_trans
@@ -161,11 +168,13 @@ sub MigrateQueues {
 			    ScripAction => 'NotifyAdminCcsAsComment',
 			    ScripCondition => 'OnComment');
 	}
+	
+	print "done.\n";
 
 	# Grant ACLs to 'Everyone' to create requests and see queue if 
 	# allow_user_create is granted.
 	if ($row[13]) {
-	    print "...allowing public ticket creation";
+	    print "Allowing public ticket creation.";
 	    my $everyone = RT::Group->new($RT::SystemUser);
 	    $everyone->Load('Everyone');
 	    $everyone->GrantQueueRight( RightName => 'SeeQueue', 
@@ -186,26 +195,32 @@ sub MigrateQueues {
 sub MigrateAreas {
     my $queue = shift;
     
+    print "Adding current areas for queue ". $queue->Name ."\n";
+    
     #Find out what areas we have for this queue in RT1..
-    my $sth = ExecStatement(" select area from queue_areas where queue_id = ".$dbh->quote($queue->Name));
+    my $sth = ExecStatement("SELECT area from queue_areas where queue_id = ".$dbh->quote($queue->Name));
     
     my $rows = $sth->rows;
-
+    
+    print "Found $rows areas. Now adding keywords for them.\n";
     #If we have any...
 
-	#Create /QueueName
-	my $queue_keyword = RT::Keyword->new($RT::SystemUser);
-	my ($val, $msg) = $queue_keyword->Create('Name' => $queue->Name,
-			       'Description' => 'Keywords specific to queue' .$queue->Name,
-			       Parent => $queue_keyword->id);
-
+    #Create /QueueName
+    my $queue_keyword = RT::Keyword->new($RT::SystemUser);
+    my ($val, $msg) = 
+      $queue_keyword->Create( Name => $queue->Name,
+			      Description => 'Keywords for queue'.$queue->Name,
+			      Parent => 0 );
+    
+    
 	
-	
-	#Create /QueueName/Area/
-	my $area_keyword = RT::Keyword->new($RT::SystemUser);
-	my ($area, $areamsg) = $area_keyword->Create('Name' => $queue->Name,
-			      Parent => $val);
-	
+    #Create /QueueName/Area/
+    my $area_keyword = RT::Keyword->new($RT::SystemUser);
+    my ($area, $areamsg) = 
+      $area_keyword->Create( Name => 'Area',
+			     Description => 'Autocreated by RT 1.0 import',
+			     Parent => $val );
+    
     if ($rows) {
 	#Create all the areas underneath /QueueName/Area/
 	while (my @row = $sth->fetchrow()) {
@@ -215,7 +230,9 @@ sub MigrateAreas {
 				Parent => $area);
 	}	
 	
+
 	#Create the 'Area' keyword select
+	print "Creating 'Area' KeywordSelect...\n"; 
 	my $ks = new RT::KeywordSelect($RT::SystemUser);
 	$ks->Create(Name => 'Area',
 		    Keyword => $area,
@@ -230,6 +247,8 @@ sub MigrateAreas {
 
 
 sub MigrateUsers {
+
+    print "Importing users...\n";
     
     #load the RT1 users
     my $sth = ExecStatement("select user_id, real_name, password, 
@@ -237,6 +256,8 @@ sub MigrateUsers {
          where user_id != 'root' ");
 
     while (my @row = $sth->fetchrow_array()) {
+
+	print "Importing user $row[0]...";
 	#iterate through the RT1 users list and create new RT2 users.
 	my $user = RT::User->new($RT::SystemUser);
 	
@@ -252,10 +273,12 @@ sub MigrateUsers {
 					     Comments => $row[6],
 					     Privileged => 1);
 	if ($return == 0) {
-	    print "Can't add user $row[0]: $msg\n";
+	    print "failed: $msg\n";
 	    next;
 	}
-	print "Added ".$user->Name;
+
+	print "...added ";
+
 	if ($row[7]) {
 	    $user->GrantSystemRight('SuperUser');
 	    print " as superuser";
@@ -269,13 +292,16 @@ sub MigrateUsers {
 
 
 sub MigrateTickets {
+
+    print "Importing tickets...\n";
     my $sth = ExecStatement('select * from each_req');
     
     while (my $row = $sth->fetchrow_hashref()) {
 
+	print "\n".$row->{'serial_num'}.".";
+
 	my @requestors = split(',',$row->{'requestors'});
 	
-	warn "Ticket ". $row->{'serial_num'}. " has requestors ". join(',',@requestors)."\n";
 	my $owner = new RT::User($RT::SystemUser);
 	$owner->Load($row->{'owner'});
 
@@ -302,7 +328,7 @@ sub MigrateTickets {
 	#
 
 	my $queue = $ticket->QueueObj();
-
+	
 	#If the ticket has an area, add it.
 	if ($row->{'area'}) {
 	    my $area_sel = $queue->KeywordSelect('Area');
@@ -311,6 +337,18 @@ sub MigrateTickets {
 	    $areaobj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
 				 '/Area/'.$row->{'area'});
 	    
+	    # If the area doesn't exist in the database,
+	    # it's a disabled area. We need to create and disable it.
+	    unless ($areaobj->id) {
+		my $queue_area_obj = new RT::Keyword($RT::SystemUser);
+		$queue_area_obj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
+					    '/Area');
+		$areaobj->Create(Name => $row->{'area'},
+				 Description => 'Autocreated by RT 1.0 import',
+				 Parent => $queue_area_obj->id);
+		$areaobj->Disable();
+	    }
+
 	    # create the new objectkeyword. bypass the Ticketobj so we don't
 	    # get a transaction created for us.
 	    my $ObjectKeyword = new RT::ObjectKeyword($RT::SystemUser);
@@ -319,7 +357,7 @@ sub MigrateTickets {
 						 ObjectId => $ticket->Id,
 						 KeywordSelect => $area_sel->Id );
 	}
-
+	
         ImportTransactions($ticket);
     }
     
@@ -328,7 +366,7 @@ sub MigrateTickets {
 sub ImportTransactions {
     my $ticket = shift;
     
-    warn "Now getting transactions for ticket ".$ticket->id."\n";
+    print "..transactions: ";
     
     my $sth = ExecStatement('SELECT * FROM transactions where serial_num = '.
 			    $ticket->id);
@@ -340,9 +378,7 @@ sub ImportTransactions {
     
     while (my $row = $sth->fetchrow_hashref()) {  
 	my (%trans_args, $MIMEObj, $trans_file);
-	
-
-	
+		
 	warn "transaction $row->{id}\n" if $Debug;
 	
 	my $load_content = 0;
@@ -449,12 +485,10 @@ sub ImportTransactions {
 
 	# }}}
 	
-
-
+	# {{{ Try to find a file for the content if we need to
 	my $filename = $row->{serial_num}.".".$row->{id};
-
+	
 	if ( $load_content ) {
-	    warn "Loading Content";
 	    my $file = 
 	      time2str("$RT1DATA/%Y/%b/%e/",$row->{trans_date},'PST');
 
@@ -475,7 +509,8 @@ sub ImportTransactions {
 	      warn "none of $file, $file2 or $file3 exist\n";
 	    warn "Content is in $trans_file\n";
 	}
-	
+	# }}}
+
 	# {{{ if we need to get the content out of the database
 	
 	if ( $trans_file ) {
@@ -554,8 +589,6 @@ sub ImportTransactions {
 	
 	if ( $trans_args{'Type'} ) {
 	    
-	    warn "adding transaction..\n";
-	    
 	    # {{{ Figure out who's the transaction actor. create a user if we need to
 	    my $User = new RT::User($RT::SystemUser);
 	    $User->Load( $row->{'actor'} );
@@ -576,16 +609,13 @@ sub ImportTransactions {
 	    };
 	    
 	    # }}}
-	    
-
 	    die "We couldn't find or create ".$row->{'actor'}
 	      unless ($User->Id);
 	    
-	    print "Creating a transaction as ".$User->id."\n";
+
 	    my $created = new RT::Date($RT::SystemUser);
 	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
 
-	    
 	    my $trans = new RT::Transaction($User);
 	    
 	    # Allow us to set the 'Created' attribute. 
@@ -607,13 +637,15 @@ sub ImportTransactions {
 	    
 	    die("Couldn't create transaction for ".$row->{'id'} . "\n$msg\n") 
 	      unless $transaction;
-	    warn "    added\n";
+
+	    print $trans->id.".";
 	}
 	else {
-	    die "Didn't understand transaction ". $row->{'id'};
+	    die "Couldn't parse ". $row->{'id'};
 	}
 	
     }
+    print "done.\n";
 }
 
 
