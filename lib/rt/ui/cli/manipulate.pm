@@ -454,9 +454,10 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
           Bcc: @{[$Ticket->BccAsString]}
         Owner: @{[$Ticket->Owner->UserId]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
-          Due: @{[localtime($Ticket->Due)]})
-      Created: @{[localtime($Ticket->Created)]}) (@{[$Ticket->Age]}) ago)
- Last Contact: @{[localtime($Ticket->Told)]}) (@{[$Ticket->SinceTold]} ago)
+          Due: @{[$Ticket->DueAsString]}
+      Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->Age]}) ago)
+ Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->SinceTold]} ago)
+  Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
 
 EOFORM
@@ -472,7 +473,7 @@ EOFORM
     ;
   my $attachments=$transaction->Attachments();
   while (my $message=$attachments->Next) {
-      print <<EOFORM;
+    print <<EOFORM;
 --------------------------------------------------------------------------
 @{[$message->Headers]}
 EOFORM

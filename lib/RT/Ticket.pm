@@ -37,6 +37,7 @@ sub Create {
 	      Told => 0,
 	      Due => 0,
 	      MIMEEntity => undef,
+	     
 	      @_);
 
   #TODO Load queue defaults
@@ -149,6 +150,7 @@ sub Watchers {
   if (! defined ($self->{'Watchers'})) {
     require RT::Watchers;
     $self->{'Watchers'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Watchers'}->LimitToTicket($self->id);
     
   }
   return($self->{'Watchers'});
@@ -160,6 +162,7 @@ sub Requestors {
   if (! defined ($self->{'Requestors'})) {
     require RT::Watchers;
     $self->{'Requestors'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Requestors'}->LimitToTicket($self->id);
     $self->{'Requestors'}->LimitToRequestors();
   }
   return($self->{'Requestors'});
@@ -171,8 +174,13 @@ sub RequestorsAsString {
     $self->{'RequestorsAsString'} = "";
     while (my $requestor = $self->Requestors->Next) {
       $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
+ 
+
     }
+
     $self->{'RequestorsAsString'} =~ s/, $//;
+    
+#    print STDERR "R as S is ". $self->{'RequestorsAsString'} ."\n";
   }
   
 
@@ -185,6 +193,7 @@ sub Cc {
   if (! defined ($self->{'Cc'})) {
     require RT::Watchers;
     $self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Cc'}->LimitToTicket($self->id);
     $self->{'Cc'}->LimitToCc();
   }
   return($self->{'Cc'});
@@ -211,6 +220,7 @@ sub Bcc {
   if (! defined ($self->{'Bcc'})) {
     require RT::Watchers;
     $self->{'Bcc'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Bcc'}->LimitToTicket($self->id);
     $self->{'Bcc'}->LimitToBcc();
   }
   return($self->{'Bcc'});
@@ -426,9 +436,53 @@ sub Resolve {
 }
 
 
+
+#
+# Date printing routines
+#
+
+
+sub DueAsString {
+  my $self = shift;
+  if ($self->Due) {
+    return (scalar(localtime($self->Due)));
+  }
+  else {
+    return("Never");
+  }
+}
+
+sub CreatedAsString {
+  my $self = shift;
+  return (scalar(localtime($self->Created)));
+}
+
+sub ToldAsString {
+  my $self = shift;
+  if ($self->Due) {
+    return (scalar(localtime($self->Told)));
+  }
+  else {
+    return("Never");
+  }
+}
+
+
+sub LastUpdatedAsString {
+  my $self = shift;
+  if ($self->Due) {
+    return (scalar(localtime($self->LastUpdated)));
+  }
+  else {
+    return("Never");
+  }
+}
+
 #
 # Routines dealing with requestor metadata
 #
+
+
 sub Notify {
   my $self = shift;
   return ($self->_Set("Told",time()));
@@ -695,7 +749,9 @@ sub _Accessible {
 	      Created => 'read',
 	      Told => 'read',
 	      LastUpdated => 'read',
+	      LastUpdatedBy => 'read',
 	      Due => 'read/write'
+
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
