@@ -155,24 +155,25 @@ This method doesn't return anything meaningful.
 =cut
 
 sub SetMIMEEntityToEncoding {
-    my ( $entity, $enc ) = ( shift, shift );
+    my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
 
-    if ( $entity->is_multipart ) {
-	SetMIMEEntityToEncoding( $_, $enc ) foreach $entity->parts;
-    }
+    #if ( $entity->is_multipart ) {
+    #$RT::Logger->crit("This entity is a multipart " . $entity->head->as_string);
+	SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
+    #}
 
     my $charset = _FindOrGuessCharset($entity) or return;
     # one and only normalization
     $charset = 'utf-8' if $charset eq 'utf8';
     $enc     = 'utf-8' if $enc     eq 'utf8';
 
-    SetMIMEHeadToEncoding($entity->head, $charset => $enc);
+    SetMIMEHeadToEncoding($entity->head, $charset => $enc, $preserve_words);
 
     my $head = $entity->head;
 
     # convert at least MIME word encoded attachment filename
     foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	if ( my $name = $head->mime_attr($attr) ) {
+	if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
 	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
 	}
     }
@@ -181,16 +182,18 @@ sub SetMIMEEntityToEncoding {
     $head->add( "X-RT-Original-Encoding" => $charset )
 	if $head->mime_attr('content-type.charset') or $head->mime_type =~ /^text/;
 
-    return unless ( $head->mime_type =~ /^text\/plain$/i );
+
+    return unless ( $head->mime_type =~ qr{^(text/plain|message/rfc822)$}i  );
+    
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset ) {
+    if ( $enc ne $charset && $body) {
 	my @lines = $body->as_lines or return;
 
 	# {{{ Convert the body
 	eval {
-	    $RT::Logger->debug("Converting '$charset' to '$enc'");
+	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". $head->get('subject'));
 
 	    # NOTE:: see the comments at the end of the sub.
 	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
@@ -249,10 +252,17 @@ tried.  Maybe it's ok now.
 
 sub DecodeMIMEWordsToUTF8 {
     my $str = shift;
+    DecodeMIMEWordsToEncoding($str, 'utf-8');
+}
 
+sub DecodeMIMEWordsToEncoding {
+    my $str = shift;
+    my $enc = shift;
+
+   
     @_ = $str =~ m/([^=]*)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/g;
 
-    return ($str, '') unless (@_);
+    return ($str) unless (@_);
 
     $str = "";
     while (@_) {
@@ -269,17 +279,16 @@ sub DecodeMIMEWordsToUTF8 {
 	    use MIME::Base64;
 	    $enc_str = decode_base64($enc_str);
 	} else {
-	    $RT::Logger->warning("RT::I18N::DecodeMIMEWordsUTF8 got a " .
+	    $RT::Logger->warning("RT::I18N::DecodeMIMEWordsToCharset got a " .
 			      "strange encoding: $encoding.");
 	}
 
-	# now we have got a decoded subject, try to convert into
-	# utf-8 encoding
-	unless ($charset =~ m/utf-8/i) {
-	    eval { Encode::from_to($enc_str, $charset, "utf8") };
+	# now we have got a decoded subject, try to convert into the encoding
+	unless ($charset eq $enc) {
+	    eval { Encode::from_to($enc_str, $charset,  $enc) };
 	    if ($@) {
 		$charset = _GuessCharset( $enc_str );
-		Encode::from_to($enc_str, $charset, "utf8");
+		Encode::from_to($enc_str, $charset, $enc);
 	    }
 	}
 
@@ -378,30 +387,37 @@ all the time
 =cut
 
 sub SetMIMEHeadToEncoding {
-    my ($head, $charset, $enc)   = (shift, shift, shift);
+    my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
 
     $charset = 'utf-8' if $charset eq 'utf8';
     $enc     = 'utf-8' if $enc     eq 'utf8';
-    return if $charset eq $enc;
 
-    foreach my $tag ( $head->tags) {
-	my @values = $head->get_all($tag);
-	$head->delete($tag);
-	foreach my $value (@values) {
-	    eval {
-		Encode::_utf8_off($value);
-		Encode::from_to( $value, $charset => $enc );
-	    };
-	    if ($@) {
-		$RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-		eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
-		if ($@) {
-		    $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-		}
-	    }
-	    $head->add( $tag, $value );
-	}
+    return if $charset eq $enc and $preserve_words;
+
+    foreach my $tag ( $head->tags ) {
+        my @values = $head->get_all($tag);
+        $head->delete($tag);
+        foreach my $value (@values) {
+            if ( $charset ne $enc ) {
+
+                eval {
+                    Encode::_utf8_off($value);
+                    Encode::from_to( $value, $charset => $enc );
+                };
+                if ($@) {
+                    $RT::Logger->error( "Encoding error: " . $@
+                                       . " defaulting to ISO-8859-1 -> UTF-8" );
+                    eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
+                    if ($@) {
+                        $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                    }
+                }
+            }
+            $value = DecodeMIMEWordsToEncoding( $value, $enc ) unless $preserve_words;
+            $head->add( $tag, $value );
+        }
     }
+
 }
 # }}}
 

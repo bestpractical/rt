@@ -300,7 +300,8 @@ sub OriginalContent {
 
   # Encode::_utf8_on($content);
   if (!$enc or $enc eq 'utf8' or $enc eq 'utf-8') {
-    return Encode::decode_utf8($content);
+    # If we somehow fail to do the decode, at least push out the raw bits
+    eval {return( Encode::decode_utf8($content))} || return ($content);
   }
   Encode::from_to($content, 'utf8' => $enc);
   return $content;

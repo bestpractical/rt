@@ -42,7 +42,6 @@ unless ($Collapsed) {
      next unless ($message->ContentLength || $message->Children->Count);
 
   my ($headers, $quoted);
-  if ($message->Parent == 0) {
       if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
 	  $headers = $message->Headers;
       } else {
@@ -53,7 +52,6 @@ unless ($Collapsed) {
 	   # localize the common headers (like 'Subject:'), too.
 	   eval {$headers =~ s/^([^:]+)(?=:)/loc($1)/em; } # we eval here to catch errors when 5.6 panics
       }
-  }
      # 13456 is a random # of about the biggest size we want to see inline text
      my $MAX_INLINE_BODY = 13456;
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 

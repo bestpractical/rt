@@ -171,7 +171,6 @@ sub ParseMIMEEntityFromScalar {
 
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
-
     unless ( $self->{'entity'} = $parser->parse_data($message) ) {
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
@@ -234,13 +233,6 @@ sub _PostProcessNewEntity {
 
     # try to convert text parts into utf-8 charset
     RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
-    # ... and subject too
-    {
-	my $head = $self->Head;
-	foreach my $field (qw(Subject From CC)) {
-	    $head->replace($field, RT::I18N::DecodeMIMEWordsToUTF8( $head->get($field) ) );
-	}
-    }
 
 
     # Unfold headers that are have embedded newlines
@@ -649,7 +641,7 @@ sub CullRTAddresses {
     my @addresses= (@_);
     my @addrlist;
 
-    foreach my $addr( @{$addresses} ) {
+    foreach my $addr( @addresses ) {
       push (@addrlist, $addr)    unless IsRTAddress("", $addr);
     }
     return (@addrlist);
