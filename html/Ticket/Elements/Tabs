@@ -46,7 +46,7 @@ my $id   = $Ticket->id();
 if ( defined $session{'tickets'} ) {
 
 
-my $item_map = $session{'tickets'}->{'item_map'};
+my $item_map = $session{'tickets'}->ItemMap;
 
             # Don't $current_toptab = display prev links if we're on the first ticket
 
