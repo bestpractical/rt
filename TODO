@@ -4,7 +4,7 @@ RT Todo List for 1.1
 . Move request display into rtq
 . Allow sub-requests.
 . Web interface for requestors.
-. Convert to DBI. (So one could use oracle, mysql, etc.)
+. Test and get it working with other DBMS's
 . "Actions since" command (cli, web)
 . cleaner cli.
 . mailgate should be better about mime.
