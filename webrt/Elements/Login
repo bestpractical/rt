@@ -65,4 +65,5 @@ $Error => undef
 </%ARGS>
 
 <%INIT>
+SetContentType('text/html');
 </%INIT>
