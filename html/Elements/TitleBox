@@ -1,0 +1,1 @@
+<& TitleBoxStart, %ARGS&><%$m->content|n%><& TitleBoxEnd&>
