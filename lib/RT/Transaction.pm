@@ -35,7 +35,7 @@ sub _Accessible {
 }
 
 
-#This is "Create Ticket"
+#This is "Create Transaction"
 sub Create {
   my $self = shift;
   
@@ -66,7 +66,7 @@ sub Create {
 				Created => undef
 			       );
   $self->Load($id);
-  return ($id, "Ticket Created");
+  return ($id, "Transaction Created");
 }
 
 
