@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	85
+RT_VERSION_PATCH	=	86
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -228,7 +228,7 @@ fixperms:
 	# Make the web ui's data dir writable
 	chmod 0700  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 	chown -R $(WEB_USER) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
-
+	chgrp -R $(WEB_GROUP) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(MASON_DATA_PATH)

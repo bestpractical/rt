@@ -488,13 +488,13 @@ sub MigrateTransactions {
     
     while (my $row = $sth->fetchrow_hashref()) {  
 	my (%trans_args, $MIMEObj, $trans_file);
-		
+	
 	warn "transaction $row->{id}\n" if $Debug;
 	
 	my $load_content = 0;
 	$trans_args{'Type'} = '';
 	$trans_args{'Field'} = '';
-
+	
 	# {{{ Convert transaction type from RT1 to RT2
 	if ( $row->{type} eq 'create' ) {
 	    $load_content = 1;
@@ -620,7 +620,7 @@ sub MigrateTransactions {
 	    warn "Content is in $trans_file\n";
 	}
 	# }}}
-
+	
 	# {{{ if we need to get the content out of the database
 	
 	if ( $trans_file ) {
@@ -700,26 +700,34 @@ sub MigrateTransactions {
 	if ( $trans_args{'Type'} ) {
 	    
 	    # {{{ Figure out who's the transaction actor. create a user if we need to
-	    my $User = new RT::User($RT::SystemUser);
-	    $User->Load( $row->{'actor'} );
-	    unless ($User->Id) {
-		my $Address = $row->{'actor'};
-		$Address .= "\@$EMAILDOMAIN" unless $Address =~ /\@/;
-		
-		my ($Val, $Message) = $User->Create(Name => $row->{'actor'},
-						    EmailAddress => $Address,
-						    Password => undef,
-						    Privileged => 0,
-						    Comments => undef
-						   );
-		
-		unless($Val) {
-		    die "couldn't create User for $Address: $Message\n";
-		}
-	    };
 	    
+	    
+	    my $User = new RT::User($RT::SystemUser);
+	    
+	    if ($row->{'actor'}) {
+	    	$User->Load( $row->{'actor'} );
+	        unless ($User->Id) {
+		    my $Address = $row->{'actor'};
+		    $Address .= "\@$EMAILDOMAIN" unless $Address =~ /\@/;
+		    
+		    my ($Val, $Message) = $User->Create(Name => $row->{'actor'},
+							EmailAddress => $Address,
+							Password => undef,
+							Privileged => 0,
+							Comments => undef
+						       );
+		    
+		    unless($Val) {
+			die "couldn't create User for $Address: $Message\n";
+		    }
+		};
+		
+	    }
+	    else {
+		$User->Load($RT::Nobody->Id);
+	    }
 	    # }}}
-	    die "We couldn't find or create ".$row->{'actor'}
+	    carp "We couldn't find or create ".$row->{'actor'}. ". This should never happen"
 	      unless ($User->Id);
 	    
 
