@@ -35,7 +35,7 @@ sub Commit  {
   # all mailing (doubled newlines in headers)
 
   $RT::Logger->debug("$self: RT::Action::SendEmail is calling a hardcoded sendmail 8 commandline\n");
-  open (MAIL, "|/usr/lib/sendmail -oi -t -ODeliveryMode=b -OErrorMode=m ");
+  open (MAIL, "|$RT::SendmailCommand $RT::SendmailArguments");
   print MAIL $self->TemplateObj->MIMEObj->as_string;
   close(MAIL);
   

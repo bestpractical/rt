@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%> </TITLE>
-<link rel="stylesheet" href="<%$RT::WebURL%>/webrt.css" type="text/css">
+<link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 <BR>

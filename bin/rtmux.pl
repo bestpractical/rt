@@ -92,7 +92,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   &RT::Interface::Email::activate();
 }
 
-elsif ($program eq '!!WEBRT_CGI_BIN!!') {
+elsif ($program eq '!!RT_CGI_BIN!!') {
   die "This doesn't work - use the mod_perl version (webmux.pl) or mail tobix\@fsck.com for updates about the work on a CGI version";
   require HTML::Mason;
   package HTML::Mason;
@@ -133,7 +133,7 @@ elsif ($program eq '!!WEBRT_CGI_BIN!!') {
 }
 
 else {
-  print STDERR "RT Has been launched with an illegal launch program ($program)\n";
+  $RT::Logger->crit( "RT Has been launched with an illegal launch program ($program)");
   exit(1);
 }
 

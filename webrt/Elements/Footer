@@ -1,10 +1,10 @@
 <HR>
 %if (($session{'CurrentUser'}) && (!$SuppressAuthString)) {
-You are currently authenticated as <a href="<%$RT::WebURL%>/User/Prefs.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
+You are currently authenticated as <a href="<%$RT::WebPath%>/User/Prefs.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 <BR><BR>
 
 <div align=center>
-<a href="<%$RT::WebURL%>/Logout.html">Logout</a>
+<a href="<%$RT::WebPath%>/Logout.html">Logout</a>
 </div>
 %}
 </BODY>

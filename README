@@ -1,5 +1,5 @@
-RT is (c) 1996-1999 by Jesse Vincent <jesse@fsck.com>
-RT is distributed under the GNU Public License.
+RT is (c) 1996-2000 by Jesse Vincent <jesse@fsck.com>
+RT is distributed under the GNU General Public License.
 
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
@@ -8,16 +8,13 @@ Development of RT has been sponsored in part by Arepa Inc, Utopia Inc,
 The Leftbank Operation, Wesleyan University and by other contributing
 companies.
 
-All of these works are distributed under the GPL
-
 
 STATUS 
 ------
 
 This is a development release in the cycle toward RT2. This is NOT 
-a stable release.  Lots of
-things are still missing.  Don't expect it to just work out of the box.
-
+a stable release.  Lots of things are still missing.  Don't expect it 
+to just work out of the box.
 
 
 BUGS
@@ -37,37 +34,16 @@ REQUIRED PACKAGES:
 ------------------
 
 o   Perl5.x ( http://www.perl.com )
+
+o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- free
+
+o   Apache + mod_perl -- ( http://perl.apache.org) free
+
+o    Various and sundry perl modules (see below) -- free 
 	
-	RT is written almost entirely in perl.
 
-o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- semifree
-        
-	FTP mysql from www.mysql.com and follow the INSTALL instructions
-        contained therein.  In the current development version (1.3),
-        only MySQL is supported, but the work of porting to other
-        backends should be rather trivial.
-
-	It should be pretty trivial to port RT to other DBMS'es (PostgreSQL
-	is free ( http://www.postgresql.org ), Interbase ( www.interbase.com
-	) has their own open source license).  None of those are explicitly
-	supported by this README, nor by the code as of today (June 2000).
-
-o   Log::Dispatch (CPAN)
-
-        Check the config.pm and the POD about how to configure the logging.
-
-o   Apache + mod_perl -- free, optional
-
-	You might choose to run without a Web UI, and you can choose
-        to run the Web UI as a cgi under the web server of your
- 	choise.  However, Apache works out pretty well, and Mason is
-	geared towards mod_perl.  Using ordinary CGI will probably do
-	the UI quite sluggish.  If you don't like mod_perl, FastCGI
-	might be an alternative.
-
-
-INSTALL INSTRUCTIONS
---------------------
+INSTALLATION INSTRUCTIONS
+-------------------------
 
 With all of the above installed, it's time to do the rather easy job
 of installing RT.  Choose a directory in which you wish to install RT. 
@@ -85,9 +61,11 @@ GENERAL INSTALLATION
 
         	tar xzvf rt.tar.gz -C /tmp
 
-2   Read the documentation in /tmp/rt/docs. All of it.
+2   Satisfy RT's myriad dependencies.  There's a perl script in rt/bin
+    called testdeps.pl that uses CPAN to automate all of this.
 
-2.1   perl rt/bin/testdeps.pl -warn
+2.1   Check for compliance:
+	perl rt/bin/testdeps.pl -warn
 
 2.2   If there are unsatisfied dependencies, install them by hand or
       run rt/bin/testdeps.pl -fix
@@ -106,22 +84,26 @@ GENERAL INSTALLATION
 				 GNU Make, if you need to)
 
 
-5b  FOR UPGRADING: (From any RT installation NEWER than RT 1.1.3)
-
+5b  FOR UPGRADING: (Within the RT 2.0.x series)
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
 				  GNU Make, if you need to)
 
 	This will build new RT wrappers, config files and libraries without
 	overwriting your RT database.
+	WARNING: Note that this will clobber your configuration file!
 	
 5c  FOR UPGRADING (From 1.0/0.9x):
 
-        Not supported yet (ask tobix@irctos.org about this)
+        Not supported yet 
 
 6   Configure the email and web gateways, as described below. 
 
-7   The admin tools doesn't work yet, so this information is slightly
+7   Edit etc/config.pm in your RT installation directory.  In many
+    cases sensible defaults have been included. In others, you MUST
+    supply a value.
+
+8   The admin tools doesn't work yet, so this information is slightly
     inaccurate:
 
     Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
@@ -145,12 +127,6 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "wordpass" 
     (without the quotes.)  Not changing this is a SECURITY risk
     
-    ...while waiting for the admin tools to be operative, do the admin stuff
-    through SQL.
- 
-8   Edit templates to your liking.  This might be done through some admin
-    tool that isn't ready yet, or you can edit them through SQL.
-
 
 
 SETTING UP THE MAIL GATEWAY 
@@ -209,11 +185,6 @@ PerlRequire /opt/rt/bin/webmux.pl
 </Location>
 </VirtualHost>
 
-	To get it up running even without mod_perl, you will need to
-consult Tobix or the rt-devel mailinglist.  Tobix is actively working
-on a (Fast)CGI version, but as for now he has been too lazy to update
-the template for the cgi executable.
-
 
 THE CLI
 -------
@@ -230,10 +201,12 @@ THE CLI
 TROUBLESHOOTING
 ---------------
 
-All errors will be appended to a logfile.  Check etc/config.pm for details.
-Check if the error is covered in docs/FAQ.  And if it isn't, send a mail to
-the mailinglist.
+All errors will be appended to a logfile, which lives in /tmp/rt.log unless 
+you've reconfigured it.  Check etc/config.pm for details.
 
+If the solution to the problem you're running into isn't obvious and you've 
+checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
+versions of RT) or rt-devel@fsck.com (for development versions).
 
 RT-USERS MAILINGLIST
 --------------------
@@ -284,8 +257,9 @@ have all contributed bug reports, code or ideas that have helped RT along.
 
 Arepa, Inc, Utopia Inc, Wesleyan University and The Leftbank Operation 
 have paid me to update RT and release it to the public.  Without their 
-support RT would not exist.  If I've left you out, please drop me a line
-....it wasn't intentional. 
+support RT would not exist.  
+
+If I've left you out, please drop me a line ....it wasn't intentional. 
  
 
         Enjoy
