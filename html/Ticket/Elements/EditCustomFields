@@ -22,12 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
 % my $Values = $TicketObj->CustomFieldValues($CustomField->id);
 
 <%$CustomField->Name%> - <%loc($CustomField->Type)%><br>
@@ -56,10 +51,6 @@
 </select>
 % }
 <br>
-% }
-
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, Prefix => 'AddEntry-', CustomFields => \@entry_fields, TicketObj => $TicketObj &>
 % }
 
 <%INIT>

@@ -36,10 +36,8 @@ use RT::TicketCustomFieldValues;
 @TYPES = (
     'SelectSingle',	# loc
     'SelectMultiple',	# loc
-    'SelectEntry',	# loc
     'FreeformSingle',	# loc
     'FreeformMultiple', # loc
-    'FreeformEntry',	# loc
 );
 
 # Populate a hash of types of easier validation

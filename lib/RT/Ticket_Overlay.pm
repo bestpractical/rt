@@ -613,6 +613,371 @@ sub CreateFromEmailMessage {
 # }}}
 
 
+# {{{ CreateFrom822
+
+=head2 FORMAT
+
+CreateTickets uses the template as a template for an ordered set of tickets 
+to create. The basic format is as follows:
+
+
+ ===Create-Ticket: identifier
+ Param: Value
+ Param2: Value
+ Param3: Value
+ Content: Blah
+ blah
+ blah
+ ENDOFCONTENT
+=head2 Acceptable fields
+
+A complete list of acceptable fields for this beastie:
+
+
+    *  Queue           => Name or id# of a queue
+       Subject         => A text string
+       Status          => A valid status. defaults to 'new'
+
+       Due             => Dates can be specified in seconds since the epoch
+                          to be handled literally or in a semi-free textual
+                          format which RT will attempt to parse.
+       Starts          => 
+       Started         => 
+       Resolved        => 
+       Owner           => Username or id of an RT user who can and should own 
+                          this ticket
+   +   Requestor       => Email address
+   +   Cc              => Email address 
+   +   AdminCc         => Email address 
+       TimeWorked      => 
+       TimeEstimated   => 
+       TimeLeft        => 
+       InitialPriority => 
+       FinalPriority   => 
+       Type            => 
+    +  DependsOn       => 
+    +  DependedOnBy    =>
+    +  RefersTo        =>
+    +  ReferredToBy    => 
+    +  Members         =>
+    +  MemberOf        => 
+       Content         => content. Can extend to multiple lines. Everything
+                          within a template after a Content: header is treated
+                          as content until we hit a line containing only 
+                          ENDOFCONTENT
+       ContentType     => the content-type of the Content field
+       CustomField-<id#> => custom field value
+
+Fields marked with an * are required.
+
+Fields marked with a + man have multiple values, simply
+by repeating the fieldname on a new line with an additional value.
+
+
+When parsed, field names are converted to lowercase and have -s stripped.
+Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
+be treated as the same thing.
+
+
+=begin testing
+
+use_ok(RT::Ticket);
+
+=end testing
+
+
+=cut
+
+sub CreateFrom822 {
+    my $self    = shift;
+    my $content = shift;
+
+
+
+    my %args = $self->_Parse822HeadersForAttributes($content);
+
+    # Now we have a %args to work with.
+    # Make sure we have at least the minimum set of
+    # reasonable data and do our thang
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+
+    my %ticketargs = (
+        Queue           => $args{'queue'},
+        Subject         => $args{'subject'},
+        Status          => $args{'status'},
+        Due             => $args{'due'},
+        Starts          => $args{'starts'},
+        Started         => $args{'started'},
+        Resolved        => $args{'resolved'},
+        Owner           => $args{'owner'},
+        Requestor       => $args{'requestor'},
+        Cc              => $args{'cc'},
+        AdminCc         => $args{'admincc'},
+        TimeWorked      => $args{'timeworked'},
+        TimeEstimated   => $args{'timeestimated'},
+        TimeLeft        => $args{'timeleft'},
+        InitialPriority => $args{'initialpriority'},
+        FinalPriority   => $args{'finalpriority'},
+        Type            => $args{'type'},
+        DependsOn       => $args{'dependson'},
+        DependedOnBy    => $args{'dependedonby'},
+        RefersTo        => $args{'refersto'},
+        ReferredToBy    => $args{'referredtoby'},
+        Members         => $args{'members'},
+        MemberOf        => $args{'memberof'},
+        MIMEObj         => $args{'mimeobj'}
+    );
+
+    # Add custom field entries to %ticketargs.
+    # TODO: allow named custom fields
+    map {
+        /^customfield-(\d+)$/
+          && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
+    } keys(%args);
+
+    my ( $id, $transid, $msg ) = $ticket->Create(%ticketargs);
+    unless ($id) {
+        $RT::Logger->error( "Couldn't create a related ticket for "
+              . $self->TicketObj->Id . " "
+              . $msg );
+    }
+
+    return (1);
+}
+
+# }}}
+
+
+# {{{ sub UpdateFrom822 
+sub UpdateFrom822 {
+        my $self = shift;
+        my $content = shift;
+        my %args = $self->_Parse822HeadersForAttributes($content);
+
+        
+    my %ticketargs = (
+        Queue           => $args{'queue'},
+        Subject         => $args{'subject'},
+        Status          => $args{'status'},
+        Due             => $args{'due'},
+        Starts          => $args{'starts'},
+        Started         => $args{'started'},
+        Resolved        => $args{'resolved'},
+        Owner           => $args{'owner'},
+        Requestor       => $args{'requestor'},
+        Cc              => $args{'cc'},
+        AdminCc         => $args{'admincc'},
+        TimeWorked      => $args{'timeworked'},
+        TimeEstimated   => $args{'timeestimated'},
+        TimeLeft        => $args{'timeleft'},
+        InitialPriority => $args{'initialpriority'},
+        FinalPriority   => $args{'finalpriority'},
+        Type            => $args{'type'},
+        DependsOn       => $args{'dependson'},
+        DependedOnBy    => $args{'dependedonby'},
+        RefersTo        => $args{'refersto'},
+        ReferredToBy    => $args{'referredtoby'},
+        Members         => $args{'members'},
+        MemberOf        => $args{'memberof'},
+        MIMEObj         => $args{'mimeobj'}
+    );
+
+
+    # Add custom field entries to %ticketargs.
+    # TODO: allow named custom fields
+    map {
+        /^customfield-(\d+)$/
+          && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
+    } keys(%args);
+
+    my ( $id, $transid, $msg ) = $self->Create(%ticketargs);
+    unless ($id) {
+        $RT::Logger->error( "Couldn't create a related ticket for "
+              . $self->TicketObj->Id . " "
+              . $msg );
+    }
+
+    # iterate through the basic fields 
+    # delete any that haven't changed
+    
+    # iterate through the people
+    # if explicitly specified.
+    #   set them 
+    # else 
+    #  delete any that have been removed
+    #  add any new ones
+
+    # iterate through the custom fields
+    # if explicitly specified.
+    #   set them 
+    # else 
+    #  delete any that have been removed
+    #  add any new ones
+
+    # iterate through the relationships
+    # if explicitly specified.
+    #   set them 
+    # else 
+    #  delete any that have been removed
+    #  add any new ones
+
+
+
+
+# for each ticket we've been told to update, iterate through the set of
+# rfc822 headers and perform that update to the ticket.
+
+
+    # {{{ Set basic fields 
+    my @attribs = qw(
+      Subject
+      FinalPriority
+      Priority
+      TimeEstimated
+      TimeWorked
+      TimeLeft
+      Status
+      Queue
+      Type
+    );
+
+    
+    my $basics = {};
+    my $head; 
+    # Let's make a hash of the basic parameters 
+    foreach my $attr (@attribs) { 
+      $basics->{$attr} = $head->get($attr);          
+      $head->delete($attr); #done with it
+    } 
+
+    # Resolve the queue from a name to a numeric id.
+    if ( $basics->{'Queue'} and ( $basics->{'Queue'} !~ /^(\d+)$/ ) ) {
+        my $tempqueue = RT::Queue->new($RT::SystemUser);
+        $tempqueue->Load( $basics->{'Queue'} );
+        $basics->{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
+    }
+
+    # die "updaterecordobject is a webui thingy";
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $self,
+        ARGSRef       => $basics
+    );
+
+    # We special case owner changing, so we can use ForceOwnerChange
+    if ( $head->get('Owner') && ( $self->Owner != $head->get('Owner') ) ) {
+        my $ChownType = "Give";
+        $ChownType = "Force" if ( $head->get('ForceOwnerChange') );
+
+        my ( $val, $msg ) = $self->SetOwner( $head->get('Owner'), $ChownType );
+        push ( @results, $msg );
+        $head->delete('Owner');
+    }
+
+    # }}}
+# Deal with setting watchers
+my @watcher_types = qw(Requestor Cc AdminCc);
+
+
+# Acceptable arguments:
+#  Requestor
+#  Requestors
+#  AddRequestor
+#  AddRequestors
+#  DelRequestor
+  
+foreach my $type (@watcher_types) {
+    my @to_set = ( $head->get_all($type), $head->get_all( $type . "s" ) );
+    my @to_add =
+      ( $head->get_all( "Add" . $type ),
+        $head->get_all( "Add" . $type . "s" ) );
+    my @to_del =
+      ( $head->get_all( "Del" . $type ),
+        $head->get_all( "Del" . $type . "s" ) );
+
+        # If we've been given a number of addresses to make this sort of watcher,       # go to it.
+        if ($#to_set >=0 ) {
+                foreach my $address (@to_set) {
+                        my $user = RT::User->new($self->CurrentUser);
+                        
+                }
+        }
+        
+        # If we've been given a number of delresses to del, do it.
+        if ($#to_del >=0 ) {
+                foreach my $address (@to_del) {
+                my ($id, $msg) = $self->DelWatcher( Type => $type, Email => $address);
+                push (@results, $msg) ;
+                }
+
+        }
+        # If we've been given a number of addresses to add, do it.
+        if ($#to_add >=0 ) {
+                foreach my $address (@to_add) {
+                my ($id, $msg) = $self->AddWatcher( Type => $type, Email => $address);
+                push (@results, $msg) ;
+                }
+        }
+
+
+}
+
+}
+# }}}
+
+sub _Parse822HeadersForAttributes {
+    my $self    = shift;
+    my $content = shift;
+    my %args;
+    my @lines = ( split ( /\n/, $content ) );
+    while ( defined( my $line = shift @lines ) ) {
+        if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
+            my $value = $2;
+            my $tag   = lc($1);
+
+            $tag =~ s/-//g;
+            if ( defined( $args{$tag} ) )
+            {    #if we're about to get a second value, make it an array
+                $args{$tag} = [ $args{$tag} ];
+            }
+            if ( ref( $args{$tag} ) )
+            {    #If it's an array, we want to push the value
+                push @{ $args{$tag} }, $value;
+            }
+            else {    #if there's nothing there, just set the value
+                $args{$tag} = $value;
+            }
+        } elsif ($line =~ /^$/) {
+
+            #TODO: this won't work, since "" isn't of the form "foo:value"
+
+                while ( defined( my $l = shift @lines ) ) {
+                    push @{ $args{'content'} }, $l . "\n";
+                }
+            }
+        
+    }
+
+    foreach my $date qw(due starts started resolved) {
+        my $dateobj = RT::Date->new($RT::SystemUser);
+        if ( $args{$date} =~ /^\d+$/ ) {
+            $dateobj->Set( Format => 'unix', Value => $args{$date} );
+        }
+        else {
+            $dateobj->Set( Format => 'unknown', Value => $args{$date} );
+        }
+        $args{$date} = $dateobj->ISO;
+    }
+    $args{'mimeobj'} = MIME::Entity->new();
+    $args{'mimeobj'}->build(
+        Type => ( $args{'contenttype'} || 'text/plain' ),
+        Data => $args{'content'}
+    );
+
+    return (%args);
+}
+
+
 # {{{ sub Import
 
 =head2 Import PARAMHASH

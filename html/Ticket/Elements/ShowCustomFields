@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <dl>
-% my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
 % my $Values = $Ticket->CustomFieldValues($CustomField->Id);
 <dt><%$CustomField->Name%></dt>
 <dd>
@@ -41,9 +36,6 @@
 </dd>
 % }
 </dl>
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
-% }
 <%INIT>
 my $CustomFields = $Ticket->QueueObj->CustomFields();
 </%INIT>

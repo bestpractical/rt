@@ -33,7 +33,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	53
+RT_VERSION_PATCH	=	54
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -363,7 +363,7 @@ POD2TEST_EXE = sbin/extract_pod_tests
 
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
-	find lib -name \*pm |grep -v\*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
 	find bin -type f |grep -v \~| grep -v \*.in | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 

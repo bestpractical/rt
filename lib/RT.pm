@@ -45,7 +45,7 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $MasonSessionDir
 );
 
-$VERSION = '2.1.53';
+$VERSION = '2.1.54';
 $CORE_CONFIG_FILE = "/opt/rt3/etc/RT_Config.pm";
 $SITE_CONFIG_FILE = "/opt/rt3/etc/RT_SiteConfig.pm";
 

@@ -87,21 +87,11 @@
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
 </TD>
 </TR>
-% my @entry_fields;
 % while( my $cf = $CFs->Next() ) {
-%   if ($cf->Type =~ /Entry$/) {
-%     push @entry_fields, $cf;
-%     next;
-%   }
 <TR><TD ALIGN=LEFT VALIGN="top"><%$cf->Name%>:</TD>
 <TD><% $cf->Description && '<i>'.$cf->Description . '</i><br>'%> <& /Ticket/Elements/EditCustomFieldValues, Name => 'CustomField-'.$cf->Id, CustomField => $cf &>
 </TD>
 </TR>
-% }
-% if (@entry_fields) {
-<TR><TD COLSPAN=6>
-<& /Ticket/Elements/EditCustomFieldEntries, Prefix => 'AddEntry-', CustomFields => \@entry_fields, TempValues => $Entries &>
-</TD></TR>
 % }
 <TR>
 % if (exists $session{'Attachments'}) {
@@ -246,52 +236,15 @@ if ($ARGS{'Attach'}) {			# attachment?
 }
 # }}}
 
-# {{{ deal with deleting entered entries
-my $Entries = $session{'Entries'} || {};
-my $added_entry;
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteEntry-(.+)$/) {
-	foreach my $col (keys %$Entries) {
-	    splice(@{$Entries->{$col}}, $1, 1);
-	}
-    }
-    if ($key =~ m/^AddEntry-(.+)$/) {
-	$added_entry->{$1} = $ARGS{$key};
-    }
-}
-# }}}
-
-# {{{ now add back the new entries, if at least one value is given
-my $LastIndex = -1;
-foreach my $col (keys %$Entries) {
-    $LastIndex = $#{$Entries->{$col}}
-	if $#{$Entries->{$col}} > $LastIndex;
-}
-
-if (grep { $_ ne '' } values %$added_entry) {
-    $LastIndex++;
-    foreach my $col (keys %$added_entry) {
-	$Entries->{$col}[$LastIndex] = $added_entry->{$col};
-    }
-}
-# }}}
-
 # delete temporary storage entry to make WebUI clean
 unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
 }
 
-if (keys %{$Entries} and $ARGS{'id'} eq 'new') {
-    $ARGS{"CustomField-$_"} = $Entries->{$_} foreach keys %{$Entries};
-    $session{'Entries'} = { %{$Entries} };
-}
-else {
-    delete $session{'Entries'};
-}
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) && (!exists $ARGS{'AddMoreEntry'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
     $m->abort();
 }
