@@ -16,6 +16,7 @@ $Name => undef
 
 <%INIT>
 use RT::CurrentUser;
+use RT::Users;
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Users = RT::Users->new($CurrentUser);
 $Users->Limit( FIELD => 'id',
