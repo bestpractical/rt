@@ -79,7 +79,7 @@ package HTML::Mason::Commands;
 # Error - calls Error and aborts
 sub Abort {
 
-    $r->content_type('text/html');
+    SetContentType('text/html');
     $m->comp("/Elements/Error" , Why => shift);
     $m->abort;
 }

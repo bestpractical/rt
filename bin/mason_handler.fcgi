@@ -80,11 +80,11 @@ use Carp;
     
     #TODO: make this use DBI
     use Apache::Session::File;
-    use FCGI;
+    use CGI::Fast;
 
     # set the page's content type.
     # In this case, just save it to a variable that we can pull later;
-    my $ContentType = 'text/html';
+    my $ContentType;
     sub SetContentType {
 	$ContentType = shift;
     }
@@ -105,16 +105,12 @@ die "Can't read and write $RT::MasonSessionDir"
 
 
 # Response loop
+RT::Init();
 
-while (FCGI::accept >= 0) {
-    #undef(%in);
+while (my $cgi = new CGI::Fast) {
     
+    $HTML::Mason::Commands::ContentType = 'text/html';
         
-    RT::Init();
-        
-    require CGI;
-    my $cgi = new CGI;
- 
     # This routine comes from ApacheHandler.pm:
     my (%args, $cookie);
     foreach my $key ( $cgi->param ) {
