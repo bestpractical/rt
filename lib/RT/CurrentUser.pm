@@ -180,6 +180,8 @@ Takes the email address of the user to load.
 sub LoadByEmail  {
     my $self = shift;
     my $identifier = shift;
+
+    $identifier = RT::User::CanonicalizeEmailAddress(undef, $identifier);
         
     $self->LoadByCol("EmailAddress",$identifier);
     

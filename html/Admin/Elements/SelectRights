@@ -24,7 +24,7 @@
 <INPUT TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
      <TABLE BORDER=0>
 <TR>
-<TD valign=top width="50%"> 
+<TD valign=top width="180"> 
 <h3><&|/l&>Current rights</&></h3>
 % if ($ACLObj->Count() > 0) {
 <i>(<&|/l&>Check box to revoke right</&>)</i> <BR>

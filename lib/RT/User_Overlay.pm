@@ -203,6 +203,9 @@ sub Create {
         @_    # get the real argumentlist
     );
 
+
+    $args{'EmailAddress'} = $self->CanonicalizeEmailAddress($args{'EmailAddress'});
+
     #Check the ACL
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('No permission to create users') );
@@ -598,7 +601,7 @@ sub CanonicalizeEmailAddress {
     # coming from a subdomain as coming from second level domain
     # foo.com
     if ($RT::CanonicalizeEmailAddressMatch && $RT::CanonicalizeEmailAddressReplace ) {
-        $email =~ s/\$RT::CanonicalizeEmailAddressMatch/$RT::CanonicalizeEmailAddressReplace/gi;
+        $email =~ s/$RT::CanonicalizeEmailAddressMatch/$RT::CanonicalizeEmailAddressReplace/gi;
     }
     return ($email);
 }
