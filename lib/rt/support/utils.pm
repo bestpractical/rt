@@ -1,4 +1,16 @@
 package rt;
+
+
+sub untaint {
+	my $data = shift;
+   if ($data =~ /^([-\@\w.]+)$/) {
+               $data = $1;                     # $data now untainted
+           } else {
+               die "Bad data in $data";        # log this somewhere
+           }
+	return ($data);
+}
+
 #
 #can the named user modify the named queue
 sub can_manipulate_request{
@@ -270,7 +282,7 @@ sub template_read {
     
     if (! (-f "$rt::template_dir/queues/$in_queue/$in_template")) 
     {
-       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\nm,8%content%");
+       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/queues/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\nm,8%content%");
     }
     open(CONTENT, "$rt::template_dir/queues/$in_queue/$in_template"); 
     while (<CONTENT>)
