@@ -32,6 +32,10 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
     @ORACLE_ENV_PREF@
+
+    eval { require Apache2; require Apache::compat }
+        if $ENV{'MOD_PERL'} and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
+
 }
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
