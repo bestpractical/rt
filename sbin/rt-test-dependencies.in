@@ -182,6 +182,7 @@ HTML::Form
 HTML::TokeParser
 WWW::Mechanize
 Test::WWW::Mechanize
+Module::Refresh
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];

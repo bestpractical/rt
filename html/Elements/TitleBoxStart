@@ -73,7 +73,7 @@ $class =>  undef
 $bodyclass => undef
 $title_href => undef
 $title => undef
-$title_class => undef
+$title_class => ''
 
 $titleright_href => undef
 $titleright => undef

@@ -55,6 +55,7 @@ sub DefaultHandlerArgs  { (
     allow_globals        => [qw(%session)],
     # Turn off static source if we're in developer mode.
     static_source        => ($RT::DevelMode ? '0' : '1'), 
+    use_object_files     => ($RT::DevelMode ? '0' : '1'), 
     autoflush            => 0
 ) };
 

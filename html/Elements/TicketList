@@ -100,7 +100,7 @@ my $next = $m->comp(
 % }
 % }
 <%INIT>
-my $maxitems;
+my $maxitems = 0;
 
 $Format ||= $RT::DefaultSearchResultFormat;
 # Scrub the html of the format string to remove any potential nasties.

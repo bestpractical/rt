@@ -366,7 +366,7 @@ sub LanguageHandle {
     if (   ( !defined $self->{'LangHandle'} )
         || ( !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' ) )
         || (@_) ) {
-        if ( (!$RT::SystemUser || $self->id == $RT::SystemUser->id() )) {
+        if ( !$RT::SystemUser or ($self->id || 0) == $RT::SystemUser->id() ) {
             @_ = qw(en-US);
         }
 

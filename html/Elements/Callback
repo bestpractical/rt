@@ -44,7 +44,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%once>
-my (%cache, $check);
+my %cache;
+my $check = '';
 </%once>
 <%init>
 # checks for inode change time for each callback directory
