@@ -383,19 +383,16 @@ sub Quote {
 
 =head2 NiceHeaders
 
-Returns the To, From, Cc, Date and Subject headers.
-
-It is a known issue that this breaks if any of these headers are not
-properly unfolded.
+Returns a multi-line string of the To, From, Cc, Date and Subject headers.
 
 =cut
 
 sub NiceHeaders {
     my $self = shift;
     my $hdrs = "";
-    my @hdrs = split(/\n/,$self->Headers);
+    my @hdrs = $self->_SplitHeaders;
     while (my $str = shift @hdrs) {
-	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc:Date|Subject): /i;
+	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc|Date|Subject):/i;
 	    $hdrs .= $str . "\n";
 	    $hdrs .= shift( @hdrs ) . "\n" while ($hdrs[0] =~ /^[ \t]+/);
     }
@@ -418,10 +415,9 @@ an abstraction barrier that makes it impossible to pass this data directly
 sub Headers {
     my $self = shift;
     my $hdrs="";
-    for ($self->_SplitHeaders) {
-	    $hdrs.="$_\n" unless /^(RT-Send-Bcc):/i
-    }
-    return $hdrs;
+    my @headers =  grep { !/^RT-Send-Bcc/i } $self->_SplitHeaders;
+    return join("\n",@headers);
+
 }
 
 
@@ -520,7 +516,7 @@ sub _Value {
 =head2 _SplitHeaders
 
 Returns an array of this attachment object's headers, with one header 
-per array entry. multiple lines are folded
+per array entry. multiple lines are folded.
 
 =begin testing
 
