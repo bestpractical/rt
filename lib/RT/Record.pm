@@ -559,7 +559,7 @@ Validate the name of the record we're creating. Mostly, just make sure it's not 
 sub ValidateName {
     my $self = shift;
     my $value = shift;
-    if ($value =~ /^\d+$/) {
+    if ($value && $value=~ /^\d+$/) {
         return(0);
     } else  {
          return (1);
