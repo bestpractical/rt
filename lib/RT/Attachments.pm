@@ -23,6 +23,12 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
   $self->SUPER::Limit(%args);
 }
 
+sub ChildrenOf {
+  my $self = shift;
+  my $attachment = shift;
+  $self->Limit ( Field => 'Parent',
+		 Value => "$attachment");
+}
 sub NewItem {
   my $self = shift;
   my $Handle = shift;

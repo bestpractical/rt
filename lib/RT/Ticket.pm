@@ -36,9 +36,7 @@ sub Create {
 	      Created => time(),
 	      Told => 0,
 	      Due => 0,
-	      ContentMessageId => undef,
-	      ContentType => 'text/plain',
-	      Content => undef,
+	      Attachment => undef,
 	      @_);
 
   #TODO Load queue defaults
@@ -65,22 +63,23 @@ sub Create {
   $self->SUPER::_Set("EffectiveId",$id);
   
 
-
-  print STDERR "My id is ".$self->Id." effective is ".$self->EffectiveId."\n";
-  
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction("create",undef,0);
   
-  #Attach the content to the transaction
-  print STDERR "Content is ".$args{'Content'}."\n";
-  $Trans->Attach($args{'Subject'}, $args{'ContentType'},
-		 $args{'ContentMessageId'}, $args{'Content'});
+  
+
+  #Attach the content to the transaction, if we were passed in an attachment
+  
+
+  if ($args{'Attachment'}){
+    $Trans->Attach($args{'Attachment'});
+  }
 
 
 
   #TODO If the requestor is supposed to get an autoreply on creation, do that now.
-  
-  return($self->Id, $ErrStr);
+
+  return($self->Id, $Trans, $ErrStr);
   
 }
 
@@ -331,7 +330,6 @@ sub Comment {
 	       Cc => undef,
 	       Bcc => undef,
 	       TimeTaken => 0,
-	       Content => undef,
 	       @_ );
   
   if ($args{'subject'} !~ /\[(\s*)comment(\s*)\]/i) {

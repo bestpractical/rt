@@ -98,29 +98,24 @@ sub Attachments {
   return($Attachments);
 
 }
-
-
 sub Attach {
   my $self = shift;
-  my $Summary = shift;
-  my $ContentType = shift;
-  my $MessageId = shift;
-  my $Content = shift;
+  my $MIMEObject = shift;
+
+  if (!defined($MIMEObject)) {
+    die "RT::Transaction->Attach: We can't attach a mime object if you don't give us one.\n";
+  }
   
+
   use RT::Attachment;
-  $Summary = "[no summary]" if (!$Summary) ;
-  $ContentType ="test/plain" if (!$ContentType);
-  $MessageId = "none" if (!$MessageId);
   my $Attachment = new RT::Attachment ($self->CurrentUser);
-  $Attachment->Create(Summary => "$Summary",
-		      MessageId => "$MessageId",
-		      TransactionId => $self->Id,
-		      ContentType => "$ContentType",
-		      Content => "$Content"
-		     );
+  $Attachment->Create(TransactionId => $self->Id,
+		      Attachment => $MIMEObject);
   return ($Attachment, "Attachment created");
   
 }
+
+
 
 sub Description {
   my $self = shift;

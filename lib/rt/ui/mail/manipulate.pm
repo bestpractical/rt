@@ -1,30 +1,39 @@
 package rt::ui::mail::manipulate;
 
 sub activate {
+  my $Action=$ARGV[0];
+  my $Queue=$ARGV[1];
+  my $Area = $ARGV[2];
   
-  my $in_queue=$ARGV[0];
-  my $in_action=$ARGV[1];
-  my $in_area = $ARGV[2];
+  my ($From, $TicketId, $Subject);
+
   
-  if (!$in_queue){
-    $in_queue="general";
-  }
-  if (!$in_action){
-    $in_action='correspond';
-  }
+  #BEGIN TEMPORARY CODE FOR CLI USAGE
+  my ($CurrentUid);
+  require RT::CurrentUser;
   
+  #Instantiate a user object
   
+  ($CurrentUid,undef)=getpwuid($<);
+  #If the current user is 0, then RT will assume that the User object
+  #is that of the currentuser.
+  $CurrentUser = new RT::CurrentUser($CurrentUid);
+  if (!$CurrentUser) {
+    print "You have no RT access\n";
+    return(0);
+  }  
+#END TEMPORARY CODE
+
+  
+  if (!defined ($Queue)) { $Queue = "general";}
+  if (!defined ($Action)) { $Action = "correspond";}
   
   my $time = time;
   my $AttachmentDir = "/tmp/rt/$time";
   mkdir "$AttachmentDir", 0700;
+
   # Create a new parser object:
   use MIME::Parser;
-  
-
-
-  #Set up a MIME::Parser
-
   my $parser = new MIME::Parser;
   
   # Set up output directory for files:
@@ -37,13 +46,9 @@ sub activate {
   # Else, write to a disk file (the default action):
   $parser->output_to_core(20000);
   
-
-
-  
   #Ok. now that we're set up, let's get the stdin.
   $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
   
-
   # Get the head, a MIME::Head:
   $head = $entity->head;
 
@@ -53,147 +58,58 @@ sub activate {
   if ($IsALoop) {
     #TODO Send mail to an administrator
     die "RT Recieved a message it should not process";
+  }
+  
+  #Figure out who's sending this message.
+  $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
+
+  #Pull apart the subject line
+  $Subject = $head->get('Subject');
+  
+  if ($Subject =~ s/\[$rt::rtname \#(\d+)\]//i) {
+    $TicketId = $1;
+  }
+  
+  
+  
+  use RT::Ticket;
+  
+  #If the message doesn't reference a ticket #, create a new ticket
+  if (!defined($TicketId)) {
+    #    If the message is meant to be a comment, return an error.
+    if ($Action =~ /comment/i) {
+      #TODO Send a warning message
+      die "can't comment on a nonexistent ticket...";
+    }
+    
+    #    open a new ticket 
+    my $Ticket = new RT::Ticket($CurrentUser); #TODO we need an anonymous user
+    my ($id, $Transaction, $ErrStr) = 
+      $Ticket->Create ( Queue => $Queue,
+			Area => $Area,
+			Requestors => $From,
+			Subject => $Subject,
+			Attachment => $entity
+		      );
     
   }
 
-  
-  # Get the body, as a MIME::Body;
-  $bodyh = $entity->bodyhandle;
-  
-  
-  # Get the actual MIME type, in the header:
-  $type = $entity->mime_type;
-  
-  # Get the effective MIME type (for dealing with nonstandard encodings):
-  $eff_type = $entity->effective_type;
-  
-  
-  # Get preamble, parts, and epilogue:
-  $preamble   = $entity->preamble;          # ref to array of lines
-  $num_parts  = $entity->parts;
-  $first_part = $entity->parts(0);          # an entity
-  $epilogue   = $entity->epilogue;          # ref to array of lines
-  
-  
+    #If the message applies to an existing ticket
 
+    #   If the message contains commands, execute them
+    
+    #   If the mail message is a comment, add a comment.
 
-  $entity->dump_skeleton;
-
-  if ($type eq 'multipart/alternative') {
-    print "EEK an ugly html message";
-  }
-  else {
-    print "It's not multipart/alternative";
-  }
-
-
-  # TODO
-  # Recurse through all parts of the message. If any of them
-  # are multipart-alternative and RT can find a text/plain,
-  # remove the html part and promote the text part
-  # to replace the multipart/alternative.
-
-  
-
-  #Figure out who's sending this message.
-
-  #Pull apart the subject line
+    
+    #   If the message is correspondence, add it to the ticket
 
 
 
 
-  #If the message applies to an existing ticket
-
-  #   If the message contains commands, execute them
-
-  #   If the mail message is a comment, add a comment.
-
-
-  #   If the message is correspondence, add it to the ticket
-
-
-
-  #If the message doesn't reference a ticket #,
-
-  #    If the message is meant to be a comment, return an error.
-
-  #    open a new ticket 
 
 
 
 }  
-
-sub parse_headers {
-  my ($content) ="@_";
-  ($headers, $body) = split (/\n\n/, $content, 2);
-  
-  foreach $line (split (/\n/,$headers)) {
-    
-    elsif (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){
-      $serial_num=$2;
-      &rt::req_in($serial_num,$current_user);
-      $subject=$3;
-      $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
-    }
-    
-    elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
-      $subject=$1;
-    }
-    
-    elsif (($line =~ /^Reply-To: (.*)/)) {
-      $replyto = $1;
-    }
-    
-    elsif ($line =~ /^From: (.*)/) {
-      $from = $1;
-    }
-    
-    elsif ($line =~ /^Sender: (.*)/){
-      $sender = $1;
-      
-    }
-    elsif ($line =~ /^Date: (.*)/) {
-      $time_in_text = $1;
-    }
-  }
-     
-  $current_user = $replyto || $from || $sender;
-  
-  # Get the real name of the current user from the
-  # replyto/from/sender .. etc
-  
-  $name_temp = $current_user;
-  
-  
-  if ($current_user =~/<(\S*\@\S*)>/){
-    $current_user =$1;
-    $rt::users{$current_user}{real_name}=$`
-      if (!exists $rt::users{$current_user}{real_name});
-  }
-  if ($current_user =~/(\S*\@\S*)/) {
-    $current_user =$1;
-    $rt::users{$current_user}{real_name}=$'
-      if (!exists $rt::users{$current_user}{real_name});
-  }
-  if ($current_user =~/<(\S*)>/){
-    $current_user =$1;
-    $rt::users{$current_user}{real_name}=$`
-      if (!exists $rt::users{$current_user}{real_name});
-  }
-  
-  if (!$subject) {
-    $subject = "[No Subject Given]";
-  }
-  
-}
-
-  
-  
-  
-  
-
-
-
 
 sub CheckForLoops {
   my $head = shift;
@@ -218,6 +134,6 @@ sub CheckForLoops {
   if ($Precedence =~ /^bulk/i) {
     return (1);
   }
-
+}
 
 1;

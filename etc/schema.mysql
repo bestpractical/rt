@@ -4,18 +4,32 @@
 # RT is distribute under the terms of the GNU Public License
 
 
-CREATE TABLE ACL (
+CREATE TABLE QueueACL (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Queue INT,
   User INT,
-  Display INT,
-  Manipulate INT,
-  Admin INT (11),
-  Mail INT(11),
+  Right VARCHAR(16), #Read, Write or Admin
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP)\g
+  LastUpdated TIMESTAMP
+)\g
+
+
+CREATE TABLE Subscriptions (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  Scope VarCHAR(16), #Ticket, Queue or Global
+  Value INT(11), #Ticket Id or Queue Id -- 0 for global
+  Condition VARCHAR(60), 
+  Action VARCHAR(60),
+  Template INT(11), #Link to the templates table
+  Target VARCHAR(255),
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP  
+)\g
+
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -103,10 +117,13 @@ CREATE TABLE Transactions (
 CREATE TABLE Attachments (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   TransactionId	 INT(11) NOT NULL,
-  MessageId char(160),
-  ContentType char(80),
+  Parent int(11), #Another attachment.
+  MessageId VARCHAR(160),
+  Subject VARCHAR(255),
+  Filename VARCHAR(255),
+  ContentType VARCHAR(80),
   Content LONGBLOB,
-  Summary VARCHAR(255),
+  Headers BLOB,
   Creator INT(11),
   Created TIMESTAMP
   
@@ -132,4 +149,31 @@ CREATE TABLE Links (
 
 )\g
 
+CREATE TABLE Templates (	
+
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(120),
+  content BLOB
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP
+)\g
+
+
+CREATE TABLE Actors (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  Email VARCHAR(255),
+  UserId VARCHAR(255), #(local users have a UserId)
+		       #Nobody without a userID will be able to have
+		       #ACLs other than to one's own tickets. which
+		       #will be covered with a meta-acl
+  Gecos VARCHAR(64),
+  Password VARCHAR(255),
+  Name VARCHAR(64)
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP
+)\g
 

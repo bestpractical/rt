@@ -256,7 +256,7 @@ sub ParseArgs {
     }	 
     use RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
-    my $id = $Ticket->Create ( Queue => $queue,
+    my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue,
 			       Area => $area,
 			       Alias => $alias,
 			       Requestors => $requestors,
@@ -265,9 +265,8 @@ sub ParseArgs {
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       Due => $date_due,
-			       Content => $content
-			     );
+			       Due => $date_due);
+    $Transaction->Attach('','text/plain','',$content);
     printf("Request %s created",$id);
   }
   
