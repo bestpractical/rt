@@ -1,11 +1,19 @@
+6 Oct 1999
+----------
+
+* Integrated a new release of the documentation from Michael Brader
+
+* Fixed an oversight in the makefile that affected people with remote databases
+  Thanks to Adam Hammer <hammer@math.purdue.edu>   
+
 4 Oct 1999
 ----------
 
-* Fixed a bug in database/manipulate.pm which caused tickets to get disowned when they
-  changed queues.
+* Fixed a bug in database/manipulate.pm which caused tickets to get disowned 
+  when they changed queues. -- Thanks to Robin Shostack <robin@cs.brandeis.edu>
 
-* Added a feature to the cli display engine that i'm not telling people about, as it's orthogonal
-  to the 1.0 release. Fnord.
+* Added a feature to the cli display engine that i'm not telling people about,
+  as it's orthogonal to the 1.0 release. Fnord.
 
 30 Sep 1999
 -----------

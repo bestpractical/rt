@@ -252,7 +252,7 @@ initialize: database acls
 
 
 database:
-#	$(MYSQLDIR)/mysqladmin drop $(RT_MYSQL_DATABASE)
+#	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) drop $(RT_MYSQL_DATABASE)
 	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) create $(RT_MYSQL_DATABASE)
 	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
 
@@ -263,7 +263,7 @@ acls:
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
 		" $(RT_MYSQL_ACL)
-	$(MYSQLDIR)/mysql $(DBADMIN_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
+	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
 	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) reload
 
 
