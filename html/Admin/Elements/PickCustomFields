@@ -55,7 +55,7 @@
 <input type="checkbox"
 name="Object-<%$id%>-CF-<%$CustomFieldObj->Id%>"
 value="1" 
-<% $Checked && 'CHECKED' %>
+<% $Checked ? 'CHECKED' : '' %>
 >
   </TD>
 %   }
