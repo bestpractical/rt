@@ -148,7 +148,10 @@ GENERAL INSTALLATION
 
 6   Configure the email and web gateways, as described below. 
 
-7   Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
+7   The admin tools doesn't work yet, so this information is slightly
+    inaccurate:
+
+    Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
     queue. This must be done as root, as the only user with acls to access rt 
     is root.
 	
@@ -167,10 +170,13 @@ GENERAL INSTALLATION
 
 
     NOTE: root's password for the web interface is "wordpass" 
-    (without the quotes.)  Not changing this is a SECURITY risk  
+    (without the quotes.)  Not changing this is a SECURITY risk
+    
+    ...while waiting for the admin tools to be operative, do the admin stuff
+    through SQL.
  
-8   Edit templates to your liking. Templates are found in
-    rt/etc/templates/queues/<queue-name>
+8   Edit templates to your liking.  This might be done through some admin
+    tool that isn't ready yet, or you can edit them through SQL.
 
 
 
@@ -211,8 +217,10 @@ httpd.  Additionally, you'll need a web browser that supports unless you've
 enabled "external" authentication above.
 
 Apache 
-        RT Uses HTML::Mason  You'll need to add a few lines to your
-        httpd.conf telling it to use rt's web ui:
+        RT Uses HTML::Mason.  You'll need to add a few lines to your
+        httpd.conf telling it to use rt's web ui.  If you have mod-perl
+	(you should, the perl scripts will go quite a bit faster around with
+	it), you can do something like this:
 
 
 <VirtualHost your.ip.address>

@@ -12,4 +12,8 @@ rt -resolve $id
 
 rt -kill $id
 
+id2=`echo -e "general\n\n\n\n\ntobiasb@funcom.com\ntobiasb@funcom.com\n\nblbdwah test\naafaefwfwfe\n" | rt -create | perl -nle 'print $1 if (/^Request (\d+) created$/);'`
+
+rt -take id2
+
 # ... TODO ...
