@@ -52,7 +52,8 @@ my @users = (
 	      UserId => 'root',
 	      Gecos => 'root',
 	      RealName => 'Enoch Root',
-	      EmailAddress => 'root\@localhost',
+              Password => 'password',
+	      EmailAddress => "root\@localhost",
 	      Comments => 'Superuser',
 	      CanManipulate => '1',
 	     }
