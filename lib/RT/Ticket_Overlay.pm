@@ -1216,7 +1216,7 @@ my ($id, $msg) = $ticket->Create(Subject => "Foo",
                 );
 ok ($id, "Ticket $id was created");
 ok(my $group = RT::Group->new($RT::SystemUser));
-ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Requestor'));
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Requestor'));
 ok ($group->Id, "Found the requestors object for this ticket");
 
 ok(my $jesse = RT::User->new($RT::SystemUser), "Creating a jesse rt::user");
@@ -1236,13 +1236,13 @@ ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "T
 
 
 $group = RT::Group->new($RT::SystemUser);
-ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Cc'));
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Cc'));
 ok ($group->Id, "Found the cc object for this ticket");
 $group = RT::Group->new($RT::SystemUser);
-ok($group->LoadTicketGroup(Ticket => $id, Type=> 'AdminCc'));
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'AdminCc'));
 ok ($group->Id, "Found the AdminCc object for this ticket");
 $group = RT::Group->new($RT::SystemUser);
-ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Owner'));
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Owner'));
 ok ($group->Id, "Found the Owner object for this ticket");
 ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
 
@@ -1284,7 +1284,7 @@ A constructor which returns an RT::Group object containing the owner of this tic
 sub OwnerGroup {
     my $self = shift;
     my $owner_obj = RT::Group->new($self->CurrentUser);
-    $owner_obj->LoadTicketGroup( Ticket => $self->Id,  Type => 'Owner');
+    $owner_obj->LoadTicketRoleGroup( Ticket => $self->Id,  Type => 'Owner');
     return ($owner_obj);
 }
 
@@ -1411,7 +1411,7 @@ sub _AddWatcher {
 
 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->Id);
+    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->Id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1489,7 +1489,7 @@ sub DeleteWatcher {
     }
 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->Id);
+    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->Id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1634,7 +1634,7 @@ sub Requestors {
 
     my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketGroup(Type => 'Requestor', Ticket => $self->Id);
+        $group->LoadTicketRoleGroup(Type => 'Requestor', Ticket => $self->Id);
     }
     return ($group);
 
@@ -1657,7 +1657,7 @@ sub Cc {
 
     my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketGroup(Type => 'Cc', Ticket => $self->Id);
+        $group->LoadTicketRoleGroup(Type => 'Cc', Ticket => $self->Id);
     }
     return ($group);
 
@@ -1680,7 +1680,7 @@ sub AdminCc {
 
     my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketGroup(Type => 'AdminCc', Ticket => $self->Id);
+        $group->LoadTicketRoleGroup(Type => 'AdminCc', Ticket => $self->Id);
     }
     return ($group);
 
@@ -1718,7 +1718,7 @@ sub IsWatcher {
 
     # Load the relevant group. 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->id);
+    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->id);
     # Ask if it has the member in question
 
     my $principal = RT::Principal->new($self->CurrentUser);

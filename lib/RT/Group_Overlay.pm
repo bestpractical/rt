@@ -335,9 +335,9 @@ sub LoadSystemInternalGroup {
 
 # }}}
 
-# {{{ sub LoadTicketGroup 
+# {{{ sub LoadTicketRoleGroup 
 
-=head2 LoadTicketGroup  { Ticket => TICKET_ID, Type => TYPE }
+=head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
 
 Loads a ticket group from the database. 
 
@@ -349,7 +349,7 @@ Takes a param hash with 2 parameters:
 
 =cut
 
-sub LoadTicketGroup {
+sub LoadTicketRoleGroup {
     my $self       = shift;
     my %args = (Ticket => undef,
                 Type => undef,
@@ -362,9 +362,9 @@ sub LoadTicketGroup {
 
 # }}}
 
-# {{{ sub LoadQueueGroup 
+# {{{ sub LoadQueueRoleGroup 
 
-=head2 LoadQueueGroup  { Queue => Queue_ID, Type => TYPE }
+=head2 LoadQueueRoleGroup  { Queue => Queue_ID, Type => TYPE }
 
 Loads a Queue group from the database. 
 
@@ -376,7 +376,7 @@ Takes a param hash with 2 parameters:
 
 =cut
 
-sub LoadQueueGroup {
+sub LoadQueueRoleGroup {
     my $self       = shift;
     my %args = (Queue => undef,
                 Type => undef,
@@ -384,6 +384,29 @@ sub LoadQueueGroup {
         $self->LoadByCols( Domain => 'RT::Queue-Role',
                            Instance =>$args{'Queue'}, 
                            Type => $args{'Type'}
+                           );
+}
+
+# }}}
+
+# {{{ sub LoadSystemRoleGroup 
+
+=head2 LoadSystemRoleGroup  Type
+
+Loads a System group from the database. 
+
+Takes a single param: Type
+
+    Type is the type of Group we're trying to load: 
+        Requestor, Cc, AdminCc, Owner
+
+=cut
+
+sub LoadSystemRoleGroup {
+    my $self       = shift;
+    my $type = shift;
+        $self->LoadByCols( Domain => 'RT::System-Role',
+                           Type => $type
                            );
 }
 
@@ -602,7 +625,7 @@ sub CreatePersonalGroup {
 
 A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
 Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
-Domain is one of (Ticket || Queue)
+Domain is one of (RT::Ticket-Role || RT::Queue-Role || RT::System-Role)
 Instance is the id of the ticket or queue in question
 
 This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _inside of a transaction_
@@ -620,6 +643,7 @@ sub CreateRoleGroup {
     unless ( $args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
         return ( 0, $self->loc("Invalid Group Type") );
     }
+
 
     return ( $self->_Create( Domain            => $args{'Domain'},
                              Instance          => $args{'Instance'},

@@ -437,7 +437,7 @@ my $Queue = RT::Queue->new($RT::SystemUser); my ($id, $msg) = $Queue->Create(Nam
                 );
 ok ($id, "Foo $id was created");
 ok(my $group = RT::Group->new($RT::SystemUser));
-ok($group->LoadQueueGroup(Queue => $id, Type=> 'Cc'));
+ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
 
@@ -453,10 +453,10 @@ ok (!$Queue->IsWatcher(Type => 'Cc', Principal => $bob->PrincipalId), "The Queue
 
 
 $group = RT::Group->new($RT::SystemUser);
-ok($group->LoadQueueGroup(Queue => $id, Type=> 'Cc'));
+ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
 ok ($group->Id, "Found the cc object for this Queue");
 $group = RT::Group->new($RT::SystemUser);
-ok($group->LoadQueueGroup(Queue => $id, Type=> 'AdminCc'));
+ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'AdminCc'));
 ok ($group->Id, "Found the AdminCc object for this Queue");
 
 =end testing
@@ -606,7 +606,7 @@ sub _AddWatcher {
 
 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->Id);
+    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -666,7 +666,7 @@ sub DeleteWatcher {
     }
 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->Id);
+    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -785,7 +785,7 @@ sub Cc {
 
     my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueGroup(Type => 'Cc', Queue => $self->Id);
+        $group->LoadQueueRoleGroup(Type => 'Cc', Queue => $self->Id);
     }
     return ($group);
 
@@ -808,7 +808,7 @@ sub AdminCc {
 
     my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueGroup(Type => 'AdminCc', Queue => $self->Id);
+        $group->LoadQueueRoleGroup(Type => 'AdminCc', Queue => $self->Id);
     }
     return ($group);
 
@@ -844,7 +844,7 @@ sub IsWatcher {
 
     # Load the relevant group. 
     my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->id);
+    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     # Ask if it has the member in question
 
     my $principal = RT::Principal->new($self->CurrentUser);
