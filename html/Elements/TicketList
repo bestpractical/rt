@@ -38,8 +38,8 @@
 <& .Row, Format => \@Format, i => $i, record => $record &>
 % }
 </TABLE>
-<hr>
 % if ($ShowNavigation) {
+<hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 % if ($Page != 1) {
 <A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
