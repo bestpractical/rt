@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /usr/local/cvsroot/rt/Makefile,v 1.69 1999/04/13 07:07:35 jesse Exp O
 # 
 #
 # Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
@@ -259,12 +259,13 @@ database:
 	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL)  -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
+	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
 		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
-		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql $(ROOT_MYSQL_PASS_STRING) mysql
+		" $(RT_MYSQL_ACL)
+	$(MYSQLDIR)/mysql $(ROOT_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
 	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) reload
 
 
