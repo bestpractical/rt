@@ -115,10 +115,18 @@ sub handler {
     return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
 
     my %session;
-    my $status = $ah->handle_request($r);
+    my $status;
+    eval { $status = $ah->handle_request($r) };
+    if ($@) {
+	$RT::Logger->crit($@);
+    }
+
     undef (%session);
 
-    $RT::Logger->crit("Transaction not committed. Usually indicates a software fault. Data loss may have occurred") if $RT::Handle->TransactionDepth;
+    if ($RT::Handle->TransactionDepth) {
+	$RT::Handle->ForceRollback;
+    	$RT::Logger->crit("Transaction not committed. Usually indicates a software fault. Data loss may have occurred") ;
+    }
     return $status;
 }
 
