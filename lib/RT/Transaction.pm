@@ -53,7 +53,7 @@ sub Create {
   if ( $args{'Ticket'} == 0) {
     return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
   }
-  
+
   #lets create our parent object
   my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				EffectiveTicket  => $args{'Ticket'},
@@ -185,7 +185,7 @@ sub Description {
     #TODO Add the other Set types here.
   }
 
-  elsif ($self->Type eq 'Ccorrespond')    {
+  elsif ($self->Type eq 'Correspond')    {
     return("Mail sent by ". $self->Creator->UserId);
   }
   

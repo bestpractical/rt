@@ -29,6 +29,10 @@ sub _Accessible {
   return $self->SUPER::_Accessible(@_, %Cols);
 }
 
+sub DisplayPermitted {
+    return 1;
+}
+
 sub Parse {
     my $self=shift;
     my $object=shift;
@@ -36,8 +40,16 @@ sub Parse {
     # Might be subject to change
     require Text::Template;
 
+    # Ouch ... this sucks a bit.  Maybe Text::Template is based upon
+    # some old perl4 code?  It can't take my'ed variables, and it
+    # won't accept objects as hashes, nor hashes containing objects.
+
+    $T::self=$self;
+    $T::object=$object;
+    $T::rtname=$RT::rtname;
+    
     $template=Text::Template->new(TYPE=>STRING, SOURCE=>$self->content);
-    return $template->fill_in(HASH=>$object);
+    return $template->fill_in(PACKAGE=>T);
 }
 
 1;

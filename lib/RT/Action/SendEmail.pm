@@ -29,16 +29,23 @@ sub Commit {
   my $self = shift;
   #send the email
 
+  # This is way stupid.  The more I fiddle around with Mail::Internet,
+  # the more I'm just wanting to throw it out the window. -- TobiX
+  my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
+
+  $self->{'Message'}=Mail::Internet->new(Header=>$self->{'Header'}, 
+					 Body=>\@body);
+
   # This one is stupid.  There are really stability concerns with
   # smtpsend.  We really should call $self->{'Message'}->send instead
   # - unfortunately that sub is not implemented, and probably never
   # will be.  I will probably mash it together myself some day.
-  # TobiX
+  # -- TobiX
 
-  $self->{'Message'}=Mail::Internet->new(Header=>$self->{'Header'}, 
-					 Body=>$self->{'Body'});
   $self->{'Message'}->smtpsend || die "could not send email";
 
+  # I would at least expect it to sort the headers in an appropriate
+  # order.  It doesn't.
 }
 
 
@@ -66,14 +73,14 @@ sub Prepare {
 
   # Subject
   unless ($self->{'Header'}->get(Subject)) {
+      my $m=$self->{TransactionObject}->Message;
+      my $subject=$m->head->get('subject')
+	  if $m;
+      $subject=$self->{TicketObject}->Subject()
+	  unless $subject;
+
       $self->{'Header'}->add('subject', 
-			     "[$RT::rtname #$$self{Ticket}] ".
-			     $self->{TicketObject}->Subject());
-
-      # Should use the Subject of the transaction, not the ticket?
-
-      # My Create Transaction has no subject ... nor transaction.
-      # A bug? I haven't investigated more yet.
+			     "[$RT::rtname #$$self{Ticket}] $subject");
 
   }
 
@@ -83,12 +90,13 @@ sub Prepare {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
       my $email_address=$self->{comment} ? 
 	  $self->{TicketObject}->Queue->CommentAddress :
-          $self->{TicketObject}->Queue->CorrespondAddress;
+          $self->{TicketObject}->Queue->CorrespondAddress
+	      or warn "Can't find email address for queue?";
       $self->{'Header'}->add('From', "$friendly_name <$email_address>");
       $self->{'Header'}->add('Reply-To', "$email_address");
       $self->{'Header'}->add('Sender', $self->{TransactionObject}->Creator->EmailAddress);
       # Is this one necessary?
-      $self->{'Header'}->add('X-Sender', $self->{TransactionObject}->Creator->EmailAddress);
+#      $self->{'Header'}->add('X-Sender', $self->{TransactionObject}->Creator->EmailAddress);
   }
 
   # This should perhaps be in the templates table. ISO-8859-1 just
@@ -108,7 +116,8 @@ sub Prepare {
  
 
 
-  $head->add('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+  $self->{'Header'}->add
+      ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
 }
 

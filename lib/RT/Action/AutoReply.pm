@@ -21,7 +21,7 @@ sub Prepare {
   print "Preparing\n";
   
   my $id=$self->{TicketObject}->id || die;
-  my $subject=$self->{TransactionObject}->Subject || "(no subject)";
+  my $subject=$self->{TicketObject}->Subject || "(no subject)";
 
   $self->{'Header'}->add('Subject', 
 			 "[$RT::rtname \#$id] Autoreply: $subject");
