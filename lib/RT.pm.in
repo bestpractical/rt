@@ -100,12 +100,12 @@ After that, go after the site config.
 =cut
 
 sub LoadConfig {
-    require $CORE_CONFIG_FILE
-      || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
     if ( -f "$SITE_CONFIG_FILE" ) {
         require $SITE_CONFIG_FILE
           || die ("Couldn't load RT config file  '$SITE_CONFIG_FILE'\n$@");
     }
+    require $CORE_CONFIG_FILE
+      || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
     RT::I18N->Init;
 }
 
