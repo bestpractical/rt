@@ -358,6 +358,7 @@ html-install:
 
 # {{{ doc-install
 doc-install:
+	[ -d $(DESTDIR)/$(RT_DOC_PATH) ] || mkdir $(DESTDIR)/$(RT_DOC_PATH)
 	-cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
 # }}}
 
