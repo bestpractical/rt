@@ -554,6 +554,7 @@ sub comment {
             Attachment => [ @files ],
             TimeWorked => $wtime || '',
             Text       => $msg || '',
+            Status => ''
         }
     ];
 
