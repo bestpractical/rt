@@ -716,19 +716,11 @@ sub LimitKeyword {
 
     # Below, We're checking to see whether the keyword we're searching for
     # is null or not.
-    # This could probably be rewritten to be easier to read and
-    # understand
+    # This could probably be rewritten to be easier to read and  understand
 
     
-    # if we're not looking to compare with a null value
-    if ($ARGS{'KEYWORD'} !~ /^null$/i) {
-	use RT::Keyword;
-	my $Keyword = RT::Keyword->new($self->CurrentUser);
-	$Keyword->Load($args{KEYWORD});
-	$args{'DESCRIPTION'} ||= "Keyword Selection " . $KeywordSelect->Name.  " $args{OPERATOR} ". $Keyword->Name;
-    }
     #If we are looking to compare with a null value.
-    else {
+    if ($args{'OPERATOR'} =~ /is/i)  {
 	if ($args{'OPERATOR'} =~ /^is$/i) {
 	    $args{'DESCRIPTION'} ||= "Keyword Selection ". $KeywordSelect->Name . " has no value";
 	}
@@ -736,6 +728,14 @@ sub LimitKeyword {
 	    $args{'DESCRIPTION'} ||= "Keyword Selection ". $KeywordSelect->Name . " has a value";
 	}
     }
+	# if we're not looking to compare with a null value
+    else { 	
+        use RT::Keyword;
+	my $Keyword = RT::Keyword->new($self->CurrentUser);
+	$Keyword->Load($args{KEYWORD});
+	$args{'DESCRIPTION'} ||= "Keyword Selection " . $KeywordSelect->Name.  " $args{OPERATOR} ". $Keyword->Name;
+    }
+    
  
     
     my $index = $self->_NextIndex;
@@ -1133,8 +1133,11 @@ sub _ProcessRestrictions {
 	}
 
 	# }}}
-	# {{{ keyword
+	# {{{ if it's a keyword
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'KEYWORDFIELD') {
+ 
+	    my $null_columns_ok;
+
             my $ObjKeywordsAlias = $self->Join(
 			TYPE => 'left',
 			ALIAS1 => 'main',
@@ -1151,6 +1154,13 @@ sub _ProcessRestrictions {
 				ENTRYAGGREGATOR => 'AND',
                                );
 
+            if  ( ($restriction->{'OPERATOR'} =~ /^IS$/i) or 
+	          ($restriction->{'OPERATOR'} eq '!=') ) {
+		
+		$null_columns_ok=1;
+
+	    } 
+
 	    #If we're trying to find tickets where the keyword isn't somethng, also check ones where it _IS_ null
 	    if ( $restriction->{'OPERATOR'} eq '!=') {
 	        $self->SUPER::Limit(
@@ -1164,19 +1174,36 @@ sub _ProcessRestrictions {
 	      }
 
 
-            $self->SUPER::Limit(
-				ALIAS => $ObjKeywordsAlias,
+            $self->SUPER::Limit(ALIAS => $ObjKeywordsAlias,
 				FIELD => 'KeywordSelect',
 				VALUE => $restriction->{'KEYWORDSELECT'},
-				ENTRYAGGREGATOR => 'AND',
-                               );
-	    
-            $self->SUPER::Limit(
-                                 ALIAS => $ObjKeywordsAlias,
+				ENTRYAGGREGATOR => 'OR');
+
+
+	    if ($null_columns_ok) {
+	         $self->SUPER::Limit(ALIAS => $ObjKeywordsAlias,
+                                    FIELD => 'KeywordSelect',
+	   	  		    OPERATOR => 'IS',
+                                    VALUE => 'NULL',
+				    QUOTEVALUE => 0,
+                                    ENTRYAGGREGATOR => 'OR');
+	    }
+	   
+ 
+            $self->SUPER::Limit( ALIAS => $ObjKeywordsAlias,
                                  FIELD => 'ObjectType',
                                  VALUE => 'Ticket',
-                                 ENTRYAGGREGATOR => 'AND',
-                               );
+                                 ENTRYAGGREGATOR => 'AND');
+	    
+	    if ($null_columns_ok) {
+	         $self->SUPER::Limit(ALIAS => $ObjKeywordsAlias,
+                                    FIELD => 'ObjectType',
+	   	  		    OPERATOR => 'IS',
+                                    VALUE => 'NULL',
+				    QUOTEVALUE => 0,
+                                    ENTRYAGGREGATOR => 'OR');
+	    }
+	   
         }
         # }}}
 

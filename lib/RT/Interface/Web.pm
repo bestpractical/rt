@@ -279,43 +279,27 @@ sub ProcessSearchQuery {
     # {{{ Limit KeywordSelects
 
     foreach my $KeywordSelectId (
-	map { /^KeywordSelect(\d+)$/; $1 }
-        grep { /^KeywordSelect(\d+)$/; }
-          keys %{$args{ARGS}}
-    ) {
+				 map { /^KeywordSelect(\d+)$/; $1 }
+				 grep { /^KeywordSelect(\d+)$/; }
+				 keys %{$args{ARGS}} ) {
 	my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
 	my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
 	foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
-	    if ($KeywordId) {
-		
-		my $description = '';
-		my $quote = 1;
-		if ( $KeywordId eq 'NULL' ) {
-		    $quote = 0;
-		    
-		    # Convert the operator to something apropriate for nulls
-		    if ( $oper eq '=' ) {
-			$oper = 'IS';
-		    } elsif ( $oper eq '!=' ) {
-			$oper = 'IS NOT';
-		    }
-		}
-
-		
-		
-		$session{'tickets'}->LimitKeyword(
-						  KEYWORDSELECT => $KeywordSelectId,
-						  OPERATOR => $oper,
-						  QUOTEVALUE => $quote,
-						  KEYWORD => $KeywordId,
-						 );
-
-		
+	    next unless ($KeywordId); 
+	    my $quote = 1;
+	    if ( $KeywordId =~ /^null$/i ) {
+		#Don't quote the string 'null'
+		$quote = 0;
+		# Convert the operator to something apropriate for nulls
+		$oper = 'IS' if ( $oper eq '=' );
+		$oper = 'IS NOT' if ( $oper eq '!=' ) ;
 	    }
+	    $session{'tickets'}->LimitKeyword(KEYWORDSELECT => $KeywordSelectId,
+					      OPERATOR => $oper,
+					      QUOTEVALUE => $quote,
+					      KEYWORD => $KeywordId);
 	}
-	
     }
-    
     # }}}
     
 }
