@@ -22,11 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title=> $title &>
+<& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket &>, 
+    Ticket => $Ticket , 
     Title=> $title &>
-<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM ACTION="Update.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
@@ -60,10 +59,11 @@
 
 <tr><td align=right><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, Name=>"Status", Default => $DefaultStatus &>
+<& /Elements/SelectStatus, Name=>"Status", Default => ($ARGS{'Status'} || $ARGS{'DefaultStatus'} || $Ticket->Status) &>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", Default => $Ticket->OwnerObj->Id(), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
-<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked"<% ($ARGS{UpdateTimeWorked}) && " VALUE=\"$ARGS{UpdateTimeWorked}\"" %>> <&|/l&>minutes</&></td></tr>
+<& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $Ticket->OwnerObj->Id()), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
+<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
+$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
@@ -75,11 +75,12 @@
 </select> 
 </td></tr>
 <tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $Ticket->Subject()%>"></td></tr>
-<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60<% ($ARGS{UpdateCc}) && " VALUE=\"$ARGS{UpdateCc}\"" %>><BR>
+<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
+value=<% $ARGS{UpdateCc} %>><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60<% ($ARGS{UpdateBcc}) && " VALUE=\"$ARGS{UpdateBcc}\"" %>><BR>
+<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60 VALUE="<%$ARGS{UpdateBcc}%>"><BR>
 <i><font size=-2>
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
@@ -99,11 +100,11 @@
 <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-<& /Elements/Callback, Name => 'BeforeTextarea', %ARGS &>
+<& /Elements/Callback, _CallbackName => 'BeforeTextarea', %ARGS &>
 % if (exists $ARGS{UpdateContent}) {
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent} &>
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, %ARGS&>
 % } else {
-<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
 % }
 </td></tr>
 		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
@@ -112,7 +113,6 @@
 
 
 
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Name => 'SubmitTicket' &>
   </FORM>
 
@@ -137,8 +137,13 @@ if ($DefaultStatus eq 'resolved') {
 
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
-my $CommentDefault=$Action eq "Comment" ? "SELECTED" : "";
-my $ResponseDefault=$Action eq "Respond" ? "SELECTED" : "";
+
+my ($CommentDefault, $ResponseDefault);
+if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+   $CommentDefault = "SELECTED"; 
+} else {
+    $ResponseDefault = "SELECTED";
+}
 
 $DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 

@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Callback, Name => $Name, Values => $Values, %ARGS &>
+<& /Elements/Callback, _CallbackName => $Name, Values => $Values, %ARGS &>
 
 % if ($CustomField->Type eq 'FreeformSingle') {
 <input name="<%$Name%>"

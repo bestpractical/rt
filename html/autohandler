@@ -149,7 +149,7 @@ if ( (defined $session{'CurrentUser'}) and
      ( $session{'CurrentUser'}->Id) ) {
     
     # Process per-page global callbacks
-    $m->comp('/Elements/Callback', %ARGS);
+    $m->comp('/Elements/Callback', _CallbackName => 'autohandler', %ARGS);
 
     # If the user isn\'t privileged, they can only see SelfService
     if ((! $session{'CurrentUser'}->Privileged) and

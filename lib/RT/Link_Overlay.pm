@@ -98,10 +98,9 @@ sub Create {
     my $target = RT::URI->new( $self->CurrentUser );
     $target->FromURI( $args{'Target'} );
 
-    unless ( $target->Scheme ) {
+    unless ( $target->Resolver ) {
         $RT::Logger->warning( "$self couldn't resolve target:'"
                               . $args{'Target'} . " - "
-                              . $target->Scheme
                               . "' into a URI\n" );
 
         #use Data::Dumper;
@@ -162,6 +161,11 @@ sub LoadByParams {
 
     my $target = RT::URI->new($self->CurrentUser);
     $target->FromURI( $args{'Target'} );
+    
+    unless ($base->Resolver && $target->Resolver) {
+        return ( 0, $self->loc("Couldn't load link") );
+    }
+
 
     my ( $id, $msg ) = $self->LoadByCols( Base   => $base->URI,
                                           Type   => $args{'Type'},

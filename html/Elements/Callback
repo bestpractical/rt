@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <%init>
-my @callbacks = $m->interp->resolver->glob_path('/Callbacks/'. $m->callers(1)->path.'/'.$ARGS{'Name'}.'/*');
+$Page = $m->callers(1)->path unless ($Page);
+my $path = '/Callbacks/' . $Page . '/' . $_CallbackName . '/*';
+my @callbacks = $m->interp->resolver->glob_path($path);
 # TODO: memoize these callbacks, so we don't have a big perf hit
 foreach my $comp (@callbacks) {
         next if ($comp =~ /~$/); #skip backup files
@@ -32,5 +34,6 @@ foreach my $comp (@callbacks) {
 return(1);
 </%init>
 <%args>
-$Name => 'Default'
+$_CallbackName => 'Default'
+$Page => undef
 </%args>

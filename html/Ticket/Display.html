@@ -107,8 +107,9 @@ if (defined $ARGS{'Action'}) {
 	}
 #Process status updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
+my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);                            
 
-push (@Actions, @BasicActions);
+push (@Actions, @BasicActions, @results);
 }
 </%INIT>
 
