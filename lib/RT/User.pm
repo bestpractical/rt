@@ -490,7 +490,7 @@ sub SetDisabled {
     unless($self->CurrentUser->HasSystemRight('AdminUsers')) {
 	return (0, 'Permission denied');
     }
-    return($self->_Set('Disabled', $value));
+    return($self->_Set(Field => 'Disabled', Value => $value));
 }
 
 # }}}
