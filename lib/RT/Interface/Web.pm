@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 ## Portions Copyright 2000 Tobias Brox <tobix@fsck.com>
 
 ## This is a library of static subs to be used by the Mason web
@@ -43,63 +65,6 @@ use_ok(RT::Interface::Web);
 package RT::Interface::Web;
 use strict;
 
-
-
-my @DefaultHandlerArgs = (
-
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        [ standard => $RT::MasonComponentRoot ]
-    ],
-    default_escape_flags => 'h',
-    data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
-    autoflush            => 1
-
-);
-
-# {{{ sub NewApacheHandler 
-
-=head2 NewApacheHandler
-
-  Takes extra options to pass to HTML::Mason::ApacheHandler->new
-  Returns a new Mason::ApacheHandler object
-
-=cut
-
-sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    return RT::Interface::Web::NewHandler('HTML::Mason::ApacheHandler',
-                                            args_method => "CGI",
-                                            @_);
-}
-
-# }}}
-
-# {{{ sub NewCGIHandler 
-
-=head2 NewCGIHandler
-
-  Returns a new Mason::CGIHandler object
-
-=cut
-
-sub NewCGIHandler {
-    return RT::Interface::Web::NewHandler('HTML::Mason::CGIHandler',@_);
-}
-
-sub NewHandler {
-    my $class = shift;
-    my $handler = $class->new(
-        @DefaultHandlerArgs,
-        @_
-    );
-  
-    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    return($handler);
-}
-
-# }}}
 
 
 # {{{ EscapeUTF8
@@ -1030,6 +995,7 @@ sub ProcessTicketBasics {
       TimeEstimated
       TimeWorked
       TimeLeft
+      Type
       Status
       Queue
     );
@@ -1275,8 +1241,8 @@ sub ProcessTicketWatchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {	    
+            my ( $code, $msg ) = $Ticket->DeleteWatcher( Email => $ARGSRef->{$key}, Type => $1 );
             push @results, $msg;
         }
 

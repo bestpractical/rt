@@ -218,12 +218,15 @@ Set($UseFriendlyToLine , 0);
 # are WatcherType and TicketId.
 Set($FriendlyToLineFormat, "\"%s of $RT::rtname Ticket #%s\":;");
 
-# By default RT doesn't notify the person who performs an update, as they
+# By default, RT doesn't notify the person who performs an update, as they
 # already know what they've done. If you'd like to change this behaviour,
 # Set $NotifyActor to 1
 
 Set($NotifyActor, 0);
 
+# By default, RT records each message it sends out to its own internal database.# To change this behaviour, set $RecordOutgoingEmail to 0 
+
+Set($RecordOutgoingEmail, 1);
 
 # }}}
 
@@ -279,7 +282,7 @@ Set($WebURL , $WebBaseURL . $WebPath . "/");
 
 # $WebImagesURL points to the base URL where RT can find its images.
 
-Set($WebImagesURL , $WebURL . "NoAuth/images/");
+Set($WebImagesURL , $WebPath . "/NoAuth/images/");
 
 # $RTLogoURL points to the URL of the RT logo displayed in the web UI
 

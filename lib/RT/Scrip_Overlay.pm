@@ -1,27 +1,48 @@
-# BEGIN LICENSE BLOCK
-#
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
-#
-# (Except where explictly superceded by other copyright notices)
-#
+# {{{ BEGIN BPS TAGGED BLOCK
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-#
+# 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-#
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
-#
-#
-# END LICENSE BLOCK
-
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 =head1 NAME
 
   RT::Scrip - an RT Scrip object
@@ -323,27 +344,32 @@ sub Apply {
 
     $RT::Logger->debug("Now applying scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
 
-    unless ( $self->IsApplicable( TicketObj      => $args{'TicketObj'},
-                                  TransactionObj => $args{'TransactionObj'} )
-      ) {
+    my $ApplicableTransactionObj = $self->IsApplicable( TicketObj      => $args{'TicketObj'},
+                                                        TransactionObj => $args{'TransactionObj'} );
+    unless ( $ApplicableTransactionObj ) {
         return undef;
+    }
+
+    if ( $ApplicableTransactionObj->id != $args{'TransactionObj'}->id ) {
+        $RT::Logger->debug("Found an applicable transaction ".$ApplicableTransactionObj->Id . " in the same batch with transaction ".$args{'TransactionObj'}->id);
     }
 
     #If it's applicable, prepare and commit it
-    $RT::Logger->debug("Now preparing scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
+    $RT::Logger->debug("Now preparing scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
     unless ( $self->Prepare( TicketObj      => $args{'TicketObj'},
-                             TransactionObj => $args{'TransactionObj'} )
+                             TransactionObj => $ApplicableTransactionObj )
       ) {
         return undef;
     }
 
-    $RT::Logger->debug("Now commiting scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
-    unless ( $self->Commit(TicketObj => $args{'TicketObj'},
-                            TransactionObj => $args{'TransactionObj'}) ) {
+    $RT::Logger->debug("Now commiting scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
+    unless ( $self->Commit( TicketObj => $args{'TicketObj'},
+                            TransactionObj => $ApplicableTransactionObj)
+      ) {
         return undef;
     }
 
-    $RT::Logger->debug("We actually finished scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
+    $RT::Logger->debug("We actually finished scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
     return (1);
 
 }
@@ -356,6 +382,16 @@ sub Apply {
 
 Calls the  Condition object\'s IsApplicable method
 
+Upon success, returns the applicable Transaction object.
+Otherwise, undef is returned.
+
+If the Scrip is in the TransactionCreate Stage (the usual case), only test
+the associated Transaction object to see if it is applicable.
+
+For Scrips in the TransactionBatch Stage, test all Transaction objects
+created during the Ticket object's lifetime, and returns the first one
+that is applicable.
+
 =cut
 
 sub IsApplicable {
@@ -367,14 +403,35 @@ sub IsApplicable {
     my $return;
     eval {
 
-        #Load the scrip's Condition object
-       $self->ConditionObj->LoadCondition(
-                                      ScripObj       => $self,
-                                      TicketObj      => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
-        );
+	my @Transactions;
 
-        $return =  $self->ConditionObj->IsApplicable();
+        if ( $self->Stage eq 'TransactionCreate') {
+	    # Only look at our current Transaction
+	    @Transactions = ( $args{'TransactionObj'} );
+        }
+        elsif ( $self->Stage eq 'TransactionBatch') {
+	    # Look at all Transactions in this Batch
+            @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
+        }
+	else {
+	    $RT::Logger->error( "Unknown Scrip stage:" . $self->Stage );
+	    return (undef);
+	}
+
+	foreach my $TransactionObj ( @Transactions ) {
+	    # Load the scrip's Condition object
+	    $self->ConditionObj->LoadCondition(
+		ScripObj       => $self,
+		TicketObj      => $args{'TicketObj'},
+		TransactionObj => $TransactionObj,
+	    );
+
+            if ( $self->ConditionObj->IsApplicable() ) {
+	        # We found an application Transaction -- return it
+                $return = $TransactionObj;
+                last;
+            }
+	}
     };
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );

@@ -1,7 +1,7 @@
 %# {{{ BEGIN BPS TAGGED BLOCK
 %# 
 %# COPYRIGHT:
-%# 
+%#  
 %# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
@@ -53,11 +53,6 @@
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
-<link rel="" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-% foreach my $service (qw( Feed Post Edit )) {
-%     my $uri = $ARGS{$service."URI"} or next;
-<link rel="service.<% lc($service) %>" type="application/x.atom+xml" href="<% $RT::WebPath %>/REST/2.0/<% $uri %>" title="Atom <% $service %>" />
-% }
 <script>
 function hideshow(num) {
     idstring = "element-" + num;
@@ -83,7 +78,10 @@ ONLOAD="
 <div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></a></div>
 <div class="login-information">
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id && $LoggedIn) {
-<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A><br></SPAN>
+<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A></SPAN>
+%if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
+<A  HREF="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></A>
+% }
 <& /Elements/Callback, %ARGS &>
 <&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {

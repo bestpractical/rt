@@ -1,8 +1,14 @@
-%# BEGIN LICENSE BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explictly superceded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
@@ -14,18 +20,41 @@
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %# 
 %# 
-%# END LICENSE BLOCK
-<table cellspacing=0 border=0>
-<tr><td>
-% foreach my $field (@fields) {
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# }}} END BPS TAGGED BLOCK
+
+<tr>
+<td class="label">
+<&|/l&>id</&>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => "idOp" &>
+</td><td>
+<INPUT Name="ValueOfid" SIZE=5>
+</td>
+</tr>
+
 <tr><td align=right>
-% if ($field eq "Attachment") {
 <& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "AttachmentOp", 
@@ -36,44 +65,26 @@
 &> 
 </td><td>
 <Input Name="ValueOfAttachment" Size=20>
-% } elsif ($field eq "Dates") {
-<& /Elements/SelectDateType, Name=>"DateField" &>
+</td>
+</tr>
+<tr>
+<td class="label">
+<&|/l&>Queue</&>
 </td><td>
-<& /Elements/SelectDateRelation, Name=>"DateOp" &>
+<& /Elements/SelectBoolean,  Name => "QueueOp" , 
+					True => loc("is"), 
+					False => loc("isn't"), 
+					TrueVal=> '=', 
+					FalseVal => '!=' &>
 </td><td>
-<& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
-% } elsif ($field eq "Links") {
-<& SelectLinks, Name=>"LinksField" &>
-</td><td>
-<& /Elements/SelectBoolean, Name => "LinksOp", 
-			    True => loc("is"), 
-  			    False => loc("isn't"), 
-			    TrueVal=> '=', 
-			    FalseVal => '!=' 
-&>  
-</td><td>
-<INPUT Name="ValueOfLinks" value="" SIZE=5>
-%} elsif ($field eq "Priority") {
-<SELECT NAME="PriorityField">
-<OPTION VALUE="Priority"><&|/l&>Priority</&></OPTION>
-<OPTION VALUE="InitialPriority"><&|/l&>Initial Priority</&></OPTION>
-<OPTION VALUE="FinalPriority"><&|/l&>Final Priority</&></OPTION>
-</SELECT>
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
-</td><td>
-<INPUT Name="ValueOfPriority" SIZE=5>
-%} elsif ($field =~ m/Time.*/) {
-<SELECT NAME="TimeField">
-<OPTION VALUE="TimeWorked"><&|/l&>Time Worked</&></OPTION>
-<OPTION VALUE="TimeEstimated"><&|/l&>Time Estimated</&></OPTION>
-<OPTION VALUE="TimeLeft"><&|/l&>Time Left</&></OPTION>
-</SELECT>
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
-</td><td>
-<INPUT Name="ValueOfTime" SIZE=5>
-% } elsif ($field eq "Status") {
+<& /Elements/SelectQueue, 
+    Name => "ValueOfQueue", 
+    NamedValues => 1, 
+    CheckQueueRight => 'ShowTicket' &>
+</td>
+</tr>
+<tr>
+<td class="label">
 <&|/l&>Status</&>
 </td><td>
 <& /Elements/SelectBoolean, Name => "StatusOp", 
@@ -84,32 +95,9 @@
 &>  
 </td><td>
 <& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
-%} elsif ($field =~ m/.*Priority/ || $field =~ m/Time.*/) {
-<&|/l&><%$field%></&>
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
-</td><td>
-<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
-% } elsif ($field eq "Queue") {
-<&|/l&>Queue</&>
-</td><td>
-<& /Elements/SelectBoolean,  Name => "QueueOp" , 
-					True => loc("is"), 
-					False => loc("isn't"), 
-					TrueVal=> '=', 
-					FalseVal => '!=' &>
-</td><td>
-<& /Elements/SelectQueue, Name => "ValueOfQueue", NamedValues => 1 &>
-% } elsif ($field eq "id") {
-<&|/l&>Id</&>
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => "idOp" &>
-</td><td>
-<INPUT Name="ValueOfid" SIZE=5>
-% } elsif ($field eq "People") {
-% foreach my $field (@people) {
+</td>
+</tr>
 <tr><td class="label">
-% if ($field eq "Actor") {
 <SELECT NAME="ActorField">
 <OPTION VALUE="Owner"><&|/l&>Owner</&></OPTION>
 <OPTION VALUE="Creator"><&|/l&>Creator</&></OPTION>
@@ -122,13 +110,18 @@
 &> 
 </td><td>
 <& /Elements/SelectOwner, Name => "ValueOfActor" &>
-% } elsif ($field eq 'Watcher') {
+</td>
+</tr>
+<tr>
+<td class="label">
 <& SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
 <Input Name="ValueOfWatcher" Size=20>
-% } elsif ($field eq 'WatcherGroup') {
+</tr>
+<tr>
+<td class="label">
 <& SelectPersonType, Name => 'WatcherGroupField', Default => 'RequestorGroup', Suffix => 'Group' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "WatcherGroupOp", 
@@ -139,36 +132,55 @@
 &>
 </td><td>
 <& SelectGroup, Name => 'ValueOfWatcherGroup' &>
-% } else {
-<% loc($field) %>
-<& /Elements/SelectMatch, Name => "$field" . "Op" &>
-<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
-% }
-</td></tr>
-% }
-% } else {
-<% loc($field) %>
+</td> 
+</tr>
+<tr>
+<td class="label">
+<& /Elements/SelectDateType, Name=>"DateField" &>
 </td><td>
-<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+<& /Elements/SelectDateRelation, Name=>"DateOp" &>
 </td><td>
-<INPUT Name="<%"ValueOf" . $field%>" value="" SIZE=20>
-% }
+<& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 </td></tr>
-% }
-</table>
-
+<tr>
+<td class="label">
+<SELECT NAME="TimeField">
+<OPTION VALUE="TimeWorked"><&|/l&>Time Worked</&></OPTION>
+<OPTION VALUE="TimeEstimated"><&|/l&>Time Estimated</&></OPTION>
+<OPTION VALUE="TimeLeft"><&|/l&>Time Left</&></OPTION>
+</SELECT>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
+</td><td>
+<INPUT Name="ValueOfTime" SIZE=5>
+</td>
+</tr>
+<tr>
+<td class="label">
+<SELECT NAME="PriorityField">
+<OPTION VALUE="Priority"><&|/l&>Priority</&></OPTION>
+<OPTION VALUE="InitialPriority"><&|/l&>Initial Priority</&></OPTION>
+<OPTION VALUE="FinalPriority"><&|/l&>Final Priority</&></OPTION>
+</SELECT>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
+</td><td>
+<INPUT Name="ValueOfPriority" SIZE=5>
+</td>
+</tr>
+<tr>
+<td class="label">
+<& SelectLinks, Name=>"LinksField" &>
+</td><td>
+<& /Elements/SelectBoolean, Name => "LinksOp", 
+			    True => loc("is"), 
+  			    False => loc("isn't"), 
+			    TrueVal=> '=', 
+			    FalseVal => '!=' &>  
+</td><td>
+<INPUT Name="ValueOfLinks" value="" SIZE=5>
+</td></tr>
 <%INIT>
-my @fields = ('Attachment',
-    'Queue',
-    'Status',
-    'People',
-    'Dates',
-    'Time',
-    'Priority',
-    'Links',
-    'id',
-    );
-
 my @people = ('Actor',
 	      'Watcher',
 	      'WatcherGroup',

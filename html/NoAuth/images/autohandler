@@ -1,0 +1,21 @@
+<%init>
+
+# This autohandler will spit out RT's images if the user hasn't 
+# properly configured their webserver to stop RT from passing 
+# images through the mason handler.
+
+my $file = $m->base_comp->source_file;
+my $type = "application/octet-stream";
+
+if ($file =~ /\.(gif|png|jpe?g)$/i) {
+    $type = "image/$1";
+    $type =~ s/jpg/jpeg/gi;
+}
+
+die unless (-f $file && -r $file);
+$r->content_type($type);
+open (FILE, "<$file") || die;
+$m->out($_) while (<FILE>);
+close(FILE);
+$m->abort;
+</%init>

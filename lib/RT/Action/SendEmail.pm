@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
 package RT::Action::SendEmail;
@@ -32,7 +54,7 @@ use vars qw/@ISA/;
 
 use MIME::Words qw(encode_mimeword);
 
-use RT::EmailParser;
+use RT::Interface::Email;
 use Mail::Address;
 
 =head1 NAME
@@ -116,10 +138,11 @@ sub Prepare {
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
+    # If we don't have any 'To' header (but do have other recipients), drop in
+    # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
       if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) );
+        and ( !$MIMEObj->head->get('To') ) ) and ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc'));
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
@@ -263,7 +286,7 @@ sub SendMessage {
       . $MIMEObj->head->get('Bcc') );
     $success =~ s/\n//gi;
 
-    $self->RecordOutgoingMailTransaction($MIMEObj);
+    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
     $RT::Logger->info($success);
 
@@ -273,6 +296,7 @@ sub SendMessage {
 # }}}
 
 # {{{ AddAttachments 
+
 =head2 AddAttachments
 
 Takes any attachments to this transaction and attaches them to the message
@@ -315,6 +339,7 @@ sub AddAttachments {
             Data     => $attach->OriginalContent,
             Filename => $self->MIMEEncodeString( $attach->Filename,
                 $RT::EmailOutputEncoding ),
+            'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
             Encoding => '-SUGGEST'
         );
     }
@@ -324,6 +349,7 @@ sub AddAttachments {
 # }}}
 
 # {{{ RecordOutgoingMailTransaction
+
 =head2 RecordOutgoingMailTransaction MIMEObj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
@@ -335,6 +361,27 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 sub RecordOutgoingMailTransaction {
     my $self = shift;
     my $MIMEObj = shift;
+           
+
+    my @parts = $MIMEObj->parts;
+    my @attachments;
+    my @keep;
+    foreach my $part (@parts) {
+        my $attach = $part->head->get('RT-Attachment');
+        if ($attach) {
+            $RT::Logger->debug("We found an attachment. we want to not record it.");
+            push @attachments, $attach;
+        } else {
+            $RT::Logger->debug("We found a part. we want to record it.");
+            push @keep, $part;
+        }
+    }
+    $MIMEObj->parts(\@keep);
+    foreach my $attachment (@attachments) {
+        $MIMEObj->head->add('RT-Attachment', $attachment);
+    }
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
 
     my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
 
@@ -348,7 +395,14 @@ sub RecordOutgoingMailTransaction {
     }
 
 
-    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => $type, Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+      
+    my ( $id, $msg ) = $transaction->Create(
+        Ticket         => $self->TicketObj->Id,
+        Type           => $type,
+        Data           => $MIMEObj->head->get('Message-Id'),
+        MIMEObj        => $MIMEObj,
+        ActivateScrips => 0
+    );
 
 
 }
@@ -430,11 +484,11 @@ sub RemoveInappropriateRecipients {
 
     # Weed out any RT addresses. We really don't want to talk to ourselves!
     @{ $self->{'To'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'To'} } );
+      RT::Interface::Email::CullRTAddresses( @{ $self->{'To'} } );
     @{ $self->{'Cc'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Cc'} } );
+      RT::Interface::Email::CullRTAddresses( @{ $self->{'Cc'} } );
     @{ $self->{'Bcc'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Bcc'} } );
+      RT::Interface::Email::CullRTAddresses( @{ $self->{'Bcc'} } );
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To

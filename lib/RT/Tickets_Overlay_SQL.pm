@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 use strict;
 use warnings;
 
@@ -51,7 +73,7 @@ sub _InitSQL {
   $self->{'_sql_linkalias'}    = undef;
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
-  $self->{'_sql_keywordalias'}  = undef;
+  $self->{'_sql_object_cf_alias'}  = undef;
   $self->{'_sql_depth'}         = 0;
   $self->{'_sql_localdepth'}    = 0;
   $self->{'_sql_query'}         = '';
@@ -61,11 +83,19 @@ sub _InitSQL {
 }
 
 sub _SQLLimit {
+  my $self = shift;
+    my %args = (@_);
+    if ($args{'FIELD'} eq 'EffectiveId') {
+        $self->{'looking_at_effective_id'} = 1;
+    }      
+    
+    if ($args{'FIELD'} eq 'Type') {
+        $self->{'looking_at_type'} = 1;
+    }
+
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  my $this = shift;
-
-  $this->SUPER::Limit(@_,
+  $self->SUPER::Limit(%args,
                       SUBCLAUSE => 'ticketsql');
 }
 
@@ -89,14 +119,6 @@ sub _CloseParen {
 =head1 SQL Functions
 
 =cut
-
-sub _match {
-  # Case insensitive equality
-  my ($y,$x) = @_;
-  return 1 if $x =~ /^$y$/i;
-  #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
-  return 0;
-}
 
 =head2 Robert's Simple SQL Parser
 
@@ -205,14 +227,14 @@ sub _parser {
     my $current = 0;
 
     # Highest priority is last
-    $current = OP      if _match($re_op,$val) ;
-    $current = VALUE   if _match($re_value,$val);
-    $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
-    $current = AGGREG  if _match($re_aggreg,$val);
-    $current = PAREN   if _match($re_paren,$val);
-    $current = COLUMN if _match($re_keyword,$val) && ($want & COLUMN);
-    $current = WHERE if _match($re_where,$val) && ($want & WHERE);
-    $current = SELECT if _match($re_select,$val);
+    $current = OP      if $val =~ /^$re_op$/io;
+    $current = VALUE   if $val =~ /^$re_value$/io;
+    $current = KEYWORD if $val =~ /^$re_keyword$/io && ($want & KEYWORD);
+    $current = AGGREG  if $val =~ /^$re_aggreg$/io;
+    $current = PAREN   if $val =~ /^$re_paren$/io;
+    $current = COLUMN if  $val =~ /^$re_keyword$/io && ($want & COLUMN);
+    $current = WHERE if  $val =~ /^$re_where$/io && ($want & WHERE);
+    $current = SELECT if  $val =~ /^$re_select$/io;
 
 
     unless ($current && $want & $current) {
@@ -480,7 +502,7 @@ sub FromSQL {
   $self->{_sql_query} = $query;
   eval { $self->_parser( $query ); };
     if ($@) {
-        $RT::Logger->error( $@ );
+        $RT::Logger->error( "Query error in <<$query>>:\n$@" );
         return(0,$@);
     }
   # We only want to look at EffectiveId's (mostly) for these searches.

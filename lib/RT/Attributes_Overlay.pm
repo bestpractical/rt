@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 =head1 NAME
 
   RT::Attributes - collection of RT::Attribute objects
@@ -137,9 +159,13 @@ sub WithId {
 
 =head2 DeleteEntry { Name =>   Content => , id => }
 
-Deletes the attribute with
-    the  matching name 
+Deletes attributes with
+    the matching name 
  and the matching content or id
+
+If Content and id are both undefined, delete all attributes with
+the matching name.
+
 =cut
 
 
@@ -151,8 +177,10 @@ sub DeleteEntry {
                  @_);
 
     foreach my $attr ($self->Named($args{'Name'})){ 
-        $attr->Delete if ($attr->Content eq $args{'Content'});
-        $attr->Delete if ($attr->id eq $args{'id'});
+        $attr->Delete
+            if (!defined $args{'id'} and !defined $args{'Content'})
+            or (defined $args{'id'} and $attr->id eq $args{'id'})
+            or (defined $args{'Content'} and $attr->Content eq $args{'Content'});
     }
     $self->_DoSearch();
     return (1, $self->loc('Attribute Deleted'));
@@ -170,7 +198,7 @@ Limit the Attributes to rights for the object $object. It needs to be an RT::Rec
 sub LimitToObject {
     my $self = shift;
     my $obj = shift;
-    unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id')) {
+    unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id) {
     return undef;
     }
     $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => ref($obj), ENTRYAGGREGATOR => 'OR');

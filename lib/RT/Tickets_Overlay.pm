@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# {{{ BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# }}} END BPS TAGGED BLOCK
 # Major Changes:
 
 # - Decimated ProcessRestrictions and broke it into multiple
@@ -58,6 +80,7 @@ ok (require RT::Tickets);
 use strict;
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
+use RT::CustomFields;
 
 
 # Configuration Tables:
@@ -84,6 +107,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
+    DependedOnBy     => ['LINK' => From => 'DependsOn',],
     ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
@@ -95,7 +119,6 @@ my %FIELDS =
     LastUpdated	    => ['DATE' => 'LastUpdated',],
     Created	    => ['DATE' => 'Created',],
     Subject	    => ['STRING',],
-    Type	    => ['STRING',],
     Content	    => ['TRANSFIELD',],
     ContentType	    => ['TRANSFIELD',],
     Filename        => ['TRANSFIELD',],
@@ -125,7 +148,7 @@ my %dispatch =
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD     => \&_CustomFieldLimit,
+    CUSTOMFIELD    => \&_CustomFieldLimit,
   );
 my %can_bundle =
   ( WATCHERFIELD => "yeps",
@@ -246,7 +269,7 @@ sub _EnumLimit {
     $o->Load( $value );
     $value = $o->Id;
   }
-  $sb->_SQLLimit( FIELD => $field,,
+  $sb->_SQLLimit( FIELD => $field,
 	      VALUE => $value,
 	      OPERATOR => $op,
 	      @rest,
@@ -820,103 +843,117 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$_field,$op,$value,@rest) = @_;
+    my ( $self, $_field, $op, $value, @rest ) = @_;
 
   my %rest = @rest;
   my $field = $rest{SUBKEY} || die "No field specified";
 
   # For our sanity, we can only limit on one queue at a time
-  my $queue = undef;
-  # Ugh.    This will not do well for things with underscores in them
+  my $queue = 0;
 
-  use RT::CustomFields;
-  my $CF = RT::CustomFields->new( $self->CurrentUser );
-  #$CF->Load( $cfid} );
-
-  my $q;
-  if ($field =~ /^(.+?)\.{(.+)}$/) {
-    my $q = RT::Queue->new($self->CurrentUser);
-    $q->Load($1);
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+    $queue =  $1;
     $field = $2;
-    $CF->LimitToQueue( $q->Id );
-    $queue = $q->Id;
-  } else {
+   }
     $field = $1 if $field =~ /^{(.+)}$/; # trim { }
-    $CF->LimitToGlobal;
-  }
-  $CF->FindAllRows;
 
-  my $cfid = 0;
 
-  # this is pretty inefficient for huge numbers of CFs...
-  while ( my $CustomField = $CF->Next ) {
-    if (lc $CustomField->Name eq lc $field) {
-      $cfid = $CustomField->Id;
-      last;
+
+# If we're trying to find custom fields that don't match something, we want tickets
+# where the custom field has no value at all
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
     }
-  }
-  die "No custom field named $field found\n"
-    unless $cfid;
 
-#   use RT::CustomFields;
-#   my $CF = RT::CustomField->new( $self->CurrentUser );
-#   $CF->Load( $cfid );
+    my $cfid = 0;
+    if ($queue) {
+
+    my $q = RT::Queue->new( $self->CurrentUser );
+    $q->Load($queue) if ($queue);
+
+    my $cf;
+    if ( $q->id ) {
+        $cf = $q->CustomField($field);
+    }
+    else {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
+    }
+
+     $cfid = $cf->id;
+
+    }
 
 
-  my $null_columns_ok;
+    my $TicketCFs;
 
-  my $TicketCFs;
   # Perform one Join per CustomField
-  if ($self->{_sql_keywordalias}{$cfid}) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-  } else {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->_SQLJoin( TYPE   => 'left',
-		   ALIAS1 => 'main',
-		   FIELD1 => 'id',
-		   TABLE2 => 'ObjectCustomFieldValues',
-		   FIELD2 => 'ObjectId' );
+    if ( $self->{_sql_object_cf_alias}{$cfid} ) {
+    $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
   }
+    else {
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId'
+        );
 
-  $self->_OpenParen;
+    $self->Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD => 'ObjectType',
+        VALUE => ref($self->NewItem), # we want a single item, not a collection
+        ENTRYAGGREGATOR => 'AND'
+    );
 
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'ObjectType',
-		    VALUE      => ref($self),
-		);
+    if ($cfid) {
+    $self->Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'CustomField',
+        VALUE           => $cfid,
+        ENTRYAGGREGATOR => 'AND'
+    );
+    } else {
+    my $cfalias = $self->Join(
+        ALIAS1        => $TicketCFs,
+        FIELD1           => 'CustomField',
+        TABLE2          => 'CustomFields',
+        FIELD2          => 'id'
+    );
+    $self->Limit(
+        LEFTJOIN        => $cfalias,
+        FIELD           => 'Name',
+        VALUE           => $field,
+    );
 
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'Content',
-		    OPERATOR   => $op,
-		    VALUE      => $value,
-		    QUOTEVALUE => 1,
-		    @rest );
 
-  if (   $op =~ /^IS$/i
-	 or ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
+    }
+    }
+
+    $self->_OpenParen if ($null_columns_ok);
+
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => 'Content',
+        OPERATOR   => $op,
+        VALUE      => $value,
+        QUOTEVALUE => 1,
+        @rest
+    );
+    if ($null_columns_ok) {
+        $self->_SQLLimit(
+            ALIAS           => $TicketCFs,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
   }
-
-  #If we're trying to find tickets where the keyword isn't somethng,
-  #also check ones where it _IS_ null
-
-  if ( $op eq '!=' ) {
-    $self->_SQLLimit( ALIAS           => $TicketCFs,
-		      FIELD           => 'Content',
-		      OPERATOR        => 'IS',
-		      VALUE           => 'NULL',
-		      QUOTEVALUE      => 0,
-		      ENTRYAGGREGATOR => 'OR', );
-  }
-
-  $self->_SQLLimit( LEFTJOIN => $TicketCFs,
-		    FIELD    => 'CustomField',
-		    VALUE    => $cfid,
-		    ENTRYAGGREGATOR => 'OR' );
-
-
-
-  $self->_CloseParen;
+    $self->_CloseParen if ($null_columns_ok);
 
 }
 
@@ -1797,7 +1834,6 @@ sub LimitCustomField {
                  QUOTEVALUE    => 1,
                  @_ );
 
-    use RT::CustomFields;
     my $CF = RT::CustomField->new( $self->CurrentUser );
     if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
 	$CF->Load( $args{CUSTOMFIELD} );

@@ -22,8 +22,20 @@
 %# 
 %# END LICENSE BLOCK
 
+% if ($ShowNavigation) {
+%     my $FirstItem = $maxitems*($Page-1)+1;
+%     my $LastItem = $FirstItem + $Rows - 1;
+<&|/l, $FirstItem, $LastItem&>Results [_1] to [_2]</&>
+% }
+
+%# If you're having TicketList display a single record, you need
+%# to wrap the calls in your own table(s).
+% unless (defined $SingleRecord) {
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<& .Header, 
+% }
+
+% if ($ShowHeader) {
+<& /Elements/CollectionAsTable/Header, 
     Format => \@Format, 
     AllowSorting => $AllowSorting, 
     Order => $Order, 
@@ -33,13 +45,22 @@
     OrderBy => $OrderBy , 
     BaseURL => $BaseURL,
     maxitems => \$maxitems &> 
-
-% my $i;
-% while (my $record = $Collection->Next) {
-% $i++;
-<& .Row, Format => \@Format, i => $i, record => $record, maxitems => $maxitems &>
 % }
+
+% if (defined $SingleRecord) {
+<&   /Elements/CollectionAsTable/Row, Format => \@Format, i => 0, record => $SingleRecord, maxitems => $maxitems &>
+% } else {
+%   my $i;
+%   while (my $record = $Collection->Next) {
+%   $i++;
+<&   /Elements/CollectionAsTable/Row, Format => \@Format, i => $i, record => $record, maxitems => $maxitems &>
+%   }
+% }
+
+% unless (defined $SingleRecord) {
 </TABLE>
+% }
+
 % if ($ShowNavigation) {
 <hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
@@ -70,365 +91,23 @@ my $next =  $m->comp('/Elements/QueryString',
 <%INIT>
 my $maxitems;
 
-use vars qw($COLUMN_MAP $CUSTOM_FIELD_MAP);
-
 $Format ||= $RT::DefaultSearchResultFormat;
 # Scrub the html of the format string to remove any potential nasties.
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 
 $Rows ||= '25'; # we need a positive value
 
-# {{{ item map
-
-sub ColumnMap {
-    my $name = shift;
-    my $attr = shift;
-
-    # First deal with the simple things from the map
-    if ( $COLUMN_MAP->{$name} ) {
-        return ( $COLUMN_MAP->{$name}->{$attr} );
-    }
-
-    # now, let's deal with harder things, like Custom Fields
-
-    elsif ( $name =~ /^(?:CF|CustomField).(.*)$/ ) {
-        my $field = $1;
-        my $cf;
-        if ( $CUSTOM_FIELD_MAP->{$field} ) {
-            $cf = $CUSTOM_FIELD_MAP->{$field};
-        }
-        else {
-
-            $cf = RT::CustomField->new( $session{'CurrentUser'} );
-
-            if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-                $cf->LoadByNameAndQueue( Queue => $1, Name => $2 );
-            }
-            else {
-                $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
-                $cf->LoadByNameAndQueue( Queue => "0", Name => $field );
-            }
-            $CUSTOM_FIELD_MAP->{$field} = $cf if ( $cf->id );
-        }
-
-        unless ( $cf->id ) {
-            return undef;
-        }
-
-        if ( $attr eq 'attribute' ) {
-            return (undef);
-        }
-        elsif ( $attr eq 'title' ) {
-            return ( $cf->Name );
-        }
-        elsif ( $attr eq 'value' ) {
-	    my $value = eval "sub {
-                    my \$values = \$_[0]->CustomFieldValues('".$cf->id."');
-                    return ( join( ', ', map { \$_->Content } \@{ \$values->ItemsArrayRef } ))
-                  }" || die $@;
-            return($value);
-	}
-    }
-}
-$COLUMN_MAP = {
-    QueueName => {
-        attribute => 'Queue',
-        title => 'Queue',
-        value => sub { return $_[0]->QueueObj->Name }
-    },
-    OwnerName => {
-        title => 'Owner',
-        attribute => 'Owner',
-        value => sub { return $_[0]->OwnerObj->Name }
-    },
-    id => {
-        attribute => 'id',
-        align => 'right',
-        value => sub { return $_[0]->id }
-    },
-    Status => {
-        attribute => 'Status',
-        value => sub { return $_[0]->Status }
-    },
-    Subject => {
-        attribute => 'Subject',
-        value => sub { return $_[0]->Subject || "(".loc('No subject').")" }
-    },
-    ExtendedStatus => {
-        title => 'Status',
-        attribute => 'Status',
-        value => sub {
-            my $Ticket = shift;
-
-            if ( $Ticket->HasUnresolvedDependencies ) {
-                if ( $Ticket->HasUnresolvedDependencies( Type => 'approval' )
-                    or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
-                {
-                    return "<em>" . loc('(pending approval)') . "</em>";
-                }
-                else {
-                    return "<em>" . loc('(pending other Collection)') . "</em>";
-                }
-            }
-            else {
-                return loc( $Ticket->Status );
-            }
-
-        }
-    }, Priority => {
-        attribute => 'Priority',
-        value => sub { return $_[0]->Priority }
-    },
-    InitialPriority => {
-        attribute => 'InitialPriority',
-        value => sub { return $_[0]->InitialPriority }
-    },
-    FinalPriority => {
-        attribute => 'FinalPriority',
-        value => sub { return $_[0]->FinalPriority }
-    },
-    EffectiveId => {
-        attribute => 'EffectiveId',
-        value => sub { return $_[0]->EffectiveId }
-    },
-    Type => {
-        attribute => 'Type',
-        value => sub { return $_[0]->Type }
-    },
-    TimeWorked => {
-        attribute => 'TimeWorked',
-        value => sub { return $_[0]->TimeWorked }
-    },
-    TimeLeft => {
-        attribute => 'TimeLeft',
-        value => sub { return $_[0]->TimeLeft }
-    },
-    TimeEstimated => {
-        attribute => 'TimeEstimated',
-        value => sub { return $_[0]->TimeEstimated }
-    },
-    Requestors => {
-        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
-    },
-    Cc => {
-        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
-    },
-    AdminCc => {
-        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
-    },
-    StartsRelative => {
-        title => 'Starts',
-        attribute => 'Starts',
-        value => sub { return $_[0]->StartsObj->AgeAsString }
-    },
-    StartedRelative => {
-        title => 'Started',
-        attribute => 'Started',
-        value => sub { return $_[0]->StartedObj->AgeAsString }
-    },
-    CreatedRelative => {
-        title => 'Created',
-        attribute => 'Created',
-        value => sub { return $_[0]->CreatedObj->AgeAsString }
-    },
-    LastUpdatedRelative => {
-        title => 'LastUpdated',
-        attribute => 'LastUpdated',
-        value => sub { return $_[0]->LastUpdatedObj->AgeAsString }
-    },
-    ToldRelative => {
-        title => 'Told',
-        attribute => 'Told',
-        value => sub { return $_[0]->ToldObj->AgeAsString }
-    },
-    DueRelative => {
-        title => 'Due',
-        attribute => 'Due',
-        value => sub { return $_[0]->DueObj->AgeAsString }
-    },
-    ResolvedRelative => {
-        title => 'Resolved',
-        attribute => 'Resolved',
-        value => sub { return $_[0]->ResolvedObj->AgeAsString }
-    },
-    Starts => {
-        attribute => 'Starts',
-        value => sub { return $_[0]->StartsObj->AsString }
-    },
-    Started => {
-        attribute => 'Started',
-        value => sub { return $_[0]->StartedObj->AsString }
-    },
-    Created => {
-        attribute => 'Created',
-        value => sub { return $_[0]->CreatedObj->AsString }
-    },
-    CreatedBy => {
-	attribute => 'CreatedBy',
-        value => sub { return $_[0]->CreatorObj->Name }
-    },
-    LastUpdated => {
-        attribute => 'LastUpdated',
-        value => sub { return $_[0]->LastUpdatedObj->AsString }
-    },
-    LastUpdatedBy => {
-        attribute => 'LastUpdatedBy',
-        value => sub { return $_[0]->LastUpdatedByObj->Name }
-    },
-    Told => {
-        attribute => 'Told',
-        value => sub { return $_[0]->ToldObj->AsString }
-    },
-    Due => {
-        attribute => 'Due',
-        value => sub { return $_[0]->DueObj->AsString }
-    },
-    Resolved => {
-        attribute => 'Resolved',
-        value => sub { return $_[0]->ResolvedObj->AsString }
-    },
-
-    DependedOnBy => {
-        value => sub {
-            my $links = $_[0]->DependedOnBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    Members => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    Children => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    ReferredToBy => {
-        value => sub {
-            my $links = $_[0]->ReferredToBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-
-    DependsOn => {
-        value => sub {
-            my $links = $_[0]->DependsOn;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    MemberOf => {
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    Parents => {
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-    RefersTo => {
-        value => sub {
-            my $links = $_[0]->RefersTo;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef } ) );
-          }
-    },
-
-
-
-
-    '_CLASS' => {
-        value => sub { return  $_[1] %2 ? 'oddline' : 'evenline' } 
-        },
-
-};
-
-# }}}
-
 unless ($Collection) {
         $Collection = RT::Tickets->new($session{'CurrentUser'});
         $Collection->FromSQL($Query);
 }
 
-my (@Format) = $m->comp('.ParseColumnDefinitions', Format => $Format);
-    
+my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Format);
 
 $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 $Collection->RowsPerPage($Rows);
 $Collection->GotoPage($Page-1); # SB uses page 0 as the first page
 my $TotalFound =  $Collection->CountAll();
-
-
-
-
 
 </%INIT>
 <%ARGS>
@@ -437,185 +116,12 @@ $Rows => 10
 $Page => 1
 $Title => 'Ticket Search'
 $Collection => undef
+$SingleRecord => undef
 $AllowSorting => undef
 $Order => undef
 $OrderBy => undef
 $BaseURL => undef
 $Format => $RT::DefaultSearchResultFormat
 $ShowNavigation => 1
+$ShowHeader => 1
 </%ARGS>
-%#### SUB COMPONENTS
-%#
-%#
-%# {{{ Header
-<%DEF .Header>
-<%ARGS>
-@Format => undef
-$AllowSorting => undef
-$Order=>undef
-$BaseURL => undef
-$Query => undef
-$Rows => undef
-$Page => undef
-$maxitems => undef
-</%ARGS>
-<TR>
-<%perl>
-
-
-
-my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
-
-my $item = 0;
-$$maxitems = 0;
-foreach my $col (@Format) {
-    $item++;
-    $$maxitems = $item if $item > $$maxitems;
-    if ( $col->{title} eq 'NEWLINE' ) {
-        $m->out('</TR>       <TR>');
-	$item = 0;
-    }
-    else {
-        $m->out('<TH align="center">');
-        my $title = $col->{title};
-        $title =~ s/^__(.*)__$/$1/o;
-        $title = ( ColumnMap( $title, 'title' ) || $title );
-        if (   $AllowSorting
-            && $col->{'attribute'}
-            && ColumnMap( $col->{'attribute'}, 'attribute' ) )
-        {
-
-            $m->out(
-                '<a href="' . $BaseURL 
-                  . $m->comp(
-                    '/Elements/QueryString',
-                    %generic_query_args,
-                    OrderBy => (
-                        ColumnMap( $col->{'attribute'}, 'attribute' )
-                          || $col->{'attribute'}
-                    ),
-                    Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
-                  ).
-                  '">' . loc($title) . '</a>'
-            );
-        }
-        else {
-            $m->out( loc($title) );
-        }
-        $m->out('</TH>');
-    }
-}
-</%perl>
-</TR>
-</%DEF>
-%# }}}
-%# {{{ Row
-<%DEF .Row>
-<%ARGS>
-$i => undef
-@Format => undef
-$record => undef
-$maxitems => undef
-</%ARGS>
-<%PERL>
-$m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
-my $item;
-foreach my $column (@Format) {
-    if ( $column->{title} eq 'NEWLINE' ) {
-	while ($item < $maxitems) {
-	    $m->out("<td>&nbsp;</td>\n");
-	    $item++;
-	}
-	$item = 0;
-        $m->out('</TR>');
-        $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
-        next;
-    }
-    $item++;
-    $m->out('<td align="left">');
-    foreach my $subcol ( @{ $column->{output} } ) {
-        if ( $subcol =~ /^__(.*?)__$/o ) {
-            my $col = $1;
-            my $value = ColumnMap($col, 'value');
-
-            if ( $value && ref($value)) {
-                $m->out( &{ $value } ( $record, $i ) );
-            } else {
-                $m->out($value );
-            }
-        }
-        else {
-            $m->out( Encode::decode_utf8($subcol) );
-        }
-    }
-    $m->out('</td>');
-}
-$m->out('</TR>');
-</%PERL>
-
-
-</%DEF>
-%# }}}
-%# {{{ ParseColumnDefinitions
-
-<%DEF .ParseColumnDefinitions >
-<%ARGS>
-$Format => "id, Subject"
-</%ARGS>
-
-<%init>
-
-use Regexp::Common qw(delimited);
-my @Columns;
-#my $quoted = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-my $justquoted = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-#my $quoted =        $RE{quoted}{-esc};
-my $word = qr [(?:\{|\}|\w|\.)+];
-
-while ($Format =~ /($justquoted|$word)/igx) {
-    my $col = $1;
-
-    if ($col =~ /^$RE{quoted}{-esc}$/) {
-        substr($col,0,1) = "";
-        substr($col,-1,1) = "";
-    }
-
-    my $colref;
-    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
-        $colref->{'style'} = $1;
-    }
-    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
-        $colref->{'class'} = $1;
-    }
-    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
-        $colref->{'title'} = $1;
-    }
-    if ( $col =~ /__(.*?)__/gio ) {
-        my @subcols;
-        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
-            push ( @subcols, $1 ) if ($1);
-            push ( @subcols, "__$2__" );
-            $colref->{'attribute'} = $2;
-        }
-        push ( @subcols, $col );
-        @{ $colref->{'output'} } = @subcols;
-    }
-    else {
-        @{ $colref->{'output'} } = ( "__" . $col . "__" );
-        $colref->{'attribute'} = $col;
-    }
-    
-    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
-        @{ $colref->{'output'} } )
-    {   
-        $colref->{'title'}     = $1;
-        $colref->{'attribute'} = $1;
-    }
-
-
-    push @Columns, $colref;
-}
-    return(@Columns);
-</%init>
-</%DEF>
-%# }}}
