@@ -25,6 +25,7 @@ RT/GroupMember.pm
 RT/GroupMembers.pm
 RT/Groups.pm
 RT/Handle.pm
+RT/Interface/CLI.pm
 RT/Interface/Email.pm
 RT/Interface/Web.pm
 RT/Keyword.pm

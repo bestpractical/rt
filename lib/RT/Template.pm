@@ -236,6 +236,7 @@ Takes nothing. returns this ticket's queue object
 =cut
 
 sub QueueObj {
+    #TODO +++ what uses this?
   my $self = shift;
   if (!defined $self->{'queue'})  {
     require RT::Queue;

@@ -102,39 +102,56 @@ Queue Configuration for --queue <queueid>
 	--delete
 	--display
 
-	--queueid
-	--correspondaddress
-	--commentaddress
-	--initialpriority
-	--finalpriority
-	--defaultduein
+	--name <name>
+	--correspondaddress <email address>
+	--commentaddress <email address>
+	--initialpriority <int>
+	--finalpriority <int>
+	--defaultduein <days>
 
-	--add-cc
-	--delete-cc
-	--add-admincc
-	--delete-admincc
+	--add-cc <email address>
+	--delete-cc <email address>
+	--add-admincc <email address>
+	--delete-admincc <email address>
 	
-	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
+	--add-keyword-select [name]
+            --root <keyword>
+            --single 
+            --multiple
+            --depth  <int>
+            
 	--delete-keyword-select [name]
 	
-	--create-template  <name> <description>
-	--modify-template <name> <description>
-	--delete-template <name>
-	--display-template
-	--list-templates
 
-	--add-scrip <condition> <action> <template>
-	--delete-scrip <condition> <action> <template>
+	--scrip [<id>] (id needed for delete or modify)
+           --delete
+           --create
+           --condition <condition name or id>
+           --action <action name or id>
+           --template <template name or id>
+
 	--list-scrips
+
+        --delete-template [<id>|<name>]
+        --display-template [<id>|<name>]
+
+         --create-template
+         --modify-template [<id>|<name>]
+           Flags for --create-template and --modify-template
+           --template-name
+           --template-description
+           --template-edit
+         
+         --list-templates
 
 	--grant-user <userid> <right>
 	--grant-group <groupid> <right>
 
 	--list-user-rights <user>
-	--list-users-with-right
+	--list-users-with-right <right>
 
 	--list-group-rights <group>
-	--list-groups-with-right
+	--list-groups-with-right <right>
 
 	--revoke-user <userid> <right>
 	--revoke-group <groupid> <right>
@@ -145,11 +162,6 @@ System configuration for --system
 	--delete-keyword-select [name]
 	--list-keyword-selects	
 
-
-	--create-template  <name> <description>
-	--modify-template <name> <description>
-	--delete-template <name>
-	--display-template
 	--list-templates
 
 	--add-scrip <condition> <action> <template>
@@ -171,15 +183,9 @@ System configuration for --system
 
 
 Template Configuration for --template 
-        --create
-        --delete
-        
-        --queue [queueid]
-        --system
-        --alias
-        --title
-        --edit
-        --display
+
+
+
 
 
 Keyword configuration for --keyword  <fully qualified name>
@@ -202,19 +208,18 @@ sub PickMode {
 	$listgroups, $listqueues, $help);
 
 
-
     GetOptions ('help|h|usage' => \$help,
 		'user=s' => \$user,
 		'queue=s' => \$queue,
 		'group=s' => \$group,
-		'system=s' => \$system,
+		'system' => \$system,
 		'keyword=s', => \$keyword,
 		'list-users' => \$listusers,
 		'list-queues' => \$listqueues,
 		'list-groups' => \$listgroups,
 	       );
     
-    print "We got through the first round ok\n";
+
     
     if ($user)          { AdminUser($user) }  
     elsif ($group)      { AdminGroup($group) }
@@ -235,6 +240,7 @@ sub PickMode {
 
 
 # {{{ AdminUser
+
 sub AdminUser {
     my $user=shift;
     my %args;
@@ -338,12 +344,14 @@ sub AdminUser {
 	
     }
 }
+
 # }}}
 
 
 # {{{ AdminQueue
-sub AdminUser {
-    my $user=shift;
+
+sub AdminQueue {
+    my $queue=shift;
     my %args;
 
     GetOptions(\%args,
@@ -353,13 +361,14 @@ sub AdminUser {
 	       'DefaultDueIn',
 	       
 	       'add-cc=s', 'add-admin-cc=s', 'delete-cc=s', 'delete-admin-cc=s',
-	       'create-template
+	       'create-template'
 	       );
 
+    use RT::Queue;
     my $queue_obj = new RT::Queue($CurrentUser);
     
     
-    #Create the user if we need to 
+    #Create the queue if we need to 
     if ($args{'create'}) {
 	my ($status, $msg) = 
 	  $queue_obj->Create(
@@ -373,23 +382,17 @@ sub AdminUser {
 			    );
 	
 	print "$msg\n";
-	return();
-	
     }
     else {
-	
-	
-	#Load the user
+	#Load the queue
 	$queue_obj->Load($queue);
 	
 	unless ($queue_obj->id) {
 	    print "Queue '$queue' not found";
 	    return();
 	}	
-	
-	
-	
-	#modify the user if we need to
+		
+        #modify if we need to
 	my @attributes = qw(Name CorrespondAddress Description
 			    CommentAddress InitialPriority FinalPriority
 			    DefaultDueIn
@@ -406,16 +409,17 @@ sub AdminUser {
 	}		
 	    
 	
-	print "About to display, if we can do that\n";
-	#Check if we need to display the user
+	#Check if we need to display the queue
 	if ($args{'display'}) {
 	    foreach my $attrib (@attributes) {
 		printf("%22.22s %-64s\n",$attrib, ($queue_obj->$attrib()||'(undefined)'));
 		
 	    }	
 	}	
-	
-	#Check if we need to delete the user
+       	
+        AdminTemplates($queue_obj->Id());
+
+	#Check if we need to delete the queue
 	if ($args{'delete'}) {
 	    my ($val, $msg) = $queue_obj->Delete();
 	    print "$msg\n";
@@ -423,13 +427,11 @@ sub AdminUser {
 	
     }
 }
+
 # }}}
 
-# {{{
-sub AdminQueue {
-    my $queue = shift;
-}
-# }}}
+
+
 
 sub AdminKeyword {
     my $keyword = shift;
@@ -441,5 +443,85 @@ sub AdminGroup {
 }
 
 sub AdminSystem {
-    
+    print "In AdminSystem\n";
+    AdminTemplates(0);
 }
+
+
+sub AdminTemplates {
+    my $queue = shift;
+    #Queue = 0 means 'global';
+
+    my %args;
+
+    
+    GetOptions(\%args, 'list-templates', 'create-template','modify-template=s',
+	       'delete-template=s', 'display-template=s',
+	       'template-Name=s', 'template-Description=s',
+	       'template-edit!');
+    
+    # {{{ List templates
+    if ($args{'list-templates'}) {
+	print "Templates for $queue\n";
+	require RT::Templates;
+	my $templates = new RT::Templates($CurrentUser);
+	if ($queue != 0) {
+	    $templates->LimitToQueue($queue);
+	}	
+	else {
+	    $templates->LimitToSystem();
+	}	
+	while (my $template = $templates->Next) {
+	    print $template->Id.": ".$template->Name." - " . $template->Description ."\n";
+	}	
+    }
+    else {
+	print "Did not want to list templates\n";
+    }
+    # }}}
+
+    require RT::Template;	
+    my $template = new RT::Template($CurrentUser);
+    if ($args{'delete-template'}) {
+	$template->Load($args{'delete-template'});
+	unless ($template->id) {
+	    print "Couldn't load template";
+	    return(undef);
+	}
+	my ($val, $msg) = $template->Delete();
+	print "$msg\n";
+    }
+    elsif ($args{'create-template'}) {
+	#TODO edit the template content
+	my $content;
+	my ($val, $msg) = $template->Create(Name => $args{'template-Name'},
+					    Description => $args{'template-Description'},
+					    Content => $content,
+					    Queue => $queue);
+	print "$msg\n";
+    }	
+    elsif ($args{'modify-template'}) {
+	
+	$template->Load($args{'modify-template'});
+	unless ($template->Id()) {
+	    print "Template not found\n";
+	    return();
+	}	
+	my @attributes = qw( Name Description );
+	foreach my $attrib (@attributes) {
+	    if ( (exists ($args{"template-$attrib"})) and
+		 ($template->$attrib() ne $args{"template-$attrib"})) {
+		
+		my $method = "Set$attrib";
+		my $val = $template->$method($args{"template-$attrib"});
+		print "Trying to set $attrib to ". $args{"template-$attrib"};
+		print "Template ".$template->Name. " $attrib:  $val\n";
+		
+		
+	    }
+	}
+    }	
+    if ($args{'display-template'}) {
+	print $template->Name . "\n". $template->Description ."\n". $template->Content."\n";
+    }	
+}	
