@@ -48,9 +48,9 @@
 
 <TABLE>
 <tr>                                                                          
-       <th align=left><&|/l&>Queue</&></th>
-       <th align=right><&|/l&>New</&></th>
-       <th align=right><&|/l&>Open</&></th>          
+       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>                                         
+       <th class="collection-as-table" align=right><&|/l&>New</&></th>
+       <th class="collection-as-table" align=right><&|/l&>Open</&></th>          
 </tr>
 
 <%PERL>
