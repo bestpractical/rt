@@ -137,7 +137,7 @@ INSERT INTO Scrips VALUES (11, 'ResolveMember',
 #			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
 
 INSERT INTO Scrips VALUES (13, 'Spam', 'Spams people',
-			   'Correspondance', 'Spam',4,NULL,1,NULL,1,NULL);
+			   'Correspond', 'Spam',4,NULL,1,NULL,1,NULL);
 
 INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
 			  NULL, NULL, NULL, NULL, NULL, NULL, NULL);
