@@ -29,7 +29,7 @@ Started:
 <a href="Display.html?id='.$Ticket->id.'&Action=SetTold">Last Contact</a>:
 </TD>
 <TD>
-<% $Ticket->ToldObj->AsString "%>
+<% $Ticket->ToldObj->AsString %>
 </TD>
 </TR>
 <TR>
