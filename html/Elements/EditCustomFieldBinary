@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 % while (my $value = $Values->Next ) {
 %# XXX - let user download the file(s) here?
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br>
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br>
 % }
 % if (!$MaxValues or $Values->Count < $MaxValues) {
 <input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload">
