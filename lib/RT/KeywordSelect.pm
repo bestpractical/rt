@@ -10,19 +10,19 @@ use RT::Keyword;
 @ISA = qw(RT::Record);
 
 sub _Init {
-  my $self = shift;
-  $self->{'table'} = "KeywordSelects";
-  $self->SUPER::_Init(@_);
+    my $self = shift;
+    $self->{'table'} = "KeywordSelects";
+    $self->SUPER::_Init(@_);
 }
 
 sub _Accessible {
-  shift->SUPER::_Accessible( @_,
-    Parent => 'read/write', # link to Keywords.  Can be specified by id or Name.,
-    Single => 'read/write', # bool (described above)
-    Generations => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
-    ObjectType  => 'read/write', # currently only C<Ticket>
-    ObjectField => 'read/write', #optional, currently only C<Queue>
-    ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
+    shift->SUPER::_Accessible( @_,
+      Parent => 'read/write', # link to Keywords.  Can be specified by id or Name.,
+      Single => 'read/write', # bool (described below)
+      Generations => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
+      ObjectType  => 'read/write', # currently only C<Ticket>
+      ObjectField => 'read/write', #optional, currently only C<Queue>
+      ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
   );
 }
 
@@ -101,12 +101,13 @@ ObjectValue - constrains KeywordSelect function to when B<ObjectType>.I<ObjectFi
 =cut
 
 sub Create {
-  my $self = shift;
-  my %hash = @_;
+    my $self = shift;
+    my %hash = @_;
     if ( $hash{Parent} && $hash{Parent} !~ /^\d+$/ ) {
-    die "not yet";
-  }
-  $self->SUPER::Create(%hash);
+	#TODO +++ never die in core code. return failure.
+	die "not yet";
+    }
+    return($self->SUPER::Create(%hash));
 }
 
 =item KeywordObj
@@ -116,10 +117,11 @@ Returns the B<RT::Keyword> referenced by the I<Parent> field.
 =cut
 
 sub KeywordObj {
-  my $self = shift;
-  my $Keyword = new RT::Keyword $self->CurrentUser;
-  $Keyword->Load( $self->Parent ); #or ?
-  $Keyword;
+    my $self = shift;
+
+    my $Keyword = new RT::Keyword($self->CurrentUser);
+    $Keyword->Load( $self->Parent ); #or ?
+    return($Keyword);
 } 
 
 =item Object
@@ -129,14 +131,14 @@ Returns the object (currently only RT::Queue) specified by ObjectField and Objec
 =cut
 
 sub Object {
-  my $self = shift;
-  if ( $self->ObjectField eq 'Queue' ) {
-    my $Queue = new RT::Queue $self->CurrentUser;
-    $Queue->Load( $self->ObjectValue );
-    $Queue;
-  } else {
-    ''
-  };
+    my $self = shift;
+    if ( $self->ObjectField eq 'Queue' ) {
+	my $Queue = new RT::Queue($self->CurrentUser);
+	$Queue->Load( $self->ObjectValue );
+	return ($Queue);
+    } else {
+	return (undef);
+    }
 }
 
 =back

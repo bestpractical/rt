@@ -9,18 +9,23 @@ use RT::Record;
 @ISA = qw(RT::Record);
 
 sub _Init {
-  my $self = shift;
-  $self->{'table'} = "ObjectKeywords";
-  $self->SUPER::_Init(@_);
+    my $self = shift;
+    $self->{'table'} = "ObjectKeywords";
+    $self->SUPER::_Init(@_);
 }
 
 sub _Accessible {
-  shift->SUPER::_Accessible ( @_,
-    Keyword     => 'read/write', #link to the B<RT::Keyword>
-    ObjectType  => 'read/write', #currently only C<Ticket>
-    ObjectId    => 'read/write', #link to the object specified in I<ObjectType>
+    shift->SUPER::_Accessible ( @_,
+        Keyword     => 'read/write', #link to the B<RT::Keyword>
+        ObjectType  => 'read/write', #currently only C<Ticket>
+        ObjectId    => 'read/write', #link to the object specified in I<ObjectType>
   );
 }
+
+# TODO +++ add in a create so we can ACL it and check values
+
+# TODO +++ add in _Set and _Value, so we can ACL them.
+
 
 =head1 NAME
 
