@@ -60,9 +60,10 @@ $ClassObj->Load($Class);
 unless ($ClassObj->Id) {
     $m->comp("/RTFM/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
 }
-my     $CustomFields = $ClassObj->CustomFields();
-$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'TextSingle');
-$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'WikiTextSingle');
+my     $CustomFields = $ClassObj->ArticleCustomFields();
+
+$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Text');
+$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Freeform');
 </%init>
 <%ARGS>
 $Class=>undef

@@ -18,7 +18,6 @@
 
 <table>
 % while (my $CustomField = $CustomFields->Next()) {
-1
   <tr>
     <td class="labeltop">
       <b><%$CustomField->Name%></b><br>
@@ -28,7 +27,7 @@
         Object => $ArticleObj, 
         CustomField => $CustomField, 
         NamePrefix => $NamePrefix,
-        Content => $CFContent->{$CustomField->Id}
+        Default => $CFContent->{$CustomField->Id}
         &></td>
   </tr>
 % }
