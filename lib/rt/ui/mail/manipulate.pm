@@ -310,7 +310,7 @@ sub parse_actions {
   my ($real_serial_num) = shift;
   
   my ($body) = shift;
-  my ($trans, $message, $serial_num, $line, $original_line, $current_user);
+  my ($trans, $message, $serial_num, $line, $original_line, $current_user, $authenticated_user);
   
   foreach $line (split(/\n/,$body)) {
     my $count, @arg;
@@ -439,15 +439,15 @@ sub parse_actions {
           $username = (split(/\@/, $real_current_user))[0];
         }
         if ($username) {
-	  #check the authentication state
-          if (!(&rt::is_password($username, $password))) {
-            if ($debug) {print "$password is not $username\'s password.\n (1:$arg[0] 2:$arg[1] 3:$arg[2]";}
-	    $message = "Bad Login for $username.";
-	    $trans = 0;
-	  }
+	    #check the authentication state
+	    if (!(&rt::is_password($username, $password))) {
+		if ($debug) {print "$password is not $username\'s password.\n (1:$arg[0] 2:$arg[1] 3:$arg[2]";}
+		$message = "Bad Login for $username.";
+		$trans = 0;
+	    }
 	  else {
-	    $message = "You are now authenticated as $username.";
-	    $current_user = $username;
+	      $message = "You are now authenticated as $username.";
+	    $authenticated_user = $username;
 	  }
 	}
       }
@@ -457,14 +457,14 @@ sub parse_actions {
       
       if ($arg[0] =~ /stall/i) {
 	$serial_num=$arg[1];
-	($trans,  $message)=&rt::stall($serial_num, $current_user);
+	($trans,  $message)=&rt::stall($serial_num, $authenticated_user);
       }
       
       #deal with OPEN commands
         
       elsif ($arg[0] =~ /open/i) {
 	$serial_num=$arg[1];
-	($trans,  $message)=&rt::open($serial_num, $current_user);
+	($trans,  $message)=&rt::open($serial_num, $authenticated_user);
       }
       
       #deal with RESOLV commands
@@ -472,7 +472,7 @@ sub parse_actions {
       elsif ($arg[0] =~ /resolv/i)  {
 	
 	#		$serial_num=$arg[1];
-	#		($trans,  $message)=&rt::resolve($serial_num, $current_user);
+	#		($trans,  $message)=&rt::resolve($serial_num, $authenticated_user);
 	# batch them up and do them at the very end.
 	if (!$arg[1]) { $arg[1] = $real_serial_num; }
 	@resolve_nums = (@resolve_nums,$arg[1]);
@@ -485,7 +485,7 @@ sub parse_actions {
       #deal with KILL commands
       elsif (($arg[0] =~ /kill/i) and ($arg[2] =~ /^yes/)){
 	$serial_num=int($arg[1]);
-	($trans,  $message)=&rt::kill($serial_num, $current_user);
+	($trans,  $message)=&rt::kill($serial_num, $authenticated_user);
       }
       
       #deal with merge commands
@@ -497,7 +497,7 @@ sub parse_actions {
 	else {
 	  $into = $arg[2];
           }
-	($trans,  $message)=&rt::merge($serial_num, $into, $current_user);
+	($trans,  $message)=&rt::merge($serial_num, $into, $authenticated_user);
       }
       
       
@@ -506,7 +506,7 @@ sub parse_actions {
         
       elsif ($arg[0] =~ /^take/i) {
 	$serial_num=$arg[1];
-	($trans,  $message)=&rt::take($serial_num, $current_user);
+	($trans,  $message)=&rt::take($serial_num, $authenticated_user);
       }
       
       
@@ -514,7 +514,7 @@ sub parse_actions {
       
         elsif ($arg[0] =~ /^untake/i) {
           $serial_num=$arg[1];
-          ($trans,  $message)=&rt::untake($serial_num, $current_user);
+          ($trans,  $message)=&rt::untake($serial_num, $authenticated_user);
         }
       
       
@@ -522,7 +522,7 @@ sub parse_actions {
       
       elsif ($arg[0] =~ /steal/i) {
 	$serial_num=$arg[1];
-	($trans,  $message)=&rt::steal($serial_num, $current_user);
+	($trans,  $message)=&rt::steal($serial_num, $authenticated_user);
       }
         
       #deal with SET commands
@@ -533,7 +533,7 @@ sub parse_actions {
 	if ($arg[1] =~ /^own/) {
             $serial_num=int($arg[2]);
             $owner=$arg[3];
-            ($trans,  $message)=&rt::give($serial_num, $owner, $current_user);
+            ($trans,  $message)=&rt::give($serial_num, $owner, $authenticated_user);
             
           }
 	
@@ -541,20 +541,20 @@ sub parse_actions {
 	if (($arg[1] =~ /^user/) or ($arg[1] =~ /^requestor/)) {
 	  $serial_num=int($arg[2]);
 	  $new_user=$arg[3];
-	  ($trans,  $message)=&rt::change_requestors($serial_num, $new_user, $current_user);
+	  ($trans,  $message)=&rt::change_requestors($serial_num, $new_user, $authenticated_user);
 	}
 	# deal with SET SUBJECT commands
 	if ($arg[1] =~ /^sub/) {
 	  $serial_num=int($arg[2]);
 	  $subject=$arg[3];
-	  ($trans,  $message)=&rt::change_subject ($serial_num, $subject, $current_user);
+	  ($trans,  $message)=&rt::change_subject ($serial_num, $subject, $authenticated_user);
 	}
 	
 	#deal with SET QUEUE commands
 	if ($arg[1] =~ /^queue/) {
 	  $serial_num=int($arg[2]);
             $queue=$arg[3];
-	  ($trans,  $message)=&rt::change_queue ($serial_num, $queue, $current_user);
+	  ($trans,  $message)=&rt::change_queue ($serial_num, $queue, $authenticated_user);
 	}
 	
 	
@@ -562,7 +562,7 @@ sub parse_actions {
 	if ($arg[1] =~ /^area/) {
 	  $serial_num=int($arg[2]);
 	  $area=$arg[3];
-            ($trans,  $message)=&rt::change_area ($serial_num, $area, $current_user);
+            ($trans,  $message)=&rt::change_area ($serial_num, $area, $authenticated_user);
 	}
 	
 	#deal with SET PRIO commands
@@ -570,7 +570,7 @@ sub parse_actions {
 	if ($arg[1] =~ /^prio/) {
             $serial_num=int($arg[2]);
             $prio=$arg[3];
-            ($trans,  $message)=&rt::change_priority ($serial_num, $prio, $current_user);
+            ($trans,  $message)=&rt::change_priority ($serial_num, $prio, $authenticated_user);
           }
 	
 	
@@ -578,7 +578,7 @@ sub parse_actions {
 	if ($arg[1] =~ /^final/) {
 	  $serial_num=int($arg[2]);
 	  $prio=$arg[3];
-	  ($trans,  $message)=&rt::change_final_priority ($serial_num, $prio, $current_user);
+	  ($trans,  $message)=&rt::change_final_priority ($serial_num, $prio, $authenticated_user);
 	}
 	
 	#deal with SET DUE commands
@@ -589,7 +589,7 @@ sub parse_actions {
 	  
 	  $due_date = &rt::date_parse($due_string);
 	  
-	  ($trans,$message)=&rt::change_date_due($serial_num, $date_due, $current_user);
+	  ($trans,$message)=&rt::change_date_due($serial_num, $date_due, $authenticated_user);
 	}
 	
 	#deal with SET STATUS commands
@@ -602,19 +602,19 @@ sub parse_actions {
             
             
             if ($status =~ /stall/i) {
-              ($trans,  $message)=&rt::stall($serial_num, $current_user);
+              ($trans,  $message)=&rt::stall($serial_num, $authenticated_user);
             }
             
             elsif ($status =~ /open/i) {
-              ($trans,  $message)=&rt::open($serial_num, $current_user);
+              ($trans,  $message)=&rt::open($serial_num, $authenticated_user);
             }
             
             elsif ($status =~ /resolv/i)  {
-              ($trans,  $message)=&rt::resolve($serial_num, $current_user);
+              ($trans,  $message)=&rt::resolve($serial_num, $authenticated_user);
             }
             
             elsif (($status =~ /dead/i) and ($confirmation =~ /^yes/)){
-              ($trans,  $message)=&rt::kill($serial_num, $current_user);
+              ($trans,  $message)=&rt::kill($serial_num, $authenticated_user);
             }
           }
 	
@@ -647,7 +647,14 @@ sub parse_actions {
     }
     
   } #end of the foreach
-  
+  if ($#resolve_nums > -1) {
+      print "RT: Resolving $#resolve_nums tickets\n" if ($debug);
+      foreach $ticket (@resolve_nums) {     
+	  print "Resolving $ticket\n" if ($debug);
+	  ($trans,  $message)=&rt::resolve($resolve_nums[$count], (split(/\@/, $authenticated_user))[0]);
+	  $response .= "RT: $message ($trans)\n";
+      }
+  }  
   return ($parsed_body);
 }
 # }}}
@@ -655,22 +662,13 @@ sub parse_actions {
 # {{{ sub send_rt_response
 
 sub send_rt_response {
-    my($real_current_user) = shift;
-    
-    if ($#resolve_nums > -1) {
-      print "RT: Resolving $#resolve_nums tickets\n" if ($debug);
-     foreach $ticket (@resolve_nums) {     
-        print "Resolving $ticket\n" if ($debug);
-        ($trans,  $message)=&rt::resolve($resolve_nums[$count], (split(/\@/, $current_user))[0]);
-        $response .= "RT: $message ($trans)\n";
-      }
-    }    
+    my($user) = shift;
     
     print "$response\n" if $debug;
     if ($response) {
       ($message)=&rt::template_mail ('act_response','_rt_system',
-				     $real_current_user,"","",0,0,"RT Actions Complete",
-				     "$real_current_user","$response");
+				     $user,"","",0,0,"RT Actions Complete",
+				     "$user","$response");
     }
     print "$message\n" if $debug;
     
