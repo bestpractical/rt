@@ -27,16 +27,15 @@ sub _Accessible {
 	      Ticket => 'read',
 	      Type=> 'read',
 	      Data => 'read',
-	      Content => 'read',
 	      EffectiveTicket => 'read',
-	      Actor => 'read',
 	      Creator => 'read',
 	      Created => 'read'
 
 	     );
 }
-#take simple args and call RT::Record to do the real work.
 
+
+#This is "Create Ticket"
 sub Create {
   my $self = shift;
   
@@ -52,7 +51,7 @@ sub Create {
 	     );
   #if we didn't specify a ticket, we need to bail
   if ( $args{'Ticket'} == 0) {
-    die "RT::Transaction->Create couldn't, as you didn't specify a ticket id\n";
+    return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
   }
   
   #lets create our parent object
@@ -64,18 +63,17 @@ sub Create {
 				Field => $args{'Field'},
 				OldValue => $args{'OldValue'},
 				NewValue => $args{'NewValue'},
-				Actor => $self->CurrentUser->UserId(),
 				Creator =>  $self->CurrentUser->UserId(),
 				Created => undef
 			       );
   $self->Load($id);
-  return ($id);
+  return ($id, "Ticket Created");
 }
 
 
-sub DateAsString {
+sub CreatedAsString {
   my $self = shift;
-  return($self->_Value('date'));
+  return($self->_Value('Created'));
 }
 
 
@@ -107,10 +105,12 @@ sub Attach {
   my $Summary = shift;
   my $ContentType = shift;
   my $MessageId = shift;
-  my $Content = @_;
+  my $Content = shift;
   
   use RT::Attachment;
-  print STDERR "My id is ".$self->Id."\n";
+  $Summary = "[no summary]" if (!$Summary) ;
+  $ContentType ="test/plain" if (!$ContentType);
+  $MessageId = "none" if (!$MessageId);
   my $Attachment = new RT::Attachment ($self->CurrentUser);
   $Attachment->Create(Summary => "$Summary",
 		      MessageId => "$MessageId",
@@ -118,76 +118,77 @@ sub Attach {
 		      ContentType => "$ContentType",
 		      Content => "$Content"
 		     );
+  return ($Attachment, "Attachment created");
   
 }
 
 sub Description {
   my $self = shift;
   if ($self->Type eq 'create'){
-    return("Request created by ".$self->Actor);
+    return("Request created by ".$self->Creator);
   }
   elsif ($self->Type eq 'correspond')    {
-    return("Mail sent by ". $self->Actor);
+    return("Mail sent by ". $self->Creator);
   }
   
   elsif ($self->Type eq 'comments')  {
-    return( "Comments added by ".$self->Actor);
+    return( "Comments added by ".$self->Creator);
   }
   
   elsif ($self->Type eq 'area')  {
     my $to = $self->{'data'};
     $to = 'none' if ! $to;
-    return( "Area changed to $to by". $self->Actor);
+    return( "Area changed to $to by". $self->Creator);
   }
   
   elsif ($self->Type eq 'status'){
     if ($self->Data eq 'dead') {
-      return ("Request killed by ". $self->Actor);
+      return ("Request killed by ". $self->Creator);
     }
     else {
-      return( "Status changed to ".$self->Data." by ".$self->Actor);
+      return( "Status changed to ".$self->Data." by ".$self->Creator);
     }
   }
   elsif ($self->Type eq 'queue_id'){
-    return( "Queue changed to ".$self->Data." by ".$self->Actor);
+    return( "Queue changed to ".$self->Data." by ".$self->Creator);
   }
   elsif ($self->Type eq 'owner'){
-    if ($self->Data eq $self->Actor){
-      return( "Taken by ".$self->Actor);
+    if ($self->Data eq $self->Creator){
+      return( "Taken by ".$self->Creator);
     }
     elsif ($self->Data eq ''){
-      return( "Untaken by ".$self->Actor);
+      return( "Untaken by ".$self->Creator);
     }
     
     else{
-      return( "Owner changed to ".$self->Data." by ". $self->Actor);
+      return( "Owner changed to ".$self->Data." by ". $self->Creator);
     }
   }
   elsif ($self->Type eq 'requestors'){
-    return( "User changed to ".$self->Data." by ".$self->Actor);
+    return( "User changed to ".$self->Data." by ".$self->Creator);
   }
   elsif ($self->Type eq 'priority') {
-    return( "Priority changed to ".$self->Data." by ".$self->Actor);
+    return( "Priority changed to ".$self->Data." by ".$self->Creator);
       }    
   elsif ($self->Type eq 'final_priority') {
-    return( "Final Priority changed to ".$self->Data." by ".$self->Actor);
+    return( "Final Priority changed to ".$self->Data." by ".$self->Creator);
       }
   elsif ($self->Type eq 'date_due') {  
     ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&parse_time(".$self->Data.");
       $text_time = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
-    return( "Date Due changed to $text_time by ".$self->Actor);
+    return( "Date Due changed to $text_time by ".$self->Creator);
     }
   elsif ($self->Type eq 'subject') {
-      return( "Subject changed to ".$self->Data." by ".$self->Actor);
+      return( "Subject changed to ".$self->Data." by ".$self->Creator);
       }
   elsif ($self->Type eq 'date_told') {
-    return( "User notified by ".$self->Actor);
+    return( "User notified by ".$self->Creator);
       }
   elsif ($self->Type eq 'effective_sn') {
-    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Actor);
+    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Creator);
   }
   elsif ($self->Type eq 'subreqrsv') {
-    return "Subrequest #".$self->Data." resolved by ".$self->Actor;
+    return "Subrequest #".$self->Data." resolved by ".$self->Creator;
   }
   elsif ($self->Type eq 'link') {
     #TODO: make this fit with the rest of things.
@@ -196,15 +197,15 @@ sub Description {
     if ($type =~ /^dependency(-?)$/) {
       #$remote=(defined $remote) ? " at $remote" : "";
       if ($1 eq '-') {
-	return ("Request \#$fid$remote made dependent on this request by ".$self->Actor);
+	return ("Request \#$fid$remote made dependent on this request by ".$self->Creator);
       } else {
-	return ("This request made dependent on request \#$fid$remote by ".$self->Actor);
+	return ("This request made dependent on request \#$fid$remote by ".$self->Creator);
       }
     } else {
       
       # Some kind of plugin system needed here.
       
-      return ("$type linked to $fid at $remote by ".$self->Actor);
+      return ("$type linked to $fid at $remote by ".$self->Creator);
     }
   }
   else {

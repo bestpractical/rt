@@ -23,8 +23,8 @@ sub GetCurrentUser {
     ($CurrentUid,undef)=getpwuid($<);
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
-    $CurrentUser = new RT::CurrentUser();
-    if (!$CurrentUser->Load($CurrentUid)) {
+    $CurrentUser = new RT::CurrentUser($CurrentUid);
+    if (!$CurrentUser) {
       print "You have no RT access\n";
       return(0);
     }

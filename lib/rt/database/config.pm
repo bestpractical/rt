@@ -3,17 +3,6 @@
  
  package rt;
  
- sub read_config {
-   &prepare_sql();
-   &load_user_info();
-   &load_queue_conf();
-   &load_queue_acls();
-   &load_queue_areas();      
- }	
- 
- # I feel preparing frequently used statements is more correct once
- # and only than each time the statement is used. When we move to
- # FastCGI, this will probably speed up the execution.
  sub prepare_sql {
    $rt::AddLink=$dbh->prepare
      ('INSERT into links 

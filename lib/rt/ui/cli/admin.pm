@@ -7,7 +7,7 @@ sub activate {
   require RT::CurrentUser;  
   ($current_user,undef)=getpwuid($<);
   $CurrentUser = new RT::CurrentUser($current_user);
-  if (!$CurrentUser->Load($current_user)) {
+  if (!$CurrentUser) {
     print "You have no RT access.\n";
     return();
   }

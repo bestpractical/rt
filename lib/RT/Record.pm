@@ -14,8 +14,30 @@ sub new {
 
 sub _Init {
   my $self = shift;
+  $self->_MyHandle();
+  $self->_MyCurrentUser(@_);
+  
+}
+
+
+sub _MyCurrentUser {
+  my $self = shift;
   $self->{'user'} = shift;
-  $self->SUPER::_Init( 'Handle' => $RT::Handle);
+  
+  if(!$self->CurrentUser->UserId) {
+    my ($package, $filename, $line) = caller;
+    print STDERR "RT::Record->_Init: You don't exist. Go Away.\n";
+    die " called from $package, line $line with arguments (",@_,")\n";
+    
+  }
+
+
+}
+
+sub _MyHandle {
+  my $self = shift;
+  
+  $self->SUPER::_MyHandle( 'Handle' => $RT::Handle );
 }
 
 sub Create {

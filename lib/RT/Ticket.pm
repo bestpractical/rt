@@ -36,6 +36,8 @@ sub Create {
 	      Created => time(),
 	      Told => 0,
 	      Due => 0,
+	      ContentMessageId => undef,
+	      ContentType => 'text/plain',
 	      Content => undef,
 	      @_);
   
@@ -55,23 +57,22 @@ sub Create {
 				Told => $args{'Told'},
 				Due => $args{'Due'}
 			       );
-  
-  #Now that we know the Id
-  $self->SetEffectiveId($id);
-  
   #Load 'er up.
   $self->Load($id);
+  #Now that we know the Id
+  $self->SUPER::_Set("EffectiveId",$id);
+  
 
 
+  print STDERR "My id is ".$self->Id." effective is ".$self->EffectiveId."\n";
+  
   #Add a transaction for the create
-  use RT::Transaction;
-  my $Transaction = new RT::Transaction($self->CurrentUser);
-  $Transaction->Create(Ticket => $self->Id,
-		       Type => "create");
+  my $Trans = $self->_NewTransaction("create",undef,0);
   
   #Attach the content to the transaction
-  $Transaction->Attach($args{'Subject'}, $args{'ContentType'},
-		       $args{'MessageId'}, $args{'Content'});
+  print STDERR "Content is ".$args{'Content'}."\n";
+  $Trans->Attach($args{'Subject'}, $args{'ContentType'},
+		 $args{'ContentMessageId'}, $args{'Content'});
 
   
   return($self->Id, $ErrStr);
@@ -101,11 +102,11 @@ sub SetQueue {
     
     #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.    
     else {
-      $self->_Set('Queue', $NewQueueObj->Id());
+      return($self->_Set('Queue', $NewQueueObj->Id()));
     }
   }
   else {
-    return ("No queue specified");
+    return (0,"No queue specified");
   }
 }
 
@@ -165,10 +166,10 @@ sub Steal {
   my $self = shift;
   
   if (!$self->ModifyPermitted){
-    return ("Permission Denied");
+    return (0,"Permission Denied");
   }
   elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
-    return ("You already own this ticket"); 
+    return (0,"You already own this ticket"); 
   }
   else {
     # TODO: Send a "This ticket was stolen from you" alert
@@ -197,18 +198,18 @@ sub SetOwner {
   #TODO:this breaks stealing.
   
   if (($self->Owner) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
-    return("You can only reassign tickets that you own or that are unowned");
+    return(0, "You can only reassign tickets that you own or that are unowned");
   }
   #If we've specified a new owner and that user can't modify the ticket
   elsif (($NewOwner) and (!$self->ModifyPermitted($NewOwnerObj->Id))) {
-    return ("That user may not own requests in that queue")
+    return (0, "That user may not own requests in that queue")
   }
   
 
   #If the ticket has an owner and it's the new owner, we don't need
   #To do anything
   elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
-    return("That user already owns that request");
+    return(0, "That user already owns that request");
   }
   
   
@@ -221,7 +222,7 @@ sub SetOwner {
     #If we're giving the request to someone other than $self->CurrentUser
     #send them mail
   }
-  $self->_Set('Owner',$NewOwnerObj->Id);  
+  return($self->_Set('Owner',$NewOwnerObj->Id));  
 }
 
 
@@ -231,16 +232,11 @@ sub SetOwner {
 
 sub SetStatus { 
   my $self = shift;
-  if (@_) {
    my $status = shift;
- }
-  else {
-    my $status = undef;
-  }
   
-  if (($status) and ($status != 'open') and ($status != 'stalled') and 
+  if (($status != 'open') and ($status != 'stalled') and 
       ($status != 'resolved') and ($status != 'dead') ) {
-    return ("That status is not valid.");
+    return (0,"That status is not valid.");
   }
   
   if ($status == 'resolved') {
@@ -249,7 +245,7 @@ sub SetStatus {
     #TODO: we need to check for open parents.
   }
   
-  $self->_Set('status',@_);
+  return($self->_Set('status',@_));
 }
 
 sub Kill {
@@ -279,7 +275,7 @@ sub Resolve {
 #
 sub Notify {
   my $self = shift;
-  return ($self->DateTold(time()));
+  return ($self->_Set("Told",time()));
 }
   
 sub SinceTold {
@@ -309,7 +305,13 @@ sub Merge {
   #Merge the requestor lists
   #Set my effective_sn to the $Target's Effective SN.
   #Set all my transactions Effective_SN to the $Target's Effective_Sn
+  
+  #Make sure this ticket object thinks its merged
+
+  return ($TransactionObj, "Merge Successful");
 }  
+
+
 
 # 
 # Routines dealing with correspondence/comments
@@ -319,12 +321,12 @@ sub Merge {
 sub Comment {
   my $self = shift;
   
-  my %args = ( subject => $self->Subject,
-	       sender => $self->CurrentUser->EmailAddress,
-	       cc => undef,
-	       bcc => undef,
-	       time_taken => 0,
-	       content => undef,
+  my %args = ( Subject => $self->Subject,
+	       Sender => $self->CurrentUser->EmailAddress,
+	       Cc => undef,
+	       Bcc => undef,
+	       TimeTaken => 0,
+	       Content => undef,
 	       @_ );
   
   if ($args{'subject'} !~ /\[(\s*)comment(\s*)\]/i) {
@@ -347,12 +349,12 @@ sub Comment {
 
 sub Correspond {
   my $self = shift;
-    my %args = ( subject => $self->Subject,
-		 sender => $self->CurrentUser->EmailAddress,
-		 cc => undef,
-		 bcc => undef,
-		 time_taken => 0,
-		 content => undef,
+    my %args = ( Subject => $self->Subject,
+		 Sender => $self->CurrentUser->EmailAddress,
+		 Cc => undef,
+		 Bcc => undef,
+		 TimeTaken => 0,
+		 Content => undef,
 		 @_ );
 
   
@@ -478,28 +480,28 @@ sub IsRequestor {
 
 sub _NewTransaction {
   my $self = shift;
-  my $type = shift;
-  my $data = shift;
-  my $time_taken = shift;
-  my $content = shift;
+  my $Type = shift;
+  my $Data = shift;
+  my $TimeTaken = shift;
+  
   
   use RT::Transaction;
   print STDERR "My effective id is ".$self->Id."\n";
   my $trans = new RT::Transaction($self->CurrentUser);
   $trans->Create( Ticket => $self->EffectiveId,
-		  TimeTaken => "$time_taken",
-		  Type => "$type",
-		  Data => "$data",
-		  Content => "$content"
+		  TimeTaken => "$TimeTaken",
+		  Type => "$Type",
+		  Data => "$Data"
 		);
-  $self->_UpdateTimeTaken($time_taken); 
+  $self->_UpdateTimeTaken($TimeTaken); 
+  return($trans);
 }
 
 sub _Accessible {
 
   my $self = shift;  
   my %Cols = (
-	      EffectiveId => 'read/write',
+	      EffectiveId => 'read',
 	      Queue => 'read/write',
 	      Alias => 'read/write',
 	      Requestors => 'read/write',
@@ -511,7 +513,7 @@ sub _Accessible {
 	      Status => 'read/write',
 	      TimeWorked => 'read',
 	      Created => 'read',
-	      Told => 'read/write',
+	      Told => 'read',
 	      LastUpdated => 'read',
 	      Due => 'read/write'
 	     );

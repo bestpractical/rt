@@ -90,7 +90,6 @@ CREATE TABLE Transactions (
   EffectiveTicket INT,
   Ticket INT,
   TimeTaken INT,
-  Actor INT,
   Type CHAR(20),
   Field CHAR(40),
   OldValue VARCHAR(255),

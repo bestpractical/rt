@@ -79,7 +79,12 @@ sub Create {
 
 sub Load {
   my $self = shift;
+  
   my $identifier = shift;
+  if (!$identifier) {
+    return (undef);
+  }	    
+
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
   }
@@ -89,12 +94,6 @@ sub Load {
   }
 
 }
-
-sub load {
-  my $self = shift;
-  return($self->Load(@_));
-}
-
 
 #
 # Distribution lists

@@ -21,6 +21,18 @@ sub new {
   return($self);
 }
 
+#The basic idea here is that $self->CurrentUser is always supposed
+# to be a CurrentUser object. but that's hard to do when we're trying to load
+# the CurrentUser object
+sub _Init {
+  my $self = shift;
+  my $UserId = shift;
+  $self->_MyHandle;
+  $self->Load($UserId);
+  $self->_MyCurrentUser($self);
+  
+}
+
 sub _Accessible {
   my $self = shift;
   my %Cols = (
@@ -45,6 +57,7 @@ sub load {
 sub Load {
   my $self = shift;
   my $identifier = shift;
+  print "Identifier is $identifier\n";
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
