@@ -572,6 +572,7 @@ sub Correspond {
 		 TimeTaken => 0,
 		 @_ );
   
+  # Shouldn't those be members of %args?
   my ($Cc, $Bcc, $Sender);
   #For ease of processing
   my $MIME = $args{'MIMEObj'};
@@ -592,8 +593,9 @@ sub Correspond {
   #Send a copy to the queue members, if necessary
   
   #Send a copy to the owner if necesary
-  
-  if (!$self->IsRequestor($Ssender)) {
+
+  # Where did $Sender come from?
+  if (!$self->IsRequestor($Sender)) {
     #Send a copy of the correspondence to the user
     #Flip the date_told to now
     #If we've sent the correspondence to the user, flip the note the date_told
