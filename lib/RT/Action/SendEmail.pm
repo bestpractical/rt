@@ -366,6 +366,7 @@ sub FixSubject {
   my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
   $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
       unless $sub =~ /\Q$tag\E/;
+}
 # }}}
 
 # {{{ sub IsApplicable 
