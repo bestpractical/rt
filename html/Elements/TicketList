@@ -65,7 +65,7 @@ use vars qw($COLUMN_MAP $CUSTOM_FIELD_MAP);
 
 $Format ||= $RT::DefaultSearchResultFormat;
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML, Content => $Format);
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 
 $Rows ||= '25'; # we need a positive value
 
