@@ -386,25 +386,7 @@ sub Import {
     }
     
     
-    # {{{ Parse these dates
 
-    my $due = new RT::Date($self->CurrentUser);
-    $due->Set (Format => 'unknown', Value => $args{'Due'})
-      if (defined $args{'Due'});
-    
-    my $told =  new RT::Date($self->CurrentUser);
-    $told->Set (Format => 'unknown', Value => $args{'Told'})
-      if (defined $args{'Told'});
-
-    my $created =  new RT::Date($self->CurrentUser);
-    $created->Set (Format => 'unknown', Value => $args{'Created'})
-      if (defined $args{'Created'});
-
-    my $updated =  new RT::Date($self->CurrentUser);
-    $updated->Set (Format => 'unknown', Value => $args{'Updated'})
-      if (defined $args{'Updated'});
-    
-    # }}}
 
     # {{{ Deal with setting the owner
     
@@ -457,11 +439,11 @@ sub Import {
 	return (0,0,'Invalid value for status');
     }
     
-#    $self->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
-#    $self->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
-#    $self->{'_AccessibleCache'}{LastUpdated} = { 'read'=>1, 'write'=>1 };
-#    $self->{'_AccessibleCache'}{LastUpdatedBy} = { 'read'=>1, 'auto'=>1 };
-    
+    $self->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
+    $self->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
+    $self->{'_AccessibleCache'}{LastUpdated} = { 'read'=>1, 'write'=>1 };
+    $self->{'_AccessibleCache'}{LastUpdatedBy} = { 'read'=>1, 'auto'=>1 };
+
     my $id = $self->SUPER::Create(
 				  id => $args{'id'},
 				  Queue => $QueueObj->Id,
@@ -473,10 +455,10 @@ sub Import {
 				  Status => $args{'Status'},
 				  TimeWorked => $args{'TimeWorked'},
 				  Type => $args{'Type'},	
-				  Created => $created->ISO,
-				  Told => $told->ISO,
-				  LastUpdated => $updated->ISO,
-				  Due => $due->ISO,
+				  Created => $args{'Created'},
+				  Told => $args{'Told'},
+				  LastUpdated => $args{'Updated'},
+				  Due => $args{'Due'},
 				 );
 
 

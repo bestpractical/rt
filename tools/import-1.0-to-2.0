@@ -397,6 +397,27 @@ sub MigrateTickets {
 	      ($row->{'effective_sn'} != $row->{'serial_num'}));
 
 
+	
+	# {{{ Parse these dates
+	
+	my $due = new RT::Date($RT::SystemUser);
+	$due->Set (Format => 'unix', Value => $row->{'date_due'})
+	  if (defined $row->{'date_due'});
+	
+	my $told =  new RT::Date($RT::SystemUser);
+	$told->Set (Format => 'unix', Value => $row->{'date_told'})
+	  if (defined $row->{'date_old'});
+	
+	my $created =  new RT::Date($RT::SystemUser);
+	$created->Set (Format => 'unix', Value => $row->{'date_created'})
+	  if (defined $row->{'date_created'});
+	
+	my $updated =  new RT::Date($RT::SystemUser);
+	$updated->Set (Format => 'unix', Value => $row->{'date_acted'})
+	  if (defined $row->{'date_acted'});
+	
+	# }}}
+
 	my $ticket = new RT::Ticket($RT::SystemUser);
 	my ($id, $msg) = 
 	  $ticket->Import( id => $row->{'serial_num'},
@@ -408,10 +429,10 @@ sub MigrateTickets {
 			   Priority => $row->{'priority'},
 			   FinalPriority => $row->{'final_priority'},
 			   InitialPriority => $row->{'initial_priority'},
-			   Due => $row->{'date_due'},
-			   Told => $row->{'date_told'},
-			   Created => $row->{'date_created'},
-			   Updated => $row->{'date_acted'});
+			   Due => $due->ISO,
+			   Told => $told->ISO,
+			   Created => $created->ISO,
+			   Updated => $updated->ISO);
 	
 
 	$queue = $ticket->QueueObj();
