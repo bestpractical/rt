@@ -1,21 +1,21 @@
 % if ($CustomFieldObj->Type eq 'FreeformSingle') {
 <input name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values"
-       value="<%$Values->First && $Values->First->Content%>">
+       value="<%$Values->First && $Values->First->Content%>" />
 % }
 %  elsif ($CustomFieldObj->Type eq 'FreeformMultiple') {
-<textarea name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values">
+<textarea name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values">\
 %while (my $value = $Values->Next ) {
-<%$value->Content%>
+<%$value->Content%>\
 %}
 </textarea>
 % } 
 %  elsif ($CustomFieldObj->Type =~ /(?:Text)/) {
 % my $name = "Article-$id-CustomField-".$CustomFieldObj->Id."-Values";
-<textarea rows="25" cols="70" name="<%$name%>">
+<textarea rows="25" cols="70" name="<%$name%>">\
 %while (my $value = $Values->Next ) {
 % $Content .= $value->Content;
 %}
-<%$Content || $ARGS{$name}%>
+<%$Content || $ARGS{$name}%>\
 </textarea>
 % } 
 % elsif ($CustomFieldObj->Type =~ /^Select/) {

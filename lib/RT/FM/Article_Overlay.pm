@@ -982,6 +982,9 @@ sub _AddCustomFieldValue {
 
         # }}}
 
+        return (1, $self->loc( "Custom field unchanged" )) if not $args{'Content'} and not $cf_values;
+        return (1, $self->loc( "Custom field value unset" )) unless $args{'Content'};
+
         # {{{ Add a new custom field value
         my $value = $cf->ValuesForArticle( $self->Id )->First;
         my $old_value;
@@ -1034,6 +1037,11 @@ sub _AddCustomFieldValue {
                              $old_value, $new_value->Content ) );
 
         # }}}
+    }
+
+    # If it's an empty value, we don't want to insert it
+    elsif (not $args{'Content'}) {
+        return ( 1, $self->loc( "Empty value skipped" ));
     }
 
     # otherwise, just add a new value and record "new value added"
@@ -1105,7 +1113,7 @@ sub DeleteCustomFieldValue {
 
     my $values = RT::FM::ArticleCFValueCollection->new($self->CurrentUser);
     $values->LimitToArticle($self->id);
-    $values->LimitToCustomField($self->id);
+    $values->LimitToCustomField($cf->id);
     my $CFObjectValue = $values->HasEntryWithContent($args{'Content'}); 
 
     #if we can\'t find it, bail

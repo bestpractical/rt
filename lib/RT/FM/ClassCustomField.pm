@@ -180,6 +180,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item Display
+
+Returns the current value of Display. 
+(In the database, Display is stored as varchar(255).)
+
+
+
+=item SetDisplay VALUE
+
+
+Set Display to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Display will be stored as a varchar(255).)
+
+
+=cut
+
+
 =item LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
@@ -214,6 +232,8 @@ sub _CoreAccessible {
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        Display => 
+		{read => 1, write => 1, type => 'varchar(255)', default => 'Normal'},
         LastUpdatedBy => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 

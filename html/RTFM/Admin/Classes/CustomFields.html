@@ -46,8 +46,15 @@ CHECKED
 <i><%$cf->Description%></i>
 </td>
 <td>
-<input size="3" 
-name="Class-<%$ClassObj->Id%>-CF-<%$cf->Id%>-SortOrder" value="<%$class_cf->Id ? $class_cf->SortOrder : ''%>">
+<input size="3" name="Class-<%$ClassObj->Id%>-CF-<%$cf->Id%>-SortOrder" <%$class_cf->Id ? 'value="'.$class_cf->SortOrder.'"' : 'disabled="1"' |n%>>
+</td>
+<td>
+<select name="Class-<% $ClassObj->Id %>-CF-<% $cf->Id %>-Display" <% $class_cf->Id ? '' : 'disabled="1"' |n%>>
+% for (qw/Normal Emphasized De-emphasized Hidden/, "Hidden when empty") {
+<option <% $_ eq $class_cf->Display and "selected" %>><% $_ %></option>
+% }
+</select>
+</td>
 </td>
 </tr>
 % }
@@ -94,6 +101,9 @@ while (my $cf = $CustomFields->Next) {
     }
     if (defined $ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id}  ) {
         
+        my $class_cf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
+        $class_cf->LoadByCols(Class => $ClassObj->Id, CustomField => $cf->Id);
+        $class_cf->SetDisplay($ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-Display"} || "Normal");
         my ($val, $msg) =  $cf->SetSortOrderForClass(Class => $ClassObj->Id, SortOrder => $ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-SortOrder"});
     }
 }

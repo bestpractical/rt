@@ -23,6 +23,7 @@ CustomField NUMBER(11,0) NOT NULL,
 Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
 Created DATE,
 SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
+Display varchar2(255) DEFAULT 'normal' NOT NULL,
 LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
