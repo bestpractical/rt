@@ -59,11 +59,12 @@ sub SetRecipients {
         push(@Bcc, @{$self->TicketObj->AdminCc->Emails});
 	push(@Bcc, @{$self->TicketObj->QueueObj->AdminCc->Emails});
     }
-    
-    unless (@To) {
-	push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
-    }
-    
+
+    if ($RT::UseFriendlyToLine) {    
+    	unless (@To) {
+		push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
+    	}
+    } 
     
     my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
       
