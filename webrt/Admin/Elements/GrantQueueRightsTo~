@@ -1,0 +1,31 @@
+<BR>
+Add new watchers:<br>
+
+% if ($msg) {
+<%$msg%>
+% } elsif ($Users) {
+<ul>
+% while (my $u = $Users->Next ) {
+<li> <%$u->UserId%> (<%$u->RealName%>) <& SelectQueueAndTicketRights, Name => "GrantTo".$u->id &>
+% }
+</ul>
+% }
+
+<%INIT>
+my ($msg, $Users);
+if (!$ARGS{'UserString'}) {
+$msg = "No users selected.";
+ }
+else {
+    $Users = new RT::Users($session{'CurrentUser'});
+    $Users->Limit(FIELD => $ARGS{'UserField'},
+                 VALUE => $ARGS{'UserString'},
+                 OPERATOR => $ARGS{'UserOp'});
+     }
+</%INIT>
+
+<%ARGS>
+$UserField => 'UserId'
+$UserOp => '='
+$UserString => undef
+</%ARGS>

@@ -1,0 +1,29 @@
+%# $Header$
+
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="">-</OPTION>
+%foreach $right (@rights) {
+<OPTION VALUE="<%$right%>" <%($Default eq $right) && 'SELECTED'%>><%$right%></OPTION>
+% }
+</SELECT>
+<%ONCE>
+
+use RT::ACE;
+my $ACE = new RT::ACE($session{'CurrentUser'});
+my %QueueRights = $ACE->QueueRights;
+my %TicketRights = $ACE->TicketRights;
+
+my ($key, $right, @rights);
+
+foreach $key (sort keys %QueueRights) {
+push (@rights, $QueueRights{$key} . " ($key)");
+}
+foreach $key (sort keys %TicketRights) {
+push (@rights, $TicketRights{$key} . " ($key)");
+}
+</%ONCE>
+<%ARGS>
+$Name => undef
+$Default => undef
+ 
+</%ARGS>
