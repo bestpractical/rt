@@ -204,8 +204,6 @@ sub Message {
 
     my $self = shift;
     
-    use Carp;
-    Carp::confess;
     if ( !defined( $self->{'message'} ) ) {
 
         $self->{'message'} = new RT::Attachments( $self->CurrentUser );
