@@ -2,6 +2,10 @@
 -----------
 * Fixed leading spaces in the subject line when sending mail
 
+* RT now uses "Request Tracker" or "Sender's friendly name via RT" 
+  in its outgoing messages, depending on whether there was a 
+  friendly name in the incoming headers.
+
 * More work on cleaning up the from line
 
 * Fixed the repeated (queue) (queue) in transaction messages
