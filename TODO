@@ -1,7 +1,9 @@
-To look RT 2.0's open bugs:
+Errata for RT 2.x can be found at http://fsck.com/rt2/NoAuth/Errata.html
 
+A list of all open issues, including those which haven't been added
+to the official Errata lists,  can be found at 
 http://fsck.com/rt2/NoAuth/Buglist.html
 
-If you want to look at more detail, you may need to login as guest/guest
+If you want to look at bugs in more detail, you may need to login as guest with a password of 'guest'
 
 
