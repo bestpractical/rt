@@ -87,8 +87,10 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 <li>Sort results by <& /Elements/SelectTicketSortBy, Name => "TicketsSortBy", 
 						     Default => $session{'tickets_sort_by'} 
 &> 
-
 <& /Elements/SelectSortOrder, Name => 'TicketsSortOrder', Default => $session{'tickets_sort_order'} &>
+
+<li> <& /Elements/Refresh, Name => 'RefreshSearchInterval' , Default => $session{'tickets_refresh_interval'} &>
+
 
 </UL>
 

@@ -1,3 +1,4 @@
+<A NAME="#<%$Transaction->Id%>">
 <!-- Transaction <%$Ticket->Id%>/<%$Transaction->Id%> -->
 <& /Elements/TitleBoxStart, 
 	title => 
@@ -14,23 +15,30 @@
 %  while (my $message=$attachments->Next) {
 <TABLE WIDTH="100%">
 <TR>
-<TD>
-
+<TD VALIGN=TOP>
 <pre>
-%if ($FullHeaders) {
+% if ($message->Parent == 0 ) {
+%if ($ShowHeaders == $Transaction->Id) {
 <%$message->Headers %>
 % } else {
 <%$message->NiceHeaders %>
 %}
+% }
 </pre>
+% # 13456 is a random # of about the biggest size we'd want to see inline text
+%   if ($message->ContentType =~ m{^(text/plain|message|text$)}i && length($message->Content)<13456) {
+<pre><% $message->Content %></pre>
+%    }  
 </TD>
 <TD VALIGN=TOP ALIGN=RIGHT>
-%if ($FullHeaders) {
+% if ($message->Parent == 0  ) {
+%  if ($ShowHeaders == $Transaction->Id) {
 <A HREF="Display.html?id=<%$Transaction->TicketObj->id%>">Brief headers</a>
 % } else {
 <A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
-%}
+%  }
 <BR>
+% }
 <%PERL>
 my $size = length($message->Content());
 
@@ -44,26 +52,11 @@ else {
 }
 </%PERL>
 <A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename%></a> <% $size %><br>
-
 % }
-
 </TD>
 </TR>
 </TABLE>
-% # 13456 is a random # of about the biggest size we'd want to see inline text
-%   if ($message->ContentType =~ m{^(text/plain|message|text$)}i && length($message->Content)<13456) {
-<pre>
-%#TODO We're now HTML escaping the message content, but should
-%#TODO probably deal with converting links
-<% $message->Content %>
-</pre>
-%    }  
-% elsif ($message->ContentType =~ m{^multipart}) {
-<i>This is a multipart message</i>
-% } 
-
 % }
-
 % }
 <& /Elements/TitleBoxEnd &>
 
@@ -71,7 +64,7 @@ else {
 <%ARGS>
 $Ticket => undef
 $Transaction => undef
-$FullHeaders => undef
+$ShowHeaders => undef
 $Collapsed => undef
 </%ARGS>
 
