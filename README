@@ -42,8 +42,8 @@ o   Perl5.005_03 or later with support for setgid perl scripts ( http://www.perl
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:    Mysql 3.23, Postgres 7.1
 	Partially supported:    Oracle 8i
-	(Mysql is known to be a more solid base for RT than postgres and oracle
-	 at this time)
+	(Mysql and Postgres are known to be a more solid base for RT than 
+	Oracle at this time)
 
 o   Apache + mod_perl -- ( http://perl.apache.org) 
 
@@ -115,7 +115,25 @@ GENERAL INSTALLATION
 	
 5c  FOR UPGRADING (From 1.0.x):
 
-        Not supported yet 
+	Follow the instructions for installing RT 2.0.
+
+	Once you have installed RT 2.0, cd /path/to/rt/etc
+
+	you will find a script called 'import-1.0-to-2.0'
+
+	Edit the configuration defaults in import-1.0-to-2.0
+
+	perl ./import-1.0-to-2.0
+
+	The import tool will do its thing.
+	
+	It imports:
+		Queues, Areas, Users, Acls, Mailing Rules, Queue Members,
+		Tickets and Transactions.
+
+	It DOES NOT IMPORT:
+		Templates and Attachments removed by stripmime.
+
 
 6   Edit etc/config.pm in your RT installation directory.  In many
     cases sensible defaults have been included. In others, you MUST
