@@ -2,7 +2,7 @@
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Queues/' &>
 <& /Elements/TitleBoxStart, title => 'Select a queue' &>
 <UL>
-<LI><A HREF="<% $RT::WebPath %>/Admin/Queues/Modify.html?Create=1">Create new a queue.</A>
+<LI><A HREF="<% $RT::WebPath %>/Admin/Queues/Modify.html?Create=1">Create a new queue.</A>
 
 %while ( $queue = $queues->Next) {
 <LI><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->Name%></a><BR>

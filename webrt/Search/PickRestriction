@@ -34,6 +34,16 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp",
 					FalseVal => '!=' &>
 <& /Elements/SelectQueue, Name => "ValueOfQueue" &>
 
+
+<li>Priority  <& /Elements/SelectBoolean,  Name => "PriorityOp" , 
+					True => "exceeds", 
+					False => "is less than", 
+					TrueVal=> '>', 
+					FalseVal => '<' &>
+
+<INPUT Name="ValueOfPriority" SIZE=5>
+
+
 <li>
 <& /Elements/SelectDateType, Name => 'DateType' &>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>

@@ -203,6 +203,14 @@ sub ProcessSearchQuery {
     }
     
     # }}}
+    # {{{ Limit priority
+    if ($args{ARGS}->{'ValueOfPriority'} ne '' ) {
+	$session{'tickets'}->LimitPriority(					
+				VALUE => $args{ARGS}->{'ValueOfPriority'},
+				OPERATOR => $args{ARGS}->{'PriorityOp'}
+			       );
+    }
+    # }}}
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
 	$session{'tickets'}->LimitOwner(					
@@ -213,7 +221,6 @@ sub ProcessSearchQuery {
 
     # }}}
     # {{{ Limit requestor email
-    #TODO this doesn't work
     
     if ($args{ARGS}->{'ValueOfRequestor'} ne '') {
 	my $alias=$session{'tickets'}->LimitRequestor (
