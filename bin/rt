@@ -404,6 +404,28 @@ else {
 
     # }}}
 
+
+
+    # {{{ limit on queue
+    foreach $value (@limit_queue) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+
+	    my $queue_obj = new RT::Queue($RT::SystemUser);
+		
+	    unless ($queue_obj->Load($val)) {
+		$RT::Logger->debug("Queue '$val' not found");
+		return(-1);
+	    }
+	    $RT::Logger->debug ("Limiting queue to $op ".$queue_obj->Name);
+	    $Tickets->LimitQueue(VALUE => $queue_obj->Name,
+				 OPERATOR => $op);
+	}	
+    }	
+    # }}}
     # {{{ limit on owner
     foreach $value (@limit_owner) {
 	if ($value =~ /^(\W?)(.*?)$/i) {
@@ -426,7 +448,6 @@ else {
 	}	
     }	
     # }}}
-
     # {{{ limt on priority
 
     foreach $value (@limit_priority) {
