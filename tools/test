@@ -4,6 +4,12 @@
 
 # Create a new request (ok, this syntax is downright ugly ... we
 # should consider making a better cli, but it's not prioritied anyway)
-echo -e "general\n\n\n\n\ntobiasb@funcom.com\ntobiasb@funcom.com\n\nblah test\naafaefwfwfe\n" | rt -create
+id=`echo -e "general\n\n\n\n\ntobiasb@funcom.com\ntobiasb@funcom.com\n\nblah test\naafaefwfwfe\n" | rt -create | perl -nle 'print $1 if (/^Request (\d+) created$/);'`
+
+echo "testsubj\ntobiasb@funcom.com\ntobix@tobiasb.funcom.com\naaaaghagaah\n.\n2\n" | rt -comment $id
+
+rt -resolve $id
+
+rt -kill $id
 
 # ... TODO ...
