@@ -236,7 +236,7 @@ sub _PopulateACLCache {
     foreach my $obj (@{$args{'Objects'}}) {
             next unless (UNIVERSAL::can($obj, 'id'));
             my $type = ref($obj);
-            my $id = $obj->id;
+            my $id = $obj->id || '0';
             push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = $id)"; 
             }
 
@@ -346,7 +346,6 @@ sub HasRight {
         return (undef);
     }
 
-    $RT::Logger->crit("HasRight: does ".$self->Id." have right ".$args{'Right'}. " on ".ref($args{'Object'}) . " ".$args{'Object'}->Id. "?");
     # If this object is a ticket, we care about ticket roles and queue roles
     if ( ( ref( $args{'Object'} ) eq 'RT::Ticket' ) && $args{'Object'}->Id ) {
 

@@ -232,6 +232,7 @@ $SIG{__WARN__} = sub {$RT::Logger->warning($_[0])};
 
 $SIG{__DIE__}  = sub {
     unless ($^S || !defined $^S ) {
+        $RT::Handle->Rollback();
         $RT::Logger->crit("$_[0]");
         exit(-1);
     }

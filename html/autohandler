@@ -22,6 +22,11 @@
 %# 
 %# END LICENSE BLOCK
 <%INIT>
+
+# Roll back any dangling transactions from a previous failed connection
+$RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+
+
 local *session;
 %ARGS = map {
     # if they've passed multiple values, they'll be an array. if they've passed just one, a scalar
