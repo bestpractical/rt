@@ -71,6 +71,16 @@ o Libwww-perl / LWP::UserAgent and HTTP::Request
 	links from external web-based databases.
 
 
+SOON-TO-BE-REQUIRED PACKAGES
+----------------------------
+
+o DBIx::RecordObject and DBIx::EasySearch
+        ( ftp://ftp.fsck.com/pub/DBIx ) -- free
+
+	These will be used for RT's new Object interface...
+
+
+
 INSTALL INSTRUCTIONS
 --------------------
 

@@ -21,6 +21,7 @@ CREATE TABLE queue_areas (
 
 CREATE TABLE users (
   user_id CHAR(40) NOT NULL PRIMARY KEY, 
+  gecos CHAR(16),
   real_name CHAR(40),
   password CHAR(40), 			
   email CHAR(40),
@@ -29,7 +30,9 @@ CREATE TABLE users (
   comments CHAR(120),
   admin_rt INT
 )\g
+
 INSERT INTO users VALUES ('root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
+
 CREATE TABLE queues (
  queue_id CHAR(40) NOT NULL PRIMARY KEY,
  mail_alias CHAR(40),
@@ -80,8 +83,17 @@ CREATE TABLE transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_sn INT,
   serial_num INT,
+  time_taken INT,
   actor CHAR(40),
   type CHAR(20),
   trans_data CHAR(100),
   trans_date INT
 ) \g
+
+CREATE TABLE mime_bodies (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  message_id char(160),
+  content_type char(80),
+  charset char(32),
+
+)\g
