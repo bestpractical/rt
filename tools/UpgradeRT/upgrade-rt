@@ -1,0 +1,18 @@
+       use UpgradeRT;
+
+       my $rt10 = DBI->connect
+           ('dbi:mysql:database=rt;host=localhost',
+            'root',
+            'systeM',
+            {RaiseError=>1, PrintError=>1});
+
+       my $rt11 = DBI->connect
+           ('dbi:mysql:database=RT11;host=tobserve',
+            'RtImport',
+            'asdfasdf',
+            {RaiseError=>1, PrintError=>1, AutoCommit=>1});
+	
+       my $cpy=DBIx::Copy::UpgradeRT->new($rt10, $rt11, <~rt/transactions>);
+
+       $cpy->copy;
+       $cpy->copy_transactions;
