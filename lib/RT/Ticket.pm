@@ -1643,7 +1643,7 @@ sub Correspond {
       );
     
     # TODO this bit of logic should really become a scrip for 2.2
-    if (($TransObj->IsInbound) and 
+    if (
 	($self->Status ne 'open') and
 	($self->Status ne 'new')
        ) {
