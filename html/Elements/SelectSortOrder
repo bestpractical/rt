@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME="<%$Name%>">
 %foreach my $order (@orders) {
 <OPTION VALUE="<%$order%>" <%$order eq $Default && 'SELECTED' %>>

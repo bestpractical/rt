@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%init>
 $r->content_type('text/plain');
 $m->call_next();

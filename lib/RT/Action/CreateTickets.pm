@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::Action::CreateTickets;
 require RT::Action::Generic;
 

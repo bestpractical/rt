@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 %# TODO: Better default handling
 
 <SELECT NAME ="<%$Name%>">

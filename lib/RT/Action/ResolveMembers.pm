@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # This Action will resolve all members of a resolved group ticket
 
 package RT::Action::ResolveMembers;

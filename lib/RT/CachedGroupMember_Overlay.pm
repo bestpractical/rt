@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # Released under the terms of the GNU Public License
 
 no warnings qw(redefine);

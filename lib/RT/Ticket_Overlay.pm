@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # This software is redistributable under the terms version 2 of the GNU GPL
 
 # {{{ Front Material 

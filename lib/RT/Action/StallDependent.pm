@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # This Action will stall the BASE if a dependency or membership link
 # (according to argument) is created and if BASE is open.
 

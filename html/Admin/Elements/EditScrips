@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">

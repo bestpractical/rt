@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%PERL>
 my $people = $Ticket->Requestors->MembersObj;
 while (my $member=$people->Next) {

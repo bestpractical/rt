@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%perl>
      my ($ticket, $trans,$attach, $filename);
      my $arg = $m->dhandler_arg;                # get rest of path

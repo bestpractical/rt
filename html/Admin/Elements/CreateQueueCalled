@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Queues/Create.html">
 <&|/l&>Create a queue called</&> <INPUT NAME="Name" size=10><input type=submit>
 </form>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME="<%$Name%>">
 <OPTION VALUE="Created"><&|/l&>Created</&></OPTION>
 <OPTION VALUE="Started"><&|/l&>Started</&></OPTION>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % if ($members->Count) {
 <UL>
 % while (my $link = $members->Next) {

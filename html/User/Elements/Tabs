@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'User/', current_tab => $current_tab, current_subtab => $current_subtab&>
 
 <hr>

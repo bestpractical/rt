@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
 %while (my $user = $users->Next) {
 <OPTION VALUE="<%$user->id%>"><%$user->Name%>

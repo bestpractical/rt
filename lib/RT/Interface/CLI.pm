@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 use strict;
 
 use RT;

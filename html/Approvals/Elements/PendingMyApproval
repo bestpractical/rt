@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <h2><&|/l&>Items pending my approval</&></h2>
 <table width="100%">
 % my ($i, $class);

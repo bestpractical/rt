@@ -84,7 +84,7 @@ sub tag_mason {
                 print "no license section";
              $file ="%# BEGIN LICENSE BLOCK\n$pmlic%# END LICENSE BLOCK\n". $file;
         }
-        $file =~ s/%# END LICENSE BLOCK(\n+)/%# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/%# END LICENSE BLOCK(\n+)/%# END LICENSE BLOCK\n/mg;
         print "\n";
         
         
@@ -116,7 +116,7 @@ sub tag_makefile {
                 print "no license section";
              $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
         }
-        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n/mg;
         print "\n";
         
         
@@ -149,7 +149,7 @@ sub tag_pm {
                 print "no license section";
              $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
         }
-        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n/mg;
         print "\n";
         
         

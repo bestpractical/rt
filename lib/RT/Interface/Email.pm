@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 use RT;
 package RT::Interface::Email;
 

@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package HTML::Mason::CGIHandler;
 
 use strict;

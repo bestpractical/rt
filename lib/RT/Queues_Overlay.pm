@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
   RT::Queues - a collection of RT::Queue objects

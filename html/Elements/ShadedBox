@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <div align="left"><span class=label><%$title |n %>: <b><%$content |n %></b></div><br>
 <%ARGS>
 $title => undef

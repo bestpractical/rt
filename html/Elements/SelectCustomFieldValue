@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <tr <%$class && "class=\"$class\""%>>
         <td><%$ticket->Id%></td><td><a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><%$ticket->Subject%></a></td>
 <td><input type="radio" name="Approval-<%$ticket->Id%>-Action" value="approve"><&|/l&>Approve</&></td>

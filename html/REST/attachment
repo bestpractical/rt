@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%perl>
      my ($ticket, $trans,$attach, $filename);
      if ($arg =~ '^(\d+)-(\d+)-(\d+)$') {

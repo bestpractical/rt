@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
   RT::Attachments - a collection of RT::Attachment objects

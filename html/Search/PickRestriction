@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <FORM ACTION="Listing.html" METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
 <& /Elements/TitleBoxStart, title => loc('Refine Search')&>

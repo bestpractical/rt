@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % while (my $CustomField = $CustomFields->Next()) {
 % my $Values = $TicketObj->CustomFieldValues($CustomField->id);
 

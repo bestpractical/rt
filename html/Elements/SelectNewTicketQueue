@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& SelectQueue, Name => $Name, Verbose => $Verbose, Default => $Default,
 	ShowAllQueues => 0, ShowNullOption => 0 &>
 

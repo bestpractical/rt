@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
   RT::Links - A collection of Link objects

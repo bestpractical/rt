@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <&|/l&>Depends on</&>:<BR>
 <UL>
 % while (my $Link = $Ticket->DependsOn->Next) {

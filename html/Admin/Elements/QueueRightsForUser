@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <UL>
 %while(my $ACE = $ACL->Next) {
 

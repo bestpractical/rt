@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 SYNOPSIS
 
   use RT::ACE;

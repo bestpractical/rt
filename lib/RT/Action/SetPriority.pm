@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::Action::SetPriority;
 require RT::Action::Generic;
 @ISA=qw(RT::Action::Generic);

@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
 RT::I18N - a base class for localization of RT

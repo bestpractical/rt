@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # Distributed under the terms of the GNU GPL
 
 

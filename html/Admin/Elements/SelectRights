@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <INPUT TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
      <TABLE BORDER=0>
 <TR>

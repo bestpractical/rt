@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 # Released under the terms of the GNU General Public License
 
@@ -106,6 +105,19 @@ sub _Set {
 Takes the name of a table column.
 Returns its value as a string, if the user passes an ACL check
 
+
+=begin testing
+
+my $t = RT::Template->new($RT::SystemUser);
+$t->Create(Name => "Foo", Queue => 1);
+my $t2 = RT::Template->new($RT::Nobody);
+$t2->Load($t->Id);
+ok($t2->QueueObj->id, "Got the template's queue objet");
+
+=end testing
+
+
+
 =cut
 
 sub _Value {
@@ -113,6 +125,7 @@ sub _Value {
     my $self  = shift;
     my $field = shift;
 
+   
     #If the current user doesn't have ACLs, don't let em at it.  
     #use super::value or we get acl blocked
     if ( ( !defined $self->__Value('Queue') )

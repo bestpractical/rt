@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">".loc("Tickets from [_1]", $name)."</a>",
 	titleright=> "<a class='inverse' href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">".loc("Comments about [_1]", $name)."</a>" &>

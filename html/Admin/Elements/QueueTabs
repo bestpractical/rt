@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Queues/' &>
 <hr>
 <%INIT>

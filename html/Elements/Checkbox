@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <INPUT TYPE="Checkbox" NAME ="<%$Name%>" <%$IsChecked%>>
 
 <%ARGS>

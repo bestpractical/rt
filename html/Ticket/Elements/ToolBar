@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%ARGS>
 $Ticket => undef
 </%ARGS>

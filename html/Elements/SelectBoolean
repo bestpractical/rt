@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="<%$TrueVal%>" <%$TrueDefault%>><%$True%></OPTION>
 <OPTION VALUE="<%$FalseVal%>" <%$FalseDefault%>><%$False%></OPTION>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="MemberOf"><&|/l&>Member of</&></OPTION>
 <OPTION VALUE="DependsOn"><&|/l&>Depends on</&></OPTION>

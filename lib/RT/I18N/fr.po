@@ -3054,8 +3054,3 @@ msgstr "avec le modèle %1"
 #: lib/RT/Date.pm:294
 msgid "years"
 msgstr "années"
-
-
-
-
-

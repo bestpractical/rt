@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <%init>
 my %cookies = CGI::Cookie->fetch();
 my $IsMySQL = ($RT::DatabaseType eq 'mysql');;

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % if (@actions ) {
 <& /Elements/TitleBoxStart, title => loc('Results') &>
 <UL>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <TR bgcolor="<%$rowbgcolor%>">
 <TD bgcolor="<%$bgcolor%>"><A NAME="#<%$Transaction->Id%>"></A>&nbsp&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>

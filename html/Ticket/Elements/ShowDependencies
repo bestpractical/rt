@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <&|/l&>Depends on</&>:<BR>
 % while (my $Link = $Ticket->DependsOn->Next) {
 % my $member = $Link->TargetObj;

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc('Editing Configuration for queue [_1]', $QueueObj->Id) &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/Header, Title => "Comments about $name" &>
 <&|/l&>These comments aren't generally visible to the user</&>:<br>
 <input type="hidden" name="id" value="<%$id%>">

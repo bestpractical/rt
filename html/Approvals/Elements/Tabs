@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/Tabs, tabs => $tabs &>
 <%INIT>
 </%INIT>

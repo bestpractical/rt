@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc("Find new/open tickets"),  &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME ="<%$Name%>">
 %for my $option (RT::CustomField->Types) {
 <OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% loc($option) %></OPTION>

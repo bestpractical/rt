@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::Action::Autoreply;
 require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);

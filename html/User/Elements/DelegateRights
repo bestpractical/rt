@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <h2><%$sectionheading%></h2>
 <%perl>
 

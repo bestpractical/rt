@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME ="<%$Name%>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;

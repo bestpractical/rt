@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <INPUT NAME="<%$Name%>" VALUE="<%$Default%>" size=16> 
 
 <%init>

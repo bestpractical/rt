@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <&|/l&>Owner</&><BR>
 &nbsp;<B><%$Ticket->OwnerObj->Name%></B><BR>
 <&|/l&>Requestors</&><BR>

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <% $link |n%><% $columnconstant || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %><% $endlink|n %>
 <%INIT>
 

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Users/Create.html">
 <&|/l&>New user called</&> <INPUT NAME="Name" size=10><input type=submit value="<&|/l&>Create</&>">
 </form>

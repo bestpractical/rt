@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME=<%$Name%>>
 <OPTION VALUE="" 
 <% $Default eq 'none' && 'SELECTED' %>

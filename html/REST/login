@@ -22,5 +22,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 Logged in as <%$session{'CurrentUser'}->Name%> <<%$session{'CurrentUser'}->EmailAddress%>>

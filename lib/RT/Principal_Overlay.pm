@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 no warnings qw(redefine);
 use RT::Group;
 use RT::User;

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <UL>
 % my $memberof = $Ticket->MemberOf;
 % while (my $member_of = $memberof->Next) {

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 %  while (my $scrip = $Scrips->Next ) {
 <% $scrip->ConditionObj->Name %> 
 <% $scrip->ActionObj->Name %> 

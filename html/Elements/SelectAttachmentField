@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME="<%$Name%>">
 <OPTION VALUE="Content"><&|/l&>content</&></OPTION>
 <OPTION VALUE="ContentType"><&|/l&>content-type</&></OPTION>

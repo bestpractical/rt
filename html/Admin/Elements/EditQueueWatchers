@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 %if ($Members->Count == 0 ) {
 <ul>
 <li><i>none</i>

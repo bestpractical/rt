@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::Action::Notify;
 require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);

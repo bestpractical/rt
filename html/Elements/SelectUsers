@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <select name="UserField">
 <option value="Name"><&|/l&>User Id</&>
 <option value="EmailAddress"><&|/l&>Email</&>

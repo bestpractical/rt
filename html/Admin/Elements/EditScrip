@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => $title &>
@@ -70,7 +69,7 @@
 <TD>
 <TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
 </TD>
-</TR/
+</TR>
 <TR>
 <TD ALIGN=RIGHT>
 <&|/l&>Custom action cleanup code</&>:

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc('Editing Configuration for user [_1]', $UserObj->Name) &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>

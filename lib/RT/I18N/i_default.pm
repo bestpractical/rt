@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::I18N::i_default;
 use base qw(RT::I18N);
 1;

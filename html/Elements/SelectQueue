@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % if ($Lite) {
 <INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
 % } else {

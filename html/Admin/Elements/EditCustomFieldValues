@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <ul>
 % while (my $v = $values->Next) {
 <li>

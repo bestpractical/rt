@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <TABLE CLASS="<%$class%>" 
         BGCOLOR="<%$color%>" 
         CELLSPACING=0

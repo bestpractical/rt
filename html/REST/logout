@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <&|/l&>You have been logged out of RT.</&>
 <%PERL>
 tied(%session)->delete if (defined %session);

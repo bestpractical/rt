@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <SELECT NAME="<%$Name%>">
 % foreach my $field (@sortfields) {
 <OPTION VALUE="<%$field%>" <%$field eq $Default && 'SELECTED'%>><% loc($field) %></OPTION>

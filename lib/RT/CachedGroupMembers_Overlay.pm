@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
   RT::CachedGroupMembers - a collection of RT::GroupMember objects

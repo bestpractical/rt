@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 % if ($CustomField->Type eq 'FreeformSingle') {
 <input name="<%$Name%>"
 % if ($Values)  {

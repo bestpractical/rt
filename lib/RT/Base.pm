@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::Base;
 
 use vars qw(@EXPORT);

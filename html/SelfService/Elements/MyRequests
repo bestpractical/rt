@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc("Your [_1] requests", $friendly_status) &>
 <TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
 <TR>
