@@ -41,4 +41,5 @@ Status <& /Elements/SelectBoolean, Name => "NegateStatus", True => "is", False =
 
 </pre>
 </blockquote>
+<input type=submit>
 </FORM>
