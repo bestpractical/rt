@@ -88,8 +88,7 @@ sub IsApplicable  {
   # Loop check.  This header field might be added to the incoming mail
   # by RT::Interfaces::Email.pm if it might be a loop or result in
   # looping (typically a bounce) 
-
-  $self->TransactionObj->Message->First->head->get('RT-Mailing-Loop-Alarm')
+  $self->TransactionObj->Message->First->Headers =~ /^RT-Mailing-Loop-Alarm/mg
       && return 0;
 
   # More work needs to be done here to avoid duplicates beeing sent,
