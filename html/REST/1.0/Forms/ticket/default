@@ -1,68 +1,147 @@
-%# BEGIN LICENSE BLOCK
-%# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
-%# 
-%# (Except where explictly superceded by other copyright notices)
-%# 
-%# This work is made available to you under the terms of Version 2 of
-%# the GNU General Public License. A copy of that license should have
-%# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org.
-%# 
-%# This work is distributed in the hope that it will be useful, but
-%# WITHOUT ANY WARRANTY; without even the implied warranty of
-%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%# General Public License for more details.
-%# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
-%# 
-%# 
-%# END LICENSE BLOCK
 %# REST/1.0/Forms/ticket/default
 %#
 <%ARGS>
 $id
-$changes => undef
+$changes => {}
 </%ARGS>
 <%perl>
-my @data;
-my $ticket = new RT::Ticket $session{CurrentUser};
+use MIME::Entity;
 
+my @comments;
+my ($c, $o, $k, $e) = ("", [], {}, 0);
+my %data   = %$changes;
+my $ticket = new RT::Ticket $session{CurrentUser};
+my @dates  = qw(Starts Started Due Resolved Told);
+my @people = qw(Requestors Cc AdminCc);
+my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
+                InitialPriority FinalPriority TimeEstimated TimeWorked
+                TimeLeft Starts Started Due Resolved);
+my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
+                TimeLeft InitialPriority FinalPriority);
+my %dates  = map {lc $_ => $_} @dates;
+my %people = map {lc $_ => $_} @people;
+my %create = map {lc $_ => $_} @create;
+my %simple = map {lc $_ => $_} @simple;
+
+# Are we dealing with an existing ticket?
 if ($id ne 'new') {
     $ticket->Load($id);
     if (!$ticket->Id) {
         return [ "# Ticket $id does not exist.", [], {}, 1 ];
     }
     elsif (!$ticket->CurrentUserHasRight('ShowTicket') ||
-           ($changes && !$ticket->CurrentUserHasRight('ModifyTicket')))
+           (%data && !$ticket->CurrentUserHasRight('ModifyTicket')))
     {
-        my $act = $changes ? "modify" : "display";
+        my $act = %data ? "modify" : "display";
         return [ "# You are not allowed to $act ticket $id.", [], {}, 1 ];
     }
 }
 else {
-    # XXX: Can this fail?
-    $ticket->Create(Queue => 'general');
+    if (%data == 0) {
+        # GET ticket/new: Return a suitable default form.
+        # We get defaults from queue/1 (XXX: What if it isn't there?).
+        my $due = new RT::Date $session{CurrentUser};
+        my $queue = new RT::Queue $session{CurrentUser};
+        my $starts = new RT::Date $session{CurrentUser};
+        $queue->Load(1);
+        $due->SetToNow;
+        $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
+        $starts->SetToNow;
+
+        return [
+            "# Required: Queue, Requestor, Subject",
+            [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
+                 InitialPriority FinalPriority TimeEstimated Starts Due Text) ],
+            {
+                id               => "ticket/new",
+                Queue            => $queue->Name,
+                Requestor        => $session{CurrentUser}->Name,
+                Subject          => "",
+                Cc               => [],
+                AdminCc          => [],
+                Owner            => "",
+                Status           => "new",
+                Priority         => $queue->InitialPriority,
+                InitialPriority  => $queue->InitialPriority,
+                FinalPriority    => $queue->FinalPriority,
+                TimeEstimated    => 0,
+                Starts           => $starts->ISO,
+                Due              => $due->ISO,
+                Text             => "",
+            },
+            0
+        ];
+    }
+    else {
+        # We'll create a new ticket, and fall through to set fields that
+        # can't be set in the call to Create().
+        my (%v, $text);
+
+        foreach my $k (keys %data) {
+            if (exists $create{lc $k}) {
+                $v{$create{lc $k}} = delete $data{$k};
+            }
+            elsif (lc $k eq 'text') {
+                $text = delete $data{$k};
+            }
+        }
+
+        if ($text) {
+            $v{MIMEObj} =
+                MIME::Entity->build(
+                    From => $session{CurrentUser}->EmailAddress,
+                    Subject => $v{Subject},
+                    Data => $text
+                );
+        }
+
+        $ticket->Create(%v);
+        unless ($ticket->Id) {
+            return [ "# Could not create ticket.", [], {}, 1 ];
+        }
+
+        delete $data{id};
+        $id = $ticket->Id;
+        push(@comments, "# Ticket $id created.");
+        goto DONE if %data == 0;
+    }
 }
 
-my ($c, $o, $k, $e) = ("", [], {}, 0);
+# Now we know we're dealing with an existing ticket.
+if (%data == 0) {
+    my ($time, $key, $val, @data);
 
-my @dates  = qw(Starts Started Due Resolved Told);
-my @people = qw(Requestors Cc AdminCc);
-my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
-                TimeLeft InitialPriority FinalPriority);
+    push @data, [ id    => "ticket/".$ticket->Id   ];
+    push @data, [ Queue => $ticket->QueueObj->Name ];
+    push @data, [ Owner => $ticket->OwnerObj->Name ];
 
-my %dates  = map {lc $_ => $_} @dates;
-my %people = map {lc $_ => $_} @people;
-my %simple = map {lc $_ => $_} @simple;
+    foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
+        push @data, [$_ => $ticket->$_ ];
+    }
 
-if ($changes) {
+    foreach $key (@people) {
+        push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
+    }
+
+    $time = new RT::Date ($session{CurrentUser});
+    foreach $key (@dates) {
+        $time->Set(Format => 'sql', Value => $ticket->$key);
+        push @data, [ $key => $time->AsString ];
+    }
+
+    $time = new RT::Date ($session{CurrentUser});
+    foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
+        $val = $ticket->$key || 0;
+        $val = $time->DurationAsString($val*60) if $val;
+        push @data, [ $key => $val ];
+    }
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+}
+else {
     my ($get, $set, $key, $val, $n, $s);
-    my %data = %$changes;
-    my @comments;
 
     foreach $key (keys %data) {
         $val = $data{$key};
@@ -140,7 +219,7 @@ if ($changes) {
         }
         elsif ($key ne 'id' && $key ne 'type') {
             $n = 0;
-            $s = "Unknown field: $key";
+            $s = "Unknown field.";
         }
 
     SET:
@@ -148,47 +227,18 @@ if ($changes) {
             $e = 1;
             push @comments, "# $key: $s";
             unless (@$o) {
-                @$o = ("id", keys %data);
-                %$k = %data;
+                my %o = keys %$changes;
+                delete $o{id};
+                @$o = ("id", keys %o);
+                $k = $changes;
             }
         }
     }
-
-    push(@comments, "# Ticket $id updated.") unless @comments;
-    $c = join("\n", @comments) if @comments;
-}
-else {
-    my ($time, $key, $val, @data);
-
-    push @data, [ id    => "ticket/".$ticket->Id   ];
-    push @data, [ Queue => $ticket->QueueObj->Name ];
-    push @data, [ Owner => $ticket->OwnerObj->Name ];
-
-    foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
-        push @data, [$_ => $ticket->$_ ];
-    }
-
-    foreach $key (@people) {
-        push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
-    }
-
-    $time = new RT::Date ($session{CurrentUser});
-    foreach $key (@dates) {
-        $time->Set(Format => 'sql', Value => $ticket->$key);
-        push @data, [ $key => $time->AsString ];
-    }
-
-    $time = new RT::Date ($session{CurrentUser});
-    foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
-        $val = $ticket->$key || 0;
-        $val = $time->DurationAsString($val*60) if $val;
-        push @data, [ $key => $val ];
-    }
-
-    my %k = map {@$_} @data;
-    $o = [ map {$_->[0]} @data ];
-    $k = \%k;
+    push(@comments, "# Ticket $id updated.") unless $n == 0;
 }
 
-return [ $c, $o, $k, $e ];
+DONE:
+$c ||= join("\n", @comments) if @comments;
+return [$c, $o, $k, $e];
+
 </%perl>
