@@ -17,8 +17,8 @@ any comments you may have.
 	jrvincent@wesleyan.edu
 
 
-To upgrade from .9.1 to .9.5 (if you're daring):
-	mysqldump your old rt database
+To upgrade from .9.1 to .9.6:
+	"mysqldump -c -t rt"  -- dump out the data from your old rt database
 	copy your current RT installation to a safe location
 	install a fresh copy of RT .9.5, as if for the first time
 	mysql rt < (YOUR_RT_DUMP_FILE)
