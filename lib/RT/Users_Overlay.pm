@@ -1,4 +1,3 @@
-
 # $Header: /raid/cvsroot/rt/lib/RT/Users.pm,v 1.2 2001/11/06 23:04:15 jesse Exp $
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
@@ -145,6 +144,16 @@ sub LimitToPrivileged {
 
 =head2 WhoHaveRight { Right => 'name', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
+=begin testing
+
+ok(my $users = RT::Users->new($RT::SystemUser));
+ok( $users->WhoHaveRight(ObjectType =>'System', Right =>'SuperUser'));
+ok($users->Count == 2, "There are two superusers");
+# TODO: this wants more testing
+
+=end testing
+
+
 
 =cut
 
@@ -170,145 +179,134 @@ sub WhoHaveRight {
 
 # {{{ WhoHaveRight
 
-=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
+=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, 
+
+
+
+In the future, we'll also allow these parameters:
+
+    IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
 
 =cut
-
 
 sub WhoHaveRight {
 
     my $self = shift;
-    my %args = ( Right => undef,
-                 ObjectType => undef,
-                 ObjectId => undef,
-                 IncludeSystemRights => undef, 
-                 IncludeSuperusers => undef,
-                 IncludeSubgroupMembers => undef, 
-                 @_);
+    my %args = (
+        Right                  => undef,
+        ObjectType             => undef,
+        ObjectId               => undef,
+        IncludeSystemRights    => undef,
+        IncludeSuperusers      => undef,
+        IncludeSubgroupMembers => 1,
+        @_
+    );
 
+    my $users      = 'main';
+    my $groups     = $self->NewAlias('Groups');
+    my $userprinc  = $self->NewAlias('Principals');
+    my $groupprinc = $self->NewAlias('Principals');
+    my $acl        = $self->NewAlias('ACL');
+    my $cgm;
+    if ($args{'IncludeSubgroupMembers'} ) {
+        $cgm        = $self->NewAlias('CachedGroupMembers');
+     }
+     else {
+        $cgm        = $self->NewAlias('GroupMembers');
+     }
 
- # Find all users who have this right OR all users who are members of groups 
- # which have this right for this object
+    # Find all users who have this right OR all users who are members of groups 
+    # which have this right for this object
 
-}
-# }}}
+    if ( $args{'ObjectType'} eq 'Ticket' ) {
+        $or_check_ticket_roles =
+          " OR ( $groups.Domain = 'TicketRole' AND $groups.Instance = '"
+          . $args{'ObjectId'} . "') ";
 
+        # If we're looking at ticket rights, we also want to look at the associated queue rights.
+        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
+        # and ask all the rest of our questions about the queue.
+        my $tick = RT::Ticket->new($RT::SystemUser);
+        $tick->Load( $args{'ObjectId'} );
+        $args{'ObjectType'} = 'Queue';
+        $args{'ObjectId'}   = $tick->QueueObj->Id();
 
-# {{{ HasQueueRight
+    }
+    if ( $args{'ObjectType'} eq 'Queue' ) {
+        $or_check_roles =
+          " OR ( ( ($groups.Domain = 'QueueRole' AND $groups.Instance = '"
+          . $args{'ObjectId'}
+          . "') $or_check_ticket_roles ) "
+          . " AND $groups.Type = $acl.PrincipalType AND $groups.Id = $groupprinc.ObjectId AND $groupprinc.PrincipalType = 'Group') ";
+    }
 
-=head2 HasQueueRight
+    if ( defined $args{'ObjectType'} ) {
+        $or_look_at_object_rights =
+          " OR ($acl.ObjectType = '"
+          . $args{'ObjectType'}
+          . "'  AND $acl.ObjectId = '"
+          . $args{'ObjectId'} . "') ";
 
-Takes a queue id as its first argument.  Queue Id "0" is treated by RT as "applies to all queues"
-Takes a specific right as an optional second argument
+    }
 
-Limits the returned set to users who have rights in the queue specified, personally.  If the optional second argument is supplied, limits to users who have been explicitly granted that right.
+    $self->Join(
+        ALIAS1 => $users,
+        FIELD1 => 'id',
+        ALIAS2 => $userprinc,
+        FIELD2 => 'ObjectId'
+    );
 
+    $self->Join(
+        ALIAS1 => $cgm,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $userprinc,
+        FIELD2 => 'Id'
+    );
 
+    $self->Join(
+        ALIAS1 => $cgm,
+        FIELD1 => 'GroupId',
+        ALIAS2 => $groupprinc,
+        FIELD2 => 'Id'
+    );
 
-This should not be used as an ACL check, but only for obtaining lists of
-users with explicit rights in a given queue.
+    $self->Limit(
+        ALIAS    => $userprinc,
+        FIELD    => 'PrincipalType',
+        OPERATOR => '=',
+        VALUE    => 'User'
+    );
 
-=cut
+    if ( $args{'IncludeSuperusers'} ) {
+        $self->Limit(
+            ALIAS    => $acl,
+            FIELD    => 'RightName',
+            OPERATOR => '=',
+            VALUE    => 'SuperUser',
+	    ENTRYAGGREGATOR => 'OR'
+        );
+    }
 
-sub HasQueueRight {
-    my $self = shift;
-    my $queue = shift;
-    my $right;
-    
-    $right = shift if (@_);
+    $self->Limit(
+        ALIAS           => $acl,
+        FIELD           => 'RightName',
+        OPERATOR        => '=',
+        VALUE           => $args{Right},
+        ENTRYAGGREGATOR => 'OR'
+    );
 
+    $self->_AddSubClause( "WhichRight",
+        "($acl.ObjectType = 'System' $or_look_at_object_rights)" );
+    $self->_AddSubClause( "WhichGroup",
+        "( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.ObjectId = $groups.Id AND $acl.PrincipalType = 'Group' AND "
+          . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"
+    );
 
-    my $acl_alias  = $self->NewAlias('ACL');
-    $self->Join( ALIAS1 => 'main',  FIELD1 => 'id',
-		 ALIAS2 => $acl_alias, FIELD2 => 'PrincipalId');
-    $self->Limit (ALIAS => $acl_alias,
-		 FIELD => 'PrincipalType',
-		 OPERATOR => '=',
-		 VALUE => 'User');
-
-
-    $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightAppliesTo',
-		 OPERATOR => '=',
-		 VALUE => "$queue");
-
-
-    $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope',
-		 OPERATOR => '=',
-		 ENTRYAGGREGATOR => 'OR',
-		 VALUE => 'Queue');
-
-
-    $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope',
-		 OPERATOR => '=',
-		 ENTRYAGGREGATOR => 'OR',
-		 VALUE => 'Ticket');
-
-
-    #TODO: is this being initialized properly if the right isn't there?
-    if (defined ($right)) {
-	
-	$self->Limit(ALIAS => $acl_alias,
-		     FIELD => 'RightName',
-		     OPERATOR => '=',
-		     VALUE => "$right");
-	
-	
-       };
-
-
-}
-
-
-
-# }}}
-
-# {{{ HasSystemRight
-
-=head2 HasSystemRight
-
-Takes one optional argument:
-   The name of a System level right.
-
-Limits the returned set to users who have been granted system rights, personally.  If the optional argument is passed in, limits to users who have been granted the explicit right listed.   Please see the note attached to LimitToQueueRights
-
-=cut
-
-sub HasSystemRight {
-    my $self = shift;
-    my $right = shift if (@_);
-       my $acl_alias  = $self->NewAlias('ACL');
-
-
-    $self->Join( ALIAS1 => 'main',  FIELD1 => 'id',
-		 ALIAS2 => $acl_alias, FIELD2 => 'PrincipalId');
-    $self->Limit (ALIAS => $acl_alias,
-		 FIELD => 'PrincipalType',
-		 OPERATOR => '=',
-		 VALUE => 'User');
-
-    $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope',
-		 OPERATOR => '=',
-		 VALUE => 'System');
-
-
-    #TODO: is this being initialized properly if the right isn't there?
-    if (defined ($right)) {
-	$self->Limit(ALIAS => $acl_alias,
-		     FIELD => 'RightName',
-		     OPERATOR => '=',
-		     VALUE => "$right");
-	
-       }
-
-    
 }
 
 # }}}
+
 
 1;
 

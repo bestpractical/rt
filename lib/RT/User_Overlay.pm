@@ -939,25 +939,6 @@ sub PrincipalId {
 # }}}
 
 
-=head2 ACLEquivalenceGroupObj 
-
-Returns the ACLEquivalenceGroup object for this user. returns an empty RT::ACLEquivalenceGroup
-if there's no ACLEquivalenceGroup object matching this user. 
-The response is cached. ACLEquivalenceGroupObj should never ever change.
-
-=begin testing
-
-ok(my $u = RT::User->new($RT::SystemUser));
-ok($u->Load(1), "Loaded the first user");
-ok($u->ACLEquivalenceGroupObj->ObjectId == 1, "user 1 is the first ACLEquivalenceGroup");
-ok($u->ACLEquivalenceGroupObj->ACLEquivalenceGroupType eq 'User' , "ACLEquivalenceGroup 1 is a user, not a group");
-
-=end testing
-
-=cut
-
-
-# {{{ ACL Related routines
 
 # {{{ sub HasGroupRight
 
