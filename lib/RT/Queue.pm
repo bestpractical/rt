@@ -247,14 +247,14 @@ sub CurrentUserHasRight {
 
 # {{{ sub HasRight
 
-# TAKES: Right and optional "Actor" which defaults to the current user
+# TAKES: Right and optional "Principal" which defaults to the current user
 sub HasRight {
     my $self = shift;
         my %args = ( Right => undef,
-                     Principal => undef,
+                     Principal => $self->CurrentUser,
                      @_);
         unless(defined $args{'Principal'}) {
-                $RT::Logger->warn("Principal attrib undefined for Queue::HasRight");
+                $RT::Logger->debug("Principal attrib undefined for Queue::HasRight");
 
         }
         return($args{'Principal'}->HasQueueRight(QueueObj => $self,

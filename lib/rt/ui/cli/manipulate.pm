@@ -334,8 +334,8 @@ sub cli_create_req  {
       $Owner = RT::User->new($CurrentUser);
       
       $owner=&rt::ui::cli::question_string( "Give request to");
-      
-      while ($owner && (!$Owner->Load($owner) || !$Queue->HasRight("ModifyTicket",$Owner))) {
+	
+      while ($owner && (!$Owner->Load($owner) || !$Queue->HasRight( Right => "ModifyTicket", Principal => $Owner))) {
 	
 	print "That user doesn't exist or can't own tickets in that queue\n";
 	$owner=&rt::ui::cli::question_string( "Give request to")
