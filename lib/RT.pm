@@ -123,6 +123,19 @@ RT - Request Tracker
 
 =head1 SEE ALSO
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+
+ok ($RT::Nobody->Name() eq 'Nobody', "Nobody is nobody");
+ok ($RT::Nobody->Name() ne 'root', "Nobody isn't named root");
+ok ($RT::SystemUser->Name() eq 'RT_System', "The system user is RT_System");
+ok ($RT::SystemUser->Name() ne 'noname', "The system user isn't noname");
+
+
+=end testing
+
 =cut
 
 1;
