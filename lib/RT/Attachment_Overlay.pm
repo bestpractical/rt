@@ -432,10 +432,13 @@ properly unfolded.
 =cut
 
 sub NiceHeaders {
-    my $self=shift;
-    my $hdrs="";
-    for (split(/\n/,$self->Headers)) {
-	    $hdrs.="$_\n" if /^(To|From|RT-Send-Cc|Cc|Date|Subject): /i
+    my $self = shift;
+    my $hdrs = "";
+    my @hdrs = split(/\n/,$self->Headers);
+    while (my $str = shift @hdrs) {
+	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Date|Subject): /i;
+	    $hdrs .= $str . "\n";
+	    $hdrs .= shift( @hdrs ) . "\n" while ($hdrs[0] =~ /^[ \t]+/);
     }
     return $hdrs;
 }
