@@ -140,7 +140,6 @@ sub LoadByURI {
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
-  id 
   Queue  - Either a Queue object or a Queue Name
   Requestor -  A reference to a list of RT::User objects, email addresses or RT user Names
   Cc  - A reference to a list of RT::User objects, email addresses or Names
@@ -178,7 +177,7 @@ ok ( my $id = $t->Id, "Got ticket id");
 sub Create {
     my $self = shift;
     
-    my %args = (id => undef,
+    my %args = (
 		Queue => undef,
 		Requestor => undef,
 		Cc => undef,
@@ -424,6 +423,9 @@ sub Create {
 Import a ticket. 
 Doesn\'t create a transaction. 
 Doesn\'t supply queue defaults, etc.
+
+Arguments are identical to Create(), with the addition of
+    Id -    Ticket Id
 
 Returns: TICKETID
 
