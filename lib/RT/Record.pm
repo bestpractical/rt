@@ -474,12 +474,32 @@ sub _Set {
         $args{'Value'} = 0;
     }
 
-    $self->_SetLastUpdated();
-    my ( $val, $msg ) = $self->SUPER::_Set(
+    my $old_val = $self->__Value($args{'Field'});
+     $self->_SetLastUpdated();
+    my $ret = $self->SUPER::_Set(
         Field => $args{'Field'},
         Value => $args{'Value'},
         IsSQL => $args{'IsSQL'}
     );
+    # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
+    # we want to change the standard "success" message
+    if ($ret) {
+        my @values = $ret->as_array;
+        # @values has two values, a status code and a message.
+        pop @values;
+        push @values,
+          $self->loc(
+            "[_1] changed from [_2] to [_3]",
+            $args{'Field'},
+            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            '"' . $self->__Value( $args{'Field'} . '"' )
+          );
+
+        $ret->as_array(@values);     
+    }
+
+    return ($ret);
+
 }
 
 # }}}
@@ -873,9 +893,13 @@ sub Update {
         my ( $code, $msg ) = $self->$method($value);
 
         my ($prefix) = ref($self) =~ /RT::(\w+)/;
+
+        # Default to $id, but use name if we can get it.
+        my $label = $self->id;
+        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
+
         push @results,
-          $self->loc( "$prefix [_1]", $self->id ) . ': '
-          . $self->loc($attribute) . ': '
+          $self->loc( "$prefix [_1]", $label ) . ': '
           . $self->CurrentUser->loc_fuzzy($msg);
 
 =for loc
@@ -1014,10 +1038,12 @@ ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps"
 
 my ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
-ok($t2->Resolve);
+my ($rid2, $rmsg2) = $t2->Resolve();
+ok ($rid2, $rmsg2);
 ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
-ok($t3->Resolve);
+my ($rid3,$rmsg3) = $t3->Resolve;
+ok ($rid3,$rmsg3);
 ($rid, $rmsg)= $t1->Resolve();
 ok($rid, $rmsg);
 
