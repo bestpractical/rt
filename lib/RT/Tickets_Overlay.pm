@@ -2092,9 +2092,9 @@ sub _RestrictionsToClauses {
     }
 
     # Two special case
-    # CustomFields have a different real field
-    if ($field =~ /^CF\./) {
-      $realfield = "CF"
+    # Handle subkey fields with a different real field
+    if ($field =~ /^(\w+)\./) {
+      $realfield = $1;
     }
 
     die "I don't know about $field yet"
