@@ -1,0 +1,33 @@
+%# $Header$
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+<& /Elements/Header, Title => "Ticket History #".$Ticket->Id ." ".$Ticket->Subject &>
+<& /Ticket/Elements/Tabs, Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id  &>
+
+<BR>
+      
+<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, ShowHeaders => $ARGS{'ShowHeaders'} &> 
+
+
+<%ARGS>
+$id => undef
+</%ARGS>
+
+<%INIT>
+
+  
+
+my $Ticket = new RT::Ticket($session{'CurrentUser'});
+
+unless ($Ticket->Load($id)) {
+	Abort("Ticket couldn't be loaded");
+}	
+unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+	Abort("No permission to view ticket");
+}
+
+</%INIT>
+
+
+
+

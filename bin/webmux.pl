@@ -26,7 +26,8 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::SearchBuilder::Handle;
+# don't think we need this anymore.
+#use DBIx::SearchBuilder::Handle;
 
 
 {  
@@ -77,7 +78,7 @@ use DBIx::SearchBuilder::Handle;
 
 my $parser = &RT::Interface::Web::NewParser();
 
-my $interp = &RT::Interface::Web::NewInterp($parser);
+my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
 
 my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 

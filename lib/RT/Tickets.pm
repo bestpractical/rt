@@ -1281,7 +1281,7 @@ sub _TicketColumnValue {
 	    $method = 'AsString' if $m =~ /asstring/i;
 	    $method = 'AgeAsString' if $m =~ /age/i;
 	    last SWITCH;
-	    $obj->$method
+	    $obj->$method();
 	      
 	};
 	  

@@ -11,13 +11,19 @@ package RT::Interface::Web;
 
 =head2 NewParser
 
-  returns a new Mason::Parser object
+  Returns a new Mason::Parser object. Takes a param hash of things 
+  that get passed to HTML::Mason::Parser. Currently hard coded to only
+  take the parameter 'allow_globals'.
 
 =cut
 
 sub NewParser {
-    
-    my $parser = new HTML::Mason::Parser( default_escape_flags=>'h',
+    my %args = ( allow_globals => undef,
+                 @_ );
+
+    my $parser = new HTML::Mason::Parser( 
+                        default_escape_flags=>'h',
+                        allow_globals => $args{'allow_globals'}
 					);
     return($parser);
 }
@@ -28,20 +34,23 @@ sub NewParser {
 
 =head2 NewInterp 
 
-  Takes a mason::parser object
+  Takes a paremeter hash. Needs a param called 'parser' which is a reference
+  to an HTML::Mason::Parser.
   returns a new Mason::Interp object
 
 =cut
 
 sub NewInterp {
-
-    my $parser=shift;
+    my %params = ( allow_recursive_autohandlers => 1,
+                   comp_root => "$RT::MasonComponentRoot",
+                   data_dir => "$RT::MasonDataDir",
+                   parser => undef,
+                   @_);
     
-#We allow recursive autohandlers to allow for RT auth.
-    my $interp = new HTML::Mason::Interp( allow_recursive_autohandlers =>1, 
-					  parser=>$parser,
-					  comp_root=>"$RT::MasonComponentRoot",
-					  data_dir=>"$RT::MasonDataDir");
+    #We allow recursive autohandlers to allow for RT auth.
+
+    use HTML::Mason::Interp;
+    my $interp = new HTML::Mason::Interp(%params);
     
 }
 

@@ -1,0 +1,193 @@
+#!/usr/bin/perl
+
+#!/usr/bin/speedy -- -t600 -M8
+# $Header$
+# RT is (c) 1996-2001 Jesse Vincent (jesse@fsck.com);
+#
+# Contains code derived from mason.cgi
+# mason.cgi is Copyright December 2000 Joshua Kronengold (mneme@io.com, 
+# mneme@cyberspace.org).  All Rights Reserved.
+
+use strict;
+# {{{ Clean out the environment a little bit
+$ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
+$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+$ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
+$ENV{'ENV'} = '' if defined $ENV{'ENV'};
+$ENV{'IFS'} = ''          if defined $ENV{'IFS'};
+# }}}
+
+package RT::Mason;
+use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
+use vars qw($VERSION %session $Nobody $SystemUser);
+
+# List of modules that you want to use from components (see Admin
+# manual for details)
+
+$VERSION="!!RT_VERSION!!";
+
+use lib "!!RT_LIB_PATH!!";
+use lib "!!RT_ETC_PATH!!";
+
+
+#This drags in  RT's config.pm
+use config;
+use Carp;
+
+use HTML::Mason::FakeApache;
+use CGI;
+
+# {{{ Set up CGI environment and grab CGI params:
+
+my $r=new HTML::Mason::FakeApache;
+
+$|=1; # set output to non-buffered.
+
+my %cgi;
+CGI::ReadParse(\%cgi); # %cgi is now a tied hash containing our params.
+
+my $q=$cgi{CGI}; # $q now contains the object tied to %cgi.
+# }}}
+
+# {{{ require what we need
+{  
+    package HTML::Mason::Commands;
+
+    use vars qw(%session);
+
+    use RT::Ticket;
+    use RT::Tickets;
+    use RT::Transaction;
+    use RT::Transactions;
+    use RT::User;
+    use RT::Users;
+    use RT::CurrentUser;
+    use RT::Template;
+    use RT::Templates;
+    use RT::Queue;
+    use RT::Queues;
+    use RT::ScripAction;
+    use RT::ScripActions;
+    use RT::ScripCondition;
+    use RT::ScripConditions;
+    use RT::Scrip;
+    use RT::Scrips;
+    use RT::Group;
+    use RT::Groups;
+    use RT::Keyword;
+    use RT::Keywords;
+    use RT::ObjectKeyword;
+    use RT::ObjectKeywords;
+    use RT::KeywordSelect;
+    use RT::KeywordSelects;
+    use RT::GroupMember;
+    use RT::GroupMembers;
+    use RT::Watcher;
+    use RT::Watchers;
+    use RT::Handle;
+    use RT::Interface::Web;    
+    use MIME::Entity;
+    use CGI::Cookie;
+    use Date::Manip;
+    use HTML::Entities;
+
+    
+    use Apache::Session::File;
+
+    
+}
+# }}}
+
+# {{{ RT Database setup
+    $RT::Handle = new RT::Handle;
+    
+    $RT::Handle->Connect;
+   
+    use RT::CurrentUser;
+    
+    #RT's system user is a genuine database user. its id lives here
+    $RT::SystemUser = new RT::CurrentUser();
+    $RT::SystemUser->LoadByUserId('RT_System');
+
+    #RT's "nobody user" is a genuine database user. its ID lives here.
+    $RT::Nobody = new RT::CurrentUser();
+    $RT::Nobody->LoadByUserId('Nobody'); 
+     
+
+# }}}
+
+
+
+
+# {{{ Deal with cookies
+
+my %cookies = fetch CGI::Cookie();
+eval { 
+    tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+      ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef );
+};
+
+if ( $@ ) {
+    # If the session is invalid, create a new session.
+    if ( $@ =~ m#^Object does not exist in the data store# ) {
+	 tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef;
+	 undef $cookies{'AF_SID'};
+    }
+}
+
+if ( !$cookies{'AF_SID'} ) {
+    my $cookie = new CGI::Cookie(
+ 	 -name=>'AF_SID', 
+	 -value=>$HTML::Mason::Commands::session{_session_id}, 
+	  -path => '/');
+    print 'Set-Cookie: '. $cookie."\r\n";
+}
+
+# }}}
+
+my $path=$ENV{PATH_INFO} || "/"; $path=~s/\'/\\\'/g;
+
+my $type=`/usr/bin/file '$RT::MasonComponentRoot/$path'`;
+
+# {{{ if it's a text file, handle it with mason.
+if($type=~/text|directory/) { 
+	my ($out, %mason_params);
+        my $parser = RT::Interface::Web::NewParser(allow_globals=>[qw($r)]);
+	$mason_params{parser}=$parser;
+	$r->content_type('text/html');
+	# (get cookies line) ...
+	$r->access_hash('headers_in','Cookie',$ENV{HTTP_COOKIE});
+	$r->{'args@'}=[];
+	$mason_params{out_method}=\$out;
+
+	my $interp = RT::Interface::Web::NewInterp(%mason_params);
+
+	$interp->set_global(r=>$r);
+	$interp->exec($path,%cgi);
+	$r->send_http_header();
+        print $out;
+} 
+# }}} 
+
+# {{{ if it's not a text file, just stream it out.
+
+else { # file is binary, damn it
+	my $mime_type;
+	if ( $mime_type=
+	     eval{ use MIME::Types;
+		   my($type,$encoding)=MIME::Types::by_suffix($path);
+		   $type; }) {
+	    print $q->header($mime_type);	
+	    $path=~s/[\|\>\<\&]//g;
+	    open F,"$RT::MasonComponentRoot/$path" or 
+	      die "couldn't open $path -- $!";
+	    print while <F>; 
+	    close F;
+	} else {
+	    die "couldn't resolve type of non-text file (!@; $type) -- install Mime::Types\n";
+	}
+    }
+
+# }}}
+
+untie %HTML::Mason::Commands::session;

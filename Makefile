@@ -50,11 +50,14 @@ RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 # The rtmux is the script which invokes whichever rt program it needs to.
 RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 
-# RT_MODPERL_HANDLER is the mason handler script for apache 
+# RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
 
-# RT_FASTCGI_HANDLER is the mason handler script for fcgi
+# RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.fcgi
+
+# RT_SPEEDYCGI_HANDLER is the mason handler scropt for SpeedyCGI
+RT_SPEEDYCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.scgi
 
 # The following are the names of the various binaries which make up RT 
 
@@ -179,11 +182,18 @@ fixperms:
 
 	chmod 0550 $(RT_CONFIG)
 
-	# Make the perl mux executable and setgid rt
-	chown $(BIN_OWNER) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
-	chgrp $(RTGROUP) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
-	chmod 0755 $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
-	chmod g+s $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
+	# Make the interfaces executable and setgid rt
+	chown $(BIN_OWNER) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+
+	chgrp $(RTGROUP) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+
+	chmod 0755 $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+
+	chmod g+s $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
 
 	# Make the web ui readable by all. 
 	chmod -R 0755 $(MASON_HTML_PATH)
@@ -200,9 +210,6 @@ dirs:
 	mkdir -p $(RT_ETC_PATH)
 	mkdir -p $(RT_LIB_PATH)
 	mkdir -p $(MASON_HTML_PATH)
-	# We don't need to do this anymore. all we want to copy is config.pm
-	# That gets done elsewhere
-	#cp -rp ./etc/* $(RT_ETC_PATH)
 
 libs-install: 
 	[ -d $(RT_LIB_PATH) ] || mkdir $(RT_LIB_PATH)
@@ -251,6 +258,7 @@ mux-install:
 	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
 	cp -p ./bin/rt $(RT_CLI_BIN)
 	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
+	cp -p ./bin/mason_handler.scgi $(RT_SPEEDYCGI_HANDLER)
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
@@ -260,7 +268,8 @@ mux-install:
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
 				s'!!WEB_USER!!'$(WEB_USER)'g;\
 				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
-					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
 
 
 mux-links:

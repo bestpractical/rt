@@ -1,0 +1,79 @@
+this file contains basic notes for what an RT testsuite should do.
+at the moment we're talking about a system testsuite and not a
+unit testsuite.  that should exist too.
+
+this testsuite verifies that RT has been installed correctly and has a 
+complete and functional database with (at least) some proper defaults.
+
+
+things to check:
+
+systemuser exists
+nobody exists
+root exists
+
+
+systemuser and nobody are system users
+root has acls
+
+
+as root:
+
+we can create a queue
+we can create a privileged user 
+we can grant that user the rights to create, see and modify tickets in that queue
+we can create a nonpriviledged user
+the non-prived user can't create a ticket in that queue
+we can allow 'requestor' to create and see requests in that queue
+the non-prived user can't create a ticket in that queue
+
+
+
+
+
+
+Things to test:
+Core queue ops
+        create
+        delete
+        core attributes
+        keyword selects
+        
+Core template ops
+        create
+        delete
+        parse
+        modify
+        
+Core ticket ops
+        Transactions
+                MIME support
+Core Keywords ops
+        create
+        delete
+        reparent?
+        
+Core Group ops
+        create
+        add members
+        delete members
+        grant rights
+        revoke rights
+        modify attributes
+        read attributes
+Core user ops
+        create
+        delete
+        set password
+        check password
+        core attributes
+        make priviledged
+        make unprivileged
+        
+Conditions
+
+Actions
+
+Mailgateway
+CLI
+Web UI
