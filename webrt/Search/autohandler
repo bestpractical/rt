@@ -1,10 +1,11 @@
 <%PERL>
 if (defined ($user) && defined ($pass)){
 	#TODO if the password is the user's password
-	my $tst = RT::CurrentUser->new() or die "huh1?";
-	$session{'CurrentUser'} = $tst
-		or die "huh2?";
-	$session{'CurrentUser'}->Load($user);
+	$session{'CurrentUser'} = RT::CurrentUser->new();
+	unless ($session{'CurrentUser'}->Load($user)) {
+		&mc_comp("/Elements/Error", Why => "User Unknown");
+		$m->abort;
+	};
 
         $m->call_next;
 }
