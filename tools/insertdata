@@ -59,6 +59,7 @@ $CurrentUser->LoadByName('RT_System');
 my @users = ( 
 	     { 
 	      Name => 'Nobody',
+	      EmailAddress => "nobody\@localhost",
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral ' .
 	      'to RT\'s internal data structures',
@@ -420,9 +421,10 @@ print "done.\n";
 print "Creating users...";
 use RT::User;
 foreach $item (@users) {
-   my $new_entry = new RT::User($CurrentUser);
-   my ($return, $msg) = $new_entry->Create(%$item);
-  print $return.".";
+    my $new_entry = new RT::User($CurrentUser);
+    my ($return, $msg) = $new_entry->Create(%$item);
+    print "(Error: $msg)"   unless ($return);
+    print $return.".";
 }
 print "done.\n";
 
@@ -442,6 +444,7 @@ use RT::Queue;
 for $item (@queues) {
     my $new_entry = new RT::Queue($CurrentUser);
     my ($return, $msg) = $new_entry->Create(%$item);
+    print "(Error: $msg)"   unless ($return);
     print $return.".";
 }
 

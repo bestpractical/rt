@@ -290,7 +290,7 @@ my $gratuitous = {
     'Created', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
-  'unique' => [ ['Name'] ],
+  'unique' => [ [''] ],
   'index' => [  ],
 },
 

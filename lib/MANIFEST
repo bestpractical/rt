@@ -53,6 +53,5 @@ RT/Transaction.pm
 RT/Transactions.pm
 RT/User.pm
 RT/Users.pm
-RT/Utils.pm
 RT/Watcher.pm
 RT/Watchers.pm

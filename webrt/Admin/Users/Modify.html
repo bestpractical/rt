@@ -130,7 +130,9 @@ if ($Create) {
 } 
 else {
 if ($id eq 'new') {
-    my ($val, $msg) = $UserObj->Create( Name => $Name );
+    my ($val, $msg) = $UserObj->Create( Name => $Name,
+					EmailAddress => $ARGS{'EmailAddress'}
+				      );
     push @results, $msg;
 }
 else {
