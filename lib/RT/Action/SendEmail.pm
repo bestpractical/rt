@@ -299,12 +299,36 @@ sub SendMessage {
 
      my $success = ($msgid. " sent To: ".$MIMEObj->head->get('To') . " Cc: ".$MIMEObj->head->get('Cc') . " Bcc: ".$MIMEObj->head->get('Bcc'));
     $success =~ s/\n//gi;
+
+    $self->RecordOutgoingMailTransaction($MIMEObj);
+
     $RT::Logger->info($success);
 
     return (1);
 }
 
 # }}}
+
+=head2 RecordOutgoingMailTransaction MIMEObj
+
+Record a transaction in RT with this outgoing message for future record-keeping purposes
+
+=cut
+
+
+sub RecordOutgoingMailTransaction {
+    my $self = shift;
+    my $MIMEObj = shift;
+
+    my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
+
+    # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
+
+    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => 'EmailRecord', Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+
+
+}
+
 
 # {{{ Deal with message headers (Set* subs, designed for  easy overriding)
 
