@@ -5,9 +5,13 @@ Help();
 sub Help {
 print <<EOF;
 
-User configuration
+USAGE:  rtadmin --user <userid> [Userflags]
+	rtadmin --queue <queueid> [Queueflags]
+	rtadmin --system  [SystemFlags]
+	rtadmin --keyword [keywordflags]
+	rtadmin --group [groupflags]
 
---user <userid>
+User configuration for --user <userid>
    
   	--delete
   	--create
@@ -48,8 +52,7 @@ User configuration
 	--set-otherinfo	
 
 
-Group Configuration
---group <groupid>
+Group Configuration for --group <groupid>
 	--create 
 	--delete
 	--set-description <new description>
@@ -58,8 +61,7 @@ Group Configuration
 	--delete-member <userid>
 	
 
-Queue Configuration
---queue <queueid>
+Queue Configuration for --queue <queueid>
 	--create
 	--delete
 	--set-queueid
@@ -90,8 +92,7 @@ Queue Configuration
 	--revoke-group <groupid> <right>
 
 
-System configuration
---system 
+System configuration for --system 
 	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
 	--delete-keyword-select [name]
 	
@@ -109,8 +110,7 @@ System configuration
 	--revoke-group <groupid> <right>	
 
 
-Keywords
---keyword  <fully qualified name>
+Keywords for --keyword  <fully qualified name>
   	--create
 	--delete
 	--set-name
