@@ -188,6 +188,20 @@ mux-install:
 	cp -rp ./bin/rtmux.pl $(RTMUX)  
 	$(PERL) -p -i.orig -e"s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
+	rm -f $(RT_BIN_PATH)/rt
+	ln -s $(RTMUX) $(RT_BIN_PATH)/rt
+	rm -f $(RT_BIN_PATH)/rtadmin
+	ln -s $(RTMUX) $(RT_BIN_PATH)/rtadmin
+	rm -f $(RT_BIN_PATH)/rtq
+	ln -s  $(RTMUX) $(RT_BIN_PATH)/rtq
+	rm -f $(RT_BIN_PATH)/rt-mailgate
+	ln -s $(RTMUX) $(RT_BIN_PATH)/rt-mailgate
+	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
+	ln  $(RTMUX) $(RT_CGI_PATH)/nph-webrt.cgi
+	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
+	ln  $(RTMUX) $(RT_CGI_PATH)/nph-admin-webrt.cgi
+	chmod 4755 $(RT_CGI_PATH)/nph-webrt.cgi
+	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
 
 config-replace:
 	 $(PERL) -p -i.bak  -e"\

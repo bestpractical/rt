@@ -1,6 +1,6 @@
 #!/usr/bin/perl -T
 #
-#
+# $Header$
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
 
 require "ctime.pl";
@@ -37,7 +37,7 @@ elsif ($0 =~ '/rtadmin$') {
   require rt::support::utils;     
   require rt::ui::cli::support;
   require rt::ui::cli::admin;
-  &rt::ui::cli::activate();
+  &rt::ui::cli::admin::activate();
 }
 elsif ($0 =~ '/nph-webrt.cgi$') {
   #

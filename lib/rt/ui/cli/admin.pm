@@ -1,4 +1,5 @@
-package rt::ui::cli::admin
+#$Header$
+package rt::ui::cli::admin;
 
 
 sub activate {
