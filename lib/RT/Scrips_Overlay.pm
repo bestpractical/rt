@@ -146,24 +146,22 @@ sub Apply {
                  Type           => undef,
                  @_ );
 
-    my @scrips_to_commit = $self->Prepare(%args);
-
-    $self->Commit(@scrips_to_commit);
+    $self->Prepare(%args);
+    $self->Commit();
 
 }
 
-=head2 Commit ARRAY
+=head2 Commit
 
-Expects an array of scrips. Iterate through them and commit each one in order
+Commit all of this object's prepared scrips
 
 =cut
 
 sub Commit {
     my $self = shift;
-    my @scrips_to_commit = (@_);
 
     
-    foreach my $scrip (@scrips_to_commit) {
+    foreach my $scrip (@{$self->Prepared}) {
 
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
                         TransactionObj => $self->{'TransactionObj'} );
@@ -197,7 +195,6 @@ sub Prepare {
 
     $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
 
-    my @scrips_to_commit;
 
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->Next() ) {
@@ -213,13 +210,26 @@ sub Prepare {
           unless ( $scrip->Prepare( TicketObj      => $self->{'TicketObj'},
                                     TransactionObj => $self->{'TransactionObj'}
                    ) );
-        push @scrips_to_commit, $scrip;
+        push @{$self->{'prepared_scrips'}}, $scrip;
 
     }
 
-    return (@scrips_to_commit);
+    return (@{$self->Prepared});
 
 };
+
+=head2 Prepared
+
+Returns an arrayref of the scrips this object has prepared
+
+
+=cut
+
+sub Prepared {
+    my $self = shift;
+    return ($self->{'prepared_scrips'} || []);
+}
+
 
 # {{{ sup _SetupSourceObjects
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }

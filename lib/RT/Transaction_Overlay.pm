@@ -120,19 +120,16 @@ sub Create {
        $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
-        use Data::Dumper;
-        $RT::Logger->debug(Dumper $self->{'scrips_to_commit'});
 
-        @{$self->{'scrips_to_commit'}} = $self->{'scrips'}->Prepare(
+        $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             Ticket      => $args{'Ticket'},
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
-        
             $RT::Logger->debug('About to commit scrips for transaction' .$self->Id);
-            $self->{'scrips'}->Commit(@{$self->{'scrips_to_commit'}});
+            $self->{'scrips'}->Commit();
         }
     }
 
@@ -140,6 +137,8 @@ sub Create {
 }
 
 # }}}
+
+
 
 # {{{ sub Delete
 

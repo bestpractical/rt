@@ -33,6 +33,7 @@ use vars qw/@ISA/;
 use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
+use Mail::Address;
 
 =head1 NAME
 
@@ -140,6 +141,53 @@ sub Prepare {
 # }}}
 
 # }}}
+
+
+
+=head2 To
+
+Returns an array of Mail::Address objects containing all the To: recipients for this notification
+
+=cut
+
+sub To {
+    my $self = shift;
+    return ($self->_AddressesFromHeader('To'));
+}
+
+=head2 Cc
+
+Returns an array of Mail::Address objects containing all the Cc: recipients for this notification
+
+=cut
+
+sub Cc { 
+    my $self = shift;
+    return ($self->_AddressesFromHeader('Cc'));
+}
+
+=head2 Bcc
+
+Returns an array of Mail::Address objects containing all the Bcc: recipients for this notification
+
+=cut
+
+
+sub Bcc {
+    my $self = shift;
+    return ($self->_AddressesFromHeader('Bcc'));
+
+}
+
+sub _AddressesFromHeader  {
+    my $self = shift;
+    my $field = shift;
+    my $header = $self->TemplateObj->MIMEObj->head->get($field);
+    my @addresses = Mail::Address->parse($header);
+
+    return (@addresses);
+}
+
 
 # {{{ SendMessage
 
