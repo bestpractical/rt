@@ -8,7 +8,7 @@ WriteMakefile(
                      'DBI'                 => 1.13,
                      'DBIx::DataSource'    => 0.02,
                      'DBIx::DBSchema'      => 0.14,
-                     'DBIx::SearchBuilder' => 0.21,
+                     'DBIx::SearchBuilder' => 0.22,
                      'HTML::Mason'         => 0.896,
                      'Date::Manip'         => 0,
                      'Date::Format'        => 0,
