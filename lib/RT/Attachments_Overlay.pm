@@ -117,10 +117,12 @@ sub Next {
     my $Attachment = $self->SUPER::Next();
     if ((defined($Attachment)) and (ref($Attachment))) {
 	if ($Attachment->TransactionObj->__Value('Type') =~ /^Comment/ && 
-	    $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	    ($Attachment->TransactionObj->TicketObj->QueueObj->CurrentUserHasRight('ShowTicket') ||
+	     	    $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments'))) {
 	    return($Attachment);
 	} elsif ($Attachment->TransactionObj->__Value('Type') !~ /^Comment/ && 
-		 $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket')) {
+		 ($Attachment->TransactionObj->TicketObj->QueueObj->CurrentUserHasRight('ShowTicket') ||
+		  $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket'))) {
 	    return($Attachment);
 	}
 
