@@ -529,6 +529,24 @@ sub ISO {
 
 # }}}
 
+# {{{ sub ISO
+
+=head2 ISO
+
+Takes nothing
+
+Returns the object's date in W3C DTF format
+
+=cut
+
+sub W3CDTF {
+    my $self = shift;
+    my $date = $self->ISO . 'Z';
+    $date =~ s/ /T/;
+    return $date;
+};
+
+# }}}
 
 # {{{ sub LocalTimezone 
 =head2 LocalTimezone

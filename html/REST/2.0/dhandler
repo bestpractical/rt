@@ -131,7 +131,10 @@ AUTH_WSSE: {
 }
 
 if ($CurrentUser and $CurrentUser->Id) {
-    my $type = ucfirst(lc($m->dhandler_arg)); # XXX - proper delegation goes here
+    # XXX - do proper delegation goes here
+
+    my $path = $m->dhandler_arg;
+    my $type = ucfirst(lc($path));
     $type =~ s{/.*}{};
     $type =~ s{s$}{};
 
@@ -140,11 +143,21 @@ if ($CurrentUser and $CurrentUser->Id) {
     $collection->UnLimit;
     my $count = $collection->Count;
 
-    $r->content_type('text/xml');
+    $r->content_type('text/xml; charset=utf-8');
     my $entries = '';
+
+    my $now = RT::Date->new;
+    $now->SetToNow;
+    my $modified = $now->W3CDTF;
+
     while (my $entry = $collection->Next) {
 	my %entry = map { $_ => eval { $entry->$_ } || '' }
-	    qw(Id Name Description Content LastUpdated Created);
+	    qw(Id Name Description Content);
+        $entry{Created} = $entry->CreatedObj->W3CDTF;
+        $entry{Created} =~ s/ /T/;
+        $entry{LastUpdated} = $entry->LastUpdatedObj->W3CDTF;
+        $entry{LastUpdated} =~ s/ /T/;
+    
 	$entries .= <<".";
   <entry>
     <title mode="escaped">$entry{Name}</title>
@@ -154,7 +167,7 @@ if ($CurrentUser and $CurrentUser->Id) {
     <created>$entry{Created}</created>
     <id>rt-fsck.com:$RT::rtname/$entry{Id}</id>
     <summary mode="escaped">$entry{Description}</summary>
-    <content type="text/html" mode="escaped" xml:base="http://diveintomark.org/archives/2004/04/19/feed-parser-beta-22">
+    <content type="text/plain" mode="escaped" xml:base="http://diveintomark.org/archives/2004/04/19/feed-parser-beta-22">
       <![CDATA[$entry{Content}]]>
     </content>
   </entry>
@@ -169,8 +182,10 @@ if ($CurrentUser and $CurrentUser->Id) {
     <name>$RT::Organization</name>
     <url>$RT::WebURL</url>
   </author>
+  <link rel="alternate" type="text/html" href="$RT::WebURL"/>
   <tagline mode="escaped">$count results found.</tagline>
-  <id>$nonce</id>
+  <id>rt-fsck.com://$path</id>
+  <modified>$modified</modified>
   <generator url="http://www.bestpractical.com/rt/" version="$RT::VERSION">RT</generator>
   $entries
 </feed>
