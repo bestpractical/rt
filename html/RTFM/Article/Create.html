@@ -101,11 +101,11 @@ $ArticleObj => undef
 </form>
 <%INIT>
 my %cfcontent;
-foreach my $arg (keys %ARGS) {
+foreach my $arg (sort keys %ARGS) {
         if ($arg =~ /^Transaction-(\d+)$/) {
                 my $trans = RT::Transaction->new($session{'CurrentUser'});
                 $trans->Load($1);
-                $cfcontent{$ARGS{$arg}} = $trans->Content;
+                $cfcontent{$ARGS{$arg}} .= $trans->Content;
         }
 }
 
