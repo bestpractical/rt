@@ -325,7 +325,7 @@ sub FromSQL {
 
   # Unless we've explicitly asked to look at a specific Type, we need
   # to limit to it.
-  unless (exists $self->{_sql_looking_at}{'type'}) {
+  unless ($self->{looking_at_type}) {
     $self->SUPER::Limit( FIELD => 'Type',
                          OPERATOR => '=',
                          VALUE => 'ticket');

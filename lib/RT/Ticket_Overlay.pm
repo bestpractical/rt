@@ -2395,18 +2395,25 @@ ok($id, "Created dep test 1 - $msg");
 my $t2 = RT::Ticket->new($RT::SystemUser);
 my ($id2, $trans, $msg2) = $t2->Create(Subject => 'DepTest2', Queue => 'general');
 ok($id2, "Created dep test 2 - $msg2");
+my $t3 = RT::Ticket->new($RT::SystemUser);
+my ($id3, $trans, $msg3) = $t3->Create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
+ok($id3, "Created dep test 3 - $msg3");
 
-my ($lid, $lmsg) = 
-# returns $lid, $lmsg 
 ok ($t1->AddLink( Type => 'DependsOn', Target => $t2->id));
+ok ($t1->AddLink( Type => 'DependsOn', Target => $t3->id));
 
 ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
-ok (!$t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has no unresolved approvals");
+ok (!$t1->HasUnresolvedDependencies( Type => 'blah' ), "Ticket ".$t1->Id." has no unresolved blahs");
+ok ($t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has unresolved approvals");
 ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
 my ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
 ok($t2->Resolve);
-ok($t1->Resolve());
+($rid, $rmsg)= $t1->Resolve();
+ok(!$rid, $rmsg);
+ok($t3->Resolve);
+($rid, $rmsg)= $t1->Resolve();
+ok($rid, $rmsg);
 
 
 =end testing
@@ -2428,7 +2435,7 @@ sub HasUnresolvedDependencies {
               VALUE => $args{Type}); 
     }
     else {
-	$deps->IgnoreType;
+	    $deps->IgnoreType;
     }
 
     if ($deps->Count > 0) {

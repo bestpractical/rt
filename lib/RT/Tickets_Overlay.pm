@@ -930,7 +930,7 @@ sub IgnoreType {
     # Tickets_Overlay_SQL/FromSQL goes down the right branch
 
     #  $self->LimitType(VALUE => '__any');
-    $self->{_sql_looking_at}{'type'} = 1;
+    $self->{looking_at_type} = 1;
 }
 
 # }}}
@@ -1671,6 +1671,7 @@ sub _Init  {
     $self->{'table'} = "Tickets";
     $self->{'RecalcTicketLimits'} = 1;
     $self->{'looking_at_effective_id'} = 0;
+    $self->{'looking_at_type'} = 0;
     $self->{'restriction_index'} =1;
     $self->{'primary_key'} = "id";
     delete $self->{'items_array'};
@@ -1834,6 +1835,7 @@ sub ClearRestrictions {
     my $self = shift;
     delete $self->{'TicketRestrictions'};
     $self->{'looking_at_effective_id'} = 0;
+    $self->{'looking_at_type'} = 0;
     $self->{'RecalcTicketLimits'} =1;
 }
 
