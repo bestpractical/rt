@@ -41,6 +41,7 @@ sub _ClassAccessible {
     {
     TransactionId   => { 'read'=>1, 'public'=>1, },
     MessageId       => { 'read'=>1, },
+    Parent          => { 'read'=>1, },
     ContentType     => { 'read'=>1, },
     Subject         => { 'read'=>1, },
     Content         => { 'read'=>1, },
@@ -101,7 +102,9 @@ sub Create  {
     
     #if we didn't specify a ticket, we need to bail
     if ( $args{'TransactionId'} == 0) {
-	die "RT::Attachment->Create couldn't, as you didn't specify a transaction\n";
+	$RT::Logger->Crit("RT::Attachment->Create couldn't, as you didn't specify a transaction\n");
+	return (0);
+	
     }
     
     #If we possibly can, collapse it to a singlepart
@@ -220,6 +223,24 @@ sub Content {
   }
 }
 
+
+# }}}
+
+# {{{ sub Children
+
+=head2 Children
+
+  Returns an RT::Attachments object which is preloaded with all Attachments objects with this Attachment\'s Id as their 'Parent'
+
+=cut
+
+sub Children {
+    my $self = shift;
+    
+    my $kids = new RT::Attachments($self->CurrentUser);
+    $kids->ChildrenOf($self->Id);
+    return($kids);
+}
 
 # }}}
 
