@@ -1,0 +1,6 @@
+sub acl {
+return (
+"SP_ADDLOGIN ${RT::DatabaseUser}, ${RT::DatabasePassword}, ${RT::DatabaseName} ",
+);
+}
+1;

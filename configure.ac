@@ -79,17 +79,23 @@ AC_ARG_WITH(db-type,
 	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and Informix are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' ; then
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' -a "$DB_TYPE" != 'Sybase' ; then
 	AC_MSG_ERROR([Only Oracle, Informix, Pg and mysql are valid db types])
 fi
 AC_SUBST(DB_TYPE)
 
-dnl ORACLE_ENV_PREF
+dnl DATABASE_ENV_PREF
 if test "$DB_TYPE" = 'Oracle'; then
 	test "x$ORACLE_HOME" = 'x' && AC_MSG_ERROR([Please declare the ORACLE_HOME environment variable])
-	ORACLE_ENV_PREF="\$ENV{'ORACLE_HOME'} = '$ORACLE_HOME';"
+	DATABASE_ENV_PREF="\$ENV{'ORACLE_HOME'} = '$ORACLE_HOME';"
 fi
-AC_SUBST(ORACLE_ENV_PREF)
+
+dnl DATABASE_ENV_PREF
+if test "$DB_TYPE" = 'Sybase'; then
+	test "x$SYBASE" = 'x' && AC_MSG_ERROR([Please declare the SYBASE_HOME environment variable])
+	DATABASE_ENV_PREF="\$ENV{'SYBASE'} = '$SYBASE';"
+fi
+AC_SUBST(DATABASE_ENV_PREF)
 
 dnl DB_HOST
 AC_ARG_WITH(db-host,

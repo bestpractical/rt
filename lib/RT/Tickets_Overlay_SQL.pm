@@ -468,7 +468,11 @@ ok ($cols[0] == undef, "We haven't explicitly asked to display anything");
 sub FromSQL {
   my ($self,$query) = @_;
 
-  $self->CleanSlate;
+  {
+    # preserve first_row and show_rows across the CleanSlate
+    local($self->{'first_row'}, $self->{'show_rows'});
+    $self->CleanSlate;
+  }
   $self->_InitSQL();
 
   return (1,$self->loc("No Query")) unless $query;
