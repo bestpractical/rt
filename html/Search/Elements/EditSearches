@@ -1,10 +1,10 @@
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
 <input type="hidden" name="SearchId" value="<%$SearchId%>">
 <&|/l&>Privacy:</&><br>
-% if ($SearchId eq 'new') {
-<& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
+% if ($CurrentSearch->{'Object'}) {
+<& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
 % } else {
-PRINT THE OBJECT HERE
+<& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
 % }
 <&|/l&>Description</&>:<br>
 <font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
@@ -12,6 +12,7 @@ PRINT THE OBJECT HERE
 % if ($SearchId ne 'new') {
 <input type="submit" name="Revert" value="<%loc('Revert')%>">
 <input type="submit" name="Delete" value="<%loc('Delete')%>">
+<input type="submit" name="CopySearch" value="<%loc('Copy')%>">
 
 % }
 

@@ -28,7 +28,6 @@
 
 <FORM METHOD="GET">
 <input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=items value="<% $items %>">
 <table width=100%>
 <tr>
 <td valign=top>
@@ -52,9 +51,9 @@
 </center>
 <& /Elements/TitleBoxEnd &>
 <br>
-<& Elements/EditSearches, CurrentSearch => $search_hash &>
-<br>
 <& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), %ARGS &>
+<br>
+<& Elements/EditSearches, CurrentSearch => $search_hash &>
 </td>
 </tr>
 </table>
@@ -65,14 +64,21 @@ my $search_hash = {};
 my $search;
 my $title = "Query Builder";
 
-# if we're asked to revert the current search, we just want to load it
+# If the user wants a new search, clobber the search id
+if ($ARGS{'CopySearch'}) {
+    $ARGS{'SearchId'}  ='new';
+}
+
+# {{{ if we're asked to revert the current search, we just want to load it
 if ( $ARGS{'Revert'} ) {
     $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
     $Format                  = undef;
     $Query                   = undef;
 }
 
-# if we're asked to load a search, load it.
+# }}}
+
+# {{{ if we're asked to load a search, load it.
 if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     my $obj_type  = $1;
     my $obj_id    = $2;
@@ -88,9 +94,12 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     }
 
     $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
+    $search_hash->{'Objectl'} = $search;
 }
 
-# if we're asked to save the current search, save it
+# }}}
+
+# {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
     if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         my $obj_type  = $1;
@@ -122,6 +131,7 @@ if ( $ARGS{'Save'} ) {
 
 
          $search_hash->{'SearchId'}  = $ARGS{'SearchId'};
+         $search_hash->{'Object'}  = $search;
 
     }
     elsif ( $ARGS{'SearchId'} eq 'new' ) {
@@ -142,8 +152,9 @@ if ( $ARGS{'Save'} ) {
           . $search->Id;
     }
 }
+# }}}
 
-# If we're asked to delete the current search, make it go away and reset
+# {{{ If we're asked to delete the current search, make it go away and reset
 # the search parameters
 if ( $ARGS{'Delete'} ) {
     if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
@@ -161,10 +172,44 @@ if ( $ARGS{'Delete'} ) {
 
 }
 
+# }}}
+
+
+# if we've gotten to this point, without a $search, the user is doing _something_ other than
+# manipulating a search's saved status. whcih means we don't have a loaded
+# saved search. 
+# we want to load the search they're working on and compare it to the currently
+# loaded search. this will let us present the right buttons.
+
+    if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        my $obj_type  = $1;
+        my $obj_id    = $2;
+        my $search_id = $3;
+
+        # XXX TODO This will only let users save personal searches
+        # We explicitly list out the available types and
+        # don't trust user input here
+        if (    ( $obj_type eq 'RT::User' )
+             && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+               
+            $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+            $search_hash->{'SearchId'} = $ARGS{'SearchId'};
+
+
+        }
+        else {
+
+            die "unsupported search type"
+
+        }
+
+}
+
 if ($search) {
     $search_hash->{Description} = ($search->Description()|| loc('Untitled search'));
     $search_hash->{Format} = $search->SubValue('Format');
     $search_hash->{Query} = $search->SubValue('Query');
+    $search_hash->{'Object'} = $search;
 } else {
     $search_hash->{Description} = loc('Untitled search');
     $search_hash->{Format} = '';
@@ -179,13 +224,13 @@ if ($ARGS{"DoSearch"}) {
     $m->comp("Show.html", Query => $Query, Format => $ARGS{Format}, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
     $m->abort();
 } elsif ($ARGS{"EditQuery"}) {
-    $m->comp("Edit.html", Query => $Query);
+    $m->comp("Edit.html", Query => $Query, Format => $Format, SearchId =>
+    $SearchId);
     $m->abort();
 }
 
-my $items = {};
 
-$items = ParseQuery($Query||$search_hash->{'Query'});
+my $items = ParseQuery($Query||$search_hash->{'Query'});
 
 # if parsing went poorly, send them to the edit page to fix it
 if ($actions[0]) {
@@ -330,7 +375,7 @@ if ($ARGS{"Up"}) {
     }
 }
 # }}}
-
+# {{{ Query building magic
 
 $Query = "";
 @options = ();
@@ -872,6 +917,7 @@ sub swap {
 
     return 1;
 }
+# }}}
 
 sub debug {
     my $message = shift;

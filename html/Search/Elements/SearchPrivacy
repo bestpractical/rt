@@ -1,0 +1,8 @@
+<%args>
+$Object => undef
+</%args>
+% if (ref($Object) eq 'RT::User' && $Object->id == $session{'CurrentUser'}->Id) {
+<&|/l&>My saved searches</&>
+% } else {
+<&|/l, $Object->Name&>[_1]'s saved searches</&>
+% }

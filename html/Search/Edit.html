@@ -21,16 +21,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& /Elements/Header, Title => $title&>
 <& /Ticket/Elements/Tabs, 
     current_tab => 'Search/Edit.html', 
     Title => $title &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
-<form action="Build.html">
+<form method="post" action="Build.html">
+<input type="hidden" name="SearchId" value="<%$SearchId%>">
 <& /Elements/MessageBox, Name => "Query", Default => $Query, Width => '100%' &>
 
+<& /Elements/MessageBox, Name => "Format", Default => $Format, Width => '100%' &>
 <& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
 </form>
 
@@ -41,5 +43,7 @@ my $title = "Edit Query";
 
 <%ARGS>
 $Query => undef
+$Format => undef
+$SearchId => 'new'
 @actions => undef
 </%ARGS>
