@@ -1260,7 +1260,7 @@ sub BuildListingFormat {
 		    owner => {  chars => '10',
 				justify => 'r',
 				title => 'Owner',
-				value => '$Ticket->Owner'
+				value => '$Ticket->OwnerObj->Name'
 			     },
 		    requestor => {  chars => '10',
 				    justify => 'r',

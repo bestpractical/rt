@@ -882,6 +882,29 @@ sub Count {
 }
 # }}}
 
+# {{{ sub ItemsArrayRef
+
+=head2 ItemsArrayRef
+
+Returns a reference to the set of all items found in this search
+
+=cut
+
+sub ItemsArrayRef {
+    my $self = shift;
+    my @items;
+    
+    my $placeholder = $self->_ItemsCounter;
+    $self->GotoFirstItem();
+    while (my $item = $self->Next) { 
+	push (@items, $item);
+    }
+    
+    $self->GotoItem($placeholder);
+    return(\@items);
+}
+# }}}
+
 # {{{ sub Next 
 sub Next {
 	my $self = shift;
