@@ -402,7 +402,8 @@ sub insert_initial_data {
         RealName => 'The RT System itself',
         Comments =>
 'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-        Creator => '1' );
+        Creator => '1',
+        LastUpdatedBy => '1' );
 
     unless ($val) {
         print "$msg\n";
