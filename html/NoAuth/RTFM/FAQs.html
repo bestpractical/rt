@@ -1,8 +1,4 @@
-% if ($cat->Id && $category) {
-<h1><&|/l, $class_obj->Name, $category &>[_1] in category '[_2]'</&></h1>
-% } else {
-<h1><&|/l, $class_obj->Name &>[_1]</&></h1>
-%}
+<& Elements/Tabs, current_tab => 'NoAuth/RTFM/FAQs.html', Title => $title&>
 
 
 % while (my $art = $arts->Next) {
@@ -38,6 +34,13 @@ my $cat = RT::FM::CustomField->new($session{'CurrentUser'});
 $cat->LoadByCols(Name => 'Category');
 
 $arts->LimitCustomField( FIELD => $cat->Id, VALUE => "$category" );
+
+my $title;
+ if ($cat->Id && $category) {
+$title = loc("[_1] in category '[_2]'", $class_obj->Name, $category);
+ } else {
+$title = loc('[_1]', $class_obj->Name);
+}
 
 </%init>
 <%args>

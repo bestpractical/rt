@@ -2,22 +2,20 @@
 to RTFM'&>
 
 
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-10 most recently updated articles
+<h1>Quick search</h1>
 
-10 newest articles
-
-</TD>
-<TD VALIGN="TOP" ALIGN="RIGHT">
-
-Search for articles<br>
 <form action="Search.html" METHOD="POST">
-<& /RTFM/Elements/SelectClass&> matching<br> 
-<input name="Content~=" size="15"><br>
-<div align="right"><input type="submit" value="<&|/l&>Go</&>"></div>
+<INPUT TYPE="hidden" NAME="HideOptions" VALUE="1">
+Search <& /RTFM/Elements/SelectClass, ShowNullOption => 0 , Name => 'Class'&> for articles matching 
+<input name="Content~=" size="15"><input type="submit" value="<&|/l&>Go</&>">
 </form>
-</TD>
-</TR>
-</TABLE>
+
+
+<h1>Browse the knowledge base</h1>
+
+Show me <a href="Browse.html?class=Knowledge%20Base&group_by=category">  all knowledge base articles</a>.
+
+<h1>FAQ</h1>
+
+The <a href="FAQs.html">FAQ</a> is a list of simple questions and answers.
+

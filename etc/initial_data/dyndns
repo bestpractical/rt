@@ -28,7 +28,7 @@
                    { Name => 'Third-party Applications', },
                    { Name => 'General', } ] },
         { Name => 'Content',
-          Type => 'TestSingle',
+          Type => 'TextSingle',
           Classes => ['FAQs', 'Knowledge Base']}
 
 );
