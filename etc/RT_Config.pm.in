@@ -421,4 +421,15 @@ Set($AmbiguousDayInPast , 1);
 
 # }}}
 
+# {{{ Miscellaneous RT Settings
+
+# You can define new statuses and even reorder existing statuses here.
+# WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
+# will break horribly.
+
+@ActiveStatus = qw(new open stalled) unless @ActiveStatus;
+@InactiveStatus = qw(resolved rejected deleted) unless @InactiveStatus;
+
+# }}}
+
 1;
