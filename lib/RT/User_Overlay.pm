@@ -323,8 +323,12 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        $priv->AddMember($self->PrincipalId);  
-        return (1, $self->loc("That user is now privileged"));
+        my ($status, $msg) = $priv->AddMember($self->PrincipalId);  
+        if ($status) {
+            return (1, $self->loc("That user is now privileged"));
+        } else {
+            return (0, $msg);
+        }
     }
     else {
         if ($unpriv->HasMember($self->PrincipalObj)) {
@@ -340,8 +344,12 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        $unpriv->AddMember($self->PrincipalId);  
-        return (1, $self->loc("That user is now unprivileged"));
+        my ($status, $msg) = $unpriv->AddMember($self->PrincipalId);  
+        if ($status) {
+            return (1, $self->loc("That user is now unprivileged"));
+        } else {
+            return (0, $msg);
+        }
     }
 }
 
