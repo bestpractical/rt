@@ -95,8 +95,9 @@ sub Create  {
   my %args = (#TODO: insert argument list 
 	      @_ # get the real argumentlist
 	     );
-  
-  
+
+  ##TODO: unless defined $args{'Password'}, make a random password.
+
   #Todo we shouldn't do anything if we have no password to start.
   #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
@@ -108,11 +109,18 @@ sub Create  {
   
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
-  
-  #TODO: send a welcome message to the user if they should 
-  # get mail and we should send welcome messages at all
-  #TODO: Send the user a "welcome message"  see [fsck.com #290]
 
+  ## TODO: Document WelcomeMessage in config.pm
+
+  ## TODO: It makes a difference if the user was created via email or
+  ## via web (by themselves) or via the admin tools.  Tobix actually
+  ## thinks that it makes more sense having "send welcome message" as
+  ## a User object method, and do it through the respective tools than
+  ## through Users.pm.
+  if ($RT::WelcomeMessage) {
+      #TODO: Check if the email exists and looks valid
+      #TODO: Send the user a "welcome message"  see [fsck.com #290]
+  }
 
   return (1,"User created");
 }
