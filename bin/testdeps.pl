@@ -23,6 +23,7 @@ $mode = shift || &print_help;
 @modules = qw(
 DBI 1.13
 HTML::Mason 0.81
+Date::Manip
 Time::Seconds
 Date::Kronos
 MIME::Entity 5.108
