@@ -7,7 +7,7 @@
 <META NAME="HTTP-EQUIV" VALUE="<%$Code%> <%$Why%>">
 % }
 
-<link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
+<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 <TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
