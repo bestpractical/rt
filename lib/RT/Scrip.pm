@@ -117,7 +117,7 @@ sub LoadAction  {
 sub TemplateObj {
   my $self = shift;
   if (!$self->{'TemplateObj'})  {
-    require RT::Scrip;
+    require RT::Template;
     $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
     $self->{'TemplateObj'}->load($self->Template());
   
