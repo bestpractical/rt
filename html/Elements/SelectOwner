@@ -48,7 +48,7 @@
 <OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
 %}
 <OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
-%foreach my $User (@users)  {
+%foreach my $User ( @users)  {
 <OPTION <% ($User->Id == $Default)         && "SELECTED" %> VALUE="<%$User->Id()%>"><%$User->Name()%></OPTION>
 %}
 </SELECT>
@@ -85,8 +85,7 @@ foreach my $object (@objects) {
 	      $user_uniq_hash{$User->Id()} = $User;
         }
 }
-
-@users = values %user_uniq_hash;
+@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash;
 </%INIT>
 
 <%ARGS>
