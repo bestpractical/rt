@@ -508,12 +508,12 @@ NULL,20000227191745,NULL,00000000000000);
 # }}}
 
 
-
 # For storing who we have sent autoreplies to, so we don't overload
 # somebody with those autoreplies.  Take a look at Action/AutoReply.pm
+# (postponed until post-2.0)
 
-create table AutoReplies (
-  Email varchar(255),
-  Template int,
-  Created TIMESTAMP
-);
+#create table AutoReplies (
+#  Email varchar(255),
+#  Template int,
+#  Created TIMESTAMP
+#);
