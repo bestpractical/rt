@@ -1016,7 +1016,10 @@ sub ProcessTicketBasics {
         }
     }
 
-    $ARGSRef->{'Status'} ||= $TicketObj->Status;
+
+   # Status isn't a field that can be set to a null value.
+   # RT core complains if you try
+    delete $ARGSRef->{'Status'} unless ($ARGSRef->{'Status'});
     
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,

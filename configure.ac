@@ -3,7 +3,7 @@ dnl
 dnl Process this file with autoconf to produce a configure script
 dnl
 dnl Embed in generated ./configure script the following CVS info:
-AC_REVISION($Revision: 1.1 $)dnl
+AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
