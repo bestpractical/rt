@@ -7,9 +7,8 @@
 %        $Parent = undef;
 %}
 <TR>
-<TD><% "&nbsp;"x $Depth|n %><input name="Ticket-<%$Root->id%>-Subject" value=<%$Root->Subject%> size="25"><br>
-<&|/l&>Move</&>:<& SelectProjectTask, Name=> 'Ticket-'.$Root->id."-Parent", Project => $Project, Default =>  $Parent &>
-
+<TD><% "&nbsp;"x $Depth|n %><input name="Ticket-<%$Root->id%>-Subject" value="<%$Root->Subject%>" size="25"><br>
+%#<&|/l&>Move</&>:<& SelectProjectTask, Name=> 'Ticket-'.$Root->id."-Parent", Project => $Project, Default =>  $Parent &>
 </TD>
 <TD><& /Elements/SelectOwner, Name => 'Ticket-'.$Root->id.'-Owner', Default => $Root->OwnerObj->id &></TD>
 <TD><& /Elements/SelectStatus, Name => 'Ticket-'.$Root->id.'-Status', Default => $Root->Status &></TD>
@@ -23,7 +22,7 @@
 % else {
 
 <TR>
-<TD><tt><% "&nbsp;"x $Depth|n %></tt><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Root->id%>" target="_new"><%$Root->Subject%></A></TD>
+<TD><tt><% "&nbsp;"x $Depth|n %></tt><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Root->id%>" target="_newwin"><%$Root->Subject%></A></TD>
 <TD><%$Root->OwnerObj->Name%></TD>
 <TD><%$Root->Status%></TD>
 <TD><%$Root->DueObj->AgeAsString%></TD>

@@ -46,6 +46,17 @@
 </FORM>
 <%INIT>
 my (@messages);
+my @tix_to_update;
+
+ grep { /^Ticket-(\d+)-/ && push @tix_to_update, $1 } (keys %ARGS);
+foreach my $ticket_id (@tix_to_update) {
+    my $ticket=    LoadTicket($ticket_id);
+    my %ticket_args;
+    grep { /^Ticket-$ticket_id-(.*)$/ && ($ticket_args{$1} = $ARGS{$_})} (keys %ARGS);
+    ProcessTicketDates ( TicketObj =>$ticket, ARGSRef => \%ticket_args);
+    ProcessTicketBasics ( TicketObj =>$ticket, ARGSRef => \%ticket_args);
+}
+
 my $task = LoadTicket($id);
 $Project = $task->Id unless ($Project); 
 my $ProjectObj = LoadTicket($Project);
@@ -58,6 +69,8 @@ if ($ARGS{'CreateTask'}) {
 my     ($new_id, $new_msg) = CreateTicket(%ARGS);
 push (@messages, $new_msg);
 }
+
+
 
 
 </%INIT>
