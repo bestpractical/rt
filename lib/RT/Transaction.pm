@@ -22,132 +22,87 @@ sub new  {
 }
 # }}}
 
-# TODO:
-# This sub will return wrong if the one entering the request
-# (i.e. through the cli) is a different person than the real
-# requestor.
-sub IsInbound {
-  my $self=shift;
-  return ($self->TicketObj->IsRequestor($self->Creator));
-}
+# {{{ sub Create 
 
 #This is "Create Transaction"
-
-# {{{ sub Create 
 sub Create  {
-  my $self = shift;
-  
-  my %args = ( id => undef,
-	       TimeTaken => 0,
-	       Ticket => 0 ,
-               Type => '',
-	       Data => '',
-	       Field => undef,
-	       OldValue => undef,
-	       NewValue => undef,
-	       MIMEEntity => undef,
-	       @_
-	     );
-  #if we didn't specify a ticket, we need to bail
-  unless ( $args{'Ticket'} ) {
-    return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
-  }
-  
-  #lets create our parent object
-  my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
-				EffectiveTicket  => $args{'Ticket'},
-				TimeTaken => $args{'TimeTaken'},
-				Type => $args{'Type'},
-				Data => $args{'Data'},
-				Field => $args{'Field'},
-				OldValue => $args{'OldValue'},
-				NewValue => $args{'NewValue'},
-				Created => undef
-			       );
+    my $self = shift;
+    my %args = ( id => undef,
+		 TimeTaken => 0,
+		 Ticket => 0 ,
+		 Type => '',
+		 Data => '',
+		 Field => undef,
+		 OldValue => undef,
+		 NewValue => undef,
+		 MIMEEntity => undef,
+		 @_
+	       );
 
-
-  $self->Load($id);
-
-  
-  $self->_Attach($args{'MIMEEntity'})
-      if defined $args{'MIMEEntity'};
-
-
-  #We're really going to need a non-acled ticket for the scrips to work
-  use RT::Ticket;
-  #TODO this MUST be as the "System" principal or it all breaks
-  #TODO This is actively broken, but it'll work as long as we have no acls
-  my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
-  $TicketAsSystem->Load($self->Ticket);
-
-
-   # Here, we send a copy of the transaction to all Interested Parties.
-
-
-  
-  # Deal with Scrips
-
-  #Load a scrips object
-  use RT::ScripScopes;
-  my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
-  $ScripScopes->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
-
-  #Load a ScripsScopes object
-  #Iterate through each script and check it's applicability.
-
-  while (my $Scope = $ScripScopes->Next()) {
-
-    # TODO: 
-    # TODO: This sucks a bit ... we're really doing a lot of unneccessary
-    # TODO: loading here. I think we really should do a search on two
-    # TODO: tables.  --TobiX
-    # TODO: Agreed - jesse. It'll probably wait until after the 2.0 release unless it appears to
-    # TODO: be a serious perf bottleneck.
-
-    next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type !~ /(Any)|(\b$args{'Type'}\b)/);
-
-    #TODO: properly deal with errors raised in this scrip loop
-   # eval {
-      #Load the scrip's action;
-      $Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-				   TemplateObj => $Scope->ScripObj->TemplateObj,
-				   TransactionObj => $self);
-      
-      #If it's applicable, prepare and commit it
-      if ( $Scope->ScripObj->IsApplicable() ) {
-	print STDERR "About to describe\n";
-	print STDERR $Scope->ScripObj->Describe();
-
-	print STDERR "About to prepare\n";
-	$Scope->ScripObj->Prepare() || next;   
-	print STDERR "About to Commit\n";
-	$Scope->ScripObj->Commit();
-      }
+    #if we didn't specify a ticket, we need to bail
+    unless ( $args{'Ticket'} ) {
+	return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
     }
+    
+    #lets create our parent object
+    my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
+				  EffectiveTicket  => $args{'Ticket'},
+				  TimeTaken => $args{'TimeTaken'},
+				  Type => $args{'Type'},
+				  Data => $args{'Data'},
+				  Field => $args{'Field'},
+				  OldValue => $args{'OldValue'},
+				  NewValue => $args{'NewValue'},
+				  Created => undef
+				 );
+    $self->Load($id);
+    $self->_Attach($args{'MIMEEntity'})
+      if defined $args{'MIMEEntity'};
+        
+    #We're really going to need a non-acled ticket for the scrips to work
+    use RT::Ticket;
+    #TODO this MUST be as the "System" principal or it all breaks
+    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
+    $TicketAsSystem->Load($self->Ticket);
+    
+    # Deal with Scrips
+    
+    #Load a scrips object
+    use RT::ScripScopes;
+    my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
+    $ScripScopes->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
+    
+    #Load a ScripsScopes object
+    #Iterate through each script and check it's applicability.
+    
+    while (my $Scope = $ScripScopes->Next()) {
+	
+	# TODO: we're really doing a lot of unneccessary
+	# TODO: loading here. I think we really should do a search on two
+	# TODO: tables.  --TobiX
+	# TODO: Agreed - jesse. It'll probably wait until after the 2.0 
+	# TODO  release unless it appears to be a serious perf bottleneck.
+	
+	next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type !~ /(Any)|(\b$args{'Type'}\b)/);
+	#TODO: properly deal with errors raised in this scrip loop
 
-# }
-  
-  return ($id, "Transaction Created");
+	# eval {
+	#Load the scrip's action;
+	$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
+				     TemplateObj => $Scope->ScripObj->TemplateObj,
+				     TransactionObj => $self);
+	
+	#If it's applicable, prepare and commit it
+	if ( $Scope->ScripObj->IsApplicable() ) {
+	    $Scope->ScripObj->Prepare() || next;   
+	    $Scope->ScripObj->Commit();
+	}
+    }
+    return ($id, "Transaction Created");
 }
 # }}}
 
-# {{{ sub CreatedAsString 
-sub CreatedAsString  {
-  my $self = shift;
-  return($self->_Value('Created'));
-}
-# }}}
-
-# {{{ sub TicketObj
-sub TicketObj {
-    my $self=shift;
-    my $ticket=new RT::Ticket;
-    return $self->{'TicketObj'}
-        if exists $self->{'TicketObj'};
-    $ticket->Load($self->Ticket);
-    return $self->{'TicketObj'}=$ticket;
-}
-# }}}
+# {{{ Routines dealing with Attachments
 
 # {{{ sub Message 
 sub Message  {
@@ -207,6 +162,21 @@ sub _Attach  {
 		      Attachment => $MIMEObject);
   return ($Attachment, "Attachment created");
   
+}
+# }}}
+
+# }}}
+
+# {{{ Routines dealing with Transaction Attributes
+
+# {{{ sub TicketObj
+sub TicketObj {
+    my $self=shift;
+    my $ticket=new RT::Ticket;
+    return $self->{'TicketObj'}
+        if exists $self->{'TicketObj'};
+    $ticket->Load($self->Ticket);
+    return $self->{'TicketObj'}=$ticket;
 }
 # }}}
 
@@ -329,6 +299,13 @@ sub Description  {
 }
 # }}}
 
+# {{{ sub CreatedAsString 
+sub CreatedAsString  {
+  my $self = shift;
+  return($self->_Value('Created'));
+}
+# }}}
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;
@@ -344,8 +321,27 @@ sub _Accessible  {
 }
 # }}}
 
+# }}}
 
-#ACCESS CONTROL
+# {{{ Utility methods
+
+# {{{ sub IsInbound
+
+# TODO:  This sub will return wrong if the one entering the request
+# (i.e. through the cli) is a different person than the real
+# requestor. --tobix
+# Arguably, that's the right action, as the goal of this routine
+# is to notify the requestor if someone other than the requestor
+# performs an action, right?  -- jesse
+sub IsInbound {
+  my $self=shift;
+  return ($self->TicketObj->IsRequestor($self->Creator));
+}
+# }}}
+
+# }}}
+
+# {{{ Routines dealing with ACCESS CONTROL
 
 # {{{ sub DisplayPermitted 
 sub DisplayPermitted  {
@@ -402,5 +398,7 @@ sub AdminPermitted  {
     return(0);
   }
 }
+# }}}
+
 # }}}
 1;
