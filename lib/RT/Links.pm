@@ -28,9 +28,9 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
   if (  ( $args{'OPERATOR'} eq '=') and
         ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
      ) {
-   my $dummy = $self->NewItem;
-   $uri = $dummy->CanonicalizeURI($args{'VALUE'})
-
+        my $dummy = $self->NewItem;
+        $uri = $dummy->CanonicalizeURI($args{'VALUE'});
+    }
   $self->SUPER::Limit(%args);
 }
 # }}}

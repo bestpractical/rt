@@ -226,7 +226,7 @@ Returns its canonicalized URI.
 Bug: ticket aliases can't have :// in them. URIs must have :// in them.
 =cut
 
-sub  CanonicalizeURI {
+sub CanonicalizeURI {
  my $self = shift;
  my $id = shift;
 
@@ -237,11 +237,11 @@ sub  CanonicalizeURI {
     $ticket->LoadByURI($id);
     #If we couldn't find a ticket, return undef.
     return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)");
+    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
     return ($ticket->URI);
   }
   #If it's a remote URI, we're going to punt for now
-  elsif ($id =~ |://| ) {
+  elsif ($id =~ '://' ) {
     return ($id);
    }
   
@@ -253,7 +253,7 @@ sub  CanonicalizeURI {
     $ticket->Load($id);
     #If we couldn't find a ticket, return undef.
     return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self returned ".$ticket->URI ." (id #)");
+    $RT::Logger->debug("$self returned ".$ticket->URI ." (id #)\n");
     return ($ticket->URI);
   }
 
@@ -263,7 +263,7 @@ sub  CanonicalizeURI {
     $ticket->LoadByAlias($id);
     #If we couldn't find a ticket, return undef.
     return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)");
+    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
     return ($ticket->URI);
     return($ticket->URI);
   }

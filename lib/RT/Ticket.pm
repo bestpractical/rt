@@ -50,6 +50,46 @@ sub new {
 
 # }}}
 
+
+# {{{ sub Load
+
+=head2 Load
+
+Takes a single argument. This can be a ticket id, ticket alias or 
+local ticket uri.  If the ticket can't be loaded, returns undef.
+Otherwise, returns the ticket id.
+
+=cut
+
+sub Load {
+    my $self=shift;
+    my $id = shift;
+
+  #If it's a local URI, load the ticket object and return its URI
+  if ($id =~ /^$RT::TicketBaseURI/)  {
+    return($self->LoadByURI($id));
+  }
+  #If it's a remote URI, we're going to punt for now
+  elsif ($id =~ '://' ) {
+    return (undef);
+   }
+
+  #If the base is an integer, load it as a ticket 
+ elsif ( $id =~ /^\d+$/ ) {
+
+    return($self->LoadById($id));
+  }
+
+  #It's not a URI. It's not a numerical ticket ID. It must be an alias
+  else {
+   return( $self->LoadByAlias($id));
+  }
+
+
+}
+
+# }}}
+
 # {{{ sub LoadByAlias
 
 =head2 LoadByAlias
