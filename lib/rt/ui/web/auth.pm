@@ -32,6 +32,18 @@ Error $AuthError";
 
 
 }
+
+sub AuthForceLogout () {
+    local ($AuthRealm) = @_;
+    print "HTTP/1.0 401 Unauthorized -- authentication failed
+WWW-Authenticate: Basic realm=\"$AuthRealm\"
+Content Type: text/html
+
+<html><head><title>Logged out</title></head><body>You have been logged out of RT.  To log back in, please click <a HREF=\"$rt::ui::web::ScriptURL\"> here.</a>
+</body></html>
+";
+
+}                           
 sub AuthForceLogin () {
     local ($AuthRealm) = @_;
     print "HTTP/1.0 401 Unauthorized -- authentication failed

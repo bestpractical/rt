@@ -146,9 +146,10 @@ dirs:
 	mkdir -p $(RT_ETC_PATH)/templates/queues
 	mkdir -p $(RT_GLIMPSE_PATH)
 
-libs-install:
+libs-install: 
 	mkdir -p $(RT_LIB_PATH)
 	cp -rp ./lib/* $(RT_LIB_PATH)    
+	chmod -R 0755 $(RT_LIB_PATH)
 
 mux-links: 
 	rm -f $(RT_BIN_PATH)/rt

@@ -45,11 +45,11 @@ sub CheckAuth() {
     #if the user's password is bad
     if (!(&rt::is_password($name, $pass))) {
 
-	&WebAuth::AuthForceLogin($AuthRealm);
+	&WebAuth::AuthForceLogout($AuthRealm);
 	exit(0);
     }
 
-    #if the user isn't eve authenticating
+    #if the user isn't even authenticating
     elsif ($name eq '') {
 	&WebAuth::AuthForceLogin($AuthRealm);
 	exit(0)
@@ -578,7 +578,7 @@ $query_string
                &rt::ui::web::new_col("nowrap"); {
 
                    print "<font size=-1>
- <A href=\"$ScriptURL?serial_num=$rt::req[$temp]{'effective_sn'}</font>";     
+ <A href=\"$ScriptURL?serial_num=$rt::req[$temp]{'effective_sn'}";     
 	
 
                     if($frames) {
@@ -587,7 +587,7 @@ $query_string
                     else {
                         print "&display=History\"";
                     }
-                    print ">$rt::req[$temp]{'serial_num'}</a>";
+                    print ">$rt::req[$temp]{'serial_num'}</a></font>";
                 } &rt::ui::web::end_col;
 
                 &rt::ui::web::new_col("nowrap"); {
@@ -617,7 +617,7 @@ $query_string
 
                 &rt::ui::web::new_col("nowrap"); {
 #                   &rt::ui::web::table_label("Area");
-                    print "<font size=-1>$rt::req[$temp]{'area'}</font>";
+                    print "<font size=-1>$rt::req[$temp]{'area'}&nbsp;</font>";
                 } &rt::ui::web::end_col;
 
                 &rt::ui::web::new_col("nowrap"); {
@@ -635,17 +635,17 @@ $query_string
                                 $attr = "color=#ff0000";
                         } else { $attr = ""; }
 
-                    print "<font size=-1 $attr>$due</font>";
+                    print "<font size=-1 $attr>$due&nbsp;</font>";
                 } &rt::ui::web::end_col;
 
                 &rt::ui::web::new_col("nowrap"); {
 #                   &rt::ui::web::table_label("Requestor");
-                    print "<font size=-1>$rt::req[$temp]{'requestors'}</font>";
+                    print "<font size=-1>$rt::req[$temp]{'requestors'}&nbsp;</font>";
                 } &rt::ui::web::end_col;
 
                 &rt::ui::web::new_col("nowrap"); {
 #                   &rt::ui::web::table_label("Sub");
-                    printf "<font size=-1>%s</font>",$rt::req[$temp]{'subject'};
+                    print "<font size=-1>$rt::req[$temp]{'subject'}</font>";
                 } &rt::ui::web::end_col;
             } &rt::ui::web::end_row;
 

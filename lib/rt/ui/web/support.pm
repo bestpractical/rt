@@ -151,7 +151,7 @@ sub select_an_int{
 	if ($ones==$counter) {print " SELECTED";}
 	print ">$counter\n";
     }
-    print "</select>"; 
+    print "</select>\n"; 
     
 }
 sub select_a_date{
@@ -185,7 +185,7 @@ sub select_a_date{
 	if ($year==$counter) {print " SELECTED";}
 	print ">$counter\n";
     }
-    print "</select>"; 
+    print "</select>\n"; 
 
 }
 
@@ -214,7 +214,7 @@ sub header_black {
     print "<BODY bgcolor=\"#000000\">\n";
     if (!&frames()) {
 	#&head_foot_options;
-	print "<hr>";
+	print "<hr>\n";
 	
     }
     $header_printed=1; #this is so we only print one header...even if we call header twide
@@ -230,7 +230,7 @@ sub footer {
 Please report all bugs to <a href=\"mailto:jesse\@fsck.com\">Jesse Vincent</a>
 </center>\n";
     }
-    print "</body></html>";
+    print "</body>\n</html>";
 }
 			
 sub content_header {
@@ -257,28 +257,28 @@ sub new_table {
 }
 
 sub end_table {
-    print "</table>";
+    print "</table>\n";
 }
 sub new_row {
     my ($options) = shift;
-    print "<tr $options>";
+    print "<tr $options>\n";
     
 }
 sub end_row {
     
-    print "</tr>";
+    print "</tr>\n";
 }
 sub new_col {
     my ($options) = shift;
     if (!$options) { 
-	print "<td valign=\"top\">";
+	print "<td valign=\"top\">\n";
     }
     else {
-	print "<td $options>";
+	print "<td $options>\n";
     }
 }
 sub end_col {
-    print "</td>";
+    print "</td>\n";
 }
 
 

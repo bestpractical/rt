@@ -7,8 +7,7 @@ package rt::ui::web;
 
 sub FormQueueOptions{
     local($^W) = 0; # Lots of form fields that may or may not exist give bogus errors
-    print "<form action=\"$ScriptURL";
-    print "\" method=\"post\"";
+    print "<form action=\"$ScriptURL\" method=\"post\"";
     if ($frames){
         print "target=\"queue\"";
     }
@@ -17,9 +16,7 @@ sub FormQueueOptions{
 <table>
 <tr><td valign=\"top\">
 <font size=\"-1\">";
-    print "<b>Order by</b>:<BR> "; 
-
-    print "<SELECT NAME=\"q_sort\" Size=1>";
+    print "<b>Order by</b>: <SELECT NAME=\"q_sort\" Size=1>";
     
     
     print "<OPTION";
@@ -46,11 +43,15 @@ sub FormQueueOptions{
 
     print "</SELECT>";
     
-    print "</TD><td valign=\"top\">";
-    print "<font size=\"-1\">";
-    print "<b>Status</b>: <BR>";
+    print "<br>
+<INPUT TYPE=\"checkbox\" NAME=\"q_reverse\" VALUE=\"true\"";
+    print "CHECKED" if $rt::ui::web::FORM{'q_reverse'};
+    print "> Reverse Order 
 
-    print "<SELECT NAME=\"q_status\" Size=1>";
+
+</TD><td valign=\"top\">
+<font size=\"-1\">
+<b>Status</b>: <SELECT NAME=\"q_status\" Size=1>";
     print "<OPTION SELECTED> any" if ($rt::ui::web::FORM{'q_status'} eq "any");
     print "<OPTION> any" if ($rt::ui::web::FORM{'q_status'} ne "any");
     print "<OPTION SELECTED> open" if (($rt::ui::web::FORM{'q_status'} eq "open" ) or  (!$rt::ui::web::FORM{'q_status'}));
@@ -61,13 +62,13 @@ sub FormQueueOptions{
     print "<OPTION> resolved" if ($rt::ui::web::FORM{'q_status'} ne "resolved");
     print "<OPTION SELECTED> dead" if ($rt::ui::web::FORM{'q_status'} eq "dead");
     print "<OPTION> dead" if ($rt::ui::web::FORM{'q_status'} ne "dead");
-    print "</SELECT>";
+    print "</SELECT\n>";
  
-    print "</td>";
-    print "<td valign=\"top\">";
-    print "<font size=\"-1\">";
-   print "<b>Queue</b>: <BR><select name=\"q_queue\">";
-    print "<option value=\"\">Any\n";
+    print "</td>
+<td valign=\"top\">
+<font size=\"-1\">
+<b>Queue</b>: <select name=\"q_queue\">
+<option value=\"\">Any\n";
     while(($queue, $value)= each %rt::queues) {
         if ($queue) {
         if (&rt::can_display_queue($queue, $current_user)) {
@@ -77,22 +78,16 @@ sub FormQueueOptions{
         }
     }
     }
-    print "</select>\n<br>";
-
-
-    print "</TD></TR><TR><td valign=\"top\">";
-    print "<font size=\"-1\">";
-    print"<BR><INPUT TYPE=\"checkbox\" NAME=\"q_reverse\" VALUE=\"true\"";
-    print "CHECKED" if $rt::ui::web::FORM{'q_reverse'};
-    print "> Reverse Order ";
-
-    print "</td><td>";
-    print "<font size=\"-1\">";
-    print "<B>Subject:<B><input name=\"q_subject\" size=15 value=\"$rt::ui::web::FORM{'q_subject'}\">";
-
-    print "</TD></TR><TR><td valign=\"top\">";
-    print "<font size=\"-1\">";
-    print "<b>Owner</b>: <INPUT TYPE=\"checkbox\" NAME=\"q_unowned\" VALUE=\"true\"";
+    print "
+</select>\n<br>
+</TD></TR><TR>
+<td>
+<font size=\"-1\">
+<B>Subject:<B><input name=\"q_subject\" size=15 value=\"$rt::ui::web::FORM{'q_subject'}\">
+</TD><td valign=\"top\">
+<font size=\"-1\">
+<b>Owner</b>: 
+<INPUT TYPE=\"checkbox\" NAME=\"q_unowned\" VALUE=\"true\"";
     print "CHECKED" if $rt::ui::web::FORM{'q_unowned'};
     print "> None <INPUT TYPE=\"checkbox\" NAME=\"q_owned_by_me\" VALUE=\"true\"";
     print "CHECKED" if $rt::ui::web::FORM{'q_owned_by_me'};
@@ -110,15 +105,14 @@ sub FormQueueOptions{
 	    print ">$user_id\n";
 	
     }
-	print "</select>\n";
-    	
-    print "\n<br>";
-    print "</TD><td valign=\"top\">";
-    print "<font size=\"-1\">";
-    print "<b>User</b>: ";
-    
-    print "<INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"\"";
-    print "CHECKED" if (!$rt::ui::web::FORM{'q_user'});
+	print "</select>
+<br>
+</TD><td valign=\"top\">
+<font size=\"-1\">
+<b>User</b>:
+<INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"\"";
+ 
+   print "CHECKED" if (!$rt::ui::web::FORM{'q_user'});
     print "> Any ";
     
     print "<INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"$current_user\"";
@@ -129,20 +123,18 @@ sub FormQueueOptions{
     print "CHECKED" if $rt::ui::web::FORM{'q_user_other'};
     print "> <INPUT SIZE=8 NAME=\"q_user_other\"";
     print "VALUE=\"$rt::ui::web::FORM{'q_user_other'}\"" if $rt::ui::web::FORM{'q_user_other'};
-    print "> ";
-
-    print "\n<br>";
-    print "</font>";
-    print "</td><td valign=\"top\">";
-    print "</td></tr></table>";
-    print "</td><td><B>";
-     print "<center><input type=\"submit\" value =\"Refresh Queue\"></center>";
-
-    print "</B></td></tr>";
-        print "</td></tr></table>";
-    print "<input type=\"hidden\" name=\"display\" value=\"Queue\">";
-
-    print "</form>\n";
+    print "> 
+<br>
+</font>
+</td><td valign=\"top\">
+</td></tr></table>
+</td><td><B>
+<center><input type=\"submit\" value =\"Refresh Queue\"></center>
+</B></td></tr>
+</td></tr></table>
+<input type=\"hidden\" name=\"display\" value=\"Queue\">
+</form>
+";
 
 }  
 
