@@ -168,6 +168,8 @@ $DatabaseType="!!DB_TYPE!!";
 #From: and Reply-To: headers of mail tracked by RT
 
 $MailAlias = "!!RT_MAIL_ALIAS!!";
+$CorrespondAddress=$MailAlias;
+$CommentAddress="!!RT_COMMENT_MAIL_ALIAS!!";
 
 
 #TODO: Mail::Internet might need some configuration.
