@@ -17,7 +17,8 @@ use vars qw (%SCOPE
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 %QUEUERIGHTS = ( See => 'Can this principal see this queue',
-		 List => 'Display a listing of ticket',
+         Explore => 'Look at this queue\'s configuration, watchers, etc',
+		 ListQueue => 'Display a listing of ticket',
 		 ModifyWatchers => 'Modify the queue watchers',
 		 ModifyACL => 'Modify this queue\'s ACL',
 		 CreateTicket => 'Create a ticket in this queue'
@@ -237,6 +238,16 @@ List Tickets in <queue>
 
 	Name: ListQueue
 	Principals: <user> <group>
+
+Know that <queue> exists
+    
+    Name: See
+    Principals: <user> <group>
+
+Display queue settings
+
+    Name: Explore
+    Principals: <user> <group>
 
 Modify Queue Watchers for <queue>
 

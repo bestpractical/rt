@@ -377,8 +377,10 @@ sub DeleteWatcher {
    }
     #Otherwise, we'll assume it's an email address
    else {
+   #Iterate throug all the watchers looking for this email address
+    #it may be faster to speed this up with a custom query
     while ($Watcher = $self->Watchers->Next) {
-      if ($Watcher->Email =~ /$id/) {
+      if ($Watcher->Email =~ /^$id$/) {
 	$self->_NewTransaction ( Type => 'DelWatcher',
 				 OldValue => $Watcher->Email,
 				 Data => $Watcher->Type,
@@ -422,6 +424,7 @@ sub Watchers {
   return($self->{'Watchers'});
   
 }
+
 # }}}
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
@@ -605,6 +608,7 @@ sub AdminCc {
   return($self->{'AdminCc'});
   
 }
+
 # }}}
 
 # }}}
@@ -613,11 +617,19 @@ sub AdminCc {
 
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
+
+=head2 IsWatcher
+
+Takes a param hash with the attributes Type and User. User is either a user object or string containing an email address. Returns true if that user or string
+is a ticket watcher. Returns undef otherwise
+
+=cut
+
 sub IsWatcher {
 my $self = shift;
 
 my @args = (Type => 'Requestor',
-	    Id => undef);
+	    User => undef);
 
 
 $RT::Logger->warn( "Ticket::IsWatcher unimplemented");
@@ -628,7 +640,15 @@ return (0);
 # }}}
 
 # {{{ sub IsRequestor
+=head2 IsRequestor
 
+Takes a string. Returns true if the string is a requestor of the current ticket.
+
+=item Bugs
+
+Should also be able to handle an RT::User object
+
+=cut
 sub IsRequestor {
   my $self = shift;
   my $whom = shift;
@@ -676,12 +696,20 @@ sub IsCc {
 # }}}
 
 # {{{ sub IsAdminCc
+=head2 IsAdminCc
 
+Takes a string. Returns true if the string is an AdminCc watcher of the current ticket.
+
+=item Bugs
+
+Should also be able to handle an RT::User object
+
+=cut
 sub IsAdminCc {
   my $self = shift;
   my $bcc = shift;
   
-  return ($self->IsWatcher( Type => 'Bcc', Identifier => $bcc ));
+  return ($self->IsWatcher( Type => 'AdminCc', Identifier => $bcc ));
   
 }
 
@@ -847,6 +875,7 @@ sub ResolvedObj {
 # }}}
 
 # {{{ sub SetStarted
+
 =head2 SetStarted
 
 Takes a date in ISO format or undef
@@ -874,7 +903,7 @@ sub SetStarted {
     return ($self->_Set(Field => 'Started', Value =>$time_obj->ISO));
     
 }
-#}}}
+# }}}
 
 # {{{ sub StartedObj
 
@@ -1014,9 +1043,8 @@ sub TimeWorkedAsString {
 
 # }}}
 
+
 # }}}
-
-
 
 # {{{ Routines dealing with correspondence/comments
 
@@ -1880,7 +1908,6 @@ sub _Accessible {
 sub _Set {
   my $self = shift;
   
-
   unless ($self->CurrentUserHasRight('ModifyTicket')) {
     return (0, "Permission Denied");
   }
@@ -2035,3 +2062,4 @@ sub HasRight {
 # }}}
 
 1;
+
