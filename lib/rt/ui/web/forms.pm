@@ -426,7 +426,7 @@ sub FormCreate_Step2 {
 
     $queue_id = $rt::ui::web::FORM{'queue_id'};
     
-    print "<form action=\"$ScriptURL\" method=\"post\"";
+    print "<CENTER> <form action=\"$ScriptURL\" method=\"post\"";
     if ($frames) { print "target=\"summary\" ";
 	       }
     print ">";
@@ -517,7 +517,8 @@ $template
 <input type=\"hidden\" name=\"queue_id\" value=\"$rt::ui::web::FORM{'queue_id'}\">
 <input type=\"hidden\" name=\"alias\" value=\"$rt::ui::web::FORM{'alias'}\">
 <input type=\"hidden\" name=\"do_req_create\" value=\"true\">
-</form>";
+</form>
+</CENTER>";
     
 }
 

@@ -1068,27 +1068,33 @@ sub fdro_murl {
     return($url);
 }
 sub display_commands {
-    print "<center>
+   
+	if (!$frames) {
+	require rt::ui::web::forms;
+	print "<hr>";
+
+	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN=CENTER>";
+
+	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN=CENTER>";
+	&FormCreate;
+	print "</TD><TD ALIGN=CENTER VALIGN=CENTER>";
+	&FormShowNum;
+        print "</TD><TD ALIGN=CENTER VALIGN=CENTER><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
+
+
+
+}
+else {
+
+ print "<center>
 <font size=\"-1\" >";
     
-     
-    if (!$frames) {
-	print "<A HREF=\"$ScriptURL\">Display Queue</A> | ";
-    }
-    
-    print "<A HREF=\"$ScriptURL?display=Create\"";
-    print "target = \"summary\"" if ($frames);
-    print ">Create a request</A>";
-    if ($frames) {
-	print "<br>";
-    }
-    else {
-	print " | ";
-    }
-    
-    if (($serial_num != 0) and ($frames)){
-	print " <A HREF=\"$ScriptURL?display=Request&amp;serial_num=$serial_num\" target=\"_parent\">Refresh Request \#$serial_num</a><br>";
+    print "<A HREF=\"$ScriptURL?display=Create\" target = \"summary\">Create a request</A>";
 
+	print "<br>";
+    
+    if ($serial_num != 0){
+	print " <A HREF=\"$ScriptURL?display=Request&amp;serial_num=$serial_num\" target=\"_parent\">Refresh Request \#$serial_num</a><br>";
 
 	}
     
@@ -1098,14 +1104,14 @@ sub display_commands {
     print " target=\"summary\"" if ($frames);
     
     print ">View Specific Request</A> ";
-    print "<br>" if ($frames);
-    print " | " if (!$frames); 
+    print "<br>";
+
     
     print "<A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A>
 
 </font>
 </center>";
-     
+     }
     
 }
 
