@@ -9,31 +9,6 @@ use RT::Keyword;
 
 @ISA = qw(RT::Record);
 
-# {{{ sub _Init
-sub _Init {
-    my $self = shift;
-    $self->{'table'} = "KeywordSelects";
-    $self->SUPER::_Init(@_);
-}
-# }}}
-
-# {{{ sub _Accessible
-sub _Accessible {
-    my $self = shift;
-    my %Cols = (
-		Name => 'read/write',
-		Keyword => 'read/write', # link to Keywords.  Can be specified by id
-		Single => 'read/write', # bool (described below)
-
-		Depth => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
-		ObjectType  => 'read/write', # currently only C<Ticket>
-		ObjectField => 'read/write', #optional, currently only C<Queue>
-		ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
-	       );
-    return($self->SUPER::_Accessible(@_, %Cols));  
-}
-# }}}
-
 # {{{ POD
 =head1 NAME
 
@@ -100,6 +75,69 @@ Takes a single argument, an RT::CurrentUser object.  Instantiates a new
 (uncreated) RT::KeywordSelect object.
 
 =cut
+# }}}
+
+# {{{ sub _Init
+sub _Init {
+    my $self = shift;
+    $self->{'table'} = "KeywordSelects";
+    $self->SUPER::_Init(@_);
+}
+# }}}
+
+# {{{ sub _Accessible
+sub _Accessible {
+    my $self = shift;
+    my %Cols = (
+		Name => 'read/write',
+		Keyword => 'read/write', # link to Keywords.  Can be specified by id
+		Single => 'read/write', # bool (described below)
+
+		Depth => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
+		ObjectType  => 'read/write', # currently only C<Ticket>
+		ObjectField => 'read/write', #optional, currently only C<Queue>
+		ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
+	       );
+    return($self->SUPER::_Accessible(@_, %Cols));  
+}
+# }}}
+
+
+# {{{ sub LoadByName
+
+=head2 LoadByName( Name => [NAME], Queue => [QUEUE_ID])
+.  Takes a queue id and a keyword select name. 
+    tries to load the keyword select for that queue. if that fails, it tries to load it
+    without a queue specified.
+
+=cut
+
+
+sub LoadByName {
+    my $self = shift;
+    my %args = ( Name => undef,
+		 Queue => undef,
+		 @_
+	       );
+    if ($args{'Queue'}) {
+	#Try to get the keyword select for this queue
+	$self->LoadByCols( Name => $args{'Name'}, 
+			   ObjectType => 'Ticket', 
+			   ObjectField => 'Queue', 
+			   ObjectValue => $args{'Queue'});
+    }	
+    unless ($self->Id) { #if that failed to load an object
+	#Try to get the keyword select of that name that's global
+	$self->LoadByCols( Name => $args{'Name'}, 
+			   ObjectType => 'Ticket', 
+			   ObjectField => 'Queue', 
+			   ObjectValue => '0');
+    }
+    
+    return($self->Id);
+    
+}
+
 # }}}
 
 # {{{ sub Create
@@ -172,8 +210,7 @@ sub Delete {
     return($self->SUPER::Delete());
 
 }
-
-
+# }}}
 
 # {{{ sub KeywordObj
 
@@ -277,9 +314,9 @@ sub HasRight {
 
 =back
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Ivan Kohler <ivan-rt@420.am>
+Ivan Kohler <ivan-rt@420.am>, Jesse Vincent <jesse@fsck.com>
 
 =head1 BUGS
 

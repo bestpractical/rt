@@ -605,6 +605,30 @@ sub AddKeywordSelect {
 
 # }}}
 
+# {{{ sub KeywordSelect
+
+=head2 KeywordSelect([NAME])
+
+Takes the name of a keyword select for this queue or that's global.
+Returns the relevant KeywordSelect object.  Prefers a keywordselect that's 
+specific to this queue over a global one
+
+=cut
+
+sub KeywordSelect {
+    my $self = shift;
+    my $name = shift;
+    
+    require RT::KeywordSelect;
+    my $select = RT::KeywordSelect->new($self->CurrentUser);
+    $select->LoadByName( Name => $name, Queue => $self->Id);
+    
+    return ($select);
+}
+
+
+# }}}
+
 # {{{ sub KeywordSelects
 
 =head2 KeywordSelects
