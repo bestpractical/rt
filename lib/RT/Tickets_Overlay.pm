@@ -1874,15 +1874,25 @@ sub _RestrictionsToClauses {
       # Then join each subclause group with AND.
 
     my $field = $restriction->{'FIELD'};
+    my $realfield = $field;	# CustomFields fake up a fieldname, so
+                                # we need to figure that out
 
     # One special case
+    # Rewrite LinkedTo meta field to the real field
     if ($field =~ /LinkedTo/) {
-      $field = $restriction->{'TYPE'};
+      $realfield = $field = $restriction->{'TYPE'};
     }
 
-    die "I don't know about $field yet" unless (exists $FIELDS{$field} or $restriction->{CUSTOMFIELD});
+    # Two special case
+    # CustomFields have a different real field
+    if ($field =~ /^CF\./) {
+      $realfield = "CF"
+    }
 
-    my $type = $FIELDS{$field}->[0];
+    die "I don't know about $field yet" 
+      unless (exists $FIELDS{$realfield} or $restriction->{CUSTOMFIELD});
+
+    my $type = $FIELDS{$realfield}->[0];
     my $op   = $restriction->{'OPERATOR'};
 
     my $value = ( grep { defined }
@@ -1909,7 +1919,7 @@ sub _RestrictionsToClauses {
 	unless exists $ea->{$op};
       $ea = $ea->{$op};
     }
-    exists $clause{$field} or $clause{$field} = [];
+    exists $clause{$realfield} or $clause{$realfield} = [];
     # Escape Quotes
     $field =~ s!(['"])!\\$1!g;
     $value =~ s!(['"])!\\$1!g;
@@ -1919,7 +1929,7 @@ sub _RestrictionsToClauses {
     # something.  (I.e. "TYPE SPECIFIC STUFF")
 
     #print Dumper($data);
-    push @{$clause{$field}}, $data;
+    push @{$clause{$realfield}}, $data;
   }
   return \%clause;
 }
