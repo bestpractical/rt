@@ -129,7 +129,7 @@ sub add_transaction {
       }
       if ($queues{$queue_id}{m_user_trans}){
 
-       #We don't want to mail the user on comment
+       #We don't want to mail the requestor on comment
        if ($in_type ne 'comments') {
 	  &rt::template_mail ('transaction',$queue_id,$requestors,"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
 
