@@ -1,22 +1,23 @@
 # BEGIN LICENSE BLOCK
-# 
+#
 #  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of version 2 of the GNU General Public License 
+#  it under the terms of version 2 of the GNU General Public License
 #  as published by the Free Software Foundation.
-# 
+#
 #  A copy of that license should have arrived with this
 #  software, but in any event can be snarfed from www.gnu.org.
-# 
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-# 
+#
 # END LICENSE BLOCK
 
 use strict;
+
 package RT::FM::ArticleCollection;
 no warnings qw/redefine/;
 
@@ -28,28 +29,26 @@ Returns the next article that this user can see.
 
 sub Next {
     my $self = shift;
-   
-   
-    my $Object = $self->SUPER::Next();
-    if ((defined($Object)) and (ref($Object))) {
 
-        if ($Object->CurrentUserHasRight('ShowArticle')) {
-            return($Object);
+    my $Object = $self->SUPER::Next();
+    if ( ( defined($Object) ) and ( ref($Object) ) ) {
+
+        if ( $Object->CurrentUserHasRight('ShowArticle') ) {
+            return ($Object);
         }
 
         #If the user doesn't have the right to show this Object
         else {
-            return($self->Next());
+            return ( $self->Next() );
         }
     }
+
     #if there never was any queue
     else {
-        return(undef);
-    }  
+        return (undef);
+    }
 
 }
-
-
 
 =head2 Limit { FIELD  => undef, OPERATOR => '=', VALUE => 'undef'} 
 
@@ -60,22 +59,24 @@ In addition to the "normal" stuff, value can be an array.
 
 sub Limit {
     my $self = shift;
-    my %ARGS =( OPERATOR => '=', 
-                @_);
+    my %ARGS = (
+        OPERATOR => '=',
+        @_
+    );
 
-    if (ref( $ARGS{'VALUE'} )) {
+    if ( ref( $ARGS{'VALUE'} ) ) {
         my @values = $ARGS{'VALUE'};
         delete $ARGS{'VALUE'};
         foreach my $v (@values) {
-            $self->SUPER::Limit(%ARGS, VALUE => $v);
-        } 
+            $self->SUPER::Limit( %ARGS, VALUE => $v );
+        }
     }
     else {
-        $RT::Logger->debug(ref($self). " Limit called :".join(" ",%ARGS));
+        $RT::Logger->debug(
+            ref($self) . " Limit called :" . join( " ", %ARGS ) );
         $self->SUPER::Limit(%ARGS);
     }
 }
-
 
 =head2 LimitName  { OPERATOR => 'LIKE', VALUE => undef } 
 
@@ -95,21 +96,20 @@ my $arts2 =RT::FM::ArticleCollection->new($RT::SystemUser);
 
 =cut
 
-
 sub LimitName {
     my $self = shift;
-    
-    my %args = ( FIELD => 'Name',
-                 OPERATOR => 'LIKE',
-                 CASESENSITIVE => 0,
-                 VALUE => undef,
-                 @_);
+
+    my %args = (
+        FIELD         => 'Name',
+        OPERATOR      => 'LIKE',
+        CASESENSITIVE => 0,
+        VALUE         => undef,
+        @_
+    );
 
     $self->Limit(%args);
 
-
 }
-
 
 =head2 LimitSummary  { OPERATOR => 'LIKE', VALUE => undef } 
 
@@ -129,27 +129,29 @@ is($arts2->Count, 3, 'Found 3 artlcles with summaries matching the word "test"')
 
 =cut
 
-
 sub LimitSummary {
     my $self = shift;
-    
-    my %args = ( FIELD => 'Summary',
-                 OPERATOR => 'LIKE',
-                 CASESENSITIVE => 0,
-                 VALUE => undef,
-                 @_);
+
+    my %args = (
+        FIELD         => 'Summary',
+        OPERATOR      => 'LIKE',
+        CASESENSITIVE => 0,
+        VALUE         => undef,
+        @_
+    );
 
     $self->Limit(%args);
-
 
 }
 
 sub LimitCreated {
     my $self = shift;
-    my %args = ( FIELD => 'Created',
-                 OPERATOR => undef,
-                 VALUE => undef,
-                 @_);
+    my %args = (
+        FIELD    => 'Created',
+        OPERATOR => undef,
+        VALUE    => undef,
+        @_
+    );
 
     $self->Limit(%args);
 
@@ -157,10 +159,12 @@ sub LimitCreated {
 
 sub LimitCreatedBy {
     my $self = shift;
-    my %args = ( FIELD => 'CreatedBy',
-                 OPERATOR => '=',
-                 VALUE => undef,
-                 @_);
+    my %args = (
+        FIELD    => 'CreatedBy',
+        OPERATOR => '=',
+        VALUE    => undef,
+        @_
+    );
 
     $self->Limit(%args);
 
@@ -169,31 +173,29 @@ sub LimitCreatedBy {
 sub LimitUpdated {
 
     my $self = shift;
-    my %args = ( FIELD => 'Updated',
-                 OPERATOR => undef,
-                 VALUE => undef,
-                 @_);
+    my %args = (
+        FIELD    => 'Updated',
+        OPERATOR => undef,
+        VALUE    => undef,
+        @_
+    );
 
     $self->Limit(%args);
 
 }
+
 sub LimitUpdatedBy {
     my $self = shift;
-    my %args = ( FIELD => 'UpdatedBy',
-                 OPERATOR => '=',
-                 VALUE => undef,
-                 @_);
+    my %args = (
+        FIELD    => 'UpdatedBy',
+        OPERATOR => '=',
+        VALUE    => undef,
+        @_
+    );
 
     $self->Limit(%args);
 
 }
-
-
-
-
-
-
-
 
 # {{{ LimitToParent ID
 
@@ -292,12 +294,12 @@ sub LimitCustomField {
       ref( $args{'VALUE'} ) ? @{ $args{'VALUE'} } : ( $args{'VALUE'} );
 
     foreach my $value (@values) {
-        next unless $value; #strip out total blank wildcards
+        next unless $value;    #strip out total blank wildcards
         my $ObjectValuesAlias = $self->Join(
             TYPE   => 'left',
             ALIAS1 => 'main',
             FIELD1 => 'id',
-            TABLE2 => 'FM_ArticleCFValues',
+            TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'Article'
         );
 
@@ -319,25 +321,25 @@ sub LimitCustomField {
             );
         }
 
-        #If we're trying to find articles where a custom field value doesn't match
-        # something, be sure to find  things where it's null
+      #If we're trying to find articles where a custom field value doesn't match
+      # something, be sure to find  things where it's null
 
-        #basically, we do a left join on the value being applicable to the article and then we turn around 
-        # and make sure that it's actually null in practise
+#basically, we do a left join on the value being applicable to the article and then we turn around
+# and make sure that it's actually null in practise
 
         #TODO this should deal with starts with and ends with
 
-        if ( $args{'OPERATOR'} eq '!='  || $args{'OPERATOR'} =~ /^not like$/i) {
+        if ( $args{'OPERATOR'} eq '!=' || $args{'OPERATOR'} =~ /^not like$/i ) {
             my $op;
-            if ($args{'OPERATOR'} eq '!=') {
+            if ( $args{'OPERATOR'} eq '!=' ) {
                 $op = "=";
             }
-            elsif ($args{'OPERATOR'} =~ /^not like$/i) {
+            elsif ( $args{'OPERATOR'} =~ /^not like$/i ) {
                 $op = 'LIKE';
             }
 
             $self->SUPER::Limit(
-                LEFTJOIN           => $ObjectValuesAlias,
+                LEFTJOIN        => $ObjectValuesAlias,
                 FIELD           => 'Content',
                 OPERATOR        => $op,
                 VALUE           => $value,
@@ -353,7 +355,7 @@ sub LimitCustomField {
                 ENTRYAGGREGATOR => 'OR',
             );
         }
-        else { 
+        else {
             $self->SUPER::Limit(
                 ALIAS           => $ObjectValuesAlias,
                 FIELD           => 'Content',
@@ -370,17 +372,18 @@ sub LimitCustomField {
 
 # {{{ LimitTopics
 sub LimitTopics {
-    my $self = shift;
+    my $self   = shift;
     my @topics = @_;
 
     my $topics = $self->NewAlias('FM_ObjectTopics');
     $self->Limit(
-        ALIAS => $topics,
-        FIELD => 'Topic',
-        VALUE => $_,
+        ALIAS           => $topics,
+        FIELD           => 'Topic',
+        VALUE           => $_,
         ENTRYAGGREGATOR => 'OR'
-    ) for @topics;
-    
+      )
+      for @topics;
+
     $self->Limit(
         ALIAS => $topics,
         FIELD => 'ObjectType',
@@ -393,6 +396,7 @@ sub LimitTopics {
         FIELD2 => 'ObjectId',
     );
 }
+
 # }}}
 
 # {{{ LimitRefersTo URI
@@ -436,6 +440,7 @@ sub LimitRefersTo {
     );
 
 }
+
 # }}}
 
 # {{{ LimitReferredToBy URI
@@ -479,6 +484,7 @@ sub LimitReferredToBy {
     );
 
 }
+
 # }}}
 
 1;

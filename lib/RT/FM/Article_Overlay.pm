@@ -26,7 +26,7 @@ use RT::FM::ObjectTopicCollection;
 use RT::FM::ClassCollection;
 use RT::Links;
 use RT::URI::fsck_com_rtfm;
-use RT::FM::TransactionCollection;
+use RT::Transactions;
 
 # {{{ Create
 
@@ -818,344 +818,6 @@ sub URIObj {
 }
 
 # }}}
-
-# {{{ Custom Fields
-
-=head2 Custom Fields
-
-The following routines deal with custom fields and their values
-
-=cut
-
-# {{{ CustomFieldValues
-
-=item CustomFieldValues [ CUSTOMFIELD_ID ]
-
-Returns an RT::FM::CustomFieldObjectValueCollection object containing
-the values of CustomField CUSTOMFIELD_ID for this Article. if no CUSTOMFIELD_ID is specified, returns ALL customfield values.
-
-
-=cut
-
-sub CustomFieldValues {
-    my $self = shift;
-    my $customfield;
-    $customfield = shift if (@_);
-
-    my $cfovc = new RT::FM::ArticleCFValueCollection( $self->CurrentUser );
-    if ( $self->CurrentUserHasRight('ShowArticle') ) {
-        $cfovc->LimitToArticle( $self->Id );
-        $cfovc->LimitToCustomField($customfield) if ($customfield);
-    }
-    return ($cfovc);
-}
-
-# }}}
-
-# {{{ AddCustomFieldValue
-
-=item AddCustomFieldValue { Field => FIELD, Content => VALUE }
-
-VALUE can either be a CustomFieldValue object or a string.
-FIELD can be a CustomField object OR a CustomField ID.
-
-
-Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
-deletes the old value. 
-If VALUE isn't a valid value for the custom field, returns 
-(0, 'Error message' ) otherwise, returns (1, 'Success Message')
-
-
-=begin testing
-
-
-my $art = RT::FM::Article->new($RT::SystemUser);
-my ($id,$msg) =$art->Create(Class => 'ArticleTest');
-ok ($id, $msg);
-
-my $cf = RT::FM::CustomField->new($RT::SystemUser);
-($id, $msg) =$cf->Create(Name => "Test", Type => "SelectMultiple");
-ok ($id, $msg);
-($id, $msg) = $cf->AddValue(Name => "Test1");
-ok ($id, $msg);
-
-($id, $msg) = $cf->AddValue(Name => "Testy");
-ok ($id, $msg);
-
-($id, $msg )= $cf->AddToClass('ArticleTest');
-ok ($id, $msg);
-
-$id = $cf->ValidForClass('ArticleTest');
-ok ($id, "This cf is good for the class 'ArticleTest'");
-$id = $cf->ValidForClass($art->ClassObj->Name);
-ok ($id, "This cf is good for the class ".$art->ClassObj->Name);
-
-($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Test1");
-ok ($id, $msg);
-($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Test1");
-ok (!$id, "Can add a duplicate value to a custom field that's a 'select multiple' - $msg");
-($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Testy");
-ok ($id, $msg);
-
-
-($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "TestFroboz");
-ok (!$id, "Can't add a non-existent value to a custom field that's a 'select multiple' - $msg");
-
-=end testing
-
-
-
-
-=cut
-
-sub AddCustomFieldValue {
-    my $self = shift;
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-    $self->_AddCustomFieldValue(@_);
-}
-
-sub _AddCustomFieldValue {
-    my $self = shift;
-    my %args = ( Field             => undef,
-                 Content           => undef,
-                 RecordTransaction => 1,
-                 @_ );
-
-    # {{{ Get the custom field we're talking about
-
-    my $cf = RT::FM::CustomField->new( $self->CurrentUser );
-    if ( UNIVERSAL::isa( $args{'Field'}, "RT::FM::CustomField" ) ) {
-        $cf->Load( $args{'Field'}->id );
-    }
-    else {
-        $cf->Load( $args{'Field'} );
-    }
-
-    unless ( $cf->ValidForClass( $self->__Value('Class') ) ) {
-        return ( 0,
-                 $self->loc( "Custom field [_1] not valid for that article",
-                             $args{'Field'} ) );
-    }
-
-    unless ( $cf->Id ) {
-        return ( 0,
-                 $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
-    }
-
-    # }}}
-
-    # Load up a ArticleCFValueCollection object for this custom field
-    my $values = $self->CustomFieldValues( $cf->Id );
-
-    # If the custom field only accepts a single value, delete the existing
-    # value and record a "changed from foo to bar" transaction
-    if ( $cf->SingleValue ) {
-
-# {{{ We need to whack any old values here.  In most cases, the custom field should
-# only have one value to delete.  In the pathalogical case, this custom field
-# used to be a multiple and we have many values to whack....
-        my $cf_values = $values->Count;
-
-        if ( $cf_values > 1 ) {
-            my $i = 0;   #We want to delete all but the last one, so we can then
-                 # execute the same code to "change" the value from old to new
-            while ( my $value = $values->Next ) {
-                $i++;
-                if ( $i < $cf_values ) {
-                    my $old_value = $value->Content;
-                    my ( $val, $msg ) = $cf->DeleteValueForArticle(
-                                                      Article => $self->Id,
-                                                      Content => $value->Content
-                    );
-                    unless ($val) {
-                        return ( 0, $msg );
-                    }
-                    my ( $TransactionId, $Msg, $TransactionObj ) =
-                      $self->_NewTransaction( Type       => 'Custom',
-                                              Field      => $cf->Id,
-                                              OldContent => $old_value );
-                }
-            }
-        }
-
-        # }}}
-
-        return (1, $self->loc( "Custom field unchanged" )) if not $args{'Content'} and not $cf_values;
-        return (1, $self->loc( "Custom field value unset" )) unless $args{'Content'};
-
-        # {{{ Add a new custom field value
-        my $value = $cf->ValuesForArticle( $self->Id )->First;
-        my $old_value;
-        if ( $cf_values == 1 ) {
-            $old_value = $value->Content();
-        }
-
-        my ( $new_value_id, $value_msg ) = $cf->AddValueForArticle(
-                                                     Article => $self->Id,
-                                                     Content => $args{'Content'}
-        );
-
-        unless ($new_value_id) {
-            return (
-                  0,
-                  $self->loc(
-                      "Could not add new custom field value for Article. [_1] ",
-                      $value_msg ) );
-        }
-
-        # }}}
-
-        # {{{ Kill the old value
-        my $new_value = RT::FM::ArticleCFValue->new( $self->CurrentUser );
-        $new_value->Load($new_value_id);
-
-        # now that adding the new value was successful, delete the old one
-        if ( defined $old_value ) {
-            my ( $val, $msg ) = $cf->DeleteValueForArticle(Article => $self->Id,
-                                                           Content => $old_value
-            );
-            unless ($val) {
-                return ( 0, $msg );
-            }
-
-        }
-
-        # }}}
-
-        # {{{ Record the "Changed" transaction
-        if ( $args{'RecordTransaction'} ) {
-            my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type       => 'Custom',
-                                      Field      => $cf->Id,
-                                      OldContent => $old_value,
-                                      NewContent => $new_value->Content );
-        }
-        return ( 1,
-                 $self->loc( "Custom field value changed from '[_1]' to '[_2]'",
-                             $old_value, $new_value->Content ) );
-
-        # }}}
-    }
-
-    # If it's an empty value, we don't want to insert it
-    elsif (not $args{'Content'}) {
-        return ( 1, $self->loc( "Empty value skipped" ));
-    }
-
-    # otherwise, just add a new value and record "new value added"
-    else {
-
-        # {{{ Add a custom field value
-        my ( $new_value_id, $new_value_msg ) = $cf->AddValueForArticle(
-                                                     Article => $self->Id,
-                                                     Content => $args{'Content'}
-        );
-
-        unless ($new_value_id) {
-            return (
-                   0,
-                   $self->loc(
-                       "Could not add new custom field value for Article. [_1]",
-                       $new_value_msg ) );
-        }
-
-        # }}}
-
-        # {{{ Record a tranaction
-        if ( $args{'RecordTransaction'} ) {
-            my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type       => 'Custom',
-                                      Field      => $cf->Id,
-                                      NewContent => $args{'Content'} );
-            unless ($TransactionId) {
-                return ( 0,
-                         $self->loc( "Couldn't create a transaction: [_1]", $Msg
-                         ) );
-            }
-        }
-        return ( $new_value_id,
-                 $self->loc( "[_1] added as a value for [_2]",
-                             $args{'Content'},
-                             $cf->Name ) );
-
-        # }}}
-    }
-
-}
-
-# }}}
-
-# {{{ DeleteCustomFieldValue
-
-=item DeleteCustomFieldValue { CustomField => undef, Content => undef } 
-
-Takes a paramhash. Deletes the Keyword denoted by the I<Keyword>
-parameter from this ticket's object keywords.
-
-=cut
-
-sub DeleteCustomFieldValue {
-    my $self = shift;
-    my %args = ( Content => undef,
-                 Field   => undef,
-                 @_ );
-
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    my $cf = RT::FM::CustomField->new($RT::SystemUser);
-    $cf->Load( $args{'Field'} );
-
-    #Load up the ObjectKeyword we\'re talking about
-
-    my $values = RT::FM::ArticleCFValueCollection->new($self->CurrentUser);
-    $values->LimitToArticle($self->id);
-    $values->LimitToCustomField($cf->id);
-    my $CFObjectValue = $values->HasEntryWithContent($args{'Content'}); 
-
-    #if we can\'t find it, bail
-    unless ($CFObjectValue ) {
-        return (
-            undef,
-            $self->loc(
-"Couldn't load custom field [_1] value [_2] while trying to delete it.",
-                $cf->Id,
-                $args{'Content'} ) );
-    }
-
-    #record transaction here.
-    $RT::Handle->BeginTransaction();
-    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-                                           Type  => 'Custom',
-                                           Field => $CFObjectValue->CustomField,
-                                           OldContent => $args{'Content'} );
-    unless ($TransactionId) {
-        $RT::Handle->Rollback();
-        $RT::Logger->crit("Somehow, couldn't add a transaction. aiee");
-        return ( undef, $self->loc("Internal error") );
-    }
-    my $del = $CFObjectValue->Delete();
-    unless ($del) {
-
-        $RT::Handle->Rollback();
-        return ( undef,
-                 $self->loc( "Couldn't delete  custom field [_1] value [_2].",
-                             $cf->Id, $args{'Content'} ) );
-    }
-
-    $RT::Handle->Commit();
-    return ( 1,
-             $self->loc( "Value [_1] deleted from custom field [_2].",
-                         $CFObjectValue->Content,
-                         $cf->Name ) );
-
-}
-
-# }}}
-
 # }}}
 
 # {{{ Topics
@@ -1269,13 +931,12 @@ sub _NewTransaction {
                  ChangeLog  => '',
                  @_ );
 
-    my $trans = RT::FM::Transaction->new( $self->CurrentUser );
-    $trans->Create( Article    => $self->Id,
+    my $trans = RT::Transaction->new( $self->CurrentUser );
+    $trans->Create( Object    => $self,
                     Type       => $args{'Type'},
                     Field      => $args{'Field'},
                     OldContent => $args{'OldContent'},
-                    NewContent => $args{'NewContent'},
-                    ChangeLog  => $args{'ChangeLog'} );
+                    NewContent => $args{'NewContent'})
 
     #something bad happened;
     unless ( $trans->Id ) {
@@ -1298,12 +959,11 @@ this object is an _empty_ TransactionCollection
 
 sub Transactions {
     my $self         = shift;
-    my $transactions = RT::FM::TransactionCollection->new( $self->CurrentUser );
+    my $transactions = RT::Transactions->new( $self->CurrentUser );
 
     if ( $self->CurrentUserHasRight('ShowArticleHistory') ) {
-        $transactions->Limit( FIELD    => 'Article',
-                              OPERATOR => '=',
-                              VALUE    => $self->Id );
+         $transactions->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+         $transactions->Limit( FIELD    => 'ObjectId', OPERATOR => '=', VALUE    => $self->Id );
     }
 
     return ($transactions);
