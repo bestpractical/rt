@@ -285,7 +285,7 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/00smoke.t
 
-regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
+regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods
 	$(PERL) lib/t/02regression.t
 
 regression-quiet:
@@ -296,6 +296,11 @@ regression-instruct:
 
 
 # {{{ database-installation
+
+regression-reset-db:
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@ --dba-password ''
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@ --dba-password ''
+
 initialize-database: 
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@ --prompt-for-dba-password
 

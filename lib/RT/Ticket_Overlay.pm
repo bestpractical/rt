@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-# This software is redistributable under the terms version 2 of the GNU GPL
 
 # {{{ Front Material 
 
@@ -747,8 +746,36 @@ sub CreateFrom822 {
 
 # }}}
 
+# {{{ UpdateFrom822 
 
-# {{{ sub UpdateFrom822 
+=head2 UpdateFrom822 $MESSAGE
+
+Takes an RFC822 format message as a string and uses it to make a bunch of changes to a ticket.
+Returns an um. ask me again when the code exists
+
+
+=begin testing
+
+my $simple_update = <<EOF;
+Subject: target
+AddRequestor: jesse\@fsck.com
+EOF
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+$ticket->Create(Subject => 'first', Queue => 'general');
+ok($ticket->Id, "Created the test ticket");
+$ticket->UpdateFrom822($simple_update);
+is($ticket->Subject, 'target', "changed the subject");
+my $jesse = RT::User->new($RT::SystemUser);
+$jesse->LoadByEmail('jesse@fsck.com');
+ok ($jesse->Id, "There's a user for jesse");
+ok($ticket->Requestors->HasMember( $jesse->PrincipalObj), "It has the jesse principal object as a requestor ");
+
+=end testing
+
+
+=cut
+
 sub UpdateFrom822 {
         my $self = shift;
         my $content = shift;
@@ -771,6 +798,7 @@ sub UpdateFrom822 {
         TimeEstimated   => $args{'timeestimated'},
         TimeLeft        => $args{'timeleft'},
         InitialPriority => $args{'initialpriority'},
+        Priority => $args{'priority'},
         FinalPriority   => $args{'finalpriority'},
         Type            => $args{'type'},
         DependsOn       => $args{'dependson'},
@@ -782,6 +810,23 @@ sub UpdateFrom822 {
         MIMEObj         => $args{'mimeobj'}
     );
 
+    foreach my $type qw(Requestor Cc Admincc) {
+
+        foreach my $action ( 'Add', 'Del', '' ) {
+
+            my $lctag = lc($action) . lc($type);
+            foreach my $list ( $args{$lctag}, $args{ $lctag . 's' } ) {
+
+                foreach my $entry ( ref($list) ? @{$list} : ($list) ) {
+                    push @{$ticketargs{ $action . $type }} , split ( /\s*,\s*/, $entry );
+                }
+
+            }
+
+            # Todo: if we're given an explicit list, transmute it into a list of adds/deletes
+
+        }
+    }
 
     # Add custom field entries to %ticketargs.
     # TODO: allow named custom fields
@@ -789,40 +834,6 @@ sub UpdateFrom822 {
         /^customfield-(\d+)$/
           && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
     } keys(%args);
-
-    my ( $id, $transid, $msg ) = $self->Create(%ticketargs);
-    unless ($id) {
-        $RT::Logger->error( "Couldn't create a related ticket for "
-              . $self->TicketObj->Id . " "
-              . $msg );
-    }
-
-    # iterate through the basic fields 
-    # delete any that haven't changed
-    
-    # iterate through the people
-    # if explicitly specified.
-    #   set them 
-    # else 
-    #  delete any that have been removed
-    #  add any new ones
-
-    # iterate through the custom fields
-    # if explicitly specified.
-    #   set them 
-    # else 
-    #  delete any that have been removed
-    #  add any new ones
-
-    # iterate through the relationships
-    # if explicitly specified.
-    #   set them 
-    # else 
-    #  delete any that have been removed
-    #  add any new ones
-
-
-
 
 # for each ticket we've been told to update, iterate through the set of
 # rfc822 headers and perform that update to the ticket.
@@ -841,42 +852,41 @@ sub UpdateFrom822 {
       Type
     );
 
-    
-    my $basics = {};
-    my $head; 
-    # Let's make a hash of the basic parameters 
-    foreach my $attr (@attribs) { 
-      $basics->{$attr} = $head->get($attr);          
-      $head->delete($attr); #done with it
-    } 
 
     # Resolve the queue from a name to a numeric id.
-    if ( $basics->{'Queue'} and ( $basics->{'Queue'} !~ /^(\d+)$/ ) ) {
+    if ( $ticketargs{'Queue'} and ( $ticketargs{'Queue'} !~ /^(\d+)$/ ) ) {
         my $tempqueue = RT::Queue->new($RT::SystemUser);
-        $tempqueue->Load( $basics->{'Queue'} );
-        $basics->{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
+        $tempqueue->Load( $ticketargs{'Queue'} );
+        $ticketargs{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
     }
 
     # die "updaterecordobject is a webui thingy";
-    my @results = UpdateRecordObject(
-        AttributesRef => \@attribs,
-        Object        => $self,
-        ARGSRef       => $basics
-    );
+    my @results;
+
+    foreach my $attribute (@attribs) {
+        my $value = $ticketargs{$attribute};
+
+        if ( $value ne $self->$attribute() ) {
+
+            my $method = "Set$attribute";
+            my ( $code, $msg ) = $self->$method($value);
+
+            push @results, $self->loc($attribute) . ': ' . $msg;
+
+        }
+    }
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $head->get('Owner') && ( $self->Owner != $head->get('Owner') ) ) {
+    if ( $ticketargs{'Owner'} && ( $self->Owner != $ticketargs{'Owner'} ) ) {
         my $ChownType = "Give";
-        $ChownType = "Force" if ( $head->get('ForceOwnerChange') );
+        $ChownType = "Force" if ( $ticketargs{'ForceOwnerChange'} );
 
-        my ( $val, $msg ) = $self->SetOwner( $head->get('Owner'), $ChownType );
+        my ( $val, $msg ) = $self->SetOwner( $ticketargs{'Owner'}, $ChownType );
         push ( @results, $msg );
-        $head->delete('Owner');
     }
 
     # }}}
 # Deal with setting watchers
-my @watcher_types = qw(Requestor Cc AdminCc);
 
 
 # Acceptable arguments:
@@ -885,50 +895,43 @@ my @watcher_types = qw(Requestor Cc AdminCc);
 #  AddRequestor
 #  AddRequestors
 #  DelRequestor
-  
-foreach my $type (@watcher_types) {
-    my @to_set = ( $head->get_all($type), $head->get_all( $type . "s" ) );
-    my @to_add =
-      ( $head->get_all( "Add" . $type ),
-        $head->get_all( "Add" . $type . "s" ) );
-    my @to_del =
-      ( $head->get_all( "Del" . $type ),
-        $head->get_all( "Del" . $type . "s" ) );
+ 
+ foreach my $type qw(Requestor Cc AdminCc) {
 
-        # If we've been given a number of addresses to make this sort of watcher,       # go to it.
-        if ($#to_set >=0 ) {
-                foreach my $address (@to_set) {
-                        my $user = RT::User->new($self->CurrentUser);
-                        
-                }
-        }
-        
         # If we've been given a number of delresses to del, do it.
-        if ($#to_del >=0 ) {
-                foreach my $address (@to_del) {
+                foreach my $address (@{$ticketargs{'Del'.$type}}) {
                 my ($id, $msg) = $self->DelWatcher( Type => $type, Email => $address);
                 push (@results, $msg) ;
                 }
 
-        }
         # If we've been given a number of addresses to add, do it.
-        if ($#to_add >=0 ) {
-                foreach my $address (@to_add) {
+                foreach my $address (@{$ticketargs{'Add'.$type}}) {
+                $RT::Logger->debug("Adding $address as a $type");
                 my ($id, $msg) = $self->AddWatcher( Type => $type, Email => $address);
                 push (@results, $msg) ;
-                }
+
         }
 
 
 }
+
 
 }
 # }}}
+
+# {{{ _Parse822HeadersForAttributes Content
+
+=head2 _Parse822HeadersForAttributes Content
+
+Takes an RFC822 style message and parses its attributes into a hash.
+
+=cut
 
 sub _Parse822HeadersForAttributes {
     my $self    = shift;
     my $content = shift;
     my %args;
+
     my @lines = ( split ( /\n/, $content ) );
     while ( defined( my $line = shift @lines ) ) {
         if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
@@ -952,7 +955,7 @@ sub _Parse822HeadersForAttributes {
             #TODO: this won't work, since "" isn't of the form "foo:value"
 
                 while ( defined( my $l = shift @lines ) ) {
-                    push @{ $args{'content'} }, $l . "\n";
+                    push @{ $args{'content'} }, $l;
                 }
             }
         
@@ -971,12 +974,13 @@ sub _Parse822HeadersForAttributes {
     $args{'mimeobj'} = MIME::Entity->new();
     $args{'mimeobj'}->build(
         Type => ( $args{'contenttype'} || 'text/plain' ),
-        Data => $args{'content'}
+        Data => ($args{'content'} || '')
     );
 
     return (%args);
 }
 
+# }}}
 
 # {{{ sub Import
 

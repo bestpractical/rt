@@ -41,6 +41,12 @@ if ($ARGS{'SessionType'}) {
         $session{'SessionType'} = $ARGS{'SessionType'};
 }
 
+if ($session{'SessionType'} =~ /REST/i) {
+        $m->error_format('text');
+} else {
+        $m->error_format('html');
+}
+
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
 }
