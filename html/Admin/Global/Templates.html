@@ -2,15 +2,18 @@
 <& /Admin/Elements/SystemTabs &>
 
 <& /Elements/TitleBoxStart, title => loc('Edit system templates') &>
+<P><A href="Template.html?create=1&Queue=0"><&|/l&>Create a new template</&></A></P>
+
+<P>
+<&|/l&>Templates</&>:<BR>
 <UL>
-<LI><A href="Template.html?create=1&Queue=0"><&|/l&>Create a new template</&></A><BR><BR>
-
-
 %while  (my $TemplateObj = $Templates->Next) { 
 
 <LI><A HREF="Template.html?template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Name%>: <%$TemplateObj->Description%></a><BR>
 
 %}
+<UL>
+</P>
 
 <& /Elements/TitleBoxEnd &>
 <%INIT>

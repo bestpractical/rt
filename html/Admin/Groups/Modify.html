@@ -23,8 +23,7 @@
 <&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-
-<& /Elements/Submit &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </form>
 <%INIT>
 

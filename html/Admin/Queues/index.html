@@ -4,6 +4,10 @@
 
 <& /Elements/TitleBoxStart, title => loc("Select a queue") &>
 
+% if ($session{'CurrentUser'}->HasSystemRight('AdminQueue')) {
+<P><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1"><&|/l&>Create a new queue</&></A><BR><BR></P>
+% }
+
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
@@ -15,14 +19,10 @@
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
 </TD>
-<TD VALIGN=TOP>
-<UL>
-% if ($session{'CurrentUser'}->HasSystemRight('AdminQueue')) {
-<LI><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1"><&|/l&>Create a new queue</&></A><BR><BR></LI>
-</UL>
-% }
-
-<%$caption%><BR>
+</TR>
+<TR>
+<TD>
+<%$caption%>:<BR>
 <UL>
 %if ($queues->Count == 0) {
 <LI> <i><&|/l&>No queues matching search criteria found.</&></i>
@@ -43,7 +43,10 @@ my $queues = new RT::Queues($session{'CurrentUser'});
 $queues->UnLimit();
 
 if ($FindDisabledQueues) {
-	$queues->{'find_disabled_rows'} = 1;
+        $caption = loc("All Queues");
+        $queues->{'find_disabled_rows'} = 1;
+} else {
+    $caption = loc("Enabled Queues");
 }
 
 </%INIT>

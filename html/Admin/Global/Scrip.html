@@ -1,0 +1,66 @@
+<& /Admin/Elements/Header, Title => loc('Edit scrips') &>
+<& /Admin/Elements/SystemTabs &>
+
+<& /Elements/ListActions, actions => \@actions &>
+
+<& /Elements/TitleBoxStart, title => loc("Add a new a global scrip") &>
+  
+<FORM METHOD=POST ACTION="Scrip.html">
+
+<&|/l&>Add a scrip which will apply to all queues</&>:
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Condition</&>:
+</TD>
+<TD>
+<& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition', Default => $scrip->ConditionObj->Id &>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Action</&>:
+</TD>
+<TD>
+<& /Admin/Elements/SelectScripAction, Name => 'NewScripAction', Default => $scrip->ActionObj->Id &>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Template</&>: 
+</TD>
+<TD>
+<& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', Default => $scrip->TemplateObj->Id &>
+</TD>
+</TR>
+
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+</FORM>
+<%init>
+my $scrip = new RT::Scrip($session{'CurrentUser'});
+my (@actions);
+
+if ($NewScripAction and $NewScripCondition) {
+    my $NewScrip = new RT::Scrip($session{'CurrentUser'});
+    
+    my ($retval, $msg) = $NewScrip->Create ( ScripAction => $NewScripAction,
+				     ScripCondition => $NewScripCondition,
+				     Stage => 'TransactionCreate',
+				     Queue => 0,
+				     Template => $NewScripTemplate);
+    if (defined $retval) {
+        push @actions, $msg;
+    }
+    else {
+        push @actions, $msg;
+    }
+}
+
+# }}}
+</%init>
+
+<%ARGS>
+$NewScripCondition => undef
+$NewScripAction => undef
+$NewScripTemplate => undef
+</%ARGS>

@@ -1,78 +1,37 @@
-
-<& /Elements/TitleBoxStart, title => loc('Editing Configuration for user [_1]', $UserObj->Name) &>
-
-<FORM ACTION="<%$RT::WebPath%>/Admin/ModifyUser.html" METHOD=POST>
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
-
-<&|/l&>Name</&>: <input name="Name" value="<%$UserObj->Name%>">
-<BR>
-<&|/l&>New Password</&>: <input type=password name="Pass1"><BR>
-<&|/l&>Retype Password</&>: <input type=password name="Pass2"><BR>
-
-<&|/l&>Comments</&>: <TEXTAREA name="Comments" COLS=20 ROWS=5>
-<%$UserObj->Comments%></TEXTAREA>
-
-<BR>
-<&|/l&>Signature</&>: <TEXTAREA COLS=80 ROWS=5 name="Signature">
-<%$UserObj->Signature%>"></TEXTAREA>
-<BR>
-<&|/l&>EmailAddress</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
-<BR>
-<&|/l&>FreeformContactInfo</&>: <input name="FreeformContactInfo" value="<%$UserObj->FreeformContactInfo%>">
-<BR>
-<&|/l&>Organization</&>: <input name="Organization" value="<%$UserObj->Organization%>">
-<BR>
-<&|/l&>RealName</&>: <input name="RealName" value="<%$UserObj->RealName%>">
-<BR>
-<&|/l&>NickName</&>: <input name="NickName" value="<%$UserObj->NickName%>">
-<BR>
-<&|/l&>Lang</&>: <input name="Lang" value="<%$UserObj->Lang%>">
-<BR>
-<&|/l&>EmailEncoding</&>: <input name="EmailEncoding" value="<%$UserObj->EmailEncoding%>">
-<BR>
-<&|/l&>WebEncoding</&>: <input name="WebEncoding" value="<%$UserObj->WebEncoding%>">
-<BR>
-<&|/l&>ExternalContactInfoId</&>: <input name="ExternalContactInfoId" value="<%$UserObj->ExternalContactInfoId%>">
-<BR>
-<&|/l&>ContactInfoSystem</&>: <input name="ContactInfoSystem" value="<%$UserObj->ContactInfoSystem%>">
-<BR>
-<&|/l&>UnixUsername</&>: <input name="Gecos" value="<%$UserObj->Gecos%>">
-<BR>
-<&|/l&>ExternalAuthId</&>: <input name="ExternalAuthId" value="<%$UserObj->ExternalAuthId%>">
-<BR>
-<&|/l&>AuthSystem</&>: <input name="AuthSystem" value="<%$UserObj->AuthSystem%>">
-<BR>
-<&|/l&>HomePhone</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>">
-<BR>
-<&|/l&>WorkPhone</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>">
-<BR>
-<&|/l&>MobilePhone</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>">
-<BR>
-<&|/l&>PagerPhone</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>">
-<BR>
-<&|/l&>Address1</&>: <input name="Address1" value="<%$UserObj->Address1%>">
-<BR>
-<&|/l&>Address2</&>: <input name="Address2" value="<%$UserObj->Address2%>">
-<BR>
-<&|/l&>City</&>: <input name="City" value="<%$UserObj->City%>">
-<BR>
-<&|/l&>State</&>: <input name="State" value="<%$UserObj->State%>">
-<BR>
-<&|/l&>Zip</&>: <input name="Zip" value="<%$UserObj->Zip%>">
-<BR>
-<&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
-<BR>
-
-<input type=submit>
-</form>
-<& /Elements/TitleBoxEnd &>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Name</&>:
+</TD>
+<TD>
+<input name="Name" VALUE="<%$Name%>" SIZE=20><BR>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Description</&>: 
+</TD>
+<TD>
+<input name="Description" VALUE="<%$Description%>" SIZE=80><BR>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<&|/l&>Content</&>:<BR>
+</TD>
+<TD>
+<TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
+<%$Content%></TEXTAREA>
+</TD>
+</TR>
+</TABLE>
 
 <%INIT>
 
 </%INIT>
 
 <%ARGS>
-
-
-$UserObj => undef
+$Name => undef
+$Description => undef
+$Content => undef
 </%ARGS>

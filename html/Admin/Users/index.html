@@ -4,6 +4,10 @@
 
 <& /Elements/TitleBoxStart, title => loc('Select a user') &>
 
+% if ($session{'CurrentUser'}->HasSystemRight('AdminUsers')) {
+<P><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1"><&|/l&>Create a new user</&></A></P>
+% }
+
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
@@ -16,14 +20,11 @@
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
 </TD>
-<TD VALIGN=TOP>
-<UL>
-% if ($session{'CurrentUser'}->HasSystemRight('AdminUsers')) {
-<LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1"><&|/l&>Create a new user</&></A><BR><BR></LI>
-</UL>
-% }
+</TR>
 
-<%$caption%><BR>
+<TR>
+<TD>
+<%$caption%>:<BR>
 <UL>
 %if ($users->Count == 0) {
 <LI> <i><&|/l&>No users matching search criteria found.</&></i>

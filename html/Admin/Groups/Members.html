@@ -10,17 +10,14 @@
 <TABLE WIDTH="100%">
 <TR>
 <TD>
-<&|/l&>Add members</&>
+<h3><&|/l&>Current members</&></h3>
 </TD>
 <TD>
-<&|/l&>Current members</&>
+<h3><&|/l&>Add members</&></h3>
 </TD>
 </TR>
 
 <TR>
-<TD VALIGN=TOP>
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
-</TD>
 <TD VALIGN=TOP>
 
 % if ($Group->MembersObj->Count == 0 ) {
@@ -49,10 +46,13 @@
 % }
 </UL>
 </TD>
+<TD VALIGN=TOP>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
+</TD>
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </form>
 
 

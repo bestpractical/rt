@@ -4,24 +4,23 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => loc("Modify global scrips") &>
-  
-  <FORM METHOD=POST ACTION="Scrips.html">
 
-% if ($Scrips->Count > 0 ) {
+<FORM METHOD=POST ACTION="Scrips.html">
+<P><A href="Scrip.html?create=1&Queue=0"><&|/l&>Create a new global scrip</&></A></P>
+
+<P><&|/l&>Global Scrips</&>:</P>
+% if ($Scrips->Count == 0 ) {
+<P><i><&|/l&>(No scrips)</&></i></P>
+% } else {
+<P><i><&|/l&>(Check box to delete scrip)</&></i></P>
 <TABLE>
-<TR>
-<TD><&|/l&>Delete</&>
-</TD>
-<TD>
-</TR>
-
 %   while (my $scrip = $Scrips->Next ) {
 <TR>
 <TD>
-<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->Id%>">
+<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->id%>">
 </TD>
 <TD>
-<% $scrip->ConditionObj->Name %> 
+<LI><% $scrip->ConditionObj->Name %> 
 <% $scrip->ActionObj->Name %> 
 <&|/l, $scrip->TemplateObj->Name &>with template [_1]</&>
 </TD>
@@ -31,41 +30,15 @@
 </TABLE>
 
 % }
-<&|/l&>Add a scrip which will apply to all queues</&>:
-<ul>
-<li><&|/l&>Condition</&>: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
-	  <&|/l&>Action</&>: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
-	  <&|/l&>Template</&>: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate' &>
-
-</ul>
 
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </FORM>
 <%init>
-my (@actions, $description);
+my (@actions);
 
 my $Scrips = new RT::Scrips ($session{'CurrentUser'});
 $Scrips->LimitToGlobal();
-
-
-
-
-if ($NewScripAction and $NewScripCondition) {
-    my $NewScrip = new RT::Scrip($session{'CurrentUser'});
-    
-    my ($retval, $msg) = $NewScrip->Create ( ScripAction => $NewScripAction,
-				     ScripCondition => $NewScripCondition,
-				     Stage => 'TransactionCreate',
-				     Queue => 0,
-				     Template => $NewScripTemplate);
-    if (defined $retval) {
-        push @actions, $msg;
-    }
-    else {
-        push @actions, $msg;
-    }
-}
 
 # {{{ deal with modifying and deleting existing scrips
 my ($key );
@@ -89,7 +62,4 @@ foreach $key (keys %ARGS) {
 </%init>
 
 <%ARGS>
-$NewScripCondition => undef
-$NewScripAction => undef
-$NewScripTemplate => undef
 </%ARGS>
