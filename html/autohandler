@@ -138,7 +138,13 @@ elsif ( $RT::WebExternalAuth ) {
 	    }
 	}
     }
-    else {
+    elsif ($RT::WebFallbackToInternalAuth) {
+  	unless (defined($session{'CurrentUser'})) {
+	        $m->comp('/Elements/Login', %ARGS,
+                         Error=> loc('XXX CHANGEME You are not an authorized user'));
+                $m->abort();
+	}
+    } else {
 	# WebExternalAuth is set, but we don't have a REMOTE_USER. abort
 	delete $session{'CurrentUser'} if defined $session{'CurrentUser'};
     }
@@ -146,6 +152,7 @@ elsif ( $RT::WebExternalAuth ) {
 
 delete $session{'CurrentUser'}
     unless $session{'CurrentUser'} and defined $session{'CurrentUser'}->Id;
+
 
 # Process per-page authentication callbacks
 $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'Auth');
