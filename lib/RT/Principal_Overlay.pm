@@ -363,15 +363,15 @@ sub HasRight {
     # Only find superuser or rights with the name $right
    "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
    # Never find disabled groups.
-   "AND Principals.Disabled = 0 ".
+   "AND Principals.Disabled = 0 "
+    . "AND CachedGroupMembers.Disabled = 0  ".
 
 
     # See if the principal is a member of the group recursively or _is the rightholder_
     # never find recursively disabled group members
     # also, check to see if the right is being granted _directly_ to this principal,
     #  as is the case when we want to look up group rights
-    "AND (( Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' "
-    . "AND CachedGroupMembers.Disabled = 0 )  OR (Principals.Id = " . $self->Id . ") )" .
+    "AND  Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
 
     # Make sure the rights apply to the entire system or to the object in question
     "AND ( ".join(' OR ', @look_at_objects).") ".

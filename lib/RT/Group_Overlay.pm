@@ -454,11 +454,21 @@ sub _Create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
-        $self->crit(
-            "Couldn't create a Principal on new user create. Strange thi
-ngs are afoot at the circle K" );
+        $self->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
         return ( 0, $self->loc('Could not create group') );
     }
+
+    # Now we make the group a member of itself as a cached group member
+    # this needs to exist so that group ACL checks don't fall over.
+    # you're checking CachedGroupMembers to see if the principal in question
+    # is a member of the principal the rights have been granted too
+
+    # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as 
+    # cached members. thankfully, we're creating the group now...so it has no members.
+    my $cgm = RT::CachedGroupMember->new($self->CurrentUser);
+    $cgm->Create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
+
+
 
     $RT::Handle->Commit() unless ($args{'InsideTransaction'});
     return ( $id, $self->loc("Group created") );

@@ -53,62 +53,62 @@ Create takes a hash of values and creates a row in the database:
 
 sub Create {
     my $self = shift;
-    my %args = (
-        Group           => '',
-        Member          => '',
-        ImmediateParent => '',
-        Via             => '0',
-        Disabled        => '0',
-        @_
-    );
+    my %args = ( Group           => '',
+                 Member          => '',
+                 ImmediateParent => '',
+                 Via             => '0',
+                 Disabled        => '0',
+                 @_ );
 
-    unless ( $args{'Member'} && UNIVERSAL::isa($args{'Member'}, 'RT::Principal') &&  $args{'Member'}->Id ) {
+    unless (    $args{'Member'}
+             && UNIVERSAL::isa( $args{'Member'}, 'RT::Principal' )
+             && $args{'Member'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Member argument");
     }
 
-    unless ( $args{'Group'} && UNIVERSAL::isa($args{'Group'}, 'RT::Principal') &&  $args{'Group'}->Id ) {
+    unless (    $args{'Group'}
+             && UNIVERSAL::isa( $args{'Group'}, 'RT::Principal' )
+             && $args{'Group'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Group argument");
     }
 
-    unless ( $args{'ImmediateParent'} && UNIVERSAL::isa($args{'ImmediateParent'}, 'RT::Principal') && $args{'ImmediateParent'}->Id ) {
+    unless (    $args{'ImmediateParent'}
+             && UNIVERSAL::isa( $args{'ImmediateParent'}, 'RT::Principal' )
+             && $args{'ImmediateParent'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus ImmediateParent argument");
     }
 
     # If the parent group for this group member is disabled, it's disabled too, along with all its children
     if ( $args{'ImmediateParent'}->Disabled ) {
-        $args{'Disabled'} =  $args{'ImmediateParent'}->Disabled;
+        $args{'Disabled'} = $args{'ImmediateParent'}->Disabled;
     }
 
     my $id = $self->SUPER::Create(
-        GroupId           => $args{'Group'}->Id,
-        MemberId          => $args{'Member'}->Id,
-        ImmediateParentId => $args{'ImmediateParent'}->Id,
-        Disabled          => $args{'Disabled'}, 
-        Via               => $args{'Via'},
-    );
-
-
-
-
+                              GroupId           => $args{'Group'}->Id,
+                              MemberId          => $args{'Member'}->Id,
+                              ImmediateParentId => $args{'ImmediateParent'}->Id,
+                              Disabled          => $args{'Disabled'},
+                              Via               => $args{'Via'}, );
 
     unless ($id) {
         $RT::Logger->warn( "Couldn't create "
-              . $args{'Member'}
-              . " as a cached member of "
-              . $args{'Group'}->Id . " via "
-              . $args{'Via'} );
+                           . $args{'Member'}
+                           . " as a cached member of "
+                           . $args{'Group'}->Id . " via "
+                           . $args{'Via'} );
         return (undef);  #this will percolate up and bail out of the transaction
     }
-    if ($self->__Value('Via') == 0 ) {
-       my ($vid, $vmsg)=  $self->__Set(Field => 'Via', Value => $id);
+    if ( $self->__Value('Via') == 0 ) {
+        my ( $vid, $vmsg ) = $self->__Set( Field => 'Via', Value => $id );
         unless ($vid) {
-        $RT::Logger->warn( "Due to a via error, couldn't create "
-              . $args{'Member'}
-              . " as a cached member of "
-              . $args{'Group'}->Id . " via "
-              . $args{'Via'} );
-            return (undef);  #this will percolate up and bail out of the transaction
-    }
+            $RT::Logger->warn( "Due to a via error, couldn't create "
+                               . $args{'Member'}
+                               . " as a cached member of "
+                               . $args{'Group'}->Id . " via "
+                               . $args{'Via'} );
+            return (undef)
+              ;          #this will percolate up and bail out of the transaction
+        }
     }
 
     if ( $args{'Member'}->IsGroup() ) {
@@ -117,12 +117,11 @@ sub Create {
             my $cached_member =
               RT::CachedGroupMember->new( $self->CurrentUser );
             my $c_id = $cached_member->Create(
-                Group           => $args{'Group'},
-                Member          => $member->MemberObj,
-                ImmediateParent => $args{'Member'},
-                Disabled        => $args{'Disabled'},
-                Via             => $id
-            );
+                                             Group  => $args{'Group'},
+                                             Member => $member->MemberObj,
+                                             ImmediateParent => $args{'Member'},
+                                             Disabled => $args{'Disabled'},
+                                             Via      => $id );
             unless ($c_id) {
                 return (undef);    #percolate the error upwards.
                      # the caller will log an error and abort the transaction
