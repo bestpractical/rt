@@ -29,9 +29,10 @@
 </pre>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)}) {
-<BLOCKQUOTE>
+<pre>
+%# TODO: We really should HTML'ify and/or HTML-escape the Content.
 <%$message->Content%>
-</BLOCKQUOTE>
+</pre>
 %    } 
 % else {
 	
