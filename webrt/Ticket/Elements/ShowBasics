@@ -25,5 +25,5 @@ if ($Ticket->TimeLeft > 0 ) {
 }
 </%INIT>
 <%ARGS>
-$Ticket = undef
+$Ticket => undef
 </%ARGS>

@@ -95,14 +95,18 @@ use Carp;
 	    }
 
 	}
+my ($parser, $interp, $ah);
+if ($HTML::Mason::VERSION < 1.0902) {
+ $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
-my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
+ $interp = &RT::Interface::Web::NewInterp(parser=>$parser,
+                                          allow_recursive_autohandlers => 1,
+                                                              );
 
-my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
-
-my $ah = &RT::Interface::Web::NewApacheHandler($interp);
-
-
+ $ah = &RT::Interface::Web::NewApacheHandler($interp);
+} else {
+ $ah = &RT::Interface::Web::NewMason11ApacheHandler();
+}
 # Activate the following if running httpd as root (the normal case).
 # Resets ownership of all files created by Mason at startup.
 #

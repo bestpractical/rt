@@ -18,7 +18,6 @@ package RT::Mason;
 #use CGI qw(-private_tempfiles);   # pull in CGI with the private tempfiles
 				  #option predefined
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
-use HTML::Mason::ApacheHandler;
 
 use vars qw($VERSION %session $Nobody $SystemUser $cgi);
 
@@ -96,12 +95,23 @@ use Carp;
 }
 
 
-my ($output);
-my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
+my ($output, $parser, $interp);
+if ($HTML::Mason::VERSION < 1.0902) {
+        require HTML::Mason::ApacheHandler;
 
-my $interp = &RT::Interface::Web::NewInterp(parser=>$parser,
+         $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
+
+         $interp = &RT::Interface::Web::NewInterp(parser=>$parser,
+                                             allow_recursive_autohandlers => 1,
 					    out_method => \$output);
+}
+else {
+         $interp = &RT::Interface::Web::NewInterp(
+                                                  allow_globals => [%session],
+                                                  default_escape_flags => 'h',
 
+					    out_method => \$output);
+}
 # Die if WebSessionDir doesn't exist or we can't write to it
 
 stat ($RT::MasonSessionDir);
