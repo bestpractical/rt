@@ -84,7 +84,7 @@ sub Create  {
 
 # }}}
 
-# {{{ sub Delete 
+# {{{ sub Delete
 
 =head2 Delete
 
@@ -98,8 +98,6 @@ sub Delete  {
     my $self = shift;
     my $newqueue = shift;
     # this function needs to move all requests into some other queue!
-    my ($query_string,$update_clause);
-    
 
 
     unless ($self->CurrentUserHasRight('AdminQueue')) {
@@ -165,12 +163,18 @@ sub ValidateName {
     my $tempqueue = new RT::Queue($RT::SystemUser);
     $tempqueue->Load($name);
 
-    #If this queue exists, return 1
+    #If we couldn't load it :)
+    unless ($tempqueue->id()) {
+	return(1);
+    }
+
+    #If this queue exists, return undef
+    #Avoid the ACL check.
     if ($tempqueue->Name()){
         return(undef);
     }
 
-    #If the queue doesn't exist, return undef
+    #If the queue doesn't exist, return 1
     else {
         return(1);
     }
@@ -179,7 +183,6 @@ sub ValidateName {
 
 
 # }}}
-
 
 # {{{ sub Templates
 
@@ -376,7 +379,8 @@ sub IsWatcher {
 		 @_
 	       );
     
- 
+    use Carp;
+    Carp::cluck; 
     my %cols = ('Type' => $args{'Type'},
 		'Scope' => 'Queue',
 		'Value' => $self->Id
@@ -401,6 +405,9 @@ sub IsWatcher {
 
 
     my ($description);
+    use Data::Dumper;
+    print STDERR "Checking watchers for queue. cols is:". Dumper(%cols);
+
     $description = join(":",%cols);
     
     #If we've cached a positive match...
@@ -734,8 +741,6 @@ sub _Value {
     return ($self->SUPER::_Value(@_));
 }
 # }}}
-
-
 
 # {{{ sub CurrentUserHasRight
 

@@ -35,6 +35,23 @@ $RT_System->Create(
 		     Creator => '1');
 
 
+
+#now that we bootstrapped that little bit, we can use the standard RT cli
+# helpers  to do what we need
+
+use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+			   GetCurrentUser GetMessageContent);
+
+#Clean out all the nasties from the environment
+CleanEnv();
+
+#Load etc/config.pm and drop privs
+LoadConfig();
+
+#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+DBConnect();
+
+
 my $CurrentUser = new RT::CurrentUser();
 $CurrentUser->LoadByName('RT_System');
 # {{{ Users
@@ -404,7 +421,7 @@ print "Creating users...";
 use RT::User;
 foreach $item (@users) {
    my $new_entry = new RT::User($CurrentUser);
-   my ($msg, $return) = $new_entry->Create(%$item);
+   my ($return, $msg) = $new_entry->Create(%$item);
   print $return.".";
 }
 print "done.\n";
@@ -424,7 +441,7 @@ print "Creating queues...";
 use RT::Queue;
 for $item (@queues) {
     my $new_entry = new RT::Queue($CurrentUser);
-    my $return = $new_entry->Create(%$item);
+    my ($return, $msg) = $new_entry->Create(%$item);
     print $return.".";
 }
 

@@ -177,7 +177,7 @@ sub Create {
     #TODO+++ check the Name for uniqueness
     
     
-    $RT::Logger->debug ("Creating a new template: Content is ".$args{'Content'});
+    #$RT::Logger->debug ("Creating a new template: Content is ".$args{'Content'});
     my $result = $self->SUPER::Create( Content => $args{'Content'},
                                        Queue   => $args{'Queue'},,
                                        Description   => $args{'Description'},
