@@ -203,6 +203,51 @@ sub GrantSystemRight {
 }
 # }}}
 
+# {{{ sub TicketRights
+
+=head2 TicketRights
+
+Returns a hash of all the possible rights at the ticket scope
+
+=cut
+
+sub TicketRights {
+	return (%TICKETRIGHTS);
+}
+
+# }}}
+
+
+# {{{ sub QueueRights
+
+=head2 QueueRights
+
+Returns a hash of all the possible rights at the queue scope
+
+=cut
+
+sub QueueRights {
+        return (%QUEUERIGHTS);
+}
+
+# }}}
+
+# {{{ sub SystemRights
+
+=head2 SystemRights
+
+Returns a hash of all the possible rights at the system scope
+
+=cut
+
+sub SystemRights {
+	return (%SYSTEMRIGHTS);
+}
+
+
+# }}}
+
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;  

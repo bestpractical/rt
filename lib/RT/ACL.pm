@@ -61,7 +61,7 @@ There are three real scopes right now:
 =item System is for rights that apply to the System (rights that aren't queue related)
 
 
-=head2 RT::ACL::LimitScopeToQueue($queue_id)
+=head2 LimitScopeToQueue($queue_id)
 
 Limit the ACL to just a given queue when supplied with an integer queue id.
 
@@ -81,7 +81,7 @@ sub LimitScopeToQueue {
   
 }
 
-=head2 RT::ACL::LimitScopeToAllQueues()
+=head2 LimitScopeToAllQueues()
 
 Limit the ACL to global queue rights. (Rights granted across all queues)
 =cut
@@ -98,7 +98,7 @@ sub LimitScopeToAllQueues {
 }
 
 
-=head2 RT::ACL::LimitScopeToSystem()
+=head2 LimitScopeToSystem()
 
 Limit the ACL to system rights
 
@@ -112,7 +112,7 @@ sub LimitScopeToSystem {
 }
 
 
-=head2 RT::ACL::LimitRightTo($right)
+=head2 LimitRightTo($right)
 
 Limits the search to the right $right.
 $right is a right listed in perldoc RT::ACE
