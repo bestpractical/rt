@@ -3,6 +3,7 @@
 <%ARGS>
 $id
 $changes => {}
+$fields => undef
 </%ARGS>
 <%perl>
 use MIME::Entity;
@@ -112,26 +113,33 @@ if (%data == 0) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->Id   ];
-    push @data, [ Queue => $ticket->QueueObj->Name ];
-    push @data, [ Owner => $ticket->OwnerObj->Name ];
-    push @data, [ Creator => $ticket->CreatorObj->Name ];
+    push @data, [ Queue => $ticket->QueueObj->Name ] 
+	if (!%$fields || exists $fields->{lc 'Queue'});
+    push @data, [ Owner => $ticket->OwnerObj->Name ]
+	if (!%$fields || exists $fields->{lc 'Owner'});
+    push @data, [ Creator => $ticket->CreatorObj->Name ]
+	if (!%$fields || exists $fields->{lc 'Creator'});
 
     foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
+	next unless (!%$fields || (exists $fields->{lc $_}));
         push @data, [$_ => $ticket->$_ ];
     }
 
     foreach $key (@people) {
+	next unless (!%$fields || (exists $fields->{lc $key}));
         push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
     }
 
     $time = new RT::Date ($session{CurrentUser});
     foreach $key (@dates) {
+	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->Set(Format => 'sql', Value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
     $time = new RT::Date ($session{CurrentUser});
     foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
+	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
         $val = $time->DurationAsString($val*60) if $val;
         push @data, [ $key => $val ];

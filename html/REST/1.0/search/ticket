@@ -27,11 +27,30 @@
 $query
 $format => undef
 $orderby => undef
+$fields => undef
 </%ARGS>
 <%INIT>
 my $output = "";
 my $status = "200 Ok";
 my $tickets = new RT::Tickets $session{CurrentUser};
+
+# Parse and validate any field specifications.
+my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
+my (%fields, @fields);
+if ($fields) {
+    $format = "l";
+    unless ($fields =~ /^(?:$field,)*$field$/) {
+        $status = "400 Bad Request";
+        $output = "Invalid field specification: $fields";
+        goto OUTPUT;
+    }
+    @fields = map lc, split /,/, $fields;
+    @fields{@fields} = ();
+    unless (exists $fields{id}) {
+        unshift @fields, "id";
+        $fields{id} = ();
+    }
+}
 
 $format ||= "s";
 if ($format !~ /^[isl]$/) {
@@ -70,6 +89,7 @@ if ($@ || $n == 0) {
 }
 
 $n = 0;
+my @output;
 while (my $ticket = $tickets->Next) {
     $n++;
 
@@ -80,13 +100,17 @@ while (my $ticket = $tickets->Next) {
         $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
     }
     else {
-        # XXX: Should think of a meaningful -l format.
-        $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+	my $id = $ticket->Id;
+        my $d = $m->comp("$RT::WebPath/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+        my ($c, $o, $k, $e) = @$d;
+	push @output, [ $c, $o, $k ];
     }
 }
 if ($n == 0 && $format ne "i") {
     $output = "No matching results.\n";
 }
+
+$output = form_compose(\@output) if @output;
 
 OUTPUT:
 </%INIT>

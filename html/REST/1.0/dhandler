@@ -75,8 +75,23 @@ if ($object eq 'show' ||                                # $REST/show
         if (my ($type, $oids, $extra) =
             ($id =~ m#^($name)/($list|$labels)(?:(/.*))?$#o))
         {
-            push(@objects, "$type/$_$extra") for expand_list($oids);
-        }
+	    foreach my $oid (expand_list($oids)) {
+		if ($extra =~ m{^(?:/($name)(?:/(.*))?)?$}o) {
+		    my ($attr, $args) = ($1, $2);
+		    # expand transaction and attachment range specifications
+		    # (if applicable)
+		    my $tids;
+		    if ($attr eq 'history' && $args =~ m#id/(\d.*)#o) {
+			$tids = $1;
+		    }
+		    if ($tids) {
+			push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
+		    } else {
+			push(@objects, "$type/$oid$extra");
+		    }
+		}
+	    }
+	}
         else {
             $status = "400 Bad Request";
             $output = "Invalid object ID specified: '$id'";
@@ -232,7 +247,7 @@ foreach $object (@objects) {
     }
 
     unless ($content) {
-        my $d = $m->comp($handler, id => $id, args => $args, format => $format);
+        my $d = $m->comp($handler, id => $id, args => $args, format => $format, fields => \%fields);
         my ($c, $o, $k, $e) = @$d;
 
         if (!$e && @$o && keys %fields) {

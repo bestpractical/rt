@@ -24,6 +24,7 @@
 %# REST/1.0/autohandler
 %#
 <%INIT>
+use RT::Interface::REST;
 $r->content_type('text/plain');
 $m->error_format('text');
 $m->call_next();
