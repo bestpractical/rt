@@ -71,19 +71,31 @@ CREATE TABLE ACE (
 
 
 
-# This select statement would figure out if A user had permission to modify a ticket
-SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
-		 ( ACE.ObjectType = 'Queue' and (ACE.ObjectId = $self->id OR ACE.ObjectId = 0)) AND
-		 ( ACE.Right = $Right OR ACE.Right = "Ticket::Admin") AND
-		 ( ACE.PrincipalScope = 'User' AND ( ACE.PrincipalId = ".$self->CurrentUser->Id." OR ACE.PrincipalId = 0) ) OR
-	         ( ACE.PrinciaplScope = 'Owner' AND Tickets.Owner = ".$self->CurrentUser->Id ." AND	Tickets.Id = ".$self->Id. ") OR
-	         ( ACE.PrincipalScope = Watchers.Scope AND ACE.PrincipalType = Watchers.Type AND ACL.PrincipalId = Watchers.Value AND Watchers.Owner = ".$self->CurrentUser->Id."))
+$PrincipalClause = " ( ACE.PrincipalScope = 'User') AND 
+		      ( ACE.PrincipalId = ".$self->CurrentUser->Id." OR ACE.PrincipalId = 0) )
+	         OR ( ( ACE.PrinciaplScope = 'Owner') AND 
+		      ( Tickets.Owner = ".$self->CurrentUser->Id .") AND	
+		      ( Tickets.Id = ".$self->Id. ") )
+	         OR ( ( ACE.PrincipalScope = Watchers.Scope ) AND 
+		      ( ACE.PrincipalType = Watchers.Type ) AND 
+		      ( ACL.PrincipalId = Watchers.Value ) AND 
+		      ( Watchers.Owner = ".$self->CurrentUser->Id."))";
 
+
+
+# This select statement would figure out if A user has permissions for something at the queue level
+
+SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
+		 ( ACE.ObjectType = 'Queue' and (ACE.ObjectId = $self->id OR ACE.ObjectId = 0))
+	     AND ( ACE.Right = $Right) 
+	     AND ($PrincipalClause))
+
+# This select statement would figure outif a usr had permissions of type $Type for the "System"
 
 	
 
 #
-# These are the entities in your Access Control Element
+# {{{ Prinicpals  These are the entities in your Access Control Element
 #
 
 Principal: What user does this right apply to
@@ -114,7 +126,10 @@ Principal: What user does this right apply to
 		Id:	A queue id or 0 for "this queue"
 
 
-Object: What object does this right apply to
+# }}}
+
+
+#  {{{ Object: What object does this right apply to
 
 	Object is composed of an ObjectType and an ObjectId
 
@@ -123,18 +138,22 @@ Object: What object does this right apply to
 
 	Type:	Queue
 	Id:	Integer ref to queue id or 0 for all queues
+	
+# }}}
 
-	Type:	User
-	Id:	Integer reference to user id or 0 for all users
 
-
-Right: (What does this entry give the principal the right to do)
+# {{{ Right: (What does this entry give the principal the right to do)
 
 
 
 	For the Object System:
 		System::SetACL
-						
+
+		User::Display
+		User::Create
+		User::Destroy
+		User::Modify
+		User::SetPassword						
 
 	For the Object "Queue":
 		Queue::Admin
@@ -161,13 +180,8 @@ Right: (What does this entry give the principal the right to do)
 					Stalled
 					<null> means any
 
-	For the Object "User"
 
-		User::Display
-		User::Create
-		User::Destroy
-		User::Modify
-		User::SetPassword
+# }}}
 
 #
 # {{{ Examples
