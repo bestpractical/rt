@@ -289,7 +289,7 @@ sub SetReturnAddress {
 
 sub SetEnvelopeTo {
   my $self = shift;
-  $self->{'EnvelopeTo'} = "root";
+  $self->{'EnvelopeTo'} = shift;
   return($self->{'EnvelopeTo'});
 }
 

@@ -373,13 +373,13 @@ sub Description  {
   elsif ($self->Type eq 'Link') {
     #TODO: make pretty output.
       
-      return "Linked up.  (  ". $self->Data. "  )";
+      return "Linked by ".$self->Creator->UserId."  (  ". $self->Data. "  )";
   }
   elsif ($self->Type eq 'Set') {
       return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
   }	
   else {
-    return($self->Type . " modified. RT Should be more explicit about this!");
+    return($self->Type . " modified by ".$self->Creator->UserId. ". RT Should be more explicit about this!");
   }
   
   

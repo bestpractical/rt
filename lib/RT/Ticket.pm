@@ -1321,8 +1321,9 @@ sub Correspond {
   
   if ($args{BccMessageTo} || 
       $args{CcMessageTo}) {
-        $RT::Logger->warning("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
-    }
+
+      $RT::Logger->warning("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
+  }
   
   unless ($Trans) {
       $RT::Logger->err("$self couldn't init a transaction ($msg)\n");
@@ -1651,12 +1652,13 @@ sub _NewLink {
 
   if ($args{dir} eq 'T') {
       $t=$args{Target};
-      $b='THIS';
+      $b=$self->Id;
   } else {
-      $t='THIS';
+      $t=$self->Id;
       $b=$args{Base};
   }
-  my $TransString="$b $args{Type} $t as of $linkid";
+  my $TransString="Ticket $b $args{Type} ticket $t.";
+  
   my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
     (Type => 'Link',
      Data => $TransString,
