@@ -22,6 +22,8 @@
 # 
 # 
 # END LICENSE BLOCK
+
+
 package RT;
 use strict;
 use RT::I18N;
@@ -43,7 +45,7 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $MasonSessionDir
 );
 
-$VERSION = '2.1.48';
+$VERSION = '2.1.49';
 $CORE_CONFIG_FILE = "/opt/rt3/etc/RT_Config.pm";
 $SITE_CONFIG_FILE = "/opt/rt3/etc/RT_SiteConfig.pm";
 
