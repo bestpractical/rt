@@ -27,14 +27,13 @@
 % next unless ($display_headers{'_all'} || $display_headers{lc($header->{'Tag'})});
 <tr>
 <td align="right" class="message-header-key"><pre><%$header->{'Tag'}%>:</pre></td>
-<td class="message-header-value"><%$header->{'Value'}|n%></td>
+<td class="message-header-value"><%$header->{'Value'}%></td>
 </td>
 </tr>
 % }
 </table>
 <%INIT>
 my $content = $Headers;
-RT::Interface::Web::EscapeUTF8(\$content);
 $m->comp('/Elements/Callback', content => \$content, %ARGS);
 
 

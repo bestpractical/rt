@@ -212,7 +212,7 @@ before returning it.
 
 sub Content {
   my $self = shift;
-  my $decode_utf8 = (($self->ContentType eq 'text/plain') ? 1 : 0);
+  my $decode_utf8 = (($self->ContentType =~ qr{^text/plain}i) ? 1 : 0);
 
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
       return $self->_Value(
