@@ -81,6 +81,13 @@ use Carp;
     #TODO: make this use DBI
     use Apache::Session::File;
     use FCGI;
+
+    # set the page's content type.
+    # In this case, just save it to a variable that we can pull later;
+    my $ContentType = 'text/html';
+    sub SetContentType {
+	$ContentType = shift;
+    }
 }
 
 
@@ -89,15 +96,6 @@ my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
 my $interp = &RT::Interface::Web::NewInterp(parser=>$parser,
 					    out_method => \$output);
-
-# Activate the following if running httpd as root (the normal case).
-# Resets ownership of all files created by Mason at startup.
-#
-#chown (Apache->server->uid, Apache->server->gid, 
-#		$RT::MasonSessionDir);
-
-#chown (Apache->server->uid, Apache->server->gid, 
-#		$interp->files_written);
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
@@ -130,16 +128,19 @@ while (FCGI::accept >= 0) {
 	    } else {
 		$args{$key} = $value;
 	    }
+
 	}
 	
     }
     
 
- #   foreach my $key (keys %ENV) {
-#	print STDERR "Env: $key $ENV{$key}\n";
-#    }
     my $comp = $ENV{'PATH_INFO'};
     
+    if ($comp =~ /^(.*)$/) {  # untaint the path info. apache should
+			      # never hand us a bogus path. 
+			      # We should be more careful here.
+	$comp = $1;
+    }    
     
     if ($comp =~ /\/$/) {
 	$comp .= "index.html";
@@ -150,9 +151,16 @@ while (FCGI::accept >= 0) {
     # {{{ Cookies
     my %cookies = fetch CGI::Cookie();
     
-    eval { 
+    eval {
+	my $session_id = undef;
+
+	#Get the session id and untaint it
+	if ($cookies{'AF_SID'} && $cookies{'AF_SID'}->value() =~ /^(.*)$/) {
+		$session_id = $1;
+	}
+ 
 	tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-	  ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef ), 
+	  	$session_id, 
 	    { Directory => $RT::MasonSessionDir,
 	      LockDirectory => $RT::MasonSessionDir,
 	    }	;
@@ -168,7 +176,7 @@ while (FCGI::accept >= 0) {
 	     undef $cookies{'AF_SID'};
 	}
 	  else {
-	      die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this directory's permissions are correct.";
+	      die "$@ \nProbably means that RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this directory's permissions are correct.";
 	  }
     }
     
@@ -187,10 +195,9 @@ while (FCGI::accept >= 0) {
     $output = '';
     my $status = $interp->exec($comp, %args);
     
-    my $content_type =  "text/html";
     
+    print "Content-Type: $HTML::Mason::Commands::ContentType\n\r";
     print "Set-Cookie: $cookie\n\r" if ($cookie);
-    print "Content-Type: $content_type\n\r";
     print "\n\r";
     print $output;
     untie %HTML::Mason::Commands::session;

@@ -20,7 +20,7 @@
 
      }
      my $content_type = $AttachmentObj->ContentType || 'text/html';
-     $r->content_type($content_type);
+     SetContentType($content_type);
      $m->out($AttachmentObj->Content); 
      $m->abort; 
 </%perl>

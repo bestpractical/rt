@@ -73,12 +73,19 @@ use Carp;
     use RT::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;
-    use CGI::Cookie;
+    use Apache::Cookie;
     use Date::Parse;
     use HTML::Entities;
     
     #TODO: make this use DBI
     use Apache::Session::File;
+
+    # Set this page's content type to whatever we are called with
+    sub SetContentType {
+	my $type = shift;
+	$r->content_type($type);
+    }
+
 }
 
 my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
@@ -114,7 +121,7 @@ sub handler {
     
     #This is all largely cut and pasted from mason's session_handler.pl
     
-    my %cookies = parse CGI::Cookie($r->header_in('Cookie'));
+    my %cookies = Apache::Cookie::Parse($r->header_in('Cookie'));
     
     eval { 
 	tie %HTML::Mason::Commands::session, 'Apache::Session::File',
@@ -139,11 +146,13 @@ sub handler {
     }
     
     if ( !$cookies{'AF_SID'} ) {
-	my $cookie = new CGI::Cookie
-	  (-name=>'AF_SID', 
+	my $cookie = new Apache::Cookie
+	  ($r,
+	   -name=>'AF_SID', 
 	   -value=>$HTML::Mason::Commands::session{_session_id}, 
 	   -path => '/',);
-	$r->header_out('Set-Cookie', => $cookie);
+	$cookie->bake;
+
     }
     
     my $status = $ah->handle_request($r);
