@@ -60,6 +60,9 @@ use Carp;
 	    use RT::FM::CustomFieldObjectValueCollection;
 	    use RT::FM::CustomField;
 	    use RT::FM::CustomFieldCollection;
+	    use RT::FM::CurrentUser;
+	    use RT::FM::User;
+	    use RT::FM::UserCollection;
 	     
 	    use MIME::Entity;
 	    use Apache::Cookie;

@@ -1,7 +1,7 @@
 # $Header$
 # RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-package RT::Interface::CLI;
+package RT::Framework::Interface::CLI;
 
 use strict;
 
@@ -22,14 +22,14 @@ BEGIN {
 }
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::Framework::Interface::CLI - helper functions for creating a commandline RT interface
 
 =head1 SYNOPSIS
 
   use lib "!!RT_LIB_PATH!!";
   use lib "!!RT_ETC_PATH!!";
 
-  use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+  use RT::Framework::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 	  		   GetCurrentUser GetMessageContent);
 
   #Clean out all the nasties from the environment
@@ -78,7 +78,7 @@ Loads RT's config file and then drops setgid privileges.
 sub LoadConfig {
     
     #This drags in  RT's config.pm
-    use config;
+    use RT::FM::Config;
     
 }	
 

@@ -4,8 +4,8 @@
 
 % if (0) {
 &nbsp;&nbsp;&nbsp&nbsp;
-	 <a href="manage/edit_article.html?id=<%$article->Id%>">[edit]</a>
-	 <a href="manage/create_article.html?Parent=<%$article->Id%>">[new child]</a>
+	 <a href="edit/edit_article.html?id=<%$article->Id%>">[edit]</a>
+	 <a href="edit/create_article.html?Parent=<%$article->Id%>">[new child]</a>
 % }
 </LI>
 % if ($Depth > 0) {

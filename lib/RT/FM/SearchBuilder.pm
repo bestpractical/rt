@@ -22,11 +22,9 @@ sub _Init  {
     my $self = shift;
     
     $self->{'user'} = shift;
-    #warn "$self -> _Init  -- currentuser stubbed";
-    unless (1) { # unless(defined($self->CurrentUser)) {
+    unless(defined($self->CurrentUser)) {
 	use Carp;
 	Carp::confess("$self was created without a CurrentUser");
-	$RT::Logger->err("$self was created without a CurrentUser\n"); 
 	return(0);
     }
     $self->SUPER::_Init( 'Handle' => $RT::FM::Handle);

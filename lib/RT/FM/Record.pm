@@ -82,16 +82,15 @@ sub Create  {
       if ($self->_Accessible('Created', 'auto'));
     
 
-    warn "RT::FM::Record not setting Creator or UpdatedBy since we don't do users yet";
 
-#    push @_, 'Creator', $self->{'user'}->id
-#      if $self->_Accessible('Creator', 'auto');
+    push @_, 'Creator', $self->{'user'}->id
+      if $self->_Accessible('Creator', 'auto');
     
     push @_, 'Updated', $now->ISO()
       if ($self->_Accessible('Updated', 'auto'));
 
-#    push @_, 'UpdatedBy', $self->{'user'}->id
-#      if $self->_Accessible('UpdatedBy', 'auto');
+    push @_, 'UpdatedBy', $self->{'user'}->id
+      if $self->_Accessible('UpdatedBy', 'auto');
     
     
 

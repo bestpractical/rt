@@ -12,7 +12,7 @@ $DatabaseHost="localhost";
 
 # The port that your database server is running on.  Ignored unless it's 
 # a positive integer. It's usually safe to leave this blank
-$DatabasePort="";
+$DatabasePort = undef ;
 
 
 #The name of the database user (inside the database) 

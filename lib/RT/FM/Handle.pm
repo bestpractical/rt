@@ -33,7 +33,7 @@ sub Connect {
 my $self=shift;
 
 # Unless the database port is a positive integer, we really don't want to pass it.
-$RT::FM::DatabasePort = undef unless ($RT::FM::DatabasePort =~ /^(\d+)$/);
+$RT::FM::DatabasePort = undef unless (defined $RT::FM::DatabasePort && $RT::FM::DatabasePort =~ /^(\d+)$/);
 
 $self->SUPER::Connect(Host => $RT::FM::DatabaseHost, 
 			 Database => $RT::FM::DatabaseName, 

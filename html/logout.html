@@ -1,0 +1,22 @@
+<HTML>
+<HEAD>
+<TITLE>RT: Logout</TITLE>
+ <META HTTP-EQUIV="Refresh" CONTENT="0;URL=<%$RT::FM::WebPath%>/">
+</HEAD>
+<BODY>
+<p>You have been logged out of RT/FM.
+
+
+<br>
+<br>
+<A HREF="<%$RT::FM::WebPath%>/">You're welcome to login again</a>
+
+
+<%PERL>
+if (defined %session) {
+	%session = undef;
+}
+$m->abort();
+</%PERL>
+
+

@@ -1,0 +1,63 @@
+%# $Header$
+<& /Elements/Footer &>
+
+<%INIT>
+
+# Create a sesion object
+unless ($session{'CurrentUser'}) {
+	$session{'CurrentUser'} = RT::FM::CurrentUser->new();
+}
+
+# If the user is loging in, let's authenticate
+if (defined ($user) && defined ($pass)){
+    
+    $session{'CurrentUser'} = RT::FM::CurrentUser->new();
+    $session{'CurrentUser'}->Load($user);
+    unless ($session{'CurrentUser'}->id() ) {
+	delete $session{'CurrentUser'};
+	$m->comp('/Elements/Login', %ARGS, Error=> 'Your username or password is incorrect');
+        $m->abort();
+    };
+    unless ($session{'CurrentUser'}->IsPassword($pass)) {
+	delete $session{'CurrentUser'};
+	
+	$m->comp('/Elements/Login', Error => 'Your username or password is incorrect', %ARGS);
+	$m->abort();
+    }
+}
+  
+
+#If we've got credentials, or its a noauth file,  lets serve the file up.
+if  (defined $session{'CurrentUser'}) {
+    
+    # If the user isn\'t privileged, they can only see SelfService
+    if ($m->base_comp->path =~ '^(\/+)admin/') {
+ 	 unless ($session{'CurrentUser'}->IsAdministrator) {
+		$m->comp('/Elements/Login');
+		$m->abort();
+    	}
+    }
+
+    elsif ($m->base_comp->path =~ '^(\/+)edit/')  {
+
+    	unless ($session{'CurrentUser'}->IsEditor) {
+		$m->comp('/Elements/Login');
+		$m->abort();
+    	}
+    }
+
+    $m->call_next;
+}
+
+#If we have no credentials
+else {
+    $m->comp('/Elements/Login', %ARGS);
+    $m->abort();
+}
+
+</%INIT>
+
+<%ARGS>
+$user => undef
+$pass => undef
+</%ARGS>

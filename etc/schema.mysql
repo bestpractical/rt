@@ -1,19 +1,3 @@
-CREATE TABLE Content (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
-  Parent integer NULL  ,
-  MessageId varchar(160) NULL  ,
-  Subject varchar(255) NULL  ,
-  Filename varchar(255) NULL  ,
-  ContentType varchar(80) NULL  ,
-  ContentEncoding varchar(80) NULL  ,
-  Body LONGBLOB NULL  ,
-  Headers LONGBLOB NULL  ,
-  CreatedBy integer NULL  ,
-  Created DATETIME NULL  ,
-  UpdatedBy integer NULL  ,
-  Updated DATETIME NULL  ,
-  PRIMARY KEY (id)
-);
 CREATE TABLE CustomFieldObjectValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Article int NOT NULL  ,
@@ -47,12 +31,15 @@ CREATE TABLE Delta (
   NewValue varchar(255) NULL  ,
   PRIMARY KEY (id)
 );
-CREATE TABLE Transaction (
+CREATE TABLE User (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Article integer NULL  ,
-  ChangeLog text NULL  ,
-  CreatedBy integer NULL  ,
-  Created DATETIME NULL  ,
+  Name varchar(255) NULL  ,
+  RealName varchar(255) NULL  ,
+  EmailAddress varchar(255) NULL  ,
+  Password varchar(255) NULL  ,
+  IsAdministrator integer NOT NULL  ,
+  IsEditor integer NOT NULL  ,
+  IsDisabled integer NOT NULL  ,
   PRIMARY KEY (id)
 );
 CREATE TABLE Article (
@@ -79,5 +66,29 @@ CREATE TABLE CustomFieldValues (
   Created DATETIME NULL  ,
   UpdatedBy integer NULL  ,
   Updated DATETIME NULL  ,
+  PRIMARY KEY (id)
+);
+CREATE TABLE Content (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  Parent integer NULL  ,
+  MessageId varchar(160) NULL  ,
+  Subject varchar(255) NULL  ,
+  Filename varchar(255) NULL  ,
+  ContentType varchar(80) NULL  ,
+  ContentEncoding varchar(80) NULL  ,
+  Body LONGBLOB NULL  ,
+  Headers LONGBLOB NULL  ,
+  CreatedBy integer NULL  ,
+  Created DATETIME NULL  ,
+  UpdatedBy integer NULL  ,
+  Updated DATETIME NULL  ,
+  PRIMARY KEY (id)
+);
+CREATE TABLE Transaction (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  Article integer NULL  ,
+  ChangeLog text NULL  ,
+  CreatedBy integer NULL  ,
+  Created DATETIME NULL  ,
   PRIMARY KEY (id)
 );

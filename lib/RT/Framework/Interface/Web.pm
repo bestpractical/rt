@@ -244,6 +244,43 @@ sub UpdateArticles {
 # }}}
 
 
+# {{{ sub UpdateUsers
+
+sub UpdateUsers {
+    my %args = (
+                ARGSRef => undef,
+                @_
+               );
+
+    my @total_results;
+    my $template = RT::FM::User->new($session{'CurrentUser'}) ;
+
+    # TODO  There needs to be a DBIx::SB::Record API to get this cleanly
+    my @attributes = grep { $template->{'_AccessibleCache'}->{$_}->{'read'} }
+      keys %{$template->{'_AccessibleCache'}};
+
+
+    foreach my $id ( ref($$args{'ARGSRef'}->{'EditUser'}) ?
+                         @{ $args{'ARGSRef'}->{'EditUser'} } :
+                         ( $args{'ARGSRef'}->{'EditUser'} ) ) {
+
+        # update all the basic fields
+        my $object = RT::FM::User->new($session{'CurrentUser'});
+        $object->Load($id);
+        my @results = UpdateRecordObject ( AttributesRef => \@attributes,
+                                           Object => $object,
+                                           ARGSRef => $args{'ARGSRef'});
+        @total_results = (@total_results, @results, @cf_results);
+
+    }
+    return (@total_results);
+
+
+}
+
+
+# }}}
+
 
 # {{{ sub UpdateArticleCustomFieldValues
 
@@ -462,8 +499,11 @@ sub UpdateRecordObject {
     foreach $attribute (@$attributes) {
 	my $formvar = ref($object)."-".$object->Id."-$attribute";
 	warn "Looking for $formvar";
-	if ((defined $ARGSRef->{$formvar}) and 
-	    ($ARGSRef->{"$formvar"} ne $object->$attribute())) {
+	if (
+	     ((defined $ARGSRef->{$formvar}) || 
+	      (defined $ARGSRef->{$formvar."-magic"} ) ) 
+             and 
+	     ($ARGSRef->{"$formvar"} ne $object->$attribute())) {
 	    
 	    $ARGSRef->{"$formvar"} =~ s/\r\n/\n/gs;
 	    

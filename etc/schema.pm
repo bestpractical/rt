@@ -129,13 +129,16 @@ my $gratuitous = {
   'index' => [ [] ],
 },
 
-'Delta' => {
+'User' => {
   'columns' => [
   'id', 'serial', '', '', '', '',
   'Name', 'varchar', 'NULL', '255', '', '',
+  'RealName', 'varchar', 'NULL', '255', '', '',
+  'EmailAddress', 'varchar', 'NULL', '255', '', '',
   'Password', 'varchar', 'NULL', '255', '', '',
   'IsAdministrator', 'integer', '0', '', '', '', 
   'IsEditor', 'integer', '0', '', '', '', 
+  'IsDisabled', 'integer', '0', '', '', '', 
   ],
   'primary_key' => 'id',
   'unique' => [ [] ],

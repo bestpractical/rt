@@ -10,8 +10,10 @@ use Getopt::Long qw(:config pass_through);
 use lib "/home/jesse/projects/fm/lib";
 use lib "/home/jesse/projects/fm/etc";
 
-use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+use RT::Framework::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 	  		       GetCurrentUser GetMessageContent);
+
+
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -27,9 +29,11 @@ RT::FM::DropSetGIDPermissions();
 
 #Get the current user all loaded
 
-my $CurrentUser = '';
+my $CurrentUser = new RT::FM::CurrentUser();
+use RT::FM::CurrentUser;
 #my $CurrentUser = GetCurrentUser();
-
+$CurrentUser->Load('jesse');
+$CurrentUser->UserObj->SetPassword('iron');
 
 PickMode();
 
