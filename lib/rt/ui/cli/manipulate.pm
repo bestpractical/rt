@@ -5,6 +5,7 @@
 #
 package rt::ui::cli::manipulate;
 
+# TODO: Search for $Message->print and solve it as for ShowTransaction.
 
 # {{{ sub activate 
 sub activate  {
@@ -265,7 +266,7 @@ sub ParseArgs  {
     next;
   }
 
-  print "$Message\n" if defined($Message);
+  $Message->print if defined($Message);
 }
 # }}}
 
@@ -354,7 +355,7 @@ sub cli_create_req  {
 	      		       MIMEEntity => $Message			
 						      );
 
-    printf("Request %s created",$id);
+    printf("Request %s created\n",$id);
   }
 # }}}
   
@@ -424,7 +425,7 @@ n";
 					Bcc => $Bcc || "",
 					Data => $content,
 					From => $CurrentUser->EmailAddress));
-    print $Message;
+    $Message->print;
   }                   
 # }}}
   
