@@ -795,7 +795,8 @@ sub Disabled {
 
 =head2 DeepMembersObj
 
-Returns an RT::CachedGroupMembers object of this group's members.
+Returns an RT::CachedGroupMembers object of this group's members,
+including all members of subgroups.
 
 =cut
 
@@ -848,7 +849,7 @@ sub UserMembersObj {
 
 =head2 MembersObj
 
-Returns an RT::CachedGroupMembers object of this group's members.
+Returns an RT::GroupMembers object of this group's direct members.
 
 =cut
 
