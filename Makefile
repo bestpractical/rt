@@ -36,7 +36,7 @@ DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
 DB_DBA			= root
-TAG			= rtfm-2-0RC1
+TAG			= rtfm-2-0RC2
 
 
 upgrade: install-lib install-html install-lexicon
@@ -45,17 +45,18 @@ install: upgrade initdb
 html-install: install-html
 
 install-html:
-	-mkdir $(MASON_HTML_PATH)/RTFM
-	cp -rp html/* $(MASON_HTML_PATH)/
-	chmod -R 755  $(MASON_HTML_PATH)
+	cd ./html/; find . -type d -exec install -d -m 0755 $(MASON_HTML_PATH)/{} \;
+	cd ./html/; find . -type f -exec install  -m 0644 {}  $(MASON_HTML_PATH)/{} \;
 
 
 install-lib:
-	cp -rp lib/* $(RT_LIB_PATH)
-	chmod -R 755 $(RT_LIB_PATH);
+
+	cd ./lib; find . -type d -exec install -d -m 0755 $(RT_LIB_PATH)/{} \;
+	cd ./lib; find . -type f -name \*.pm -exec install  -m 0644 {}  $(RT_LIB_PATH)/{} \;
 
 install-lexicon:
-	cp -rp po/* $(RT_LEXICON_PATH)
+	cd ./po; find . -type d -exec install -d -m 0755 $(RT_LEXICON_PATH)/{} \;
+	cd ./po; find . -type f  -exec install  -m 0644 {}  $(RT_LEXICON_PATH)/{} \;
 
 factory:
 	cd lib; $(PERL) ../tools/factory.mysql $(DB_DATABASE) RT::FM
