@@ -62,15 +62,16 @@ my $bgcolor;
 require RT::Interface::Web;
 
 $session{'i'}++;
-if ( ($ARGS{'ClearRestrictions'}) ||
-     ($ARGS{'NewSearch'}) ) {
-  $session{'tickets'}->ClearRestrictions;
+if ($session{'tickets'}) {
+    if ( ($ARGS{'ClearRestrictions'}) ||
+	 ($ARGS{'NewSearch'}) ) {
+	$session{'tickets'}->ClearRestrictions;
+    }
+    
+    if ($ARGS{'DeleteRestriction'}) {
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
 }
-
-if ($ARGS{'DeleteRestriction'}) {
- $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-}
-
 &ProcessSearchQuery(ARGS=>\%ARGS);
 
 my $row;
