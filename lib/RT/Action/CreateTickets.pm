@@ -454,7 +454,7 @@ sub Commit {
 
 
 	foreach my $key (keys(%args)) {
-	    $key =~ /^customfield-(\d+)$/ or next;
+	    $key =~ /^customfield(\d+)$/ or next;
 	    $ticketargs{ "CustomField-" . $1 } = $args{$key};
 	}
 
