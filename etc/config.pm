@@ -207,12 +207,16 @@ $LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
 # Define the directory name to be used for images in rt web
 # documents.
 
-#If you're putting the web ui somewhere other than at / on a server
+# If you're putting the web ui somewhere other than at the root of
+# your server
+# $WebPath requires a leading / but no trailing /     
+
 $WebPath = "";
 
-#Scheme, server and port for constructing urls to webrt
+# This is the Scheme, server and port for constructing urls to webrt
+# $WebBaseURL doesn't need a trailing /                                                                            
 
-$WebBaseURL = "http://RT::WebBaseURL.not.configured:80/";
+$WebBaseURL = "http://RT::WebBaseURL.not.configured:80";
 
 $WebURL = $WebBaseURL . $WebPath . "/";
 
