@@ -59,5 +59,7 @@ my $ResponseDefault=$Action eq "Respond" ? "SELECTED" : "";
 use RT::Ticket;
 my $Ticket=RT::Ticket->new($session{'CurrentUser'});
 $Ticket->Load($ARGS{'id'});
-my $MessageURI=$ARGS{MessageLinkPrefix} . $ARGS{MessageLink};
+my $MessageURI;
+$MessageURI=$ARGS{MessageLinkPrefix} . $ARGS{MessageLink}
+if $ARGS{MessageLink};
 </%INIT>

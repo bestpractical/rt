@@ -1,7 +1,7 @@
 %# $Header$
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
-<& /Elements/Header, Title => "Ticket View (#".$Ticket->Id.")" &>
+<& /Elements/Header, Title => "Ticket View (#".$Ticket->Id.($Ticket->Subject&&(", ".$Ticket->Subject)).")" &>
 
 % for (@Actions) {
    <%$_%><br>
@@ -33,8 +33,6 @@
 
 use RT::Ticket;
 use RT::CurrentUser;
-# Huh? Shouldn't this be $session{CurrentUser}? -- TobiX
-
 
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 my $id=$ARGS{'id'};

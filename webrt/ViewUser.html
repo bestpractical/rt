@@ -1,24 +1,50 @@
 <& /Elements/Header, Title=>"User view" &>
 
 <& /Elements/ViewUser, User=>$u &>
+
 %if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
 	<& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
-<input type="hidden">
+<input type="hidden" name="id" value=<%$id%>>
 <TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{CurrentUser}->Signature %></TEXTAREA><br><br>
 <input type="submit" value="Update signature">
 </form>
 	  <& /Elements/TitleBoxEnd &>
 %}
 
+	<& /Elements/TitleBoxStart, title => 'Email'  &>
+<form method=post>
+<input type="hidden" name="id" value="<%$id%>">
+<input name="Email" value="<% $u->EmailAddress %>"><input type="submit" value="Update email">
+</form>
+	  <& /Elements/TitleBoxEnd &>
+	<& /Elements/TitleBoxStart, title => 'Real Name'  &>
+<form method=post>
+<input type="hidden" name="id" value="<%$id%>">
+<input name="RealName" value="<% $u->RealName %>"><input type="submit" value="Update name">
+</form>
+	  <& /Elements/TitleBoxEnd &>
+
+	<& /Elements/TitleBoxStart, title => 'User ID'  &>
+<form method=post>
+<input type="hidden" name="id" value="<%$id%>">
+<input name="UserId" value="<% $u->UserId %>"><input type="submit" value="Update ID">
+</form>
+	  <& /Elements/TitleBoxEnd &>
+
+%# TODO: alternative email addresses + merging users
+
 <%ARGS>
 $id => $session{CurrentUser} ? $session{CurrentUser}->Id : 0
 $Signature => undef
+$Email => undef
+$RealName => undef
+$UserId => undef
 </%ARGS>
 
 <%INIT>
 require RT::User;
-my $u=RT::User->new;
+my $u=RT::User->new($session{CurrentUser});
 $u->Load($id) || die "Couldn't load that user ($id)";
 if ($Signature) {
 
@@ -29,8 +55,24 @@ if ($Signature) {
 # when I'm into the perl debugger using the cli
 #$session{CurrentUser}->SetSignature($Signature);
 my ($val, $msg)=$session{CurrentUser}->_Set('Signature',$Signature);
-$RT::Logger->log(level=>($val ? 'debug' : 'error'), message=>$msg);
+$RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 }
+
+if ($Email) {
+my ($val, $msg)=$u->SetEmailAddress($Email);
+$RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
+}
+
+if ($RealName) {
+my ($val, $msg)=$u->SetRealName($RealName);
+$RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
+}
+
+if ($UserId) {
+my ($val, $msg)=$u->SetUserId($UserId);
+$RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
+}
+
 </%INIT>
 
 

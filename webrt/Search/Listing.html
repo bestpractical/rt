@@ -56,7 +56,7 @@ $ValueOfResultsPerPage => 1
   else {
     $session{'tickets'}->NewTickets;
   }
-if ($ARGS{'LimitResultsPerPage'} and ((0+$ARGS{'ValueOfResultsPerPage'})>0)) {
+if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'})) {
   
   $session{'tickets'}->Rows($ARGS{'ValueOfResultsPerPage'});
 }

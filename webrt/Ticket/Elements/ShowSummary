@@ -13,7 +13,7 @@
 	  </TD>
 	</TR>
 	<TD COLSPAN=2>
-	  <& /Elements/TitleBoxStart, title => 'People' &>
+	  <& /Elements/TitleBoxStart, title => '<a href="EditWatchers.html?id='.$Ticket->id.'">People</a>' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
