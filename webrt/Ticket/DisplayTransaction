@@ -13,7 +13,9 @@ Date: <%$Transaction->CreatedAsString%>
 
 
 %  while (my $message=$attachments->Next) {
+<%$message%>
 
+% if (0) {
 <hr width=60%>
 <pre>
 <%$message->Headers%>
@@ -28,5 +30,5 @@ Date: <%$Transaction->CreatedAsString%>
 	
 <% $message->ContentType %> not shown
 %    }
-
+% }
 % }

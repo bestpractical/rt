@@ -1,38 +1,54 @@
-<HTML>
-<HEAD>
+
+<& /Elements/Header, Title=>"Update Ticket" &>
+
+<H1> Update ticket <% $Ticket->Id %> </H1>
+<FORM ACTION="ProcessUpdate.html" METHOD=POST>
+
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT>
+Subject:
+</TD>
+<TD> <% $Ticket->Subject %>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>Interested Parties:
+</TD>
+<TD><ul>
+<li>	Requestor:<% $Ticket->RequestorsAsString %> <br>
+<li>	Cc:<% $Ticket->CcAsString %><br>
+<li>	AdminCc: <% $Ticket->AdminCcAsString %> <br>
+</ul>
+</TD>
+</TR>
+</TABLE>
+
+Status:
+<& /Elements/SelectStatus, Name=>"SetStatus", Default => $Ticket->Status() &> 
+
+Owner:  
+<& /Elements/SelectOwner, Name=>"SetQueue", Default => $Ticket->Owner->Id(), Queue => $Ticket->Queue() &>
+
+Time Worked: 
+<input size=4 name="UpdateTimeWorked"> minutes<br>
+<hr>
+Update Type: <select name="UpdateType">
+		<option value="private">Private Comments (Invisible to watchers)</option>
+		<option value="public">Public Comments (Visible to watchers) <B>CURRENTLY NONEXISTENT</B> </option>
+		<option value="response">Response (Sent to watchers)</option>
+	</select> <br>
+
+Update Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
+<TEXTAREA COLS=80 ROWS=15 NAME="UpdateContent">
+</TEXTAREA>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<INPUT TYPE=SUBMIT VALUE="Submit Update">
+</FORM>
+</HTML>
+
 <%INIT>
 use RT::Ticket;
 my $Ticket=RT::Ticket->new($RT::CurrentUser);
 $Ticket->Load($ARGS{'id'});
 </%INIT>
-<TITLE>
-Update Ticket <% $Ticket->Id %>
-</TITLE>
-</HEAD>
-
-<FORM TARGET=ValidateUpdate.html METHOD=POST>
-Subject: <% $Ticket->Subject %> <br>
-Interested Parties:
-	Requestor:<% $Ticket->RequestorAsString %> <br>
-	Cc:<% $Ticket->CcAsString %><br>
-	Bcc: <% $Ticket->BccAsString %> <br>
-Status: <% $Ticket->Status %> -&gt;<& SetStatus Ticket => $Ticket&>
-Owner: <% $Ticket->Owner %> -&gt; <& SetOwner Ticket => $Ticket &>
-
-Time Worked: <input size=4 name="time_worked"> minutes<br>
-Update Type: <select name="type">
-		<option value="private">Private Comments (Invisible to watchers)</option>
-		<option value="public">Public Comments (Visible to watchers)</option>
-		<option value="response">Response (Sent to watchers)</option>
-	</select> <br>
-
-Update Subject: <input name="subject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
-CC Update to: <input name="update_cc" size=40> <br>
-Bcc Update to: <input name="update bcc" size=40> <br>
-<TEXTAREA COLS=80 ROWS=15>
-</TEXTAREA>
-
-<INPUT TYPE=SUBMIT VALUE="Submit Update">
-</FORM>
-</HTML>
-

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>ProcessUpdate</title>
+  </head>
+
+  <body>
+
+    <h1>ProcessUpdate</h1>
+    Ticket Updated.
+    <& DisplayTicket, Ticket => $Ticket &>
+
+
+    <hr>
+    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
+<!-- Created: Fri Mar 31 19:46:12 EST 2000 -->
+<!-- hhmts start -->
+Last modified: Fri Mar 31 21:19:03 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>
+
+<%args>
+$id => undef
+$SetStatus => undef
+$SetOwner => undef
+$UpdateSubject => undef
+$UpdateComment =>  undef
+$Transaction => undef
+$Description => undef
+</%args>
+
+<%init>
+
+
+  if (!$ARGS{'id'}) {
+    &mc_comp("/Elements/Error" , Why => "No ticket specified");
+    $m->abort;
+  }
+
+my $CurrentUser = RT::CurrentUser->new(2);
+my $Ticket = RT::Ticket->new($CurrentUser);
+$Ticket->Load($ARGS{'id'});
+my @UpdateContent = split(/\r/,$ARGS{'UpdateContent'}."\n");
+
+my $Message = MIME::Entity->build ( Subject => $ARGS{'UpdateSubject'} || "",
+				    Cc => $ARGS{'UpdateCc'} || "",
+				    Bcc => $ARGS{'UpdateBcc'} || "",
+				    Data => \@UpdateContent);
+						
+
+if ($ARGS{'UpdateType'} eq 'private') {
+    ($Transaction, $Description) = $Ticket->Comment( CcMessageTo => $ARGS{'UpdateCc'},
+						     BccMessageTo => $ARGS{'UpdateBcc'},
+						     MIMEObj => $Message,
+						     TimeTaken => $ARGS{'UpdateTimeWorked'});
+  }
+elsif ($ARGS{'UpdateType'} eq 'response') {
+    ($Transaction, $Description) = $Ticket->Correspond( CcMessageTo => $ARGS{'UpdateCc'},
+						     BccMessageTo => $ARGS{'UpdateBcc'},
+						     MIMEObj => $Message,
+						     TimeTaken => $ARGS{'UpdateTimeWorked'});
+  }
+						
+if ($ARGS{'SetStatus'} ne $Ticket->Status()) {
+  $Ticket->SetStatus($ARGS{'SetStatus'});
+}
+    if ($ARGS{'SetOwner'} ne $Ticket->Owner->Id()) {
+      $Ticket->SetOwner($ARGS{'SetOwner'});
+}
+   
+</%init>

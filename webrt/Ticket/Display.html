@@ -1,5 +1,12 @@
 %# $Header$
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+<& /Elements/Header, Title => "WebRT Ticket View" &>
+
+<& DisplayTicket, Ticket => $Ticket &>
+<& /Elements/Footer &>
+
+
 <%ARGS>
 $id => undef
 </%ARGS>
@@ -10,17 +17,3 @@ my $CurrentUser = RT::CurrentUser->new(2);
 my $Ticket = RT::Ticket->new($CurrentUser);
 $Ticket->Load($id);
 </%INIT>
-<HTML>
-<HEAD>
-<TITLE>
-WebRT Ticket View
-</TITLE>
-</HEAD>
-<BODY BGCOLOR=WHITE>
-<& ToolBar &>
-
-<& DisplaySummary ,  Ticket => $Ticket &>
-
-<& DisplayHistory , Ticket => $Ticket &> 
-</BODY>
-</HTML>

@@ -1,0 +1,14 @@
+<HTML>
+<HEAD>
+<TITLE>
+Error
+</TITLE>
+<BODY BGCOLOR=RED>
+This is an unfriendly error message.
+<hr>
+<h1><%$Why%></h1>
+</body>
+</HTML>
+<%args>
+$Why => "the calling component did not specify why"
+</%args>
