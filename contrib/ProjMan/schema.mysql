@@ -1,0 +1,38 @@
+# $Header$
+
+# ProjMan is Copyright 2000 Tobias Brox <tobix@fsck.com>
+# ProjMan is distributed under the terms of the GNU Public License
+# ProjMan is built over RT, Copyright 1996-1999 Jesse Reed Vencent <jesse@fsck.com>
+
+# {{{ Ticket extentions (Worktask table)
+CREATE TABLE Worktask (
+	id int(11) PRIMARY KEY, # References Tickets!
+
+# Time estimates.  If a worktask consists of two subtasks, only the two
+# (atomic?) subtasks should have time estimates set.  There should be
+# some logic in the program for splitting up a worktask into subtasks,
+# and let the time estimates follow.  When accessing a group ticket, the
+# time estimates should be calculated from the subtasks.
+
+# Those should be set only once:
+
+	OrigTypTimeEst INT,
+	OrigMinTimeEst INT,
+	OrigMaxTimeEst INT,
+
+# Those should be updated all the time while the project gets more and
+# more delayed:
+
+	CurrTypTimeEst INT,
+	CurrMinTimeEst INT,
+	CurrMaxTimeEst INT,
+
+# If TimeWorked (in the Tickets table) is higher than CurrMaxTimeEst,
+# somebody is either not using this tool properly, or a very bad
+# project administrator, or both.
+
+# TimeWorked / CurrTypTimeEst should usually give the percentage of
+# completeness.
+
+);
+# }}}
