@@ -148,6 +148,7 @@ sub Create {
                 Summary => undef,
                 Class => undef,
                 CustomFields => { },
+                Links => { },
 		  @_);
 
     my $class = RT::FM::Class->new($RT::SystemUser);
@@ -167,12 +168,68 @@ sub Create {
         return (undef, $msg);
     }
 
-    my %cfs  = %{$args{'CustomFields'}};
+    #ADd ccustom fields
 
 
-    foreach my $cf (keys %cfs) {
+    foreach my $key (keys %args) {
+    next unless ($key =~ /^CustomField-(.*)$/);
+        my $cf = $1;
+    my @vals = ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
+    foreach my $val (@vals) {
+
+        my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
+            Field             => $1,
+            Content             => $val,
+            RecordTransaction => 0
+        );
+
+        unless ($cfid) {
+            $RT::Handle->Rollback();
+            return ( undef, $cfmsg );
+        }
+    }
+
+
+
+    }
+    #Add relationships
+
+
+    foreach my $type (keys %args) {
+    next unless ($type =~ /^(RefersTo-new|new-RefersTo)$/);
+    my @vals = ref( $args{$type} ) eq 'ARRAY' ? @{ $args{$type} } : ( $args{$type} );
+    foreach my $val (@vals) {
+        my ($base, $target);
+        if ($type =~ /^new-(.*)$/ ) {
+            $type = $1;
+            $base = undef;
+            $target = $val;
+        }
+        elsif ($type =~ /^(.*)-new$/ ) {
+            $type = $1;
+            $base = $val;
+            $target = undef;
+        }
+
+
+        my ( $linkid, $linkmsg ) = $self->AddLink(
+            Type               => $type,
+            Target             => $target,
+            Base             => $base,
+            RecordTransaction => 0
+        );
+
+        unless ($linkid) {
+            $RT::Handle->Rollback();
+            return ( undef, $linkmsg );
+        }
+    }
+
+
+
         # Process custom field values
     }
+
 
     # We override the URI lookup. the whole reason
     # we have a URI column is so that joins on the links table
@@ -226,7 +283,7 @@ sub AddLink {
         Target => '',
         Base   => '',
         Type   => 'RefersTo',
-        Silent => undef,
+        RecordTransaction => 1,
         @_
     );
 
@@ -236,7 +293,7 @@ sub AddLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug(
-"$self tried to delete a link. both base and target were specified\n"
+"$self tried to delete a link. both base and target were specified"
         );
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
@@ -289,10 +346,7 @@ sub AddLink {
       "Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
 
     # Don't write the transaction if we're doing this on create
-    if ( $args{'Silent'} ) {
-        return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
-    }
-    else {
+    if ( $args{'RecordTransaction'} ) {
 
         #Write the transaction
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
@@ -302,8 +356,9 @@ sub AddLink {
             TimeTaken => 0
         );
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
+    } else {
+        return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
     }
-
 }
 
 # }}}

@@ -28,7 +28,7 @@
 
 <& /Elements/TitleBoxStart, title => $title &>
 
-<FORM METHOD=GET ACTION="Basics.html">
+<FORM METHOD="POST" ACTION="Basics.html">
 <INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
 
 <&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
@@ -37,11 +37,10 @@
 <BR>
 % if ($CustomFieldObj->Id) {
 <H2><&|/l&>Values</&></H2>
-<BR>
-<font size=-1>
-%#<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-%#<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
-</font>
+<table width="100%">
+<& /RTFM/Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+<& /RTFM/Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+</table>
 % }
 <& /Elements/TitleBoxEnd&>
 <&/Elements/Submit&>
@@ -83,6 +82,47 @@ else {
 
     $id = $CustomFieldObj->id;
 }
+
+
+
+
+my $paramtag = "CustomField-".$CustomFieldObj->Id."-Value-";
+# Delete any fields that want to be deleted
+foreach my $key (keys %ARGS) {
+	
+	next unless ($key =~ /^Delete-$paramtag(\d+)$/);
+	my ($val, $msg) = $CustomFieldObj->DeleteValue($1);
+	push (@results, $msg);
+
+
+}
+# Update any existing values
+my $values = $CustomFieldObj->ValuesObj;
+while (my $value = $values->Next) {
+	foreach my $attr qw(Name Description SortOrder) {
+	my $param = $paramtag.$value->Id."-".$attr;
+
+	if ( $ARGS{$param} && ($value->$attr() ne $ARGS{$param}))  {
+		my $mutator = "Set$attr";
+		my ($id, $msg) = $value->$mutator($ARGS{$param});
+        push (@results, $msg);
+		}
+	}
+
+
+}
+
+
+
+# Add any new values
+if ($ARGS{$paramtag."new-Name"}) {
+	my ($id, $msg) = $CustomFieldObj->AddValue ( Name => $ARGS{$paramtag."new-Name"},
+						 Description => $ARGS{$paramtag."new-Description"},
+						 SortOrder => $ARGS{$paramtag."new-SortOrder"});
+	push (@results, $msg);
+}
+
+
 
 
 </%INIT>

@@ -44,6 +44,10 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'Article'.
   text 'ChangeLog'.
+  varchar(64) 'Type'.
+  int(11) 'CustomField'.
+  text 'OldContent'.
+  text 'NewContent'.
 
 =cut
 
@@ -55,11 +59,19 @@ sub Create {
     my %args = ( 
                 Article => '',
                 ChangeLog => '',
+                Type => '',
+                CustomField => '',
+                OldContent => '',
+                NewContent => '',
 
 		  @_);
     $self->SUPER::Create(
                          Article => $args{'Article'},
                          ChangeLog => $args{'ChangeLog'},
+                         Type => $args{'Type'},
+                         CustomField => $args{'CustomField'},
+                         OldContent => $args{'OldContent'},
+                         NewContent => $args{'NewContent'},
 );
 
 }
@@ -111,19 +123,73 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=item Type
 
-Returns the current value of Creator. 
-(In the database, Creator is stored as int(11).)
+Returns the current value of Type. 
+(In the database, Type is stored as varchar(64).)
+
+
+
+=item SetType VALUE
+
+
+Set Type to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(64).)
 
 
 =cut
 
 
-=item Created
+=item CustomField
 
-Returns the current value of Created. 
-(In the database, Created is stored as datetime.)
+Returns the current value of CustomField. 
+(In the database, CustomField is stored as int(11).)
+
+
+
+=item SetCustomField VALUE
+
+
+Set CustomField to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomField will be stored as a int(11).)
+
+
+=cut
+
+
+=item OldContent
+
+Returns the current value of OldContent. 
+(In the database, OldContent is stored as text.)
+
+
+
+=item SetOldContent VALUE
+
+
+Set OldContent to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, OldContent will be stored as a text.)
+
+
+=cut
+
+
+=item NewContent
+
+Returns the current value of NewContent. 
+(In the database, NewContent is stored as text.)
+
+
+
+=item SetNewContent VALUE
+
+
+Set NewContent to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, NewContent will be stored as a text.)
 
 
 =cut
@@ -139,10 +205,14 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         ChangeLog => 
 		{read => 1, write => 1, type => 'text', default => ''},
-        Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
-        Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+        Type => 
+		{read => 1, write => 1, type => 'varchar(64)', default => ''},
+        CustomField => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        OldContent => 
+		{read => 1, write => 1, type => 'text', default => ''},
+        NewContent => 
+		{read => 1, write => 1, type => 'text', default => ''},
 
  }
 };

@@ -36,6 +36,7 @@
 
 <& Elements/EditBasics, ArticleObj => $ArticleObj &>
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj &>
+<& Elements/EditLinks, ArticleObj => $ArticleObj &>
 
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
@@ -45,97 +46,177 @@ my @results;
 
 my $Entries    = {};
 my $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
+
+my %create_args;
+
+if ($id eq 'new') {
+
+    if ($ARGS{'RefersTo-new'} ) {
+         @{$create_args{'RefersTo-new'}} = split(/\s+/, $ARGS{'RefersTo-new'});
+    }
+
+    if ($ARGS{'new-RefersTo'} ) {
+         @{$create_args{'new-RefersTo'}} = split(/\s+/, $ARGS{'new-RefersTo'});
+    }
+    
+    foreach my $arg (keys %ARGS) {
+        if ($arg =~ /^CustomField-(.*)$/) {
+            $create_args{$arg} = $ARGS{$arg};
+        }
+    }
+
+
+   my ($val, $msg) = $ArticleObj->Create ( Summary => $ARGS{'Summary'},
+                         Name => $ARGS{'Name'},
+                         Class => $ARGS{'Class'},
+                         %create_args);
+  
+  push (@results, $msg);
+
+
+} else { 
+
 $ArticleObj->Load($id);
 unless ( $ArticleObj->id ) {
     Abort( loc("Unable to load article") );
 }
 
-my @attribs= qw(Name Summary Class);
+my @attribs = qw(Name Summary Class);
 
-  @results = UpdateRecordObject( AttributesRef => \@attribs, 
-                                    Object => $ArticleObj, 
-                                    ARGSRef => \%ARGS);
+@results = UpdateRecordObject(
+    AttributesRef => \@attribs,
+    Object        => $ArticleObj,
+    ARGSRef       => \%ARGS
+);
 
+my $CustomFields = $ArticleObj->ClassObj->CustomFields();
 
+# Build up a list of articles that we want to work with
+my %articles_to_mod;
+my %custom_fields_to_mod;
+foreach my $arg ( keys %ARGS ) {
+    if ( $arg =~ /^Article-(\d+)-CustomField-(\d+)-/ ) {
 
+        # For each of those articles, find out what custom fields we want to work with.
+        $custom_fields_to_mod{$1}{$2} = 1;
+    }
+}
 
-    my $CustomFields = $ArticleObj->ClassObj->CustomFields();
+# For each of those Articles
+foreach my $article ( keys %custom_fields_to_mod ) {
+    my $Article = RT::FM::Article->new( $session{'CurrentUser'} );
+    $Article->Load($article);
 
-    # Build up a list of articles that we want to work with
-    my %articles_to_mod;
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %ARGS ) {
-        if ( $arg =~ /^Article-(\d+)-CustomField-(\d+)-/ ) {
+    # For each custom field
+    foreach my $cf ( keys %{ $custom_fields_to_mod{$article} } ) {
 
-            # For each of those articles, find out what custom fields we want to work with.
-            $custom_fields_to_mod{$1}{$2} = 1;
+        foreach my $arg ( keys %ARGS ) {
+            next unless ( $arg =~ /^Article-$article-CustomField-$cf-/ );
+            my @values =
+              ( ref( $ARGS{$arg} ) eq 'ARRAY' )
+              ? @{ $ARGS{$arg} }
+              : ( $ARGS{$arg} );
+            if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
+                foreach my $value (@values) {
+                    next unless ($value);
+                    my ( $val, $msg ) = $Article->AddCustomFieldValue(
+                        Field   => $cf,
+                        Content => $value
+                    );
+                    push ( @results, $msg );
+                }
+            }
+            elsif ( $arg =~ /-DeleteValues$/ ) {
+                foreach my $value (@values) {
+                    next unless ($value);
+                    my ( $val, $msg ) = $Article->DeleteCustomFieldValue(
+                        Field   => $cf,
+                        Content => $value
+                    );
+                    push ( @results, $msg );
+                }
+            }
+            elsif ( $arg =~ /-Values$/ ) {
+                my $cf_values = $Article->CustomFieldValues($cf);
+
+                my %values_hash;
+                foreach my $value (@values) {
+                    next unless ($value);
+
+                    # build up a hash of values that the new set has
+                    $values_hash{$value} = 1;
+                    unless ( $cf_values->HasEntryWithContent($value) ) {
+                        my ( $val, $msg ) = $Article->AddCustomFieldValue(
+                            Field   => $cf,
+                            Content => $value
+                        );
+                        push ( @results, "finished the add" );
+                    }
+
+                }
+                while ( my $cf_value = $cf_values->Next ) {
+                    unless ( $values_hash{ $cf_value->Content } == 1 ) {
+                        my ( $val, $msg ) = $Article->DeleteCustomFieldValue(
+                            Field   => $cf,
+                            Content => $cf_value->Content
+                        );
+                        push ( @results, $msg );
+
+                    }
+
+                }
+            }
+            else {
+                push ( @results,
+                    "User asked for an unknown update type for custom field "
+                      . $cf->Name
+                      . " for Article "
+                      . $Article->id );
+            }
         }
     }
 
-    # For each of those Articles
-    foreach my $article ( keys %custom_fields_to_mod ) {
-        my $Article = RT::FM::Article->new( $session{'CurrentUser'} );
-        $Article->Load($article);
+}
+# Delete links that are gone gone gone.
+foreach my $arg ( keys %ARGS ) {
+    if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
+        my $base   = $1;
+        my $type   = $2;
+        my $target = $3;
 
-        # For each custom field
-        foreach my $cf ( keys %{ $custom_fields_to_mod{$article} } ) {
+        my ( $val, $msg ) = $ArticleObj->DeleteLink( Base   => $base, Type   => $type, Target => $target);
 
-            foreach my $arg ( keys %ARGS ) {
-                next unless ( $arg =~ /^Article-$article-CustomField-$cf-/ );
-                my @values = ( ref( $ARGS{$arg} ) eq 'ARRAY' ) ? @{ $ARGS{$arg} } : ( $ARGS{$arg} );
-                if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
-                    foreach my $value (@values) {
-                        next unless ($value);
-                        my ( $val, $msg ) = $Article->AddCustomFieldValue(
-                        Field => $cf, Content => $value);
-                        push ( @results, $msg );
-                    }
-                }
-                elsif ( $arg =~ /-DeleteValues$/ ) {
-                    foreach my $value (@values) {
-                        next unless ($value);
-                        my ( $val, $msg ) = $Article->DeleteCustomFieldValue(
-                        Field => $cf, Content => $value);
-                        push ( @results, $msg );
-                    }
-                }
-                elsif ( $arg =~ /-Values$/ ) {
-                    my $cf_values = $Article->CustomFieldValues($cf);
+        push @results, $msg;
 
-                    my %values_hash;
-                    foreach my $value (@values) {
-                        next unless ($value);
+    }
 
-                        # build up a hash of values that the new set has
-                        $values_hash{$value} = 1;
-                        unless ( $cf_values->HasEntryWithContent($value) ) {
-                            my ( $val, $msg ) = $Article->AddCustomFieldValue( Field => $cf, Content => $value);
-                        push (@results,"finished the add");
-                        }
+}
 
-                    }
-                    while ( my $cf_value = $cf_values->Next ) {
-                        unless ( $values_hash{ $cf_value->Content } == 1 ) {
-                            my ( $val, $msg ) = $Article->DeleteCustomFieldValue( Field => $cf, Content => $cf_value->Content);
-                            push ( @results, $msg );
+my @linktypes = qw(DependsOn MemberOf RefersTo );
 
-                        }
+foreach my $linktype (@linktypes) {
 
-                    }
-                }
-                else {
-                    push ( @results, "User asked for an unknown update type for custom field " . $cf->Name . " for Article " . $Article->id );
-                }
-            }
-        }
+    for my $luri ( split ( / /, $ARGS{ $ArticleObj->Id . "-$linktype" } ) ) {
+        $luri =~ s/\s*$//;    # Strip trailing whitespace
+        my ( $val, $msg ) = $ArticleObj->AddLink( Target => $luri, Type   => $linktype);
+        push @results, $msg;
+    }
+
+    for my $luri ( split ( / /, $ARGS{ "$linktype-" . $ArticleObj->Id } ) ) {
+        my ( $val, $msg ) = $ArticleObj->AddLink( Base => $luri, Type => $linktype);
+
+        push @results, $msg;
+    }
+
+}
 
 }
 
 # TODO: display the results, even if we can't display the Article
 
-unless ($ArticleObj->CurrentUserHasRight('ShowArticle')) {
+unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
     Abort("No permission to view Article");
-} 
+}
 
 </%INIT>
 

@@ -1,0 +1,56 @@
+<TABLE width=100%>
+<TR>
+<TD VALIGN=TOP WIDTH=50%>
+<h3><&|/l&>Current Relationships</&></h3>
+<i><&|/l&>(Check box to delete)</&></i><br>
+
+<&|/l&>Refers to</&>:<BR>
+<UL>
+% my $refersto = $ArticleObj->RefersTo;
+
+% while (my $link = $refersto->Next) {
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+% if ($link->TargetURI->IsLocal) {
+% my $member = $link->TargetObj;
+
+<a href="<%$RT::WebPath%>/RTFM/Article/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Name%><br>
+% } else {
+<A HREF="<%$link->TargetURI%>"><%$link->Target%></A>
+% }
+%}
+</UL>
+
+<&|/l&>Referred to by</&>:<BR>
+<UL>
+% my $referredtoby = $ArticleObj->ReferredToBy;
+% while (my $link = $referredtoby->Next) {
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+% if ($link->BaseURI->IsLocal) {
+% my $member = $link->BaseObj;
+<a href="<%$RT::WebPath%>/RTFM/Article/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Name%>
+% } else {
+<A HREF="<%$link->BaseURI%>"><%$link->Base%></A>
+%}
+% }
+</UL>
+
+			    
+</TD>
+<TD VALIGN=TOP>
+<h3><&|/l&>New Relationships</&></h3>
+<i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
+<TABLE>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$ArticleObj->Id%>-RefersTo"></TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$ArticleObj->Id%>"></TD></TR>
+</TABLE>
+</TD>
+</TR>
+</TABLE>
+
+
+      
+<%ARGS>
+$ArticleObj => undef
+</%ARGS>

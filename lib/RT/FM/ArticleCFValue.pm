@@ -23,7 +23,6 @@ RT::FM::ArticleCFValue
 
 package RT::FM::ArticleCFValue;
 use RT::FM::Record; 
-use RT::FM::Content;
 
 
 use base qw( RT::FM::Record );
@@ -45,7 +44,7 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'Article'.
   int(11) 'CustomField'.
-  int(11) 'Content'.
+  text 'Content'.
 
 =cut
 
@@ -57,7 +56,7 @@ sub Create {
     my %args = ( 
                 Article => '0',
                 CustomField => '0',
-                Content => '0',
+                Content => '',
 
 		  @_);
     $self->SUPER::Create(
@@ -118,7 +117,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =item Content
 
 Returns the current value of Content. 
-(In the database, Content is stored as int(11).)
+(In the database, Content is stored as text.)
 
 
 
@@ -127,25 +126,11 @@ Returns the current value of Content.
 
 Set Content to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Content will be stored as a int(11).)
+(In the database, Content will be stored as a text.)
 
 
 =cut
 
-
-=item ContentObj
-
-Returns the Content Object which has the id returned by Content
-
-
-=cut
-
-sub ContentObj {
-	my $self = shift;
-	my $Content =  RT::FM::Content->new($self->CurrentUser);
-	$Content->Load($self->Content());
-	return($Content);
-}
 
 =item Creator
 
@@ -194,7 +179,7 @@ sub _ClassAccessible {
         CustomField => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Content => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, type => 'text', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => ''},
         Created => 

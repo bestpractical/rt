@@ -2,10 +2,10 @@ package RT::URI::fsck_com_rtfm;
 
 use RT::FM::Article;
 
-use RT::URI::null;
+use RT::URI::base;
 
 use vars qw (@ISA);
-@ISA = qw/RT::URI::null/;
+@ISA = qw/RT::URI::base/;
 
 
 
@@ -26,7 +26,7 @@ use Data::Dumper;
 
 ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rtfm), "It's an RT::URI::fsck_com_rtfm");
 
-ok ($uri->isa('RT::URI::null'), "It's an RT::URI::null");
+ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
 ok ($uri->isa('RT::Base'), "It's an RT::Base");
 
 is ($uri->LocalURIPrefix , 'fsck.com-rtfm://example.com/article/');

@@ -39,14 +39,14 @@ This article refers to:
 <ul>
 % my $refersto = $article->RefersTo;
 % while (my $uri = $refersto->Next()) {
-<li><%$uri->TargetObj->URI%></li>
+<li><%$uri->TargetURI->URI%></li>
 % }
 </ul>
 This article is referred to by:
 <ul>
 % my $referredtoby = $article->ReferredToBy;
 % while (my $uri = $referredtoby->Next()) {
-<li><%$uri->TargetObj->URI%></li>
+<li><%$uri->BaseURI->URI%></li>
 % }
 </ul>
 

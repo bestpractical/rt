@@ -73,8 +73,14 @@
 % }
 
 <%INIT>
-my $CustomFields = $ArticleObj->ClassObj->CustomFields();
+my $CustomFields;
+if ($ClassObj) {
+        $CustomFields = $ClassObj->CustomFields();
+        } else {
+        $CustomFields = $ArticleObj->ClassObj->CustomFields();
+        }
 </%INIT>
 <%ARGS>
 $ArticleObj => undef
+$ClassObj => undef
 </%ARGS>

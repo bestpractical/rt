@@ -36,10 +36,10 @@ install: install-lib install-html initdb
 
 install-html:
 	-mkdir $(MASON_HTML_PATH)/RTFM
-	cp -rvp html/* $(MASON_HTML_PATH)/RTFM/
+	cp -rp html/* $(MASON_HTML_PATH)/RTFM/
 
 install-lib:
-	cp -rvp lib/* $(RT_LIB_PATH)
+	cp -rp lib/* $(RT_LIB_PATH)
 
 factory:
 	cd lib; $(PERL) ../tools/factory.mysql $(DB_DATABASE) RT::FM

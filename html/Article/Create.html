@@ -1,0 +1,95 @@
+<& /RTFM/Elements/Header, Title => loc('Create a new article') &>
+<& /RTFM/Elements/Tabs &>
+
+<FORM METHOD=POST ACTION="Edit.html">
+<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+<INPUT TYPE=HIDDEN NAME=Class VALUE="<%$ClassObj->Id%>">
+
+
+
+<TABLE>
+<TR>
+<TD>
+ <&|/l&>Name</&>
+</td>
+<td>
+<input name=Name SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD>
+ <&|/l&>Summary</&>
+</td>
+<td>
+<input name=Summary SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD>
+<&|/l&>Class</&>
+</TD>
+<TD>
+<%$ClassObj->Name%>
+</TD>
+</TR>
+</TABLE>
+
+% while (my $CustomField = $CustomFields->Next) {
+
+<%$CustomField->Name%> - <%$CustomField->Type%><br>
+% if ($CustomField->Type eq 'FreeformSingle') {
+
+<input name="CustomField-<%$CustomField->Id%>">
+
+
+% } elsif ($CustomField->Type eq 'FreeformMultiple') {
+
+<textarea name="CustomField-<%$CustomField->Id%>">
+</textarea>
+
+% } 
+%  elsif ($CustomField->Type eq 'TextSingle') {
+
+<textarea rows="10" cols="60"name="CustomField-<%$CustomField->Id%>">
+</textarea>
+
+% } 
+% elsif ($CustomField->Type =~ /^Select/) {
+% my $CustomFieldValues = $CustomField->ValuesObj();
+
+<select name="CustomField-<%$CustomField->Id%>" size="5" <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%> >
+% while (my $value = $CustomFieldValues->Next) {
+<option value="<%$value->Name%>" ><% $value->Name%></option>
+% }
+<option value="" ><&|/l&>(no value)</&></option>
+</select>
+% }
+% }
+
+<TABLE width=100%>
+<h3><&|/l&>Relationships</&></h3>
+<i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
+<TABLE>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="new-RefersTo"></TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-new"></TD></TR>
+</TABLE>
+
+      
+<%ARGS>
+$ArticleObj => undef
+</%ARGS>
+<& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
+</form>
+<%INIT>
+
+
+my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+$ClassObj->Load($Class);
+unless ($ClassObj->Id) {
+    Abort("'%1' isn't a valid class identifier", $Class);
+}
+my        $CustomFields = $ClassObj->CustomFields();
+</%init>
+<%ARGS>
+$Class=>undef
+</%ARGS>
