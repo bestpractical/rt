@@ -367,9 +367,11 @@ done in Headers() above.
 sub GetHeader {
     my $self = shift;
     my $tag = shift;
-    foreach my $line (split(/\n/,$self->SUPER::Headers)) {
-        $RT::Logger->debug( "Does $line match $tag\n");
-        if ($line =~ /^$tag:\s+(.*)$/i) { #if we find the header, return its value
+    my $head = $self->SUPER::Headers;
+    $head =~ s/\n\s/ /gs;
+    foreach my $line (split(/\n/,$head)) {
+        if ($line =~ /^$tag:\s+(.*)$/i) { #if we find the header, return its val
+ue
             return ($1);
         }
     }
