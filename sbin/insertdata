@@ -7,23 +7,20 @@ use strict;
 use Carp;
 use Getopt::Long qw(:config pass_through);
 
-use lib "/home/jesse/projects/fm/lib";
-use lib "/home/jesse/projects/fm/etc";
+use lib '!!LIB_PATH!!';
 
-use RT::Framework::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
-	  		       GetCurrentUser GetMessageContent);
-
-
+use RT::FM;
 use RT::FM::User;
 use RT::FM::CurrentUser;
 
-use vars qw($CurrentUser);
+use vars qw($CurrentUser $CONFIGFILE);
 
+$CONFIGFILE = '!!CONFIG_FILE_PATH!!';
 
 #connect to the db
-$RT::FM::Handle = new RT::FM::Handle($RT::FM::DatabaseType);
-$RT::FM::Handle->Connect();
-
+# We'll need to do this again, once we actually have the system user to work 
+# with
+RT::FM::Init($CONFIGFILE);
 
 $CurrentUser = new RT::FM::CurrentUser();
 
@@ -31,11 +28,11 @@ print "Creating system user...";
 my $RT_System = new RT::FM::User($CurrentUser); 
 
 my ($val, $msg) = $RT_System->Create(
-					       Name => 'RT_System',
-					       RealName => 'The RT System itself',
-					       IsAdministrator => '1',
-					       IsEditor => '1',
-					       Creator => '1');
+				       Name => 'RT_System',
+				       RealName => 'The RT System itself',
+				       IsAdministrator => '1',
+				       IsEditor => '1',
+				       Creator => '1');
 
 if ($val) {
     print "done.\n";
@@ -46,15 +43,9 @@ else {
 }
 
 
-#Load etc/config.pm and drop privs
-LoadConfig();
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-DBConnect();
-
-$CurrentUser->LoadByName('RT_System');
-
-
+# now that we have a system user, we can get going with the regular init
+# mechanism
+RT::FM::Init($CONFIGFILE);
 
 # {{{ Users
 

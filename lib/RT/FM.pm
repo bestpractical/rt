@@ -1,28 +1,36 @@
 package RT::FM;
-use RT::FM::Handle;
-#use RT::FM::CurrentUser;
 use strict;
 
 use vars qw($VERSION $SystemUser $Nobody $Handle $Logger);
+
+
 
 $VERSION = '!!RT_VERSION!!';
 
 
 sub Init {
+    my $configfile = shift;
+    
+    # read the config file
+    require "$configfile";
+
     #Get a database connection
+    # We require rather than use, because we need to delay this until after
+    # we read the config file
+    require RT::FM::Handle;
     $Handle = new RT::FM::Handle($RT::FM::DatabaseType);
     $Handle->Connect();
     
     
     #RT's system user is a genuine database user. its id lives here
-#    $SystemUser = new RT::FM::CurrentUser();
-#    $SystemUser->LoadByName('RT_System');
+    $SystemUser = new RT::FM::CurrentUser();
+    $SystemUser->LoadByName('RT_System');
     
     #RT's "nobody user" is a genuine database user. its ID lives here.
-#    $Nobody = new RT::FM::CurrentUser();
-#    $Nobody->LoadByName('Nobody');
+    $Nobody = new RT::FM::CurrentUser();
+    $Nobody->LoadByName('Nobody');
    
-#   InitLogging(); 
+    InitLogging(); 
 }
 
 =head2 InitLogging
@@ -43,17 +51,6 @@ sub InitLogging {
 
     $Logger=Log::Dispatch->new();
     
-    if ($RT::FM::LogToFile) {
-	my $filename = $RT::FM::LogToFileNamed || "$RT::FM::LogDir/rt.log";
-
-	  $Logger->add(Log::Dispatch::File->new
-		       ( name=>'rtlog',
-			 min_level=> $RT::FM::LogToFile,
-			 filename=> $filename,
-			 mode=>'append',
-			 callback => sub {my %p=@_; return "$p{message}\n"}
-		       ));
-    }
     if ($RT::FM::LogToScreen) {
 	$Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',

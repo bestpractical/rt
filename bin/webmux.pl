@@ -2,6 +2,8 @@
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
 
 use strict;
+use Carp;
+
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
 $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
@@ -12,7 +14,6 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 # We really don't want apache to try to eat all vm
 # see http://perl.apache.org/guide/control.html#Preventing_mod_perl_Processes_Fr
 
-
 package RT::FM::Mason;
 
 use CGI qw(-private_tempfiles); #bring this in before mason, to make sure we
@@ -20,7 +21,7 @@ use CGI qw(-private_tempfiles); #bring this in before mason, to make sure we
 use HTML::Mason::ApacheHandler (args_method => 'CGI');
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 
-use vars qw($VERSION %session $Nobody $SystemUser $r);
+use vars qw($VERSION %session $Nobody $SystemUser $r $CONFIGFILE);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -31,14 +32,14 @@ umask(0077);
 
 	  
 $VERSION="!!RT_VERSION!!";
+$CONFIGFILE = '!!CONFIG_FILE_PATH!!';
 
-use lib "/home/jesse/projects/fm/lib";
-use lib "/home/jesse/projects/fm/etc";
+use lib "!!LIB_PATH!!";
+
 
 #This drags in  RT's config.pm
-use RT::FM::Config;
 use RT::FM;
-use Carp;
+RT::FM::Init($CONFIGFILE);
 
 {  
 	    package HTML::Mason::Commands;
@@ -66,9 +67,9 @@ use Carp;
 	     
 	    use MIME::Entity;
 	    use Apache::Cookie;
-	    use Date::Parse;
 	    use HTML::Entities;
-	    
+            use Log::Dispatch::ApacheLog;	    
+
 	    #TODO: make this use DBI
 	    use Apache::Session::File;
 
@@ -83,6 +84,7 @@ use Carp;
 	    }
 
 	}
+
 
 my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
@@ -112,12 +114,21 @@ die "Can't read and write $RT::FM::MasonSessionDir"
   unless (( -d _ ) and ( -r _ ) and ( -w _ ));
 
 
-    RT::FM::Init();
 
 sub handler {
     ($r) = @_;
     
+ 
+    if ($RT::FM::LogToApacheLog) {
+          $RT::FM::Logger->add(Log::Dispatch::ApacheLog->new
+                       ( name=>'rtlog',
+                         apache => $r,
+                         min_level=> $RT::FM::LogToApacheLog,
+                         callbacks => sub {my %p=@_; chomp $p{message}; return ("RT/FM: $p{message}")}
+                       ));
+    }
 
+    $RT::FM::Logger->debug('Woo');
  
     # We don't need to handle non-text items
     return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;
