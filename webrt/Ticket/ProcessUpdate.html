@@ -58,13 +58,13 @@ elsif ($ARGS{'UpdateType'} eq 'response') {
 						     MIMEObj => $Message,
 						     TimeTaken => $ARGS{'UpdateTimeWorked'});
   }
-						
-if ($ARGS{'SetStatus'} ne $Ticket->Status()) {
+
+if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
   $Ticket->SetStatus($ARGS{'SetStatus'});
 }
-    if (exists $ARGS{'SetOwner'} 
-        and (!Ticket->Owner 
-             || $ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
+
+    if ($ARGS{'SetOwner'}
+        and ($ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
       $Ticket->SetOwner($ARGS{'SetOwner'});
 }
    
