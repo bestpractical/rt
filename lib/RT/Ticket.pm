@@ -103,6 +103,12 @@ sub Create {
       $q->LoadByCol("QueueId", $args{'QueueTag'});
       $args{'Queue'}=$q->id;
   }
+
+  unless ($args{'Queue'}) {
+      warn "Queue not set!";
+      # Defaulting it to 'general':
+      $args{'Queue'}=1;
+  }
   
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
