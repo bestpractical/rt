@@ -148,7 +148,7 @@ sub add_correspondence {
     my $in_status = shift; # if we want to make the status something, set it here
                            # otherwise leave it blank to not change anything;
     my $in_notify = shift; # if we want to update the "user notified" field
-                           # make this a 1.
+                           # make this a 1.oo
     my $in_current_user = shift;
     my ($transaction_num,$requestors,$isnotrequestor);
     
@@ -170,19 +170,19 @@ sub add_correspondence {
 	# below. Be warned this will also bounce to requestors if they
 	# changes their email during the progress.
 	return 
-	    (
-	     $resc,
-"No permission to reply to \#$in_serial_num - your mail is recorded as a comment.\n$ress"
-	     );
-    }
+	  (
+	   $resc,
+	     "No permission to reply to \#$in_serial_num - your mail is recorded as a comment.\n$ress"
+	  );
+      }
     if (!$isnotrequestor) {
-	$in_content = "(inbound)\n\n$in_content";
+      $in_content = "(inbound)\n\n$in_content";
     }
-
+    
     $requestors=$rt::req[$in_serial_num]{'requestors'};
     
     $queue_id=$rt::req[$in_serial_num]{'queue_id'};
-
+    
     $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond',
 				      '',$in_content,$time,0,$in_current_user);
     
@@ -195,23 +195,23 @@ sub add_correspondence {
     
     #if it's coming from somebody other than the user, send them a copy
     if ($isnotrequestor) {
-	&update_each_req($in_serial_num, 'date_told', $rt::time);
-	$tem=&rt::template_mail('correspondence-official', $queue_id, "$requestors", $in_cc, $in_bcc, 
+      &update_each_req($in_serial_num, 'date_told', $rt::time);
+      $tem=&rt::template_mail('correspondence-official', $queue_id, "$requestors", $in_cc, $in_bcc, 
 			 "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
     } else {
-	if ($in_cc || $in_bcc) {
-	    $tem=&rt::template_mail('correspondence-official', $queue_id, "", $in_cc, $in_bcc, 
-				    "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
-	}
+      if ($in_cc || $in_bcc) {
+	$tem=&rt::template_mail('correspondence-official', $queue_id, "", $in_cc, $in_bcc, 
+				"$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+      }
 	if ($in_notify) {
-	    &update_each_req($in_serial_num, 'date_told', $rt::time);
+	  &update_each_req($in_serial_num, 'date_told', $rt::time);
 	}
     }
-
+    
     my $dist_list=&rt::dist_list('correspond', $queue_id, $in_serial_num);
     if ($dist_list) {
-	&rt::template_mail ('correspondence', $queue_id, $dist_list, "", "", 
-			    $in_serial_num, $transaction_num, $in_subject, $in_current_user);
+      &rt::template_mail ('correspondence', $queue_id, $dist_list, "", "", 
+			  $in_serial_num, $transaction_num, $in_subject, $in_current_user);
     }
     
     $effective_sn=&normalize_sn($in_serial_num);
@@ -265,49 +265,10 @@ sub comment {
     return ($transaction_num,"Your comments have been recorded.");
 }
 
-sub resolve {
-    my  ($in_serial_num, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You ($in_current_user) don't have permission to modify request \#$in_serial_num");
-    }
- 
-    $transaction_num=&update_request($in_serial_num,'status', 'resolved', $in_current_user);
-    &open_parents($in_serial_num, $in_current_user) || $transaction_num=0;
-    return ($transaction_num,"Request #$in_serial_num has been resolved.");
-}
-
-#
-#change request's status to open
-sub open {
-    my  ($in_serial_num, $in_current_user) = @_;
-    my ($transaction_num);
- 
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    
-    $transaction_num=&update_request($in_serial_num,'status','open', $in_current_user);
-    return ($transaction_num,"Request #$in_serial_num has been opened.");
-}
-
-sub stall {
-    my  ($in_serial_num, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to stall request \#$in_serial_num");
-    }
-  
-    $transaction_num=&update_request($in_serial_num,'status','stalled', $in_current_user);
-    return ($transaction_num,"Request #$in_serial_num has been stalled.");
-}
-
 sub kill {
     my  ($in_serial_num, $in_current_user) = @_;
     my ($transaction_count, $transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
+ 
  
     ($transaction_count)=&transaction_history_in($in_serial_num,$in_current_user);
 
@@ -336,17 +297,17 @@ sub kill {
 # what do you think?
 # 	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";
 # 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n";
-	
+    
     $transaction_num=&update_request($in_serial_num,'status','dead', $in_current_user);    
     return ($transaction_num,"Request #$in_serial_num has been killed.");
-
-}
+    
+  }
 
 
 sub merge {
-    my  ($in_serial_num, $in_merge_into, $in_current_user) = @_;
-    my ($new_requestors, $old_requestors, @requestors_list, $user); 
-    my ($transaction_num);
+  my  ($in_serial_num, $in_merge_into, $in_current_user) = @_;
+  my ($new_requestors, $old_requestors, @requestors_list, $user); 
+  my ($transaction_num);
     my %requestors;
     if (!(&can_manipulate_request($in_serial_num,$in_current_user)) or (!(&can_manipulate_request($in_merge_into,$in_current_user)))) {
       return (0,"You don't have permission to modify both requests you wish to merge");
@@ -401,22 +362,22 @@ sub change_queue {
     }
     elsif (!&is_a_queue($in_queue)) {
 	return (0, "\'$in_queue\' is not a valid queue.");
-    }
+      }
     elsif (!(&can_create_request($in_queue, $in_current_user))){
-	return (0, "You may only requeue a request into a queue you have privileges to create requests in");
+      return (0, "You may only requeue a request into a queue you have privileges to create requests in");
     }
     if (!(&is_an_area($rt::req[$in_serial_num]{queue_id}, $in_area))){ 
-
-	&update_request($in_serial_num,'area','',$in_current_user);
+      
+      &update_request($in_serial_num,'area','',$in_current_user);
     }
-	$transaction_num=&update_request($in_serial_num,'queue_id',$in_queue, $in_current_user);
+    $transaction_num=&update_request($in_serial_num,'queue_id',$in_queue, $in_current_user);
     if (! $transaction_num) {
       return (0,"Specify a different queue.");
     }
-	#if the owner isn't able to manipulate reqs in the new queue
+    #if the owner isn't able to manipulate reqs in the new queue
      if(!can_manipulate_queue($in_queue, $rt::req[$in_serial_num]{'owner'})) { 
        &update_request($in_serial_num,'owner','','_rt_system');
-	}
+     }
 	return ($transaction_num,"Request #$in_serial_num moved to queue $in_queue.");
 }
 
@@ -426,10 +387,6 @@ sub give {
     my ($transaction_num);
     my $qid;
     my $requestors;
-    
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You do not have access to modify request \#$in_serial_num");
-    }
 
     if (($req[$in_serial_num]{owner} ne '') and ($req[$in_serial_num]{owner} ne $in_current_user))
     {
@@ -478,49 +435,11 @@ sub give {
 	return(0, "You can not change the ownership of a request  owned by somebody else.");
     }
 }
-sub untake {
-    my  ($in_serial_num, $in_current_user) = @_;
-    return(&give ($in_serial_num, "", $in_current_user));
-}
-sub take {
-    my  ($in_serial_num, $in_current_user) = @_;
-    return(&give ($in_serial_num, $in_current_user, $in_current_user));
-}
-
-sub steal {
-    my  ($in_serial_num, $in_current_user) = @_;
-    my $old_owner;
-    my $qid;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    #we don't need to read the req in because can_manipulate_req calls req_in
-    #&req_in($in_serial_num,$in_current_user);
-    $old_owner=$req[$in_serial_num]{'owner'};
-    $qid = $req[$in_serial_num]{'queue_id'};
-
-    if (($old_owner ne $in_current_user) and ($old_owner ne '')) {
-	$transaction_num=&update_request($in_serial_num,'owner',$in_current_user, $in_current_user);
-	&rt::template_mail('steal',$qid,$rt::users{$old_owner}{email},"","", "$in_serial_num" ,
-			   "$transaction_num",$rt::req[$in_serial_num]{subject}, "$in_current_user",'');
-
-	return ($transaction_num, "Request \#$in_serial_num stolen.");
-    }
-    else {
-	return (0,"You can only steal requests owned by someone else.");
-    }
-}
-
 sub change_requestors {
     my  ($in_serial_num, $in_user, $in_current_user) = @_;
     my ($transaction_num);
     my $msg;
     
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-
     ($in_user,$msg) = &norm_requestors($in_user);
     return (0,$msg) if $msg;
 
@@ -532,9 +451,6 @@ sub change_area {
     my  ($in_serial_num, $in_area, $in_current_user) = @_;
     my ($transaction_num);
 
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
     if ((!(&is_an_area($rt::req[$in_serial_num]{queue_id}, $in_area))) and ($in_area ne '')){ 
 	return (0, "Queue \'$rt::req[$in_serial_num]{queue_id}\' doesn't have an area called \'$in_area\'");
     }
@@ -542,17 +458,6 @@ sub change_area {
     $transaction_num=&update_request($in_serial_num,'area',$in_area,$in_current_user);
     return ($transaction_num);
 }
-
-sub change_priority {
-    my  ($in_serial_num, $in_priority, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    $transaction_num=&update_request($in_serial_num,'priority',$in_priority, $in_current_user);
-    return ($transaction_num, "Request $in_serial_num [$rt::req[$in_serial_num]{subject}] set to priority $in_priority");
-}
-
 
 sub change_date_due {
     my  ($in_serial_num, $in_due_date, $in_current_user) = @_;
@@ -566,61 +471,11 @@ sub change_date_due {
     $text_time = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
     return ($transaction_num, "Date due changed to $text_time");
 }
-sub change_alias {
-    # we need to do error checking here
-    # only one req can have a given alias
-    # aliases can only be of certain characters
-
-    my  ($in_serial_num, $in_alias, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-
-    $transaction_num=&update_request($in_serial_num,'alias',$in_alias,$in_current_user);
-    return ($transaction_num);
-}
-
-sub change_final_priority {
-    my  ($in_serial_num, $in_final_prio, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    $transaction_num=&update_request($in_serial_num,'final_priority',$in_final_prio,$in_current_user);
-    return ($transaction_num,"Final priority changed");
-}
-
-
-
-sub change_subject {
-    my  ($in_serial_num, $in_subject, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    
-    $transaction_num=&update_request($in_serial_num,'subject',$in_subject, $in_current_user);
-    return ($transaction_num,"Request \#$in_serial_num\'s subject has been changed to \"$in_subject\".");
-}
-
-sub notify {
-    my  ($in_serial_num, $in_notified, $in_current_user) = @_;
-    my ($transaction_num);
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
-    $transaction_num=&update_request($in_serial_num,'date_told',$in_notified, $in_current_user);
-    return ($transaction_num, 'Notification Noted.');
-}
 
 sub link {
     my ($in_serial_num, $in_current_user, $otherdb, $foreign_id, $content) = @_;
     my $transaction_num;
 
-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
-    }
 
     # ADD TRANSACTION AT THE OTHER REQUEST
     if ($rt::relship{$otherdb}{TYPE} eq 'dependency') {

@@ -86,12 +86,13 @@ CREATE TABLE each_req (
 CREATE TABLE transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_sn INT,
-  serial_num INT,
+  ticket INT,
   time_taken INT,
   actor CHAR(40),
   type CHAR(20),
-  trans_data CHAR(100),
-  trans_date INT
+  data CHAR(100),
+  content BLOB,
+  date INT
 ) \g
 
 CREATE TABLE mime_bodies (
