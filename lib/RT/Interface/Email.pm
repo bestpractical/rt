@@ -252,6 +252,10 @@ sub ParseMIMEEntityFromSTDIN {
     
     # Get the head, a MIME::Head:
     my $head = $entity->head;
+   
+
+    # Unfold headers that are have embedded newlines
+    $head->unfold; 
     
     # TODO - information about the charset is lost here!
     $head->decode;
