@@ -39,23 +39,35 @@ o   GNU Make ( http://www.gnu.org ) -- free
 	GNU Make, but feel reasonably comfortable with Makefiles, you probably
 	can get by without it.
 
-o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
+o   Msql-Mysql-modules ( CPAN or ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 
 	When installing Msql-Mysql-modules, it is imperative that you say yes 
 	when asked "Do you want to install the MysqlPerl emulation?"  Please 
 	note that Msql-Mysql-modules requires DBD to be installed to function.
 	See the Msql-Mysql-modules documentation for more information.
 
-o   CGI.pm ( http://www.perl.com ) -- free
+o   CGI.pm ( CPAN or http://www.perl.com ) -- free
 	
 	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
 	We recommend that you use at least 2.53 as we know that version wokrs.
 
-o   Digest::MD5 ( http://www.perl.com ) -- free
+o   Digest::MD5 ( CPAN or http://www.perl.com ) -- free
 	
 	Digest::MD5 is a perl module used for generating MD5 hashes 
 	of files or strings, in this case, the password hashes used by 
 	the Web interface. It is required for web authentication to work.
+
+o   Text::Wrapper ( CPAN or http://www.perl.com ) -- free
+
+	For quoting and eventually wrapping messages in the WebRT
+	reply textarea.
+
+o   Internet::Mail ( CPAN or http://www.perl.com ) -- free
+
+	For sending email. Earlier versions used an external mail
+	program (like sendmail). Internet::Mail usually works right
+	out of the box, but if it doesn't, complain to
+	rt-devel@lists.fsck.com.
 
 
 INSTALL INSTRUCTIONS

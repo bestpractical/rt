@@ -66,11 +66,7 @@
     $mail_alias = "!!RT_MAIL_ALIAS!!";
 
 
-    #set this to whatever program you want to send the mail that RT generates
-    #be aware, however, that RT expects to be able to set the From: line
-    #with sendmail's command line syntax
-    $mailprog = "!!MAIL_PROGRAM!!";
-    $mail_options = "!!MAIL_OPTIONS!!";
+    # (TODO) Internet::Mail might need some configuration.
 
 
     # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use

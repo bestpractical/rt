@@ -91,26 +91,10 @@ RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
 RT_USER_PASSWD_MIN	=	5
 
 
-# 
-# set this to whatever program you want to send the mail that RT generates
-# be aware, however, that RT expects to be able to set the From: line
-# with sendmail's command line syntax. For versions of sendmail < 8.8 you may 
-# need to remove some or all of the flags we're passing here.  However, nobody
-# should be running a version of sendmail < 8.8
-#
-# If you're not running sendmail, you want to start off with your local sendmail
-# "surrogate" with MAIL_OPTIONS set to -t
-#
-MAIL_PROGRAM		= 	/usr/lib/sendmail
-
-#The following mail options are best for recent versions of sendmail
-MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
-
-
-# The following mail options are best for sendmail emulators or 
-# pre 8.8 versions of sendmail
-
-#MAIL_OPTIONS		=	-oi -t
+# While it earlier was possible to specify mail program and
+# options here, newer versions of RT uses Internet::Mail
+# instead. Hopefully, it will work straight out of the box.
+# If not, ask for help at rt-users@lists.fsck.com
 
 #
 # Mysql related preferences
@@ -319,8 +303,6 @@ config-replace:
         s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g;\
         s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
-        s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
-	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\
 	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
