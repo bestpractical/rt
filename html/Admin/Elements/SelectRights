@@ -47,22 +47,25 @@
      <TABLE BORDER=0>
 <TR>
 <TD valign=top width="180" align="left"> 
+%  my %current_rights;
 <h3><&|/l&>Current rights</&></h3>
-% if ($ACLObj->Count() > 0) {
-<i>(<&|/l&>Check box to revoke right</&>)</i> <BR>
-% } else {
+% if ($ACLObj->Count() == 0) {
 <i><&|/l&>No rights granted.</&></i> <BR>    
-% }
+% } else {
+<i>(<&|/l&>Check box to revoke right</&>)</i> <BR>
 % while (my $right = $ACLObj->Next()) {
 % if ($right->RightName) {
+% $current_rights{$right->RightName} = 1;
 <input type=checkbox value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>"> <% loc($right->RightName) %><br>
 % }
 %  }
+% }
 </TD>
 <TD valign=top>
 <h3><&|/l&>New rights</&></h3> 
 <SELECT SIZE=5  MULTIPLE  NAME="GrantRight-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
+% next if $current_rights{$right};
       <OPTION VALUE="<%$right%>"  
 	><% loc($right) %></OPTION>
 % }
