@@ -6,11 +6,10 @@ feed {
 }
 
 info {
-  margin:20px;
-  background:yellow;
-  text-align:center;
+  margin:10px 0px 10px 0px;
+  background:#003366;
   display:block;
-  padding:10px;
+  padding:3px;
   font-size:85%;
 }
 
@@ -31,21 +30,67 @@ feed>link.html:before {
     content: attr(title)
 }
 
-feed>link.html[rel!="alternate"] {
-  padding: 3pt;
+feed>link.html {
+  padding: 5px;
   border:solid 1px #dddddd;
   font-size: 90%;
 }
 
 feed>link.html[rel="alternate"] {
-  display: block;
   text-align: left;
+  border: none;
+  padding: 0px;
 }
 
 link.html[rel="alternate"]:before {
   content: "HTML";
   background-color: #003366;
-  color: #c9c9ff;
+  color: #ccccff;
+  padding: 1px 5px 1px 5px;
+  font-size: xx-small;
+}
+
+feed>link.html[rel="service.post"] {
+  text-align: left;
+  border: none;
+  padding: 0px;
+}
+
+link.html[rel="service.post"]:before {
+  content: "Post";
+  font-weight: bold;
+  background-color: #66ee66;
+  color: #000000;
+  padding: 1px 5px 1px 5px;
+  font-size: xx-small;
+}
+
+feed>link.html[rel="service.feed"] {
+  text-align: left;
+  border: none;
+  padding: 0px;
+}
+
+link.html[rel="service.feed"]:before {
+  content: "Index";
+  background-color: #cccccc;
+  color: #000000;
+  padding: 1px 5px 1px 5px;
+  font-size: xx-small;
+}
+
+feed>link.html[rel="service.edit"] {
+  display: block;
+  text-align: left;
+  border: none;
+  padding: 0px;
+}
+
+link.html[rel="service.edit"]:before {
+  content: "Edit";
+  font-weight: bold;
+  background-color: #cccc66;
+  color: #000033;
   padding: 1px 5px 1px 5px;
   font-size: xx-small;
 }
@@ -61,7 +106,7 @@ entry title {
   background:#eeeeee;
 }
 
-id, modified, generator, created, issued, url {
+id, modified, created, generator, issued, url {
   display:none;
 }
 
@@ -86,8 +131,8 @@ entry {
   border-top:dotted 1px #999999;
   display:block;
   background:#ffffff;
-  padding:5px 0px 10px 0px;
-  margin:10px 10px 35px 10px;
+  padding:5px 0px 0px 0px;
+  margin:5px 5px 0px 10px;
   
 }
 
@@ -100,4 +145,8 @@ issued,modified,created,name,id {
   color:#999999;
   font-size:80%;
   margin-top:25px;
+}
+
+name {
+  font-weight: bold;
 }

@@ -140,25 +140,32 @@ $type =~ s{-}{/};
 
 my $class;
 foreach my $key (keys %INC) {
-    $key =~ m{^RTx?(?:/.+)?/($type).pm}i or next;
-    $type = $1;
-    $class = $key;
-    $class =~ s{.pm$}{}i;
+    $key =~ m{^(RTx?(?:/.+)?/($type)).pm$}i or next;
+    ($class, $type) = ($1, $2);
     $class =~ s{/}{::}g;
     $class->can('UnLimit') or (undef $class, next);
     last;
 }
 
+my $BaseURI = "$RT::WebPath/REST/2.0";
+$ARGS{Path} = $path;
+$ARGS{BaseURI} = $BaseURI;
+$ARGS{Link} = "$BaseURI/Elements/Link";
+$ARGS{Now} = RT::Date->new($session{CurrentUser});
+$ARGS{Now}->SetToNow;
+
+$r->content_type('text/xml; charset=utf-8');
+
 if (!$class) {
-    return $m->comp('index') if $path =~ /index|^\W*$/i;
+    return $m->comp('index', %ARGS) if $path =~ /index|^\W*$/i;
     return $m->comp('Error/index', Status => 404);
 }
 
 $m->comp(
     'Search/index', %ARGS,
-    Path => $path,
     Type => $type,
     CollectionClass => $class,
+    FeedURI => "$BaseURI/\L$type",
 );
 </%INIT>
 <%FLAGS>

@@ -1,0 +1,33 @@
+<& feed.css &>
+
+feed {
+  display:block;
+  text-align:left;
+}
+
+feed>link.html[rel="alternate"] {
+  display:block;
+  text-align:center;
+}
+
+link[rel="service.feed"] {
+  text-align:left;
+  border-top:dotted 1px #999999;
+  display:block;
+  background:#ffffff;
+  padding:5px 0px 0px 0px;
+  margin:5px 5px 0px 10px;
+}
+
+link[rel="service.feed"]:before {
+  content: attr(title);
+  font-size:150%;
+  color:#000000;
+  text-align:left;
+  font-weight:bold;
+}
+
+link.html[rel="service.feed"] {
+  display:inline;
+}
+

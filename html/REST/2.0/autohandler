@@ -4,6 +4,7 @@
 % if ($path =~ $RT::WebNoAuthRegex ) {
 %     $r->content_type('text/css') if $path =~ /\.css$/i;
 %     $r->content_type('text/xml') if $path =~ /\.xsl$/i;
+%     $r->content_type('image/png') if $path =~ /\.png$/i;
 %     $m->call_next(%ARGS);
 %     $m->abort();
 % }
