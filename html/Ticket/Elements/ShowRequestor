@@ -46,7 +46,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 <&|/l, $rows &>This user's [_1] highest priority tickets</&>:<BR>
 <UL>
 %while (my $w=$tickets->Next) {
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
+<LI><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </UL>
 <& /Elements/TitleBoxEnd &>
@@ -55,4 +55,5 @@ $tickets->OrderBy(FIELD => 'Priority',
 %}
 <%ARGS>
 $Ticket=>undef
+$DisplayPath => "/Ticket/Display.html"
 </%ARGS>
