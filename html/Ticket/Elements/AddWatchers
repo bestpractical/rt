@@ -96,4 +96,7 @@ if ($GroupString) {
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
+$GroupField => 'Name'
+$GroupOp => '='
+$GroupString => undef
 </%ARGS>

@@ -371,7 +371,7 @@ sub HasRight {
 
     
 
-    my $query = "SELECT COUNT(ACL.id) from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
+    my $query = "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
     # Only find superuser or rights with the name $right
    "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
    # Never find disabled groups.
@@ -394,7 +394,8 @@ sub HasRight {
 
         # have a look at role groups, if there are any
          $or_check_roles.
-        " ) ";
+        " ) ".
+        " LIMIT 1"; #only return one result
 
     # }}}
 

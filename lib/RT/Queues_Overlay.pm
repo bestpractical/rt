@@ -95,17 +95,6 @@ sub Limit  {
 }
 # }}}
 
-# {{{ sub NewItem 
-sub NewItem  {
-  my $self = shift;
-  my $item;
-
-  use RT::Queue;
-  $item = new RT::Queue($self->CurrentUser);
-  return($item);
-}
-# }}}
-
 # {{{ sub Next 
 
 =head2 Next

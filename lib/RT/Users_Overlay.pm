@@ -66,7 +66,7 @@ sub _Init {
     $self->Join( ALIAS1 => 'main',
                  FIELD1 => 'id',
                  ALIAS2 => $self->{'princalias'},
-                 FIELD2 => 'ObjectId' );
+                 FIELD2 => 'id' );
 
     $self->Limit( ALIAS    => $self->{'princalias'},
                   FIELD    => 'PrincipalType',
@@ -263,7 +263,7 @@ sub WhoHaveRight {
           " OR ( ( ($groups.Domain = 'RT::Queue-Role' AND $groups.Instance = '"
           . $args{'Object'}->Id
           . "') $or_check_ticket_roles ) "
-          . " AND $groups.Type = $acl.PrincipalType AND $groups.Id = $groupprinc.ObjectId AND $groupprinc.PrincipalType = 'Group') ";
+          . " AND $groups.Type = $acl.PrincipalType AND $groups.Id = $groupprinc.id AND $groupprinc.PrincipalType = 'Group') ";
     }
 
         $or_look_at_object_rights =
@@ -277,7 +277,7 @@ sub WhoHaveRight {
     $self->Join( ALIAS1 => $users,
                  FIELD1 => 'id',
                  ALIAS2 => $userprinc,
-                 FIELD2 => 'ObjectId' );
+                 FIELD2 => 'id' );
 
     $self->Join( ALIAS1 => $cgm,
                  FIELD1 => 'MemberId',
@@ -311,7 +311,7 @@ sub WhoHaveRight {
     $self->_AddSubClause( "WhichRight",
                      "($acl.ObjectType = 'RT::System' $or_look_at_object_rights)" );
     $self->_AddSubClause( "WhichGroup",
-"( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.ObjectId = $groups.Id AND $acl.PrincipalType = 'Group' AND "
+"( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.id = $groups.Id AND $acl.PrincipalType = 'Group' AND "
           . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"
     );
 

@@ -39,6 +39,7 @@ CREATE TABLE Queues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
+CREATE INDEX Queues2 ON Queues (Disabled) ;
 
 # }}}
 
@@ -57,7 +58,10 @@ CREATE TABLE Links (
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
+
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
+CREATE INDEX Links2 ON Links (Base,  Type) ;
+CREATE INDEX Links3 ON Links (Target,  Type) ;
 
 # }}}
 
@@ -182,6 +186,8 @@ CREATE TABLE GroupMembers (
   MemberId integer NOT NULL DEFAULT 0,  #Foreign key to Principals
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
+CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
+
 
 # }}}
 
@@ -204,6 +210,7 @@ create table CachedGroupMembers (
 ) TYPE=InnoDB;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
 
 # }}}
 
@@ -295,6 +302,7 @@ CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
 CREATE INDEX Tickets4 ON Tickets (id, Status) ;
 CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
+CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
 # }}}
 
@@ -369,6 +377,9 @@ CREATE TABLE CustomFields (
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
+
+CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
+
 
 # }}}
 
