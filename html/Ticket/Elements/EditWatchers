@@ -1,45 +1,28 @@
-%# $Header: /raid/cvsroot/rt/webrt/Ticket/Elements/EditWatchers,v 1.2 2001/11/06 23:07:10 jesse Exp $
-%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
-
+%# Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 <ul>
-
 %# Print out a placeholder if there are none.
-%if ($watchers->Count == 0 ) {
+%if ($Members->Count == 0 ) {
 <li><i>none</i>
 % }
 
 
-%while (my $watcher=$watchers->Next) {
+%while (my $watcher=$Members->Next) {
 <li>
-<INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
-%#If there's a principal backing this user, lets give a link to their
-%# account
-%if ($watcher->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
-<%$watcher->OwnerObj->RealName%></a>:
+<INPUT TYPE=CHECKBOX NAME="Ticket-DelWatcher-Type-<%$Watchers->Type%>" value="<%$watcher->MemberId%>" UNCHECKED>
+%if ($watcher->MemberObj->IsUser) { 
+<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
+<%$watcher->MemberObj->Object->Name%></a>
 %} else {
-Email address:
+<%$watcher->MemberObj->Object->Name%>
 %}
-<i><%$watcher->Email%></i>
-%}
+% }
 </ul>
 <%INIT>
-my ($watchers, $watcher, $set);
-if ($Type  =~ /^request/i) {
-       $watchers = $TicketObj->Requestors;
-       }
-elsif ($Type =~ /^admin/i) {
-        $watchers = $TicketObj->AdminCc;
-        }
-elsif ($Type =~ /^cc/i) {
-        $watchers = $TicketObj->Cc;
-      }
-else { $watchers = $TicketObj->Watchers;
-       }
+my $Members = $Watchers->MembersObj;
 </%INIT>
 <%ARGS>
 $TicketObj => undef
-$Type => undef
+$Watchers => undef
 </%ARGS>
 
 

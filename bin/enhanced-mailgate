@@ -640,13 +640,16 @@ sub ActOnPseudoHeaders {
 		    $type = 'Requestor' if ($command =~ /^requestor/i) ;
 		    $type = 'Cc' if ($command =~ /^cc/i) ;
 		    $type = 'AdminCc' if ($command =~ /^admincc/i) ;
-		    
+		   
+                    my $user = RT::User->new($CurrentUser);
+                    $user->Load($args);
+
 		    if ($operator eq '+') {
 		  	($val, $msg) = $Ticket->AddWatcher( Type => $type,
-							    Email => $args);
+							    PrincipalId => $user->PrincipalId);
 		    } elsif ($operator eq '-') {
 		  	($val, $msg) = $Ticket->DeleteWatcher( Type => $type,
-							       Email => $args);
+							       PrincipalId => $user->PrincipalId);
 		    }
 		}
 		

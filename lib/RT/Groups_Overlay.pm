@@ -46,51 +46,19 @@ sub _Init {
 }
 # }}}
 
-# {{{ LimitToReal
 
-=head2 LimitToReal
+=head2 LimitToSystemGroups
 
-Make this groups object return only "real" groups, which can be
-granted rights and have members assigned to them
+Return only System Groups 
 
 =cut
 
-sub LimitToReal {
+
+sub LimitToSystemGroups {
     my $self = shift;
-
-    return ($self->Limit( FIELD => 'Pseudo',
-			  VALUE => '0',
-			  OPERATOR => '='));
-
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'System');
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
-# }}}
-
-# {{{ sub LimitToPseudo
-
-=head2 LimitToPseudo
-
-Make this groups object return only "pseudo" groups, which can be
-granted rights but whose membership lists are determined dynamically.
-
-=cut
-  
-  sub LimitToPseudo {
-    my $self = shift;
-
-    return ($self->Limit( FIELD => 'Pseudo',
-			  VALUE => '1',
-			  OPERATOR => '='));
-
-}
-# }}}
-
-# {{{ sub NewItem 
-sub NewItem  {
-  my $self = shift;
-  return (RT::Group->new($self->CurrentUser));
-}
-# }}}
-
 
 1;
 

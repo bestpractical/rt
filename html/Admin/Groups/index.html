@@ -9,14 +9,14 @@ Groups:<BR>
 <UL>
 <LI><A HREF="Modify.html?Create=1">Create a new group</A><BR><BR></LI>
 %while ( my $Group = $Groups->Next) {
-<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name%></a><BR>
+<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}
 </UL>
 
 <& /Elements/TitleBoxEnd &>
 <%INIT>
-my $Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->UnLimit;
+my $Groups = RT::Groups->new($session{'CurrentUser'});
+$Groups->LimitToSystemGroups();
 
 </%INIT>
 <%ARGS>

@@ -1,4 +1,3 @@
-# $Header: /raid/cvsroot/rt/lib/RT/Ticket.pm,v 1.7 2002/01/10 23:32:05 jesse Exp $
 # (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 # This software is redistributable under the terms of the GNU GPL
 
@@ -75,7 +74,6 @@ use RT::Record;
 use RT::Link;
 use RT::Links;
 use RT::Date;
-use RT::Watcher;
 use RT::CustomFields;
 use RT::TicketCustomFieldValues;
 
@@ -343,14 +341,7 @@ sub Create {
     if (
         ( defined($Owner) )
         and ( $Owner->Id != $RT::Nobody->Id )
-        and (
-            !$Owner->HasQueueRight(
-                QueueObj => $QueueObj,
-                Right    => 'OwnTicket'
-            )
-        )
-      )
-    {
+        and ( !$Owner->HasQueueRight( QueueObj => $QueueObj, Right    => 'OwnTicket'))) {
 
         $RT::Logger->warning( "$self user "
               . $Owner->Name . "("
@@ -383,6 +374,8 @@ sub Create {
         $resolved = undef;
     }
 
+    $RT::Handle->BeginTransaction();
+
     my $id = $self->SUPER::Create(
         Queue           => $QueueObj->Id,
         Owner           => $Owner->Id,
@@ -406,29 +399,49 @@ sub Create {
         $RT::Logger->err("$self ->Create couldn't set EffectiveId: $msg\n");
     }
 
-    my $watcher;
-    foreach $watcher ( @{ $args{'Cc'} } ) {
+
+    my $create_groups_ret = $self->_CreateTicketGroups();
+    unless ($create_groups_ret) {
+        $RT::Logger->crit("Couldn't create ticket groups for ticket ".$self->Id.  
+                          ". aborting Ticket creation.");
+        $self->Rollback();
+        return(0,0,$self->loc("Ticket could not be created due to an internal error")); 
+    }
+
+    # Set the owner in the Groups table
+    # We denormalize it into the Ticket table too because doing otherwise would 
+    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+
+    $self->OwnerGroup->AddMember($Owner->PrincipalId);
+
+
+    # Set the requestors in the Groups table
+
+    # Set the Cc in the Groups table
+
+    # Set the ADminCc in the Groups table
+
+
+    foreach my $watcher ( @{ $args{'Cc'} } ) {
         my ( $wval, $wmsg ) =
-          $self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1 );
+          $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
         push @non_fatal_errors, $wmsg unless ($wval);
     }
 
-    foreach $watcher ( @{ $args{'Requestor'} } ) {
+    foreach my $watcher ( @{ $args{'Requestor'} } ) {
         my ( $wval, $wmsg ) =
-          $self->_AddWatcher( Type => 'Requestor', Person => $watcher,
-            Silent => 1 );
+          $self->_AddWatcher( Type => 'Requestor', Email  => $watcher, Silent => 1 );
         push @non_fatal_errors, $wmsg unless ($wval);
     }
 
-    foreach $watcher ( @{ $args{'AdminCc'} } ) {
+    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
 
         # Note that we're using AddWatcher, rather than _AddWatcher, as we 
         # actually _want_ that ACL check. Otherwise, random ticket creators
         # could make themselves adminccs and maybe get ticket rights. that would
         # be poor
         my ( $wval, $wmsg ) =
-          $self->AddWatcher( Type => 'AdminCc', Person => $watcher,
-            Silent => 1 );
+          $self->AddWatcher( Type => 'AdminCc', Email => $watcher, Silent => 1 );
         push @non_fatal_errors, $wmsg unless ($wval);
     }
 
@@ -441,20 +454,19 @@ sub Create {
 
     # Logging
     if ( $self->Id && $Trans ) {
-        $ErrStr = "Ticket "
-          . $self->Id
-          . " created in queue '"
-          . $QueueObj->Name . "'.\n"
-          . join ( "\n", @non_fatal_errors );
+        $ErrStr = "Ticket " . $self->Id . " created in queue '" . $QueueObj->Name . "'.\n"
+         . join ( "\n", @non_fatal_errors );
 
         $RT::Logger->info($ErrStr);
     }
     else {
-
+        $RT::Handle->Rollback();
         # TODO where does this get errstr from?
-        $RT::Logger->warning("Ticket couldn't be created: $ErrStr");
+        $RT::Logger->error("Ticket couldn't be created: $ErrStr");
+        return(0,0,$self->loc("Ticket could not be created due to an internal error")); 
     }
 
+    $RT::Handle->Commit();
     return ( $self->Id, $TransObj->Id, $ErrStr );
 }
 
@@ -661,6 +673,102 @@ sub Delete {
 
 # {{{ Routines dealing with watchers.
 
+
+# {{{ _CreateTicketGroups 
+
+=head2 _CreateTicketGroups
+
+Create the ticket groups and relationships for this ticket. 
+This routine expects to be called from Ticket->Create _inside of a transaction_
+
+It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
+
+It will return true on success and undef on failure.
+
+=begin testing
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my ($id, $msg) = $ticket->Create(Subject => "Foo",
+                Owner => $RT::SystemUser->Id,
+                Status => 'open',
+                Requestor => ['jesse@fsck.com'],
+                Queue => '1'
+                );
+ok ($id, "Ticket $id was created");
+ok(my $group = RT::Group->new($RT::SystemUser));
+ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Requestor'));
+ok ($group->Id, "Found the requestors object for this ticket");
+
+ok(my $jesse = RT::User->new($RT::SystemUser), "Creating a jesse rt::user");
+$jesse->LoadByEmail('jesse@fsck.com');
+ok($jesse->Id,  "Found the jesse rt user");
+
+
+ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $jesse->PrincipalId), "The ticket actually has jesse at fsck.com as a requestor");
+ok ((my $add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($add_id, "Add succeeded: ($add_msg)");
+ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
+$bob->LoadByEmail('bob@fsck.com');
+ok($bob->Id,  "Found the bob rt user");
+ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
+ok ((my $add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
+
+
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Cc'));
+ok ($group->Id, "Found the cc object for this ticket");
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketGroup(Ticket => $id, Type=> 'AdminCc'));
+ok ($group->Id, "Found the AdminCc object for this ticket");
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketGroup(Ticket => $id, Type=> 'Owner'));
+ok ($group->Id, "Found the Owner object for this ticket");
+ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
+
+=end testing
+
+=cut
+
+
+sub _CreateTicketGroups {
+    my $self = shift;
+    
+    my @types = qw(Requestor Owner Cc AdminCc);
+
+    foreach my $type (@types) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateTicketGroup(Ticket => $self->Id, Type => $type);
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
+                               $self->Id.": ".$msg);     
+            return(undef);
+        }
+     }
+    return(1);
+    
+}
+
+
+# }}}
+
+# {{{ sub OwnerGroup
+
+=head2 OwnerGroup
+
+A constructor which returns an RT::Group object containing the owner of this ticket.
+
+=cut
+
+sub OwnerGroup {
+    my $self = shift;
+    my $owner_obj = RT::Group->new($self->CurrentUser);
+    $owner_obj->LoadTicketGroup( Ticket => $self->Id,  Type => 'Owner');
+    return ($owner_obj);
+}
+
+# }}}
+
 # {{{ Routines dealing with adding new watchers
 
 # {{{ sub AddWatcher
@@ -669,9 +777,11 @@ sub Delete {
 
 AddWatcher takes a parameter hash. The keys are as follows:
 
-Email
-Type
-Owner
+Type        One of Requestor, Cc, AdminCc
+
+PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
+Email       The email address of the new watcher. If a user with this 
+            email address can't be found, a new nonprivileged user will be created.
 
 If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
@@ -680,50 +790,36 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 sub AddWatcher {
     my $self = shift;
     my %args = (
-        Email => undef,
         Type  => undef,
-        Owner => undef,
+        PrincipalId => undef,
+        Email => undef,
         @_
     );
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if (
-        (
-            $self->CurrentUser->EmailAddress
-            && ( $args{'Email'} eq $self->CurrentUser->EmailAddress )
-        )
-        or ( $args{'Owner'} eq $self->CurrentUser->Id )
-      )
-    {
-
+    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
             unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') )
-            {
-                return ( 0, 'Permission Denied' );
+                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied'))
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) )
-        {
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
 
             unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('Watch') )
-            {
-                return ( 0, 'Permission Denied' );
+                or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied'))
             }
         }
         else {
-            $RT::Logger->warn( "$self -> AddWatcher hit code"
-                  . " it never should. We got passed "
-                  . " a type of "
-                  . $args{'Type'} );
-            return ( 0, 'Error in parameters to TicketAddWatcher' );
+            $RT::Logger->warn( "$self -> AddWatcher got passed a bogus type");
+            return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
         }
     }
 
@@ -748,219 +844,155 @@ sub _AddWatcher {
     my %args = (
         Type   => undef,
         Silent => undef,
-        Email  => undef,
-        Owner  => 0,
-        Person => undef,
+        PrincipalId => undef,
+        Email => undef,
         @_
     );
 
-    #clear the watchers cache
-    $self->{'watchers_cache'} = undef;
+    $RT::Logger->debug( "$self->_AddWathcer". join(":",%args));
 
-    if ( defined $args{'Person'} ) {
+    my $principal = RT::Principal->new($self->CurrentUser);
+    if ($args{'PrincipalId'}) {
+        $principal->Load($args{'PrincipalId'});
+    } 
+    elsif ($args{'Email'}) {
 
-        #if it's an RT::User object, pull out the id and shove it in Owner
-        if ( ref( $args{'Person'} ) =~ /RT::User/ ) {
-            $args{'Owner'} = $args{'Person'}->id;
+        my $user = RT::User->new($self->CurrentUser);
+        $user->LoadByEmail($args{'Email'});
+
+        unless ($user->Id) {
+            $user->Load($args{'Email'});
         }
+        if ($user->Id) { # If the user exists
+            $principal->Load($user->PrincipalId);
+        } else {
+        
+        # if the user doesn't exist, we need to create a new user
+             my $new_user = RT::User->new($RT::SystemUser);
 
-        #if it's an int, shove it in Owner
-        elsif ( $args{'Person'} =~ /^\d+$/ ) {
-            $args{'Owner'} = $args{'Person'};
+            my ( $Val, $Message ) = $new_user->Create(
+                Name => $args{'Email'},
+                EmailAddress => $args{'Email'},
+                RealName     => $args{'Email'},
+                Privileged   => 0,
+                Comments     => 'Autocreated when added as a watcher');
+            unless ($Val) { 
+                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
+                # Deal with the race condition of two account creations at once
+                $new_user->LoadByEmail($args{'Email'});
+            }
+            $principal->Load($new_user->PrincipalId);
         }
-
-        #if it's an email address, shove it in Email
-        else {
-            $args{'Email'} = $args{'Person'};
-        }
+    } 
+    # If we can't find this watcher, we need to bail.
+    unless ($principal->Id) {
+        return(0, $self->loc("Could not find or create that user"));
     }
 
-    # Turn an email address int a watcher if we possibly can.
-    if ( $args{'Email'} ) {
-        my $watcher = new RT::User( $self->CurrentUser );
-        $watcher->LoadByEmail( $args{'Email'} );
-        if ( $watcher->Id ) {
-            $args{'Owner'} = $watcher->Id;
-            delete $args{'Email'};
-        }
+
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->Id);
+    unless ($group->id) {
+        return(0,$self->loc("Group not found"));
     }
 
-    # see if this user is already a watcher. if we have an owner, check it
-    # otherwise, we've got an email-address watcher. use that.
+    if ( $group->HasMember( $principal)) {
 
-    if (
-        $self->IsWatcher(
-            Type => $args{'Type'},
-            Id   => ( $args{'Owner'} || $args{'Email'} )
-        )
-      )
-    {
-
-        return ( 0,
-            'That user is already that sort of watcher for this ticket' );
+        return ( 0, $self->loc('That principal is already a [_1] for this ticket', $args{'Type'}) );
     }
 
-    require RT::Watcher;
-    my $Watcher = new RT::Watcher( $self->CurrentUser );
-    my ( $retval, $msg ) = (
-        $Watcher->Create(
-            Value => $self->Id,
-            Scope => 'Ticket',
-            Email => $args{'Email'},
-            Type  => $args{'Type'},
-            Owner => $args{'Owner'},
-          )
-    );
+
+    my ($m_id, $m_msg) = $group->AddMember($principal->Id);
+    unless ($m_id) {
+        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
+
+        return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $args{'Type'}) );
+    }
 
     unless ( $args{'Silent'} ) {
         $self->_NewTransaction(
             Type     => 'AddWatcher',
-            NewValue => $Watcher->Email,
-            Field    => $Watcher->Type
+            NewValue => $principal->Id,
+            Field    => $args{'Type'}
         );
     }
 
-    return ( $retval, $msg );
+        return ( 1, $self->loc('Added principal as a [_1] for this ticket', $args{'Type'}) );
 }
 
 # }}}
 
-# {{{ sub AddRequestor
-
-=head2 AddRequestor
-
-AddRequestor takes what AddWatcher does, except it presets
-the "Type" parameter to \'Requestor\'
-
-=cut
-
-sub AddRequestor {
-    my $self = shift;
-    return ( $self->AddWatcher( Type => 'Requestor', @_ ) );
-}
-
-# }}}
-
-# {{{ sub AddCc
-
-=head2 AddCc
-
-AddCc takes what AddWatcher does, except it presets
-the "Type" parameter to \'Cc\'
-
-=cut
-
-sub AddCc {
-    my $self = shift;
-    return ( $self->AddWatcher( Type => 'Cc', @_ ) );
-}
-
-# }}}
-
-# {{{ sub AddAdminCc
-
-=head2 AddAdminCc
-
-AddAdminCc takes what AddWatcher does, except it presets
-the "Type" parameter to \'AdminCc\'
-
-=cut
-
-sub AddAdminCc {
-    my $self = shift;
-    return ( $self->AddWatcher( Type => 'AdminCc', @_ ) );
-}
-
-# }}}
 
 # }}}
 
 # {{{ sub DeleteWatcher
 
-=head2 DeleteWatcher id [type]
+=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
-DeleteWatcher takes a single argument which is either an email address 
-or a watcher id.  
-If the first argument is an email address, you need to specify the watcher type you're talking
-about as the second argument. Valid values are 'Requestor', 'Cc' or 'AdminCc'.
-It removes that watcher from this Ticket\'s list of watchers.
+
+Deletes a Ticket watcher.  Takes two arguments:
+
+Type  (one of Requestor,Cc,AdminCc)
+
+and one of
+
+PrincipalId (an RT::Principal Id of the watcher you want to remove)
+    OR
+Email (the email address of an existing wathcer)
 
 
 =cut
 
-#TODO It is lame that you can't call this the same way you can call AddWatcher
 
 sub DeleteWatcher {
     my $self = shift;
-    my $id   = shift;
 
-    my $type;
+    my %args = ( Type => undef,
+                 PrincipalId => undef,
+                 @_ );
 
-    $type = shift if (@_);
+    my $principal = RT::Principal->new($self->CurrentUser);
+    $principal->Load($args{'PrincipalId'});
 
-    my $Watcher = new RT::Watcher( $self->CurrentUser );
-
-    #If it\'s a numeric watcherid
-    if ( $id =~ /^(\d*)$/ ) {
-        $Watcher->Load($id);
+    # If we can't find this watcher, we need to bail.
+    unless ($principal->Id) {
+        return(0, $self->loc("Could not find that user"));
     }
 
-    #Otherwise, we'll assume it's an email address
-    elsif ($type) {
-        my ( $result, $msg ) = $Watcher->LoadByValue(
-            Email => $id,
-            Scope => 'Ticket',
-            Value => $self->id,
-            Type  => $type
-        );
-        return ( 0, $msg ) unless ($result);
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->Id);
+    unless ($group->id) {
+        return(0,$self->loc("Group not found"));
     }
 
-    else {
-        return ( 0,
-            "Can\'t delete a watcher by email address without specifying a type"
-        );
-    }
-
-    # {{{ Check ACLS 
-
-    #If the watcher we're trying to delete is for the current user
-    if ( $Watcher->Email eq $self->CurrentUser->EmailAddress ) {
-
+    # {{{ Check ACLS
+    #If the watcher we're trying to add is for the current user
+    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $Watcher->Type eq 'AdminCc' ) {
+        if ( $args{'Type'} eq 'AdminCc' ) {
             unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') )
-            {
-                return ( 0, 'Permission Denied' );
+                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied'))
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $Watcher->Type eq 'Cc' )
-            or ( $Watcher->Type eq 'Requestor' ) )
-        {
-
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
             unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('Watch') )
-            {
-                return ( 0, 'Permission Denied' );
+                or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied'))
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DeleteWatcher hit code"
-                  . " it never should. We got passed "
-                  . " a type of "
-                  . $args{'Type'} );
-            return ( 0, 'Error in parameters to $self DeleteWatcher' );
+            $RT::Logger->warn( "$self -> DelWatcher got passed a bogus type");
+            return ( 0, $self->loc('Error in parameters to Ticket->DelWatcher') );
         }
     }
 
     # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyTicket'
-    # bail
+    # and the current user  doesn't have 'ModifyTicket' bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
             return ( 0, "Permission Denied" );
@@ -969,85 +1001,35 @@ sub DeleteWatcher {
 
     # }}}
 
-    unless ( ( $Watcher->Scope eq 'Ticket' )
-        and ( $Watcher->Value == $self->id ) )
-    {
-        return ( 0, "Not a watcher for this ticket" );
+
+    # see if this user is already a watcher.
+
+    unless ( $group->HasMember($principal)) {
+        return ( 0, 
+        $self->loc('That principal is not a [_1] for this ticket', $args{'Type'}) );
     }
 
-    #Clear out the watchers hash.
-    $self->{'watchers'} = undef;
+    my ($m_id, $m_msg) = $group->DeleteMember($principal->Id);
+    unless ($m_id) {
+        $RT::Logger->error("Failed to delete ".$principal->Id.
+                           " as a member of group ".$group->Id."\n".$m_msg);
 
-    #If we\'ve validated that it is a watcher for this ticket 
-    $self->_NewTransaction(
-        Type     => 'DelWatcher',
-        OldValue => $Watcher->Email,
-        Field    => $Watcher->Type,
-    );
-
-    my $retval = $Watcher->Delete();
-
-    unless ($retval) {
-        return ( 0,
-            "Watcher could not be deleted. Database inconsistency possible." );
+        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this ticket', $args{'Type'}) );
     }
 
-    return ( 1, "Watcher deleted" );
+    unless ( $args{'Silent'} ) {
+        $self->_NewTransaction(
+            Type     => 'DeleteWatcher',
+            NewValue => $principal->Id,
+            Field    => $args{'Type'}
+        );
+    }
+
+    return ( 1, $self->loc("[_1] is no longer a [_2] for this ticket.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# {{{ sub DeleteRequestor
-
-=head2 DeleteRequestor EMAIL
-
-Takes an email address. It calls DeleteWatcher with a preset 
-type of 'Requestor'
 
 
-=cut
-
-sub DeleteRequestor {
-    my $self = shift;
-    my $id   = shift;
-    return ( $self->DeleteWatcher( $id, 'Requestor' ) );
-}
-
-# }}}
-
-# {{{ sub DeleteCc
-
-=head2 DeleteCc EMAIL
-
-Takes an email address. It calls DeleteWatcher with a preset 
-type of 'Cc'
-
-
-=cut
-
-sub DeleteCc {
-    my $self = shift;
-    my $id   = shift;
-    return ( $self->DeleteWatcher( $id, 'Cc' ) );
-}
-
-# }}}
-
-# {{{ sub DeleteAdminCc
-
-=head2 DeleteAdminCc EMAIL
-
-Takes an email address. It calls DeleteWatcher with a preset 
-type of 'AdminCc'
-
-
-=cut
-
-sub DeleteAdminCc {
-    my $self = shift;
-    my $id   = shift;
-    return ( $self->DeleteWatcher( $id, 'AdminCc' ) );
-}
-
-# }}}
 
 # }}}
 
@@ -1158,19 +1140,18 @@ sub CcAsString {
 =head2 Requestors
 
 Takes nothing.
-Returns this ticket's Requestors as an RT::Watchers object
+Returns this ticket's Requestors as an RT::Group object
 
 =cut
 
 sub Requestors {
     my $self = shift;
 
-    my $requestors = $self->Watchers();
+    my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $requestors->LimitToRequestors();
+        $group->LoadTicketGroup(Type => 'Requestor', Ticket => $self->Id);
     }
-
-    return ($requestors);
+    return ($group);
 
 }
 
@@ -1181,20 +1162,19 @@ sub Requestors {
 =head2 Cc
 
 Takes nothing.
-Returns a watchers object which contains this ticket's Cc watchers
+Returns an RT::Group object which contains this ticket's Ccs.
+If the user doesn't have "ShowTicket" permission, returns an empty group
 
 =cut
 
 sub Cc {
     my $self = shift;
 
-    my $cc = $self->Watchers();
-
+    my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $cc->LimitToCc();
+        $group->LoadTicketGroup(Type => 'Cc', Ticket => $self->Id);
     }
-
-    return ($cc);
+    return ($group);
 
 }
 
@@ -1205,18 +1185,20 @@ sub Cc {
 =head2 AdminCc
 
 Takes nothing.
-Returns this ticket\'s administrative Ccs as an RT::Watchers object
+Returns an RT::Group object which contains this ticket's AdminCcs.
+If the user doesn't have "ShowTicket" permission, returns an empty group
 
 =cut
 
 sub AdminCc {
     my $self = shift;
 
-    my $admincc = $self->Watchers();
+    my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $admincc->LimitToAdminCc();
+        $group->LoadTicketGroup(Type => 'AdminCc', Ticket => $self->Id);
     }
-    return ($admincc);
+    return ($group);
+
 }
 
 # }}}
@@ -1228,83 +1210,46 @@ sub AdminCc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher
+=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and User. User is either a user object or string containing an email address. Returns true if that user or string
-is a ticket watcher. Returns undef otherwise
+Takes a param hash with the attributes Type and PrincipalId
+
+Type is one of Requestor, Cc, AdminCc and Owner
+
+PrincipalId is an RT::Principal id 
+
+Returns true if that principal is a member of the group Type for this ticket
+
 
 =cut
 
 sub IsWatcher {
     my $self = shift;
 
-    my %args = (
-        Type  => 'Requestor',
-        Email => undef,
-        Id    => undef,
+    my %args = ( Type  => 'Requestor',
+        PrincipalId    => undef,
         @_
     );
 
-    my %cols = (
-        'Type'  => $args{'Type'},
-        'Scope' => 'Ticket',
-        'Value' => $self->Id,
-        'Owner' => undef,
-        'Email' => undef
-    );
+    # Load the relevant group. 
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadTicketGroup(Type => $args{'Type'}, Ticket => $self->id);
+    # Ask if it has the member in question
 
-    if ( ref( $args{'Id'} ) ) {
+    my $principal = RT::Principal->new($self->CurrentUser);
+    $principal->Load($args{'PrincipalId'});
 
-        #If it's a ref, it's an RT::User object;
-        $cols{'Owner'} = $args{'Id'}->Id;
-    }
-    elsif ( $args{'Id'} =~ /^\d+$/ ) {
-
-        # if it's an integer, it's a reference to an RT::User obj
-        $cols{'Owner'} = $args{'Id'};
-    }
-    else {
-        $cols{'Email'} = $args{'Id'};
-    }
-
-    if ( $args{'Email'} ) {
-        $cols{'Email'} = $args{'Email'};
-    }
-
-    my $description = join ( ":", %cols );
-
-    #If we've cached a positive match...
-    if ( defined $self->{'watchers_cache'}->{"$description"} ) {
-        if ( $self->{'watchers_cache'}->{"$description"} == 1 ) {
-            return (1);
-        }
-        else {    #If we've cached a negative match...
-            return (undef);
-        }
-    }
-
-    my $watcher = new RT::Watcher( $self->CurrentUser );
-    $watcher->LoadByCols(%cols);
-
-    if ( $watcher->id ) {
-        $self->{'watchers_cache'}->{"$description"} = 1;
-        return (1);
-    }
-    else {
-        $self->{'watchers_cache'}->{"$description"} = 0;
-        return (undef);
-    }
-
+    return ($group->HasMember($principal));
 }
 
 # }}}
 
 # {{{ sub IsRequestor
 
-=head2 IsRequestor
+=head2 IsRequestor PRINCIPAL_ID
   
-  Takes an email address, RT::User object or integer (RT user id)
-  Returns true if the string is a requestor of the current ticket.
+  Takes an RT::Principal id
+  Returns true if the principal is a requestor of the current ticket.
 
 
 =cut
@@ -1313,7 +1258,7 @@ sub IsRequestor {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'Requestor', Id => $person ) );
+    return ( $self->IsWatcher( Type => 'Requestor', PrincipalId => $person ) );
 
 };
 
@@ -1321,9 +1266,11 @@ sub IsRequestor {
 
 # {{{ sub IsCc
 
-=head2 IsCc
+=head2 IsCc PRINCIPAL_ID
 
-Takes a string. Returns true if the string is a Cc watcher of the current ticket.
+  Takes an RT::Principal id.
+  Returns true if the principal is a requestor of the current ticket.
+
 
 =cut
 
@@ -1331,7 +1278,7 @@ sub IsCc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->IsWatcher( Type => 'Cc', Id => $cc ) );
+    return ( $self->IsWatcher( Type => 'Cc', PrincipalId => $cc ) );
 
 }
 
@@ -1339,9 +1286,10 @@ sub IsCc {
 
 # {{{ sub IsAdminCc
 
-=head2 IsAdminCc
+=head2 IsAdminCc PRINCIPAL_ID
 
-Takes a string. Returns true if the string is an AdminCc watcher of the current ticket.
+  Takes an RT::Principal id.
+  Returns true if the principal is a requestor of the current ticket.
 
 =cut
 
@@ -1349,7 +1297,7 @@ sub IsAdminCc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'AdminCc', Id => $person ) );
+    return ( $self->IsWatcher( Type => 'AdminCc', PrincipalId => $person ) );
 
 }
 
@@ -2033,7 +1981,7 @@ sub DeleteLink {
     #check acls
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         $RT::Logger->debug("No permission to delete links\n");
-        return ( 0, 'Permission Denied' );
+        return ( 0, $self->loc('Permission Denied'))
 
     }
 
@@ -2267,34 +2215,7 @@ sub MergeInto {
     );
 
     #add all of this ticket's watchers to that ticket.
-    my $watchers = $self->Watchers();
-
-    while ( my $watcher = $watchers->Next() ) {
-        unless (
-            (
-                $watcher->Owner && $NewTicket->IsWatcher(
-                    Type => $watcher->Type,
-                    Id   => $watcher->Owner
-                )
-            )
-            or (
-                $watcher->Email
-                && $NewTicket->IsWatcher(
-                    Type => $watcher->Type,
-                    Id   => $watcher->Email
-                )
-            )
-          )
-        {
-
-            $NewTicket->_AddWatcher(
-                Silent => 1,
-                Type   => $watcher->Type,
-                Email  => $watcher->Email,
-                Owner  => $watcher->Owner
-            );
-        }
-    }
+    # TODO: XXX when merging, we need to merge watchers
 
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets( $self->CurrentUser );
@@ -2413,7 +2334,7 @@ sub SetOwner {
         )
       )
     {
-        return ( 0, "That user may not own requests in that queue" );
+        return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
     #If the ticket has an owner and it's the new owner, we don't need
@@ -2421,9 +2342,24 @@ sub SetOwner {
     elsif ( ( $self->OwnerObj )
         and ( $NewOwnerObj->Id eq $self->OwnerObj->Id ) )
     {
-        return ( 0, "That user already owns that request" );
+        return ( 0, $self->loc("That user already owns that ticket") );
     }
 
+    $RT::Handle->NewTransaction();
+
+    # Delete the owner in the owner group, then add a new one
+    my ($del_id, $del_msg) = $self->OwnerGroup->Members->First->Delete();
+    unless ($del_id) {
+        $RT::Handle->Rollback();
+        return(0, $self->loc("Could not change owner. "). $del_msg);
+    }
+
+    my ($add_id,$add_msg) = $self->OwnerGroup->AddMember($NewOwnerObj->PrincipalId);
+    unless ($add_id) {
+        $RT::Handle->Rollback();
+        return(0, $self->loc("Could not change owner. "). $add_msg);
+    }
+    
     my ( $trans, $msg ) = $self->_Set(
         Field           => 'Owner',
         Value           => $NewOwnerObj->Id,
@@ -2432,11 +2368,10 @@ sub SetOwner {
     );
 
     if ($trans) {
-        $msg =
-          "Owner changed from "
-          . $OldOwnerObj->Name . " to "
-          . $NewOwnerObj->Name;
+        $msg = "Owner changed from " . $OldOwnerObj->Name . " to " . $NewOwnerObj->Name;
     }
+    $RT::Handle->Commit();
+    $RT::Logger->crit("RT::Ticket->SetOwner lets a transaction span across scrips. this is DANGEROUS AND MUST CHANGE");
     return ( $trans, $msg );
 
 }
@@ -2539,7 +2474,7 @@ sub SetStatus {
 
     #Check ACL
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, 'Permission Denied' );
+        return ( 0, $self->loc('Permission Denied'))
     }
 
     my $now = new RT::Date( $self->CurrentUser );

@@ -1,10 +1,6 @@
-%# $Header: /raid/cvsroot/rt/webrt/Elements/SelectWatcherType,v 1.2 2001/11/06 23:06:58 jesse Exp $
-%# portions Copyright 2000 Tobias Brox <tobix@fsck.com>
 %# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
-
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="none">-</OPTION>
-%# Make nice options:
+<OPTION VALUE="">-</OPTION>
 %for my $option (@types) {
 <OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%$option%></OPTION>
 %}

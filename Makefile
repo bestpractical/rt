@@ -253,7 +253,7 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/smoke.t
 
-regression: libs-install bin-install regression-instruct dropdb initialize-database
+regression: libs-install sbin-install bin-install regression-instruct dropdb initialize-database
 	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/regression.t)
 		
 regression-instruct:

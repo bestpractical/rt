@@ -642,8 +642,10 @@ else {
 		my $op = $1;
 		my $addr = $2;
 		
-		$Ticket->AddRequestor(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteRequestor( $addr) if ($op eq '-');
+		$Ticket->AddWatcher(Type => 'Requestor',
+                                    Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher( Type => 'Requestor',
+                                        Email => $addr) if ($op eq '-');
 	    }	
 	}
 	
@@ -652,19 +654,22 @@ else {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $addr = $2;
-		$Ticket->AddCc(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteCc($addr) if ($op eq '-');
+		$Ticket->AddWatcher( Type=> 'Cc',
+                                     Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher(Type => 'Cc',
+                                       Email => $addr) if ($op eq '-');
 	    }	
 	}	
 	
 	# add / delete adminccs
-        $RT::Logger->debug("Looking at admin ccs");
 	foreach $value (@admincc) {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $addr = $2;
-		$Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteAdminCc($addr) if ($op eq '-');
+		$Ticket->AddWatcher( Type => 'AdminCc',
+                                     Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher( Type=> 'AdminCc',
+                                        Email => $addr) if ($op eq '-');
 	    }	
 	}	
 

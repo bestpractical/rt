@@ -420,20 +420,22 @@ sub AdminQueue {
         }
 
         foreach my $person ( @{ $args{'add-cc'} } ) {
-            my ( $val, $msg ) = $queue_obj->AddCc( Email => $person );
+            my ( $val, $msg ) = $queue_obj->AddWatcher( Type => 'Cc',
+                                                        Email => $person );
             print "$msg\n";
         }
         foreach my $person ( @{ $args{'add-admincc'} } ) {
-            my ( $val, $msg ) = $queue_obj->AddAdminCc( Email => $person );
+            my ( $val, $msg ) = $queue_obj->AddWatcher( Type=> 'AdminCc',
+                                                        Email => $person );
             print "$msg\n";
         }
 
         foreach my $person ( @{ $args{'delete-cc'} } ) {
-            my ( $val, $msg ) = $queue_obj->DeleteCc($person);
+            my ( $val, $msg ) = $queue_obj->DeleteWatcher( Type => 'Cc', Email =>$person);
             print "$msg\n";
         }
         foreach my $person ( @{ $args{'delete-admincc'} } ) {
-            my ( $val, $msg ) = $queue_obj->DeleteAdminCc($person);
+            my ( $val, $msg ) = $queue_obj->DeleteWatcher(Type => 'AdminCc', Email => $person);
             print "$msg\n";
         }
 

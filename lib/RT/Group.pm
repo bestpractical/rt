@@ -47,6 +47,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(16) 'Name'.
   varchar(64) 'Description'.
   varchar(255) 'Domain'.
+  varchar(255) 'Type'.
   varchar(255) 'Instance'.
 
 =cut
@@ -60,6 +61,7 @@ sub Create {
                 Name => '',
                 Description => '',
                 Domain => '',
+                Type => '',
                 Instance => '',
 
 		  @_);
@@ -67,6 +69,7 @@ sub Create {
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          Domain => $args{'Domain'},
+                         Type => $args{'Type'},
                          Instance => $args{'Instance'},
 );
 
@@ -137,6 +140,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item Type
+
+Returns the current value of Type. 
+(In the database, Type is stored as varchar(255).)
+
+
+
+=item SetType VALUE
+
+
+Set Type to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(255).)
+
+
+=cut
+
+
 =item Instance
 
 Returns the current value of Instance. 
@@ -166,6 +187,8 @@ sub _ClassAccessible {
         Description => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
         Domain => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Type => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Instance => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},

@@ -31,7 +31,7 @@ RT
 ok (require RT::Group);
 
 ok (my $group = RT::Group->new($RT::SystemUser), "instantiated a group object");
-ok (my ($id, $msg) = $group->Create( Name => 'TestGroup', Description => 'A test group',
+ok (my ($id, $msg) = $group->CreateSystemGroup( Name => 'TestGroup', Description => 'A test group',
                     Domain => 'System', Instance => ''), 'Created a new group');
 ok ($id != 0, "Group id is $id");
 ok ($group->Name eq 'TestGroup', "The group's name is 'TestGroup'");
@@ -44,14 +44,14 @@ ok ($ng->AddMember('2' ), "Added a member to the group");
 ok ($ng->AddMember('3' ), "Added a member to the group");
 
 my $group_2 = RT::Group->new($RT::SystemUser);
-ok (my ($id_2, $msg_2) = $group_2->Create( Name => 'TestGroup2', Description => 'A second test group',
+ok (my ($id_2, $msg_2) = $group_2->CreateSystemGroup( Name => 'TestGroup2', Description => 'A second test group',
                     Domain => 'System', Instance => ''), 'Created a new group');
 ok ($id_2 != 0, "Created group 2 ok");
 ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
 ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
 
 my $group_3 = RT::Group->new($RT::SystemUser);
-ok (($id_3, $msg) = $group_3->Create( Name => 'TestGroup3', Description => 'A second test group',
+ok (($id_3, $msg) = $group_3->CreateSystemGroup( Name => 'TestGroup3', Description => 'A second test group',
                     Domain => 'System', Instance => ''), 'Created a new group');
 ok ($id_3 != 0, "Created group 3 ok");
 ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
@@ -131,14 +131,56 @@ sub LoadSystemGroup {
 
         $self->LoadByCols( "Domain" => 'System',
                            "Instance" => '',
+                           "Type" => '',
                            "Name" => $identifier );
 }
 
 # }}}
 
-# {{{ sub Create
+# {{{ sub LoadTicketGroup 
+
+=head2 LoadTicketGroup  { Ticket => TICKET_ID, Type => TYPE }
+
+Loads a ticket group from the database. 
+
+Takes a param hash with 2 parameters:
+
+    Ticket is the TicketId we're curious about
+    Type is the type of Group we're trying to load: 
+        Requestor, Cc, AdminCc, Owner
+
+=cut
+
+sub LoadTicketGroup {
+    my $self       = shift;
+    my %args = (Ticket => undef,
+                Type => undef,
+                @_);
+        $self->LoadByCols( Domain => 'Ticket',
+                           Instance =>$args{'Ticket'}, 
+                           Type => $args{'Type'}
+                           );
+}
+
+# }}}
+
 
 =head2 Create
+
+You need to specify what sort of group you're creating by calling one of the other
+Create_____ routines.
+
+=cut
+
+sub Create {
+    my $self = shift;
+    $RT::Logger->crit("Someone called RT::Group->Create. this method does not exist. someone's being evil");
+    return(0,$self->loc('Permission Denied'));
+}
+
+# {{{ sub _Create
+
+=head2 _Create
 
 Takes a paramhash with named arguments: Name, Description.
 
@@ -146,28 +188,23 @@ TODO: fill in for 2.2
 
 =cut
 
-sub Create {
+sub _Create {
     my $self = shift;
     my %args = (
         Name        => undef,
         Description => undef,
         Domain      => undef,
+        Type        => undef,
         Instance    => undef,
         @_
     );
-
-    # TODO: set up acls to deal based on what sort of group is being created
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-        $RT::Logger->warning( $self->CurrentUser->Name
-              . " Tried to create a group without permission." );
-        return ( 0, 'Permission Denied' );
-    }
 
     $RT::Handle->BeginTransaction();
 
     my $id = $self->SUPER::Create(
         Name        => $args{'Name'},
         Description => $args{'Description'},
+        Type        => $args{'Type'},
         Domain      => $args{'Domain'},
         Instance    => $args{'Instance'}
     );
@@ -199,7 +236,7 @@ ngs are afoot at the circle K" );
 
 # }}}
 
-# {{{ CreateSystemGroups
+# {{{ CreateSystemGroup
 
 =head2 CreateSystemGroup { Name => "name", Description => "Description"}
 
@@ -209,7 +246,38 @@ A helper subroutine which creates a system group
 
 sub CreateSystemGroup {
     my $self = shift;
-    return($self->Create( Domain => 'System', Instance => '', @_));
+
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+        $RT::Logger->warning( $self->CurrentUser->Name
+              . " Tried to create a group without permission." );
+        return ( 0, 'Permission Denied' );
+    }
+
+    return($self->_Create( Domain => 'System', Type => '', Instance => '', @_));
+}
+
+# }}}
+
+=head2 CreateTicketGroup { Type =>  TYPE, Ticket => ID }
+
+A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
+Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
+
+
+This routine expects to be called from Ticket->CreateTicketGroups _inside of a transaction_
+
+=cut
+
+sub CreateTicketGroup {
+    my $self = shift;
+    my %args = ( Ticket => undef,
+                 Type => undef,
+                 @_);
+    unless ($args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/) {
+        return  (0, $self->loc("Invalid Group Type"));
+    }
+
+    return($self->_Create( Domain => 'Ticket', Instance => $args{'Ticket'} , Type => $args{'Type'}));
 }
 
 # }}}

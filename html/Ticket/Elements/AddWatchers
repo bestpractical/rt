@@ -11,7 +11,7 @@ Type
 Username
 </td></tr>
 % while (my $u = $Users->Next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "WatcherTypeUser".$u->Id &></td><td><%$u->Name%> (<%$u->RealName%>)</td></tr>
+<tr><td><&/Elements/SelectWatcherType, Name => "TicketWatcher-Add-Principal-".$u->PrincipalId &></td><td><%$u->Name%> (<%$u->RealName%>)</td></tr>
 % }
 % }
 
@@ -40,7 +40,7 @@ Email
 <%INIT>
 my ($msg, $Users);
 if ($UserString) {
-    $Users = new RT::Users($session{'CurrentUser'});
+    $Users = RT::Users->new($session{'CurrentUser'});
     $Users->Limit(FIELD => $UserField,
                  VALUE => $UserString,
                  OPERATOR => $UserOp);

@@ -1050,17 +1050,22 @@ sub ProcessTicketWatchers {
 
     foreach my $key ( keys %$ARGSRef ) {
 
-        # Delete deletable watchers
-        if ( ( $key =~ /^DelWatcher(\d*)$/ ) and ( $ARGSRef->{$key} ) ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher($1);
+        # {{{ Delete deletable watchers
+        if ( ( $key =~ /^Ticket-DelWatcher-Type-(.*)$/ ) and 
+             ( $ARGSRef->{$key} ) ) {
+            my ( $code, $msg ) = 
+                $Ticket->DeleteWatcher(PrincipalId => $ARGSRef->{$key}, 
+                                       Type => $1);
             push @results, $msg;
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher( $ARGSRef->{$key}, $1 );
+            my ( $code, $msg ) = $Ticket->DeleteWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
             push @results, $msg;
         }
+
+        # }}}
 
         # Add new wathchers by email address      
         elsif ( ( $ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/ )
@@ -1086,12 +1091,11 @@ sub ProcessTicketWatchers {
 
         # Add new  watchers by owner
         elsif ( ( $ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/ )
-            and ( $key =~ /^WatcherTypeUser(\d*)$/ ) )
-        {
+            and ( $key =~ /^Ticket-AddWatcher-Principal-(\d*)$/ ) ) {
 
             #They're in this order because otherwise $1 gets clobbered :/
             my ( $code, $msg ) =
-              $Ticket->AddWatcher( Type => $ARGSRef->{$key}, Owner => $1 );
+              $Ticket->AddWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
             push @results, $msg;
         }
     }

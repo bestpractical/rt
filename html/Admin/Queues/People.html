@@ -27,7 +27,7 @@ Cc:
 
 %while (my $watcher=$cc->Next) {
 <li>
-<INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
+<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>->DelWatcher-Principal-<%$watcher->PrincipalId%>" VALUE = "Cc" UNCHECKED>
 %# account
 %if ($watcher->IsUser) { 
 <a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
@@ -48,7 +48,7 @@ Administrative Cc:
 % }
 
 %while (my $watcher=$admincc->Next) {
-<li><INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
+<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>->DelWatcher-Principal-<%$watcher->PrincipalId%>" VALUE = "AdminCc" UNCHECKED>
 %# account
 %if ($watcher->IsUser) { 
 <a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
@@ -74,7 +74,7 @@ Add new watchers:<br>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "WatcherTypeUser".$u->Id &> <%$u->Name%>
+<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "Queue-AddWatcher-Principal-".$u->Id &> <%$u->Name%>
 (<%$u->RealName%>)
 % }
 </ul>
@@ -94,7 +94,8 @@ Add new watchers:<br>
 
 <%INIT>
 
-my ($field, @results, $User, $Users, $watcher, $key, $msg);
+my ($field, @results, $User, $Users, $watcher, $msg);
+
 # {{{ Load the queue
 #If we get handed two ids, mason will make them an array. bleck.
 # We want teh first one. Just because there's no other sensible way
@@ -108,26 +109,23 @@ $QueueObj->Load($id) || Abort("Couldn't load queue '$id'");
 
 # {{{ Delete deletable watchers
 
-foreach $key (keys %ARGS) {
-    if (($key =~ /^DelWatcher(\d*)$/) and
-	($ARGS{$key})) {
-	$RT::Logger->debug("Deleting watcher $1\n");
-	my ($code, $msg) = $QueueObj->DeleteWatcher($1);
-	
-	push @results, $msg;
+foreach my $key (keys %ARGS) {
+    if (($key =~ /^Queue-$id-DelWatcher-Principal-(\d*)$/) and ($ARGS{$key})) {
+	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $ARGS{$key},
+                                                    PrincipalId => $1);
+	    push @results, $msg;
     }
 }
 # }}}
 
 # {{{ Add new watchers
-foreach $key (keys %ARGS) {
+foreach my  $key (keys %ARGS) {
     #They're in this order because otherwise $1 gets clobbered :/
     if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
-	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
+	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = 
-	  $QueueObj->AddWatcher(Type => $ARGS{$key},
-				 Owner => $1);
+	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
+				                             Principal => $1);
 	push @results, $msg;
     }
 }

@@ -665,7 +665,7 @@ Returns false otherwise
 
 sub IsInbound {
     my $self = shift;
-    return ( $self->TicketObj->IsRequestor( $self->CreatorObj ) );
+    return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
 # }}}

@@ -17,13 +17,13 @@ Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj,
 (Check box to delete)<br>
 
 Requestors:
-<& EditWatchers, TicketObj => $Ticket, Type => 'requestors' &>
+<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
 
 Cc:
-<& EditWatchers, TicketObj => $Ticket, Type => 'cc' &>
+<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
 
 Administrative Cc:
-<& EditWatchers, TicketObj => $Ticket, Type => 'admincc' &>
+<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
 
 </TD>
 </TR>

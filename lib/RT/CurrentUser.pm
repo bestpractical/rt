@@ -93,6 +93,25 @@ sub UserObj {
 }
 # }}}
 
+
+# {{{ sub PrincipalId 
+
+=head2 PrincipalId
+
+    Returns this user's principal Id.  this is just a helper routine for
+    $self->UserObj->PrincipalId
+
+=cut
+
+sub PrincipalId {
+    my $self = shift;
+    return($self->UserObj->PrincipalId);
+}
+
+
+# }}}
+
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;

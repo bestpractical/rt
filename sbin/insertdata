@@ -286,12 +286,6 @@ unless ($LastVersion) {
             ExecModule  => 'Notify',
             Argument    => 'All'
         },
-    );
-}
-
-if ( $LastMinorVersion < 12 ) {
-    push (
-        @ScripActions,
         {
             Name        => 'NotifyOtherRecipientsAsComment',
             Description => 'Sends mail to explicitly listed Ccs and Bccs',
@@ -512,8 +506,9 @@ print "done.\n";
 print "Creating groups...";
 use RT::Group;
 foreach $item (@groups) {
-    my $new_entry = new RT::Group($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
+    my $new_entry = RT::Group->new($CurrentUser);
+    my ($return, $msg)   = $new_entry->CreateSystemGroup(%$item);
+    print "(Error: $msg)" unless ($return);
     print $return. ".";
 }
 print "done.\n";

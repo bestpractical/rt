@@ -1,5 +1,5 @@
 <%PERL>
-my $people = $Ticket->Requestors;
+my $people = $Ticket->Requestors->MembersObj;
 while (my $requestor=$people->Next) {
 if (($requestor->Owner ) && (my $user=$requestor->OwnerObj)) {
 my $name=$user->RealName || $user->EmailAddress;	

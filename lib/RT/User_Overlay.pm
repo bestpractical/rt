@@ -887,8 +887,6 @@ sub HasQueueRight {
 
     if ( defined $args{'TicketObj'} ) {
         $args{'QueueObj'} = $args{'TicketObj'}->QueueObj();
-        $RT::Logger->debug("We got TicketObj. so we're making queueobj: ".
-                            $args{'QueueObj'}->Name());
     }
 
     # {{{ Validate and load up the QueueId
@@ -922,28 +920,28 @@ sub HasQueueRight {
     # {{{ Find out about whether the current user is a Requestor, Cc, AdminCc or Owner
 
     if ( defined $args{'TicketObj'} ) {
-        if ( $args{'TicketObj'}->IsRequestor($self) ) {    #user is requestor
+        if ( $args{'TicketObj'}->IsRequestor($self->PrincipalId) ) {    #user is requestor
             $IsRequestor = 1;
         }
 
-        if ( $args{'TicketObj'}->IsCc($self) ) {           #If user is a cc
+        if ( $args{'TicketObj'}->IsCc($self->PrincipalId) ) {           #If user is a cc
             $IsCc = 1;
         }
 
-        if ( $args{'TicketObj'}->IsAdminCc($self) ) {    #If user is an admin cc
+        if ( $args{'TicketObj'}->IsAdminCc($self->PrincipalId) ) {    #If user is an admin cc
             $IsAdminCc = 1;
         }
 
-        if ( $args{'TicketObj'}->IsOwner($self) ) {      #If user is an owner
+        if ( $args{'TicketObj'}->IsOwner($self->PrincipalId) ) {      #If user is an owner
             $IsOwner = 1;
         }
     }
 
     if ( defined $args{'QueueObj'} ) {
-        if ( $args{'QueueObj'}->IsCc($self) ) {          #If user is a cc
+        if ( $args{'QueueObj'}->IsCc($self->PrincipalId) ) {          #If user is a cc
             $IsCc = 1;
         }
-        if ( $args{'QueueObj'}->IsAdminCc($self) ) {     #If user is an admin cc
+        if ( $args{'QueueObj'}->IsAdminCc($self->PrincipalId) ) {     #If user is an admin cc
             $IsAdminCc = 1;
         }
 
@@ -1073,12 +1071,8 @@ sub _HasRight {
     return(1);
 
     if ( $self->Disabled ) {
-        $RT::Logger->debug( "Disabled User:  "
-              . $self->Name
-              . " failed access check for "
-              . $args{'Right'}
-              . " to object "
-              . $args{'Scope'} . "/"
+        $RT::Logger->debug( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} . 
+                            " to object " . $args{'Scope'} . "/"
               . $args{'AppliesTo'} . "\n" );
         return (undef);
     }
@@ -1432,6 +1426,6 @@ sub _Value {
 
 # }}}
 
-# }}}
+# }}}}
 1;
 

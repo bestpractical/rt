@@ -79,6 +79,7 @@ CREATE TABLE Groups (
   Name varchar(16) NULL  ,
   Description varchar(64) NULL  ,
   Domain varchar(255),
+  Type varchar(255),
   Instance varchar(255),
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
