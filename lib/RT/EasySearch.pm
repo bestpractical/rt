@@ -9,13 +9,15 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->_Init();
+  $self->_Init(@_);
   return $self;
 }
 
 sub _Init {
   my $self = shift;
-  $self->{'user'} = shift;
+
+ $self->{'user'} = shift;
+
   $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 

@@ -273,7 +273,7 @@ sub ParseArgs {
   }
   
   sub cli_comment_req {	
-    my ($id)=@_;
+    my $Ticket = shift ;
     my ($subject,$content,$trans,$message,$cc,$bcc );
     
     $subject=&rt::ui::cli::question_string("Subject",);
@@ -289,8 +289,8 @@ sub ParseArgs {
       }
     }
     
-    my $Ticket = &LoadTicket($id);
-    $Message =$Ticket->Comment(subject => "$subject",
+
+    $Message = $Ticket->Comment(subject => "$subject",
 				content => "$content",
 				cc => "$cc",
 				bcc => "$bcc",

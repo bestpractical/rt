@@ -47,27 +47,32 @@ sub Create {
 	      Content => undef,
 	      @_);
   
-  my $ErrStr = $self->SUPER::Create(Id => $args{'id'},
-				EffectiveId => $args{'EffectiveId'},
-				Queue => $args{'Queue'},
-				Alias => $args{'Alias'},
-				Requestors => $args{'Requestors'},
-				Owner => $args{'Owner'},
-				Subject => $args{'Subject'},
-				InitialPriority => $args{'InitialPriority'},
-				FinalPriority => $args{'FinalPriority'},
-				Priority => $args{'InitialPriority'},
-				Status => $args{'Status'},
-				TimeWorked => $args{'TimeWorked'},
-				DateCreated => $args{'DateCreated'},
-				DateTold => $args{'DateTold'},
-				DateActed => $args{'DateActed'},
-				DateDue => $args{'DateDue'}
+  my $id = $self->SUPER::Create(Id => $args{'id'},
+				    EffectiveId => $args{'EffectiveId'},
+				    Queue => $args{'Queue'},
+				    Alias => $args{'Alias'},
+				    Requestors => $args{'Requestors'},
+				    Owner => $args{'Owner'},
+				    Subject => $args{'Subject'},
+				    InitialPriority => $args{'InitialPriority'},
+				    FinalPriority => $args{'FinalPriority'},
+				    Priority => $args{'InitialPriority'},
+				    Status => $args{'Status'},
+				    TimeWorked => $args{'TimeWorked'},
+				    DateCreated => $args{'DateCreated'},
+				    DateTold => $args{'DateTold'},
+				    DateActed => $args{'DateActed'},
+				    DateDue => $args{'DateDue'}
 			       );
   
   #TODO: ADD A TRANSACTION
   #TODO: DO SOMETHING WITH $args{'content'}
-  
+
+  #now that we have an Id, set the effective Id, if we didn't come in with one.
+  if ($self->EffectiveId == 0 ) {
+    print "Setting Eid";
+    $self->SetEffectiveId($id);
+  }
   return($self->Id, $ErrStr);
   
 }
@@ -478,6 +483,7 @@ sub _NewTransaction {
   my $content = shift;
   
   use RT::Transaction;
+  print STDERR "My effective id is ".$self->Id."\n";
   my $trans = new RT::Transaction($self->CurrentUser);
   $trans->Create( Ticket => $self->EffectiveId,
 		  TimeTaken => "$time_taken",
@@ -536,10 +542,11 @@ sub _Set {
     my $value = shift;
     my $time_taken = shift if @_;
     
+    print STDERR "Setting $field to $value\n";
     #TODO: this doesn't work, iirc.
     
     my $content = @_;
-        
+    
     #record what's being done in the transaction
     
     $self->_NewTransaction ($field, $value, $time_taken, $content);
@@ -558,16 +565,14 @@ sub _Set {
 # 
 sub DisplayPermitted {
   my $self = shift;
-
-  print STDERR "IN RT::Ticket->DisplayPermitted\n";
-  
   my $actor = shift;
+  
   if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
+    #my $actor = $self->CurrentUser->Id();
   }
   if (1) {
     #  if ($self->Queue->DisplayPermitted($actor)) {
-    return(1);
+      return(1);
   }
   else {
     #if it's not permitted,
@@ -579,7 +584,7 @@ sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
+   # my $actor = $self->CurrentUser->Id();
   }
   if ($self->Queue->ModifyPermitted($actor)) {
     
@@ -595,7 +600,7 @@ sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
+   # my $actor = $self->CurrentUser->Id();
   }
 
 

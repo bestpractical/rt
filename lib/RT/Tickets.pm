@@ -1,25 +1,22 @@
 package RT::Tickets;
-use DBIx::EasySearch;
-@ISA= qw(DBIx::EasySearch);
+use RT::EasySearch;
+@ISA= qw(RT::EasySearch);
 
-
-sub new {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
-  $self-
 
 sub _Init {
   my $self = shift;
-  $self->{'table'} = "transaction";
+
+  $self->{'table'} = "tickets";
   $self->{'primary_key'} = "id";
-  return($self);
+  $self->SUPER::_Init(@_);
+  
 }
 
 sub Limit {
   my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
-
+  my %args = ( ENTRYAGGREGATOR => 'AND',
+	       @_);
+  
   $self->SUPER::Limit(%args);
 }
 
@@ -27,6 +24,7 @@ sub NewItem {
   my $self = shift;
   my $Handle = shift;
   my $item;
+  use RT::Ticket;
   $item = new RT::Ticket($self->{'user'}, $Handle);
   return($item);
 }
@@ -44,12 +42,12 @@ sub Status {
   my $Status;
   foreach $Status (@_) {
     $self->Limit(
-		 ALIAS => 'AStatus',
 		 FIELD => 'Status',
 		 OPERATOR => '=',
 		 VALUE => "%$Status%",
 		 ENTRYAGGREGATOR => 'or'
 		);
+    print " VALUE => %$Status% \n";
   }
 }
 

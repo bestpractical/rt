@@ -37,22 +37,24 @@ sub create {
   return($self->Create(@_));
 }
 
-sub create {
+sub Create {
   my $self = shift;
   
   my %args = ( id => undef,
 	       TimeTaken => 0,
-	       Ticket => '',
+	       Ticket => undef,
                Type => '',
 	       Data => '',
 	       Content => '',
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
-  return (0) if (! $args{'Ticket'});
-
+  if (! $args{'Ticket'}) {
+    die "RT::Transaction->Create couldn't, as you didn't specify a ticket id\n";
+  }
+  
   #lets create our parent object
-  my $id = $self->SUPER::Create(Ticket => $args{'ticket'},
+  my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				EffectiveTicket  => $args{'Ticket'},
 				TimeTaken => $args{'TimeTaken'},
 				Date => time(),

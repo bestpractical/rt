@@ -64,7 +64,7 @@ sub ParseArgs {
      elsif ($field =~ /^o(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=8;}
-       printf "%-${length}.${length}s ", $Request->Owner;
+       printf "%-${length}.${length}s ", $Request->Owner->UserId;
      }
      
      elsif ($field =~ /^s(\d*)$/){ 
@@ -157,6 +157,7 @@ sub build_query {
     
     if ($ARGV[$i] =~ '-stat'){
       my $status = $ARGV[++$i];
+      print "Got some status\n";
       $Requests->Limit( FIELD => 'status',
 			VALUE => "$status");
     }
