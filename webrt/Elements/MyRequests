@@ -36,7 +36,7 @@
 <%INIT>
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->Id);
+$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->EmailAddress);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
 </%INIT>

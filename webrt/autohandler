@@ -8,9 +8,10 @@ if ($m->base_comp->path =~ '^/NoAuth/') {
 }
 
   
-elsif (defined $session{'CurrentUser'}){
-    if  (!$session{'CurrentUser'}->Privileged) {
-	# If the user isn't priviledged, they can only see SelfService
+elsif ( (defined $session{'CurrentUser'}) and 
+	( $session{'CurrentUser'}->Id) ) {
+    unless ($session{'CurrentUser'}->Privileged) {
+	# If the user isn't privileged, they can only see SelfService
            if ($m->base_comp->path =~ '^/SelfService/') {
                 $m->call_next;
            } else {
@@ -23,21 +24,21 @@ elsif (defined $session{'CurrentUser'}){
     
 }
 elsif (defined ($user) && defined ($pass)){
-    my %cookies = fetch CGI::Cookie;
-    #TODO if the password is the user's password
+    
     $session{'CurrentUser'} = RT::CurrentUser->new();
-    unless ($session{'CurrentUser'}->Load($user)) {
-	$session{'CurrentUser'} = undef;
+    $session{'CurrentUser'}->Load($user);
+    unless ($session{'CurrentUser'}->id() ) {
+	delete $session{'CurrentUser'};
 	$m->comp('/NoAuth/Login.html', %ARGS, Error=> 'Your username or password is incorrect');
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
-	$session{'CurrentUser'} = undef;
+	delete $session{'CurrentUser'} ;
 	
 	$m->comp('/NoAuth/Login.html', Error => 'Your username or password is incorrect', %ARGS);
 	$m->abort();
     }
-    if  (!$session{'CurrentUser'}->Privileged) {
+    unless  ($session{'CurrentUser'}->Privileged) {
 	# If the user isn't priviledged, they can only see SelfService
         if ($m->base_comp->path =~ '^/SelfService/') {
                 $m->call_next;
@@ -45,9 +46,8 @@ elsif (defined ($user) && defined ($pass)){
         	$m->comp('/SelfService/index.html');
                 }
     }
-    else {
-	$m->call_next;
-    }
+    $m->call_next;
+    
 }
 else {
     $m->comp('/NoAuth/Login.html', %ARGS);
