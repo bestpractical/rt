@@ -1,18 +1,18 @@
 package rt::ui::cli;
 
-sub question_string{
+sub question_string {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {
-	print "$question \[$default\]:";
+	print "$question \[$default\]: ";
     }
     else {
-	print "$question:";
+	print "$question: ";
     }
   $response=&input_string($default);
     return($response);
 }
-sub question_yes_no{
+sub question_yes_no {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {    
@@ -23,21 +23,21 @@ sub question_yes_no{
 	    $default='N';
 	}
 	
-	print "$question \[$default\]:";
+	print "$question \[$default\]: ";
     }
     else {
-	print "$question [N]:";
+	print "$question [N]: ";
     }    $response=&input_yes_no($default);
     return($response);
 }
-sub question_int{
+sub question_int {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {
-	print "$question \[$default\]:";
+	print "$question \[$default\]: ";
     }
     else {
-	print "$question:";
+	print "$question: ";
     }    $response=&input_int($default);
     return($response);
 }

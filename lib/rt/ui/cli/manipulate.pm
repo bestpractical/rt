@@ -211,9 +211,9 @@ sub cli_create_req {
     $owner=&rt::ui::cli::question_string( "Give request to");
     $requestors=&rt::ui::cli::question_string("Requestor(s)",);
     $subject=&rt::ui::cli::question_string("Subject",);
-    $priority=&rt::ui::cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
-    $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
-    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YY)",);
+    $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
+    $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
+    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
     if ($due_string ne '') {
 	 $date_due = &rt::date_parse($due_string);
 	}  
