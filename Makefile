@@ -237,6 +237,7 @@ config-replace:
 	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
+	cvs commit
 	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 	rm -rf /tmp/rt-$(RT_VERSION)
 	cvs export -r rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERISON_PATCH) -d /tmp/rt-$(RT_VERSION) rt

@@ -1,3 +1,27 @@
+2 Apr 1998
+----------
+
+	RT 0.9.10 is a probably a bit more flaky than 0.9.9.  I added a bunch of
+	new ui stuff and made the install more configurable and made upgrades
+	easier.  Changes are too numerous to list but here's a summary:
+
+	webrt:
+	* nicer display of forms in netscape.
+	* nicer display of forms in lynx
+	* got rid of ugly black button bar
+	* queue can now auto-refresh
+
+	rt once again works w/ sendmail versions < 8.8 
+	rt now works with mysql 3.21 (untested)
+	the readme is more verbose
+	the readme now tells you exactly how to make apache work with RT
+
+	all in all we're much closer to 1.0.  I feel a lot better about the 
+	web ui than I have in recent memory.  the cli could still use some work.
+
+
+
+
 26 Jan 1998
 -----------
 
