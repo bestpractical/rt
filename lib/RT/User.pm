@@ -172,6 +172,27 @@ sub Create  {
 
 # }}}
 
+# {{{ sub _BootstrapCreate {
+
+#create a user without validating _any_ data.
+
+#To be used only on database init.
+
+sub _BootstrapCreate {
+    my $self = shift;
+    my %args = (@_);
+
+    my $id = $self->SUPER::Create(%args);
+    
+    #If the create failed.
+    return (0, 'Could not create user') 
+      unless ($id);
+
+    return ($id, 'User created');
+}
+
+# }}}
+
 # {{{ sub Delete 
 
 sub Delete  {

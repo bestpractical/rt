@@ -18,6 +18,7 @@ use config;
 use Carp;
 
 use RT::Handle;
+use RT::User;
 use RT::CurrentUser;
 
 #connect to the db
@@ -25,16 +26,27 @@ $RT::Handle = new RT::Handle($RT::DatabaseType);
 $RT::Handle->Connect();
 
 
-my $RT_System = new RT::CurrentUser(); #TODO how do we bootstrap?
+#Put together a current user object so we can create a User object
+my $CurrentUser = new RT::CurrentUser();
 
-$RT_System->Create(
+
+print "Creating system user...";
+my $RT_System = new RT::User($CurrentUser); 
+
+my ($val, $msg) = $RT_System->_BootstrapCreate(
 		     Name => 'RT_System',
 		     RealName => 'The RT System itself',
 		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
 		     Privileged => '2',
 		     Creator => '1');
 
-
+if ($val) {
+    print "done.\n";
+}
+else {
+    print "$msg\n";
+    exit(1);
+}
 
 #now that we bootstrapped that little bit, we can use the standard RT cli
 # helpers  to do what we need
@@ -52,7 +64,6 @@ LoadConfig();
 DBConnect();
 
 
-my $CurrentUser = new RT::CurrentUser();
 $CurrentUser->LoadByName('RT_System');
 # {{{ Users
 
