@@ -192,9 +192,9 @@ while (my $cgi = new CGI::Fast) {
     my $status = $interp->exec($comp, %args);
     
     
-    print "Content-Type: $HTML::Mason::Commands::ContentType\n\r";
-    print "Set-Cookie: $cookie\n\r" if ($cookie);
-    print "\n\r";
+    print "Content-Type: $HTML::Mason::Commands::ContentType\r\n";
+    print "Set-Cookie: $cookie\r\n" if ($cookie);
+    print "\r\n";
     print $output;
     untie %HTML::Mason::Commands::session;
     
