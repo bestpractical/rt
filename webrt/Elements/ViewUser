@@ -10,7 +10,7 @@
 %}
 </td>
 <td align=right valign=top>
-	<% $User->Comments || "No comment entered about this user" |h %>
+	<% $User->Comments || "No comment entered about this user" %>
 </tr>
 </table>
 <& /Elements/TitleBoxEnd &>
