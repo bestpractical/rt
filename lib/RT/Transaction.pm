@@ -199,7 +199,7 @@ sub Description  {
   if ($self->Type eq 'Create'){
     return("Request created by ".$self->Creator->UserId);
   }
-  elsif ($self->Type eq 'Set') {
+  elsif ($self->Type =~ /Set|Stall|Open|Resolve|Kill/) {
     if ($self->Field eq 'Owner') {
       my $New = RT::User->new($CurrentUser);
       $New->Load($self->NewValue);
