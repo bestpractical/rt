@@ -99,6 +99,7 @@ sub can_admin_queue {
 	return(0);
     }
 }
+
 sub is_not_a_requestor{
     my($address,$serial_num) =@_;
     if (($address !~ /\@/) and (exists $users{$address})) {
@@ -112,6 +113,26 @@ sub is_not_a_requestor{
     }
     
 }
+
+sub dist_list {
+    my ($in_action, $in_queue, $in_serial_num)=@_;
+    &rt::req_in($in_serial_num);
+    my $action = $in_action eq 'new' ? "correspond" : $in_action;
+    my @dist_list;
+    push(@dist_list, $queues{$in_queue}{dist_list}) 
+	if ($queues{$in_queue}{"m_members_$action"} &&
+	    $queues{$in_queue}{dist_list});
+    push(@dist_list, $req[$in_serial_num]{owner})
+	if (($queues{$in_queue}{"m_owner_$action"} || 
+	     $queues{$in_queue}{m_owner_trans}) &&
+	    $req[$in_serial_num]{owner});
+    push(@dist_list, $req[$in_serial_num]{requestors})	
+	if (($queues{$in_queue}{"m_user_$action"} || 
+	     $queues{$in_queue}{m_user_trans}) &&
+	    $req[$in_serial_num]{requestors});
+    return join(', ', @dist_list);
+}
+
 sub is_owner {
     my($serial_num,$user) =@_;
     if ($req[$serial_num]{'owner'} eq $user) {
