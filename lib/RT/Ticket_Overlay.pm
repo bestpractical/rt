@@ -2720,8 +2720,15 @@ sub MergeInto {
         elsif ($link->Base eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetTarget($MergeInto->URI);
-            $link->SetLocalTarget($MergeInto->id);
+            # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Link->new($RT::SystemUser);
+            $tmp->LoadByCols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
+            if ($tmp->id)   {
+                    $link->Delete;
+            } else { 
+                $link->SetTarget($MergeInto->URI);
+                $link->SetLocalTarget($MergeInto->id);
+            }
             $old_seen{$link->Base."-".$link->Type} =1;
         }
 
@@ -2737,9 +2744,16 @@ sub MergeInto {
         if ($link->Target eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetBase($MergeInto->URI);
-            $link->SetLocalBase($MergeInto->id);
-             $old_seen{$link->Type."-".$link->Target} =1;
+            # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Link->new($RT::SystemUser);
+            $tmp->LoadByCols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
+            if ($tmp->id)   {
+                    $link->Delete;
+            } else { 
+                $link->SetBase($MergeInto->URI);
+                $link->SetLocalBase($MergeInto->id);
+                $old_seen{$link->Type."-".$link->Target} =1;
+            }
         }
 
     }
