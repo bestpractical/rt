@@ -43,60 +43,38 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Bulk ticket update") &>
-<& /Elements/Tabs, Title => loc("Bulk ticket update") &>
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+    current_tab => "Search/Bulk.html",
+    Title => $title,
+    Format => $ARGS{'Format'}, # we don't want the locally modified one
+    Query => $Query,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order &>
 
 <& /Elements/ListActions, actions => \@results &>
-<FORM METHOD="POST" ACTION="<%$RT::WebPath%>/Search/Bulk.html" >
-<input type="hidden" name="Query" value="<%$ARGS{'Query'}%>">
-<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
-<TR>
-<TH><&|/l&>Update</&></TH>
-%foreach my $col (@cols) {
-% my $colalias = $col;
-% $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
-
-<TH><% loc($colalias) %>&nbsp;</TH>
+<FORM METHOD="POST" ACTION="<%$RT::WebPath%>/Search/Bulk.html" enctype="multipart/form-data">
+% foreach my $var qw(Query Format OrderBy Order Rows Page) {
+<input type="hidden" name="<%$var%>" value="<%$ARGS{$var}%>">
 %}
-</TR>
-
-<%PERL>
-
-my $i;
-
-$Tickets->RedoSearch();
-while (my $Ticket = $Tickets->Next) {
- $i++;
- if ($i % 2) {
-     $bgcolor = "#dddddd";
- }
- else {
-     $bgcolor = "#ffffff";
- }
-      </%PERL>
-<TR bgcolor="<%$bgcolor%>">
-<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
-%foreach my $col (@cols) {
-<TD>
-% if ($col eq 'id') {
-<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
-% }
-%else {
-<% eval "\$Ticket->$col()" %>&nbsp;
-%}
-</TD>
-%}
-</TR>
-%}
-
-
-
-</TABLE>
+<& /Elements/TicketList, Query => $Query,
+    Format => $Format,
+    Verbatim => 1,
+    AllowSorting => 1,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    Rows => $Rows,
+    Page => $Page,
+    Format => $Format,
+    BaseURL => $RT::WebPath."/Search/Bulk.html?"
+   &>
 
 <HR>
 
-
-<& /Elements/TitleBoxStart, title => loc('Update selected tickets') &>
+<& /Elements/Submit, Label => loc('Update All'), CheckAll => 1, ClearAll => 1 &>
+<br>
+<& /Elements/TitleBoxStart, title => $title &>
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
@@ -168,18 +146,79 @@ while (my $Ticket = $Tickets->Next) {
  </table>
 
 <& /Elements/TitleBoxEnd &>
+<&|/Elements/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
+<%perl>
+my $cfs = RT::CustomFields->new($session{'CurrentUser'});
+$cfs->LimitToGlobal();
+$cfs->LimitToQueue($_) for keys %$seen_queues;
+</%perl>
+% while (my $cf = $cfs->Next()) {
 
+freeform single
+
+    set value
+    
+select single
+
+    set value
+
+freeform multiple
+
+    add values
+    delete values
+
+select multiple
+
+    add values
+    delete values
+
+textsingle 
+
+    set value
+
+upload single
+
+    upload a file
+
+upload multiple
+
+    upload a file
+    upload a file
+
+    ???
+
+image single
+
+    upload an image
+
+image multiple
+
+    upload an image
+    upload an image
+
+    ???
+
+<%$cf->Name%>
+% if ($cf->Type eq 'Select') {
+
+<&|/l&>Add these values</&>:
+
+<&|/l&>Delete these values</&>:
+% } 
+% }
+</&>
 
 <& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></i><br>
 <& /Ticket/Elements/BulkLinks &>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => loc('Update All') &>
+<& /Elements/Submit, Label => loc('Update All'), CheckAll => 1, ClearAll => 1 &>
 
 
 </FORM>
 <%INIT>
+my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
@@ -187,28 +226,30 @@ map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 my ($bgcolor, @results);
 my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
 
+$Format ||= $RT::DefaultSearchResultFormat;
+$Format =~ s/^'\s+/'___CHECKBOX__/;
+
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-$Tickets->FromSQL($ARGS{'Query'});
+$Tickets->FromSQL($Query);
+$Tickets->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+$Tickets->RowsPerPage($Rows) if ($Rows);
+$Tickets->GotoPage($Page-1); # SB uses page 0 as the first page
 
 Abort(loc("No search to operate on.")) unless ($Tickets);
 
-my %allcfs;
-my %cfqnames;
-my %cfqs;
-my $count = 0;
-while (my $Ticket = $Tickets->Next) {
-    my $cfq = $Ticket->QueueObj;
-    my $cfqid = $cfq->Id;
-    my $cfqn = $cfq->Name;
-    unless ( exists $cfqs{$cfqid} ) {
-	$cfqs{$cfqid} = 1;
-	$count++;
-	my $cfs = $cfq->TicketCustomFields;
-	while (my $cf = $cfs->Next) {
-	    $allcfs{$cf->Id} = $cf;
-	    $cfqnames{$cf->Id} = $cfqn;
-	}
+
+# build up a list of all custom fields for tickets that we're displaying, so 
+# we can display sane edit widgets.
+
+my $fields = {};
+my $seen_queues = {};
+while (my $ticket = $Tickets->Next) {
+    next if $seen_queues->{$ticket->Queue}++;
+
+    my $custom_fields = $ticket->QueueObj->TicketCustomFields;
+    while (my $field = $custom_fields->Next) {
+        $fields->{$field->id} = $field;
     }
 }
 
@@ -276,3 +317,11 @@ $TxnCFs->LimitToLookupType("RT::Queue-RT::Ticket-RT::Transaction");
 $TxnCFs->LimitToGlobalOrObjectId(sort keys %queues);
 
 </%INIT>
+<%args>
+$Format => undef
+$Page => 1
+$Rows => undef
+$Order => 'ASC'
+$OrderBy => 'id'
+$Query => undef
+</%args>
