@@ -67,15 +67,14 @@ use RT::Queue;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);
+use vars qw(@DEFAULT_ACTIVE_STATUS @DEFAULT_INACTIVE_STATUS $RIGHTS);
+
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
 
-
-@ACTIVE_STATUS = qw(new open stalled);
-@INACTIVE_STATUS = qw(resolved rejected deleted);
-@STATUS = (@ACTIVE_STATUS, @INACTIVE_STATUS);
+@DEFAULT_ACTIVE_STATUS = qw(new open stalled);+
+@DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
 
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
@@ -180,7 +179,12 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return (@ACTIVE_STATUS);
+    if (@RT::ActiveStatus) {
+    	return (@RT::ActiveStatus)
+    } else {
+        $RT::Logger->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
+        return (@DEFAULT_ACTIVE_STATUS);
+    }
 }
 
 # }}}
@@ -195,7 +199,12 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return (@INACTIVE_STATUS);
+    if (@RT::InactiveStatus) {
+    	return (@RT::InactiveStatus)
+    } else {
+        $RT::Logger->warn("RT::InactiveStatus undefined, falling back to deprecated defaults");
+        return (@DEFAULT_INACTIVE_STATUS);
+    }
 }
 
 # }}}
@@ -210,7 +219,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return (@STATUS);
+    return ($self->ActiveStatusArray(), $self->InactiveStatusArray());
 }
 
 # }}}
