@@ -224,12 +224,14 @@ sub DisplayForm {
     	  if (!$frames) {
 	      &display_commands();
 	        }
-
+    &do_bar($serial_num);
     
     &display_summary($serial_num);
     print "<hr>";
     &display_history_tables($serial_num);
-    
+    &do_bar($serial_num);
+
+	
   }
   
   
@@ -766,34 +768,28 @@ $time
 
 sub do_bar {
   my $serial_num = shift;
-      print "<TABLE WIDTH=\"100%\" bgcolor=\"#222222\" CELLPADDING=5 CELLSPACING=0 BORDER=0>
-      
-<TR><TD ALIGN=\"CENTER\">". 
-&fdro_murl("display=SetComment","history","Comment"). "
-</TD>
-<TD ALIGN=\"CENTER\" >".
-&fdro_murl("display=SetReply","history","Reply")."</TD>";
+      print "
+     <DIV ALIGN=\"CENTER\"> ".
+&fdro_murl("display=SetComment","history","Comment"). " | " .
+&fdro_murl("display=SetReply","history","Reply");
       
       
       if ($rt::req[$serial_num]{'owner'} eq '') {
-	print "<TD ALIGN=\"CENTER\">". 
-&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take")."
-</TD>";
+	print " | ". 
+&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take") ;
       }
       if ($rt::req[$serial_num]{'status'} ne 'resolved') {
 	
-	print "<TD ALIGN=\"CENTER\">". 
-&fdro_murl("do_req_resolve=true","summary","Resolve"). "
-</TD>";
+	print " | ". 
+&fdro_murl("do_req_resolve=true","summary","Resolve");
       }
       if ($rt::req[$serial_num]{'status'} ne 'open') {
 	
-	print "<TD ALIGN=\"CENTER\">" . 
-&fdro_murl("do_req_open=true","summary","Open"). "
-</TD></TR>";
+	print " | " . 
+&fdro_murl("do_req_open=true","summary","Open");
       }
       
-      print "</TABLE>";
+      print "</DIV>";
     }
 
 
@@ -975,7 +971,6 @@ localtime($rt::req[$in_serial_num]{'date_created'}) . "
   </TABLE>
   </font>
 ";
-&do_bar($serial_num);
 
 }
   
@@ -1052,7 +1047,7 @@ Request Tracker's development was initially comissioned by <a href=\"http://www.
 This program is redistributable under the terms of the <b>GNU Public License.</b>
 </font>
 <br>
-Copyright &copy; 1996,1997
+Copyright &copy; 1996-1998
 <a href=\"http://www.con.wesleyan.edu/~jesse/jesse.html\">Jesse Vincent</a>.
 ";
    
