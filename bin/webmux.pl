@@ -3,7 +3,7 @@
 
 use strict;
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
-$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
 $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
@@ -14,8 +14,11 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 
 package RT::Mason;
+
+use CGI qw(-private_tempfiles); #bring this in before mason, to make sure we
+				#set private_tempfiles
+use HTML::Mason::ApacheHandler (args_method => 'CGI');
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
-use HTML::Mason::ApacheHandler;
 
 use vars qw($VERSION %session $Nobody $SystemUser $r);
 
@@ -26,7 +29,7 @@ use vars qw($VERSION %session $Nobody $SystemUser $r);
 umask(0077);
 
 
-  
+	  
 $VERSION="!!RT_VERSION!!";
 
 use lib "!!RT_LIB_PATH!!";
@@ -37,56 +40,60 @@ use config;
 use Carp;
 
 {  
-    package HTML::Mason::Commands;
-    use vars qw(%session);
-  
-    use RT; 
-    use RT::Ticket;
-    use RT::Tickets;
-    use RT::Transaction;
-    use RT::Transactions;
-    use RT::User;
-    use RT::Users;
-    use RT::CurrentUser;
-    use RT::Template;
-    use RT::Templates;
-    use RT::Queue;
-    use RT::Queues;
-    use RT::ScripAction;
-    use RT::ScripActions;
-    use RT::ScripCondition;
-    use RT::ScripConditions;
-    use RT::Scrip;
-    use RT::Scrips;
-    use RT::Group;
-    use RT::Groups;
-    use RT::Keyword;
-    use RT::Keywords;
-    use RT::ObjectKeyword;
-    use RT::ObjectKeywords;
-    use RT::KeywordSelect;
-    use RT::KeywordSelects;
-    use RT::GroupMember;
-    use RT::GroupMembers;
-    use RT::Watcher;
-    use RT::Watchers;
-    use RT::Handle;
-    use RT::Interface::Web;    
-    use MIME::Entity;
-    use Apache::Cookie;
-    use Date::Parse;
-    use HTML::Entities;
-    
-    #TODO: make this use DBI
-    use Apache::Session::File;
+	    package HTML::Mason::Commands;
+	    use vars qw(%session);
+	  
+	    use RT; 
+	    use RT::Ticket;
+	    use RT::Tickets;
+	    use RT::Transaction;
+	    use RT::Transactions;
+	    use RT::User;
+	    use RT::Users;
+	    use RT::CurrentUser;
+	    use RT::Template;
+	    use RT::Templates;
+	    use RT::Queue;
+	    use RT::Queues;
+	    use RT::ScripAction;
+	    use RT::ScripActions;
+	    use RT::ScripCondition;
+	    use RT::ScripConditions;
+	    use RT::Scrip;
+	    use RT::Scrips;
+	    use RT::Group;
+	    use RT::Groups;
+	    use RT::Keyword;
+	    use RT::Keywords;
+	    use RT::ObjectKeyword;
+	    use RT::ObjectKeywords;
+	    use RT::KeywordSelect;
+	    use RT::KeywordSelects;
+	    use RT::GroupMember;
+	    use RT::GroupMembers;
+	    use RT::Watcher;
+	    use RT::Watchers;
+	    use RT::Handle;
+	    use RT::Interface::Web;    
+	    use MIME::Entity;
+	    use Apache::Cookie;
+	    use Date::Parse;
+	    use HTML::Entities;
+	    
+	    #TODO: make this use DBI
+	    use Apache::Session::File;
 
-    # Set this page's content type to whatever we are called with
-    sub SetContentType {
-	my $type = shift;
-	$RT::Mason::r->content_type($type);
-    }
+	    # Set this page's content type to whatever we are called with
+	    sub SetContentType {
+		my $type = shift;
+		$RT::Mason::r->content_type($type);
+	    }
 
-}
+	    sub CGIObject {
+		$m->cgi_object();
+	    }
+
+	}
 
 my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
@@ -154,7 +161,6 @@ sub handler {
 	$cookie->bake;
 
     }
-    
     my $status = $ah->handle_request($r);
     untie %HTML::Mason::Commands::session;
     

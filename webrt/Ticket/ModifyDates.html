@@ -1,5 +1,5 @@
 <& /Elements/Header, Title => 'Modify dates for ticket #'. $TicketObj->Id &>
-<& /Ticket/Elements/Tabs, Ticket => $TicketObj &>
+<& /Ticket/Elements/Tabs, Ticket => $TicketObj, current_tab => "Ticket/ModifyDates.html?id=".$TicketObj->Id  &> &>
 
 <& /Elements/ListActions, actions => \@results &>
 

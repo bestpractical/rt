@@ -3,7 +3,7 @@
 
 <& /Elements/Header, Title => "Create a new ticket" &>
 <& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
-<FORM ACTION="Display.html" METHOD="POST">
+<FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket"&>
 
@@ -75,18 +75,15 @@ Depends on:
 </TD>
 </TR>
 % }
-%#TODO: support for uploading attachments
-% if (0){ 
 <TR>
 <TD>
 Attach file:
 </TD>
 <TD COLSPAN=5>
-<INPUT TYPE=FILE NAME="Attachment">
+<INPUT TYPE=FILE NAME="Attach">
 </TD>
 </TR>
 <TR>
-% }
 <TD COLSPAN=6>
 Describe the issue below:<br>
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>

@@ -3,9 +3,10 @@
 
 <& Elements/Header, Title => "Create a request" &>
 
-<FORM ACTION="<%$RT::WebPath%>/SelfService/Details.html" METHOD="POST">
+
+<FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket " &>
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket" &>
 
 <TABLE>
 <TR>
@@ -36,8 +37,16 @@ Cc:
 <TD>
 Subject:
 </TD>
-<TD COLSPAN=3>
+<TD>
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
+</TD>
+</TR>
+<TR>
+<TD>
+Attach file:
+</TD>
+<TD>
+<INPUT Name="Attach" type=file>
 </TD>
 </TR>
 <TR>

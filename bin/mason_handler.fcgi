@@ -15,10 +15,12 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 
 package RT::Mason;
+#use CGI qw(-private_tempfiles);   # pull in CGI with the private tempfiles
+				  #option predefined
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 use HTML::Mason::ApacheHandler;
 
-use vars qw($VERSION %session $Nobody $SystemUser);
+use vars qw($VERSION %session $Nobody $SystemUser $cgi);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -40,7 +42,7 @@ use Carp;
 {  
     package HTML::Mason::Commands;
     use vars qw(%session);
-  
+    
     use RT; 
     use RT::Ticket;
     use RT::Tickets;
@@ -88,6 +90,9 @@ use Carp;
     sub SetContentType {
 	$ContentType = shift;
     }
+    sub CGIObject {
+	return $RT::Mason::cgi;
+    }
 }
 
 
@@ -107,7 +112,7 @@ die "Can't read and write $RT::MasonSessionDir"
 RT::Init();
 
 # Response loop
-while (my $cgi = new CGI::Fast) {
+while ($RT::Mason::cgi = new CGI::Fast) {
     
     $HTML::Mason::Commands::ContentType = 'text/html';
         
@@ -189,9 +194,14 @@ while (my $cgi = new CGI::Fast) {
     # }}}
     
     $output = '';
-    my $status = $interp->exec($comp, %args);
-    
-    
+    eval {
+	    my $status = $interp->exec($comp, %args);
+    };
+ 
+    if ($@) {
+	$output = "<PRE>$@</PRE>";
+    }
+ 
     print "Content-Type: $HTML::Mason::Commands::ContentType\r\n";
     print "Set-Cookie: $cookie\r\n" if ($cookie);
     print "\r\n";

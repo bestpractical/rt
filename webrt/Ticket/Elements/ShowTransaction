@@ -31,7 +31,22 @@
 <A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
 %}
 <BR>
-<A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename%></a> <% int(length($message->Content())/1024)%>k<br>
+<%PERL>
+my $size = length($message->Content());
+
+if ($size) {
+
+if ($size > 1024) {
+	$size = int($size/102.4)/10 . "k";
+}
+else {
+	$size = $size ."b";
+}
+</%PERL>
+<A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename%></a> <% $size %><br>
+
+% }
+
 </TD>
 </TR>
 </TABLE>

@@ -1,5 +1,5 @@
 <& /Elements/Header, Title => 'Modify ticket #'.$TicketObj->Id &>
-<& /Ticket/Elements/Tabs, Ticket => $TicketObj  &>
+<& /Ticket/Elements/Tabs, Ticket => $TicketObj, current_tab => "Ticket/Modify.html?id=".$TicketObj->Id  &>
 
 <& /Elements/ListActions, actions => \@results &>
 <FORM METHOD=POST ACTION="Modify.html">

@@ -68,7 +68,7 @@ sub NewInterp {
 
 sub NewApacheHandler {
     my $interp=shift;
-    my $ah = new HTML::Mason::ApacheHandler (interp=>$interp);
+    my $ah = new HTML::Mason::ApacheHandler ( interp=>$interp);
     return($ah);
 }
 
@@ -120,11 +120,12 @@ sub ProcessUpdateMessage {
 
     #Make the update content have no 'weird' newlines in it
     if ($args{ARGSRef}->{'UpdateContent'}) {
-	my @UpdateContent = split(/(\r\n|\n|\r)/,
-				  $args{ARGSRef}->{'UpdateContent'});
-	my $Message = MIME::Entity->build 
-	  ( Subject => $args{ARGSRef}->{'UpdateSubject'} || "",
-	    Data => \@UpdateContent);
+
+	my $Message = 
+	  MakeMIMEEntity(
+			 Subject => $args{ARGSRef}->{'UpdateSubject'},
+			 Body => $args{ARGSRef}->{'UpdateContent'},
+			 AttachmentFieldName => 'UpdateAttachment');
 	
 	## TODO: Implement public comments
 	if ($args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/) {
@@ -144,6 +145,69 @@ sub ProcessUpdateMessage {
 	    push(@{$args{Actions}}, $Description);
 	}
     }
+}
+# }}}
+
+# {{{ sub MakeMIMEEntity
+
+=head2 MakeMIMEEntity PARAMHASH
+
+Takes a paramhash Subject, Body and AttachmentFieldName.
+
+  Returns a MIME::Entity.
+
+=cut
+
+sub MakeMIMEEntity {
+  #TODO document what else this takes.
+    my %args=(
+	      Subject => undef,
+	      From => undef,
+	      Cc => undef,
+	      Body => undef,
+	      AttachmentFieldName => undef,
+	      @_);
+
+  #Make the update content have no 'weird' newlines in it
+  my @UpdateContent = split(/(\r\n|\n|\r)/,
+			    $args{Body});
+  my $Message = MIME::Entity->build 
+    ( Subject => $args{'Subject'} || "",
+      From => $args{'From'},
+      Cc => $args{'Cc'},
+      Data => \@UpdateContent);
+
+  my $cgi_object = CGIObject();
+
+  my $filehandle = $cgi_object->upload($args{'AttachmentFieldName'});
+  
+  
+  use File::Temp qw(tempfile tempdir);
+
+  #foreach my $filehandle (@filenames) {
+  
+  my ($fh, $temp_file) = tempfile();
+  
+  binmode $fh; #thank you, windows
+  my ($buffer);
+  #while ($buffer = <$filehandle>) {
+  while (my $bytesread=read($filehandle,$buffer,4096)) {
+      $RT::Logger->crit("got $buffer");
+      print $fh $buffer;
+  }
+  
+  
+  my $filename = "$filehandle";
+  $filename =~ s#^(.*)/##;	
+    my $uploadinfo = $cgi_object->uploadInfo($filehandle);	
+  $Message->attach(Path => $temp_file,
+		   Filename => $filename,
+		   Type => $uploadinfo->{'Content-Type'});	
+  close ($fh);
+  #	}
+  $Message->make_singlepart();
+  return ($Message);
+
 }
 # }}}
 
@@ -892,5 +956,6 @@ sub ProcessTicketObjectKeywords {
 }
 
 # }}}
+
 
 1;

@@ -49,14 +49,13 @@ if ($ARGS{'id'} eq 'new') {
     my @Cc = split(/,/,$ARGS{'Cc'});
     my @AdminCc = split(/,/,$ARGS{'AdminCc'});
     
-    
-    require MIME::Entity;
-    my $MIMEObj = MIME::Entity->build(Subject => $ARGS{Subject},
-				      From => $ARGS{Requestors},
-				      Cc => $ARGS{Cc},
-				      Data => $ARGS{Content}
-				     );
-    
+    my $MIMEObj = MakeMIMEEntity( Subject => $ARGS{'Subject'},
+				  From => $ARGS{'From'},
+				  Cc => $ARGS{'Cc'},
+				  Body => $ARGS{'Content'},
+				  AttachmentFieldName => 'Attach');
+ 
+				  
     #TODO in Create_Details.html: priorities and due-date      
     my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{Queue},
 					       Owner=>$ARGS{ValueOfOwner},
