@@ -1,12 +1,12 @@
 # $Header$
-# RT is Copyright 1996-2002 Jesse Vincent <jessebestpractical.com>
+# RT is Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 # It is distributed under the terms of the GNU General Public License, version 2
 
 PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	14-pre1
+RT_VERSION_PATCH	=	14-pre2
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
