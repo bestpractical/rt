@@ -58,18 +58,17 @@ Takes nothing. Calls SUPER::Connect with the needed args
 =cut
 
 sub Connect {
-my $self=shift;
+    my $self = shift;
 
-
-    if ($RT::DatabaseType eq 'Oracle') {
+    if ( $RT::DatabaseType eq 'Oracle' ) {
         $ENV{'NLS_LANG'} = ".UTF8";
     }
 
-    $self->SUPER::Connect(
-			 User => $RT::DatabaseUser,
-			 Password => $RT::DatabasePassword,
-			);
-   
+    $self->SUPER::Connect( User     => $RT::DatabaseUser,
+                           Password => $RT::DatabasePassword, );
+
+    $self->dbh->{LongReadLen} = $RT::MaxAttachmentSize;
+
 }
 
 =item BuildDSN
