@@ -261,6 +261,8 @@ sub SetMIMEEntityToEncoding {
 	$enc     = 'utf-8' if $enc     eq 'utf8';
 
 	if ($enc ne $charset) {
+      eval {
+
 	    $RT::Logger->debug("Converting '$charset' to '$enc'");
 
 	    # NOTE:: see the comments at the end of the sub.
@@ -272,6 +274,10 @@ sub SetMIMEEntityToEncoding {
 	    else {
 		Encode::from_to($lines[$_], $charset => $enc) foreach (0 .. $#lines);
 	    }
+      }; 
+      if ($@) {
+        $RT::Logger->error("Encoding error: ".$@);
+       }
 	}
 	elsif ($enc eq 'utf-8') {
 	    Encode::_utf8_on($lines[$_]) foreach (0 .. $#lines);

@@ -3211,7 +3211,7 @@ sub SetStatus {
                      RecordTransaction => 0 );
     }
 
-    if ( $args{status} eq 'resolved' ) {
+    if ( $args{Status} =~ /^(resolved|rejected|dead)$/ ) {
 
         #When we resolve a ticket, set the 'Resolved' attribute to now.
         $self->_Set( Field             => 'Resolved',

@@ -36,12 +36,16 @@
     <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><a href="Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</TD>
+    <TD class="label"><&|/l&>Last Contact</&>:</TD>
     <TD class="value"><% $Ticket->ToldObj->AsString %></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Due</&>:</TD>
     <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Closed</&>:</TD>
+    <TD class="value"><% $Ticket->ResolvedObj->AsString  %></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Updated</&>:</TD>
