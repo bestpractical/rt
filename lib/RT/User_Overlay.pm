@@ -164,8 +164,22 @@ sub Create {
 
 
     $RT::Handle->BeginTransaction();
+    # Groups deal with principal ids, rather than user ids.
+    # When creating this user, set up a principal Id for it.
+    my $principal = RT::Principal->new($self->CurrentUser);
+    my $principal_id = $principal->Create(PrincipalType => 'User',
+                                ObjectId => '0');
+    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
+    # If we couldn't create a principal Id, get the fuck out.
+    unless ($principal_id) {
+        $RT::Handle->Rollback();
+        $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
+        return ( 0, $self->loc('Could not create user') );
+    }
 
-    my $id = $self->SUPER::Create(%args);
+
+    $self->SUPER::Create(id => $principal_id , %args);
+    my $id = $self->Id;
 
     #If the create failed.
     unless ($id) {
@@ -181,19 +195,6 @@ sub Create {
     #	#TODO: Send the user a "welcome message" 
     #}
 
-
-    # Groups deal with principal ids, rather than user ids.
-    # When creating this user, set up a principal Id for it.
-    my $principal = RT::Principal->new($self->CurrentUser);
-    my $principal_id = $principal->Create(PrincipalType => 'User',
-                                ObjectId => $id);
-
-    # If we couldn't create a principal Id, get the fuck out.
-    unless ($principal_id) {
-        $RT::Handle->Rollback();
-        $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
-        return ( 0, $self->loc('Could not create user') );
-    }
 
 
     my $aclstash = RT::Group->new($self->CurrentUser);
@@ -242,15 +243,16 @@ Returns a standard RT tuple of (val, msg);
 
 =begin testing
 
+
 ok(my $user = RT::User->new($RT::SystemUser));
-ok($user->Load(3), "Loaded user 3");
-ok($user->Privileged, "User 3 is privileged");
+ok($user->Load('root'), "Loaded user 'root'");
+ok($user->Privileged, "User 'root' is privileged");
 ok(my ($v,$m) = $user->SetPrivileged(0));
 ok ($v ==1, "Set unprivileged suceeded ($m)");
-ok(!$user->Privileged, "User 3 is no longer privileged");
+ok(!$user->Privileged, "User 'root' is no longer privileged");
 ok(my ($v2,$m2) = $user->SetPrivileged(1));
 ok ($v2 ==1, "Set privileged suceeded ($m2");
-ok($user->Privileged, "User 3 is privileged again");
+ok($user->Privileged, "User 'root' is privileged again");
 
 =end testing
 
@@ -351,24 +353,25 @@ sub _BootstrapCreate {
 
     $RT::Handle->BeginTransaction(); 
 
-    my $id = $self->SUPER::Create(%args);
-
-    #If the create failed.
-    return ( 0, 'Could not create user' )
-      unless ($id);
-
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal Id for it.
     my $principal = RT::Principal->new($self->CurrentUser);
-    my $principal_id = $principal->Create(PrincipalType => 'User',
-                                ObjectId => $id);
-
+    my $principal_id = $principal->Create(PrincipalType => 'User', ObjectId => '0');
+    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
+    
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, 'Could not create user' );
     }
+    $self->SUPER::Create(id => $principal_id, %args);
+    my $id = $self->Id;
+
+    #If the create failed.
+    return ( 0, 'Could not create user' ) 
+      unless ($id); # Never loc this
+
 
     my $aclstash = RT::Group->new($self->CurrentUser);
     my $stash_id  = $aclstash->_CreateACLEquivalenceGroup($principal);
@@ -933,7 +936,7 @@ Returns this user's PrincipalId
 
 sub PrincipalId {
     my $self = shift;
-    return $self->PrincipalObj->Id;
+    return $self->Id;
 }
 
 # }}}

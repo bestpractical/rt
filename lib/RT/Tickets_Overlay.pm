@@ -62,6 +62,7 @@ use vars qw(%TYPES @SORTFIELDS);
  	      TransactionDate => 'TRANSDATE',
 	      LinkedTo => 'LINKFIELD',
           Watcher => 'WATCHERFIELD',
+          CustomFieldValue => 'CUSTOMFIELD'
 	    );
 
 
@@ -540,6 +541,13 @@ sub LimitOwner {
   VALUE is a value to match the ticket\'s watcher email addresses against
   TYPE is the sort of watchers you want to match against. Leave it undef if you want to search all of them
 
+=begin testing
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+$t1->Create(Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
+
+=end testing
+
 =cut
    
 sub LimitWatcher {
@@ -569,53 +577,18 @@ sub LimitWatcher {
 		 );
 }
 
-# }}}
-
-# {{{ sub LimitRequestor
-
-=head2 LimitRequestor
-
-It\'s like LimitWatcher, but it presets TYPE to Requestor
-
-=cut
-
 
 sub LimitRequestor {
     my $self = shift;
-    $self->LimitWatcher(TYPE=> 'Requestor', @_);
+    my %args = (@_);
+  my ($package, $filename, $line) = caller;
+    $RT::Logger->error("Tickets->LimitRequestor is deprecated. please rewrite call at  $package - $filename: $line");
+    $self->LimitWatcher(TYPE => 'Requestor', @_);
+
 }
 
 # }}}
 
-# {{{ sub LimitCc
-
-=head2 LimitCC
-
-It\'s like LimitWatcher, but it presets TYPE to Cc
-
-=cut
-
-sub LimitCc {
-    my $self = shift;
-    $self->LimitWatcher(TYPE=> 'Cc', @_);
-}
-
-# }}}
-
-# {{{ sub LimitAdminCc
-
-=head2 LimitAdminCc
-
-It\'s like LimitWatcher, but it presets TYPE to AdminCc
-
-=cut
-  
-sub LimitAdminCc {
-    my $self = shift;
-    $self->LimitWatcher(TYPE=> 'AdminCc', @_);
-}
-
-# }}}
 
 # }}}
 
@@ -874,6 +847,63 @@ sub LimitTransactionDate {
 
 # }}}
 
+# {{{ Limit based on custom fields
+# {{{ sub LimitCustomField
+
+=head2 LimitCustomField 
+
+Takes a paramhash of key/value pairs with the following keys:
+
+=over 4
+
+=item KEYWORDSELECT - KeywordSelect id
+
+=item OPERATOR - (for KEYWORD only - KEYWORDSELECT operator is always `=')
+
+=item KEYWORD - Keyword id
+
+=back
+
+=cut
+
+sub LimitCustomField {
+    my $self = shift;
+    my %args = ( VALUE        => undef,
+                 CUSTOMFIELD   => undef,
+                 OPERATOR      => '=',
+                 DESCRIPTION   => undef,
+                 FIELD         => 'CustomFieldValue',
+                 QUOTEVALUE    => 1,
+                 @_ );
+
+    use RT::CustomFields;
+    my $CF = RT::CustomField->new( $self->CurrentUser );
+    $CF->Load( $args{CUSTOMFIELD} );
+
+
+    #If we are looking to compare with a null value.
+        if ( $args{'OPERATOR'} =~ /^is$/i ) {
+            $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] has no value.", $CF->Name);
+        }
+        elsif ( $args{'OPERATOR'} =~ /^is not$/i ) {
+            $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] has a value.", $CF->Name);
+        }
+
+    # if we're not looking to compare with a null value
+    else {
+        $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] [_2] [_3]",  $CF->Name , $args{OPERATOR} , $args{VALUE});
+    }
+
+    my $index = $self->_NextIndex;
+    %{ $self->{'TicketRestrictions'}{$index} } = %args;
+
+    $self->{'RecalcTicketLimits'} = 1;
+    return ($index);
+}
+
+# }}}
+# }}}
+
 
 # {{{ sub _NextIndex
 
@@ -902,14 +932,6 @@ sub _Init  {
     $self->{'restriction_index'} =1;
     $self->{'primary_key'} = "id";
     $self->SUPER::_Init(@_);
-
-}
-# }}}
-
-# {{{ sub NewItem 
-sub NewItem  {
-  my $self = shift;
-  return(RT::Ticket->new($self->CurrentUser));
 
 }
 # }}}
@@ -1320,9 +1342,103 @@ sub _ProcessRestrictions {
 	# }}}
 	# {{{ if it's a watcher that we're hunting for
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'WATCHERFIELD') {
+        my $groups = $self->NewAlias('Groups');
+        my $group_princs = $self->NewAlias('Principals');
+        my $groupmembers = $self->NewAlias('CachedGroupMembers');
+        my $member_princs = $self->NewAlias('Principals');
+        my $users        = $self->NewAlias('Users');
+
+        # {{{ Tie to groups for tickets we care about
+        $self->SUPER::Limit(ALIAS => $groups, 
+                            FIELD => 'Domain',
+                            VALUE => 'TicketRole');
+
+        $self->Join(ALIAS1 => $groups, FIELD1 => 'Instance',
+                    ALIAS2 => 'main',   FIELD2 => 'id');
+
+        # }}}
+
+        # If we care about which sort of watcher
+        if ($restriction->{'TYPE'} ) {
+            $self->SUPER::Limit(ALIAS => $groups, 
+                                FIELD => 'Type',
+                               VALUE => $restriction->{'TYPE'});
+
+        }
+
+
+        $self->Join (ALIAS1 => $groups,  FIELD1 => 'id',
+                     ALIAS2 => $group_princs, FIELD2 => 'ObjectId');
+        $self->SUPER::Limit(ALIAS => $group_princs, 
+                            FIELD => 'PrincipalType',
+                            VALUE => 'Group');
+        $self->Join( ALIAS1 => $group_princs, FIELD1 => 'id',
+                      ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
+
+        $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
+                     ALIAS2 => $member_princs, FIELD2 => 'id');
+                     
+        $self->Join (ALIAS1 => $member_princs, FIELD1 => 'ObjectId',
+                     ALIAS2 => $users, FIELD2 => 'id');
+    
+
+        #Find user watchers
+        my $subclause = undef;
+        my $aggregator = 'OR';
+        if ($restriction->{'OPERATOR'} =~ /!|NOT/i ){
+            $subclause = 'AndEmailIsNot';
+            $aggregator = 'AND';
+        }
+        $self->SUPER::Limit(ALIAS => $users, 
+                            SUBCLAUSE => $subclause,
+                            FIELD => 'EmailAddress',
+                            ENTRYAGGREGATOR => $aggregator,
+                            VALUE           => $restriction->{'VALUE'},
+                            OPERATOR        => $restriction->{'OPERATOR'},
+                            CASESENSITIVE   => 0
+            );
+
 	}
 
 	# }}}
+   # {{{ if it's a CUSTOMFIELD
+        elsif ( $TYPES{ $restriction->{'FIELD'} } eq 'CUSTOMFIELD' ) {
+
+            my $null_columns_ok;
+            my $TicketCFs = $self->Join( TYPE   => 'left',
+                                                ALIAS1 => 'main',
+                                                FIELD1 => 'id',
+                                                TABLE2 => 'TicketCustomFieldValues',
+                                                FIELD2 => 'Ticket' );
+
+                $self->SUPER::Limit( ALIAS      => $TicketCFs,
+                                     FIELD      => 'Content',
+                                     OPERATOR   => $restriction->{'OPERATOR'},
+                                     VALUE      => $restriction->{'VALUE'},
+                                     QUOTEVALUE => $restriction->{'QUOTEVALUE'},
+                                     ENTRYAGGREGATOR => 'AND', );
+            if (    ( $restriction->{'OPERATOR'} =~ /^IS$/i ) or ( $restriction->{'OPERATOR'} eq '!=' ) ) {
+                $null_columns_ok = 1;
+            }
+
+            #If we're trying to find tickets where the keyword isn't somethng, also check ones where it _IS_ null
+            if ( $restriction->{'OPERATOR'} eq '!=' ) {
+                $self->SUPER::Limit( ALIAS           => $TicketCFs,
+                                     FIELD           => 'Content',
+                                     OPERATOR        => 'IS',
+                                     VALUE           => 'NULL',
+                                     QUOTEVALUE      => 0,
+                                     ENTRYAGGREGATOR => 'OR', );
+            }
+
+            $self->SUPER::Limit( LEFTJOIN => $TicketCFs,
+                                 FIELD    => 'CustomField',
+                                 VALUE    => $restriction->{'CUSTOMFIELD'},
+                                 ENTRYAGGREGATOR => 'OR' );
+
+        }
+
+        # }}}
 
     
      }

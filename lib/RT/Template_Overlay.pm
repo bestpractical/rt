@@ -26,7 +26,8 @@ ok(require RT::Template);
 
 no warnings qw(redefine);
 
-
+use Safe;
+use Text::Template;
 use MIME::Entity;
 use MIME::Parser;
 
@@ -312,8 +313,6 @@ sub _ParseContent {
         @_
     );
 
-    # Might be subject to change
-    use Text::Template;
 
     $T::Ticket      = $args{'TicketObj'};
     $T::Transaction = $args{'TransactionObj'};
@@ -329,7 +328,8 @@ sub _ParseContent {
         SOURCE => $content
     );
 
-    my $retval = $template->fill_in( PACKAGE => T );
+    my $safe = Safe->new();
+    my $retval = $template->fill_in( SAFE => $safe, PACKAGE => T );
     return ($retval);
 }
 

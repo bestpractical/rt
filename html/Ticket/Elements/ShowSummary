@@ -8,7 +8,7 @@
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), 
-		title_href =>"$RT::WebPath/Ticket/CustomFields.html?id=".$Ticket->Id, 
+	#	title_href =>"$RT::WebPath/Ticket/CustomFields.html?id=".$Ticket->Id, #
 		title_class=> 'inverse',  
 		color => "#993333" &>
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>

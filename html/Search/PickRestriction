@@ -56,6 +56,20 @@
 &>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
+
+% while ( my $CustomField = $CustomFields->Next ) {
+
+<li><% $CustomField->Name %> 
+        <& /Elements/SelectBoolean, Name => "CustomFieldOp". $CustomField->id, 
+                                    True => loc("is"), 
+                                    False => loc("isn't"), 
+                                    TrueVal=> '=', FalseVal => '!=' &>
+
+<& /Elements/SelectCustomFieldValue, Name => "CustomField".$CustomField->id,
+                            CustomField => $CustomField,
+                            &>
+% }
+
 </UL>
 
 <& /Elements/TitleBoxEnd &>
@@ -91,4 +105,11 @@
 
 
  <%INIT>
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+ foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
+        $CustomFields->LimitToQueue($_);
+ }
+
+ $CustomFields->LimitToGlobal();
+
 </%INIT>

@@ -191,15 +191,15 @@ unless ($LastVersion) {
 my @acl;
 unless ($LastVersion) {
     @acl = (    
-        {
-            UserId    => '2',
+        { 
+            UserId    => '10', # - principalId
             Right      => 'OwnTicket',
             ObjectType     => 'System',
             ObjectId => '0'
         },
 
         {
-            UserId    => '3',
+            UserId    => '12', # - principalid
             Right      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0'

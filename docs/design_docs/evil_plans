@@ -3,10 +3,7 @@ Current planned 2.2 feature list. subject to change.
 
 Core
 
-Should	Make "Owner" a watcher type, rather than a special ticket attribute,
-	under the hood.  This wins for ACL and code consistency reasons.
-        This loses for performance reasons and the fact that it makes
-        it easier to lose and possibly have no owner or two owners.
+
 
 Web UI
 
@@ -69,7 +66,6 @@ nice	Scrips could apply to a list of queues, rather than just one queue or
 
 Custom fields
 
-Should	String and multi-string custom fields.
 Nice	Date custom fields
 Nice	Some way to order and group custom fields.
 Nice	Default values
@@ -79,8 +75,6 @@ Nice	Make custom fields apply to an enumerated list of queues,
 
 
 Web infrastructure
-
-Must	Full fastcgi support.
 
 
 Installation 

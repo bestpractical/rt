@@ -1,0 +1,17 @@
+% if ($CustomField->Type =~ /Select/i) {
+% my $values = $CustomField->Values;
+<select name="<%$Name%>">
+<option value="" SELECTED>-</option>
+<option value="null"><&|/l&>(no value)</&></option>
+% while (my $value = $values->Next) {
+<option value="<%$value->Name%>"><%$value->Name%></option>
+% }
+</select>
+% }
+% else {
+<input name="<%$Name%>" size="20">
+% }
+<%args>
+$Name => undef
+$CustomField =>undef
+</%args>

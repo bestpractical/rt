@@ -147,11 +147,11 @@ sub loc_match {
 	my $regex = quotemeta($entry);
 	$regex =~ s/\\\[_\d\\\]/(.*?)/;
 	if (my @matched = ($msg =~ /^$regex$/)) {
-	    return $self->loc($entry, @matched);
+	    return loc($entry, @matched);
 	}
     }
 
-    return $self->loc($msg);
+    return loc($msg);
 }
 
 # }}}
@@ -384,7 +384,7 @@ sub MakeMIMEEntity {
         Data    => [ $args{'Body'} ]
     );
 
-    my $cgi_object = $r->cgi_object;
+    my $cgi_object = $m->cgi_object;
 
     if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
 
@@ -590,6 +590,42 @@ sub ProcessSearchQuery {
     }
 
     # }}}   
+
+ # {{{ Limit CustomFields
+
+    foreach my $arg ( keys %{ $args{ARGS} } ) {
+        my $id;
+        if ( $arg =~ /^CustomField(\d+)$/ ) {
+            $id = $1;
+        }
+        else {
+            next;
+        }
+        next unless ( $args{ARGS}->{$arg} );
+
+        my $form = $args{ARGS}->{$arg};
+        my $oper = $args{ARGS}->{ "CustomFieldOp" . $id };
+        foreach my $value ( ref($form) ? @{$form} : ($form) ) {
+            my $quote = 1;
+            if ( $KeywordId =~ /^null$/i ) {
+
+                #Don't quote the string 'null'
+                $quote = 0;
+
+                # Convert the operator to something apropriate for nulls
+                $oper = 'IS'     if ( $oper eq '=' );
+                $oper = 'IS NOT' if ( $oper eq '!=' );
+            }
+            $session{'tickets'}->LimitCustomField( CUSTOMFIELD => $id,
+                                                   OPERATOR    => $oper,
+                                                   QUOTEVALUE  => $quote,
+                                                   VALUE       => $value );
+        }
+    }
+
+    # }}}
+
+
 }
 
 # }}}
@@ -711,7 +747,7 @@ sub UpdateRecordObject {
             my $method = "Set$attribute";
             my ( $code, $msg ) = $object->$method( $ARGSRef->{"$attribute"} );
 
-	    push @results, $self->loc($attribute) . ': '. $self->loc_match(
+	    push @results, loc($attribute) . ': '. loc_match(
 		$msg,
 "[_1] could not be set to [_2].",	# loc
 "That is already the current value",	# loc

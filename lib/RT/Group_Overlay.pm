@@ -370,26 +370,28 @@ sub _Create {
     );
 
     $RT::Handle->BeginTransaction();
+    # Groups deal with principal ids, rather than user ids.
+    # When creating this user, set up a principal Id for it.
+    my $principal    = RT::Principal->new( $self->CurrentUser );
+    my $principal_id = $principal->Create(
+        PrincipalType => 'Group',
+        ObjectId      => '0'
+    );
+    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
 
-    my $id = $self->SUPER::Create(
+
+    $self->SUPER::Create(
+        Id          => $principal_id,
         Name        => $args{'Name'},
         Description => $args{'Description'},
         Type        => $args{'Type'},
         Domain      => $args{'Domain'},
         Instance    => $args{'Instance'}
     );
-
+    my $id = $self->Id;
     unless ($id) {
         return ( 0, $self->loc('Could not create group') );
     }
-
-    # Groups deal with principal ids, rather than user ids.
-    # When creating this user, set up a principal Id for it.
-    my $principal    = RT::Principal->new( $self->CurrentUser );
-    my $principal_id = $principal->Create(
-        PrincipalType => 'Group',
-        ObjectId      => $id
-    );
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
@@ -1071,7 +1073,7 @@ Returns this user's PrincipalId
 
 sub PrincipalId {
     my $self = shift;
-    return $self->PrincipalObj->Id;
+    return $self->Id;
 }
 
 # }}}
