@@ -1,0 +1,14 @@
+    <div align="left"> 
+ 
+	<b>
+	  <font size=-2><%$title%></font>
+	</b>
+	<br>
+	<%$content%>&nbsp;
+ 
+      
+    </div>
+<%ARGS>
+$title => undef
+$content => undef
+</%ARGS>
