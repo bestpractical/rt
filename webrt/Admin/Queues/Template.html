@@ -1,13 +1,20 @@
 <& /Admin/Elements/Header, title => "Modify template ".$TemplateObj->id&>
-<& /Admin/Elements/QueueTabs, id => $id &>
-<& /Elements/ListActions, actions => @results &>
+<& /Admin/Elements/QueueTabs, id => $Queue &>
+<& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => "Modify Template ".$TemplateObj->id &>
+<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM METHOD=POST ACTION="Template.html">
-<INPUT TYPE=HIDDEN name="template" value="<%$TemplateObj->id%>">
+%if ($create ) {
+<INPUT TYPE=HIDDEN NAME=template VALUE="new">
+% } else {
+<INPUT TYPE=HIDDEN NAME=template VALUE="<%$TemplateObj->Id%>">
+% }
+
 %# hang onto the queue id
-<INPUT TYPE=HIDDEN name="id" value="<%$id%>">
+<INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
+
+
 Name: <input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=20><BR>
 Description: <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80><BR>
 
@@ -24,30 +31,39 @@ Description: <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZ
 <%INIT>
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
-$TemplateObj->Load($template) || Abort('No template specified');
+my  ($title, @results);
 
-# Deal with updating individual fields where we're doing something to watch
-# what goes in and out
-    
-my @fields = qw( Name Description Content Queue);
-
-#Run through each field in this list. update the value if apropriate
-my ($field);
-my @results = ('');
-foreach $field (@fields) {
-    my ($code, $msg);
-    my $check = "if ((defined \$ARGS{'$field'}) and (\$ARGS{'$field'} ne \$TemplateObj->$field))
-    {   \$ARGS{'$field'} =~ s/\\r\\n/\\n/g;     
-        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
-
-    push \@results, \$msg;  }";
-    $RT::Logger->debug("$check");
-    eval $check || push @results, $@;
-    
+if ($create) {
+  $title = "Create a template";
 }
 
+else {
+  if ($template eq 'new') {
+      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
+      Abort("Could not create template: $msg") unless ($val);
+     push @results, $msg;
+     $title = 'Created template ' . $TemplateObj->Name(); 
+    }
+    else {
+       $TemplateObj->Load($template) || Abort('No Template');
+      $title = 'Editing template ' . $TemplateObj->Name(); 
+    }
+  
+    
+}
+if ($TemplateObj->Id()) {
+  $Queue = $TemplateObj->Queue;
+
+  my @attribs = qw( Description Content Queue Name);
+  my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
+				     Object => $TemplateObj, 
+				     ARGSRef => \%ARGS);
+  push @results, @aresults;
+}
 </%INIT>
 <%ARGS>
-$id => undef
+$Queue => undef
 $template => undef
+$create => undef
+$Name => undef
 </%ARGS>

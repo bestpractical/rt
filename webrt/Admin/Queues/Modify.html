@@ -67,7 +67,7 @@ Requests should be due in:
 
 
 <%INIT>
-use RT::Interface::Web;
+
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my  ($title, @results, $Disabled, $EnabledChecked);
 
@@ -92,22 +92,13 @@ else {
     
 }
 if ($QueueObj->Id()) {
-my @fields = qw(Description CorrespondAddress CommentAddress Name 
+my @attribs= qw(Description CorrespondAddress CommentAddress Name 
                 InitialPriority FinalPriority DefaultDueIn);
 
+  @results = UpdateRecordObject( AttributesRef => \@attribs, 
+				    Object => $QueueObj, 
+				    ARGSRef => \%ARGS);
 
-#Run through each field in this list. update the value if apropriate
-my $field;
-foreach $field (@fields) {
-my ($code, $msg);
-my $check = "if ((defined \$$field) and (\$$field !~ \$QueueObj->$field)) {
-  (\$code, \$msg) = \$QueueObj->Set$field(\$$field);
-
-     push \@results, \$msg;
-   }";
-eval $check;
-
-}
 }
 
 #we're asking about enabled on the web page but really care about disabled.
