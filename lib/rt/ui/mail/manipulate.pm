@@ -124,7 +124,6 @@ sub parse_headers {
 	$current_user =$1;
         $rt::users{$current_user}{real_name}=$` 
              if (!exists $rt::users{$current_user}{real_name});
-           }
       }
       if ($current_user =~/<(\S*\@\S*)>/){
 	$current_user =$1;
