@@ -47,7 +47,7 @@
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket") &>
-<FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
 	
