@@ -1,0 +1,182 @@
+% if ($method) {
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+% } else {
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+"http://www.w3.org/TR/html4/">
+<html lang="en">
+% }
+<head>
+<title><% $n || 'RT' %> - RT Pod Online</title>
+<style type="text/css"><!--
+a { text-decoration: none }
+a:hover { text-decoration: underline }
+a:focus { background: #99ff99; border: 1px black dotted }
+--></style>
+</head>
+% if (!$method) {
+<FRAMESET COLS="*, 250">
+    <FRAME src="Perldoc.html?method=Body" name="podBody">
+    <FRAME src="Perldoc.html?method=TOC" name="podTOC">
+    <NOFRAMES>
+        <a style="display: none" href="#toc">Table of Contents</a>
+<& SELF:Body, Target => '' &>
+        <h1><a id="toc">Table of Contents</a></h1>
+<& SELF:TOC, Target => '' &>
+    </NOFRAMES>
+</FRAMESET>
+%     return;
+% }
+
+
+% if ($method eq 'TOC') {
+<body style="background: #dddddd">
+<& SELF:TOC &>
+% } else {
+<body>
+<& SELF:Body &>
+% }
+
+<%METHOD Body>
+<%PERL>
+my $n = $m->request_args->{n} || '';
+
+my $dirname = File::Basename::dirname($INC{'RT.pm'});
+
+$n =~ s/::/\//g;
+$n = 'RT' unless -r "$dirname/$n.pm";
+my $show = "$dirname/$n";
+if (-r "$show.pm") {
+    local $/;
+    my ($fh, $filename) = File::Temp::tempfile();
+    close $fh;
+    my ($src_fh, $src_file) = File::Temp::tempfile();
+    my $got_name = 0;
+    foreach my $postfix ('', '_Overlay', '_Vendor', '_Local') {
+        next unless -r "$show$postfix.pm";
+        open $fh, "$show$postfix.pm" or next;
+        my $body = <$fh>;
+        if ($body =~ s/.*Create takes a hash of values and creates a row in the
+database:([^=]+)//s) {
+            # okay, reduce it...
+            $body = "=head1 SCHEMA\n\n$1\n=head1 ACCESSORS\n\n\n=cut\n$body";
+            $body =~ s/=item/=head2/g;
+        }
+        elsif ($body =~ /^=item NewItem$/m and $n =~ /s$/) {
+            my $pkg = $n;
+            $pkg =~ s{/}{::}g;
+            chop $pkg;
+            $body = "=head1 NAME\n\n${pkg}s - Collection of $pkg
+objects\n\n=cut\n";
+            $got_name++;
+        }
+        else {
+            $body =~ s/^=head1 NAME[^=]+//m if $got_name;
+        }
+
+        $body =~ s/^=head1\b(?! ACCESSORS).*\s*(?==(head1|cut))//mg;
+        $body =~ s/^=head1 (?:AUTHOR|SEE ALSO|SYNOPSIS)\s*[^=]+//mg;
+        $body =~ s/^=/\n=/mg;
+        $body =~ s/^=begin testing\n/=begin testing\n\n/mg;
+        # print FOO $body;
+
+        print $src_fh $body;
+        close $fh;
+    }
+    close $src_fh;
+    Pod::Html::pod2html(
+        "--infile=$src_file",
+        "--outfile=$filename",
+        "--cachedir=" . File::Spec->tmpdir,
+    );
+    open $fh, $filename;
+    my $body = <$fh>;
+    $body =~ s{.*?<body [^>]+>}{}s;
+    $body =~ s{</body>\s*</html>\s*$}{};
+    $n =~ s{/}{::}g;
+    $m->print("<h1>$n</h1>");
+    $body =~ s/(?<!\$)\b(RT::[a-zA-Z0-9:]+)\b/<a
+href="Perldoc.html?n=$1$Target">$1<\/a>/g;
+    $body =~ s{(?<![\$:])(?<!RT::)\b((?!RT::)\w+::\w+)\b}{<a
+href="http://search.cpan.org/search?query=$1&mode=module">$1</a>}g;
+    $body =~ s!</li>\n\t<ul>!<ul>!;
+    $body =~ s!</ul>!</ul></li>!;
+    $body =~ s!<p></p>!!;
+    $body =~ s!<a name=!<a id=!g;
+    $body =~ s!__index__!index!g;
+    $m->print($body);
+}
+</%PERL>
+<%ARGS>
+$Target    => '&method=Body'
+</%ARGS>
+</%METHOD>
+
+<%METHOD TOC>
+<%PERL>
+my $dirname = File::Basename::dirname($INC{'RT.pm'});
+my @found;
+File::Find::find(
+    { wanted => sub {
+        return unless /(\w+)\.pm$/;
+        return if $1 =~ /_/;
+        my $name = $File::Find::name;
+        $name =~ s/.*lib\b.//;
+        $name =~ s!\.pm!!i;
+        $name =~ s!\W!::!g;
+        push @found, $name;
+    }, follow => ($^O ne 'MSWin32') },
+    $dirname,
+);
+my ($prev, $indent);
+foreach my $file (sort @found) {
+    my ($parent, $name) = ($1, $2) if $file =~ /(?:(.*)::)?(\w+)$/;
+    if ($file =~ /^$prev\::(.*)/) {
+        my $foo = $1;
+        while ($foo =~ s/(\w+):://) {
+            $indent++;
+            $m->print(('&nbsp;&nbsp;&nbsp;' x $indent));
+            $m->print("$1<br />");
+        }
+        $indent++;
+    } elsif ($prev !~ /^$parent\::/) {
+        while ($parent =~ s/(\w+)//) {
+            next if $prev =~ s/\b$1:://;
+            while ($prev =~ s/:://) {
+                $indent--;
+            }
+            $m->print(('&nbsp;&nbsp;&nbsp;' x $indent));
+            $m->print("$1<br />");
+            $indent++;
+        }
+    } elsif ($prev =~ /^$parent\::(.*::)/) {
+        my $foo = $1;
+        while ($foo =~ s/:://) {
+            $indent--;
+        }
+    }
+    $m->print(('&nbsp;&nbsp;&nbsp;' x $indent));
+    $m->print('<a target="podBody"');
+    $m->print("href='Perldoc.html?n=$file$Target'>$name</a><br />");
+    $prev = $file;
+}
+
+</%PERL>
+<%ARGS>
+$Target    => '&method=Body'
+</%ARGS>
+</%METHOD>
+</body></html>
+<%INIT>
+require File::Basename;
+require File::Find;
+require File::Temp;
+require File::Spec;
+require Pod::Html;
+</%INIT>
+<%ARGS>
+$n  => ''
+$method => ''
+</%ARGS>
