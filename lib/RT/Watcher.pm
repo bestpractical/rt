@@ -25,9 +25,9 @@ sub new  {
 
 # {{{ sub Create 
 sub Create  {
-    # Args {{{
     my $self = shift;
     my %args = (
+		Owner => undef,
 		Email => undef,
 		Value => undef,
 		Scope => undef,
@@ -36,31 +36,20 @@ sub Create  {
 		@_ # get the real argumentlist
 		);
   
-    # }}} (Args)
-
-    # {{{ DEAL WITH USER ID
     my $User=RT::User->new($self->CurrentUser);
     if (!$Owner && $User->LoadByEmail($args{Email})) {
 	$args{Owner}=$User->id;
 	delete $args{Email};
-    } elsif (!$Owner && exists $args{Name} && $User->LoadByName($args{Name})) {
-	$args{Owner}=$User->id;
     }
-    delete $args{Name} if exists $args{Name};
     if ($args{Email} !~ /\@/ && $args{Email} && $args{Owner}) {
 	delete $args{Email};
     }
-    # }}}
   
-    # {{{ Create & Load
     my $id = $self->SUPER::Create(%args);
     $self->Load($id);
   
     #TODO: this is horrificially wasteful. we shouldn't commit 
     # to the db and then instantly turn around and load the same data
-
-    # }}}
-
 
     return (1,"Interest noted");
 }
