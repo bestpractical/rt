@@ -103,6 +103,18 @@ sub loc {
     }
 }
 
+sub loc_fuzzy {
+    my $self = shift;
+    if (my $user = $self->OriginalUser) {
+        return $user->loc_fuzzy(@_);
+    }
+    else {
+        use Carp;
+        Carp::confess("No currentuser");
+        return ("Critical error:$self has no CurrentUser", $self);
+    }
+}
+
 eval "require RT::Base_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
 eval "require RT::Base_Local";
