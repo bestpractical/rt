@@ -34,6 +34,13 @@ sub template_replace_tokens {
     return ($template);
 }
 
+
+# The return value should specify whether an error has occurred or
+# not, so errors might be returned to the UI. It seems to me the
+# message is discarded anyway, so introducing the same array-scheme as
+# elsewhere could be feasible in 1.0. I want to test the emails using
+# Email::Valid - if and only if the module can be located in @INC.
+
 sub template_mail{
     local ($in_template,$in_queue_id, $in_recipient, $in_cc, $in_bcc, $in_serial_num, $in_transaction, $in_subject, $in_current_user, $in_custom_content) = @_;
     my ($mailto, $template, $temp_mail_alias);
