@@ -231,9 +231,6 @@ sub SetReferences {
      "\@".$RT::rtname.">");
 
 
-  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
-  # message-ids (ref rfc822)
-
   # TODO We should always add References headers for all message-ids
   # of previous messages related to this ticket.
 }
@@ -254,13 +251,10 @@ sub SetMessageID {
   # pull out different message-ids.  I'd suggest message ids like
   # "rt-ticket#-transaction#-scrip#-receipient#"
 
-  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
-  # message-ids (ref rfc822)
-  
   $self->SetHeader
     ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
-     $self->TransactionObj->id()."." .rand(20) . "\@".$RT::rtname.">")
+     $self->TransactionObj->id()."." .rand(20) . "\@".$RT::Organization.">")
       unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
 }
 

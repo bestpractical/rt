@@ -114,7 +114,7 @@ unless ($CurrentUser->Id) {
 }
 
 my $MessageId = $head->get('Message-Id') || 
-  "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
+  "<no-message-id-".time.rand(2000)."\@.$RT::Organization>";
 
 #Pull apart the subject line
 $Subject = $head->get('Subject') || "[no subject]";
