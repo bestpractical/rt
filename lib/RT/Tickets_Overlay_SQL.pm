@@ -31,6 +31,9 @@ my %FIELDS = %{FIELDS()};
 my %dispatch = %{dispatch()};
 my %can_bundle = %{can_bundle()};
 
+# Lower Case version of FIELDS, for case insensitivity
+my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELDS);
+
 sub _InitSQL {
   my $self = shift;
 
@@ -240,10 +243,9 @@ sub _parser {
    }
 
       my $class;
-      my ($stdkey) = grep { /^$key$/i } (keys %FIELDS);
-      if ($stdkey && exists $FIELDS{$stdkey}) {
+      if (exists $lcfields{lc $key}) {
+        $key = $lcfields{lc $key};
         $class = $FIELDS{$key}->[0];
-        $key = $stdkey;
       }
    # no longer have a default, since CF's are now a real class, not fallthrough
    # fixme: "default class" is not Generic.
