@@ -10,20 +10,22 @@ Date: <%$Transaction->CreatedAsString%>
 (<%$Transaction->TimeTaken%> minutes)
 % }
 <%$Transaction->Description%>
-
+<br>
 
 %  while (my $message=$attachments->Next) {
 
-%# TODO: This is _not_ the right way to do it.  
-%# We have to handle the message as a MIME Entity and view it 
-%# accordingly.
-
+%# TODO: This is not really the right way to do it.  
+% # The if (0) stuff below seems a bit more correct
+% # .. though still a lot of work is needed.
+<a href="Update.html?QuoteTransaction=<%$message->Id%>">Act</a>
 <h3><%$message->Subject%></h3>
 <hr>
 <pre>
 <%$message->Content%>
+</pre>
 
-% if (0) {
+% if (0) { 
+
 <hr width=60%>
 <pre>
 <%$message->Headers%>
@@ -40,3 +42,6 @@ Date: <%$Transaction->CreatedAsString%>
 %    }
 % }
 % }
+
+
+
