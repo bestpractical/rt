@@ -54,11 +54,7 @@ Link:
 % while ($i < scalar @$CurrentFormat) {
 % my $field = $CurrentFormat->[$i];
 % if ($field) {
-<option value=<%$i%>
-% if ($i eq $ARGS{SeenCols}) {
-SELECTED
-% }
-><%$field->{Column}%></option>
+<option value=<%$i%>><%$field->{Column}%></option>
 % }
 % $i++;
 % }

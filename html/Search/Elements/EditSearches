@@ -10,13 +10,17 @@
 <font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
 <br>
 % if ($SearchId ne 'new') {
+% if ($Dirty) {
 <input type="submit" name="Revert" value="<%loc('Revert')%>">
+% }
 <input type="submit" name="Delete" value="<%loc('Delete')%>">
 <input type="submit" name="CopySearch" value="<%loc('Copy')%>">
 
 % }
 
+% if ($Dirty or $SearchId eq 'new') {
 <input type="submit" name="Save" value="<%loc('Save')%>">
+% }
 <hr>
 <&|/l&>Load saved search:</&><br>
 <& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
@@ -47,4 +51,5 @@ $SearchId => 'new'
 $CurrentSearch => undef
 $Description => undef
 $HideResults => 0
+$Dirty => 0
 </%ARGS>
