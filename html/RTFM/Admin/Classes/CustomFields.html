@@ -50,8 +50,8 @@ CHECKED
 </td>
 <td>
 <select name="Class-<% $ClassObj->Id %>-CF-<% $cf->Id %>-Display" <% $class_cf->Id ? '' : 'disabled="1"' |n%>>
-% for (qw/Normal Emphasized De-emphasized Hidden/, "Hidden when empty") {
-<option <% $_ eq $class_cf->Display and "selected" %>><% $_ %></option>
+% for ("Hidden when empty", qw/Hidden De-emphasized Visible Emphasized/) {
+<option <% ($_ eq $class_cf->Display or (not $class_cf->Display and $_ eq "Visible")) and "selected" %>><% $_ %></option>
 % }
 </select>
 </td>
@@ -103,7 +103,7 @@ while (my $cf = $CustomFields->Next) {
         
         my $class_cf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
         $class_cf->LoadByCols(Class => $ClassObj->Id, CustomField => $cf->Id);
-        $class_cf->SetDisplay($ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-Display"} || "Normal");
+        $class_cf->SetDisplay($ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-Display"} || "Visible");
         my ($val, $msg) =  $cf->SetSortOrderForClass(Class => $ClassObj->Id, SortOrder => $ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-SortOrder"});
     }
 }

@@ -22,9 +22,10 @@
 %   my $class_cf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
 %   $class_cf->LoadByCols(Class => $article->ClassObj->Id, CustomField => $cf->Id);
 %   my $display = $class_cf->Display;
-%   next if $display eq "Hidden";
-%   next if $display eq "Hidden when empty" and not $values->Count;
-<tr class="<% (split(' ',$display))[-1] %>">
+%   if ($display eq "Hidden when empty") {
+%     $display = $values->Count ? "Visible" : "Hidden";
+%   }
+<tr class="<% lc $display %>">
 <th valign="top"><%$cf->Name%></th>
 <td>
 <% ($cf->Type !~ /Single$/) && '<ul>' |n%>
