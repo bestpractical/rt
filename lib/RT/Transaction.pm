@@ -7,7 +7,8 @@ package RT::Transaction;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -19,8 +20,10 @@ sub new {
 
   return ($self);
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      TimeTaken => 'read',
@@ -32,10 +35,12 @@ sub _Accessible {
 	      Created => 'read'
 	     );
 }
+# }}}
 
 
 #This is "Create Transaction"
-sub Create {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
   
   my %args = ( id => undef,
@@ -110,15 +115,19 @@ sub Create {
   
   return ($id, "Transaction Created");
 }
+# }}}
 
 
-sub CreatedAsString {
+# {{{ sub CreatedAsString 
+sub CreatedAsString  {
   my $self = shift;
   return($self->_Value('Created'));
 }
+# }}}
 
 
-sub Message {
+# {{{ sub Message 
+sub Message  {
  my $self = shift;
   
   use RT::Attachments;
@@ -132,8 +141,10 @@ sub Message {
  } 
  return($self->{'message'});
 }
+# }}}
 
-sub Attachments {
+# {{{ sub Attachments 
+sub Attachments  {
   my $self = shift;
   if (@_) {
     my $Types = shift;
@@ -155,7 +166,9 @@ sub Attachments {
   return($Attachments);
 
 }
-sub Attach {
+# }}}
+# {{{ sub Attach 
+sub Attach  {
   my $self = shift;
   my $MIMEObject = shift;
 
@@ -171,10 +184,12 @@ sub Attach {
   return ($Attachment, "Attachment created");
   
 }
+# }}}
 
 
 
-sub Description {
+# {{{ sub Description 
+sub Description  {
   my $self = shift;
   if (!defined($self->Type)) {
     return("No transaction type specified");
@@ -290,9 +305,11 @@ sub Description {
   
   
 }
+# }}}
 #ACCESS CONTROL
 # 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
 
   my $actor = shift;
@@ -308,8 +325,10 @@ sub DisplayPermitted {
     return(0);
   }
 }
+# }}}
 
-sub ModifyPermitted {
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -324,8 +343,10 @@ sub ModifyPermitted {
     return(0);
   }
 }
+# }}}
 
-sub AdminPermitted {
+# {{{ sub AdminPermitted 
+sub AdminPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -342,4 +363,5 @@ sub AdminPermitted {
     return(0);
   }
 }
+# }}}
 1;

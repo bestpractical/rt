@@ -10,7 +10,8 @@ use RT::Record;
 
 
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -20,11 +21,13 @@ sub new {
 
   return($self);
 }
+# }}}
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
 # the CurrentUser object
-sub _Init {
+# {{{ sub _Init 
+sub _Init  {
   my $self = shift;
   my $UserId = shift;
   $self->_MyHandle;
@@ -34,8 +37,10 @@ sub _Init {
   $self->_MyCurrentUser($self);
   
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      UserId => 'read',
@@ -48,9 +53,11 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
 
 
-sub Load {
+# {{{ sub Load 
+sub Load  {
   my $self = shift;
   my $identifier = shift;
 
@@ -65,9 +72,12 @@ sub Load {
     $self->LoadByCol("UserId",$identifier);
   }
 }
+# }}}
 
 
 #used to check if a password is correct
+
+# {{{ sub IsPassword
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
@@ -78,18 +88,23 @@ sub IsPassword {
     return (undef);
   }
 }
+# }}}
 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
   #TODO: Implement
   return(1);
 }
+# }}}
 
-sub ModifyPermitted {
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   #TODO: Implement
   return(1);
 }
+# }}}
 
 1;
  

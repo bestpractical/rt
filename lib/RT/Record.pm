@@ -4,23 +4,28 @@ package RT::Record;
 use DBIx::Record;
 @ISA= qw(DBIx::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
   return $self;
 }
+# }}}
 
-sub _Init {
+# {{{ sub _Init 
+sub _Init  {
   my $self = shift;
   $self->_MyHandle();
   $self->_MyCurrentUser(@_);
   
 }
+# }}}
 
 
-sub _MyCurrentUser {
+# {{{ sub _MyCurrentUser 
+sub _MyCurrentUser  {
   my $self = shift;
   $self->{'user'} = shift;
   
@@ -30,14 +35,18 @@ sub _MyCurrentUser {
     return(0);
   }
 }
+# }}}
 
-sub _MyHandle {
+# {{{ sub _MyHandle 
+sub _MyHandle  {
   my $self = shift;
   
   $self->SUPER::_MyHandle( 'Handle' => $RT::Handle );
 }
+# }}}
 
-sub Create {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
   my @args = (Creator => $self->CurrentUser->Id,
 	      @_);
@@ -47,9 +56,11 @@ sub Create {
   return($id);
 
 }
+# }}}
 
 
-sub _Value {
+# {{{ sub _Value 
+sub _Value  {
 
   my $self = shift;
   my $field = shift;
@@ -65,8 +76,10 @@ sub _Value {
     return(0, "Permission Denied");
   }
 }
+# }}}
 
-sub _Set {
+# {{{ sub _Set 
+sub _Set  {
   my $self = shift;
   my $field = shift;
   #if the user is trying to modify the record
@@ -78,8 +91,10 @@ sub _Set {
   }
   
 }
+# }}}
 
-sub Creator {
+# {{{ sub Creator 
+sub Creator  {
   my $self = shift;
   if (!$self->{'creator'}) {
     use RT::User;
@@ -88,11 +103,14 @@ sub Creator {
   }
   return($self->{'creator'});
 }
+# }}}
 
-sub CurrentUser {
+# {{{ sub CurrentUser 
+sub CurrentUser  {
   my $self = shift;
   return ($self->{'user'});
 }
+# }}}
     
 
 1;

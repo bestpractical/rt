@@ -6,7 +6,8 @@ use RT::EasySearch;
 
 
 #instantiate a new object.
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -14,22 +15,29 @@ sub new {
   $self->_Init(@_);
   return ($self)
 }
+# }}}
 
+
+# {{{ sub _Init
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Queues";
   $self->{'primary_key'} = "id";
   $self->SUPER::_Init(@_);
 }
+# }}}
 
-sub Limit {
+# {{{ sub Limit 
+sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
 	       @_);
   $self->SUPER::Limit(%args);
 }
+# }}}
 
-sub NewItem {
+# {{{ sub NewItem 
+sub NewItem  {
   my $self = shift;
   my $item;
 
@@ -37,6 +45,7 @@ sub NewItem {
   $item = new RT::Queue($self->{'user'});
   return($item);
 }
+# }}}
 
 
 1;

@@ -7,6 +7,8 @@ package RT::Ticket;
 use RT::Record;
 @ISA= qw(RT::Record);
 
+# {{{ sub new
+
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -16,6 +18,10 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+
+# }}}
+
+# {{{ sub Create
 
 sub Create {
   my $self = shift;
@@ -108,14 +114,15 @@ sub Create {
   
   
   return($self->Id, $Trans, $ErrStr);
-  
 }
 
+# }}}
 
 #
 # Routines dealing with interested parties.
 #
 
+# {{{ sub AddWatcher
 
 sub AddWatcher {
   my $self = shift;
@@ -130,7 +137,11 @@ sub AddWatcher {
   $Watcher->Create(%args);
   
 }
+
+# }}}
 	
+# {{{ sub DeleteWatcher
+
 sub DeleteWatcher {
   my $self = shift;
   my $email = shift;
@@ -148,7 +159,9 @@ sub DeleteWatcher {
   }
 }
 
+# }}}
 
+# {{{ sub Watchers
 sub Watchers {
   my $self = shift;
   if (! defined ($self->{'Watchers'}) 
@@ -160,7 +173,9 @@ sub Watchers {
   return($self->{'Watchers'});
   
 }
+# }}}
 
+# {{{ sub Requestors
 sub Requestors {
   my $self = shift;
   if (! defined ($self->{'Requestors'})) {
@@ -172,6 +187,9 @@ sub Requestors {
   return($self->{'Requestors'});
   
 }
+# }}}
+
+# {{{ sub RequestorsAsString
 sub RequestorsAsString {
   my $self = shift;
   if (!defined $self->{'RequestorsAsString'}) {
@@ -192,6 +210,10 @@ sub RequestorsAsString {
   
 }
 
+# }}}
+
+# {{{ sub Cc
+
 sub Cc {
   my $self = shift;
   if (! defined ($self->{'Cc'})) {
@@ -204,6 +226,10 @@ sub Cc {
   
 }
 
+# }}}
+
+
+# {{{ sub CcAsString
 sub CcAsString {
   my $self = shift;
   if (!defined $self->{'CcAsString'}) {
@@ -215,10 +241,12 @@ sub CcAsString {
   }
   $self->{'CcAsString'} =~ s/, $//;
   return ( $self->{'CcAsString'});
-    
-    
-  
+      
 }
+
+# }}}
+
+# {{{ sub AdminCc
 sub AdminCc {
   my $self = shift;
   if (! defined ($self->{'AdminCc'})) {
@@ -230,6 +258,9 @@ sub AdminCc {
   return($self->{'AdminCc'});
   
 }
+# }}}
+
+# {{{ sub AdminCcAsString
 sub AdminCcAsString {
   my $self = shift;
   if (!defined $self->{'AdminCcAsString'}) {
@@ -240,14 +271,12 @@ sub AdminCcAsString {
     $self->{'AdminCcAsString'} =~ s/, $//;
   }
   return ( $self->{'AdminCcAsString'});
-  
-    
-  
 }
-  
 
-#
-#
+# }}}  
+
+
+# {{{ sub _Validate
 
 sub _Validate {
   my $self = shift;
@@ -274,7 +303,9 @@ sub _Validate {
     }
   }
 }
-  
+# }}}
+
+# {{{ sub SetQueue  
 sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
@@ -305,7 +336,9 @@ sub SetQueue {
     return (0,"No queue specified");
   }
 }
+# }}}
 
+# {{{ sub Queue
 sub Queue {
   my $self = shift;
   if (!$self->{'queue'})  {
@@ -315,15 +348,13 @@ sub Queue {
   }
   return ($self->{'queue'});
 }
-
-
-
-
+# }}}
 
 #
 # Routines dealing with ownership
 #
 
+# {{{ sub Owner
 sub Owner {
   my $self = shift;
 	
@@ -343,19 +374,23 @@ sub Owner {
   #Return the owner object
   return ($self->{'owner'});
 }
+# }}}
 
-
+# {{{ sub Take
 sub Take {
   my $self = shift;
   return($self->SetOwner($self->CurrentUser->Id, 'Take'));
 }
+# }}}
 
+# {{{ sub Untake
 sub Untake {
   my $self = shift;
   return($self->SetOwner("", 'Untake'));
 }
+# }}}
 
-
+# {{{ sub Steal 
 sub Steal {
   my $self = shift;
   
@@ -369,9 +404,11 @@ sub Steal {
     # TODO: Send a "This ticket was stolen from you" alert
     return($self->_Set('owner',$self->CurrentUser->Id, 'Steal'));
   }
-  
-  
+    
 }
+# }}}
+
+# {{{ sub SetOwner
 sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
@@ -426,12 +463,13 @@ sub SetOwner {
 
   return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
 }
-
+# }}}
 
 #
 # Routines dealing with status
 #
 
+# {{{ sub SetStatus
 sub SetStatus { 
   my $self = shift;
    my $status = shift;
@@ -449,35 +487,42 @@ sub SetStatus {
   
   return($self->_Set('Status',$status));
 }
+# }}}
 
+# {{{ sub Kill
 sub Kill {
   my $self = shift;
   die "Ticket::Kill Unimplemented";
 }
+# }}}
 
+# {{{ sub Stall
 sub Stall {
   my $self = shift;
   return ($self->SetStatus('stalled'));
-  
 }
+# }}}
 
+# {{{ sub Owner
 sub Open {
   my $self = shift;
   return ($self->SetStatus('open'));
 }
+# }}}
 
+# {{{ sub Resolve
 sub Resolve {
   my $self = shift;
   return ($self->SetStatus('resolved'));
 }
-
+# }}}
 
 
 #
 # Date printing routines
 #
 
-
+# {{{ sub DueAsString 
 sub DueAsString {
   my $self = shift;
   if ($self->Due) {
@@ -487,12 +532,16 @@ sub DueAsString {
     return("Never");
   }
 }
+# }}}
 
+# {{{ sub CreatedAsString
 sub CreatedAsString {
   my $self = shift;
   return (scalar(localtime($self->Created)));
 }
+# }}}
 
+# {{{ sub ToldAsString
 sub ToldAsString {
   my $self = shift;
   if ($self->Due) {
@@ -502,8 +551,9 @@ sub ToldAsString {
     return("Never");
   }
 }
+# }}}
 
-
+# {{{ #sub LastUpdatedAsString
 sub LastUpdatedAsString {
   my $self = shift;
   if ($self->Due) {
@@ -513,31 +563,39 @@ sub LastUpdatedAsString {
     return("Never");
   }
 }
+# }}}
 
 #
 # Routines dealing with requestor metadata
 #
 
-
+# {{{ sub Notify
 sub Notify {
   my $self = shift;
   return ($self->_Set("Told",time()));
 }
+# }}}
   
+# {{{ sub SinceTold
 sub SinceTold {
   my $self = shift;
   return ("Ticket->SinceTold unimplemented");
 }
+# }}}
 
+
+# {{{ sub Age
 sub Age {
   my $self = shift;
   return("Ticket->Age unimplemented\n");
 }
+# }}}
 
 #
 # Routines dealing with ticket relations
 #
 
+# {{{ sub Merge
 sub Merge {
   my $self = shift;
   my $MergeInto = shift;
@@ -557,13 +615,14 @@ sub Merge {
 
   return ($TransactionObj, "Merge Successful");
 }  
-
+# }}}
 
 
 # 
 # Routines dealing with correspondence/comments
 #
 
+# {{{ sub Comment
 #takes a subject, a cc list, a bcc list
 sub Comment {
   my $self = shift;
@@ -598,7 +657,9 @@ sub Comment {
   
   return ($Trans, "The comment has been recorded");
 }
+# }}}
 
+# {{{ sub Correspond
 sub Correspond {
   my $self = shift;
   my %args = ( CcMessageTo => undef,
@@ -639,12 +700,13 @@ sub Correspond {
   
   return ($Trans, "correspondence (probably) sent");
 }
-
+# }}}
 
 #
 # Get the right transactions object. 
 #
 
+# {{{ sub Transactions 
 sub Transactions {
   my $self = shift;
   if (!$self->{'transactions'}) {
@@ -655,17 +717,20 @@ sub Transactions {
   }
   return($self->{'transactions'});
 }
+# }}}
 
 
 
+# {{{ sub Keywords
 
-#TODO KEYWORDS IS NOT YET IMPLEMENTEd
 sub Keywords {
   my $self = shift;
   #TODO Implement
   return($self->{'article_keys'});
 }
+# }}}
 
+# {{{ sub NewKeyword
 sub NewKeyword {
   my $self = shift;
   my $keyid = shift;
@@ -678,15 +743,14 @@ sub NewKeyword {
   
   #reset the keyword listing...
   $self->{'article_keys'} = undef;
-  
   return();
-  
 }
-
+# }}}
 
 #
 #TODO: Links is not yet implemented
 #
+# {{{ sub Links
 sub Links {
   my $self= shift;
   
@@ -697,7 +761,9 @@ sub Links {
   }
   return($self->{'pointer_to_links_object'});
 }
+# }}}
 
+# {{{ sub NewLink
 sub NewLink {
   my $self = shift;
   my %args = ( url => '',
@@ -714,13 +780,14 @@ sub NewLink {
     print STDERR "made new create\n";
  return ($id);
 }
-
+# }}}
  
 
 #
 # UTILITY METHODS
 # 
     
+# {{{ sub IsRequestor
 sub IsRequestor {
   my $self = shift;
   my $username = shift;
@@ -735,12 +802,13 @@ sub IsRequestor {
     return(undef);
   }
 };
-
+# }}}
 
 #
 # PRIVATE UTILITY METHODS
 #
 
+# {{{ sub NewTransaction
 sub _NewTransaction {
   my $self = shift;
   my %args = (TimeTaken => 0,
@@ -772,7 +840,9 @@ sub _NewTransaction {
   }
   return($trans);
 }
+# }}}
 
+# {{{ sub _Accessible
 sub _Accessible {
 
   my $self = shift;  
@@ -797,9 +867,12 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
+
 
 #This routine will increment the timeworked counter. it should
 #only be called from _NewTransaction 
+# {{{ sub _UpdateTimeTaken
 sub _UpdateTimeTaken {
   my $self = shift;
   my $Minutes = shift;
@@ -810,17 +883,20 @@ sub _UpdateTimeTaken {
   $self->SUPER::_Set("TimeWorked", $Total);
   return ($Total);
 }
+# }}}
 
+# {{{ sub _UpdateDateActed
 sub _UpdateDateActed {
   my $self = shift;
   $self->SUPER::_Set('LastUpdated',undef);
 }
-
+# }}}
 
 
 
 
 #This overrides RT::Record
+# {{{ sub _Set
 sub _Set {
   my $self = shift;
   if (!$self->ModifyPermitted) {
@@ -849,10 +925,13 @@ sub _Set {
   }
   
 }
+# }}}
 
 #
 #ACCESS CONTROL
 # 
+
+# {{{ sub DisplayPermitted
 sub DisplayPermitted {
   my $self = shift;
   my $actor = shift;
@@ -869,7 +948,10 @@ sub DisplayPermitted {
     return(0);
   }
 }
+# }}}
 
+
+# {{{ sub ModifyPermitted
 sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
@@ -885,7 +967,9 @@ sub ModifyPermitted {
     return(0);
   }
 }
+# }}}
 
+# {{{ sub AdminPermitted
 sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
@@ -903,7 +987,7 @@ sub AdminPermitted {
     return(0);
   }
 }
-
+# }}}
 1;
 
 

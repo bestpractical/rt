@@ -3,7 +3,8 @@
 
 package RT::Interface::Email;
 use RT::Ticket;
-sub activate {
+# {{{ sub activate 
+sub activate  {
   my $Action=$ARGV[0];
   my $Queue=$ARGV[1];
   my $Area = $ARGV[2];
@@ -117,8 +118,10 @@ sub activate {
   
   return(0);
 }
+# }}}
 
-sub CheckForLoops {
+# {{{ sub CheckForLoops 
+sub CheckForLoops  {
   my $head = shift;
 
   #If this instance of RT sent it our, we don't want to take it in
@@ -142,11 +145,13 @@ sub CheckForLoops {
     return (1);
   }
 }
+# }}}
 
 
 
 
-sub GetCurrentUser {
+# {{{ sub GetCurrentUser 
+sub GetCurrentUser  {
   my $head = shift;
 
   #Figure out who's sending this message.
@@ -189,5 +194,6 @@ sub GetCurrentUser {
   }
   return ($CurrentUser);
 }
+# }}}
 
 1;

@@ -9,7 +9,8 @@ use RT::Record;
 @ISA= qw(RT::Record);
 
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -19,10 +20,12 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+# }}}
 
 
 #take simple args and call DBIx::Record to do the real work.
-sub create {
+# {{{ sub create 
+sub create  {
   my $self = shift;
 
   my %args = ( id => undef,
@@ -40,22 +43,29 @@ sub create {
 				comment => $args{'comment'});
   return ($id);
 }
+# }}}
 
 
 
 #Table specific data accessors/ modifiers
-sub Queue {
+# {{{ sub Queue 
+sub Queue  {
   my $self = shift;
   return($self->_set_and_return('queue',@_));
 }
+# }}}
 
-sub Area {
+# {{{ sub Area 
+sub Area  {
   my $self = shift;
   return($self->_set_and_return('area',@_));
 }
-sub Description {
+# }}}
+# {{{ sub Description 
+sub Description  {
   my $self = shift;
   return($self->_set_and_return('description',@_));
 }
+# }}}
 
 1;

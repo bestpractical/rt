@@ -4,7 +4,8 @@ package RT::Scrip;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -13,8 +14,10 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = ( Name  => 'read/write',
 	       Description => 'read/write',
@@ -26,17 +29,21 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
 
-sub Create {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
   die "RT::Scrip->create stubbed\n";
   my $id = $self->SUPER::Create(Name => @_);
   $self->LoadById($id);
   
 }
+# }}}
 
 
-sub delete {
+# {{{ sub delete 
+sub delete  {
   my $self = shift;
  # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
@@ -46,14 +53,18 @@ sub delete {
       
 
 }
+# }}}
 
-sub create {
+# {{{ sub create 
+sub create  {
   my $self = shift;
   return($self->Create(@_));
 }
+# }}}
 
 
-sub Load {
+# {{{ sub Load 
+sub Load  {
   my $self = shift;
   
   my $identifier = shift;
@@ -71,8 +82,10 @@ sub Load {
 
  
 }
+# }}}
 
-sub LoadAction {
+# {{{ sub LoadAction 
+sub LoadAction  {
   my $self = shift;
   my %args = ( TransactionObject => undef,
 	       TicketObject => undef,
@@ -90,38 +103,48 @@ sub LoadAction {
 					 Type => $self->Type,
 				       );
 }
+# }}}
 
 
 #
 # The following methods call the action object
 #
 
-sub Prepare {
+# {{{ sub Prepare 
+sub Prepare  {
   my $self = shift;
   return ($self->{'ScriptObject'}->Prepare());
   
 }
+# }}}
 
-sub Commit {
+# {{{ sub Commit 
+sub Commit  {
   my $self = shift;
   return ($self->{'ScriptObject'}->Commit());
   
 }
-sub Describe {
+# }}}
+# {{{ sub Describe 
+sub Describe  {
   my $self = shift;
   return ($self->{'ScriptObject'}->Describe());
   
 }
-sub IsApplicable {
+# }}}
+# {{{ sub IsApplicable 
+sub IsApplicable  {
   my $self = shift;
   return ($self->{'ScriptObject'}->IsApplicable());
   
 }
+# }}}
 #
 # ACCESS CONTROL
 # 
 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
 
   my $actor = shift;
@@ -137,7 +160,9 @@ sub DisplayPermitted {
     return(0);
   }
 }
-sub ModifyPermitted {
+# }}}
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -152,8 +177,10 @@ sub ModifyPermitted {
     return(0);
   }
 }
+# }}}
 
-sub AdminPermitted {
+# {{{ sub AdminPermitted 
+sub AdminPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -170,6 +197,7 @@ sub AdminPermitted {
     return(0);
   }
 }
+# }}}
 
 
 1;

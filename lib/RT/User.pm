@@ -10,7 +10,8 @@ use RT::Record;
 
 
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -20,8 +21,10 @@ sub new {
 
   return($self);
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      UserId => 'read/write',
@@ -44,9 +47,11 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
 
 
-sub Create {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
   my %args = (
 	      UserId => undef,
@@ -83,8 +88,10 @@ sub Create {
   
   return (1,"User created");
 }
+# }}}
  
-sub Delete {
+# {{{ sub Delete 
+sub Delete  {
   my $self = shift;
   my $new_owner = shift;
   
@@ -125,9 +132,11 @@ sub Delete {
   }
   
 }
+# }}}
 
 
-sub Load {
+# {{{ sub Load 
+sub Load  {
   my $self = shift;
   my $identifier = shift || return undef;
   my ($package, $filename, $line) = caller;
@@ -143,8 +152,11 @@ sub Load {
    $self->LoadByCol("UserId",$identifier);
   }
 }
+# }}}
 
 #used to check if a password is correct
+# {{{ sub IsPassword
+
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
@@ -155,18 +167,23 @@ sub IsPassword {
     return (undef);
   }
 }
+# }}}
 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
   #TODO: Implement
   return(1);
 }
+# }}}
 
-sub ModifyPermitted {
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   #TODO: Implement
   return(1);
 }
+# }}}
 
 1;
  

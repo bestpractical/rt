@@ -7,15 +7,18 @@ package RT::Template;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
     $pkg=shift;
     my $self=SUPER::new $pkg;
     $self->{'table'}="Templates";
     $self->_Init(@_);
     return $self;
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      id => 'read',
@@ -29,16 +32,22 @@ sub _Accessible {
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
+# }}}
 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
     return 1;
 }
+# }}}
 
-sub ParseHeaders {
+# {{{ sub ParseHeaders 
+sub ParseHeaders  {
     return Parse(@_, 'Headers');
 }
+# }}}
 
-sub Parse {
+# {{{ sub Parse 
+sub Parse  {
     my $self=shift;
     my $object=shift;
     my $what=shift;
@@ -60,5 +69,6 @@ sub Parse {
                                       : $self->Content));
     return $template->fill_in(PACKAGE=>T);
 }
+# }}}
 
 1;

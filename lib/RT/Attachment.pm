@@ -7,7 +7,8 @@ package RT::Attachment;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -17,8 +18,12 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+# }}}
 
-sub _Accessible {
+
+
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      Transaction => 'read',
@@ -33,9 +38,12 @@ sub _Accessible {
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
-#take simple args and call RT::Record to do the real work.
+# }}}
 
-sub Create {
+#take simple args and call RT::Record to do the real work.
+# {{{ sub Create 
+
+sub Create  {
   my $self = shift;
   my ($id);
   my %args = ( id => 0,
@@ -91,7 +99,7 @@ sub Create {
   
   #If it's not multipart
   else {
-
+    
     
     #can't call a method on an undefined object
     
@@ -107,14 +115,17 @@ sub Create {
 				  Filename => $Filename,
 				  Created => undef,
 				 );
-  return ($id);
+    return ($id);
+  }
 }
-}
+
+# }}}
 
 
 #ACCESS CONTROL
 # 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
 
   my $actor = shift;
@@ -130,8 +141,10 @@ sub DisplayPermitted {
     return(0);
   }
 }
+# }}}
 
-sub ModifyPermitted {
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -146,8 +159,10 @@ sub ModifyPermitted {
     return(0);
   }
 }
+# }}}
 
-sub AdminPermitted {
+# {{{ sub AdminPermitted 
+sub AdminPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -164,4 +179,5 @@ sub AdminPermitted {
     return(0);
   }
 }
+# }}}
 1;

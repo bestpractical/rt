@@ -4,7 +4,8 @@ package RT::ACE;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -13,8 +14,10 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;  
   my %Cols = (
 	     User => 'read/write',
@@ -25,6 +28,7 @@ sub _Accessible {
 	    );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
 
 
 1;

@@ -5,17 +5,22 @@ package RT::Action::AutoReply;
 require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);
 
-sub Describe {
+# {{{ sub Describe 
+sub Describe  {
   return ("Sends an autoresponse to the requestor");
 }
+# }}}
 
-sub Commit {
+# {{{ sub Commit 
+sub Commit  {
   my $self = shift;
   print "AutoReply Commiting\n";
   return($self->SUPER::Commit());
 }
+# }}}
 
-sub Prepare {
+# {{{ sub Prepare 
+sub Prepare  {
   my $self = shift;
 
   print "Preparing\n";
@@ -34,6 +39,7 @@ sub Prepare {
 
   return $self->SUPER::Prepare();
 }
+# }}}
 
 1;
 

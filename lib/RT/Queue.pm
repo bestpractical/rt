@@ -4,7 +4,8 @@ package RT::Queue;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
@@ -13,8 +14,10 @@ sub new {
   $self->_Init(@_);
   return ($self);
 }
+# }}}
 
-sub _Accessible {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
   my %Cols = ( QueueId => 'read/write',
 	       CorrespondAddress => 'read/write',
@@ -26,8 +29,10 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+# }}}
 
-sub create {
+# {{{ sub create 
+sub create  {
   my $self = shift;
 
 #  print STDERR "In RT::Queue::create.pm\n";
@@ -36,9 +41,11 @@ sub create {
   $self->LoadById($id);
   
 }
+# }}}
 
 
-sub delete {
+# {{{ sub delete 
+sub delete  {
   my $self = shift;
  # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
@@ -63,15 +70,19 @@ sub delete {
     return(0, "You do not have the privileges to delete queue $in_queue_id.");
   }
 }
+# }}}
 
-sub Create {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
   #print "In RT::Queue::Create\n";
   return($self->create(@_));
 }
+# }}}
 
 
-sub Load {
+# {{{ sub Load 
+sub Load  {
   my $self = shift;
   
   my $identifier = shift;
@@ -88,16 +99,18 @@ sub Load {
   }
 
 }
+# }}}
 
 #
 # Distribution lists
 
-sub DistributionList {
-	my $self = shift;
-	#return the list of all queue members.
-	return();
-      }
-
+# {{{ sub DistributionList 
+sub DistributionList  {
+  my $self = shift;
+  #return the list of all queue members.
+  return();
+}
+# }}}
 #
 
 
@@ -105,13 +118,18 @@ sub DistributionList {
 # Routines related to areas
 # Eventually, this may be replaced with a keyword system
 
-sub NewArea {
+# {{{ sub NewArea 
+sub NewArea  {
 }
+# }}}
 
-sub DeleteArea {
+# {{{ sub DeleteArea 
+sub DeleteArea  {
 }
+# }}}
 
-sub Watchers {
+# {{{ sub Watchers 
+sub Watchers  {
   my $self = shift;
   if (! defined ($self->{'Watchers'}) 
       || $self->{'Watchers'}->{is_modified}) {
@@ -122,10 +140,12 @@ sub Watchers {
   return($self->{'Watchers'});
   
 }
+# }}}
 
 
 
-sub Areas {
+# {{{ sub Areas 
+sub Areas  {
   my $self = shift;
   
   if (!$self->{'areas'}){
@@ -136,6 +156,7 @@ sub Areas {
   }  
   #returns an EasySearch object which enumerates this queue's areas
 }
+# }}}
 
 #
 # 
@@ -143,7 +164,8 @@ sub Areas {
 #
 
 #returns an EasySearch of ACEs everyone who has anything to do with this queue.
-sub ACL {
+# {{{ sub ACL 
+sub ACL  {
   my $self = shift;
   if (!$self->{'acl'}) {
     $self->{'acl'} = RT::ACL->new($self->{'self'});
@@ -154,6 +176,7 @@ sub ACL {
  return ($self->{'acl'});
   
 }
+# }}}
 
 
 #
@@ -169,7 +192,8 @@ sub ACL {
 #ACCESS CONTROL
 # 
 
-sub CreatePermitted {
+# {{{ sub CreatePermitted 
+sub CreatePermitted  {
   my $self = shift;
   if ($self->PermitNonmemberCreate ||
       $self->ModifyPermitted(@_)) { 
@@ -179,8 +203,10 @@ sub CreatePermitted {
     return (undef);
   }
 }
+# }}}
 
-sub DisplayPermitted {
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
   my $self = shift;
 
   my $actor = shift;
@@ -196,7 +222,9 @@ sub DisplayPermitted {
     return(0);
   }
 }
-sub ModifyPermitted {
+# }}}
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -211,8 +239,10 @@ sub ModifyPermitted {
   #  return(0);
   #}
 }
+# }}}
 
-sub AdminPermitted {
+# {{{ sub AdminPermitted 
+sub AdminPermitted  {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -229,6 +259,7 @@ sub AdminPermitted {
     return(0);
   }
 }
+# }}}
 
 
 1;

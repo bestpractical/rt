@@ -1,6 +1,7 @@
 package RT::Utils;
 
-sub Booleanize {
+# {{{ sub Booleanize 
+sub Booleanize  {
 my ($in_val)=@_;
 	if ($in_val) {
 	return(1);
@@ -9,6 +10,7 @@ my ($in_val)=@_;
 	return(0);
 	}
 }
+# }}}
 
 
 #
@@ -16,7 +18,8 @@ my ($in_val)=@_;
 # will generate the content of a transaction...prefixed.
 # TODO: Update this for 1.1
 #
-sub QuoteContent {
+# {{{ sub QuoteContent 
+sub QuoteContent  {
     my $transaction = shift;
     my $current_user = shift;
     my $answer = shift;
@@ -92,13 +95,15 @@ sub QuoteContent {
     $max+=2;
     return ($body, $max);
 }
+# }}}
 
 #
 #
 #Adapted from ctime.pl
 #
 
-sub TimeParse {
+# {{{ sub TimeParse 
+sub TimeParse  {
     my $time = @_;
     local($[) = 0;
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst);
@@ -127,12 +132,14 @@ sub TimeParse {
     $year += 1900;
     return ($DoW[$wday], $MoY[$mon], $mday, $hour, $min, $sec, $TZ, $year);
 }
+# }}}
 	
 #
 # Date_diff from req-1.2.7 by Remy Evard (remy@ccs.neu.edu)
 # Hacked by jesse vincent to deal with negative time
 #	
-sub DateDiff {
+# {{{ sub DateDiff 
+sub DateDiff  {
 
     local($old, $new) = @_;
     local($diff, $minute, $hour, $day, $week, $month, $year, $s, $string, $negative="");
@@ -175,9 +182,11 @@ sub DateDiff {
     }
     return "$negative$s $string";
 }
+# }}}
 
 
-sub TemplateLoad {
+# {{{ sub TemplateLoad 
+sub TemplateLoad  {
     
     local ($in_template, $in_queue) =@_;
     local ($template_content="");
@@ -195,6 +204,7 @@ sub TemplateLoad {
     close (CONTENT);
     return ($template_content);
 }
+# }}}
 
 1;
  

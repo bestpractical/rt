@@ -8,7 +8,8 @@ require RT::Watcher;
 @ISA= qw(RT::EasySearch);
 
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $pkg= shift;
   my $self = SUPER::new $pkg;
   
@@ -16,16 +17,19 @@ sub new {
   $self->{'primary_key'} = "id";
   return($self);
 }
+# }}}
 
-sub Limit {
+# {{{ sub Limit 
+sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
 	       @_);
 
   $self->SUPER::Limit(%args);
 }
+# }}}
 
-
+# {{{ sub LimitToTicket
 sub LimitToTicket { 
   my $self = shift;
   my $ticket = shift;
@@ -36,8 +40,10 @@ sub LimitToTicket {
 		FIELD => 'Scope',
 		VALUE => 'Ticket');
 }
+# }}}
 
-sub LimitToQueue {
+# {{{ sub LimitToQueue 
+sub LimitToQueue  {
   my $self = shift;
   my $queue = shift;
   $self->Limit (ENTRYAGGREGATOR => 'AND',
@@ -47,30 +53,40 @@ sub LimitToQueue {
 		FIELD => 'Scope',
 		VALUE => 'Queue');
 }
+# }}}
 
-sub LimitToType {
+# {{{ sub LimitToType 
+sub LimitToType  {
   my $self = shift;
   my $type = shift;
   $self->Limit(FIELD => 'Type',
 	       VALUE => "$type");
 }
+# }}}
 
-sub LimitToRequestors {
+# {{{ sub LimitToRequestors 
+sub LimitToRequestors  {
   my $self = shift;
   $self->LimitToType("Requestor");
 }
+# }}}
 
-sub LimitToCc {
+# {{{ sub LimitToCc 
+sub LimitToCc  {
     my $self = shift;
     $self->LimitToType("Cc");
 }
+# }}}
 
-sub LimitToAdministrativeCc {
+# {{{ sub LimitToAdministrativeCc 
+sub LimitToAdministrativeCc  {
     my $self = shift;
     $self->LimitToType("AdminCc");
 }
+# }}}
 # Return a (reference to a) list of emails
-sub Emails {
+# {{{ sub Emails 
+sub Emails  {
     my $self = shift;
     my $type = shift;
 
@@ -83,18 +99,24 @@ sub Emails {
     }
     return \@list;
 }
+# }}}
 
-sub LimitToCc {
+# {{{ sub LimitToCc 
+sub LimitToCc  {
   my $self = shift;
   $self->LimitToType("Cc");
 }
+# }}}
 
-sub LimitToBcc {
+# {{{ sub LimitToBcc 
+sub LimitToBcc  {
   my $self = shift;
   $self->LimitToType("Bcc");
 } 
+# }}}
 
-sub NewItem {
+# {{{ sub NewItem 
+sub NewItem  {
   my $self = shift;
   my $Handle = shift;
   my $item;
@@ -102,6 +124,7 @@ sub NewItem {
   $item = new RT::Watcher($self->{'user'}, $Handle);
   return($item);
 }
+# }}}
 1;
 
 

@@ -8,7 +8,8 @@ require RT::Template;
 
 @ISA = qw(RT::Action);
 
-sub new {
+# {{{ sub new 
+sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = { @_ };
@@ -16,16 +17,20 @@ sub new {
   $self->_Init();
   return $self;
 }
+# }}}
 
-sub _Init {
+# {{{ sub _Init 
+sub _Init  {
   my $self = shift;
   $self->{'TemplateObject'}=RT::Template->new;
   $self->{'TemplateObject'}->Load($self->{Template});
   $self->{'Header'} = Mail::Header->new;
   $self->{'Header'}->fold(78);
 }
+# }}}
 
-sub Commit {
+# {{{ sub Commit 
+sub Commit  {
   my $self = shift;
   #send the email
 
@@ -47,9 +52,11 @@ sub Commit {
   # I would at least expect it to sort the headers in an appropriate
   # order.  It doesn't.
 }
+# }}}
 
 
-sub Prepare {
+# {{{ sub Prepare 
+sub Prepare  {
   my $self = shift;
 
   # Perform variable substitution on the template headers
@@ -130,9 +137,11 @@ sub Prepare {
       ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
 }
+# }}}
 
 # Override this sub for more fine grained control of receipients.
-sub SetReceipients {
+# {{{ sub SetReceipients 
+sub SetReceipients  {
   my $self=shift;
 
   my $receipients;
@@ -168,12 +177,15 @@ sub SetReceipients {
   }
   return 1;
 }
+# }}}
 
-sub IsApplicable {
+# {{{ sub IsApplicable 
+sub IsApplicable  {
   my $self = shift;
   # More work needs to be done here to avoid duplicates beeing sent.
   return(1);
 }
+# }}}
 
 1;
 
