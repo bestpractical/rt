@@ -123,12 +123,12 @@
 
 <%INIT>
 my @fields = ('Attachment',
-	      'Dates',
-	      'Time',
-	      'Links',
 	      'Queue',
 	      'Status',
+	      'Dates',
+	      'Time',
 	      'Priority',
+	      'Links',
 	      'id',
 	      );
 </%INIT>

@@ -31,7 +31,7 @@
 <table width=100%>
 <tr>
 <td valign=top>
-<& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
+<& Elements/PickCriteria, query => $Query, cfqueues => \%queues, %ARGS &>
 <& /Elements/Submit, Caption => "Add additional criteria", Label => loc('Add'), Name => 'AddClause'&>
 </td>
 <td valign=top>
@@ -46,6 +46,7 @@
 <input type=submit name="Left" value="<">
 <input type=submit name="Right" value=">">
 <br>
+<input type=submit name="Clear" value="Clear">
 <input type=submit name="Toggle" DISABLED value="And/Or">
 <input type=submit name="DeleteClause" value="Delete">
 <input type=submit name="EditQuery" value="Advanced">
@@ -222,7 +223,7 @@ our $selectedclause = $ARGS{clauses};
 our %queues;
 
 if ($ARGS{"DoSearch"}) {
-    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format}, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
+    $m->comp("Results.html", Query => $Query, Format => $ARGS{Format}, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
     $m->abort();
 } elsif ($ARGS{"EditQuery"}) {
     $m->comp("Edit.html", Query => $Query, Format => $Format, SearchId =>
@@ -374,6 +375,8 @@ if ($ARGS{"Up"}) {
     } else {
         push(@actions, ["error: nothing to delete", -1]);
     }
+} elsif ($ARGS{"Clear"}) {
+	$items = ();
 }
 # }}}
 # {{{ Query building magic
