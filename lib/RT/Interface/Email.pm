@@ -268,7 +268,16 @@ sub GetCurrentUser  {
       #TODO this should not just up and die. at the worst it should send mail.
       die $Message;
     }
-    #TODO: Send the user a "welcome message"
+
+    #TODO: Send the user a "welcome message" 
+
+    ## Tobix: No, actually I think it's better to do it as suggested
+    ## in [fsck 290].  Feed people with an URL in the Autoreply and/or
+    ## the correspondance.  Those that are interessted in following a
+    ## case or whatever, can just use the URL to gain insight in how
+    ## to use (that) RT (instance).  Those that don't care don't have
+    ## to care.
+
     #Load the new user object
     $CurrentUser->Load($FromObj->address);
   }
