@@ -266,7 +266,7 @@ sub SendMessage {
            and ( !$MIMEObj->head->get('To') ) );
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
-            open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" );
+            open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
             print MAIL $MIMEObj->as_string;
             close(MAIL);
           };
