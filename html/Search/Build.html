@@ -1077,7 +1077,7 @@ if ( $ARGS{'Delete'} ) {
 # Build a querystring for the tabs
 
 my $QueryString;
-$QueryString = $m->comp('/Elements/QueryString', Query => $Query,
+$QueryString = '?' . $m->comp('/Elements/QueryString', Query => $Query,
 	Format => $Format,
 	Rows =>$ARGS{'Rows'}) if ($Query);
 
