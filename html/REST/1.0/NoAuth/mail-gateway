@@ -26,7 +26,7 @@
 $message
 $queue => 1
 $action => "correspond"
-$ticketid => 0
+$ticket => undef
 </%ARGS>
 <%init>
 use MIME::Parser;
@@ -89,7 +89,7 @@ EOT
 else {
 
     # Now do the work and return something sensible.
-    ( $status, $error, $Ticket ) = Gateway( $Item, $CurrentUser, $AuthStat, $queue, $action, $ticketid );
+    ( $status, $error, $Ticket ) = Gateway( $Item, $CurrentUser, $AuthStat, $queue, $action, $ticket );
 }
 </%init>
 %    if ($status) {

@@ -94,7 +94,7 @@ Locale::Maketext
 Locale::Maketext::Lexicon 0.10
 Locale::Maketext::Fuzzy
 MIME::Entity 5.108
-Mail::Mailer 1.52
+Mail::Mailer 1.56
 Net::SMTP
 Text::Wrapper 
 Time::ParseDate
@@ -108,7 +108,7 @@ $deps{'MASON'} = [ _( << '.') ];
 Params::Validate 0.02
 Cache::Cache
 Exception::Class
-HTML::Mason 1.15
+HTML::Mason 1.16
 MLDBM
 Errno
 FreezeThaw

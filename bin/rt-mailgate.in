@@ -24,6 +24,57 @@
 # 
 # END LICENSE BLOCK
 
+
+=head1 NAME
+
+rt-mailgate - Mail interface to RT3.
+
+=begin testing
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: root@localhost
+To: rt@fsck.com
+Subject: This is a test of new ticket creation
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+use RT::Tickets;
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: jesse@fsck.com
+To: rt@fsck.com
+Subject: This is a test of new ticket creation as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+$tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+
+die;
+
+=end testing
+
+=cut
+
+
 use strict;
 use Getopt::Long;
 use LWP::UserAgent;
@@ -31,7 +82,7 @@ use LWP::UserAgent;
 use constant EX_TEMPFAIL => 75;
 
 my %opts;
-GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug" );
+GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s" );
 
 if ( $opts{help} ) {
     require Pod::Usage;
@@ -55,6 +106,11 @@ my %args = (
     message => $message,
     SessionType => 'REST',    # Surpress login box
 );
+
+
+if ($opts{'extension'}) {
+        $args{$opts{'extension'}} = $ENV{'EXTENSION'};
+}
 
 # Set up cookie here.
 
@@ -105,9 +161,6 @@ sub check_failure {
     exit EX_TEMPFAIL;
 }
 
-=head1 NAME
-
-rt-mailgate - Mail interface to RT3.
 
 =head1 SYNOPSIS
 
@@ -117,6 +170,7 @@ Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment) --queue queuename 
                 --url http://your.rt.server/ 
+                [ --extension (queue|action|ticket)
                 [--jar /tmp/mailgate/cookies.txt]
 
 See C<man rt-mailgate> for more.
@@ -144,6 +198,17 @@ File in which to save RT cookie. If this is given and contains a valid
 cookie, C<rt-mailgate> will present this to the web server instead of
 the username and password. If this is given and doesn't contain a valid
 cookie, the mailgate will log in and store the cookie for next time.
+
+=item C<--extension> OPTIONAL
+
+Some MTAs will route mail sent to user-foo@host or user+foo@host to user@host
+and present "foo" in the environment variable $EXTENSION. By specifying
+the value "queue" for this parameter, the queue this message should be 
+submitted to will be set to the value of $EXTENSION. By specifying 
+"ticket", $EXTENSION will be interpreted as the id of the ticket this message
+is related to.  "action" will allow the user to specify either "comment" or 
+"correspond" in the address extension.
+
 
 =head1 DESCRIPTION
 

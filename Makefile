@@ -199,7 +199,7 @@ upgrade-noclobber: libs-install html-install bin-install local-install doc-insta
 
 
 # {{{ dependencies
-rt-test-dependencies:
+testdeps:
 	$(PERL) ./sbin/rt-test-dependencies --with-$(DB_TYPE)
 
 fixdeps:
@@ -291,7 +291,10 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/00smoke.t
 
-regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods
+regression-nosetgid: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
+	$(PERL) lib/t/02regression.t
+
+regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods apachectl
 	$(PERL) lib/t/02regression.t
 
 regression-quiet:
@@ -389,7 +392,7 @@ POD2TEST_EXE = sbin/extract_pod_tests
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
 	find lib -name \*pm |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
-	find bin -type f |grep -v \~| grep -v \*.in | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 
 
@@ -451,5 +454,6 @@ rpm:
 
 apachectl:
 	/usr/sbin/apachectl stop
+	sleep 1
 	/usr/sbin/apachectl start
 # }}}
