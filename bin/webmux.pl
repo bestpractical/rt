@@ -64,8 +64,8 @@ my $parser = new HTML::Mason::Parser;
 my $interp = new HTML::Mason::Interp (
             allow_recursive_autohandlers =>1, 
 	    parser=>$parser,
-            comp_root=>'/opt/rt/WebRT/html',
-            data_dir=>'/opt/rt/WebRT/data');
+            comp_root=>'!!WEBRT_HTML_PATH!!',
+            data_dir=>'!!WEBRT_DATA_PATH!!');
 my $ah = new HTML::Mason::ApacheHandler (interp=>$interp);
 chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
         $interp->files_written );   # chown nobody
