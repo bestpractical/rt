@@ -25,7 +25,7 @@
 if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
     $r->content_type("text/plain");
     $m->error_format("text");
-    $m->out("RT/$RT::VERSION 400 Credentials required\n");
+    $m->out("RT/$RT::VERSION 401 Credentials required\n");
     $m->out("\n$Error\n") if $Error;
     $m->abort;
 }

@@ -1715,16 +1715,16 @@ sub AdminCc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
+=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL }
 
-Takes a param hash with the attributes Type and PrincipalId
+Takes a param hash with the attributes Type and either PrincipalId or Email
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
-PrincipalId is an RT::Principal id 
+PrincipalId is an RT::Principal id, and Email is an email address.
 
-Returns true if that principal is a member of the group Type for this ticket
-
+Returns true if the specified principal (or the one corresponding to the
+specified address) is a member of the group Type for this ticket.
 
 =cut
 
@@ -1733,17 +1733,31 @@ sub IsWatcher {
 
     my %args = ( Type  => 'Requestor',
         PrincipalId    => undef,
+        Email          => undef,
         @_
     );
 
     # Load the relevant group. 
     my $group = RT::Group->new($self->CurrentUser);
     $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->id);
-    # Ask if it has the member in question
 
+    # Find the relevant principal.
     my $principal = RT::Principal->new($self->CurrentUser);
+    if (!$args{PrincipalId} && $args{Email}) {
+        # Look up the specified user.
+        my $user = RT::User->new($self->CurrentUser);
+        $user->LoadByEmail($args{Email});
+        if ($user->Id) {
+            $args{PrincipalId} = $user->PrincipalId;
+        }
+        else {
+            # A non-existent user can't be a group member.
+            return 0;
+        }
+    }
     $principal->Load($args{'PrincipalId'});
 
+    # Ask if it has the member in question
     return ($group->HasMember($principal));
 }
 
