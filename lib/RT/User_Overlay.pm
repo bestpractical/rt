@@ -51,6 +51,7 @@ use vars qw(%_USERS_KEY_CACHE);
 
 %_USERS_KEY_CACHE = ();
 
+use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
 
@@ -167,10 +168,9 @@ sub Create {
     elsif ( length( $args{'Password'} ) < $RT::MinimumPasswordLength ) {
         return ( 0, $self->loc("Password too short") );
     }
+
     else {
-        my $salt = join '',
-          ( '.', '/', 0 .. 9, 'A' .. 'Z', 'a' .. 'z' )[ rand 64, rand 64 ];
-        $args{'Password'} = crypt( $args{'Password'}, $salt );
+        $args{'Password'} = $self->_GeneratePassword($args{'Password'});
     }
 
     #TODO Specify some sensible defaults.
@@ -860,10 +860,25 @@ sub SetPassword {
         return ( 0, $self->loc("Password too short") );
     }
     else {
+        $password = $self->_GeneratePassword($password);
+        return ( $self->SUPER::SetPassword( $password));
+    }
+
+}
+
+=head2 _GeneratePassword PASSWORD
+
+returns an MD5 hash of the password passed in, in base64 encoding.
+
+=cut
+
+sub _GeneratePassword {
+    my $self = shift;
+    my $password = shift;
+
     my $md5 = Digest::MD5->new();
     $md5->add($password);
-        return ( $self->SUPER::SetPassword( $md5->b64digest ) );
-    }
+    return ($md5->b64digest);
 
 }
 
@@ -900,10 +915,8 @@ sub IsPassword {
         return(undef);
      }
 
-    # Passwords are MD5 sums.
-    my $md5 = Digest::MD5->new();
-    $md5->add($value);
-    if ($md5->b64digest eq $self->__Value('Password')) {
+    # generate an md5 password 
+    if ($self->_GeneratePassword($value) eq $self->__Value('Password')) {
         return(1);
     }
 
