@@ -107,11 +107,12 @@ sub IsPassword {
 # {{{ sub HasRight
 sub HasRight {
   my $self = shift;
-  my $args = ( Scope => undef,
+  my %args = ( Scope => undef,
 	       AppliesTo => undef,
 	       Right => undef,
-	      @_);
-  1;
+	       @_);
+  # TODO: Something is obviously missing here.
+  return 1;
 }
 
 # }}}
