@@ -61,8 +61,8 @@ my $interp = &RT::Interface::Web::NewInterp($parser);
 
 my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 
-chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
-        $interp->files_written );   # chown nobody
+chown ( [getpwnam('!!WEB_USER!!')]->[2], [getgrnam('!!WEB_GROUP!!')]->[2],
+        $interp->files_written );   # chown !!WEB_USER!!.!!WEB_GROUP!!
 
 
 sub handler {

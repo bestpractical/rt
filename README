@@ -53,8 +53,6 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 GENERAL INSTALLATION
 --------------------
 
-0   Install DBIx-SearchBuilder from fsck.com (We're waiting on CPAN approval)
-
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
         Granted, you've already got it open. To do this cleanly:
@@ -77,23 +75,23 @@ GENERAL INSTALLATION
 	There are many variables you NEED to customize for your site.
 	Even if you are just upgrading, you must set ALL variables.
 
-5a  FOR A NEW INSTALLATION: (If you don't  have an "RT" database in Mysql)
-
+5a  FOR A NEW INSTALLATION: 
+        
         As root, type:
 		 make install	(replace "make" with the local name for 
-				 GNU Make, if you need to)
+				 Make, if you need to)
 
 
 5b  FOR UPGRADING: (Within the RT 2.0.x series)
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
-				  GNU Make, if you need to)
+				  Make, if you need to)
 
 	This will build new RT wrappers, config files and libraries without
 	overwriting your RT database.
 	WARNING: Note that this will clobber your configuration file!
 	
-5c  FOR UPGRADING (From 1.0/0.9x):
+5c  FOR UPGRADING (From 1.0.x):
 
         Not supported yet 
 
@@ -140,8 +138,8 @@ Add the following lines to /etc/aliases (or your local equivalent) :
 
 TODO: THE CALLING CONVENTION FOR THE MAILGATE HAS CHANGED
 
-    rt-comment: |"/path/to/rt/bin/rt-mailgate general comment"
-    rt:         |"/path/to/rt/bin/rt-mailgate general correspond"
+    rt-comment: |"/path/to/rt/bin/rt-mailgate --queue general --action comment"
+    rt:         |"/path/to/rt/bin/rt-mailgate --queue general --action correspond"
                                                     |          |
                                    <<queue-name>----/          |
                                                                |
@@ -158,7 +156,7 @@ any RT alias with the command %RT HELP on a line by itself.
 
 You'll need an alias like the following for action requests:
 
-        rt-action:      |"/path/to/rt/bin/rt-mailgate general action"
+        rt-action:      |"/path/to/rt/bin/rt-mailgate --queue general --action action"
 	
 
 THE WEB UI

@@ -20,7 +20,7 @@ RTGROUP			=	rt
 # RT_PATH is the name of the directory you want make to install RT in
 # RT must be installed in its own directory (don't set this to /usr/local)
 
-RT_PATH			=	/opt/rt-1.3
+RT_PATH			=	/opt/rt-$(RT_VERSION)
 
 # The rest of these paths are all configurable, but you probably don't want to 
 # put them elsewhere
@@ -119,7 +119,9 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 # The user your webserver runs as. needed so that webrt can cache mason
 # objectcode
+
 WEB_USER			=	nobody
+WEB_GROUP			=	rt
 
 # }}}
 
@@ -203,7 +205,9 @@ mux-install:
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
+				s'!!WEB_USER!!'$(WEB_USER)'g;\
+				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
 					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER)
 
 mux-links:
