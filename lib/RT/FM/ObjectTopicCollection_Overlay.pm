@@ -21,6 +21,9 @@
 # 
 # 
 # END LICENSE BLOCK
+
+package RT::FM::ObjectTopicCollection;
+
 use strict;
 no warnings qw(redefine);
 

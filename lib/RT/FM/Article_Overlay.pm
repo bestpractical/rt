@@ -16,6 +16,8 @@
 #
 # END LICENSE BLOCK
 
+package RT::FM::Article;
+
 use strict;
 
 no warnings qw/redefine/;
@@ -31,7 +33,8 @@ use RT::Transactions;
 
 # This object takes custom fields
 
-RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'RTFM Articles' );    #loc
+RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'RTFM Articles' )
+  ;    #loc
 
 # {{{ Create
 
@@ -55,12 +58,14 @@ Create takes a hash of values and creates a row in the database:
 
 sub Create {
     my $self = shift;
-    my %args = ( Name         => '',
-                 Summary      => '',
-                 Class        => '0',
-                 CustomFields => {},
-                 Links        => {},
-                 @_ );
+    my %args = (
+        Name         => '',
+        Summary      => '',
+        Class        => '0',
+        CustomFields => {},
+        Links        => {},
+        @_
+    );
 
     my $class = RT::FM::Class->new($RT::SystemUser);
     $class->Load( $args{'Class'} );
@@ -72,12 +77,15 @@ sub Create {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    return (undef,$self->loc('Name in use')) unless $self->ValidateName($args{'Name'});
+    return ( undef, $self->loc('Name in use') )
+      unless $self->ValidateName( $args{'Name'} );
 
     $RT::Handle->BeginTransaction();
-    my ( $id, $msg ) = $self->SUPER::Create( Name    => $args{'Name'},
-                                             Class   => $class->Id,
-                                             Summary => $args{'Summary'}, );
+    my ( $id, $msg ) = $self->SUPER::Create(
+        Name    => $args{'Name'},
+        Class   => $class->Id,
+        Summary => $args{'Summary'},
+    );
     unless ($id) {
         $RT::Handle->Rollback();
         return ( undef, $msg );
@@ -93,9 +101,9 @@ sub Create {
         foreach my $val (@vals) {
 
             my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
-                                                          Field   => $1,
-                                                          Value => $val,
-                                                          RecordTransaction => 0
+                Field             => $1,
+                Value             => $val,
+                RecordTransaction => 0
             );
 
             unless ($cfid) {
@@ -109,9 +117,9 @@ sub Create {
     # }}}
     # {{{ Add topics
 
-    foreach my $topic (@{$args{Topics}}) {
-        my ( $cfid, $cfmsg ) = $self->AddTopic(Topic => $topic);
-        
+    foreach my $topic ( @{ $args{Topics} } ) {
+        my ( $cfid, $cfmsg ) = $self->AddTopic( Topic => $topic );
+
         unless ($cfid) {
             $RT::Handle->Rollback();
             return ( undef, $cfmsg );
@@ -138,10 +146,12 @@ sub Create {
                 $target = undef;
             }
 
-            my ( $linkid, $linkmsg ) = $self->AddLink( Type   => $type,
-                                                       Target => $target,
-                                                       Base   => $base,
-                                                       RecordTransaction => 0 );
+            my ( $linkid, $linkmsg ) = $self->AddLink(
+                Type              => $type,
+                Target            => $target,
+                Base              => $base,
+                RecordTransaction => 0
+            );
 
             unless ($linkid) {
                 $RT::Handle->Rollback();
@@ -158,10 +168,10 @@ sub Create {
     # aren't expensive and stupid
     $self->__Set( Field => 'URI', Value => $self->URI );
 
-    my ($txn_id, $txn_msg,$txn) = $self->_NewTransaction( Type => 'Create' );
+    my ( $txn_id, $txn_msg, $txn ) = $self->_NewTransaction( Type => 'Create' );
     unless ($txn_id) {
         $RT::Handle->Rollback();
-        return (undef, $self->loc('Internal error: [_1]', $txn_msg));
+        return ( undef, $self->loc( 'Internal error: [_1]', $txn_msg ) );
     }
     $RT::Handle->Commit();
 
@@ -185,23 +195,23 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
-    if (!$name) {
-        return(1);
+    if ( !$name ) {
+        return (1);
     }
 
     my $temp = RT::FM::Article->new($RT::SystemUser);
-    $temp->LoadByCols(Name => $name);
-    if ($temp->id && $temp->id != $self->id) {
-        return(undef);
+    $temp->LoadByCols( Name => $name );
+    if ( $temp->id && $temp->id != $self->id ) {
+        return (undef);
     }
 
-    return(1);
+    return (1);
 
 }
 
 # }}}
 
-# {{{ Delete 
+# {{{ Delete
 
 =head2 Delete
 
@@ -261,8 +271,8 @@ sub Delete {
         }
     }
 
-    while (my $item = $topics->Next) {
-        my ($val, $msg ) = $item->Delete();
+    while ( my $item = $topics->Next ) {
+        my ( $val, $msg ) = $item->Delete();
         unless ($val) {
             $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
@@ -309,8 +319,6 @@ et.
 
 =cut
 
-
-
 sub DeleteLink {
     my $self = shift;
     my %args = (
@@ -328,7 +336,6 @@ sub DeleteLink {
     $self->_DeleteLink(%args);
 }
 
-
 sub AddLink {
     my $self = shift;
     my %args = (
@@ -345,7 +352,6 @@ sub AddLink {
 
     $self->_AddLink(%args);
 }
-
 
 sub URI {
     my $self = shift;
@@ -387,66 +393,78 @@ sub URIObj {
 # {{{ Topics
 sub Topics {
     my $self = shift;
-    
-    my $topics = new RT::FM::ObjectTopicCollection($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ShowArticle')) {
+
+    my $topics = new RT::FM::ObjectTopicCollection( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('ShowArticle') ) {
         $topics->LimitToObject($self);
     }
     return $topics;
 }
+
 # }}}
 
 # {{{ AddTopic
 sub AddTopic {
     my $self = shift;
-    my %args = ( @_ );
-    
+    my %args = (@_);
+
     unless ( $self->CurrentUserHasRight('ModifyArticleTopics') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $t = new RT::FM::ObjectTopic($self->CurrentUser);
-    my ($tid) = $t->Create( Topic      => $args{'Topic'},
-                            ObjectType => ref($self),
-                            ObjectId   => $self->Id );
+    my $t = new RT::FM::ObjectTopic( $self->CurrentUser );
+    my ($tid) = $t->Create(
+        Topic      => $args{'Topic'},
+        ObjectType => ref($self),
+        ObjectId   => $self->Id
+    );
     if ($tid) {
-        return ($tid, $self->loc("Topic membership added"));
-    } else {
-        return (0, $self->loc("Unable to add topic membership"));
-    } 
+        return ( $tid, $self->loc("Topic membership added") );
+    }
+    else {
+        return ( 0, $self->loc("Unable to add topic membership") );
+    }
 }
+
 # }}}
 
-# {{{ DeleteTopic
 sub DeleteTopic {
     my $self = shift;
-    my %args = ( @_ );
+    my %args = (@_);
 
     unless ( $self->CurrentUserHasRight('ModifyArticleTopics') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $t = new RT::FM::ObjectTopic($self->CurrentUser);
-    $t->LoadByCols(Topic => $args{'Topic'}, ObjectId => $self->Id, ObjectType => ref($self));
-    if ($t->Id) {
+    my $t = new RT::FM::ObjectTopic( $self->CurrentUser );
+    $t->LoadByCols(
+        Topic      => $args{'Topic'},
+        ObjectId   => $self->Id,
+        ObjectType => ref($self)
+    );
+    if ( $t->Id ) {
         my $del = $t->Delete;
         unless ($del) {
-            return ( undef, 
-                     $self->loc("Unable to delete topic membership in [_1]",
-                                $t->TopicObj->Name));
-        } else {
-            return ( 1,
-                     $self->loc("Topic membership removed"));
+            return (
+                undef,
+                $self->loc(
+                    "Unable to delete topic membership in [_1]",
+                    $t->TopicObj->Name
+                )
+            );
         }
-    } else {
-        return ( undef,
-                 $self->loc("Couldn't load topic membership while trying to delete it"));
+        else {
+            return ( 1, $self->loc("Topic membership removed") );
+        }
+    }
+    else {
+        return (
+            undef,
+            $self->loc(
+                "Couldn't load topic membership while trying to delete it")
+        );
     }
 }
-# }}}
-# }}}
-
-# {{{ CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -458,16 +476,17 @@ sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
 
-    return ( $self->CurrentUser->HasRight(
-                            Right        => $right,
-                            Object       => $self,
-                            EquivObjects => [ $RT::FM::System, $RT::System, $self->ClassObj ]
-             ) );
+    return (
+        $self->CurrentUser->HasRight(
+            Right        => $right,
+            Object       => $self,
+            EquivObjects => [ $RT::FM::System, $RT::System, $self->ClassObj ]
+        )
+    );
 
 }
 
 # }}}
-
 
 # {{{ _Set
 
@@ -480,18 +499,22 @@ Internal helper method to record a transaction as we update some core field of t
 
 sub _Set {
     my $self = shift;
-    my %args = ( Field => undef,
-                 Value => undef,
-                 @_ );
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_
+    );
 
     unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    $self->_NewTransaction( Type       => 'Set',
-                            Field      => $args{'Field'},
-                            NewValue => $args{'Value'},
-                            OldValue => $self->__Value( $args{'Field'} ) );
+    $self->_NewTransaction(
+        Type     => 'Set',
+        Field    => $args{'Field'},
+        NewValue => $args{'Value'},
+        OldValue => $self->__Value( $args{'Field'} )
+    );
 
     return ( $self->SUPER::_Set(%args) );
 
@@ -506,8 +529,9 @@ Return "PARAM" for this object. if the current user doesn't have rights, returns
 sub _Value {
     my $self = shift;
     my $arg  = shift;
-    unless (    ( $arg eq 'Class' )
-             || ( $self->CurrentUserHasRight('ShowArticle') ) ) {
+    unless ( ( $arg eq 'Class' )
+        || ( $self->CurrentUserHasRight('ShowArticle') ) )
+    {
         return (undef);
     }
     return $self->SUPER::_Value($arg);
@@ -527,6 +551,5 @@ sub _LookupId {
     return $self->ClassObj->id;
 
 }
-
 
 1;

@@ -32,6 +32,7 @@ can_ok($class, 'AddCustomFieldValue');
 can_ok($class, 'DeleteCustomFieldValue');
 can_ok($class, 'FirstCustomFieldValue');
 can_ok($class, 'CustomFieldValues');
+can_ok($class, 'CurrentUserHasRight');
 
 
 # Add a custom field to our class

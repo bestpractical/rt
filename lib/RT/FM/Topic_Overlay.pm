@@ -21,6 +21,10 @@
 # 
 # 
 # END LICENSE BLOCK
+#
+
+package RT::FM::Topic;
+
 use strict;
 no warnings qw(redefine);
 

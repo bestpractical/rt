@@ -19,6 +19,7 @@
 <%init>
 use RT::FM;
 use RT::FM::ArticleCollection;
+use RT::FM::Article;
 use RT::FM::ClassCollection;
 use RT::FM::TopicCollection;
 use RT::FM::ObjectTopicCollection;

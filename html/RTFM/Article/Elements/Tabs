@@ -47,6 +47,7 @@ if ($id) {
 
  };
 
+    use RT::FM::Article;
         my $art = RT::FM::Article->new( $session{'CurrentUser'} );
         $art->Load($id);
         if ( $art->CurrentUserHasRight('ModifyArticle') ) {
