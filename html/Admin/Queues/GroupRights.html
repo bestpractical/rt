@@ -2,7 +2,7 @@
 <& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="groupRights.html">
+  <FORM METHOD=POST ACTION="GroupRights.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
 <& /Elements/TitleBoxStart, title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>

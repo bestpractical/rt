@@ -1,4 +1,3 @@
-
 =head1 NAME
 
 RT::I18N - a base class for localization of RT
@@ -6,31 +5,40 @@ RT::I18N - a base class for localization of RT
 =cut
 
 package RT::I18N;
-
-# This is the project base class for "findgrep", an example application
-# using Locale::Maketext;
-
 use Locale::Maketext 1.01;
 use base ('Locale::Maketext');
+
+my @languages;
+
+BEGIN {
+    # Acquire all .po files and iterate them into lexicons
+    @languages = map {
+	m|/(\w+).po$|g
+    } glob(substr(__FILE__, 0, -3) . "/*.po");
+
+    require Locale::Maketext::Lexicon;
+    Locale::Maketext::Lexicon->import({ map {
+	$_ => [Gettext => "$_.po"]
+    } @languages });
+}
+
 
 # I decree that this project's first language is English.
 
 %Lexicon = (
-    'TEST_STRING' => 'Concrete Mixer',
+   'TEST_STRING' => 'Concrete Mixer',
 
     '__Content-Type' => 'text/plain; charset=utf-8',
 
-    '_AUTO' => 1,
-
-    # That means that lookup failures can't happen -- if we get as far
-    #  as looking for something in this lexicon, and we don't find it,
-    #  then automagically set $Lexicon{$key} = $key, before possibly
-    #  compiling it.
-
-    # The exception is keys that start with "_" -- they aren't auto-makeable.
+  '_AUTO' => 1,
+  # That means that lookup failures can't happen -- if we get as far
+  #  as looking for something in this lexicon, and we don't find it,
+  #  then automagically set $Lexicon{$key} = $key, before possibly
+  #  compiling it.
+  
+  # The exception is keys that start with "_" -- they aren't auto-makeable.
 
 );
-
 # End of lexicon.
 
 =head2 encoding
@@ -57,63 +65,68 @@ ok($en->encoding eq 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 {
 
+my %decoder; # shared cache of Text::Iconv decoder
 
-    my %decoder;    # shared cache of Text::Iconv decoder
+sub encoding { 
+    my $self = shift;
 
-    sub encoding {
-        my $self = shift;
+    if ( $self->maketext('__Content-Type') =~ /charset=\s*([-\w]+)/i ) {
+        my $encoding = $1;
 
-        if ( $self->maketext('__Content-Type') =~ /charset=\s*([-\w]+)/i ) {
-            my $encoding = $1;
-            if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
+	# Doesn't make any sense if it's already utf8
+	return 'utf-8' if $encoding =~ /^utf-?8$/i;
 
-                # perl 5.7.3 or above with Encode module - normalize to utf8
-                no strict 'refs';
-                *{ ref($self) . '::maketext' } = ( $encoding =~ /^utf-?8$/i )
-                  ? sub {
-                    my $self = shift;
-                    my $text = $self->SUPER::maketext(@_);
-                    Encode::_utf8_on($text);
-                    return $text;
-                  }
-                  : sub {
-                    my $self = shift;
-                    return Encode::decode( $encoding,
-                                           $self->SUPER::maketext(@_) );
-                  };
+        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
 
-                return ('utf-8');
-            }
-            elsif ( $] >= 5.006 and eval { require Text::Iconv; 1 } ) {
-                $decoder{$encoding} ||= Text::Iconv->new( $encoding, 'utf-8' );
+            # perl 5.7.3 or above with Encode module - normalize to utf8
+            no strict 'refs';
+            *{ ref($self) . '::maketext' } = sub {
+                my $self = shift;
+                return Encode::decode( $encoding, $self->SUPER::maketext(@_) );
+            };
 
-                # different quite broken ways to force utf8ness.
-                my $force_utf8 = sub {
-                    return pack( 'U0A*', $_[0] );
-                };
+            return ('utf-8');
+        }
+        elsif ( $] >= 5.006 and eval { require Text::Iconv; 1 } ) {
+            $decoder{$encoding} ||= Text::Iconv->new( $encoding, 'utf-8' );
 
-                *{ ref($self) . '::maketext' } = sub {
-                    my $self = shift;
+            # different quite broken ways to force utf8ness.
+            my $force_utf8 = sub {
+                return pack( 'U0A*', $_[0] );
+              };
 
-                    return $force_utf8->( $decoder{$encoding}
-                                      ->convert( $self->SUPER::maketext(@_) ) );
-                };
+            *{ ref($self) . '::maketext' } = sub {
+                my $self = shift;
 
-                return ('utf-8');
-            }
-            else {
+                return $force_utf8->(
+                      $decoder{$encoding}->convert( $self->SUPER::maketext(@_) )
+                );
+            };
 
-                # assume byte semantic
-                return ($encoding);
-            }
-
+            return ('utf-8');
+        }
+        else {
+            # assume byte semantic
+            return ($encoding);
         }
     }
 }
-
-if ( $] >= 5.008 ) {
-   require Encode;
-   Encode::_utf8_on($_) for values %Lexicon;
 }
 
-1;    # End of module.
+# Force UTF8 flag on if we're sure it's utf8 already
+no strict 'refs';
+foreach my $lang (@languages) {
+    my $pkg = __PACKAGE__ . "::$lang";
+    next unless $pkg->encoding eq 'utf-8';
+
+    if ($] >= 5.007003) {
+	require Encode;
+	Encode::_utf8_on($_) for values %{"$pkg\::Lexicon"};
+    }
+    elsif ($] >= 5.006) {
+	$_ = pack( 'U0A*', $_ ) for values %{"$pkg\::Lexicon"};
+    }
+}
+
+1;  # End of module.
+
