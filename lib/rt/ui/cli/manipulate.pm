@@ -121,19 +121,63 @@ sub ParseArgs {
 	
       }
       
-      elsif ($ARGV[$i] eq "-user")	{
-	my $id = int($ARGV[++$i]);
+    
+    elsif ($ARGV[$i] eq "-requestor") {
+   	my $id = int($ARGV[++$i]);
 	my $new_user = $ARGV[++$i];
-	my $Ticket = &LoadTicket($id);
-	
-	$Message .= $Ticket->SetRequestors($new_user);
-      }
-      
-      elsif ($ARGV[$i] eq "-untake")	{
-	my $id=int($ARGV[++$i]);
-	my $Ticket = &LoadTicket($id);
 
-	$Message .= $Ticket->Untake();
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->AddWatcher(Email => "$new_user",
+			    Type => "Requestor");
+      }
+    
+    elsif ( ($ARGV[$i] =~ "-cc") || 
+	    ($ARGV[$i] =~ "-bcc") || 
+	    ($ARGV[$i] =~ "-user") ) {
+      
+      my $type = $ARGV[$i];
+      my $id = int($ARGV[++$i]);
+      my $arg = $ARGV[++$i];
+      my $Ticket = &LoadTicket($id);
+    
+      if ($type eq '-cc') {
+	$watcher_type = "Cc";
+      }
+      elsif ($type eq '-bcc') {
+	$watcher_type = "Bcc";
+      }
+      elsif ($type eq '-user') {
+	$watcher_type = "Requestor";
+      }
+      else {
+	#we've just covered all our bases
+	die "This else never reached. Ever. or you broke the cli\n";
+      }
+     
+
+
+      if ($arg =~ /^(.)(.*)/) {
+	$action = $1;
+	$email = $2;
+      }
+      if ($action eq "+") {
+	$Message .= $Ticket->AddWatcher(Email => "$email",
+					Type => "$watcher_type");
+	
+      }
+      elsif ($action eq "-") {
+	$Message .= $Ticket->DeleteWatcher("$email");
+      }
+      else {
+	$Message .= "$type expects an argument of the form +<email address> or -<email address>\n";
+      }
+    }
+    
+    elsif ($ARGV[$i] eq "-untake")	{
+      my $id=int($ARGV[++$i]);
+      my $Ticket = &LoadTicket($id);
+      
+      $Message .= $Ticket->Untake();
 
       }
       
@@ -374,7 +418,11 @@ n";
     -steal <num>	  Become owner of <num> (if owned by another)
     -untake <num>	  Make <num> ownerless (if owned by you) 
     -give <num> <user>	  Make <user> owner of <num>
-    -user <num> <user>	  Change the requestor ID of <num> to <user>
+
+    -user <num> (+|-) <email>	  Add or remove <email> as a watcher for <num>
+    -cc <num> (+|-) <email>
+    -bcc <num> (+|-) <email>
+
     -due <num< <date>     Change <num>'s due date to <date> (MM/DD/YY)
     -comment <num>	  Add comments about <num> from STDIN
     -respond <num>	  Respond to <num>
@@ -398,7 +446,9 @@ EOFORM
     print <<EOFORM
 Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
       Subject: @{[$Ticket->Subject]}
-   Requestors: @{[$Ticket->Requestors]}
+   Requestors: @{[$Ticket->RequestorsAsString]}
+           Cc: @{[$Ticket->CcAsString]}
+          Bcc: @{[$Ticket->BccAsString]}
         Owner: @{[$Ticket->Owner->UserId]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[localtime($Ticket->Due)]})

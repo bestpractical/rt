@@ -63,9 +63,13 @@ sub Create {
 
 
   #Add the requestor to the list of watchers
-  $self->NewWatcher ( Type => 'Requestor',
-		      Email => $arg{'requestor'} );
-
+  require RT::Watcher;
+  my $Requestor = new RT::Watcher ($self->CurrentUser);
+  $Requestor->Create( Ticket => $self->Id(),
+		      Email => 'Requestor', 
+		      Type =>$arg{'requestor'} );
+  
+  
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction(Type => "Create",
 				     TimeTaken => 0);
@@ -87,7 +91,7 @@ sub Create {
 #
 
 
-sub NewWatcher {
+sub AddWatcher {
   my $self = shift;
   my %args = ( Ticket => $self->Id(),
 	       Email => undef,
@@ -102,15 +106,19 @@ sub NewWatcher {
 	
 sub DeleteWatcher {
   my $self = shift;
-  my $self = shift;
-  my %args = ( Ticket => $self->Id(),
-	       Email => undef,
-	       Type => undef,
-	       @_ );
+  my $email = shift;
   
-  require RT::Watcher;
-  my $Watcher = new RT::Watcher ($self->CurrentUser);
-  $Watcher->Load(%args);
+  my ($Watcher);
+  
+  while ($Watcher = $self->Watchers->Next) {
+    if ($Watcher->Email =~ /$email/) {
+      $self->_NewTransaction ( Type => 'DelWatcher',
+			       OldValue => $Watcher->Email,
+			       Data => $Watcher->Type,
+			     );
+      $Watcher->Delete();
+    }
+  }
 }
 
 
@@ -619,7 +627,7 @@ sub _NewTransaction {
 	     @_);
   
   
-  use RT::Transaction;
+  require RT::Transaction;
   my $trans = new RT::Transaction($self->CurrentUser);
   $trans->Create( Ticket => $self->EffectiveId,
 		  TimeTaken => $args{'TimeTaken'},

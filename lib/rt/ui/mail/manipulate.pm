@@ -6,9 +6,6 @@ sub activate {
   my $Area = $ARGV[2];
   
   my ($From, $TicketId, $Subject);
-
-
-  
   
   if (!defined ($Queue)) { $Queue = "general";}
   if (!defined ($Action)) { $Action = "correspond";}
@@ -19,6 +16,8 @@ sub activate {
 
   # Create a new parser object:
   use MIME::Parser;
+  use Mail::Address;
+
   my $parser = new MIME::Parser;
   
   # Set up output directory for files:
@@ -45,18 +44,8 @@ sub activate {
     die "RT Recieved a message it should not process";
   }
   
-  #Figure out who's sending this message.
-  $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-  use Mail::Address;
-  print "From is : $From\n";
-  my @Address = Mail::Address->parse($From);
-  my $FromObj = shift @Address;
-  my $Address = $FromObj->address;
-  my $Name =  ($FromObj->phrase || $FromObj->comment);
 
-  print "Name: $Name\n";
-  
-  
+
   #Pull apart the subject line
   $Subject = $head->get('Subject') || "";
   chomp $Subject;
@@ -65,37 +54,28 @@ sub activate {
     $TicketId = $1;
   }
   
-  
-  #Now we've got a parsed mime object. 
-  use RT::CurrentUser;
-  my $CurrentUser = new RT::CurrentUser($Address);
+  my $CurrentUser = &GetCurrentUser($head);
 
-  #Lets take the from and load a user object.
-  if ($CurrentUser->Id == 0) {
-    #If it fails, create a user
-    
-    use RT::User;
-    my $SystemUser = new RT::CurrentUser(1);
-    my $NewUser = RT::User->new($SystemUser);#Create a user as root 
-                                   #TODO: Figure out a better way to do this
-    my ($Val, $Message) = $NewUser->Create(UserId => "$Address",
-					   EmailAddress => "$Address",
-					   RealName => "$Name",
-					   Password => "Default", #TODO FIX THIS
-					   CanManipulate => 0,
-					   IsAdministrator => 0,
-					   Comments => "Autocreated by RT::Mailgate on ticket submission"
-					  );
-    
-    if (!$Val) {
-      die $Message;
-    }
-    #TODO: Send the user a "welcome message"
-    #Load the new user object
-    $CurrentUser->Load($Address);
-  }
+
+ 
+
+  my $FromObj = shift @Address;
+  my $Name =  ($FromObj->phrase || $FromObj->comment);
+
+
+  my $Bcc = $head->get('Bcc');
+
+
   
-  use RT::Ticket;
+
+  #Go through every address in the From, Cc and Bcc headers
+  #Foreach header, see if the address has an RT account.
+  #if it doesn't hafve an account, create an account.
+
+
+
+
+  require RT::Ticket;
   
   #If the message doesn't reference a ticket #, create a new ticket
   if (!defined($TicketId)) {
@@ -110,12 +90,25 @@ sub activate {
     my ($id, $Transaction, $ErrStr) = 
       $Ticket->Create ( Queue => $Queue,
 			Area => $Area,
-			Requestors => $From,
 			Subject => $Subject,
 			Attachment => $entity
+			Requestor => $CurrentUser->Email
 		      );
     
-  }
+    my @Cc = Mail::Address->parse($head->get('Cc'));
+    foreach $Cc (@Cc) {
+      $Ticket->AddWatcher ( Email => $Cc->address,
+			    Type => "Cc");
+    }
+
+    my @Bcc = Mail::Address->parse($head->get('Bcc'));
+    foreach $Bcc (@Bcc) {
+      $Ticket->AddWatcher ( Email => $Bcc->address,
+			    Type => "Bcc");
+    }
+
+
+
   else { #If we have a ticketid
     #   If the message contains commands, execute them
     
@@ -126,6 +119,8 @@ sub activate {
       #TODO: Check for error conditions.
       $Ticket->Comment(MIMEObj=>$entity);
     }
+
+
     #   If the message is correspondence, add it to the ticket
     elsif ($Action =~ /correspond/) {
       
@@ -135,7 +130,15 @@ sub activate {
       $Ticket->Comment(MIMEObj => $entity);
     }
    }
+
+  return(0);
 }
+
+
+
+
+
+
 
 sub CheckForLoops {
   my $head = shift;
@@ -160,6 +163,53 @@ sub CheckForLoops {
   if ($Precedence =~ /^bulk/i) {
     return (1);
   }
+}
+
+
+
+
+sub GetCurrentUser {
+  my $head = shift;
+
+  #Figure out who's sending this message.
+  my $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
+
+  use Mail::Address;
+  my @Address = Mail::Address->parse($From);
+  my $FromObj = shift @Address;
+  my $Name =  ($FromObj->phrase || $FromObj->comment);
+
+  
+  #Now we've got a parsed mime object. 
+  use RT::CurrentUser;
+  my $CurrentUser = new RT::CurrentUser($FromObj->address);
+  
+  #Lets take the from and load a user object.
+  if ($CurrentUser->Id == 0) {
+    #If it fails, create a user
+    
+    use RT::User;
+    my $SystemUser = new RT::CurrentUser(1);
+    my $NewUser = RT::User->new($SystemUser);#Create a user as root 
+    #TODO: Figure out a better way to do this
+    my ($Val, $Message) = $NewUser->Create(UserId => $FromObj->address,
+					   EmailAddress => $FromObj->address,
+					   RealName => "$Name",
+					   Password => "Default", #TODO FIX THIS
+					   CanManipulate => 0,
+					   IsAdministrator => 0,
+					   Comments => "Autocreated by RT::Mailgate on ticket submission"
+					  );
+    
+    if (!$Val) {
+      #TODO this should not just up and die. at the worst it should send mail.
+      die $Message;
+    }
+    #TODO: Send the user a "welcome message"
+    #Load the new user object
+    $CurrentUser->Load($FromObj->address);
+  }
+  return ($CurrentUser);
 }
 
 1;

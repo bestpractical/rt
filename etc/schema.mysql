@@ -98,12 +98,15 @@ CREATE TABLE Queues (
 
 
 
-#We're not using InterestedParties yet.
-CREATE TABLE InterestedParties (
+CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
    Ticket int(11),
-   User int(11),
+   Email VARCHAR(255),
    Type VARCHAR(16) #Requestor, Cc, Bcc
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP
    )\g
 
 CREATE TABLE Tickets (
