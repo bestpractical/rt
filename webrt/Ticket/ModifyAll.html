@@ -40,10 +40,14 @@
 <& /Elements/TitleBoxStart, title => 'Update ticket' &>
 <hr>
 Update Type: <select name="UpdateType">
-	    <option value="private">Comments (Not sent to requestors)</option>
-	    <option value="response">Response to requestors</option>
-	  </select> 
-	  <br>
+% if ($CanComment) {
+  <option value="private" <%$CommentDefault%>>Comments (Not sent to requestors)</option>
+% }
+% if ($CanRespond) {
+   <option value="response" <%$ResponseDefault%>>Response to requestors</option>
+% }
+</select> 
+<br>
 
 Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
 <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
@@ -58,6 +62,18 @@ Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>">
 
 
 my $Ticket = LoadTicket($id);
+
+my $CanRespond = 0;
+my $CanComment = 0;
+
+
+$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+
+$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+
+
 
 my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);

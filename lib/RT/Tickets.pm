@@ -84,7 +84,7 @@ sub Limit {
     #make the TicketRestrictions hash the equivalent of whatever we just passed in;
     %{$self->{'TicketRestrictions'}{$index}} = %args;
     
-    
+
     $self->{'RecalcTicketLimits'} = 1;
     return ($index);
 }
@@ -749,7 +749,7 @@ sub _Init  {
     $self->{'restriction_index'} =1;
     $self->{'primary_key'} = "id";
     $self->SUPER::_Init(@_);
-    
+
 }
 # }}}
 
@@ -772,13 +772,20 @@ sub Count {
 # {{{ sub Next 
 sub Next {
 	my $self = shift;
-	
+ 	
 	$self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
 
 	my $Ticket = $self->SUPER::Next();
 	if ((defined($Ticket)) and (ref($Ticket))) {
 
-  	    if ($Ticket->CurrentUserHasRight('ShowTicket')) {
+    	    #Make sure we _never_ show dead tickets
+	    #TODO we should be doing this in the where clause.
+	    #but you can't do multiple clauses on the same field just yet :/
+
+	    if ($Ticket->Status eq 'dead') {
+		return($self->Next());
+	    }
+  	    elsif ($Ticket->CurrentUserHasRight('ShowTicket')) {
 		return($Ticket);
 	    }
 
@@ -904,6 +911,8 @@ sub _ProcessRestrictions {
     delete $self->{'TicketAliases'};
 
     my $row;
+    
+    
     foreach $row (keys %{$self->{'TicketRestrictions'}}) {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 	# {{{ if it's an int
