@@ -2,6 +2,15 @@
 
 package RT;
 
+=head1 NAME
+
+RT::Config
+
+=for testing
+use RT::Config;
+
+=cut
+
 # {{{ Base Configuration
 
 # $rtname the string that RT will look for in mail messages to
@@ -29,38 +38,81 @@ $Timezone =  'US/Eastern';
 
 # LogDir is where RT writes its logfiles.
 # This directory should be writable by your rt group
-$LogDir = "!!RT_LOG_PATH!!";
+
+$BasePath = "/opt/rt22/";
+
+$BinPath = $BasePath . "bin/";
+$SbinPath = $BasePath . "sbin/";
+$LibPath = $BasePath . "lib/";
+$EtcPath = $BasePath . "etc/";
+$ManPath = $BasePath . "man/";
+
+
+
+$WebUser = 'www';
+$WebGroup = 'www';
+
+
+# $MasonComponentRoot is where your rt instance keeps its mason html files
+# (this should be autoconfigured during 'make install' or 'make upgrade')
+
+$MasonComponentRoot = $BasePath . "WebRT/html";
+
+# $MasonLocalComponentRoot is where your rt instance keeps its site-local
+# mason html files.
+# (this should be autoconfigured during 'make install' or 'make upgrade')
+
+$MasonLocalComponentRoot = $BasePath ."local/WebRT/html";
+
+# $MasonDataDir Where mason keeps its datafiles
+# (this should be autoconfigured during 'make install' or 'make upgrade')
+
+$MasonDataDir = $BasePath."WebRT/data";
+
+# RT needs to put session data (for preserving state between connections
+# via the web interface)
+$MasonSessionDir = $BasePath ."WebRT/session_data";
+
+# }}}
+
+$LogDir = "/var/log/rt";
 
 # }}}
 
 # {{{ Database Configuration
 
-# Database driver beeing used - i.e. MySQL.
-$DatabaseType="!!DB_TYPE!!";
+# Database driver beeing used. Case matters
+# Valid types are "mysql" and "Pg" 
+
+$DatabaseType="mysql";
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
 # leave it blank for enhanced performance
-$DatabaseHost="!!DB_HOST!!";
+$DatabaseHost="";
+$DatabaseRTHost="localhost";
 
 # The port that your database server is running on.  Ignored unless it's 
 # a positive integer. It's usually safe to leave this blank
-$DatabasePort="!!DB_PORT!!";
+$DatabasePort="";
 
 
 #The name of the database user (inside the database) 
-$DatabaseUser='!!DB_RT_USER!!';
+$DatabaseUser='rt_user';
 
 # Password the DatabaseUser should use to access the database
-$DatabasePassword='!!DB_RT_PASS!!';
+$DatabasePassword='rt_pass';
 
+
+$DatabaseDBA="root";
+$DatabaseDBAPassword="";
 
 # The name of the RT's database on your database server
-$DatabaseName='!!DB_DATABASE!!';
+$DatabaseName='rt22';
 
 # If you're using Postgres and have compiled in SSL support, 
 # set DatabaseRequireSSL to 1 to turn on SSL communication
-$DatabaseRequireSSL=undef;
+$DatabaseRequireSSL=0;
 
 # }}}
 
@@ -110,44 +162,26 @@ $DropLongAttachments = undef;
 # Ticket 'Cc' watchers from the To and Cc lines of incoming messages
 # Be forewarned that if you have _any_ addresses which forward mail to
 # RT automatically and you enable this option without modifying 
-# "IsRTAddress" below, you will get yourself into a heap of trouble.
-# And well, this is free software, so there isn't a warrantee, but
-# I disclaim all ability to help you if you do enable this without
-# modifying IsRTAddress below.
+# "RTAddressRegexp" below, you will get yourself into a heap of trouble.
 
 $ParseNewMessageForTicketCcs = undef;
 
-# IsRTAddress is used to make sure RT doesn't add itself as a ticket CC if
+# RTAddressRegexp is used to make sure RT doesn't add itself as a ticket CC if
 # the setting above is enabled.
 
-sub IsRTAddress {
-    my $address = shift;
+$RTAddressRegexp = '^rt\@example.com$';
 
-    # Example: the following rule would tell RT not to Cc 
-    #	"tickets@noc.example.com"
-    # return(1) if ($address =~ /^tickets\@noc.example.com$/i);
-    
-    return(undef)
-}
 
-# CanonicalizeAddress converts email addresses into canonical form.
-# it takes one email address in and returns the proper canonical
-# form. You can dump whatever your proper local config is in here
+# RT provides functionality which allows the system to rewrite
+# incoming email addresses.  In its simplest form,
+# you can substitute the value in CanonicalizeEmailAddressReplace
+# for the value in CanonicalizeEmailAddressMatch
+# (These values are passed to the CanonicalizeEmailAddress subroutine in RT/User.pm)
+# By default, that routine performs a s/$Match/$Replace/gi on any address passed to it
 
-sub CanonicalizeAddress {
-    my $email = shift;
-    # Example: the following rule would treat all email
-    # coming from a subdomain as coming from second level domain
-    # foo.com
-    #$email =~ s/\@(.*).foo.com/\@foo.com/;
-    return ($email)
-}
+$CanonicalizeEmailAddressMatch = 'subdomain.example.com$';
+$CanonicalizeEmailAddressReplace = 'example.com';
 
-# If $LookupSenderInExternalDatabase is defined, RT will attempt to
-# verify the incoming message sender with a known source, using the 
-# LookupExternalUserInfo routine below
-
-$LookupSenderInExternalDatabase = undef;
 
 # If $SenderMustExistInExternalDatabase is true, RT will refuse to
 # create non-privileged accounts for unknown users if you are using 
@@ -163,45 +197,6 @@ $LookupSenderInExternalDatabase = undef;
 
 $SenderMustExistInExternalDatabase = undef;
 
-# LookupExternalUserInfo is a site-definable method for synchronizing
-# incoming users with an external data source. 
-#
-# This routine takes a tuple of EmailAddress and FriendlyName
-# 	EmailAddress is the user's email address, ususally taken from
-#  		an email message's From: header.
-# 	FriendlyName is a freeform string, ususally taken from the "comment" 
-#		portion	of an email message's From: header.
-#
-# It returns (FoundInExternalDatabase, ParamHash);
-#
-#   FoundInExternalDatabase must  be set to 1 before return if the user was
-#   found in the external database.
-#
-#   ParamHash is a Perl parameter hash which can contain at least the following
-#   fields. These fields are used to populate RT's users database when the user 
-#   is created
-#
-# 	EmailAddress is the email address that RT should use for this user.  
-# 	Name is the 'Name' attribute RT should use for this user. 
-#   	     'Name' is used for things like access control and user lookups.
-# 	RealName is what RT should display as the user's name when displaying 
-#   	     'friendly' names
-
-sub LookupExternalUserInfo {
-  my ($EmailAddress, $RealName) = @_;
-
-  my $FoundInExternalDatabase = 1;
-  my %params = {};
-  
-  #Name is the RT username you want to use for this user.
-  $params{'Name'} = $EmailAddress;
-  $params{'EmailAddress'} = $EmailAddress;
-  $params{'RealName'} = $RealName;
-
-  # See RT's contributed code for examples.
-  # http://www.fsck.com/pub/rt/contrib/
-  return ($FoundInExternalDatabase, %params); 
-}
 
 # }}}
 
@@ -320,27 +315,6 @@ $LogoURL = $WebImagesURL."/rt.jpg";
 # REMOTE_USER variable.
 
 $WebExternalAuth = undef;
-
-# $MasonComponentRoot is where your rt instance keeps its mason html files
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonComponentRoot = "!!MASON_HTML_PATH!!";
-
-# $MasonLocalComponentRoot is where your rt instance keeps its site-local
-# mason html files.
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonLocalComponentRoot = "!!MASON_LOCAL_HTML_PATH!!";
-
-# $MasonDataDir Where mason keeps its datafiles
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonDataDir = "!!MASON_DATA_PATH!!";
-
-# RT needs to put session data (for preserving state between connections
-# via the web interface)
-$MasonSessionDir = "!!MASON_SESSION_PATH!!";
-
 
 
 #This is from tobias' prototype web search UI. it may stay and it may go.

@@ -3,15 +3,18 @@
 # $Header$
 # RT is (c) 1996-2002 Jesse Vincent (jesse@bestpractical.com);
 
-package RT;
 use strict;
 use vars qw($VERSION $Handle $Nobody $SystemUser $item);
 
 use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
 
 #This drags in  RT's config.pm
-use config;
+# We do it in a begin block because RT::Handle needs to know the type to do its
+# inheritance
+BEGIN {
+        use RT;
+        RT::LoadConfig();
+}
 use Carp;
 
 use RT::Handle;
@@ -23,7 +26,7 @@ my $LastVersion = shift || undef;
 my $LastMinorVersion = undef;
 
 #connect to the db
-$RT::Handle = new RT::Handle($RT::DatabaseType);
+$RT::Handle = RT::Handle->new();
 $RT::Handle->Connect();
 
 #Put together a current user object so we can create a User object
@@ -86,17 +89,16 @@ else {    # this is a virgin install
 #now that we bootstrapped that little bit, we can use the standard RT cli
 # helpers  to do what we need
 
-use RT::Interface::CLI qw(CleanEnv LoadConfig DBConnect
-  GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
 
 #Clean out all the nasties from the environment
 CleanEnv();
 
 #Load etc/config.pm and drop privs
-LoadConfig();
+RT::LoadConfig();
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-DBConnect();
+RT::Init;
 
 $CurrentUser->LoadByName('RT_System');
 

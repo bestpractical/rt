@@ -1,4 +1,8 @@
-
-DELETE FROM user WHERE user like '!!DB_RT_USER!!';
-DELETE FROM db where db LIKE '!!DB_DATABASE!!';
-GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON !!DB_DATABASE!!.* TO !!DB_RT_USER!!@!!DB_RT_HOST!! IDENTIFIED BY '!!DB_RT_PASS!!';
+sub acl {
+return  (
+"USE mysql;",
+"DELETE FROM user WHERE user like '${RT::DatabaseUser}';",
+"DELETE FROM db where db LIKE '${RT::DatabaseName}';",
+"GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON ${RT::DatabaseName}.* TO ${RT::DatabaseUser}@${RT::DatabaseRTHost} IDENTIFIED BY '${RT::DatabasePassword}';");
+}
+1;

@@ -1,9 +1,11 @@
 # $Header$
-# RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
-
-package RT::Interface::CLI;
+# RT is (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 
 use strict;
+
+use RT;
+package RT::Interface::CLI;
+
 
 
 BEGIN {
@@ -17,7 +19,7 @@ BEGIN {
     
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK   = qw(&CleanEnv &LoadConfig &DBConnect 
+    @EXPORT_OK   = qw(&CleanEnv 
 		      &GetCurrentUser &GetMessageContent &debug);
 }
 
@@ -27,21 +29,22 @@ BEGIN {
 
 =head1 SYNOPSIS
 
-  use lib "!!RT_LIB_PATH!!";
-  use lib "!!RT_ETC_PATH!!";
+  use lib "/path/to/rt/libraries/";
 
-  use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+  use RT::Interface::CLI  qw(CleanEnv 
 	  		   GetCurrentUser GetMessageContent);
 
   #Clean out all the nasties from the environment
   CleanEnv();
 
-  #Load etc/config.pm and drop privs
-  LoadConfig();
+  #let's talk to RT'
+  use RT;
 
-  #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-  DBConnect();
+  #Load RT's config file
+  RT::LoadConfig();
 
+  # Connect to the database. set up loggign
+  RT::Init();
 
   #Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
@@ -76,34 +79,6 @@ sub CleanEnv {
 }
 
 
-
-=head2 LoadConfig
-
-Loads RT's config file and then drops setgid privileges.
-
-=cut
-
-sub LoadConfig {
-    
-    #This drags in  RT's config.pm
-    use config;
-    
-}	
-
-
-
-=head2 DBConnect
-
-  Calls RT::Init, which creates a database connection and then creates $RT::Nobody
-  and $RT::SystemUser
-
-=cut
-
-
-sub DBConnect {
-    use RT;
-    RT::Init();
-}
 
 
 

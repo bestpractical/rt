@@ -1,5 +1,6 @@
+#$Header$
+
 package RT;
-use RT::Handle;
 use RT::CurrentUser;
 use strict;
 
@@ -14,16 +15,33 @@ $VERSION = '!!RT_VERSION!!';
 =head1 SYNOPSIS
 
 	A fully featured request tracker package
-	
 
 =head1 DESCRIPTION
 
 
 =cut
 
+=item LoadConfig
+
+Load RT's config file
+
+=cut
+
+sub LoadConfig {
+    my $config_file = "!!RT_CONFIG!!";
+    require $config_file || die "Couldn't load RT config file '$config_file'. ".$@;
+}
+
+=item Init
+
+    Conenct to the database, set up logging.
+    
+=cut
+
 sub Init {
+    require RT::Handle;
     #Get a database connection
-    $Handle = new RT::Handle($RT::DatabaseType);
+    $Handle = RT::Handle->new();
     $Handle->Connect();
     
     
@@ -57,6 +75,12 @@ sub InitLogging {
     $Logger=Log::Dispatch->new();
     
     if ($RT::LogToFile) {
+
+    unless (-d $RT::LogDir && -w $RT::LogDir) {
+        die "Log directory ".$RT::LogDir." not found or couldn't be written.\n".
+            " RT can't run.";
+    }
+
 	my $filename = $RT::LogToFileNamed || "$RT::LogDir/rt.log";
 
 	  $Logger->add(Log::Dispatch::File->new
@@ -125,10 +149,6 @@ sub DropSetGIDPermissions {
     $) = $(;
 }
 
-
-=head1 NAME
-
-RT - Request Tracker
 
 =head1 SYNOPSIS
 

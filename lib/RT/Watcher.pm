@@ -29,18 +29,18 @@ ok(require RT::Watcher);
 
 package RT::Watcher;
 use RT::Record;
-@ISA= qw(RT::Record);
-
+@ISA = qw(RT::Record);
 
 # {{{ sub _Init 
 
 sub _Init {
-  my $self = shift;
-  
-  $self->{'table'} = "Watchers";
-  return ($self->SUPER::_Init(@_));
+    my $self = shift;
+
+    $self->{'table'} = "Watchers";
+    return ( $self->SUPER::_Init(@_) );
 
 }
+
 # }}}
 
 # {{{ sub Create 
@@ -58,72 +58,70 @@ Owner: The RT user id of the \'owner\' of this watcher object.
 
 =cut
 
-sub Create  {
+sub Create {
     my $self = shift;
     my %args = (
-		Owner => undef,
-		Email => undef,
-		Value => undef,
-		Scope => undef,
-		Type => undef,
-		Quiet => 0,
-		@_ # get the real argumentlist
-	       );
-    
+        Owner => undef,
+        Email => undef,
+        Value => undef,
+        Scope => undef,
+        Type  => undef,
+        Quiet => 0,
+        @_    # get the real argumentlist
+    );
+
     #Do we have someone this applies to?
-    unless (($args{'Owner'} =~ /^(\d+)$/) || ($args{'Email'} =~ /\@/)) {
-	return (0, "No user or email address specified");
+    unless ( ( $args{'Owner'} =~ /^(\d+)$/ ) || ( $args{'Email'} =~ /\@/ ) ) {
+        return ( 0, "No user or email address specified" );
     }
-    
+
     #if we only have an email address, try to resolve it to an owner
-    if ($args{'Owner'} == 0) {
+    if ( $args{'Owner'} == 0 ) {
         my $User = new RT::User($RT::SystemUser);
-        $User->LoadByEmail($args{'Email'});
-        if ($User->id) {
+        $User->LoadByEmail( $args{'Email'} );
+        if ( $User->id ) {
             $args{'Owner'} = $User->id;
-   	    delete $args{'Email'};
-	}
+            delete $args{'Email'};
+        }
     }
-    
-    
-    if ($args{'Type'} eq "Requestor" and $args{'Owner'} == 0) {
-	# Requestors *MUST* have an account
-	
-	my $Address = RT::CanonicalizeAddress($args{'Email'});
-	
-	my $NewUser = RT::User->new($RT::SystemUser);
-	my ($Val, $Message) =
-	  $NewUser->Create(Name => $Address,
-			   EmailAddress => $Address,
-			   RealName => $Address,
-			   Password => undef,
-			   Privileged => 0,
-			   Comments => 'Autocreated on ticket submission'
-			  );
-	return (0, "Could not create watcher for requestor")
-	  unless $Val;
-	if ($NewUser->id) {
-	    $args{'Owner'} = $NewUser->id;
-	    delete $args{'Email'};
-	}
+
+    if ( $args{'Type'} eq "Requestor" and $args{'Owner'} == 0 ) {
+
+        # Requestors *MUST* have an account
+
+        my $NewUser = RT::User->new($RT::SystemUser);
+        my $Address = $NewUser->CanonicalizeEmailAddress( $args{'Email'} );
+
+        my ( $Val, $Message ) = $NewUser->Create(
+            Name         => $Address,
+            EmailAddress => $Address,
+            RealName     => $Address,
+            Password     => undef,
+            Privileged   => 0,
+            Comments     => 'Autocreated on ticket submission'
+        );
+        return ( 0, "Could not create watcher for requestor" )
+          unless $Val;
+        if ( $NewUser->id ) {
+            $args{'Owner'} = $NewUser->id;
+            delete $args{'Email'};
+        }
     }
-    
-    
-    
-    
+
     #Make sure we\'ve got a valid type
     #TODO --- move this to ValidateType 
-    return (0, "Invalid Type")
-      unless ($args{'Type'} =~ /^(Requestor|Cc|AdminCc)$/i);
+    return ( 0, "Invalid Type" )
+      unless ( $args{'Type'} =~ /^(Requestor|Cc|AdminCc)$/i );
 
     my $id = $self->SUPER::Create(%args);
     if ($id) {
-	return (1,"Interest noted");
+        return ( 1, "Interest noted" );
     }
     else {
-	return (0, "Error adding watcher");
+        return ( 0, "Error adding watcher" );
     }
 }
+
 # }}}
 
 # {{{ sub Load 
@@ -134,15 +132,15 @@ sub Create  {
   
 =cut
 
-sub Load  {
-    my $self = shift;
+sub Load {
+    my $self       = shift;
     my $identifier = shift;
-    
-    if ($identifier !~ /\D/) {
-	$self->SUPER::LoadById($identifier);
+
+    if ( $identifier !~ /\D/ ) {
+        $self->SUPER::LoadById($identifier);
     }
     else {
-	return (0, "That's not a numerical id");
+        return ( 0, "That's not a numerical id" );
     }
 }
 
@@ -165,52 +163,57 @@ msg describes what happened in a human readable form.
 
 sub LoadByValue {
     my $self = shift;
-    my %args = ( Email => undef, 
-		 Owner => undef,
-		 Scope => undef,
-		 Type => undef,
-		 Value => undef,
-		 @_);
-    
+    my %args = (
+        Email => undef,
+        Owner => undef,
+        Scope => undef,
+        Type  => undef,
+        Value => undef,
+        @_
+    );
+
     #TODO: all this code is being copied from Create. that\'s silly
-    
+
     #Do we have someone this applies to?
-    unless (($args{'Owner'} =~ /^(\d*)$/) || ($args{'Email'} =~ /\@/)) {
-	return (0, "No user or email address specified");
+    unless ( ( $args{'Owner'} =~ /^(\d*)$/ ) || ( $args{'Email'} =~ /\@/ ) ) {
+        return ( 0, "No user or email address specified" );
     }
-    
+
     #if we only have an email address, try to resolve it to an owner
-    unless ($args{'Owner'}) {
+    unless ( $args{'Owner'} ) {
         my $User = new RT::User($RT::SystemUser);
-        $User->LoadByEmail($args{'Email'});
-        if ($User->id > 0) {
+        $User->LoadByEmail( $args{'Email'} );
+        if ( $User->id > 0 ) {
             $args{'Owner'} = $User->id;
-   	    delete $args{'Email'};
-	}
+            delete $args{'Email'};
+        }
     }
-    
-    if ((defined ($args{'Type'})) and 
-	($args{'Type'} !~ /^(Requestor|Cc|AdminCc)$/i)) {
-	return (0, "Invalid Type");
+
+    if ( ( defined( $args{'Type'} ) )
+        and ( $args{'Type'} !~ /^(Requestor|Cc|AdminCc)$/i ) )
+    {
+        return ( 0, "Invalid Type" );
     }
-    if ($args{'Owner'}) {
-	$self->LoadByCols( Type => $args{'Type'},
-			   Value => $args{'Value'},
-			   Owner => $args{'Owner'},
-			   Scope => $args{'Scope'},
-			 );
+    if ( $args{'Owner'} ) {
+        $self->LoadByCols(
+            Type  => $args{'Type'},
+            Value => $args{'Value'},
+            Owner => $args{'Owner'},
+            Scope => $args{'Scope'},
+        );
     }
     else {
-	$self->LoadByCols( Type => $args{'Type'},
-			   Email => $args{'Email'},
-			   Value => $args{'Value'},
-			   Scope => $args{'Scope'},
-			 );
-    }	
-    unless ($self->Id) {
-	return(0, "Couldn\'t find that watcher");
+        $self->LoadByCols(
+            Type  => $args{'Type'},
+            Email => $args{'Email'},
+            Value => $args{'Value'},
+            Scope => $args{'Scope'},
+        );
     }
-    return (1, "Watcher loaded");
+    unless ( $self->Id ) {
+        return ( 0, "Couldn\'t find that watcher" );
+    }
+    return ( 1, "Watcher loaded" );
 }
 
 # }}}
@@ -223,19 +226,21 @@ Return an RT Owner Object for this Watcher, if we have one
 
 =cut
 
-sub OwnerObj  {
+sub OwnerObj {
     my $self = shift;
-    if (!defined $self->{'OwnerObj'}) {
-	require RT::User;
-	$self->{'OwnerObj'} = RT::User->new($self->CurrentUser);
-	if ($self->Owner) {
-	    $self->{'OwnerObj'}->Load($self->Owner);
-	} else {
-	    return $RT::Nobody->UserObj;
-	}
+    if ( !defined $self->{'OwnerObj'} ) {
+        require RT::User;
+        $self->{'OwnerObj'} = RT::User->new( $self->CurrentUser );
+        if ( $self->Owner ) {
+            $self->{'OwnerObj'}->Load( $self->Owner );
+        }
+        else {
+            return $RT::Nobody->UserObj;
+        }
     }
-    return ($self->{'OwnerObj'});
+    return ( $self->{'OwnerObj'} );
 }
+
 # }}}
 
 # {{{ sub Email
@@ -251,20 +256,21 @@ an RT::User object.
 
 sub Email {
     my $self = shift;
-    
+
     # IF Email is defined, return that. Otherwise, return the Owner's email address
-    if (defined($self->__Value('Email'))) {
-	return ($self->__Value('Email'));
+    if ( defined( $self->__Value('Email') ) ) {
+        return ( $self->__Value('Email') );
     }
-    elsif ($self->Owner) {
-	return ($self->OwnerObj->EmailAddress);
+    elsif ( $self->Owner ) {
+        return ( $self->OwnerObj->EmailAddress );
     }
     else {
-	return ("Data error");
+        return ("Data error");
     }
 }
+
 # }}}
-  
+
 # {{{ sub IsUser
 
 =head2 IsUser
@@ -277,10 +283,11 @@ Otherwise, returns undef
 
 sub IsUser {
     my $self = shift;
+
     # if this watcher has an email address glued onto it,
     # return undef
 
-    if (defined($self->__Value('Email'))) {
+    if ( defined( $self->__Value('Email') ) ) {
         return undef;
     }
     else {
@@ -291,23 +298,24 @@ sub IsUser {
 # }}}
 
 # {{{ sub _Accessible 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      Email => 'read/write',
-	      Scope => 'read/write',
-	      Value => 'read/write',
-	      Type => 'read/write',
-	      Quiet => 'read/write',
-	      Owner => 'read/write',	      
-	      Creator => 'read/auto',
-	      Created => 'read/auto',
-	      LastUpdatedBy => 'read/auto',
-	      LastUpdated => 'read/auto'
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
+sub _Accessible {
+    my $self = shift;
+    my %Cols = (
+        Email         => 'read/write',
+        Scope         => 'read/write',
+        Value         => 'read/write',
+        Type          => 'read/write',
+        Quiet         => 'read/write',
+        Owner         => 'read/write',
+        Creator       => 'read/auto',
+        Created       => 'read/auto',
+        LastUpdatedBy => 'read/auto',
+        LastUpdated   => 'read/auto'
+    );
+    return ( $self->SUPER::_Accessible( @_, %Cols ) );
 }
+
 # }}}
 
 1;
- 
+

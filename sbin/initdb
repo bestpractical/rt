@@ -1,0 +1,184 @@
+#!/usr/bin/perl -w
+# $Header$
+
+use strict;
+use vars qw($PROMPT $ACTION $DEBUG);
+
+use lib "!!RT_LIB_PATH!!";
+
+BEGIN {
+        use RT;
+        RT::LoadConfig();
+}
+use RT::Handle;
+use DBIx::DataSource qw( create_database drop_database );
+
+$| = 1;    #unbuffer that output.
+
+$DEBUG  = 0;
+
+$ACTION = shift @ARGV;
+
+my $Handle = RT::Handle->new($RT::DatabaseType);
+$Handle->BuildDSN;
+my $DSN = $Handle->DSN;
+
+
+if ( $ACTION eq 'create' ) {
+    print "Now creating a database for RT.\n";
+    create_db();
+}
+elsif ( $ACTION eq 'drop' ) {
+    print "Now dropping the RT2 database.\n";
+    drop_db();
+}
+elsif ( $ACTION eq 'insert' ) {
+    print "Now populating database schema.\n";
+    insert_schema();
+}
+elsif ( $ACTION eq 'generate' ) {
+    generate_schema( shift @ARGV );
+}
+elsif ( $ACTION eq 'acl' ) {
+    insert_acl();
+}
+
+else {
+    print STDERR '$ACTION unspecified. Makefile error. It was ' . $ACTION;
+    exit(-1);
+}
+
+
+
+# {{{ sub drop_db
+sub drop_db {
+
+    if ($PROMPT) {
+        print <<END;
+
+About to drop $RT::DatabaseType database $RT::DatabaseName.
+WARNING: This will erase all data in $RT::DatabaseName.
+If you have an existing RT 2.x installation, this will destroy all your data.
+i
+END
+        exit unless _yesno();
+
+    }
+
+    print "\nDropping $RT::DatabaseType database $RT::DatabaseName.\n";
+    drop_database( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
+      or warn $DBIx::DataSource::errstr;
+
+}
+
+# }}}
+
+# {{{ sub insert_schema
+sub insert_schema {
+    my (@schema);
+    print "Creating database schema.\n";
+
+    my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
+      or die $DBI::errstr;
+
+    if ( -f $RT::EtcPath."/schema.".$RT::DatabaseType ) {
+        open( SCHEMA, "<".$RT::EtcPath."/schema.".$RT::DatabaseType );
+        my $statement = "";
+        foreach my $line (<SCHEMA>) {
+            $statement .= $line;
+            if ( $line =~ /;$/ ) {
+                $statement =~ s/;$//g;
+                push @schema, $statement;
+                $statement = "";
+            }
+        }
+
+        foreach my $statement (@schema) {
+            print STDERR $statement if $DEBUG;
+            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+            unless ( $sth->execute ) {
+                die "Problem with statement:\n $statement\n" . $sth->errstr;
+            }
+        }
+
+    }
+    else {
+        die "Couldn't find schema file for " . $RT::DatabaseType . "\n";
+    }
+    $dbh->disconnect;
+    print "schema sucessfully inserted\n";
+
+}
+
+# }}}
+
+# {{{ sub generate_schema
+
+=item generate_schema SOURCE_FILENAME
+
+From a DBIx::DBSchema style config file, generate database-apropriate
+schema
+
+=cut
+
+sub generate_schema {
+    my $schema_file = shift;
+
+    require DBIx::DBSchema;
+    my $schema_href = do "$schema_file" or die $@ || $!;
+    my $schema = DBIx::DBSchema->pretty_read($schema_href);
+
+    foreach my $statement ( $schema->sql( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) ) {
+        print $statement;
+    }
+
+}
+
+# }}}
+
+# {{{ sub create_db
+sub create_db {
+    print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
+    create_database( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
+      or die $DBIx::DataSource::errstr;
+}
+
+# }}}
+
+# {{{ sub _yesno
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
+}
+
+# }}}
+
+# {{{ insert_acls 
+sub insert_acl {
+        my @acl;
+    if ( $RT::DatabaseType =~ /^oracle$/i ) {
+        do $RT::EtcPath."acl.Oracle" || die "Couldn't find ACLS for Oracle\n".$@;;
+    }
+    elsif ( $RT::DatabaseType =~ /^pg$/i ) {
+        do $RT::EtcPath."acl.Pg" || die "Couldn't find ACLS for Pg\n".$@;
+    }
+    elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
+        do $RT::EtcPath."acl.mysql" || die "Couldn't find ACLS for mysql\n".$@;
+    }
+    else {
+        die "Unknown RT database type";
+    }
+
+    my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword );
+        foreach my $statement (acl()) {
+            print STDERR $statement if $DEBUG;
+            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+            unless ( $sth->execute ) {
+                die "Problem with statement:\n $statement\n" . $sth->errstr;
+            }
+        }
+
+}
+
+# }}}

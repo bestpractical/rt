@@ -1,39 +1,41 @@
-drop user !!DB_RT_USER!!;
-create user !!DB_RT_USER!! with password '!!DB_RT_PASS!!' NOCREATEDB NOCREATEUSER;
+sub acl {
 
-grant select, insert, update, delete on Groups to !!DB_RT_USER!!;
-grant select, insert, update, delete on Groups_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on ACL to !!DB_RT_USER!!;
-grant select, insert, update, delete on ACL_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Watchers to !!DB_RT_USER!!;
-grant select, insert, update, delete on Watchers_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Links to !!DB_RT_USER!!;
-grant select, insert, update, delete on Links_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Users to !!DB_RT_USER!!;
-grant select, insert, update, delete on Users_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Tickets to !!DB_RT_USER!!;
-grant select, insert, update, delete on Tickets_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on GroupMembers to !!DB_RT_USER!!;
-grant select, insert, update, delete on GroupMembers_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Queues to !!DB_RT_USER!!;
-grant select, insert, update, delete on Queues_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Transactions to !!DB_RT_USER!!;
-grant select, insert, update, delete on Transactions_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on ScripActions to !!DB_RT_USER!!;
-grant select, insert, update, delete on ScripActions_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on ScripConditions to !!DB_RT_USER!!;
-grant select, insert, update, delete on ScripConditions_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Scrips to !!DB_RT_USER!!;
-grant select, insert, update, delete on Scrips_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Attachments to !!DB_RT_USER!!;
-grant select, insert, update, delete on Attachments_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Templates to !!DB_RT_USER!!;
-grant select, insert, update, delete on Templates_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on Keywords to !!DB_RT_USER!!;
-grant select, insert, update, delete on Keywords_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on ObjectKeywords to !!DB_RT_USER!!;
-grant select, insert, update, delete on ObjectKeywords_id_seq to !!DB_RT_USER!!;
-grant select, insert, update, delete on KeywordSelects to !!DB_RT_USER!!;
-grant select, insert, update, delete on KeywordSelects_id_seq to !!DB_RT_USER!!;
-
-
+return (
+"drop user ${RT::DatabaseUser};",
+"create user ${RT::DatabaseUser} with password '${RT::DatabasePassword}' NOCREATEDB NOCREATEUSER;",
+"grant select, insert, update, delete on Groups to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Groups_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ACL to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ACL_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Watchers to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Watchers_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Links to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Links_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Users to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Users_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Tickets to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Tickets_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on GroupMembers to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on GroupMembers_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Queues to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Queues_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Transactions to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Transactions_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ScripActions to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ScripActions_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ScripConditions to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ScripConditions_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Scrips to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Scrips_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Attachments to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Attachments_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Templates to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Templates_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Keywords to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on Keywords_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ObjectKeywords to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on ObjectKeywords_id_seq to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on KeywordSelects to ${RT::DatabaseUser};",
+"grant select, insert, update, delete on KeywordSelects_id_seq to ${RT::DatabaseUser};");
+}
+1;

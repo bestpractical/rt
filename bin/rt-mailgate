@@ -1,21 +1,16 @@
 #!!!PERL!! -w
-
 # $Header$
-# (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 # This software is redistributable under the terms of the GNU GPL
 
 
-package RT;
 use strict;
-use vars qw($VERSION $Handle $Nobody $SystemUser);
-
-$VERSION="!!RT_VERSION!!";
-
 
 use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
 
-use RT::Interface::Email  qw(CleanEnv LoadConfig DBConnect
+use RT;
+
+use RT::Interface::Email  qw(CleanEnv 
 			     GetCurrentUser
 			     GetMessageContent
 			     CheckForLoops 
@@ -33,10 +28,10 @@ use RT::Interface::Email  qw(CleanEnv LoadConfig DBConnect
 CleanEnv();
 
 #Load etc/config.pm and drop privs
-LoadConfig();
+RT::LoadConfig();
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-DBConnect();
+RT::Init();
 
 #Drop setgid permissions
 RT::DropSetGIDPermissions();

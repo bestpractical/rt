@@ -8,19 +8,19 @@ use Carp;
 use Getopt::Long;
 
 use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
 
-use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
-			   GetCurrentUser GetMessageContent);
+package RT;
+
+use RT::Interface::CLI  qw(CleanEnv GetCurrentUser GetMessageContent);
 
 #Clean out all the nasties from the environment
 CleanEnv();
 
-#Load etc/config.pm and drop privs
-LoadConfig();
+# Load the config file
+RT::LoadConfig();
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-DBConnect();
+RT::Init();
 
 #Drop setgid permissions
 RT::DropSetGIDPermissions();
@@ -311,7 +311,7 @@ EOUSAGE
 
 # Print version, and leave
 if ($version) {
-	print "RT $RT::VERSION for $RT::rtname. Copyright 1996-2001 Jesse Vincent <jesse\@fsck.com>\n";
+	print "RT $RT::VERSION. Copyright 1996-2002 Jesse Vincent <jesse\@bestpractical.com>\n";
 	exit(0);
 }
 

@@ -8,19 +8,18 @@ use Carp;
 use Getopt::Long qw(:config pass_through);
 
 use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
 
-use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+use RT::Interface::CLI  qw(CleanEnv 
 			   GetCurrentUser GetMessageContent);
 
 #Clean out all the nasties from the environment
 CleanEnv();
 
 #Load etc/config.pm and drop privs
-LoadConfig();
+RT::LoadConfig();
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-DBConnect();
+RT::Init();
 
 #Drop setgid permissions
 RT::DropSetGIDPermissions();

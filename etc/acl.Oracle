@@ -1,9 +1,10 @@
-CREATE USER !!DB_RT_USER!! identified by !!DB_RT_PASS!!
-temporary tablespace TEMP
-default tablespace USERS
-quota unlimited on USERS;
-
-grant connect, resource to !!DB_RT_USER!!;
-
-exit;
-
+sub acl {
+return (
+"CREATE USER ${RT::DatabaseUser} identified by ${RT::DatabasePassword}".
+"temporary tablespace TEMP" .
+"default tablespace USERS" .
+"quota unlimited on USERS;" ,
+"grant connect, resource to ${RT::DatabaseUser};",
+"exit;");
+}
+1;
