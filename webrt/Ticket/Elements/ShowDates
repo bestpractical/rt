@@ -25,7 +25,7 @@ Started:
 </TR>
 
 <TR>
-<TD
+<TD>
 <a href="Display.html?id=<%$Ticket->id%>&Action=SetTold">Last Contact</a>:
 </TD>
 <TD>

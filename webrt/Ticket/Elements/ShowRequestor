@@ -23,7 +23,6 @@ This user's open tickets:<BR>
 <& /Elements/TitleBoxEnd &>
 
 
-</%INIT>
 % }
 %}
 <%ARGS>
