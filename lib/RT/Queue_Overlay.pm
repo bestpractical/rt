@@ -48,6 +48,8 @@ no warnings qw(redefine);
 
 use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);
 use RT::Groups;
+use RT::ACL;
+
 
 @ACTIVE_STATUS = qw(new open stalled);
 @INACTIVE_STATUS = qw(resolved rejected deleted);
@@ -87,6 +89,9 @@ $RIGHTS = {
     DeleteTicket    => 'Delete tickets'                               # loc_pair
 
 };
+
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.

@@ -148,6 +148,10 @@ $RIGHTS = {
     ModifyOwnMembership => 'Join or leave this group'                 # loc_pair
 };
 
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
+
+
 #
 
 # TODO: This should be refactored out into an RT::ACLedObject or something

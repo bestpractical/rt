@@ -50,7 +50,9 @@ use RT::Groups;
 
 use vars qw (
   %LOWERCASERIGHTNAMES
+  %OBJECT_TYPES
 );
+
 
 # {{{ Descriptions of rights
 
@@ -765,21 +767,22 @@ If the user has no rights, returns undef.
 
 =cut
 
+
+
+
 sub Object {
     my $self = shift;
-    if ( $self->__Value('ObjectType') eq 'RT::Queue' ) {
-        my $appliesto_obj = RT::Queue->new( $self->CurrentUser );
+
+    my $appliesto_obj;
+
+    if ($self->__Value('ObjectType') && $OBJECT_TYPES{$self->__Value('ObjectType')} ) {
+        $appliesto_obj =  $self->__Value('ObjectType')->new($self->CurrentUser);
+        unless (ref( $appliesto_obj) eq $self->__Value('ObjectType')) {
+            return undef;
+        }
         $appliesto_obj->Load( $self->__Value('ObjectId') );
         return ($appliesto_obj);
-    }
-    elsif ( $self->__Value('ObjectType') eq 'RT::Group' ) {
-        my $appliesto_obj = RT::Group->new( $self->CurrentUser );
-        $appliesto_obj->Load( $self->__Value('ObjectId') );
-        return ($appliesto_obj);
-    }
-    elsif ( $self->__Value('ObjectType') eq 'RT::System' ) {
-        return ($RT::System);
-    }
+     }
     else {
         $RT::Logger->warning( "$self -> Object called for an object "
                               . "of an unknown type:"

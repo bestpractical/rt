@@ -21,6 +21,8 @@ In the future, there will probably be other API goodness encapsulated here.
 package RT::System;
 use base qw /RT::Base/;
 use strict;
+
+use RT::ACL;
 use vars qw/ $RIGHTS/;
 
 # System rights are rights granted to the whole system
@@ -38,6 +40,8 @@ $RIGHTS = {
       "Delegate specific rights which have been granted to you."      # loc_pair
 };
 
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
     $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
