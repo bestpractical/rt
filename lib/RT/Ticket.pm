@@ -1118,12 +1118,7 @@ is a ticket watcher. Returns undef otherwise
 
 sub IsWatcher {
     my $self = shift;
-    
-    #ACL check can't happen since this gets used to check ACLs
-    #    unless ($self->CurrentUserHasRight('ShowTicket')) {
-    #	return(undef);
-    #    }	
-    
+
     my %args = ( Type => 'Requestor',
 		 User => undef,
 		 Email => undef,
@@ -1133,14 +1128,17 @@ sub IsWatcher {
     
     my %cols = ('Type' => $args{'Type'},
 		'Scope' => 'Ticket',
-		'Value' => $self->Id
+		'Value' => $self->Id,
+		'Owner' => undef,
+		'Email' => undef
 	       );
-
-    if (ref($args{'Id'})){ #If it's a ref, assume it's an RT::User object;
-	#Dangerous but ok for now TODO
+    
+    if (ref($args{'Id'})){ 
+	#If it's a ref, it's an RT::User object;
 	$cols{'Owner'} = $args{'Id'}->Id;
     }
-    elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's a reference to an RT::User obj
+    elsif ($args{'Id'} =~ /^\d+$/) { 
+	# if it's an integer, it's a reference to an RT::User obj
 	$cols{'Owner'} = $args{'Id'};
     }
     else {
@@ -1150,23 +1148,20 @@ sub IsWatcher {
     if ($args{'Email'}) {
 	$cols{'Email'} = $args{'Email'};
     }
-    
 
-
-    my ($description);
-    $description = join(":",%cols);
+    my $description = join(":",%cols);
     
     #If we've cached a positive match...
     if (defined $self->{'watchers_cache'}->{"$description"}) {
 	if ($self->{'watchers_cache'}->{"$description"} == 1) {
 	    return(1);
 	}
-	#If we've cached a negative match...
-	else {
+	else { #If we've cached a negative match...
 	    return(undef);
 	}
     }
-
+    
+    
     my $watcher = new RT::Watcher($self->CurrentUser);
     $watcher->LoadByCols(%cols);
     
@@ -2042,7 +2037,7 @@ sub MergeInto {
     }
     
     # Load up the new ticket.
-    my $NewTicket = RT::Ticket->new($self->CurrentUser);
+    my $NewTicket = RT::Ticket->new($RT::SystemUser);
     $NewTicket->Load($MergeInto);
 
     # make sure it exists.
@@ -2056,8 +2051,7 @@ sub MergeInto {
 	$RT::Logger->debug("failed...");
 	return (0, "Permission Denied");
     }
-    $RT::Logger->debug("succeeded...");
-
+    
     $RT::Logger->debug("checking if the new ticket has the same id and effective id...");
     unless ($NewTicket->id == $NewTicket->EffectiveId) {
 	$RT::Logger->err('$self trying to merge into '.$NewTicket->Id .
@@ -2091,7 +2085,6 @@ sub MergeInto {
 			   "RT's Database may be inconsistent.");
     }	    
     
-    $RT::Logger->debug("adding a merged into link");
     #make a new link: this ticket is merged into that other ticket.
     $self->AddLink( Type =>'MergedInto',
 		    Target => $NewTicket->Id() );
@@ -2100,14 +2093,21 @@ sub MergeInto {
     my $watchers = $self->Watchers();
     
     while (my $watcher = $watchers->Next()) {
-	unless ($NewTicket->IsWatcher ( Type => $watcher->Type(),
-					Email => $watcher->Email(),
-					Id => $watcher->Owner())) {
+	unless (
+		($watcher->Owner && 
+		$NewTicket->IsWatcher (Type => $watcher->Type,
+				       Id => $watcher->Owner)) or 
+		($watcher->Email && 
+		 $NewTicket->IsWatcher (Type => $watcher->Type,
+					Id => $watcher->Email)) 
+	       ) {
+	    
+	    
 	    
 	    $NewTicket->_AddWatcher(Silent => 1, 
 				    Type => $watcher->Type, 
-				    Email => $watcher->Email(),
-				    Owner => $watcher->Owner());
+				    Email => $watcher->Email,
+				    Owner => $watcher->Owner);
 	}
     }
     
