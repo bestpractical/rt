@@ -44,8 +44,7 @@ elsif ($program eq '!!RT_ADMIN_BIN!!') {
   &rt::ui::cli::admin::activate();
 }
 elsif ($program eq '!!RT_WEB_QUERY_BIN!!') {
-  
-    #
+  # WebRT
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
