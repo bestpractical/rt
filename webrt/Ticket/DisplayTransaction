@@ -17,7 +17,7 @@ Date: <%$Transaction->CreatedAsString%>
 %# TODO: This is not really the right way to do it.  
 % # The if (0) stuff below seems a bit more correct
 % # .. though still a lot of work is needed.
-<a href="Update.html?QuoteTransaction=<%$message->Id%>">Act</a>
+<a href="Update.html?id=<%$Transaction->Ticket%>&QuoteTransaction=<%$message->Id%>">Act</a>
 <h3><%$message->Subject%></h3>
 <hr>
 <pre>

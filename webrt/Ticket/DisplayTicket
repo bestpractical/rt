@@ -4,6 +4,8 @@
 
 <& DisplaySummary ,  Ticket => $Ticket &>
 
+<a href="Modify.html?id=<%$Ticket->Id%>">Modify this ticket</a> | <a href="Update.html?id=<%$Ticket->Id%>">Do an update/action</a>
+
 <& DisplayHistory , Ticket => $Ticket &> 
 
 <%ARGS>
