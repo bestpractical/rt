@@ -67,13 +67,18 @@ GENERAL INSTALLATION
 
         	tar xzvf rt.tar.gz -C /tmp
 
-2   Satisfy RT's myriad dependencies.  There's a perl script in rt/tools
+2   Check over /tmp/rt/Makefile
+
+	There are many variables you NEED to customize for your site.
+	Even if you are just upgrading, you must set ALL variables.
+
+3   Satisfy RT's myriad dependencies.  There's a perl script in rt/tools
     called testdeps that uses CPAN to automate all of this.
 
-2.1   Check for compliance:
+3.1   Check for compliance:
 	make testdeps
 
-2.2   If there are unsatisfied dependencies, install them by hand or run
+3.2   If there are unsatisfied dependencies, install them by hand or run
 	make fixdeps
 	
        (You may need to install Apache::Session and Apache::DBI by hand.
@@ -84,15 +89,10 @@ GENERAL INSTALLATION
 	perl -MCPAN -e'install DBD::mysql::Install' should do it for you.
        )
 
-2.3   Check to make sure everything was installed properly:
+3.3   Check to make sure everything was installed properly:
 	make testdeps
 
-3   Create a group called 'rt'
-
-4   Check over /tmp/rt/Makefile
-
-	There are many variables you NEED to customize for your site.
-	Even if you are just upgrading, you must set ALL variables.
+4   Create a group called 'rt'
 
 5a  FOR A NEW INSTALLATION: 
         
@@ -191,14 +191,20 @@ PerlRequire /opt/rt/bin/webmux.pl
 
 Additionally, you should set up a cron job to remove stale session data.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-WARNING: Don't install this cron job or run this find command if your MASON_SESSION_PATH
-(known in config.pm as $MasonSessionDir) points to a directory that could EVER contain
-any file that's not a Apache::Session datafile.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: Don't install this cron job or run this find command if your
+ MASON_SESSION_PATH
 
-#Every hour, nuke session files and lockfiles that haven't been touched in 10 hours
-0 * * * * find MASON_SESSION_PATH --type f -amin +600 -exec rm {}\;
+(known in config.pm as $MasonSessionDir) points to a directory that could 
+EVER contain any file that's not a Apache::Session datafile.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Every hour, nuke session files and lockfiles that haven't been 
+# touched in 10 hours
+
+0 * * * * find <MASON_SESSION_PATH> --type f -amin +600 -exec rm {}\;
+
+(replace <MASON_SESSION_PATH> with the apropriate path )
 
 
 THE CLI
