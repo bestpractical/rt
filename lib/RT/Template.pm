@@ -281,11 +281,10 @@ sub _ParseContent  {
 
   # We need to untaint the content of the template, since we'll be working
   # with it
-  $self->Content =~ /^(.*)$/;  
-  my $untainted_content = $1; 
- 
+  my $content = $self->Content();
+  $content =~ s/^(.*)$/$1/;  
   $template=Text::Template->new(TYPE=>STRING, 
-				SOURCE=>$untainted_content);
+				SOURCE=>$content);
   
   return ($template->fill_in(PACKAGE=>T));
 }
