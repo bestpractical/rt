@@ -217,19 +217,26 @@ nondestruct: mux-links fixperms
 
 all:
 	@echo "Read the readme."
+
 fixperms:
-	chown -R $(RTUSER) $(RT_PATH)
-	chgrp -R $(RTGROUP) $(RT_PATH)  
+	if [ \! -d $(RT_PATH) ] ;
+	then
+		chown -R $(RTUSER) $(RT_PATH)
+		chgrp -R $(RTGROUP) $(RT_PATH)  
+		chmod 0755 $(RT_PATH)
+	fi
+
 	chmod -R 755 $(RT_LIB_PATH)
 	chmod -R 0750 $(RT_ETC_PATH)
-	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(WEBRT_CGI_PATH)
 	chmod 4755 $(RT_PERL_MUX)
 	chmod 777  $(WEBRT_DATA_PATH)
+
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(WEBRT_CGI_PATH)
+	mkdir -p $(WEBRT_DATA_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
 	mkdir -p $(RT_LOCALE_PATH)
