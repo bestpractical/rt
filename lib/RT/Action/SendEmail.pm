@@ -3,9 +3,10 @@
 # Released under the terms of the GNU Public License
 
 package RT::Action::SendEmail;
-require RT::Action;
+require RT::Action::Generic;
 
-@ISA = qw(RT::Action);
+@ISA = qw(RT::Action::Generic
+);
 
 
 # {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
@@ -27,7 +28,7 @@ sub Commit  {
 
   # If there are no recipients, don't try to send the message.
 
-  $RT::Logger->debug("Sending message to ".$self->EnvelopeTo."\n");
+  $RT::Logger->debug("Sending message \n");
   
   $self->TemplateObj->MIMEObj->make_singlepart;
 
@@ -41,7 +42,7 @@ sub Commit  {
   close(MAIL);
   
 
-#  $self->TemplateObj->MIMEObj->send('sendmail', $self->{'EnvelopeTo'}) || die "Could not send mail (check the FAQ)";
+#  $self->TemplateObj->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
   #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
   
   $RT::Logger->debug("$self: Message sent\n");
@@ -55,54 +56,42 @@ sub Commit  {
 
 sub Prepare  {
   my $self = shift;
-
+  
   # This actually populates the MIME::Entity fields in the Template Object
-
+  
   $RT::Logger->debug("Now entering $self -> Prepare\n");
   unless ($self->TemplateObj) {
       $RT::Logger->debug("No template object handed to $self\n");
-      return 0;
   }
-
+  
   unless ($self->TransactionObj) {
       $RT::Logger->debug("No transaction object handed to $self\n");
-      return 0;
+      
   }
-
-    unless ($self->TicketObj) {
+  
+  unless ($self->TicketObj) {
       $RT::Logger->debug("No ticket object handed to $self\n");
-      return 0;
+      
   }
-
-
+  
+  
   $self->TemplateObj->Parse(Argument => $self->Argument,
 			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
-
+  
   # Header
-
+  
   $self->SetSubject();
-
-  # Sets the tag
   $self->SetSubjectToken();
-
+  
+  
   $self->SetReturnAddress();
-
-  $self->SetContentType();
-
+  
   $self->SetRTSpecialHeaders();
 
-  $self->SetReferences();
 
-  $self->SetMessageID();
-
-  $self->SetPrecedence();
-
-  $self->SetRecipients();
-
-# Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
-
-
+  # Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
+    
   return 1;
   
 }
@@ -111,25 +100,25 @@ sub Prepare  {
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {
-  my $self = shift;
+    my $self = shift;
 
-  # Loop check.  This header field might be added to the incoming mail
-  # by RT::Interfaces::Email.pm if it might be a loop or result in
-  # looping (typically a bounce) 
-
-  #TODO: This code violates RT's abstraction six ways to sunday
-  # and needs to move into a subclass
-  if (0) {
-      my $m=$self->TransactionObj->Message->First ;
-      if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
-	  warn "Aborting mailsending Scrip because of possible or potential mail loop";
-	  return 0;
-      }
-}
-  # More work needs to be done here to avoid duplicates beeing sent,
-  # and to ensure that there actually are any receipients.
-
-  return(1);
+    # Loop check.  This header field might be added to the incoming mail
+    # by RT::Interfaces::Email.pm if it might be a loop or result in
+    # looping (typically a bounce) 
+    
+    #TODO: This code violates RT's abstraction six ways to sunday
+    # and needs to move into a subclass
+    if (0) {
+	my $m=$self->TransactionObj->Message->First ;
+	if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
+	    warn "Aborting mailsending Scrip because of possible or potential mail loop";
+	    return 0;
+	}
+    }
+    # More work needs to be done here to avoid duplicates beeing sent,
+    # and to ensure that there actually are any receipients.
+    
+    return(1);
 }
 # }}}
 
@@ -145,8 +134,12 @@ sub IsApplicable  {
 sub SetRTSpecialHeaders {
     my $self = shift;
     
+    $self->SetReferences();
+
+    $self->SetMessageID();
     
-    
+    $self->SetPrecedence();
+        
     $self->TemplateObj->MIMEObj->head->add('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
     $self->TemplateObj->MIMEObj->head->add
       ('Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
@@ -156,7 +149,7 @@ sub SetRTSpecialHeaders {
     
 }
 
-# }}}
+
 
 # {{{ sub SetReferences
 
@@ -244,6 +237,8 @@ return();
 
 # }}}
 
+# }}}
+
 # {{{ sub SetReturnAddress 
 sub SetReturnAddress {
 
@@ -271,45 +266,8 @@ sub SetReturnAddress {
 
 # }}}
 
-# {{{ sub SetEnvelopeTo
 
-sub SetEnvelopeTo {
-  my $self = shift;
-  $self->{'EnvelopeTo'} = shift;
-  return($self->{'EnvelopeTo'});
-}
 
-# }}}
-
-# {{{ sub SetRecipients
-
-# The specialized SetRecipients sub should find out whom to send the
-# message to, and then set the header fields.
-
-# If SendEmail is called rather than a subclass, the receipients have
-# to be set by the template.
-
-# There is three ways to override this (well, more ways ... you could
-# of course add the logic to a specialized prepare or commit or
-# something ... but that's not considered a good way to do it anyway).
-
-# 1: Override SetRecipients to set the header fields (to, cc, bcc) and
-#    eventually call SetEnvelopeTo
-# 2: Override SetRecipients to set the hash elements $self->{To}, {Cc}
-#    and {Bcc}, and then call SUPER::SetRecipients.
-# 3: Override SetTo, SetCc and/or SetBcc.
-
-sub SetRecipients {
-  my $self=shift;
-  my $r=0;
-  $self->SetTo() && $r++;
-  $self->SetCc() && $r++;
-  $self->SetBcc() && $r++;
-  $self->SetEnvelopeTo() && $r++;
-  return ($r);
-}
-
-# }}} sub SetRecipients
 
 # {{{ sub SetHeader
 
@@ -421,20 +379,6 @@ sub SetSubjectToken {
 
 # }}}
 
-# {{{ sub EnvelopeTo
-=head2 EnvelopeTo
-
-Returns the message's envelope To.
-
-=cut
-
-sub EnvelopeTo {
-    my $self = shift;
-    return($self->{'EnvelopeTo'});
-}
-
-
-# }}}
 
 # }}}
 
@@ -460,18 +404,11 @@ Basically, you create another module RT::Action::YourAction which ISA
 RT::Action::SendEmail.
 
 If you want to set the recipients of the mail to something other than
-the addresses mentioned in the To, Cc, Bcc and EnvelopeTo headers in
+the addresses mentioned in the To, Cc, Bcc and headers in
 the template, you should subclass RT::Action::SendEmail and override
 either the SetRecipients method or the SetTo, SetCc, etc methods (see
 the comments for the SetRecipients sub).
 
-The reason for the EnvelopeTo method is to allow you to set who the
-mail message is _really_ sent to, as sometimes you may want the
-to/cc/bcc headers to "massage the truth" and not send mail to all
-listed addresses. For example, you may want to always set the To: and
-From: lines to RT but don't want to actually _send_ the mail there.
-
-The EnvelopeTo functionality is not implemented as for now.
 
 =head1 AUTHOR
 

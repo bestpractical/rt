@@ -79,7 +79,7 @@ sub Create  {
     my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
     $TicketAsSystem->Load($args{'Ticket'}) || 
       $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
-
+    
     my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
     $TransAsSystem->Load($self->id) ||
       $RT::Logger->err("$self couldn't load a copy of itself as superuser\n");
@@ -87,28 +87,28 @@ sub Create  {
     # {{{ Deal with Scrips
     
     #Load a scripscopes object
-    use RT::ScripScopes;
-    my $PossibleScrips = RT::ScripScopes->new($RT::SystemUser);
+    use RT::Scrips;
+    my $PossibleScrips = RT::Scrips->new($RT::SystemUser);
     
     $PossibleScrips->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to  $Ticket->QueueObj->Id
     $PossibleScrips->LimitToGlobal(); # or to "global"
-    my $ScripsAlias = $PossibleScrips->NewAlias(Scrips);
+    my $ConditionsAlias = $PossibleScrips->NewAlias('ScripConditions');
     
-    $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'Scrip',
-			  ALIAS2 => $ScripsAlias, FIELD2=> 'id');
+    $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'ScripCondition',
+			  ALIAS2 => $ConditionsAlias, FIELD2=> 'id');
     
     
     #We only want things where the scrip applies to this sort of transaction
-    $PossibleScrips->Limit(ALIAS=> $ScripsAlias,
-			   FIELD=>'Type',
+    $PossibleScrips->Limit(ALIAS=> $ConditionsAlias,
+			   FIELD=>'ApplicableTransTypes',
 			   OPERATOR => 'LIKE',
 			   VALUE => $args{'Type'},
 			   ENTRYAGGREGATOR => 'OR',
 			  );
     
     # Or where the scrip applies to any transaction
-    $PossibleScrips->Limit(ALIAS=> $ScripsAlias,
-			   FIELD=>'Type',
+    $PossibleScrips->Limit(ALIAS=> $ConditionsAlias,
+			   FIELD=>'ApplicableTransTypes',
 			   OPERATOR => 'LIKE',
 			   VALUE => "Any",
 			   ENTRYAGGREGATOR => 'OR',
@@ -128,35 +128,39 @@ sub Create  {
 	  local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
 	  
 	  
-        #Load the scrip's action;
-	  
-	  $Scrip->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-				       TransactionObj => $TransAsSystem);
+	  #Load the scrip's Condition object
+	  $Scrip->ConditionObj->LoadCondition(TicketObj => $TicketAsSystem, 
+					      TransactionObj => $TransAsSystem);	  
 	  
 	  
 	  #If it's applicable, prepare and commit it
-	  $RT::Logger->debug ("$self: Checking $Scrip ".$Scrip->ScripObj->id. " (ScripScope: ".$Scrip->id .")\n");
+	  $RT::Logger->debug ("$self: Checking $Scrip ".$Scrip->ConditionObj->id. " (ScripScope: ".$Scrip->id .")\n");
 	  
-	  if ( $Scrip->ScripObj->IsApplicable() ) {
+	  if ( $Scrip->IsApplicable() ) {
 	      
 	      $RT::Logger->debug ("$self: Preparing $Scrip\n");
 	      
 	      #TODO: handle some errors here
 	      
-	      $Scrip->ScripObj->Prepare() &&   
-		$Scrip->ScripObj->Commit() &&
+	      $Scrip->ActionObj->LoadAction(TicketObj => $TicketAsSystem, 
+					   TransactionObj => $TransAsSystem);
+	  
+	      
+	      $Scrip->Prepare() &&   
+		$Scrip->Commit() &&
 		  $RT::Logger->info("$self: Committed $Scrip\n");
 	      
 	      #We're done with it. lets clean up.
 	      #TODO: why the fuck do we need to do this? 
-	      $Scrip->ScripObj->DESTROY();
+	      $Scrip->ActionObj->DESTROY();
+	      $Scrip->ConditionObj->DESTROY;
 	  }
 	  
 	  
 	else {
 	    #TODO: why the fuck does this not catch all
 	    # ScripObjs we create. and why do we explictly need to destroy them?
-	    $Scrip->ScripObj->DESTROY;
+	    $Scrip->ConditionObj->DESTROY;
 	}
       }	
     }

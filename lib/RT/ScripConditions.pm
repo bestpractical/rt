@@ -1,11 +1,11 @@
 #$Header$
 =head1 NAME
 
-  RT::Scrips - Collection of Scrip objects
+  RT::ScripConditions - Collection of Action objects
 
 =head1 SYNOPSIS
 
-  use RT::Scrips;
+  use RT::ScripConditions;
 
 
 =head1 DESCRIPTION
@@ -15,14 +15,14 @@
 
 =cut
 
-package RT::Scrips;
+package RT::ScripConditions;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init
 sub _Init { 
   my $self = shift;
-  $self->{'table'} = "Scrips";
+  $self->{'table'} = "ScripConditions";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
 }
@@ -61,8 +61,8 @@ sub NewItem  {
   my $self = shift;
   my $item;
 
-  use RT::Scrip;
-  $item = new RT::Scrip($self->CurrentUser);
+  require RT::ScripCondition;
+  $item = new RT::ScripCondition($self->CurrentUser);
   return($item);
 }
 # }}}

@@ -126,141 +126,128 @@ my @queues = (
 
 # }}}
 
-# {{{ Scrips
+# {{{ ScripActions
 
-my @scrips = (
-	      {
-	       Name => 'Autoreply', 
-	       Description =>  'Sends an automatic response to the requestor when a ticket was created',
-	       Type=>  'Create',
-	       ExecModule => 'SendEmail',
-	       DefaultTemplate => '1',
-	       Argument => ''
-	      },
+my @ScripActions = (
+		    {
+		     Name => 'Autoreply',
+		     Description =>       'Sends an automatic response to the requestor',
+		     ExecModule =>        'Notify',
+		     Argument =>          'Requestor'
+		    },
+		    {
+		     Name =>	          'NotifyOwner',
+		     Description =>       'Sends mail to owner',
+		     ExecModule =>        'Notify',
+		     Argument =>          'Owner'
+		    },
+		    {
+		     Name =>	          'NotifyAdminWatchers',
+		     Description =>	  'Sends mail to administrative watchers',
+		     ExecModule =>	  'Notify',
+		     Argument =>        'AdminCc'
+		    },
+		    
+		    
+		    {
+		     Name =>             'NotifyWatchers',
+		     Description =>      'Send mail to requestors',
+		     ExecModule =>       'Notify',
+		     Argument =>         'Requestor,Cc'
+		    },
+		    
+		    {
+		     Name =>	          'NotifyAllWatchers',
+		     Description =>	  'Send mail to all watchers',
+		     ExecModule =>	  'Notify',
+		     Argument =>          'All'
+		    },
+		    
+		    {
+		     Name =>	           'StallDependant (broken)',
+		     Description =>        'Stalls the dependent tickets',
+		     ExecModule =>	   'StallDependent',
+		     Argument => ''
+		    },
+		    {
+		     Name =>		   'OpenDependant (broken)',
+		     Description =>        'Opens the dependent tickets',
+		     ExecModule =>	   'OpenDependent',
+		     Argument => ''
+		    }
+		    
+		   );
 
+# }}}
 
-	      {
-	       Name =>			   'NotifyOwnerOnTransaction',
-	       Description =>   'Sends mail to owner when anything happens',
-	       Type => 			   'Any',
-	       ExecModule =>	'Notify',
-	       DefaultTemplate =>	'2',
-	       Argument =>			   'Owner'
-	      },
-	      {
-	       
-	       Name =>	          'NotifyAdminWatchersOnCorrespond',
-	       Description =>	  'Sends mail to administrative watchers when email comes in',
-	       Type => 		  'Correspond,Create',
-	       ExecModule =>	  'SendEmail',
-	       DefaultTemplate => '3',
-	       Argument =>        ''
-	      },
-	      
-	      
-	      {
-	       
-	       Name =>             'NotifyWatchersOnCorrespond', 
-	       Description =>      'Send "official" mail to requestors when correspondence comes in',
-	       Type => 'Correspond',
-	       ExecModule =>  'SendEmail',
-	       DefaultTemplate =>   '4',
-	       Argument =>			   ''
-	      },
-	      
-	      {
-	       
-	       Name =>			   'NotifyAdminWatchersOnComment',
-	       Description =>			   'Send mail to administrative watchers whenever comments come in',
-	       Type => 			   'Comment',
-	       ExecModule =>			   'SendEmail',
-	       DefaultTemplate =>			   '5',
-	       Argument =>			   'AdminCc'
-	      },
-	      
-	      {
-	       
-	       Name =>			   'NotifyWatchersOnStatus', 
-	       Description =>			   'Send mail to watchers whenever a ticket\'s status changes',
-	       Type => 			   'Resolve/Stall/Open/Kill',
-	       ExecModule =>			   'SendEmail',
-	       DefaultTemplate =>			   '6',
-	       Argument =>			   ''},
-	      
-	      {
-	       
-	       
-	       Name =>			   'NotifyAllWatchersOnResolve', 
-	       Description =>				   'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
-	       Type => 			   'Resolve',
-	       ExecModule =>			   'SendEmailOnResolve',
-	       DefaultTemplate =>			   '7',
-	       Argument =>			   ''},
-	      
-	      {
-	       
-	       Name =>			   'NotifyAdminWatchersOnTransaction',
-	       Description =>				  'Sends mail to owner when anything happens',
-	       Type => 			  'Any',
-	       ExecModule =>			   'Notify',
-	       DefaultTemplate =>			   '2',
-	       Argument =>			   'AdminCc'
-	      },
-	      
-	      ##TODO: Get Notify.pm to support OldOwner + fix a template
-	      #INSERT INTO Scrips VALUES (20, 'NotifyOldOwnerOnSteal',
-	      #			  'Sends mail to the old owner when the ticket is stolen',
-	      #			  'Steal','Notify',10,'OldOwner',
-	      
-	      
-	      {
-	       Name =>			   'StallDependentOnLink', 
-	       Description =>			           'Stalls the dependent when a DependsOn link is made',
-	       Type => 			   'Link',
-	       ExecModule =>			   'StallDependent',
-	       
-	      },
-	      
-	      {
-	       
-	       Name =>			   'StallMemberOnLink', 
-	       Description =>			           'Stalls the member when a MemberOf link is made',
-	       Type => 			   'Link',
-	       ExecModule =>			   'StallDependent',
-	       Argument =>			   'MemberOf'} ,
-	      
-	      
-	      {
-	       
-	       Name =>			   'OpenDependentOnResolve',
-	       Description =>			           'Opens the dependent when the DependsOn is resolved',
-	       Type => 			   'Resolve', 
-	       ExecModule =>			   'OpenDependent',
-	      },
-	      
-	      
-	      {
-	       
-	       Name =>			   'ResolveMembers',
-	       Description =>			           'Resolves all members when MemberOf is resolved',
-	       Type => 			   'Resolve', 
-	       ExecModule =>			   'ResolveMembers',
-	      },
-	      
-	      
-	      
-	      {
-	       
-	       Name =>			   'NotifyWatchersofMembers', 
-	       Description =>			   'Sends mail to the watchers of all tickets which are members of this ticket',
-	       Type =>       'Correspond', 
-	       ExecModule =>			   'Spam',
-	       DefaultTemplate =>			   '4'
-	      }
-	     );
+# {{{ ScripConditions
 
-# Default templates
-# Should eventually be created through some init script calling on the CLI admin tools
+my @ScripConditions = (
+		       {
+			Name => 'OnCreate',
+			Description =>  'When a ticket is created',
+			ApplicableTransTypes =>  'Create',
+			ExecModule => 'AnyTransaction',
+		       },
+		       
+		       
+		       {
+			Name =>			   'OnTransaction',
+			Description =>   'When anything happens',
+			ApplicableTransTypes => 			   'Any',
+			ExecModule =>	'AnyTransaction',
+		       },
+		       {
+			
+			Name =>	          'OnCorrespond',
+			Description =>	  'Whenever correspondence comes in',
+			ApplicableTransTypes => 		  'Correspond',
+			ExecModule =>	  'AnyTransaction',
+		       },
+		       
+		       
+		       {
+			
+			Name =>			   'OnComment',
+			Description =>			   'Whenever comments come in',
+			ApplicableTransTypes => 	   'Comment',
+			ExecModule =>			   'AnyTransaction'
+		       },
+		       {
+			
+			Name =>		   'OnStatus', 
+			Description =>	   'Whenever a ticket\'s status changes',
+			ApplicableTransTypes => 		   'Status',
+			ExecModule =>	   'AnyTransaction',
+
+		       },
+		       {
+			Name =>		   'OnResolve', 
+			Description =>	   'Whenever a ticket\'s status changes to resolved.', 
+			ApplicableTransTypes => 		   'Status',
+			ExecModule =>	   'OnResolve'
+		       },
+		       {
+			
+			Name =>			   'OnLink', 
+			Description =>	           'When a DependsOn link is made',
+			ApplicableTransTypes => 	   'Link',
+			ExecModule =>	          'OnNewDependency'
+			
+		       },
+		       
+		       {
+			
+			Name =>			   'OnResolve',
+			Description =>	           'When a ticket is resolved',
+			ApplicableTransTypes => 	   'Status', 
+			ExecModule =>		   'OnResolve'
+		       }
+		       
+		       
+		       
+		      );
+
 # }}}
 
 # {{{ Templates
@@ -432,12 +419,22 @@ for $item (@queues) {
 }
 
 print "done.\n";
-print "Creating scrips...";
+print "Creating ScripActions...";
 
-use RT::Scrip;
-for $item (@scrips) {
-    my $new_entry = new RT::Scrip($CurrentUser);
+use RT::ScripAction;
+for $item (@ScripActions) {
+    my $new_entry = new RT::ScripAction($CurrentUser);
        my $return = $new_entry->Create(%$item);
+    print $return.".";
+}
+
+print "done.\n";
+print "Creating ScripConditions...";
+
+use RT::ScripCondition;
+for $item (@ScripConditions) {
+    my $new_entry = new RT::ScripCondition($CurrentUser);
+    my $return = $new_entry->Create(%$item);
     print $return.".";
 }
 

@@ -1,27 +1,29 @@
 <& /Admin/Elements/Header, Title => 'Edit scrips' &>
 
 
-
-
 <& /Elements/ListActions, actions => \@actions &>
+
 <h1><%$description%></h1>
-
-<FORM METHOD=POST>
-<INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
-
-<UL>
-% while (my  $ScripScope  = $ScripScopes->Next ) {
+  
+  <FORM METHOD=POST>
+    <INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
+      
+      <UL>
+% while (my  $scrip  = $Scrips->Next ) {
 	
-<LI>	Scrip: <& /Admin/Elements/SelectScrip,  Name => 'ScripForScope-'.$ScripScope->Id, Default => $ScripScope->Scrip &>
-	  Template: <& /Admin/Elements/SelectTemplate, Name => 'TemplateForScope-'.$ScripScope->Id, Default => $ScripScope->Template &>
+<LI
+    >Condition: <& /Admin/Elements/SelectScripCondition,  Name => 'ConditionForScrip-'.$scrip->Id, Default => $scrip->ScripCondition &>>
+	  Action: <& /Admin/Elements/SelectScripAction,  Name => 'ActionForScrip-'.$scrip->Id, Default => $scrip->ScripAction &>
+	  Template: <& /Admin/Elements/SelectTemplate, Name => 'TemplateForScrip-'.$scrip->Id, Default => $scrip->Template &>
 
 </LI>
 % }
 </ul>
 Add a scrip to this queue:
 <ul>
-<li>Scrip: <& /Admin/Elements/SelectScrip, Name => 'NewScopeScrip' &>
-Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScopeTemplate', DefaultQueue => $Queue &>
+<li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
+	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
+	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $Queue &>
 
 </ul>
 <& /Elements/Submit &>
@@ -30,14 +32,14 @@ Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScopeTemplate', Default
 my (@actions, $description);
 
 
-my $ScripScopes = new RT::ScripScopes ($session{'CurrentUser'});
+my $Scrips = new RT::Scrips ($session{'CurrentUser'});
 unless ($Queue =~ /^\d+$/) {
-        Abort("$Queue isn't a valid Queue id.");
-        }
+    Abort("$Queue isn't a valid Queue id.");
+}
 
 
-unless ($ScripScopes->LimitToQueue($Queue)) {
-        Abort("Couldn't load ScripScopes.");
+unless ($Scrips->LimitToQueue($Queue)) {
+    Abort("Couldn't load Scrips.");
         }
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
@@ -45,61 +47,77 @@ $QueueObj->Load($Queue);
 
 if ($QueueObj->id) {
     $description = "Modify scrips for queue '". $QueueObj->QueueId ."'";
-    }
+}
 else {
     $description = "Modify global scrips";
-    }
+}
 
 
-if ($NewScopeScrip and $NewScopeTemplate) {
-  my $NewScripScope = new RT::ScripScope($session{'CurrentUser'});
-
-   my $retval = $NewScripScope->Create ( Scrip => $NewScopeScrip,
-                                         Queue => $Queue,
-                                         Template => $NewScopeTemplate);
+if ($NewScripAction and $NewScripCondition) {
+    my $NewScrip = new RT::Scrip($session{'CurrentUser'});
+    
+    my $retval = $NewScrip->Create ( ScripAction => $NewScripAction,
+				     ScripCondition => $NewScripCondition,
+				     Stage => 'TransactionCreate',
+				     Queue => $Queue,
+				     Template => $NewScripTemplate);
     if (defined $retval) {
         push @actions, "Scrip added to queue";
     }
     else {
         push @actions, "Scrip could not be added to queue";
-     }
+    }
 }
 
 # {{{ deal with modifying and deleting existing scrips
 my ($key );
 foreach $key (keys %ARGS) {
-    if ($key =~ /^ScripForScope-(\d*)$/) {
-         my $id = $1;
-         my $scripscope = new RT::ScripScope($session{'CurrentUser'});
-         $scripscope->Load($id);
+    if ($key =~ /^ActionForScrip-(\d*)$/) {
+	my $id = $1;
+	my $scrip = new RT::Scrip($session{'CurrentUser'});
+	$scrip->Load($id);
+	
+	
+	# {{{ if we're trying to delete the scrip
+	if ( ( $ARGS{"ActionForScrip-".$id} eq "") and
+	     ( $ARGS{"ConditionForScrip-".$id} eq "") ) {
 
+            $scrip->Delete;
+	}
 
-         if ( ( $ARGS{"ScripForScope-".$id} eq "") and
-              ( $ARGS{"TemplateForScope-".$id} eq "") ) {
-            $scripscope->Delete;
-         }
-            
-
+	# }}}
+	# {{{ modify the scrip	
         else {
-          if ($ARGS{"ScripForScope-".$id} ne $scripscope->Scrip) {
-           my ($code,$msg) = 
-              $scripscope->SetScrip($ARGS{"ScripForScope-".$id});
-           push @actions, $msg;
-          }
 
-          if ($ARGS{"STemplateForScope-".$id} ne $scripscope->Template) {
-           my ($code,$msg) = 
-              $scripscope->SetTemplate($ARGS{"TemplateForScope-".$id});
-           push @actions, $msg;
-         }
-       }	
+	    if ($ARGS{"ConditionForScrip-".$id} ne $scrip->ScripCondition) {
+		my ($code,$msg) = 
+		  $scrip->SetScripCondition($ARGS{"ConditionForScrip-".$id});
+		push @actions, $msg;
+	    }
+	    if ($ARGS{"ActionForScrip-".$id} ne $scrip->ScripAction) {
+		my ($code,$msg) = 
+		  $scrip->SetScripAction($ARGS{"ActionForScrip-".$id});
+		push @actions, $msg;
+	    }
+	    
+	    if ($ARGS{"STemplateForScrip-".$id} ne $scrip->Template) {
+		my ($code,$msg) = 
+		  $scrip->SetTemplate($ARGS{"TemplateForScrip-".$id});
+		push @actions, $msg;
+	    }
+	}	
+
+	# }}}
+
+
     }
 }
 # }}}
 </%init>
 
 <%ARGS>
-$NewScopeScrip => undef
-$NewScopeTemplate => undef
+$NewScripCondition => undef
+$NewScripAction => undef
+$NewScripTemplate => undef
 $Queue => undef         #some identifier that a Queue could 
 </%ARGS>

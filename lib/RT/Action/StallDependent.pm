@@ -4,8 +4,8 @@
 # TODO: Rename this .pm
 
 package RT::Action::StallDependent;
-require RT::Action;
-@ISA=qw|RT::Action|;
+require RT::Action::Generic;
+@ISA=qw|RT::Action::Generic|;
 
 # {{{ sub Describe 
 sub Describe  {

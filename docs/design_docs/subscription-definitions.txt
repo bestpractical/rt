@@ -1,3 +1,49 @@
+NEW SCRIP NOTES
+
+
+RT Actions:
+
+
+   EmailOwnerAsComment
+	Send mail to the ticket owner from the queue's comment address
+	
+   EmailOwnerOrAdminWatchersAsComment
+	Send mail to the ticket owner, or if there is no owner, the ticket's admin watchers
+	from the queue's comment addresses
+
+   EmailAdminWatchersAsComment
+	Send mail to the ticket's adminstrative watchers from the queue's comment address
+
+
+
+   EmailOwner
+	Send mail to the ticket owner from the queue's correspond address
+	
+   EmailOwnerOrAdminWatchers
+	Send mail to the ticket owner, or if there is no owner, the ticket's admin watchers
+	from the queue's correspond addresses
+
+   EmailAdminWatchers
+	Send mail to the ticket's adminstrative watchers from the queue's correspond address
+
+   EmailWatchers
+	Send mail to the ticket watchers from the queue's correspond address
+
+   AutoReply 
+	Sendmail to the requestor from the queue's correspond address.
+	     
+   
+
+RT Conditions:
+   OnCreate
+   OnEachTransaction
+   OnComment
+   OnCorrespond
+   
+
+
+
+
 What is an Action?
 
 ...some piece of code that can do something whenever a transaction is done.

@@ -2,9 +2,9 @@
 # This Action will open the BASE if a dependent is resolved.
 
 package RT::Action::OpenDependent;
-require RT::Action;
+require RT::Action::Generic;
 require RT::Links;
-@ISA=qw(RT::Action);
+@ISA=qw(RT::Action::Generic);
 
 #Do what we need to do and send it out.
 

@@ -1,9 +1,9 @@
 # This Action will resolve all members of a resolved group ticket
 
 package RT::Action::ResolveMembers;
-require RT::Action;
+require RT::Action::Generic;
 require RT::Links;
-@ISA=qw|RT::Action|;
+@ISA=qw(RT::Action::Generic);
 
 #Do what we need to do and send it out.
 

@@ -29,10 +29,10 @@
 	    <% $UserObj->UserId %>
 		  </TD>
 		<TD>
-	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
-                                  PrincipalType => 'User',
-                                  Scope => 'Queue',
-                                  QueueObj => $QueueObj &>
+		  <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj,
+		    PrincipalType => 'User',
+		      Scope => 'Queue',
+			QueueObj => $QueueObj &>
 		</TD>
 	      </TR>
 % }
@@ -47,7 +47,7 @@
 		  <% $GroupObj->Name %>
 		</TD>
 		<TD>
-	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj,
                                    PrincipalType => 'Group',
                                    QueueObj => $QueueObj,
                                    Scope => 'Queue' &>

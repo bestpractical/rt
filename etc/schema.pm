@@ -5,9 +5,9 @@ my $gratuitous = {
 'Groups' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-   'Name', 'varchar', 'NULL', '16', '', '',
+    'Name', 'varchar', 'NULL', '16', '', '',
     'Description', 'varchar', 'NULL', '64', '', '',
-    'Pseudo', 'integer', null, '', '', '',
+    'Pseudo', 'integer', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [ ['Name'] ],
@@ -195,44 +195,61 @@ my $gratuitous = {
   'index' => [  ],
 },
 
-'Scrips' => {
+'ScripActions' => {
   'columns' => [
-    'id', 'serial', '', '', '', '',
-    'Name', 'varchar', 'NULL', '255', '', '',  # Alias
-    'Description', 'varchar', 'NULL', '255', '', '', #Textual description
-    'Type', 'varchar', 'NULL', '60', '', '',    #Transaction types this scrip
-    # acts on. comma or / delimited is just great.
-    'ExecModule', 'varchar', 'NULL', '60', '', '', #This calles RT::Action::___
-    'DefaultTemplate', 'integer', 'NULL', '', '', '', #If the scripscope doesn't
-     #Spec a template, what do we want to use
-    'Argument', 'varchar', 'NULL', '255', '', '', #We can pass a single argument
-    #to the scrip. sometimes, it's who to send mail to.
-
-    'Creator', 'integer', 'NULL', '', '', '',
-    'Created', 'timestamp', 'NULL', '', '', '',
-    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
-    'LastUpdated', 'timestamp', 'NULL', '', '', '',
+		'id', 'serial', '', '', '', '',
+		'Name', 'varchar', 'NULL', '255', '', '',  # Alias
+		'Description', 'varchar', 'NULL', '255', '', '', #Textual description
+		'ExecModule', 'varchar', 'NULL', '60', '', '', #This calles RT::Action::___
+		'Argument', 'varchar', 'NULL', '255', '', '', #We can pass a single argument
+		#to the scrip. sometimes, it's who to send mail to.
+		'Creator', 'integer', 'NULL', '', '', '',
+		'Created', 'timestamp', 'NULL', '', '', '',
+		'LastUpdatedBy', 'integer', 'NULL', '', '', '',
+		'LastUpdated', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [  ],
   'index' => [  ],
 },
 
-'ScripScope' => {
+'ScripConditions' => {
   'columns' => [
-    'id', 'serial', '', '', '', '',
-    'Scrip', 'integer', 'NULL', '', '', '', #Foreign key Scrips::id
-    'Queue', 'integer', 'NULL', '', '', '', #Foreign key Queues::id
-    'Template', 'integer', 'NULL', '', '', '', #Foreign key Templates::id
-
-    'Creator', 'integer', 'NULL', '', '', '',
-    'Created', 'timestamp', 'NULL', '', '', '',
-    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
-    'LastUpdated', 'timestamp', 'NULL', '', '', '',
+		'id', 'serial', '', '', '', '',
+		'Name', 'varchar', 'NULL', '255', '', '',  # Alias
+		'Description', 'varchar', 'NULL', '255', '', '', #Textual description
+		'ExecModule', 'varchar', 'NULL', '60', '', '', #This calles RT::Condition::
+		'Argument', 'varchar', 'NULL', '255', '', '', #We can pass a single argument
+		#to the scrip. sometimes, it's who to send mail to.
+		'ApplicableTransTypes', 'varchar', 'NULL', '60', '', '',#Transaction types this scrip
+		# acts on. comma or / delimited is just great.
+		'Creator', 'integer', 'NULL', '', '', '',
+		'Created', 'timestamp', 'NULL', '', '', '',
+		'LastUpdatedBy', 'integer', 'NULL', '', '', '',
+		'LastUpdated', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [  ],
   'index' => [  ],
+},
+'Scrips' => {
+		 'columns' => [
+			       'id', 'serial', '', '', '', '',
+			       'ScripCondition', 'integer', 'NULL', '', '', '', #Foreign key ScripConditions::id
+			       'ScripAction', 'integer', 'NULL', '', '', '', #Foreign key ScripActions::id
+			       'Stage', 'varchar', 'NULL', '32','','', #What stage does this scrip
+			       #Happen in.  for now, everything is 'TransactionCreate',
+			       'Queue', 'integer', 'NULL', '', '', '', #Foreign key Queues::id
+			       'Template', 'integer', 'NULL', '', '', '', #Foreign key Templates::id
+			       
+			       'Creator', 'integer', 'NULL', '', '', '',
+			       'Created', 'timestamp', 'NULL', '', '', '',
+			       'LastUpdatedBy', 'integer', 'NULL', '', '', '',
+			       'LastUpdated', 'timestamp', 'NULL', '', '', '',
+			      ],
+		 'primary_key' => 'id',
+		 'unique' => [  ],
+		 'index' => [  ],
 },
 
 'Attachments' => {

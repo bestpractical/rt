@@ -4,11 +4,11 @@
 
 =head1 NAME
 
-  RT::Scrip - RT Scrip object
+  RT::ScripCondition - RT scrip conditional
 
 =head1 SYNOPSIS
 
-  use RT::Scrip;
+  use RT::ScripCondition;
 
 
 =head1 DESCRIPTION
@@ -18,7 +18,7 @@
 
 =cut
 
-package RT::Scrip;
+package RT::ScripCondition;
 use RT::Record;
 @ISA= qw(RT::Record);
 
@@ -27,7 +27,7 @@ use RT::Record;
 # {{{  sub _Init 
 sub _Init  {
     my $self = shift; 
-    $self->{'table'} = "Scrips";
+    $self->{'table'} = "ScripConditions";
     return ($self->SUPER::_Init(@_));
 }
 # }}}
@@ -37,9 +37,8 @@ sub _Accessible  {
     my $self = shift;
     my %Cols = ( Name  => 'read/write',
 		 Description => 'read/write',
-		 Type	 => 'read/write',
+		 ApplicableTransTypes	 => 'read/write',
 		 ExecModule  => 'read/write',
-		 DefaultTemplate => 'read/write',
 		 Argument  => 'read/write'
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));
@@ -49,7 +48,7 @@ sub _Accessible  {
 # {{{ sub Create 
 =head2 Create
   
-Takes a hash. Creates a new scrip entry.
+Takes a hash. Creates a new Condition entry.
  should be better documented.
 =cut
 sub Create  {
@@ -67,7 +66,7 @@ sub Delete  {
     # this function needs to move all requests into some other queue!
     my ($query_string,$update_clause);
     
-    die ("Scrip->Delete not implemented yet");
+    die ("Condition->Delete not implemented yet");
 }
 # }}}
 
@@ -77,8 +76,6 @@ sub Delete  {
 sub Load  {
     my $self = shift;
     my $identifier = shift;
-    
-    my $template = shift;
     
     if (!$identifier) {
 	return (undef);
@@ -91,81 +88,40 @@ sub Load  {
 	$RT::Logger->crit("$self -> Load called with a bogus id '$identifier'\n");
 	return(undef);
     }
-    
-    # Set the template Id to the passed in template
-  # or fall back to the default for this scrip
-    if (defined $template) {
-	$self->{'Template'} = $template;
-    }
-    else {
-	$self->{'Template'} = $self->DefaultTemplate();
-    }
-    
 }
 # }}}
 
 
-# {{{ sub LoadAction 
-sub LoadAction  {
+# {{{ sub LoadCondition 
+sub LoadCondition  {
     my $self = shift;
     my %args = ( TransactionObj => undef,
 		 TicketObj => undef,
 		 @_ );
     
     #TODO: Put this in an eval  
-    my $type = "RT::Action::". $self->ExecModule;
+    my $type = "RT::Condition::". $self->ExecModule;
     
     $RT::Logger->debug("now requiring $type\n"); 
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
-    $self->{'Action'}  = $type->new ( 'ScripObj' => $self, 
+    $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
 				      'TicketObj' => $args{'TicketObj'},
 				      'TransactionObj' => $args{'TransactionObj'},
-				      'TemplateObj' => $self->TemplateObj,
 				      'Argument' => $self->Argument,
-				      'Type' => $self->Type,
+				      'ApplicableTransTypes' => $self->ApplicableTransTypes,
 				    );
 }
 # }}}
 
-# {{{ sub TemplateObj
-sub TemplateObj {
-    my $self = shift;
-    return undef unless $self->{Template};
-    if (!$self->{'TemplateObj'})  {
-	require RT::Template;
-	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
-	$self->{'TemplateObj'}->LoadById($self->{'Template'});
-	
-    }
-    
-    return ($self->{'TemplateObj'});
-}
-# }}}
 
-# The following methods call the action object
+# The following methods call the Condition object
 
-# {{{ sub Prepare 
-sub Prepare  {
-    my $self = shift;
-    return ($self->{'Action'}->Prepare());
-  
-}
-# }}}
-
-# {{{ sub Commit 
-sub Commit  {
-    my $self = shift;
-    return($self->{'Action'}->Commit());
-    
-    
-}
-# }}}
 
 # {{{ sub Describe 
 sub Describe  {
     my $self = shift;
-    return ($self->{'Action'}->Describe());
+    return ($self->{'Condition'}->Describe());
     
 }
 # }}}
@@ -173,7 +129,7 @@ sub Describe  {
 # {{{ sub IsApplicable 
 sub IsApplicable  {
     my $self = shift;
-    return ($self->{'Action'}->IsApplicable());
+    return ($self->{'Condition'}->IsApplicable());
     
 }
 # }}}
@@ -181,8 +137,7 @@ sub IsApplicable  {
 # {{{ sub DESTROY
 sub DESTROY {
     my $self=shift;
-    $self->{'Action'} = undef;
-    $self->{'TemplateObj'} = undef;
+    $self->{'Condition'} = undef;
 }
 # }}}
 

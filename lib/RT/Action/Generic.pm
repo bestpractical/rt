@@ -4,11 +4,11 @@
 
 =head1 NAME
 
-  RT::Action - a generic baseclass for RT Actions
+  RT::Action::Generic - a generic baseclass for RT Actions
 
 =head1 SYNOPSIS
 
-  use RT::Action;
+  use RT::Action::Generic;
 
 =head1 DESCRIPTION
 
@@ -17,7 +17,7 @@
 
 =cut
 
-package RT::Action;
+package RT::Action::Generic;
 
 # {{{ sub new 
 sub new  {
