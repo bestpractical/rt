@@ -23,7 +23,7 @@
 % if ((!defined $IdLike) and (!defined $EmailLike) ) {
 To find users not listed above, search by email address or username below.<br>
 % }
-Find users with email addresses like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> and Names like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
+Find users with email addresses like: <INPUT SIZE=8 NAME="EmailLike" VALUE="<%$EmailLike%>"> and RT usernames like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
 
 <& /Elements/TitleBoxEnd &>
 
@@ -54,5 +54,4 @@ $users->Limit(FIELD => 'EmailAddress',
 <%ARGS>
 $IdLike => undef
 $EmailLike => undef
-
 </%ARGS>
