@@ -3,6 +3,33 @@
 # Released under the terms of the GNU Public License
 #
 #
+
+=head1 NAME
+
+  RT::Group - RT's group object
+
+=head1 SYNOPSIS
+
+  use RT::Group;
+my $group = new RT::Group($CurrentUser);
+
+=head1 DESCRIPTION
+
+An RT group object.
+
+=head1 AUTHOR
+
+Jesse Vincent, jesse@fsck.com
+
+=head1 SEE ALSO
+
+RT
+
+=head1 METHODS
+
+=cut
+
+
 package RT::Group;
 use RT::Record;
 use vars qw|@ISA|;
@@ -55,6 +82,16 @@ sub Create {
     return ($retval);
 }
 # }}}
+
+# {{{ AddMember
+# }}}
+
+# {{{ HasMember
+# }}}
+
+# {{{ DeleteMember
+# }}}
+
 # {{{ ACL Related routines
 
 # {{{ GrantQueueRight

@@ -2,6 +2,21 @@
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 
+=head1 NAME
+
+  RT::User - RT User object
+
+=head1 SYNOPSIS
+
+  use RT::User;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 
 package RT::User;
 use RT::Record;

@@ -1,10 +1,26 @@
 #$Header$
 
+=head1 NAME
+
+  RT::Attachments - a collection of RT::Attachment objects
+
+=head1 SYNOPSIS
+
+  use RT::Attachments;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Attachments;
 
 use RT::EasySearch;
 
 @ISA= qw(RT::EasySearch);
+
 
 
 # {{{ sub _Init  

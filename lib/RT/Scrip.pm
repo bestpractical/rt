@@ -2,6 +2,22 @@
 # Released under the terms of the GNU Public License
 # $Header$
 
+=head1 NAME
+
+  RT::Scrip - RT Scrip object
+
+=head1 SYNOPSIS
+
+  use RT::Scrip;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Scrip;
 use RT::Record;
 @ISA= qw(RT::Record);

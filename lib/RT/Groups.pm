@@ -1,5 +1,20 @@
 #$Header$
 
+=head1 NAME
+
+  RT::Groups - a collection of RT::Group objects
+
+=head1 SYNOPSIS
+
+  use RT::Groups;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Groups;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);

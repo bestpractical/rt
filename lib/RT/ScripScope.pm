@@ -1,4 +1,18 @@
 #$Header$
+=head1 NAME
+
+  RT::ScripScope - an RT ScripScope object
+
+=head1 SYNOPSIS
+
+  use RT::ScripScope;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 package RT::ScripScope;
 use RT::Record;

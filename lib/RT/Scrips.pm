@@ -1,4 +1,19 @@
 #$Header$
+=head1 NAME
+
+  RT::Scrips - Collection of Scrip objects
+
+=head1 SYNOPSIS
+
+  use RT::Scrips;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 package RT::Scrips;
 use RT::EasySearch;

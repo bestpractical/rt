@@ -1,5 +1,20 @@
 #$Header$
 
+=head1 NAME
+
+  RT::GroupMembers - a collection of RT::GroupMember objects
+
+=head1 SYNOPSIS
+
+  use RT::GroupMembers;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::GroupMembers;
 use RT::EasySearch;
 

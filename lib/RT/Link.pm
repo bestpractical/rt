@@ -1,7 +1,20 @@
 # $Header$
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
-#
+=head1 NAME
+
+  RT::Link - an RT Link object
+
+=head1 SYNOPSIS
+
+  use RT::Link;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 package RT::Link;
 use RT::Record;
@@ -230,6 +243,7 @@ Takes a single argument: some form of ticket identifier.
 Returns its canonicalized URI.
 
 Bug: ticket aliases can't have :// in them. URIs must have :// in them.
+
 =cut
 
 sub CanonicalizeURI {

@@ -1,5 +1,21 @@
 #$Header$
 
+=head1 NAME
+
+  RT::ACE - RT's ACE object
+
+=head1 SYNOPSIS
+
+  use RT::ACE;
+my $ace = new RT::ACE($CurrentUser);
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::ACE;
 use RT::Record;
 @ISA= qw(RT::Record);
@@ -230,28 +246,24 @@ __DATA__
 
 # {{{ POD
 
-=title RT::ACE
+=head1 RT::ACE
 
-=head1 Table Structure
+=head2 Table Structure
 
 PrincipalType, PrincipalId, Right,Scope,AppliesTo
 
-=head1 The docs are out of date. so you know.
+=head2 The docs are out of date. so you know.
 
 =head1 Scopes
 
 Scope is the scope of the right granted, not the granularity of the grant.
 For example, Queue and Ticket rights are both granted for a "queue." 
-Rights with a scope of "Ticket" are rights that act on a single existing ticket.The 'AppliesTo' for a right with the scope of 'Ticket' is the Queue that the
-right applies to.  The 'AppliesTo' for a right with the scope of 'Queue' is the
-Queue that the right applies to.  Rights with a scope of 'System' don't have an
-AppliesTo. (They're global).
+Rights with a scope of 'System' don't have an AppliesTo. (They're global).
 Rights with a scope of "Queue" are rights that act on a queue.
 Rights with a scope of "System" are rights that act on some other aspect
 of the system.
 
 
-=item Ticket 
 =item Queue
 =item System
 
@@ -260,7 +272,7 @@ of the system.
 
 =head2 Scope: Queue
 
-=head3 Queue rights that apply to a ticket within a queue
+=head2 Queue rights that apply to a ticket within a queue
 
 Create Ticket in <queue>
 
@@ -302,7 +314,7 @@ Delete Tickets in <queue>
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 
-=head3 Queue Rights that apply to a whole queue
+=head2 Queue Rights that apply to a whole queue
 
 These rights can only be granted to "real people"
 
@@ -339,7 +351,7 @@ Modify Queue ACL for queue <queue>
 
 =head2 Rights that apply to the System scope
 
-=head3 SystemRights
+=head2 SystemRights
 
 Create Queue
   
@@ -390,10 +402,6 @@ Modify System ACL
 
   User,<userid>
   Group,<groupip>
-  TicketOwner,NULL
-  TicketRequestor,NULL
-  TicketCc,NULL
-  TicketAdminCc,NULL
   Everyone,NULL
 
 =cut

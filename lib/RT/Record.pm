@@ -1,5 +1,20 @@
 #$Header$
 
+=head1 NAME
+
+  RT::Record - Base class for RT record objects
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
+
 package RT::Record;
 use DBIx::SearchBuilder::Record;
 use RT::Date;
@@ -198,7 +213,9 @@ sub _SetLastUpdated {
 =head2 Creator and CreatorObj
 
 Returns an RT::User object with the RT account of the creator of this row
+
 =cut
+
 *CreatorObj = \&Creator;
 
 sub Creator  {

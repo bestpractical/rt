@@ -1,5 +1,19 @@
 #$Header$
+=head1 NAME
 
+  RT::Tickets - A collection of Ticket objects
+
+=head1 SYNOPSIS
+
+  use RT::Tickets;
+my $tickets = new RT::Tickets($CurrentUser);
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 package RT::Tickets;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
@@ -207,7 +221,7 @@ sub LimitType {
 
 # {{{ sub LimitContent
 
-=head LimitContent
+=head2 LimitContent
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, LIKE, NOT LIKE or !=.
@@ -227,7 +241,7 @@ sub LimitContent {
 # }}}
 # {{{ sub LimitContentType
 
-=head LimitContentType
+=head2 LimitContentType
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, LIKE, NOT LIKE or !=.

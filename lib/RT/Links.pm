@@ -1,5 +1,19 @@
 #$Header$
+=head1 NAME
 
+  RT::Links - A collection of Link objects
+
+=head1 SYNOPSIS
+
+  use RT::Links
+my $links = new RT::Links($CurrentUser);
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 package RT::Links;
 use RT::EasySearch;
 

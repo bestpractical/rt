@@ -1,8 +1,25 @@
 # $Header$
 # Copyright 2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-#
-#
+
+=head1 NAME
+
+  RT::Attachment -- an RT attachment object
+
+=head1 SYNOPSIS
+
+  use RT::Attachment;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
+
+
 package RT::Attachment;
 use RT::Record;
 use vars qw|@ISA|;

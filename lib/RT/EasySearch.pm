@@ -1,5 +1,18 @@
 #$Header$
 
+=head1 NAME
+
+  RT::EasySearch - a baseclass for RT collection objects
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::EasySearch;
 use DBIx::SearchBuilder;
 @ISA= qw(DBIx::SearchBuilder);

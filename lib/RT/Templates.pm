@@ -1,4 +1,20 @@
 # $Header$
+
+=head1 NAME
+
+  RT::Templates - a collection of RT Template objects
+
+=head1 SYNOPSIS
+
+  use RT::Templates;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Templates;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);

@@ -1,5 +1,20 @@
 # $Header$
 
+=head1 NAME
+
+  RT::Queue - an RT Queue object
+
+=head1 SYNOPSIS
+
+  use RT::Queue;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Queue;
 use RT::Record;
 @ISA= qw(RT::Record);

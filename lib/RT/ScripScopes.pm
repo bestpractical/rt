@@ -2,6 +2,21 @@
 # Released under the terms of the GNU Public License
 # $Header$
 
+=head1 NAME
+
+  RT::ScripScopes - a collection of RT ScripScope objects
+
+=head1 SYNOPSIS
+
+  use RT::ScripScopes;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::ScripScopes;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);

@@ -2,6 +2,24 @@
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
+
+=head1 NAME
+
+  RT::Ticket - RT's ticket object
+
+=head1 SYNOPSIS
+
+  use RT::Ticket;
+my $ticket = new RT::Ticket($CurrentUser);
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
+
 package RT::Ticket;
 use RT::User;
 use RT::Record;
@@ -776,6 +794,7 @@ sub IsWatcher {
 # }}}
 
 # {{{ sub IsRequestor
+
 =head2 IsRequestor
   
   Takes an email address, RT::User object or integer (RT user id)
@@ -783,6 +802,7 @@ sub IsWatcher {
 
 
 =cut
+
 sub IsRequestor {
     my $self = shift;
     my $whom = shift;
@@ -813,15 +833,13 @@ sub IsCc {
 # }}}
 
 # {{{ sub IsAdminCc
+
 =head2 IsAdminCc
 
 Takes a string. Returns true if the string is an AdminCc watcher of the current ticket.
 
-=item Bugs
-
-Should also be able to handle an RT::User object
-
 =cut
+
 sub IsAdminCc {
   my $self = shift;
   my $bcc = shift;
@@ -1030,6 +1048,7 @@ Takes a date in ISO format or undef
 Returns a transaction id and a message
 The client calls "Start" to note that the project was started on the date in $date.
 A null date means "now"
+
 =cut
   
 sub SetStarted {
@@ -2220,4 +2239,18 @@ sub HasRight {
 
 # }}}
 
+
 1;
+
+=head1 AUTHOR
+
+Jesse Vincent, jesse@fsck.com
+
+=head1 SEE ALSO
+
+RT
+
+=cut
+
+
+  

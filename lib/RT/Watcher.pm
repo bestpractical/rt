@@ -1,7 +1,22 @@
 # $Header$
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
-#
+
+=head1 NAME
+
+  RT::Watcher - RT Watcher object
+
+=head1 SYNOPSIS
+
+  use RT::Watcher;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 
 package RT::Watcher;

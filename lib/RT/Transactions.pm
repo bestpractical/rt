@@ -1,5 +1,21 @@
 #$Header$
 
+=head1 NAME
+
+  RT::Transactions - a collection of RT Transaction objects
+
+=head1 SYNOPSIS
+
+  use RT::Transactions;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Transactions;
 use RT::EasySearch;
 

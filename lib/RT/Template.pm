@@ -2,6 +2,22 @@
 # Copyright 2000 Tobias Brox <tobix@cpan.org> and  Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 
+=head1 NAME
+
+  RT::Template - RT's template object
+
+=head1 SYNOPSIS
+
+  use RT::Template;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Template;
 use RT::Record;
 

@@ -1,8 +1,22 @@
 # $Header$
 # Copyright 2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-#
-#
+
+=head1 NAME
+
+  RT::GroupMember - a member of an RT Group
+
+=head1 SYNOPSIS
+
+  use RT::GroupMember;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::GroupMember;
 use RT::Record;
 use vars qw|@ISA|;

@@ -1,13 +1,24 @@
 #$Header$
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
+=head1 NAME
 
-=head1 RT::Date
+  RT::Date - a simple Object Oriented date.
+
+=head1 SYNOPSIS
+
+  use RT::Date
+
+=head1 DESCRIPTION
 
 RT Date is a simple Date Object designed to be speedy and easy for RT to use
 
 The fact that it assumes that a time of 0 means "never" is probably a bug.
+
+=head1 METHODS
+
 =cut
+
 
 package RT::Date;
 use Time::Local;

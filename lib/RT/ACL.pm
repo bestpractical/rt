@@ -2,6 +2,22 @@
 # Distributed under the terms of the GNU GPL
 # Copyright (c) 2000 Jesse Vincent <jesse@fsck.com>
 
+=head1 NAME
+
+  RT::ACL - collection of RT ACE objects
+
+=head1 SYNOPSIS
+
+  use RT::ACL;
+my $ACL = new RT::ACL($CurrentUser);
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::ACL;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);

@@ -2,6 +2,22 @@
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 
+=head1 NAME
+
+  RT::Watchers - Collection of RT Watcher objects
+
+=head1 SYNOPSIS
+
+  use RT::Watchers;
+my $watchers = new RT::Watchers($CurrentUser)
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Watchers;
 require RT::EasySearch;
 require RT::Watcher;

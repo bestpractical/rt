@@ -1,7 +1,22 @@
 # $Header$
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
-#
+
+=head1 NAME
+
+  RT::CurrentUser - an RT object representing the current user
+
+=head1 SYNOPSIS
+
+  use RT::CurrentUser
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 
 package RT::CurrentUser;

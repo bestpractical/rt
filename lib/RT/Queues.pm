@@ -1,5 +1,20 @@
 #$Header$
 
+=head1 NAME
+
+  RT::Queues - a collection of RT::Queue objects
+
+=head1 SYNOPSIS
+
+  use RT::Queues;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Queues;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);

@@ -2,6 +2,22 @@
 # Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 
+=head1 NAME
+
+  RT::Transaction - RT's transaction object
+
+=head1 SYNOPSIS
+
+  use RT::Transaction;
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 package RT::Transaction;
 use RT::Record;
 @ISA= qw(RT::Record);
@@ -21,6 +37,7 @@ sub _Init  {
 
 Create a new transaction
 TODO: Document what gets passed to this
+
 =cut
 
 sub Create  {

@@ -1,4 +1,18 @@
 package RT::Utils;
+=head1 NAME
+
+  RT::Utils - misc functions
+
+=head1 SYNOPSIS
+
+  use RT::Utils;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
 
 # {{{ sub Booleanize 
 sub Booleanize  {
