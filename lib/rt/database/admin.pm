@@ -145,9 +145,9 @@ sub add_modify_queue_conf {
     if ($users{$in_current_user}{admin_rt}) {
       $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
       $sth=$dbh->prepare($query_string) 
-	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
+	  or return (0, "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n");
       $sth->execute() 
-	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
+	  or return (0, "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n");
       $< = $>;			#set real to effective uid
       system("cp", "-rp", "$rt_dir/lib/generic_templates","$template_dir/queues/$in_queue_id");
       &rt::load_queue_conf();
@@ -175,7 +175,7 @@ sub add_modify_queue_conf {
 	$query_string = "UPDATE queues SET $update_clause WHERE queue_id = $queue_id";
 	
 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
-	$dbh->do($query_string) or warn "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+	$dbh->do($query_string) or warn "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n";
 	delete $rt::queues{$in_queue_id};
 	&rt::load_queue_conf();
 	&rt::load_queue_acls();
@@ -261,7 +261,7 @@ sub add_modify_queue_acl {
       if( ! (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) ) {
 	$query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulate, $in_admin)";
 	$dbh->do($query_string) or 
-	  return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
+	  return (0, "[add_modify_queue_acl] Query had some problem: $DBI::errstr\n");
 	
        }
       
@@ -436,7 +436,7 @@ sub add_modify_user_info {
       if ($update_clause) {
 	$query_string = "UPDATE users SET $update_clause WHERE user_id = $new_user_id";
 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
-	$dbh->do($query_string) or warn "[add_modify_user] Query had some problem: $Mysql::db_errstr\n$query_string";
+	$dbh->do($query_string) or warn "[add_modify_user] Query had some problem: $DBI::errstr\n$query_string";
 	&rt::load_user_info();
 	return(1, "User record updated");
       }
