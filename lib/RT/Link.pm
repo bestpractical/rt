@@ -3,12 +3,9 @@
 # This software is redistributable under the terms of the GNU GPL
 #
 
-
 package RT::Link;
 use RT::Record;
 @ISA= qw(RT::Record);
-
-
 
 # {{{ sub new 
 sub new  {
@@ -59,26 +56,42 @@ sub Load  {
 }
 # }}}
 
+
+# {{{ sub TargetObj 
 sub TargetObj {
-    return $_[0]->_Obj("Target");
+  my $self = shift;
+   return $self->_TicketObj('base',$self->Target);
 }
+# }}}
 
+# {{{ sub BaseObj
 sub BaseObj {
-    return $_[0]->_Obj("Base");
+  my $self = shift;
+  return $self->_TicketObj('target',$self->Base);
 }
+# }}}
 
-sub _Obj {
-    my ($self,$w)=@_;
-    my $tag="$w\_obj";
-    unless (exists $self->{$tag}) {
-	unless (URIIsLocal($w eq "Target" ? $self->Target : $self->Base)) {
-	    return $self->{$tag}=undef;
-	}
-	$self->{$tag}=RT::Ticket->new;
-	$self->{$tag}->Load($w eq "Target" ? $self->Target : $self->Base);
+
+# {{{ sub _TicketObj
+sub _TicketObj {
+  my $self = shift;
+  my $name = shift;
+  my $ref = shift;
+  my $tag="$name\_obj";
+  
+  unless (exists $self->{$tag}) {
+    if ($self->_IsLocal($ref)) {
+      $self->{$tag}=RT::Ticket->new;
+      $self->{$tag}->Load($ref);
     }
-    return $self->{$tag};
+    else {
+      $self->{$tag} = undef;
+    }
+  }
+  return $self->{$tag};
 }
+# }}}
+
 
 # {{{ sub _Accessible 
 sub _Accessible  {
@@ -92,34 +105,76 @@ sub _Accessible  {
 }
 # }}}
 
+
+# {{{ sub DisplayPermitted
 sub DisplayPermitted {
     # TODO: stub!
     return 1;
 }
 
+# }}}
+
+
 # Static methods:
 
-# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
-sub URIIsLocal {
-    my $URI=shift;
-    # TODO: More thorough check
-    $URI =~ /^(\d+)$/;
-    return $1;
+# {{{ sub BaseIsLocal
+sub BaseIsLocal {
+  my $self = shift;
+  return $self->_IsLocal($self->Base);
+}
+
+# }}}
+
+# {{{ sub TargetIsLocal
+sub TargetIsLocal {
+  my $self = shift;
+  return $self->_IsLocal($self->Target);
+}
+
+# }}}
+
+# {{{ sub _IsLocal
+
+# checks whether an URI is local or not
+sub _IsLocal {
+  my $self = shift;
+  my $URI=shift;
+  # TODO: More thorough check
+  $URI =~ /^(\d+)$/;
+  return $1;
 }
 # }}}
 
+
+# {{{ sub BaseAsHREF 
+sub BaseAsHREF {
+  my $self = shift;
+  return $self->AsHREF($self->Base);
+}
+# }}}
+
+# {{{ sub TargetAsHREF 
+sub TargetAsHREF {
+  my $self = shift;
+  return $self->AsHREF($self->Target);
+}
+# }}}
+
+# {{{ sub AsHREF
 # Converts Link URIs to HTTP URLs
-sub URI2HTTP {
-    my $URI=shift;
-    if (&URIIsLocal($URI)) {
-	my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
-	return $url;
-    } else {
-	my ($protocol) = $URI =~ m|(.*?)://|;
-	return $RT::URI2HTTP{$protocol}->($URI);
+sub AsHREF {
+  my $self=shift;
+  my $URI=shift;
+  if ($self->_IsLocal($URI)) {
+    my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
+    return $url;
+  } else {
+    my ($protocol) = $URI =~ m|(.*?)://|;
+    return $RT::URI2HTTP{$protocol}->($URI);
     }
 }
 
+# }}}
 
 1;
  

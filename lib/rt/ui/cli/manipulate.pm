@@ -121,16 +121,15 @@ sub ParseArgs  {
 	$base=int($ARGV[++$i]);
 	$type=$ARGV[++$i];
 	$target=int($ARGV[++$i]);
-	if (RT::Ticket::URIIsLocal($base)) {
-	    my $Ticket=&LoadTicket($base);
-	    my ($res, $msg, $linkid)=
-		$Ticket->LinkTo(Target=>$target, Type=>$type);
-	    $Message .= $msg;
-	} elsif (RT::Ticket::URIIsLocal($target)) {
-	    my $Ticket=&LoadTicket($target);
-	    my ($res, $msg, $linkid)=
-		$Ticket->LinkFrom(Base=>$base, Type=>$type);
-	    $Message .= $msg;
+	my $Ticket;
+	if ($Ticket=&LoadTicket($base)) {
+	  my ($res, $msg, $linkid)=
+	    $Ticket->LinkTo(Target=>$target, Type=>$type);
+	  $Message .= $msg;
+	} elsif ($Ticket=&LoadTicket($target)) {
+	  my ($res, $msg, $linkid)=
+	    $Ticket->LinkFrom(Base=>$base, Type=>$type);
+	  $Message .= $msg;
 	}
       }
       

@@ -1,4 +1,5 @@
-#!/usr/bin/perl -w -d:DProf
+#!/usr/bin/perl 
+#!/usr/bin/perl -d
 #
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
@@ -53,11 +54,12 @@ for (my $i = 0; $i < 1000; $i++) {
 	$ticket->Create(QueueTag => 'general',
 		Subject => "This is a subject",
 		Status => "Open",
+		Requestor => 'jesse+rttest\@fsck.com',
 		MIMEEntity => $Message);
 
 }
 $RT::Handle->Disconnect();
 
-
+print STDERR "Ok. all done \n\n";
 1;
 

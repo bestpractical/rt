@@ -1,9 +1,10 @@
+# $Header$
 # This Action will open the BASE if a dependent is resolved.
 
 package RT::Action::OpenDependent;
 require RT::Action;
 require RT::Links;
-@ISA=qw|RT::Action|;
+@ISA=qw(RT::Action);
 
 #Do what we need to do and send it out.
 
@@ -32,7 +33,7 @@ sub Commit {
     $Links->Limit(FIELD => 'Target', VALUE => $self->TicketObj->id);
 
     while (my $Link=$Links->Next()) {
-	next unless RT::Ticket::URIIsLocal($Link->Base);
+	next unless $Link->BaseIsLocal;
 	my $base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->Load($Link->Base);

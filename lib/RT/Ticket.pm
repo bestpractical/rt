@@ -956,19 +956,12 @@ sub AllLinks {
 # }}}
 
 # {{{ sub URI 
+
 sub URI {
     my $self = shift;
     return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
 }
 
-# }}}
-
-# {{{ Static sub "URIIsLocal" checks whether an URI is local or not (moved!)
-sub URIIsLocal {
-    # This sub shouldn't be called - let's log it:
-    warn "RT::Ticket::URIIsLocal called - should be RT::Link::URIIsLocal";
-    return RT::Link::URIIsLocal(@_);
-}
 # }}}
 
 # {{{ sub LinkTo

@@ -40,7 +40,7 @@ $Handle = new DBIx::Handle;
 {
 # I did get a stupid "Variable Used Only Once" message here.
 # Well, this ought to fix it.
-no warnings;
+#no warnings;
 $Handle->Connect(Host => $RT::DatabaseHost, 
 		     Database => $RT::DatabaseName, 
 		     User => $RT::DatabaseUser,

@@ -46,7 +46,9 @@ sub IsApplicable  {
   $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
 
   # 2:
-  &RT::Ticket::URIIsLocal($1) || return 0;
+  #TODO: I don't understand what this is supposed to do.
+  # Is it supposed to check the parent or the child. no matter. needs going over
+  #  &RT::Ticket::URIIsLocal($1) || return 0;
   
   return 1;
 }

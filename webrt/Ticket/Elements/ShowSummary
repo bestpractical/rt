@@ -1,13 +1,3 @@
-	<%INIT>
-	my $linkcount=0;
-	my $l;
-	</%INIT>
-      <%ARGS>
-      $Ticket = undef
-      </%ARGS>
-      
-      
-      
       <TABLE WIDTH="100%" >
       <TR>
 	<TD VALIGN=TOP WIDTH="50%">
@@ -32,28 +22,13 @@
         <TR>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
-	  This ticket has some or none unresoved dependencies
+	  Nothing's here yet
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<A HREF="">[As search]</a>' &>
-%    while ($l=$Ticket->Children->Next) { $linkcount++;
-       <a href="<% RT::Link::URI2HTTP($l->Base) %>"><% $l->Base %></a> 
-%if (RT::Link::URIIsLocal($l->Base)) {
-	(<% $l->BaseObj->Subject %>)
-%}
-<% $l->Type %> THIS <br>
-%}
-%   while ($l=$Ticket->Parents->Next) { $linkcount++;
-       THIS <% $l->Type %> 
-       <a href="<% RT::Link::URI2HTTP($l->Target) %>"><% $l->Target %></a> 
-%if (RT::Link::URIIsLocal($l->Target)) {
-(<% $l->TargetObj->Subject %>) <br>
-%}
-%   }
-% unless ($linkcount) {
-	This Ticket has no pending links
-% }
+	<& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
+	
 	  <& /Elements/TitleBoxEnd &>	
 	</TD>
       </TR>
@@ -62,6 +37,10 @@
       
  
 
+
+<%ARGS>
+      $Ticket = undef
+</%ARGS>
 
 
 

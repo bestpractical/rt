@@ -1,0 +1,21 @@
+%    while (my $l=$Ticket->Children->Next) { 
+       <a href="<% $l->BaseAsHREF %>"><% $l->Base %></a> 
+
+%if ($l->BaseIsLocal) {
+	(<% $l->BaseObj->Subject %>)
+%}
+
+<% $l->Type %> THIS <br>
+
+%}
+%   while (my $l=$Ticket->Parents->Next) {
+       THIS <% $l->Type %> 
+       <a href="<% $l->TargetAsHREF %>"><% $l->Target %></a> 
+%if ($l->TargetIsLocal) {
+	(<% $l->TargetObj->Subject %>) <br>
+%}		
+%   }
+
+<%ARGS>
+$Ticket = undef
+</%ARGS>

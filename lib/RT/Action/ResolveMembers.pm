@@ -33,7 +33,7 @@ sub Commit {
 
     while (my $Link=$Links->Next()) {
 	# Todo: Try to deal with remote URIs as well
-	next unless RT::Ticket::URIIsLocal($Link->Base);
+	next unless $Link->BaseIsLocal;
 	my $base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->Load($Link->Base);
