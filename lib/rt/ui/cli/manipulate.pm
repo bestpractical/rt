@@ -32,7 +32,7 @@ sub print_transaction
 
 
 sub parse_args {
-    for ($i=1;$i<=$#ARGV;$i++) {
+    for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] eq "-create")   {
 	    &cli_create_req;
 	}

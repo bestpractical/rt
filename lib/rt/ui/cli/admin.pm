@@ -12,7 +12,7 @@ if ($value == 0) {
 }
 
 sub parse_args {
-    for ($i=1;$i<=$#ARGV;$i++) {
+    for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] =~ 'q') {
 	    $action=$ARGV[++$i];
 	    if (($action eq "-modify") or ($action eq "-create")) {

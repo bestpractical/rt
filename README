@@ -77,39 +77,21 @@ GENERAL INSTALLATION
 3   Check over /usr/local/rt/src/Makefile
 
         Mainly, you want to make sure all the paths up top are correct.
-        Is gcc your preferred compiler?
-
-4   Edit /usr/local/rt/lib/routines/RT.pm
-
         Specifically, you NEED to change the value for $rtpass to something
         secret.  After all, you don't want other people logging in and mucking
         with your request database.  Though it is nice to be able to escalate
         one's requests secretly ;)
 
-        You also need to change the default return address for RT and
-	the rtname variable.
+4a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep):
 
- 
-5   Edit /usr/local/rt/etc/mysql.acl
+        As ROOT: make install
 
-        Specifically, you NEED to change the password listed there to
-	whatever you changed $rtpass to a moment ago.
+4b  FOR UPGRADING: (After RT version 970802):
 
- 
-
-6a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep):
-
-        As ROOT: cd /usr/local/rt/src; make install
-        There will be some errors about reqnum and transactnum.
-        That is OK.  It has to do with Makefile weirdness.
-
-6b  FOR UPGRADING: (After RT version 970802):
-
-        As ROOT: cd /usr/local/rt/src; make  nondestruct
-	This will compile new RT wrappers and fix permissions without
+        As ROOT: make upgrade
+	NOTE: UPGRADE DOES NOT YET EXIST
+	This will compile new RT wrappers and libraries without
 	overwriting your RT database.
- 
-
  
 
 SETTING UP THE ALIAS

@@ -7,7 +7,9 @@
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
+RT_VERSION		=	0.9.4
 RT_PATH			=	/opt/rt
+
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
@@ -122,7 +124,8 @@ acls:
 
 
 mux-replace:
-	$(PERL) -p -i.orig -e"s'!!RT_PATH!!'$(RT_PATH)'g;"  $(RTMUX)
+	$(PERL) -p -i.orig -e"s's'!!RT_PATH!!'$(RT_PATH)'g;\
+				  !!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
 
 config-replace:
 	 $(PERL) -p -i.bak  -e"\
