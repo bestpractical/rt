@@ -59,6 +59,56 @@
   customlibdir:		${customdir}/lib
 </Layout>
 
+<Layout FHS>
+  prefix:		/usr/local
+  exec_prefix:		${prefix}
+  bindir:		${prefix}/bin
+  sbindir:		${prefix}/sbin
+  sysconfdir:		/etc+
+  datadir:		${prefix}/share
+# FIXME: missing support for lib64
+  libdir:		${prefix}/lib
+  mandir:		${datadir}/man
+# FIXME: no such directory in FHS; shouldn't go to somewhere in "${datadir}/rt/"?
+  htmldir:		${datadir}/html
+  manualdir:		${datadir}/doc
+  localstatedir:	/var
+  logfiledir:		${localstatedir}/log
+# XXX: "/var/cache/mason/*"?
+  masonstatedir:	${localstatedir}/cache/mason_data
+  sessionstatedir:	${localstatedir}/cache/session_data
+  customdir:		${prefix}/local
+  custometcdir:		${customdir}/etc
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
+</Layout>
+
+<Layout FHS>
+  prefix:		/usr/local
+  exec_prefix:		${prefix}
+  bindir:		${prefix}/bin
+  sbindir:		${prefix}/sbin
+  sysconfdir:		/etc+
+  datadir:		${prefix}/share
+# FIXME: missing support for lib64
+  libdir:		${prefix}/lib
+  mandir:		${datadir}/man
+# FIXME: no such directory in FHS; shouldn't go to somewhere in "${datadir}/rt/"?
+  htmldir:		${datadir}/html
+  manualdir:		${datadir}/doc
+  localstatedir:	/var
+  logfiledir:		${localstatedir}/log
+# XXX: "/var/cache/mason/*"?
+  masonstatedir:	${localstatedir}/cache/mason_data
+  sessionstatedir:	${localstatedir}/cache/session_data
+  customdir:		${prefix}/local
+  custometcdir:		${customdir}/etc
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
+</Layout>
+
 <Layout FreeBSD>
   prefix:		/usr/local
   exec_prefix:		${prefix}

@@ -21,14 +21,15 @@ AC_DEFUN([RT_LAYOUT],[
 		pldconf=./config.pld
 		$PERL  -0777 -p -e "\$layout = '$2';"  -e '
 		s/.*<Layout\s+$layout>//gims; 
-		s/\<\/Layout\>.*//s; 
-		s/^#.*$//m;
+		s/<\/Layout>.*//s; 
+		s/^#.*$//gm;
 		s/^\s+//gim;
 		s/\s+$/\n/gim;
 		s/\+$/\/rt3/gim;
 		# m4 will not let us just use $1, we need @S|@1
-		s/^\s*((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|info|man)dir)\s*:\s*(.*)$/@S|@1=@S|@2/gim;
-		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gim;
+#		s/^((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|info|man)dir)\s*:\s*(.*)$/@S|@1=@S|@2/gim;
+		# uh, should be [:=], but m4 apparently substitutes something...
+		s/^(.*?)\s*(?::|=)\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gim;
 		 ' < $1 > $pldconf
 
 		if test -s $pldconf; then
