@@ -367,7 +367,7 @@ sub edit {
         local $/ = undef;
         $text = <STDIN>;
     }
-    elsif ($edit || !$cl) {
+    elsif ($edit || %add || %del || !$cl) {
         my $r = submit("$REST/show", { id => \@objects, format => 'l' });
         $text = $r->content;
     }
