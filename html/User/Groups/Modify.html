@@ -24,8 +24,7 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 
-<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab =>
-'User/Groups/Modify.html?id='.$Group->Id &>
+<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab => $current_tab &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -57,16 +56,19 @@
 </form>
 <%INIT>
 
+my $current_tab;
 my  ($title, @results, $Disabled, $EnabledChecked);
 
 my $Group = RT::Group->new($session{'CurrentUser'});
 
 if ($Create) {
+    $current_tab = 'User/Groups/Modify.html?Create=1';
     $title = loc("Create a new personal group");
 } 
 
 else {
     
+    $current_tab = 'User/Groups/Modify.html?id='.$Group->Id;
     if ($id eq 'new' ) {
 	
         my ($id, $msg) = $Group->CreatePersonalGroup(Name => "$Name", 

@@ -23,11 +23,23 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs &>
-<& /Admin/Elements/EditScrips, title => $title, %ARGS &>
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/Scrips.html', 
+    current_subtab => 'Admin/Global/Scrips.html', 
+    subtabs => $subtabs &>
+<& /Admin/Elements/EditScrips, title => $title, id => $id, %ARGS &>
 </form>
 <%init>
 
+my $subtabs = {
+		 A => { title => loc('Select scrip'),
+  		     	path => "Admin/Global/Scrips.html",
+			   },
+		 B => { title => loc('New scrip'),
+  		     	path => "Admin/Global/Scrip.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
 my $title = loc("Modify scrips which apply to all queues");
 
 my (@actions);
@@ -37,5 +49,5 @@ my (@actions);
 
 
 <%ARGS>
-$id => undef
+$id => 0
 </%ARGS>

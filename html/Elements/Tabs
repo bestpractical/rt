@@ -22,161 +22,124 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table border=0 cellspacing=0 width="100%" height="100%">
+<table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
+<TR><TD bgcolor=red colspan=2>
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+%# bevelled edge
+<TR><TD height=1 bgcolor=333333></TD></TR>
+<TR><TD height=1 bgcolor=999999></TD></TR>
 
 %# "New ticket in" and "Goto Ticket" fields
 <tr>
-<td class="darkblue" >&nbsp;</td>
-<td class="darkblue" colspan=2>
-<table>
-<span class="topactions">
+  <td class="blueright" colspan=4>
+  <table border=0 cellspacing=0 cellpadding=3 align="right">
+    <span class="topactions">
 % foreach $action (sort keys %{$topactions}) {
-<td class="darkblueright">
-<%$topactions->{"$action"}->{'html'} |n %>
-</td>
+      <td class="blueright">
+      <%$topactions->{"$action"}->{'html'} |n %>
+      </td>
 % }
-</span>
-</table>
-</td>
+    </span>
+  </table>
+  </td>
 </tr>
-
+%# bevelled edge
+<TR><TD height=1 bgcolor=999999></TD></TR>
+<TR><TD height=1 bgcolor=333333></TD></TR>
+</table>
+</TD></TR>
 % if ($tabs_scalar or $actions) {
 <tr>
-<td class="darkblue" >&nbsp;</td>
-<TD class="darkblue">
-<table width=100%>
-<tr>
+  <td class="blue" >&nbsp;</td>
+  <TD class="blue">
+  <table width=100%>
+  <tr>
 % }
 
 %# Tabs_scalar
 % if ($tabs_scalar) {
-<TD class="darkblue">
-<span class=nav><% $tabs_scalar |n%></span>
-</TD>
+    <TD class="blue">
+    <span class=nav><% $tabs_scalar |n%></span>
+    </TD>
 % }
 
 %# Actions
 % if ($actions) {
-<TD class="darkblueright">
-<span class="nav">| 
+    <TD class="blueright">
+    <span class="nav">| 
 % foreach $action (sort keys %{$actions}) {
 % if ($actions->{"$action"}->{'html'}) {
-<% $actions->{"$action"}->{'html'} |n%> |
+    <% $actions->{"$action"}->{'html'} |n%> |
 % } else {
-<A class="nav" HREF="<%$RT::WebPath."/".$actions->{$action}->{'path'}|n%>"><%$actions->{$action}->{'title'}%></A> |
+    <A class="nav" HREF="<%$RT::WebPath."/".$actions->{$action}->{'path'}|n%>"><%$actions->{$action}->{'title'}%></A> |
 % }
 %  }
-</span>
+    </span>
 % }
 % if ($subactions_scalar) {
-<% $subactions_scalar |n%>
+    <% $subactions_scalar |n%>
 % }
 % if ($subactions) {
-<span class="nav">|
-%  foreach $action (sort keys %{$subactions}) {
-<%$subactions->{"$action"}->{'html'} |n%> |
+    <span class="nav">|
+% foreach $action (sort keys %{$subactions}) {
+    <%$subactions->{"$action"}->{'html'} |n%> |
 %  }
-</span>
-</TD>
+    </span>
+    </TD>
 % }
 
 % if ($tabs_scalar or $actions) {
+  </tr>
+  </table>
+  </td>
 </tr>
-</table>
-</td></tr>
 % }
 
 %# Vertical menu
+<TR height=100%><TD>
+<table cellspacing=0 cellpadding=0 width=100% height=100%>
+<TR><TD colspan=4 height=1 bgcolor=333333></TD></TR>
+<TR><TD colspan=5 height=1 bgcolor=999999></TD></TR>
 <TR>
-<TD class="darkblue" rowspan="2" width=130>
-<table border=0 cellspacing=0>
-<tr> 
-  <td class="darkblue">&nbsp;</td>
-  <td class="darkblue" colspan=3>
-  <span class="topnav">
-% foreach $tab (sort keys %{$toptabs}) {
-<A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>"
-% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-class="currenttopnav"
-% } else {
-class="topnav"
-% } 
-><% $toptabs->{$tab}->{'title'}%></A><br>
-% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-% if ($tabs) {
-</td></tr>
-<tr>
-<td></td>
-<td width=5></td>
-<td colspan=2>
-<span class="nav">
-% foreach $tab (sort keys %{$tabs}) {
-<A HREF="<% $RT::WebPath."/". $tabs->{$tab}->{'path'} |n%>" 
-% if ($current_tab eq $tabs->{$tab}->{'path'}) {
- class='currentnav'
-% } else {
- class='nav'
-% } 
-><%$tabs->{$tab}->{'title'}%></a><br>
-% if ($current_tab eq $tabs->{$tab}->{'path'}) {
-% if ($subtabs_scalar) {
-<% $subtabs_scalar |n%>
-% }
-% if ($subtabs) {
-</td></tr>
-<span class="subnav">
-<tr>
-<td></td>
-<td></td>
-<td width=10></td>
-<td>
-% foreach my $subtab (sort keys %{$subtabs}) {
-<A HREF="<% $RT::WebPath ."/". $subtabs->{$subtab}->{'path'}|n%>" 
-% if ($current_subtab eq $subtabs->{$subtab}->{'path'}) {
-class='currentsubnav'
-% } else {
-class='subnav'
-% }
-><%$subtabs->{$subtab}->{'title'}%></A><br>
-% }
-</span>
-</td></tr>
-<tr>
-<td></td>
-<td width=5></td>
-<td colspan=2>
-% }
-% }
-% }
-</span>
-</td></tr>
-<tr> 
-  <td class="darkblue">&nbsp;</td>
-  <td class="darkblue" colspan=3>
-  <span class="topnav">
-% }
-% }
-% }
-</span>
-</td></tr>
-</td>
-    </TR>
-  </TABLE>
+  <TD class="blue">&nbsp;</TD>
+  <TD height=100%>
+    <table class="blue" cellspacing=2 cellpadding=0 width=100% height=100%>
+      <TR>
+        <TD class="blue">
+          <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
+        </TD>
+      </TR>
+    </table>
+  </TD>
+  <TD class="blue">&nbsp;</TD>
+  <TD>
+    <table cellspacing=0 cellpadding=0 width=2 height=100%>
+      <TR>
+        <TD width="1" bgcolor="#333333"></TD>
+        <TD rowspan=1 width="1" bgcolor="#999999"></TD>
+      </TR>
+    </table>
+  </TD>
+<TR><TD colspan=2 height=1 bgcolor=333333></TD></TR>
+<TR><TD colspan=3 height=1 bgcolor=999999></TD></TR>
+</table>
 </TD>
-</TR>
-<TR valign=top height=100%>
-<TD>
+%# main panel
+  <TD valign="top" width=100%>
 
 <%INIT>
-my ($tab, $action);
-my $toptabs = {    A => { title => loc('Homepage'),
+my $action;
+my $topactions = {
+	A => { html => $m->scomp('/Elements/CreateTicket')	
+		},
+	B => { html => $m->scomp('/Elements/GotoTicket') 
+		}
+	};
+my $toptabs = {     A => { title => loc('Homepage'),
                            path => '',
                          },
                     B => { title => loc('Search'),
                         path => 'Search/Listing.html'
-                      },
-                    ZZ => { title => loc('Preferences'),
-                        path => 'User/Prefs.html'
                       },
                     D => { title => loc('Approval'),
                            path => 'Approvals/'
@@ -184,23 +147,23 @@ my $toptabs = {    A => { title => loc('Homepage'),
                     E => { title => loc('Configuration'),
                            path => 'Admin/'
                          },
+                    ZZ => { title => loc('Preferences'),
+                        path => 'User/Prefs.html'
+                      },
                  };
                     
-
-my $topactions = {
-	A => { html => $m->scomp('/Elements/CreateTicket')	
-		},
-	B => { html => $m->scomp('/Elements/GotoTicket') 
-		}
-	};
+  foreach my $tab (sort keys %{$toptabs}) {
+    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
+      $toptabs->{$tab}->{"subtabs"} = $tabs;
+      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
+    }
+  }
 </%INIT>
 <%ARGS>
-$current_toptab =>  "none"
-$current_tab => "none"
-$current_subtab => "none"
+$current_toptab => undef
+$current_tab => undef
 $tabs => undef
 $tabs_scalar => undef
-$subtabs => undef
 $actions => undef
 $subactions => undef
 $subtabs_scalar => undef

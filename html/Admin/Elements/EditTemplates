@@ -28,8 +28,6 @@
 <INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
 <& /Elements/TitleBoxStart, title => $title &>
 
-<P><A href="Template.html?create=1&Queue=<%$id%>"><&|/l&>Create a new template</&></A>
-
 <P><&|/l&>Current Templates</&>:</P>
 % if ($Templates->Count == 0 ) {
 <P><i><&|/l&>(No templates)</&></i></P>

@@ -23,7 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/UserTabs, id => $id, current_subtab => '/Admin/Elements/Modify.html?id='.$id &>
+<& /Admin/Elements/UserTabs, id => $id, current_subtab => $current_tab &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -33,7 +33,6 @@
 % } else {
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 % }
-
 <TABLE WIDTH=100% BORDER=0>
 <TR>
 
@@ -193,22 +192,24 @@
 </TR>
 </TABLE>
 
-
 <& /Elements/Submit &>
 </form>
 
 <%INIT>
 
+my $current_tab;
 my $UserObj = new RT::User($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);
 
 if ($Create) {
+    $current_tab = 'Admin/Users/Modify.html?Create=1';
     $title = loc("Create a new user");
 } 
 else {
 
+    $current_tab = 'Admin/Users/Modify.html?id='.$id;
     if ($id eq 'new') {
 	($val, $msg) = $UserObj->Create( Name => $Name,
 					 EmailAddress => $ARGS{'EmailAddress'}

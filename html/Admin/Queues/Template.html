@@ -23,11 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, title => loc("Modify template [_1]", $TemplateObj->id) &>
-<& /Admin/Elements/QueueTabs, id => $Queue &>
+<& /Admin/Elements/QueueTabs, id => $Queue, 
+     current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
+     current_subtab => $current_subtab, 
+     subtabs => $subtabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => $title &>
-
 <FORM METHOD=POST ACTION="Template.html">
 %if ($create ) {
 <INPUT TYPE=HIDDEN NAME=template VALUE="new">
@@ -74,10 +76,11 @@
 <%INIT>
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
-my  ($title, @results);
+my  ($title, @results, $current_subtab);
 
 if ($create) {
   $title = loc("Create a template");
+  $current_subtab = "Admin/Queues/Template.html?create=1&Queue=".$Queue;
 }
 
 else {
@@ -103,6 +106,12 @@ if ($TemplateObj->Id()) {
 				     ARGSRef => \%ARGS);
   push @results, @aresults;
 }
+my $subtabs = {
+		 A => { title => loc('New template'),
+  		     	path => "Admin/Queues/Template.html?create=1&Queue=".$Queue
+			   }
+	      };
+
 </%INIT>
 <%ARGS>
 $Queue => undef

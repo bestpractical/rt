@@ -22,10 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'User/Prefs.html', current_tab => $current_tab, current_subtab => $current_subtab &>
+<& /Elements/Tabs, tabs => $tabs, current_toptab => 'User/Prefs.html', current_tab => $current_tab &>
 
-<hr>
-  
 <%INIT>
   my $tabs = { a => { title => loc('About me'),
 			  path => 'User/Prefs.html',
@@ -37,6 +35,13 @@
 			   path => 'User/Delegation.html',
 			 },
 	     };
+
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 </%INIT>
 
 

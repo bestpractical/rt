@@ -23,16 +23,32 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs &>
+<& /Admin/Elements/SystemTabs, current_tab => 'Admin/Global/CustomFields.html',
+    current_subtab => $current_subtab, 
+    subtabs => $subtabs &>
 
 <& /Admin/Elements/EditCustomField, title => $title,  %ARGS &>
 
 <%INIT>
-my $title;
+my ($title, $current_subtab);
 
+my $subtabs = {
+		 A => { title => loc('Select custom field'),
+  		     	path => "Admin/Global/CustomFields.html"
+			   },
+		 B => { title => loc('New custom field'),
+  		     	path => "Admin/Global/CustomField.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
 if ($CustomField) {
+    $current_subtab = "Admin/Global/CustomField.html?id=".$ARGS{'id'}."&Queue=0";
     $title = loc('Modify a CustomField which applies to all queues');
+    $subtabs->{"C"} = { title => loc('Custom Field #[_1]', $ARGS{'id'}),
+  		     	path => "Admin/Global/CustomField.html?id=".$ARGS{'id'}."&Queue=0"
+			   }
 }else {
+    $current_subtab = "Admin/Global/CustomField.html?create=1&Queue=0";
     $title = loc('Create a CustomField which applies to all queues');
 }
 </%INIT>

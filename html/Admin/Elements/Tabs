@@ -22,22 +22,30 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'Admin/', current_tab => $current_tab, current_subtab => $current_subtab&>
+<& /Elements/Tabs, tabs => $tabs, current_toptab => 'Admin/', current_tab => $current_tab&>
 
 <%INIT>
-  my $tabs = { Users => { title => loc('Users'),
+  my $tabs = { A => { title => loc('Users'),
 			  path => 'Admin/Users/',
 			},
-	       Groups => { title => loc('Groups'),
+	       B => { title => loc('Groups'),
 			   path => 'Admin/Groups/',
 			 },
-	       Queues => { title => loc('Queues'),
+	       C => { title => loc('Queues'),
 			   path => 'Admin/Queues/',
 			 },
-	       System => { 'title' => loc('Global'),
+	       D => { 'title' => loc('Global'),
 			   path => 'Admin/Global/',
 			 },
 	     };
+
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
+
 </%INIT>
 
 

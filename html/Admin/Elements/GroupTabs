@@ -22,30 +22,46 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Groups/' &>
+<& /Admin/Elements/Tabs, subtabs => $tabs, 
+                         current_tab => 'Admin/Groups/', 
+			 current_subtab => $current_tab &>
 <%INIT>
-my $subtabs;
-if ($GroupObj) {
-$subtabs = { 
-             Basics => { title => loc('Basics'),
+my $tabs;
+if ($GroupObj and $GroupObj->id) {
+$tabs = { 
+             C => { title => loc('Basics'),
                          path => "Admin/Groups/Modify.html?id=". $GroupObj->id
                        },
 
-	     Members=>  { title => loc('Members'),
+	     D =>  { title => loc('Members'),
                          path => "Admin/Groups/Members.html?id=".$GroupObj->id },
 
-            F => { title => loc('Group Rights'),
+             F => { title => loc('Group Rights'),
                           path => "Admin/Groups/GroupRights.html?id=".$GroupObj->id,
                         },
-                 G => { title => loc('User Rights'),
+             G => { title => loc('User Rights'),
                           path => "Admin/Groups/UserRights.html?id=".$GroupObj->id,
                         },
 	};
 }
-$subtabs->{"A"} = { title => loc('New group'),
-	     	path => "Admin/Groups/Modify.html?Create=1",
+$tabs->{"A"} = { title => loc('Select group'),
+	     	path => "Admin/Groups/",
  	  };
+$tabs->{"B"} = { title => loc('New group'),
+	     	path => "Admin/Groups/Modify.html?Create=1",
+		separator => 1,
+ 	  };
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_subtab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 </%INIT>
 <%ARGS>
 $GroupObj => undef
+$subtabs => undef
+$current_subtab => undef
+$current_tab => undef
 </%ARGS>
+

@@ -23,11 +23,22 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs &>
+<& /Admin/Elements/SystemTabs, current_tab => 'Admin/Global/Templates.html', 
+    current_subtab => 'Admin/Global/Templates.html', 
+    subtabs => $subtabs &>
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 </form>
 <%init>
 
+my $subtabs = {
+		 A => { title => loc('Select template'),
+  		     	path => "Admin/Global/Templates.html"
+			   },
+		 B => { title => loc('New template'),
+  		     	path => "Admin/Global/Template.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
 my $title = loc("Modify templates which apply to all queues");
 
 my (@actions);

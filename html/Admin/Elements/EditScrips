@@ -28,8 +28,6 @@
 <input type="hidden" name="id" value="<%$id%>">
 <& /Elements/TitleBoxStart, title => $title &>
 
-<P><A href="Scrip.html?create=1&Queue=<%$id%>"><&|/l&>Create a new scrip</&></A></P>
-
 <P><&|/l&>Current Scrips</&>:</P>
 % if ($Scrips->Count == 0 ) {
 <P><i><&|/l&>(No scrips)</&></i></P>

@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
+    current_tab => 'Admin/Queues/Scrips.html?id='.$id, 
+    subtabs => $subtabs &>
 
 <h2><&|/l&>Scrips which apply to all queues</&></h2>
 <& /Admin/Elements/ListGlobalScrips &>
@@ -41,7 +43,11 @@ if ($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
 }
 
-
+my $subtabs = {
+	 A => { title => loc('New scrip'),
+	     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$id,
+			   }
+	      };
 </%init>
 
 <%ARGS>

@@ -31,7 +31,6 @@
 
 <FORM METHOD=GET ACTION="CustomFields.html">
 <INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
-<P><A href="CustomField.html?create=1&Queue=<%$id%>"><&|/l&>Create a new Custom Field</&></A>
 
 % if ($id) {
 <BR>

@@ -90,5 +90,5 @@ $title_class => undef
 $titleright_href => undef
 $titleright => undef
 $contentbg => "#dddddd"
-$color => "#0066CC"
+$color => "#336699"
 </%ARGS>

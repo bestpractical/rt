@@ -23,14 +23,17 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
+    current_tab => 'Admin/Queues/Scrips.html?id='.$QueueObj->id, 
+    current_subtab => $current_subtab, 
+    subtabs => $subtabs &>
 
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS &>
 <%init>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
-my $title;
+my ($title, $current_subtab);
 
 unless($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
@@ -38,8 +41,14 @@ unless($QueueObj->id) {
 if ($id) {
     $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
 }else {
+    $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
     $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
 }
+my $subtabs = {
+		 A => { title => loc('New scrip'),
+  		     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id
+			   }
+	      };
 </%init>
 
 <%ARGS>

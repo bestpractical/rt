@@ -23,16 +23,34 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs &>
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/Scrips.html', 
+    current_subtab => $current_subtab, 
+    subtabs => $subtabs &>
 
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS &>
 
 <%init>
-my $title;
+my ($title, $current_subtab);
+my $subtabs = {
+		 A => { title => loc('Select scrip'),
+  		     	path => "Admin/Global/Scrips.html",
+			   },
+		 B => { title => loc('New scrip'),
+  		     	path => "Admin/Global/Scrip.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
+
 if ($ARGS{'id'}) {
-     $title = loc("Modify a scrip which applies to all queues");
+    $current_subtab = "Admin/Global/Scrip.html?id=".$ARGS{'id'}."&Queue=0";
+    $title = loc("Modify a scrip which applies to all queues");
+    $subtabs->{"C"} = { title => loc('Scrip #[_1]', $ARGS{'id'}),
+  		     	path => "Admin/Global/Scrip.html?id=".$ARGS{'id'}."&Queue=0"
+			   }
 }
 else {
-     $title = loc("Add a scrip which will apply to all queues");
+    $current_subtab = "Admin/Global/Scrip.html?create=1&Queue=0";
+    $title = loc("Add a scrip which will apply to all queues");
 }
 </%init>

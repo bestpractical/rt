@@ -26,30 +26,34 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 color: #FFFFFF;
 	 text-decoration: none}
+.nav2 {	 font-size: 10px}
 .nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 12px;
+	 font-size: 13px;
+	 font-weight: normal;
 	 color: #FFFFFF;
 	 text-decoration: none}
 .currentnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 12px;
+	 font-size: 13px;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none}
 .topnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 13px;
+	 font-size: 16px;
+	 font-weight: normal;
 	 color: #FFFFFF;
+	 text-decoration: none}
+.currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 16px;
+         font-weight: bold;
+	 color: #FFFF66;
 	 text-decoration: none}
 .topactions {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 10px;
 	 color: #FFFFFF;
 	 text-decoration: none}
-.currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 13px;
-         font-weight: bold;
-	 color: #FFFF66;
-	 text-decoration: none}
 .subnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
+	 font-weight: normal;
 	 color: #FFFFFF;
 	 text-decoration: none}
 .currentsubnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -62,12 +66,28 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 vertical-align: top;
 	 text-align: left;
          }
-.blue {  background-color: #0066CC;
+.oldblue {  background-color: #0066CC;
 	 background-position: left top;
 	 vertical-align: top;
 	 text-align: left;
          }
-.darkblue {  background-color: #003399;
+.blue {  background-color: #4682B4;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-valign: center;
+	 text-align: left;
+         }
+.blueright {  background-color: #4682B4;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: right;
+         }
+.olddarkblue {  background-color: #003399;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: left;
+         }
+.darkblue {  background-color: #000080;
 	 background-position: left top;
 	 vertical-align: top;
 	 text-align: left;

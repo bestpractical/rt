@@ -22,13 +22,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $subtabs,
+<& /Admin/Elements/Tabs, subtabs => $tabs,
 			 current_tab => 'Admin/Users/', 
                          current_subtab => $current_subtab &>
 <%INIT>
-my $subtabs;
+my $tabs;
 if ($id) {
-$subtabs = {
+$tabs = {
 	       Queues => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
 			 },
@@ -39,8 +39,12 @@ $subtabs = {
 	      };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers')) {
-  $subtabs->{"A"} = { title => loc('New user'),
+  $tabs->{"A"} = { title => loc('Select user'),
+  		     	path => "Admin/Users/",
+			   };
+  $tabs->{"B"} = { title => loc('New user'),
   		     	path => "Admin/Users/Modify.html?Create=1",
+			separator => 1,
 			   };
 }
 
@@ -49,5 +53,6 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
   
 <%ARGS>
 $id => undef
+$current_tab => undef
 $current_subtab => undef
 </%ARGS>

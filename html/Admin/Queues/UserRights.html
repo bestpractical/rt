@@ -23,7 +23,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify user rights for queue [_1]', $QueueObj->Name) &>
-<& /Admin/Elements/QueueTabs, id => $id &>  
+<& /Admin/Elements/QueueTabs, id => $id,
+    current_tab => $current_tab &>
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="UserRights.html">
@@ -78,7 +79,8 @@ my $Users = $Privileged->MembersObj();
     
   
 # }}}
-    
+my $current_tab;
+$current_tab = 'Admin/Queues/UserRights.html?id='.$QueueObj->id;
 </%INIT>
 
 <%ARGS>

@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, title => loc("Modify template [_1]", $TemplateObj->id) &>
-<& /Admin/Elements/SystemTabs &>
+<& /Admin/Elements/SystemTabs, current_tab => 'Admin/Global/Templates.html', 
+    current_subtab => $current_subtab, 
+    subtabs => $subtabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => $title &>
@@ -49,9 +51,21 @@
 <%INIT>
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
-my  ($title, @results);
+my  ($title, @results, $current_subtab);
+
+my $subtabs = {
+		 A => { title => loc('Select template'),
+  		     	path => "Admin/Global/Templates.html"
+			   },
+		 B => { title => loc('New template'),
+  		     	path => "Admin/Global/Template.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
+
 
 if ($create) {
+  $current_subtab = "Admin/Global/Template.html?create=1&Queue=0";
   $title = loc("Create a template");
 }
 
@@ -74,6 +88,10 @@ if ($TemplateObj->Id()) {
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
+  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id();
+  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
+  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id(),
+			};
   push @results, @aresults;
 }
 </%INIT>

@@ -23,7 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
+    current_tab => 'Admin/Queues/CustomFields.html?id='.$QueueObj->id, 
+    current_subtab => $current_subtab, 
+    subtabs => $subtabs &>
 
 <& /Admin/Elements/EditCustomField, title => $title,  %ARGS &>
 
@@ -31,7 +34,7 @@
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
-my $title;
+my ($title, $current_subtab);
 
 unless($QueueObj->id) {
     Abort(loc("Queue [_1] not found", $Queue));
@@ -39,8 +42,16 @@ unless($QueueObj->id) {
 if ($CustomField) {
     $title = loc('Modify a CustomField for queue [_1]', $QueueObj->Name()); 
 }else {
+    $current_subtab = "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id;
     $title = loc('Create a CustomField for queue [_1]', $QueueObj->Name()); 
 }
+
+my $subtabs = {
+		 A => { title => loc('New custom field'),
+  		     	path => "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id
+			   }
+	      };
+
 </%INIT>
 <%ARGS>
 $CustomField => undef

@@ -51,6 +51,13 @@
 	      
 	     };
 
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
+
 my $actions;
 
 if ($Ticket->CurrentUserHasRight('ModifyTicket') or 
@@ -148,5 +155,7 @@ if (defined $session{'tickets'}) {
   
 <%ARGS>
 $Ticket => undef
+$subtabs => undef
 $current_tab => undef
+$current_subtab => undef
 </%ARGS>

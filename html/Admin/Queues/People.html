@@ -23,7 +23,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
-<& /Admin/Elements/QueueTabs, id => $id  &>
+<& /Admin/Elements/QueueTabs, id => $id, 
+    current_tab => $current_tab &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -87,6 +88,7 @@
 
 <%INIT>
 
+my $current_tab;
 my ($field, @results, $User, $Users, $Groups, $watcher, $msg);
 
 # {{{ Load the queue
@@ -141,6 +143,8 @@ else {
 
 $Groups = new RT::Groups($session{'CurrentUser'});
 $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+
+$current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 </%INIT>
 
 <%ARGS>

@@ -23,10 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
+    current_tab => $current_tab &>
 <& /Elements/ListActions, actions => \@results &>
-
-
 
 <& /Elements/TitleBoxStart, title => $title &>
 
@@ -91,16 +90,17 @@
 
 
 <%INIT>
-
+my $current_tab;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id);
 my  ($title, @results, $Disabled, $EnabledChecked);
 $EnabledChecked = "CHECKED";
 
 if ($Create) {
+    $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
-}
-
-else {
+} else {
+    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
     if ($id eq 'new') {
        my ($val, $msg) =  $QueueObj->Create(Name => $Name);
        if ($val == 0 ) {

@@ -55,9 +55,9 @@
   </tr>
   <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
 <tr valign="middle">
-        <td class="blue" align="left" valign="middle" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
+        <td class="darkblue" align="left" valign="middle" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
 </tr>
-  <tr><td class="blue" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="3"></td></tr>
+  <tr><td class="darkblue" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="3"></td></tr>
   <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
 </table>
 <%INIT>

@@ -22,10 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Global/', current_subtab => $current_subtab &>
-<hr>
+<& /Admin/Elements/Tabs, subtabs => $tabs, 
+	current_tab => 'Admin/Global/', 
+	current_subtab => $current_tab &>
+
 <%INIT>
-  my $subtabs = {
+  my $tabs = {
                 
                A => { title => loc('Scrips'),
                            path => 'Admin/Global/Scrips.html',
@@ -45,12 +47,19 @@
                                 path => 'Admin/Global/UserRights.html',
                       }
 
-
 };
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 </%INIT>
 
   
 <%ARGS>
 $id => undef
+$current_tab => undef
+$subtabs => undef
 $current_subtab => undef
 </%ARGS>

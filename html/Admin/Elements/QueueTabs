@@ -22,45 +22,60 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Queues/' &>
-<hr>
+<& /Admin/Elements/Tabs, subtabs => $tabs, 
+		current_tab => 'Admin/Queues/', 
+		current_subtab => $current_tab &>
+
 <%INIT>
-my $subtabs;
+my $tabs;
 if ($id) {
-  $subtabs = {
-		 Ab => { title => loc('Basics'),
+  $tabs = {
+		 C => { title => loc('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
-		 B => { title => loc('Watchers'),
+		 D => { title => loc('Watchers'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
 
-		 C => { title => loc('Scrips'),
+		 E => { title => loc('Scrips'),
 			     path => "Admin/Queues/Scrips.html?id=".$id,
 			   },
-		 D => { title => loc('Templates'),
+		 F => { title => loc('Templates'),
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 E => { title => loc('Custom Fields'),
+                 G => { title => loc('Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?id='.$id,
                         },
 
-		 F => { title => loc('Group Rights'),
+		 H => { title => loc('Group Rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 G => { title => loc('User Rights'),
+		 I => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			},
   };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
-  $subtabs->{"A"} = { title => loc('New queue'),
-  		     	path => "Admin/Queues/Modify.html?Create=1",
+  $tabs->{"A"} = { title => loc('Select queue'),
+  		     	path => "Admin/Queues/",
 			   };
+  $tabs->{"B"} = { title => loc('New queue'),
+  		     	path => "Admin/Queues/Modify.html?Create=1",
+			separator => 1,
+			   };
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 }
 </%INIT>
   
 <%ARGS>
 $id => undef
+$subtabs => undef
+$current_subtab => undef
+$current_tab => undef
 </%ARGS>

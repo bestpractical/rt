@@ -1,0 +1,96 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+%#
+%# font size depends on level
+% if ($level gt 0) {
+% if ($level ge 3) {
+%   $size = $basesize-(3);
+% } else {
+%   $size = $basesize-($level);
+% }
+%   $padding = 2;
+% } else {
+%   $padding = 5;
+% }
+<table border=0 cellspacing=0 cellpadding=0 bordercolor=#FFFFFF width=100%>
+  <span class="topnav">
+% my $sep=0;
+% foreach $tab (sort keys %{$toptabs}) {
+% if ($sep) {
+    <tr><td height="2"></td></tr>
+    <tr><td height="1" bgcolor="#999999"></td></tr>
+    <tr><td height="2"></td></tr>
+% }
+% $sep=0;
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+%     $class="currenttopnav"
+% } else {
+%     $class="topnav"
+% } 
+    <tr>
+      <td height=<%$padding%>></td>
+    </tr>
+    <tr> 
+      <td class="blue" colspan=2 width=100%>
+        <A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" class="<%$class%>" style="font-size: <%$size%>"><% $toptabs->{$tab}->{'title'}%></A>
+      </td>
+    </tr>
+% if ($toptabs->{$tab}->{'separator'}) {
+% $sep=1;
+% }
+%# Second-level items
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+% my ($t, $current);
+% if ($toptabs->{$tab}->{'subtabs'}) {
+%   $t = $toptabs->{$tab}->{'subtabs'};
+%   $current = $toptabs->{$tab}->{'current_subtab'};
+    <tr>
+      <td width=5></td>
+      <td>
+        <& /Elements/Menu, level => $level+1, current_toptab => $current, toptabs => $t &>
+% }
+% }
+%# put a line after each top-level menu entry
+% if ($level eq 0) {
+    <tr><td height=<%$padding%>></td></tr>
+    <tr><td colspan=2 height=1 bgcolor="#FFFFFF"></td></tr>
+% }
+% }
+      </td>
+    </TR>
+  </span>
+</TABLE>
+
+<%INIT>
+my ($tab, $subtab, $class, $size, $padding);
+my $basesize=14;
+</%INIT>
+
+<%ARGS>
+$current_toptab => undef
+$toptabs => undef
+$subtabs_scalar => undef
+$level => 0
+</%ARGS>
