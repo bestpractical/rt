@@ -67,7 +67,7 @@ sub Load  {
   my $self = shift;
   my $identifier = shift;
 
-  my $template = shift if (@_);
+  my $template = shift;
 
   if (!$identifier) {
     return (undef);
@@ -119,7 +119,7 @@ sub TemplateObj {
   if (!$self->{'TemplateObj'})  {
     require RT::Template;
     $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
-    $self->{'TemplateObj'}->load($self->Template());
+    $self->{'TemplateObj'}->LoadById($self->{'Template'});
   
   }
   

@@ -106,8 +106,8 @@ sub _ParseHeaders  {
   $T::rtname=$RT::rtname;
   
   $template=Text::Template->new(TYPE=>STRING, 
-				SOURCE=>$self->Headers));
-return ($template->fill_in(PACKAGE=>T));
+				SOURCE=>$self->Headers);
+  return ($template->fill_in(PACKAGE=>T));
 
 }
 # }}}

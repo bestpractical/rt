@@ -93,21 +93,30 @@ sub Create  {
 
   #Load a scrips object
   use RT::Scrips;
-  my $Scrips = RT::Scrips->new($self->CurrentUser);
-  $Scrips->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
-  $Scrips->LimitToType($args{'Type'}); #Limit to $args{'Type'} or 'any'
-  #Load a scrips object
+  use RT::ScripScope;
+  my $ScripScope = RT::ScripScopes->new($self->CurrentUser);
+#  my $Scrips = RT::Scrips->new($self->CurrentUser);
+  $ScripScope->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
+#  $Scrips->LimitToType($args{'Type'}); #Limit to $args{'Type'} or 'any'
+
+  #Load a ScripsScopes object
   #Iterate through each script and check it's applicability.
 
-  while (my $Scrip = $Scrips->Next()) {
+  while (my $Scope = $ScripScope->Next()) {
+
+    # This sucks a bit ... we're really doing a lot of unneccessary
+    # loading here. I think we really should do a search on two
+    # tables.  --TobiX
+    next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type ne $args{'Type'});
+
     #TODO: Raise errors here.
     eval {
       #Load the scrip's action;
-      $Scrip->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
+      $Scope->ScripObj->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
       
       #If it's applicable, prepare and commit it
-      if ( $Scrip->IsApplicable() ) {
-	$Scrip->Prepare() and $Scrip->Commit();
+      if ( $Scope->ScripObj->IsApplicable() ) {
+	$Scope->ScripObj->Prepare() and $Scope->ScripObj->Commit();
       }
     }
 
