@@ -83,3 +83,8 @@ IMG {
 */
 
 P.map-also { font-style: italic; margin-left: 15%; text-align: right }
+
+.oddline { 
+background-color : #eeeeee;
+
+}
