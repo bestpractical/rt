@@ -28,11 +28,29 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM>
-<textarea name=string cols=90 rows=30>
+<FORM ACTION="Offline.html" NAME="TicketUpdate" 
+	METHOD=POST enctype="multipart/form-data">
+<table>
+<tr><td class=label>
+<&|/l&>Upload file</&>:
+</td>
+<td>
+<input name="Template" type="file" value="foo">
+<INPUT TYPE=SUBMIT NAME="Parse" VALUE="<&|/l&>Parse</&>">
+</td>
+</tr>
+<tr>
+<tr><td class=labeltop>
+<&|/l&>Template</&>:
+</td>
+<td>
+<textarea name=string cols=80 rows=30>
 <%$string%>
 </textarea>
-<& /Elements/Submit, Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
+</td>
+</tr>
+</table>
+<& /Elements/Submit, Name => 'UpdateTickets', Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
 
 </FORM>
 
@@ -43,7 +61,26 @@ use RT::Action::CreateTickets;
 my $action = new RT::Action::CreateTickets;
 my $string;
 
-if ($ARGS{'string'}) {
+if ($ARGS{'Parse'}) {
+    $ARGS{'string'} = "";
+    my $cgi_object = $m->cgi_object;
+    my $fh = $cgi_object->upload('Template');
+    my $filename = "$fh";
+
+    my ($buffer, $template);
+    while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
+	$template .= $buffer;
+    }
+    $action->Parse($template);
+    foreach (@{ $action->{'create_tickets'} }) {
+	my $id = $_;
+	$id =~ s/^create\-//;
+	$string .= "===Create-Ticket: $id\n";
+	$string .= $action->{'templates'}->{$_} . "\n";
+    }
+
+    $ARGS{'string'} = $string;
+} elsif ($ARGS{'UpdateTickets'}) {
     $action->Parse($ARGS{string});
     push @results, $action->CreateByTemplate();
     push @results, $action->UpdateByTemplate();
