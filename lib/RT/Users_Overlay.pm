@@ -93,7 +93,6 @@ sub _DoSearch {
     unless ( $self->{'find_disabled_rows'} ) {
         $self->LimitToEnabled();
     }
-
     return ( $self->SUPER::_DoSearch(@_) );
 
 }

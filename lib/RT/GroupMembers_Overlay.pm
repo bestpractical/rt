@@ -117,7 +117,7 @@ sub LimitToMembersOfGroup {
                          VALUE => $group,
                          FIELD => 'GroupId',
                          ENTRYAGGREGATOR => 'OR',
-			 QUOTEVALUE => 0
+			             QUOTEVALUE => 0
                          ));
 
 }

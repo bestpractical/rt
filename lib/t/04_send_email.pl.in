@@ -33,8 +33,8 @@ sub RT::Action::SendEmail::SendMessage {
 # create a regular ticket
 
 my $parser = RT::EmailParser->new();
-$parser->ParseMIMEEntityFromScalar('From: root\@localhost
-To: rt\@example.com
+$parser->ParseMIMEEntityFromScalar('From: root@localhost
+To: rt@example.com
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -69,10 +69,6 @@ my $content =  `cat ./lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't fi
 
 
 
-
-
-
-
 $parser->ParseMIMEEntityFromScalar($content);
 
 
@@ -98,9 +94,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 
 # If we correspond, does it do the right thing to the outbound messages?
 
+$parser->ParseMIMEEntityFromScalar($content);
 my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
+$parser->ParseMIMEEntityFromScalar($content);
 ($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
@@ -135,9 +133,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 
 # If we correspond, does it do the right thing to the outbound messages?
 
+$parser->ParseMIMEEntityFromScalar($content);
 my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
+$parser->ParseMIMEEntityFromScalar($content);
 ($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 

@@ -238,6 +238,7 @@ sub SetMIMEEntityToEncoding {
         my $new_body = MIME::Body::InCore->new( \@lines );
 
         # set up the new entity
+        $head->mime_attr("content-type" => 'text/plain') unless ($head->mime_attr("content-type"));
         $head->mime_attr( "content-type.charset" => $enc );
         $head->add( "X-RT-Original-Encoding" => $charset );
         $entity->bodyhandle($new_body);

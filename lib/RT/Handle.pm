@@ -87,6 +87,7 @@ $RT::DatabaseHost = undef unless (defined $RT::DatabaseHost && $RT::DatabaseHost
 			 Port => $RT::DatabasePort,
 			 Driver => $RT::DatabaseType,
 			 RequireSSL => $RT::DatabaseRequireSSL,
+             DisconnectHandleOnDestroy => 1
 			);
    
 

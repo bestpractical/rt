@@ -193,11 +193,16 @@ sub MailError {
 sub CreateUser {
     my ($Username, $Address, $Name, $ErrorsTo, $entity) = @_;
     my $NewUser = RT::User->new($RT::SystemUser);
+
+    # This data is tainted by some Very Broken mailers.
+    # (Sometimes they send raw ISO 8859-1 data here. fear that.
+    $Username = Encode::encode(utf8 => $Username, Encode::FB_PERLQQ);
+    $Name = Encode::encode(utf8 => $Name, Encode::FB_PERLQQ);
     
     my ($Val, $Message) = 
       $NewUser->Create(Name => ($Username || $Address),
                        EmailAddress => $Address,
-                       RealName => "$Name",
+                       RealName => $Name,
                        Password => undef,
                        Privileged => 0,
                        Comments => 'Autocreated on ticket submission'
@@ -468,6 +473,10 @@ sub Gateway {
             Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for your email.
+
+Your RT administrator needs to grant 'Everyone' the right 'CreateTicket'
+for this queue.
+
 EOT
             MIMEObj  => $Message,
             LogLevel => 'error' )

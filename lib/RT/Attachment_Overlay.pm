@@ -146,8 +146,11 @@ sub Create {
             TransactionId => $args{'TransactionId'},
             Parent        => 0,
             ContentType   => $Attachment->mime_type,
-            Headers       => $Attachment->head->as_string,
-            Subject       => $Subject,
+
+            # We need to untaint the data here, because there's a high likelyhood that some incompetent MUA
+            # Author will try to put bogus non-ascii data in a message header.
+            Headers => Encode::encode( utf8 => $Attachment->head->as_string, Encode::FB_PERLQQ ),
+            Subject => Encode::encode( utf8 => $Subject, Encode::FB_PERLQQ )
 
         );
         foreach my $part ( $Attachment->parts ) {
@@ -219,14 +222,15 @@ sub Create {
             $Body = MIME::Base64::encode_base64($Body);
 
         }
-
         my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
                                        ContentType   => $Attachment->mime_type,
                                        ContentEncoding => $ContentEncoding,
                                        Parent          => $args{'Parent'},
+                                       # We need to untaint the data here, because there's a high likelyhood that some incompetent MUA
+                                       # Author will try to put bogus non-ascii data in a message header.
+                                       Headers       => Encode::encode(utf8 => $Attachment->head->as_string, Encode::FB_PERLQQ),
+                                       Subject       => Encode::encode(utf8 => $Subject, Encode::FB_PERLQQ),
                                        Content         => $Body,
-                                       Headers  => $Attachment->head->as_string,
-                                       Subject  => $Subject,
                                        Filename => $Filename, );
         return ($id);
     }

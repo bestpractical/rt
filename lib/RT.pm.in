@@ -119,9 +119,10 @@ sub LoadConfig {
 sub Init {
     require RT::Handle;
     #Get a database connection
+        unless ($Handle) {
     $Handle = RT::Handle->new();
+        } 
     $Handle->Connect();
-    
     
     #RT's system user is a genuine database user. its id lives here
     $SystemUser = new RT::CurrentUser();
@@ -149,6 +150,8 @@ sub InitLogging {
 
     $, = '';
     use Log::Dispatch 1.6;
+
+    unless ($RT::Logger) {
 
     $RT::Logger=Log::Dispatch->new();
     
@@ -219,6 +222,9 @@ sub InitLogging {
 		       stderr => 1
 		     ));
     }
+
+    }
+
 # {{{ Signal handlers
 
 ## This is the default handling of warnings and die'ings in the code
