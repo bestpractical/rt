@@ -1,40 +1,79 @@
 % if ($Root) {
+% if ($ARGS{'Edit-'.$Root->Id})  {
+% my $Parent;
+%if ($Root->MemberOf->First && $Root->MemberOf->First->TargetObj) {
+%        $Parent = $Root->MemberOf->First->TargetObj->Id;
+%} else {
+%        $Parent = undef;
+%}
 <TR>
-<TD><tt><% "&nbsp;"x $Depth|n %></tt><A HREF="Edit.html?Project=<%$Project%>&id=<%$Root->Id%>" onClick="window.open('Edit.html?Project=<%$Project%>&id=<%$Root->Id%>','edit','toolbar=no,width=600,height=450,left=10,top=10,screenX=10,screenY=10,status=no,scrollbars=yes,resizable=1');return false"><%$Root->Subject%></A></TD>
+<TD><% "&nbsp;"x $Depth|n %><input name="Ticket-<%$Root->id%>-Subject" value=<%$Root->Subject%> size="25"><br>
+<&|/l&>Move</&>:<& SelectProjectTask, Name=> 'Ticket-'.$Root->id."-Parent", Project => $Project, Default =>  $Parent &>
+
+</TD>
+<TD><& /Elements/SelectOwner, Name => 'Ticket-'.$Root->id.'-Owner', Default => $Root->OwnerObj->id &></TD>
+<TD><& /Elements/SelectStatus, Name => 'Ticket-'.$Root->id.'-Status', Default => $Root->Status &></TD>
+<TD><input name="Ticket-<%$Root->id%>-Due" value ="<%$Root->Due%>" size=10></TD>
+<TD><input name="Ticket-<%$Root->id%>-Priority" value="<%$Root->Priority%>" size=2></TD>
+<TD><input name="Ticket-<%$Root->id%>-TimeWorked" value="<%$Root->TimeWorked%>" size="3"></TD>
+<TD><input name="Ticket-<%$Root->id%>-TimeLeft" value="<%$Root->TimeLeft%>" size="3"></TD>
+<TD><input type="submit"  value="<%loc('Save')%>"></TD>
+</TR>
+% }
+% else {
+
+<TR>
+<TD><tt><% "&nbsp;"x $Depth|n %></tt><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Root->id%>" target="_new"><%$Root->Subject%></A></TD>
 <TD><%$Root->OwnerObj->Name%></TD>
+<TD><%$Root->Status%></TD>
 <TD><%$Root->DueObj->AgeAsString%></TD>
 <TD><%$Root->Priority%></TD>
 <TD><%int($Root->TimeWorked/6)/10%></TD>
 <TD><%int($Root->TimeLeft/6)/10%></TD>
-<TD align=right><font size=-2>
-<DIV ALIGN=RIGHT>[<A HREF="Create.html?Queue=<%$Root->Queue%>&Parent=<%$Root->Id%>&Owner=<%$Root->Owner%>&Project=<%$Project%>" onClick="window.open('Create.html?Queue=<%$Root->Queue%>&Parent=<%$Root->Id%>&Owner=<%$Root->Owner%>&Project=<%$Project%>','wdyt','toolbar=no,width=500,height=450,left=10,top=10,screenX=30,screenY=30,status=no,scrollbars=yes,resizable=1');return false">New subtask</A>]</DIV></font>
+<TD align=right>
+<input type="submit" name="AddChildOf-<%$Root->Id%>" value="+">
+<input type="submit" name="Edit-<%$Root->Id%>" value="<%loc('Edit')%>">
+</td>
+</TR>
+% }
 
-% if ($Root->Id == $AddChildOf) {
+% if ($Depth < $MaxDepth) {
+% while (my $link = $tasks->Next()) {
+<& OverviewEntry, %ARGS, Root=> $link, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project &>
+% }
+
+% }
+
+% if ($ARGS{"AddChildOf-".$Root->Id}) {
 <TR>
-<TD><form method="post"><% "&nbsp;"x $Depth|n %><input name="Subject" size="25"></TD>
-<TD><& /Elements/SelectOwner, Name => 'Owner' &></TD>
+<TD><% "&nbsp;"x $Depth|n %><input name="Subject" size="25">
+
+<input type="hidden" name="new-MemberOf" value="<%$Root->id%>">
+<input type="hidden" name="AddChildOf<%$Root->id%>" value="1">
+</TD>
+
+<TD><& /Elements/SelectOwner, Name => 'Owner', Default => $RT::Nobody->id &></TD>
+<TD><& /Elements/SelectStatus, Name => 'Status', Default => 'new' &></TD>
 <TD><input name="Due" size=10></TD>
 <TD><input name="Priority" size=2></TD>
 <TD><input name="TimeWorked" size="3"></TD>
 <TD><input name="TimeLeft" size="3"></TD>
-<TD><input type="submit"></form</TD>
+<TD><input type="submit" name="CreateTask" value="<%loc('Create')%>"></TD>
+</TR>
 %}
 
-% if ($Depth < $MaxDepth) {
-% while (my $link = $tasks->Next()) {
-<& OverviewEntry, Root=> $link->BaseObj, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project &>
-% }
-
-% }
 % }
 <%ARGS>
 $Depth => 0
 $MaxDepth => 8
 $Root => undef
 $Project => undef
-$AddChildOf => undef
+$Edit => undef
+$EditAll => 0
 </%ARGS>
 
 <%INIT>
-my $tasks = $Root->Members();
+
+my $tasks = RT::Tickets->new($session{'CurrentUser'});
+$tasks->FromSQL('MemberOf = '.$Root->id);
 </%INIT>

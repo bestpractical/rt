@@ -1,13 +1,22 @@
 <& /Elements/Header, Title => $ProjectObj->Subject . " / Project Overview" &> 
 <& Elements/Tabs, Ticket => $ProjectObj, current_tab => 'Projects/Overview.html?id='.$ProjectObj->Id &>
+
+<& /Elements/ListActions, actions => \@messages &>
+
+<form method="post" action="Overview.html">
+<input type="hidden" name="Project" value="<%$Project%>">
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Debug" value="2">
+
 <TABLE WIDTH=100% CELLSPACING=0 BORDER=0 CELLPADDING=2>
 <TR BGCOLOR="#993333">
-<TD CLASS=INVERSE>Task</TD>
-<TD CLASS=INVERSE>Owner</TD>	
-<TD CLASS=INVERSE>Due</TD>
-<TD CLASS=INVERSE>Priority</TD>
-<TD CLASS=INVERSE>Worked</TD>
-<TD CLASS=INVERSE>Left</TD>
+<TD CLASS=INVERSE><&|/l&>Task</&></TD>
+<TD CLASS=INVERSE><&|/l&>Owner</&></TD>	
+<TD CLASS=INVERSE><&|/l&>Status</&></TD>	
+<TD CLASS=INVERSE><&|/l&>Due</&></TD>
+<TD CLASS=INVERSE><&|/l&>Priority</&></TD>
+<TD CLASS=INVERSE><&|/l&>Estimate</&></TD>
+<TD CLASS=INVERSE><&|/l&>Left</&></TD>
 <TD>&nbsp;</TD>
 </TR>
 % my $parents = $task->MemberOf;
@@ -17,27 +26,44 @@
 % } else {
 <TR><TD colspan=7 BGCOLOR="#cccccc"><a HREF="Overview.html?Project=<%$Project%>&id=<%$link->TargetObj->Id%>">Up</A></TD></TR>
 % }
-<& Elements/OverviewEntry, Root=> $link->TargetObj, Depth => 0, MaxDepth => 0,
-Project => $Project, AddChildOf => $AddChildOf &>
+<& Elements/OverviewEntry, 
+    Root=> $link->TargetObj, 
+    Depth => 0, 
+    MaxDepth => 0,
+    Project => $Project,
+    %ARGS &>
 % }
 % unless ($task->MemberOf->First) {
 <TR><TD colspan=7 BGCOLOR="#cccccc">Top</TD></TR>
 % }
-<& Elements/OverviewEntry, Root=> $task, Depth => 1, Project => $Project,
-AddChildOf => $AddChildOf &>
-</TABLE>
-</BODY>
-</HTML>
+<& Elements/OverviewEntry, 
+    Root=> $task, 
+    Depth => 1, 
+    Project => $Project,
+    %ARGS
+    &>
+
+</FORM>
 <%INIT>
-
-
+my (@messages);
 my $task = LoadTicket($id);
 $Project = $task->Id unless ($Project); 
 my $ProjectObj = LoadTicket($Project);
+
+
+
+if ($ARGS{'CreateTask'}) {
+   
+    $ARGS{'Queue'} = $task->QueueObj->id;
+my     ($new_id, $new_msg) = CreateTicket(%ARGS);
+push (@messages, $new_msg);
+}
+
+
 </%INIT>
 
 <%ARGS>
-$id => undef
 $Project => undef
 $AddChildOf => undef
+$id => undef
 </%ARGS>
