@@ -25,7 +25,6 @@
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <& .Header, 
     Format => \@Format, 
-    map => $map, 
     AllowSorting => $AllowSorting, 
     Order => $Order, 
     Query => $Query,
@@ -36,7 +35,7 @@
 % my $i;
 % while (my $record = $Collection->Next) {
 % $i++;
-<& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
+<& .Row, Format => \@Format, i => $i, record => $record &>
 % }
 </TABLE>
 % if ($ShowNavigation) {
@@ -50,11 +49,24 @@
 % }
 <%INIT>
 
-$Format = $RT::DefaultSearchResultFormat unless $Format;
+use vars qw($COLUMN_MAP);
 
-$Rows = '25' unless ($Rows); # we need a positive value
+$Format ||= $RT::DefaultSearchResultFormat;
+
+$Rows ||= '25'; # we need a positive value
 # {{{ item map
-my $map = {
+
+sub ColumnMap {
+    my $name  = shift;
+    my $attr = shift;
+
+    if ($COLUMN_MAP->{$name}) {
+        return ($COLUMN_MAP->{$name}->{$attr});
+    }
+
+}
+
+$COLUMN_MAP = {
     QueueName => {
         attribute => 'Queue',
         title => 'Queue',
@@ -231,7 +243,6 @@ $ShowNavigation => 1
 <%DEF .Header>
 <%ARGS>
 @Format => undef
-$map => undef
 $AllowSorting => undef
 $Order=>undef
 $BaseURL => undef
@@ -251,14 +262,12 @@ foreach my $col (@Format) {
         $m->out('<TH align="center">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
-        $title = ( $map->{$title}->{title} || $title );
+        $title = ( ColumnMap($title, 'title')  || $title );
         if ( $AllowSorting && $col->{'attribute'} ) {
             my @query_args = @generic_query_args;
             push @query_args,
               ( "OrderBy="
-              . ( $map->{ $col->{'attribute'} }->{'attribute'}
-              ? $map->{ $col->{'attribute'} }->{'attribute'}
-              : $col->{'attribute'} ) );
+              . ( ColumnMap($col->{'attribute'}, 'attribute') || $col->{'attribute'} ) );
             push @query_args,
               ( "Order=" . ( $ARGS{'Order'} eq 'ASC'  
               ? 'DESC'
@@ -283,7 +292,6 @@ foreach my $col (@Format) {
 $i => undef
 @Format => undef
 $record => undef
-$map => undef
 </%ARGS>
 <%PERL>
 $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
@@ -297,8 +305,10 @@ foreach my $column (@Format) {
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
             my $col = $1;
-            if ( $map->{$col}->{value} && ref( $map->{$col}->{value} ) ) {
-                $m->out( &{ $map->{$col}->{value} } ( $record, $i ) );
+            my $value = ColumnMap($col, 'value');
+
+            if ( $value && ref($value)) {
+                $m->out( &{ $value } ( $record, $i ) );
             }
         }
         else {
