@@ -1,60 +1,139 @@
 #$Header$
 
-package RT::Scrips;
-use RT::EasySearch;
-@ISA= qw(RT::EasySearch);
+package RT::ScripScope;
+use RT::Record;
+@ISA= qw(RT::Record);
 
-# Removed the new() method.  It's redundant, we'll use
-# RT::EasySearch::new instead.
-
-# {{{ sub _Init
-sub _Init { 
-  my $self = shift;
+# {{{ sub new 
+sub new  {
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self  = {};
+  bless ($self, $class);
   $self->{'table'} = "ScripScope";
-  $self->{'primary_key'} = "id";
-  $self->SUPER::_Init(@_);
+  $self->_Init(@_);
+  return ($self);
 }
 # }}}
 
-# {{{ sub Limit 
-sub Limit  {
+# {{{ sub _Accessible 
+sub _Accessible  {
   my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
-  $self->SUPER::Limit(%args);
+  my %Cols = ( Scrip  => 'read/write',
+	    	Queue => 'read/write', 
+	  	Template => 'read/write',
+	     );
+  return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
 
-# {{{ sub LimitToQueue 
-sub LimitToQueue  {
+# {{{ sub Create 
+sub Create  {
   my $self = shift;
-  my $queue = shift;
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => "$queue")
-      if defined $queue;
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => 0);
+  die "RT::Scrip->create stubbed\n";
+  my $id = $self->SUPER::Create(Name => @_);
+  $self->LoadById($id);
   
 }
 # }}}
 
-# What do we need this one for?  Shouldn't it essentially be the same
-# to call $object->new() as $object->NewItem() ?  Or do we plan to
-# subclass this class without overriding this method?
 
-# {{{ sub NewItem 
-sub NewItem  {
+# {{{ sub delete 
+sub delete  {
   my $self = shift;
-  my $item;
+ # this function needs to move all requests into some other queue!
+  my ($query_string,$update_clause);
+  
+  die ("Scrip->Delete not implemented yet");
+    
+      
 
-  use RT::ScripScope;
-  $item = new RT::ScripScope();
-  return($item);
+}
+# }}}
+
+
+# {{{ sub Load 
+sub Load  {
+  my $self = shift;
+  
+  my $identifier = shift;
+  if (!$identifier) {
+    return (undef);
+  }	    
+
+  if ($identifier !~ /\D/) {
+    $self->SUPER::LoadById($identifier);
+  }
+  else {
+  die "This code is never reached ;)";  
+ 
+  }
+
+ 
+}
+# }}}
+
+#
+# ACCESS CONTROL
+# 
+
+# {{{ sub DisplayPermitted 
+sub DisplayPermitted  {
+  my $self = shift;
+
+  my $actor = shift;
+  if (!$actor) {
+   my $actor = $self->CurrentUser;
+ }
+#  if ($self->Queue->DisplayPermitted($actor)) {
+ if (1){   
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
+# }}}
+# {{{ sub ModifyPermitted 
+sub ModifyPermitted  {
+  my $self = shift;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
+#  if ($self->Queue->ModifyPermitted($actor)) {
+ if (1) {   
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
+# }}}
+
+# {{{ sub AdminPermitted 
+sub AdminPermitted  {
+  my $self = shift;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
+
+
+#  if ($self->ACL->AdminPermitted($actor)) {
+ if (1) {   
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
 # }}}
 
 
 1;
+
 
