@@ -29,14 +29,16 @@
     Query => $Query,
     Rows => $ARGS{'Rows'} &>
 
-<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
 <table width=100%>
 <tr>
 <td valign=top>
+<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
+<input type=hidden name=SearchId value="<%$ARGS{'SearchId'}%>">
+<input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=Format value="<%$Format%>">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues, %ARGS &>
 <& /Elements/Submit, Caption => "Add additional criteria", Label => loc('Add'), Name => 'AddClause'&>
+
 </td>
 <td valign=top>
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
@@ -56,15 +58,25 @@
 %#<input type=submit name="EditQuery" value="Advanced">
 </center>
 <& /Elements/TitleBoxEnd &>
+</form>
 <br>
+<FORM METHOD="POST" ACTION="Build.html" NAME="SavedSearch">
+<input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=Format value="<%$Format%>">
 <& Elements/EditSearches, CurrentSearch => $search_hash &>
+</form>
 </td>
 </tr>
 <tr>
 <td colspan=2>
 
+<FORM METHOD="POST" ACTION="Build.html" NAME="EditFormat">
+<input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=Format value="<%$Format%>">
+<input type=hidden name=SearchId value="<%$ARGS{'SearchId'}%>">
 <& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}),
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, %ARGS &>
+</form>
 </td>
 </tr>
 </table>
@@ -459,6 +471,7 @@ sub ParseQuery {
     my $depth = 1;
     my $query = {};
     my %depths;
+    my %items;
 
     setvalue($query, "{0.0}", {});
     setvalue($query, "{0.0}{Subkey}", {});
@@ -486,6 +499,7 @@ sub ParseQuery {
     # as a keyword or value.
 
     my $num = 0;
+    $depths{1} = 0;
     while ( $string =~ /(
                       $re_aggreg
                       |$re_op
@@ -520,14 +534,9 @@ sub ParseQuery {
         # Parens are highest priority
         if ( $current & PAREN ) {
             if ( $val eq "(" ) {
-                if ( !( defined $depths{$depth} ) ) {
-                    $depths{$depth} = 0;
-                }
-                else {
-                    $depths{$depth}++;
-                }
-                $depth++;
                 $num = 0;
+                $depth++;
+		$depths{$depth} = 0;
 
                 my $hashkey;
                 my @keys;
@@ -556,10 +565,12 @@ sub ParseQuery {
                 $depth--;
                 $num = $depths{$depth} + 1;
             }
+
             $want = KEYWORD | PAREN | AGGREG;
         }
         elsif ( $current & AGGREG ) {
             $ea = $val;
+	    $depths{$depth}++ if ($last & PAREN);
 
             $want = KEYWORD | PAREN;
         }
@@ -607,15 +618,9 @@ sub ParseQuery {
         }
 
         if ( $current & VALUE ) {
-            if ( !( defined $depths{$depth} ) ) {
-                $depths{$depth} = 0;
-            }
-            else {
-                $depths{$depth}++;
-            }
+	    $depths{$depth}++;
 
             my $keystring = "";
-	    my $pd = $parentdepth;
             $keystring = "{Subkey}{" . $parentdepth . ".$num" . "}";
             $parentdepth--;
 
@@ -630,6 +635,9 @@ sub ParseQuery {
 	    $ea = 'AND' if !$ea;
             $keystring = "{0.0}" . $keystring;
 
+	    if ( $key =~ /^CF./ ) {
+	        $key = "'" . $key . "'";
+	    }
             my $clause = {
                 Key   => $key,
                 Op    => $op,
@@ -694,16 +702,18 @@ sub appendsubkey {
     my $hash = shift;
     my $key  = shift;
 
-    my $nextkey;
-    if ( subkeyexists( $hash, nextkey($key) ) ) {
-        $nextkey = appendkey( $hash, subkey( nextkey($key) ) );
+    my $newkey;
+
+    # if the next key exists, get the last key
+    my $nextkey = nextkey($key);
+    if ( subkeyexists( $hash, $nextkey ) ) {
+        $newkey = appendkey( $hash, subkey( $nextkey ) );
     }
     else {
-        my ( $prefix, $depth, $num ) = parsekey($key);
-        $nextkey = subkey($key);
+        $newkey = subkey($key);
     }
 
-    return $nextkey;
+    return $newkey;
 }
 
 sub prevkey {
@@ -877,8 +887,8 @@ sub movecurrent {
     setvalue($hash, $newkey, \%temp);
 
     $$currentkey = $orignewkey;
-    reworkkeys( $hash, $origkey, $currentkey );
     reworkkeys( $hash, $orignewkey, $currentkey );
+    reworkkeys( $hash, $origkey, $currentkey );
 
     return 1;
 }
@@ -932,9 +942,12 @@ sub setvalue {
     my $newhash;
     if ($prefix) {
 	my $parentkey = parentkey($key);
-	my $parent = gethash($hash, $parentkey);
+
+	my $parent;
 	if (!gethash($hash, $parentkey)) {
 	    setvalue($hash, $parentkey, {});
+	    $parent = gethash($hash, $parentkey);
+	} else {
 	    $parent = gethash($hash, $parentkey);
 	}
 
@@ -947,6 +960,13 @@ sub setvalue {
     }
 
     $newhash->{$depth + ($num / 10)} = $value;
+
+    # if there isn't an aggregator, set it to AND
+    my $ea = getaggregator( $hash, $key);
+    if (!$ea) {
+	setaggregator( $hash, $key, 'AND' );
+    }
+
 }
 
 sub deletevalue {
@@ -1081,6 +1101,7 @@ $QueryString = '?' . $m->comp('/Elements/QueryString', Query => $Query,
 	Format => $Format,
 	Rows =>$ARGS{'Rows'}) if ($Query);
 
+$ARGS{'SearchId'} =$search_hash->{'SearchId'};
 </%INIT>
 
 <%ARGS>

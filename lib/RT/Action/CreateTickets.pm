@@ -280,6 +280,7 @@ id,Queue,Subject,Owner,Content
 ticket1,General,"foo, bar",root,blah
 ticket2,General,foo bar,root,blah
 ticket3,General,foo' bar,root,blah'boo
+ticket4,General,foo' bar,,blah'boo
 EOF
 
 # tab-delimited templates
@@ -288,6 +289,7 @@ id\tQueue\tSubject\tOwner\tContent
 ticket10\tGeneral\t"foo' bar"\troot\tblah'
 ticket11\tGeneral\tfoo, bar\troot\tblah
 ticket12\tGeneral\tfoo' bar\troot\tblah'boo
+ticket13\tGeneral\tfoo' bar\t\tblah'boo
 EOF
 
 my %expected;
@@ -316,6 +318,14 @@ Content: blah'boo
 ENDOFCONTENT
 EOF
 
+$expected{ticket4} = <<EOF;
+Queue: General
+Subject: foo' bar
+Owner: 
+Content: blah'boo
+ENDOFCONTENT
+EOF
+
 $expected{ticket10} = <<EOF;
 Queue: General
 Subject: foo' bar
@@ -336,6 +346,14 @@ $expected{ticket12} = <<EOF;
 Queue: General
 Subject: foo' bar
 Owner: root
+Content: blah'boo
+ENDOFCONTENT
+EOF
+
+$expected{ticket13} = <<EOF;
+Queue: General
+Subject: foo' bar
+Owner: 
 Content: blah'boo
 ENDOFCONTENT
 EOF
@@ -658,6 +676,7 @@ sub Parse {
 	}
 	my $delimited = qr[[^$delimiter]+];
 	my @fields = split(/$delimiter/, $first);
+	my $empty = qr[[$delimiter][$delimiter]];
 
 	my $justquoted = qr[$RE{quoted}];
 
@@ -671,14 +690,19 @@ sub Parse {
 	    # first item is $template_id
 	    my $i = 0;
 	    my $template_id;
-	    while ($line =~ /($justquoted|$delimited)/igx) {
+	    while ($line =~ /($justquoted|$delimited|$empty)/igx) {
 		if ($i == 0) {
 		    $queue = 0;
-		    $template_id = 'create-' . $1;
-		    $RT::Logger->debug("template_id: $1");
+		    my $tid = $1;
+		    $tid =~ s/^\s//;
+		    $tid =~ s/\s$//;
+		    next unless $tid;
+		    $template_id = 'create-' . $tid;
+		    $RT::Logger->debug("template_id: $tid");
 		    push @{$self->{'create_tickets'}},$template_id;
 		} else {
 		    my $value = $1;
+		    $value = '' if ($value =~ /^$empty$/);
 		    if ($value =~ /$justquoted/) {
 			$value =~ s/^\"|\'//;
 			$value =~ s/\"|\'$//;
@@ -696,12 +720,10 @@ sub Parse {
 		    }
 		    if ( $field =~ /Queue/i) {
 			$queue = 1;
-			$RT::Logger->debug("queue!!: |$field|\n");
 			if (!$value) {
 			    $value = $qname;
 			}
 		    }
-		    $RT::Logger->debug("field: |$field|\n");
 		    $self->{'templates'}->{$template_id} .= $field . ": ";
 		    $self->{'templates'}->{$template_id} .= $value || "";
 		    $self->{'templates'}->{$template_id} .= "\n";

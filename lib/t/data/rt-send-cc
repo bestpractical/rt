@@ -1,0 +1,5 @@
+From: rt@example.com
+subject: testing send-cc headers
+RT-Send-Cc: this-is-a-sample-test1e@example.com, second-this-is-a-sample-test2@example.com,  test-sample-sample-sample-test3@example.com,
+    afourthtest4@example.com,
+ test5@example.com
