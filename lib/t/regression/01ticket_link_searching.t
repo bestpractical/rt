@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use lib qw(/opt/rt3/lib);
-#use Test::More tests => 25;
+use Test::More tests => 25;
 use strict;
 use RT;
 

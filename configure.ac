@@ -241,16 +241,6 @@ AC_CONFIG_FILES([
                  Makefile
 		 etc/RT_Config.pm
 		 lib/RT.pm
-                 lib/t/00smoke.t
-                 lib/t/01harness.t
-                 lib/t/02regression.t
-                 lib/t/03web.pl
-                 lib/t/04_send_email.pl
-		 lib/t/05cronsupport.pl
-		 lib/t/06mailgateway.pl
-		 lib/t/07acl.pl
-		 lib/t/08web_cf.pl
-		 lib/t/09record_customfields.t
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd

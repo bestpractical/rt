@@ -121,7 +121,14 @@ else {
 }
 
 
+print $outfh <<EOF;
 
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig();
+RT::Init();
+
+EOF
 foreach my $test (@tests, @examples) {
     print $outfh "$test\n";
 }
