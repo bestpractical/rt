@@ -107,11 +107,17 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     # XXX TODO This will only let users save personal searches
     # We explicitly list out the available types and
     # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) ) {
-        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
+    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
 
     }
+    elsif ($obj_type eq 'RT::Group')  {
+        my $group = RT::Group->new($session{'CurrentUser'});
+        $group->Load($obj_id);
+        $search = $group->Attributes->WithId($search_id);
+    }
+
+
 
     $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
     $ARGS{'Format'} = $Format   = $search->SubValue('Format');
@@ -137,18 +143,22 @@ if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     # XXX TODO This will only let users save personal searches
     # We explicitly list out the available types and
     # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-
+    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
         $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
         $search_hash->{'SearchId'} = $ARGS{'SearchId'};
 
     }
+    elsif ($obj_type eq 'RT::Group')  {
+        my $group = RT::Group->new($session{'CurrentUser'});
+        $group->Load($obj_id);
+        $search = $group->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
+    }
+
+
+
     else {
-
-        die "unsupported search type"
-
+        push @actions, [loc("Searches can't be associated with that kind of object"), 0];
     }
 
 }
@@ -165,6 +175,8 @@ else {
     $search_hash->{Query}       = '';
 }
 
+
+# {{{ Parse the query
 my $items = ParseQuery( $Query, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
@@ -184,7 +196,6 @@ $currentkey = $options[$ARGS{clauses}]->{Key} if $ARGS{clauses};
 # a criterion will get lost otherwise
 if (1) {
 
-    #$ARGS{"AddClause"}) {
     my $key;
     if ($currentkey) {
         $key = $currentkey;
@@ -204,7 +215,7 @@ if (1) {
             if ( $ARGS{ $field . "Field" } ) {
                 $keyword = $ARGS{ $field . "Field" };
             }
-            else {
+           else {
                 $keyword = $field;
             }
             my $clause = {
@@ -446,9 +457,7 @@ sub ParseQuery {
     my $re_aggreg  = qr[(?i:AND|OR)];
     my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
     my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      =
-      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
-      ;    # long to short
+    my $re_op      = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)] ;    # long to short
     my $re_paren = qr'\(|\)';
 
     my ( $ea, $key, $op, $value ) = ( "", "", "", "" );
@@ -458,8 +467,7 @@ sub ParseQuery {
     # as a keyword or value.
 
     my $num = 0;
-    while (
-        $string =~ /(
+    while ( $string =~ /(
                       $re_aggreg
                       |$re_op
                       |$re_keyword
@@ -484,13 +492,7 @@ sub ParseQuery {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions,
-              [
-"current: $current, want $want, Error near ->$val<- expecting a "
-                  . $token
-                  . " in '$string'\n",
-                -1
-              ];
+            push @actions, [ "current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n", -1 ];
         }
 
         # State Machine:
@@ -949,6 +951,8 @@ sub debug {
 
 # }}}
 
+# }}}
+
 # {{{ Deal with format changes
 my ($AvailableColumns, $CurrentFormat);
 ($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);
@@ -960,26 +964,8 @@ $ARGS{'Query'}  = $Query;
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
-    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        my $obj_type  = $1;
-        my $obj_id    = $2;
-        my $search_id = $3;
 
-        # XXX TODO This will only let users save personal searches
-        # We explicitly list out the available types and
-        # don't trust user input here
-        if (   ( $obj_type eq 'RT::User' )
-            && ( $obj_id == $session{'CurrentUser'}->id ) )
-        {
-            $search =
-              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-
-        }
-        else {
-
-            die "unsupported search type"
-
-        }
+        if ($search && $search->id) {
 
         # if the search data or metadata has changed, change it
         $search->SetSubValues(
@@ -995,9 +981,24 @@ if ( $ARGS{'Save'} ) {
         $search_hash->{'Object'}   = $search;
 
     }
-    elsif ( $ARGS{'SearchId'} eq 'new' ) {
-        my ( $search_id, $search_msg ) =
-          $session{'CurrentUser'}->UserObj->AddAttribute(
+    elsif ( $ARGS{'SearchId'} eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+ 
+
+        my $container_object;
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+            $container_object =    $session{'CurrentUser'}->UserObj;
+        }
+        elsif ($obj_type eq 'RT::Group') {
+            $container_object = RT::Group->new($session{'CurrentUser'});
+            $container_object->Load($obj_id);
+        }
+
+        if ($container_object->id ) { 
+
+        
+        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
             Name        => 'SavedSearch',
             Description => $ARGS{'Description'},
             Content     => {
@@ -1005,14 +1006,20 @@ if ( $ARGS{'Save'} ) {
                 Query  => $Query
             }
           );
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-        $search_hash->{'SearchId'} =
-            ref( $session{'CurrentUser'}->UserObj ) . '-'
-          . $session{'CurrentUser'}->UserObj->Id
-          . '-SavedSearch-'
-          . $search->Id;
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = ref( $session{'CurrentUser'}->UserObj ) . '-'
+          . $session{'CurrentUser'}->UserObj->Id . '-SavedSearch-' . $search->Id;
     }
+        unless ($search->id) {
+            push @actions, [loc("Can't find a saved search to work with"), 0];
+        }
+
+    }
+
+    else {
+            push @actions, [loc("Can't save this search"), 0];
+    }
+
 }
 
 # }}}
@@ -1024,10 +1031,19 @@ if ( $ARGS{'Delete'} ) {
         my $obj_type  = $1;
         my $obj_id    = $2;
         my $search_id = $3;
-        $session{'CurrentUser'}->UserObj->Attributes->DeleteEntry(
-            Name => 'SavedSearch',
-            id   => $search_id
-        );
+
+        my $container_object;
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+            $container_object =    $session{'CurrentUser'}->UserObj;
+        }
+        elsif ($obj_type eq 'RT::Group') {
+            $container_object = RT::Group->new($session{'CurrentUser'});
+            $container_object->Load($obj_id);
+        }
+
+        if ($container_object->id ) { 
+
+        $container_object->Attributes->DeleteEntry( Name => 'SavedSearch', id   => $search_id);
 
         $Format = '';
         $Query  = '';
@@ -1035,7 +1051,7 @@ if ( $ARGS{'Delete'} ) {
     }
 
     delete $ARGS{'SearchId'};
-
+    }
 }
 
 # }}}
@@ -1047,9 +1063,7 @@ $Format =~ s/&/%26/g;
 # Build a querystring for the tabs
 
 my $QueryString;
-if ($Query) {
-  $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
-}
+$QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}" if ($Query);
 
 </%INIT>
 

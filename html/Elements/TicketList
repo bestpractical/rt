@@ -218,7 +218,7 @@ $AllowSorting => undef
 $Order =>undef
 $OrderBy => undef
 $BaseURL => undef
-$Format => undef
+$Format => $RT::DefaultSearchResultFormat
 </%ARGS>
 %#### SUB COMPONENTS
 %#
