@@ -18,17 +18,17 @@
      $user_id=$rt::dbh->quote($in_user_id);
      
      if ($users{$in_current_user}{admin_rt}) {
-       if ($user_id ne $in_current_user) {
-	 $query_string = "DELETE FROM users WHERE user_id = $in_user_id";
+       if ($in_user_id ne $in_current_user) {
+	 $query_string = "DELETE FROM users WHERE user_id = $user_id";
 	 $dbh->Query($query_string) or 
 	   return (0, "[delete_user] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-	 $query_string = "DELETE FROM queue_acl WHERE user_id = $in_user_id";
+	 $query_string = "DELETE FROM queue_acl WHERE user_id = $user_id";
 	 $dbh->Query($query_string) or 
 	   return (0, "[delete_user] Query had some problem: $Mysql::db_errstr\n$query_string\n");
 	 
-	 delete $rt::users{$user_id};
+	 delete $rt::users{$in_user_id};
 	 while (($queue_id,$value)= each %rt::queues) {
-	   delete $rt::queues{$queue_id}{acls}{$user_id};
+	   delete $rt::queues{$queue_id}{acls}{$in_user_id};
 	 }
 	 return (1, "User $user_id deleted.");
 	 
