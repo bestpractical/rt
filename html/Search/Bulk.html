@@ -175,6 +175,7 @@ if ($ARGS{'UpdateContent'} &&
 #Iterate through each ticket we've been handed
 my @linkresults;
 
+$session{'tickets'}->RedoSearch();
 while (my $Ticket = $session{'tickets'}->Next) {
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
