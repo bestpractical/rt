@@ -15,7 +15,7 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "users";
+  $self->{'table'} = "Users";
   $self->_Init(@_);
 
   return($self);

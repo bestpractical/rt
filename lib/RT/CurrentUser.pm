@@ -15,7 +15,7 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "users";
+  $self->{'table'} = "Users";
   $self->_Init(@_);
 
   return($self);
@@ -26,12 +26,12 @@ sub _Accessible {
   my %Cols = (
 	      UserId => 'read',
 	      Gecos => 'read',
-	      RealName=> 'read',
-	      Password=> 'write',
-	      EmailAddress=> 'read',
-	      Phone=> 'read',
-	      Office=> 'read',
-	      Comments=> 'read',
+	      RealName => 'read',
+	      Password => 'write',
+	      EmailAddress => 'read',
+	      Phone => 'read',
+	      Office => 'read',
+	      Comments => 'read',
 	      IsAdministrator => 'read'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));

@@ -83,7 +83,10 @@ sub ParseArgs {
 	  }
 	
 	elsif ($ARGV[$i] =~ 'u') {
+	  use RT::User;
+
 	  $action=$ARGV[++$i];
+
 	  if ($action eq "-modify") {
 	    $user_id=$ARGV[++$i];
 	    if (!$user_id) {
@@ -191,6 +194,7 @@ sub cli_acl_queue {
  sub cli_modify_user{
    my $user_id = shift;
    my $User;
+
    $User = new RT::User($CurrentUser);
    if (!$User->Load($user_id)){
      print "That user does not exist.\n";

@@ -6,7 +6,7 @@ use RT::EasySearch;
 sub _Init {
   my $self = shift;
 
-  $self->{'table'} = "tickets";
+  $self->{'table'} = "Tickets";
   $self->{'primary_key'} = "id";
   $self->SUPER::_Init(@_);
   

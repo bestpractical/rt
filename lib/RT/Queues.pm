@@ -17,9 +17,8 @@ sub new {
 
 sub _Init { 
   my $self = shift;
-  $self->{'table'} = "queues";
+  $self->{'table'} = "Queues";
   $self->{'primary_key'} = "id";
- # print "Now initting with ",@_,"\n";
   $self->SUPER::_Init(@_);
 }
 
@@ -33,8 +32,8 @@ sub Limit {
 sub NewItem {
   my $self = shift;
   my $item;
+
   use RT::Queue;
-#  print STDERR "Loading a new queue\n";
   $item = new RT::Queue($self->{'user'});
   return($item);
 }

@@ -195,7 +195,7 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 default:
 	@echo "Read the README"
 
-install: dirs initialize libs-install nondestruct config-replace mux-install fixperms instruct
+install: dirs initialize libs-install config-replace mux-install mux-links fixperms instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -217,8 +217,7 @@ fixperms:
 	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
-	chmod 0755 $(RT_PERL_MUX)
-	chmod g+s $(RT_PERL_MUX)
+	chmod 4755 $(RT_PERL_MUX)
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
@@ -274,7 +273,7 @@ mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 
-	chmod 4755 $(RT_PERL_MUX)
+
 
 
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)

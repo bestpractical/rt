@@ -13,43 +13,45 @@ sub new {
   my $self  = {};
   bless ($self, $class);
 
-  $self->{'table'} = "transactions";
+  $self->{'table'} = "Transactions";
   $self->_Init(@_);
+
+
   return ($self);
 }
 
 sub _Accessible {
   my $self = shift;
   my %Cols = (
-	      TimeTaken => 'read/write',
-	      Ticket => 'read/write',
-	      Type=> 'read/write',
-	      Data => 'read/write',
-	      Content => 'read/write',
-	      Date => 'read/write',
-	      EffectiveTicket => 'read/write',
-	      Actor => 'read/write'
+	      TimeTaken => 'read',
+	      Ticket => 'read',
+	      Type=> 'read',
+	      Data => 'read',
+	      Content => 'read',
+	      EffectiveTicket => 'read',
+	      Actor => 'read',
+	      Creator => 'read',
+	      Created => 'read'
+
 	     );
 }
 #take simple args and call RT::Record to do the real work.
-sub create {
-  my $self = shift;
-  return($self->Create(@_));
-}
 
 sub Create {
   my $self = shift;
   
   my %args = ( id => undef,
 	       TimeTaken => 0,
-	       Ticket => undef,
+	       Ticket => 0 ,
                Type => '',
 	       Data => '',
-	       Content => '',
+	       Field => undef,
+	       OldValue => undef,
+	       NewValue => undef,
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
-  if (! $args{'Ticket'}) {
+  if ( $args{'Ticket'} == 0) {
     die "RT::Transaction->Create couldn't, as you didn't specify a ticket id\n";
   }
   
@@ -57,19 +59,66 @@ sub Create {
   my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				EffectiveTicket  => $args{'Ticket'},
 				TimeTaken => $args{'TimeTaken'},
-				Date => time(),
 				Type => $args{'Type'},
-				Content => $args{'Content'},
 				Data => $args{'Data'},
-				Actor => $self->CurrentUser(),
+				Field => $args{'Field'},
+				OldValue => $args{'OldValue'},
+				NewValue => $args{'NewValue'},
+				Actor => $self->CurrentUser->UserId(),
+				Creator =>  $self->CurrentUser->UserId(),
+				Created => undef
 			       );
+  $self->Load($id);
   return ($id);
 }
 
 
 sub DateAsString {
   my $self = shift;
-  return($self->_set_and_return('date'));
+  return($self->_Value('date'));
+}
+
+
+sub Attachments {
+  my $self = shift;
+  if (@_) {
+    my $Types = shift;
+  }
+
+  use RT::Attachments;
+  my $Attachments = new RT::Attachments($self->CurrentUser);
+  $Attachments->Limit(FIELD => 'TransactionId',
+		      VALUE => $self->Id);
+
+  if ($Types) {
+    $Attachments->Limit(FIELD => 'ContentType',
+			VALUE => "%$Types%",
+			OPERATOR => "LIKE");
+  }
+  
+  
+  return($Attachments);
+
+}
+
+
+sub Attach {
+  my $self = shift;
+  my $Summary = shift;
+  my $ContentType = shift;
+  my $MessageId = shift;
+  my $Content = @_;
+  
+  use RT::Attachment;
+  print STDERR "My id is ".$self->Id."\n";
+  my $Attachment = new RT::Attachment ($self->CurrentUser);
+  $Attachment->Create(Summary => "$Summary",
+		      MessageId => "$MessageId",
+		      TransactionId => $self->Id,
+		      ContentType => "$ContentType",
+		      Content => "$Content"
+		     );
+  
 }
 
 sub Description {

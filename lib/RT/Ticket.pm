@@ -13,16 +13,9 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "tickets";
+  $self->{'table'} = "Tickets";
   $self->_Init(@_);
   return ($self);
-}
-
-
-
-sub create {
-  my $self = shift;
-  return($self->Create(@_));
 }
 
 sub Create {
@@ -40,39 +33,47 @@ sub Create {
 	      FinalPriority => undef,
 	      Status => 'open',
 	      TimeWorked => 0,
-	      DateCreated => time(),
-	      DateTold => 0,
-	      DateActed => time(),
-	      DateDue => 0,
+	      Created => time(),
+	      Told => 0,
+	      Due => 0,
 	      Content => undef,
 	      @_);
   
   my $id = $self->SUPER::Create(Id => $args{'id'},
-				    EffectiveId => $args{'EffectiveId'},
-				    Queue => $args{'Queue'},
-				    Alias => $args{'Alias'},
-				    Requestors => $args{'Requestors'},
-				    Owner => $args{'Owner'},
-				    Subject => $args{'Subject'},
-				    InitialPriority => $args{'InitialPriority'},
-				    FinalPriority => $args{'FinalPriority'},
-				    Priority => $args{'InitialPriority'},
-				    Status => $args{'Status'},
-				    TimeWorked => $args{'TimeWorked'},
-				    DateCreated => $args{'DateCreated'},
-				    DateTold => $args{'DateTold'},
-				    DateActed => $args{'DateActed'},
-				    DateDue => $args{'DateDue'}
+				EffectiveId => $args{'EffectiveId'},
+				Queue => $args{'Queue'},
+				Alias => $args{'Alias'},
+				Requestors => $args{'Requestors'},
+				Owner => $args{'Owner'},
+				Subject => $args{'Subject'},
+				InitialPriority => $args{'InitialPriority'},
+				FinalPriority => $args{'FinalPriority'},
+				Priority => $args{'InitialPriority'},
+				Status => $args{'Status'},
+				TimeWorked => $args{'TimeWorked'},
+				Created => undef,
+				Told => $args{'Told'},
+				Due => $args{'Due'}
 			       );
   
-  #TODO: ADD A TRANSACTION
-  #TODO: DO SOMETHING WITH $args{'content'}
+  #Now that we know the Id
+  $self->SetEffectiveId($id);
+  
+  #Load 'er up.
+  $self->Load($id);
 
-  #now that we have an Id, set the effective Id, if we didn't come in with one.
-  if ($self->EffectiveId == 0 ) {
-    print "Setting Eid";
-    $self->SetEffectiveId($id);
-  }
+
+  #Add a transaction for the create
+  use RT::Transaction;
+  my $Transaction = new RT::Transaction($self->CurrentUser);
+  $Transaction->Create(Ticket => $self->Id,
+		       Type => "create");
+  
+  #Attach the content to the transaction
+  $Transaction->Attach($args{'Subject'}, $args{'ContentType'},
+		       $args{'MessageId'}, $args{'Content'});
+
+  
   return($self->Id, $ErrStr);
   
 }
@@ -509,10 +510,10 @@ sub _Accessible {
 	      Priority => 'read/write',
 	      Status => 'read/write',
 	      TimeWorked => 'read',
-	      DateCreated => 'read',
-	      DateTold => 'read/write',
-	      DateActed => 'read/write',
-	      DateDue => 'read/write'
+	      Created => 'read',
+	      Told => 'read/write',
+	      LastUpdated => 'read',
+	      Due => 'read/write'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -524,7 +525,7 @@ sub _UpdateTimeTaken {
 
 sub _UpdateDateActed {
   my $self = shift;
-  $self->SUPER::_Set('DateActed',time);
+  $self->SUPER::_Set('Updated',time);
 }
 
 

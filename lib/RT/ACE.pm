@@ -9,7 +9,7 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "queue_acls";
+  $self->{'table'} = "ACL";
   $self->_Init(@_);
   return ($self);
 }

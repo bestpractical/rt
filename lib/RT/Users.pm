@@ -11,7 +11,7 @@ sub new {
   my $pkg= shift;
   my $self = SUPER::new $pkg;
   
-  $self->{'table'} = "users";
+  $self->{'table'} = "Users";
   $self->{'primary_key'} = "id";
   return($self);
 }

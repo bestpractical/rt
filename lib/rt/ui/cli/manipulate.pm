@@ -52,8 +52,7 @@ sub ParseArgs {
 	    print "You don't have permission to view that ticket.\n";
 	  }
 	}
-    
-
+      
     }
     
     
@@ -175,7 +174,7 @@ sub ParseArgs {
 	my $due_string=$ARGV[++$i];
 	my $due_date = &rt::DateParse($due_string);
 	
-	$Message .= $Ticket->SetDateDue($id, $due_date, $CurrentUser->Id);
+	$Message .= $Ticket->SetDue($id, $due_date, $CurrentUser->Id);
 
 	}
       
@@ -243,8 +242,8 @@ sub ParseArgs {
     $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
     if ($due_string ne '') {
-      use RT::Utils;
-      $date_due = &RT::Utils::DateParse($due_string);
+      use Date::Manip;
+      $date_due = &ParseDate($due_string);
     }  
     print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
@@ -256,7 +255,7 @@ sub ParseArgs {
       }
     }	 
     use RT::Ticket;
-    my $Ticket = RT::Ticket->new($CurrentUser->Id);
+    my $Ticket = RT::Ticket->new($CurrentUser);
     my $id = $Ticket->Create ( Queue => $queue,
 			       Area => $area,
 			       Alias => $alias,
@@ -266,7 +265,7 @@ sub ParseArgs {
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       DateDue => $date_due,
+			       Due => $date_due,
 			       Content => $content
 			     );
     printf("Request %s created",$id);
@@ -386,9 +385,9 @@ EOFORM
       Final Priority:@{[$Ticket->FinalPriority]}
     Current Priority:@{[$Ticket->Priority]}
               Status:@{[$Ticket->Status]}
-             Created:@{[localtime($Ticket->DateCreated)]}) (@{[$Ticket->Age]}) ago)
-        Last Contact:@{[localtime($Ticket->DateTold)]}) (@{[$Ticket->SinceTold]} ago)
-	         Due:@{[localtime($Ticket->DateDue)]})
+             Created:@{[localtime($Ticket->Created)]}) (@{[$Ticket->Age]}) ago)
+        Last Contact:@{[localtime($Ticket->Told)]}) (@{[$Ticket->SinceTold]} ago)
+	         Due:@{[localtime($Ticket->Due)]})
 
 EOFORM
 }
