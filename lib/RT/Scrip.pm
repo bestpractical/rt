@@ -48,10 +48,14 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
+  varchar(255) 'Description'.
   int(11) 'ScripCondition'.
   int(11) 'ScripAction'.
-  text 'ScripConditionRules'.
-  text 'ScripActionRules'.
+  text 'ConditionRules'.
+  text 'ActionRules'.
+  text 'CustomIsApplicableCode'.
+  text 'CustomPrepareCode'.
+  text 'CustomCommitCode'.
   varchar(32) 'Stage'.
   int(11) 'Queue'.
   int(11) 'Template'.
@@ -64,20 +68,28 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
+                Description => '',
                 ScripCondition => '',
                 ScripAction => '',
-                ScripConditionRules => '',
-                ScripActionRules => '',
+                ConditionRules => '',
+                ActionRules => '',
+                CustomIsApplicableCode => '',
+                CustomPrepareCode => '',
+                CustomCommitCode => '',
                 Stage => '',
                 Queue => '',
                 Template => '',
 
 		  @_);
     $self->SUPER::Create(
+                         Description => $args{'Description'},
                          ScripCondition => $args{'ScripCondition'},
                          ScripAction => $args{'ScripAction'},
-                         ScripConditionRules => $args{'ScripConditionRules'},
-                         ScripActionRules => $args{'ScripActionRules'},
+                         ConditionRules => $args{'ConditionRules'},
+                         ActionRules => $args{'ActionRules'},
+                         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
+                         CustomPrepareCode => $args{'CustomPrepareCode'},
+                         CustomCommitCode => $args{'CustomCommitCode'},
                          Stage => $args{'Stage'},
                          Queue => $args{'Queue'},
                          Template => $args{'Template'},
@@ -91,6 +103,24 @@ sub Create {
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=item Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=item SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
 
 
 =cut
@@ -160,37 +190,91 @@ sub ScripActionObj {
 	return($ScripAction);
 }
 
-=item ScripConditionRules
+=item ConditionRules
 
-Returns the current value of ScripConditionRules. 
-(In the database, ScripConditionRules is stored as text.)
-
-
-
-=item SetScripConditionRules VALUE
+Returns the current value of ConditionRules. 
+(In the database, ConditionRules is stored as text.)
 
 
-Set ScripConditionRules to VALUE. 
+
+=item SetConditionRules VALUE
+
+
+Set ConditionRules to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ScripConditionRules will be stored as a text.)
+(In the database, ConditionRules will be stored as a text.)
 
 
 =cut
 
 
-=item ScripActionRules
+=item ActionRules
 
-Returns the current value of ScripActionRules. 
-(In the database, ScripActionRules is stored as text.)
-
-
-
-=item SetScripActionRules VALUE
+Returns the current value of ActionRules. 
+(In the database, ActionRules is stored as text.)
 
 
-Set ScripActionRules to VALUE. 
+
+=item SetActionRules VALUE
+
+
+Set ActionRules to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ScripActionRules will be stored as a text.)
+(In the database, ActionRules will be stored as a text.)
+
+
+=cut
+
+
+=item CustomIsApplicableCode
+
+Returns the current value of CustomIsApplicableCode. 
+(In the database, CustomIsApplicableCode is stored as text.)
+
+
+
+=item SetCustomIsApplicableCode VALUE
+
+
+Set CustomIsApplicableCode to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomIsApplicableCode will be stored as a text.)
+
+
+=cut
+
+
+=item CustomPrepareCode
+
+Returns the current value of CustomPrepareCode. 
+(In the database, CustomPrepareCode is stored as text.)
+
+
+
+=item SetCustomPrepareCode VALUE
+
+
+Set CustomPrepareCode to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomPrepareCode will be stored as a text.)
+
+
+=cut
+
+
+=item CustomCommitCode
+
+Returns the current value of CustomCommitCode. 
+(In the database, CustomCommitCode is stored as text.)
+
+
+
+=item SetCustomCommitCode VALUE
+
+
+Set CustomCommitCode to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomCommitCode will be stored as a text.)
 
 
 =cut
@@ -320,13 +404,21 @@ sub _ClassAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
+        Description => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         ScripCondition => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         ScripAction => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
-        ScripConditionRules => 
+        ConditionRules => 
 		{read => 1, write => 1, type => 'text', default => ''},
-        ScripActionRules => 
+        ActionRules => 
+		{read => 1, write => 1, type => 'text', default => ''},
+        CustomIsApplicableCode => 
+		{read => 1, write => 1, type => 'text', default => ''},
+        CustomPrepareCode => 
+		{read => 1, write => 1, type => 'text', default => ''},
+        CustomCommitCode => 
 		{read => 1, write => 1, type => 'text', default => ''},
         Stage => 
 		{read => 1, write => 1, type => 'varchar(32)', default => ''},

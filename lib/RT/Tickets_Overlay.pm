@@ -568,7 +568,7 @@ sub LimitOwner {
 =begin testing
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
-$t1->Create(Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
+$t1->Create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
 
 =end testing
 

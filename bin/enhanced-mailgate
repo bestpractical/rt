@@ -649,7 +649,7 @@ sub ActOnPseudoHeaders {
 		    }
 		}
 		
-	    $ResultsMessage .= loc("[_1] succeeded\n", $msg");
+	    $ResultsMessage .= loc("[_1] succeeded\n", $msg);
 	    
 	}
 	

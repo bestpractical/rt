@@ -86,6 +86,13 @@ sub TemplateObj  {
 }
 # }}}
 
+# {{{ sub ScripObj
+sub ScripObj  {
+  my $self = shift;
+  return($self->{'ScripObj'});
+}
+# }}}
+
 # {{{ sub Type
 sub Type  {
   my $self = shift;

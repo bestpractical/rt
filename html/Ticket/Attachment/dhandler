@@ -19,8 +19,8 @@
         Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
 
      }
-     my $content_type = $AttachmentObj->ContentType || 'text/plain';
-     SetContentType($content_type);
+     $r->content_type( $AttachmentObj->ContentType || 'text/plain');
+     $m->clear_buffer();
      $m->out($AttachmentObj->Content); 
      $m->abort; 
 </%perl>

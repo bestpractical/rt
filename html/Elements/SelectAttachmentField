@@ -1,0 +1,8 @@
+<SELECT NAME="<%$Name%>">
+<OPTION VALUE="Content"><&|/l&>content</&></OPTION>
+<OPTION VALUE="ContentType"><&|/l&>content-type</&></OPTION>
+<OPTION VALUE="Filename"><&|/l&>filename</&></OPTION>
+</SELECT>
+<%ARGS>
+$Name => 'AttachmentField'
+</%ARGS>

@@ -17,12 +17,11 @@
 %   while (my $scrip = $Scrips->Next ) {
 <TR>
 <TD>
-<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->id%>">
+<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<&|/l&>Edit</&></a>
 </TD>
 <TD>
-<LI><% $scrip->ConditionObj->Name %> 
-<% $scrip->ActionObj->Name %> 
-<&|/l, $scrip->TemplateObj->Name &>with template [_1]</&>
+<%$scrip->Description%><BR>
+<font size="-1"><% $scrip->ConditionObj->Name %> <% $scrip->ActionObj->Name %> <&|/l, $scrip->TemplateObj->Name &>with template [_1]</&></font>
 </TD>
 </TR>
 %   }

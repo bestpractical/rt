@@ -1,4 +1,4 @@
-<%perl>
+<%init>
 my %cookies = CGI::Cookie->fetch();
 my $IsMySQL = ($RT::DatabaseType eq 'mysql');;
 my $session_class = $IsMySQL ? 'Apache::Session::MySQL' : 'Apache::Session::File';
@@ -43,5 +43,5 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
         $r->header_out('Set-Cookie', $cookie->as_string);
 
     } 
-</%perl>
-
+    return();
+</%init>

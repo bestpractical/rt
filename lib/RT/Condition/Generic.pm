@@ -102,6 +102,19 @@ sub TicketObj  {
 }
 # }}}
 
+# {{{ sub ScripObj
+
+=head2 ScripObj
+
+Return the Scrip object we're talking about
+
+=cut
+
+sub ScripObj  {
+  my $self = shift;
+  return($self->{'ScripObj'});
+}
+# }}}
 # {{{ sub TransactionObj
 
 =head2 TransactionObj

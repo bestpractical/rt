@@ -132,10 +132,14 @@ CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
 CREATE TABLE Scrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
+  Description varchar(255),
   ScripCondition integer NULL  ,
   ScripAction integer NULL  ,
-  ScripConditionRules text NULL  ,
-  ScripActionRules text NULL  ,
+  ConditionRules text NULL  ,
+  ActionRules text NULL  ,
+  CustomIsApplicableCode text NULL  ,
+  CustomPrepareCode text NULL  ,
+  CustomCommitCode text NULL  ,
   Stage varchar(32) NULL  ,
   Queue integer NULL  ,
   Template integer NULL  ,

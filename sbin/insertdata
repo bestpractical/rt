@@ -309,6 +309,11 @@ unless ($LastVersion) {
             ExecModule  => 'Notify',
             Argument    => 'OtherRecipients'
         },
+        {
+            Name        => 'UserDefined',
+            Description => 'Perform a user-defined action',
+            ExecModule  => 'UserDefined',
+        },
     );
 }
 
@@ -373,13 +378,20 @@ unless ($LastVersion) {
         },
         {
             Name                 => 'OnResolve',
-            Description          => 'Whenever a ticket is resolved.',
+            Description          => 'Whenever a ticket is resolved',
             ApplicableTransTypes => 'Status',
             ExecModule           => 'StatusChange',
             Argument             => 'resolved'
 
         },
 
+        {
+            Name                 => 'UserDefined',
+            Description          => 'Whenever a user-defined condition occurs',
+            ApplicableTransTypes => 'Any',
+            ExecModule           => 'UserDefined'
+
+        },
     );
 }
 

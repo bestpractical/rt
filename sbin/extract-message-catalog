@@ -1,4 +1,3 @@
-#!/usr/bin/env perl -w
 
 use strict;
 use File::Find;
@@ -32,6 +31,8 @@ sub update {
 	if (1 .. /^$/) { $out .= $_; next }
 
 	my $msgid = <LEXICON>;
+	$msgid = <LEXICON> until $msgid =~ /^msgid/;
+
 	my $msgstr = <LEXICON>;
 	<LEXICON>;
 	chomp $msgid;
@@ -52,56 +53,56 @@ sub update {
 	return if ($_ =~ /.bak$|~|,D|,B$/);
 	return if ($_ =~ /^#/);
 	print "Looking at $File::Find::name\n";
-	my $r = $File::Find::name; 
-	open _, $file or die $!; $_ = <_>; $r =~ s'^./'';
-	while (s!<&\|/l.*?&>(.*?)</&>!!s) {
-	    my $u = $1; 
-            $u =~ s/\\'/\'/g; 
-            $file{$u}{$r}++;
+	my $filename = $File::Find::name; 
+	open _, $file or die $!; $_ = <_>; $filename =~ s'^./'';
+
+	my $line = 1;
+	while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
+	    my ($vars, $str) = ($1, $2);
+	    $line += ( () = ($& =~ /\n/g) ); # cryptocontext!
+            $str =~ s/\\'/\'/g; 
+            push @{$file{$str}}, [ $filename, $line, $vars ];
 	}
 
-	while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) {
-	    my $u = substr($1, 1, -1); 
-            $u =~ s/\\'/\'/g; 
-            $file{$u}{$r}++;
-	}
+	$line = 1;
+	pos($_) = 0;
 
-	while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) {
-	    my $u = substr($1, 1, -1); 
-            $u =~ s/\\'/\'/g; 
-            $file{$u}{$r}++;
-	}
-
-	while (s!($RE{delimited}{-delim=>"'"}{-esc}{-keep})[\}\)\],]*\s*\#\s*loc\s*\n!!s) {
-	    my $u = substr($1, 1, -1); 
-            $u =~ s/\\'/\'/g; 
-            $file{$u}{$r}++;
-	}
-
-	while (s!($RE{delimited}{-delim=>'"'}{-esc}{-keep})[\}\)\],]*\s*\#\s*loc\s*\n!!s) {
-	    my $u = substr($1, 1, -1); 
-            $u =~ s/\\'/\'/g; 
-            $file{$u}{$r}++;
+	while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {
+	    my $match = $1;
+	    $line += ( () = ($& =~ /\n/g) ); # cryptocontext!
+	    my ($vars, $str);
+	    if ($match =~ /\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})(.*?)\)$/) {
+		($vars, $str) = ($9, substr($1, 1, -1)); # reversed
+	    }
+	    elsif ($match =~ /\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})(.*?)\)$/) {
+		($vars, $str) = ($9, substr($1, 1, -1)); # reversed
+	    }
+	    else {
+		next;
+	    }
+	    $vars =~ s/[\n\r]//g;
+	    $str =~ s/\\'/\'/g; 
+	    push @{$file{$str}}, [ $filename, $line, $vars ];
 	}
     }
 
-    foreach (sort keys %file) {
-	my $k = $file{$_};
+    foreach my $str (sort keys %file) {
+	my $entry = $file{$str};
 
-	s/\\/\\\\/g;
-	s/\"/\\"/g;
-	s/\[_(\d+)\]/%$1/g;
-	s/~([\[\]])/$1/g;
+	$str =~ s/\\/\\\\/g;
+	$str =~ s/\"/\\"/g;
+	$str =~ s/\[_(\d+)\]/%$1/g;
+	$str =~ s/~([\[\]])/$1/g;
 
-	$file{$_} = $k;
-	$Lexicon{$_} ||= '';
+	$file{$str} = $entry;
+	$Lexicon{$str} ||= '';
     }
 
     my $is_english = ($lang =~/^en(?:[^A-Za-z]|$)/);
 
     delete $file{''};
     foreach (sort keys %Lexicon) {
-	my $f = join(' ', sort keys %{$file{$_}});
+	my $f = join(' ', sort map "$_->[0]:$_->[1]", @{$file{$_}});
 	$f = " $f" if length $f;
 	my $nospace = $_;
 	$nospace =~ s/ +$//;
@@ -112,7 +113,14 @@ sub update {
 
 	next if !length($Lexicon{$_}) and $is_english;
 
-	$out .= "#:$f\nmsgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
+	my %seen;
+	$out .= "#:$f\n";
+	foreach my $entry ( grep { $_->[2] } @{$file{$_}} ) {
+	    my ($file, $line, $var) = @{$entry};
+	    $var =~ s/^\s*,\s*//; $var =~ s/\s*$//;
+	    $out .= "#. ($var)\n" unless $seen{$var}++;
+	}
+	$out .= "msgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
     }
 
     open _, ">lib/RT/I18N/$lang.po" or die $!;

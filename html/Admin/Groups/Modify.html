@@ -40,8 +40,11 @@ else {
     
     if ($id eq 'new' ) {
 	
-	$Group->CreateUserDefinedGroup(Name => "$Name") ||
-        Abort ("Group could not be created.");
+	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name =>
+    "$Name");
+        unless ($create_id) {
+            Abort (loc("Group could not be created: [_1]", $create_msg));
+     }
 	$id = $Group->Id;
     }
     else {
