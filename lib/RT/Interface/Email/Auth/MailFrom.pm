@@ -72,7 +72,7 @@ sub GetCurrentUser {
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'Action'} =~ /^comment$/i ) {
 
-            # check to see whether "Everybody" or "Unprivileged users" can comment on tickets
+            # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
             unless ( $everyone->PrincipalObj->HasRight(
                                                       Object => $args{'Queue'},
                                                       Right => 'CommentOnTicket'
@@ -111,8 +111,6 @@ sub GetCurrentUser {
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
                                                     Right  => 'CreateTicket' )
-                 || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                     Right  => 'CreateTicket' )
           ) {
             return ( $args{'CurrentUser'}, 0 );
         }
