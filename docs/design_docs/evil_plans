@@ -1,0 +1,27 @@
+For 2.2:
+
+	Saveable user preferences.
+	Saveable user searches.
+	Ability to define search result format.
+
+For the near future:
+
+	Use case:
+		Jesse wants to get notified of all tickets in queue 'RT Bugs'
+		with a severity of 'critical' and also have a requestor whcih matches 'fsck.com'.  
+		I'm not sure this is the best idea.
+
+
+	Site admins define a number of subscriptions and can sign up individual
+	users, groups or metagroups to get mail on that subscription.
+
+	Basically, an admin would define "On Condition, notify as comment with
+	template _template_"
+
+	There would be a new table called "subscriptions"(?) that would have
+	the structure:
+
+		id
+		ScripId
+		PrincipalType  ENUM: User, Group, Owner, Requestors, AdminCcs, Ccs
+		PrincipalId --  UserId or GroupId.  For Owner, Requestors, AdminCcs, Ccs, it doesn't really make a lick of difference.	
