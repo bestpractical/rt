@@ -73,25 +73,29 @@ sub FormQueueOptions{
  
   print "> <select name=\"q_owner\">";
 
-    $rt::ui::web::FORM{'q_owner'} = $current_user if ! $rt::ui::web::FORM{'q_owner'};
+	if (!  $rt::ui::web::FORM{'q_owner'}) {
+    $rt::ui::web::FORM{'q_owner'} = $current_user;
+}
 
     foreach $user_id (sort keys %rt::users ) {
 	if( $rt::ui::web::FORM{q_queue} )
 	{
 		next if &rt::can_display_queue($rt::ui::web::FORM{q_queue},$user_id) != 1;
-	else
+	}
+else
 	{
-		my $u = 0;
+		$u = 0;
 		foreach $queue ( @qs )
 		{
 			next if &rt::can_display_queue($queue, $user_id) != 1;
 			$u = 1;
 			last;
 		}
-		next if ! $u;
+		next if  ($u==1);
 	}
 	print "<option ";
-	print "SELECTED" if $user_id eq $rt::ui::web::FORM{'q_owner'};
+	if  ($user_id eq $rt::ui::web::FORM{'q_owner'}) {
+print "SELECTED";};
 	print ">$user_id\n";	
     }
 	print "</select>
