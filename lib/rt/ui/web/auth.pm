@@ -6,46 +6,59 @@ use CGI::Cookie;
 
 sub AuthCheck () {
     my ($AuthRealm) = @_;
-    my ($Name, $Pass, $set_user, $set_pass);
+    my ($Name, $Pass,$path, $set_user, $set_pass);
     #lets get the cookies
     print "HTTP/1.0 200 Ok\n";
   
+    if ($ENV{'SCRIPT_NAME'} =~ /(.*)\/(.*?)/) {
+      $path=$1;
 
-
-
-
-# lets set the user/pass cookies
-    if ($rt::ui::web::FORM{'username'} and $rt::ui::web::FORM{'password'}) {
-      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
-				     -value => "$rt::ui::web::FORM{'username'}",
-				     -expires => '+6M',
-				     -path => "$ENV{'SCRIPT_NAME'}");
-      #works well enough while we're nph-
-      print "Set-Cookie: $set_user\n";
       
-      $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-				      -value => "$rt::ui::web::FORM{'password'}",
-				      -expires => '+1h',
-				      -path => "$ENV{'SCRIPT_NAME'}"	    );
-      #works well enough while we're nph-
-      print "Set-Cookie: $set_password\n";
       
     }
-
-
- if (!($rt::ui::web::cookies{'RT_PASSWORD'}) or !($rt::ui::web::cookies{'RT_USERNAME'})) {
-
-      $Name = $rt::ui::web::FORM{'username'};
+    #strip a trailing /
+    $path =~ s/\/$//;
     
+    
+
+    # lets set the user/pass cookies
+    if (($rt::ui::web::FORM{'username'}) and ($rt::ui::web::FORM{'password'})) {
       
+      
+      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
+				    -value => "$rt::ui::web::FORM{'username'}",
+				  -expires => '+6M',
+				  -path => $path);
+      
+	$set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
+					-value => "$rt::ui::web::FORM{'password'}",
+					-expires => '+1h',
+					-path => $path);
+      
+	
+      
+      
+      #works well enough while we're nph-
+      if ($rt::ui::web::FORM{'insecure_path'}) {
+      $set_password =~ s/; path=(.*?); /; /;
+      $set_user =~ s/; path=(.*?); /; /
+    }
+      
+
+      print "Set-Cookie: $set_password\n";
+      print "Set-Cookie: $set_user\n";   
+    }
+
+    
+    #if we don't have cookies, it means we just logged in.
+    if (!($rt::ui::web::cookies{'RT_PASSWORD'}) or !($rt::ui::web::cookies{'RT_USERNAME'})) {
+      $Name = $rt::ui::web::FORM{'username'};
       $Pass = $rt::ui::web::FORM{'password'};
     }
     
-
+    #otherwise, we've got cookies.
     else {
-
       $Name = $rt::ui::web::cookies{'RT_USERNAME'}->value;
-    
       $Pass = $rt::ui::web::cookies{'RT_PASSWORD'}->value;
     }
 
@@ -67,18 +80,31 @@ sub AuthForceLogout () {
 
 sub AuthForceLogin () {
   local ($AuthRealm) = @_;
-  my ($default_user);
+  my ($default_user, $path);
   
    # lets set the user/pass cookies
   
+    if ($ENV{'SCRIPT_NAME'} =~ /(.*)\/(.*?)/) {
+      $path=$1;      
+    }
 
-
+  
+#kill the auth cookies of both sorts...
   $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-				   -value => "",
-				-expires => '-1M',
-				-path => "$ENV{'SCRIPT_NAME'}"	    );
+				  -value => "",
+				  -expires => '-1M'
+				  -path => $path);
+  
+  $set_password =~ s/; path=(.*?)\/; /; path=$1; /;
+  
+  
   #works well enough while we're nph-
   print "Set-Cookie: $set_password\n";
+  
+  #now do it without hte path. yes this is a hack
+  $set_password =~ s/; path=(.*?); /; /;
+  print "Set-Cookie: $set_password\n";
+
 
   &rt::ui::web::header;
 
@@ -118,28 +144,27 @@ Username:&nbsp;
 <TD >
 <input name=\"username\" VALUE=\"$default_user\" size=\"20\">
 </TD>
-<TD></TD>
+<TD>&nbsp;</TD>
 </TR>
 <TR>
 <TD ALIGN=\"RIGHT\">
 Password:&nbsp;
 </TD>
-<TD >
+<TD>
 <input name=\"password\" type=\"password\" size=\"20\">
 </TD>
-<TD></TD>
-</TR>
-<TR>
-<td>&nbsp;
-</td>
 <TD>&nbsp;</TD>
+</TR>
+<TR><TD align=\"right\" VALIGN=\"TOP\">
+<INPUT TYPE=\"CHECKBOX\" name=\"insecure_path\"></td><td ALIGN=\"LEFT\" VALIGN=\"TOP\">&nbsp;<font size=\"-1\"><B>Send authentication info to all scripts on this server.</B></font><br><font size=\"-1\">(If you're having trouble with RT and IE4.01sp1, check here.)<BR> <font size=\"-2\" color=\"red\">&nbsp;On a server with potentially malicious scripts, this could be a security risk.</font><br>
+</td>
 <TD ALIGN=\"LEFT\">
 <INPUT TYPE=\"SUBMIT\" VALUE=\"Login\">
 </TD>
 </TR>
 
 
-<TR VALIGN=\"TOP\"><TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=420 height=16 alt=''></TD>
+<TR VALIGN=\"TOP\"><TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=520 height=16 alt=''></TD>
 <TD ALIGN=\"LEFT\" BGCOLOR=\"#ffffff\"><img src=\"/webrt/sbc.gif\" width=12 alt='' height=16></TD></TR>
 </TABLE>
 </CENTER>
