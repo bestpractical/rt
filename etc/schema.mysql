@@ -1,4 +1,4 @@
-# $Header$
+	# $Header$
 #
 # Request Tracker is Copyright 1996-1999 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU Public License
@@ -31,7 +31,9 @@ insert into QueueACL values (3, 1, 2, "Admin", NULL, NULL, NULL, NULL);
 
 # {{{ TABLE Scrips
 CREATE TABLE Scrips (
-  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  id int(11)                #The ID.  All IDs lower than 256 is reservated
+	AUTO_INCREMENT      #default scrips.
+	PRIMARY KEY, 
   Name VARCHAR(255),	    #Textual string
   Description VARCHAR(255), #another longer textual string
   Type VARCHAR(60),	    #Transaction type or 'any'	
@@ -54,24 +56,33 @@ CREATE TABLE Scrips (
 
 
 # {{{ Values for Scrips
+
+# Short about the default available actions; (this should be in some docs)
+
+# Action    - base class for any scrips.
+#   SendEmail - standard thing, mails away a template
+#     Notify  - sends away a template to the recipient in the Scrips Argument 
+#     AutoReply - sends an autoreply 
+
 INSERT INTO Scrips VALUES (1,'Autoreply', 
 			  'Sends an automatic response to the requestor when a ticket was created',
 			  'Create','AutoReply',1,'',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction',
 			  'Sends mail to owner when anything happens',
-			  'Any','SendEmail',2,'$',0,NULL,0,NULL);
+			  'Any','Notify',2,'Owner',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (3, 'NotifyAdminWatchersOnCorrespond',
 			  'Sends mail to administrative watchers when email comes in',
 			  'Correspond','SendEmail',3,'',0,NULL,0,NULL);
+
 INSERT INTO Scrips VALUES (4, 'NotifyRegularWatchersOnCorrespond', 
-			  'Send mail to non-administrative watchers whenever correspondence comes in',
+			  'Send "official" mail to (external) Cc watchers and (external) requestors whenever correspondence comes in',
 			  'Correspond','SendEmail',4,'',0,NULL,0,NULL);
 
-INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment', 
+INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment',
 			   'Send mail to administrative watchers whenever comments come in',
-			  'Comment','SendEmail',5,'',1,0,1,0);
+			  'Comment','SendEmail',5,'AdminCc',1,0,1,0);
 
 INSERT INTO Scrips VALUES (6, 'NotifyAllWatchersOnStatus', 
 			  'Send mail to watchers whenever a ticket\'s status changes',
@@ -81,6 +92,12 @@ INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve',
 			  'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
 			  'Status','SendEmailOnResolve',7,'',1,0,1,0);
 
+INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
+			  'Sends mail to owner when anything happens',
+			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips follows', 'None', 
+			  NULL, NULL, NULL, NULL, NULL);
 
 # }}}
 
@@ -101,6 +118,7 @@ CREATE TABLE ScripScope (
 
 # Put all scrips at all queues:
 insert into ScripScope select NULL, id, 0, NULL, NULL, NULL, NULL, NULL from Scrips;
+delete from ScripScope where id=8;
 
 # }}}
 
@@ -292,24 +310,22 @@ CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Title VARCHAR(120),
-# Language INT(11), # Should point to some table of available languages.
-                    # A two character language code would also be an idea,
-		    # but after a recent discussion (trolling?) at
-		    # no.usenet.admin that some _norwegian_ documents at the web
-		    # should be translated into at least four different versions
-		    # of Norwegian + lappish, I'm uncertain a two character code
-		    # will be enough for all languages and sublanguages that might
-		    # be needed..
-	            #
-		    #
-	            # I think we should probably go with the standard language codes, if
-		    # we're going to do this. things like en, en-GB (or is it UK), en-US 
-		    # and fr-FR, fr-CA.
-	            # I'm tempted to leave this as a placeholder for post-2.0. right now,
-		    # i want to make sure the webui and the cli and internals are localizable.
-		    # 
-	            #
-		    #
+  Language varchar(16), 
+  TranslationOf int(11),
+
+# The standard language codes should be used, things like en, en-GB
+# (or is it UK), en-US and fr-FR, fr-CA, etc.  With 16 characters
+# available, it's also possible to add languages or variants not
+# covered by the standard.  TranslationOf should point to the id of
+# the "original" template (or any other translation), and it should be
+# the same for all the different translations of the same content.
+
+# I'm not sure if those attributes will be used directly by the code
+# anywhere in the near future, but if we're going to do more content
+# managing (i.e. put a language attribute on every user, and
+# automaticly determinate what templates are appropriate to send to a
+# user)
+
   Content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
@@ -323,7 +339,7 @@ CREATE TABLE Templates (
 # {{{ Values for Templates
 # Default templates
 # Should eventually be created through some init script calling on the CLI
-INSERT INTO Templates VALUES (1,'Default Autoresponse Template',
+INSERT INTO Templates VALUES (1,'Default Autoresponse Template', NULL, NULL
 'Subject: AutoReply: {$Ticket->Subject}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
@@ -348,9 +364,8 @@ problem. To do so, you may reply to this message.
 ',
 NULL,20000227191248,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (2,'Mail the ticket owner on transaction',
+INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL
 'Reply-To: {$Ticket->Queue->CommentAddress} (Replies will be entered as comments)
-To: {$Ticket->Owner->Email} 
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
@@ -360,31 +375,31 @@ Transaction: {$Transaction->Description}
        Owner: {$Ticket->Owner->UserId || "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
+ Ticket <URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
 {$Transaction->Message()->First()->Content() if $object->{TransactionObj}->Message()->First()}',
 NULL,20000227191543,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (3,'Send Correspondence to admins',
+
+INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, NULL
 'Subject: {$object->{Subject}}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminWatchersAsString}
-X-TODO: (That\'s probably broken. I need sleep)
 
+{$Argument->{Inbound} ? "In" : "Out"}bound correspondence:
 
-http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
+<URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
 
 {$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors',
+INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL
 'Subject: Re: {$Transaction->Subject}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Content-Type: text/plain; charset=ISO-8859-1
 
-http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
-
 {$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
 
@@ -392,13 +407,13 @@ NULL,20000227191745,NULL,00000000000000);
 
 
 
-INSERT INTO Templates VALUES (5,'Default Administrative Comment template',
+INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL
 'Subject: [Comment] $object->{Subject}
 Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminWatchersAsString}
 
-http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
+http://{$WebRT}/ticket/display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Message()->First()->Content()}
@@ -406,13 +421,13 @@ This is a comment.  It is not sent to the Requestor(s):
 NULL,20000227191745,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (6,'Status Change',
+INSERT INTO Templates VALUES (6,'Status Change', NULL, NULL
 'Subject: Status Changed to: {$Transaction->NewValue}
 Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->WatchersAsString}
 
-http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
+http://{$WebRT}/ticket/display.html?id={$Ticket->id}
 
 {$Transaction->Message()->First()->Content()}
 ',
@@ -426,7 +441,6 @@ To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 
 Your request has been resolved. We hope you\'re happy.
-(This template needs customization.
 ',
 NULL,20000227191745,NULL,00000000000000);
 
