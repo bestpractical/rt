@@ -34,7 +34,7 @@ use RT::I18N;
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -59,7 +59,7 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # {{{This is a test of new ticket creation as an unknown user
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -94,7 +94,7 @@ ok ($val, "Granted everybody the right to create tickets - $msg");
 
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -126,7 +126,7 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 #sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -148,7 +148,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -173,7 +173,7 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 #sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -196,7 +196,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -227,12 +227,12 @@ my $entity = MIME::Entity->build( From => 'root@localhost',
                                 Data => ['This is a test of a binary attachment']);
 
 # currently in lib/t/autogen
-$entity->attach(Path => '../../../html/NoAuth/images/spacer.gif', 
+$entity->attach(Path => '@MASON_HTML_PATH@/NoAuth/images/spacer.gif', 
                 Type => 'image/gif',
                 Encoding => 'base64');
 
 # Create a ticket with a binary attachment
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 
 $entity->print(\*MAIL);
 
@@ -273,7 +273,7 @@ use LWP::UserAgent;
 # Grab the binary attachment via the web ui
 my $ua      = LWP::UserAgent->new();
 
-my $full_url = "http://localhost/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/spacer.gif?&user=root&pass=password";
+my $full_url = "http://localhost".$RT::WebPath."/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/spacer.gif?&user=root&pass=password";
 my $r = $ua->get( $full_url);
 
 
@@ -286,7 +286,7 @@ is($file, $r->content, 'The attachment isn\'t screwed up in download');
 
 # {{{ Simple I18N testing
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -317,7 +317,7 @@ is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attac
 ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
