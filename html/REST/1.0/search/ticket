@@ -135,7 +135,7 @@ if ($n == 0 && $format ne "i") {
 $output = form_compose(\@output) if @output;
 
 OUTPUT:
-$m->out("RT/". $RT::VERSION . " " . $status);
+$m->out("RT/". $RT::VERSION . " " . $status ."\n\n");
 
 $m->out($output );
 </%INIT>
