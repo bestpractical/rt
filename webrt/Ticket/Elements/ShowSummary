@@ -5,7 +5,7 @@
 	  <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
-	  <& /Elements/TitleBoxStart, title => '<a href="EditWatchers.html?id='.$Ticket->id.'">People</a>' &>
+	  <& /Elements/TitleBoxStart, title => 'People' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
