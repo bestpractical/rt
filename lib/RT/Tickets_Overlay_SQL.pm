@@ -48,6 +48,7 @@ sub _InitSQL {
   $self->{'_sql_subclause'}     = "a";
   $self->{'_sql_first'}         = 0;
   $self->{'_sql_opstack'}       = [''];
+  $self->{'_sql_linkalias'}    = undef;
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
   $self->{'_sql_keywordalias'}  = undef;
@@ -63,8 +64,18 @@ sub _SQLLimit {
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
   my $this = shift;
+
   $this->SUPER::Limit(@_,
                       SUBCLAUSE => 'ticketsql');
+}
+
+sub _SQLJoin {
+  # All SQL stuff goes into one SB subclause so we can deal with all
+  # the aggregation
+  my $this = shift;
+
+  $this->SUPER::Join(@_,
+		     SUBCLAUSE => 'ticketsql');
 }
 
 # Helpers

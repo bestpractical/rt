@@ -69,12 +69,10 @@ sub Next {
     my $Transaction = $self->SUPER::Next();
     if ((defined($Transaction)) and (ref($Transaction))) {
 	if ($Transaction->__Value('Type') =~ /^Comment/ && 
-	    ($Transaction->TicketObj->QueueObj->CurrentUserHasRight('ShowTicketComments') ||
-	     $Transaction->TicketObj->CurrentUserHasRight('ShowTicketComments'))) {
+	    $Transaction->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
 	    return($Transaction);
 	} elsif ($Transaction->__Value('Type') !~ /^Comment/ && 
-		 ($Transaction->TicketObj->QueueObj->CurrentUserHasRight('ShowTicketComments') ||
-		  $Transaction->TicketObj->CurrentUserHasRight('ShowTicket'))) {
+		 $Transaction->TicketObj->CurrentUserHasRight('ShowTicket')) {
 	    return($Transaction);
 	}
 

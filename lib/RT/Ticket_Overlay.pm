@@ -185,6 +185,9 @@ use vars '%LINKDIRMAP';
 
 # }}}
 
+sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
+sub LINKDIRMAP   { return \%LINKDIRMAP   }
+
 # {{{ sub Load
 
 =head2 Load
@@ -216,8 +219,8 @@ sub Load {
     if ( $id =~ /^\d+$/ ) {
         my $ticketid = $self->LoadById($id);
 
-        unless ($ticketid) {
-            $RT::Logger->debug("$self tried to load a bogus ticket: $id\n");
+        unless ($self->Id) {
+            $RT::Logger->crit("$self tried to load a bogus ticket: $id\n");
             return (undef);
         }
     }
@@ -2460,254 +2463,6 @@ sub _RecordNote {
 
 # }}}
 
-# {{{ Routines dealing with Links and Relations between tickets
-
-# {{{ Link Collections
-
-# {{{ sub Members
-
-=head2 Members
-
-  This returns an RT::Links object which references all the tickets 
-which are 'MembersOf' this ticket
-
-=cut
-
-sub Members {
-    my $self = shift;
-    return ( $self->_Links( 'Target', 'MemberOf' ) );
-}
-
-# }}}
-
-# {{{ sub MemberOf
-
-=head2 MemberOf
-
-  This returns an RT::Links object which references all the tickets that this
-ticket is a 'MemberOf'
-
-=cut
-
-sub MemberOf {
-    my $self = shift;
-    return ( $self->_Links( 'Base', 'MemberOf' ) );
-}
-
-# }}}
-
-# {{{ RefersTo
-
-=head2 RefersTo
-
-  This returns an RT::Links object which shows all references for which this ticket is a base
-
-=cut
-
-sub RefersTo {
-    my $self = shift;
-    return ( $self->_Links( 'Base', 'RefersTo' ) );
-}
-
-# }}}
-
-# {{{ ReferredToBy
-
-=head2 ReferredToBy
-
-  This returns an RT::Links object which shows all references for which this ticket is a target
-
-=cut
-
-sub ReferredToBy {
-    my $self = shift;
-    return ( $self->_Links( 'Target', 'RefersTo' ) );
-}
-
-# }}}
-
-# {{{ DependedOnBy
-
-=head2 DependedOnBy
-
-  This returns an RT::Links object which references all the tickets that depend on this one
-
-=cut
-
-sub DependedOnBy {
-    my $self = shift;
-    return ( $self->_Links( 'Target', 'DependsOn' ) );
-}
-
-# }}}
-
-
-
-=head2 HasUnresolvedDependencies
-
-  Takes a paramhash of Type (default to '__any').  Returns true if
-$self->UnresolvedDependencies returns an object with one or more members
-of that type.  Returns false otherwise
-
-
-=begin testing
-
-my $t1 = RT::Ticket->new($RT::SystemUser);
-my ($id, $trans, $msg) = $t1->Create(Subject => 'DepTest1', Queue => 'general');
-ok($id, "Created dep test 1 - $msg");
-
-my $t2 = RT::Ticket->new($RT::SystemUser);
-my ($id2, $trans, $msg2) = $t2->Create(Subject => 'DepTest2', Queue => 'general');
-ok($id2, "Created dep test 2 - $msg2");
-my $t3 = RT::Ticket->new($RT::SystemUser);
-my ($id3, $trans, $msg3) = $t3->Create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
-ok($id3, "Created dep test 3 - $msg3");
-my ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t2->id));
-ok ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t3->id));
-
-ok ($addid, $addmsg);
-ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
-ok (!$t1->HasUnresolvedDependencies( Type => 'blah' ), "Ticket ".$t1->Id." has no unresolved blahs");
-ok ($t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has unresolved approvals");
-ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
-;
-
-my ($rid, $rmsg)= $t1->Resolve();
-ok(!$rid, $rmsg);
-ok($t2->Resolve);
-($rid, $rmsg)= $t1->Resolve();
-ok(!$rid, $rmsg);
-ok($t3->Resolve);
-($rid, $rmsg)= $t1->Resolve();
-ok($rid, $rmsg);
-
-
-=end testing
-
-=cut
-
-sub HasUnresolvedDependencies {
-    my $self = shift;
-    my %args = (
-        Type   => undef,
-        @_
-    );
-
-    my $deps = $self->UnresolvedDependencies;
-
-    if ($args{Type}) {
-        $deps->Limit( FIELD => 'Type', 
-              OPERATOR => '=',
-              VALUE => $args{Type}); 
-    }
-    else {
-	    $deps->IgnoreType;
-    }
-
-    if ($deps->Count > 0) {
-        return 1;
-    }
-    else {
-        return (undef);
-    }
-}
-
-
-# {{{ UnresolvedDependencies 
-
-=head2 UnresolvedDependencies
-
-Returns an RT::Tickets object of tickets which this ticket depends on
-and which have a status of new, open or stalled. (That list comes from
-RT::Queue->ActiveStatusArray
-
-=cut
-
-
-sub UnresolvedDependencies {
-    my $self = shift;
-    my $deps = RT::Tickets->new($self->CurrentUser);
-
-    my @live_statuses = RT::Queue->ActiveStatusArray();
-    foreach my $status (@live_statuses) {
-        $deps->LimitStatus(VALUE => $status);
-    }
-    $deps->LimitDependedOnBy($self->Id);
-
-    return($deps);
-
-}
-
-# }}}
-
-# {{{ AllDependedOnBy
-
-=head2 AllDependedOnBy
-
-Returns an array of RT::Ticket objects which (directly or indirectly)
-depends on this ticket; takes an optional 'Type' argument in the param
-hash, which will limit returned tickets to that type, as well as cause
-tickets with that type to serve as 'leaf' nodes that stops the recursive
-dependency search.
-
-=cut
-
-sub AllDependedOnBy {
-    my $self = shift;
-    my $dep = $self->DependedOnBy;
-    my %args = (
-        Type   => undef,
-	_found => {},
-	_top   => 1,
-        @_
-    );
-
-    while (my $link = $dep->Next()) {
-	next unless ($link->BaseURI->IsLocal());
-	next if $args{_found}{$link->BaseObj->Id};
-
-	if (!$args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
-	}
-	elsif ($link->BaseObj->Type eq $args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
-	}
-	else {
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
-	}
-    }
-
-    if ($args{_top}) {
-	return map { $args{_found}{$_} } sort keys %{$args{_found}};
-    }
-    else {
-	return 1;
-    }
-}
-
-# }}}
-
-# {{{ DependsOn
-
-=head2 DependsOn
-
-  This returns an RT::Links object which references all the tickets that this ticket depends on
-
-=cut
-
-sub DependsOn {
-    my $self = shift;
-    return ( $self->_Links( 'Base', 'DependsOn' ) );
-}
-
-# }}}
-
-
-
-
 # {{{ sub _Links 
 
 sub _Links {
@@ -2744,8 +2499,6 @@ sub _Links {
 
 # }}}
 
-# }}}
-
 # {{{ sub DeleteLink 
 
 =head2 DeleteLink
@@ -2772,43 +2525,25 @@ sub DeleteLink {
 
     }
 
-    #we want one of base and target. we don't care which
-    #but we only want _one_
+    my ($val, $Msg) = $self->SUPER::_DeleteLink(%args);
 
-    my $direction;
-    my $remote_link;
-
-    if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+    if ( !$val ) {
+        $RT::Logger->debug("Couldn't find that link\n");
+        return ( 0, $Msg );
     }
-    elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->URI();
+
+    my ($direction, $remote_link);
+
+    if ( $args{'Base'} ) {
 	$remote_link = $args{'Base'};
     	$direction = 'Target';
     }
     elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->URI();
 	$remote_link = $args{'Target'};
         $direction='Base';
     }
-    else {
-        $RT::Logger->debug("$self: Base or Target must be specified\n");
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
 
-    my $link = new RT::Link( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
-
-
-    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
-    #it's a real link. 
-    if ( $link->id ) {
-
-        my $linkid = $link->id;
-        $link->Delete();
-
-        my $TransString = "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
+    if ( $val ) {
 	my $remote_uri = RT::URI->new( $RT::SystemUser );
     	$remote_uri->FromURI( $remote_link );
 
@@ -2819,13 +2554,7 @@ sub DeleteLink {
             TimeTaken => 0
         );
 
-        return ( $Trans, $self->loc("Link deleted ([_1])", $TransString));
-    }
-
-    #if it's not a link we can find
-    else {
-        $RT::Logger->debug("Couldn't find that link\n");
-        return ( 0, $self->loc("Link not found") );
+        return ( $Trans, $Msg );
     }
 }
 
@@ -2853,74 +2582,36 @@ sub AddLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    # Remote_link is the URI of the object that is not this ticket
-    my $remote_link;
-    my $direction;
+    my ($val, $Msg) = $self->SUPER::_AddLink(%args);
 
-    if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug(
-"$self tried to delete a link. both base and target were specified\n" );
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+    if (!$val) {
+	return ($val, $Msg);
     }
-    elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->URI();
-        $remote_link    = $args{'Base'};
-        $direction      = 'Target';
-    }
-    elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->URI();
+
+    my ($direction, $remote_link);
+    if ( $args{'Target'} ) {
         $remote_link  = $args{'Target'};
         $direction    = 'Base';
+    } elsif ( $args{'Base'} ) {
+        $remote_link  = $args{'Base'};
+        $direction    = 'Target';
     }
-    else {
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
-
-    # If the base isn't a URI, make it a URI. 
-    # If the target isn't a URI, make it a URI. 
-
-    # {{{ Check if the link already exists - we don't want duplicates
-    use RT::Link;
-    my $old_link = RT::Link->new( $self->CurrentUser );
-    $old_link->LoadByParams( Base   => $args{'Base'},
-                             Type   => $args{'Type'},
-                             Target => $args{'Target'} );
-    if ( $old_link->Id ) {
-        $RT::Logger->debug("$self Somebody tried to duplicate a link");
-        return ( $old_link->id, $self->loc("Link already exists"), 0 );
-    }
-
-    # }}}
-
-    # Storing the link in the DB.
-    my $link = RT::Link->new( $self->CurrentUser );
-    my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
-                                  Base   => $args{Base},
-                                  Type   => $args{Type} );
-
-    unless ($linkid) {
-        $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created") );
-    }
-
-    my $TransString =
-      "Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
 
     # Don't write the transaction if we're doing this on create
     if ( $args{'Silent'} ) {
-        return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
+        return ( 1, $Msg );
     }
     else {
 	my $remote_uri = RT::URI->new( $RT::SystemUser );
     	$remote_uri->FromURI( $remote_link );
 
         #Write the transaction
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-                                                         Type  => 'AddLink',
-                                                         Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
-							                             NewValue =>  $remote_uri->URI || $remote_link,
-                                                         TimeTaken => 0 );
-        return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
+        my ( $Trans, $Msg, $TransObj ) = 
+	    $self->_NewTransaction(Type  => 'AddLink',
+				   Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
+				   NewValue =>  $remote_uri->URI || $remote_link,
+				   TimeTaken => 0 );
+        return ( $Trans, $Msg );
     }
 
 }
