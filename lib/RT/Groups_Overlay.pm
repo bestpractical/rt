@@ -229,6 +229,45 @@ sub WithMember {
 }
 
 
+=head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0 }
+
+
+Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
+
+=begin testing
+
+my $q = RT::Queue->new($RT::SystemUser);
+my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');
+ok ($id, $msg);
+
+my $testuser = RT::User->new($RT::SystemUser);
+($id,$msg) = $testuser->Create(Name => 'JustAnAdminCc');
+ok ($id,$msg);
+
+my $global_admin_cc = RT::Group->new($RT::SystemUser);
+$global_admin_cc->LoadSystemRoleGroup('AdminCc');
+ok($global_admin_cc->id, "Found the global admincc group");
+my $groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'OwnTicket', Object => $q);
+is($groups->Count, 1);
+($id, $msg) = $global_admin_cc->PrincipalObj->GrantRight(Right =>'OwnTicket', Object=> $RT::System);
+ok ($id,$msg);
+ok (!$testuser->HasRight(Object => $q, Right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
+($id, $msg) = $q->AddWatcher(Type => 'AdminCc', PrincipalId => $testuser->id);
+ok($id,$msg);
+ok ($testuser->HasRight(Object => $q, Right => 'OwnTicket') , "The test user does have the right to own tickets now. thank god.");
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'OwnTicket', Object => $q);
+ok ($id,$msg);
+is($groups->Count, 2);
+
+=end testing
+
+
+=cut
+
+
 sub WithRight {
     my $self = shift;
     my %args = ( Right                  => undef,
@@ -273,7 +312,7 @@ sub WithRight {
             $or_check_roles =
                 " OR ( ( (main.Domain = 'RT::Queue-Role' AND main.Instance = " .
                 $args{'Object'}->Id . ") $or_check_ticket_roles ) " .
-                " AND main.Type = $acl.PrincipalType AND main.id = $acl.PrincipalId) ";
+                " AND main.Type = $acl.PrincipalType) ";
         }
 
 	if ( $args{'IncludeSystemRights'} ) {
@@ -317,7 +356,7 @@ sub LimitToEnabled {
 	ALIAS1 => 'main',
 	FIELD1 => 'id',
 	TABLE2 => 'Principals',
-	FIELD2 => 'ObjectId'
+	FIELD2 => 'id'
     );
 
     $self->Limit( ALIAS => $alias,
@@ -343,7 +382,7 @@ sub LimitToDeleted {
 	ALIAS1 => 'main',
 	FIELD1 => 'id',
 	TABLE2 => 'Principals',
-	FIELD2 => 'ObjectId'
+	FIELD2 => 'id'
     );
 
     $self->{'find_disabled_rows'} = 1;

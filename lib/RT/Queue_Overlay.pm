@@ -519,6 +519,8 @@ Email       The email address of the new watcher. If a user with this
 
 If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
+Returns a tuple of (status/id, message).
+
 =cut
 
 sub AddWatcher {
