@@ -1,0 +1,129 @@
+<h1>Details for task #<%$TicketObj->Id%>:  <%$TicketObj->Subject%></h1>
+
+<& /Elements/ListActions, actions => \@results &>
+<FORM enctype="multipart/formdata" method="post" ACTION="Edit.html">
+<DIV ALIGN=RIGHT>[<A HREF="History.html?id=<%$TicketObj->Id%>" onClick="window.open('History.html?id=<%$TicketObj->Id%>','wdyt','toolbar=no,width=500,height=450,left=10,top=10,screenX=30,screenY=30,status=no,scrollbars=yes,resizable=1');return false">Show Task History</A>]</DIV>
+
+<input type=hidden name="id" value="<%$TicketObj->Id%>">
+<input type=hidden name="Project" value="<%$Project%>">
+<TABLE border=0> 
+<TR>
+<TD colspan=3>
+        Subject<BR>
+        <input name=Subject value="<%$TicketObj->Subject|h%>"  SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD colspan=3>
+Parent<BR>
+<& SelectProjectTask, Project => $Project, Default =>  $Parent &>
+</TD>
+</TR>
+<TR>
+<TD>
+Status<BR>
+<& /Elements/SelectStatus, Name => 'Status', Default=> $TicketObj->Status &>
+</TD>
+</TD>
+<TD>
+Time Worked<BR>
+<input name=TimeWorked value="<%$TicketObj->TimeWorked%>" SIZE=5>
+
+</TD>
+<TD>
+Time Left<BR>
+<input name=TimeLeft value="<%$TicketObj->TimeLeft%>" SIZE=5>
+</TD>
+</TR>
+<TR>
+<TD>
+Queue<BR>
+<& /Elements/SelectQueue, Name => 'Queue', Default =>$TicketObj->QueueObj->Id&>
+</TD>
+<TD>
+Priority<BR>
+<input name=Priority value="<%$TicketObj->Priority%>" SIZE=2>
+</TD>
+<TD>
+Final Priority<BR>
+<input name=FinalPriority value="<%$TicketObj->FinalPriority%>" SIZE=2>
+</TD>
+</TR>
+<TR><TD>
+Starts:<BR> 
+<& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+        (<% $TicketObj->StartsObj->AsString %>)
+</TD>
+<TD>
+Started:<BR>
+<& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)
+</TD>
+<TD>
+Due:<BR>
+<& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+</TD>
+</TR>
+
+</TABLE>
+
+<h2>Record notes</h2>
+Visibility: <select name="UpdateType">
+<option value="private">Private</option>
+<option value="response">Public</option>
+</select><BR>
+Attach file: <input type=file name="UpdateAttachment"><BR>
+<textarea name="UpdateContent" rows=8 cols=60></textarea>
+
+<& /Elements/Submit &>
+
+</FORM>
+<%INIT>
+
+my $TicketObj;
+my @results;
+
+# TODO this feels hacky
+if ($id = 'new') {
+   ($TicketObj, @results) = CreateTicket(%ARGS);  
+}
+
+else {
+$TicketObj = LoadTicket($id);
+my $Parent;
+
+if ($TicketObj->MemberOf->First && $TicketObj->MemberOf->First->TargetObj) {
+	$Parent = $TicketObj->MemberOf->First->TargetObj->Id;
+} else {
+	$Parent = undef;
+}
+
+
+my @wresults = ProcessTicketWatchers( TicketObj => $TicketObj, 
+						ARGSRef => \%ARGS);    
+my @bresults = ProcessTicketBasics( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, 
+						ARGSRef => \%ARGS);
+
+my @dresults = ProcessTicketDates( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+my @lresults = ProcessTicketLinks( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+ProcessUpdateMessage(TicketObj => $TicketObj, 
+			ARGSRef=>\%ARGS, 
+			Actions=>\@results);
+
+
+
+push @results, @bresults;
+push @results, @wresults;
+push @results, @dresults;
+push @results, @lresults;
+push @results, @okresults;
+}
+
+</%INIT>
+<%ARGS>
+$Project => undef 
+$id => undef
+</%ARGS>

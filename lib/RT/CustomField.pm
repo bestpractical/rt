@@ -62,7 +62,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -102,7 +102,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -111,14 +111,14 @@ Returns the current value of id.
 =cut
 
 
-=item Name
+=head2 Name
 
 Returns the current value of Name. 
 (In the database, Name is stored as varchar(200).)
 
 
 
-=item SetName VALUE
+=head2 SetName VALUE
 
 
 Set Name to VALUE. 
@@ -129,14 +129,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Type
+=head2 Type
 
 Returns the current value of Type. 
 (In the database, Type is stored as varchar(200).)
 
 
 
-=item SetType VALUE
+=head2 SetType VALUE
 
 
 Set Type to VALUE. 
@@ -147,14 +147,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Queue
+=head2 Queue
 
 Returns the current value of Queue. 
 (In the database, Queue is stored as int(11).)
 
 
 
-=item SetQueue VALUE
+=head2 SetQueue VALUE
 
 
 Set Queue to VALUE. 
@@ -165,7 +165,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item QueueObj
+=head2 QueueObj
 
 Returns the Queue Object which has the id returned by Queue
 
@@ -179,14 +179,14 @@ sub QueueObj {
 	return($Queue);
 }
 
-=item Description
+=head2 Description
 
 Returns the current value of Description. 
 (In the database, Description is stored as varchar(255).)
 
 
 
-=item SetDescription VALUE
+=head2 SetDescription VALUE
 
 
 Set Description to VALUE. 
@@ -197,14 +197,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item SortOrder
+=head2 SortOrder
 
 Returns the current value of SortOrder. 
 (In the database, SortOrder is stored as int(11).)
 
 
 
-=item SetSortOrder VALUE
+=head2 SetSortOrder VALUE
 
 
 Set SortOrder to VALUE. 
@@ -215,7 +215,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -224,7 +224,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -233,7 +233,7 @@ Returns the current value of Created.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -242,7 +242,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
@@ -251,14 +251,14 @@ Returns the current value of LastUpdated.
 =cut
 
 
-=item Disabled
+=head2 Disabled
 
 Returns the current value of Disabled. 
 (In the database, Disabled is stored as smallint(6).)
 
 
 
-=item SetDisabled VALUE
+=head2 SetDisabled VALUE
 
 
 Set Disabled to VALUE. 
@@ -270,7 +270,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

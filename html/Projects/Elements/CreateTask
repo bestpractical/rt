@@ -1,0 +1,83 @@
+
+<FORM enctype="multipart/formdata" method="post" ACTION="Edit.html">
+
+<input type=hidden name="id" value="new">
+<input type=hidden name="Project" value="<%$Project%>">
+<TABLE border=0> 
+<TR>
+<TD colspan=3>
+<font size=-1>Subject</font><BR>
+<input name=Subject value=""  SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD colspan=3>
+<font size=-1>Parent</font><BR>
+<& SelectProjectTask, Project => $Project, Default =>  $Parent, Name => 'new-MemberOf' &>
+</TD>
+</TR>
+<TR>
+<TD>
+<font size=-1>Status</font><BR>
+<& /Elements/SelectStatus, Name => 'Status', Default => 'new'&>
+</TD>
+</TD>
+<TD>
+<font size=-1>Time Worked</font><BR>
+<input name=TimeWorked value="" SIZE=5>
+
+</TD>
+<TD>
+<font size=-1>Time Left</font>
+<BR>
+<input name=TimeLeft value="" SIZE=5>
+</TD>
+</TR>
+<TR>
+<TD>
+<font size=-1>Queue</font>
+<BR>
+<& /Elements/SelectQueue, Name => 'Queue', Default => $Queue &>
+</TD>
+<TD>
+<font size=-1>Priority</font><BR>
+<input name=Priority value="" SIZE=2>
+</TD>
+<TD>
+<font size=-1>Final Priority</font><BR>
+<input name=FinalPriority value="" SIZE=2>
+</TD>
+</TR>
+<TR><TD>
+<font size=-1>Starts</font><BR> 
+<& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+</TD>
+<TD>
+<font size=-1>Started</font><BR>
+<& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> 
+</TD>
+<TD>
+<font size=-1>Due</font><BR>
+<& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> 
+</TD>
+</TR>
+
+</TABLE>
+
+<h2>Record notes</h2>
+Visibility: <select name="UpdateType">
+<option value="private">Private</option>
+<option value="response">Public</option>
+</select><BR>
+Attach file: <input type=file name="Attach"><BR>
+<textarea name="Content" rows=8 cols=60></textarea>
+
+<& /Elements/Submit &>
+
+</FORM>
+<%ARGS>
+$id => undef
+$Project => undef
+$Queue => undef
+$Parent => undef
+</%ARGS>

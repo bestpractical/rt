@@ -1,0 +1,846 @@
+#!/usr/bin/perl -w
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
+
+# {{{ Docs
+# -*-Perl-*-
+#
+#ident	"@(#)ccvs/contrib:$Name:  $:$Id: rt-commit-handler,v 1.1.2.2 2002/01/28 05:44:41 jesse Exp $"
+#
+# Perl filter to handle the log messages from the checkin of files in multiple
+# directories.  This script will group the lists of files by log message, and
+# send one piece of mail per unique message, no matter how many files are
+# committed.
+
+=head1 NAME rt-commit-handler
+
+=head1 USAGE
+
+
+
+=head2 Regular use
+
+Stick the following in in CVSROOT/commitinfo
+
+ ALL     /opt/rt3/bin/rt-commit-handler --record-last-dir
+
+Stick the following  in CVSROOT/loginfo
+
+ ALL     /opt/rt3/bin/rt-commit-handler --cvs-root /pathtocvs/root --rt %{Vvts}
+
+=head2 Invocation (advanced use)
+
+rt-commit-handler --cvs-root /path/to/cvs/root [-d] [-D] [-r] [-M module] \
+                [[-m mailto] ...] [[-R replyto] ...] [-f logfile] 
+
+
+  	-d		- turn on debugging
+  	-m mailto	- send mail to "mailto" (multiple)
+  	-R replyto	- set the "Reply-To:" to "replyto" (multiple)
+  	-M modulename	- set module name to "modulename"
+  	-f logfile	- write commit messages to logfile too
+  	-D		- generate diff commands
+        --rt              - invoke RT commit handler
+        --cvs-root       - specify your CVS root 
+
+        --record-last-dir -  Record the last directory with changes in
+                             pre-commit (commitinfo) mode
+
+
+=cut
+
+# }}}
+
+use strict;
+use Carp;
+use Getopt::Long;
+use Text::Wrap;
+use Digest::MD5;
+use MIME::Entity;
+
+use lib ("/opt/rt3/lib", "/opt/rt3/local/lib");
+
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
+
+use vars
+  qw(@MAILER $TMPDIR $FILE_PREFIX $LASTDIR_FILE $HASH_FILE $VERSION_FILE             $MESSAGE_FILE $MAIL_FILE $DEBUG $MAILTO $REPLYTO $id $MODULE_NAME
+  $LOGIN $COMMITLOG $CVS_ROOT $RT_HANDLER);
+
+#Clean out all the nasties from the environment
+CleanEnv();
+
+#Load etc/config.pm and drop privs
+RT::LoadConfig();
+
+#Drop setgid permissions
+RT::DropSetGIDPermissions();
+
+# {{{ Variable setup
+$TMPDIR      = '/tmp';
+$FILE_PREFIX = $TMPDIR . '/#cvs.';
+
+# The root of your CVS install. we should get this from some smarter place.
+# It needs a trailing /
+
+$LASTDIR_FILE = $FILE_PREFIX . "lastdir";
+$HASH_FILE    = $FILE_PREFIX . "hash";
+$VERSION_FILE = $FILE_PREFIX . "version";
+$MESSAGE_FILE = $FILE_PREFIX . "message";
+$MAIL_FILE    = $FILE_PREFIX . "mail";
+
+$DEBUG      = 0;
+$RT_HANDLER = 1;
+
+$MAILTO = '';
+
+my @files = ();
+my (@log_lines);
+my $do_diff = 0;
+my $id      = getpgrp();    # note, you *must* use a shell which does setpgrp()
+$LOGIN = getpwuid($<);
+
+# }}}
+
+die "User could not be found" unless ($LOGIN);
+
+# {{{ parse command line arguments (file list is seen as one arg)
+#
+while ( my $arg = shift @ARGV ) {
+
+    if ( $arg eq '-d' ) {
+        $DEBUG = 1;
+        warn "Debug turned on...\n";
+    }
+    elsif ( $arg =~ /^--record-last-dir$/i ) {
+        record_last_dir( $id, $ARGV[0] );
+        exit(0);
+    }
+    elsif ( $arg eq '-m' ) {
+        $MAILTO .= ", " if $MAILTO;
+        $MAILTO .= shift @ARGV;
+    }
+    elsif ( $arg eq '--rt' ) {
+        $RT_HANDLER = 1;
+    }
+    elsif ( $arg eq '-R' ) {
+        $REPLYTO .= ", " if $REPLYTO;
+        $REPLYTO .= shift @ARGV;
+    }
+    elsif ( $arg eq '-M' ) {
+        die ("too many '-M' args\n") if $MODULE_NAME;
+        $MODULE_NAME = shift @ARGV;
+    }
+    elsif ( $arg eq '--cvs-root' ) {
+        $CVS_ROOT = shift @ARGV;
+        $CVS_ROOT .= "/" unless ( $CVS_ROOT =~ /\/$/ );
+    }
+    elsif ( $arg eq '-f' ) {
+        die ("too many '-f' args\n") if $COMMITLOG;
+        $COMMITLOG = shift @ARGV;
+
+        # This is a disgusting hack to untaint $COMMITLOG if we're running from
+        # setgid cvs.
+        $COMMITLOG = untaint($COMMITLOG);
+    }
+    elsif ( $arg eq '-D' ) {
+        $do_diff = 1;
+    }
+    else {
+        @files = split ( ' ', $arg );
+        last;
+    }
+}
+
+# }}}
+
+$REPLYTO = $LOGIN unless ($REPLYTO);
+
+# for now, the first "file" is the repository directory being committed,
+# relative to the $CVSROOT location
+#
+my $dir = shift @files;
+
+# XXX there are some ugly assumptions in here about module names and
+# XXX directories relative to the $CVSROOT location -- really should
+# XXX read $CVSROOT/CVSROOT/modules, but that's not so easy to do, since
+# XXX we have to parse it backwards.
+#
+# XXX For now we set the `module' name to the top-level directory name.
+#
+unless ($MODULE_NAME) {
+    ($MODULE_NAME) = split ( '/', $dir, 2 );
+}
+
+if ($DEBUG) {
+    warn "module - ", $MODULE_NAME, "\n";
+    warn "dir    - ", $dir,         "\n";
+    warn "files  - ", join ( " ", @files ), "\n";
+    warn "id     - ", $id, "\n";
+}
+
+# {{{ Check for a new directory or an import command.
+
+#
+#    files[0] - "-"
+#    files[1] - "New"
+#    files[2] - "directory"
+#
+#    files[0] - "-"
+#    files[1] - "Imported"
+#    files[2] - "sources"
+#
+if ( $files[0] eq "-" ) {
+
+    #we just don't care about  New Directory notes
+    unless ( $files[1] eq "New" && $files[2] eq "directory" ) {
+
+        my @text = ();
+
+        push @text, build_header();
+        push @text, "";
+
+        while ( my $line = <STDIN> ) {
+            chop $line;    # Drop the newline
+            push @text, $line;
+        }
+
+        append_logfile( $COMMITLOG, @text ) if ($COMMITLOG);
+
+        mail_notification( $id, @text );
+    }
+
+    exit 0;
+}
+
+# }}}
+
+# {{{ Collect just the log message from stdin.
+#
+
+while ( my $line = <STDIN> ) {
+    chop $line;    # strip the newline
+    last if ( $line =~ /^Log Message:$/ );
+}
+while ( my $line = <STDIN> ) {
+    chop $line;    # strip the newline
+    $line =~ s/\s+$//;    # strip trailing white space
+    push @log_lines, $line;
+}
+
+my $md5 = Digest::MD5->new();
+foreach my $line (@log_lines) {
+    $md5->add( $line . "\n" );
+}
+my $hash = $md5->hexdigest();
+
+warn "hash = $hash\n" if ($DEBUG);
+
+if ( !-e "$MESSAGE_FILE.$id.$hash" ) {
+    append_logfile( "$HASH_FILE.$id",      $hash );
+    write_file( "$MESSAGE_FILE.$id.$hash", @log_lines );
+}
+
+# }}}
+
+# Spit out the information gathered in this pass.
+
+append_logfile( "$VERSION_FILE.$id.$hash", $dir . '/', @files );
+
+# {{{ Check whether this is the last directory.  If not, quit.
+
+warn "Checking current dir against last dir $LASTDIR_FILE.$id\n" if ($DEBUG);
+
+my @last_dir = read_file("$LASTDIR_FILE.$id");
+
+unless ($CVS_ROOT) {
+    die "No cvs root specified with --cvs-root. Can't continue.";
+}
+
+if ( $last_dir[0] ne $CVS_ROOT . $dir ) {
+    warn "Current directory $CVS_ROOT$dir is not last directory $last_dir[0].\n"
+      if ($DEBUG);
+    exit 0;
+}
+
+# }}}
+
+# {{{ End Of Commits!
+#
+
+# This is it.  The commits are all finished.  Lump everything together
+# into a single message, fire a copy off to the mailing list, and drop
+# it on the end of the Changes file.
+#
+
+#
+# Produce the final compilation of the log messages
+#
+
+my @hashes = read_file("$HASH_FILE.$id");
+my (@text);
+
+push @text, build_header();
+push @text, "";
+
+my ( @added_files, @modified_files, @removed_files );
+
+foreach my $hash (@hashes) {
+
+    # In case we're running setgid, make sure the hash file hasn't been hacked.
+    $hash =~ m/([a-z0-9]*)/ || die "*** Hacking attempt detected\n";
+    $hash = $1;
+
+    my @files     = read_file("$VERSION_FILE.$id.$hash");
+    my @log_lines = read_file("$MESSAGE_FILE.$id.$hash");
+
+    my $working_on_dir;    # gets set as we iterate through the files.
+    foreach my $file (@files) {
+
+        #If we've entered a new directory, make a note of that and remove the trailing /
+
+        if ( $file =~ s'\/$'' ) {
+            $working_on_dir = $file;
+            next;
+        }
+
+        my @file_entry = ( split ( ',', $file, 4 ), $working_on_dir );
+
+        # file_entry looks like ths:
+
+        # 0        1          2      3        4
+        # Old rev : new rev : tag:   file    :directory	
+        my $entry = {};
+        $entry->{'old'}  = $file_entry[0];
+        $entry->{'new'}  = $file_entry[1];
+        $entry->{'tag'}  = $file_entry[2];
+        $entry->{'file'} = $file_entry[3];
+        $entry->{'dir'}  = $file_entry[4];
+
+        if ( $file_entry[0] eq 'NONE' ) {
+            $entry->{'old'} = '0';
+            push @added_files, $entry;
+        }
+        elsif ( $file_entry[1] eq 'NONE' ) {
+            $entry->{'new'} = '0';
+            push @removed_files, $entry;
+        }
+        else {
+            push @modified_files, $entry;
+        }
+    }
+}
+
+# }}}
+
+# {{{ start building up the body
+
+# Strip leading and trailing blank lines from the log message.  Also
+# compress multiple blank lines in the body of the message down to a
+# single blank line.
+#
+
+my $blank = 1;
+@log_lines = map {
+    my $wasblank = $blank;
+    $blank = $_ eq '';
+    $blank && $wasblank ? () : $_;
+} @log_lines;
+
+pop @log_lines if $blank;
+
+@modified_files = order_and_summarize_diffs(@modified_files);
+@added_files    = order_and_summarize_diffs(@added_files);
+@removed_files  = order_and_summarize_diffs(@removed_files);
+
+push @text, "Modified Files:", format_lists(@modified_files)
+  if (@modified_files);
+
+push @text, "Added Files:", format_lists(@added_files) if (@added_files);
+
+push @text, "Removed Files:", format_lists(@removed_files) if (@removed_files);
+
+push @text, "", "Log Message", @log_lines if (@log_lines);
+
+push @text, "";
+
+if ($RT_HANDLER) {
+    rt_handler(
+        @log_lines,                             "\n",
+        loc("To generate a diff of this commit:\n"), "\n",
+        format_diffs( @modified_files, @added_files, @removed_files )
+    );
+}
+
+if ($COMMITLOG) {
+    append_logfile( $COMMITLOG, @text );
+}
+
+if ($do_diff) {
+    push @text, "";
+    push @text, loc("To generate a diff of this commit:");
+    push @text, format_diffs( @modified_files, @added_files, @removed_files );
+    push @text, "";
+}
+
+# }}}
+
+# {{{ Mail out the notification.
+
+mail_notification( $id, @text );
+
+# }}} 
+
+# {{{ clean up
+
+unless ($DEBUG) {
+    $hash = untaint($hash);
+    $id   = untaint($id);
+    unlink "$VERSION_FILE.$id.$hash";
+    unlink "$MESSAGE_FILE.$id.$hash";
+    unlink "$MAIL_FILE.$id";
+    unlink "$LASTDIR_FILE.$id";
+    unlink "$HASH_FILE.$id";
+}
+
+# }}}
+
+exit 0;
+
+# {{{ Subroutines
+#
+
+# {{{ append_logfile
+sub append_logfile {
+    my $filename = shift;
+    my (@lines) = @_;
+
+    $filename = untaint($filename);
+
+    open( FILE, ">>$filename" )
+      || die ("Cannot open file $filename for append.\n");
+    foreach my $line (@lines) {
+        print FILE $line . "\n";
+    }
+    close(FILE);
+}
+
+# }}}
+
+# {{{ write_file
+sub write_file {
+    my $filename = shift;
+    my (@lines) = @_;
+
+    $filename = untaint($filename);
+
+    open( FILE, ">$filename" )
+      || die ("Cannot open file $filename for write.\n");
+    foreach my $line (@lines) {
+        print FILE $line . "\n";
+    }
+    close(FILE);
+}
+
+# }}}
+
+# {{{ read_file
+sub read_file {
+    my $filename = shift;
+    my (@lines);
+
+    open( FILE, "<$filename" )
+      || die ("Cannot open file $filename for read.\n");
+    while ( my $line = <FILE> ) {
+        chop $line;
+        push @lines, $line;
+    }
+    close(FILE);
+
+    return (@lines);
+}
+
+# }}}
+
+# {{{ sub format_lists
+
+sub format_lists {
+    my @items = (@_);
+
+    my $files = "";
+    map {
+        $_->{'files'} && ( $files .= ' ' . join ( ' ', @{ $_->{'files'} } ) );
+    } @items;
+
+    my @lines = wrap( "\t", "\t\t", $files );
+    return (@lines);
+
+}
+
+# }}}
+
+# {{{ sub format_diffs
+
+sub format_diffs {
+    my @items = (@_);
+
+    my @lines;
+    foreach my $item (@items) {
+        next unless ( $item->{'files'} );
+        push ( @lines,
+            "cvs diff -r"
+              . $item->{'old'} . " -r"
+              . $item->{'new'} . " "
+              . join ( " ", @{ $item->{'files'} } ) . "\n" );
+
+    }
+
+    @lines = fill( "\t", "\t\t", @lines );
+
+    return (@lines);
+}
+
+# }}}
+
+# {{{ sub order_and_summarize_diffs {
+
+# takes an array of file items
+# returns a sorted array of fileset items, which are like file items, except they can have an array of files, rather than 
+# a singleton file.
+
+sub order_and_summarize_diffs {
+
+    my @files = (@_);
+
+    # Sort by tag, dir, file.
+    @files = sort {
+        $a->{'tag'} cmp $b->{'tag'}
+          || $a->{'dir'} cmp $b->{'dir'}
+          || $a->{'file'} cmp $b->{'file'};
+    } @files;
+
+    # Combine adjacent rows that are the same modulo the file name.
+
+    my @items = (undef);
+
+    foreach my $file (@files) {
+        if ( $#items == -1    #if it's empty
+            || ( !defined $items[-1]->{'old'}
+                || $items[-1]->{'old'} ne $file->{'old'} )
+            || ( !defined $items[-1]->{'new'}
+                || $items[-1]->{'new'} ne $file->{'new'} )
+            || ( !defined $items[-1]->{'tag'}
+                || $items[-1]->{'tag'} ne $file->{'tag'} ) )
+        {
+
+            push ( @items, $file );
+        }
+        push ( @{ $items[-1]->{'files'} },
+            $file->{'dir'} . "/" . $file->{'file'} );
+    }
+
+    return (@items);
+}
+
+# }}}
+
+# {{{ build_header
+
+sub build_header {
+    my $now    = gmtime;
+    my $header =
+      sprintf( "Module Name:\t%s\nCommitted By:\t%s\nDate:\t\t%s %s %s",
+        $MODULE_NAME, $LOGIN, substr( $now, 0, 19 ), "UTC",
+        substr( $now, 20, 4 ) );
+    return ($header);
+}
+
+# }}}
+
+# {{{ mail_notification
+sub mail_notification {
+    my $id = shift;
+    my (@text) = @_;
+    write_file( "$MAIL_FILE.$id", "From: " . $LOGIN,
+        "Subject: CVS commit: " . $MODULE_NAME, "To: " . $MAILTO,
+        "Reply-To: " . $REPLYTO,                "", "", @text );
+
+    my $entity = MIME::Entity->build(
+        From       => $LOGIN,
+        To         => $MAILTO,
+        Subject    => "CVS commit: " . $MODULE_NAME,
+        'Reply-To' => $REPLYTO,
+        Data       => join ( "\n", @text )
+    );
+    if ( $RT::MailCommand eq 'sendmailpipe' ) {
+        open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" )
+          || die "Couldn't send mail: " . $@ . "\n";
+        print MAIL $entity->as_string;
+        close(MAIL);
+    }
+    else {
+        $entity->send( $RT::MailCommand, $RT::MailParams );
+    }
+
+}
+
+# }}}
+
+# {{{ sub record_last_dir
+
+sub record_last_dir {
+    my $id  = shift;
+    my $dir = shift;
+
+    # make a note of this directory. later, we'll use this to 
+    # figure out if we've gone through the whole commit,
+    # for something that is a bad mockery of attomic commits.
+
+    warn "about to write $dir to $LASTDIR_FILE.$id" if ($DEBUG);
+
+    write_file( "$LASTDIR_FILE.$id", $dir );
+}
+
+# }}}
+
+# {{{ Get the RT stuff set up
+
+# {{{ sub rt_handler 
+
+sub rt_handler {
+    my (@LogMessage) = (@_);
+
+    #Connect to the database and get RT::SystemUser and RT::Nobody loaded
+    RT::Init;
+
+    require RT::Ticket;
+
+    #Get the current user all loaded
+    my $CurrentUser = GetCurrentUser();
+
+    if ( !$CurrentUser->Id ) {
+        print
+loc("No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\n");
+        return;
+    }
+
+    my (@commands) = find_commands( \@LogMessage );
+
+    my ( @tickets, @errors );
+
+    # Get the list of tickets we're working with out of commands
+    grep { $_ =~ /^RT-Ticket:\s*(.*?)$/i && push ( @tickets, $1 ) } @commands;
+
+    my $message = new MIME::Entity;
+    $message->build(
+        From    => $CurrentUser->EmailAddress,
+        Subject => 'CVS Commit',
+        Data    => \@LogMessage
+    );
+
+    # {{{ comment or correspond, as needed
+
+    foreach my $ticket (@tickets) {
+        my $TicketObj = RT::Ticket->new($CurrentUser);
+        $TicketObj->Load($ticket);
+        my ( $id, $msg );
+        unless ( $TicketObj->Id ) {
+            push ( @errors,
+"Couldn't load ticket #$ticket. Not adding commit log to ticket history.\n"
+            );
+        }
+
+        if ( $LogMessage[0] =~ /^(comment|private)$/ ) {
+            ( $id, $msg ) = $TicketObj->Comment( MIMEObj => $message );
+
+        }
+        else {
+            ( $id, $msg ) = $TicketObj->Correspond( MIMEObj => $message );
+        }
+
+        push ( @errors, ">> Log message",
+            "Ticket #" . $TicketObj->Id . ": " . $msg );
+
+    }
+
+    # }}}
+
+    my ($reply) = ActOnPseudoHeaders( $CurrentUser, @commands );
+    print "$reply\n" if ($reply);
+    print join ( "\n", @errors );
+    print "\n";
+
+}
+
+# }}}
+
+# {{{ sub find_commands
+
+sub find_commands {
+    my $lines = shift;
+    my (@pseudoheaders);
+
+    while ( my $line = shift @{$lines} ) {
+        next if $line =~ /^\s*?$/;
+        if ( $line =~ /^RT-/i ) {
+
+            push ( @pseudoheaders, $line );
+        }
+
+        #If we find a line that's not a command, get out.
+        else {
+            unshift ( @{$lines}, $line );
+            last;
+        }
+    }
+
+    return (@pseudoheaders);
+
+}
+
+# }}}
+
+# {{{ sub ActOnPseudoHeaders
+
+=item ActOnPseudoHeaders $PseudoHeaders
+
+Takes a string of pseudo-headers, iterates through them and does what they tell it to.
+
+=cut
+
+sub ActOnPseudoHeaders {
+    my $CurrentUser = shift;
+    my (@actions) = (@_);
+
+    my $ResultsMessage = '';
+    my $Ticket         = RT::Ticket->new($CurrentUser);
+
+    foreach my $action (@actions) {
+        my ($val);
+        my $msg = '';
+
+        $ResultsMessage .= ">>> $action\n";
+
+        if ( $action =~ /^RT-(.*?):\s*(.*)$/i ) {
+            my $command = $1;
+            my $args    = $2;
+
+            if ( $command =~ /^ticket$/i ) {
+
+                $val = $Ticket->Load($args);
+                unless ($val) {
+                    $ResultsMessage .=
+                      loc("ERROR: Couldn't load ticket '[_1]': [_2].\n", $1, $msg);
+                      . loc("Aborting to avoid unintended ticket modifications.\n")
+                      . loc("The following commands were not proccessed:\n\n")
+                      . join ( "\n", @actions );
+                    return ($ResultsMessage);
+                }
+                $ResultsMessage .= loc("Ticket [_1] loaded\n", $Ticket->Id);
+            }
+            else {
+                unless ( $Ticket->Id ) {
+                    $ResultsMessage .= loc("No Ticket specified. Aborting ticket ")
+                      . loc("modifications\n\n")
+                      . loc("The following commands were not proccessed:\n\n")
+                      . join ( "\n", @actions );
+                    return ($ResultsMessage);
+                }
+
+                # Deal with the basics
+                if ( $command =~ /^(Subject|Owner|Status|Queue)$/i ) {
+                    my $method = 'Set' . ucfirst( lc($1) );
+                    ( $val, $msg ) = $Ticket->$method($args);
+                }
+
+                # Deal with the dates
+                elsif ( $command =~ /^(due|starts|started|resolved)$/i ) {
+                    my $method = 'Set' . ucfirst( lc($1) );
+                    my $date   = new RT::Date($CurrentUser);
+                    $date->Set( Format => 'unknown', Value => $args );
+                    ( $val, $msg ) = $Ticket->$method( $date->ISO );
+                }
+
+                # Deal with the watchers
+                elsif ( $command =~ /^(requestor|requestors|cc|admincc)$/i ) {
+                    my $operator = "+";
+                    my ($type);
+                    if ( $args =~ /^(\+|\-)(.*)$/ ) {
+                        $operator = $1;
+                        $args     = $2;
+                    }
+                    $type = 'Requestor' if ( $command =~ /^requestor/i );
+                    $type = 'Cc'        if ( $command =~ /^cc/i );
+                    $type = 'AdminCc'   if ( $command =~ /^admincc/i );
+
+                       my $user = RT::User->new($CurrentUser);
+                    $user->Load($args);
+
+                    if ($operator eq '+') {
+                        ($val, $msg) = $Ticket->AddWatcher( Type => $type,
+                                                            PrincipalId => $user->PrincipalId);
+                    } elsif ($operator eq '-') {
+                        ($val, $msg) = $Ticket->DeleteWatcher( Type => $type,
+                                                               PrincipalId => $user->PrincipalId);
+                    }
+
+            }
+            $ResultsMessage .= $msg . "\n";
+        }
+
+    }
+    return ($ResultsMessage);
+
+}
+
+# }}}
+
+# {{{ sub untaint 
+sub untaint {
+    my $val = shift;
+
+    if ( $val =~ /^([-\#\/\w.]+)$/ ) {
+        $val = $1;    # $data now untainted
+    }
+    else {
+        die loc("Bad data in [_1]", $val);    # log this somewhere
+    }
+    return ($val);
+}
+
+# }}}
+
+=head1 AUTHOR
+
+
+
+  rt-commit-handler is a rewritten version of the NetBSD commit handler,
+  which was placed in the public domain by Charles Hannum. It bore the following
+  authors statement:
+
+ Contributed by David Hampton <hampton@cisco.com>
+ Hacked greatly by Greg A. Woods <woods@planix.com>
+ Rewritten by Charles M. Hannum <mycroft@netbsd.org>
+
+=cut
+

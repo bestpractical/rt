@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -107,7 +107,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -116,14 +116,14 @@ Returns the current value of id.
 =cut
 
 
-=item Name
+=head2 Name
 
 Returns the current value of Name. 
 (In the database, Name is stored as varchar(200).)
 
 
 
-=item SetName VALUE
+=head2 SetName VALUE
 
 
 Set Name to VALUE. 
@@ -134,14 +134,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Description
+=head2 Description
 
 Returns the current value of Description. 
 (In the database, Description is stored as varchar(255).)
 
 
 
-=item SetDescription VALUE
+=head2 SetDescription VALUE
 
 
 Set Description to VALUE. 
@@ -152,14 +152,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item CorrespondAddress
+=head2 CorrespondAddress
 
 Returns the current value of CorrespondAddress. 
 (In the database, CorrespondAddress is stored as varchar(120).)
 
 
 
-=item SetCorrespondAddress VALUE
+=head2 SetCorrespondAddress VALUE
 
 
 Set CorrespondAddress to VALUE. 
@@ -170,14 +170,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item CommentAddress
+=head2 CommentAddress
 
 Returns the current value of CommentAddress. 
 (In the database, CommentAddress is stored as varchar(120).)
 
 
 
-=item SetCommentAddress VALUE
+=head2 SetCommentAddress VALUE
 
 
 Set CommentAddress to VALUE. 
@@ -188,14 +188,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item InitialPriority
+=head2 InitialPriority
 
 Returns the current value of InitialPriority. 
 (In the database, InitialPriority is stored as int(11).)
 
 
 
-=item SetInitialPriority VALUE
+=head2 SetInitialPriority VALUE
 
 
 Set InitialPriority to VALUE. 
@@ -206,14 +206,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item FinalPriority
+=head2 FinalPriority
 
 Returns the current value of FinalPriority. 
 (In the database, FinalPriority is stored as int(11).)
 
 
 
-=item SetFinalPriority VALUE
+=head2 SetFinalPriority VALUE
 
 
 Set FinalPriority to VALUE. 
@@ -224,14 +224,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item DefaultDueIn
+=head2 DefaultDueIn
 
 Returns the current value of DefaultDueIn. 
 (In the database, DefaultDueIn is stored as int(11).)
 
 
 
-=item SetDefaultDueIn VALUE
+=head2 SetDefaultDueIn VALUE
 
 
 Set DefaultDueIn to VALUE. 
@@ -242,7 +242,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -251,7 +251,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -260,7 +260,7 @@ Returns the current value of Created.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -269,7 +269,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
@@ -278,14 +278,14 @@ Returns the current value of LastUpdated.
 =cut
 
 
-=item Disabled
+=head2 Disabled
 
 Returns the current value of Disabled. 
 (In the database, Disabled is stored as smallint(6).)
 
 
 
-=item SetDisabled VALUE
+=head2 SetDisabled VALUE
 
 
 Set Disabled to VALUE. 
@@ -297,7 +297,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

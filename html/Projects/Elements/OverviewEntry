@@ -1,0 +1,40 @@
+% if ($Root) {
+<TR>
+<TD><tt><% "&nbsp;"x $Depth|n %></tt><A HREF="Edit.html?Project=<%$Project%>&id=<%$Root->Id%>" onClick="window.open('Edit.html?Project=<%$Project%>&id=<%$Root->Id%>','edit','toolbar=no,width=600,height=450,left=10,top=10,screenX=10,screenY=10,status=no,scrollbars=yes,resizable=1');return false"><%$Root->Subject%></A></TD>
+<TD><%$Root->OwnerObj->Name%></TD>
+<TD><%$Root->DueObj->AgeAsString%></TD>
+<TD><%$Root->Priority%></TD>
+<TD><%int($Root->TimeWorked/6)/10%></TD>
+<TD><%int($Root->TimeLeft/6)/10%></TD>
+<TD align=right><font size=-2>
+<DIV ALIGN=RIGHT>[<A HREF="Create.html?Queue=<%$Root->Queue%>&Parent=<%$Root->Id%>&Owner=<%$Root->Owner%>&Project=<%$Project%>" onClick="window.open('Create.html?Queue=<%$Root->Queue%>&Parent=<%$Root->Id%>&Owner=<%$Root->Owner%>&Project=<%$Project%>','wdyt','toolbar=no,width=500,height=450,left=10,top=10,screenX=30,screenY=30,status=no,scrollbars=yes,resizable=1');return false">New subtask</A>]</DIV></font>
+
+% if ($Root->Id == $AddChildOf) {
+<TR>
+<TD><form method="post"><% "&nbsp;"x $Depth|n %><input name="Subject" size="25"></TD>
+<TD><& /Elements/SelectOwner, Name => 'Owner' &></TD>
+<TD><input name="Due" size=10></TD>
+<TD><input name="Priority" size=2></TD>
+<TD><input name="TimeWorked" size="3"></TD>
+<TD><input name="TimeLeft" size="3"></TD>
+<TD><input type="submit"></form</TD>
+%}
+
+% if ($Depth < $MaxDepth) {
+% while (my $link = $tasks->Next()) {
+<& OverviewEntry, Root=> $link->BaseObj, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project &>
+% }
+
+% }
+% }
+<%ARGS>
+$Depth => 0
+$MaxDepth => 8
+$Root => undef
+$Project => undef
+$AddChildOf => undef
+</%ARGS>
+
+<%INIT>
+my $tasks = $Root->Members();
+</%INIT>

@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -92,7 +92,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -101,14 +101,14 @@ Returns the current value of id.
 =cut
 
 
-=item PrincipalType
+=head2 PrincipalType
 
 Returns the current value of PrincipalType. 
 (In the database, PrincipalType is stored as varchar(16).)
 
 
 
-=item SetPrincipalType VALUE
+=head2 SetPrincipalType VALUE
 
 
 Set PrincipalType to VALUE. 
@@ -119,14 +119,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectId
+=head2 ObjectId
 
 Returns the current value of ObjectId. 
 (In the database, ObjectId is stored as int(11).)
 
 
 
-=item SetObjectId VALUE
+=head2 SetObjectId VALUE
 
 
 Set ObjectId to VALUE. 
@@ -137,14 +137,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Disabled
+=head2 Disabled
 
 Returns the current value of Disabled. 
 (In the database, Disabled is stored as smallint(6).)
 
 
 
-=item SetDisabled VALUE
+=head2 SetDisabled VALUE
 
 
 Set Disabled to VALUE. 
@@ -156,7 +156,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -104,7 +104,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -113,14 +113,14 @@ Returns the current value of id.
 =cut
 
 
-=item PrincipalType
+=head2 PrincipalType
 
 Returns the current value of PrincipalType. 
 (In the database, PrincipalType is stored as varchar(25).)
 
 
 
-=item SetPrincipalType VALUE
+=head2 SetPrincipalType VALUE
 
 
 Set PrincipalType to VALUE. 
@@ -131,14 +131,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item PrincipalId
+=head2 PrincipalId
 
 Returns the current value of PrincipalId. 
 (In the database, PrincipalId is stored as int(11).)
 
 
 
-=item SetPrincipalId VALUE
+=head2 SetPrincipalId VALUE
 
 
 Set PrincipalId to VALUE. 
@@ -149,14 +149,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item RightName
+=head2 RightName
 
 Returns the current value of RightName. 
 (In the database, RightName is stored as varchar(25).)
 
 
 
-=item SetRightName VALUE
+=head2 SetRightName VALUE
 
 
 Set RightName to VALUE. 
@@ -167,14 +167,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectType
+=head2 ObjectType
 
 Returns the current value of ObjectType. 
 (In the database, ObjectType is stored as varchar(25).)
 
 
 
-=item SetObjectType VALUE
+=head2 SetObjectType VALUE
 
 
 Set ObjectType to VALUE. 
@@ -185,14 +185,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectId
+=head2 ObjectId
 
 Returns the current value of ObjectId. 
 (In the database, ObjectId is stored as int(11).)
 
 
 
-=item SetObjectId VALUE
+=head2 SetObjectId VALUE
 
 
 Set ObjectId to VALUE. 
@@ -203,14 +203,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item DelegatedBy
+=head2 DelegatedBy
 
 Returns the current value of DelegatedBy. 
 (In the database, DelegatedBy is stored as int(11).)
 
 
 
-=item SetDelegatedBy VALUE
+=head2 SetDelegatedBy VALUE
 
 
 Set DelegatedBy to VALUE. 
@@ -221,14 +221,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item DelegatedFrom
+=head2 DelegatedFrom
 
 Returns the current value of DelegatedFrom. 
 (In the database, DelegatedFrom is stored as int(11).)
 
 
 
-=item SetDelegatedFrom VALUE
+=head2 SetDelegatedFrom VALUE
 
 
 Set DelegatedFrom to VALUE. 
@@ -240,7 +240,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

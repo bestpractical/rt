@@ -85,6 +85,15 @@ my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
     next if ($table eq 'sessions');
+        $table = ucfirst($table);
+        $table =~ s/field/Field/;
+        $table =~ s/group/Group/;
+        $table =~ s/custom/Custom/;
+        $table =~ s/member/Member/;
+        $table =~ s/Scripaction/ScripAction/g;
+        $table =~ s/condition/Condition/g;
+        $table =~ s/value/Value/;
+        $table =~ s/Acl/ACL/g;
     $tablemap{$table}  = $table;
     $modulemap{$table} = $table;
     if ( $table =~ /^(.*)s$/ ) {
@@ -348,7 +357,7 @@ $Create
 
 $FieldsPod
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
 $ClassAccessible

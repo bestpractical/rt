@@ -1,0 +1,62 @@
+<%ARGS>
+$id => undef
+</%ARGS>
+<%INIT>
+
+use RT::Projects::Scheduler;
+
+my $ProjectObj = LoadTicket($id);
+my $schedule = RT::Projects::Scheduler->new();
+
+
+my ($retval, $msg) = $schedule->Build($id);
+unless ($retval) {
+    Abort($msg);
+}
+
+my $calendar = $schedule->Calendar();
+my $ticketinfo = $schedule->TicketInfo();
+
+my @dates =  sort (keys %{$calendar});
+my $last = $dates[0]; 		
+my @tasks = sort { 
+		$ticketinfo->{$a}->{'startson'} <=> 
+		$ticketinfo->{$b}->{'startson'} } 
+		keys %{$ticketinfo};
+
+
+</%INIT>
+<& /Elements/Header, Title => $ProjectObj->Subject . " / Schedule" &>
+<& Elements/Tabs, Ticket => $ProjectObj, current_tab => 'Projects/Schedule.html?id='.$ProjectObj->Id &>
+
+<H1>Schedule by date</H1>
+    
+% foreach my $date ( keys %{$calendar}) {
+<h2><%$schedule->{'dates'}->{$date}->{'daymon'}%></h2>
+<UL>
+% foreach my $person (keys %{$schedule->{'calendar'}->{$date}}) {
+% my $User = new RT::User($session{'CurrentUser'});
+% $User->Load($person);
+% my $Ticket= LoadTicket($schedule->{'calendar'}->{$date}->{$person});
+<LI><%$User->Name%> - Ticket: <%$Ticket->Subject()%>
+%	}
+</UL>
+%    }
+
+<%INIT>
+
+my $peoplecolors = {};
+my @colors = qw(ffffcc ffccff ccffff aacccc ccaacc ccccaa aaaa99 
+		aa99aa 99aaaa 999966 996699 669999 666633 663366 336666);
+
+foreach my $task (keys %{$ticketinfo}) {
+
+	#TODO: We should be getting this from Projects::Scheduler. why aren't we?
+
+	$ticketinfo->{$task}->{'ticketobj'} = LoadTicket($task);
+	my $ticket = $ticketinfo->{$task}->{'ticketobj'};
+	$peoplecolors->{$ticket->OwnerObj->Id} = (shift @colors);	
+}
+
+
+</%INIT>

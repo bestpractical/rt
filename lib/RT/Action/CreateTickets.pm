@@ -128,18 +128,18 @@ A convoluted example
  Queue: Approvals
  Type: Approval
  AdminCc: {join ("\nAdminCc: ",@admins) }
- Depended-On-By: {$Tickets{"TOP"}->Id}
- Refers-To: {$Tickets{"TOP"}->Id}
- Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
+ Depended-On-By: TOP
+ Refers-To: TOP
+ Subject: Approval for ticket: TOP - {$Tickets{"TOP"}->Subject}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {$Tickets{"TOP"}->Id}: {$Tickets{"TOP"}->Subject}
+ Content: Your approval is requested for the ticket TOP: {$Tickets{"TOP"}->Subject}
  Blah
  Blah
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
- Depended-On-By: {$Tickets{"TOP"}->Id}
+ Depended-On-By: TOP
  Refers-On: {$Tickets{"approval"}->Id}
  Queue: Approvals
  Content-Type: text/plain
@@ -239,8 +239,8 @@ my $approvals =
 Queue: Approvals
 Type: Approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
-Depended-On-By: {$Tickets{"TOP"}->Id}
-Refers-To: {$Tickets{"TOP"}->Id}
+Depended-On-By: TOP
+Refers-To: TOP
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
