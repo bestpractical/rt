@@ -62,6 +62,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->{'AttachmentDir'} = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
   return $self;
 }
 
@@ -592,10 +593,12 @@ A private instance method which sets up a mime parser to do its job
 sub _SetupMIMEParser {
     my $self = shift;
     my $parser = shift;
-     $self->{'AttachmentDir'} ||= File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
 
     # Set up output directory for files:
-    $parser->output_dir($self->{'AttachmentDir'});
+    # Untaint the attachment dir, because MIME::Tools will choke otherwise
+    if ($self->{'AttachmentDir'} =~ /^(.*)$/) {
+        $parser->output_dir($1);
+    } 
     $parser->filer->ignore_filename(1);
 
 
