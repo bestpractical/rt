@@ -43,12 +43,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-<&|/Elements/TitleBox, title => loc('[_1] highest priority tickets I own', $rows) &>
+<&|/Elements/TitleBox, 
+	title => loc('[_1] highest priority tickets I own', $rows),
+	title_href => "Search/Results.html".$QueryString &>
 <& /Elements/TicketList, 
         Title => loc("[_1] highest priority tickets I requested...", $rows),
         Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
 
-        Query => " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')",
+        Query => $Query,
         OrderBy => 'Priority',
         Order => 'DESC',
         Rows => $rows,
@@ -57,5 +59,13 @@
 </&> 
 <%init>
 my $rows = $RT::MyTicketsLength;
+
+my $Query = " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')";
+
+my $QueryString = '?' . $m->comp('/Elements/QueryString', 
+            Query => $Query,
+            Order => 'DESC',
+            OrderBy => 'Priority') if ($Query);
+
 </%init>
 
