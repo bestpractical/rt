@@ -151,7 +151,12 @@ sub ParseURI {
     }
  
  	$self->{'object'} = $ticket;
-  	return ($ticket->Id);
+    if ( UNIVERSAL::can( $ticket, 'Id' ) ) {
+        return ( $ticket->Id );
+    }
+    else {
+        return undef;
+    }
 }
 
 =head2 IsLocal 

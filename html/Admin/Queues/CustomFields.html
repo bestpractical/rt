@@ -28,7 +28,6 @@
     subtabs => $subtabs,
     Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 
-<& /Elements/TitleBoxStart, title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 <UL>
 
 %while  (my $CustomFieldObj = $CustomFields->Next) { 
@@ -37,11 +36,11 @@
 
 %}
 
-<& /Elements/TitleBoxEnd &>
 <%INIT>
 my $Queue = new RT::Queue($session{'CurrentUser'});
 $Queue->Load($id);
-my $CustomFields = $Queue->CustomFields;
+my $CustomFields = RT::CustomFields->new($RT::SystemUser);
+$CustomFields->LimitToQueue($Queue->Id);
 my $subtabs = {
 	 A => { title => loc('New custom field'),
 	     	path => "Admin/Queues/CustomField.html?create=1&Queue=".$id,

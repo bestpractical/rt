@@ -88,7 +88,7 @@ CREATE TABLE Groups (
 ) TYPE=InnoDB;
 
 CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
-
+CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
 # }}}
 
 # {{{ ScripConditions

@@ -91,6 +91,8 @@ sub Create {
         return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify a ticket id"));
     }
 
+
+
     #lets create our transaction
     my %params = (Ticket    => $args{'Ticket'},
         TimeTaken => $args{'TimeTaken'},

@@ -26,7 +26,7 @@
 
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
-use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates);
+use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips);
 
 use lib "@RT_LIB_PATH@";
 
@@ -373,6 +373,25 @@ for $item (@Queues) {
     print "(Error: $msg)" unless ($return);
     print $return. ".";
 }
+print "Creating custom fields...";
+for $item (@CustomFields) {
+    my $new_entry = new RT::CustomField($CurrentUser);
+    my $values    = $item->{'Values'};
+    delete $item->{'Values'};
+    my $q     = $item->{'Queue'};
+    my $q_obj = RT::Queue->new($CurrentUser);
+    $q_obj->Load($q);
+    print "(Error: Could not find queue " . $q . ")";
+    $item->{'Queue'} = $q_obj->Id;
+    my ( $return, $msg ) = $new_entry->Create(%$item);
+
+    foreach my $value ( @{$values} ) {
+        $new_entry->AddValue($value);
+    }
+
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
+}
 
 print "done.\n";
 print "Creating ScripActions...";
@@ -398,6 +417,15 @@ print "Creating templates...";
 
 for $item (@Templates) {
     my $new_entry = new RT::Template($CurrentUser);
+    my $return    = $new_entry->Create(%$item);
+    print $return. ".";
+}
+print "done.\n";
+
+print "Creating scrips...";
+
+for $item (@Scrips) {
+    my $new_entry = new RT::Scrip($CurrentUser);
     my $return    = $new_entry->Create(%$item);
     print $return. ".";
 }

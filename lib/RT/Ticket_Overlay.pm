@@ -552,7 +552,9 @@ sub Create {
       my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
         next unless ($value);
         $self->_AddCustomFieldValue( Field => $cfid,
-                                     Value => $value );
+                                     Value => $value,
+                                     RecordTransaction => 0
+                                 );
     }
     }
     # }}}
@@ -3428,7 +3430,6 @@ sub _AddCustomFieldValue {
             Content => $args{'Value'}
         );
 
-        $RT::Logger->debug ("added a custom field value : $value_msg\n");
         unless ($new_value_id) {
             return ( 0,
                 $self->loc("Could not add new custom field value for ticket. [_1] ",
