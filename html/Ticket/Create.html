@@ -162,8 +162,9 @@
 		 color => "#663366" &>
 
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts"<% $ARGS{Starts} && " VALUE=\"$ARGS{Starts}\"" %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due" value="<%
+$ARGS{Due}%>"></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
@@ -200,9 +201,19 @@
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 
 <%INIT>
+
+
+
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->CustomFields();
+
+if ($QueueObj->DefaultDueIn) {
+    my $default_due = RT::Date->new($session{'CurrentUser'});
+    $default_due->SetToNow();
+    $default_due->AddDays($QueueObj->DefaultDueIn);
+    $ARGS{'Due'} = $default_due->ISO();
+}
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
