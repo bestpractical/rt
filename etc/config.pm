@@ -10,7 +10,7 @@
     #Where you're sticking the glimpse index files;
     $glimpse_dir= "!!RT_GLIMPSE_PATH!!|";
 
-    #Where you keep your templates
+    #Where you keep templates for each of your queues
     $template_dir="!!RT_TEMPLATE_PATH!!";
 
 

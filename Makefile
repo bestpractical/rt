@@ -31,6 +31,8 @@ RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
 RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
+
+# Where you keep the templates for your various queues
 RT_TEMPLATE_PATH	=	$(RT_ETC_PATH)/templates
 RT_GLIMPSE_PATH		=       $(RT_TRANSACTIONS_PATH)/glimpse
 
@@ -142,24 +144,17 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
 
-upgrade: libs-install update-etc config-replace mux-install nondestruct
+upgrade: libs-install config-replace mux-install nondestruct
 
 nondestruct: mux-links glimpse fixperms
-
-
-update-etc:
-	cp -auR etc/*  $(RT_ETC_PATH)
 
 all:
 	@echo "Read the readme."
 fixperms:
 	chown -R $(RTUSER) $(RT_PATH)
 	chgrp -R $(RTGROUP) $(RT_PATH)  
-	chmod -R 700 $(RT_LIB_PATH)
-	chmod 0755 $(RT_ETC_PATH)
-	chmod -R 0700 $(RT_ETC_PATH)/*	
-	chmod 0775 $(RT_ETC_PATH)/images
-	chmod 0644 $(RT_ETC_PATH)/images/*
+	chmod -R 755 $(RT_LIB_PATH)
+	chmod -R 0700 $(RT_ETC_PATH)
 	chmod 0755 $(RT_PATH)
 	
 	chmod 0755 $(RT_BIN_PATH)
@@ -170,10 +165,8 @@ fixperms:
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
-	mkdir -p $(RT_ETC_PATH)/templates/queues
 	cp -rp ./etc/* $(RT_ETC_PATH)
 	mkdir -p $(RT_TRANSACTIONS_PATH)
-	mkdir -p $(RT_ETC_PATH)/templates/queues
 	mkdir -p $(RT_GLIMPSE_PATH)
 
 libs-install: 
