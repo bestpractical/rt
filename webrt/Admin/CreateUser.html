@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Create a user</title>
+  </head>
+
+  <body>
+    <h1>Create a user</h1>
+
+<& /Admin/Elements/ModifyUser, UserObj => $UserObj &>
+
+    <hr>
+    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
+<!-- Created: Mon Aug  7 22:47:53 EDT 2000 -->
+<!-- hhmts start -->
+Last modified: Mon Aug  7 22:48:59 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>
+<%INIT>
+my $UserObj = new RT::User($session{'CurrentUser'});
+$UserObj->Create(UserId => $UserId);
+</%INIT>
+
+<%ARGS>
+$UserId => undef
+</%ARGS>

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Modify a user</title>
+  </head>
+
+  <body>
+    <h1>Modify a user</h1>
+
+
+%foreach $result (@results) {
+<b><%$result%></b><br>
+%}
+
+<& /Admin/Elements/ModifyUser, UserObj => $UserObj &>
+
+    <hr>
+    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
+<!-- Modifyd: Mon Aug  7 22:47:53 EDT 2000 -->
+<!-- hhmts start -->
+Last modified: Tue Aug  8 01:38:30 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>
+<%INIT>
+use RT::Interface::Web;
+my $UserObj = new RT::User($session{'CurrentUser'});
+$UserObj->Load($id) || $UserObj->Load($UserId) || $m->comp('/Elements/Error', Why => "Couldn't load user '$UserId'");
+
+
+my @fields = qw(UserId Comments Signature EmailAddress FreeformContactInfo 
+		Organization RealName NickName Lang EmailEncoding WebEncoding 
+		ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
+		AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+		Address2 City State Zip Country
+                );
+
+
+#Run through each field in this list. update the value if apropriate
+my $field;
+foreach $field (@fields) {
+my ($code, $msg);
+my $check = "if ((defined \$$field) and (\$$field !~ \$UserObj->$field)) {
+  (\$code, \$msg) = \$UserObj->Set$field(\$$field);
+
+     push \@results, \$msg;
+   }";
+eval $check;
+
+}
+if ((defined $Pass1)  and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
+my ($code, $msg);
+($code, $msg) = $UserObj->SetPassword($Pass1);
+push @results, $msg;
+}
+
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$result => undef
+@results => undef
+$UserId  => undef
+$Comments  => undef
+$Signature  => undef
+$EmailAddress  => undef
+$FreeformContactInfo => undef
+$Organization  => undef
+$RealName  => undef
+$NickName  => undef
+$Lang  => undef
+$EmailEncoding  => undef
+$WebEncoding => undef
+$ExternalContactInfoId  => undef
+$ContactInfoSystem  => undef
+$Gecos => undef
+$ExternalAuthId  => undef
+$AuthSystem  => undef
+$HomePhone => undef
+$WorkPhone  => undef
+$MobilePhone  => undef
+$PagerPhone  => undef
+$Address1 => undef
+$Address2  => undef
+$City  => undef
+$State  => undef
+$Zip  => undef
+$Country => undef
+$Pass1 => undef
+$Pass2=> undef
+
+</%ARGS>

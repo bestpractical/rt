@@ -1,0 +1,3 @@
+<FORM METHOD=get ACTION="/Admin/CreateUser.html">
+Create a user called <INPUT NAME="UserId" size=10><input type=submit>
+</form>

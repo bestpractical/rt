@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Modify a queue</title>
+  </head>
+
+  <body>
+    <h1>Modify a queue</h1>
+
+
+%foreach $result (@results) {
+<b><%$result%></b><br>
+%}
+
+<& /Admin/Elements/ModifyQueue, QueueObj => $QueueObj &>
+
+    <hr>
+    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
+<!-- Modifyd: Mon Aug  7 22:47:53 EDT 2000 -->
+<!-- hhmts start -->
+Last modified: Tue Aug  8 00:49:17 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>
+<%INIT>
+use RT::Interface::Web;
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id) || $QueueObj->Load($QueueId) || $m->comp('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
+
+
+my @fields = qw(Description CorrespondAddress CommentAddress QueueId 
+                InitialPriority FinalPriority DefaultDueIn);
+
+
+#Run through each field in this list. update the value if apropriate
+my $field;
+foreach $field (@fields) {
+my ($code, $msg);
+my $check = "if ((defined \$$field) and (\$$field !~ \$QueueObj->$field)) {
+  (\$code, \$msg) = \$QueueObj->Set$field(\$$field);
+
+     push \@results, \$msg;
+   }";
+eval $check;
+
+}
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$result => undef
+@results => undef
+$QueueId => undef
+$Description => undef
+$CorrespondAddress => undef
+$CommentAddress => undef
+
+$InitialPriority => undef
+$FinalPriority => undef
+$DefaultDueIn => undef
+</%ARGS>

@@ -1,0 +1,38 @@
+
+<& /Elements/TitleBoxStart, title => 'Editing Configuration for queue '.$QueueObj->Id &>
+
+<FORM ACTION="/Admin/ModifyQueue.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+Queue Name: <INPUT name="QueueId" value="<%$QueueObj->QueueId%>"><BR>
+
+Description: <INPUT name="Description" value="<%$QueueObj->Description%>">
+<BR>
+
+Correspondence Address: <INPUT name="CorrespondAddress" value="<%$QueueObj->CorrespondAddress%>">
+<BR>
+
+Comment Address: <INPUT NAME="CommentAddress" value="<%$QueueObj->CommentAddress%>">
+<BR>
+
+Priority starts at:  <INPUT NAME="InitialPriority" value="<%$QueueObj->InitialPriority %>">
+
+<BR>
+
+Over time, priority moves toward: <INPUT NAME="FinalPriority" value="<%$QueueObj->FinalPriority %>">
+<BR>
+
+By default, new requests should be due in <INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> days.
+<BR>
+<input type=submit>
+</form>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+
+</%INIT>
+
+<%ARGS>
+
+
+$QueueObj => undef
+</%ARGS>
