@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE CLASS="<%$class|n%>" 
+<TABLE CLASS="box <%$class|n%>" 
         BGCOLOR="<%$color%>" 
         CELLSPACING=0
         BORDER=0

@@ -31,7 +31,7 @@
 
 <table width=100%>
 <tr>
-<td valign=top>
+<td valign=top class="boxcontainer">
 <FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
 <input type=hidden name=SearchId value="<%$ARGS{'SearchId'}%>">
 <input type=hidden name=Query value="<%$Query%>">
@@ -40,7 +40,7 @@
 <& /Elements/Submit, Caption => "Add additional criteria", Label => loc('Add'), Name => 'AddClause'&>
 
 </td>
-<td valign=top>
+<td valign=top class="boxcontainer">
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
 <& Elements/NewListActions, actions => \@actions &>
 <select size=10 name=clauses style="width : 100%">
@@ -68,7 +68,7 @@
 </td>
 </tr>
 <tr>
-<td colspan=2>
+<td colspan=2 class="boxcontainer">
 
 <FORM METHOD="POST" ACTION="Build.html" NAME="EditFormat">
 <input type=hidden name=Query value="<%$Query%>">
