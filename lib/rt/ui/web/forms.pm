@@ -360,7 +360,7 @@ Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'sub
 </pre>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"-1\">
-<br><textarea rows=15 cols=70 name=\"content\" wrap>
+<br><textarea rows=15 cols=70 name=\"content\" WARP=HARD>
 $reply_content
 </textarea>
 </font>
@@ -443,7 +443,7 @@ Requestor:<input name=\"requestors\" size=\"30\"";
 Summary:  <input name=\"subject\" size=\"50\">
 </pre>
 <font size=\"-1\">
-<br><textarea rows=15 cols=70 name=\"content\" wrap>
+<br><textarea rows=15 cols=70 name=\"content\" WARP=HARD>
 $template
 </textarea>
 </font>
@@ -479,7 +479,7 @@ Bcc:	 <input name=\"bcc\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
 <br><font size=\"-1\">
-<textarea rows=15 cols=70 name=\"content\" wrap>
+<textarea rows=15 cols=70 name=\"content\" WARP=HARD>
 $reply_content
 </textarea>
 </font>
