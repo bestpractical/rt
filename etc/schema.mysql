@@ -204,7 +204,6 @@ CREATE TABLE Users (
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Users1 ON Users (Name);
-CREATE INDEX Users2 ON Users (Name);
 CREATE INDEX Users3 ON Users (id, EmailAddress);
 CREATE INDEX Users4 ON Users (EmailAddress);
 CREATE TABLE Tickets (
