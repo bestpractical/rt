@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 SYNOPSIS
 
   use RT::Attachment;
@@ -165,12 +166,18 @@ sub Create {
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
     unless ( defined $Attachment->bodyhandle ) {
+
         $id = $self->SUPER::Create(
             TransactionId => $args{'TransactionId'},
             Parent        => 0,
             ContentType   => $Attachment->mime_type,
             Headers => $Attachment->head->as_string,
             Subject => $Subject);
+        
+        unless ($id) {
+            $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
+
+        }
 
         foreach my $part ( $Attachment->parts ) {
             my $SubAttachment = new RT::Attachment( $self->CurrentUser );
@@ -179,7 +186,6 @@ sub Create {
                 Parent        => $id,
                 Attachment    => $part,
                 ContentType   => $Attachment->mime_type,
-                Headers       => $Attachment->head->as_string(),
 
             );
         }
@@ -189,21 +195,19 @@ sub Create {
     #If it's not multipart
     else {
 
-
-        my $Body = $Attachment->bodyhandle->as_string;
-
-
 	my ($ContentEncoding, $Body) = $self->_EncodeLOB($Attachment->bodyhandle->as_string, $Attachment->mime_type);
-
-
         my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
                                        ContentType   => $Attachment->mime_type,
                                        ContentEncoding => $ContentEncoding,
                                        Parent          => $args{'Parent'},
-                                       Headers       =>  $Attachment->head->as_string, 
+                                                  Headers       =>  $Attachment->head->as_string,
                                        Subject       =>  $Subject,
                                        Content         => $Body,
                                        Filename => $Filename, );
+        unless ($id) {
+            $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
+        }
+
         return ($id);
     }
 }
