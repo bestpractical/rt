@@ -44,6 +44,7 @@ exit(0);
 $args{'with-MASON'} = 1;
 $args{'with-CORE'} = 1;
 $args{'with-CLI'} =1; 
+$args{'with-MAILGATE'} =1; 
 if ($] < 5.007) {
 $args{'with-I18N-COMPAT'} = 1;
 }
@@ -114,6 +115,13 @@ Digest::MD5
 CGI::Cookie 1.20
 Storable
 Apache::Session 1.53
+.
+
+$deps{'MAILGATE'} = [ _( << '.') ];
+HTML::TreeBuilder
+HTML::FormatText
+Getopt::Long
+LWP::UserAgent
 .
 
 $deps{'CLI'} = [ _( << '.') ];

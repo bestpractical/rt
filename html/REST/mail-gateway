@@ -1,0 +1,75 @@
+<%ARGS>
+$message
+$queue => 1
+$action => "correspond"
+$ticketid => 0
+</%ARGS>
+<%init>
+
+use MIME::Parser;
+use RT::Interface::Email qw(MailError Gateway ParseMIMEEntity);
+
+# This needs to be moved to the email package
+my ( $Item, $Head ) = ParseMIMEEntity( $message->[-1] );
+
+my ( $CurrentUser, $AuthStat );
+
+# Authentication Level
+# 0 - User may not do anything (Not used at the moment)
+# 1 - Normal user
+# 2 - User is allowed to specify status updates etc. a la
+#     enhanced-mailgate
+
+push @RT::MailPlugins, "Auth::MailFrom"    # Since this needs loading
+  unless @RT::MailPlugins;
+
+for (@RT::MailPlugins) {
+    my $Code;
+    my $NewAuthStat;
+    if ( ref($_) eq "CODE" ) {
+        $Code = $_;
+    }
+    else {
+        $_ = "RT::Interface::Email::$_" unless /^RT::Interface::Email::/;
+        eval "require $_;";
+        if ($@) {
+            die ("Couldn't load module $_: $@");
+            next;
+        }
+        no strict 'refs';
+        if ( !defined( $Code = *{ $_ . "::GetCurrentUser" }{CODE} ) ) {
+            die ("No GetCurrentUser code found in $_ module");
+            next;
+        }
+    }
+
+    ( $CurrentUser, $NewAuthStat ) = $Code->( $Item, $CurrentUser, $AuthStat );
+
+    # You get the highest level of authentication you were assigned.
+    last if $AuthStat == -1;
+    $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
+}
+
+if ( !$CurrentUser or !$CurrentUser->Id or $AuthStat == -1 ) {
+
+    # If the plugins refused to create one, they lose.
+    MailError(
+        Subject     => "Could not load a valid user",
+        Explanation => <<EOT,
+RT could not load a valid user, and RT's configuration does not allow
+for the creation of a new user for your email.
+EOT
+        MIMEObj  => $Item,
+        LogLevel => 'error' )
+      unless $AuthStat == -1;
+}
+else {
+
+    # Now do the work and return something sensible.
+    my ( $status, $error ) =
+      Gateway( $Item, $CurrentUser, $AuthStat, $queue, $action, $ticketid );
+
+    if ($status) { $m->out("ok"); }
+    else { $m->out("not ok - $error") }
+}
+</%init>

@@ -87,9 +87,14 @@ $Error => undef
 </%ARGS>
 
 <%INIT>
-if ($Error && $session{'SessionType'} eq 'REST') {
+if ($session{'SessionType'} eq 'REST') {
         $r->content_type('text/plain');
-        $m->out($Error);
+        if ($Error) {
+
+                $m->out($Error);
+        } else {
+                $m->out(loc("Not logged in"));
+        }
         $m->abort();
 }
 

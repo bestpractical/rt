@@ -1,396 +1,213 @@
-#!@PERL@ -w
-# BEGIN LICENSE BLOCK
-# 
-# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# 
-# (Except where explictly superceded by other copyright notices)
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
-# 
-# 
-# END LICENSE BLOCK
+#!@PERL@
+use Getopt::Long;
+use LWP::UserAgent;
 
-# This software is redistributable under the terms of the GNU GPL
+use constant EX_TEMPFAIL => 75;
 
-=head1 TESTING
+my %opts;
+GetOptions( \%opts, "queue=s", "action=s", "url=s", "username=s", "password=s",
+            "jar=s", "help" );
 
-=begin testing
+if ( $opts{help} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage("RT Mail Gateway\n");
+    exit 1;    # Don't want to succeed if this is really an email!
+}
 
-ok(open(GATE ,"| perl $RT::BinPath/rt-mailgate --action correspond --queue general"));
-print GATE <<EOM;
-From: hostmaster\@example.com
-To: rt\@example.com
-Subject: Sample message
+for (qw(username password url)) {
+    die "RT misconfigured!\n\nNo $_ provided to mail gateway!\n"
+      unless $opts{$_};
+}
 
-blah
-blah blah
+undef $/;
+my $message = <>;
+my $ua      = LWP::UserAgent->new();
+$ua->cookie_jar( { file => $opts{jar} } );
 
+my %args = (
+    queue   => $opts{queue},
+    action  => $opts{action},
+    message => [ undef, "message", Content => $message ],
+    SessionType => 'REST',    # Surpress login box
+);
 
-EOM
+# Set up cookie here.
 
-ok(close(GATE), "Closed the pipe");
+my $r = $ua->post( $opts{url} . "/REST/mail-gateway", {%args} );
+check_failure($r);
 
-=end testing
+my $content = $r->content;
+if ( $content =~ /Not logged in/i ) {
+
+    # Cookie wasn't OK, try again with u/p
+    @args{qw(user pass)} = @opts{qw(username password)};
+
+    $r = $ua->post( $opts{url} . "/REST/mail-gateway", {%args} );
+    check_failure($r);
+    $content = $r->content;
+    if ( $content =~ /Not logged in/i ) {    # No joy at all
+        die <<EOF;
+Invalid credentials
+
+The administrator of this RT instance failed to set up the credentials
+for the mail gateway correctly.
+EOF
+    }
+}
+
+if ( $content !~ /ok/ ) {
+
+    # This also catches "not ok". This is deliberate. It's not the
+    # server's fault if the mail is bogus. We just want to know that
+    # *something* came out of the server.
+    die <<EOF
+RT server error. 
+
+The RT server which handled your email did not behave as expected. It
+said:
+
+$content
+EOF
+}
+
+sub check_failure {
+    my $r = shift;
+    return if $r->is_success();
+
+    # This ordinarily oughtn't to be able to happen, suggests a bug in RT.
+    # So only load these heavy modules when they're needed.
+    require HTML::TreeBuilder;
+    require HTML::FormatText;
+
+    my $error = $r->error_as_HTML;
+    my $tree  = HTML::TreeBuilder->new->parse($error);
+    $tree->eof;
+
+    # It'll be a cold day in hell before RT sends out bounces in HTML
+    my $formatter = HTML::FormatText->new( leftmargin  => 0,
+                                           rightmargin => 50 );
+    warn $formatter->format($tree);
+    exit EX_TEMPFAIL;
+}
+
+=head1 NAME
+
+rt-mailgate - Mail interface to RT3.
+
+=head1 SYNOPSIS
+
+    rt-mailgate --help : this text
+
+Usual invocation (from MTA):
+
+    rt-mailgate --action (correspond|comment) --queue queuename 
+                --url http://your.rt.server/ --username mailgate 
+                --password quux --jar /tmp/mailgate/cookies.txt
+
+See C<man rt-mailgate> for more.
+
+=head1 OPTIONS
+
+=over 3
+
+=item C<--action>    
+
+Specifies whether this is a correspondence or comment address.
+
+=item C<--queue>
+
+Reflects which queue this address handles.
+
+=item C<--url>
+
+The location of the web server for your RT instance.
+
+=item C<--username>
+
+The user name the mail gateway runs as.
+
+=item C<--password>
+
+The mail gateway user's password.
+
+=item C<--jar>
+
+File in which to save RT cookie. If this is given and contains a valid
+cookie, C<rt-mailgate> will present this to the web server instead of
+the username and password. If this is given and doesn't contain a valid
+cookie, the mailgate will log in and store the cookie for next time.
+
+=head1 DESCRIPTION
+
+The RT mail gateway is the primary mechanism for communicating with RT
+via email. This program simply directs the email to the RT web server,
+which handles filing correspondence and sending out any required mail.
+It is designed to be run as part of the mail delivery process, either
+called directly by the MTA or C<procmail>, or in a F<.forward> or
+equivalent.
+
+=head1 SETUP
+
+Much of the set up of the mail gateway depends on your MTA and mail
+routing configuration. However, you will need first of all to create an
+RT user for the mail gateway and assign it a password; this helps to
+ensure that mail coming into the web server did originate from the
+gateway.
+
+Next, you need to route mail to C<rt-mailgate> for the queues you're
+monitoring. For instance, if you're using F</etc/aliases> and you have a
+"bugs" queue, you will want something like this:
+
+    bugs:         "|/opt/rt3/bin/rt-mailgate --queue bugs --action correspond
+              --url http://rt.mycorp.com/ --user mailgate --password Quux"
+
+    bugs-comment: "|/opt/rt3/bin/rt-mailgate --queue bugs --action comment
+              --url http://rt.mycorp.com/ --user mailgate --password Quux"
+
+Note that you don't have to run your RT server on your mail server, as
+the mail gateway will happily relay to a different machine.
+
+=head1 CUSTOMIZATION
+
+By default, the mail gateway will accept mail from anyone. However,
+there are situations in which you will want to authenticate users
+before allowing them to communicate with the system. You can do this
+via a plug-in mechanism in the RT configuration.
+
+You can set the array C<@RT::MailPlugins> to be a list of plugins. The
+default plugin, if this is not given, is C<Auth::MailFrom> - that is,
+authentication of the person is done based on the C<From> header of the
+email. If you have additional filters or authentication mechanisms, you
+can list them here and they will be called in order:
+
+    @RT::MailPlugins = (
+        "Filter::SpamAssassin",
+        "Auth::LDAP",
+        # ...
+    );
+
+See the documentation for any additional plugins you have.
+
+You may also put Perl subroutines into the C<@RT::MailPlugins> array, if
+they behave as described below.
+
+=head1 WRITING PLUGINS
+
+What's actually going on in the above is that C<@RT::MailPlugins> is a
+list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
+to form a package name, and then C<use>'s this module. The module is
+expected to provide a C<GetCurrentUser> subroutine, which takes three
+parameters: a C<MIME::Entity> object representing the email, and the
+C<RT::CurrentUser> object and authentication level returned from the
+previous plugin.
+
+It returns two values, the new C<RT::CurrentUser> object, and the new
+authentication level. The authentication level can be zero, not allowed
+to communicate with RT at all, (a "permission denied" error is mailed to
+the correspondent) or one, which is the normal mode of operation.
+Additionally, if C<-1> is returned, then the processing of the plug-ins
+stops immediately and the message is ignored. 
 
 =cut
 
-
-use strict;
-
-use lib "@RT_LIB_PATH@";
-
-use RT;
-use RT::Interface::Email  qw(CleanEnv  MailError);
-
-#Clean out all the nasties from the environment
-CleanEnv();
-
-#Load etc/config.pm and drop privs
-RT::LoadConfig();
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init();
-
-#Drop setgid permissions
-RT::DropSetGIDPermissions();
-
-use RT::Ticket;
-use RT::Queue;
-use RT::EmailParser;
-use MIME::Parser;
-use File::Temp;
-use Mail::Address;
-
-
-#Set some sensible defaults 
-my $Queue = 1;
-my $time = time;
-my $Action = "correspond";  
-
-my ($Verbose, $ReturnTid, $Debug);
-my ($From, $TicketId, $Subject,$SquelchReplies);
-
-# using --owner-from-extension, this will let you set ticket owner on create
-my $AssignTicketTo = undef;
-my ($status, $msg);
-
-# {{{ parse commandline 
-
-while (my $flag = shift @ARGV) {
-    if (($flag eq '-v') or ($flag eq '--verbose')) {
-	$Verbose = 1;
-    }
-    if (($flag eq '-t') or ($flag eq '--ticketid')) {
-	$ReturnTid = 1;
-    }
-    
-    if (($flag eq '-d') or ($flag eq '--debug')) {
-	$RT::Logger->debug("Debug mode enabled\n");
-	$Debug = 1;
-      }
-    
-    if (($flag eq '-q') or ($flag eq '--queue')) {
-	$Queue = shift @ARGV;
-    } 
-    if ($flag eq '--ticket-id-from-extension') {
-       $TicketId = $ENV{'EXTENSION'};
-    }
-    if ($flag eq '--queue-from-extension') {
-       $Queue = $ENV{'EXTENSION'};
-    }
-    if ($flag eq '--owner-from-extension') {
-        $AssignTicketTo = $ENV{'EXTENSION'};
-    }
-
-    if (($flag eq '-a') or ($flag eq '--action')) {
-	  $Action = shift @ARGV;
-    } 
-    
-    
-}
-
-# }}}
-# get the current mime entity from stdin
-my $message = RT::EmailParser->new($RT::Nobody);
-my $retval = $message->ParseMIMEEntityFromSTDIN();
-#TODO refactor this to handle errors
-
-die unless $retval;
-
-
-#Get someone to send runtime errors to;
-my $ErrorsTo = $message->ParseErrorsToAddressFromHead();
-$RT::Logger->debug("Errors to address is $ErrorsTo");
-#Get us a current user object.
-my $CurrentUser = $message->GetCurrentUser($ErrorsTo);
-
-# We've already performed a warning and sent the mail off to somewhere safe ($RTOwner).
-#  this is _exceedingly_ unlikely but we don't want to keep going if we don't have a current user
-
-unless ($CurrentUser->Id) {
-        $RT::Logger->crit("Couldn't find a user object for this message");
-	exit(1);
-}
-
-my $MessageId = $message->Head->get('Message-Id') || "<no-message-id-".time.rand(2000)."\@.$RT::Organization>";
-
-#Pull apart the subject line
-$Subject = $message->Head->get('Subject') || "";
-chomp $Subject;
-
-# Get the ticket ID unless it's already set
-$TicketId = $message->ParseTicketId($Subject) unless ($TicketId);
-
-#Set up a queue object
-my $QueueObj = RT::Queue->new($CurrentUser);
-$QueueObj->Load($Queue);
-unless ($QueueObj->id ) {
-  MailError(To => $RT::OwnerEmail,
-                  Subject => $CurrentUser->loc("RT Bounce: [_1]", $Subject),
-                  Explanation => $CurrentUser->loc("RT couldn't find the queue: [_1]", $Queue),
-                  MIMEObj => $message->Entity);
-
-}
-
-# {{{ Lets check for mail loops of various sorts.
-
-my $IsAutoGenerated = $message->CheckForAutoGenerated();
-
-my $IsSuspiciousSender = $message->CheckForSuspiciousSender();
-
-my $IsALoop = $message->CheckForLoops();
-
-
-#If the message is autogenerated, we need to know, so we can not 
-# send mail to the sender
-if ($IsSuspiciousSender || $IsAutoGenerated || $IsALoop) {
-    $SquelchReplies = 1;
-
-    $ErrorsTo = $RT::OwnerEmail;
-    
-    #TODO: Is what we want to do here really 
-    #  "Make the requestor cease to get mail from RT"?
-    # This might wreak havoc with vacation-mailing users.
-    # Maybe have a "disabled for bouncing" state that gets
-    # turned off when we get a legit incoming message
-
-}
-
-
-# {{{ Warn someone  if it's a loop
-
-# Warn someone if it's a loop, before we drop it on the ground
-if ($IsALoop) {
-    $RT::Logger->crit("RT Received mail ($MessageId) from itself.");
-    
-    #Should we mail it to RTOwner?
-    if ($RT::LoopsToRTOwner) {
-	MailError(To => $RT::OwnerEmail,
-		  Subject => $CurrentUser->loc("RT Bounce: [_1]", $Subject),
-		  Explanation => $CurrentUser->loc("RT thinks this message may be a bounce"),
-		  MIMEObj => message->Entity);
-	
-	#Do we actually want to store it?
-	exit unless ($RT::StoreLoops);
-    }
-}
-
-# }}}
-
-
-   #Don't let the user stuff the RT-Squelch-Replies-To header.
-    if ($message->Head->get('RT-Squelch-Replies-To')) {
-        $message->Head->add('RT-Relocated-Squelch-Replies-To',
-                   $message->Head->get('RT-Squelch-Replies-To'));
-        $message->Head->delete('RT-Squelch-Replies-To')
-    }
-
-
-if ($SquelchReplies) {
-    ## TODO: This is a hack.  It should be some other way to
-    ## indicate that the transaction should be "silent".
-
-    my ($Sender, $junk) = $message->ParseSenderAddressFromHead();
-    $message->Head->add('RT-Squelch-Replies-To', $Sender);
-}
-
-# }}}
-
-
-# {{{ If we require that the sender be found in an external DB and they're not
-# forward this message to RTOwner
-
-
-if ($RT::LookupSenderInExternalDatabase && 
-    $RT::SenderMustExistInExternalDatabase )  {
-
-    MailError(To => $RT::OwnerEmail,
-	      Subject => $CurrentUser->loc("RT Bounce: [_1]", $Subject),
-	      Explanation => $CurrentUser->loc("RT couldn't find requestor via its external database lookup"),
-	      MIMEObj => $message->Entity);
-    
-}
-
-# }}}
-
-# {{{ elsif we don't have a ticket Id, we're creating a new ticket
-
-
-
-elsif (!defined($TicketId)) {
-    
-    # {{{ Create a new ticket
-    if ($Action =~ /correspond/) {
-	
-	#    open a new ticket 
-	my @Requestors = ($CurrentUser->id);
-	
-	my @Cc;
-	if ($RT::ParseNewMessageForTicketCcs) {
-		@Cc =$message->ParseCcAddressesFromHead(
-					CurrentUser => $CurrentUser,
-					QueueObj => $QueueObj );
-	}
-
-	my $Ticket = RT::Ticket->new($CurrentUser);
-	my ($id, $Transaction, $ErrStr) = 
-	  $Ticket->Create ( Queue => $Queue,
-			    Subject => $Subject,
-                            Owner => $AssignTicketTo,
-			    Requestor => \@Requestors,
-			    Cc => \@Cc,
-			    MIMEObj => $message->Entity
-			  );
-	if ($id == 0 ) {
-	    MailError( To => $ErrorsTo,
- 		       Subject => $CurrentUser->loc("Ticket creation failed"),
-		       Explanation => $ErrStr,
-		       MIMEObj => $message->Entity
-		     );
-	    $RT::Logger->error("Create failed: $id, $Transaction, $ErrStr");
-	}	
-    }
-
-    # }}}
-    
-    else {
-	#TODO Return an error message
-	MailError( To => $ErrorsTo,
-		   Subject => $CurrentUser->loc("No ticket id specified"),
-		   Explanation => $CurrentUser->loc("[_1] aliases require a TicketId to work on", $Action),
-		   MIMEObj => $message->Entity
-		 );
-	
-	$RT::Logger->crit($Action." aliases require a TicketId to work on ".
-			  "(from ".$CurrentUser->UserObj->EmailAddress.") ".
-			  $MessageId);
-    }
-}
-
-# }}}
-
-# {{{ If we've got a ticket ID, update the ticket
-
-else {
-    
-    #   If the action is comment, add a comment.
-    if ($Action =~ /comment/i){
-	
-	my $Ticket = RT::Ticket->new($CurrentUser);
-	$Ticket->Load($TicketId);
-	unless ($Ticket->Id) {
-	    MailError( To => $ErrorsTo,
-		       Subject => $CurrentUser->loc("Comment not recorded"),
-		       Explanation => $CurrentUser->loc("Could not find a ticket with id [_1]", $TicketId),
-		       MIMEObj => $message->Entity
-		     );
-	    #Return an error message saying that Ticket "#foo" wasn't found.
-	}
-	
-	($status, $msg) = $Ticket->Comment(MIMEObj=>$message->Entity);
-	unless ($status) {
-	    #Warn the sender that we couldn't actually submit the comment.
-	    MailError( To => $ErrorsTo,
-		       Subject => $CurrentUser->loc("Comment not recorded"),
-		       Explanation => $msg,
-		       MIMEObj => $message->Entity
-		     );
-	}	
-    }
-
-    # If the message is correspondence, add it to the ticket
-    elsif ($Action =~ /correspond/i) {
-	my $Ticket = RT::Ticket->new($CurrentUser);
-	$Ticket->Load($TicketId);
-	
-	#TODO: Check for error conditions
-	($status, $msg) = $Ticket->Correspond(MIMEObj => $message->Entity);
-	unless ($status) {
-
-	    #Return mail to the sender with an error
-	    MailError( To => $ErrorsTo,
-		       Subject => $CurrentUser->loc("Correspondence not recorded"),
-		       Explanation => $msg,
-		       MIMEObj => $message->Entity
-		     );
-	}
-    }
-
-    else {
-	#Return mail to the sender with an error
-	    MailError( To => $ErrorsTo,
-		       Subject => $CurrentUser->loc("RT Configuration error"),
-		       Explanation => $CurrentUser->loc("'[_1]' not a recognized action. ", $Action).
-		                      $CurrentUser->loc("Your RT administrator has misconfigured the mail aliases which invoke RT"),
-		       MIMEObj => $message->Entity
-		     );
-
-	$RT::Logger->crit(loc("[_1] type unknown for $MessageId", $Action));
-	
-    }
-    
-}
-
-# }}}
-
-$RT::Handle->Disconnect();
-
-
-# Everything below this line is a helper sub. most of them will eventually
-# move to Interface::Email
-
-#When we call die, trap it and log->crit with the value of the die.
-$SIG{__DIE__}  = sub {
-    unless ($^S || !defined $^S ) {
-        $RT::Logger->crit("$_[0]");
-	MailError( To => $ErrorsTo,  
-		   Bcc => $RT::OwnerEmail,
-		   Subject => $CurrentUser->loc("RT Critical error. Message not recorded!"),
-		   Explanation => "$_[0]",
-		   MIMEObj => $message->Entity
-		 );
-	exit(-1);
-    }
-    else {
-        #Get out of here if we're in an eval
-        die $_[0];
-    }
-};
-
-
-
-1;
