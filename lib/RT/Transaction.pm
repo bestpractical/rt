@@ -644,6 +644,16 @@ sub BriefDescription  {
 	    return ($self->Field . " changed from " . $q1->Name . " to ".
 		    $q2->Name);
 	}
+
+        # Write the date/time change at local time:                    
+    elsif ($self->Field =~  /Due|Starts|Started|Told/) {           
+        my $t1 = new RT::Date($self->CurrentUser);                 
+        $t1->Set(Format => 'ISO', Value => $self->NewValue);       
+        my $t2 = new RT::Date($self->CurrentUser);                 
+        $t2->Set(Format => 'ISO', Value => $self->OldValue);       
+        return ($self->Field . " changed from " . $t2->AsString .  
+                    " to ".$t1->AsString);      
+    }                
 	else {
 	    return ($self->Field . " changed from " . $self->OldValue . 
 		    " to ".$self->NewValue);
