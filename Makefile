@@ -36,7 +36,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	3
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	4
+RT_VERSION_PATCH	=	5pre1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -55,8 +55,8 @@ LIBS_OWNER 		=	root
 # Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
-WEB_USER		=	www-data
-WEB_GROUP		=	www-data
+WEB_USER		=	www
+WEB_GROUP		=	www
 
 # {{{ Files and directories 
 
