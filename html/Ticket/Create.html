@@ -208,7 +208,9 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->CustomFields();
 
-if ($QueueObj->DefaultDueIn) {
+# if no due date has been set explicitly, then use the
+# queue's default if it exists
+if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new($session{'CurrentUser'});
     $default_due->SetToNow();
     $default_due->AddDays($QueueObj->DefaultDueIn);
