@@ -272,7 +272,7 @@ PACKAGE_BUGREPORT='rt-3.0-bugs@fsck.com'
 
 ac_unique_file="lib/RT.pm"
 ac_default_prefix=/opt/rt3
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS rt_version_major rt_version_minor rt_version_patch INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PERL exp_prefix exp_exec_prefix exp_bindir exp_sbindir exp_sysconfdir exp_mandir exp_libdir exp_datadir htmldir exp_htmldir exp_localstatedir logfiledir exp_logfiledir masonstatedir exp_masonstatedir sessionstatedir exp_sessionstatedir customdir exp_customdir customhtmldir exp_customhtmldir customlexdir exp_customlexdir rt_layout_name RTGROUP BIN_OWNER LIBS_OWNER LIBS_GROUP DB_TYPE DB_HOST DB_PORT DB_RT_HOST DB_DBA DB_DATABASE DB_RT_USER DB_RT_PASS WEB_USER WEB_GROUP RT_VERSION_MAJOR RT_VERSION_MINOR RT_VERSION_PATCH RT_PATH RT_LOCAL_PATH RT_LIB_PATH RT_ETC_PATH CONFIG_FILE_PATH RT_BIN_PATH RT_SBIN_PATH RT_VAR_PATH RT_MAN_PATH MASON_DATA_PATH MASON_SESSION_PATH MASON_HTML_PATH MASON_LOCAL_HTML_PATH LOCAL_LEXICON_PATH DESTDIR RT_LOG_PATH LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS rt_version_major rt_version_minor rt_version_patch INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PERL exp_prefix exp_exec_prefix exp_bindir exp_sbindir exp_sysconfdir exp_mandir exp_libdir exp_datadir htmldir exp_htmldir manualdir exp_manualdir exp_localstatedir logfiledir exp_logfiledir masonstatedir exp_masonstatedir sessionstatedir exp_sessionstatedir customdir exp_customdir customhtmldir exp_customhtmldir customlexdir exp_customlexdir rt_layout_name RTGROUP BIN_OWNER LIBS_OWNER LIBS_GROUP DB_TYPE DB_HOST DB_PORT DB_RT_HOST DB_DBA DB_DATABASE DB_RT_USER DB_RT_PASS WEB_USER WEB_GROUP RT_VERSION_MAJOR RT_VERSION_MINOR RT_VERSION_PATCH RT_PATH RT_DOC_PATH RT_LOCAL_PATH RT_LIB_PATH RT_ETC_PATH CONFIG_FILE_PATH RT_BIN_PATH RT_SBIN_PATH RT_VAR_PATH RT_MAN_PATH MASON_DATA_PATH MASON_SESSION_PATH MASON_HTML_PATH MASON_LOCAL_HTML_PATH LOCAL_LEXICON_PATH DESTDIR RT_LOG_PATH LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1382,14 +1382,16 @@ echo "$as_me: WARNING: Layout file $srcdir/config.layout not found" >&2;}
 		rt_layout_name=no
 	else
 		pldconf=./config.pld
-		$PERL  -p -e "\$layout = '$LAYOUT';"  -e '
+		$PERL  -0777 -p -e "\$layout = '$LAYOUT';"  -e '
 		s/.*<Layout\s+$layout>//gims;
-		s/\<\/Layout\>.*$//gism;
-		s/^#.*$//;
-		s/^\s+//gi;
-		s/\s+$/\n/gi;
+		s/\<\/Layout\>.*//s;
+		s/^#.*$//m;
+		s/^\s+//gim;
+		s/\s+$/\n/gim;
+		s/\+$/\/rt3/gim;
 		# m4 will not let us just use $srcdir/config.layout, we need $1
-		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\$$1" = "xNONE" || test "x\$$1" = "x") && $1=$2/gi;
+		s/^\s*((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|info|man)dir)\s*:\s*(.*)$/$1=$2/gim;
+		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\$$1" = "xNONE" || test "x\$$1" = "x") && $1=$2/gim;
 		 ' < $srcdir/config.layout > $pldconf
 
 		if test -s $pldconf; then
@@ -1400,31 +1402,11 @@ echo "$as_me: WARNING: Layout file $srcdir/config.layout not found" >&2;}
 				 sysconfdir mandir libdir datadir htmldir \
 				 localstatedir logfiledir masonstatedir \
 				 sessionstatedir customdir customhtmldir \
-				 customlexdir; do
+				 customlexdir manualdir; do
 				eval "val=\"\$$var\""
-				case $val in
-				*+)
-					val=`echo $val | sed -e 's;\+$;;'`
-					eval "$var=\"\$val\""
-					autosuffix=yes
-					;;
-				*)
-					autosuffix=no
-					;;
-				esac
 				val=`echo $val | sed -e 's:\(.\)/*$:\1:'`
 				val=`echo $val |
 					sed -e 's:[\$]\([a-z_]*\):$\1:g'`
-				if test "$autosuffix" = "yes"; then
-					if echo $val | grep rt3 >/dev/null; then
-						addtarget=no
-					else
-						addtarget=yes
-					fi
-					if test "$addtarget" = "yes"; then
-						val="$val/rt3"
-					fi
-				fi
 				eval "$var='$val'"
 			done
 
@@ -1546,6 +1528,19 @@ echo "$as_me: WARNING: Layout file $srcdir/config.layout not found" >&2;}
 		ap_cur=`eval "echo ${ap_cur}"`
 	done
 	exp_htmldir="${ap_cur}"
+
+
+
+
+
+
+	ap_last=''
+	ap_cur='$manualdir'
+	while test "x${ap_cur}" != "x${ap_last}"; do
+		ap_last="${ap_cur}"
+		ap_cur=`eval "echo ${ap_cur}"`
+	done
+	exp_manualdir="${ap_cur}"
 
 
 
@@ -1812,6 +1807,8 @@ RT_VERSION_PATCH=${rt_version_patch}
 
 RT_PATH=${exp_prefix}
 
+RT_DOC_PATH=${exp_manualdir}
+
 RT_LOCAL_PATH=${exp_customdir}
 
 RT_LIB_PATH=${exp_libdir}
@@ -1844,7 +1841,7 @@ RT_LOG_PATH=${exp_logfiledir}
 
 
 
-                                                                                                                                                                          ac_config_files="$ac_config_files Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/02regression.t sbin/initdb sbin/testdeps sbin/insert_approval_scrips bin/enhanced-mailgate bin/mason_handler.fcgi bin/mason_handler.svc bin/rt bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/rtadmin bin/webmux.pl"
+                                                                                                                                                                                              ac_config_files="$ac_config_files Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/01harness.t lib/t/02regression.t lib/t/03web.pl sbin/initdb sbin/testdeps sbin/insert_approval_scrips bin/enhanced-mailgate bin/mason_handler.fcgi bin/mason_handler.svc bin/rt bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/rtadmin bin/webmux.pl"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2380,7 +2377,9 @@ do
   "etc/RT_Config.pm" ) CONFIG_FILES="$CONFIG_FILES etc/RT_Config.pm" ;;
   "lib/RT.pm" ) CONFIG_FILES="$CONFIG_FILES lib/RT.pm" ;;
   "lib/t/00smoke.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/00smoke.t" ;;
+  "lib/t/01harness.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/01harness.t" ;;
   "lib/t/02regression.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/02regression.t" ;;
+  "lib/t/03web.pl" ) CONFIG_FILES="$CONFIG_FILES lib/t/03web.pl" ;;
   "sbin/initdb" ) CONFIG_FILES="$CONFIG_FILES sbin/initdb" ;;
   "sbin/testdeps" ) CONFIG_FILES="$CONFIG_FILES sbin/testdeps" ;;
   "sbin/insert_approval_scrips" ) CONFIG_FILES="$CONFIG_FILES sbin/insert_approval_scrips" ;;
@@ -2490,6 +2489,8 @@ s,@exp_libdir@,$exp_libdir,;t t
 s,@exp_datadir@,$exp_datadir,;t t
 s,@htmldir@,$htmldir,;t t
 s,@exp_htmldir@,$exp_htmldir,;t t
+s,@manualdir@,$manualdir,;t t
+s,@exp_manualdir@,$exp_manualdir,;t t
 s,@exp_localstatedir@,$exp_localstatedir,;t t
 s,@logfiledir@,$logfiledir,;t t
 s,@exp_logfiledir@,$exp_logfiledir,;t t
@@ -2522,6 +2523,7 @@ s,@RT_VERSION_MAJOR@,$RT_VERSION_MAJOR,;t t
 s,@RT_VERSION_MINOR@,$RT_VERSION_MINOR,;t t
 s,@RT_VERSION_PATCH@,$RT_VERSION_PATCH,;t t
 s,@RT_PATH@,$RT_PATH,;t t
+s,@RT_DOC_PATH@,$RT_DOC_PATH,;t t
 s,@RT_LOCAL_PATH@,$RT_LOCAL_PATH,;t t
 s,@RT_LIB_PATH@,$RT_LIB_PATH,;t t
 s,@RT_ETC_PATH@,$RT_ETC_PATH,;t t
@@ -2756,7 +2758,13 @@ s,@INSTALL@,$ac_INSTALL,;t t
     lib/t/00smoke.t ) chmod +x sbin/initdb
 		chmod +x sbin/testdeps
                  ;;
+    lib/t/01harness.t ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
     lib/t/02regression.t ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    lib/t/03web.pl ) chmod +x sbin/initdb
 		chmod +x sbin/testdeps
                  ;;
     sbin/initdb ) chmod +x sbin/initdb

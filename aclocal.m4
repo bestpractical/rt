@@ -69,14 +69,16 @@ AC_DEFUN([RT_LAYOUT],[
 		rt_layout_name=no
 	else
 		pldconf=./config.pld
-		$PERL  -p -e "\$layout = '$2';"  -e '
+		$PERL  -0777 -p -e "\$layout = '$2';"  -e '
 		s/.*<Layout\s+$layout>//gims; 
-		s/\<\/Layout\>.*$//gism; 
-		s/^#.*$//;
-		s/^\s+//gi;
-		s/\s+$/\n/gi;
+		s/\<\/Layout\>.*//s; 
+		s/^#.*$//m;
+		s/^\s+//gim;
+		s/\s+$/\n/gim;
+		s/\+$/\/rt3/gim;
 		# m4 will not let us just use $1, we need @S|@1
-		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gi;
+		s/^\s*((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|info|man)dir)\s*:\s*(.*)$/@S|@1=@S|@2/gim;
+		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gim;
 		 ' < $1 > $pldconf
 
 		if test -s $pldconf; then
@@ -87,31 +89,11 @@ AC_DEFUN([RT_LAYOUT],[
 				 sysconfdir mandir libdir datadir htmldir \
 				 localstatedir logfiledir masonstatedir \
 				 sessionstatedir customdir customhtmldir \
-				 customlexdir; do
+				 customlexdir manualdir; do
 				eval "val=\"\$$var\""
-				case $val in
-				*+)
-					val=`echo $val | sed -e 's;\+$;;'`
-					eval "$var=\"\$val\""
-					autosuffix=yes
-					;;
-				*)
-					autosuffix=no
-					;;
-				esac
 				val=`echo $val | sed -e 's:\(.\)/*$:\1:'`
 				val=`echo $val | 
 					sed -e 's:[\$]\([a-z_]*\):${\1}:g'`
-				if test "$autosuffix" = "yes"; then
-					if echo $val | grep rt3 >/dev/null; then
-						addtarget=no
-					else
-						addtarget=yes
-					fi
-					if test "$addtarget" = "yes"; then
-						val="$val/rt3"
-					fi
-				fi
 				eval "$var='$val'"
 			done
 			changequote([,])
@@ -129,6 +111,7 @@ AC_DEFUN([RT_LAYOUT],[
 	RT_SUBST_EXPANDED_ARG(libdir)
 	RT_SUBST_EXPANDED_ARG(datadir)
 	RT_SUBST_EXPANDED_ARG(htmldir)
+	RT_SUBST_EXPANDED_ARG(manualdir)
 	RT_SUBST_EXPANDED_ARG(localstatedir)
 	RT_SUBST_EXPANDED_ARG(logfiledir)
 	RT_SUBST_EXPANDED_ARG(masonstatedir)

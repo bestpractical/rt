@@ -70,6 +70,7 @@ RT_SBIN_PATH		=	/opt/rt3/sbin
 RT_LIB_PATH		=	/opt/rt3/lib
 RT_MAN_PATH		=	/opt/rt3/man
 RT_VAR_PATH		=	/opt/rt3/var
+RT_DOC_PATH		=	/opt/rt3/share/doc
 RT_LOCAL_PATH		=	/opt/rt3/local
 LOCAL_LEXICON_PATH	=	/opt/rt3/local/po
 MASON_HTML_PATH		=	/opt/rt3/share/html
@@ -194,7 +195,7 @@ upgrade-instruct:
 
 upgrade: dirs upgrade-noclobber  upgrade-instruct
 
-upgrade-noclobber: libs-install html-install bin-install  fixperms
+upgrade-noclobber: libs-install html-install bin-install local-install doc-install fixperms
 
 
 # {{{ dependencies
@@ -209,12 +210,9 @@ fixdeps:
 # {{{ fixperms
 fixperms:
 	# Make the libraries readable
-	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
 	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
-
-	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_BIN_PATH)
-	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_BIN_PATH)
 
 
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)
@@ -263,6 +261,9 @@ fixperms-nosetgid: fixperms
 dirs:
 	mkdir -p $(DESTDIR)/$(RT_LOG_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)
+	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)/cache
+	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)/etc
+	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)/obj
 	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
@@ -271,7 +272,7 @@ dirs:
 
 install: config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install bin-install sbin-install html-install
+files-install: libs-install etc-install bin-install sbin-install html-install local-install doc-install
 
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
@@ -319,6 +320,11 @@ html-install:
 	cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
+# {{{ doc-install
+doc-install:
+	cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
+# }}}
+
 # {{{ etc-install
 
 etc-install:
@@ -343,6 +349,7 @@ sbin-install:
 # {{{ bin-install
 
 bin-install:
+    	# FIXME: fixperm here
 	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
 	cp -rp \
 		bin/rtadmin \
@@ -354,6 +361,12 @@ bin-install:
 		bin/rt-crontool \
 		bin/rt-commit-handler \
 		$(DESTDIR)/$(RT_BIN_PATH)
+# }}}
+
+# {{{ local-install
+local-install:
+	-cp -rp ./local/html/* $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	-cp -rp ./local/po/* $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside

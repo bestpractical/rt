@@ -155,6 +155,7 @@ AC_SUBST(RT_VERSION_PATCH,		${rt_version_patch})
 
 dnl layout paths
 AC_SUBST([RT_PATH],			${exp_prefix})
+AC_SUBST([RT_DOC_PATH],			${exp_manualdir})
 AC_SUBST([RT_LOCAL_PATH],		${exp_customdir})
 AC_SUBST([RT_LIB_PATH],			${exp_libdir})
 AC_SUBST([RT_ETC_PATH],			${exp_sysconfdir})
@@ -177,7 +178,9 @@ AC_CONFIG_FILES([Makefile
 		 etc/RT_Config.pm
 		 lib/RT.pm
                  lib/t/00smoke.t
+                 lib/t/01harness.t
                  lib/t/02regression.t
+                 lib/t/03web.pl
 		 sbin/initdb
                  sbin/testdeps
  		 sbin/insert_approval_scrips

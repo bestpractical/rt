@@ -24,8 +24,9 @@
   sysconfdir:		${prefix}/etc
   mandir:		${prefix}/man
   libdir:		${prefix}/lib
-  datadir:		${prefix}
+  datadir:		${prefix}/share
   htmldir:		${datadir}/html
+  manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
@@ -33,4 +34,24 @@
   customdir:		${prefix}/local
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+</Layout>
+
+<Layout FreeBSD>
+  prefix:		/usr/local
+  exec_prefix:		${prefix}
+  bindir:		${exec_prefix}/bin
+  sbindir:		${exec_prefix}/sbin
+  sysconfdir:		${prefix}/etc+
+  mandir:		${prefix}/man
+  libdir:		${prefix}/lib+
+  datadir:		${prefix}/share+
+  htmldir:		${datadir}/html
+  manualdir:		${prefix}/share/doc+
+  logfiledir:		/var/log
+  localstatedir:	/var/run+
+  masonstatedir:	${localstatedir}/mason_data
+  sessionstatedir:	${localstatedir}/session_data
+  customdir:		${prefix}/share+
+  customhtmldir:	${customdir}/local/html
+  customlexdir:		${customdir}/local/po
 </Layout>

@@ -2230,9 +2230,6 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
 
-If the _reopen attribute is set to a false value, tickets with
-status other than 'new' or 'open' would not be reopened.
-
 
 =cut
 
