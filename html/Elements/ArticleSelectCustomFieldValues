@@ -1,4 +1,9 @@
-<SELECT NAME="<%$Name%>">
+<SELECT NAME="<%$Name%>"
+
+%if ($cf->Type =~ /Multiple/) {
+MULTIPLE
+% }
+>
 % foreach my $item (@{$cf->ValuesObj->ItemsArrayRef}) {
 <OPTION VALUE="<%$item->id%>"
 % 	if ($Selected->{$item->Id}) {
