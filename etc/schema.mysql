@@ -198,7 +198,6 @@ CREATE TABLE Users (
   EmailAddress varchar(120) NULL  ,
   FreeformContactInfo blob NULL  ,
   Organization varchar(200) NULL  ,
-  Privileged integer NULL  ,
   RealName varchar(120) NULL  ,
   NickName varchar(16) NULL  ,
   Lang varchar(16) NULL  ,

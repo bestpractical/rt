@@ -25,8 +25,6 @@ use RT::Ticket;
 use RT::Tickets;
 use RT::ACE;
 use RT::ACL;
-use RT::Watcher;
-use RT::Watchers;
 use RT::Scrip;
 use RT::Scrips;
 use RT::ScripAction;

@@ -34,7 +34,6 @@ the comments for the SetRecipients sub).
 
 =begin testing
 
-ok (require RT::TestHarness);
 ok (require RT::Action::SendPasswordEmail);
 
 =end testing

@@ -26,16 +26,6 @@ ok (require RT::Scrips);
 
 no warnings qw(redefine);
 
-
-# {{{ sub _Init
-sub _Init { 
-  my $self = shift;
-  $self->{'table'} = "Scrips";
-  $self->{'primary_key'} = "id";
-  return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub LimitToQueue 
 
 =head2 LimitToQueue

@@ -100,20 +100,6 @@ sub Limit {
 
 # }}}
 
-# {{{ sub CurrentUser 
-
-=head2 CurrentUser
-
-  Returns the current user as an RT::User object.
-
-=cut
-
-sub CurrentUser  {
-  my $self = shift;
-  return ($self->{'user'});
-}
-# }}}
-
 # {{{ sub ItemsArrayRef
 
 =item ItemsArrayRef

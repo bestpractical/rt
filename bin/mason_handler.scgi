@@ -82,8 +82,6 @@ my $q=$cgi{CGI}; # $q now contains the object tied to %cgi.
     use RT::KeywordSelects;
     use RT::GroupMember;
     use RT::GroupMembers;
-    use RT::Watcher;
-    use RT::Watchers;
     use RT::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;

@@ -28,7 +28,6 @@ $tickets->OrderBy(FIELD => 'Priority',
 <& /Elements/TitleBoxEnd &>
 
 % }
-% }
 %}
 <%ARGS>
 $Ticket=>undef

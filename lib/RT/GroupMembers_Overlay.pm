@@ -100,12 +100,4 @@ sub LimitToMembersOfGroup {
 }
 # }}}
 
-# {{{ sub NewItem 
-
-sub NewItem  {
-    my $self = shift;
-    return(RT::GroupMember->new($self->CurrentUser))
-}
-
-# }}}
 1;

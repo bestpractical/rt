@@ -24,8 +24,6 @@
 <%$Ticket->Status%>
 </TD><TD>
 <%$Ticket->OwnerObj->Name%>
-</TD><TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">Display</A>]
 </TD>
 </TR>
 % }

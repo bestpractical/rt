@@ -734,65 +734,12 @@ sub IsAdminCc {
 # }}}
 
 
-# {{{ sub AdminCcAddresses 
 
-=head2 AdminCcAddresses
-
-Takes nothing. returns a string: All Ticket/Queue AdminCcs.
-
-=cut
-
-sub AdminCcAddresses {
-    my $self = shift;
-
-    return ( $self->AdminCc->MemberEmailAddressesAsString() );
-}
-
-# }}}
-
-# {{{ sub CcAddresses
-
-=head2 CcAddresses
-
-B<Returns> String: All Queue Ccs as a comma delimited set of email addresses.
-
-=cut
-
-sub CcAddresses {
-    my $self = shift;
-
-    return ( $self->Cc->MemberEmailAddressesAsString() );
-}
-
-# }}}
 
 
 # }}}
 
 # {{{ ACCESS CONTROL
-
-# {{{ sub ACL 
-
-=head2 ACL
-
-#Returns an RT::ACL object of ACEs everyone who has anything to do with this queue.
-
-=cut
-
-sub ACL {
-    my $self = shift;
-
-    use RT::ACL;
-    my $acl = new RT::ACL( $self->CurrentUser );
-
-    if ( $self->CurrentUserHasRight('ShowACL') ) {
-        $acl->LimitToQueue( $self->Id );
-    }
-
-    return ($acl);
-}
-
-# }}}
 
 # {{{ sub _Set
 sub _Set {

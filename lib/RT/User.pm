@@ -715,8 +715,6 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'blob', default => ''},
         Organization => 
 		{read => 1, write => 1, type => 'varchar(200)', default => ''},
-        Privileged => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
         RealName => 
 		{read => 1, write => 1, type => 'varchar(120)', default => ''},
         NickName => 

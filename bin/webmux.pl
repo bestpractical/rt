@@ -46,7 +46,6 @@ use Carp;
     use RT::Scrips;
     use RT::Groups;
     use RT::GroupMembers;
-    use RT::Watchers;
     use RT::CustomFields;
     use RT::CustomFieldValues;
     use RT::TicketCustomFieldValues;
@@ -92,46 +91,6 @@ sub handler {
     # We don't need to handle non-text items
     return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
 
-    #This is all largely cut and pasted from mason's session_handler.pl
-
-    my %cookies = Apache::Cookie::parse( $r->header_in('Cookie') );
-
-    eval {
-        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-          ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef ),
-          {
-            Directory     => $RT::MasonSessionDir,
-            LockDirectory => $RT::MasonSessionDir,
-          };
-    };
-
-    if ($@) {
-
-        # If the session is invalid, create a new session.
-        if ( $@ =~ m#^Object does not exist in the data store# ) {
-            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
-              {
-                Directory     => $RT::MasonSessionDir,
-                LockDirectory => $RT::MasonSessionDir,
-              };
-            undef $cookies{'AF_SID'};
-        }
-        else {
-            die
-"RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this directory's permissions are correct.";
-        }
-    }
-
-    if ( !$cookies{'AF_SID'} ) {
-        my $cookie = new Apache::Cookie(
-            $r,
-            -name  => 'AF_SID',
-            -value => $HTML::Mason::Commands::session{_session_id},
-            -path  => '/',
-        );
-        $cookie->bake;
-
-    }
     my $status = $ah->handle_request($r);
     untie %HTML::Mason::Commands::session;
 

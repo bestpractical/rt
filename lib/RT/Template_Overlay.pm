@@ -335,33 +335,6 @@ sub _ParseContent {
 
 # }}}
 
-# {{{ sub QueueObj
-
-=head2 QueueObj
-
-Takes nothing. returns this ticket's queue object
-
-=cut
-
-sub QueueObj {
-    my $self = shift;
-    if ( !defined $self->{'queue'} ) {
-        require RT::Queue;
-        $self->{'queue'} = RT::Queue->new( $self->CurrentUser );
-
-        unless ( $self->{'queue'} ) {
-            $RT::Logger->crit(
-                "RT::Queue->new(" . $self->CurrentUser . ") returned false" );
-            return (undef);
-        }
-        my ($result) = $self->{'queue'}->Load( $self->__Value('Queue') );
-
-    }
-    return ( $self->{'queue'} );
-}
-
-# }}}
-
 # {{{ sub CurrentUserHasQueueRight
 
 =head2 CurrentUserHasQueueRight

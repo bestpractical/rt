@@ -49,7 +49,6 @@ use Carp;
     use RT::Scrips;
     use RT::Groups;
     use RT::GroupMembers;
-    use RT::Watchers;
     use RT::CustomFields;
     use RT::CustomFieldValues;
     use RT::TicketCustomFieldValues;

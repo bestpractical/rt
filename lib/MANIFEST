@@ -100,8 +100,4 @@ RT/User.pm
 RT/User_Overlay.pm
 RT/Users.pm
 RT/Users_Overlay.pm
-RT/Watcher.pm
-RT/Watcher_Overlay.pm
-RT/Watchers.pm
-RT/Watchers_Overlay.pm
 t/regression.t

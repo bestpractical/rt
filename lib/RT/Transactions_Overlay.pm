@@ -40,15 +40,6 @@ sub _Init   {
 }
 # }}}
 
-# {{{ sub NewItem 
-sub NewItem  {
-    my $self = shift;
-    
-    return(RT::Transaction->new($self->CurrentUser));
-}
-# }}}
-
-
 =head2 example methods
 
   Queue RT::Queue or Queue Id

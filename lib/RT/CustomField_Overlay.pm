@@ -356,8 +356,6 @@ sub SingleValue {
 
 # }}}
 
-
-
 # {{{ sub CurrentUserHasQueueRight
 
 =item CurrentUserHasQueueRight

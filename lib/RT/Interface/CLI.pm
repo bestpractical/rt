@@ -58,7 +58,6 @@ BEGIN {
 
 =begin testing
 
-ok(require RT::TestHarness);
 ok(require RT::Interface::CLI);
 
 =end testing

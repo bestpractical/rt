@@ -16,7 +16,6 @@
 
 =begin testing
 
-ok (require RT::TestHarness);
 ok (require RT::Action::Generic);
 
 =end testing

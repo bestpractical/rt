@@ -29,7 +29,6 @@ Net::SMTP
 Params::Validate 0.02
 HTML::Mason 1.02
 CGI::Cookie 1.20
-Apache::Cookie
 Apache::Session 1.53
 Date::Parse
 Date::Format 

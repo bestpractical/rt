@@ -20,7 +20,6 @@ RT::Ticket
 
 =head1 METHODS
 
-
 =cut
 
 package RT::Ticket;
