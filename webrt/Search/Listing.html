@@ -3,11 +3,8 @@
 
 <& /Elements/Header, Title => "Ticket Listing / Queue View" &>
 
-%#TODO: What's this? :)
-%#Foo<% $foo %>bar
-
 %#<& QueueInterpretRestrictionCookies &>
-<TABLE WIDTH=100% border>
+<TABLE WIDTH=100% border=0 cellpadding=1>
 %#<& QueueHeader format="$format" &>
 <TR>
 %foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
@@ -15,11 +12,19 @@
 %}
 </TR>
 
-%my $cnt=0;
-%while (my $Ticket = $session{'tickets'}->Next) {
-%## This doesn't work very well in Netscape:
-%#<TR <% (($cnt++) % 2 == 1) && "class=\"oddline\"" %>>
-<TR <% (($cnt++) % 2 == 1) && "bgcolor=\"eeeeee\"" %>>
+<%PERL>
+my $cnt=0;
+while (my $Ticket = $session{'tickets'}->Next) {
+ my $bgcolor;
+ $cnt++; 
+ if (($cnt % 2) == 1) {
+	$bgcolor = "#cccccc";
+ }
+ else {
+ 	$bgcolor = "#ffffff";
+ }
+</%PERL>
+<TR bgcolor="<%$bgcolor%>" >
 
 %# The ticket view is controlled by config.pm, WebOptions
 

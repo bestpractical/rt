@@ -6,7 +6,13 @@ if (defined ($user) && defined ($pass)){
 		&mc_comp("/Elements/Error", Why => "User Unknown");
 		$m->abort;
 	}
-
+	unless ($session{'CurrentUser'}->IsPassword($pass)) {
+		$session{'CurrentUser'} = undef;
+	        &mc_comp("/Elements/Error", Why => "Wrong Password");
+		
+                $m->abort;
+        }
+	
 	$RT::Logger->log(level=>'info', message=>"$user successfully logged in");
 
         $m->call_next;

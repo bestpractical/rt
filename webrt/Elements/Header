@@ -14,7 +14,7 @@ You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$
 %# TODO: This should be in a separated ToolBar module, together with
 %# the generic stuff in TicketToolBar and a log for linking out:
 
-<form method="get" action="<%$RT::WebURL%>/Ticket/Display.html"><input type="submit" value="Show Ticket"> #<input name="id" size=5></form>
+%#<form method="get" action="<%$RT::WebURL%>/Ticket/Display.html"><input type="submit" value="Show Ticket"> #<input name="id" size=5></form>
 <hr>
 
 <%ARGS>

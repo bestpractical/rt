@@ -199,12 +199,17 @@ sub LoadByEmail {
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  
+
+  $RT::Logger->debug($self->UserId." attempting to authenticate with password '$value'\n");
+  # RT does not allow null passwords 
+  if ((!defined ($value)) or ($value eq '')) {
+	return(undef);
+  } 
   if ($self->Disabled) {
   	$RT::Logger->info("Disabled user ".$self->UserId." tried to log in");
 	return(undef);
   }
-  if ($value == $self->_Value('Password')) {
+  if ($value eq $self->_Value('Password')) {
     return (1);
   }
   else {

@@ -90,16 +90,21 @@ sub Load  {
 
 # {{{ sub IsPassword
 
-#used to check if a password is correct
+=head2 IsPassword
+
+Takes a password as a string.  Passes it off to IsPassword in this
+user's UserObj.  If it is the user's password and the user isn't
+disabled, returns 1.
+
+Otherwise, returns undef.
+
+=cut
+
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  if ($value == $self->_Value('Password')) {
-    return (1);
-  }
-  else {
-    return (undef);
-  }
+  
+  return ($self->UserObj->IsPassword($value)); 
 }
 # }}}
 

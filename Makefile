@@ -195,6 +195,10 @@ WEB_IMAGE_PATH			=	/webrt
 
 WEB_PATH	                =       /webrt
 
+# The user your webserver runs as. needed so that webrt can cache mason
+# objectcode
+WEB_USER			=	nobody
+
 # hostname and domainname
 # todo: docs about when, how and where they will be used
 RT_HOST = `hostname`
@@ -238,6 +242,7 @@ fixperms:
 	chmod 0755 $(WEBRT_CGI_PATH)
 	chmod 4755 $(RT_PERL_MUX)
 	chmod 777  $(WEBRT_DATA_PATH)
+	chown -R $(WEB_USER) $(WEBRT_DATA_PATH)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
