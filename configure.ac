@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.1@$Rev: 2039 $], [rt-3.1-bugs@fsck.com])
+AC_INIT(RT, [3.3.HEAD], [rt-3.1-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components

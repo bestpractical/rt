@@ -92,11 +92,9 @@ sub Next {
  	
     my $Transaction = $self->SUPER::Next();
     if ((defined($Transaction)) and (ref($Transaction))) {
-	if ($Transaction->__Value('Type') =~ /^Comment/ && 
-	    $Transaction->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
-	    return($Transaction);
-	} elsif ($Transaction->__Value('Type') !~ /^Comment/ && 
-		 $Transaction->TicketObj->CurrentUserHasRight('ShowTicket')) {
+    	# If the user can see the transaction's type, then they can 
+	#  see the transaction and we should hand it back.
+	if ($Transaction->Type) {
 	    return($Transaction);
 	}
 
@@ -113,24 +111,6 @@ sub Next {
 }
 # }}}
 
-=head2 example methods
-
-  Queue RT::Queue or Queue Id
-  Ticket RT::Ticket or Ticket Id
-
-
-LimitDate 
-  
-Type TRANSTYPE
-Field STRING
-OldValue OLDVAL
-NewValue NEWVAL
-Data DATA
-TimeTaken
-Actor USEROBJ/USERID
-ContentMatches STRING
-
-=cut
 
 
 1;

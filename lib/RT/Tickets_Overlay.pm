@@ -101,8 +101,8 @@ my %FIELDS =
     Filename        => ['TRANSFIELD',],
     TransactionDate => ['TRANSDATE',],
     Requestor       => ['WATCHERFIELD' => 'Requestor',],
-    CC              => ['WATCHERFIELD' => 'Cc',],
-    AdminCC         => ['WATCHERFIELD' => 'AdminCC',],
+    Cc              => ['WATCHERFIELD' => 'Cc',],
+    AdminCc         => ['WATCHERFIELD' => 'AdminCC',],
     Watcher	    => ['WATCHERFIELD'],
     LinkedTo	    => ['LINKFIELD',],
     CustomFieldValue =>['CUSTOMFIELD',],
@@ -542,14 +542,6 @@ sub _TransLimit {
 
   $sb->_OpenParen;
 
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
-
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
 		 FIELD =>    $field,
@@ -558,6 +550,14 @@ sub _TransLimit {
 		 CASESENSITIVE => 0,
 		 @rest
 		);
+
+  # Join Transactions To Attachments
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   $sb->_CloseParen;
 

@@ -169,21 +169,23 @@ sub InitLogging {
     $RT::Logger=Log::Dispatch->new();
     
     if ($RT::LogToFile) {
-
-    unless (-d $RT::LogDir && -w $RT::LogDir) {
-        # localizing here would be hard when we don't have a current user yet
-        # die $self->loc("Log directory [_1] not found or couldn't be written.\n RT can't run.", $RT::LogDir);
-        die ("Log directory $RT::LogDir not found or couldn't be written.\n RT can't run.");
-    }
-
-	my $filename;
+	my ($filename, $logdir);
 	if ($RT::LogToFileNamed =~ m![/\\]!) {
 	    # looks like an absolute path.
 	    $filename = $RT::LogToFileNamed;
+	    ($logdir) = $RT::LogToFileNamed =~ m!^(.*[/\\])!;
 	}
 	else {
 	    $filename = "$RT::LogDir/$RT::LogToFileNamed";
+	    $logdir = $RT::LogDir;
 	}
+
+    unless ( -d $logdir && ( ( -f $filename && -w $filename ) || -w $logdir ) ) {
+        # localizing here would be hard when we don't have a current user yet
+        # die $self->loc("Log directory [_1] not found or couldn't be written.\n RT can't run.", $RT::LogDir);
+        die ("Log file $filename couldn't be written or created.\n RT can't run.");
+    }
+
     require Log::Dispatch::File;
 
 
@@ -232,7 +234,8 @@ sub InitLogging {
                                 return "$p{message} ($filename:$line)\n"}
 				},
              
-		       stderr => 1
+		       stderr => 1,
+               @RT::LogToSyslogConf
 		     ));
     }
 

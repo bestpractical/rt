@@ -47,6 +47,8 @@ my %config = (
         user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd  => undef,
         server  => 'http://localhost/rt/',
+        query   => undef,
+        orderby => undef,
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
@@ -148,8 +150,9 @@ sub help {
             my $title = $item->[2]{Title};
             my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (grep $_, @titles) {
-            $help{$title} = $item->[2]{Text};
+            foreach $title (grep $_, @titles) {
+                $help{$title} = $item->[2]{Text};
+            }
         }
     }
 
@@ -192,6 +195,8 @@ sub help {
 
 sub list {
     my ($q, $type, %data);
+    $orderby = $config{orderby};
+    
     my $bad = 0;
 
     while (@ARGV) {
@@ -225,7 +230,12 @@ sub list {
             $bad = 1; last;
         }
     }
-
+    
+    if (!defined $q)
+    {
+        $q = $config{query} ; 
+    }
+    
     $type ||= "ticket";
     unless ($type && defined $q) {
         my $item = $type ? "query string" : "object type";
@@ -234,7 +244,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $orderby || "" });
+    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $data{orderby} || "" });
     print $r->content;
 }
 
@@ -539,7 +549,14 @@ sub comment {
                 my $a = $_ eq "-b" ? \@bcc : \@cc;
                 @$a = split /\s*,\s*/, shift @ARGV;
             }
-            elsif (/-m/) { $msg = shift @ARGV }
+            elsif (/-m/) {
+                $msg = shift @ARGV;
+                if ( $msg =~ /^-$/ ) {
+                    undef $msg;
+                    while (<STDIN>) { $msg .= $_ }
+                }
+            }
+
             elsif (/-w/) { $wtime = shift @ARGV }
         }
         elsif (!$id && m|^(?:ticket/)?($idlist)$|) {
@@ -838,7 +855,7 @@ sub submit {
     sub cookie {
         my ($self) = @_;
         my $cookie = $self->{sids}{$s}{$u};
-        return defined $cookie ? "RT_SID=$cookie" : undef;
+        return defined $cookie ? "RT_SID_$cookie" : undef;
     }
 
     # Deletes the current session cookie.
@@ -861,7 +878,7 @@ sub submit {
         my ($self, $response) = @_;
         my $cookie = $response->header("Set-Cookie");
 
-        if (defined $cookie && $cookie =~ /^RT_SID=([0-9A-Fa-f]+);/) {
+        if (defined $cookie && $cookie =~ /^RT_SID_(.[^;,\s]+=[0-9A-Fa-f]+);/) {
             $self->{sids}{$s}{$u} = $1;
         }
     }
@@ -878,7 +895,7 @@ sub submit {
             while (<F>) {
                 chomp;
                 next if /^$/ || /^#/;
-                next unless m#^https?://[^ ]+ \w+ [0-9A-Fa-f]+$#;
+                next unless m#^https?://[^ ]+ \w+ [^;,\s]+=[0-9A-Fa-f]+$#;
                 my ($server, $user, $cookie) = split / /, $_;
                 $sids->{$server}{$user} = $cookie;
             }
@@ -1087,7 +1104,7 @@ sub Form::compose {
 sub config_from_env {
     my %env;
 
-    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER") {
+    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "ORDERBY") {
         if (exists $ENV{"RT$k"}) {
             $env{lc $k} = $ENV{"RT$k"};
         }
@@ -1138,7 +1155,7 @@ sub parse_config_file {
             chomp;
             next if (/^#/ || /^\s*$/);
 
-            if (/^(user|passwd|server)\s+([^ ]+)$/) {
+            if (/^(user|passwd|server|query|orderby)\s+(.*)\s?$/) {
                 $cfg{$1} = $2;
             }
             else {
@@ -1369,6 +1386,8 @@ Text:
         - server <URL>          URL to RT server.
         - user <username>       RT username.
         - passwd <passwd>       RT user's password.
+        - query <RT Query>      Default RT Query for list action
+        - orderby <order>       Default RT order for list action
 
         Blank and #-commented lines are ignored.
 
@@ -1383,6 +1402,8 @@ Text:
         - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
         - RTCONFIG      Specifies a name other than ".rtrc" for the
                         configuration file.
+        - RTQUERY       Default RT Query for rt list
+        - RTORDERBY     Default order for rt list
 
 --
 
@@ -1406,7 +1427,7 @@ Text:
     be used to specify more than one object of the same type. Note that
     the list must be a single argument (i.e., no spaces). For example,
     "user/root,1-3,5,7-10,ams" is a list of ten users; the same list
-    can also be written as "user/ams,root,1,2,3,5,7,8-20".
+    can also be written as "user/ams,root,1,2,3,5,7,8-10".
     
     Examples:
 

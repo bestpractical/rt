@@ -1,6 +1,3 @@
-<%attr>
-AutoFlush => 0
-</%attr>
 <%args>
 $Attachment => undef
 $Transaction => undef
@@ -16,11 +13,14 @@ $Transaction => undef
      unless ($AttachmentObj->TransactionId() == $Transaction ) {
         Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
      }
-$r->content_type('text/plain');
+
 </%init>
+<& /Elements/Header, ShowBar => 0 &>
 <pre>
 <%$AttachmentObj->Headers%>
 
 <%$AttachmentObj->Content%>
 </pre>
-%$m->abort();
+</body>
+</html>
+%$m->abort;

@@ -1,3 +1,4 @@
+
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>

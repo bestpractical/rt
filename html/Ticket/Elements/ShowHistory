@@ -118,16 +118,14 @@ my $i;
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
-
-
 </%INIT>
 <%ARGS>
 $URIFile => 'Display.html'
 $Ticket => undef
 $Tickets => undef
 $Attachments => undef
-$ShowHeaders => 0
 $AttachmentContent => undef
+$ShowHeaders => undef
 $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1

@@ -275,7 +275,7 @@ msgid "(Check boxes to delete)"
 msgstr "(Marque las cajas para borrar)"
 
 #: html/Ticket/Create.html:178
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Introduzca los identificadores de ticket o URLs, separados por espacios)"
 
 #: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60

@@ -51,7 +51,7 @@ unless($QueueObj->id) {
 if ($id) {
     $current_subtab = "Admin/Queues/Scrip.html?id=".$id."&Queue=".$QueueObj->id;
     $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
-    $subtabs->{"C"} = { title => loc("Scrip #[_1]",$QueueObj->id),
+    $subtabs->{"C"} = { title => loc("Scrip #[_1]",$id),
 			path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id };
 } else {
     $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;

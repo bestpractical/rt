@@ -366,7 +366,7 @@ msgid "(Check boxes to delete)"
 msgstr "(Spunta la casella per cancellare)"
 
 #: html/Ticket/Create.html:177
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Inserire il numero di tickets o gli URL, separati da spazi)"
 
 #. ($RT::CorrespondAddress)

@@ -101,6 +101,7 @@ sub NewCGIHandler {
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)],
         autoflush => 1,
+        @_
     );
   
 
@@ -123,7 +124,7 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        my $val = (Encode::is_utf8($$ref) ? Encode::encode_utf8($$ref) : $$ref);
+        my $val = (Encode::is_utf8($$ref) ? Encode::encode_utf8($$ref) : $$ref);                                                                                                                                
         $val =~ s/&/&#38;/g;
         $val =~ s/</&lt;/g; 
         $val =~ s/>/&gt;/g;
@@ -920,7 +921,7 @@ sub UpdateRecordObject {
     my $Object = $args{'Object'};
     my @results = $Object->Update(AttributesRef => $args{'AttributesRef'},
 				  ARGSRef       => $args{'ARGSRef'},
-				  AttributePrefix => undef,
+                  AttributePrefix => $args{'AttributePrefix'}
 				  );
 
     return (@results);

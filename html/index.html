@@ -1,3 +1,29 @@
+<!--
+% $m->out('--'.'>');
+% if (0) {
+%# -->
+<html><head>
+<META HTTP-EQUIV=Refresh CONTENT="3; URL=http://bestpractical.com/rt/rt-broken-install.html">
+<title>Almost there!</title></head>
+<body>
+
+<img src="http://www.bestpractical.com/images/unconfigured-rtlogo.jpg">
+<br><br>
+<h1>You're almost there!</h1>
+You haven't yet configured your webserver to run RT.
+
+You appear to have installed RT's web interface correctly, but haven't yet configured your web
+server to "run" the RT server which powers the web interface.
+
+The next step is to edit your webserver's configuration file to instruct it to use
+RT's <b>mod_perl</b>, <b>fastcgi</b> or <b>speedycgi</b> handler.
+
+If you need commercial support, please contact us at sales@bestpractical.com.
+
+
+<!--
+% }
+
 %# BEGIN LICENSE BLOCK
 %# 
 %# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
@@ -64,7 +90,7 @@ if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->comp("/Ticket/Display.html", id=> $1);
+        $m->comp("/Ticket/Display.html" , id=> $1);
         return();
     }
 
@@ -104,3 +130,5 @@ if ($ARGS{'HomeRefreshInterval'}) {
 }
 
 </%init>
+
+%# --></body></html>

@@ -236,7 +236,6 @@ sub WithRight {
                  IncludeSuperusers      => undef,
                  @_ );
 
-    my $groupprinc = $self->NewAlias('Principals');
     my $acl        = $self->NewAlias('ACL');
 
     # {{{ Find only rows where the right granted is the one we're looking up or _possibly_ superuser 
@@ -273,7 +272,7 @@ sub WithRight {
             $or_check_roles =
                 " OR ( ( (main.Domain = 'RT::Queue-Role' AND main.Instance = " .
                 $args{'Object'}->Id . ") $or_check_ticket_roles ) " .
-                " AND main.Type = $acl.PrincipalType AND main.id = $groupprinc.id) ";
+                " AND main.Type = $acl.PrincipalType AND main.id = $acl.PrincipalId) ";
         }
 
 	if ( $args{'IncludeSystemRights'} ) {
@@ -291,12 +290,11 @@ sub WithRight {
 
     $self->_AddSubClause( "WhichGroup",
         qq{
-          ( (    $acl.PrincipalId = $groupprinc.id
+          ( (    $acl.PrincipalId = main.id
              AND $acl.PrincipalType = 'Group'
              AND (   main.Domain = 'SystemInternal'
                   OR main.Domain = 'UserDefined'
-                  OR main.Domain = 'ACLEquivalence')
-             AND main.id = $groupprinc.id)
+                  OR main.Domain = 'ACLEquivalence'))
            $or_check_roles)
         }
     );
@@ -355,5 +353,18 @@ sub LimitToDeleted {
 		);
 }
 # }}}
+
+sub _DoSearch {
+    my $self = shift;
+    
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless($self->{'find_disabled_rows'}) {
+	$self->LimitToEnabled();
+    }
+    
+    return($self->SUPER::_DoSearch(@_));
+    
+}
+
 1;
 

@@ -183,7 +183,7 @@ sub SmartParseMIMEEntityFromScalar {
         close($fh);
         if ( -f $temp_file ) {
             $self->ParseMIMEEntityFromFile($temp_file, $args{'Decode'});
-            File::Temp::unlink0( $fh, $temp_file );
+            unlink($temp_file );
         }
     } #If for some reason we weren't able to parse the message using a temp file      # try it with a scalar
     if ( !$self->Entity ) {
@@ -626,19 +626,21 @@ A private instance method which sets up a mime parser to do its job
     ## Over max size and return them
 
 sub _SetupMIMEParser {
-    my $self = shift;
+    my $self   = shift;
     my $parser = shift;
-    my $AttachmentDir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
 
+    #$RT::Logger->crit(  $self->{'AttachmentDir'} );
     # Set up output directory for files:
-    $parser->output_dir("$AttachmentDir");
-    $parser->filer->ignore_filename(1);
 
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
+    $parser->output_dir($tmpdir);
+    $parser->filer->ignore_filename(1);
 
     #If someone includes a message, extract it
     $parser->extract_nested_messages(1);
 
-    $parser->extract_uuencode(1);           ### default is false
+    $parser->extract_uuencode(1);    ### default is false
 
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
@@ -647,7 +649,15 @@ sub _SetupMIMEParser {
 
     $parser->output_to_core(0);
 }
+
 # }}}
+
+sub DESTROY {
+    my $self = shift;
+    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1);
+}
+
+
 
 eval "require RT::EmailParser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm});

@@ -53,6 +53,7 @@ use vars qw(%_USERS_KEY_CACHE);
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
+use RT::EmailParser;
 
 
 # {{{ sub _Accessible 
@@ -221,14 +222,15 @@ sub Create {
     my $principal_id = $principal->Create(PrincipalType => 'User',
                                 Disabled => $args{'Disabled'},
                                 ObjectId => '0');
-    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
-        $RT::Logger->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
+        $RT::Logger->crit("Couldn't create a Principal on new user create.");
+        $RT::Logger->crit("Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
     }
 
+    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
     delete $args{'Disabled'};
 
     $self->SUPER::Create(id => $principal_id , %args);
@@ -242,15 +244,6 @@ sub Create {
         return ( 0, $self->loc('Could not create user') );
     }
 
-
-    #TODO post 2.0
-    #if ($args{'SendWelcomeMessage'}) {
-    #	#TODO: Check if the email exists and looks valid
-    #	#TODO: Send the user a "welcome message" 
-    #}
-
-
-
     my $aclstash = RT::Group->new($self->CurrentUser);
     my $stash_id = $aclstash->_CreateACLEquivalenceGroup($principal);
 
@@ -260,31 +253,55 @@ sub Create {
         return ( 0, $self->loc('Could not create user') );
     }
 
-    $RT::Handle->Commit;
 
-    #$RT::Logger->debug("Adding the user as a member of everyone"); 
     my $everyone = RT::Group->new($self->CurrentUser);
     $everyone->LoadSystemInternalGroup('Everyone');
-    $everyone->AddMember($self->PrincipalId);
-
-    if ($privileged)  {
-        my $priv = RT::Group->new($self->CurrentUser);
-        #$RT::Logger->debug("Making ".$self->Id." a privileged user");
-        $priv->LoadSystemInternalGroup('Privileged');
-        $priv->AddMember($self->PrincipalId);  
-    } else {
-        my $unpriv = RT::Group->new($self->CurrentUser);
-        #$RT::Logger->debug("Making ".$self->Id." an unprivileged user");
-        $unpriv->LoadSystemInternalGroup('Unprivileged');
-        $unpriv->AddMember($self->PrincipalId);  
+    unless ($everyone->id) {
+        $RT::Logger->crit("Could not load Everyone group on user creation.");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc('Could not create user') );
     }
+
+
+    my ($everyone_id, $everyone_msg) = $everyone->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);
+    unless ($everyone_id) {
+        $RT::Logger->crit("Could not add user to Everyone group on user creation.");
+        $RT::Logger->crit($everyone_msg);
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc('Could not create user') );
+    }
+
+
+    my $access_class = RT::Group->new($self->CurrentUser);
+    if ($privileged)  {
+        $access_class->LoadSystemInternalGroup('Privileged');
+    } else {
+        $access_class->LoadSystemInternalGroup('Unprivileged');
+    }
+
+    unless ($access_class->id) {
+        $RT::Logger->crit("Could not load Privileged or Unprivileged group on user creation");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc('Could not create user') );
+    }
+
+
+    my ($ac_id, $ac_msg) = $access_class->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
+
+    unless ($ac_id) {
+        $RT::Logger->crit("Could not add user to Privileged or Unprivileged group on user creation. Aborted");
+        $RT::Logger->crit($ac_msg);
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc('Could not create user') );
+    }
+
 
     if ( $record_transaction ) {
 	$self->_NewTransaction( Type => "Create" );
     }
 
+    $RT::Handle->Commit;
 
-   #  $RT::Logger->debug("Finished creating the user");
     return ( $id, $self->loc('User created') );
 }
 
@@ -322,6 +339,10 @@ sub SetPrivileged {
     my $self = shift;
     my $val = shift;
 
+    #Check the ACL
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
     my $priv = RT::Group->new($self->CurrentUser);
     $priv->LoadSystemInternalGroup('Privileged');
    
@@ -343,7 +364,7 @@ sub SetPrivileged {
             return (0,$self->loc("That user is already privileged"));
         }
         if ($unpriv->HasMember($self->PrincipalObj)) {
-            $unpriv->DeleteMember($self->PrincipalId);
+            $unpriv->_DeleteMember($self->PrincipalId);
         } else {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
@@ -351,7 +372,7 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $priv->AddMember($self->PrincipalId);  
+        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
         if ($status) {
             return (1, $self->loc("That user is now privileged"));
         } else {
@@ -364,7 +385,7 @@ sub SetPrivileged {
             return (0,$self->loc("That user is already unprivileged"));
         }
         if ($priv->HasMember($self->PrincipalObj)) {
-            $priv->DeleteMember($self->PrincipalId);
+            $priv->_DeleteMember( $self->PrincipalId);
         } else {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
@@ -372,7 +393,7 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $unpriv->AddMember($self->PrincipalId);  
+        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
         if ($status) {
             return (1, $self->loc("That user is now unprivileged"));
         } else {
@@ -538,13 +559,17 @@ sub LoadOrCreateByEmail {
 
         my ($val, $message);
 
+	my ( $Address, $Name ) =
+		RT::EmailParser::ParseAddressFromHeader('', $email);
+	$email = $Address;
+
         $self->LoadByEmail($email);
         $message = $self->loc('User loaded');
         unless ($self->Id) {
             ( $val, $message ) = $self->Create(
                 Name => $email,
                 EmailAddress => $email,
-                RealName     => $email,
+                RealName     => $Name,
                 Privileged   => 0,
                 Comments     => 'Autocreated when added as a watcher');
             unless ($val) {

@@ -17,6 +17,3 @@ Now, if you want RT to automatically create new users upon ticket
 submission, you MUST grant 'Everyone' the right to create tickets.
 Granting this right only to "Unprivileged Users" is now insufficient.
 
-
-
-

@@ -182,14 +182,13 @@ sub MailError {
 
     }
 
- 
     if ($RT::MailCommand eq 'sendmailpipe') {
         open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
         print MAIL $entity->as_string;
         close(MAIL);
     }
     else {
-	$entity->send($RT::MailCommand, $RT::MailParams);
+    	$entity->send($RT::MailCommand, $RT::MailParams);
     }
 }
 
@@ -415,7 +414,6 @@ sub Gateway {
     my $parser = RT::EmailParser->new();
 
     $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'});
-
 
     if (!$parser->Entity()) {
         MailError(

@@ -259,7 +259,7 @@ msgid "(Check box to delete)"
 msgstr "(Zatrhněte pro smazání)"
 
 #: html/Ticket/Create.html:178
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Zadejte identifikátory či URL požadavku, oddělené mezerami)"
 
 #: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60

@@ -251,6 +251,14 @@ Set($LogToFile      , undef);
 Set($LogDir, '@RT_LOG_PATH@');
 Set($LogToFileNamed , "rt.log");    #log to rt.log
 
+# On Solaris, set to ( socket => 'inet' ).  Options here override any
+# other options RT passes to Log::Dispatch::Syslog.  Other interesting
+# flags include facility and logopt.  (See the Log::Dispatch::Syslog
+# documentation for more information.)  (Maybe ident too, if you have
+# multiple RT installations.)
+
+@LogToSyslogConf = () unless (@LogToSyslogConf);
+
 # }}}
 
 # {{{ Web interface configuration
@@ -339,11 +347,17 @@ Set($WebExternalAuto , undef);
 
 Set($MaxInlineBody, 13456);
 
-# $MyTicketsLength is the length of the table on the front page.
-# For some people, the default of 10 isn't big enough to get a feel for
-# how much work needs to be done before you get some time off.
+# $MyTicketsLength is the length of the owned tickets table on the
+# front page. For some people, the default of 10 isn't big enough
+# to get a feel for how much work needs to be done before you get
+# some time off.
 
 Set($MyTicketsLength, 10);
+
+# $MyRequestsLength is the length of the requested tickets table
+# on the front page.
+
+Set($MyRequestsLength, 10);
 
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful

@@ -194,7 +194,7 @@ sub _AddressesFromHeader  {
 =head2 SendMessage MIMEObj
 
 sends the message using RT's preferred API.
-TODO: Break this out to a seperate module
+TODO: Break this out to a separate module
 
 =cut
 
@@ -661,15 +661,41 @@ Takes a string and a possible encoding and returns the string wrapped in MIME go
 sub MIMEEncodeString {
     my  $self = shift;
     my $value = shift;
-    my $enc = shift;
+    # using RFC2047 notation, sec 2.
+    # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
+    my $charset = shift;
+    my $encoding = 'B';
+    # An 'encoded-word' may not be more than 75 characters long
+    #
+    # MIME encoding increases 4/3*(number of bytes), and always in multiples
+    # of 4. Thus we have to find the best available value of bytes available
+    # for each chunk.
+    #
+    # First we get the integer max which max*4/3 would fit on space.
+    # Then we find the greater multiple of 3 lower or equal than $max.
+    my $max = int(((75-length('=?'.$charset.'?'.$encoding.'?'.'?='))*3)/4);
+    $max = int($max/3)*3;
 
     chomp $value;
     return ($value) unless $value =~ /[^\x20-\x7e]/;
 
     $value =~ s/\s*$//;
     Encode::_utf8_off($value);
-    my $res = Encode::from_to( $value, "utf-8", $enc );
-    $value = encode_mimeword( $value,  'B', $enc );
+    my $res = Encode::from_to( $value, "utf-8", $charset );
+   
+    if ($max > 0) {
+      # copy value and split in chuncks
+      my $str=$value;
+      my @chunks = unpack("a$max" x int(length($str)/$max 
+                                  + ((length($str) % $max) ? 1:0)), $str);
+      # encode an join chuncks
+      $value = join " ", 
+                     map encode_mimeword( $_, $encoding, $charset ), @chunks ;
+      return($value); 
+    } else {
+      # gives an error...
+      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+    }
 }
 
 # }}}

@@ -34,5 +34,5 @@
         &>
 </&>
 <%init>
-my $rows = 10;
+my $rows = $RT::MyRequestsLength;
 </%init>

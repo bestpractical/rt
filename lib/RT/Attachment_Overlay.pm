@@ -384,7 +384,7 @@ sub NiceHeaders {
 Returns this object's headers as a string.  This method specifically
 removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
 We need to record the RT-Send-Cc and RT-Send-Bcc values so that we can actually send
-out mail. (The mailing rules are seperated from the ticket update code by
+out mail. (The mailing rules are separated from the ticket update code by
 an abstraction barrier that makes it impossible to pass this data directly
 
 =cut
@@ -392,8 +392,8 @@ an abstraction barrier that makes it impossible to pass this data directly
 sub Headers {
     my $self = shift;
     my $hdrs="";
-    for (split(/\n/,$self->SUPER::Headers)) {
-	    $hdrs.="$_\n" unless /^(RT-Send-Bcc): /i
+    for ($self->_SplitHeaders) {
+	    $hdrs.="$_\n" unless /^(RT-Send-Bcc):/i
     }
     return $hdrs;
 }
@@ -413,8 +413,8 @@ done in Headers() above.
 sub GetHeader {
     my $self = shift;
     my $tag = shift;
-    foreach my $line (split(/\n/,$self->SUPER::Headers)) {
-        if ($line =~ /^\Q$tag\E:\s+(.*)$/i) { #if we find the header, return its value
+    foreach my $line ($self->_SplitHeaders) {
+        if ($line =~ /^\Q$tag\E:\s+(.*)$/si) { #if we find the header, return its value
             return ($1);
         }
     }
@@ -437,7 +437,7 @@ sub SetHeader {
     my $tag = shift;
     my $newheader = '';
 
-    foreach my $line (split(/\n/,$self->SUPER::Headers)) {
+    foreach my $line ($self->_SplitHeaders) {
         if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
 	    $newheader .= "$tag: $_[0]\n";
 	    undef $tag;
@@ -490,6 +490,54 @@ sub _Value  {
 }
 
 # }}}
+
+=head2 _SplitHeaders
+
+Returns an array of this attachment object's headers, with one header 
+per array entry. multiple lines are folded
+
+=begin testing
+
+my $test1 = "From: jesse";
+my @headers = RT::Attachment->_SplitHeaders($test1);
+is ($#headers, 0, $test1 );
+
+my $test2 = qq{From: jesse
+To: bobby
+Subject: foo
+};
+
+@headers = RT::Attachment->_SplitHeaders($test2);
+is ($#headers, 2, "testing a bunch of singline multiple headers" );
+
+
+my $test3 = qq{From: jesse
+To: bobby,
+ Suzie,
+    Sally,
+    Joey: bizzy,
+Subject: foo
+};
+
+@headers = RT::Attachment->_SplitHeaders($test3);
+is ($#headers, 2, "testing a bunch of singline multiple headers" );
+
+
+=end testing
+
+=cut
+
+sub _SplitHeaders {
+    my $self = shift;
+    my $headers = (shift || $self->SUPER::Headers());
+    my @headers;
+    for (split(/\n(?=\w|\z)/,$headers)) {
+        push @headers, $_;
+
+    }
+    return(@headers);
+}
+
 
 sub ContentLength {
     my $self = shift;

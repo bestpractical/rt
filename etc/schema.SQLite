@@ -408,7 +408,7 @@ CREATE TABLE Attributes (
   LastUpdated DATETIME NULL  
  
 ) ;
-CREATE INDEX Attributes1 on Attributes(Name)
+CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
 --- }}}

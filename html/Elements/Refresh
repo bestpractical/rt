@@ -29,7 +29,7 @@
 ><&|/l&>Don't refresh this page.</&></OPTION>
 %foreach my $value (@refreshevery) {
 <OPTION VALUE="<%$value%>"
-% if ($value == $Default) {
+% if  ( $Default && ($value == $Default)) {
 SELECTED 
 % }
 ><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></OPTION>

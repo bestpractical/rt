@@ -340,27 +340,25 @@ is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
 =cut 
 
 sub LanguageHandle {
-     my $self = shift;
-     if (   ( !defined $self->{'LangHandle'} )
-         || ( !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' ) )
-         || (@_) ) {
+    my $self = shift;
+    if (   ( !defined $self->{'LangHandle'} )
+        || ( !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' ) )
+        || (@_) ) {
+        if ( (!$RT::SystemUser || $self->id == $RT::SystemUser->id() )) {
+            @_ = qw(en-US);
+        }
 
-         if ( $RT::SystemUser and $self->id == $RT::SystemUser->id() ) {
-             @_ = qw(en-US);
-         }
+        elsif ( $self->Lang ) {
+            push @_, $self->Lang;
+        }
+        $self->{'LangHandle'} = RT::I18N->get_handle(@_);
+    }
 
-         elsif ( $self->Lang ) {
-             push @_, $self->Lang;
-         }
-         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
-     }
-
-     # Fall back to english.
-     unless ( $self->{'LangHandle'} ) {
-         die "We couldn't get a dictionary. Nye mogu naidti slovar. No 
-puedo encontrar dictionario.";
-     }
-     return ( $self->{'LangHandle'} );
+    # Fall back to english.
+    unless ( $self->{'LangHandle'} ) {
+        die "We couldn't get a dictionary. Nye mogu naidti slovar. No puedo encontrar dictionario.";
+    }
+    return ( $self->{'LangHandle'} );
 }
 
 sub loc {
