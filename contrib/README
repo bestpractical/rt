@@ -8,3 +8,6 @@ No-ModPerl - things that might be usable for setting up a CGI/FCGI version
 Bugzilla   - Bugzilla integration.  -- TobiX
 
 KB         - Integration to Jesse's knowledge base.  -- TobiX
+
+folding.el - An emacs plugin.  This is the reason why we have all those
+             weird # {{{ comments
