@@ -1,8 +1,7 @@
-Documentation for RT is currently being maintained by Michael Brader
-<mbrader@stoic.com.au> and is based on earlier work by Adam Hirsch
-<adam@baz.org> It is in the process of an overhaul and any
-feedback or suggestions are most welcome. If you find any errors or
-omissions, please send mail to rt-devel@fsck.com with anything you
-find to be in error.
+Seems like most of the documentation here is for RT 1.0, eventually all the
+documentation will be fixed by the RT Documentation Team (rt-docs@fsck.com)
+which is led by Meri.
 
-	jesse
+Documentation for RT 1.0 is being maintained by Michael Brader
+<mbrader@stoic.com.au> and is based on earlier work by Adam Hirsch
+<adam@baz.org>.
