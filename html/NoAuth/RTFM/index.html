@@ -1,2 +1,23 @@
 <& Elements/Tabs, current_tab => 'NoAuth/RTFM/index.html', Title => 'Welcome
 to RTFM'&>
+
+
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+10 most recently updated articles
+
+10 newest articles
+
+</TD>
+<TD VALIGN="TOP" ALIGN="RIGHT">
+
+Search for articles<br>
+<form action="Search.html" METHOD="POST">
+<& /RTFM/Elements/SelectClass&> matching<br> 
+<input name="Content~=" size="15"><br>
+<div align="right"><input type="submit" value="<&|/l&>Go</&>"></div>
+</form>
+</TD>
+</TR>
+</TABLE>

@@ -1,0 +1,46 @@
+<TR>
+<TH ALIGN=RIGHT><&|/l&>#</&></TH>
+<TH ALIGN=LEFT><&|/l&>Name</&></TH>
+</TR>
+% while (my $Article = $arts->Next) {
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
+<TD ALIGN=RIGHT>
+<%$Article->Id%>
+</TD>
+<TD>
+<A HREF="<% $RT::WebPath %>/RTFM/Article/Display.html?id=<%$Article->Id%>">
+<%$Article->Name || loc('(no name)')%>
+</A>
+</TD>
+</TR>
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<TD>&nbsp;</TD>
+<TD COLSPAN=3>
+<SMALL><%$Article->Summary || loc('(no Summary)')%></SMALL>
+</TD>
+</TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+
+<%INIT>
+my $i;
+my $arts = new RT::FM::ArticleCollection ($session{'CurrentUser'});
+$arts->Limit(FIELD => 'Class', VALUE => $class);
+
+my $class = RT::FM::Class->new($session{'CurrentUser'});
+$class->LoadByCols(Name => $class);
+my $cf = RT::FM::CustomField->new($session{'CurrentUser'});
+$cf->LoadByCols(Name => 'Category');
+$arts->LimitCustomField(FIELD => $cf->Id, OPERATOR => 'LIKE', VALUE => $category);
+$arts->Limit(FIELD => 'Class', OPERATOR => '=', VALUE => $class->Id);
+$arts->OrderBy(FIELD => 'LastUpdated', ORDER => 'DESC');
+
+
+</%INIT>
+<%ARGS>
+$class => undef
+$category => undef
+</%ARGS>

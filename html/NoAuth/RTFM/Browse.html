@@ -1,0 +1,25 @@
+<h1><&|/l, $class_obj->Name &>Browse [_1]</&></h1>
+% while (my $cat = $categories->Next) {
+% my $arts = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+% $arts->Limit(FIELD => 'Class', VALUE => $class_obj->Id);
+% $arts->LimitCustomField(FIELD => $cat_cf->Id, VALUE => $cat->Name);
+% if ($arts->Count) {
+<h2><%$cat->Name %></h2>
+<ul>
+% while (my $art = $arts->Next) {
+<li><a href="DynDisplay.html?id=<%$art->Id%>"><%$art->Summary %></a>
+%}
+</ul>
+% }
+% }
+<%init>
+my $class_obj = RT::FM::Class->new($session{'CurrentUser'});
+$class_obj->LoadByCols(Name => $class);
+my $cat_cf = RT::FM::CustomField->new($session{'CurrentUser'});
+$cat_cf->LoadByCols(Name => $group_by);
+my $categories = $cat_cf->ValuesObj();
+</%init>
+<%args>
+$class => undef
+$group_by => undef
+</%args>

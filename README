@@ -20,8 +20,20 @@ RTFM (The RT FAQ Manager) is a tool for maintaining an organizational
 knowledgebase. Out of the box, it integrates with RT3 (Also available from
 bestpractical.com)
 
+Upgrade instructions (From an earlier 2.0.x release):
+-----------------------------------------------------
+
+1) Edit RTFM's Makefile to point to your RT 3 instance
+
+2) make sure that mysql or pgsql's commandline tool is in your path
+
+3) Type "make upgrade"
+
+4) stop and start your web server
+
 
 Installation instructions:
+--------------------------
 
 1) Install RT 3.0.x
 

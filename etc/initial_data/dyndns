@@ -1,12 +1,13 @@
 @Classes = ( 
-      { Name => 'FAQ' } 
+      { Name => 'FAQs' }, 
+      { Name => 'Knowledge Base' } 
 
 );
 
 @CustomFields = (
     {  Name   => 'Service',
        Type   => 'SelectMultiple',
-       Classes => ['FAQ'],
+       Classes => ['FAQs'],
        Values => [
 
                                 { Name => 'Custom DNS', },
@@ -18,14 +19,17 @@
                                 { Name => 'Uncategorized', }, ] },
     {  Name   => 'Category',
        Type   => 'SelectSingle',
-       Classes => ['FAQ'],
+       Classes => ['FAQs', 'Knowledge Base'],
        Values => [ { Name => 'DNS', },
-                   { Name => 'email', },
-                   { Name => 'webserver', },
-                   { Name => 'accounts', },
-                   { Name => 'clients', },
-                   { Name => 'third-party applications', },
-                   { Name => 'general', } ] }
+                   { Name => 'Email', },
+                   { Name => 'Webserver', },
+                   { Name => 'Accounts', },
+                   { Name => 'Clients', },
+                   { Name => 'Third-party Applications', },
+                   { Name => 'General', } ] },
+        { Name => 'Content',
+          Type => 'TestSingle',
+          Classes => ['FAQs', 'Knowledge Base']}
 
 );
 
