@@ -35,8 +35,7 @@ unless ($article->Id) {
     $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
 }
 
-unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
-                                           Right => 'ShowArticle')) {
+unless ($article->ClassObj->CurrentUserHasRight('ShowArticle')) {
     $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
 }
 

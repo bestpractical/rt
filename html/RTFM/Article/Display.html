@@ -44,8 +44,8 @@ unless ($article->Id) {
 
 }
 
-unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
-                                           Right => 'ShowArticle')) {
+unless ($article->CurrentUserHasRight(
+                                        'ShowArticle')) {
     $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
 }
 my $title =  loc( "Article #[_1]: [_2]", $article->Id, $article->Name);
