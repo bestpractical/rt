@@ -1,0 +1,5 @@
+%# [DELETE EditURI]
+%# Delete an object.
+%# 200: Successfully deleted.  Body is success message in text/plain.
+%# 400: Request failed.  Body is error message in text/plain.
+%# 404: There is no object matching the specified URI.

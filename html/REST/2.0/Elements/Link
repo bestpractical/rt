@@ -1,18 +1,31 @@
 %# Make a HTML link and an Atom link
 <link rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" />
-<a class="<% $class %>" rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" xmlns="http://www.w3.org/1999/xhtml"><% loc($TextMap{$Relation}) || $Title %></a>
+<a accesskey="<% $accesskey %>" class="<% $class %>" rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" xmlns="http://www.w3.org/1999/xhtml"><% loc($TextMap{$Relation}) || $Title %></a>
 <%INIT>
 my %TextMap = (
     'alternate'	    => 'HTML',	# loc
-    'service.post'  => 'Post',	# loc
+    'service.post'  => 'Create',# loc
     'service.feed'  => 'Index',	# loc
     'service.edit'  => 'Edit',	# loc
 );
 my $class = lc($TextMap{$Relation} || 'nav');
+my %KeyMap = (
+    'alternate'	    => 'h',
+    'next'	    => 'n',
+    'prev'	    => 'p',
+    'service.post'  => 'c',
+    'service.feed'  => 'i',
+);
+my $accesskey = $KeyMap{$Relation};
+if ($IsEntry) {
+    $accesskey = ($m->notes('EntryAccessKey') + 1) % 10;
+    $m->notes(EntryAccessKey => $accesskey);
+}
 </%INIT>
 <%ARGS>
 $Relation => "alternate"
 $Type => "application/x.atom+xml"
 $URI => "#"
 $Title => ""
+$IsEntry => 0
 </%ARGS>

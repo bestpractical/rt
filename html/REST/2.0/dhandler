@@ -133,14 +133,39 @@ if (!$CurrentUser or !$CurrentUser->Id) {
 
 $session{CurrentUser} = $CurrentUser;
 
+my $verb = {
+    GET	    => 'Get',
+    HEAD    => 'Get',
+    POST    => 'Create',
+    PUT	    => 'Put',
+    DELETE  => 'Delete',
+    OPTIONS => 'Describe',
+}->{$r->method} or return $m->comp('Elements/Error', Status => 405);
+
 my $path = $m->dhandler_arg;
-my $type = $path;
-$type =~ s{/.*}{};
-$type =~ s{-}{/};
+my ($type, @parts) = grep length, split('/', $path);
+
 if ($type ne lc($type)) {
     $path =~ s{([^/]*)}{\L$type};
     $r->header_out(Location => $path);
     return $m->comp('Elements/Error', Status => 301);
+}
+
+my $adverb = '';
+if ($type =~ s/-(\w+)$//) {
+    $adverb = $1;
+    $verb = 'Describe' if $verb eq 'Get';
+    $m->comp('Elements/Error', Status => 405)
+        unless $verb =~ /Create|Describe/;
+}
+
+if ((@parts % 2) == 0) {
+    # FeedURI on collection
+    $verb = 'Search' if $verb eq 'Get';
+}
+elsif ($adverb) {
+    # PostURI on object
+    $verb = 'Update' if $verb eq 'Create';
 }
 
 my $map = $m->comp('Elements/Introspect', Want => 'CollectionToClass');
@@ -184,8 +209,9 @@ if (!$class) {
 }
 
 $m->comp(
-    'Search/index', %ARGS,
+    "$verb/index", %ARGS,
     Type => $type,
+    Adverb => $adverb,
     CollectionClass => $class,
     FeedURI => "$BaseURI/\L$type",
 );

@@ -1,0 +1,5 @@
+%# [PUT EditURI]
+%# Modifies an object with the AtomEntry in the request body.
+%# 200: Success.  Body is the object, serialized as an AtomEntry.
+%# 400: Request failed.  Body is error message in text/plain.
+%# 404: There is no object matching the specified URI.

@@ -1,0 +1,6 @@
+%# [POST PostURI] (Container)
+%# Create a new object from the AtomEntry in the request's body.
+%# 303: Created.  The 'Location:' header is set to the new object's EditURI
+%#      (for subsequent Get/Update).  Body is success message in text/plain.
+%# 400: Request failed.  Body is error message in text/plain.
+%# 404: There is no container matching the specified URI.

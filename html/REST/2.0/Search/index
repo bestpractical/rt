@@ -1,4 +1,9 @@
-%# Search, aka FeedURI
+%# [GET FeedURI]
+%# Search for objects within an container.
+%# Possible query parameters: rows, page, query.
+%# 200: Success.  Body is the result, serialized as an AtomFeed.
+%# 400: Request failed.  Body is error message in text/plain.
+%# 404: There is no container matching the specified URI.
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/css" href="<% $BaseURI %>/NoAuth/feed.css"?>
 <feed version="0.3" xmlns="http://purl.org/atom/ns#">
@@ -12,7 +17,7 @@
     (<&|/l, $TotalFound&>[_1] Total</&>)
   </tagline>
   <& $Link, Relation => "service.feed", URI => $BaseURI, Title => loc("Homepage") &>
-  <& $Link, Relation => "service.post", URI => "$FeedURI.new", Title => loc("Create"). ": ". loc($Type) &>
+  <& $Link, Relation => "service.post", URI => "$FeedURI-new", Title => loc("Create"). ": ". loc($Type) &>
 %# XXX - The URI below is incorrect; should point to collection URL
   <& $Link, Type => 'text/html', URI => $RT::WebURL, Title => loc($Type) &>
   <modified><% $Now->W3CDTF %></modified>
@@ -20,7 +25,7 @@
 % foreach my $entry (@entries) {
   <entry>
     <title mode="escaped"><% $entry->{Name} || "#$entry->{Id}" %></title>
-    <& $Link, Relation => "service.edit", URI => "$FeedURI/$entry->{Id}", Title => loc("Edit"). ": $entry->{Name}" &>
+    <& $Link, Relation => "service.edit", URI => "$FeedURI/$entry->{Id}", Title => loc("Edit"). ": $entry->{Name}", IsEntry => 1 &>
     <summary mode="escaped"><% $entry->{Description} %></summary>
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>

@@ -1,0 +1,5 @@
+%# [POST PostURI] (Object)
+%# Updates an object, using an 'adverb' acceptable to that object's class.
+%# 200: Success.  Body is the object, serialized as an AtomEntry.
+%# 400: Request failed.  Body is error message in text/plain.
+%# 404: The specific object does not exist, or does not support this adverb.
