@@ -1,0 +1,103 @@
+<& /Elements/Header, Title => loc("Create a new ticket") &>
+<& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
+<FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
+<INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<A NAME="top">
+	
+	
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
+<TABLE border=0>
+%# {{{ Basics
+<TR><TD ALIGN=RIGHT><h2><&|/l&>The Basics</&></h2></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Queue</&>:</TD>
+<TD><b><% $QueueObj->Name %></b></TD>
+<TR>
+<TD ALIGN="RIGHT"> <&|/l&>Subject</&>: </TD> 
+<TD COLSPAN=5> <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value=""> </TD>
+</TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Status</&>:</TD>
+<TD><& /Elements/SelectStatus, Name => "Status", Default=> 'new' &> </TD>
+</TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<%$QueueObj->InitialPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<%$QueueObj->FinalPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"></TD></TR>
+%# }}}
+%# {{{ Custom Fields
+<TR><TD ALIGN=RIGHT><h2><&|/l&>Custom Fields</&></h2></TD></TR>
+% while( my $cf = $CFs->Next() ) {
+<TR><TD ALIGN=RIGHT VALIGN="top"><%$cf->Name%>:</TD>
+<TD><% $cf->Description && '<i>'.$cf->Description . '</i><br>'%> <& /Ticket/Elements/EditCustomFieldValues, Name => 'CustomField-'.$cf->Id, CustomField => $cf &>
+</TD>
+</TR>
+% }
+%# }}}
+%# {{{ people
+<TR><TD ALIGN=RIGHT><h2><&|/l&>People</&></h2></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Owner</&>:</TD>
+<TD> <& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj &> </TD> </TR>
+<TR><TD ALIGN="RIGHT"> <&|/l&>Requestors</&>: </TD>
+<TD COLSPAN=5> <INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=40> </TD>
+</TR>
+<TR><TD ALIGN="RIGHT"> <&|/l&>Cc</&>: </TD>
+<TD COLSPAN=5> <INPUT NAME="Cc" SIZE=40> </TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><&|/l&>Admin Cc</&>: </TD>
+<TD COLSPAN=5> <INPUT NAME="AdminCc" SIZE=40> </TD>
+</TR>
+<TR><TD ALIGN=RIGHT COLSPAN=2>
+</TD>
+</TR>
+%# }}}
+%# {{{ Dates
+<TR><TD ALIGN=RIGHT><h2><&|/l&>Dates</&></h2></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due"></TD></TR>
+%# }}}
+%# {{{ Relationships
+<TR><TD ALIGN=RIGHT><h2><&|/l&>Relationships</&></h2></TD></TR>
+<TR><TD></TD><TD colspan=3><i><&|/l&>(Enter ticket ids or URLs, seperated with spaces)</&></i></TD></TR>
+
+<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&>:</TD><TD><input size=10 name="new-DependsOn"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&>:</TD><TD><input size=10 name="DependsOn-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Parents</&>:</TD><TD><input size=10 name="new-MemberOf"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Children</&>:</TD><TD><input size=10 name="MemberOf-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&>:</TD><TD><input size=10 name="new-RefersTo"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&>:</TD><TD><input size=10 name="RefersTo-new"></TD></TR>
+%# }}}
+%# {{{ Body
+<TR><TD ALIGN=RIGHT><h2><&|/l&>Ticket content</&></h2></TD></TR>
+<TR><TD ALIGN=RIGHT> <&|/l&>Attach file</&>: </TD>
+<TD COLSPAN=5>
+<INPUT TYPE=FILE NAME="Attach">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=6>
+<&|/l&>Describe the issue below</&>:<br>
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+</TD>
+</TR>
+
+%# }}}
+</TABLE>
+<& /Elements/TitleBoxEnd&>
+<& /Elements/Submit, Label => loc("Create") &>
+</FORM>
+
+<%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
+my $CFs = $QueueObj->CustomFields();
+
+</%INIT>
+
+<%ARGS>
+$DependsOn => undef
+$DependedOnBy => undef
+$MemberOf => undef
+$QuoteTransaction => undef
+$Queue => undef
+</%ARGS>

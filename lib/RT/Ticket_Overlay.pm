@@ -38,11 +38,16 @@ ok($testcf->Values->Count == 2);
 
 use_ok(RT::Ticket);
 
+my $u = RT::User->new($RT::SystemUser);
+$u->Load("root");
+ok ($u->Id, "Found the root user");
 ok(my $t = RT::Ticket->new($RT::SystemUser));
 ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
                Subject => 'Testing',
+               Owner => $u->Id
               ));
 ok($id != 0);
+ok ($t->OwnerObj->Id == $u->Id, "Root is the ticket owner");
 ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->Id,
                            Value => 'Value1'));
 ok($cfv != 0, "Custom field creation didn't return an error: $cfm");
@@ -59,7 +64,7 @@ ok(my $t2 = RT::Ticket->new($RT::SystemUser));
 ok($t2->Load($id));
 ok($t2->Subject eq 'Testing');
 ok($t2->QueueObj->Id eq $testqueue->id);
-ok($t2->OwnerObj->Id == $RT::Nobody->Id);
+ok($t2->OwnerObj->Id == $u->Id;
 
 
 =end testing
@@ -189,7 +194,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Starts -- an ISO date describing the ticket\'s start date and time in GMT
   Due -- an ISO date describing the ticket\'s due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
-
+  CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
 
 Returns: TICKETID, Transaction Object, Error Message
@@ -217,7 +222,7 @@ sub Create {
                  AdminCc         => undef,
                  Type            => 'ticket',
                  Owner           => $RT::Nobody->UserObj,
-                 Subject         => '[no subject]',
+                 Subject         => '',
                  InitialPriority => undef,
                  FinalPriority   => undef,
                  Status          => 'new',
@@ -301,8 +306,8 @@ sub Create {
     }
 
     #If we've been handed something else, try to load the user.
-    elsif ( $args{'Owner'} ) {
-        $Owner = new RT::User( $self->CurrentUser );
+    elsif ( defined $args{'Owner'} ) {
+        $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 
     }
@@ -435,6 +440,25 @@ sub Create {
         push @non_fatal_errors, $wmsg unless ($wval);
     }
 
+
+
+   # Add all the custom fields 
+
+   foreach my $arg (keys %args) {
+	if ($arg =~ /^CustomField-(\d+)$/i) {
+  	    $cfid = $1; 
+	} else {
+	    next;
+	}
+    foreach
+      my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
+	next unless ($value);
+        $self->_AddCustomFieldValue(
+            Field => $cfid,
+            Value => $value
+        );
+    }
+	}
     #Add a transaction for the create
     my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                      Type      => "Create",
@@ -1972,7 +1996,7 @@ sub DeleteLink {
             TimeTaken => 0
         );
 
-        return ( $linkid, loc("Link deleted ([_1])", $TransString), $transactionid );
+        return ( $linkid, $self->loc("Link deleted ([_1])", $TransString), $transactionid );
     }
 
     #if it's not a link we can find
@@ -2571,9 +2595,18 @@ If VALUE isn't a valid value for the custom field, returns
 
 sub AddCustomFieldValue {
     my $self = shift;
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+    $self->_AddCustomFieldValue(@_);
+}
+
+sub _AddCustomFieldValue {
+    my $self = shift;
     my %args = (
         Field => undef,
         Value => undef,
+	RecordTransaction => 1,
         @_
     );
 
@@ -2586,14 +2619,14 @@ sub AddCustomFieldValue {
     }
 
     unless ( $cf->Id ) {
-        return ( 0, loc("Custom field [_1] not found", $args{'Field'}) );
+        return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
     }
 
     # Load up a TicketCustomFieldValues object for this custom field and this ticket
     my $values = $cf->ValuesForTicket( $self->id );
 
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
-        return ( 0, loc("Invalid value for custom field") );
+        return ( 0, $self->loc("Invalid value for custom field") );
     }
 
     # If the custom field only accepts a single value, delete the existing
@@ -2650,12 +2683,14 @@ sub AddCustomFieldValue {
                   return (0,$msg);
         }
 
+	if ($args{'RecordTransaction'}) {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
             OldValue => $old_value,
             NewValue => $new_value->Content
         );
+	}
         return ( 1, $self->loc("Custom field value changed from [_1] to [_2]" , $old_value, $new_value->Content ));
 
     }
@@ -2671,15 +2706,17 @@ sub AddCustomFieldValue {
             return ( 0,
                 $self->loc("Could not add new custom field value for ticket. "));
         }
-
+    if ( $args{'RecordTransaction'} ) {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
             NewValue => $args{'Value'}
         );
-        unless($TransactionId) {
-            return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
-        } 
+        unless ($TransactionId) {
+            return ( 0,
+                $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
+        }
+    }
         return ( 1, $self->loc("[_1] added as a value for [_2]",$args{'Value'}, $cf->Name));
     }
 
@@ -2707,6 +2744,9 @@ sub DeleteCustomFieldValue {
         Value => undef,
         @_);
 
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
         $cf->LoadById( $args{'Field'}->id );

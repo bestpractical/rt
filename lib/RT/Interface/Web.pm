@@ -209,22 +209,26 @@ sub CreateTicket {
     );
 
     my %create_args = (
-        Queue           => $ARGS{Queue},
-        Owner           => $ARGS{Owner},
-        InitialPriority => $ARGS{InitialPriority},
-        FinalPriority   => $ARGS{FinalPriority},
-        TimeLeft        => $ARGS{TimeLeft},
-        TimeWorked      => $ARGS{TimeWorked},
+        Queue           => $ARGS{'Queue'},
+        Owner           => $ARGS{'Owner'},
+        InitialPriority => $ARGS{'InitialPriority'},
+        FinalPriority   => $ARGS{'FinalPriority'},
+        TimeLeft        => $ARGS{'TimeLeft'},
+        TimeWorked      => $ARGS{'TimeWorked'},
         Requestor       => \@Requestors,
         Cc              => \@Cc,
         AdminCc         => \@AdminCc,
-        Subject         => $ARGS{Subject},
-        Status          => $ARGS{Status},
+        Subject         => $ARGS{'Subject'},
+        Status          => $ARGS{'Status'},
         Due             => $due->ISO,
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
-
+  foreach my $arg (%ARGS) {
+        if ($arg =~ /^CustomField-(\d+)$/) {
+                $create_args{$arg} = $ARGS{"$arg"};
+        }
+    }
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);

@@ -26,7 +26,7 @@
 <&|/l&>Owner</&>:
 </TD>
 <TD>
-<& /Elements/SelectOwner, Name => "ValueOfOwner", QueueObj => $QueueObj &>
+<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj &>
 </TD>
 </TR>
 <TR>
@@ -157,7 +157,7 @@
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort("Queue could not be loaded.");
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 
 </%INIT>
 
