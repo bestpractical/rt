@@ -165,6 +165,8 @@ $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist-2@example.com');
 ok( $u->Id == 0, " user does not exist and was not created by ticket correspondence submission");
 # }}}
+
+
 # {{{  can another random reply to a ticket after being granted privs? answer should be yes
 
 
