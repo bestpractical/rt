@@ -214,7 +214,7 @@ sub loc {
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
-    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser) } ) {
+    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser->Name) } ) {
         return ($u->loc(@_));
     }
     else {
@@ -246,7 +246,7 @@ sub loc_fuzzy {
         return($session{'CurrentUser'}->loc_fuzzy($msg));
     }
     else  {
-        my $u = RT::CurrentUser->new($RT::SystemUser);
+        my $u = RT::CurrentUser->new($RT::SystemUser->Name);
         return ($u->loc_fuzzy($msg));
     }
 }
