@@ -1,8 +1,5 @@
 package rt;
 
-use Text::Wrapper;
-
-
 sub untaint {
 	my $data = shift;
    if ($data =~ /^([-\@\w.]+)$/) {
@@ -208,8 +205,8 @@ sub quote_content {
     }
 
     if ($max>76) {
-	my $wrapper=new Text::Wrapper
-	    (
+        use Text::Wrapper;
+	my $wrapper=new Text::Wrapper (
 	     columns => 70
 	     body_start => ($max > 150 ? '   ' : ''), 
 	     par_start => ''

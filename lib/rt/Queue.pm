@@ -31,6 +31,44 @@ sub create {
   # TODO: created is not autoset
 }
 
+#TODO: this is OLD CODE. IT IS BROKEN
+sub delete {
+  my $self = shift;
+ # this function needs to move all requests into some other queue!
+  my ($query_string,$update_clause);
+  
+  
+    
+    $queue_id=$rt::dbh->quote($in_queue_id);
+    if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
+	$query_string = "DELETE FROM queues WHERE id = $in_queue_id";
+	$sth = $dbh->prepare($query_string) 
+	    or return (0, 
+		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	$query_string = "DELETE FROM queue_acl WHERE queue_id = $in_queue_id";
+        $sth=$dbh->prepare($query_string) 
+	    or return (0, 
+		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	$query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
+        $sth=$dbh->prepare($query_string) 
+	    or return (0, "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");  
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	delete $rt::queues{"$in_queue_id"};
+	return (1, "Queue $in_queue_id deleted.");
+    }
+    else {
+	return(0, "You do not have the privileges to delete queue $in_queue_id.");
+    }
+}
+
 sub Create {
   my $self = shift;
   return($self->create(@_));
@@ -115,8 +153,60 @@ sub MailMembersOnComment {
   $self->_set_and_return('MailMembersOnComment',@_);
 }
 
+#
+# Distribution lists
+
+sub DistributionList {
+	my $self = shift;
+	#return the list of all queue members.
+	return();
+}
+
+#
 
 
+#
+# Routines related to areas
+# Eventually, this may be replaced with a keyword system
+
+sub NewArea {
+}
+
+sub DeleteArea {
+}
+
+sub Areas {
+#returns an EasySearch object which enumerates this queue's areas
+}
+
+#
+# 
+# Routines which deal with this queues acls 
+#
+
+#returns an EasySearch of ACEs everyone who has anything to do with this queue.
+sub ACL {
+ my $self = shift;
+ if (!$self->{'acl'}) {
+	 my $self->{'acl'} = new RT::ACL($self->{'user'});
+	 $self->{'acl'}->Limit(FIELD => 'queue', 
+			       VALUE => "$self->id");
+	}
+
+  return ($self->{'acl'});
+
+}
+
+
+#
+# Really need to figure out how to do 
+# acl lookups. perhaps the best thing to do is to extend easysearch to build an accessable hash of objects
+#
+
+
+
+#
+#
 sub Display_Permitted {
   my $self = shift;
   my $actor = shift || my $actor = $self->{'user'};

@@ -5,25 +5,12 @@
 # RT is distributed under the terms of the GNU Public License
 
 package rt;
-use DBI;
 
-&connectdb();
 
 require rt::support::utils;   
 require rt::database::config;
 &rt::read_config();
 
-
-sub connectdb {
-	# Gets the RDBMS and database from the config.
-	$data_source="dbi:$rt_db:dbname=$dbname";
-
-	if (!($dbh = DBI->connect($data_source, $rtuser, $rtpass)))
-	{
-		die "[connectdb] Database connect failed: $DBI::errstr\n";
-	}
-
-}
 
 
 #
@@ -170,9 +157,11 @@ sub add_transaction {
    
     #if we've got content, write to transaction file
     if ($in_content) {
-	require rt::database::content;
-        $content_file=&write_content($in_time,$in_serial_num,$transaction_num,$in_content);
+      #TODO: we no longer store content in the filesystem. as yet it's not stored anywhere else.
+        die ("No message content stored. don't use this version of RT");
+
     }
+
 
     #if we've got content, mail it away
     if ($in_do_mail) {
@@ -299,15 +288,9 @@ sub parse_transaction_row {
 
 	$rt::req[$serial_num]{'trans'}[$in_id]{'text_time'}         = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
 	
-	require rt::database::content;
-	($success, $content)= &read_content($rt::req[$serial_num]{'trans'}[$in_id]{'time'},$rt::req[$serial_num]{'trans'}[$in_id]{'serial_num'}, $rt::req[$serial_num]{'trans'}[$in_id]{'id'});
+      #TODO: we no longer store content in the filesystem. as yet it's not stored anywhere else.
+	die ("No message content stored. don't use this version of RT"); 
 
-
-       
-
-	if ($success) {
-	    $rt::req[$serial_num]{'trans'}[$in_id]{'content'} = $content;
-	}
 	$rt::req[$serial_num]{'trans'}[$in_id]{'text'}=&transaction_text($serial_num, $in_id, $in_current_user);
 
     }
@@ -591,21 +574,6 @@ sub add_link {
     push(@{$rt::links[$serial_num]}, {'foreign_db'=>$otherdb, 'foreign_id'=>$foreign_id});
 }
 
-sub quote_wrapper {
-  my $in_val = shift;
-  my ($out_val);
-  if (!$in_val) {
-    return ("''");
-    
-  }
-  else {
-    $out_val = $rt::dbh->quote($in_val);
-    
-  }
-  return("$out_val");
-  
-
-}
 
 1;
     

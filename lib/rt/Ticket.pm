@@ -88,27 +88,27 @@ sub owner{
   }
   $self->_set_and_return('owner',@_);
 }
-sub subject{
+sub subject {
   my $self = shift;
   $self->_set_and_return('subject',@_);
 }
-sub initial_priority{
+sub initial_priority {
   my $self = shift;
-  $self->_set_and_return('initial_priority');
+  $self->_set_and_return('initial_priority',@_);
 }
-sub final_priority{
+sub final_priority {
   my $self = shift;
   $self->_set_and_return('final_priority',@_);
 }
-sub priority{
+sub priority {
   my $self = shift;
   $self->_set_and_return('priority',@_);
 }
-sub status{
+sub status { 
   my $self = shift;
   $self->_set_and_return('status',@_);
 }
-sub time_worked{
+sub time_worked {
   my $self = shift;
   $self->_set_and_return('time_worked',@_);
 }
@@ -125,6 +125,9 @@ sub date_due {
   my $self = shift;
   $self->_set_and_return('date_due',@_);
 }
+
+
+#takes a subject, a cc list, a bcc list
 
 sub new_comment {
   my $self = shift;
@@ -237,7 +240,8 @@ sub _set_and_return {
   else {
     if ($self->Modify_Permitted) {
       #instantiate a transaction 
-      #record what's being done in the transaction
+ 
+     #record what's being done in the transaction
  
       #Figure out where to send mail
       

@@ -1,6 +1,4 @@
 # $Header$
-#
-
 package rt;
 
 #####
@@ -65,7 +63,6 @@ sub template_mail{
       $template =~ s/--- Headers Follow ---(.*)$//s;
     }
 
-#    print STDERR "Debug 1\n";
     
     if (!$in_recipient && !$in_cc && !$in_bcc) {
 	return(0, "template_mail: No Recipient Specified!");

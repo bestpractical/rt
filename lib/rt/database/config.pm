@@ -103,43 +103,6 @@
 	return(1);
     }
 
-sub load_queue_areas {
-    
-    my ($queue_id, $row);
-    $sth = $dbh->prepare("SELECT queue_areas.queue_id, queue_areas.area FROM queue_areas") or warn "prepare query had some problem: $DBI::errstr\n";
-	$rv = $sth->execute or warn "execute query had some problem: $DBI::errstr\n";
-
-    while (@row=$sth->fetchrow_array) {
-        $queue_id=$row[0];
-        $area=$row[1];
-        if (!&is_a_queue($queue_id)) {next;} #the queue doesn't exist
-        $rt::queues{$queue_id}{areas}{$area}=1;
-    }
-}         
-
-
-
-sub load_user_info {
-    my ($row);
-
-    $query_string="SELECT id, password, email,  phone, office, comments, admin_rt, real_name FROM users";
-    $sth = $dbh->prepare($query_string) or warn "[load_user_info] prepare query had some problem: $DBI::errstr\n$query_string\n";
-    $rv = $sth->execute or warn "[load_user_info] execute query had some problem: $DBI::errstr\n$query_string\n";
-    while (@row=$sth->fetchrow_array) { 
-	$user_id=$row[0];
-	$emails{$row[2]}=$user_id;
-	$users{$user_id}{name}=$user_id;
-	$users{$user_id}{password}="";
-	$users{$user_id}{email}=$row[2];
-	$users{$user_id}{phone}=$row[3];
-	$users{$user_id}{office}=$row[4];
-	$users{$user_id}{comments}=$row[5];
-	$users{$user_id}{admin_rt}=$row[6];
-	$users{$user_id}{real_name}=$row[7];
-    }
-    
-}
-
 sub is_hash_of_password_and_ip {
   my $in_user_id = shift;
   my $in_ip = shift;
@@ -180,35 +143,6 @@ sub is_hash_of_password_and_ip {
 
 
 
-sub is_password {
-    my ($in_user_id, $in_password) = @_;
-    my ($row, $password);
-
-   
-    if (!&is_a_user ($in_user_id)) {
-	return(0);
-    }
-
-     my $user_id=$dbh->quote($in_user_id);
-    $query_string="SELECT password FROM users WHERE id = $user_id";
-       
-    $sth = $dbh->prepare($query_string) or warn "[is_password] prepare had some problem: $DBI::errstr\n$query_string\n";
-    $rv = $sth->execute or warn "[is_password] execute had some problem: $DBI::errstr\n$query_string\n";
-    @row=$sth->FetchRow;
-
-    $password=$row[0];
-   
-
-    
-    if ($password eq $in_password) {
-	return (1);
-    }
-    else {
-	return(0);
-    }
-    
-}
-
 sub is_a_user {
     my ($in_user_id) = shift;
     if ($users{"$in_user_id"}{name} eq $in_user_id) {
@@ -219,27 +153,6 @@ sub is_a_user {
     }
 }
     
-
-sub load_queue_conf {
-#    local ($in_queue_id)=@_;
-    my ($row,$queue_id);
-	$sth = $dbh->prepare("SELECT id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio FROM queues") or warn "prepare query had some problem: $DBI::errstr\n";
-	$rv = $sth->execute or warn "execute query had some problem: $DBI::errstr\n";
-    while (@row=$sth->fetchrow_array) {
-	$queue_id=$row[0];
-	$queues{$queue_id}{name}=$queue_id;
-	$queues{$queue_id}{mail_alias}=$row[1];
-	$queues{$queue_id}{m_owner_trans}=$row[2];
-	$queues{$queue_id}{m_members_trans}=$row[3];
-	$queues{$queue_id}{m_user_trans}=$row[4];
-	$queues{$queue_id}{m_user_create}=$row[5];
-	$queues{$queue_id}{m_members_correspond}=$row[6];
-	$queues{$queue_id}{m_members_comment}=$row[7];
-	$queues{$queue_id}{allow_user_create}=$row[8];
-	$queues{$queue_id}{default_prio}=$row[9];
-	$queues{$queue_id}{default_final_prio}=$row[10];
-    }
-}
 
 sub is_an_area {
 	my ($in_queue_id, $in_area) = @_;
