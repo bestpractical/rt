@@ -8,38 +8,45 @@ package rt::ui::web;
 
 sub check_auth() {
     my ($name,$pass);
-    
+    my $debug = 0;    
     # If we're doing external authentication
 
     if ($rt::web_auth_mechanism =~ /external/i) {
+	print STDERR "using external auth\n" if $debug;
       $current_user = $ENV{REMOTE_USER};                                        
       return (0);
     }
     
     else {
+	print STDERR "Using cookies auth\n" if $debug;
     	require rt::database::config;	
     	$AuthRealm="WebRT for $rt::rtname";
     	($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
+	print STDERR "Name: $name\t Pass: $pass\n" if $debug;
     
+
    #if the user isn't even authenticating
     if ($name eq '') {
+      print STDERR "No name provided. forcing login\n" if $debug;
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0)
     }
  
     #if the user's password is bad
     elsif (!(&rt::is_hash_of_password_and_ip($name,$ENV{'REMOTE_ADDR'}, $pass))) {
-      
+        print STDERR "The user's password is bad. forcing login\n" if $debug;
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
     }
     
     #if the user is trying to log out
     if ($rt::ui::web::FORM{'display'} eq 'Logout') {
+        print STDERR "But they _wanted_ to log out\n" if $debug;
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
     }
     else { #authentication has succeeded
+	print STDERR "Password validation successful!\n" if $debug;
       $current_user = $name;
       
     }
@@ -130,7 +137,6 @@ sub dump_env
 
 sub frames {
     if ($ENV{'PATH_INFO'} =~ /\/frames/) {
-
 	return(1);
     }
     else {
@@ -139,15 +145,13 @@ sub frames {
 }
 
 sub cgi_vars_in {
-	use CGI qw/:cgi-lib/;
-	$query = new CGI;
-	%FORM = $query->Vars;
-	 
+    use CGI qw/:cgi-lib/;
+    $query = new CGI;
+    %FORM = $query->Vars;
 
     # Pull in the cookies
     use CGI::Cookie;
     %rt::ui::web::cookies = fetch CGI::Cookie;
-
 
 }
 

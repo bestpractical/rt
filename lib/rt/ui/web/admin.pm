@@ -418,31 +418,31 @@ Queue Configuration
 
     print "<input type=\"checkbox\" name=\"m_owner_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_owner_trans});
-    print "> Mail request owner on transaction<br>\n";
+    print "> Send <b>request owner</b> email notification of each transaction<br>\n";
      
     print "<input type=\"checkbox\" name=\"m_members_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_trans});
-    print "> Mail request queue members on transaction<br>\n";
+    print ">Send <b>all queue members</b> email notification of each transaction<br>\n";
     
     print "<input type=\"checkbox\" name=\"m_user_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_user_trans});
-    print "> Mail requestors on transaction<br>\n";
+    print ">Send <b>requestors</b> email notifications of each transaction (except comment) on their requests<br>\n";
     
     print "<input type=\"checkbox\" name=\"m_user_create\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_user_create});
-    print "> Autoreply to requestors on creation<br>\n";
+    print "> Send <b>requestors</b> an autoreply on request creation<br>\n";
     
     print "<input type=\"checkbox\" name=\"m_members_correspond\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_correspond});
-    print "> Mail correspondence to queue members<br>\n";
+    print ">Send <b>queue members</b> copies of  all correspondence<br>\n";
     
     print "<input type=\"checkbox\" name=\"m_members_comment\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_comment});
-    print "> Mail comments to queue members<br>\n";
+    print ">Send <b>queue members</b> copies of  all comments<br>\n";
     
     print "<input type=\"checkbox\" name=\"allow_user_create\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{allow_user_create});
-    print "> Allow non-members to create requests<br>\n";
+    print ">Allow non-members to create requests<br>\n";
 
  
     print "Delete the area <select name=\"delete_area\">

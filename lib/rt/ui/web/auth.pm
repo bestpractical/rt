@@ -168,7 +168,7 @@ sub AuthForceLogin () {
   }
   print "
 <TABLE cellpadding=10 cellspacing=0 border=0>
-<TR><TD BGCOLOR=\"#cccccc\"><FONT SIZE=\"+2\" COLOR=\"#bb0000\"><b>No valid RT Credentials found</b></FONT></TD></TR>
+<TR><TD BGCOLOR=\"#cccccc\"><FONT SIZE=\"+2\" COLOR=\"#bb0000\"><b>You are not logged in</b></FONT></TD></TR>
 <TR><TD BGCOLOR=\"#eeeeee\">
   This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.</TD>
 </TR>
@@ -260,7 +260,7 @@ print "&nbsp;</td>
 
 <font size=\"-1\">
 This is Request Tracker version $rt::rtversion.<br><br>
-Development was initially comissioned by <a href=\"http://www.utopia.com\">Utopia Inc</a>.  Further work has been funded by <a href=\"http://www.leftbank.com\">The Leftbank Operation</a>. and <a href=\"http://www.wesleyan.edu\">Wesleyan University.</a>
+Development was initially comissioned by <a href=\"http://www.utopia.com\">Utopia Inc</a>.  Further work has been funded by <a href=\"http://www.leftbank.com\">The Leftbank Operation</a>. and <a href=\"http://www.wesleyan.edu\">Wesleyan University</a>. <a href=\"http://www.arepa.com\">Arepa</a> currently underwrites development of RT.
 <br>
 This program is redistributable under the terms of the <A HREF=\"http://www.gnu.org/copyleft\"><b>GNU GPL.</b></a>
 

@@ -33,11 +33,6 @@ return(0);
 
 sub InitDisplay {
   
-  if ($rt::ui::web::FORM{'display'} eq 'SetNotify') { # #this is an ugly hack, but to get the <select>
-    $rt::ui::web::FORM{'do_req_notify'}=1;          # working in the display intereface, I neeeded
-    # to do it.  hopefully, it will go away some day.
-    
-  }
   if (!($frames) && (!$rt::ui::web::FORM{'display'})) {
     
     if ($serial_num > 0) {	
@@ -55,7 +50,9 @@ sub InitDisplay {
     }
     
     if ($frames) {
-  if ((!($rt::ui::web::FORM{'display'}) )) {      
+	  if (!($rt::ui::web::FORM{'display'}) and 
+	      !($rt::ui::web::FORM{'serial_num'} ) and
+	      !($rt::ui::web::FORM{'queue_id'}) ) {      
 	&frame_display_queue();
       }
       
@@ -83,13 +80,11 @@ sub DisplayForm {
   }
   
   else {   
-    
         if ($rt::ui::web::FORM{'display'} eq 'ReqOptions') {
 	  &display_commands();
 	  return();
         } 
-    
-    #easy debugging tool
+     #easy debugging tool
     elsif ($rt::ui::web::FORM{'display'} eq 'DumpEnv'){
       &rt::ui::web::dump_env();
       return();
@@ -112,7 +107,6 @@ sub DisplayForm {
 	($rt::ui::web::FORM{'display'} ne 'Queue') and 
 	($rt::ui::web::FORM{'display'} ne 'ReqOptions') and 
 	($rt::ui::web::FORM{'display'} ne 'DumpEnv')) {
-      #	    print "<h1>Request Number $serial_num</h1>\n";
       if ($rt::ui::web::FORM{'message'}) {
 	print "$rt::ui::web::FORM{'message'}<br>\n";
       }
@@ -928,7 +922,7 @@ $rt::req[$in_serial_num]{'status'}
 </TR> 
 <TR VALIGN=\"TOP\">
 <TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetNotify&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
+<b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
 </TD>
 		    
 <TD BGCOLOR=\"$bg_color\">";

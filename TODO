@@ -1,25 +1,15 @@
 Before we hit 1.0
   Web
-	Authentication
-		Make external authentication configurable
-		Make cookies stable
-		Make cookies work only over ssl.
-		Document ModAuthMysql
 	UI
 		Add in crosslinks with webadmin
 
   Install
 	Documentation
-		CGI.pm
 		make foo -> (GNU MAKE foo)
-		Thank robin
-		Thank lamont
 	Make ACLS needs work
 		make it a perl script.
 		
   General
-	Lamont's fix.
-
 
 
 RT Todo List for 1.1

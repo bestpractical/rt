@@ -1,13 +1,18 @@
 23 Jun 99
 ---------
+Got Cookies auth working finally, i think.
 Moved from custom CGI form field parsing to CGI.pm (it only required a few lines of code changes)
+Fixed bug in frames webui.
+Reworked descriptions of mail states to make them slightly less obtuse.
+Added arepa to the list of credits.
+Editied the Makefile to reflect the new CGI.pm dependence
+Bumped the version to .99.9pre7
 
 
 
 16 Jun 99
 ---------
 Made the authentication page pass-through any querystring after authentication succeeds
-
 Fixed a bug that caused recent versions of CGI::Cookie to break authentication
 Alas, there's another bug there too.
 
@@ -22,7 +27,7 @@ Web queue listing headings have been compacted per rich.
 Fixed a bug in comment which caused it to break when there was no to line
 Fixed a date selector bug with a  patch to lib/rt/ui/web/support.pm in  Michael Brader <mbrader@aurema.com> 
 Stray debug code yanked by Charlie Brady <charlieb@aurema.com> 
-Fixed some bods in cc/bcc on comment from Tobias Brox
+Fixed some bugs in cc/bcc on comment from Tobias Brox
 Removed some legacy code from when we had to deal with  doing our own http error codes by charlieb@aurema.com
 Fixed a lot of HTML nits from charlieb@aurema.com
 a patch for getting the from-lines nicer when using the mail-ui by Tobias Brox

@@ -15,7 +15,6 @@ Development of RT has been sponsored in part by Utopia Inc, by The
 Leftbank Operation and by Wesleyan University.
 
 Some code for RT has been derived from Remy Evard's req package.
-Some code for RT has been derived from Reuven Lerner's form-mail.pl
 
 All of these works are distributed under the GPL
  
@@ -49,9 +48,8 @@ o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 
 o   CGI.pm ( http://www.perl.com ) -- free
 	
-	At the moment, we use the CGI::Cookie library included as a part of 
-	CGI.pm. CGI::Cookie is required for web authentication to work.
-
+	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
+	We recommend that you use at least 2.53 as we know that version wokrs.
 
 o   Digest::MD5 ( http://www.perl.com ) -- free
 	
@@ -247,13 +245,13 @@ day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
 Gerald Abshez, Dave Hull, Dave Schenet Dave Walton, Jan Okrouhly, Tobias Brox
-and Charlie Brady have all contributed bug reports, code  or ideas that have 
-helped RT along.  
+Lamont Lucase and Charlie Brady have all contributed bug reports, code or 
+ideas that have helped RT along.  
 
-Utopia Inc, Wesleyan University and The Leftbank Operation have paid 
-me to update RT and release it to the public.  Without their support RT 
-would not exist.   If I've left you out, please drop me a line....it 
-wasn't intentional. 
+Arepa, Inc., Utopia Inc, Wesleyan University and The Leftbank Operation 
+have paid me to update RT and release it to the public.  Without their 
+support RT would not exist.  If I've left you out, please drop me a line
+....it wasn't intentional. 
  
 
 
