@@ -41,7 +41,7 @@ sub print_transaction {
 		next;}
 	    
 	    if ((($header_mode eq 'all') or ($field =~ /$header_mode/i)) and 
-		($headers_ignore !~ /$field/i)) {
+		($field !~ /$headers_ignore/i)) {
 		&new_row(); {
 		    &new_col("align=\"right\""); {
 			&print_html($field); 

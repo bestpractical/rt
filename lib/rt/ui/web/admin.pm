@@ -73,16 +73,16 @@ sub DisplayForm {
 
 	}
 	
-	elsif ($rt::ui::web::FORM{'display'} eq 'Create a User called') {
+	elsif (($rt::ui::web::FORM{'display'} eq 'Create a User called') && ($rt::ui::web::FORM{'new_user_id'})){
 	    &FormModifyUser($rt::ui::web::FORM{'new_user_id'});
 	}
 	elsif ($rt::ui::web::FORM{'display'} eq 'Modify your RT Account') {
 	    &FormModifyUser($current_user);
 	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Create a Queue called') {
+	elsif (($rt::ui::web::FORM{'display'} eq 'Create a Queue called') && ($rt::ui::web::FORM{'new_queue_id'})) {
 	    &FormModifyQueue($rt::ui::web::FORM{'new_queue_id'});
 	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the User called'){
+	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the User called') {
        	    &FormModifyUser($rt::ui::web::FORM{'user_id'});
 	}
 	elsif ($rt::ui::web::FORM{'display'} =~ /(View|Modify) the Queue called/){
@@ -93,7 +93,11 @@ sub DisplayForm {
 	}
 	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this User'){
 	    &FormDeleteUser($rt::ui::web::FORM{'user_id'});
-	}    }
+	}    
+ 	else {
+		&menu();
+	} 
+ }
    
    &rt::ui::web::footer();
 }

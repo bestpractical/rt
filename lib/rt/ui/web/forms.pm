@@ -410,7 +410,10 @@ sub FormCreate{
 	if (&rt::can_create_request($queue, $current_user)) {
 	    print "<option>$queue\n";
 	}
-    }
+	else {
+	print "<!-- $current_user can't make a req in $queue\n\n-->";    
+	}
+}
     print"</select>
 <input type=\"hidden\" name=\"display\" value=\"Create_Step2\">
 </form>";

@@ -24,12 +24,13 @@ sub can_manipulate_request{
     }
 }
 sub can_create_request{
-    my ($in_queue, $in_user) =@_;
+    my $in_queue = shift;
+    my $in_user = shift;
   
-    if ($queues{$in_queue}{acls}{$in_user}{manipulate}) {
+    if ($queues{$in_queue}{'acls'}{$in_user}{'manipulate'}) {
 	return(1);
 }
-    if ($queues{$in_queue}{allow_user_create}) {
+    if ($queues{$in_queue}{'allow_user_create'}) {
 	return(2);
     }
 

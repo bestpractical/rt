@@ -116,7 +116,7 @@ MYSQL_VERSION		= 	3.22
 # AS SOON AS MAKE INSTALL FINISHES
 #
 #
-ROOT_MYSQL_PASS		=	
+ROOT_MYSQL_PASS		=	My!word%z0t	
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -128,17 +128,16 @@ RT_MYSQL_PASS           =       My!word%z0t
 
 #
 # Set this to the domain name of your Mysql server
-# leave this blank for enhanced speed if the mysql database is on localhost
 #
 
-RT_MYSQL_HOST		=	
+RT_MYSQL_HOST		=	localhost
 
 #
 # Set this to the FQDN of your RT server.  It'll be used by mysql to grant 
 # rt on your RT server ACLS to the Mysql database.
 #
 
-RT_HOST			=
+RT_HOST			=	localhost
 
 #
 # set this to the name you want to give to the RT database in mysql
