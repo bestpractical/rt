@@ -44,6 +44,8 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 
-% my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
-% $m->print($hand->maketext($m->content,@_));
-% return(1);
+<%init>
+ my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
+ $m->print($hand->maketext($m->content,@_));
+ return(1);
+</%init>
