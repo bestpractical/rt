@@ -681,6 +681,7 @@ sub _CustomFieldLimit {
   } else {
     $CF->LimitToGlobal;
   }
+  $CF->FindAllRows;
 
   my $cfid = 0;
 

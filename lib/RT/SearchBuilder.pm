@@ -102,6 +102,18 @@ sub LimitToDeleted {
 }
 # }}}
 
+# {{{ sub FindAllRows
+
+=head2 FindAllRows
+
+Find all matching rows, regardless of whether they are disabled or not
+
+=cut
+
+sub FindAllRows {
+  shift->{'find_disabled_rows'} = 1;
+}
+
 # {{{ sub Limit 
 
 =head2 Limit PARAMHASH
