@@ -447,7 +447,7 @@ Set($AmbiguousDayInPast , 1);
 #  * More to come
 #
 
-Set(DeveloperlMode => '@RT_DEVEL_MODE@');
+Set(DevelMode => '@RT_DEVEL_MODE@');
 
 # }}}
 
