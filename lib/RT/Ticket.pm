@@ -870,7 +870,7 @@ sub _NewTransaction {
   $self->_UpdateDateActed;
   
   if (defined $args{'TimeTaken'} ) {
-    $self->_UpdateTimeTaken($TimeTaken); 
+    $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
   return($trans);
 }
