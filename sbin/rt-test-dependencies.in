@@ -90,7 +90,7 @@ File::Spec 0.8
 HTML::Entities 
 Net::Domain
 Log::Dispatch 2.0
-Locale::Maketext
+Locale::Maketext 1.04
 Locale::Maketext::Lexicon 0.10
 Locale::Maketext::Fuzzy
 MIME::Entity 5.108
@@ -160,7 +160,7 @@ Encode::compat 0.04
 .
 
 $deps{'MYSQL'} = [ _( << '.') ];
-DBD::mysql 2.0416
+DBD::mysql 2.1018
 .
 $deps{'ORACLE'} = [ _( << '.') ];
 DBD::Oracle
