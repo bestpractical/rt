@@ -291,6 +291,9 @@ sub Parse {
     #Lets build our mime Entity
 
     my $parser = MIME::Parser->new();
+    
+    # Do work on the parsed template in memory, rather than on disk
+    $parser->output_to_core(1); 
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
