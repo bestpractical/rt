@@ -1,0 +1,51 @@
+%# $Header$
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+
+<& /Elements/Header, Title => "Link ticket ".$Ticket->Id &>
+
+<& /Ticket/Elements/ToolBar, Ticket => $Ticket &>
+
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Link tickets" &>
+
+<form action="Display.html" method="post">
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Target" value="<%$id%>">
+
+
+<input name="Base"> (URI(s) or ticket id(s):) 
+<& /Elements/SelectLinkType &> 
+this Ticket .
+
+<input type=submit value="Create link!">
+
+</form>
+
+<form action="Display.html" method="post">
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Base" value="<%$id%>">
+
+
+This ticket
+<& /Elements/SelectLinkType &> 
+<input name="Target">.
+
+<input type=submit value="Create link!">
+</form>
+
+<& /Elements/TitleBoxEnd &>
+
+<%ARGS>
+$id => undef
+</%ARGS>
+
+<%INIT>
+
+  if (!$ARGS{'id'}) {
+    Abort("No ticket specified");
+  }
+
+my $Ticket = RT::Ticket->new($session{CurrentUser});
+unless ($Ticket->Load($id)) {
+    Abort("/Elements/Error");
+}
+</%INIT>
