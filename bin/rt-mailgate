@@ -180,11 +180,30 @@ if ($SquelchReplies) {
 
 # }}}
 
-# {{{ If we don't have a ticket Id, we're creating a new ticket
 
-if (!defined($TicketId)) {
+# {{{ If we require that the sender be found in an external DB and they're not
+# forward this message to RTOwner
+
+
+
+if ($RT::LookupSenderInExternalDatabase && 
+    $RT::SenderMustExistInExternalDatabase )  {
+
+    MailError(To => $RT::OwnerEmail,
+	      Subject => "RT Bounce: $Subject",
+	      Explanation => "RT couldn't find requestor via its external database lookup",
+	      MIMEObj => $entity);
     
-    #If the message doesn't reference a ticket #, create a new ticket
+}
+
+# }}}
+
+
+# {{{ elsif we don't have a ticket Id, we're creating a new ticket
+
+
+
+elsif (!defined($TicketId)) {
     
     # {{{ Create a new ticket
     if ($Action =~ /correspond/) {

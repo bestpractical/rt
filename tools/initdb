@@ -26,7 +26,10 @@ if ($DEBUG) {
 my $dsn = "dbi:$DB_TYPE:";
 
 if (($DB_TYPE eq 'Pg') or ($DB_TYPE eq 'mysql')) {
-   $dsn .= "dbname=$DB_DATABASE;host=$DB_HOST;port=$DB_PORT";
+   $dsn .= "dbname=$DB_DATABASE;host=$DB_HOST";
+   if ($DB_PORT) {
+ 	$dsn .= ";port=$DB_PORT";
+   }
 }
 elsif ($DB_TYPE eq 'Oracle') {
    $dsn .= "$DB_DATABASE";
