@@ -24,9 +24,10 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
 <& /Elements/PageLayout,
-    current_toptab => 'RTFM/index.html',
-    current_tab => $current_toptab,
-    current_subtab => $current_tab,
+    current_toptab => 'NoAuth/RTFM/index.html',
+    current_tab => $current_tab,
+    current_subtab => $current_subtab,
+    tabs => $tabs,
     toptabs => $toptabs,
     topactions => $topactions,
     actions => $actions,
@@ -35,35 +36,38 @@
 &>
 <%INIT>
 my $action;
+my $toptabs = { aaa => { title => loc('RTFM'),
+                          path => 'NoAuth/RTFM/index.html' }};
+my $tabs = { 'aab' => { title => loc('Overview'),
+                           path  => 'NoAuth/RTFM/index.html' },
+                'articles' => { title => loc('Search'),
+                                path  => 'NoAuth/RTFM/Search.html' }, };
 
 
-my $toptabs = { 'aab' => { title => loc('Overview'),
-                                               path  => 'RTFM/index.html' },
-                                      'articles' => { title => loc('Search'),
-                                              path => 'RTFM/Article/Search.html' },
-                                 };
+my $topactions = { B => { html => $m->scomp('/RTFM/Elements/GotoArticle') } };
 
-my $topactions = {
-        B => { html => $m->scomp('/RTFM/Elements/GotoArticle') }
-        };
+# Now let callbacks add their extra tabs
+$m->comp( '/Elements/Callback',
+          topactions => $topactions,
+          toptabs    => $toptabs,
+          tabs    => $tabs,
+          %ARGS );
 
-                    
-  # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', topactions => $topactions, toptabs => $toptabs, %ARGS);
-
-  foreach my $tab (sort keys %{$toptabs}) {
-    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
-      $toptabs->{$tab}->{"subtabs"} = $tabs;
-      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
+foreach my $tab ( sort keys %{$tabs} ) {
+    if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
+        $tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{$tab}->{"current_subtab"} = $current_tab;
     }
-        
-  }
+
+}
+
 </%INIT>
 <%ARGS>
-$current_toptab => undef
+$current_toptab => 'NoAuth/RTFM/index.html'
 $current_tab => undef
-$tabs => undef
+$current_subtab => undef
 $actions => undef
+$subtabs => undef
 $subactions => undef
 $Title => undef
 </%ARGS>

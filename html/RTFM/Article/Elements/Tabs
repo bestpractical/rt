@@ -70,6 +70,15 @@ if ($id) {
             };
         }
 }
+
+foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {
+    if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_subtab ) {
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_tab;
+    }
+
+}
+
 </%INIT>
 
 
@@ -77,6 +86,6 @@ if ($id) {
 $id => undef
 $Title => undef
 $subtabs => undef
-$current_tab => undef
+$current_tab => 'RTFM/Article/Display.html?id='.$id
 $current_subtab => undef
 </%ARGS>

@@ -1,0 +1,65 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /NoAuth/RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'NoAuth/RTFM/index.html', current_subtab => $current_subtab, current_tab => $current_tab, Title => $Title&>
+  
+<%INIT>
+
+my $subtabs;
+$subtabs->{'a_search'} = { class     => "currentnav",
+                        path      => "NoAuth/RTFM/Search.html",
+                        title     => loc("New search"), 
+                        separator => 1 };
+if ($id) {
+    $subtabs->{"this"} = { class          => "currentnav",
+                        path           => "NoAuth/RTFM/Display.html?id=" . $id,
+                        title          => "#" . $id,
+                        current_subtab => $current_subtab };
+
+    $subtabs->{"this"}->{subtabs} = {
+                              Classes => {
+                                  title => loc('Display'),
+                                  path => 'NoAuth/RTFM/Display.html?id=' . $id,
+                              },
+                              History => {
+                                  title => loc('History'),
+                                  path => 'NoAuth/RTFM/History.html?id=' . $id,
+                              },
+
+
+ };
+
+        my $art = RT::FM::Article->new( $session{'CurrentUser'} );
+        $art->Load($id);
+}
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$Title => undef
+$tabs => undef
+$current_tab => undef
+$current_subtab => undef
+</%ARGS>

@@ -4,7 +4,7 @@
 <a href="Search.html?<%$qs%>">Show advanced search options...</a>
 % }  else { 
 <& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
-<form target="Search.html" method="GET">
+<form action="Search.html" method="GET">
 <br>Class is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
 and is not <& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1,

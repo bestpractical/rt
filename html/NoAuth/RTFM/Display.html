@@ -1,12 +1,13 @@
-<& /NoAuth/RTFM/Article/Elements/Tabs, id => $id, Title => $title &>
+<& /NoAuth/RTFM/Elements/ArticleTabs, id => $id, Title => $title, current_toptab =>
+'NoAuth/RTFM/index.html', current_tab => 'NoAuth/RTFM/Search.html', current_subtab => 'NoAuth/RTFM/Display.html?id='.$article->Id &>
 <emp><%$article->Summary%></emp>
 <br><br><br>
   <& /Elements/TitleBoxStart, title => loc('Custom Fields'), title_class=> 'inverse',  color => "#993333" &>
-  <& Elements/ShowCustomFields, article => $article &>
+  <& /RTFM/Article/Elements/ShowCustomFields, article => $article &>
 <& /Elements/TitleBoxEnd &> 
 <br>
     <& /Elements/TitleBoxStart, title => loc('Links'), title_class=> 'inverse',  titleright => '', color=> "#336633" &> 
-<& Elements/ShowLinks, article => $article &>
+<& /RTFM/Article/Elements/ShowLinks, article => $article &>
 <& /Elements/TitleBoxEnd &>
 <%init>
 
@@ -14,7 +15,7 @@ my $article = RT::FM::Article->new($session{'CurrentUser'});
 
 $article->Load($id);
 unless ($article->Id) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
+    $m->comp("/NoAuth/RTFM/Elements/Error", Why => loc("Article not found"));
 }
 
 unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 

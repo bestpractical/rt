@@ -1,0 +1,56 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /NoAuth/RTFM/Elements/Tabs &>
+<& /Elements/TitleBoxStart, class=> "error",  title => $Title &>
+<%$Why%>
+<br>
+<font size=-1>
+<%$Details%>
+</font>
+<& /Elements/TitleBoxEnd &>
+</body>
+</HTML>
+
+<%perl>
+$m->abort();
+</%perl>
+<%args>
+$Code => undef
+$Details => undef
+$Title => loc("RTFM Error")
+$Why => loc("the calling component did not specify why")
+</%args>
+
+<%INIT>
+my $error = "WebRT: $Why ($Details)";
+
+# TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
+if ($] >= 5.007001) {
+    require Encode;
+    Encode::_utf8_off($error);
+}
+
+$RT::Logger->error($error);
+</%INIT>

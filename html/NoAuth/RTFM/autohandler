@@ -1,0 +1,8 @@
+%$m->call_next();
+<%once>
+use RT::FM::ArticleCollection;
+use RT::FM::ClassCollection;
+use RT::FM::CustomFieldCollection;
+use Time::ParseDate;
+</%once>
+

@@ -1,4 +1,4 @@
-<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title&>
+<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title, current_subtab => 'RTFM/Article/History.html?id='.$id &>
 <& Elements/ShowHistory, id => $id &>  
 <%init>
 my $title =loc('History for article #[_1]',$id);

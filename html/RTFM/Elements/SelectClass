@@ -37,6 +37,7 @@ SIZE=<%$Size%>
 <OPTION VALUE="">-</OPTION>
 % }
 % while (my $Class=$Classes->Next) {
+% next unless ($Class->Name); # if they can't see it, don't list it
 % if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
 <OPTION VALUE="<%$Class->Id%>" <%(grep (( $Class->Id == $_ || $Class->Name eq $_ ), @Default)) && 'SELECTED'%>><%$Class->Name%>
 %   if (($Verbose) and ($Class->Description) ){

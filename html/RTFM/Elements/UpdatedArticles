@@ -46,7 +46,7 @@
 <%$Article->CreatorObj->Name%>
 </TD>
 <TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/RTFM/Article/Modify.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTFM/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
 </TD>
 </TR>
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                

@@ -1,0 +1,11 @@
+<& /NoAuth/RTFM/Elements/ArticleTabs, id => $id, Title => $title,
+current_toptab => 'NoAuth/RTFM/index.html', current_tab =>
+'NoAuth/RTFM/Search.html', current_subtab => 'NoAuth/RTFM/History.html?id='.$id &>
+<& /RTFM/Article/Elements/ShowHistory, id => $id &>  
+<%init>
+my $title =loc('History for article #[_1]',$id);
+</%init>
+
+<%args>
+$id => undef
+</%args>
