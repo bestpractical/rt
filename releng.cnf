@@ -1,7 +1,7 @@
 PRODUCT			        = rt
-TAG			            = 3.0.11
+TAG			            = 3.0.12
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rt/
 TAGS		            = tags/
-TRUNK	                = trunk/
+TRUNK	                = branches/3.0-MAINT/
 TMP_DIR			        = /tmp
 RELEASE_DIR		        = /home/ftp/pub/rt/devel
