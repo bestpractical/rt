@@ -22,30 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<%perl>
-     my ($ticket, $trans,$attach, $filename);
-     my $arg = $m->dhandler_arg;                # get rest of path
-     if ($arg =~ '^(\d+)/(\d+)') {
-        $trans = $1;
-        $attach = $2;
-     }
-    else {
-        Abort("Corrupted attachment URL.");
-        }
-     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
-     $AttachmentObj->Load($attach) || Abort(loc("Attachment '[_1]' could not be loaded"), $attach);
-
-
-     unless ($AttachmentObj->id) {
-        Abort(loc("Bad attachment id. Couldn't find attachment '[_1]'\n"), $attach);
-    }
-     unless ($AttachmentObj->TransactionId() == $trans ) {
-        Abort(loc("Bad transaction number for attachment. [_1] should be [_2]\n", $trans, $AttachmentObj->TransactionId()));
-
-     }
-     my $content_type = $AttachmentObj->ContentType || 'text/plain';
-     $r->content_type($content_type);
-     $m->out($AttachmentObj->Content); 
-     $m->abort; 
-</%perl>
-
+<%init>
+$m->comp('/Ticket/Attachment/dhandler', %ARGS);
+$m->abort;
+</%init>

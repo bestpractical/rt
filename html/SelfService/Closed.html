@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /SelfService/Elements/Header, title => loc('RT Self Service / Closed Tickets') &>
+<& /SelfService/Elements/Header, Title => loc('Closed Tickets') &>
 
-<& /SelfService/Elements/MyRequests, status => ['resolved'], friendly_status =>
+<& /SelfService/Elements/MyRequests, status => ['rejected', 'resolved'], friendly_status =>
 loc('closed') &>

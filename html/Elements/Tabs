@@ -33,8 +33,6 @@
     title => $Title
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
-
-<a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 my $action;
 my $basetopactions = {

@@ -22,12 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Elements/Header, Title => loc("Create a request") &>
+<& Elements/Header, Title => loc("Create a ticket") &>
 
-<h2 class="title"><%loc("Create a request")%></h2>
 <FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
 
 <TABLE>
 <TR>
@@ -77,7 +75,6 @@
 </TD>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Label => loc("Create ticket")&>
 
 

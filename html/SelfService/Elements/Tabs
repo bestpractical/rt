@@ -22,46 +22,34 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE WIDTH=100%>
-<TR>
-% foreach $tab (sort keys %{$tabs}) {
-<TD ALIGN=CENTER>
-[<A HREF="<%$RT::WebPath%>/<% $tabs->{"$tab"}->{'path'}%>"><% $tabs->{"$tab"}->{'title'}%></A>]
-</TD>
-%}
-
-% if ($actions) {
-
-<TD ALIGN=RIGHT>
-<TABLE><TR>
-%  foreach my $action (sort keys %{$actions}) {
-<TD>
-<FONT SIZE=-1>
-% if ($actions->{"$action"}->{'html'}) {
-<%$actions->{"$action"}->{'html'} |n%>
-% } else {
-<A HREF="<%$RT::WebPath%>/<% $actions->{$action}->{'path'}%>"><% $actions->{$action}->{'title'}%></A>
-% }
-</FONT>
-</TD>
-%  }
-</TR>
-</TABLE>
-</TD>
-%}
-</TR>
-</TABLE>
-<hr>
+<& /Elements/PageLayout,
+    current_toptab => $current_toptab,
+    current_tab => $current_tab,
+    toptabs => $tabs,
+    topactions => $actions,
+    title => $Title
+&>
+<a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
+
+if ($Title) {
+$Title = loc ("RT Self Service") . " / " . $Title;
+} else {
+$Title = loc ("RT Self Service");
+
+}
 my ($tab);
-my $tabs = { A  => { title => loc('Open requests'),
+my $tabs = { A  => { title => loc('Open tickets'),
                         path => 'SelfService/',
                       },
-             B => { title => loc('Closed requests'),
+             B => { title => loc('Closed tickets'),
                          path => 'SelfService/Closed.html',
                        },
-             C => { title => loc('New request'),
+             C => { title => loc('New ticket'),
                     path => 'SelfService/Create.html'
+                    },
+             Z => { title => loc('Preferences'),
+                    path => 'SelfService/Prefs.html'
                     }
            };
 my $actions = {
@@ -69,5 +57,9 @@ my $actions = {
 		}
 	};
 </%INIT>
-
+<%ARGS>
+$Title => undef
+$current_toptab => undef
+$current_tab => undef
+</%ARGS>
 

@@ -23,4 +23,4 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, %ARGS, Prefs => '/SelfService/Prefs.html' &>
-<& /SelfService/Elements/Tabs &>
+<& /SelfService/Elements/Tabs, %ARGS &>

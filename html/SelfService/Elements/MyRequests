@@ -22,27 +22,23 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("Your [_1] requests", $friendly_status) &>
+<& /Elements/TitleBoxStart, title =>  $title &>
 <TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
 <TR>
 <TH><&|/l&>Subject</&></TH>
 <TH><&|/l&>Status</&></TH>
 <TH><&|/l&>Owner</&></TH>
-<TH>&nbsp;</TH>
 </TR>
 <TR>
 % while (my $Ticket = $MyTickets->Next) {
 <TR>
 <TD>
-<%$Ticket->Id%>: <%$Ticket->Subject%>
+<a href="<%$RT::WebPath%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
 </TD>
 <TD>
 <%$Ticket->Status%>
 </TD><TD>
 <%$Ticket->OwnerObj->Name%>
-</TD><TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>"><&|/l&>Details</&></A>]
-</TD>
 </TR>
 % }
 </TABLE>
@@ -50,6 +46,7 @@
 
 
 <%INIT>
+$title ||= loc("My [_1] tickets", $friendly_status);
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
@@ -60,6 +57,7 @@ foreach my $status (@status) {
 }
 </%INIT>
 <%ARGS>
-$friendly_status => loc('opened')
+$title => undef
+$friendly_status => loc('open')
 @status => ('open', 'new', 'stalled')
 </%ARGS>

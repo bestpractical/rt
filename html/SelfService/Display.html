@@ -22,169 +22,115 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /SelfService/Elements/Header, Title => loc('Display ticket #[_1]', $Ticket->id) &>
+<& /SelfService/Elements/Header, Title => loc('#[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
-<h2 class="title"><%loc('Display ticket #[_1]', $Ticket->id)%></h2>
-
-<TABLE>
-    <TR>
-	<TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Ticket Id</&>
-	</TD>
-      <TD>
-	<%$Ticket->Id%>
-	</TD>
-      </TR>
-    <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Requestors</&>
-	</TD>
-      <TD>
-	<%$Ticket->RequestorAddresses%>
-      </TD>
-      </TR>
-    <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Cc</&>
-	</TD>
-      <TD>
-	<%$Ticket->CcAddresses%>
-      </TD>
-    </TR>
-
-  <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Status</&>
-	</TD>
-      <TD>
-	<%$Ticket->Status%>
-      </TD>
-    </TR>
-
-    <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Queue</&>
-	</TD>
-      <TD>
-	<%$Ticket->QueueObj->Name%> (<%$Ticket->QueueObj->Description%>)
-      </TD>
-    </TR>
-    <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Priority</&>
-      </TD>
-      <TD>
-	<%$Ticket->Priority %>
-      </TD>
-    </TR>
- 
-%  if ($Ticket->TimeWorked) {
-   <TR>	
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<&|/l&>Worked</&>
-      </TD>
-      <TD>
-	<%$Ticket->TimeWorked %> minutes
-      </TD>
-    </TR>
-% }
-
-
-
-	</TABLE>
-<TABLE BORDER=0 CELLSPACING=0>
-% my ($i);
-%while (my $Transaction = $Transactions->Next) {
-% $i++;
-%	if ($Transactions->IsLast) {
-	<a name="lasttrans"></a>
-% 	}
-	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction, 
-					     RowNum => $i,
-					     Ticket => $Ticket &>
-
-%}
+  <TABLE WIDTH="100%" class="ticketsummary" >
+      <TR>
+        <TD VALIGN=TOP WIDTH="50%">
+          <& /Elements/TitleBoxStart, title => loc('The Basics'), 
+                title_class=> 'inverse',  
+                color => "#993333" &>
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+          <& /Elements/TitleBoxEnd &>
+</TD>
+        <TD VALIGN=TOP WIDTH="50%">
+          <& /Elements/TitleBoxStart, title => loc("Dates"),
+                title_class=> 'inverse',
+                 color => "#663366" &>
+          <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+          <& /Elements/TitleBoxEnd &>
+</TD>
+</TR>
 </TABLE>
+
+
+
+<& /Ticket/Elements/ShowHistory, Ticket => $Ticket&>
+
 
 
 <%INIT>
 
-my ($field, @results);
+my ( $field, @results );
 
 # {{{ Load the ticket
 #If we get handed two ids, mason will make them an array. bleck.
 # We want teh first one. Just because there's no other sensible way
 # to deal
-my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
+my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
+my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+if ( $id[0] eq 'new' ) {
 
-my $Ticket = new RT::Ticket($session{'CurrentUser'});
-if ($id[0] eq 'new') {
     # {{{ Create a new ticket
-    
-    my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'Queue'})) {
-	$m->comp('Error.html', Why => loc('Queue not found'));
-	$m->abort;
-    }
-    
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	$m->comp('Error.html', Why => loc('You have no permission to create tickets in that queue.'));
-  	$m->abort; 
-    }
-    
-    my @Requestors = split(/\s*,\s*/,$ARGS{'Requestors'});
-    my @Cc = split(/\s*,\s*/,$ARGS{'Cc'});
-    
 
-    my $MIMEObj = MakeMIMEEntity ( Subject => $ARGS{'Subject'},
-				   From => $ARGS{'From'},
-				   Cc => $ARGS{'Cc'},
-				   Body => $ARGS{'Content'},
-				   AttachmentFieldName => 'Attach');
-
-    #TODO in Create_Details.html: priorities and due-date      
-    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{Queue},
-					       Requestor=> \@Requestors,
-					       Cc => \@Cc,
-					       Subject=>$ARGS{Subject},
-					       MIMEObj => $MIMEObj	  
-					      );         
-    unless ($id && $Trans) {
-	$m->comp('Error.html', Why => $ErrMsg);
-   	$m->abort(); 
+    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
+        $m->comp( 'Error.html', Why => loc('Queue not found') );
+        $m->abort;
     }
 
-    push(@results, $ErrMsg);
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        $m->comp( 'Error.html',
+             Why =>
+               loc('You have no permission to create tickets in that queue.') );
+        $m->abort;
+    }
+
+    my @Requestors = split ( /\s*,\s*/, $ARGS{'Requestors'} );
+    my @Cc         = split ( /\s*,\s*/, $ARGS{'Cc'} );
+
+    my $MIMEObj = MakeMIMEEntity( Subject             => $ARGS{'Subject'},
+                                  From                => $ARGS{'From'},
+                                  Cc                  => $ARGS{'Cc'},
+                                  Body                => $ARGS{'Content'},
+                                  AttachmentFieldName => 'Attach' );
+
+    #TODO in Create_Details.html: priorities and due-date
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create( Queue     => $ARGS{Queue},
+                                                   Requestor => \@Requestors,
+                                                   Cc        => \@Cc,
+                                                   Subject   => $ARGS{Subject},
+                                                   MIMEObj   => $MIMEObj );
+    unless ( $id && $Trans ) {
+        $m->comp( 'Error.html', Why => $ErrMsg );
+        $m->abort();
+    }
+
+    push ( @results, $ErrMsg );
 
     # }}}
 }
 else {
-    unless ($Ticket->Load($id[0])) {
-	$m->comp('Error.html', Why =>loc("Couldn't load ticket '[_1]'", $id));
-	$m->abort();
+    unless ( $Ticket->Load( $id[0] ) ) {
+        $m->comp( 'Error.html',
+                  Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+        $m->abort();
     }
 }
+
 # }}}
 
-unless ($session{'CurrentUser'}->HasQueueRight ( TicketObj => $Ticket,
-						 Right => 'ShowTicket')) {
-    $m->comp('Error.html', Why => loc("No permission to display that ticket"));
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    $m->comp( 'Error.html',
+              Why => loc("No permission to display that ticket") );
     $m->abort();
 }
 
-my ($code, $msg);
+my ( $code, $msg );
 
 #Update the status
-if ((defined $ARGS{'Status'}) and 
-    ($ARGS{'Status'} ne $Ticket->Status)) {
-    ($code, $msg) = $Ticket->SetStatus($ARGS{'Status'});
+if (     ( defined $ARGS{'Status'} )
+     and ( $ARGS{'Status'} ne $Ticket->Status ) ) {
+    ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
     push @results, "$msg";
 }
 
-ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@results, TicketObj=>$Ticket);
+ProcessUpdateMessage( ARGSRef   => \%ARGS,
+                      Actions   => \@results,
+                      TicketObj => $Ticket );
 
 my $Transactions = $Ticket->Transactions;
 
