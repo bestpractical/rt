@@ -1,7 +1,7 @@
 #!!!PERL!! -w
 #
 # $Header$
-# RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
+# RT is (c) 1996-2001 Jesse Vincent <jesse@bestpractical.com>
 
 use strict;
 use Carp;
