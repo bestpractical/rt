@@ -162,8 +162,8 @@ CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
 XML::RSS
-HTTP::Server::Simple 0.04
-HTTP::Server::Simple::Mason 0.04
+HTTP::Server::Simple 0.07
+HTTP::Server::Simple::Mason 0.03
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];
