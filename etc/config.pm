@@ -9,14 +9,53 @@ package RT;
 %SitePolicy=
     (
      QueueListingCols => 
+     # Here you can modify the list view.  Be aware that the web
+     # interface might crash if TicketAttribute is wrongly set.
+     # Consult the docs (if somebody is going to write them?) your
+     # local RT hacker or eventually the rt-users / rt-devel
+     # mailinglists
       [
        { Header     => 'Ticket Id',
 	 TicketLink => 1,
 	 TicketAttribute => 'Id'
 	 },
+
+       { Header => 'Queue',
+	 TicketAttribute => 'Queue->QueueId'
+	 },
+
+       { Header => 'Status',
+	 TicketAttribute => 'Status'
+	 },
+
+       { Header => 'Told',
+	 TicketAttribute => 'ToldAsString'
+	 },
+
+       { Header => 'Age',
+	 TicketAttribute => 'CreatedAsString'
+	 },
+
+       { Header => 'Last',
+	 TicketAttribute => 'LastUpdatedAsString'
+	 },
+
+       # TODO: It would be nice with a link here to the Owner and all
+       # other request owned by this Owner.
+       { Header => 'Owner',
+	 TicketAttribute => 'Owner->UserId'
+       },
+
+       # TODO: We need a link here to a page containing this
+       # requestors activity (ticket listing) and notes/similar stored
+       # about the requestor
+       { Header => 'Requestor(s)',
+	 TicketAttribute => 'RequestorsAsString'
+	 },
+
        { Header     => 'Subject',
 	 TicketAttribute => 'Subject'
-       }
+	 }
       ]
      );
 
