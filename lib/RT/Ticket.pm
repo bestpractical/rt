@@ -169,7 +169,7 @@ my $t = RT::Ticket->new($RT::SystemUser);
 
 ok( $t->Create(Queue => 'General', Subject => 'This is a subject'), "Ticket Created");
 
-ok ( my $id = $t->Id, "Got ticket id $id");
+ok ( my $id = $t->Id, "Got ticket id");
 
 =end testing
 
@@ -1358,13 +1358,10 @@ sub SetQueue {
 	return (0, "You may not create requests in that queue.");
     }
     
-    unless ($self->OwnerObj->HasQueueRight(Right=> 'CreateTicket',  
+    unless ($self->OwnerObj->HasQueueRight(Right=> 'OwnTicket',  
 					   QueueObj => $NewQueueObj)) {
-	$self->Untake();
+	    $self->Untake();
     }
-
-    #Delete self->QueueObj's stored object. so we don't cache old values    
-    delete $self->{'queue_obj'};
 
     return($self->_Set(Field => 'Queue', Value => $NewQueueObj->Id()));
     
@@ -1383,7 +1380,7 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
     
-    $queue_obj = RT::Queue->new($self->CurrentUser);
+    my $queue_obj = RT::Queue->new($self->CurrentUser);
     #We call __Value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $queue_obj->Load($self->__Value('Queue'));
     return ($queue_obj);
@@ -1653,7 +1650,7 @@ sub TimeWorkedAsString {
 Comment on this ticket.
 Takes a hashref with the follwoing attributes:
 
-MIMEObj, TimeTaken
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo
 
 =cut
 
@@ -1661,7 +1658,8 @@ sub Comment {
   my $self = shift;
   
   my %args = (
-	      
+          CcMessageTo => undef,
+          BccMessageTo => undef,
 	      MIMEObj => undef,
 	      TimeTaken => 0,
 	      @_ );
@@ -1670,8 +1668,19 @@ sub Comment {
 	  ($self->CurrentUserHasRight('ModifyTicket'))) {
       return (0, "Permission Denied");
   }
-  
-  
+ 
+   unless ($args{'MIMEObj'}) {
+       return(0,"No correspondence attached");
+   }
+
+  # If we've been passed in CcMessageTo and BccMessageTo fields,
+  # add them to the mime object for passing on to the transaction handler
+  # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
+  # RT-Send-Bcc: headers
+ 
+  $args{'MIMEObj'}->head->add('RT-Send-Cc', $args{'CcMessageTo'});
+  $args{'MIMEObj'}->head->add('RT-Send-Bcc', $args{'BccMessageTo'});
+
   #Record the correspondence (write the transaction)
   my ($Trans, $Msg, $TransObj) = $self->_NewTransaction( Type => 'Comment',
 				      Data =>($args{'MIMEObj'}->head->get('subject') || 'No Subject'),
@@ -1690,16 +1699,18 @@ sub Comment {
 =head2 Correspond
 
 Correspond on this ticket.
-Takes a hashref with the follwoing attributes:
+Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo
 
 =cut
 
 sub Correspond {
     my $self = shift;
     my %args = (
+          CcMessageTo => undef,
+          BccMessageTo => undef,
 		MIMEObj => undef,
 		TimeTaken => 0,
 		@_ );
@@ -1713,6 +1724,14 @@ sub Correspond {
 	return(0,"No correspondence attached");
     }
     
+  # If we've been passed in CcMessageTo and BccMessageTo fields,
+  # add them to the mime object for passing on to the transaction handler
+  # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
+  # headers
+ 
+  $args{'MIMEObj'}->head->add('RT-Send-Cc', $args{'CcMessageTo'});
+  $args{'MIMEObj'}->head->add('RT-Send-Bcc', $args{'BccMessageTo'});
+
     #Record the correspondence (write the transaction)
     my ($Trans,$msg, $TransObj) = $self->_NewTransaction
       (Type => 'Correspond',

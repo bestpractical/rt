@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	11
+RT_VERSION_PATCH	=	12-pre1
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -187,12 +187,20 @@ instruct:
 	@echo "You must now configure it by editing $(RT_CONFIG)."
 	@echo "From here on in, you should refer to the users guide."
 
+
 insert: insert-install
 	$(PERL) $(RT_ETC_PATH)/insertdata
 
-upgrade: dirs config-replace upgrade-noclobber 
+upgrade: dirs config-replace upgrade-noclobber  upgrade-instruct
 
-upgrade-noclobber: libs-install html-install bin-install nondestruct
+upgrade-instruct: 
+	@echo "Congratulations. RT has been upgraded. You should now check-over"
+	@echo "$(RT_CONFIG) for any necessarysite customization. Additionally,"
+	@echo "you should update RT's system database objects by running "
+	@echo "	   $(RT_ETC_PATH)/insertdata <version>"
+	@echo "where <version> is the version of RT you're upgrading from."
+
+upgrade-noclobber: insert-install libs-install html-install bin-install nondestruct
 
 nondestruct: fixperms
 

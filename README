@@ -7,24 +7,7 @@ Public License.
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
 
-Development of RT has been sponsored in part by Arepa Inc, Utopia Inc,
-The Leftbank Operation, Wesleyan University and by other contributing
-companies.
 
-
-
-BUGS
-----
-
-Known issues with releases of RT2 are listed at 
-<URL:http://fsck.com/rt2/NoAuth/Errata.html>.  This includes every bug known
-to exist in each release of RT.  (When prompted, login as guest/guest)
-
-To find out more about currently open bugs, check out the live 
-Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
-(When prompted, login as guest/guest)
-
-To report a bug, send an email to rt-2.0-bugs@fsck.com.
 
 INSTALLATION INSTRUCTIONS
 -------------------------
@@ -50,14 +33,16 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com )
 	(Mysql and Postgres are known to be a more solid base for RT than 
 	Oracle at this time)
 
-o   Apache + mod_perl -- ( http://perl.apache.org)
+o   Apache + mod_perl -- ( http://perl.apache.org) 
+    or A webserver with FastCGI support (www.fastcgi.com)
+
 	If you compile mod_perl as a DSO, you're on your own. It's known
-	to have massive stability problems.
-	mod_perl must be build with EVERYTHING=1
-	
+	to have massive stability problems. 
+        mod_perl must be build with EVERYTHING=1
 
 o    Various and sundry perl modules
-		
+        RT takes care of the installation of most of these automatically
+        during the "make testdeps" and "make fixdeps" stages below
 
 
 GENERAL INSTALLATION
@@ -113,16 +98,20 @@ GENERAL INSTALLATION
 				  Make, if you need to)
 
 	This will build new binaries, config files and libraries without
-	overwriting your RT database.
+	overwriting your RT database. 
+        
+        It will then instruct you to update your RT system database objects 
+        by running rt/etc/insertdata <version> where <version> is the version 
+        of RT you're upgrading from.
 
-	WARNING: This will clobber your existing configuration file!
+	WARNING: This WILL clobber your existing configuration file!
 	
 5c  FOR UPGRADING (From 1.0.x):
 
 	Follow the instructions for installing RT 2.0.
 
 	Once you have installed RT 2.0, download import-1.0-to-2.0
-	from ftp://ftp.fsck.com/pub/rt/contrib/2.0/rt-addons
+	from http://www.fsck.com/pub/rt/contrib/2.0/rt-addons
 
 	Edit the configuration defaults in import-1.0-to-2.0
 
@@ -154,7 +143,8 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "password" 
     (without the quotes.)  Not changing this is a SECURITY risk
     
-9   Configure RT per the instructions at http://www.helgrim.com/rtdocs.
+9   Configure RT per the instructions at http://www.fsck.com/rtfm/
+
     Until you do this, RT will not be able to send or recieve email,
     nor will it be more than marginally functional.  This is not an
     optional step.
@@ -231,19 +221,36 @@ THE CLI
         Both of these programs take --help as an option.
 
 
+BUGS
+----
+
+Known issues with releases of RT2 are listed at 
+<URL:http://fsck.com/rt2/NoAuth/Errata.html>.  This includes every bug known
+to exist in each release of RT.  (When prompted, login as guest/guest)
+
+To find out more about currently open bugs, check out the live 
+Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
+(When prompted, login as guest/guest)
+
+To report a bug, send an email to rt-2.0-bugs@fsck.com.
+
 GETTING HELP
 ------------
 
-If you're interested in having RT extended or customized or if you need
-commercial support, please send email to <jesse@bestpractical.com> to discuss 
-rates and availability.
+If RT is mission-critical for you or if you use it heavily, we recommend that
+you purchase a commercial support contract.  Details on support contracts
+are available at http://www.bestpractical.com.
+
+If you're interested in having RT extended or customized or would like more
+information about commercial support options, please send email to 
+<sales@bestpractical.com> to discuss rates and availability.
 
 
 RT-USERS MAILINGLIST
 --------------------
 
-By now, you've probably hit at least one sticking point. you probably
-want to join the rt-users mailinglist.  Send a message to:
+To keep up to date on the latest RT tips, techniques and extections,
+you probably want to join the rt-users mailinglist.  Send a message to:
 
          rt-users-request@lists.fsck.com 
 
@@ -268,7 +275,7 @@ RT WEBSITE
 ----------
 
 For current information about RT, check out the RT website at 
-http://www.fsck.com/projects/rt  You'll find screenshots, a pointer
+http://www.bestpractical.com/rt  You'll find screenshots, a pointer
 to the current version of rt, contributed patches and lots of other great
 stuff.
 
@@ -287,15 +294,14 @@ GIVING SOMETHING BACK
 ---------------------
 
 RT is free software. You are not obligated to pay for it.  You should be 
-aware, however, that the author develops RT in lieu of a day job. 
-If you able, either a contract to extend RT in some way that would be 
-useful to your organization, a financial contribution, or even something
-off the author's amazon wishlist 
+aware, however, that bestpractical.com's sole source of revenue is commercial
+work related to RT. If you are able, either a contract to extend RT in some 
+way that would be useful to your organization, a financial contribution, or 
+even something off the author's amazon wishlist 
 	( http://www.amazon.com/exec/obidos/wishlist/2GMHUDAFBT2XR/ )
 would be much appreciated. 
 
 Thanks!
-
 
 
 CREDITS
@@ -327,4 +333,4 @@ If I've left you out, please drop me a line ....it wasn't intentional.
 
         Jesse Vincent
 	<jesse@bestpractical.com>
-
+        Best Practical Solutions, LLC

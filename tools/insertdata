@@ -1,14 +1,11 @@
 #!/usr/bin/perl -w
 #
 # $Header$
-# RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
-
-
+# RT is (c) 1996-2002 Jesse Vincent (jesse@bestpractical.com);
 
 package RT;
 use strict;
 use vars qw($VERSION $Handle $Nobody $SystemUser $item);
-
 
 use lib "!!RT_LIB_PATH!!";
 use lib "!!RT_ETC_PATH!!";
@@ -21,38 +18,76 @@ use RT::Handle;
 use RT::User;
 use RT::CurrentUser;
 
+# 
+my $LastVersion = shift || undef;
+my $LastMinorVersion = undef;
+
 #connect to the db
 $RT::Handle = new RT::Handle($RT::DatabaseType);
 $RT::Handle->Connect();
 
-
 #Put together a current user object so we can create a User object
 my $CurrentUser = new RT::CurrentUser();
 
-
-print "Creating system user...";
-my $RT_System = new RT::User($CurrentUser); 
-
-my ($val, $msg) = $RT_System->_BootstrapCreate(
-					       Name => 'RT_System',
-					       RealName => 'The RT System itself',
-					       Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-					       Privileged => '2',
-					       Creator => '1');
-
-if ($val) {
-    print "done.\n";
+if ($LastVersion) {
+    if ( $LastVersion =~ /^2.0.(\d+)$/ ) {
+        $LastMinorVersion = $1;
+        print "Looking for new objects to add to the database"
+          . " since $LastVersion\n\n";
+    }
+    else {
+        print "This tool does not support upgrades from development releases "
+          . "or non 2.0.x versions";
+    }
 }
-else {
-    print "$msg\n";
-    exit(1);
+else {    # this is a virgin install
+    print "Checking for existing system user...";
+    my $test_user = RT::User->new($CurrentUser);
+    $test_user->Load('RT_System');
+    if ( $test_user->id ) {
+        print "Found!\n\nYou appear to have already run insertdata.\n"
+          . "Exiting, so as not to clobber your existing data. To ERASE your\n"
+          . "RT database and start over, type 'make dropdb; make install' in\n"
+          . "the RT installation directory. If you just meant to upgrade the\n"
+          . "content of your database, rerun this program as: \n",
+          "       $0 <version>\n"
+          . "where <version> is the last RELEASED version of RT you installed\n"
+          . "for example, if you're upgrading from 2.0.4, you'd type:\n"
+          . "       $0 2.0.4\n";
+        exit(-1);
+
+    }
+    else {
+        print "not found.  This appears to be a new installation";
+    }
+
+    print "Creating system user...";
+    my $RT_System = new RT::User($CurrentUser);
+
+    my ( $val, $msg ) = $RT_System->_BootstrapCreate(
+        Name     => 'RT_System',
+        RealName => 'The RT System itself',
+        Comments =>
+'Do not delete or modify this user. It is integral to RT\'s internal database structures',
+        Privileged => '2',
+        Creator    => '1'
+    );
+
+    if ($val) {
+        print "done.\n";
+    }
+    else {
+        print "$msg\n";
+        exit(1);
+    }
+
 }
 
 #now that we bootstrapped that little bit, we can use the standard RT cli
 # helpers  to do what we need
 
-use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
-			   GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv LoadConfig DBConnect
+  GetCurrentUser GetMessageContent);
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -63,242 +98,284 @@ LoadConfig();
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 DBConnect();
 
-
 $CurrentUser->LoadByName('RT_System');
+
 # {{{ Users
 
-my @users = ( 
-	     { 
-	      Name => 'Nobody',
-	      RealName => 'Nobody in particular',
-	      Comments => 'Do not delete or modify this user. It is integral ' .
-	      'to RT\'s internal data structures',
-	      Privileged => '2',
-	     },
-	     
-	     { 
-	      Name => 'root',
-	      Gecos => 'root',
-	      RealName => 'Enoch Root',
-              Password => 'password',
-	      EmailAddress => "root\@localhost",
-	      Comments => 'SuperUser',
-	      Privileged => '1',
-	     }
-	    );
+my @users;
+
+unless ($LastVersion) {
+    @users = (
+        {
+            Name     => 'Nobody',
+            RealName => 'Nobody in particular',
+            Comments => 'Do not delete or modify this user. It is integral '
+              . 'to RT\'s internal data structures',
+            Privileged => '2',
+        },
+
+        {
+            Name         => 'root',
+            Gecos        => 'root',
+            RealName     => 'Enoch Root',
+            Password     => 'password',
+            EmailAddress => "root\@localhost",
+            Comments     => 'SuperUser',
+            Privileged   => '1',
+        }
+    );
+}
 
 # }}}
 
 # {{{ Groups 
 
-my @groups = (
-              {
-               Name => 'Everyone',
-	       Description => 'Pseudogroup for internal use',
-	       Pseudo => '1',
-              },
-	      {
-	       Name => 'Owner',
-	       Description => 'Pseudogroup for internal use',
-	       Pseudo => '1',
-	      },
-	      {
-	       Name => 'Requestor',
-	       Description => 'Pseudogroup for internal use',
-	       Pseudo => '1',
-	      },
-	      {
-	       Name => 'Cc',
-	       Description => 'Pseudogroup for internal use',
-	       Pseudo => '1',
-	      },
-	      {
-	       Name => 'AdminCc',
-	       Description => 'Pseudogroup for internal use',
-	       Pseudo => '1',
-	      },
-	     );
+my @groups;
+unless ($LastVersion) {
+    @groups = (
+        {
+            Name        => 'Everyone',
+            Description => 'Pseudogroup for internal use',
+            Pseudo      => '1',
+        },
+        {
+            Name        => 'Owner',
+            Description => 'Pseudogroup for internal use',
+            Pseudo      => '1',
+        },
+        {
+            Name        => 'Requestor',
+            Description => 'Pseudogroup for internal use',
+            Pseudo      => '1',
+        },
+        {
+            Name        => 'Cc',
+            Description => 'Pseudogroup for internal use',
+            Pseudo      => '1',
+        },
+        {
+            Name        => 'AdminCc',
+            Description => 'Pseudogroup for internal use',
+            Pseudo      => '1',
+        },
+    );
+}
 
 # }}}
 
 # {{{ ACL
-my @acl = (  #TODO: make this actually take the serial # granted to root.
-	   { PrincipalId => '1', 
-	     PrincipalType => 'User',
-	     RightName => 'SuperUser',
-	     RightScope => 'System',
-	     RightAppliesTo => '0'
-	   }, 
-           { PrincipalId => '2',
-             PrincipalType => 'User',
-             RightName => 'SuperUser',
-             RightScope => 'System',
-             RightAppliesTo => '0'
-           },
+my @acl;
 
-           { PrincipalId => '3',
-             PrincipalType => 'User',
-             RightName => 'SuperUser',
-             RightScope => 'System',
-             RightAppliesTo => '0'
-           }
+unless ($LastVersion) {
+    @acl = (    #TODO: make this actually take the serial # granted to root.
+        {
+            PrincipalId    => '1',
+            PrincipalType  => 'User',
+            RightName      => 'SuperUser',
+            RightScope     => 'System',
+            RightAppliesTo => '0'
+        },
+        {
+            PrincipalId    => '2',
+            PrincipalType  => 'User',
+            RightName      => 'SuperUser',
+            RightScope     => 'System',
+            RightAppliesTo => '0'
+        },
 
+        {
+            PrincipalId    => '3',
+            PrincipalType  => 'User',
+            RightName      => 'SuperUser',
+            RightScope     => 'System',
+            RightAppliesTo => '0'
+        }
 
-	  );
+    );
+}
+
 # }}}
 
 # {{{ Queues
 
-my @queues = ( 
-	      { Name => 'general',
-		Description => 'The default queue',
-		CorrespondAddress => "rt\@localhost",
-		CommentAddress => "rt-comment\@localhost"
-	      }
-	     );
+my @queues;
+unless ($LastVersion) {
+    @queues = (
+        {
+            Name              => 'general',
+            Description       => 'The default queue',
+            CorrespondAddress => "rt\@localhost",
+            CommentAddress    => "rt-comment\@localhost"
+        }
+    );
+}
 
 # }}}
 
 # {{{ ScripActions
 
-my @ScripActions = (
+my @ScripActions;
 
-		    {
-		     Name => 'AutoreplyToRequestors',
-		     Description =>       'Always sends a message to the requestors independent of message sender',
-		     ExecModule =>        'Autoreply',
-		     Argument =>          'Requestor'
-		    },
-		    {
-		     Name => 'NotifyRequestors',
-		     Description =>       'Sends a message to the requestors',
-		     ExecModule =>        'Notify',
-		     Argument =>          'Requestor'
-		    },
-		    {
-		     Name =>	          'NotifyOwnerAsComment',
-		     Description =>       'Sends mail to the owner',
-		     ExecModule =>        'NotifyAsComment',
-		     Argument =>          'Owner'
-		    },
-		    {
-		     Name =>	          'NotifyOwner',
-		     Description =>       'Sends mail to the owner',
-		     ExecModule =>        'Notify',
-		     Argument =>          'Owner'
-		    },
-		    {
-		     Name =>	          'NotifyAdminCcsAsComment',
-		     Description =>	  'Sends mail to the administrative Ccs as a comment',
-		     ExecModule =>	  'NotifyAsComment',
-		     Argument =>        'AdminCc'
-		    },
-		    {
-		     Name =>	          'NotifyAdminCcs',
-		     Description =>	  'Sends mail to the administrative Ccs',
-		     ExecModule =>	  'Notify',
-		     Argument =>        'AdminCc'
-		    },
-		    
-                    {
-                     Name =>             'NotifyRequestorsAndCcsAsComment',
-                     Description =>      'Send mail to requestors and Ccs as a comment',
-                     ExecModule =>       'NotifyAsComment',
-                     Argument =>         'Requestor,Cc'
-                    },
-		    
-		    {
-		     Name =>             'NotifyRequestorsAndCcs',
-		     Description =>      'Send mail to requestors and Ccs',
-		     ExecModule =>       'Notify',
-		     Argument =>         'Requestor,Cc'
-		    },
-		    
-		    
-		    {
-		     Name =>	          'NotifyAllWatchersAsComment',
-		     Description =>	  'Send mail to all watchers',
-		     ExecModule =>	  'NotifyAsComment',
-		     Argument =>          'All'
-                    },
-		    {
-		     Name =>	          'NotifyAllWatchers',
-		     Description =>	  'Send mail to all watchers',
-		     ExecModule =>	  'Notify',
-		     Argument =>          'All'
-		    },
-		    
-		    
-		   );
+unless ($LastVersion) {
+    @ScripActions = (
+
+        {
+            Name        => 'AutoreplyToRequestors',
+            Description =>
+'Always sends a message to the requestors independent of message sender',
+            ExecModule => 'Autoreply',
+            Argument   => 'Requestor'
+        },
+        {
+            Name        => 'NotifyRequestors',
+            Description => 'Sends a message to the requestors',
+            ExecModule  => 'Notify',
+            Argument    => 'Requestor'
+        },
+        {
+            Name        => 'NotifyOwnerAsComment',
+            Description => 'Sends mail to the owner',
+            ExecModule  => 'NotifyAsComment',
+            Argument    => 'Owner'
+        },
+        {
+            Name        => 'NotifyOwner',
+            Description => 'Sends mail to the owner',
+            ExecModule  => 'Notify',
+            Argument    => 'Owner'
+        },
+        {
+            Name        => 'NotifyAdminCcsAsComment',
+            Description => 'Sends mail to the administrative Ccs as a comment',
+            ExecModule  => 'NotifyAsComment',
+            Argument    => 'AdminCc'
+        },
+        {
+            Name        => 'NotifyAdminCcs',
+            Description => 'Sends mail to the administrative Ccs',
+            ExecModule  => 'Notify',
+            Argument    => 'AdminCc'
+        },
+
+        {
+            Name        => 'NotifyRequestorsAndCcsAsComment',
+            Description => 'Send mail to requestors and Ccs as a comment',
+            ExecModule  => 'NotifyAsComment',
+            Argument    => 'Requestor,Cc'
+        },
+
+        {
+            Name        => 'NotifyRequestorsAndCcs',
+            Description => 'Send mail to requestors and Ccs',
+            ExecModule  => 'Notify',
+            Argument    => 'Requestor,Cc'
+        },
+
+        {
+            Name        => 'NotifyAllWatchersAsComment',
+            Description => 'Send mail to all watchers',
+            ExecModule  => 'NotifyAsComment',
+            Argument    => 'All'
+        },
+        {
+            Name        => 'NotifyAllWatchers',
+            Description => 'Send mail to all watchers',
+            ExecModule  => 'Notify',
+            Argument    => 'All'
+        },
+    );
+}
+
+if ( $LastMinorVersion < 12 ) {
+    push (
+        @ScripActions,
+        {
+            Name        => 'NotifyOtherRecipientsAsComment',
+            Description => 'Sends mail to explicitly listed Ccs and Bccs',
+            ExecModule  => 'NotifyAsComment',
+            Argument    => 'OtherRecipients'
+        },
+        {
+            Name        => 'NotifyOtherRecipients',
+            Description => 'Sends mail to explicitly listed Ccs and Bccs',
+            ExecModule  => 'Notify',
+            Argument    => 'OtherRecipients'
+        },
+    );
+}
 
 # }}}
 
 # {{{ ScripConditions
 
-my @ScripConditions = (
-		       {
-			Name => 'OnCreate',
-			Description =>  'When a ticket is created',
-			ApplicableTransTypes =>  'Create',
-			ExecModule => 'AnyTransaction',
-		       },
-		       
-		       
-		       {
-			Name =>			   'OnTransaction',
-			Description =>   'When anything happens',
-			ApplicableTransTypes => 			   'Any',
-			ExecModule =>	'AnyTransaction',
-		       },
-		       {
-			
-			Name =>	          'OnCorrespond',
-			Description =>	  'Whenever correspondence comes in',
-			ApplicableTransTypes => 		  'Correspond',
-			ExecModule =>	  'AnyTransaction',
-		       },
-		       
-		       
-		       {
-			
-			Name =>			   'OnComment',
-			Description =>			   'Whenever comments come in',
-			ApplicableTransTypes => 	   'Comment',
-			ExecModule =>			   'AnyTransaction'
-		       },
-		       {
-			
-			Name =>		   'OnStatus', 
-			Description =>	   'Whenever a ticket\'s status changes',
-			ApplicableTransTypes => 		   'Status',
-			ExecModule =>	   'AnyTransaction',
-			
-		       },
-		       {
-			Name =>		   'OnResolve', 
-			Description =>	   'Whenever a ticket is resolved.', 
-			ApplicableTransTypes => 		   'Status',
-			ExecModule =>	   'StatusChange',
-			Argument => 'resolved'
+my @ScripConditions;
+unless ($LastVersion) {
+    @ScripConditions = (
+        {
+            Name                 => 'OnCreate',
+            Description          => 'When a ticket is created',
+            ApplicableTransTypes => 'Create',
+            ExecModule           => 'AnyTransaction',
+        },
 
-		       },
-		       
-		      );
+        {
+            Name                 => 'OnTransaction',
+            Description          => 'When anything happens',
+            ApplicableTransTypes => 'Any',
+            ExecModule           => 'AnyTransaction',
+        },
+        {
+
+            Name                 => 'OnCorrespond',
+            Description          => 'Whenever correspondence comes in',
+            ApplicableTransTypes => 'Correspond',
+            ExecModule           => 'AnyTransaction',
+        },
+
+        {
+
+            Name                 => 'OnComment',
+            Description          => 'Whenever comments come in',
+            ApplicableTransTypes => 'Comment',
+            ExecModule           => 'AnyTransaction'
+        },
+        {
+
+            Name                 => 'OnStatus',
+            Description          => 'Whenever a ticket\'s status changes',
+            ApplicableTransTypes => 'Status',
+            ExecModule           => 'AnyTransaction',
+
+        },
+        {
+            Name                 => 'OnResolve',
+            Description          => 'Whenever a ticket is resolved.',
+            ApplicableTransTypes => 'Status',
+            ExecModule           => 'StatusChange',
+            Argument             => 'resolved'
+
+        },
+
+    );
+}
 
 # }}}
 
 # {{{ Templates
-my @templates = (
-{
-                Queue   => '0',
-                Name => 'Autoreply',
-				Description => 'Default Autoresponse Template', 
-				Content => 
-'Subject: AutoReply: {$Ticket->Subject}
+my @templates;
+
+unless ($LastVersion) {
+    @templates = (
+        {
+            Queue       => '0',
+            Name        => 'Autoreply',
+            Description => 'Default Autoresponse Template',
+            Content     => 'Subject: AutoReply: {$Ticket->Subject}
 
 
-       Greetings,
-        This message has been automatically generated in response to the
+Greetings,
+
+This message has been automatically generated in response to the
 creation of a trouble ticket regarding:
 	"{$Ticket->Subject()}", 
 a summary of which appears below.
@@ -318,99 +395,104 @@ you may reply to this message.
 
 -------------------------------------------------------------------------
 {$Transaction->Content()}
-' },
+'
+        },
 
-{
-#                  id => 2,
-                Queue   => '0',
-                Name => 'Transaction', 
-                  Description => 'Default transaction template',
-                  Content => '
+        {
+
+            #                  id => 2,
+            Queue       => '0',
+            Name        => 'Transaction',
+            Description => 'Default transaction template',
+            Content     => '
 
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->QueueObj->Name}
-     Subject: {$Transaction->Subject || {$Ticket->Subject} || "(No subject given)"}
+     Subject: {$Transaction->Subject || $Ticket->Subject || "(No subject given)"}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->Requestors->EmailsAsString()}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
-{$Transaction->Content()}'},
+{$Transaction->Content()}'
+        },
 
+        {
 
-{
-
-                  Queue   => '0',
-                  Name => 'AdminCorrespondence',
-                  Description => 'Default admin correspondence template',
-                  Content => '
+            Queue       => '0',
+            Name        => 'AdminCorrespondence',
+            Description => 'Default admin correspondence template',
+            Content     => '
 
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 
-{$Transaction->Content()}' },
+{$Transaction->Content()}'
+        },
 
+        {
+            Queue       => '0',
+            Name        => 'Correspondence',
+            Description => 'Default correspondence template',
+            Content     => '
 
-{
-                  Queue   => '0',
-                  Name => 'Correspondence',
-                  Description => 'Default correspondence template',
-                  Content =>  '
+{$Transaction->Content()}'
+        },
 
-{$Transaction->Content()}'},
-
-
-{
-                  Queue   => '0',
-                  Name => 'AdminComment',
-                  Description => 'Default admin comment template',
-                  Content =>  'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
+        {
+            Queue       => '0',
+            Name        => 'AdminComment',
+            Description => 'Default admin comment template',
+            Content     =>
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Content()}
-'},
+'
+        },
 
-
-{
-                  Queue   => '0',
-                  Name => 'StatusChange',
-                  Description => 'Ticket status changed',
-                  Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
+        {
+            Queue       => '0',
+            Name        => 'StatusChange',
+            Description => 'Ticket status changed',
+            Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
 
 
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 
 {$Transaction->Content()}
-'},
+'
+        },
 
-{
+        {
 
-                 Queue => '0',
-                 Name => 'Resolved',
-                  Description => 'Ticket Resolved',
-                  Content => 'Subject: Ticket Resolved
+            Queue       => '0',
+            Name        => 'Resolved',
+            Description => 'Ticket Resolved',
+            Content     => 'Subject: Ticket Resolved
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
-'}
-);
+'
+        }
+    );
+}
 
 # }}}
-
-
 
 print "Creating ACL...";
 use RT::ACE;
 for $item (@acl) {
     my $new_entry = new RT::ACE($CurrentUser);
+
     #Using an internal function. this should never be used outside of the bootstrap script
     my $return = $new_entry->_BootstrapRight(%$item);
-    print $return.".";
+    print $return. ".";
 }
 print "done.\n";
 
@@ -418,30 +500,28 @@ print "Creating users...";
 use RT::User;
 foreach $item (@users) {
     my $new_entry = new RT::User($CurrentUser);
-    my ($return, $msg) = $new_entry->Create(%$item);
-    print "(Error: $msg)"   unless ($return);
-    print $return.".";
+    my ( $return, $msg ) = $new_entry->Create(%$item);
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
 }
 print "done.\n";
 
 print "Creating groups...";
 use RT::Group;
 foreach $item (@groups) {
-   my $new_entry = new RT::Group($CurrentUser);
-   my $return = $new_entry->Create(%$item);
-  print $return.".";
+    my $new_entry = new RT::Group($CurrentUser);
+    my $return    = $new_entry->Create(%$item);
+    print $return. ".";
 }
 print "done.\n";
-
-
 
 print "Creating queues...";
 use RT::Queue;
 for $item (@queues) {
     my $new_entry = new RT::Queue($CurrentUser);
-    my ($return, $msg) = $new_entry->Create(%$item);
-    print "(Error: $msg)"   unless ($return);
-    print $return.".";
+    my ( $return, $msg ) = $new_entry->Create(%$item);
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
 }
 
 print "done.\n";
@@ -450,8 +530,8 @@ print "Creating ScripActions...";
 use RT::ScripAction;
 for $item (@ScripActions) {
     my $new_entry = new RT::ScripAction($CurrentUser);
-       my $return = $new_entry->Create(%$item);
-    print $return.".";
+    my $return    = $new_entry->Create(%$item);
+    print $return. ".";
 }
 
 print "done.\n";
@@ -460,25 +540,23 @@ print "Creating ScripConditions...";
 use RT::ScripCondition;
 for $item (@ScripConditions) {
     my $new_entry = new RT::ScripCondition($CurrentUser);
-    my $return = $new_entry->Create(%$item);
-    print $return.".";
+    my $return    = $new_entry->Create(%$item);
+    print $return. ".";
 }
 
 print "done.\n";
-
 
 print "Creating templates...";
 
 use RT::Template;
 for $item (@templates) {
     my $new_entry = new RT::Template($CurrentUser);
-    my $return = $new_entry->Create(%$item);
-    print $return.".";
+    my $return    = $new_entry->Create(%$item);
+    print $return. ".";
 }
 print "done.\n";
 
 $RT::Handle->Disconnect();
-
 
 1;
 
