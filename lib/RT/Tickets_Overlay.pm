@@ -894,7 +894,7 @@ sub _CustomFieldLimit {
     $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
   }
     else {
-        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->_SQLJoin(
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->Join(
             TYPE   => 'left',
             ALIAS1 => 'main',
             FIELD1 => 'id',
@@ -902,7 +902,7 @@ sub _CustomFieldLimit {
             FIELD2 => 'ObjectId'
         );
 
-    $self->_SQLLimit(
+    $self->Limit(
         LEFTJOIN        => $TicketCFs,
         FIELD => 'ObjectType',
         VALUE => ref($self->NewItem), # we want a single item, not a collection
@@ -910,20 +910,20 @@ sub _CustomFieldLimit {
     );
 
     if ($cfid) {
-    $self->_SQLLimit(
+    $self->Limit(
         LEFTJOIN        => $TicketCFs,
         FIELD           => 'CustomField',
         VALUE           => $cfid,
         ENTRYAGGREGATOR => 'AND'
     );
     } else {
-    my $cfalias = $self->_SQLJoin(
+    my $cfalias = $self->Join(
         ALIAS1        => $TicketCFs,
         FIELD1           => 'CustomField',
         TABLE2          => 'CustomFields',
         FIELD2          => 'id'
     );
-    $self->_SQLLimit(
+    $self->Limit(
         LEFTJOIN        => $cfalias,
         FIELD           => 'Name',
         VALUE           => $field,
@@ -933,7 +933,7 @@ sub _CustomFieldLimit {
     }
     }
 
-    $self->_OpenParen;
+    $self->_OpenParen if ($null_columns_ok);
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
@@ -953,8 +953,7 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'OR',
         );
   }
-
-  $self->_CloseParen;
+    $self->_CloseParen if ($null_columns_ok);
 
 }
 
