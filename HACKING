@@ -1,2 +1,134 @@
+API
+
 Take a look at doc/API. It's nowhere near done, but it's a start.
 
+
+OUTLINE
+
+RT 1.1 started as plain featureadding to the existing 1.0 code base,
+until Jesse rocked it seriously up, starting to do an object oriented
+approach.  Personally I think the timing was quite bad; anyway the
+new code is very nice to work with.
+
+There are still some elements from the code of the old 1.0, but most
+of the code is fresh.  The new object oriented code is mainly placed
+in the lib/RT/ directory, while the old code mainly remains in lib/rt
+(in addition to bin/rtmux.pl and some more).
+
+Because of this development path, there might be both new and old
+elements of code/documentation that is either not beeing used or
+outdated.  Just drop a note at the devel list if you find anything
+like that.
+
+
+DEBUGGING HINTS
+
+If you have anything you think might fit under a DEBUGGING HINTS
+section, it be either general about debugging perl code and/or cgis or
+RT-specific hints, don't hesitate mailing me.  I think debugging is an
+underestimated science.  Debugging tend to eat up a quite large part
+of the total development time, the more complex the project the larger
+part.  Any knowledge that can reduce the debugging time and increase
+the code stability (and efficiency, for that sake) should be shared.
+
+I found it a lot more enjoyable to mess around with RT after I started
+using the perl debug functionallity extensively.  I even use it
+actively during development; having a perl debug session in one window
+allows me to quickly test out how methods work, etc, which can be
+quite much more efficient than looking up the docs, specifications
+and/or code.
+
+Setting up RT for debugging and development
+===========================================
+
+Because rtmux.pl is a suid script (it must be for one and only thing;
+reading the DB password from a protected file - I just thought of it,
+maybe it's better to separate out those two lines of code and fetch it
+through a backticked command or something) perl -d (at least under
+perl 5.004_05, haven't checked with more recent versions yet) break
+even when run as root.
+
+Also, I don't want to mess around directly with the production
+library, so I've copied rtmux.pl into rtmux-experimental.pl, changed
+it a bit (i.e. letting it use my RT working directory as the lib dir)
+and removed the suid-bit.  Then I created a new subdirectory,
+experimental, and linked over rtmux-experimental.pl:
+
+	mkdir experimental
+	cd experimental
+	ln -s ../rtmux-experimental.pl rt
+	ln -s ../rtmux-experimental.pl rtadmin
+	ln -s ../rtmux-experimental.pl rt-mailgate
+	ln -s ../rtmux-experimental.pl webrt.cgi
+	ln -s ../rtmux-experimental.pl admin-webrt.cgi
+
+...and then perl -d ./rt simply worked.
+
+
+Using the perl debugger with RT
+===============================
+
+I think the cli should accept all parameters as command line options.
+Anyway, I don't have time fixing it, so to feed the cli with
+parameters quite ugly constructs like this one has to be used:
+
+	echo -e "general\n\ntobiasb\ntobiasb\n\n\ndfg\n\n\n\nsafsadf\n.\n" |
+		/usr/bin/perl -dwT ./rt -create
+
+Something of the same can be used for the cgi.
+
+While developing a certain module, I included it in the options to Perl:
+
+	echo -e "general\n\ntobiasb\ntobiasb\n\n\ndfg\n\n\n\nsafsadf\n.\n" |
+		/usr/bin/perl -I /my/working/dir/lib/ -MRT::Module -dwT \
+	        ./rt -create
+
+I like to keep as much as possible on one-liners in the bash shell as
+it makes it easy to repeat the command with a ctrl-r or ctrl-p action.
+(I guess more hard-core perl hackers uses perl -de1 as their primary
+shell anyway :)
+
+After entering the line above, it should be possible to write
+something like:
+
+c RT::Module::SubImWorkingAt
+
+(if Tab Completion doesn't work, you'd better install Term::ReadLine
+ASAP :)
+
+SQL and database debugging
+==========================
+
+Probably you don't have to care much about the Database Access.  It's
+abstracted into DBIx::EasySearch and DBIx::Record, which just seems to
+work - at least with mysql.
+
+Currently RT writes out very much verbose debug information, including
+the SQL calls.  mysql has the possibility of writing very verbose logs
+- I love those logs - personally I think it's better looking into
+those logs than letting the script print out the SQL.
+
+Error logging from the production RT
+====================================
+
+I found Tie::STDERR to be a very nice module - put it into rtmux.pl.
+If the script prints anything to STDERR, Tie::STDERR will launch a
+mail about the output as well as the environment.  I think this is
+perfectly OK, because if a component in production actually produces
+error messages, something is wrong, and action should be taken ASAP.
+Of course it might result in some thousand emails dumping in while
+you're at home sleeping if something goes really wrong.  Tie::STDERR
+can also be set to log to a file.  It makes a bit sense to log the RT
+errors in one separate file instead of having the RT errors spread
+over the webserver error log and the maillog, and Tie::STDERR also
+print the environment info, which might be essential when trying to
+reproduce web errors.
+
+
+META
+
+The Request Tracker is developed by Jesse Vincent <jesse@fsck.com>
+with help from the community.  The project is licenced under the GNU
+General Public License.  This file is mostly written by Tobias Brox
+<tobix@irctos.org>.  If anything seems stupid, or if you think there
+are better ways to do things, please tell Tobias.
