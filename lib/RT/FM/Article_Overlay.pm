@@ -137,9 +137,10 @@ sub Children {
 
 # }}}
 
-# {{{ sub CustomFieldValues
 
-=item CustomFieldValues CUSTOMFIELDID
+# {{{ CustomFieldValues
+
+=item CustomFieldValues CUSTOMFIELD_ID
 
 Returns an RT::FM::CustomFieldObjectValueCollection object containing
 the values of CustomField CUSTOMFIELDID for this Article
