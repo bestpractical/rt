@@ -1,0 +1,37 @@
+
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
+
+<h3>Owner</h3>
+Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $Ticket->OwnerObj->Id &>
+<h3>New watchers</h3>
+Find people whose<BR>
+<& /Elements/SelectUsers &>
+
+<& AddWatchers, Ticket => $Ticket, UserString => $UserString,
+        UserOp => $UserOp, UserField => $UserField &>
+
+</TD><TD VALIGN=TOP>
+<h3>Current watchers</h3>
+(Check box to delete)<br>
+
+Requestors:
+<& EditWatchers, TicketObj => $Ticket, Type => 'requestors' &>
+
+Cc:
+<& EditWatchers, TicketObj => $Ticket, Type => 'cc' &>
+
+Administrative Cc:
+<& EditWatchers, TicketObj => $Ticket, Type => 'admincc' &>
+
+</TD>
+</TR>
+</TABLE>
+
+<%ARGS>
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$Ticket => undef
+</%ARGS>

@@ -86,7 +86,6 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
       </TD>
     </TR>
   </TABLE>
-  
 
 
 <%INIT>

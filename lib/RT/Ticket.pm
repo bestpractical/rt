@@ -496,6 +496,7 @@ sub DeleteWatcher {
 				   );
 	    $Watcher->Delete();
 	}
+	return(1, "Watcher deleted");
     }
     #Otherwise, we'll assume it's an email address
     else {
@@ -509,8 +510,10 @@ sub DeleteWatcher {
 					 Field => $Watcher->Type,
 				       );
 		$Watcher->Delete();
+		
 	    }
 	}
+	return(1,'Watcher deleted');
     }
 }
 

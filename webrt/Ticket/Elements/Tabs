@@ -12,20 +12,23 @@
 		 Ab => { title => 'History',
 			     path => "Ticket/History.html?id=".$id,
 			   },
-		 B => { title => 'Edit Basics',
+		 B => { title => 'Basics',
 			  path => "Ticket/Modify.html?id=".$id,
 			},
 
-		 C => { title => 'Edit Dates',
+		 C => { title => 'Dates',
 			  path => "Ticket/ModifyDates.html?id=".$id,
 			},
 
 
-		 D => { title => 'Edit People',
+		 D => { title => 'People',
 			  path => "Ticket/ModifyPeople.html?id=".$id,
 			},
-		 E => { title => 'Edit Links',
+		 E => { title => 'Links',
 			  path => "Ticket/ModifyLinks.html?id=".$id,
+			},
+		 F => { title => 'Jumbo',
+			  path => "Ticket/ModifyAll.html?id=".$id,
 			},
 
 	};

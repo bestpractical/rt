@@ -26,22 +26,11 @@ $TemplateObj->Load($id) || &Abort('No Template');
 # Deal with updating individual fields where we're doing something to watch
 # what goes in and out
     
-my @fields = qw( Description Content Queue Name);
+  my @attribs = qw( Description Content Queue Name);
 
-#Run through each field in this list. update the value if apropriate
-my ($field);
-my @results = ('');
-foreach $field (@fields) {
-    my ($code, $msg);
-    my $check = "if ((defined \$ARGS{'$field'}) and (\$ARGS{'$field'} ne \$TemplateObj->$field))
-    {   \$ARGS{'$field'} =~ s/\\r\\n/\\n/g;     
-        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
-
-    push \@results, \$msg;  }";
-    $RT::Logger->debug("$check");
-    eval $check || push @results, $@;
-    
-}
+  my @results = UpdateRecordObject( AttributesRef => \@attribs, 
+				    Object => $TicketObj, 
+				    ARGSRef => $ARGSRef);
 
 </%INIT>
 <%ARGS>

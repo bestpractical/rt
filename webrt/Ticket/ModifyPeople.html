@@ -6,107 +6,20 @@
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 <& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%", color=> "#333399" &>
-
-<TABLE>
-<TR>
-<TD VALIGN=TOP>
-
-<h3>Owner</h3>
-Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $Ticket->OwnerObj->Id &>
-<h3>New watchers</h3>
-Find people whose<BR>
-<& /Elements/SelectUsers &>
-
-<& Elements/AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, UserField => $UserField &>
-
-</TD><TD VALIGN=TOP>
-<h3>Current watchers</h3>
-(Check box to delete)<br>
-
-Requestors:
-<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'requestors' &>
-
-Cc:
-<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'cc' &>
-
-Administrative Cc:
-<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'admincc' &>
-
-</TD>
-</TR>
-</TABLE>
-
+<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#333399" &>
 </form>
 
 <%INIT>
 
-my $field;
-my @results;
 
-# {{{ Load the ticket
-#If we get handed two ids, mason will make them an array. bleck.
-# We want teh first one. Just because there's no other sensible way
-# to deal
-my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
 
-my $Ticket = new RT::Ticket($session{'CurrentUser'});
-$Ticket->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
-# }}}
-# {{{ Set basic fields 
-my @fields = qw(
-          Owner 
-        );
+my $Ticket = LoadTicket($id);
+my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-#run through each field in this list. update the value if apropriate
-foreach $field (@fields) {
-my ($code, $msg);
-my $check = "if ((defined \$ARGS{$field}) and 
-                 (\$ARGS{$field} ne \$Ticket->$field)) {
-                  (\$code, \$msg) = \$Ticket->Set$field(\$ARGS{'$field'});
-                  push \@results, \"\$msg\";
-                   }";
-
-            eval $check;
-            if ($@)  {
-		$RT::Logger->err("Web/Ticket/Modify.html: $@\n");
-	    }   
-}
-
-# }}}
-
-my ($key);
-
-# {{{ Delete deletable watchers
-
-foreach $key (keys %ARGS) {
-    if (($key =~ /^DelWatcher(\d*)$/) and
-	($ARGS{$key})) {
-	$RT::Logger->debug("Deleting watcher $1\n");
-	my ($code, $msg) = $Ticket->DeleteWatcher($1);
-	
-	push @results, $msg;
-    }
-}
-# }}}
-
-# {{{ Add new watchers
-foreach $key (keys %ARGS) {
-    #They're in this order because otherwise $1 gets clobbered :/
-    if ( ($ARGS{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
-	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
-	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = 
-	  $Ticket->AddWatcher(Type => $ARGS{$key},
-				 Owner => $1);
-	push @results, $msg;
-    }
-}
-
-# }}}
-
+push @results, @wresults;
 </%INIT>
 
 

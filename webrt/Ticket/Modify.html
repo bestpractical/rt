@@ -2,132 +2,28 @@
 <& /Ticket/Elements/Tabs, Ticket => $TicketObj  &>
 
 <& /Elements/ListActions, actions => \@results &>
-
-<& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
-  color=> "#993333", width => "100%" &>
-
- 
-%#ACTION="" means submit to self.
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
+<& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
+  color=> "#993333", width => "100%" &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
-
 <& /Elements/TitleBoxEnd &>
+
+<& /Elements/TitleBoxStart, title => 'Keywords', color =>"#993333"&>
 <& Elements/EditKeywordSelects, TicketObj=>$TicketObj &>
+<& /Elements/TitleBoxEnd &>
+
 <& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#993333" &>
 </form>
 <%INIT>
+  
+my $TicketObj = LoadTicket($id);
 
-my $field;
-my @results;
+my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
-# {{{ Load the ticket
-
-#If we get handed two ids, mason will make them an array. bleck.
-# We want teh first one. Just because there's no other sensible way
-# to deal
-my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
-
-my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-$TicketObj->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
-
-# }}}
-
-# {{{ Set basic fields 
-
-my @fields = qw(
-          Queue 
-          Owner 
-          Subject 
-          FinalPriority 
-          Priority 
-          Status 
-          TimeWorked  
-          TimeLeft 
-        );
-
-#run through each field in this list. update the value if apropriate
-
-# If we were smart or awake, we'd create a method with this API and just use it
-# If we were even smarter, we'd use the _Accessable has from the method instead of @fields
-# thus greatly simplifying the interface creator's job.
-
-# UpdateObject ( Object => $TiceketObj, Fields => \@fields, Results => \@results, Args => $ARGS);
-
-
-foreach $field (@fields) {
-
-    if ((defined $ARGS{"$field"}) and 
-	($ARGS{"$field"} ne $TicketObj->$field())) {
-	
-	my $method = "Set$field";
-	
-	my ($code, $msg) = $TicketObj->$method($ARGS{"$field"});
-	push @results, "$msg";
-    }
- 
-}
-
-# }}}
-
-# {{{ set ObjectKeywords.
-
-my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
-
-# iterate through all the keyword selects for this queue
-
-while ( my $KeywordSelect = $KeywordSelects->Next ) {
-    # {{{ do some setup
-
-    # if we have KeywordSelectMagic for this keywordselect:
-    next unless defined $ARGS{'KeywordSelectMagic'. $KeywordSelect->id};
-    
-    
-    # Lets get a hash of the possible values to work with
-    my $value = $ARGS{'KeywordSelect'. $KeywordSelect->id} || [];
-    
-    #lets get all those values in a hash. regardless of # of entries
-    my %values = map { $_=>1 } ref($value) ? @{$value} : ( $value );
-    
-    # Load up the ObjectKeywords for this KeywordSelect for this ticket
-    my $ObjectKeys = $TicketObj->KeywordsObj($KeywordSelect->id);
-
-    # }}}
-    # {{{ add new keywords
-    my ($key);
-    foreach $key (keys %values) {
-	#unless the ticket has that keyword for that keyword select,
-	unless ($ObjectKeys->HasEntry($key)) {
-	    #Add the keyword
-	    $RT::Logger->debug ("Now adding $key");
-	    my ($result, $msg) = 
-	      $TicketObj->AddKeyword( Keyword => $key,
-				      KeywordSelect => $KeywordSelect->id);
-	    push(@results, $msg);
-	}
-    }
-
-    # }}}
-    # {{{ Delete unused keywords
-    # Iterate through $ObjectKeys
-    while (my $TicketKey = $ObjectKeys->Next) {
-	
-	# if the hash defined above doesn\'t contain the keyword mentioned,
-	unless ($values{$TicketKey->Keyword}) {
-	    #I'd really love to just call $keyword->Delete, but then 
-	    # we wouldn't get a transaction recorded
-	    my ($result, $msg) = $TicketObj->DeleteKeyword(Keyword => $TicketKey->Keyword,
-						   KeywordSelect => $KeywordSelect->id);
-	    push(@results, $msg);
-	}
-    }
-
-    # }}}
-}
-
-# }}}
-
+push (@results, @okresults);
 </%INIT>
 
 

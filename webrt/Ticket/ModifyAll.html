@@ -1,0 +1,82 @@
+<& /Elements/Header, Title => 'Modify people related to ticket # ' . $Ticket->id &>
+<& /Ticket/Elements/Tabs, Ticket => $Ticket  &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+
+
+<& /Elements/TitleBoxStart, title => 'Modify ticket #'.$Ticket->Id,   color=> "#993333", width => "100%" &>
+<& Elements/EditBasics, TicketObj => $Ticket &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/TitleBoxStart, title => 'Dates',  width => "100%", color => "#663366"  &>
+<& Elements/EditDates, TicketObj => $Ticket &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/TitleBoxStart, title => 'Keywords', color =>"#993333"&>
+<& Elements/EditKeywordSelects, TicketObj=>$Ticket &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/TitleBoxStart, title => 'People',width => "100%", color=> "#333399" &>
+<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/TitleBoxStart, title => 'Relationships', color => "#336633"&>
+<& Elements/EditLinks, Ticket => $Ticket &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/TitleBoxStart, title => 'Update ticket' &>
+<hr>
+Update Type: <select name="UpdateType">
+	    <option value="private">Comments (Not sent to requestors)</option>
+	    <option value="response">Response to requestors</option>
+	  </select> 
+	  <br>
+
+Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
+<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+<& /Elements/TitleBoxEnd &>
+
+
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#333399" &>
+</form>
+
+<%INIT>
+
+
+
+my $Ticket = LoadTicket($id);
+
+my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
+
+push @results, @wresults;
+push @results, @dresults;
+push @results, @lresults;
+
+</%INIT>
+
+
+
+<%ARGS>
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$id => undef
+</%ARGS>
+

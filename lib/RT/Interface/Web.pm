@@ -87,10 +87,17 @@ sub Abort {
 
 sub LoadTicket {
     my $id=shift;
-    my $CurrentUser = shift;
-    my $Ticket = RT::Ticket->new($CurrentUser);
-    unless ($Ticket->Load($id)) {
-	Abort("Could not load ticket $id");
+   
+    unless ($id) {
+      Abort("No ticket specified");
+    }
+
+   
+
+    my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+    $Ticket->Load($id);
+    unless ($Ticket->id){
+      Abort("Could not load ticket $id");
     }
     return $Ticket;
 }
@@ -98,50 +105,15 @@ sub LoadTicket {
 # }}}
 
 
-# {{{ sub LinkUpIfRequested
-
-sub LinkUpIfRequested {
-    my %args=@_;
-    if (my $l=$args{ARGS}->{'Link'}) {
-	# There is some redundant information from the forms now - we'll
-	# ignore one bit of it:
-	
-	my $luris=$args{ARGS}->{'LinkTo'} || $args{ARGS}->{'LinkFrom'};
-	my $ltyp=$args{ARGS}->{'LinkType'};
-	if (ref $ltyp) {
-	    &mc_comp("/Elements/Error" , Why => "Parameter error");
-	    $m->abort;
-	}
-	for my $luri (split (/ /,$luris)) {
-	    my ($LinkId, $Message);
-	    if ($l eq 'LinkTo') {
-		($LinkId,$Message)=$args{Ticket}->AddLink(Target=>$luri, Type=>$ltyp);
-	    } elsif ($l eq 'LinkFrom') {
-		($LinkId,$Message)=$args{Ticket}->AddLink(Base=>$luri, Type=>$ltyp);
-	    } else {
-		&mc_comp("/Elements/Error" , Why => "Parameter error");
-		$m->abort;
-	    }
-	    
-	    push(@{$args{Actions}}, $Message);
-	}
-    }
-}
-
-# }}}
-
 # {{{ sub ProcessSimpleActions
 
-## TODO: This is obscenely hacky, that eval should go away.  Eventually,
-## the eval is not needed in perl 5.6.0.  Eventually the sub should
-## accept more than one Action, and it should handle Actions with
-## arguments.
+
 sub ProcessSimpleActions {
     my %args=@_;
     # TODO: What if there are more Actions?
     if (exists $args{ARGS}->{Action}) {
 	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|SetTold)$/;
-	my ($res, $msg)=eval('$args{Ticket}->'.$action);
+	my ($res, $msg)=$args{Ticket}->$action();
 	push(@{$args{Actions}}, $msg);
     }
 }
@@ -363,10 +335,9 @@ sub Config {
 # {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
-    
     my $ACLref= shift;
     my $ARGSref = shift;
-    
+  
     my @CheckACL = @$ACLref;
     my %ARGS = %$ARGSref;
     
@@ -510,6 +481,333 @@ sub ProcessACLChanges {
     }
     
     return (@results);
+  }
+
+
+# }}}
+
+# {{{ sub UpdateRecordObj
+
+=head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
+
+@attribs is a list of ticket fields to check and update if they differ from the  B<Object>'s current values. ARGSRef is a ref to HTML::Mason's %ARGS.
+
+Returns an array of success/failure messages
+
+=cut
+
+sub UpdateRecordObject {
+  my %args = ( 
+	      ARGSRef => undef,
+	      AttributesRef => undef,
+	      Object => undef,
+	      @_
+	     );
+  
+  my (@results);
+
+  my $object = $args{'Object'};
+  my $attributes = $args{'AttributesRef'};
+  my $ARGSRef = $args{'ARGSRef'};
+  
+  foreach $attribute (@$attributes) {
+    $RT::Logger->debug("Looking at attribute $attribute-");#.$object->$attribute()."\n");
+    if ((defined $ARGSRef->{"$attribute"}) and 
+	($ARGSRef->{"$attribute"} ne $object->$attribute())) {
+
+      
+      my $method = "Set$attribute";
+      my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});
+      push @results, "$msg";
+    }
+    
+  }
+  return (@results);
+}
+# }}}
+
+# {{{ sub ProcessTicketBasics
+
+=head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+    
+sub ProcessTicketBasics {
+  
+  my %args = ( TicketObj => undef,
+	       ARGSRef => undef,
+	       @_
+	     );
+  
+  my $TicketObj = $args{'TicketObj'};
+  my $ARGSRef = $args{'ARGSRef'};
+
+  # {{{ Set basic fields 
+  my @attribs = qw(
+		   Queue 
+		   Owner 
+		   Subject 
+		   FinalPriority 
+		   Priority 
+		   Status 
+		   TimeWorked  
+		   TimeLeft 
+        );
+  
+  my @results = UpdateRecordObject( AttributesRef => \@attribs, 
+				    Object => $TicketObj, 
+				    ARGSRef => $ARGSRef);
+
+
+  # }}}
+  
+  return (@results);
+}
+
+# }}}
+# {{{ sub ProcessTicketWatchers
+
+=head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketWatchers {
+    my %args = ( TicketObj => undef,
+		 ARGSRef => undef,
+		 @_
+	       );
+    
+    my $Ticket = $args{'TicketObj'};
+    my $ARGSRef = $args{'ARGSRef'};
+    
+    # {{{ Munge watchers
+    
+    foreach my $key (keys %$ARGSRef) {
+      # Delete deletable watchers
+      if (($key =~ /^DelWatcher(\d*)$/) and
+	  ($ARGSRef->{$key})) {
+	my ($code, $msg) = $Ticket->DeleteWatcher($1);
+	push @results, $msg;
+      }
+      
+      # Add new watchers
+      elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
+	      ($key =~ /^WatcherTypeUser(\d*)$/) ) {
+	#They're in this order because otherwise $1 gets clobbered :/
+	my ($code, $msg) = 
+	  $Ticket->AddWatcher(Type => $ARGSRef->{$key}, Owner => $1);
+	push @results, $msg;
+      }
+    }
+    
+
+    # }}}
+    my (@results);
+
+    return (@results);
+}
+# }}}
+
+# {{{ sub ProcessTicketDates
+
+=head2 ProcessTicketDates ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketDates {
+    my %args = ( TicketObj => undef,
+		 ARGSRef => undef,
+		 @_
+	       );
+    
+    my $Ticket = $args{'TicketObj'};
+    my $ARGSRef = $args{'ARGSRef'};
+    
+    my (@results);
+    
+    # {{{ Set date fields
+    my @date_fields = qw(
+			 Told  
+			 Resolved  
+			 Starts  
+			 Started  
+			 Due  
+			);
+    #Run through each field in this list. update the value if apropriate
+    foreach $field (@date_fields) {
+      my ($code, $msg);
+      
+    my $DateObj = RT::Date->new($session{'CurrentUser'});
+      #If it's something other than just whitespace
+      if ($ARGSRef->{$field.'_Date'} ne '') {
+	$DateObj->Set(Format => 'unknown',
+		      Value => $ARGSRef->{$field. '_Date'});
+	my $obj = $field."Obj";
+	if ( (defined $DateObj->Unix) and 
+	     ($DateObj->Unix ne $Ticket->$obj()->Unix()) ) {
+	  my $method = "Set$field";
+	  my ($code, $msg) = $Ticket->$method($DateObj->ISO);
+	  push @results, "$msg";
+	}
+      }
+    }
+
+    return (@results);
+}
+# }}}
+
+# {{{ sub ProcessTicketLinks
+
+=head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketLinks {
+    my %args = ( TicketObj => undef,
+		 ARGSRef => undef,
+		 @_
+	       );
+    
+    my $Ticket = $args{'TicketObj'};
+    my $ARGSRef = $args{'ARGSRef'};
+    
+    my (@results);
+    
+    # Delete links that are gone gone gone.
+    foreach my $arg (keys %$ARGSRef) {
+      if ($arg =~ /DeleteLink-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/) {
+	my $base = $1;
+	my $type = $2;
+	my $target = $3;
+	
+	push @results, "Trying to delete: Base: $base Target: $target  Type $type";
+	my ($val, $msg) = $Ticket->DeleteLink(Base => $base,
+					      Type => $type,
+					      Target => $target);
+	
+	push @results, $msg;
+	
+	
+      }	
+      
+    }
+    
+    
+    my @linktypes = qw( DependsOn MemberOf RefersTo );
+    
+    foreach my $linktype (@linktypes) {
+      
+      for my $luri (split (/ /,$ARGSRef->{$Ticket->Id."-$linktype"})) {
+	my ($val, $msg) = $Ticket->AddLink( Target => $luri,
+					    Type => $linktype);
+	push @results, $msg;
+      }
+      
+      for my $luri (split (/ /,$ARGSRef->{"$linktype-".$Ticket->Id})) {
+	my ($val, $msg) = $Ticket->AddLink( Base => $luri,
+					    Type => $linktype);
+	
+	push @results, $msg;
+      }
+    }
+    
+    #Merge if we need to
+    if ($ARGSRef->{$Ticket->Id."-MergeInto"}) {
+      my ($val, $msg) = $Ticket->MergeInto($ARGSRef->{$Ticket->Id."-MergeInto"});
+      push @results, $msg;
+    }
+    
+    return (@results);
+}
+
+
+# }}}
+
+# {{{ sub ProcessTicketObjectKeywords
+
+=head2 ProcessTicketObjectKeywords ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketObjectKeywords {
+  my %args = ( TicketObj => undef,
+	       ARGSRef => undef,
+	       @_
+	     );
+  
+  my $TicketObj = $args{'TicketObj'};
+  my %ARGSRef = $args{'ARGSRef'};
+
+  my (@results);
+  
+  # {{{ set ObjectKeywords.
+  
+  my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
+  
+  # iterate through all the keyword selects for this queue
+  
+  while ( my $KeywordSelect = $KeywordSelects->Next ) {
+    # {{{ do some setup
+    
+    # if we have KeywordSelectMagic for this keywordselect:
+    next unless defined $ARGSRef->{'KeywordSelectMagic'. $KeywordSelect->id};
+    
+    
+    # Lets get a hash of the possible values to work with
+    my $value = $ARGSRef->{'KeywordSelect'. $KeywordSelect->id} || [];
+    
+    #lets get all those values in a hash. regardless of # of entries
+    my %values = map { $_=>1 } ref($value) ? @{$value} : ( $value );
+    
+    # Load up the ObjectKeywords for this KeywordSelect for this ticket
+    my $ObjectKeys = $TicketObj->KeywordsObj($KeywordSelect->id);
+
+    # }}}
+    # {{{ add new keywords
+    my ($key);
+    foreach $key (keys %values) {
+	#unless the ticket has that keyword for that keyword select,
+      unless ($ObjectKeys->HasEntry($key)) {
+	#Add the keyword
+	my ($result, $msg) = 
+	  $TicketObj->AddKeyword( Keyword => $key,
+				  KeywordSelect => $KeywordSelect->id);
+	push(@results, $msg);
+      }
+    }
+    
+    # }}}
+    # {{{ Delete unused keywords
+    # Iterate through $ObjectKeys
+    while (my $TicketKey = $ObjectKeys->Next) {
+      
+      # if the hash defined above doesn\'t contain the keyword mentioned,
+      unless ($values{$TicketKey->Keyword}) {
+	#I'd really love to just call $keyword->Delete, but then 
+	# we wouldn't get a transaction recorded
+	my ($result, $msg) = $TicketObj->DeleteKeyword(Keyword => $TicketKey->Keyword,
+						       KeywordSelect => $KeywordSelect->id);
+	push(@results, $msg);
+      }
+    }
+    
+    # }}}
+  }
+  
+  # }}}
+
+  return (@results);
 }
 
 # }}}
