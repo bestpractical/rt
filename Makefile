@@ -165,6 +165,11 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 WEB_IMAGE_PATH			=	/webrt
 
+# hostname and domainname
+# todo: docs about when, how and where they will be used
+RT_HOST = `hostname`
+RT_DOMAIN = `dnsdomainname`
+
 
 #
 # TODO: Doc me
@@ -290,6 +295,7 @@ config-replace:
         s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
 	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
         s'!!RT_HOST!!'$(RT_HOST)'g;\
+        s'!!RT_DOMAIN!!'$(RT_DOMAIN)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
 	s'!!DEFAULT_LOCALE!!'$(DEFAULT_LOCALE)'g;\
 	s'!!LOCALE_PATH!!'$(RT_LOCALE_PATH)'g;\

@@ -87,6 +87,10 @@ $DatabasePassword="!!DB_RT_PASS!!";
 #tickets getting new requests opened for them)
 
 $rtname="!!RT_MAIL_TAG!!";  
+
+# Domain name and hostname
+$domain="!!RT_DOMAIN!!";
+$host="!!RT_HOST!!";
  
 
 # host is the fqdn of your Mysql server
