@@ -43,6 +43,7 @@ sub UserObj {
   my $self = shift;
   
   unless ($self->{'UserObj'}) {
+    use RT::User;
     $self->{'UserObj'} = RT::User->new($self);
     $self->{'UserObj'}->Load($self->Id)
       || die "Couldn't find myself in the user db?";
