@@ -24,6 +24,8 @@
 use strict;
 use warnings;
 
+use RT::Tickets;
+
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
@@ -46,6 +48,7 @@ sub _InitSQL {
   $self->{'_sql_subclause'}     = "a";
   $self->{'_sql_first'}         = 0;
   $self->{'_sql_opstack'}       = [''];
+  $self->{'_sql_linkalias'}    = undef;
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
   $self->{'_sql_keywordalias'}  = undef;
@@ -53,6 +56,7 @@ sub _InitSQL {
   $self->{'_sql_localdepth'}    = 0;
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
+  $self->{'_sql_columns_to_display'} = [];
 
 }
 
@@ -60,8 +64,18 @@ sub _SQLLimit {
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
   my $this = shift;
+
   $this->SUPER::Limit(@_,
                       SUBCLAUSE => 'ticketsql');
+}
+
+sub _SQLJoin {
+  # All SQL stuff goes into one SB subclause so we can deal with all
+  # the aggregation
+  my $this = shift;
+
+  $this->SUPER::Join(@_,
+		     SUBCLAUSE => 'ticketsql');
 }
 
 # Helpers
@@ -169,6 +183,10 @@ sub _parser {
   # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
   # as a keyword or value.
 
+
+
+
+
   while ($string =~ /(
                       $re_aggreg
                       |$re_op
@@ -180,11 +198,12 @@ sub _parser {
     my $current = 0;
 
     # Highest priority is last
-    $current = OP      if _match($re_op,$val);
+    $current = OP      if _match($re_op,$val) ;
     $current = VALUE   if _match($re_value,$val);
     $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
     $current = AGGREG  if _match($re_aggreg,$val);
     $current = PAREN   if _match($re_paren,$val);
+
 
     unless ($current && $want & $current) {
       # Error
@@ -193,6 +212,8 @@ sub _parser {
     }
 
     # State Machine:
+
+    #$RT::Logger->debug("We've just found a '$current' called '$val'");
 
     # Parens are highest priority
     if ($current & PAREN) {
@@ -209,6 +230,7 @@ sub _parser {
 
       $want = KEYWORD | PAREN | AGGREG;
     }
+
     elsif ( $current & AGGREG ) {
       $ea = $val;
       $want = KEYWORD | PAREN;
@@ -234,7 +256,7 @@ sub _parser {
         substr($val,0,1) = "";
         substr($val,-1,1) = "";
       }
-      # Unescape escaped characters                                            
+      # Unescape escaped characters
       $key =~ s!\\(.)!$1!g;                                                    
       $val =~ s!\\(.)!$1!g;     
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
@@ -349,6 +371,72 @@ Convert a RT-SQL string into a set of SearchBuilder restrictions.
 Returns (1, 'Status message') on success and (0, 'Error Message') on
 failure.
 
+
+=begin testing
+
+use RT::Tickets;
+
+
+
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+my $query = "Status = 'open'";
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+
+my (@ids, @expectedids);
+
+my $t = RT::Ticket->new($RT::SystemUser);
+
+my $string = 'subject/content SQL test';
+ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
+
+push @ids, $t->Id;
+
+my $Message = MIME::Entity->build(
+			     Subject     => 'this is my subject',
+			     From        => 'jesse@example.com',
+			     Data        => [ $string ],
+        );
+
+ok( $t->Create(Queue => 'General', Subject => 'another ticket', MIMEObj => $Message, MemberOf => $ids[0]), "Ticket Created");
+
+push @ids, $t->Id;
+
+$query = ("Subject LIKE '$string' OR Content LIKE '$string'");
+
+my ($id, $msg) = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
+
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
+
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
+
+$query = ("id = $ids[0] OR MemberOf = $ids[0]");
+
+my ($id, $msg) = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
+
+@expectedids = ();
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
+
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
+
+=end testing
+
+
 =cut
 
 sub FromSQL {
@@ -356,13 +444,15 @@ sub FromSQL {
 
   $self->CleanSlate;
   $self->_InitSQL();
-  return (1,"No Query") unless $query;
+
+  return (1,$self->loc("No Query")) unless $query;
 
   $self->{_sql_query} = $query;
   eval { $self->_parser( $query ); };
-  $RT::Logger->error( $@ ) if $@;
-  return(0,$@) if $@;
-
+    if ($@) {
+        $RT::Logger->error( $@ );
+        return(0,$@);
+    }
   # We only want to look at EffectiveId's (mostly) for these searches.
   unless (exists $self->{_sql_looking_at}{'effectiveid'}) {
   $self->SUPER::Limit( FIELD           => 'EffectiveId',
@@ -386,9 +476,7 @@ sub FromSQL {
   # Unless we've explicitly asked to look at a specific Type, we need
   # to limit to it.
   unless ($self->{looking_at_type}) {
-    $self->SUPER::Limit( FIELD => 'Type',
-                         OPERATOR => '=',
-                         VALUE => 'ticket');
+    $self->SUPER::Limit( FIELD => 'Type', OPERATOR => '=', VALUE => 'ticket');
   }
 
   # We never ever want to show deleted tickets
@@ -399,9 +487,21 @@ sub FromSQL {
   $self->{'must_redo_search'} = 1;
   $self->{'RecalcTicketLimits'} = 0;                                           
 
-  return (1,"Good Query");
+  return (1,$self->loc("Valid Query"));
 
 }
+
+=head2 Query
+
+Returns the query that this object was initialized with
+
+=cut
+
+sub Query {
+    my $self = shift;
+    return ($self->{_sql_query}); 
+}
+
 
 
 1;
