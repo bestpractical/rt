@@ -53,13 +53,19 @@ sub _Accessible  {
 
 sub _Set {
   my $self = shift;
-
-  unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
-    return (undef);
+  if ($self->Queue == 0 ) {
+      unless $self->CurrentUser->HasSystemRight('ModifyTemplates') {
+	  return (undef);
+      }	
   }
-
-  return($self->SUPER::_Set(@_));
-  
+  else {
+      
+      unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
+	  return (undef);
+      }
+      
+      return($self->SUPER::_Set(@_));
+  }   
 }
 
 # }}}
@@ -78,14 +84,19 @@ sub _Value  {
   my $self = shift;
   my $field = shift;
 
- #If the current user doesn't have ACLs, don't let em at it.  
-
- unless ($self->CurrentUserHasQueueRight('ShowTemplate')) {
-    return (undef);
+  #If the current user doesn't have ACLs, don't let em at it.  
+  if ($self->Queue == 0 ) {
+      unless $self->CurrentUser->HasSystemRight('ShowTemplates') {
+	  return (undef);
+      }	
   }
-
+  else {
+      unless ($self->CurrentUserHasQueueRight('ShowTemplate')) {
+	  return (undef);
+      }
+  }
   return($self->SUPER::_Value($field));
-
+  
 }
 
 # }}}
@@ -117,14 +128,22 @@ sub Create {
                  @_
                 );
     
-    my $QueueObj = new RT::Queue($self->CurrentUser);
-    $QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
 
-    unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
-     return (undef);
+    if ($args{'Queue'} == 0 ) {
+	unless ($self->CurrentUser->HasSystemRight('CreateTemplate')) {
+	    return (undef);
+	}	
     }
-   
-    #TODO+++ check the queue for validity. check the alias for uniqueness.
+    else {
+	my $QueueObj = new RT::Queue($self->CurrentUser);
+	$QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
+	
+	unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
+	    return (undef);
+	}
+    }	
+    #TODO+++ check the alias for uniqueness
+
 
     my $result = $self->SUPER::Create( Content => "$args{'Content'}",
                                        Queue   => "$args{'Queue'}",

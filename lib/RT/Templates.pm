@@ -55,6 +55,24 @@ sub LimitToNotInQueue {
                 );
 }
 # }}}
+# {{{ LimitToSystem
+
+=head2 LimitToSystem
+
+Takes no arguments. Limits the returned set to "Global" templates
+which can be used with any queue.
+
+=cut
+
+sub LimitToSystem {
+    my $self = shift;
+    my $queue_id = shift;
+    $self->Limit(FIELD => 'Queue',
+                 VALUE => "0",
+                 OPERATOR => '='
+                );
+}
+# }}}
 
 # {{{ LimitToQueue
 

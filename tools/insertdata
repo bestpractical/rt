@@ -279,7 +279,7 @@ my @ScripConditions = (
 # {{{ Templates
 my @templates = (
 {
-                Queue   => '1',
+                Queue   => '0',
                 Alias => 'Autoreply',
 				Title => 'Default Autoresponse Template', 
 				Content => 
@@ -306,7 +306,7 @@ problem. To do so, you may reply to this message.
 
 {
 #                  id => 2,
-                Queue   => '1',
+                Queue   => '0',
                 Alias => 'Transaction', 
                   Title => 'Default transaction template',
                   Content => '
@@ -326,7 +326,7 @@ Transaction: {$Transaction->Description}
 
 {
 
-                  Queue   => '1',
+                  Queue   => '0',
                   Alias => 'AdminCorrespondence',
                   Title => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
@@ -339,7 +339,7 @@ Transaction: {$Transaction->Description}
 
 
 {
-                  Queue   => '1',
+                  Queue   => '0',
                   Alias => 'Correspondence',
                   Title => 'Default correspondence template',
                   Content =>  '
@@ -348,7 +348,7 @@ Transaction: {$Transaction->Description}
 
 
 {
-                  Queue   => '1',
+                  Queue   => '0',
                   Alias => 'AdminComment',
                   Title => 'Default admin comment template',
                   Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
@@ -362,7 +362,7 @@ This is a comment.  It is not sent to the Requestor(s):
 
 
 {
-                  Queue   => '1',
+                  Queue   => '0',
                   Alias => 'StatusChange',
                   Title => 'Ticket status changed',
                   Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
@@ -375,7 +375,7 @@ This is a comment.  It is not sent to the Requestor(s):
 
 {
 
-                 Queue => '1',
+                 Queue => '0',
                  Alias => 'Resolved',
                   Title => 'Ticket Resolved',
                   Content => 'Subject: Ticket Resolved
