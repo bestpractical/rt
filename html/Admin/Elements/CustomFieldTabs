@@ -64,10 +64,6 @@ if ($id) {
                 C => { title => loc('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
-                D => { title => loc('Applies to'),
-                       path  => "Admin/CustomFields/Objects.html?id=" . $id,
-                },
-
                 F => { title => loc('Group Rights'),
                        path  => "Admin/CustomFields/GroupRights.html?id="
                          . $id, },
@@ -79,8 +75,18 @@ if ($id) {
             } }
 
     };
-}
 
+
+if ($cf->LookupType =~ /^RT::Queue/io) {
+    $tabs->{'C'}->{subtabs}->{D} = 
+
+                 { title => loc('Applies to'),
+                       path  => "Admin/CustomFields/Objects.html?id=" . $id,
+                },
+
+};
+
+}
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => loc('Select custom field'),
                         path => "Admin/CustomFields/",
