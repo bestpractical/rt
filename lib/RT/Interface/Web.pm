@@ -152,6 +152,9 @@ sub ProcessUpdateMessage {
 		  MIMEObj => $Message,
 		  TimeTaken => $args{ARGSRef}->{'UpdateTimeWorked'});
 	    push(@{$args{Actions}}, $Description);
+	} 
+	else {
+	    push(@{$args{'Actions'}}, "Update type was neither correspondence nor comment. Update not recorded");
 	}
     }
 }
