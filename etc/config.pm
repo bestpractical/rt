@@ -24,20 +24,29 @@ package RT;
 # get it working.  I really don't want RT to break on such a stupid
 # thing as logging, so I'll leave logging to file as the default.
 
-# I'm using a hacked version of Log::Dispatch::File here which trails
-# the messages with a newline.  For newer versions of Log::Dispatch, a
-# callback should be used.  I will eventually look more into this
-# later.
+# There is also one weird problem coming up every now and then, that it
+# searches for some strange "addrlist" and "date" that doesn't exist.  I
+# haven't managed to pinpoint the problem - it's certainly outside RT, and
+# probably outside Log::Dispatch - one hack to get this working is to locate
+# Mail/Field/AddrList.pm and make a symlink from addrlist.pm to AddrList.pm.
+
+# The callback for adding newlines will only work for newer versions of
+# Log::Dispatch.
+
+#    -- Tobix
 
 use Log::Dispatch;
 use Log::Dispatch::File;
 
-$Logger=Log::Dispatch->new;
+Log::Dispatch::VERSION('1.2');
+
+$Logger=Log::Dispatch->new();
 $Logger->add(Log::Dispatch::File->new
 	     ( name=>'rtlog',
 	       min_level=>'info',
 	       filename=>'!!RT_LOGFILE!!',
-	       mode=>'append'
+	       mode=>'append',
+	       callback => sub {%p=@_; return "$p{message}\n"}
 	      ));
 
 # }}}

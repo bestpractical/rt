@@ -271,6 +271,14 @@ THE CLI
                 "rtadmin" (modify queues, users and acls)
 
         All three of these programs take --help as an option.
+	
+
+TROUBLE SHOOTING
+----------------
+
+All errors will be appended to a logfile.  Check etc/config.pm for details.
+Check if the error is covered in docs/FAQ.  And if it isn't, send a mail to
+the mailinglist.
 
 
 RT-USERS MAILINGLIST
@@ -285,13 +293,15 @@ With the body of the message consisting of only the word:
 
         subscribe
 
-Address questions to the mailinglist.  If you feel your questions are
-best not asked publically, send them to me personally at:
-jesse@fsck.com
-
 If you're interested in hacking on rt, you'll want to subscribe to
 rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to
-those above. 
+those above.
+
+Address questions about the stable release to the rt-users list, and
+questions about the development version to the rt-devel list.  If you feel
+your questions are best not asked publically, send them personally to
+jesse@fsck.com (eventually tobix@fsck.com, he's usually awake when Jesse is
+sleeping).
 
 There is also a mailing list rt-commit where all CVS updates are
 mailed, it might be quite useful for developers, wanna-be developers

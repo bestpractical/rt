@@ -432,7 +432,7 @@ Transaction: {$Transaction->Description}
        Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
- Ticket <URL: {$WebURL}/Ticket/Display.html?id={$Ticket->id} >
+ Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
 {$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}',
 NULL,20000227191543,NULL,00000000000000);
@@ -446,7 +446,7 @@ To: {$Ticket->AdminCcAsString}
 
 {$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 
-<URL: {$WebURL}/Ticket/Display.html?id={$Ticket->id} >
+<URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
 
 {$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
@@ -470,7 +470,7 @@ Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}
 
-{$WebURL}/Ticket/Display.html?id={$Ticket->id}
+{$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Message()->First()->Content()}
@@ -484,7 +484,7 @@ Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->WatchersAsString}
 
-{$WebURL}/Ticket/Display.html?id={$Ticket->id}
+{$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
 
 {$Transaction->Message()->First()->Content()}
 ',
