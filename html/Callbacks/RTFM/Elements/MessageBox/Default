@@ -23,7 +23,7 @@
 %        $art->Load($1);
 <& /RTFM/Article/Elements/Preformatted, Article => $art &>
 % }
-% if ($arg =~ /RTFM-Include-Article-Named/) {
+% if ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg}) {
 %    my    $art = RT::FM::Article->new($session{'CurrentUser'});       
 %        $art->LoadByCols(Name => $ARGS{$arg});
 <& /RTFM/Article/Elements/Preformatted, Article => $art &>
