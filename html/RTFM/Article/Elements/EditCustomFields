@@ -17,32 +17,32 @@
 %# END LICENSE BLOCK
 
 <table>
-% while (my $CustomField = $CustomFields->Next) {
-% my $Content = $CFContent->{$CustomField->Id};
-<tr>
-<td valign="top" align="right">
-<B><%$CustomField->Name%></b><br>
-<small><i>(<%$CustomField->Type%>)</i></small>
-</td>
-<td valign="top">
-<& EditCustomField, CustomFieldObj => $CustomField, 
-                    ClassObj => $ClassObj,
-                    ArticleObj => $ArticleObj, 
-                    Content => $Content,
-                    id => $id,
-                    %ARGS
-                     &>
-</TD>
-</TR>
+% while (my $CustomField = $CustomFields->Next()) {
+  <tr>
+    <td class="labeltop">
+      <b><%$CustomField->Name%></b><br>
+      <i><%$CustomField->FriendlyType%></i>
+    </td>
+    <td class="entry"><& /Elements/EditCustomField, 
+        Object => $ArticleObj, 
+        CustomField => $CustomField, 
+        NamePrefix => $NamePrefix,
+        Content => $CFContent->{$CustomField->Id}
+        &></td>
+  </tr>
 % }
-</TABLE>
+</table>
 <%INIT>
 my $CustomFields;
+my $NamePrefix;
+
 if ($ArticleObj->ClassObj->id) {
     $CustomFields = $ArticleObj->ClassObj->CustomFields();
+    $NamePrefix = "Object-RT::FM::Article-".$ArticleObj->Id."-CustomField-";
 }
 else {
     $CustomFields = $ClassObj->CustomFields();
+    $NamePrefix = "Object-RT::FM::Article--CustomField-";
 }
 </%INIT>
 <%ARGS>

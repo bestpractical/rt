@@ -24,35 +24,34 @@
 
 <emp><%$article->Summary%></emp>
 <br><br><br>
-  <& Elements/ShowCustomFields, article => $article &>
+<& /Elements/ShowCustomFields, Object => $article &>
 <br>
 <br>
 <& Elements/ShowLinks, article => $article &>
 <%init>
 
-my $article = RT::FM::Article->new($session{'CurrentUser'}); 
+my $article = RT::FM::Article->new( $session{'CurrentUser'} );
 if ($Name) {
-    $article->LoadByCols(Name => $Name);
-} elsif ($id) {
+    $article->LoadByCols( Name => $Name );
+}
+elsif ($id) {
     $article->Load($id);
 }
-unless ($article->Id) {
-    if ($ARGS{'Name'}) {
-        $m->comp('Edit.html',%ARGS );
-        return();
+unless ( $article->Id ) {
+    if ( $ARGS{'Name'} ) {
+        $m->comp( 'Edit.html', %ARGS );
+        return ();
     }
     else {
-        $m->comp("/Elements/Error", Why => loc("Article not found"));
+        $m->comp( "/Elements/Error", Why => loc("Article not found") );
     }
 
 }
 
-unless ($article->CurrentUserHasRight(
-                                        'ShowArticle')) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
+unless ( $article->CurrentUserHasRight('ShowArticle') ) {
+    $m->comp( "/RTFM/Elements/Error", Why => loc("Permission Denied") );
 }
-my $title =  loc( "Article #[_1]: [_2]", $article->Id, $article->Name);
-
+my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name );
 
 $id = $article->id;
 

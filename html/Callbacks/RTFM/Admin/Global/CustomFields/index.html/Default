@@ -1,0 +1,11 @@
+<%args>
+$tabs => undef
+</%args>
+<%init>
+$tabs->{'RTFM-A'} = { title => loc('RTFM Articles'),
+                      text => loc('Select custom fields for RTFM articles in all classes'),
+                      path => 'RTFM-Class-RTFM-Article.html' 
+
+                      };
+
+</%init>
