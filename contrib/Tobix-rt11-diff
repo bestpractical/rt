@@ -1,0 +1,3562 @@
+Only in rt: ACE.pm
+Only in rt: ACL.pm
+Only in rt: Area.pm
+Only in rt: Areas.pm
+diff -uwrF^sub /tmp/FunRT/CVS/Entries rt/CVS/Entries
+--- /tmp/FunRT/CVS/Entries	Wed Dec  1 08:16:18 1999
++++ rt/CVS/Entries	Wed Dec  1 09:46:39 1999
+@@ -1,7 +1,18 @@
++/Database.pm/1.1.2.2/Mon Nov  8 23:02:14 1999//Trt-1-1
+ D/DBIx////
+ D/database////
+ D/support////
+ D/ui////
+-/Database.pm/1.1.4.1/Wed Nov 17 09:32:44 1999//TFunRT
+-/Transaction.pm/1.1.4.1/Wed Nov 17 09:32:44 1999//TFunRT
+-/database.pm/1.14.4.14/Mon Nov 29 05:51:39 1999//TFunRT
++/ACE.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/ACL.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/Areas.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/Queue.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/Queues.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/Record.pm/1.1.2.1/Mon Nov 29 23:49:12 1999//Trt-1-1
++/Ticket.pm/1.1.2.3/Tue Nov 30 08:23:16 1999//Trt-1-1
++/Tickets.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/Transaction.pm/1.1.2.4/Tue Nov 30 08:23:16 1999//Trt-1-1
++/Transactions.pm/1.1.2.1/Tue Nov 30 07:17:06 1999//Trt-1-1
++/User.pm/1.1.2.1/Mon Nov 29 23:49:12 1999//Trt-1-1
++/database.pm/1.14.2.5/Tue Nov 30 08:23:16 1999//Trt-1-1
++/Area.pm/1.1.2.2/Wed Dec  1 08:46:38 1999//Trt-1-1
+Only in /tmp/FunRT/CVS: Entries.bak
+Only in /tmp/FunRT/CVS: Repository.bak
+diff -uwrF^sub /tmp/FunRT/CVS/Root rt/CVS/Root
+--- /tmp/FunRT/CVS/Root	Wed Dec  1 08:16:18 1999
++++ rt/CVS/Root	Wed Dec  1 08:15:52 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+Only in /tmp/FunRT/CVS: Root.bak
+diff -uwrF^sub /tmp/FunRT/CVS/Tag rt/CVS/Tag
+--- /tmp/FunRT/CVS/Tag	Wed Dec  1 08:16:18 1999
++++ rt/CVS/Tag	Wed Dec  1 08:15:52 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+Only in /tmp/FunRT/CVS: Tag.bak
+diff -uwrF^sub /tmp/FunRT/DBIx/CVS/Root rt/DBIx/CVS/Root
+--- /tmp/FunRT/DBIx/CVS/Root	Wed Dec  1 08:16:21 1999
++++ rt/DBIx/CVS/Root	Wed Dec  1 08:15:55 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/DBIx/CVS/Tag rt/DBIx/CVS/Tag
+--- /tmp/FunRT/DBIx/CVS/Tag	Wed Dec  1 08:16:21 1999
++++ rt/DBIx/CVS/Tag	Wed Dec  1 08:15:55 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/Database.pm rt/Database.pm
+--- /tmp/FunRT/Database.pm	Wed Nov 17 10:32:44 1999
++++ rt/Database.pm	Tue Nov  9 00:02:14 1999
+@@ -1,3 +1,9 @@
++# Copyright 1999 Jesse Vincent <jesse@fsck.com>
++# Released under the terms of the GNU Public License 
++# $Id$ 
++#
++# This code is not used yet.
++
+ package RT::Database;
+ 
+ use DBI;
+Only in rt: Queue.pm
+Only in rt: Queues.pm
+Only in rt: Record.pm
+Only in rt: Ticket.pm
+Only in rt: Tickets.pm
+diff -uwrF^sub /tmp/FunRT/Transaction.pm rt/Transaction.pm
+--- /tmp/FunRT/Transaction.pm	Wed Nov 17 10:32:44 1999
++++ rt/Transaction.pm	Tue Nov 30 09:23:16 1999
+@@ -1,5 +1,11 @@
++# Copyright 1999 Jesse Vincent <jesse@fsck.com>
++# Released under the terms of the GNU Public License
++# $Id$ 
++#
++# This code is not used yet.
++#
+ package rt::Transaction;
+-@ISA= qw(DBIx::RecordObject;
++@ISA= qw(RT::Record);
+ 
+ sub new {
+   my $proto = shift;
+@@ -52,8 +58,8 @@ sub comment {
+   return($self->_set_and_return('comment',@_));
+ }
+ 
+-sub article {
++sub content {
+   my $self=shift;
+-  return($self->_set_and_return('article',@_));
++  return($self->_set_and_return('content',@_));
+ }
+ 1;
+Only in rt: Transactions.pm
+Only in rt: User.pm
+diff -uwrF^sub /tmp/FunRT/database/CVS/Entries rt/database/CVS/Entries
+--- /tmp/FunRT/database/CVS/Entries	Wed Dec  1 08:16:33 1999
++++ rt/database/CVS/Entries	Wed Dec  1 08:16:13 1999
+@@ -1,5 +1,5 @@
+-/content.pm/1.3.4.2/Fri Oct 22 18:09:55 1999//TFunRT
+-/manipulate.pm/1.14.2.2.2.14/Fri Oct 22 18:09:55 1999//TFunRT
+-/admin.pm/1.17.4.3/Wed Nov 17 09:32:44 1999//TFunRT
+-/config.pm/1.7.2.1.2.8/Tue Nov 23 11:33:33 1999//TFunRT
++/content.pm/1.3.2.2/Wed Nov 17 08:37:27 1999//Trt-1-1
++/manipulate.pm/1.14.2.6/Wed Nov 17 08:37:28 1999//Trt-1-1
++/admin.pm/1.17.2.4/Tue Nov 30 08:23:16 1999//Trt-1-1
++/config.pm/1.7.2.3/Tue Nov 30 08:23:16 1999//Trt-1-1
+ D
+diff -uwrF^sub /tmp/FunRT/database/CVS/Root rt/database/CVS/Root
+--- /tmp/FunRT/database/CVS/Root	Wed Dec  1 08:16:33 1999
++++ rt/database/CVS/Root	Wed Dec  1 08:16:13 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/database/CVS/Tag rt/database/CVS/Tag
+--- /tmp/FunRT/database/CVS/Tag	Wed Dec  1 08:16:33 1999
++++ rt/database/CVS/Tag	Wed Dec  1 08:16:13 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/database/admin.pm rt/database/admin.pm
+--- /tmp/FunRT/database/admin.pm	Wed Nov 17 10:32:44 1999
++++ rt/database/admin.pm	Tue Nov 30 09:23:16 1999
+@@ -1,3 +1,4 @@
++# $Header$
+ # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+ # This software is redistributable under the terms of the GNU GPL
+ #
+@@ -21,7 +22,7 @@ sub delete_user {
+     
+     if ($users{$in_current_user}{admin_rt}) {
+       if ($in_user_id ne $in_current_user) {
+-	  $query_string = "DELETE FROM users WHERE user_id = $user_id";
++	  $query_string = "DELETE FROM users WHERE id = $user_id";
+ 	  $sth = $dbh->prepare($query_string) or return (0, "[delete_user] prepare had some problem: $DBI::errstr\n$query_string\n");
+ 	  $sth->execute or return (0, "[delete_user] execute had some problem: $DBI::errstr\n$query_string\n");
+ 	  $query_string = "DELETE FROM queue_acl WHERE user_id = $user_id";
+@@ -92,7 +93,7 @@ sub delete_queue {
+     
+     $queue_id=$rt::dbh->quote($in_queue_id);
+     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
+-	$query_string = "DELETE FROM queues WHERE queue_id = $in_queue_id";
++	$query_string = "DELETE FROM queues WHERE id = $in_queue_id";
+ 	$sth = $dbh->prepare($query_string) 
+ 	    or return (0, 
+ 		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+@@ -144,9 +145,9 @@ sub add_modify_queue_conf {
+     if ($users{$in_current_user}{admin_rt}) {
+       $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
+       $sth=$dbh->prepare($query_string) 
+-	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
++	  or return (0, "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+       $sth->execute() 
+-	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
++	  or return (0, "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+       $< = $>;			#set real to effective uid
+       system("cp", "-rp", "$rt_dir/lib/generic_templates","$template_dir/queues/$in_queue_id");
+       &rt::load_queue_conf();
+@@ -171,10 +172,10 @@ sub add_modify_queue_conf {
+       $update_clause =~ s/,(\s),/, /g;
+       
+       if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
+-	$query_string = "UPDATE queues SET $update_clause WHERE queue_id = $queue_id";
++	$query_string = "UPDATE queues SET $update_clause WHERE id = $queue_id";
+ 	
+ 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
+-	$dbh->do($query_string) or warn "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n";
++	$dbh->do($query_string) or warn "[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n";
+ 	delete $rt::queues{$in_queue_id};
+ 	&rt::load_queue_conf();
+ 	&rt::load_queue_acls();
+@@ -260,7 +261,7 @@ sub add_modify_queue_acl {
+       if( ! (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) ) {
+ 	$query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulate, $in_admin)";
+ 	$dbh->do($query_string) or 
+-	  return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
++	  return (0, "[add_modify_queue_acl] Query had some problem: $DBI::errstr\n");
+ 	
+        }
+       
+@@ -333,9 +334,6 @@ sub add_modify_user_info {
+   
+  
+ 
+-  
+-  #   print STDERR "in add_mod_user_info\n";
+-  
+   if ($in_user_id) {
+     $new_user_id = $rt::dbh->quote($in_user_id);
+   }
+@@ -400,7 +398,7 @@ sub add_modify_user_info {
+       #if the password length is too short and we're creating a user
+       return (0,$passwd_err) if length($in_password) < $user_passwd_min;
+       
+-      $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
++      $query_string="INSERT INTO users (id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
+        
+       $sth = $dbh->prepare($query_string) 
+ 	  or warn "[add_modify_user_info] prepare had some problem: $DBI::errstr\n";
+@@ -433,9 +431,9 @@ sub add_modify_user_info {
+ 	$update_clause .= "password = $new_password ";
+       }
+       if ($update_clause) {
+-	$query_string = "UPDATE users SET $update_clause WHERE user_id = $new_user_id";
++	$query_string = "UPDATE users SET $update_clause WHERE id = $new_user_id";
+ 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
+-	$dbh->do($query_string) or warn "[add_modify_user] Query had some problem: $Mysql::db_errstr\n$query_string";
++	$dbh->do($query_string) or warn "[add_modify_user] Query had some problem: $DBI::errstr\n$query_string";
+ 	&rt::load_user_info();
+ 	return(1, "User record updated");
+       }
+Only in rt/database: admin.pm.orig
+Only in rt/database: admin.pm.rej
+diff -uwrF^sub /tmp/FunRT/database/config.pm rt/database/config.pm
+--- /tmp/FunRT/database/config.pm	Tue Nov 23 12:33:33 1999
++++ rt/database/config.pm	Tue Nov 30 09:23:16 1999
+@@ -4,49 +4,21 @@
+     package rt;
+ 
+ 	sub read_config {
+-	    
+-	    &prepare_sql();
+ 	    &load_user_info();
+ 	    &load_queue_conf();
+ 	    &load_queue_acls();
+ 	    &load_queue_areas();
+-	    &load_relationships();
+-	}	
+-
+-
+-
+-    # I feel preparing frequently used statements is more correct once
+-    # and only than each time the statement is used: (at the other
+-    # hand, RT is designed for beeing executed each and every time
+-    # anything is to be done, so it's probably more efficient to
+-    # construct and prepare the SQL on the fly than to do it here)
+-    sub prepare_sql {
+-	$rt::AddLink=$dbh->prepare
+-	    ('INSERT into links 
+-                     (serial_num, foreign_db, foreign_id, foreign_tag) 
+-                     values (?, ?, ?, ?)');
+-
+-	$rt::GetStalledParents=$dbh->prepare
+-	    ("SELECT foreign_id from links,relship,each_req 
+-              WHERE relship.option_bitmap=14 
+-                and links.foreign_db=relship.id 
+-                and links.serial_num=?
+-                and each_req.serial_num=links.foreign_id
+-                and each_req.status='stalled'");
+-
+-	unless ($rt::AddLink && $rt::GetStalledParents) {
+-	    warn "SQL statement failed ($DBI::errstr)";
+-	}
+     }
+     
+     sub load_queue_acls {
+ 	
+ 	my ($user_id, $queue_id);
+ 
++
+ 	$sth = $dbh->prepare("SELECT queue_acl.queue_id,
+ 	   users.user_id, queue_acl.display, queue_acl.manipulate,
+ 	   queue_acl.admin, users.email, queue_acl.mail FROM
+-	   queue_acl, users WHERE users.user_id = queue_acl.user_id");
++	   queue_acl, users WHERE users.id = queue_acl.user_id");
+ 	$sth->execute()
+ 	    or warn "execute query had some problem: $DBI::errstr\n";
+ 
+@@ -59,7 +31,13 @@
+ 	    $rt::queues{$queue_id}{acls}{$user_id}{'manipulate'}=$row[3];
+ 	    $rt::queues{$queue_id}{acls}{$user_id}{'admin'}=$row[4];
+ 
+-	    if ($row[5] and $row[2] and $row[6]) {
++# TODO: The email-field (#6) should be used. What is most easy is to
++# let it be binary "user should get mail" or not. In that case, just
++# add $row[6] in the if-statement below (and update ui/*/admin.pm). A
++# more featuristic schema is to let it be a bitmap of what emails he
++# should get. In that case dist_list must be made into a hash ... that
++# seems like WORK to me, so I've postponed it for now. Tobix.
++	    if ($row[5] and $row[3]) {
+ 		if ($queues{$queue_id}{'dist_list'}) {
+ 		    $queues{$queue_id}{'dist_list'} .= ", " . $row[5];
+ 		}
+@@ -85,46 +63,12 @@ sub load_queue_areas {
+     }
+ }         
+ 
+-sub load_relationships {
+-    # should load all entries in the `relationship' table into some
+-    # %rt::relship hash.
+-    my $rv=0;
+-
+-    # I wanted to use sth->fetchrow_hashref, but it's not portable due
+-    # to uppercase/lowercase. I'll keep UPPERCASE for data fetched
+-    # directly from the DB, MixedCase for bitmap data, etc, and
+-    # maybe eventually lowercase for extra options or similar.
+-
+-    my @relshipkeys=('ID','TITLE','TABLENAME','FOREIGN_ID_KEY',
+-		     'FOREIGN_TAG_KEY','INSERT_URL','INSERT_LINKNAME',
+-		     'COMMAND','VIEWOPTION_BITMAP','OPTION_BITMAP',
+-		     'URL','LINKNAME','PARENTRELSHIP','CMDPRF');
+-
+-    my $sth = $dbh->prepare('SELECT '.join(',',@relshipkeys).' FROM relship');
+-    $rv = $sth ? $sth->execute() : 0;
+-    $rv || warn "[load_relationships] query had some problem: $DBI::errstr\n$query_string\n";
+-    while (my $row=$sth->fetchrow_arrayref) {
+-	my $id=$row->[0];
+-	my $i=0;
+-	for (@relshipkeys) {
+-	    $relship{$id}{$_}=$row->[$i++];
+-	}
+-
+-	# Handling the option bitmaps:
+-	my $options=$relship{$id}{OPTION_BITMAP};
+-	for ('AlwaysTag','RemoteLinkingHandledByRT','SelfReferencing','Dependency') {
+-	    $relship{$id}{$_}=($options & 1);
+-	    $options>>=1;
+-	}
+-	$relship{$relship{$id}{TITLE}}=$relship{$id};
+-    }
+-    $sth->finish;
+-}
++
+ 
+ sub load_user_info {
+     my ($row);
+ 
+-    $query_string="SELECT user_id, password, email,  phone, office, comments, admin_rt, real_name FROM users";
++    $query_string="SELECT id, password, email,  phone, office, comments, admin_rt, real_name FROM users";
+     $sth = $dbh->prepare($query_string) or warn "[load_user_info] prepare query had some problem: $DBI::errstr\n$query_string\n";
+     $rv = $sth->execute or warn "[load_user_info] execute query had some problem: $DBI::errstr\n$query_string\n";
+     while (@row=$sth->fetchrow_array) { 
+@@ -155,7 +99,7 @@ sub is_hash_of_password_and_ip {
+   
+   
+   my $user_id=$dbh->quote($in_user_id);
+-  $query_string="SELECT password FROM users WHERE user_id = $user_id";
++  $query_string="SELECT password FROM users WHERE id = $user_id";
+   $sth = $dbh->prepare($query_string) or warn "[is_password] prepare had some problem: $DBI::errstr\n$query_string\n";
+   $rv = $sth->execute or warn "[is_password] execute had some problem: $DBI::errstr\n$query_string\n";
+   @row=$sth->fetchrow_array;
+@@ -192,11 +136,11 @@ sub is_password {
+     }
+ 
+      my $user_id=$dbh->quote($in_user_id);
+-    $query_string="SELECT password FROM users WHERE user_id = $user_id";
++    $query_string="SELECT password FROM users WHERE id = $user_id";
+        
+     $sth = $dbh->prepare($query_string) or warn "[is_password] prepare had some problem: $DBI::errstr\n$query_string\n";
+     $rv = $sth->execute or warn "[is_password] execute had some problem: $DBI::errstr\n$query_string\n";
+-    @row=$sth->fetchrow_array;
++    @row=$sth->FetchRow;
+ 
+     $password=$row[0];
+    
+@@ -225,7 +169,7 @@ sub is_a_user {
+ sub load_queue_conf {
+ #    local ($in_queue_id)=@_;
+     my ($row,$queue_id);
+-	$sth = $dbh->prepare("SELECT queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio FROM queues") or warn "prepare query had some problem: $DBI::errstr\n";
++	$sth = $dbh->prepare("SELECT id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio FROM queues") or warn "prepare query had some problem: $DBI::errstr\n";
+ 	$rv = $sth->execute or warn "execute query had some problem: $DBI::errstr\n";
+     while (@row=$sth->fetchrow_array) {
+ 	$queue_id=$row[0];
+diff -uwrF^sub /tmp/FunRT/database/manipulate.pm rt/database/manipulate.pm
+--- /tmp/FunRT/database/manipulate.pm	Fri Oct 22 20:09:55 1999
++++ rt/database/manipulate.pm	Wed Nov 17 09:37:28 1999
+@@ -1,3 +1,5 @@
++# $Header$
++
+ package rt;
+ 
+ require rt::database;
+@@ -45,7 +47,7 @@ sub add_new_request {
+ 			     $in_date_told, $in_date_due, $in_current_user);
+     
+     # note the creation in the transaction log
+-    $transaction_num=&add_transaction($serial_num, $in_current_user, 'create','',$in_content,$time,0,$in_current_user);
++    $transaction_num=&add_transaction($serial_num, $in_current_user, 'create','',$in_content,$time,1,$in_current_user);
+ 
+     if ($queues{$in_queue_id}{m_members_correspond}) {
+       &rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}",
+@@ -154,11 +156,6 @@ sub add_correspondence {
+     
+     $isnotrequestor=&is_not_a_requestor($in_current_user,$in_serial_num);
+ 
+-    if (($in_status ne '') and ($rt::req[$in_serial_num]{'status'} ne $in_status)) {
+-      $opentrans=&rt::update_request($in_serial_num,'status',"$in_status", "_rt_system");
+-     #print "Reopening the request $opentrans\n$openmsg\n";
+-    }
+-    
+     # Those RT comments that are inserted into the content should also
+     # have been handled more elegant.
+     # Everybody can comment things, but only the support personell should send official replies:
+@@ -186,10 +183,10 @@ sub add_correspondence {
+     
+     $queue_id=$rt::req[$in_serial_num]{'queue_id'};
+ 
+-    $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond','',$in_content,time(),0,$in_current_user);
++    $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond',
++				      '',$in_content,$time,1,$in_current_user);
+    
+ # read again as add_transaction overwrites it depending on user's privileges
+-
+     &req_in($in_serial_num, '_rt_system');
+     
+     if (($in_status ne '') and ($rt::req[$in_serial_num]{'status'} ne $in_status)) {
+@@ -197,23 +194,27 @@ sub add_correspondence {
+     }
+     
+     #if it's coming from somebody other than the user, send them a copy
+-    if ($isnotrequestor) {
++    if ( (&is_not_a_requestor($in_current_user,$in_serial_num)) or
++	 ($in_cc) or 
++	 ($in_bcc) or
++	 ($in_notify) ) {
+ 	&update_each_req($in_serial_num, 'date_told', $rt::time);
+-	$tem=&rt::template_mail('correspondence-official', $queue_id, "$requestors", "$in_cc", "$in_bcc", "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+-    } elsif ($in_cc || $in_bcc) {
+-	$tem=&rt::template_mail('correspondence-official', $queue_id, "", "$in_cc", "$in_bcc", "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
++	    $tem=&rt::template_mail('correspondence-official', $queue_id, "$requestors", $in_cc, $in_bcc, 
++			 "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+     }
+     
+-    my $dist_list=&rt::dist_list('correspond', $queue_id, $in_serial_num);
+-    if ($dist_list) {
+-	&rt::template_mail ('correspondence',$queue_id,$dist_list,"","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
++    if ($queues{$queue_id}{'m_members_correspond'}) {
++      &rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", 
++			  "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+     }
+     $effective_sn=&normalize_sn($in_serial_num);
+-    &update_each_req($effective_sn, 'date_acted', time()); #make now the last acted time
++    &update_each_req($effective_sn, 'date_acted', $time); #make now the last acted time
++    
+ 
+     return ($transaction_num,"This correspondence has been recorded.");
+ }
+ 
++
+ sub import_correspondence {
+   my  ($in_serial_num, $in_content, $in_subject, $in_current_user) = @_;
+   my ($transaction_num,$requestors);
+@@ -231,10 +232,6 @@ sub comment {
+     my  ( $in_serial_num, $in_content, $in_subject, $in_cc, $in_bcc, $in_current_user) = @_;
+     my ($transaction_num,$queue_id);
+  
+-    #if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
+-    #	return (0,"You ($in_current_user) don't have permission to modify request \#$in_serial_num");
+-   # }
+-   
+      #Todo: this may or may not be broken. ideally we should have the headers and body in seperate places. 
+      if ($in_cc) {
+           $in_content = "Cc: $in_cc\n\n$in_content";
+@@ -242,16 +239,22 @@ sub comment {
+     &req_in($in_serial_num, '_rt_system');
+     $queue_id =$rt::req[$in_serial_num]{'queue_id'}; 
+ 
+-    if ($in_subject !~ /\[comment\]/i) {
+-	$in_subject .= ' [comment]';
+-    }
++    $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'comments',
++				      '',$in_content,$time, 1,$in_current_user);
+ 
+-    $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'comments','',$in_content,$time, 0,$in_current_user);
++   if ($queues{$queue_id}{m_members_comment}) {
++	&template_mail('comment',$queue_id,"$queues{$queue_id}{dist_list}",$in_cc,$in_bcc,
++		       $in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
+   
++      }
++    elsif (($queues{$queue_id}{'m_owner_comment'}) && ($req[$in_serial_num]{'owner'} ne '')) {
++      &template_mail('comment', $queue_id, "$req[$in_serial_num]{'owner'}", $in_cc, $in_bcc, $in_serial_num, 
++		     $transaction_num, "$in_subject", $in_current_user, $in_content);
+     
+-    my $dist_list=&rt::dist_list('comment', $queue_id, $in_serial_num);
+-    if ($dist_list || $in_cc || $in_bcc) {
+-	&template_mail('comment',$queue_id,"$dist_list",$in_cc,$in_bcc,$in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
++    }
++    elsif ($in_cc || $in_bcc) {
++       &template_mail('comment', $queue_id, "", $in_cc, $in_bcc, $in_serial_num, 
++		      $transaction_num, "$in_subject", $in_current_user, $in_content);
+     }
+      
+     
+@@ -268,9 +271,7 @@ sub resolve {
+ 	return (0,"You ($in_current_user) don't have permission to modify request \#$in_serial_num");
+     }
+  
+-    $transaction_num=&update_request($in_serial_num,'status', 'resolved', $in_current_user)
+-	and &open_parents($in_serial_num, $in_current_user);
+-
++    $transaction_num=&update_request($in_serial_num,'status', 'resolved', $in_current_user);
+     return ($transaction_num,"Request #$in_serial_num has been resolved.");
+ }
+ 
+@@ -292,7 +293,7 @@ sub stall {
+     my  ($in_serial_num, $in_current_user) = @_;
+     my ($transaction_num);
+     if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
+-	return (0,"You don't have permission to stall request \#$in_serial_num");
++	return (0,"You don't have permission to modify request \#$in_serial_num");
+     }
+   
+     $transaction_num=&update_request($in_serial_num,'status','stalled', $in_current_user);
+@@ -402,7 +403,7 @@ sub change_queue {
+     elsif (!(&can_create_request($in_queue, $in_current_user))){
+ 	return (0, "You may only requeue a request into a queue you have privileges to create requests in");
+     }
+-    if (!(&is_an_area($rt::req[$in_serial_num]{'queue_id'}, $in_area))){ 
++    if (!(&is_an_area($rt::req[$in_serial_num]{queue_id}, $in_area))){ 
+ 
+ 	&update_request($in_serial_num,'area','',$in_current_user);
+     }
+@@ -437,7 +438,7 @@ sub give {
+ 	return(0,"$in_owner already owns request \#$in_serial_num.");
+     }
+     
+-    $qid = $req[$in_serial_num]{'queue_id'};
++    $qid = $req[$in_serial_num]{queue_id};
+     $requestors = $req[$in_serial_num]{requestors};
+     $in_subject = $req[$in_serial_num]{subject};
+     if ($in_owner eq '') {
+@@ -532,8 +533,8 @@ sub change_area {
+     if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
+ 	return (0,"You don't have permission to modify request \#$in_serial_num");
+     }
+-    if ((!(&is_an_area($rt::req[$in_serial_num]{'queue_id'}, $in_area))) and ($in_area ne '')){ 
+-	return (0, "Queue \'$rt::req[$in_serial_num]{'queue_id'}\' doesn't have an area called \'$in_area\'");
++    if ((!(&is_an_area($rt::req[$in_serial_num]{queue_id}, $in_area))) and ($in_area ne '')){ 
++	return (0, "Queue \'$rt::req[$in_serial_num]{queue_id}\' doesn't have an area called \'$in_area\'");
+     }
+ 
+     $transaction_num=&update_request($in_serial_num,'area',$in_area,$in_current_user);
+@@ -609,111 +610,6 @@ sub notify {
+     }
+     $transaction_num=&update_request($in_serial_num,'date_told',$in_notified, $in_current_user);
+     return ($transaction_num, 'Notification Noted.');
+-}
+-
+-sub link {
+-    my ($in_serial_num, $in_current_user, $otherdb, $foreign_id, $foreign_tag, $content) = @_;
+-
+-    if (!$time) {
+-	$time=time;
+-    }
+-
+-    my ($transaction_num);
+-    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
+-	return (0,"You don't have permission to modify request \#$in_serial_num");
+-    }
+-
+-
+-    # Some "sanifying" of the id/tag:
+-    if (defined $foreign_id && $foreign_id ne "" && !$foreign_tag) {
+-	# How I just _hate_ to check if it's an int by regexp'ing it!
+-	if ($foreign_id !~ /^\d+$/ || $rt::relship{$key}{AlwaysTag}) {
+-	    $foreign_tag=$foreign_id;
+-	    undef $foreign_id;
+-	}
+-    }
+-
+-
+-    # The three events (add foreign link, add internal link, add
+-    # transaction) are sorted after the likelyness to fail and after
+-    # my feeling that it's more important to be able to relay on that
+-    # stored transactions actually are completed than that a linking
+-    # actually need a transaction.
+-
+-    # ADD FOREIGN LINK
+-
+-    # Self-referencing - add a transaction at the other, if possible:
+-    if ($rt::relship{$otherdb}{SelfReferencing}) {
+-	if (&can_manipulate_request($in_serial_num,$in_current_user)) {
+-	    &add_transaction
+-		($foreign_id, $in_current_user, 'linked', 
+-		 "$otherdb/$in_serial_num", 
+-		 "$content", $time, 1, $in_current_user)
+-		    or return (0, 'Internal error: Unable to add transaction');
+-	}
+-    }
+-
+-    # External:
+-    elsif ( $rt::relship{$otherdb}{RemoteLinkingHandledByRT} && 
+-	 $rt::relship{$otherdb}{INSERT_URL}) {
+-
+-	# Fix the link:
+-	my $insertlink=&rt::ParseURLTemplate
+-	    (
+-	     $rt::relship{$otherdb}{INSERT_URL}, { 
+-		 ' $user '      =>$in_current_user,
+-		 ' $id '        =>$foreign_id, 
+-		 ' $tag '       =>$foreign_tag, 
+-		 ' $serial_num '=>$in_serial_num,
+-		 ' $db '        =>$otherdb
+-	     }
+-	    );
+-
+-	# Create a user agent object
+-	use LWP::UserAgent;
+-	$ua = new LWP::UserAgent;
+-	$ua->agent("RT/$rt::rtversion libwww-perl/$LWP::UserAgent::Version");
+-	
+-	# Create a request
+-	my $req = new HTTP::Request GET => $insertlink;
+-	
+-	# Pass request to the user agent and get a response back
+-	my $res = $ua->request($req);
+-	
+-	# Check the outcome of the response
+-	return (0, "Unable to fix the external link") unless ($res->is_success);
+-    } 
+-
+-    if ($otherdb !~ /^\d+$/) {
+-	$otherdb=$rt::relship{$otherdb}{ID};
+-    }
+-
+-    # ADD LINK:
+-    &add_link($in_serial_num, $in_current_user, 
+-	      $otherdb, $foreign_id, $foreign_tag)
+-	or return (0, 'Internal error: Unable to add link');
+-
+-
+-    # ADD TRANSACTION:
+-    $transaction_num=&add_transaction
+-	($in_serial_num, $in_current_user, 'link', 
+-	 "$otherdb/$foreign_id/$foreign_tag",
+-	 "$content", $time, 1, $in_current_user)
+-	    or return (0, 'addtrans failed');
+-
+-
+-
+-    # DEPENDENCY
+-    # One more thing: If we add a dependency, the dependent should be
+-    # stalled:
+-    if ($rt::relship{$otherdb}{Dependency}) {
+-	req_in($foreign_id);
+-	if ($rt::req[$foreign_id]{'status'} ne 'resolved') {
+-	    return stall($foreign_id, $in_current_user);
+-	}
+-    }
+-
+-    return ($transaction_num, 'Link added');
+ }
+ 
+ 1;
+diff -uwrF^sub /tmp/FunRT/database.pm rt/database.pm
+--- /tmp/FunRT/database.pm	Mon Nov 29 06:51:39 1999
++++ rt/database.pm	Tue Nov 30 09:23:16 1999
+@@ -1,3 +1,4 @@
++# $Header$
+ # 
+ #
+ # Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
+@@ -68,7 +69,7 @@ sub add_request {
+ 	}
+ 	else
+ 	{
+-		$query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
++		$query_string="INSERT INTO each_req (id, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+ 	}
+ 
+ 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+@@ -80,7 +81,7 @@ sub add_request {
+ 
+ 	$serial_num = &get_last_each_req_serial_num($sth);
+ 
+-    	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE serial_num = $serial_num";
++    	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE id = $serial_num";
+ 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+ 	$rv = $sth->execute  or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n";
+ 	}
+@@ -93,7 +94,7 @@ sub get_last_each_req_serial_num
+ 	my($serial_num);
+ 
+ 	# I like this one - unfortunately it's MySQL specific:
+-	if ($rt::rt_db eq 'mysql') { return $sth->{insertid}; }
++	if ($rt::rt_db eq 'mysql') { return $dbh->{'mysql_insertid'}; }
+ 
+ 	# Pull the last inserted sequence value for the each_req table.
+     	$query_string="select last_value from each_req_serial_num_seq";
+@@ -112,7 +113,7 @@ sub get_last_transactions_id
+ 	my($transaction_num);
+ 
+ 	# I like this one - unfortunately it's MySQL specific:
+-	if ($rt_db eq 'mysql') { return $sth->{insertid}; }
++	if ($rt_db eq 'mysql') { return $dbh->{'mysql_insertid'}; }
+ 
+ 	# Pull the last inserted sequence value for the transactions table.
+     	$query_string="select last_value from transactions_id_seq";
+@@ -136,10 +137,6 @@ sub add_transaction {
+   my $in_do_mail = shift;
+   my $in_current_user = shift;
+ 
+-  if (!$in_serial_num) {
+-      die "Ups! No serial num!";
+-  }
+-  
+   my ($actor, $type, $data, $transaction_num, $query_string, $queue_id, $owner, $requestors);
+   
+     
+@@ -154,11 +151,9 @@ sub add_transaction {
+     $owner=$rt::req[$in_serial_num]{owner};
+     &req_in($in_serial_num, $in_current_user);
+ 
+-#	$query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ('', $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
+ 	$query_string = "INSERT INTO transactions (effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ($req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
+ 	$sth = $dbh->prepare($query_string) or warn "[add transaction] prepare had some problem: $DBI::errstr\nQuery: $query_string\n";
+-
+-	$rv = $sth->execute  or warn "[add transaction] execute had some problem: $DBI::errstr ... Query: $query_string ... $in_serial_num, $actor, $data, $transaction_num, $queue_id, $owner, $requestors";
++	$rv = $sth->execute  or warn "[add transaction] execute had some problem: $DBI::errstr\nQuery: $query_string\n";
+ 
+ 	# MySQL specific, need more general way of getting the last sequence value.
+ 	#    $transaction_num = $sth->insert_id;       
+@@ -198,7 +193,6 @@ sub update_each_req {
+     my ($in_serial_num, $in_field, $in_new_value) = @_;
+     my ($query_string, $new_value);
+ 
+-    req_in($in_serial_num, '_rt_system');
+ 
+     # if we're not actually changing the field, just abort 
+     return 0 if $rt::req[$in_serial_num]{$in_field} eq $in_new_value;
+@@ -263,17 +257,9 @@ sub transaction_in {
+     my ($trans, $in_current_user) = @_;
+     my ($query_string);
+ 
+-    if (!$trans || !$in_current_user) {
+-	warn "huh?";
+-    }
+-
+     $query_string = "SELECT id, actor, type, trans_data, trans_date, serial_num, effective_sn from transactions WHERE id = $trans ORDER BY id";
+-    $sth = $dbh->prepare($query_string);
+-    if (!$sth) {
+-	warn "prepare had some problem: $DBI::errstr - query: $query_string";
+-	return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
+-    }
+-	$rv = $sth->execute or return( "execute had some problem: $DBI::errstr - The query was $query_string");
++    $sth = $dbh->prepare($query_string) or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
++	$rv = $sth->execute or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
+     
+     while (@row=$sth->fetchrow_array) {
+ 	&parse_transaction_row($trans, $in_current_user, @row);
+@@ -308,7 +294,7 @@ sub parse_transaction_row {
+ 	if ($success) {
+ 	    $rt::req[$serial_num]{'trans'}[$in_id]{'content'} = $content;
+ 	}
+-	$rt::req[$serial_num]{'trans'}[$in_id]{'text'}=&transaction_text($serial_num, $in_id, $in_current_user);
++	$rt::req[$serial_num]{'trans'}[$in_id]{'text'}=&transaction_text($serial_num, $in_id);
+ 
+     }
+     
+@@ -325,7 +311,7 @@ sub parse_transaction_row {
+ 
+ 
+ sub transaction_text {
+-    my ($serial_num,$index,$in_current_user) =@_;
++    my ($serial_num,$index) =@_;
+     my ($text_time, $wday, $mon, $mday, $hour, $min, $sec, $TZ, $year);
+     if ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'create'){
+ 	return( "Request created by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+@@ -395,39 +381,6 @@ sub transaction_text {
+     {
+ 	return( "Request $rt::req[$serial_num]{'trans'}[$index]{'serial_num'} merged into $rt::req[$serial_num]{'trans'}[$index]{'data'} by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+     }
+-    elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'subreqrsv') {
+-	return "Subrequest #$rt::req[$serial_num]{'trans'}[$index]{'data'} resolved by $rt::req[$serial_num]{'trans'}[$index]{'actor'}";
+-    }
+-    elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'link')
+-    {
+-	my %subst=(' $serial_num '=>$serial_num);
+-	($subst{' $db '}, $subst{' $id '}, $subst{' $tag '})=
+-	    split(/\//,$rt::req[$serial_num]{'trans'}[$index]{'data'});
+-	$subst{' $user '}=$in_current_user;
+-	my $otherdb=$subst{' $db '};
+-	my $showurl=&rt::ParseURLTemplate($rt::relship{$otherdb}{URL}, \%subst);
+-	my $linkname=&rt::ParseURLTemplate($rt::relship{$otherdb}{LINKNAME}, \%subst);
+-
+-	# TODO
+-	# This is really HTML-specific. It should be replaced by the
+-	# <URL:$url>-notation for CLI and mail. Haven't figured out
+-	# anything smart yet.
+-	my $link = ($showurl && $linkname) 
+-	    ? ", <a href=\"$showurl\">$linkname</a>"
+-	    : "";
+-	return "$rt::req[$serial_num]{'trans'}[$index]{'actor'} added a link ($rt::relship{$otherdb}{TITLE}$link).";
+-    }
+-    elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'linked') {
+-	my $data=$rt::req[$serial_num]{'trans'}[$index]{'data'};
+-	if ($data =~ m|^(\w+)/(\d+)$| && exists $rt::relship{$1}) {
+-	    # Internal link - there should be a hyperlink for the web
+-	    # interface.
+-	    return "Got linked up with #$2 ($rt::relship{$1}{TITLE})";
+-	} else {
+-	    # External link
+-	    return "Got linked up: $data";
+-	}
+-    }
+     else {
+ 	return("$rt::req[$serial_num]{'trans'}[$index]{'type'} modified.  RT Should be more explicit about this!");
+     }
+@@ -452,12 +405,10 @@ sub req_in
+     my ($in_serial_num, $in_current_user) = @_;
+     my ($effective_sn);
+ 
+-    # Wouldn't it be smart to check if it's already in before doing any work?
+-
+     $effective_sn = &normalize_sn($in_serial_num);
+ 
+     
+-    $query_string = "SELECT serial_num, effective_sn,  queue_id,  area, alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE serial_num = $effective_sn";
++    $query_string = "SELECT id, effective_sn,  queue_id,  area, alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE serial_num = $effective_sn";
+     $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
+ 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
+ 
+@@ -466,36 +417,12 @@ sub req_in
+     }
+ }
+ 
+-sub links_in
+-{
+-    my ($in_serial_num, $in_current_user) = @_;
+-    my ($effective_sn);
+-
+-    # Wouldn't it be smart to check if it's already in before doing any work?
+-
+-    $effective_sn = &normalize_sn($in_serial_num);
+-    
+-    $query_string = "SELECT foreign_db, foreign_id, foreign_tag FROM links WHERE serial_num = $effective_sn";
+-    $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
+-	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
+-    @rt::links=();
+-    $rt::links[$serial_num]=[];
+-
+-    while (@row=$sth->fetchrow_array) {
+-	my %tmp=();
+-	for ('foreign_db', 'foreign_id', 'foreign_tag') {
+-	    $tmp{$_}=shift @row;
+-	}
+-	push(@{$rt::links[$serial_num]}, \%tmp);
+-    }
+-}
+-
+ 
+ sub get_queue {
+     my ($in_criteria,$in_current_user) =@_;
+     my $temp=0;
+     
+-    $query_string = "SELECT serial_num, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
++    $query_string = "SELECT id, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
+     $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n$query_string\n";
+ 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n$query_string\n";
+ 
+@@ -587,37 +514,6 @@ sub quote_wrapper {
+   return("$out_val");
+   
+ 
+-}
+-
+-sub open_parents {
+-    my ($in_serial_num, $in_current_user)=@_;
+-    $rt::GetStalledParents->execute($in_serial_num) 
+-	|| warn "Statement execution failed ($DBI::errstr)";
+-    my $row;
+-    while ($row=$rt::GetStalledParents->fetch) {
+-	update_request($row->[0], 'status', 'open', '_rt_system');
+-	add_transaction($row->[0], $in_current_user, 'subreqrsv', $in_serial_num,
+-			'', $rt::time, 1, $in_current_user);
+-    }
+-    $rt::GetStalledParents->finish;
+-}
+-
+-sub add_link {
+-    my ($in_serial_num, $in_current_user, $otherdb, $foreign_id, $foreign_tag) = @_;
+-    $rt::AddLink->execute($in_serial_num, $otherdb, $foreign_id, $foreign_tag) 
+-	|| warn "Failed to add link";
+-    $rt::AddLink->finish;
+-}
+-
+-sub read_faq_hack {
+-    my $hackysth=$rt::dbh->prepare
+-    ("select Article.id, title, content from
+-            mkia.Article,mkia.Keyword,mkia.KeywordList 
+-	    where     Keyword.Article=Article.id 
+-	          and KeywordList.id=Keyword.keyword 
+-		  and KeywordList.parent=20 and KeywordList.name=?");
+-    $hackysth->execute(@_);
+-    return $hackysth->fetchrow_array
+ }
+ 
+ 1;
+Only in rt/support: .#mail.pm.1.16.2.4
+diff -uwrF^sub /tmp/FunRT/support/CVS/Entries rt/support/CVS/Entries
+--- /tmp/FunRT/support/CVS/Entries	Wed Dec  1 08:16:36 1999
++++ rt/support/CVS/Entries	Wed Dec  1 08:16:15 1999
+@@ -1,3 +1,3 @@
+-/utils.pm/1.8.2.2.2.9/Sat Oct 23 14:10:27 1999//TFunRT
+-/mail.pm/1.16.2.1.2.5/Thu Nov 11 10:14:00 1999//TFunRT
++/utils.pm/1.8.2.5/Wed Nov 17 10:50:49 1999//Trt-1-1
++/mail.pm/1.16.2.5/Wed Nov 17 22:36:02 1999//Trt-1-1
+ D
+diff -uwrF^sub /tmp/FunRT/support/CVS/Root rt/support/CVS/Root
+--- /tmp/FunRT/support/CVS/Root	Wed Dec  1 08:16:36 1999
++++ rt/support/CVS/Root	Wed Dec  1 08:16:15 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/support/CVS/Tag rt/support/CVS/Tag
+--- /tmp/FunRT/support/CVS/Tag	Wed Dec  1 08:16:36 1999
++++ rt/support/CVS/Tag	Wed Dec  1 08:16:15 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/support/mail.pm rt/support/mail.pm
+--- /tmp/FunRT/support/mail.pm	Thu Nov 11 11:14:00 1999
++++ rt/support/mail.pm	Wed Nov 17 23:36:02 1999
+@@ -1,3 +1,4 @@
++# $Header$
+ #
+ 
+ package rt;
+@@ -97,7 +98,8 @@ sub template_mail{
+     $head->add('Subject',"[$rt::rtname \#" . $in_serial_num .
+        "] ($in_queue_id) $in_subject");
+     $head->add('Reply-To',$temp_mail_alias);
+-    $head->add('From',$friendly_name . "<$temp_mail_alias>");
++    $head->add('From',"$friendly_name via RT" .
++       "<$temp_mail_alias>");
+     $head->add('Sender',"$in_current_user");
+     $head->add('To',$in_recipient);
+     $in_cc && $head->add('Cc',$in_cc);
+@@ -118,14 +120,9 @@ sub template_mail{
+                   Header => $head,
+                   Body => \@body;
+ 
+-    @q=$message->smtpsend();
+-
+-    if (!@q) {
+-	warn "Error sending mail!";
+-	return(0, "Error sending mail!");
+-    }
+-
+-    return(1, "template_mail: Message Sent");
++    $message->smtpsend() && return(1, "template_mail: Message Sent");
++    warn "Message not sent!! :(";
++    return (0, "template_mail: Message not sent");
+ }
+ 
+ 1;
+Only in rt/support: mail.pm~
+diff -uwrF^sub /tmp/FunRT/support/utils.pm rt/support/utils.pm
+--- /tmp/FunRT/support/utils.pm	Sat Oct 23 16:10:27 1999
++++ rt/support/utils.pm	Wed Nov 17 11:50:49 1999
+@@ -71,26 +71,6 @@ sub can_manipulate_queue {
+ }
+ 
+ 
+-sub dist_list {
+-    my ($in_action, $in_queue, $in_serial_num)=@_;
+-    &rt::req_in($in_serial_num);
+-    my $action = $in_action eq 'new' ? "correspond" : $in_action;
+-    my @dist_list;
+-    push(@dist_list, $queues{$in_queue}{dist_list}) 
+-	if ($queues{$in_queue}{"m_members_$action"} &&
+-	    $queues{$in_queue}{dist_list});
+-    push(@dist_list, $req[$in_serial_num]{owner})
+-	if (($queues{$in_queue}{"m_owner_$action"} || 
+-	     $queues{$in_queue}{m_owner_trans}) &&
+-	    $req[$in_serial_num]{owner});
+-    push(@dist_list, $req[$in_serial_num]{requestors})	
+-	if (($queues{$in_queue}{"m_user_$action"} || 
+-	     $queues{$in_queue}{m_user_trans}) &&
+-	    $req[$in_serial_num]{requestors});
+-    return join(', ', @dist_list);
+-}
+-
+-
+ 
+ sub can_display_queue {
+     my ($in_queue, $in_user) =@_;
+@@ -175,7 +155,6 @@ sub booleanize {
+ sub quote_content {
+     my $transaction = shift;
+     my $current_user = shift;
+-    my $reply = shift;
+     my ($trans, $quoted_content, $body, $headers);
+     $trans=&rt::transaction_in($transaction,$current_user);
+ 
+@@ -183,10 +162,6 @@ sub quote_content {
+ 
+     $quoted_content = "$rt::req[$serial_num]{'trans'}[$trans]{'actor'} wrote ($rt::req[$serial_num]{'trans'}[$trans]{'text_time'}):\n\n";
+ 
+-    if (defined $reply) {
+-	$quoted_content .= "[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n";
+-    }
+-    
+     # Do we need any preformatting (wrapping, that is) of the message?
+ 
+     # What's the longest line like?
+@@ -205,22 +180,14 @@ sub quote_content {
+       $max=length if length>$max;
+     }
+ 
+-    if ($max>76) {
+ 	my $wrapper=new Text::Wrapper
+ 	    (
+-	     columns => 70, 
+-	     body_start => ($max > 150 ? '   ' : ''), 
+-	     par_start => ''
++	 columns => ($max>76 ? 70 : 80), 
++	 body_start => '>   ', 
++	 par_start => '> '
+ 	     );
+-	$body=$wrapper->wrap($body);
+-    }
+ 
+-    $body =~ s/^/> /gm;
+-
+-    # Lets add the reply
+-    if (defined $reply) {
+-	$body .= "\n\n[REMOVE THIS LINE. REMEMBER TO CHECK THE ANSWER BELOW THOROUGHLY]\n$$reply";
+-    }
++    $quoted_content=$wrapper->wrap($body);
+ 
+     # Let's see if we can figure out the users signature...
+     my @entry=getpwnam($current_user);
+@@ -233,7 +200,7 @@ sub quote_content {
+ 	    $signature=<SIGNATURE>;
+ 	    close(SIGNATURE);
+ 	    $/=$slash;
+-	    $body .= "\n\n-- \n$signature";
++	    $quoted_content .= "\n\n-- \n$signature";
+ 	    last;
+ 	}
+     }
+@@ -241,7 +208,7 @@ sub quote_content {
+     $max=60 if $max<60;
+     $max=70 if $max>78;
+     $max+=2;
+-    return ($body, $max);
++    return ($quoted_content, $max);
+ }
+ 
+ #
+@@ -385,6 +352,7 @@ sub date_parse {
+ 	$sec = $7;
+ 	$tz = $8;
+     }
++    
+     if ($year == -1) {
+ 	$year = $now_year;
+     }
+@@ -397,7 +365,9 @@ sub date_parse {
+     
+     #print "$time: $hours:$sec:$min $month\/$day\/$year\n";
+ 
+-    $time = timelocal($sec, $min, $hours, $day, $month, $year);
++    # timelocal) expects the same kind of values that localtime() generates,
++    # i.e. $month ranges from 0-11 and $year is the real year - 1900.
++    $time = timelocal($sec, $min, $hours, $day, $month - 1, $year - 1900);
+ 
+     #print "$time: $hours:$sec:$min $month\/$day\/$year\n";
+     
+@@ -470,19 +440,6 @@ sub norm_requestors
+    $res = join(",",sort keys %nreqs);
+ #   return ('',$err) if ! $res;
+    return ($res,'');
+-}
+-
+-# This is really a _generic_ simple template-parser.
+-sub ParseURLTemplate {
+-    my ($string, $subst)=@_;
+-    for my $key (keys %$subst) {
+-	# Goddammit - MySQL cuts trailing blanks from strings...which I 
+-	# unfortunately have used as a separator in my substitute keys..
+-	$string =~ s/$/ /;
+-	$string =~ s/\Q$key\E/$subst->{$key}/;
+-	$string =~ s/ $//;
+-    }
+-    return $string;
+ }
+ 
+ 1;
+Only in rt/support: utils.pm.orig
+diff -uwrF^sub /tmp/FunRT/ui/CVS/Root rt/ui/CVS/Root
+--- /tmp/FunRT/ui/CVS/Root	Wed Dec  1 08:16:23 1999
++++ rt/ui/CVS/Root	Wed Dec  1 08:15:58 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/ui/CVS/Tag rt/ui/CVS/Tag
+--- /tmp/FunRT/ui/CVS/Tag	Wed Dec  1 08:16:23 1999
++++ rt/ui/CVS/Tag	Wed Dec  1 08:15:58 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+Only in rt/ui/cli: .#query.pm.1.3.2.3
+diff -uwrF^sub /tmp/FunRT/ui/cli/CVS/Entries rt/ui/cli/CVS/Entries
+--- /tmp/FunRT/ui/cli/CVS/Entries	Wed Dec  1 08:16:26 1999
++++ rt/ui/cli/CVS/Entries	Wed Dec  1 08:16:01 1999
+@@ -1,5 +1,5 @@
+-/admin.pm/1.9.4.1/Wed Nov 17 09:32:44 1999//TFunRT
+-/manipulate.pm/1.6.2.1.2.10/Wed Nov 17 09:32:44 1999//TFunRT
+-/query.pm/1.3.4.2/Wed Nov 17 09:32:44 1999//TFunRT
+-/support.pm/1.2/Wed Nov 17 09:32:44 1999//TFunRT
++/admin.pm/1.9/Wed Nov 17 08:37:28 1999//Trt-1-1
++/manipulate.pm/1.6.2.5/Wed Nov 17 10:56:10 1999//Trt-1-1
++/support.pm/1.2.2.1/Wed Nov 17 10:56:10 1999//Trt-1-1
++/query.pm/1.3.2.4/Wed Nov 17 22:36:02 1999//Trt-1-1
+ D
+diff -uwrF^sub /tmp/FunRT/ui/cli/CVS/Root rt/ui/cli/CVS/Root
+--- /tmp/FunRT/ui/cli/CVS/Root	Wed Dec  1 08:16:26 1999
++++ rt/ui/cli/CVS/Root	Wed Dec  1 08:16:01 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/ui/cli/CVS/Tag rt/ui/cli/CVS/Tag
+--- /tmp/FunRT/ui/cli/CVS/Tag	Wed Dec  1 08:16:26 1999
++++ rt/ui/cli/CVS/Tag	Wed Dec  1 08:16:01 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/ui/cli/admin.pm rt/ui/cli/admin.pm
+--- /tmp/FunRT/ui/cli/admin.pm	Wed Nov 17 10:32:44 1999
++++ rt/ui/cli/admin.pm	Wed Nov 17 09:37:28 1999
+@@ -1,4 +1,4 @@
+-#$Header$
++#$Header$
+ package rt::ui::cli::admin;
+ 
+ 
+diff -uwrF^sub /tmp/FunRT/ui/cli/manipulate.pm rt/ui/cli/manipulate.pm
+--- /tmp/FunRT/ui/cli/manipulate.pm	Wed Nov 17 10:32:44 1999
++++ rt/ui/cli/manipulate.pm	Wed Nov 17 11:56:10 1999
+@@ -33,7 +33,6 @@ sub print_transaction
+ 
+ sub parse_args {
+     for ($i=0;$i<=$#ARGV;$i++) {
+-	my $found=1;
+ 	if ($ARGV[$i] eq "-create")   {
+ 	    &cli_create_req;
+ 	}
+@@ -48,6 +47,7 @@ sub parse_args {
+ 		}
+ 	}
+     
++
+     elsif ($ARGV[$i] eq "-publichistory") {
+       $serial_num=int($ARGV[++$i]);
+       if (&rt::can_display_request($serial_num, $current_user)) {
+@@ -59,6 +59,7 @@ sub parse_args {
+       }
+     } 
+     
++    
+ 	elsif ($ARGV[$i] eq "-trans") {
+ 
+ 		$serial = int($ARGV[++$i]);
+@@ -192,107 +193,10 @@ sub parse_args {
+ 	    print "$message\n";
+ 	} 
+ 
+-	elsif ($ARGV[$i] eq "-wcpcreate") {
+-	    # This one is ment for the web plugin interface, only.
+-	    if ($current_user !~ /^(www|root)$/) {
+-		print "No access\n";
+-		return 0;
+-	    }
+-
+-	    my $oldslash=$/;
+-
+-	    # I'll create a new request in the proper queue:
+-	    my ($queue_id, $subject, $user, $dbid, $cpid, $reqid);
+-	    $/="\n";
+-	    
+-	    $reqid=<STDIN>;
+-	    $user=<STDIN>;
+-	    $dbid=<STDIN>;
+-	    $cpid=<STDIN>;
+-	    $queue_id=<STDIN>;
+-	    $subject=<STDIN>;
+-	    
+-	    chop $reqid; chop $user; chop $dbid; chop $cpid; chop $queue_id; chop $subject;
+-
+-	    undef $/;
+-	    my ($newrequestid, $transid, $message)=&rt::add_new_request
+-		($queue_id, undef, $user, undef,undef,$subject, 50, 0, 'open', time, undef,undef, <STDIN>, $user);
+-	    die $message 
+-		unless ($newrequestid);
+-
+-	    print $message,"\n";
+-
+-	    $/=$oldslash;
+-
+-	    # Now we have to link the CP to the new request
+-	    my $cpdbi=DBI->connect('TCP/IP localhost 1313','rt','gtqpv','Solid')
+-		or die "Could not open database $DBI::errstr";
+-	    $cpdbi->{PrintError}=1;
+-	    $cpdbi->{RaiseError}=1;
+-
+-	    my $sth=$cpdbi->prepare('update cp set SERIALNUM=? where cpid=?');
+-	    $sth->execute($newrequestid, $cpid);
+-	    $cpdbi->disconnect;
+-
+-	    # Now we have to link the new request to the CP ... and the old request to the CP..
+-	    my ($ret, $message)=&rt::link($newrequestid, $user, $dbid, $cpid);
+-	    die $message unless $ret;
+-	    print $message,"\n";
+-	    my ($ret, $message)=&rt::link($reqid, $user, $dbid, $cpid);
+-	    warn "\$reqid, \$user, \$dbid, \$cpid: $reqid, $user, $dbid, $cpid";
+-	    die $message unless $ret;
+-	    print $message,"\n";
+-
+-	    # Now we have to link the new request to the old request
+-	    &rt::link
+-		($newrequestid, $user, 'Dependency', $reqid);
+-
+-	}
+-
+-	elsif ($ARGV[$i] eq "-wlink") {
+-	    # This one is ment for the web plugin interface, only.
+-	    if ($current_user !~ /^(www|root)$/) {
+-		print "No access\n";
+-		return 0;
+-	    }	
+-	    my ($serial_num, $user, $dbid, $fid)=splice(@ARGV, $i+1, 4);
+-	    $_=$/;
+-	    undef $/;
+-	    my $description=<STDIN>;
+-	    $/=$_;
+-	    my ($ret,$msg)=&rt::link
+-		($serial_num, $user, $dbid, $fid, undef, $description);
+-	    if ($ret) {
+-		print "Request \#$serial_num linked to $fid\n";
+-	    } else {
+-		die $msg;
+-	    }
+-	}
+-	
+         else {
+-	    $found=0;
+-  	    # Check if the command exists among the commands in the
+-	    # relationship table, if so, run a link.
+-	    for my $key (keys %rt::relship) {
+-		next unless $rt::relship{$key}{COMMAND}
+-		         && $rt::relship{$key}{INSERT_LINKNAME};
+-		if ($ARGV[$i] eq "-$rt::relship{$key}{COMMAND}") {
+-		    $found++;
+-		    ($trans, $message)=
+-			&rt::link($ARGV[++$i], $current_user,
+-				  $rt::relship{$key}{ID}, 
+-				  $ARGV[++$i]);
+-		    last;
+-		}
+-	    }
+-	}
+-	
+-    
+-        if (!$found) {
+ 	    &cli_help_req;
+-	    last;
+ 	}
+-        next;
++	next
+     }
+ }
+ 
+@@ -307,9 +211,9 @@ sub cli_create_req {	
+     $owner=&rt::ui::cli::question_string( "Give request to");
+     $requestors=&rt::ui::cli::question_string("Requestor(s)",);
+     $subject=&rt::ui::cli::question_string("Subject",);
+-    $priority=&rt::ui::cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
+-    $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
+-    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YY)",);
++    $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
++    $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
++    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
+     if ($due_string ne '') {
+ 	 $date_due = &rt::date_parse($due_string);
+ 	}  
+@@ -420,23 +324,6 @@ sub cli_help_req {
+     -merge <num1> <num2>  Merge <num1> into <num2>
+     -trans <ser> <trans>  Display ticket <ser> transaction <trans>
+     -kill <num>           Permanently remove <num> from the database\n";
+-
+-    for my $key (keys %rt::relship) {
+-	next unless ($rt::relship{$key}{INSERT_LINKNAME} 
+-		     && $rt::relship{$key}{COMMAND});
+-	my $actionname=&rt::ParseURLTemplate
+-	    ($rt::relship{$key}{INSERT_LINKNAME},{
+-		' $id '        =>'other_id',
+-		' $tag '       =>'other_id', 
+-		' $serial_num '=>'serial_num',
+-		' $db '        =>$key
+-	     });
+-	print
+-
+-"    -$rt::relship{$key}{COMMAND} <num1> <num2>   $rt::relship{$key}{INSERT_LINKNAME}
+-";
+-    }
+-    
+ 
+ }
+ 
+Only in rt/ui/cli: manipulate.pm.orig
+diff -uwrF^sub /tmp/FunRT/ui/cli/query.pm rt/ui/cli/query.pm
+--- /tmp/FunRT/ui/cli/query.pm	Wed Nov 17 10:32:44 1999
++++ rt/ui/cli/query.pm	Wed Nov 17 23:36:02 1999
+@@ -1,5 +1,4 @@
+-# $Header$
+-
++$Header$
+ package rt::ui::cli::query;
+ 
+ 
+@@ -32,6 +31,18 @@ sub activate {
+ 		if ($length < 1) {$length=6;}
+ 	    printf "%-${length}.${length}s ", $rt::req[$temp]{'serial_num'};
+ 	}
++        elsif ($field =~ /^d(\d*)$/){
++            my $length = $1;
++		if ($rt::req[$temp]{'date_due'} > 0) {
++		my $date = localtime($rt::req[$temp]{'date_due'});
++		$date =~ s/\d*:\d*:\d*//;	
++                if ($length < 1) {$length=5;}
++            printf "%-${length}.${length}s ", $date;
++		}
++	else {
++	printf  "%-${length}.${length}s ", "none";
++	}
++        }
+ 	elsif ($field =~ /^p(\d*)$/){ 
+ 	    $length = $1;
+ 		if ($length < 1) {$length=2;}
+@@ -119,11 +130,11 @@ sub build_query {
+ 	       }
+ 	       $owner_ops .= " owner =  \'\'" ;
+ 	   }
+-	   if ($ARGV[$i] eq '-priority'){
++	   if ($ARGV[$i] =~ '-prio'){
+ 	       if ($prio_ops){
+ 		   $prio_ops .= " AND ";
+ 	       }
+-	       $prio_ops .= " prio $ARGV[++$i] $ARGV[++$i]";
++	       $prio_ops .= " priority $ARGV[++$i] $ARGV[++$i] ";
+ 	   }
+ 	   
+ 	   if ($ARGV[$i] =~ '-stat'){
+@@ -132,6 +143,14 @@ sub build_query {
+ 	       }
+ 	       $status_ops .= " status =  \'$ARGV[++$i]\'" ;
+ 	   }
++
++           if ($ARGV[$i] eq '-area'){
++               if ($area_ops){
++                   $area_ops .= " OR ";
++               }
++               $area_ops .= " area =  \'$ARGV[++$i]\'" ;
++           }
++
+ 	   if ($ARGV[$i] eq '-open'){
+ 	       if ($status_ops){
+ 		   $status_ops .= " OR ";
+@@ -188,6 +207,11 @@ sub build_query {
+ 	$query_string .= "$queue_ops";
+     }
+     
++    if ($area_ops) {
++	if ($query_string) {$query_string .= " AND ";}
++        $query_string .= "$area_ops";
++    }
++ 
+     if ($prio_ops) {
+ 	if ($query_string) {$query_string .= " AND ";}
+ 	$query_string .= "$prio_ops";
+@@ -252,6 +276,7 @@ sub usage {
+                              p[2]      priority
+                              r[9]      requestors
+                              o[8]      owner
++			     d[10]     due date
+                              s[30]     subject
+                              t[5]      status
+                              a[7]      area
+@@ -284,6 +309,12 @@ sub print_header {
+ 	    $total_length = $total_length + $length;
+ 	    printf "%-${length}.${length}s ", "Num";
+ 	}
++        elsif ($field =~ /^d(\d*)$/){
++            $length = $1;
++                if ($length < 1) {$length=5;}
++            $total_length = $total_length + $length;
++            printf "%-${length}.${length}s ", "Due";
++        }
+ 	elsif ($field =~ /^p(\d*)$/){ 
+ 	    $length = $1;
+ 		if ($length < 1) {$length=2;}
+Only in rt/ui/cli: query.pm~
+Only in rt/ui/cli: support.pm.orig
+diff -uwrF^sub /tmp/FunRT/ui/mail/CVS/Entries rt/ui/mail/CVS/Entries
+--- /tmp/FunRT/ui/mail/CVS/Entries	Wed Dec  1 08:16:28 1999
++++ rt/ui/mail/CVS/Entries	Wed Dec  1 08:16:08 1999
+@@ -1,2 +1,2 @@
+-/manipulate.pm/1.22.2.1.2.11/Mon Oct 25 14:32:43 1999//TFunRT
++/manipulate.pm/1.22.2.5/Wed Nov 17 08:37:28 1999//Trt-1-1
+ D
+diff -uwrF^sub /tmp/FunRT/ui/mail/CVS/Root rt/ui/mail/CVS/Root
+--- /tmp/FunRT/ui/mail/CVS/Root	Wed Dec  1 08:16:28 1999
++++ rt/ui/mail/CVS/Root	Wed Dec  1 08:16:08 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/ui/mail/CVS/Tag rt/ui/mail/CVS/Tag
+--- /tmp/FunRT/ui/mail/CVS/Tag	Wed Dec  1 08:16:28 1999
++++ rt/ui/mail/CVS/Tag	Wed Dec  1 08:16:08 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/ui/mail/manipulate.pm rt/ui/mail/manipulate.pm
+--- /tmp/FunRT/ui/mail/manipulate.pm	Mon Oct 25 16:32:43 1999
++++ rt/ui/mail/manipulate.pm	Wed Nov 17 09:37:28 1999
+@@ -20,19 +20,6 @@ sub activate {
+     
+   &parse_headers($content);
+ 
+-  my $extract;
+-
+-  # Quite so local hack...
+-  if ($content =~ s/^\+ HTTP_USER_AGENT (.*)$//m) {
+-      $extract.="BROWSER: $1\n";
+-  }
+-  if ($content =~ s/^\+ HTTP_UA(.*)$//m) {
+-      $extract.="AGENTINFO: $1\n";
+-  }
+-  $content =~ s/-- param start /-- param start div\n$extract-- param start/ if ($extract);
+-
+-  
+-
+   #get all that rt stuff squared away.
+     &rt::initialize($current_user);
+   
+@@ -64,13 +51,6 @@ sub activate {
+ 	   );
+     }
+     else {
+-	if ($subject =~ /\[comment\]/i) {
+-	    ($transaction_num,$message)=
+-		&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
+-	} else {
+-	    ($transaction_num,$message)=
+-		&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
+-	}
+ 	if (&rt::is_not_a_requestor($current_user, $serial_num)){
+ 	    $notify_requestor=1;
+ 	} else {
+@@ -285,7 +265,7 @@ sub parse_actions {
+       #deal with (B)CC commands
+       if ($arg[0] =~ /^(b?)cc$/i) {
+ 	shift @arg;
+-	my $tmp=join(',', @arg);
++	my $tmp=join(' ', @arg);
+ 	$1 ? ($bcc = $tmp) : ($cc = $tmp);
+       }
+       
+@@ -362,23 +342,6 @@ sub parse_actions {
+         Send a BCC to those people
+ 
+ ";
+-	for my $key (keys %rt::relship) {
+-	    next unless ($rt::relship{$key}{INSERT_LINKNAME} && 
+-			 $rt::relship{$key}{COMMAND});
+-	    my $actionname=&rt::ParseURLTemplate
+-		($rt::relship{$key}{INSERT_LINKNAME},{
+-		 ' $id '        =>'other_id',
+-		 ' $tag '       =>'other_id', 
+-		 ' $serial_num '=>'serial_num',
+-		 ' $db '        =>$key
+-		 });
+-	    print 
+-
+-"        %RT $rt::relship{$key}{COMMAND} serial_num other_id
+-        $rt::relship{$key}{INSERT_LINKNAME}
+-
+-";
+-	}
+       }
+       
+       #deal with PASS commands
+@@ -405,7 +368,7 @@ sub parse_actions {
+       
+       #deal with STALL commands
+       
+-      elsif ($arg[0] =~ /stall/i) {
++      if ($arg[0] =~ /stall/i) {
+ 	$serial_num=$arg[1];
+ 	($trans,  $message)=&rt::stall($serial_num, $current_user);
+       }
+@@ -578,25 +541,6 @@ sub parse_actions {
+           }
+ 	
+ 	
+-      }
+-
+-      else {
+-        # Check if the command exists among the commands in the
+-        # relationship table, if so, run a link.
+-	# Boy, this looks ugly:
+-	for my $key (keys %rt::relship) {
+-	    next unless $rt::relship{$key}{COMMAND};
+-	    if ($arg[0] eq $rt::relship{$key}{COMMAND}) {
+-		($trans, $message)=
+-		    (
+-		     &rt::link(
+-		      $arg[1], $current_user, 
+-		      $rt::relship{$key}{ID}, $arg[2]
+-		     )
+-		    );
+-		last;
+-	    }
+-	}
+       }
+       #quote the command, not returning the password
+       
+diff -uwrF^sub /tmp/FunRT/ui/web/CVS/Entries rt/ui/web/CVS/Entries
+--- /tmp/FunRT/ui/web/CVS/Entries	Wed Dec  1 08:16:31 1999
++++ rt/ui/web/CVS/Entries	Wed Dec  1 08:16:10 1999
+@@ -1,6 +1,6 @@
+-/forms.pm/1.24.2.2.2.7/Sat Oct 23 18:03:20 1999//TFunRT
+-/admin.pm/1.24.4.2/Wed Nov 17 09:32:45 1999//TFunRT
+-/support.pm/1.25.4.1/Wed Nov 17 09:31:02 1999//TFunRT
+-/auth.pm/1.21.2.1.2.3/Tue Nov 30 11:33:58 1999//TFunRT
+-/manipulate.pm/1.36.2.3.2.16/Wed Nov 24 13:27:15 1999//TFunRT
++/admin.pm/1.24.2.2/Wed Nov 17 08:37:28 1999//Trt-1-1
++/auth.pm/1.21.2.2/Wed Nov 17 08:37:29 1999//Trt-1-1
++/forms.pm/1.24.2.6/Wed Nov 17 08:37:29 1999//Trt-1-1
++/manipulate.pm/1.36.2.10/Wed Nov 17 08:37:29 1999//Trt-1-1
++/support.pm/1.25.2.2/Wed Nov 17 08:37:29 1999//Trt-1-1
+ D
+diff -uwrF^sub /tmp/FunRT/ui/web/CVS/Root rt/ui/web/CVS/Root
+--- /tmp/FunRT/ui/web/CVS/Root	Wed Dec  1 08:16:31 1999
++++ rt/ui/web/CVS/Root	Wed Dec  1 08:16:10 1999
+@@ -1 +1 @@
+-:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
++cvs.fsck.com:/raid/cvsroot
+diff -uwrF^sub /tmp/FunRT/ui/web/CVS/Tag rt/ui/web/CVS/Tag
+--- /tmp/FunRT/ui/web/CVS/Tag	Wed Dec  1 08:16:31 1999
++++ rt/ui/web/CVS/Tag	Wed Dec  1 08:16:10 1999
+@@ -1 +1 @@
+-TFunRT
++Trt-1-1
+diff -uwrF^sub /tmp/FunRT/ui/web/admin.pm rt/ui/web/admin.pm
+--- /tmp/FunRT/ui/web/admin.pm	Wed Nov 17 10:32:45 1999
++++ rt/ui/web/admin.pm	Wed Nov 17 09:37:28 1999
+@@ -1,4 +1,4 @@
+-# $Header$
++# $Header$
+ # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+ # This software is redistributable under the terms of the GNU GPL
+ #
+@@ -412,10 +412,10 @@ sub FormModifyQueue{
+ <tr><td>Queue name:</td><td>$queue_id</td></tr>
+ <tr><td>mail alias:</td><td><input name=\"email\" size=30 value=\"$rt::queues{$queue_id}{mail_alias}\"></td></tr>
+ <tr><td>Initial priority:</td><td> ";
+-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
++    print &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
+     print "</td></tr>
+ <tr><td>Final priority:</td><td>";
+-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
++   print  &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
+     print "</td></tr></table>\n<BR>\n";
+ 
+     print "<hr><h2>Notification</h2>";
+diff -uwrF^sub /tmp/FunRT/ui/web/auth.pm rt/ui/web/auth.pm
+--- /tmp/FunRT/ui/web/auth.pm	Tue Nov 30 12:33:58 1999
++++ rt/ui/web/auth.pm	Wed Nov 17 09:37:29 1999
+@@ -1,6 +1,5 @@
+-# $Header$
++# $Header$
+ #
+-# WebAuth is part of RT: Request Tracker.
+ # RT is (c) Copyright 1996-1999 Jesse Vincent
+ # RT is distributed under the terms of the GNU General Public License
+ #
+@@ -33,8 +32,6 @@ sub AuthCheck () {
+     #lets generate that hash.
+ 
+   use Digest::MD5;
+-    warn $rt::ui::web::FORM{'username'} if $debug;
+-    warn $rt::ui::web::FORM{'password'} if $debug;
+     $ctx = Digest::MD5->new;
+     $ctx->add($rt::ui::web::FORM{'username'});
+     $ctx->add($ENV{'REMOTE_ADDR'});
+@@ -110,7 +107,6 @@ sub AuthForceLogin () {
+        my $name;
+        foreach $name (keys %rt::ui::web::FORM)
+        {
+-	   next if ($name =~ /^(username|password)$/);
+            $value = $rt::ui::web::FORM{$name};
+            # Now, add a hidden input field
+            $hiddenInput .=
+diff -uwrF^sub /tmp/FunRT/ui/web/forms.pm rt/ui/web/forms.pm
+--- /tmp/FunRT/ui/web/forms.pm	Sat Oct 23 20:03:20 1999
++++ rt/ui/web/forms.pm	Wed Nov 17 09:37:29 1999
+@@ -1,5 +1,6 @@
+ #jesse@fsck.com
+ #
++# $Header$
+ 
+ package rt::ui::web;
+ 
+@@ -245,66 +246,7 @@ sub FormShowNum{
+ }
+ 
+ 
+-sub FormSetUser{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set requestor to\">
+-<input type=\"hidden\" name=\"do_req_user\" value=\"true\">
+-<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\">
+-</FORM>
+-";
+-}
+-
+-
+-sub FormSetGive{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Give to\"><select name=\"do_req_give_to\">
+-<option value=\"\">Nobody ";	
+-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
+-	if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+-	    print "<option ";
+-		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+-		print ">$user_id\n";
+-	    }
+-	}
+-    print "</select>
+-<input type=\"hidden\" name=\"do_req_give\" value=\"true\"></FORM>
+-";
+-}
+-sub FormSetArea{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set area to\"><select name=\"area\">
+-<option value=\"\">None ";	
+-    if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
+-       foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
+-	    print "<option ";
+-		print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
+-		print ">$area\n";
+-	    }
+-    }
+-    print "</select>
+-<input type=\"hidden\" name=\"do_req_area\" value=\"true\">
+-</FORM>
+-";
+-}
+ 
+-sub FormSetSubject{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set \#$serial_num\'s subject to\">
+-<font size=\"$MESSAGE_FONT\">
+-<input type=\"hidden\" name=\"do_req_subject\" value=\"true\">
+-<input size=25 name=\"subject\" VALUE=\"$rt::req[$serial_num]{'subject'}\">
+-</font>
+-</FORM>
+-";
+-}
+ sub FormSetKill{
+     print "
+ <form action=\"$ScriptURL\" method=\"post\">
+@@ -315,86 +257,13 @@ sub FormSetKill{
+ }
+ sub FormSetSteal{
+     print "
+-<form action=\"$ScriptURL\" method=\"post\">\n";
+-    
+-    foreach $name (keys %rt::ui::web::FORM) {
+-	$value = $rt::ui::web::FORM{$name};
+-	next if ($name =~ /^(serial_num|display|message|do_req_give)$/);
+-	$name =~ s/\.bak//;
+-	# Now, add a hidden input field
+-	print "<input type=\"hidden\" name=\"$name\" value=\"$value\">\n";
+-    }
+-    
+-    print "
++<form action=\"$ScriptURL\" method=\"post\">
+ <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+ <input type=\"submit\" name=\"do_req_steal\" value =\"Steal \#$serial_num\">
+ <input type=\"submit\" name=\"dummy\" value=\"Abort\"></FORM>
+ ";
+ }
+ 
+-sub FormSetMerge{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"hidden\" name=\"do_req_merge\" value=\"true\">
+-<input type=\"submit\" value =\"Merge into #\"> <input size=5 name=\"req_merge_into\" ></FORM>
+-";
+-}
+-sub FormSetQueue{
+-    my ($queue, $value);
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set queue to\"> <select name=\"queue\">";
+-    foreach $queue (sort keys %rt::queues) {
+-	if (&rt::can_create_request($queue, $current_user)) {
+-	    print "<option";
+-	    if ($rt::req[$serial_num]{queue_id} eq $queue) {
+-		print " SELECTED";
+-	    }
+-	    print ">$queue\n";
+-	}
+-	}
+-    print "
+-</select>
+-<input type=\"hidden\" name=\"do_req_queue\" value=\"true\"> 
+-</FORM>
+-";
+-}
+-  
+-
+-
+-
+-sub  FormSetDateDue{
+-    print "<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"do_req_date_due\" value=\"true\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set Date Due to\"> ";
+-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
+-    print "</FORM>";
+-}  
+-
+-sub  FormSetPrio{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"do_req_prio\" value=\"true\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set \#$serial_num\'s priority to\">";
+-    &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
+- 
+-    print "</FORM>\n";
+-}  
+-sub  FormSetFinalPrio{
+-    print "
+-<form action=\"$ScriptURL\" method=\"post\">
+-<input type=\"hidden\" name=\"do_req_final_prio\" value=\"true\">
+-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-<input type=\"submit\" value =\"Set \#$serial_num\'s final priority to\">";
+-    &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
+-    print "</FORM>\n";
+-}  
+-
+-
+ sub  FormSetStatus{
+     if ($rt::req[$serial_num]{status} eq 'dead') { 
+ 	print "You can not reopen requests that have been killed";
+@@ -427,8 +296,8 @@ sub FormReply{
+     my ($reply_content, $width);
+  
+     # if we were called with a transaction num, let's read its content and quote it
+-    if ($rt::ui::web::FORM{'transaction'} || $rt::ui::web::FORM{'ReplyText'}) {
+-      ($reply_content, $width)= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user,$rt::ui::web::FORM{'ReplyText'});
++    if ($rt::ui::web::FORM{'transaction'}) {
++      ($reply_content, $width)= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
+     } else {
+       $width=74;
+     }
+@@ -438,12 +307,28 @@ sub FormReply{
+ 	print "target=\"summary\"";
+     }
+     print ">
+-<H1>
+-Enter your reply to the requestor below:
+-</H1>
+-<pre>
++<CENTER>
++<TABLE>
++<TR>
++<TD COLSPAN=2 BGCOLOR=\"#CCCCCC\" WIDTH=100%> 
++<FONT SIZE=+2>Comment on request $serial_num.</FONT> (".$rt::req[$serial_num]{'subject'}.")
++</TD>
++</TR>
++<TR><TD>
+ <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
+-Status:<select name=\"do_req_status\">\n";
++<FONT SIZE=-2>Give to:</FONT><BR><select name=\"do_req_give_to\">
++<option value=\"\">Nobody ";   
++    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
++       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
++           print "<option ";
++               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
++               print ">$user_id\n";
++           }
++       }
++    print "</select><input type=\"hidden\" name=\"do_req_give\" value=\"true\"></TD>
++
++<TD>
++<FONT SIZE=-2>Status:</FONT><BR><select name=\"do_req_status\">\n";
+     print "<option value=\"open\" ";
+     if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
+     print ">open\n";
+@@ -454,51 +339,36 @@ sub FormReply{
+     if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
+     print ">resolved\n";
+     print "
+-</select>
+-
+-Give to:<select name=\"do_req_give_to\">
+-<option value=\"\">Nobody ";   
+-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
+-       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+-           print "<option ";
+-               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+-               print ">$user_id\n";
+-           }
+-       }
+-    print "</select>
+-<input type=\"hidden\" name=\"do_req_give\" value=\"true\">
+-<input type=\"hidden\" name=\"previous_owner\" value=\"$rt::req[$serial_num]{owner}\">
+-
++</select></TD>
++</RE>
+ 
+-To:       $rt::req[$serial_num]{requestors}
+-Cc:	  <input name=\"cc\">
+-Bcc:      <input name=\"bcc\">
+-From:     $rt::users{$current_user}{email}
+-Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
+-</pre>
++<TR>
++<TD ALIGN=RIGHT>To:</TD><TD COLSPAN=2>$rt::req[$serial_num]{'requestors'}</TD></TR>
++<TR><TD ALIGN=RIGHT>Cc:</TD><TD COLSPAN=2><input name=\"cc\"></TD></TR>
++<TR><TD ALIGN=RIGHT>Bcc:</TD><TD COLSPAN=2><input name=\"bcc\"></TD></TR>
++<TR><TD ALIGN=RIGHT>From:</TD><TD COLSPAN=2>$rt::users{$current_user}{email}</TD></TR>
++<TR><TD ALIGN=RIGHT>Subject:</TD><TD COLSPAN=3><input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\"></TD></TR>
++<TR><TD COLSPAN=3>
+ <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
+ <font size=\"$MESSAGE_FONT\">
++Enter your response to the requestor below:
+ <br><textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
+ $reply_content
+ </textarea>
+ </font>
+-<center><input type=\"submit\" value=\"Send Response\"></center></form>";
++</TD></TR>
++<TR><TD COLSPAN=3 ALIGN=RIGHT><input type=\"submit\" value=\"Send Response\"></TD></TR>
++</TABLE>
++</center></form>";
+ }
+ 
+ sub FormCreate{
+-    my ($in_serial_num, $in_transaction)=@_;
+-    print "\n<form action=\"$ScriptURL\" method=\"post\"";
++    print "<form action=\"$ScriptURL\" method=\"post\"";
+     if ($frames) { 
+ 	print "target=\"history\" ";
+     }
+-    print ">";
+-    print "
+-<input type=\"hidden\" name=\"camefrom\" value=\"$in_serial_num\">"
+-        if ($in_serial_num);
+-    print "<input type=\"hidden\" name=\"transaction\" value=\"$in_transaction\">"
+-	if ($in_transaction);
+-    print "
+-<input type=\"submit\" value=\"", $in_transaction ? "Spawn to queue" : "Create request in queue","\">",$in_transaction ? "<br>" : "","<select name=\"queue_id\">\n";
++    print ">
++<input type=\"submit\" value=\"Create request in queue\"><select name=\"queue_id\">\n";
+     foreach $queue (sort keys %rt::queues) {
+ 	if (&rt::can_create_request($queue, $current_user)) {
+ 	    print "<option>$queue\n";
+@@ -516,109 +386,90 @@ sub FormCreate_Step2 {   
+     my ($template,$actions,$user_id, $value);
+     my $queue_id;
+     require rt::support::mail;
+-
++    $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
++    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
+     $queue_id = $rt::ui::web::FORM{'queue_id'};
+     
+     print "<CENTER> <form action=\"$ScriptURL\" method=\"post\"";
+     if ($frames) { print "target=\"summary\" ";
+ 	       }
+-    print ">";
+-      print "<table>
++    print ">
++<table>
+ <TR>
+-<TD align=\"right\">
+-Queue:
+-</TD>
+-<TD> $queue_id </TD>
+-<TD align=\"right\"> Created by:
+-
++<TD COLSPAN=3 BGCOLOR=\"#CCCCCC\" WIDTH=100%>
++<FONT SIZE=+2>
++Create a new request in <b>$queue_id</b>.
++</FONT>
+ </TD> 
+-<TD>
+- $current_user
+-</TD>
+-\n";
+-    if (exists $rt::ui::web::FORM{'camefrom'}) {
+-	for (keys %rt::relship) {
+-	    # How I hate to handle integers like text strings..
+-	    next unless /^\d+$/;
+-	    if ($rt::relship{$_}{SelfReferencing} && $rt::relship{$_}{INSERT_LINKNAME}) {
+-		print "
+-<input type=\"checkbox\" name=\"do_req_link\" CHECKED>$rt::relship{$_}{INSERT_LINKNAME}
+-<input type=\"hidden\" name=\"link_otherdb\" value=\"$_\">
+-<input type=\"hidden\" name=\"link_foreignid\" value=\"$rt::ui::web::FORM{'camefrom'}\">";
+-	    }
+-	}
+-
+-    }
+-
+-    $width=78;
++</TR>
++<TR><TD></TD></TR>
++<TR>
++<TD valign=top>
++<font size=-2>
++Queue:
++</font><BR>
++$queue_id </TD>
++<TD><FONT size=-2>Area:</FONT><BR>
++<select name=\"area\">
++<option value=\"\">None ";	
+ 
+-    if ($rt::ui::web::FORM{'transaction'}) {
+-	($template, $width)=&rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
+-    } else {
+-	$template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
+-	$template=&rt::template_replace_tokens($template,0,0,"", $current_user);
+-    }
+     if ($current_user){
+-
+-    print "
+-<TD align=\"right\">Area:
+-</TD>
+-<TD><select name=\"area\">
+-<option value=\"\">None ";	
+     if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
+ 	foreach $area (sort keys % {$rt::queues{$queue_id}{areas}}) {
+ 	    print "<option>$area\n";
+ 	}
+     }
+-    print "</select>
+-</TD>
++    }
++    print "</select></TD>
+ </TR>
+ <TR>
+-<TD align=\"right\">Status:</TD>
+-<TD><select name=\"status\">
++<TD><FONT SIZE=-2>Status:</FONT><BR>
++<select name=\"status\">
+ <option value=\"open\">open
+ <option value=\"stalled\">stalled
+ <option value=\"resolved\">resolved
+ </select></TD>
+-<TD align=\"right\">Owner:
+-</TD>
+-<TD>
++<TD><FONT SIZE=-2>Owner:</FONT><br>
+ <select name=\"owner\">
+ <option value=\"\">Nobody ";	
+-	foreach $user_id ( sort keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
+-	    if (&rt::can_manipulate_queue ($rt::ui::web::FORM{'queue_id'}, $user_id)) {
++   
++    if ($current_user) {
++       if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
++	 foreach $user_id ( sort keys % {$rt::queues{"$queue_id"}{acls}} ) {
++	   if (&rt::can_manipulate_queue ($queue_id, $user_id)) {
+ 		print "<option>$user_id\n";
+ 	    }
+ 	}
+-	print "</select></TD></TR>\n";
+     }	
++     }
++      print "</select></TD>";
+ 
+ 
+-
+-    print"<TR><TD align=\"right\">Priority:</TD><TD>";
+-    
+-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio");
+-    print "
+-</TD><TD align=\"right\">
+-Final priority:
+-</TD>
+-<TD>";
+-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio");
+-    print "</TD></TR>
+-<TR><TD align=\"right\">Date Due:</TD><TD COLSPAN=5><input type=\"checkbox\" name=\"due\">";
+-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
+-    print "</TD></TR>
+-<TR><TD align=\"right\">Requestor:</TD><TD COLSPAN=5><input name=\"requestors\" size=\"30\"";
++    print "<TD colspan=4><FONT SIZE=-2>Requestor:</FONT><BR><input name=\"requestors\" size=\"30\"";
+     if ($current_user ne 'anonymous') {
+ 	print "value=\"$rt::users{$current_user}{email}\"";
+     }
+-    print "></TD></TR>
+-<TR><TD align=\"right\">Subject:</TD><TD COLSPAN=5>  <input name=\"subject\" size=\"50\">
++    print ">
++</TD></TR>
++<TR><TD><FONT SIZE=-2>Priority:</FONT><BR>
++ ".  &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio") ."
++</TD><TD>
++<FONT SIZE=-2>Final Priority:</FONT><BR>
++" . &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio") ."
++</TD>
++<TD><FONT SIZE=-2>Due Date:</FONT><BR><input type=\"checkbox\" name=\"due\">
++" .  &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due") . "</TD>
++</TR>
++
++<TR><TD COLSPAN=4><FONT SIZE=-2>Subject:</FONT><BR><input name=\"subject\" size=\"50\">
+ 
+ </TD></TR>
+-<TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
+-<font size=\"-1\">
+-<textarea rows=15 cols=$width name=\"content\" WRAP=HARD>$template</textarea>
++<TR><TD valign=\"top\" colspan=3><FONT SIZE=-1>Content:</FONT><BR>
++<font size=\"-1\">";
++    
++
++    
++print "<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>$template</textarea>
+ </TD></TR>
+ </TABLE>
+ </font>
+@@ -644,23 +495,47 @@ sub FormComment{
+ if ($rt::ui::web::frames) { print " target=\"summary\"";}
+ 
+ print " >
+-<H1>
+-Enter your comments below:
+-</H1>
+-<pre>
+-Summary: <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
+-Cc:	 <input name=\"cc\">
+-Bcc:	 <input name=\"bcc\"> 
+-</pre>
++<CENTER>
++<TABLE>
++<TR>
++<TD COLSPAN=2 BGCOLOR=\"#CCCCCC\" WIDTH=100%> 
++<FONT SIZE=+2>Comment on request $serial_num.</FONT> (".$rt::req[$serial_num]{'subject'}.")
++</TD>
++</TR>
++<TR>
++<TD ALIGN=RIGHT>
++Subject:
++</TD>
++<TD>
++<input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
++</TD></TR>
++<TR>
++<TD ALIGN=RIGHT>Cc:
++</TD>
++<TD>
++<input name=\"cc\">
++<TR>
++<TD ALIGN=RIGHT>
++Bcc:
++</TD>
++<TD>
++<input name=\"bcc\"> 
++</TD></TR>
++<TR><TD COLSPAN=2>
+ <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
+ <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
+ <br><font size=\"$MESSAGE_FONT\">
++Type your comments below:<br>
+ <textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
+ $reply_content
+ </textarea>
+ </font>
+-<center>
++</TD></TR>
++<TR><TD COLSPAN=2 ALIGN=RIGHT>
+ <input type=\"submit\" value=\"Submit Comments\">
++</TD>
++</TR>
++</TABLE>
+ </center>
+ </form>";
+ }
+diff -uwrF^sub /tmp/FunRT/ui/web/manipulate.pm rt/ui/web/manipulate.pm
+--- /tmp/FunRT/ui/web/manipulate.pm	Wed Nov 24 14:27:15 1999
++++ rt/ui/web/manipulate.pm	Wed Nov 17 09:37:29 1999
+@@ -1,3 +1,4 @@
++# $Header$
+ # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+ # This software is redistributable under the terms of the GNU GPL
+ #
+@@ -13,13 +14,13 @@ sub activate {
+ $MESSAGE_FONT="-1";
+ $frames=&rt::ui::web::frames();
+ &rt::ui::web::cgi_vars_in();
+-&initialize_sn();
++   &rt::ui::web::GetSerial();
+ ($value, $message)=&rt::initialize('web_not_authenticated_yet');
+ &rt::ui::web::check_auth();
+-
+ &InitDisplay();
+ &takeaction();
+ 
++   
+ if ($serial_num > 0) {
+   require rt::database;
+ $effective_sn = &rt::normalize_sn($serial_num);
+@@ -63,6 +64,7 @@ sub InitDisplay {
+ }
+ sub DisplayForm {
+   
++   
+   if ($rt::ui::web::FORM{'display'} eq 'Request') {
+     &frame_display_request();
+     exit(0);
+@@ -123,28 +125,6 @@ sub DisplayForm {
+       &FormCreate_Step2();
+     }
+     
+-    elsif ($rt::ui::web::FORM{'display'} eq 'ShowNum') {
+-      &FormShowNum();
+-    }	
+-    elsif ($rt::ui::web::FORM{'display'} eq 'SetFinalPrio'){
+-      &FormSetFinalPrio();
+-    }
+-    elsif ($rt::ui::web::FORM{'display'} eq 'SetPrio'){
+-      &FormSetPrio();
+-    }
+-    elsif  ($rt::ui::web::FORM{'display'} eq 'SetSubject'){
+-      &FormSetSubject();
+-    }
+-    elsif  ($rt::ui::web::FORM{'display'} eq 'SetUser'){
+-      &FormSetUser();
+-    }
+-    elsif  ($rt::ui::web::FORM{'display'} eq 'SetMerge'){
+-      &FormSetMerge();
+-    }
+-    elsif  ($rt::ui::web::FORM{'display'} eq 'SetGive'){
+-      &FormSetGive();
+-    }
+-    
+     elsif  ($rt::ui::web::FORM{'display'} eq 'SetComment'){
+       &FormComment();
+     }
+@@ -160,15 +140,6 @@ sub DisplayForm {
+     elsif ($rt::ui::web::FORM{'display'} eq 'SetStatus') {
+       &FormSetStatus();
+     }
+-    elsif ($rt::ui::web::FORM{'display'} eq 'SetQueue') {
+-      &FormSetQueue();
+-    }
+-    elsif ($rt::ui::web::FORM{'display'} eq 'SetArea') {
+-      &FormSetArea();
+-    }
+-    elsif ($rt::ui::web::FORM{'display'} eq 'SetDateDue') {
+-      &FormSetDateDue();
+-    }
+    elsif ($rt::ui::web::FORM{'display'} eq 'Blank') {
+       exit(0);
+     }
+@@ -176,17 +147,22 @@ sub DisplayForm {
+   }
+   
+   if ($rt::ui::web::FORM{'display'} eq 'History') {
++     
++     
++     
++     &display_summary($serial_num);
++     
++     &do_bar();
++     print "<hr>";
++     
+     	  if (!$frames) {
+ 	      &display_commands();
+ 	        }
+-    &do_bar($serial_num);
+     
+-    &display_summary($serial_num);
+-    print "<hr>";
+     &display_history_tables($serial_num);
+-    &print_link_link($serial_num);
+     &do_bar($serial_num);
+ 	
++     
+   }
+   
+   
+@@ -197,26 +173,6 @@ sub DisplayForm {
+   &rt::ui::web::footer(); 
+ }
+ 
+-# Fun-Hack to produce a "Faq this!" link
+-sub print_faq_hack_link {
+-    my $serial_num=shift;
+-    my $transaction=shift;
+-    print qq|
+-	<form method="post">
+-	    <input type="hidden" value="$serial_num" name="serial_num">
+-		<input type="hidden" name="previous_owner" value="$rt::req[$serial_num]{'owner'}">
+-		    <input type="hidden" name="do_req_give_to" value="$current_user">
+-			<input type="hidden" name="do_req_give" value="true">    
+-			    FAQ-Tag: <input name="faq_tag_hack"> |;
+-    if ($transaction) {
+-	print qq|<input type="hidden" value="$transaction" name="transaction"><br>|;
+-    }
+-    print qq|
+-		<input type="hidden" value="yes" name="do_link_faq_hack">
+-			<input type="submit" value="FAQ it!">
+-			</form>
+-			    |;
+-}
+ 
+ sub frame_display_request {
+   
+@@ -266,12 +222,11 @@ sub takeaction {
+       }
+       ($serial_num,$transaction_num,$StatusMsg)=&rt::add_new_request($rt::ui::web::FORM{'queue_id'},$rt::ui::web::FORM{'area'},$rt::ui::web::FORM{'requestors'},$rt::ui::web::FORM{'alias'},$rt::ui::web::FORM{'owner'},$rt::ui::web::FORM{'subject'},"$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}","$rt::ui::web::FORM{'prio_tens'}$rt::ui::web::FORM{'prio_ones'}",$rt::ui::web::FORM{'status'},$rt::time,0,$date_due, $rt::ui::web::FORM{'content'},$current_user);
+ 
+-      if( ! $serial_num && ! $transaction_num )
++     if( (! $serial_num) && (! $transaction_num) )
+ 	{
+ 	  $rt::ui::web::FORM{'display'} = '';
+ 	}
+-      else
+-	{
++     else {
+ 	  &rt::req_in($serial_num,$current_user);
+ 	}
+     }
+@@ -283,8 +238,8 @@ sub takeaction {
+ 	($trans, $StatusMsg)=&rt::change_final_priority ($serial_num, "$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}",$current_user);
+       }
+       
+-      if (my $status=$rt::ui::web::FORM{'do_req_status'}){
+-	if ($status ne $rt::req[$serial_num]{status}) {
++     if (( my $status =$rt::ui::web::FORM{'do_req_status'}) and
++	 ($status ne $rt::req[$serial_num]{'status'})) {
+ 	  if ($status eq 'stall') {
+ 	  ($trans, $StatusMsg)=&rt::stall ($serial_num, $current_user);
+ 	  } elsif ($status eq 'open') {
+@@ -298,49 +253,17 @@ sub takeaction {
+       }
+       
+       
+-      if ($rt::ui::web::FORM{'do_req_stall'}){
+-	($trans, $StatusMsg)=&rt::stall ($serial_num, $current_user);
+-	
+-      }
+       if ($rt::ui::web::FORM{'do_req_steal'}){
+ 	  ($trans, $StatusMsg)=&rt::steal($serial_num, $current_user);
+       }    
+ 
+-      if ($rt::ui::web::FORM{'do_req_link'}) {
+-	  ($trans, $StatusMsg)=&rt::link
+-	      ($serial_num, 
+-	       $current_user, 
+-	       $rt::ui::web::FORM{'link_otherdb'},
+-	       $rt::ui::web::FORM{'link_foreignid'},
+-	       $rt::ui::web::FORM{'link_foreigntag'},
+-	       $rt::ui::web::FORM{'link_content'})
+-      }
+-
+-      if ($rt::ui::web::FORM{'do_link_faq_hack'}) {
+-	  my ($faqid, $faqsubject, $faqtext)=&rt::read_faq_hack($rt::ui::web::FORM{'faq_tag_hack'});
+-	  if (!$faqid) {
+-	      $trans=0; $StatusMsg="No such FAQ found";
+-	  } else {
+-	      ($trans, $StatusMsg)=&rt::link
+-		  ($serial_num, 
+-		   $current_user, 
+-		   1,
+-		   $faqid,
+-		   $rt::ui::web::FORM{'faq_tag_hack'});
+-	      $rt::ui::web::FORM{'display'}='SetReply';
+-	      $rt::ui::web::FORM{'ReplyText'}=\$faqtext;
+-	  }
+-      }
+       
+       if ($rt::ui::web::FORM{'do_req_notify'}) {
+ 	($trans, $StatusMsg)=&rt::notify($serial_num,$rt::time,$current_user);
+       }
+ 
+-      if ($rt::ui::web::FORM{'do_req_open'}){
+-	($trans, $StatusMsg)=&rt::open($serial_num, $current_user);
+-      }
+       if ($rt::ui::web::FORM{'do_req_user'}) {
+-	($trans, $StatusMsg)=&rt::change_requestors($serial_num, $rt::ui::web::FORM{recipient}, $current_user);
++     ($trans, $StatusMsg)=&rt::change_requestors($serial_num, $rt::ui::web::FORM{'recipient'}, $current_user);
+       }
+       if ($rt::ui::web::FORM{'do_req_merge'}) {
+ 	($trans, $StatusMsg)=&rt::merge($serial_num,$rt::ui::web::FORM{'req_merge_into'},$current_user);
+@@ -352,26 +275,16 @@ sub takeaction {
+       }
+       
+       if ($rt::ui::web::FORM{'do_req_give'}){
+-	&rt::req_in($serial_num, $current_user);
+-	if (exists $rt::ui::web::FORM{'previous_owner'} 
+-	    && $rt::req[$serial_num]{'owner'} ne $rt::ui::web::FORM{'previous_owner'}) {
+-	    $StatusMsg="Concurrency warning: somebody else have taken this.";
+-	    $trans=0;
+-	} else {
+-	    ($trans, $StatusMsg2)=&rt::give($serial_num, $rt::ui::web::FORM{'do_req_give_to'}, $current_user);
+-	    $StatusMsg .= "<br>\n$StatusMsg2";
++     ($trans, $StatusMsg)=&rt::give($serial_num, $rt::ui::web::FORM{'do_req_give_to'}, $current_user);
+ 	
+ 	    if (($trans == 0 ) and
+-		($rt::req[$serial_num]{'owner'} ne ($current_user)) ) {
+-		$rt::ui::web::FORM{'display.bak'} = $rt::ui::web::FORM{'display'};
++	 ($rt::ui::web::FORM{'do_req_give_to'} eq $current_user) and 
++	 ($rt::req[$serial_num]{'owner'} !~ $current_user) ) {
+ 		$rt::ui::web::FORM{'display'} = 'SetSteal';
+ 	    }
+-	}
+-      }
+       
+-      if ($rt::ui::web::FORM{'do_req_resolve'}){
+-	($trans, $StatusMsg)=&rt::resolve ($serial_num,$current_user);
+       }
++   
+       if ($rt::ui::web::FORM{'do_req_subject'}){
+ 	($trans, $StatusMsg)=&rt::change_subject ($serial_num, $rt::ui::web::FORM{'subject'}, $current_user);
+       }
+@@ -408,16 +321,12 @@ sub takeaction {
+ 	
+       }
+     }
+-  }
+ 
+ sub display_queue {
+   my ($owner_ops, $subject_ops, $queue_ops, $status_ops, $prio_ops, $user_ops, $order_ops, $reverse, $query_string);
+   local($^W) = 0;		# Lots of form fields that may or may not exist give bogus errors
+ 
+-  # LOCAL HACK TO GET IT INTO A NEW WINDOW
+-  my $otherwindow=1;
+   
+-  require rt::database;
+   if ($rt::ui::web::FORM{'q_owned_by'}) {
+     if ($owner_ops){
+       $owner_ops .= " OR ";
+@@ -632,12 +541,8 @@ sub display_queue {
+   
+   $count=&rt::get_queue($query_string,$current_user);
+ 
+-  #we subtract 1 from the refresh rate so that the default value is -1..which 
+-  #means never refresh...as 0 should...but 0 means refresh now.
+-  if ( ! $rt::ui::web::FORM{'refresh'} ) {
+-          $rt::ui::web::FORM{'refresh'} = -1;
+-	}
+-  if ($rt::ui::web::FORM{'refresh'} > -1) {
++   #if we've got a refresh rate > 0, then let's set how often we refresh
++   if ($rt::ui::web::FORM{'refresh'} > 0) {
+   print "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">";
+   }
+   $query = $ENV{'QUERY_STRING'};
+@@ -689,7 +594,6 @@ sub display_queue {
+     }
+     else {
+       print "&amp;display=History\"";
+-      print " target=\"workspace\"" if ($otherwindow);
+     }
+     print ">$rt::req[$temp]{'serial_num'}</a></font>
+ 
+@@ -733,7 +637,10 @@ sub display_queue {
+     
+     if (substr($due,0,1) eq '-') {
+       $attr = "color=#ff0000";
+-    } else { $attr = ""; }
++     } 
++     else { 
++       $attr = ""; 
++     }
+     
+     print "
+ <font size=-1 $attr>$due&nbsp;</font>
+@@ -749,30 +656,13 @@ sub display_queue {
+ </TD>";
+   }
+   print "
+-</TR><TR>\n";
+-
+-  print &queue_header('number',"Ser");
+-  print &queue_header('queue',"Queue");
+-  print &queue_header('owner',"Owner");
+-  print &queue_header('priority',"Pri");
+-  print &queue_header('status',"Status");
+-  print &queue_header('timestamp',"Told");
+-  print &queue_header('area',"Area");
+-  print &queue_header('age',"Age");
+-  print &queue_header('last',"Last");
+-  print &queue_header('date_due',"Due");
+-  print &queue_header('user',"Requestor");
+-  print &queue_header('subject',"Subject");
+-
+-print "</TR>
++</TR>
+ </TABLE>
+ </font>
+ <HR>
+ ";
+-  
+ }
+ 
+-
+ sub display_history_tables {
+   local ($in_serial_num)=@_;
+   local ($temp, $total_transactions, $wday,$mon,$mday,$hour,$min,$sec,$TZ,$year);
+@@ -803,9 +693,6 @@ sub display_history_tables {
+     $bgcolor="\#330000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'owner');	
+     $bgcolor="\#AA0000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'date_due');	
+ 
+-    my $text=$rt::req[$serial_num]{'trans'}[$temp]{'text'};
+-    $text =~ s/\#(\d+)/<a href=$ScriptURL?serial_num=$1>\#$1<\/a>/;
+-
+     print "
+ <TR BGCOLOR=\"$bgcolor\">
+ <TD WIDTH=5 BGCOLOR=\"$bgcolor\">&nbsp;</TD>
+@@ -820,7 +707,7 @@ sub display_history_tables {
+ </TD>
+ <TD align=\"left\">
+ <font color=\"\#ffffff\">
+-<b>$text</b>";
++<b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>";
+ 
+ if ($rt::req[$serial_num]{'trans'}[$temp]{'effective_sn'} != 
+     $rt::req[$serial_num]{'trans'}[$temp]{'serial_num'} ) {
+@@ -829,46 +716,31 @@ sub display_history_tables {
+ }
+ print "
+ </font>
+-</TD>";
++</TD>
++<TD ALIGN=\"RIGHT\" VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";
+ 
+     if (&rt::can_manipulate_request($serial_num, $current_user)) {
+     
+ 
+     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
+ 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
+-	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) 
+-    {
+-
+-      print "<TD VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";
+-
+-      # "FAQ-reply"
+-      &print_faq_hack_link($serial_num, $rt::req[$serial_num]{'trans'}[$temp]{'id'});
+-
+-
+-      print "</TD><TD VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";
+-
+-      # "Spawn"
+-      &FormCreate($serial_num, $rt::req[$serial_num]{'trans'}[$temp]{'id'});
+-
+-      print "</TD><TD ALIGN=\"RIGHT\" VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";
+-
+-      # Normal comment/reply
+-      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment this]\">",
++	   ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
++	 print &fdro_murl("display=SetComment","history","<img border=0 src=\"$rt::WebrtImagePath/comment.gif\" alt=\"[Comment on this message]\">",
+ 		       $rt::req[$serial_num]{'trans'}[$temp]{'id'} );
+       
+-      print &fdro_murl("display=SetReply&previous_owner=$rt::req[$serial_num]{'owner'}&do_req_give_to=$current_user&do_req_give=true","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Send official reply]\">",
++	 print &fdro_murl("display=SetReply","history","<img border=0 src=\"$rt::WebrtImagePath/respond.gif\" alt=\"[Reply to this message]\">",
+ 		       $rt::req[$serial_num]{'trans'}[$temp]{'id'});
+-      print "</FONT></TD>";
++	 
++	 # "FAQ-reply", "Spawn" and "notify"-links should be in here..
+     }
+   }
+     
+-#print "<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
+-print "
+-
++     print "</FONT></TD>
++<TD width=4 bgcolor=\"		#ffffff\"><IMG SRC=\"$rt::WebrtImagePath/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
+ </TR>
+ <TR>
+-<TD COLSPAN=5><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=\"\"></TD>
+-<TD><img src=\"/webrt/sbc.gif\"  width=4 alt=\"\" height=4></TD></TR>";
++<TD COLSPAN=5><img src=\"$rt::WebrtImagePath/sbs.gif\" width=100% height=4 alt=\"\"></TD>
++<TD><img src=\"$rt::WebrtImagePath/sbc.gif\"  width=4 alt=\"\" height=4></TD></TR>";
+     
+    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
+      print "
+@@ -878,17 +750,13 @@ sub display_history_tables {
+ <font size=\"$MESSAGE_FONT\">";
+       
+       &rt::ui::web::print_transaction('all','received',$rt::req[$serial_num]{'trans'}[$temp]{'content'});
+-      print "</font></TD></TR></TABLe></TD></TR>";
+       
++       print "</font></TD></TR></TABLE></TD></TR>";
+     }
+     
+-    
+-
+-    
+   }
+   
+-  
+-  print "</tABLE></font>\n";
++   print "</TABLE></font>\n";
+ }
+ 
+ 
+@@ -898,8 +766,8 @@ sub do_bar {
+   
+       print "
+      <DIV ALIGN=\"CENTER\"> ".
+-&fdro_murl("display=SetComment","history","Comment (without quotes)",0). " | " .
+-&fdro_murl("display=SetReply&previous_owner=$rt::req[$serial_num]{'owner'}&do_req_give_to=$current_user&do_req_give=true","history","Reply (without quotes)",0);
++       &fdro_murl("display=SetComment","history","Comment",0). " | " .
++	 &fdro_murl("display=SetReply","history","Reply",0);
+       
+       
+       if ($rt::req[$serial_num]{'owner'} eq '') {
+@@ -909,12 +777,12 @@ sub do_bar {
+       if ($rt::req[$serial_num]{'status'} ne 'resolved') {
+ 	
+ 	print " | ". 
+-&fdro_murl("do_req_resolve=true","summary","Resolve",0);
++       &fdro_murl("do_req_status=resolve","summary","Resolve",0);
+       }
+       if ($rt::req[$serial_num]{'status'} ne 'open') {
+ 	
+ 	print " | " . 
+-&fdro_murl("do_req_open=true","summary","Open",0);
++       &fdro_murl("do_req_status=open","summary","Open",0);
+       }
+       print " | <A HREF=\"$ScriptURL?display=History&serial_num=" .
+        ($serial_num + 1) . "\">Next</A>";
+@@ -922,105 +790,6 @@ sub do_bar {
+       print "</DIV>";
+ }
+ 
+-sub print_link_link {
+-    # for printing out links for adding links..
+-
+-    my ($in_serial_num)=@_;
+-
+-    print "\n<hr>\n";
+-    &print_faq_hack_link($serial_num);
+-    print "<table border>\n";
+-
+-    # For all possible relationships...
+-    RELSHIPS: for my $key (keys %rt::relship) {
+-
+-	next if ($rt::relship{$key}{TITLE} eq $key);
+-
+-	$rt::relship{$key}{INSERT_LINKNAME} || next;
+-
+-	my $parent;
+-	my $parid=" $parid ";
+-	my $partag=" $partag ";
+-	if ($parent=$rt::relship{$key}{PARENTRELSHIP}) {
+-	    # This one should only be activated if the parent relship
+-	    # exists for this serial_num.
+-	    &rt::links_in($serial_num);
+-
+-	    LINKS: for (@{$rt::links[$serial_num]}) {
+-		if ($_->{'foreign_db'}==$parent) {
+-		    $parent=0;
+-		    $parid=$_->{'foreign_id'};
+-		    $partag=$_->{'foreign_tag'};
+-		    last LINKS;
+-		}
+-	    }
+-	    next RELSHIPS if ($parent);
+-	}
+-
+-	# Actionname - the name the link and/or the submit-button
+-	# should have.
+-	my $actionname=&rt::ParseURLTemplate
+-	    ($rt::relship{$key}{INSERT_LINKNAME},{
+-		' $parid '     =>$parid,
+-		' $partag '    =>$partag,
+-		' $serial_num '=>$in_serial_num,
+-		' $db '        =>$key,
+-		' $id '        =>'other_id',
+-		' $tag '       =>'other_tag',
+-		' $user '      =>$current_user
+-	    });
+-
+-	# The URL.
+-	my $url;
+-
+-	if ($rt::relship{$key}{RemoteLinkingHandledByRT}) {
+-	    # The URL should point back to RT if the remote linking is
+-	    # handled by RT.
+-	    $url="$ScriptURL?serial_num=$in_serial_num&do_req_link=1&link_otherdb=$key&link_foreignid= \$other ";
+-	} else {
+-	    # Insert all known parameters
+-	    $url=&rt::ParseURLTemplate
+-		($rt::relship{$key}{INSERT_URL},{
+-		    ' $parid '     =>$parid,
+-		    ' $partag '    =>$partag,
+-		    ' $serial_num '=>$in_serial_num,
+-		    ' $db '        =>$key,
+-		    ' $id '        =>'other_id',
+-		    ' $tag '       =>'other_tag',
+-		    ' $user '      =>$current_user
+-		    });
+-	}
+-
+-	if ($url =~ / \$(\w+) /) { 
+-        # We still have unknown parameters. We will have to ask for them in a
+-        # form...  so we have to convert the URL to a FORM where all known
+-        # parameters are hidden inputs, and all " $param " are asked
+-        # for...couldn't find much on CPAN for this, though it seems to me
+-        # like CGI might do some of the work...
+-	    $url =~ /\?/;
+-	    print "\n<td><FORM METHOD=\"post\" ACTION=\"$`\">";
+-	    my $params=$';
+-	    my @form;
+-	    for (split(/\&/, $params)) {
+-		/\=/;
+-		my ($key, $val)=(&CGI::unescape($`), &CGI::unescape($'));
+-		if (/ \$(\w+) /) {
+-		    # user-input
+-		    push (@form, "Enter $1:<input name=\"$key\"><br>");
+-		} else {
+-		    push(@form, "<input type=\"hidden\" name=\"$key\" value=\"$val\">");
+-		}
+-	    }
+-	    print join('',@form), "<input type=\"submit\" value=\"$actionname\"></form></td>";
+-	} else {
+-	    print "\n<td> <a href=\"$url\">$actionname</a></td>" if ($url && $actionname);
+-	}
+-	
+-    }
+-    print "\n</tAble>\n";
+-}
+-
+-
+ sub display_summary {
+   my $in_serial_num = shift;
+   my ($bg_color, $fg_color);
+@@ -1038,423 +807,89 @@ sub display_summary {
+ 	$target="";
+       }
+   $qtarget="target=\"queue\"";
+-  print "
+-<font size=\"-1\">
+-<font size=\"+1\">T</font>rack <font size=\"+1\">R</font>equestor\n<br>
+-  <form method=get action=\"https://www.funcom.com:444/auth/update.cgi\" target=\"ivoiresearch$in_serial_num\">
+-<table cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+-<tr>
+-<td align=\"left\">
+- <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>List all requests by this requestor</a>
+-<td align=\"right\">
+-  <input name=\"search\" value=\"$rt::req[$in_serial_num]{requestors}\"><input type=\"submit\" value=\"Search for this user at Ivoire\"><br>
+-  Password enquiry<input type=\"checkbox\" name=\"mailmessage\" value=\"y\">
+-</table>
+-  </form>";
+ 
+-  if (&rt::can_manipulate_request ($serial_num, $current_user)) {
+-
+-  print "
+-<hr>
+-<font size=\"+1\">R</font>equest <font size=\"+1\">H</font>eader <font size=\"+1\">I</font>nfo\n<br>
++   print "<hr>
+ <font size=\"-1\">
+ <form action=\"$ScriptURL\" method=\"post\">
+ <font color=\"$fg_color\">
+ <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+-
+-<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+-
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Serial Number:</b>
+-</TD>
+-
+-<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\">
+-<input size=5 name=\"req_merge_into\" value=\"$in_serial_num\">
+-</TD>
+-
+-<TD bgcolor=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_merge\">Merge requests!
+-</TD>
+-
+-</a>
+-
+-</TR>
+-
++<CENTER>
++<TABLE>
++<TR><TD COLSPAN=3 BGCOLOR=\"	#CCCCCC\" WIDTH=100%>
++<font size=+2>$rt::rtname	#$in_serial_num </font>($rt::req[$in_serial_num]{'subject'})
++</TD></TR>
+ <TR VALIGN=\"TOP\">
+-<TD align=\"right\">
+-
+-<b>Subject:</b>
+-</TD>
++<TD COLSPAN=3> 
++" .&Summary_Subject . "
+ 
+-<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\" >
+-<input size=25 name=\"subject\" value=\"$rt::req[$in_serial_num]{'subject'}\">
+-</TD>
+-
+-<TD bgcolor=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_subject\">Change subject!
+ </TD>
+ 
+ </TR>
+ <TR VALIGN=\"TOP\">
+-<TD  align=\"right\">
+-<b>Area:</b></a>
+-</TD>
+-<TD ALIGN=\"LEFt\" bgcolor=\"$bg_color\">";
+-    print "<select name=\"area\"><option value=\"\">None ";
+-    foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
+-      print "<option ";
+-      print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
+-      print ">$area\n";
+-    }
+-    print "</select>
+-</TD>
+-<TD bgcolor=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_area\">Change area!
+-</TD>
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Queue:</b>
+-
+-<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\">
+-<select name=\"queue\">";
+-    foreach $queue (sort keys %rt::queues) {
+-      if (&rt::can_create_request($queue, $current_user)) {
+-	print "<option";
+-	if ($rt::req[$serial_num]{queue_id} eq $queue) {
+-	  print " SELECTED";
+-	}
+-	print ">$queue\n";
+-      }
+-    }
+-    print "</select></TD>
+ 
+-<TD bgcolor=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_queue\" value=\"true\">Change queue! (NB: Are you sure this is what you want to do? It's probably better to create a new request)
+-</TD>
++<TD>". &Summary_Queue. "</TD>
++<TD></TD>
++<TD>" . &Summary_Area . "</TD>
++<TD>" .&Summary_Merge . "</TD>
+ </TR>
+ 	    
+ <TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Requestors:</b>
+-</TD>
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">
+-<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\"> 
+ 
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_user\">Change requestor!
+-</TD>
+-</TR> 
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Owner:</b>
+-</TD>
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">
+-<select name=\"do_req_give_to\">
+-<option value=\"\">Nobody ";	
+-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
+-      if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+-	print "<option ";
+-	print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+-	print ">$user_id\n";
+-      }
+-    }
+-    print "</select>
+-</TD>
+-<TD ALIGN=\"LEFT\">
+-<input type=\"checkbox\" name=\"do_req_give\" value=\"true\">Set owner!
+-</TD>
+-</TR> 
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Status:</b>
+-</TD>
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
+-    if ($rt::req[$serial_num]{status} eq 'dead') { 
+-      print "<i>Dead</i>";
+-    } else {
+-      print "<select name=\"do_req_status\">\n";
+-      print "<option value=\"open\" ";
+-      if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
+-      print ">open\n";
+-      print "<option value=\"stall\" ";
+-      if ($rt::req[$serial_num]{status} eq 'stalled') { print "SELECTED";}
+-      print ">stalled\n";
+-      print "<option value=\"resolve\" ";
+-      if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
+-      print ">resolved\n";
+-      print "<option value =\"kill\">dead\n";
+-      print "</select>\n";
+-    }
+-    print "
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">";
+-    if ($rt::req[$serial_num]{status} eq 'dead') { 
+-      print "<i>Unchangeable</i>";
+-    }
+-    print "
+-</TD>
+-</TR> 
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>
+-Last User Contact:</b>
+-</TD>
+-		    
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
+ 			
+-  if ($rt::req[$in_serial_num]{'date_told'}) {
+-			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
+-			    print " ($rt::req[$in_serial_num]{'since_told'} ago)";
+-			}
+-			else {
+-			    print "<i>Never contacted</i>";
+-			}
++<TD>" .&Summary_Status. " </TD>
++<TD>" .&Summary_Owner. "</TD>
++<TD>" .&Summary_Requestors . "</TD>
+     
+-    print "
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_notify\" value=\"1\">Requestor has been touched!
+-</TD>
+-</TR>
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Current Priority:</b>
+-</TD>
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
+-    &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
+-    print "
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_prio\" value=\"true\">Set priority!
+-</TD>
+-</TR> 
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Final Priority:</b>
+-</TD> 
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
+-    &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
+-    print "
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_final_prio\" value=\"true\">Set final priority!
+-</TD>
+ </TR> 
+ 
+ <TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Due:</b>
+-</TD>
+-
+-<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
+-  if ($rt::req[$in_serial_num]{'date_due'}) {
+-      print "in $rt::req[$in_serial_num]{'till_due'}<br>";
+-    } else {
+-      print "<i>No date assigned</i><br>";
+-  }
+-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
+-  print "
+-</TD>
+-<TD BGCOLOR=\"$bg_color\">
+-<input type=\"checkbox\" name=\"do_req_date_due\" value=\"true\">Set new due date!
+-</TD>
++<TD> ". &Summary_Priority . "</TD>
++<TD> ". &Summary_Final_Priority . "</TD>
++<TD> " .&Summary_Due_Date . "</TD>
+ </TR> 
+-<TR VALIGN=\"TOP\">
+-<TD ALIGN=\"RIGHT\">
+-<b>Last Action:</b>
+ 		    
+-</TD>
+-<TD BGCOLOR=\"$bg_color\"> " .
+-    scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . 
+-	"
+-($rt::req[$in_serial_num]{'since_acted'} ago)
+-    </TD>
++<TR VALIGN=TOP>
++<TD> ".  &Summary_Last_Action . "</TD>
++<TD> " . &Summary_Created . "</TD>
++<TD> " . &Summary_Last_Contact. "</TD>
+     </TR> 
+     
+-    <TR valign=\"top\">
+-    <TD align=\"right\">
+-    <b>Created</b>
+-    </TD>
+-    <TD BGCOLOR=\"$bg_color\"> " .
+-scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
+-($rt::req[$in_serial_num]{'age'} ago)
+-    </TD>
+-    </TR>
+-    </TABLE>
+-
+-<DIV ALIGN=RIGHT>
+-  <input type=\"reset\" value=\"Reset\"> <input type=\"submit\" value=\"Change something\">
+-  </DIV>
+-    </font>
+-    </form>
+-    ";
+ 
+-} else {
+-  if ($rt::req[$in_serial_num]{'owner'} eq '') {
+-    $rt::req[$in_serial_num]{'owner'} = "<i>none</i>";
+-  }
+-
+-  if ($rt::req[$in_serial_num]{'subject'} eq '') {
+-    $rt::req[$in_serial_num]{'subject'} = "<i>none</i>";
+-  }
+-  
+-  if ($rt::req[$in_serial_num]{'area'} eq '') {
+-    $rt::req[$in_serial_num]{'area'} = "<i>none</i>";
+-  }
+-
+-  print "
+-    <font color=\"$fg_color\">
+-    <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+-
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <A href=\"$ScriptURL?display=SetMerge&amp;serial_num=$in_serial_num\" $target $color>
+-    <b>Serial Number</b></a>
+-    </TD>
+-
+-    <TD bgcolor=\"$bg_color\">
+-    $in_serial_num
+-    </TD>
+-    </TR>
++<TR>
++<TD COLSPAN=3 ALIGN=RIGHT>
+ 
+-    <TR VALIGN=\"TOP\">
+-    <TD align=\"right\">
+-    <a href=\"$ScriptURL?display=SetSubject&amp;serial_num=$in_serial_num\" $target>
+-    <b>Subject</b></a>
+-    </TD>
++  <input type=\"reset\" value=\"Reset form\"> <input type=\"submit\" value=\"Update ticket\">
++</TD></TR>
++</TABLE>
++</CENTER>
++    </font>
+ 
+-    <TD bgcolor=\"$bg_color\" >
+-    $rt::req[$in_serial_num]{'subject'}
+-</TD>
+-    </TR>
+-    <TR VALIGN=\"TOP\">
+-    <TD  align=\"right\">
+-    <a href=\"$ScriptURL?display=SetArea&amp;serial_num=$in_serial_num\" $target>
+-    <b>Area</b></a>
+-    </TD>
+-    <TD bgcolor=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'area'}
+-</TD>
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <a href=\"$ScriptURL?display=SetQueue&amp;serial_num=$in_serial_num\" $target>
+-    <b>Queue</b></a>
+-    </TD>
+   
+-    <TD bgcolor=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'queue_id'}
+-</TD>
+-    </TR>
+     
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <a href=\"$ScriptURL?display=SetUser&amp;serial_num=$in_serial_num\" $target>
+-    <b>Requestors</b></a>
+-    </TD>
+-    <TD BGCOLOR=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'requestors'}
+-</TD>
+-    </TR> 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <a href=\"$ScriptURL?display=SetGive&amp;serial_num=$in_serial_num\" $target><b>Owner</b></a>
+-    </TD>
+-    
+-    
+-    <TD BGCOLOR=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'owner'} 
+-</TD>
+-    </TR> 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b><a href=\"$ScriptURL?display=SetStatus&amp;serial_num=$in_serial_num\" $target>Status</a></b>
+-    </TD>
++<input type=\"checkbox\" name=\"do_req_date_due\" value=\"true\">Set new due date!
+     
+-    <TD BGCOLOR=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'status'}
+-</TD>
+-    </TR> 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
+-    </TD>
+     
+-    <TD BGCOLOR=\"$bg_color\">";
++<input type=\"checkbox\" name=\"do_req_final_prio\" value=\"true\">Set final priority!
+ 			
+-  if ($rt::req[$in_serial_num]{'date_told'}) {
+-			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
+-			    print " ($rt::req[$in_serial_num]{'since_told'} ago)";
+-			}
+-			else {
+-			    print "<i>Never contacted</i>";
+-			}
++<input type=\"checkbox\" name=\"do_req_prio\" value=\"true\">Set priority!
+     
+-    print "
+-    </TD>
+-    </TR>
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b><a href=\"$ScriptURL?display=SetPrio&amp;serial_num=$in_serial_num\" $target>Current Priority</a></b>
+-    </TD>
+-    <TD BGCOLOR=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'priority'}
+-</TD>
+-    </TR> 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b><a href=\"$ScriptURL?display=SetFinalPrio&amp;serial_num=$in_serial_num\" $target>Final Priority</a></b>
+-    </TD> 
++<input type=\"checkbox\" name=\"do_req_notify\" value=\"1\">Requestor has been touched!
+ 
+-    <TD BGCOLOR=\"$bg_color\">
+-    $rt::req[$in_serial_num]{'final_priority'}
+-</TD>
+-    </TR> 
++<input type=\"checkbox\" name=\"do_req_give\" value=\"true\">Set owner!
+ 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b><a href=\"$ScriptURL?display=SetDateDue&amp;serial_num=$in_serial_num\" $target>Due</a></b>
+-    </TD>
++<input type=\"checkbox\" name=\"do_req_user\">Change requestor!
+ 
+-    <TD BGCOLOR=\"$bg_color\">";		
++<input type=\"checkbox\" name=\"do_req_merge\">Merge requests!
+   
+-  if ($rt::req[$in_serial_num]{'date_due'}) {
+-    print scalar localtime($rt::req[$in_serial_num]{'date_due'});
+-    print " (in $rt::req[$in_serial_num]{'till_due'})";
+-  }
+-  else {
+-    print "<i>No date assigned</i>";
+-  }
+-  print "
+-    </TD>
+-    </TR> 
+-    <TR VALIGN=\"TOP\">
+-    <TD ALIGN=\"RIGHT\">
+-    <b>Last Action</b>
++<input type=\"checkbox\" name=\"do_req_queue\" value=\"true\">Change queue!
+     
+-    </TD>
+-    <TD BGCOLOR=\"$bg_color\"> " .
+-scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . "
+-($rt::req[$in_serial_num]{'since_acted'} ago)
+-    </TD>
+-    </TR> 
++<input type=\"checkbox\" name=\"do_req_subject\">Change subject!
+     
+-    <TR valign=\"top\">
+-    <TD align=\"right\">
+-    <b>Created</b>
+-    </TD>
+-    <TD BGCOLOR=\"$bg_color\"> " .
+-scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
+-($rt::req[$in_serial_num]{'age'} ago)
+-    </TD>
+-    </TR>
+-  </TABLE>
+-  </font>
++<input type=\"checkbox\" name=\"do_req_area\">Change area!
++    </form>
+     ";
+ 
+ }
+- }
+ 
+ #display a column header for the queue
+ 
+@@ -1467,8 +902,8 @@ sub queue_header {
+ <TR WIDTH=\"100%\"><TD COLSPAN=2 ALIGN=\"CENTER\">
+ <FONT SIZE=\"-1\">$name</FONT></TD></TR>
+ <TR><TD ALIGN=\"LEFT\">
+-<a href=\"$ScriptURL?q_sort=$col\&$query\"><img src=\"/webrt/up.gif\" alt=\"+\" border=0></a></TD>
+-<TD ALIGN=\"RIGHT\"><a href=\"$ScriptURL?q_sort=$col\&q_reverse=1&$query\"><img src=\"/webrt/down.gif\" alt=\"-\" border=0></a></TD></TR></TABLE></TH>";
++<a href=\"$ScriptURL?q_sort=$col\&$query\"><img src=\"$rt::WebrtImagePath/up.gif\" alt=\"+\" border=0></a></TD>
++<TD ALIGN=\"RIGHT\"><a href=\"$ScriptURL?q_sort=$col\&q_reverse=1&$query\"><img src=\"$rt::WebrtImagePath/down.gif\" alt=\"-\" border=0></a></TD></TR></TABLE></TH>";
+   return ($header);
+ }
+ 
+@@ -1480,25 +915,35 @@ sub fdro_murl {
+   my $description = shift;
+   my $trans = shift;
+   
+-    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&";
+-    $url .= $custom_content;
+-    $url .= "\"";
++   $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&$custom_content\"";
+     $url .= " target=\"$target\"" if ($frames);
+-
+-    $url .= " >";
+-    $url .= "$description</a>";
++   $url .= " > $description</a>";
+     return($url);
+ }
++
++sub GetSerial {
++  if ((!$rt::ui::web::FORM{'serial_num'}) and (!$frames)) {
++    # If we don't have a serial_num, we assume the query string was just an int representing serial_num
++    $rt::ui::web::FORM{'serial_num'} = $ENV{'QUERY_STRING'};
++  }
++  $ScriptURL=$ENV{'SCRIPT_NAME'}.$ENV{'PATH_INFO'};
++  
++  if ($rt::ui::web::FORM{'serial_num'}){
++    $serial_num=int($rt::ui::web::FORM{'serial_num'});
++  }
++  else {
++    $serial_num = 0;
++  }
++}
++
+ sub display_commands {
+    
+ 	if (!$frames) {
+ 	require rt::ui::web::forms;
+-	print "<hr>";
+-
+-	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
+-
+-	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
+-	&FormCreate($rt::ui::web::FORM{'serial_num'});
++     print "<hr>
++    <TABLE WIDTH=\"100%\" BGCOLOR=\" #ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN=\"MIDDLE\">
++<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
++     &FormCreate;
+ 	print "</TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
+ 	&FormShowNum;
+         print "</TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\"><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
+@@ -1509,11 +954,9 @@ sub display_commands {
+ else {
+ 
+  print "<center>
+-<font size=\"-1\" >";
+-    
+-    print "<A HREF=\"$ScriptURL?display=Create\" target = \"summary\">Create a request</A>";
+-
+-	print "<br>";
++<font size=\"-1\" >
++<A HREF=\"$ScriptURL?display=Create\" target = \"summary\">Create a request</A>
++<br>";
+     
+     if ($serial_num != 0){
+ 	print " <A HREF=\"$ScriptURL?display=Request&amp;serial_num=$serial_num\" target=\"_parent\">Refresh Request \#$serial_num</a><br>";
+@@ -1525,39 +968,244 @@ sub display_commands {
+     
+     print " target=\"summary\"" if ($frames);
+     
+-    print ">View Specific Request</A> ";
+-    print "<br>";
+-
++     print ">View Specific Request</A> 
+     
+-    print "<A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A>
+ 
++<br>
++<A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A>
+ </font>
+ </center>";
+      }
++ }
+     
++ 
++ 
++ sub Summary_Owner {
++   my $Form;
++   $Form = &Summary_Col_Header("Owner");
++   if (&rt::can_manipulate_request($serial_num, $current_user)) {
++     $Form .= "
++<select name=\"do_req_give_to\">
++<option value=\"\">Nobody ";	
++     foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
++       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
++	 
++	 if ($user_id eq $rt::req[$serial_num]{owner}) {
++	   $Form
++ .=  "<option SELECTED> $user_id\n";
++	 }
++	 else {
++	   $Form .= "<option> $user_id\n";
++	 }
+ }
+ 
++       }
++     $Form .= "</select>";
+ 
++   }
++   else {
++     $Form .=  $rt::req[$serial_num]{owner};
++   }
++   return ($Form);
++ }
+ 
++ sub Summary_Requestors {
++   my $Form;
++   $Form .= &Summary_Col_Header("Requestors");
+ 
++   if (&rt::can_manipulate_request($serial_num, $current_user)) {
++     $Form .= "<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\">
++<br>
++<div align=right><font size=-1>
++( <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>
++  This user's requests.</a>
++)
++</font>
++</div>"; 
++}
++else {
++  $Form .= $rt::req[$serial_num]{'requestors'};
++ }
++return ($Form);
++}
+ 
+-sub initialize_sn {
+     
+-  if ((!$rt::ui::web::FORM{'serial_num'}) and (!$frames))
+-    {
+-      # If we don't have a serial_num, we assume the query string was just an int representing serial_num
+-      $rt::ui::web::FORM{'serial_num'} = $ENV{'QUERY_STRING'};
++sub Summary_Subject {
++  my $Form;
++  $Form = &Summary_Col_Header("Summary");
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .= "<input size=60 MAXSIZE=80 name=\"subject\" value=\"$rt::req[$in_serial_num]{'subject'}\">
++";
++  }
++  else {
++    $Form .= $rt::req[$in_serial_num]{'subject'};
++  }
++  return ($Form);
++}
++
++sub Summary_Created {
++  my $Form;
++  $Form = &Summary_Col_Header("Created");
++  
++  $Form .= scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
++<br><i><font size=-1>($rt::req[$in_serial_num]{'age'} ago)</font></i>";
++  
+    
+     }
+-  $ScriptURL=$ENV{'SCRIPT_NAME'}.$ENV{'PATH_INFO'};
++sub Summary_Last_Action {
++  my $Form;
++  $Form =  &Summary_Col_Header("Last Action");
+   
+-    if ($rt::ui::web::FORM{'serial_num'}){
+-      $serial_num=int($rt::ui::web::FORM{'serial_num'});
++  $Form .=  scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . 
++    "<br><i><font size=-1>($rt::req[$in_serial_num]{'since_acted'} ago)</font></i>";
++  return ($Form);
++}
++sub Summary_Last_Contact {
++  my $Form;
++  $Form = &Summary_Col_Header("Last Contact");
++  if ($rt::req[$in_serial_num]{'date_told'}) {
++    $Form .= scalar localtime($rt::req[$in_serial_num]{'date_told'});
++    $Form .= "<br><i>($rt::req[$in_serial_num]{'since_told'} ago)</i>";
+     }
+   else {
+-    $serial_num = 0;
++    $Form .= "<i>Never contacted</i>";
++  }
++  return ($Form);
++}
++
++
++sub Summary_Queue {
++  my $Form;
++  $Form .= &Summary_Col_Header("Queue");
++  
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .= "<select name=\"queue\">";
++    foreach $queue (sort keys %rt::queues) {
++      if (&rt::can_create_request($queue, $current_user)) {
++	if ($rt::req[$serial_num]{queue_id} eq $queue) {
++	  $Form .= "<option SELECTED> $queue";
++	}
++	else {
++	  $Form .=  "<option> $queue\n";
++	}
++      }
++      $Form .= "</select>";
++    }
++  }
++  else {
++    $Form .= "$rt::req[$serial_num]{queue_id}";
++  }
++  
++  return ($Form);
++}
++
++sub Summary_Area {
++  my ($Form, $area);
++  $Form = &Summary_Col_Header("Area");
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .= "<select name=\"area\"><option value=\"\">None ";
++    foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
++      if ($area eq $rt::req[$serial_num]{area}) {
++	print "<option SELECTED>$area\n";
++      }
++      else {
++	$Form .= "<option>$area\n";
++      }
++    }
++    $Form .= "</select>";
++  }
++  else {
++    $Form .= $rt::req[$serial_num]{'area'};
++  }
++  return ($Form);
++}
++
++
++
++sub Summary_Merge {
++  my $Form;
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .=  &Summary_Col_Header("Merge Into");
++    $Form .=  "<input size=5 name=\"req_merge_into\" value=\"$in_serial_num\">";
++  }
++  return ($Form);
++}
++
++
++sub Summary_Status {
++  my $Form;
++  $Form =  &Summary_Col_Header("Status");
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    
++    if ($rt::req[$serial_num]{status} eq 'dead') { 
++      $Form .=  "<i>Dead</i>";
++    } 
++    else {
++      $Form .=  "<select name=\"do_req_status\">\n";
++      $Form .=  "<option value=\"open\" ";
++      if ($rt::req[$serial_num]{status} eq 'open') { $Form .=  "SELECTED";}
++      $Form .= ">open\n";
++      $Form .= "<option value=\"stall\" ";
++      if ($rt::req[$serial_num]{status} eq 'stalled') { $Form .=  "SELECTED";}
++      $Form .=  ">stalled\n";
++      $Form .=  "<option value=\"resolve\" ";
++      if ($rt::req[$serial_num]{status} eq 'resolved') { $Form .=  "SELECTED";}
++      $Form .=  ">resolved\n";
++      $Form .=  "<option value =\"kill\">dead\n";
++      $Form .=  "</select>\n";
++    }
++  }
++  else {
++    $Form .= $rt::req[$serial_num]{'status'};
++  }
++  return ($Form);
++}
++
++sub Summary_Due_Date {
++  my $Form;
++  $Form = &Summary_Col_Header("Due Date:");
++    
++  if ($rt::req[$in_serial_num]{'date_due'}) {
++    $Form .= &rt::ui::web::select_a_date($rt::req[$serial_num]{'date_due'}, "due");
++    $Form .= " <br><i><font size=-1>(in $rt::req[$in_serial_num]{'till_due'})</font></i>";
++  } 
++  else {
++    $Form .= &rt::ui::web::select_a_date(-1, "due");
++    
++  }
+   }
+   
++sub Summary_Priority {
++  my ($Form);
++  $Form = &Summary_Col_Header("Priority");
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .= &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
++  }
++  else {
++    $Form .= $rt::req[$serial_num]{'priority'};
+ }
++  return ($Form);
+ }
++
++sub Summary_Final_Priority {
++  my $Form;
++  $Form = &Summary_Col_Header("Final Priority");
++  
++  if (&rt::can_manipulate_request($serial_num, $current_user)) {
++    $Form .= &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
++  }
++  else {
++    $Form .= $rt::req[$serial_num]{final_priority};
++  }
++  return ($Form);
++}
++sub Summary_Col_Header {
++  my $val = shift;
++  return ("<FONT SIZE=-2>$val:</FONT><BR>");
++}
++
++
++
++}
++
+ 1;
+diff -uwrF^sub /tmp/FunRT/ui/web/support.pm rt/ui/web/support.pm
+--- /tmp/FunRT/ui/web/support.pm	Thu Nov 25 19:00:16 1999
++++ rt/ui/web/support.pm	Wed Nov 17 09:37:29 1999
+@@ -1,4 +1,4 @@
+-# $Version$
++# $Tag$
+ #
+ # RT is (c) Copyright 1996-1999 Jesse Vincent
+ # RT is distributed under the terms of the GNU General Public License
+@@ -153,66 +153,73 @@ sub cgi_vars_in {
+     use CGI::Cookie;
+     %rt::ui::web::cookies = fetch CGI::Cookie;
+ 
+-    # Fix broken content
+-    $FORM{'content'} =~ s/\r//g;
+ }
+ 
+ 
+ 
+ sub select_an_int{
+     my ($default, $name) = @_;
+-    my ($ones, $tens, $counter);
++    my ($Form, $ones, $tens, $counter);
+     $tens = int($default / 10);
+     $ones = int($default % 10);
+-    print "<select name=\"".$name."_tens\">\n";
++    $Form = "<select name=\"".$name."_tens\">\n";
+     for ($counter=0;$counter<=9;$counter++) {
+-	print "<option";
+-	if ($tens==$counter) {print " SELECTED";}
+-	print ">$counter\n";
++	$Form .= "<option";
++	if ($tens==$counter) {$Form .= " SELECTED";}
++	$Form .= ">$counter\n";
+     }
+-    print "</select><select name=\"".$name."_ones\">\n";
++    $Form .= "</select><select name=\"".$name."_ones\">\n";
+     for ($counter=0;$counter<=9;$counter++) {
+-	print "<option";
+-	if ($ones==$counter) {print " SELECTED";}
+-	print ">$counter\n";
++	$Form .= "<option";
++	if ($ones==$counter) {$Form .= " SELECTED";}
++	$Form .=  ">$counter\n";
+     }
+-    print "</select>\n"; 
++    $Form .=  "</select>\n"; 
+     
++    return ($Form);
+ }
+ sub select_a_date{
+-    my ($default, $name) = @_;
+-    my ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year, $temp, $counter, $now_year);
++    my $default = shift;
++    my $name = shift;
++    
++    my ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year, $temp, $counter, $now_year, $Form);
+     local (@MoY = ('Jan','Feb','Mar','Apr','May','Jun',
+ 	       	   'Jul','Aug','Sep','Oct','Nov','Dec'));
+ 
+-    if (!$default) { # if we don't supply a default, say it will be done next week
++    if ($default == undef) { # if we don't supply a default, say it will be done next week
+ 	$default=$rt::time+604800;
+     }
+    
+    ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($default);
+-  print "<select name=\"".$name."_mday\">\n";
++  $Form = "<select name=\"".$name."_mday\">\n";
++  $Form .= "<option>No\n"; 
+     for ($counter=1;$counter<=31;$counter++) {
+-	print "<option";
+-	if ($mday==$counter) {print " SELECTED";}
+-	print ">$counter\n";
++	$Form .= "<option";
++	if (($default > 0) and ($mday==$counter)) {$Form .= " SELECTED";}
++	$Form .= ">$counter\n";
+     }
+-    print "</select><select name=\"".$name."_month\">\n";
++  
++  $Form .= "</select><select name=\"".$name."_month\">\n";
++  $Form .= "<option>Date\n";
+     for ($counter=0;$counter<=11;$counter++) {
+-	print "<option value=\"$counter\" ";
+-	if ($mon eq $MoY[$counter]) {print " SELECTED";}
+-	print ">$MoY[$counter]\n";
++	$Form .= "<option value=\"$counter\" ";
++	if (($default > 0) and ($mon eq $MoY[$counter])) {$Form .= " SELECTED";}
++	$Form .= ">$MoY[$counter]\n";
+     }
+-    print "</select><select name=\"".$name."_year\">\n";
++    $Form .= "</select><select name=\"".$name."_year\">\n";
++	  $Form .= "<option>Set\n";
+     for ($counter=$now_year;$counter<=($now_year+5);$counter++) {
+-	print "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
++	$Form .= "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
+ 	                                            #likes dates to be 2 digits
+ 	                                            #that sucks
+-	if ($now_year==$counter) {print " SELECTED";}
+-	print ">$counter\n";
++	if (($default > 0)  and ($now_year==$counter)) {$Form .= " SELECTED";}
++	$Form .= ">$counter\n";
+     }
+-    print "</select>\n"; 
+ 
++    $Form .= "</select>\n"; 
++    return ($Form);
+ }
++
+ 
+ sub header {
+     if ($header_printed) {
