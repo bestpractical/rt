@@ -1087,7 +1087,7 @@ sub _CustomFieldLimit {
     my $null_columns_ok;
     if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
         $null_columns_ok = 1;
-    }
+    } 
 
     my $cfid = 0;
     if ($queue) {
@@ -1106,6 +1106,8 @@ sub _CustomFieldLimit {
 
         $cfid = $cf->id;
 
+    } else { # if we have no id, we're going to search on name.
+        $cfid = $field;
     }
 
     my $TicketCFs;
@@ -1136,7 +1138,7 @@ sub _CustomFieldLimit {
             VALUE => '0',
             ENTRYAGGREGATOR => 'AND');
 
-        if ($cfid) {
+        if ($cfid =~ /^\d+$/) { # we have a numerical cfid. we know which cf we want
             $self->SUPER::Limit(
                 LEFTJOIN        => $TicketCFs,
                 FIELD           => 'CustomField',
@@ -1144,9 +1146,10 @@ sub _CustomFieldLimit {
                 ENTRYAGGREGATOR => 'AND'
             );
         }
-        else {
+        else { # we're going to need to search on cf name
             my $cfalias = $self->Join(
                 ALIAS1 => $TicketCFs,
+                TYPE => 'left',
                 FIELD1 => 'CustomField',
                 TABLE2 => 'CustomFields',
                 FIELD2 => 'id'
@@ -1170,7 +1173,7 @@ sub _CustomFieldLimit {
         QUOTEVALUE => 1,
         @rest
     );
-    if ($null_columns_ok) {
+    if ($null_columns_ok && ($op ne 'IS' && $value ne 'NULL')) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
             FIELD           => 'Content',
