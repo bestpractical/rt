@@ -149,20 +149,18 @@ use Regexp::Common qw /delimited/;
 use constant VALUE => 1;
 use constant AGGREG => 2;
 use constant OP => 4;
-use constant PAREN => 8;
-use constant KEYWORD => 16;
-use constant SELECT => 32;
-use constant WHERE => 64;
-use constant COLUMN => 128;
-my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD SELECT WHERE COLUMN];
+use constant OPEN_PAREN => 8;
+use constant CLOSE_PAREN => 16;
+use constant KEYWORD => 32;
+my @tokens = qw[VALUE AGGREG OP OPEN_PAREN CLOSE_PAREN KEYWORD];
 
 my $re_aggreg = qr[(?i:AND|OR)];
-my $re_select = qr[(?i:SELECT)];
-my $re_where = qr[(?i:WHERE)];
-my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
+my $re_delim  = qr[$RE{delimited}{-delim=>qq{\'\"}}];
+my $re_value  = qr[$re_delim|\d+];
+my $re_keyword = qr[$re_delim|(?:\{|\}|\w|\.)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
-my $re_paren  = qr'\(|\)';
+my $re_open_paren  = qr'\(';
+my $re_close_paren  = qr'\)';
 
 sub _close_bundle
 {
@@ -198,7 +196,7 @@ sub _close_bundle
 
 sub _parser {
   my ($self,$string) = @_;
-  my $want = SELECT | KEYWORD | PAREN;
+  my $want = KEYWORD | OPEN_PAREN;
   my $last = undef;
 
   my $depth = 0;
@@ -215,26 +213,23 @@ sub _parser {
 
 
   while ($string =~ /(
-                      $re_select
-                      |$re_where
-                      |$re_aggreg
+                      $re_aggreg
                       |$re_op
                       |$re_keyword
                       |$re_value
-                      |$re_paren
-                     )/igx ) {
+                      |$re_open_paren
+                      |$re_close_paren
+                     )/iogx ) {
     my $val = $1;
     my $current = 0;
 
     # Highest priority is last
-    $current = OP      if $val =~ /^$re_op$/io;
-    $current = VALUE   if $val =~ /^$re_value$/io;
-    $current = KEYWORD if $val =~ /^$re_keyword$/io && ($want & KEYWORD);
-    $current = AGGREG  if $val =~ /^$re_aggreg$/io;
-    $current = PAREN   if $val =~ /^$re_paren$/io;
-    $current = COLUMN if  $val =~ /^$re_keyword$/io && ($want & COLUMN);
-    $current = WHERE if  $val =~ /^$re_where$/io && ($want & WHERE);
-    $current = SELECT if  $val =~ /^$re_select$/io;
+    $current = OP          if ($want & OP)          && $val =~ /^$re_op$/io;
+    $current = VALUE       if ($want & VALUE)       && $val =~ /^$re_value$/io;
+    $current = KEYWORD     if ($want & KEYWORD)     && $val =~ /^$re_keyword$/io;
+    $current = AGGREG      if ($want & AGGREG)      && $val =~ /^$re_aggreg$/io;
+    $current = OPEN_PAREN  if ($want & OPEN_PAREN)  && $val =~ /^$re_open_paren$/io;
+    $current = CLOSE_PAREN if ($want & CLOSE_PAREN) && $val =~ /^$re_close_paren$/io;
 
 
     unless ($current && $want & $current) {
@@ -248,43 +243,23 @@ sub _parser {
     #$RT::Logger->debug("We've just found a '$current' called '$val'");
 
     # Parens are highest priority
-    if ($current & PAREN) {
-      if ($val eq "(") {
-        $self->_close_bundle(@bundle);  @bundle = ();
-        $depth++;
-        $self->_OpenParen;
+    if ($current & OPEN_PAREN) {
+      $self->_close_bundle(@bundle);  @bundle = ();
+      $depth++;
+      $self->_OpenParen;
 
-      } else {
-        $self->_close_bundle(@bundle);  @bundle = ();
-        $depth--;
-        $self->_CloseParen;
-      }
-
-      $want = KEYWORD | PAREN | AGGREG;
+      $want = KEYWORD | OPEN_PAREN;
     }
-    elsif ($current & SELECT ) {
-        $want = COLUMN | WHERE;
-    }
+    elsif ( $current & CLOSE_PAREN ) {
+      $self->_close_bundle(@bundle);  @bundle = ();
+      $depth--;
+      $self->_CloseParen;
 
-    elsif ($current & COLUMN ) {
-      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
-        substr($val,0,1) = "";
-        substr($val,-1,1) = "";
-      }
-      # Unescape escaped characters
-      $val =~ s!\\(.)!$1!g;     
-        $self->_DisplayColumn($val);
-
-        $want = COLUMN | WHERE;
-
-    } 
-    elsif ($current & WHERE ) {
-        $want = KEYWORD | PAREN;
-
+      $want = CLOSE_PAREN | AGGREG;
     }
     elsif ( $current & AGGREG ) {
       $ea = $val;
-      $want = KEYWORD | PAREN;
+      $want = KEYWORD | OPEN_PAREN;
     }
     elsif ( $current & KEYWORD ) {
       $key = $val;
@@ -299,17 +274,17 @@ sub _parser {
 
       # Remove surrounding quotes from $key, $val
       # (in future, simplify as for($key,$val) { action on $_ })
-      if ($key =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+      if ($key =~ /$re_delim/o) {
         substr($key,0,1) = "";
         substr($key,-1,1) = "";
       }
-      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+      if ($val =~ /$re_delim/o) {
         substr($val,0,1) = "";
         substr($val,-1,1) = "";
       }
       # Unescape escaped characters
-      $key =~ s!\\(.)!$1!g;                                                    
-      $val =~ s!\\(.)!$1!g;     
+      $key =~ s!\\(.)!$1!g;
+      $val =~ s!\\(.)!$1!g;
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
 
 
@@ -365,7 +340,7 @@ sub _parser {
   
       ($ea,$key,$op,$value) = ("","","","");
   
-      $want = PAREN | AGGREG;
+      $want = CLOSE_PAREN | AGGREG;
     } else {
       die "I'm lost";
     }
@@ -376,10 +351,10 @@ sub _parser {
   $self->_close_bundle(@bundle);  @bundle = ();
 
   die "Incomplete query"
-    unless (($want | PAREN) || ($want | KEYWORD));
+    unless (($want | CLOSE_PAREN) || ($want | KEYWORD));
 
   die "Incomplete Query"
-    unless ($last && ($last | PAREN) || ($last || VALUE));
+    unless ($last && ($last | CLOSE_PAREN) || ($last || VALUE));
 
   # This will never happen, because the parser will complain
   die "Mismatched parentheses"
@@ -427,60 +402,63 @@ failure.
 
 use RT::Tickets;
 
-my $query = "SELECT id WHERE Status = 'open'";
+
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 
+my $query = "Status = 'open'";
 my ($id, $msg)  = $tix->FromSQL($query);
 
 ok ($id, $msg);
 
-my @cols =  $tix->DisplayColumns;
 
-ok ($cols[0]->{'attribute'} == 'id', "We're  displaying the ticket id");
-ok ($cols[1] == undef, "We're  displaying the ticket id");
+my (@ids, @expectedids);
 
+my $t = RT::Ticket->new($RT::SystemUser);
 
-my $query = "SELECT id, Status WHERE Status = 'open'";
+my $string = 'subject/content SQL test';
+ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
 
-my $tix = RT::Tickets->new($RT::SystemUser);
+push @ids, $t->Id;
 
-my ($id, $msg)  = $tix->FromSQL($query);
+my $Message = MIME::Entity->build(
+			     Subject     => 'this is my subject',
+			     From        => 'jesse@example.com',
+			     Data        => [ $string ],
+        );
 
-ok ($id, $msg);
+ok( $t->Create(Queue => 'General', Subject => 'another ticket', MIMEObj => $Message, MemberOf => $ids[0]), "Ticket Created");
 
-my @cols =  $tix->DisplayColumns;
+push @ids, $t->Id;
 
-ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
-ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
+$query = ("Subject LIKE '$string' OR Content LIKE '$string'");
 
-my $query = qq[SELECT id, Status, '<A href="/Ticket/Display.html?id=##id##">Subject, this: ##Subject##</a>' WHERE Status = 'open'];
-
-my $tix = RT::Tickets->new($RT::SystemUser);
-
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my @cols =  $tix->DisplayColumns;
-
-ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
-ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
-
-
-
-$query = "Status = 'open'";
-my ($id, $msg)  = $tix->FromSQL($query);
+my ($id, $msg) = $tix->FromSQL($query);
 
 ok ($id, $msg);
 
-my @cols =  $tix->DisplayColumns;
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
 
-ok ($cols[0] == undef, "We haven't explicitly asked to display anything");
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
 
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 
+$query = ("id = $ids[0] OR MemberOf = $ids[0]");
 
+my ($id, $msg) = $tix->FromSQL($query);
 
+ok ($id, $msg);
+
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
+
+@expectedids = ();
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
+
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 
 =end testing
 
@@ -547,22 +525,6 @@ sub FromSQL {
 
 Returns the query that this object was initialized with
 
-=begin testing
-
-my $query = "SELECT id, Status WHERE Status = 'open'";
-
-my $tix = RT::Tickets->new($RT::SystemUser);
-
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my $newq = $tix->Query();
-
-is ($query, $newq);
-
-=end testing
-
 =cut
 
 sub Query {
@@ -570,71 +532,6 @@ sub Query {
     return ($self->{_sql_query}); 
 }
 
-
-=head2 _DisplayColumn COL
-
-Add COL to this search's list of "Columns to display"
-
-COL can either be a
-
-LiteralColumnName
-"QuotedString" (Containing ##LiteralColumnName## to embed the colum name inside it)
-
-What else?
-
-
-
-=cut
-
-sub _DisplayColumn {
-    my $self = shift;
-    my $col  = shift;
-
-    my $colref;
-    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
-        $colref->{'style'} = $1;
-    }
-    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
-        $colref->{'class'} = $1;
-    }
-    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
-        $colref->{'title'} = $1;
-    }
-    if ( $col =~ /__(.*?)__/gio ) {
-        my @subcols;
-        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
-            push ( @subcols, $1 ) if ($1);
-            push ( @subcols, "__$2__" );
-            $colref->{'attribute'} = $2;
-        }
-        push ( @subcols, $col );
-        @{ $colref->{'output'} } = @subcols;
-    }
-    else {
-        @{ $colref->{'output'} } = ( "__" . $col . "__" );
-        $colref->{'attribute'} = $col;
-    }
-
-    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
-        @{ $colref->{'output'} } )
-    {
-        $colref->{'title'}     = $1;
-        $colref->{'attribute'} = $1;
-    }
-    push @{ $self->{'_sql_columns_to_display'} }, $colref;
-
-}
-
-=head2 DisplayColumns 
-
-Returns an array of the columns to show in the printed results of this object
-
-=cut
-
-sub DisplayColumns {
-    my $self = shift;
-    return (@{$self->{'_sql_columns_to_display'}});
-}
 
 
 1;

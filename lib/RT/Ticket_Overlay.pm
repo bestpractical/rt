@@ -302,9 +302,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   Queue  - Either a Queue object or a Queue Name
-  Requestor -  A reference to a list of RT::User objects, email addresses or RT user Names
-  Cc  - A reference to a list of RT::User objects, email addresses or Names
-  AdminCc  - A reference to a  list of RT::User objects, email addresses or Names
+  Requestor -  A reference to a list of  email addresses or RT user Names
+  Cc  - A reference to a list of  email addresses or Names
+  AdminCc  - A reference to a  list of  email addresses or Names
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
@@ -676,7 +676,7 @@ sub Create {
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
-            my ( $wval, $wmsg ) = $self->AddLink(
+            my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
                 Silent                        => 1
@@ -2544,6 +2544,24 @@ sub AddLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+
+    $self->_AddLink(%args);
+}
+
+=head2 _AddLink  
+
+Private non-acled variant of AddLink so that links can be added during create.
+
+=cut
+
+sub _AddLink {
+    my $self = shift;
+    my %args = ( Target => '',
+                 Base   => '',
+                 Type   => '',
+                 Silent => undef,
+                 @_ );
+
     # {{{ If the other URI is an RT::Ticket, we want to make sure the user
     # can modify it too...
     my $other_ticket_uri = RT::URI->new($self->CurrentUser);
@@ -2726,10 +2744,10 @@ sub MergeInto {
         while ( my $watcher = $people->Next ) {
             $MergeInto->_AddWatcher(
                 Type        => $watcher_type,
-                Silent      => 1,
+                                  Silent => 1,
                 PrincipalId => $watcher->MemberId
             );
-        }
+    }
 
     }
 
