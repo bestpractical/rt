@@ -175,6 +175,23 @@ $deps{'POSTGRESQL'} = [ _( << '.') ];
 DBD::Pg
 .
 
+print "perl:\n";
+print "\t5.8.0";
+eval {require 5.008};
+if ($@) {
+print "...missing.\n";
+        eval {require 5.00601};
+        if ($@) {
+            print " RT is known to be non-functional on versions of perl older than 5.6.1. Please upgrade to 5.8.0 or newer";
+            die;
+        } else {
+            print " RT is not supported on perl 5.6.1\n";
+        }
+} else {
+        print "...found\n";
+
+}
+
 
 foreach my $type (keys %args)  {
 next unless ($type =~ /^with-(.*?)$/);
@@ -196,17 +213,17 @@ sub test_dep {
 	my $module = shift;
 	my $version = shift;
 
-	  print "\t$module $version";
-        eval "use $module $version" ;
-        if ($@) {
-	my $error = $@;
-	$error =~ s/\n(.*)$//s;
-	print "...MISSING\n";
-		print "\t\t$error\n" if $error =~ /this is only/;
+	print "\t$module $version";
+	eval "use $module $version" ;
+	if ($@) {
+		my $error = $@;
+		$error =~ s/\n(.*)$//s;
+		print "...MISSING\n";
+			print "\t\t$error\n" if $error =~ /this is only/;
 
-	return undef;
+		return undef;
 	} else {
-	print "...found\n";
+		print "...found\n";
 return 1;
 	}
 }
