@@ -9,7 +9,7 @@ package WebAuth;
 require rt::database;
 use CGI::Cookie;
 &rt::connectdb();
-$debug =1;
+$debug =0;
 
 sub AuthCheck () {
     my ($AuthRealm) = @_;
@@ -22,63 +22,57 @@ if ($rt::program =~ /nph-/) {
     }
 	
     #get the path
-    if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/(.*?)$|) {
-      	$path=$1;
+#    if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/(.*?)$|) {
+#      	$path=$1;
 	# remove trailing slashes
-    	$path =~ s|/+$||;
-	}
+#    	$path =~ s|/+$||;
+#	}
     
 
 
     #lets generate that hash.
 
   use Digest::MD5;
-  $ctx = Digest::MD5->new;
-  $ctx->add($rt::ui::web::FORM{'username'});
-  $ctx->add($ENV{'REMOTE_ADDR'});
-  $ctx->add($rt::ui::web::FORM{'password'});
+    $ctx = Digest::MD5->new;
+    $ctx->add($rt::ui::web::FORM{'username'});
+    $ctx->add($ENV{'REMOTE_ADDR'});
+    $ctx->add($rt::ui::web::FORM{'password'});
     $hash = $ctx->hexdigest();
     
-   
-
-
-
-   
     # lets set the user/pass cookies
     
-
+    
     if  ( ( length($rt::ui::web::FORM{'username'}) ) and 
 	  ( length($rt::ui::web::FORM{'password'}) >= $rt::user_passwd_min) ) {
-	print STDERR "We've done FORMbased auth. now we're setting cookies\n" if $debug;
-#if we have a $path to play with...
-#not doing this breaks netscape
-
-	      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
+      print STDERR "We've done FORMbased auth. now we're setting cookies\n" if $debug;
+      #if we have a $path to play with...
+      #not doing this breaks netscape
+      
+      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
                                   -value => "$rt::ui::web::FORM{'username'}",
                                   -expires => '+6M');
       $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-                                      -value =>$hash,
-                                      -path => $path);
-
-    if ($path ne '') { 
-	$set_user->path($path);
-	$set_password->path($path);
-	}
-
-
+                                      -value =>$hash);
+      
+#      if ($path ne '') { 
+#	$set_user->path($path);
+#	$set_password->path($path);
+#      }
+      
+      
       if (($rt::web_auth_cookies_allow_no_path =~ /yes/i) and
 	  ($rt::ui::web::FORM{'insecure_path'})) {
-      	$set_password->path(undef);
-	$set_user->path(undef);
+      	$set_password->path('');
+	$set_user->path('');
       } 
-       
+      
       print "Set-Cookie: $set_password\n";
       print "Set-Cookie: $set_user\n";   
-
-
+      
+      
       print STDERR "Set-Cookie: $set_password\n" if $debug;
       print STDERR  "Set-Cookie: $set_user\n" if $debug;
- 
+      
       return( $rt::ui::web::FORM{'username'}, $hash);
     }
     
@@ -91,7 +85,7 @@ if ($rt::program =~ /nph-/) {
       return( $rt::ui::web::cookies{'RT_USERNAME'}->value, $rt::ui::web::cookies{'RT_PASSWORD'}->value );
     }
     
-}
+  }
 
 sub AuthForceLogout () {
   #this routine is deprecated
@@ -104,11 +98,11 @@ sub AuthForceLogin () {
   
   
   
-   # lets set the user/pass cookies
+  # lets set the user/pass cookies
   
-    if ($ENV{'SCRIPT_NAME'} =~ /(.*)\/(.*?)/) {
-      $path=$1;      
-    }
+  if ($ENV{'SCRIPT_NAME'} =~ /(.*)\/(.*?)/) {
+    $path=$1;      
+  }
   
   # check for existing cookies and kill 'em
   #
@@ -118,48 +112,35 @@ sub AuthForceLogin () {
   #
   %cookies = fetch CGI::Cookie;
   if(exists $cookies{'RT_PASSWORD'}) {
-    my $path;
+    my $pass_cookie;
     
-	$pass_cookie = $cookies{'RT_PASSWORD'};
-	$pass_cookie->value('');
- 	
-    $path = $pass_cookie->path();
-    $path =~ s|/$||;
-	if ($path ne '') {
-    $pass_cookie->path($path);
-    }
-	print "Set-Cookie: ", $pass_cookie, "\n";
-
-  }
-
+    $pass_cookie = $cookies{'RT_PASSWORD'};     
+    $pass_cookie->expires('now');
+    $pass_cookie->value('');
+    print "Set-Cookie: ", $pass_cookie, "\n";
+    print STDERR  "Set-Cookie: $pass_cookie\n" if $debug;  }
+  
   # comment this, if you want to keep your username (we don't)
   if(exists $cookies{'RT_USERNAME'}) {
-    my $path;
-    
+    my $name_cookie;
     $name_cookie = $cookies{'RT_USERNAME'};
-	
-	$name_cookie->value('');
-    $path = $name_cookie->path();
-    $path =~ s|/$||;
-   if ($path ne '') {
+    $name_cookie->expires('now');
+    $name_cookie->value('');
+    print "Set-Cookie: ", $name_cookie, "\n";
     
-		$name_cookie->path($path);	
-
-}
- 	print "Set-Cookie: ", $name_cookie, "\n";
- }
+    print STDERR  "Set-Cookie: $name_cookie\n" if $debug; }
   
   &rt::ui::web::header;
-
+  
   if  ($rt::ui::web::cookies{'RT_USERNAME'}) {
     $default_user =  $rt::ui::web::cookies{'RT_USERNAME'}->value;
     
   }
   if ($ENV{'QUERY_STRING'} ne 'display=Logout') {
-	$NewQuery = $ENV{'QUERY_STRING'};
-  }
+    $NewQuery = $ENV{'QUERY_STRING'};
+      }
   else {
-	$NewQuery= "";
+    $NewQuery= "";
   }
   print "
 <TABLE cellpadding=10 cellspacing=0 border=0>

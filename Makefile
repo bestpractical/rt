@@ -191,7 +191,7 @@ WEB_AUTH_MECHANISM		=	cookies
 # security hole. You'll _never_ want to enable it, unless you've got clients
 # with IE4.01sp1..which chokes unless this is enabled.
 
-WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	no
+WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
