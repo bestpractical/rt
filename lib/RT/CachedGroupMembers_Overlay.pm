@@ -1,12 +1,12 @@
-#$Header: /raid/cvsroot/rt/lib/RT/GroupMembers.pm,v 1.2 2001/11/06 23:04:14 jesse Exp $
+#$Header: /raid/cvsroot/rt/lib/RT/CachedGroupMembers.pm,v 1.2 2001/11/06 23:04:14 jesse Exp $
 
 =head1 NAME
 
-  RT::GroupMembers - a collection of RT::GroupMember objects
+  RT::CachedGroupMembers - a collection of RT::GroupMember objects
 
 =head1 SYNOPSIS
 
-  use RT::GroupMembers;
+  use RT::CachedGroupMembers;
 
 =head1 DESCRIPTION
 
@@ -16,7 +16,7 @@
 
 =begin testing
 
-ok (require RT::GroupMembers);
+ok (require RT::CachedGroupMembers);
 
 =end testing
 
@@ -28,7 +28,7 @@ no warnings qw(redefine);
 
 =head2 LimitToUsers
 
-Limits this search object to users who are members of this group.
+Limits this search object to users who are members of this group
 This is really useful when you want to haave your UI seperate out
 groups from users for display purposes
 
@@ -55,7 +55,7 @@ sub LimitToUsers {
 
 =head2 LimitToSystemGroups
 
-Limits this search object to Groups who are members of this group.
+Limits this search object to Groups who are members of this group
 This is really useful when you want to haave your UI seperate out
 groups from users for display purposes
 
@@ -100,12 +100,4 @@ sub LimitToMembersOfGroup {
 }
 # }}}
 
-# {{{ sub NewItem 
-
-sub NewItem  {
-    my $self = shift;
-    return(RT::GroupMember->new($self->CurrentUser))
-}
-
-# }}}
 1;

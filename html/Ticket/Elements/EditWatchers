@@ -8,7 +8,7 @@
 
 %while (my $watcher=$Members->Next) {
 <li>
-<INPUT TYPE=CHECKBOX NAME="Ticket-DelWatcher-Type-<%$Watchers->Type%>" value="<%$watcher->MemberId%>" UNCHECKED>
+<INPUT TYPE=CHECKBOX NAME="Ticket-DelWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" UNCHECKED>
 %if ($watcher->MemberObj->IsUser) { 
 <a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
 <%$watcher->MemberObj->Object->Name%></a>

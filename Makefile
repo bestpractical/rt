@@ -10,7 +10,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE_PATH)"; print $${$$RT::{$$ARGV[0]}
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	4
+RT_VERSION_PATCH	=	5
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -291,14 +291,28 @@ libs-install:
 	  $(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
 			      INSTALLMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
 			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
-	    && make \
+	    && $(MAKE) \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
 	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE_PATH)'g;" \
 				  			blib/lib/RT.pm ; \
-	    make install \
+	    $(MAKE) install \
 		   INSTALLSITEMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
 		   INSTALLSITEMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
 	)
+
+libs-install-quick:
+	cd ./lib; \
+	$(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
+			      INSTALLMAN1DIR=none \
+			      INSTALLMAN3DIR=none 
+	cd ./lib; $(MAKE)
+	cd ./lib; $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
+	    		  s'!!RT_CONFIG!!'$(CONFIG_FILE_PATH)'g;" blib/lib/RT.pm 
+	
+	cd ./lib ;$(MAKE) install \
+			      INSTALLSITEMAN1DIR= \
+			      INSTALLSITEMAN3DIR= 
+	
 # }}}
 
 # {{{ html-install
@@ -365,7 +379,7 @@ predist: commit tag-and-tar
 
 tag-and-release-baseline:
 	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
-	make -f /tmp/Makefile.tagandrelease tag-and-release
+	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release
 
 
 # Running this target in a working directory is 

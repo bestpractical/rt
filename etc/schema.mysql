@@ -88,27 +88,6 @@ CREATE UNIQUE INDEX Groups1 ON Groups (Name) ;
 
 # }}}
 
-# {{{ Watchers
-
-CREATE TABLE Watchers (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
-  Type varchar(16) NULL  ,
-  Scope varchar(16) NULL  ,
-  Value integer NULL  ,
-  Email varchar(255) NULL  ,
-  Quiet integer NULL  ,
-  Owner integer NULL  ,
-
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
-  PRIMARY KEY (id)
-) TYPE=InnoDB;
-CREATE INDEX Watchers1 ON Watchers (Scope, Value, Type, Owner);
-
-# }}}
-
 # {{{ ScripConditions
 
 CREATE TABLE ScripConditions (
@@ -219,7 +198,7 @@ CREATE TABLE Users (
   Organization varchar(200) NULL  ,
   Privileged integer NULL  ,
   RealName varchar(120) NULL  ,
-  Nickname varchar(16) NULL  ,
+  NickName varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
   EmailEncoding varchar(16) NULL  ,
   WebEncoding varchar(16) NULL  ,

@@ -69,7 +69,7 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 % if ($actions) {
 <TABLE><TR>
 %  foreach $action (sort keys %{$actions}) {
-<TD>
+<TD ALIGN=RIGHT>
 <FONT SIZE=-1>
 % if ($actions->{"$action"}->{'html'}) {
 <%$actions->{"$action"}->{'html'} |n%>

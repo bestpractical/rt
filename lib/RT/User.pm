@@ -53,7 +53,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Organization'.
   int(11) 'Privileged'.
   varchar(120) 'RealName'.
-  varchar(16) 'Nickname'.
+  varchar(16) 'NickName'.
   varchar(16) 'Lang'.
   varchar(16) 'EmailEncoding'.
   varchar(16) 'WebEncoding'.
@@ -91,7 +91,7 @@ sub Create {
                 Organization => '',
                 Privileged => '',
                 RealName => '',
-                Nickname => '',
+                NickName => '',
                 Lang => '',
                 EmailEncoding => '',
                 WebEncoding => '',
@@ -123,7 +123,7 @@ sub Create {
                          Organization => $args{'Organization'},
                          Privileged => $args{'Privileged'},
                          RealName => $args{'RealName'},
-                         Nickname => $args{'Nickname'},
+                         NickName => $args{'NickName'},
                          Lang => $args{'Lang'},
                          EmailEncoding => $args{'EmailEncoding'},
                          WebEncoding => $args{'WebEncoding'},
@@ -320,19 +320,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Nickname
+=item NickName
 
-Returns the current value of Nickname. 
-(In the database, Nickname is stored as varchar(16).)
-
-
-
-=item SetNickname VALUE
+Returns the current value of NickName. 
+(In the database, NickName is stored as varchar(16).)
 
 
-Set Nickname to VALUE. 
+
+=item SetNickName VALUE
+
+
+Set NickName to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Nickname will be stored as a varchar(16).)
+(In the database, NickName will be stored as a varchar(16).)
 
 
 =cut
@@ -740,7 +740,7 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         RealName => 
 		{read => 1, write => 1, type => 'varchar(120)', default => ''},
-        Nickname => 
+        NickName => 
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         Lang => 
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},

@@ -609,11 +609,15 @@ sub BriefDescription {
     }
 
     elsif ( $self->Type eq 'AddWatcher' ) {
-        return $self->loc( "[_1] [_2] added", $self->Field, $self->NewValue) ;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->NewValue);
+        return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->Name);
     }
 
     elsif ( $self->Type eq 'DelWatcher' ) {
-        return $self->loc( "[_1] [_2] deleted", $self->Field, $self->OldValue) ;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->OldValue);
+        return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->Name);
     }
 
     elsif ( $self->Type eq 'Subject' ) {

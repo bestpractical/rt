@@ -31,7 +31,7 @@ sub SetRecipients {
     }
 
     if ( $arg =~ /\bRequestor\b/ ) {
-        push ( @To, @{ $self->TicketObj->Requestors->Emails } );
+        push ( @To, $self->TicketObj->Requestors->MemberEmailAddresses  );
     }
 
     
@@ -40,12 +40,12 @@ sub SetRecipients {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
-            push ( @Cc, @{ $self->TicketObj->Cc->Emails } );
-            push ( @Cc, @{ $self->TicketObj->QueueObj->Cc->Emails } );
+            push ( @Cc, $self->TicketObj->Cc->MemberEmailAddresses );
+            push ( @Cc, $self->TicketObj->QueueObj->Cc->MemberEmailAddresses  );
         }
         else {
-            push ( @Cc, @{ $self->TicketObj->CcAsString } );
-            push ( @To, @{ $self->TicketObj->QueueObj->Cc->Emails } );
+            push ( @Cc, $self->TicketObj->Cc->MemberEmailAddresses  );
+            push ( @To, $self->TicketObj->QueueObj->Cc->MemberEmailAddresses  );
         }
     }
 
@@ -65,8 +65,8 @@ sub SetRecipients {
     }
 
     if ( $arg =~ /\bAdminCc\b/ ) {
-        push ( @Bcc, @{ $self->TicketObj->AdminCc->Emails } );
-        push ( @Bcc, @{ $self->TicketObj->QueueObj->AdminCc->Emails } );
+        push ( @Bcc, $self->TicketObj->AdminCc->MemberEmailAddresses  );
+        push ( @Bcc, $self->TicketObj->QueueObj->AdminCc->MemberEmailAddresses  );
     }
 
     if ($RT::UseFriendlyToLine) {

@@ -17,7 +17,7 @@ Sets the recipients of this message to this ticket's Requestor.
 sub SetRecipients {
     my $self=shift;
 
-    push(@{$self->{'To'}}, @{$self->TicketObj->Requestors->Emails});
+    push(@{$self->{'To'}}, $self->TicketObj->Requestors->MemberEmailAddresses);
     
     return(1);
 }

@@ -24,6 +24,7 @@ use RT::Queue;
 no warnings qw(redefine);
 
 use vars(@STATUS);
+use RT::Groups;
 
 @STATUS = qw(new open stalled resolved dead);
 
@@ -66,30 +67,6 @@ sub IsValidStatus {
 
 # }}}
 
-# {{{ sub _Accessible 
-
-sub _Accessible {
-    my $self = shift;
-    my %Cols = (
-        Name              => 'read/write',
-        CorrespondAddress => 'read/write',
-        Description       => 'read/write',
-        CommentAddress    => 'read/write',
-        InitialPriority   => 'read/write',
-        FinalPriority     => 'read/write',
-        DefaultDueIn      => 'read/write',
-        Creator           => 'read/auto',
-        Created           => 'read/auto',
-        LastUpdatedBy     => 'read/auto',
-        LastUpdated       => 'read/auto',
-        Disabled          => 'read/write',
-
-    );
-    return ( $self->SUPER::_Accessible( @_, %Cols ) );
-}
-
-# }}}
-
 # {{{ sub Create
 
 =head2 Create
@@ -122,12 +99,21 @@ sub Create {
     }
 
     #TODO better input validation
+    $RT::Handle->BeginTransaction();
 
     my $id = $self->SUPER::Create(%args);
     unless ($id) {
+        $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
     }
 
+    my $create_ret = $self->_CreateQueueGroups();
+    unless ($create_ret) {
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc('Queue could not be created') );
+    }
+
+    $RT::Handle->Commit();
     return ( $id, $self->loc("Queue created") );
 }
 
@@ -266,104 +252,377 @@ sub CustomFields {
 
 # }}}
 
-# {{{ Dealing with watchers
 
-# {{{ sub Watchers
+# {{{ Routines dealing with watchers.
 
-=head2
+# {{{ _CreateQueueGroups 
 
-Watchers returns a Watchers object preloaded with this queue\'s watchers.
+=head2 _CreateQueueGroups
+
+Create the ticket groups and relationships for this ticket. 
+This routine expects to be called from Ticket->Create _inside of a transaction_
+
+It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
+
+It will return true on success and undef on failure.
+
+=begin testing
+
+my $Queue = RT::Queue->new($RT::SystemUser); my ($id, $msg) = $Queue->Create(Name => "Foo",
+                );
+ok ($id, "Foo $id was created");
+ok(my $group = RT::Group->new($RT::SystemUser));
+ok($group->LoadQueueGroup(Queue => $id, Type=> 'Cc'));
+ok ($group->Id, "Found the requestors object for this Queue");
+
+
+
+ok ((my $add_id, $add_msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($add_id, "Add succeeded: ($add_msg)");
+ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
+$bob->LoadByEmail('bob@fsck.com');
+ok($bob->Id,  "Found the bob rt user");
+ok ($Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queue actually has bob at fsck.com as a requestor");;
+ok ((my $add_id, $add_msg) = $Queue->DeleteWatcher(Type =>'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (!$Queue->IsWatcher(Type => 'Cc', Principal => $bob->PrincipalId), "The Queue no longer has bob at fsck.com as a requestor");;
+
+
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadQueueGroup(Queue => $id, Type=> 'Cc'));
+ok ($group->Id, "Found the cc object for this Queue");
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadQueueGroup(Queue => $id, Type=> 'AdminCc'));
+ok ($group->Id, "Found the AdminCc object for this Queue");
+
+=end testing
 
 =cut
 
-sub Watchers {
+
+sub _CreateQueueGroups {
     my $self = shift;
 
-    require RT::Watchers;
-    my $watchers = RT::Watchers->new( $self->CurrentUser );
+    my @types = qw(Cc AdminCc);
 
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $watchers->LimitToQueue( $self->id );
+    foreach my $type (@types) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateWatcherGroup(Instance => $self->Id, 
+                                                     Type => $type,
+                                                     Domain => 'Queue');
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
+                               $self->Id.": ".$msg);
+            return(undef);
+        }
+     }
+    return(1);
+   
+}
+
+
+# }}}
+
+# {{{ sub AddWatcher
+
+=head2 AddWatcher
+
+AddWatcher takes a parameter hash. The keys are as follows:
+
+Type        One of Requestor, Cc, AdminCc
+
+PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
+Email       The email address of the new watcher. If a user with this 
+            email address can't be found, a new nonprivileged user will be created.
+
+If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+
+=cut
+
+sub AddWatcher {
+    my $self = shift;
+    my %args = (
+        Type  => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
+
+    # {{{ Check ACLS
+    #If the watcher we're trying to add is for the current user
+    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+        #  If it's an AdminCc and they don't have 
+        #   'WatchAsAdminCc' or 'ModifyTicket', bail
+        if ( $args{'Type'} eq 'AdminCc' ) {
+            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied'))
+            }
+        }
+
+        #  If it's a Requestor or Cc and they don't have
+        #   'Watch' or 'ModifyTicket', bail
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
+
+            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+                or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied'))
+            }
+        }
+     else {
+            $RT::Logger->warn( "$self -> AddWatcher got passed a bogus type");
+            return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
+        }
     }
 
-    return ($watchers);
+    # If the watcher isn't the current user 
+    # and the current user  doesn't have 'ModifyTicket'
+    # bail
+    else {
+        unless ( $self->CurrentUserHasRight('ModifyQueueWatcher') ) {
+            return ( 0, "Permission Denied" );
+        }
+    }
+
+    # }}}
+
+    return ( $self->_AddWatcher(%args) );
+}
+
+#This contains the meat of AddWatcher. but can be called from a routine like
+# Create, which doesn't need the additional acl check
+sub _AddWatcher {
+    my $self = shift;
+    my %args = (
+        Type   => undef,
+        Silent => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
+
+
+    my $principal = RT::Principal->new($self->CurrentUser);
+    if ($args{'PrincipalId'}) {
+        $principal->Load($args{'PrincipalId'});
+    }
+    elsif ($args{'Email'}) {
+
+        my $user = RT::User->new($self->CurrentUser);
+        $user->LoadByEmail($args{'Email'});
+
+        unless ($user->Id) {
+            $user->Load($args{'Email'});
+        }
+        if ($user->Id) { # If the user exists
+            $principal->Load($user->PrincipalId);
+        } else {
+
+        # if the user doesn't exist, we need to create a new user
+             my $new_user = RT::User->new($RT::SystemUser);
+
+            my ( $Val, $Message ) = $new_user->Create(
+                Name => $args{'Email'},
+                EmailAddress => $args{'Email'},
+                RealName     => $args{'Email'},
+                Privileged   => 0,
+                Comments     => 'Autocreated when added as a watcher');
+            unless ($Val) {
+                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
+                # Deal with the race condition of two account creations at once
+                $new_user->LoadByEmail($args{'Email'});
+            }
+            $principal->Load($new_user->PrincipalId);
+        }
+    }
+    # If we can't find this watcher, we need to bail.
+    unless ($principal->Id) {
+        return(0, $self->loc("Could not find or create that user"));
+    }
+
+
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->Id);
+    unless ($group->id) {
+        return(0,$self->loc("Group not found"));
+    }
+
+    if ( $group->HasMember( $principal)) {
+
+        return ( 0, $self->loc('That principal is already a [_1] for this queue', $args{'Type'}) );
+    }
+
+
+    my ($m_id, $m_msg) = $group->AddMember($principal->Id);
+    unless ($m_id) {
+        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
+
+        return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
+    }
+    return ( 1, $self->loc('Added principal as a [_1] for this queue', $args{'Type'}) );
 }
 
 # }}}
 
-# {{{ sub WatchersAsString
+# {{{ sub DeleteWatcher
 
-=head2 WatchersAsString
+=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
-Returns a string of all queue watchers email addresses concatenated with ','s.
+
+Deletes a queue  watcher.  Takes two arguments:
+
+Type  (one of Requestor,Cc,AdminCc)
+
+and one of
+
+PrincipalId (an RT::Principal Id of the watcher you want to remove)
+    OR
+Email (the email address of an existing wathcer)
+
 
 =cut
 
-sub WatchersAsString {
+
+sub DeleteWatcher {
     my $self = shift;
-    return ( $self->Watchers->EmailsAsString() );
+
+    my %args = ( Type => undef,
+                 PrincipalId => undef,
+                 @_ );
+
+    unless ($args{'PrincipalId'} ) {
+        return(0, $self->loc("No principal specified"));
+    }
+    my $principal = RT::Principal->new($self->CurrentUser);
+    $principal->Load($args{'PrincipalId'});
+
+    # If we can't find this watcher, we need to bail.
+    unless ($principal->Id) {
+        return(0, $self->loc("Could not find that principal"));
+    }
+
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->Id);
+    unless ($group->id) {
+        return(0,$self->loc("Group not found"));
+    }
+
+    # {{{ Check ACLS
+    #If the watcher we're trying to add is for the current user
+    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+        #  If it's an AdminCc and they don't have 
+        #   'WatchAsAdminCc' or 'ModifyQueue', bail
+  if ( $args{'Type'} eq 'AdminCc' ) {
+            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied'))
+            }
+        }
+
+        #  If it's a Requestor or Cc and they don't have
+        #   'Watch' or 'ModifyQueue', bail
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
+            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+                or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied'))
+            }
+        }
+        else {
+            $RT::Logger->warn( "$self -> DelWatcher got passed a bogus type");
+            return ( 0, $self->loc('Error in parameters to Queue->DelWatcher') );
+        }
+    }
+
+    # If the watcher isn't the current user 
+    # and the current user  doesn't have 'ModifyQueueWathcers' bail
+    else {
+        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
+            return ( 0, "Permission Denied" );
+        }
+    }
+
+    # }}}
+
+
+    # see if this user is already a watcher.
+
+    unless ( $group->HasMember($principal)) {
+        return ( 0,
+        $self->loc('That principal is not a [_1] for this queue', $args{'Type'}) );
+    }
+
+    my ($m_id, $m_msg) = $group->DeleteMember($principal->Id);
+    unless ($m_id) {
+        $RT::Logger->error("Failed to delete ".$principal->Id.
+                           " as a member of group ".$group->Id."\n".$m_msg);
+
+        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
+    }
+
+    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
 # }}}
 
-# {{{ sub AdminCcAsString 
+# {{{ AdminCcAddresses
 
-=head2 AdminCcAsString
+=head2 AdminCcAddresses
 
-Takes nothing. returns a string: All Ticket/Queue AdminCcs.
+returns String: All queue AdminCc email addresses as a string
 
 =cut
 
-sub AdminCcAsString {
+sub AdminCcAddresses {
     my $self = shift;
-
-    return ( $self->AdminCc->EmailsAsString() );
-}
+    
+    unless ( $self->CurrentUserHasRight('SeeQueue') ) {
+        return undef;
+    }   
+    
+    return ( $self->AdminCc->MemberEmailAddressesAsString )
+    
+}   
 
 # }}}
 
-# {{{ sub CcAsString
+# {{{ CcAddresses
 
-=head2 CcAsString
+=head2 CcAddresses
 
-B<Returns> String: All Queue Ccs as a comma delimited set of email addresses.
+returns String: All queue Ccs as a string of email addresses
 
 =cut
 
-sub CcAsString {
+sub CcAddresses {
     my $self = shift;
 
-    return ( $self->Cc->EmailsAsString() );
-}
+    unless ( $self->CurrentUserHasRight('SeeQueue') ) {
+        return undef;
+    }
 
+    return ( $self->Cc->MemberEmailAddressesAsString);
+
+}
 # }}}
+
 
 # {{{ sub Cc
 
 =head2 Cc
 
 Takes nothing.
-Returns a watchers object which contains this queue\'s Cc watchers
+Returns an RT::Group object which contains this Queue's Ccs.
+If the user doesn't have "ShowQueue" permission, returns an empty group
 
 =cut
 
 sub Cc {
     my $self = shift;
-    my $cc   = $self->Watchers();
+
+    my $group = RT::Group->new($self->CurrentUser);
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $cc->LimitToCc();
+        $group->LoadQueueGroup(Type => 'Cc', Queue => $self->Id);
     }
-    return ($cc);
-}
-
-# A helper function for Cc, so that we can call it from the ACL checks 
-# without going through acl checks.
-
-sub _Cc {
-    my $self = shift;
-    my $cc   = $self->Watchers();
-    $cc->LimitToCc();
-    return ($cc);
+    return ($group);
 
 }
 
@@ -374,25 +633,20 @@ sub _Cc {
 =head2 AdminCc
 
 Takes nothing.
-Returns this queue's administrative Ccs as an RT::Watchers object
+Returns an RT::Group object which contains this Queue's AdminCcs.
+If the user doesn't have "ShowQueue" permission, returns an empty group
 
 =cut
 
 sub AdminCc {
-    my $self     = shift;
-    my $admin_cc = $self->Watchers();
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $admin_cc->LimitToAdminCc();
-    }
-    return ($admin_cc);
-}
+    my $self = shift;
 
-#helper function for AdminCc so we can call it without ACLs
-sub _AdminCc {
-    my $self     = shift;
-    my $admin_cc = $self->Watchers();
-    $admin_cc->LimitToAdminCc();
-    return ($admin_cc);
+    my $group = RT::Group->new($self->CurrentUser);
+    if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $group->LoadQueueGroup(Type => 'AdminCc', Queue => $self->Id);
+    }
+    return ($group);
+
 }
 
 # }}}
@@ -400,96 +654,50 @@ sub _AdminCc {
 # {{{ IsWatcher, IsCc, IsAdminCc
 
 # {{{ sub IsWatcher
-
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher
+=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and User. User is either a user object or string containing an email address. Returns true if that user or string
-is a queue watcher. Returns undef otherwise
+Takes a param hash with the attributes Type and PrincipalId
+
+Type is one of Requestor, Cc, AdminCc and Owner
+
+PrincipalId is an RT::Principal id 
+
+Returns true if that principal is a member of the group Type for this queue
+
 
 =cut
 
 sub IsWatcher {
     my $self = shift;
 
-    my %args = (
-        Type  => 'Requestor',
-        Id    => undef,
-        Email => undef,
+    my %args = ( Type  => 'Cc',
+        PrincipalId    => undef,
         @_
     );
 
-    #ACL check - can't do it. we need this method for ACL checks
-    #    unless ($self->CurrentUserHasRight('SeeQueue')) {
-    #	return(undef);
-    #    }
+    # Load the relevant group. 
+    my $group = RT::Group->new($self->CurrentUser);
+    $group->LoadQueueGroup(Type => $args{'Type'}, Queue => $self->id);
+    # Ask if it has the member in question
 
-    my %cols = (
-        'Type'  => $args{'Type'},
-        'Scope' => 'Queue',
-        'Value' => $self->Id
-    );
-    if ( defined( $args{'Id'} ) ) {
-        if ( ref( $args{'Id'} ) )
-        {    #If it's a ref, assume it's an RT::User object;
-                #Dangerous but ok for now
-            $cols{'Owner'} = $args{'Id'}->Id;
-        }
-        elsif ( $args{'Id'} =~ /^\d+$/ )
-        {       # if it's an integer, it's an RT::User obj
-            $cols{'Owner'} = $args{'Id'};
-        }
-        else {
-            $cols{'Email'} = $args{'Id'};
-        }
-    }
+    my $principal = RT::Principal->new($self->CurrentUser);
+    $principal->Load($args{'PrincipalId'});
 
-    if ( defined $args{'Email'} ) {
-        $cols{'Email'} = $args{'Email'};
-    }
-
-    my ($description);
-    $description = join ( ":", %cols );
-
-    #If we've cached a positive match...
-    if ( defined $self->{'watchers_cache'}->{"$description"} ) {
-        if ( $self->{'watchers_cache'}->{"$description"} == 1 ) {
-            return (1);
-        }
-
-        #If we've cached a negative match...
-        else {
-            return (undef);
-        }
-    }
-
-    require RT::Watcher;
-    my $watcher = new RT::Watcher( $self->CurrentUser );
-    $watcher->LoadByCols(%cols);
-
-    if ( $watcher->id ) {
-        $self->{'watchers_cache'}->{"$description"} = 1;
-        return (1);
-    }
-    else {
-        $self->{'watchers_cache'}->{"$description"} = 0;
-        return (undef);
-    }
-
+    return ($group->HasMember($principal));
 }
 
 # }}}
 
+
 # {{{ sub IsCc
 
-=head2 IsCc
+=head2 IsCc PRINCIPAL_ID
 
-Takes a string. Returns true if the string is a Cc watcher of the current queue
+  Takes an RT::Principal id.
+  Returns true if the principal is a requestor of the current queue.
 
-=item Bugs
-
-Should also be able to handle an RT::User object
 
 =cut
 
@@ -497,7 +705,7 @@ sub IsCc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->IsWatcher( Type => 'Cc', Id => $cc ) );
+    return ( $self->IsWatcher( Type => 'Cc', PrincipalId => $cc ) );
 
 }
 
@@ -505,293 +713,59 @@ sub IsCc {
 
 # {{{ sub IsAdminCc
 
-=head2 IsAdminCc
+=head2 IsAdminCc PRINCIPAL_ID
 
-Takes a string. Returns true if the string is an AdminCc watcher of the current queue
-
-=item Bugs
-
-Should also be able to handle an RT::User object
+  Takes an RT::Principal id.
+  Returns true if the principal is a requestor of the current queue.
 
 =cut
 
 sub IsAdminCc {
-    my $self    = shift;
-    my $admincc = shift;
+    my $self   = shift;
+    my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'AdminCc', Id => $admincc ) );
+    return ( $self->IsWatcher( Type => 'AdminCc', PrincipalId => $person ) );
 
 }
 
 # }}}
 
+
 # }}}
 
-# {{{ sub AddWatcher
 
-=head2 AddWatcher
+# {{{ sub AdminCcAddresses 
 
-Takes a paramhash of Email, Owner and Type. Type is one of 'Cc' or 'AdminCc',
-We need either an Email Address in Email or a userid in Owner
+=head2 AdminCcAddresses
+
+Takes nothing. returns a string: All Ticket/Queue AdminCcs.
 
 =cut
 
-sub AddWatcher {
+sub AdminCcAddresses {
     my $self = shift;
-    my %args = (
-        Email => undef,
-        Type  => undef,
-        Owner => 0,
-        @_
-    );
 
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if (
-        (
-            ( defined $args{'Email'} )
-            && ( $args{'Email'} eq $self->CurrentUser->EmailAddress )
-        )
-        or ( $args{'Owner'} eq $self->CurrentUser->Id )
-      )
-    {
-
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyQueueWatchers', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') )
-            {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyQueueWatchers', bail
-        elsif ( $args{'Type'} eq 'Cc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('Watch') )
-            {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-        else {
-            $RT::Logger->warn( "$self -> AddWatcher hit code"
-                  . " it never should. We got passed "
-                  . " a type of "
-                  . $args{'Type'} );
-            return ( 0, $self->loc('Error in parameters to AddWatcher') );
-        }
-    }
-
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyQueueWatchers'
-    # bail
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    require RT::Watcher;
-    my $Watcher = new RT::Watcher( $self->CurrentUser );
-    return (
-        $Watcher->Create(
-            Scope => 'Queue',
-            Value => $self->Id,
-            Email => $args{'Email'},
-            Type  => $args{'Type'},
-            Owner => $args{'Owner'}
-          )
-    );
+    return ( $self->AdminCc->MemberEmailAddressesAsString() );
 }
 
 # }}}
 
-# {{{ sub AddCc
+# {{{ sub CcAddresses
 
-=head2 AddCc
+=head2 CcAddresses
 
-Add a Cc to this queue.
-Takes a paramhash of Email and Owner. 
-We need either an Email Address in Email or a userid in Owner
+B<Returns> String: All Queue Ccs as a comma delimited set of email addresses.
 
 =cut
 
-sub AddCc {
+sub CcAddresses {
     my $self = shift;
-    return ( $self->AddWatcher( Type => 'Cc', @_ ) );
+
+    return ( $self->Cc->MemberEmailAddressesAsString() );
 }
 
 # }}}
 
-# {{{ sub AddAdminCc
-
-=head2 AddAdminCc
-
-Add an Administrative Cc to this queue.
-Takes a paramhash of Email and Owner. 
-We need either an Email Address in Email or a userid in Owner
-
-=cut
-
-sub AddAdminCc {
-    my $self = shift;
-    return ( $self->AddWatcher( Type => 'AdminCc', @_ ) );
-}
-
-# }}}
-
-# {{{ sub DeleteWatcher
-
-=head2 DeleteWatcher id [type]
-
-DeleteWatcher takes a single argument which is either an email address 
-or a watcher id.  
-If the first argument is an email address, you need to specify the watcher type you're talking
-about as the second argument. Valid values are 'Cc' or 'AdminCc'.
-It removes that watcher from this Queue\'s list of watchers.
-
-
-=cut
-
-sub DeleteWatcher {
-    my $self = shift;
-    my $id   = shift;
-
-    my $type;
-
-    $type = shift if (@_);
-
-    require RT::Watcher;
-    my $Watcher = new RT::Watcher( $self->CurrentUser );
-
-    #If it\'s a numeric watcherid
-    if ( $id =~ /^(\d*)$/ ) {
-        $Watcher->Load($id);
-    }
-
-    #Otherwise, we'll assume it's an email address
-    elsif ($type) {
-        my ( $result, $msg ) = $Watcher->LoadByValue(
-            Email => $id,
-            Scope => 'Queue',
-            Value => $self->id,
-            Type  => $type
-        );
-        return ( 0, $msg ) unless ($result);
-    }
-
-    else {
-        return (
-            0,
-            $self->loc(
-"Can\'t delete a watcher by email address without specifying a type"
-              )
-        );
-    }
-
-    # {{{ Check ACLS 
-
-    #If the watcher we're trying to delete is for the current user
-    if ( $Watcher->Email eq $self->CurrentUser->EmailAddress ) {
-
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyQueueWatchers', bail
-        if ( $Watcher->Type eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') )
-            {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-
-        #  If it's a  Cc and they don't have
-        #   'Watch' or 'ModifyQueueWatchers', bail
-        elsif ( $Watcher->Type eq 'Cc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('Watch') )
-            {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-        else {
-            $RT::Logger->warn( "$self -> DeleteWatcher hit code"
-                  . " it never should. We got passed "
-                  . " a type of "
-                  . $args{'Type'} );
-            return ( 0, $self->loc('Error in parameters to DeleteWatcher') );
-        }
-    }
-
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyQueueWatchers'
-    # bail
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    unless ( ( $Watcher->Scope eq 'Queue' )
-        and ( $Watcher->Value == $self->id ) )
-    {
-        return ( 0, $self->loc("Not a watcher for this queue") );
-    }
-
-    #Clear out the watchers hash.
-    $self->{'watchers'} = undef;
-
-    my $retval = $Watcher->Delete();
-
-    unless ($retval) {
-        return ( 0, $self->loc("Watcher could not be deleted.") );
-    }
-
-    return ( 1, $self->loc("Watcher deleted") );
-}
-
-# {{{ sub DeleteCc
-
-=head2 DeleteCc EMAIL
-
-Takes an email address. It calls DeleteWatcher with a preset 
-type of 'Cc'
-
-
-=cut
-
-sub DeleteCc {
-    my $self = shift;
-    my $id   = shift;
-    return ( $self->DeleteWatcher( $id, 'Cc' ) );
-}
-
-# }}}
-
-# {{{ sub DeleteAdminCc
-
-=head2 DeleteAdminCc EMAIL
-
-Takes an email address. It calls DeleteWatcher with a preset 
-type of 'AdminCc'
-
-
-=cut
-
-sub DeleteAdminCc {
-    my $self = shift;
-    my $id   = shift;
-    return ( $self->DeleteWatcher( $id, 'AdminCc' ) );
-}
-
-# }}}
-
-# }}}
 
 # }}}
 

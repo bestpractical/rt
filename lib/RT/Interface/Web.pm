@@ -1051,10 +1051,9 @@ sub ProcessTicketWatchers {
     foreach my $key ( keys %$ARGSRef ) {
 
         # {{{ Delete deletable watchers
-        if ( ( $key =~ /^Ticket-DelWatcher-Type-(.*)$/ ) and 
-             ( $ARGSRef->{$key} ) ) {
+        if ( ( $key =~ /^Ticket-DelWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
             my ( $code, $msg ) = 
-                $Ticket->DeleteWatcher(PrincipalId => $ARGSRef->{$key}, 
+                $Ticket->DeleteWatcher(PrincipalId => $2,
                                        Type => $1);
             push @results, $msg;
         }

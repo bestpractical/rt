@@ -1,7 +1,4 @@
-</TD></TR></TABLE>
-</TD>
-</TR>
-<TR><TD COLSPAN=4><IMG SRC="<%$RT::WebImagesURL%>spacer.gif" height=1 ALT="&nbsp;"width=1></TD>
+</TD></TR>
 </TABLE>
 <%ARGS>
 $title => undef

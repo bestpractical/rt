@@ -673,7 +673,6 @@ sub Delete {
 
 # {{{ Routines dealing with watchers.
 
-
 # {{{ _CreateTicketGroups 
 
 =head2 _CreateTicketGroups
@@ -738,7 +737,7 @@ sub _CreateTicketGroups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateTicketGroup(Ticket => $self->Id, Type => $type);
+        my ($id, $msg) = $type_obj->CreateWatcherGroup(Domain => 'Ticket', Instance => $self->Id, Type => $type);
         unless ($id) {
             $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
                                $self->Id.": ".$msg);     
@@ -769,7 +768,6 @@ sub OwnerGroup {
 
 # }}}
 
-# {{{ Routines dealing with adding new watchers
 
 # {{{ sub AddWatcher
 
@@ -849,7 +847,6 @@ sub _AddWatcher {
         @_
     );
 
-    $RT::Logger->debug( "$self->_AddWathcer". join(":",%args));
 
     my $principal = RT::Principal->new($self->CurrentUser);
     if ($args{'PrincipalId'}) {
@@ -923,8 +920,6 @@ sub _AddWatcher {
 # }}}
 
 
-# }}}
-
 # {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
@@ -951,12 +946,15 @@ sub DeleteWatcher {
                  PrincipalId => undef,
                  @_ );
 
+    unless ($args{'PrincipalId'} ) {
+        return(0, $self->loc("No principal specified"));
+    }
     my $principal = RT::Principal->new($self->CurrentUser);
     $principal->Load($args{'PrincipalId'});
 
     # If we can't find this watcher, we need to bail.
     unless ($principal->Id) {
-        return(0, $self->loc("Could not find that user"));
+        return(0, $self->loc("Could not find that principal"));
     }
 
     my $group = RT::Group->new($self->CurrentUser);
@@ -1019,7 +1017,7 @@ sub DeleteWatcher {
 
     unless ( $args{'Silent'} ) {
         $self->_NewTransaction(
-            Type     => 'DeleteWatcher',
+            Type     => 'DelWatcher',
             NewValue => $principal->Id,
             Field    => $args{'Type'}
         );
@@ -1033,101 +1031,57 @@ sub DeleteWatcher {
 
 # }}}
 
-# {{{ sub Watchers
-
-=head2
-
-Watchers returns a Watchers object preloaded with this ticket\'s watchers.
-
-# It should return only the ticket watchers. the actual FooAsString
-# methods capture the queue watchers too. I don't feel thrilled about this,
-# but we don't want the Cc Requestors and AdminCc objects to get filled up
-# with all the queue watchers too. we've got seperate objects for that.
-  # should we rename these as s/(.*)AsString/$1Addresses/ or somesuch?
-
-=cut
-
-sub Watchers {
-    my $self = shift;
-
-    require RT::Watchers;
-    my $watchers = RT::Watchers->new( $self->CurrentUser );
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $watchers->LimitToTicket( $self->id );
-    }
-
-    return ($watchers);
-
-}
-
-# }}}
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
-=head2 RequestorsAsString
+=head2 RequestorAddresses
 
  B<Returns> String: All Ticket Requestor email addresses as a string.
 
 =cut
 
-sub RequestorsAsString {
+sub RequestorAddresses {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
 
-    return ( $self->Requestors->EmailsAsString() );
+    return ( $self->Requestors->MemberEmailAddressesAsString );
 }
 
-=head2 WatchersAsString
 
-B<Returns> String: All Ticket Watchers email addresses as a string
-
-=cut
-
-sub WatchersAsString {
-    my $self = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return ( 0, "Permission Denied" );
-    }
-
-    return ( $self->Watchers->EmailsAsString() );
-
-}
-
-=head2 AdminCcAsString
+=head2 AdminCcAddresses
 
 returns String: All Ticket AdminCc email addresses as a string
 
 =cut
 
-sub AdminCcAsString {
+sub AdminCcAddresses {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
 
-    return ( $self->AdminCc->EmailsAsString() );
+    return ( $self->AdminCc->MemberEmailAddressesAsString )
 
 }
 
-=head2 CcAsString
+=head2 CcAddresses
 
 returns String: All Ticket Ccs as a string of email addresses
 
 =cut
 
-sub CcAsString {
+sub CcAddresses {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
 
-    return ( $self->Cc->EmailsAsString() );
+    return ( $self->Cc->MemberEmailAddressesAsString);
 
 }
 

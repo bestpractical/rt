@@ -409,7 +409,7 @@ Transaction: {$Transaction->Description}
        Queue: {$Ticket->QueueObj->Name}
      Subject: {$Transaction->Subject || $Ticket->Subject || "(No subject given)"}
        Owner: {$Ticket->OwnerObj->Name}
-  Requestors: {$Ticket->Requestors->EmailsAsString()}
+  Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------

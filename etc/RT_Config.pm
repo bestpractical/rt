@@ -274,7 +274,7 @@ $UseFriendlyToLine = 1;
 
 $LogToScreen = 'debug';
 $LogToFile = 'debug';
-$LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
+$LogToFileNamed = "$LogDir/rt.log"; #log to rt.log.<pid>.<user>
 
 # }}}
 
@@ -338,7 +338,7 @@ $WebExternalAuth = undef;
 	 TicketAttribute => 'Subject'
 	 },
        { Header => 'Requestor(s)',
-	 TicketAttribute => 'RequestorsAsString'
+	 TicketAttribute => 'RequestorAddresses'
 	 },
        { Header => 'Status',
 	 TicketAttribute => 'Status'

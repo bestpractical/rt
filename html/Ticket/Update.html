@@ -11,17 +11,17 @@
 <a href="ModifyPeople.html?id=<%$Ticket->Id%>">Ticket watchers</A></TD><TD align=right>
 Requestor:
 </TD><TD>
-<b><% $Ticket->RequestorsAsString %></b>
+<b><% $Ticket->RequestorAddresses %></b>
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD align=right>
 Cc:
 </TD><TD>
-<b><% $Ticket->CcAsString %></b>
+<b><% $Ticket->CcAddresses %></b>
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD align=right>
 AdminCc:
 </TD><TD>
-<b><% $Ticket->AdminCcAsString %></b>
+<b><% $Ticket->AdminCcAddresses %></b>
 </TD></TR>
 </TR>
 </TABLE>

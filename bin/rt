@@ -1100,9 +1100,9 @@ sub ShowSummary  {
     print <<EOFORM;
 Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->Name]}
       Subject: @{[$Ticket->Subject]}
-   Requestors: @{[$Ticket->RequestorsAsString]}
-           Cc: @{[$Ticket->CcAsString]}
-     Admin Cc: @{[$Ticket->AdminCcAsString]}
+   Requestors: @{[$Ticket->RequestorAddresses]}
+           Cc: @{[$Ticket->CcAddresses]}
+     Admin Cc: @{[$Ticket->AdminCcAddresses]}
         Owner: @{[$Ticket->OwnerObj->Name]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
@@ -1228,7 +1228,7 @@ sub BuildListingFormat {
 		    requestor => {  chars => '10',
 				    justify => 'r',
 				    title => 'Requestor',
-				    value => '$Ticket->RequestorsAsString'
+				    value => '$Ticket->RequestorAddresses'
 				 },
 		    created => {  chars => '12',
 				  justify => 'r',

@@ -43,6 +43,8 @@ ok ($ng->AddMember('1' ), "Added a member to the group");
 ok ($ng->AddMember('2' ), "Added a member to the group");
 ok ($ng->AddMember('3' ), "Added a member to the group");
 
+# Group 1 now has members 1, 2 ,3
+
 my $group_2 = RT::Group->new($RT::SystemUser);
 ok (my ($id_2, $msg_2) = $group_2->CreateSystemGroup( Name => 'TestGroup2', Description => 'A second test group',
                     Domain => 'System', Instance => ''), 'Created a new group');
@@ -50,11 +52,15 @@ ok ($id_2 != 0, "Created group 2 ok");
 ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
 ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
 
+# Group 2 how has 1, g1->{1, 2,3}
+
 my $group_3 = RT::Group->new($RT::SystemUser);
 ok (($id_3, $msg) = $group_3->CreateSystemGroup( Name => 'TestGroup3', Description => 'A second test group',
                     Domain => 'System', Instance => ''), 'Created a new group');
 ok ($id_3 != 0, "Created group 3 ok");
 ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
+
+# g3 now has g2->{1, g1->{1,2,3}}
 
 my $principal_1 = RT::Principal->new($RT::SystemUser);
 $principal_1->Load('1');
@@ -63,14 +69,27 @@ my $principal_2 = RT::Principal->new($RT::SystemUser);
 $principal_2->Load('2');
 
 ok ($group_3->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
-ok($group_3->HasMember($principal_2) eq undef, "group 3 doesn't have member 2");
-ok($group_3->HasMemberRecursively($principal_2) eq undef, "group 3 has member 2 recursively");
 
+# g3 now has 1, g2->{1, g1->{1,2,3}}
+
+ok($group_3->HasMember($principal_2) == undef, "group 3 doesn't have member 2");
+ok($group_3->HasMemberRecursively($principal_2), "group 3 has member 2 recursively");
 
 ok($ng->HasMember($principal_2) , "group ".$ng->Id." has member 2");
 my ($delid , $delmsg) =$ng->DeleteMember($principal_2->Id);
 ok ($delid !=0, "Sucessfully deleted it-".$delid."-".$delmsg);
 
+#Gotta reload the group objects, since we've been messing with various internals.
+# we shouldn't need to do this.
+#$ng->LoadSystemGroup('TestGroup');
+#$group_2->LoadSystemGroup('TestGroup2');
+#$group_3->LoadSystemGroup('TestGroup');
+
+# G1 now has 1, 3
+# Group 2 how has 1, g1->{1, 3}
+# g3 now has  1, g2->{1, g1->{1, 3}}
+
+ok(!$ng->HasMember($principal_2)  , "group ".$ng->Id." no longer has member 2");
 
 ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 doesn't have member 2");
 ok($group_2->HasMemberRecursively($principal_2) == undef, "group 2 doesn't have member 2");
@@ -158,6 +177,33 @@ sub LoadTicketGroup {
                 @_);
         $self->LoadByCols( Domain => 'Ticket',
                            Instance =>$args{'Ticket'}, 
+                           Type => $args{'Type'}
+                           );
+}
+
+# }}}
+
+# {{{ sub LoadQueueGroup 
+
+=head2 LoadQueueGroup  { Queue => Queue_ID, Type => TYPE }
+
+Loads a Queue group from the database. 
+
+Takes a param hash with 2 parameters:
+
+    Queue is the QueueId we're curious about
+    Type is the type of Group we're trying to load: 
+        Requestor, Cc, AdminCc, Owner
+
+=cut
+
+sub LoadQueueGroup {
+    my $self       = shift;
+    my %args = (Queue => undef,
+                Type => undef,
+                @_);
+        $self->LoadByCols( Domain => 'Queue',
+                           Instance =>$args{'Queue'}, 
                            Type => $args{'Type'}
                            );
 }
@@ -258,26 +304,29 @@ sub CreateSystemGroup {
 
 # }}}
 
-=head2 CreateTicketGroup { Type =>  TYPE, Ticket => ID }
+# {{{ CreateWatcherGroup 
+=head2 CreateWatchertGroup { Domain= > DOMAIN, Type =>  TYPE, Instance => ID }
 
 A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
 Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
+Domain is one of (Ticket || Queue)
+Instance is the id of the ticket or queue in question
 
-
-This routine expects to be called from Ticket->CreateTicketGroups _inside of a transaction_
+This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _inside of a transaction_
 
 =cut
 
-sub CreateTicketGroup {
+sub CreateWatcherGroup {
     my $self = shift;
-    my %args = ( Ticket => undef,
+    my %args = ( Instance => undef,
                  Type => undef,
+                 Domain => undef,
                  @_);
     unless ($args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/) {
         return  (0, $self->loc("Invalid Group Type"));
     }
 
-    return($self->_Create( Domain => 'Ticket', Instance => $args{'Ticket'} , Type => $args{'Type'}));
+    return($self->_Create( Domain => $args{'Domain'}, Instance => $args{'Instance'} , Type => $args{'Type'}));
 }
 
 # }}}
@@ -302,11 +351,74 @@ sub Delete {
 
 # }}}
 
+# {{{ DeepMembersObj
+
+=head2 DeepMembersObj
+
+Returns an RT::CachedGroupMembers object of this group's members.
+
+=cut
+
+sub DeepMembersObj {
+    my $self = shift;
+    my $members_obj = RT::CachedGroupMembers->new( $self->CurrentUser );
+
+    #If we don't have rights, don't include any results
+    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+
+    return ( $members_obj );
+
+}
+
+# }}}
+
+
+# {{{ UserMembersObj
+
+=head2 UserMembersObj
+
+Returns an RT::Users object of this group's members, including
+all members of subgroups
+
+=cut
+
+sub UserMembersObj {
+    my $self = shift;
+
+    my $users = RT::Users->new($self->CurrentUser);
+
+    #If we don't have rights, don't include any results
+    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+
+    my $principals = $users->NewAlias('Principals');
+
+    $users->Join(ALIAS1 => 'main', FIELD1 => 'id',
+                 ALIAS2 => $principals, FIELD2 => 'ObjectId');
+    $users->Limit(ALIAS =>$principals,
+                  FIELD => 'PrincipalType', OPERATOR => '=', VALUE => 'User');
+
+    my $cached_members = $users->NewAlias('CachedGroupMembers');
+    $users->Join(ALIAS1 => $cached_members, FIELD1 => 'MemberId',
+                 ALIAS2 => $principals, FIELD2 => 'id');
+    $users->Limit(ALIAS => $cached_members, 
+                  FIELD => 'GroupId',
+                  OPERATOR => '=',
+                  VALUE => $self->PrincipalId);
+
+
+    return ( $users);
+
+}
+
+# }}}
+
+
 # {{{ MembersObj
 
 =head2 MembersObj
 
-Returns an RT::Principals object of this group's members.
+Returns an RT::CachedGroupMembers object of this group's members.
 
 =cut
 
@@ -323,6 +435,42 @@ sub MembersObj {
 }
 
 # }}}
+
+=head2 MemberEmailAddresses
+
+Returns an array of the email addresses of all of this group's members
+
+
+=cut
+
+sub MemberEmailAddresses {
+    my $self = shift;
+
+    my %addresses;
+    my $members = $self->UserMembersObj();
+    while (my $member = $members->Next) {
+        $addresses{$member->EmailAddress} = 1;
+    }
+    return(sort keys %addresses);
+}
+
+# }}}
+
+# {{{ MemberEmailAddressesAsString
+
+=head2 MemberEmailAddressesAsString
+
+Returns a comma delimited string of the email addresses of all users 
+who are members of this group.
+
+=cut
+
+# }}}
+
+sub MemberEmailAddressesAsString {
+    my $self = shift;
+    return (join(', ', $self->MemberEmailAddresses));
+}
 
 # {{{ AddMember
 
@@ -429,7 +577,7 @@ sub HasMember {
 
 =head2 HasMemberRecursively RT::Principal
 
-Takes an RT::Principal object and returns a GroupMember Id if that user is a member of 
+Takes an RT::Principal object and returns true if that user is a member of 
 this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
@@ -447,13 +595,13 @@ sub HasMemberRecursively {
         return(undef);
     }
 
-    my $member_obj = RT::GroupMember->new( $self->CurrentUser );
+    my $member_obj = RT::CachedGroupMember->new( $self->CurrentUser );
     $member_obj->LoadByCols( MemberId => $principal->Id,
                              GroupId => $self->PrincipalId );
 
     #If we have a member object
     if ( defined $member_obj->id ) {
-        return ( $member_obj->id );
+        return ( 1);
     }
 
     #If Load returns no objects, we have an undef id. 
@@ -463,6 +611,7 @@ sub HasMemberRecursively {
 }
 
 # }}}
+
 
 # {{{ DeleteMember
 

@@ -17,18 +17,18 @@
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 % if ($ShowBar) {
-<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=2 BGCOLOR="#993333">
 <TR VALIGN=TOP>
 <TD><IMG SRC="<%$RT::LogoURL%>" alt="RT"></TD>
 <TD VALIGN=CENTER ALIGN=LEFT>
-<font size=+2 color="#ffffff">
+<font size=+1 color="#ffffff">
 <B>
 <%$Title%>
 </B>
 </font>
 </TD>
 <TD ALIGN=RIGHT>
-<font color="#ffffff" size=-1>
+<font color="#ffffff" size=-2>
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 <&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b>
 </&>

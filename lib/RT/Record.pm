@@ -27,7 +27,7 @@ use RT::User;
 use RT::Base;
 use DBIx::SearchBuilder::Record::Cachable;
 
-@ISA = qw(DBIx::SearchBuilder::Record RT::Base);
+@ISA = qw(DBIx::SearchBuilder::Record::Cachable RT::Base);
 
 
 # {{{ sub _Init 

@@ -1577,14 +1577,9 @@ sub _TicketColumnValue {
 	      
 	};
 	  
-	  /^watcher/i && do {
-	      last SWITCH; 
-	      $Ticket->WatchersAsString();
-	  };	
-	
 	/^requestor/i && do {
 	    last SWITCH; 
-	    $Ticket->RequestorsAsString();
+	    $Ticket->RequestorAddresses();
 	};	
 	/^cc/i && do {
 	    last SWITCH; 
@@ -1594,7 +1589,7 @@ sub _TicketColumnValue {
 	
 	/^admincc/i && do {
 	    last SWITCH; 
-	    $Ticket->AdminCcAsString();
+	    $Ticket->AdminCcAddresses();
 	};
 	
     }

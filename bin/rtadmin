@@ -440,8 +440,7 @@ sub AdminQueue {
         }
 
         if ( $args{'list-watchers'} ) {
-            require RT::Watchers;
-            my $watchers = new RT::Watchers($CurrentUser);
+            die "TODO XXXX unimplemented";
             $watchers->LimitToQueue( $queue_obj->id );
             while ( my $watcher = $watchers->Next() ) {
                 printf( "%10s %-60s\n", $watcher->Type, $watcher->Email );

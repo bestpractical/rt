@@ -79,7 +79,7 @@ else {
     if ($id eq 'new') {
        my ($val, $msg) =  $QueueObj->Create(Name => $Name);
        if ($val == 0 ) {
-           Abort("Could not create queue: $msg");
+           Abort("$msg");
 	}
 	else {
 		push @results, $msg;

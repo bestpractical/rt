@@ -10,62 +10,11 @@
 
 <TABLE WIDTH=100%>
 <TR>
-<TD VALIGN=TOP >
-
-<h3>Current watchers</h3>
-<i>(Check box to delete)</i><br><BR>
-
-
-Cc:
-
-<ul>
-
-%# Print out a placeholder if there are none.
-%if ($cc->Count == 0 ) {
-<li><i>none</i>
-% }
-
-%while (my $watcher=$cc->Next) {
-<li>
-<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>->DelWatcher-Principal-<%$watcher->PrincipalId%>" VALUE = "Cc" UNCHECKED>
-%# account
-%if ($watcher->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
-<%$watcher->OwnerObj->RealName%></a>:
-%} else {
-Email address:
-%}
-<i><%$watcher->Email%></i>
-%}
-</ul>
-
-
-Administrative Cc:
-<UL>
-%# Print out a placeholder if there are none.
-%if ($admincc->Count == 0 ) {
-<li><i>none</i>
-% }
-
-%while (my $watcher=$admincc->Next) {
-<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>->DelWatcher-Principal-<%$watcher->PrincipalId%>" VALUE = "AdminCc" UNCHECKED>
-%# account
-%if ($watcher->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
-<%$watcher->OwnerObj->RealName%></a>:
-%} else {
-Email address:
-%}
-<i><%$watcher->Email%></i>
-%}
-</UL>
-</TD>
-
 <TD VALIGN=TOP>
 <h3>New watchers</h3>
 Find people whose<BR>
 <& /Elements/SelectUsers &>
-
+<input type=submit name="OnlySearchForPeople" value="Go!">
 <BR>
 Add new watchers:<br>
 
@@ -74,16 +23,31 @@ Add new watchers:<br>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "Queue-AddWatcher-Principal-".$u->Id &> <%$u->Name%>
+<li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
+"Queue-AddWatcher-Principal-".$u->PrincipalId &> <%$u->Name%>
 (<%$u->RealName%>)
 % }
 </ul>
 % }
 
 </TD>
+<TD VALIGN=TOP >
+
+<h3>Current watchers</h3>
+
+
+Cc:
+
+<& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $QueueObj->Cc &>
+
+Administrative Cc:
+
+<& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $QueueObj->AdminCc &>
+
+
+</TD>
 </TR>
 </TABLE>
-
 
 
 
@@ -110,9 +74,11 @@ $QueueObj->Load($id) || Abort("Couldn't load queue '$id'");
 # {{{ Delete deletable watchers
 
 foreach my $key (keys %ARGS) {
-    if (($key =~ /^Queue-$id-DelWatcher-Principal-(\d*)$/) and ($ARGS{$key})) {
-	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $ARGS{$key},
-                                                    PrincipalId => $1);
+        my $id = $QueueObj->Id;
+
+    if (($key =~ /^Queue-$id-DelWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
+	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
+                                                    PrincipalId => $2);
 	    push @results, $msg;
     }
 }
@@ -125,21 +91,17 @@ foreach my  $key (keys %ARGS) {
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
 	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
-				                             Principal => $1);
+				                             PrincipalId => $1);
 	push @results, $msg;
     }
 }
 
 # }}}
 
-
-
-my $admincc = $QueueObj->AdminCc;
-my $cc = $QueueObj->Cc;
  
 
 if (!$ARGS{'UserString'}) {
-$msg = "No users selected.";
+$msg = "No principals selected.";
  }
 else {
     $Users = new RT::Users($session{'CurrentUser'});
