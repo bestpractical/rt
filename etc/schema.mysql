@@ -190,7 +190,7 @@ CREATE TABLE Templates (
   content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
-  ExtraHeaders VARCHAR(255),
+  ExtraHeaders BLOB,
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
