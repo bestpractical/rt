@@ -1,13 +1,8 @@
-<& feed.css &>
+@import url(feed.css);
 
 feed {
   display:block;
   text-align:left;
-}
-
-feed>link.html[rel="alternate"] {
-  display:block;
-  text-align:center;
 }
 
 link[rel="service.feed"] {
@@ -26,8 +21,3 @@ link[rel="service.feed"]:before {
   text-align:left;
   font-weight:bold;
 }
-
-link.html[rel="service.feed"] {
-  display:inline;
-}
-

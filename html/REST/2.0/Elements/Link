@@ -1,6 +1,15 @@
 %# Make a HTML link and an Atom link
 <link rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" />
-<html:link class="html" rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" />
+<a class="<% $class %>" rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" xmlns="http://www.w3.org/1999/xhtml"><% loc($TextMap{$Relation}) || $Title %></a>
+<%INIT>
+my %TextMap = (
+    'alternate'	    => 'HTML',	# loc
+    'service.post'  => 'Post',	# loc
+    'service.feed'  => 'Index',	# loc
+    'service.edit'  => 'Edit',	# loc
+);
+my $class = lc($TextMap{$Relation} || 'nav');
+</%INIT>
 <%ARGS>
 $Relation => "alternate"
 $Type => "application/x.atom+xml"

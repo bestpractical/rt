@@ -26,73 +26,46 @@ tagline, author {
   display:block;
 }
 
-feed>link.html:before {
-    content: attr(title)
+a {
+  text-decoration: none;
 }
 
-feed>link.html {
+a:hover {
+  text-decoration: underline;
+}
+
+a {
+  padding: 1px 5px 1px 5px;
+  font-size: xx-small;
+  color: #000000;
+}
+
+a.nav {
+  font-size:80%;
   padding: 5px;
   border:solid 1px #dddddd;
   font-size: 90%;
+  color: #0000ff;
 }
 
-feed>link.html[rel="alternate"] {
-  text-align: left;
-  border: none;
-  padding: 0px;
-}
-
-link.html[rel="alternate"]:before {
-  content: "HTML";
+a.html {
   background-color: #003366;
   color: #ccccff;
-  padding: 1px 5px 1px 5px;
-  font-size: xx-small;
 }
 
-feed>link.html[rel="service.post"] {
-  text-align: left;
-  border: none;
-  padding: 0px;
-}
-
-link.html[rel="service.post"]:before {
-  content: "Post";
-  font-weight: bold;
+a.post {
   background-color: #66ee66;
-  color: #000000;
-  padding: 1px 5px 1px 5px;
-  font-size: xx-small;
-}
-
-feed>link.html[rel="service.feed"] {
-  text-align: left;
-  border: none;
-  padding: 0px;
-}
-
-link.html[rel="service.feed"]:before {
-  content: "Index";
-  background-color: #cccccc;
-  color: #000000;
-  padding: 1px 5px 1px 5px;
-  font-size: xx-small;
-}
-
-feed>link.html[rel="service.edit"] {
-  display: block;
-  text-align: left;
-  border: none;
-  padding: 0px;
-}
-
-link.html[rel="service.edit"]:before {
-  content: "Edit";
   font-weight: bold;
+}
+
+a.index {
+  background-color: #cccccc;
+}
+
+a.edit {
   background-color: #cccc66;
   color: #000033;
-  padding: 1px 5px 1px 5px;
-  font-size: xx-small;
+  font-weight: bold;
 }
 
 entry title {
@@ -134,11 +107,6 @@ entry {
   padding:5px 0px 0px 0px;
   margin:5px 5px 0px 10px;
   
-}
-
-entry link {
-  color:#aaaaaa;
-  font-size:80%;
 }
 
 issued,modified,created,name,id {

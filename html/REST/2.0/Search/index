@@ -1,10 +1,7 @@
 %# Search, aka FeedURI
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/css" href="<% $BaseURI %>/NoAuth/feed.css"?>
-<feed version="0.3"
-  xmlns="http://purl.org/atom/ns#"
-  xmlns:html="http://www.w3.org/1999/xhtml"
->
+<feed version="0.3" xmlns="http://purl.org/atom/ns#">
   <title><&|/l&>Query</&>: <% loc($Type) %></title>
   <author>
     <name><% $RT::Organization %></name>
@@ -14,7 +11,6 @@
     <&|/l, $page, int(($TotalFound-1)/$rows)+1&>Page [_1] of [_2]</&>
     (<&|/l, $TotalFound&>[_1] Total</&>)
   </tagline>
-  <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %></id>
   <& $Link, Relation => "service.feed", URI => $BaseURI, Title => loc("Homepage") &>
   <& $Link, Relation => "service.post", URI => "$FeedURI.new", Title => loc("Create"). ": ". loc($Type) &>
 %# XXX - The URI below is incorrect; should point to collection URL
@@ -28,10 +24,10 @@
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
     <created><% $entry->{Created} %></created>
-    <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %>/<% $entry->{Id} %></id>
+    <id><% $entry->{URI} %></id>
     <& $Link, Relation => "service.edit", URI => "$FeedURI/$entry->{Id}", Title => loc("Edit"). ": $entry->{Name}" &>
-% if ($entry->{URI}) {
-    <& $Link, Type => 'text/html', URI => "$RT::WebURL$entry->{URI}", Title => $entry->{Name} &>
+% if ($entry->{HTML_URL}) {
+    <& $Link, Type => 'text/html', URI => "$RT::WebURL$entry->{HTML_URL}", Title => $entry->{Name} &>
 % }
   </entry>
 % }
@@ -66,16 +62,16 @@ my @entries;
 
 while (my $entry = $List->Next) {
     my %entry = map { $_ => eval { $entry->$_ } || '' }
-	qw(Id Name Description);
+	qw(Id Name Description URI);
     $entry{Created} = eval { $entry->CreatedObj->W3CDTF }
 	|| eval { $entry->PrincipalObj->CreatedObj->W3CDTF };
     $entry{LastUpdated} = eval { $entry->LastUpdatedObj->W3CDTF }
 	|| eval { $entry->PrincipalObj->LastUpdatedObj->W3CDTF };
 
     if ($URI{$Type}) {
-	$entry{URI} = $URI{$Type} . $entry{Id};
+	$entry{HTML_URI} = $URI{$Type} . $entry{Id};
 	if (my $queue = eval { $entry->Queue } ) {
-	    $entry{URI} =~ s/Global/Queues/;
+	    $entry{HTML_URI} =~ s/Global/Queues/;
 	    $entry{Params} .= "&Queue=$queue";
 	}
     }
