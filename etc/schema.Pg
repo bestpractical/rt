@@ -1,0 +1,235 @@
+CREATE TABLE KeywordSelects (
+  id serial NOT NULL  ,
+  Name varchar(255)   ,
+  Keyword integer   ,
+  Single integer   ,
+  Depth integer NOT NULL DEFAULT 0 ,
+  ObjectType varchar(32) NOT NULL  ,
+  ObjectField varchar(32)   ,
+  ObjectValue varchar(255)   ,
+  Disabled int2 NOT NULL DEFAULT 0 
+);
+CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
+CREATE INDEX KeywordSelects2 ON KeywordSelects (ObjectType, ObjectField, ObjectValue);
+CREATE TABLE Attachments (
+  id serial NOT NULL  ,
+  TransactionId integer NOT NULL  ,
+  Parent integer   ,
+  MessageId varchar(160)   ,
+  Subject varchar(255)   ,
+  Filename varchar(255)   ,
+  ContentType varchar(80)   ,
+  ContentEncoding varchar(80)   ,
+  Content TEXT   ,
+  Headers TEXT   ,
+  Creator integer   ,
+  Created timestamp   
+);
+CREATE TABLE Queues (
+  id serial NOT NULL  ,
+  Name varchar(40) NOT NULL  ,
+  Description varchar(120)   ,
+  CorrespondAddress varchar(40)   ,
+  CommentAddress varchar(40)   ,
+  InitialPriority integer   ,
+  FinalPriority integer   ,
+  DefaultDueIn integer   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   ,
+  Disabled int2 NOT NULL DEFAULT 0 
+);
+CREATE UNIQUE INDEX Queues1 ON Queues (Name);
+CREATE TABLE Links (
+  id serial NOT NULL  ,
+  Base varchar(240)   ,
+  Target varchar(240)   ,
+  Type varchar(20) NOT NULL  ,
+  LocalTarget integer   ,
+  LocalBase integer   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   ,
+  Creator integer   ,
+  Created timestamp   
+);
+CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
+CREATE TABLE Groups (
+  id serial NOT NULL  ,
+  Name varchar(16)   ,
+  Description varchar(64)   ,
+  Pseudo integer NOT NULL DEFAULT 0 
+);
+CREATE UNIQUE INDEX Groups1 ON Groups (Name);
+CREATE TABLE Watchers (
+  id serial NOT NULL  ,
+  Type varchar(16)   ,
+  Scope varchar(16)   ,
+  Value integer   ,
+  Email varchar(255)   ,
+  Quiet integer   ,
+  Owner integer   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   
+);
+CREATE TABLE ScripConditions (
+  id serial NOT NULL  ,
+  Name varchar(255)   ,
+  Description varchar(255)   ,
+  ExecModule varchar(60)   ,
+  Argument varchar(255)   ,
+  ApplicableTransTypes varchar(60)   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   
+);
+CREATE TABLE Transactions (
+  id serial NOT NULL  ,
+  EffectiveTicket integer   ,
+  Ticket integer   ,
+  TimeTaken integer   ,
+  Type varchar(20)   ,
+  Field varchar(40)   ,
+  OldValue varchar(255)   ,
+  NewValue varchar(255)   ,
+  Data varchar(100)   ,
+  Creator integer   ,
+  Created timestamp   
+);
+CREATE TABLE Scrips (
+  id serial NOT NULL  ,
+  ScripCondition integer   ,
+  ScripAction integer   ,
+  Stage varchar(32)   ,
+  Queue integer   ,
+  Template integer   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   
+);
+CREATE TABLE ACL (
+  id serial NOT NULL  ,
+  PrincipalId integer   ,
+  PrincipalType varchar(25)   ,
+  RightName varchar(25)   ,
+  RightScope varchar(25)   ,
+  RightAppliesTo integer   
+);
+CREATE TABLE GroupMembers (
+  id serial NOT NULL  ,
+  GroupId integer   ,
+  UserId integer   
+);
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
+CREATE TABLE ObjectKeywords (
+  id serial NOT NULL  ,
+  Keyword integer NOT NULL  ,
+  KeywordSelect integer NOT NULL  ,
+  ObjectType varchar(32) NOT NULL  ,
+  ObjectId integer NOT NULL  
+);
+CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords (ObjectId, ObjectType, KeywordSelect, Keyword);
+CREATE INDEX ObjectKeywords2 ON ObjectKeywords (ObjectId, ObjectType);
+CREATE INDEX ObjectKeywords3 ON ObjectKeywords (Keyword);
+CREATE TABLE Keywords (
+  id serial NOT NULL  ,
+  Name varchar(255) NOT NULL  ,
+  Description varchar(255)   ,
+  Parent integer   ,
+  Disabled int2 NOT NULL DEFAULT 0 
+);
+CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
+CREATE INDEX Keywords2 ON Keywords (Name);
+CREATE INDEX Keywords3 ON Keywords (Parent);
+CREATE TABLE Users (
+  id serial NOT NULL  ,
+  Name varchar(120) NOT NULL  ,
+  Password varchar(40)   ,
+  Comments TEXT   ,
+  Signature TEXT   ,
+  EmailAddress varchar(120)   ,
+  FreeformContactInfo TEXT   ,
+  Organization varchar(200)   ,
+  Privileged integer   ,
+  RealName varchar(120)   ,
+  Nickname varchar(16)   ,
+  Lang varchar(16)   ,
+  EmailEncoding varchar(16)   ,
+  WebEncoding varchar(16)   ,
+  ExternalContactInfoId varchar(100)   ,
+  ContactInfoSystem varchar(30)   ,
+  ExternalAuthId varchar(100)   ,
+  AuthSystem varchar(30)   ,
+  Gecos varchar(16)   ,
+  HomePhone varchar(30)   ,
+  WorkPhone varchar(30)   ,
+  MobilePhone varchar(30)   ,
+  PagerPhone varchar(30)   ,
+  Address1 varchar(200)   ,
+  Address2 varchar(200)   ,
+  City varchar(100)   ,
+  State varchar(100)   ,
+  Zip varchar(16)   ,
+  Country varchar(50)   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   ,
+  Disabled int2 NOT NULL DEFAULT 0 
+);
+CREATE UNIQUE INDEX Users1 ON Users (Name);
+CREATE TABLE Tickets (
+  id serial NOT NULL  ,
+  EffectiveId integer   ,
+  Queue integer   ,
+  Type varchar(16)   ,
+  IssueStatement integer   ,
+  Resolution integer   ,
+  Owner integer   ,
+  Subject varchar(200)  DEFAULT '[no subject]' ,
+  InitialPriority integer   ,
+  FinalPriority integer   ,
+  Priority integer   ,
+  Status varchar(10)   ,
+  TimeWorked integer   ,
+  TimeLeft integer   ,
+  Told timestamp   ,
+  Starts timestamp   ,
+  Started timestamp   ,
+  Due timestamp   ,
+  Resolved timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   ,
+  Creator integer   ,
+  Created timestamp   ,
+  Disabled int2 NOT NULL DEFAULT 0 
+);
+CREATE TABLE ScripActions (
+  id serial NOT NULL  ,
+  Name varchar(255)   ,
+  Description varchar(255)   ,
+  ExecModule varchar(60)   ,
+  Argument varchar(255)   ,
+  Creator integer   ,
+  Created timestamp   ,
+  LastUpdatedBy integer   ,
+  LastUpdated timestamp   
+);
+CREATE TABLE Templates (
+  id serial NOT NULL  ,
+  Queue integer NOT NULL DEFAULT 0 ,
+  Name varchar(40) NOT NULL  ,
+  Description varchar(120)   ,
+  Type varchar(16)   ,
+  Language varchar(16)   ,
+  TranslationOf integer   ,
+  Content TEXT   ,
+  LastUpdated timestamp   ,
+  LastUpdatedBy integer   ,
+  Creator integer   ,
+  Created timestamp   
+);

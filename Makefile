@@ -75,7 +75,7 @@ RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 #
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
-# "Pg" gets you the preliminary postgres support. 
+# "Pg" is known to work
 # "Oracle" is in the early stages of working.
 #	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
 
@@ -90,7 +90,8 @@ DB_HOME	      	= /usr
 # environment to run your commandline SQL tools
 
 # Set DB_DBA to the name of a DB user with permission to create new databases 
-# Set DB_DBA_PASSWORD to that user's password
+# Set DB_DBA_PASSWORD to that user's password (if you don't, you'll be prompted
+# later)
 
 DB_DBA	           =	root
 DB_DBA_PASSWORD	  =	
@@ -249,9 +250,12 @@ html-install:
 
 initialize: database acls
 
+genschema:
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' generate
 
 database:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' '$(DB_RT_USER)'
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' insert
+
 
 acls:
 	cp etc/acl.$(DB_TYPE) '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
@@ -262,7 +266,7 @@ acls:
 				s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
-	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
+	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
 
 
 
