@@ -190,7 +190,10 @@ if ($UserObj->Id) {
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
-    $session{'CurrentUser'}->LanguageHandle($Lang) if $Lang;
+    if ($Lang) {
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'}= $session{'CurrentUser'}; # Force writeback
+    }
     push (@results,@fieldresults);
 
 
