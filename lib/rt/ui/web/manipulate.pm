@@ -1044,13 +1044,13 @@ sub display_commands {
 	require rt::ui::web::forms;
 	print "<hr>";
 
-	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN="MIDDLE">";
+	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
 
-	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN="MIDDLE">";
+	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
 	&FormCreate;
-	print "</TD><TD ALIGN=CENTER VALIGN="MIDDLE">";
+	print "</TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\">";
 	&FormShowNum;
-        print "</TD><TD ALIGN=CENTER VALIGN="MIDDLE"><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
+        print "</TD><TD ALIGN=CENTER VALIGN=\"MIDDLE\"><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
 
 
 
