@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+use strict;
+
+use lib qw(/opt/rt3/lib/);
+
+use RT;
+RT::LoadConfig();
+RT::Init();
+
+use RT::FM::ClassCollection;
+use RT::FM::CustomFieldCollection;
+
+use vars qw/ @Classes @CustomFields @ClassCFs/;
+
+my $datafile = shift;
+
+require "$datafile";
+
+
+# Create classes
+print "Creating classes: ";
+foreach my $class (@Classes) {
+        my $obj = RT::FM::Class->new($RT::SystemUser);
+        my ($val, $msg) = $obj->Create(%$class);
+        if ( $val  ) { 
+                print $val .".";
+        } else {
+                die $msg;
+        }       
+}
+        print "\n";
+
+
+# Create custom fields
+foreach my $CustomField (@CustomFields) {
+        my $obj = RT::FM::CustomField->new($RT::SystemUser);
+
+        my $Classes = $CustomField->{'Classes'};
+        delete $CustomField->{'Classes'};
+        my $values = $CustomField->{'Values'};
+        delete $CustomField->{'Values'};
+
+        my ($val, $msg) = $obj->Create(%$CustomField);
+        if ( $val  ) { 
+                print $val .".";
+        } else {
+                die $msg;
+        }       
+
+
+        foreach my $value (@$values) {
+                $obj->AddValue(%$value);
+        }
+        foreach my $class (@$Classes) {
+                $obj->AddToClass($class);
+        }
+        print "\n";
+}

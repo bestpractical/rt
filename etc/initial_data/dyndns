@@ -1,0 +1,30 @@
+@Classes = ( 
+      { Name => 'FAQ' } 
+
+);
+
+@CustomFields = (
+    {  Name   => 'Service',
+       Type   => 'SelectMultiple',
+       Classes => ['FAQ'],
+       Values => [
+
+                                { Name => 'Custom DNS', },
+                                { Name => 'Secondary DNS', },
+                                { Name => 'MyWebHop', },
+                                { Name => 'Dynamic DNS', },
+                                { Name => 'Static DNS', },
+                                { Name => 'WebHop', },
+                                { Name => 'Uncategorized', }, ] },
+    {  Name   => 'Category',
+       Type   => 'SelectSingle',
+       Classes => ['FAQ'],
+       Values => [ { Name => 'DNS', },
+                   { Name => 'email', },
+                   { Name => 'webserver', },
+                   { Name => 'accounts', },
+                   { Name => 'clients', },
+                   { Name => 'third-party applications', },
+                   { Name => 'general', } ] }
+
+);
