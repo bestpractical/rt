@@ -92,6 +92,5 @@ my $basesize=16;
 <%ARGS>
 $current_toptab => undef
 $toptabs => undef
-$subtabs_scalar => undef
 $level => 0
 </%ARGS>

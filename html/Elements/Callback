@@ -2,7 +2,11 @@
 my @callbacks = $m->interp->resolver->glob_path('/Callbacks/'. $m->callers(1)->path.'/'.$ARGS{'Name'}.'/*');
 # TODO: memoize these callbacks, so we don't have a big perf hit
 foreach my $comp (@callbacks) {
+        next if ($comp =~ /~$/); #skip backup files
         $m->comp($comp, %ARGS);
 }
 return(1);
 </%init>
+<%args>
+$Name => 'Default'
+</%args>

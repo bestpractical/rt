@@ -51,20 +51,13 @@
 </tr>
 </table>
 </TD></TR>
-% if ($tabs_scalar or $actions) {
+% if ($actions) {
 <tr>
   <td class="blue" >
   </td>
   <TD class="blue">
   <table width=100%>
   <tr>
-% }
-
-%# Tabs_scalar
-% if ($tabs_scalar) {
-    <TD class="blue">
-    <span class=nav><% $tabs_scalar |n%></span>
-    </TD>
 % }
 
 %# Actions
@@ -80,9 +73,6 @@
 %  }
     </span>
 % }
-% if ($subactions_scalar) {
-    <% $subactions_scalar |n%>
-% }
 % if ($subactions) {
     <span class="nav">|
 % foreach $action (sort keys %{$subactions}) {
@@ -92,7 +82,7 @@
     </TD>
 % }
 
-% if ($tabs_scalar or $actions) {
+% if ( $actions) {
   </tr>
   </table>
   </td>
@@ -175,10 +165,7 @@ my $toptabs = {     A => { title => loc('Homepage'),
 $current_toptab => undef
 $current_tab => undef
 $tabs => undef
-$tabs_scalar => undef
 $actions => undef
 $subactions => undef
-$subtabs_scalar => undef
-$subactions_scalar => undef
 $Title => undef
 </%ARGS>

@@ -28,9 +28,11 @@
     Title=> $title &>
 <& /Elements/TitleBoxStart, title => $title &>
 
-<FORM ACTION="<%$RT::WebPath%>/Ticket/Update.html?<%($ARGS{QuoteTransaction}) && "QuoteTransaction=$ARGS{QuoteTransaction}&"%><%($Action) && "Action=$Action"%>" NAME="TicketUpdate" 
+<FORM ACTION="Update.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
+<input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
 <input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
+<input type="hidden" name="Action" value="<% $ARGS{Action} %>">
 <font size=-1>
 
 <TABLE>

@@ -27,10 +27,7 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->DependsOn->Next) {
-% my $member = $Link->TargetObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-[<% loc($member->Status) %>]<br>
-
+<& ShowLink, URI => $Link->TargetURI &>
 % }
     </td>
   </tr>
@@ -38,9 +35,7 @@
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->DependedOnBy->Next) {
-% my $member = $Link->BaseObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
-[<% loc($member->Status) %>]<br>
+<& ShowLink, URI => $Link->BaseURI &>
 % }
     </td>
   </tr>
@@ -48,10 +43,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->MemberOf->Next) {
-% my $member = $Link->TargetObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-[<% loc($member->Status) %>]<br>
-
+<& ShowLink, URI => $Link->BaseURI &>
 % }
     </td>
   </tr>
@@ -63,25 +55,15 @@
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->RefersTo->Next) {
-% if ($Link->TargetURI->IsLocal) {
-% my $member = $Link->TargetObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]<br>
-% } else {
-      <A HREF="<%$Link->TargetURI->HREF%>"><%$Link->Target%></A><br>
+<& ShowLink, URI => $Link->TargetURI &>
 % }
-%}
     </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->ReferredToBy->Next) {
-% if ($Link->BaseURI->IsLocal) {
-% my $member = $Link->BaseObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]<br>
-% } else {
-      <A HREF="<%$Link->BaseURI->HREF%>"><%$Link->Base%></A><br>
-%}
+<& ShowLink, URI => $Link->BaseURI &>
 % }
     </td>
   </tr>
