@@ -1,14 +1,13 @@
 # German localization catalog for Request Tracker (RT)
 # FIRST AUTHOR: Florian Bischof <flo@fxb.de>, May 2002
 #
-#: NOT FOUND IN SOURCE
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 2.1.10\n"
-"POT-Creation-Date: 2002-05-22 11:20+0200\n"
-"PO-Revision-Date: 2002-05-30 01:37+0200\n"
+"Project-Id-Version: RT 2.1.54\n"
+"POT-Creation-Date: 2002-06-22 06:06+0200\n"
+"PO-Revision-Date: 2003-02-20 04:47+0200\n"
 "Last-Translator: Florian Bischof <flo@fxb.de>\n"
-"Language-Team: RT German <rt@lambda-bb.de>\n"
+"Language-Team: RT German <rt@fxb.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,131 +16,146 @@ msgstr ""
 msgid "#"
 msgstr "#"
 
-#: html/Approvals/Elements/ShowDependency:46
+#: html/Admin/Queues/Scrip.html:55
+#. ($QueueObj->id)
+msgid "#%1"
+msgstr ""
+
+#: html/Approvals/Elements/ShowDependency:50 html/Ticket/Display.html:26 html/Ticket/Display.html:30
+#. ($Ticket->Id, $Ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "#%1: %2"
-msgstr ""
+msgstr "#%1: %2"
 
-#: lib/RT/Date.pm:322
+#: lib/RT/Date.pm:337
 #. ($s, $time_unit)
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:135
+#: lib/RT/Tickets_Overlay.pm:771
 #. ($args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr ""
+msgstr "%1 %2 %3"
 
-#: lib/RT/Date.pm:358
+#: lib/RT/Date.pm:373
 #. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr ""
+msgstr "%1 %3. %2 %7, %4:%5:%6"
 
-#: lib/RT/Transaction_Overlay.pm:537 lib/RT/Transaction_Overlay.pm:579
+#: lib/RT/Ticket_Overlay.pm:3438 lib/RT/Transaction_Overlay.pm:559 lib/RT/Transaction_Overlay.pm:601
+#. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 added"
-msgstr ""
+msgstr "%1 %2 hinzugefügt"
 
-#: lib/RT/Date.pm:319
+#: lib/RT/Date.pm:334
 #. ($s, $time_unit)
 msgid "%1 %2 ago"
 msgstr "vor %1 %2"
 
-#: lib/RT/Transaction_Overlay.pm:544
+#: lib/RT/Ticket_Overlay.pm:3444 lib/RT/Transaction_Overlay.pm:566
+#. ($cf->Name, $old_value, $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 geändert in %3"
 
-#: lib/RT/Transaction_Overlay.pm:540 lib/RT/Transaction_Overlay.pm:585
-#. ($field, $self->NewValue)
+#: lib/RT/Ticket_Overlay.pm:3441 lib/RT/Transaction_Overlay.pm:562 lib/RT/Transaction_Overlay.pm:607
+#. ($cf->Name, $old_value)
+#. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
-msgstr ""
+msgstr "%1 %2 gelöscht"
 
-#: html/Admin/Elements/EditScrips:52 html/Admin/Elements/ListGlobalScrips:28
+#: html/Admin/Elements/EditScrips:44 html/Admin/Elements/ListGlobalScrips:28
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
-msgstr ""
+msgstr "%1 %2 mit der Vorlage %3"
 
-#: bin/rt:1144
-#. ($l->BaseObj->id, $l->BaseObj->Subject, $l->Type)
+#: NOT FOUND IN SOURCE
 msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 dieses Ticket\\n"
+
+#: html/Search/Listing.html:57
+#. (($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ))
+msgid "%1 - %2 shown"
+msgstr "%1 - %2 angezeigt"
 
 #: bin/rt-crontool:169 bin/rt-crontool:176 bin/rt-crontool:182
 #. ("--search-argument", "--search")
 #. ("--condition-argument", "--condition")
 #. ("--action-argument", "--action")
 msgid "%1 - An argument to pass to %2"
-msgstr ""
+msgstr "%1 - ein Argument zur Übergabe an %2"
 
 #: bin/rt-crontool:185
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr ""
 
+#msgstr "%1 - Schreibe Statusupdates nach STDOUT"
 #: bin/rt-crontool:179
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr ""
+msgstr "%1 - Gebe an, welches Action-Modul benutzt werden soll"
 
 #: bin/rt-crontool:173
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr ""
+msgstr "%1 - Gebe an, welches Condition-Modul benutzt werden soll"
 
 #: bin/rt-crontool:166
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr ""
+msgstr "%1 - Gebe an, welches Search-Modul benutzt werden soll"
 
-#: lib/RT/ScripAction_Overlay.pm:124
+#: lib/RT/ScripAction_Overlay.pm:122
 #. ($self->Id)
 msgid "%1 ScripAction loaded"
 msgstr "ScripAction %1 geladen"
 
-#: lib/RT/Ticket_Overlay.pm:3068
+#: lib/RT/Ticket_Overlay.pm:3471
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 als Wert für %2 hinzugefügt"
 
-#: bin/enhanced-mailgate:315 bin/rt-mailgate:294
-#. ($Action)
+#: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on"
-msgstr "%1 Aliase benötigen zum bearbeiten eine Ticketnummer"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "%1 aliases require a TicketId to work on "
-msgstr "%1 Aliase benötigen zum bearbeiten eine Ticketnummer"
-
-#: bin/enhanced-mailgate:319
-#. ($Action, $CurrentUser->UserObj->EmailAddress, $MessageId)
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
-msgstr "%1 Aliase benötigen zum bearbeiten eine Ticketnummer (von %2) %3"
+msgstr ""
 
-#: html/Ticket/Elements/ShowDates:72 lib/RT/Transaction_Overlay.pm:464
+#: lib/RT/Link_Overlay.pm:117 lib/RT/Link_Overlay.pm:124
+#. ($args{'Base'})
+#. ($args{'Target'})
+msgid "%1 appears to be a local object, but can't be found in the database"
+msgstr "%1 konnte nicht in der Datenbank gefunden werden obwohl es ein lokales Objekt zu sein scheint"
+
+#: html/Ticket/Elements/ShowDates:52 lib/RT/Transaction_Overlay.pm:483
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "am %1 von %2"
 
-#: lib/RT/Transaction_Overlay.pm:515 lib/RT/Transaction_Overlay.pm:607 lib/RT/Transaction_Overlay.pm:610
+#: lib/RT/Transaction_Overlay.pm:537 lib/RT/Transaction_Overlay.pm:626 lib/RT/Transaction_Overlay.pm:635 lib/RT/Transaction_Overlay.pm:638
 #. ($self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue)
 #. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, $self->OldValue, $self->NewValue)
 msgid "%1 changed from %2 to %3"
 msgstr "%1 von %2 in %3 geändert"
 
-#: lib/RT/Interface/Web.pm:811
+#: lib/RT/Interface/Web.pm:857
 msgid "%1 could not be set to %2."
-msgstr ""
+msgstr "%1 konnte nicht auf %2 gesetzt werden."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 couldn't init a transaction (%2)\\n"
-msgstr "%1 konnte eine Transaktion nicht initialisieren (%2)\\n"
+msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2451
+#: lib/RT/Ticket_Overlay.pm:2813
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 konnte den Status nicht auf erledigt setzen. Die RT-Datenbank könnte inkonsistent sein."
@@ -149,186 +163,199 @@ msgstr "%1 konnte den Status nicht auf erledigt setzen. Die RT-Datenbank könnte
 #: html/Elements/MyTickets:25
 #. ($rows)
 msgid "%1 highest priority tickets I own..."
-msgstr "%1 höchstpriorisiertesten mir zugewiesenen Tickets"
+msgstr "%1 mir zugewiesene Tickets mit höchster Priorität..."
 
 #: html/Elements/MyRequests:25
 #. ($rows)
 msgid "%1 highest priority tickets I requested..."
-msgstr "%1 höchstpriorisiertesten von mir ausgestellten Tickets"
+msgstr "%1 von mir ausgelösten Tickets mit höchster Priorität"
 
 #: bin/rt-crontool:161
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
-msgstr ""
+msgstr "%1 ist ein Werkzeug um Tickets über externe Terminierungstools wie \"cron\" zu verarbeiten"
 
-#: lib/RT/Queue_Overlay.pm:675
+#: lib/RT/Queue_Overlay.pm:743
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 ist kein %2 dieses Stapels mehr."
 
-#: lib/RT/Ticket_Overlay.pm:1156
+#: lib/RT/Ticket_Overlay.pm:1570
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 ist kein %2 dieses Tickets mehr."
 
-#: lib/RT/Ticket_Overlay.pm:3124
+#: lib/RT/Ticket_Overlay.pm:3527
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 ist kein Wert des benutzerdefinierten Feldes %2 mehr"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 isn't a valid Queue id."
-msgstr "%1 ist keine gültige Stapelnummer."
+msgstr "%1 ist keine gültige Stapel-Id."
 
-#: html/Ticket/Elements/ShowBasics:39
+#: html/Ticket/Elements/ShowBasics:36
 #. ($TimeWorked)
 msgid "%1 min"
 msgstr "%1 Min"
 
-#: bin/rt:1185
-#. ($message->ContentType)
+#: NOT FOUND IN SOURCE
 msgid "%1 not shown"
-msgstr "%1 nicht angezeigt"
-
-#: html/User/Elements/DelegateRights:72
-#. (loc($ObjectType))
-msgid "%1 rights"
 msgstr ""
 
-#: bin/enhanced-mailgate:673
-#. ($msg)
-msgid "%1 succeeded\\n"
-msgstr "%1 erfolgreich\\n"
-
-#: bin/rt-mailgate:362
-#. ($Action)
-msgid "%1 type unknown for $MessageId"
-msgstr "%1 Typ unbekannt für $MessageId"
-
-#: bin/enhanced-mailgate:383
-#. ($Action, $MessageId)
-msgid "%1 type unknown for %2"
-msgstr "%1 Typ unbekannt für %2"
+#: html/User/Elements/DelegateRights:76
+#. (loc($ObjectType =~ /^RT::(.*)$/))
+msgid "%1 rights"
+msgstr "%1 Rechte"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 was created without a CurrentUser\\n"
-msgstr "%1 wurde ohne einen CurrentUser angelegt"
+msgid "%1 succeeded\\n"
+msgstr ""
 
-#: lib/RT/Action/ResolveMembers.pm:39
+#: NOT FOUND IN SOURCE
+msgid "%1 type unknown for $MessageId"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "%1 type unknown for %2"
+msgstr ""
+
+#: lib/RT/Action/ResolveMembers.pm:42
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 wird alle Mitglieder eines gelösten Gruppentickets lösen."
+msgstr "%1 wird alle Mitglieder eines erledigten Gruppentickets erledigen."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
-msgstr "%1 wird eine [lokale] BASIS halten wenn es abhängig [oder Mitglied] eines bezogenen Tickets ist."
+msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:416
+#: lib/RT/Transaction_Overlay.pm:435
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1: kein Anhang angegeben"
 
-#: html/Ticket/Elements/ShowTransaction:103
+#: html/Ticket/Elements/ShowTransaction:102
 #. ($size)
 msgid "%1b"
-msgstr ""
+msgstr "%1b"
 
-#: html/Ticket/Elements/ShowTransaction:100
+#: html/Ticket/Elements/ShowTransaction:99
 #. (int($size/102.4)/10)
 msgid "%1k"
-msgstr ""
+msgstr "%1k"
 
-#: lib/RT/Ticket_Overlay.pm:726
+#: lib/RT/Ticket_Overlay.pm:1140
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' ist ein ungültiger Wert für Status"
 
-#: bin/enhanced-mailgate:379 bin/rt-mailgate:357
-#. ($Action)
-msgid "'%1' not a recognized action. "
-msgstr "'%1' ist keine bekannte Aktion."
-
 #: NOT FOUND IN SOURCE
-msgid "(Check box to delete group member)"
-msgstr "(markieren um Gruppenmitglied zu löschen)"
+msgid "'%1' not a recognized action. "
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete scrip)"
-msgstr ""
+msgstr "(Markieren um Scrip zu löschen)"
 
-#: html/Admin/Elements/EditScrips:38 html/Admin/Groups/Members.html:50 html/Ticket/Elements/EditLinks:29 html/Ticket/Elements/EditPeople:40 html/User/Groups/Members.html:53
+#: html/Admin/Elements/EditQueueWatchers:29 html/Admin/Elements/EditScrips:35 html/Admin/Elements/EditTemplates:36 html/Admin/Groups/Members.html:52 html/Ticket/Elements/EditLinks:33 html/Ticket/Elements/EditPeople:46 html/User/Groups/Members.html:55
 msgid "(Check box to delete)"
-msgstr "(markieren um zu löschen)"
+msgstr "(Markieren um zu löschen)"
 
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to delete)"
-msgstr "(markieren um zu löschen)"
-
-#: html/Ticket/Create.html:176 html/Ticket/DetailedCreate.html:84
+#: html/Ticket/Create.html:178
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
-msgstr "(gib Ticketnummer oder URLs getrennt durch Leerzeichen ein)"
+msgstr "(gib Ticketnummern oder URLs getrennt durch Leerzeichen ein)"
+
+#: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60
+#. ($RT::CorrespondAddress)
+#. ($RT::CommentAddress)
+msgid "(If left blank, will default to %1"
+msgstr "(Bei Freilassen %1"
+
+#: html/Admin/Elements/EditCustomFields:33 html/Admin/Elements/ListGlobalCustomFields:32
+msgid "(No custom fields)"
+msgstr "(Keine benutzerdefinierten Felder)"
+
+#: html/Admin/Groups/Members.html:50 html/User/Groups/Members.html:53
+msgid "(No members)"
+msgstr "(Keine Mitglieder)"
+
+#: html/Admin/Elements/EditScrips:32 html/Admin/Elements/ListGlobalScrips:32
+msgid "(No scrips)"
+msgstr "(Keine Scrips)"
+
+#: html/Admin/Elements/EditTemplates:31
+msgid "(No templates)"
+msgstr "(Keine Vorlagen)"
+
+#: html/Ticket/Update.html:85
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Schickt eine Blindkopie dieser Aktualisierung an eine durch Komma getrennte Liste von E-Mail-Adressen. Ändert <b>nicht</b> wer künftig Aktualisierungen geschickt bekommt.)"
 
 #: NOT FOUND IN SOURCE
-msgid "(No Value)"
-msgstr "(keine Angabe)"
-
-#: html/Admin/Groups/Members.html:48 html/User/Groups/Members.html:51
-msgid "(No members)"
-msgstr "(keine Mitglieder)"
-
-#: html/Admin/Elements/EditScrips:35 html/Admin/Elements/ListGlobalScrips:32
-msgid "(No scrips)"
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr ""
 
-#: html/Ticket/Update.html:79
-msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "(Schickt eine Blindkopie dieser Aktualisierung an eine kommagetrennte Liste von E-Mail-Adressen. Ändert <b>nicht</b> wer künftig Änderungen geschickt bekommt.)"
+#: html/Ticket/Create.html:79
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Schickt eine Kopie dieser Aktualisierung an eine durch Komma getrennte Liste von administrativen E-Mail-Adressen. Diese <b>werden</b> künftig Aktualisierungen erhalten.)"
 
-#: html/Ticket/Update.html:75
+#: html/Ticket/Update.html:81
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Schickt eine Kopie dieser Aktualisierung an eine durch Komma getrennte Liste von E-Mail-Adressen. Ändert <b>nicht</b> wer künftig Aktualisierungen geschickt bekommt.)"
+
+#: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "(Schickt eine Kopie dieser Aktualisierung an eine kommagetrennte Liste von E-Mail-Adressen. Ändert <b>nicht</b> wer künftig Änderungen geschickt bekommt.)"
+msgstr ""
 
-#: html/Admin/Groups/index.html:36 html/User/Groups/index.html:32
+#: html/Ticket/Create.html:69
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Schickt eine Kopie dieser Aktualisierung an eine durch Komma getrennte Liste von E-Mail-Adressen. Diese <b>werden</b> künftig Aktualisierungen erhalten.)"
+
+#: html/Admin/Groups/index.html:33 html/User/Groups/index.html:33
 msgid "(empty)"
 msgstr "(leer)"
 
-#: html/Elements/MyRequests:42 html/Elements/MyTickets:44
-msgid "(no subject)"
+#: html/Admin/Users/index.html:39
+msgid "(no name listed)"
 msgstr ""
 
-#: html/Admin/Elements/SelectRights:48 html/Elements/SelectCustomFieldValue:29 html/Ticket/Elements/EditCustomFieldValues:50 html/Ticket/Elements/EditCustomFields:49 html/Ticket/Elements/ShowCustomFields:34 lib/RT/Transaction_Overlay.pm:514
+#: html/Elements/MyRequests:43 html/Elements/MyTickets:45
+msgid "(no subject)"
+msgstr "(kein Betreff)"
+
+#: html/Admin/Elements/SelectRights:48 html/Elements/SelectCustomFieldValue:30 html/Ticket/Elements/EditCustomField:59 html/Ticket/Elements/ShowCustomFields:36 lib/RT/Transaction_Overlay.pm:536
 msgid "(no value)"
 msgstr "(keine Angabe)"
 
-#: html/Ticket/Elements/EditLinks:113
+#: html/Ticket/Elements/EditLinks:116
 msgid "(only one ticket)"
 msgstr "(nur ein Ticket)"
 
-#: html/Elements/MyRequests:52
+#: html/Elements/MyRequests:52 html/Elements/MyTickets:55
 msgid "(pending approval)"
-msgstr ""
+msgstr "(wartet auf Freigabe)"
 
-#: html/Elements/MyRequests:54
+#: html/Elements/MyRequests:54 html/Elements/MyTickets:57
 msgid "(pending other tickets)"
-msgstr ""
+msgstr "(wartet auf andere Tickets)"
 
-#: html/Admin/Users/Modify.html:43
+#: html/Admin/Users/Modify.html:50
 msgid "(required)"
 msgstr "(notwendig)"
 
-#: html/Ticket/Elements/ShowTransaction:106
+#: html/Ticket/Elements/ShowTransaction:105
 msgid "(untitled)"
-msgstr ""
+msgstr "(unbenannt)"
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
-msgstr "Die 25 höchstpriorisiertesten mir zugewiesenen Tickets..."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I requested..."
-msgstr "Die 25 höchstpriorisiertesten von mir ausgeschriebene Tickets..."
+msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:34
+#: html/Ticket/Elements/ShowBasics:32
 msgid "<% $Ticket->Status%>"
 msgstr ""
 
@@ -341,58 +368,46 @@ msgstr ""
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Neues Ticket in\">&nbsp;%1"
 
-#: sbin/insertdata:484
+#: etc/initialdata:203
 msgid "A blank template"
-msgstr ""
+msgstr "Eine leere Vorlage"
 
-#: NOT FOUND IN SOURCE
-msgid "ACE Deleted"
-msgstr "ACE gelöscht"
-
-#: NOT FOUND IN SOURCE
-msgid "ACE Loaded"
-msgstr "ACE geladen"
-
-#: NOT FOUND IN SOURCE
-msgid "ACE could not be deleted"
-msgstr "ACE konnte nicht gelöscht werden"
-
-#: NOT FOUND IN SOURCE
-msgid "ACE could not be found"
-msgstr "ACE konnte nicht gefunden werden"
-
-#: lib/RT/ACE_Overlay.pm:181 lib/RT/Principal_Overlay.pm:168
+#: lib/RT/ACE_Overlay.pm:157 lib/RT/Principal_Overlay.pm:181
 msgid "ACE not found"
 msgstr "ACE nicht gefunden"
 
-#: lib/RT/ACE_Overlay.pm:890
+#: lib/RT/ACE_Overlay.pm:831
 msgid "ACEs can only be created and deleted."
 msgstr "ACEs können nur erstellt und gelöscht werden."
 
-#: bin/enhanced-mailgate:620 bin/rt-commit-handler:755
+#: bin/rt-commit-handler:755
 msgid "Aborting to avoid unintended ticket modifications.\\n"
 msgstr "Breche ab um ungewünschte Ticketmodifikationen zu verhindern.\\n"
 
-#: html/Admin/Users/Modify.html:54
+#: html/User/Elements/Tabs:32
+msgid "About me"
+msgstr "Über mich"
+
+#: html/Admin/Users/Modify.html:80
 msgid "Access control"
 msgstr "Zugriffskontrolle"
 
-#: html/Admin/Elements/EditScrip:59
+#: html/Admin/Elements/EditScrip:57
 msgid "Action"
 msgstr "Aktion"
 
-#: lib/RT/Scrip_Overlay.pm:145
-#. ($args{ScripAction})
+#: lib/RT/Scrip_Overlay.pm:147
+#. ($args{'ScripAction'})
 msgid "Action %1 not found"
 msgstr "Aktion %1 nicht gefunden"
 
 #: bin/rt-crontool:123
 msgid "Action committed."
-msgstr ""
+msgstr "Aktion durchgeführt."
 
 #: bin/rt-crontool:119
 msgid "Action prepared..."
-msgstr ""
+msgstr "Aktion vorbereitet..."
 
 #: html/Search/Bulk.html:92
 msgid "Add AdminCc"
@@ -402,129 +417,134 @@ msgstr "AdminCC hinzufügen"
 msgid "Add Cc"
 msgstr "CC hinzufügen"
 
-#: html/Ticket/Create.html:112
+#: html/Ticket/Create.html:114 html/Ticket/Update.html:100
 msgid "Add More Files"
-msgstr ""
+msgstr "Mehr Dateien anhängen"
+msgstr "Weitere Dateien anhängen"
 
 #: html/Search/Bulk.html:88
 msgid "Add Requestor"
 msgstr "Klient hinzufügen"
 
 #: NOT FOUND IN SOURCE
-msgid "Add a keyword selection to this queue"
-msgstr "Füge eine Schlüsselwortauswahl zu diesem Stapel hinzu"
-
-#: NOT FOUND IN SOURCE
 msgid "Add a new a global scrip"
-msgstr ""
+msgstr "Erstelle ein neues globales Scrip"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a scrip to this queue"
-msgstr "Füge ein Scrip zu diesen Stapel hinzu"
+msgstr "Erstelle ein Scrip für diesen Stapel"
 
-#: html/Admin/Global/Scrip.html:36
+#: html/Admin/Global/Scrip.html:55
 msgid "Add a scrip which will apply to all queues"
-msgstr "Erstellt ein Scrip das auf Stapel wirkt"
+msgstr "Scrip erstellen, das auf alle Stapel angewendet wird"
 
 #: html/Search/Bulk.html:118
 msgid "Add comments or replies to selected tickets"
-msgstr ""
+msgstr "Füge Kommentare oder Antworten den ausgewählten Tickets zu"
 
-#: html/Admin/Groups/Members.html:40 html/User/Groups/Members.html:37
+#: html/Admin/Groups/Members.html:42 html/User/Groups/Members.html:39
 msgid "Add members"
-msgstr "Mitglied hinzufügen"
+msgstr "Mitglieder hinzufügen"
 
-#: html/Admin/Queues/People.html:58 html/Ticket/Elements/AddWatchers:28
+#: html/Admin/Queues/People.html:66 html/Ticket/Elements/AddWatchers:28
 msgid "Add new watchers"
 msgstr "Neue Beobachter hinzufügen"
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:45
+#: NOT FOUND IN SOURCE
 msgid "AddNextState"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:575
+#: lib/RT/Queue_Overlay.pm:643
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
-msgstr "Habe einen Chef als %1 für diesen Stapel hinzugefügt"
+msgstr "Habe einen Hauptverantwortlichen als %1 für diesen Stapel hinzugefügt"
 
-#: lib/RT/Ticket_Overlay.pm:1040
+#: lib/RT/Ticket_Overlay.pm:1454
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
-msgstr "Habe einen Chef als %1 für dieses Ticket hinzugefügt"
+msgstr "Habe einen Hauptverantwortlichen als %1 für dieses Ticket hinzugefügt"
 
-#: html/Admin/Elements/ModifyUser:76 html/Admin/Users/Modify.html:90
+#: html/Admin/Elements/ModifyUser:76 html/Admin/Users/Modify.html:122 html/User/Prefs.html:88
 msgid "Address1"
 msgstr "Adresse 1"
 
-#: html/Admin/Elements/ModifyUser:78 html/Admin/Users/Modify.html:92
+#: html/Admin/Elements/ModifyUser:78 html/Admin/Users/Modify.html:127 html/User/Prefs.html:90
 msgid "Address2"
 msgstr "Adresse 2"
 
-#: html/Ticket/Create.html:73 html/Ticket/DetailedCreate.html:70
+#: html/Ticket/Create.html:74
 msgid "Admin Cc"
 msgstr "Admin CC"
 
-#: html/Admin/Queues/index.html:25
+#: etc/initialdata:274
+msgid "Admin Comment"
+msgstr "Admin Notiz"
+
+#: etc/initialdata:256
+msgid "Admin Correspondence"
+msgstr "Admin Korrespondenz"
+
+#: html/Admin/Queues/index.html:25 html/Admin/Queues/index.html:28
 msgid "Admin queues"
 msgstr "Admin Stapel"
 
-#: html/Admin/Users/index.html:25
+#: NOT FOUND IN SOURCE
 msgid "Admin users"
-msgstr "Admin Benutzer"
+msgstr ""
 
-#: html/Admin/Global/index.html:25
+#: html/Admin/Global/index.html:26 html/Admin/Global/index.html:28
 msgid "Admin/Global configuration"
 msgstr "Admin/Globale Einstellungen"
 
-#: html/Admin/Groups/index.html:25
+#: NOT FOUND IN SOURCE
 msgid "Admin/Groups"
-msgstr "Admin/Gruppen"
+msgstr ""
 
-#: html/Admin/Queues/Modify.html:25
+#: html/Admin/Queues/Modify.html:25 html/Admin/Queues/Modify.html:29
 msgid "Admin/Queue/Basics"
 msgstr "Admin/Stapel/Basics"
 
-#: lib/RT/ACE_Overlay.pm:100
+#: NOT FOUND IN SOURCE
 msgid "AdminAllPersonalGroups"
 msgstr ""
 
-#: html/Ticket/Elements/ShowPeople:31 html/Ticket/Update.html:46 lib/RT/ACE_Overlay.pm:120 sbin/insertdata:189
+#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:39 html/Ticket/Update.html:50 lib/RT/ACE_Overlay.pm:89
 msgid "AdminCc"
-msgstr "AdminCC"
+msgstr ""
 
-#: sbin/insertdata:562
+#: NOT FOUND IN SOURCE
 msgid "AdminComment"
 msgstr ""
 
-#: sbin/insertdata:541
+#: NOT FOUND IN SOURCE
 msgid "AdminCorrespondence"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:74
+#: lib/RT/Queue_Overlay.pm:72
 msgid "AdminCustomFields"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:108
+#: lib/RT/Group_Overlay.pm:146
 msgid "AdminGroup"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:109
+#: lib/RT/Group_Overlay.pm:148
 msgid "AdminGroupMembership"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:101
+#: lib/RT/System.pm:59
 msgid "AdminOwnPersonalGroups"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:70
+#: lib/RT/Queue_Overlay.pm:68
 msgid "AdminQueue"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:102
+#: lib/RT/System.pm:60
 msgid "AdminUsers"
 msgstr ""
 
-#: html/Admin/Queues/People.html:46 html/Ticket/Elements/EditPeople:48
+#: html/Admin/Queues/People.html:48 html/Ticket/Elements/EditPeople:54
 msgid "Administrative Cc"
 msgstr "Administrative CC"
 
@@ -534,25 +554,29 @@ msgstr "Erweiterte Suche"
 
 #: html/Elements/SelectDateRelation:36
 msgid "After"
-msgstr "nach dem"
+msgstr "Nach dem"
 
-#: etc/RT_Config.pm:373
+#: NOT FOUND IN SOURCE
 msgid "Age"
 msgstr "Alter"
 
-#: html/Admin/Queues/index.html:70
-msgid "All Queues"
-msgstr ""
+#: html/Admin/Elements/EditCustomFields:96
+msgid "All Custom Fields"
+msgstr "Alle benutzerdefinierten Felder"
 
-#: sbin/insertdata:310
+#: html/Admin/Queues/index.html:53
+msgid "All Queues"
+msgstr "Alle Stapel"
+
+#: NOT FOUND IN SOURCE
 msgid "Always sends a message to the requestors independent of message sender"
 msgstr ""
 
-#: html/Elements/Tabs:117
+#: html/Elements/Tabs:58
 msgid "Approval"
 msgstr "Freigabe"
 
-#: html/Approvals/Display.html:44 html/Approvals/Elements/Approve:27 html/Approvals/Elements/ShowDependency:37 html/Approvals/index.html:66
+#: html/Approvals/Display.html:46 html/Approvals/Elements/Approve:27 html/Approvals/Elements/ShowDependency:42 html/Approvals/index.html:65
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($ticket->id, $msg)
 #. ($ticket->Id, $ticket->Subject)
@@ -560,21 +584,21 @@ msgstr "Freigabe"
 msgid "Approval #%1: %2"
 msgstr "Freigabe #%1: %2"
 
-#: html/Approvals/index.html:55
+#: html/Approvals/index.html:54
 #. ($ticket->Id)
 msgid "Approval #%1: Notes not recorded due to a system error"
-msgstr "Freigabe #%1: Anmerkungen wurden aufgrund eines Systemfehlers nicht vermerkt"
+msgstr "Freigabe #%1: Notiz wurde aufgrund eines Systemfehlers nicht vermerkt"
 
-#: html/Approvals/index.html:53
+#: html/Approvals/index.html:52
 #. ($ticket->Id)
 msgid "Approval #%1: Notes recorded"
-msgstr "Freigabe #%1: Anmerkungen vermerkt"
+msgstr "Freigabe #%1: Notiz vermerkt"
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:96
+#: NOT FOUND IN SOURCE
 msgid "Approval Details"
 msgstr ""
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:25
+#: NOT FOUND IN SOURCE
 msgid "Approval diagram"
 msgstr ""
 
@@ -582,74 +606,69 @@ msgstr ""
 msgid "Approve"
 msgstr "Freigeben"
 
-#: sbin/insert_approval_scrips:161
+#: etc/initialdata:431 etc/upgrade/2.1.71:148
 msgid "Approver's notes: %1"
-msgstr ""
+msgstr "Notizen des Freigebenden: %1"
 
-#: lib/RT/Date.pm:399
+#: lib/RT/Date.pm:414
 msgid "Apr."
 msgstr "Apr"
-
-#: NOT FOUND IN SOURCE
-msgid "April"
-msgstr "April"
 
 #: html/Elements/SelectSortOrder:35
 msgid "Ascending"
 msgstr "aufsteigend"
 
-#: html/Search/Bulk.html:127 html/SelfService/Update.html:35 html/Ticket/ModifyAll.html:72 html/Ticket/Update.html:81
+#: html/Search/Bulk.html:127 html/SelfService/Update.html:36 html/Ticket/ModifyAll.html:83 html/Ticket/Update.html:100
 msgid "Attach"
 msgstr "Anhängen"
 
-#: html/SelfService/Create.html:67 html/Ticket/Create.html:108 html/Ticket/DetailedCreate.html:95
+#: html/SelfService/Create.html:67 html/Ticket/Create.html:110
 msgid "Attach file"
 msgstr "Datei anhängen"
 
-#: html/Ticket/Create.html:96
+#: html/Ticket/Create.html:98 html/Ticket/Update.html:89
 msgid "Attached file"
-msgstr "Anhängende Datei"
+msgstr "Dateianhang"
 
 #: html/SelfService/Attachment/dhandler:36
 msgid "Attachment '%1' could not be loaded"
 msgstr "Anhang '%1' konnte nicht geladen werden"
 
-#: lib/RT/Transaction_Overlay.pm:424
+#: lib/RT/Transaction_Overlay.pm:443
 msgid "Attachment created"
 msgstr "Anhang erstellt"
 
-#: lib/RT/Tickets_Overlay.pm:539
+#: lib/RT/Tickets_Overlay.pm:1189
 msgid "Attachment filename"
-msgstr ""
+msgstr "Dateiname des Anhangs"
 
 #: html/Ticket/Elements/ShowAttachments:26
 msgid "Attachments"
-msgstr ""
+msgstr "Anhänge"
 
-#: lib/RT/Date.pm:403
+#: lib/RT/Date.pm:418
 msgid "Aug."
 msgstr "Aug"
-
-#: NOT FOUND IN SOURCE
-msgid "August"
-msgstr "August"
 
 #: html/Admin/Elements/ModifyUser:66
 msgid "AuthSystem"
 msgstr "AuthSystem"
 
-#: sbin/insertdata:489
+#: etc/initialdata:206
 msgid "Autoreply"
-msgstr ""
+msgstr "Autoreply"
 
-#: sbin/insertdata:309
+#: etc/initialdata:72
+msgid "Autoreply To Requestors"
+msgstr "Autoreply an Klienten"
+
+#: NOT FOUND IN SOURCE
 msgid "AutoreplyToRequestors"
 msgstr ""
 
-#: bin/enhanced-mailgate:483
-#. ($line)
+#: NOT FOUND IN SOURCE
 msgid "Bad PGP Signature: %1\\n"
-msgstr "Fehlerhafte PGP Signatur: %1\\n"
+msgstr "Fehlerhafte PGP-Signatur: %1\\n"
 
 #: html/SelfService/Attachment/dhandler:40
 msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
@@ -663,122 +682,127 @@ msgstr "Fehlerhafte Daten in %1"
 #: html/SelfService/Attachment/dhandler:43
 #. ($trans, $AttachmentObj->TransactionId())
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
-msgstr "Fehlerhafte Transaktionsnummer für den Anhant. %1 solle %2 sein\\n"
+msgstr "Fehlerhafte Transaktionsnummer für den Anhang. %1 solle %2 sein\\n"
 
-#: html/Admin/Elements/GroupTabs:29 html/Admin/Elements/QueueTabs:29 html/Admin/Elements/UserTabs:31 html/Ticket/Elements/Tabs:37 html/User/Elements/GroupTabs:29
+#: html/Admin/Elements/GroupTabs:39 html/Admin/Elements/QueueTabs:39 html/Admin/Elements/UserTabs:38 html/Ticket/Elements/Tabs:90 html/User/Elements/GroupTabs:38
 msgid "Basics"
 msgstr "Grundlagen"
 
-#: html/Ticket/Update.html:77
+#: html/Ticket/Update.html:83
 msgid "Bcc"
 msgstr "BCC"
 
-#: html/Admin/Elements/EditScrip:91 html/Admin/Global/GroupRights.html:83 html/Admin/Global/Template.html:44 html/Admin/Global/UserRights.html:53 html/Admin/Global/Workflow.html:49 html/Admin/Global/Workflow.html:53 html/Admin/Groups/GroupRights.html:72 html/Admin/Groups/Members.html:79 html/Admin/Groups/Modify.html:50 html/Admin/Groups/UserRights.html:53 html/Admin/Queues/GroupRights.html:87 html/Admin/Queues/Template.html:70 html/Admin/Queues/UserRights.html:54
+#: html/Admin/Elements/EditScrip:88 html/Admin/Global/GroupRights.html:85 html/Admin/Global/Template.html:46 html/Admin/Global/UserRights.html:54 html/Admin/Groups/GroupRights.html:73 html/Admin/Groups/Members.html:81 html/Admin/Groups/Modify.html:56 html/Admin/Groups/UserRights.html:55 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:45 html/Admin/Queues/UserRights.html:54 html/User/Groups/Modify.html:56
 msgid "Be sure to save your changes"
 msgstr "Denke daran deine Änderungen zu speichern"
 
-#: html/Elements/SelectDateRelation:34 lib/RT/CurrentUser.pm:355
+### wieder - Duzen???
+#: html/Elements/SelectDateRelation:34 lib/RT/CurrentUser.pm:322
 msgid "Before"
 msgstr "vor dem"
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:44
+#: NOT FOUND IN SOURCE
 msgid "Begin Approval"
 msgstr ""
 
-#: sbin/insertdata:483
+#: etc/initialdata:202
 msgid "Blank"
-msgstr ""
+msgstr "Leer"
 
-#: html/Search/Listing.html:114
+#: html/Search/Listing.html:79
 msgid "Bookmarkable URL for this search"
 msgstr "Lesezeichen-URL von dieser Suche"
 
-#: html/Ticket/Elements/ShowHistory:35 html/Ticket/Elements/ShowHistory:38
+#: html/Ticket/Elements/ShowHistory:39 html/Ticket/Elements/ShowHistory:45
 msgid "Brief headers"
 msgstr "Kurze Kopfzeilen"
 
-#: html/Search/Bulk.html:25
+#: html/Search/Bulk.html:25 html/Search/Bulk.html:26
 msgid "Bulk ticket update"
 msgstr "Massen Ticketupdate"
 
-#: lib/RT/User_Overlay.pm:1501
+#: lib/RT/User_Overlay.pm:1331
 msgid "Can not modify system users"
 msgstr "Kann Systembenutzer nicht ändern"
 
-#: lib/RT/ACE_Overlay.pm:69
+#: lib/RT/Queue_Overlay.pm:67
 msgid "Can this principal see this queue"
-msgstr ""
+msgstr "Kann dieser Hauptverantwortliche diesen Stapel sehen"
 
-#: lib/RT/CustomField_Overlay.pm:142
+#: lib/RT/CustomField_Overlay.pm:144
 msgid "Can't add a custom field value without a name"
 msgstr "Kann kein benutzerdefiniertes Feld ohne Namen hinzufügen"
 
-#: lib/RT/Link_Overlay.pm:123
+#: lib/RT/Link_Overlay.pm:132
 msgid "Can't link a ticket to itself"
-msgstr "Kann kein Ticket auf sich selbst zeigen lassen!"
+msgstr "Kann kein Ticket auf sich selbst verweisen lassen!"
 
-#: lib/RT/Ticket_Overlay.pm:2425
+#: lib/RT/Ticket_Overlay.pm:2787
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "Konnte das Ticket nicht in ein vereinigtes Ticket vereinigen. Diesen Fehler solltest du niemals sehen"
 
-#: lib/RT/Ticket_Overlay.pm:2243 lib/RT/Ticket_Overlay.pm:2312
+#: lib/RT/Ticket_Overlay.pm:2605 lib/RT/Ticket_Overlay.pm:2674
 msgid "Can't specifiy both base and target"
-msgstr "Du kannst nicht Basis und Ziel angeben"
+msgstr "Du kannst nicht Basis und Ziel gleichzeitig angeben"
 
-#: html/autohandler:102
+#: html/autohandler:112
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "Kann Benutzer nicht anlegen: %1"
 
-#: html/Admin/Queues/People.html:42 html/SelfService/Create.html:51 html/SelfService/Display.html:49 html/Ticket/Create.html:65 html/Ticket/DetailedCreate.html:67 html/Ticket/Elements/EditPeople:45 html/Ticket/Elements/ShowPeople:29 html/Ticket/Update.html:41 html/Ticket/Update.html:73 lib/RT/ACE_Overlay.pm:119 sbin/insertdata:182
+#: etc/initialdata:50 html/Admin/Queues/People.html:44 html/SelfService/Create.html:51 html/SelfService/Display.html:50 html/Ticket/Create.html:64 html/Ticket/Elements/EditPeople:51 html/Ticket/Elements/ShowPeople:35 html/Ticket/Update.html:45 html/Ticket/Update.html:78 lib/RT/ACE_Overlay.pm:88
 msgid "Cc"
 msgstr "CC"
 
-#: html/SelfService/Prefs.html:31 html/User/Prefs.html:32
+#: html/SelfService/Prefs.html:31
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: html/Ticket/Create.html:99
+#: html/Ticket/Create.html:101 html/Ticket/Update.html:92
 msgid "Check box to delete"
-msgstr ""
+msgstr "Zum Löschen ankreuzen"
 
 #: html/Admin/Elements/SelectRights:31
 msgid "Check box to revoke right"
-msgstr "Entziehe ein Recht durch ankreuzen"
+msgstr "Zum Entziehen einer Berechtigung ankreuzen"
 
-#: html/Ticket/Create.html:181 html/Ticket/DetailedCreate.html:89 html/Ticket/Elements/EditLinks:117 html/Ticket/Elements/EditLinks:66 html/Ticket/Elements/ShowLinks:53
+#: html/Ticket/Create.html:183 html/Ticket/Elements/EditLinks:131 html/Ticket/Elements/EditLinks:69 html/Ticket/Elements/ShowLinks:51
 msgid "Children"
 msgstr "Kinder"
 
-#: html/Admin/Elements/ModifyUser:80 html/Admin/Users/Modify.html:94
+#: html/Admin/Elements/ModifyUser:80 html/Admin/Users/Modify.html:132 html/User/Prefs.html:92
 msgid "City"
 msgstr "Stadt"
+
+#: html/Ticket/Elements/ShowDates:47
+msgid "Closed"
+msgstr "Geschlossen"
 
 #: html/SelfService/Elements/Tabs:60
 msgid "Closed requests"
 msgstr "Geschossene Tickets"
 
-#: bin/enhanced-mailgate:678
+#: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
-msgstr "Kommentar nicht verstanden!\\n"
+msgstr ""
 
-#: html/Ticket/Elements/ShowTransaction:186 html/Ticket/Elements/Tabs:57
+#: html/Ticket/Elements/ShowTransaction:179 html/Ticket/Elements/Tabs:153
 msgid "Comment"
 msgstr "Kommentar"
 
-#: html/Admin/Elements/ModifyQueue:45 html/Admin/Queues/Modify.html:57
+#: html/Admin/Elements/ModifyQueue:45 html/Admin/Queues/Modify.html:58
 msgid "Comment Address"
 msgstr "Kommentaradresse"
 
-#: bin/enhanced-mailgate:338 bin/enhanced-mailgate:349 bin/rt-mailgate:317 bin/rt-mailgate:328
+#: NOT FOUND IN SOURCE
 msgid "Comment not recorded"
-msgstr "Kommentar nicht aufgezeichnet"
-
-#: lib/RT/ACE_Overlay.pm:88
-msgid "Comment on tickets"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:88
+#: lib/RT/Queue_Overlay.pm:86
+msgid "Comment on tickets"
+msgstr "Kommentiere Tickets"
+
+#: lib/RT/Queue_Overlay.pm:86
 msgid "CommentOnTicket"
 msgstr ""
 
@@ -786,406 +810,380 @@ msgstr ""
 msgid "Comments"
 msgstr "Kommantare"
 
-#: html/Ticket/ModifyAll.html:63 html/Ticket/Update.html:65
+#: html/Ticket/ModifyAll.html:70 html/Ticket/Update.html:70
 msgid "Comments (Not sent to requestors)"
-msgstr "Kommentare (nicht an Klienten verschickt)"
+msgstr "Kommentar (wird nicht an Klienten geschickt)"
 
 #: html/Search/Bulk.html:122
 msgid "Comments (not sent to requestors)"
-msgstr ""
+msgstr "Kommentar (wird nicht an Klienten geschickt)"
 
 #: html/Elements/ViewUser:27
 #. ($name)
 msgid "Comments about %1"
-msgstr "Kommentare über %1"
+msgstr "Kommentar über %1"
 
-#: html/Admin/Users/Modify.html:121 html/Ticket/Elements/ShowRequestor:43
+#: html/Admin/Users/Modify.html:185 html/Ticket/Elements/ShowRequestor:44
 msgid "Comments about this user"
-msgstr "Kommentar über diesen Benutzer"
+msgstr "Kommentar zu diesen Benutzer"
 
-#: lib/RT/Transaction_Overlay.pm:523
+#: lib/RT/Transaction_Overlay.pm:545
 msgid "Comments added"
-msgstr "Kommentare hinzugefügt"
+msgstr "Kommentar hinzugefügt"
 
 #: lib/RT/Action/Generic.pm:140
 msgid "Commit Stubbed"
 msgstr "Übergabe abgehakt"
 
-#: html/Search/RestrictSearch.html:25
+#: NOT FOUND IN SOURCE
 msgid "Compile Restrictions"
-msgstr "Kompiliere Restriktionen"
+msgstr ""
 
-#: html/Admin/Elements/EditScrip:43
+#: html/Admin/Elements/EditScrip:41
 msgid "Condition"
 msgstr "Bedingung"
 
 #: bin/rt-crontool:109
 msgid "Condition matches..."
-msgstr ""
+msgstr "Condition trifft zu..."
 
-#: lib/RT/Scrip_Overlay.pm:158
+#: lib/RT/Scrip_Overlay.pm:160
 msgid "Condition not found"
 msgstr "Bedingung nicht gefunden"
 
-#: html/Elements/Tabs:120
+#: html/Elements/Tabs:52
 msgid "Configuration"
 msgstr "Einstellungen"
 
-#: html/SelfService/Prefs.html:33 html/User/Prefs.html:34
+#: html/SelfService/Prefs.html:33
 msgid "Confirm"
 msgstr "Bestätigen"
 
 #: html/Admin/Elements/ModifyUser:60
 msgid "ContactInfoSystem"
-msgstr "KontaktInfoSystem"
-
-#: bin/rt:817
-#. ($contacted)
-msgid "Contacted date '%1' could not be parsed"
-msgstr "Kontaktdatum '%1' konnte nicht interpretiert werden"
-
-#: html/Admin/Elements/ModifyTemplate:44 html/Admin/Elements/ModifyTemplateAsWorkflow:113 html/Admin/Queues/Template.html:60
-msgid "Content"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Coould not create group"
+msgid "Contacted date '%1' could not be parsed"
 msgstr ""
 
-#: sbin/insertdata:553
+#: html/Admin/Elements/ModifyTemplate:44 html/Ticket/ModifyAll.html:87
+msgid "Content"
+msgstr "Inhalt"
+
+#: etc/initialdata:266
 msgid "Correspondence"
-msgstr ""
+msgstr "Korrespondenz"
 
 #: html/Admin/Elements/ModifyQueue:39 html/Admin/Queues/Modify.html:51
 msgid "Correspondence Address"
 msgstr "Korrespondenzadresse"
 
-#: lib/RT/Transaction_Overlay.pm:519
+#: lib/RT/Transaction_Overlay.pm:541
 msgid "Correspondence added"
 msgstr "Korrespondenz hinzugefügt"
 
-#: bin/enhanced-mailgate:367 bin/rt-mailgate:346
+#: NOT FOUND IN SOURCE
 msgid "Correspondence not recorded"
-msgstr "Korrespondenz nicht aufgezeichnet"
+msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:3055
+#: lib/RT/Ticket_Overlay.pm:3458
 msgid "Could not add new custom field value for ticket. "
 msgstr "Konnte dem Ticket kein neues benutzerdefiniertes Feld hinzufügen. "
 
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value for ticket. %1 "
-msgstr "Konnte dem Ticket kein neues benutzerdefiniertes Feld hinzufügen. %1 "
-
-#: lib/RT/Ticket_Overlay.pm:2599 lib/RT/Ticket_Overlay.pm:2607 lib/RT/Ticket_Overlay.pm:2623
+#: lib/RT/Ticket_Overlay.pm:2963 lib/RT/Ticket_Overlay.pm:2971 lib/RT/Ticket_Overlay.pm:2987
 msgid "Could not change owner. "
 msgstr "Konnte den Inhaber nicht ändern. "
 
-#: html/Admin/Queues/CustomField.html:69
+#: html/Admin/Elements/EditCustomField:68 html/Admin/Elements/EditCustomFields:166
 #. ($msg)
 msgid "Could not create CustomField"
 msgstr "Konnte benutzerdefiniertes Feld nicht anlegen"
 
-#: html/User/Groups/Modify.html:71 lib/RT/Group_Overlay.pm:417 lib/RT/Group_Overlay.pm:426
+#: html/User/Groups/Modify.html:77 lib/RT/Group_Overlay.pm:474 lib/RT/Group_Overlay.pm:481
 msgid "Could not create group"
 msgstr "Konnte Gruppe nicht anlegen"
 
-#: html/Admin/Global/Template.html:61 html/Admin/Global/Workflow.html:124 html/Admin/Queues/Template.html:86
+#: html/Admin/Global/Template.html:75 html/Admin/Queues/Template.html:72
 #. ($msg)
 msgid "Could not create template: %1"
 msgstr "Konnte Vorlage nicht anlegen: %1"
 
-#: lib/RT/Ticket_Overlay.pm:329 lib/RT/Ticket_Overlay.pm:659
+#: lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:333
 msgid "Could not create ticket. Queue not set"
-msgstr "Konnte Ticket nicht anlegen. Stapel nicht gesetzt"
+msgstr "Konnte Ticket nicht anlegen. Stapel nicht bestimmt"
 
-#: lib/RT/User_Overlay.pm:204 lib/RT/User_Overlay.pm:215 lib/RT/User_Overlay.pm:233 lib/RT/User_Overlay.pm:409
+#: lib/RT/User_Overlay.pm:208 lib/RT/User_Overlay.pm:220 lib/RT/User_Overlay.pm:238 lib/RT/User_Overlay.pm:414
 msgid "Could not create user"
 msgstr "Konnte Benutzer nicht anlegen"
 
 #: NOT FOUND IN SOURCE
-msgid "Could not create watcher for requestor"
-msgstr "Konnte für den Klienten kein Beobachter anlegen"
-
-#: bin/enhanced-mailgate:339 bin/rt-mailgate:318
-#. ($TicketId)
 msgid "Could not find a ticket with id %1"
-msgstr "Konnte kein Ticket mit der Nummer %1 finden"
+msgstr ""
 
-#: bin/rtadmin:888
-#. ($group)
+#: NOT FOUND IN SOURCE
 msgid "Could not find group %1."
-msgstr "Konnte die Gruppe '%1' nicht finden."
+msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:553 lib/RT/Ticket_Overlay.pm:1008
+#: lib/RT/Queue_Overlay.pm:621 lib/RT/Ticket_Overlay.pm:1422
 msgid "Could not find or create that user"
 msgstr "Konnte diesen Benutzer nicht finden oder anlegen"
 
-#: lib/RT/Queue_Overlay.pm:614 lib/RT/Ticket_Overlay.pm:1087
+#: lib/RT/Queue_Overlay.pm:682 lib/RT/Ticket_Overlay.pm:1501
 msgid "Could not find that principal"
-msgstr "Konnte diesen Chef nicht finden"
+msgstr "Konnte diesen Hauptverantwortlichen nicht finden"
 
-#: bin/rtadmin:901
-#. ($user)
+#: NOT FOUND IN SOURCE
 msgid "Could not find user %1."
-msgstr "Konnte den Benutzer %1 nicht finden."
+msgstr ""
 
-#: html/Admin/Groups/Members.html:86 html/User/Groups/Members.html:89 html/User/Groups/Modify.html:76
+#: html/Admin/Groups/Members.html:88 html/User/Groups/Members.html:90 html/User/Groups/Modify.html:82
 msgid "Could not load group"
 msgstr "Konnte die Gruppe nicht laden"
 
-#: lib/RT/Queue_Overlay.pm:573
+#: lib/RT/Queue_Overlay.pm:641
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
-msgstr "Konnte den Chef nicht zu einen %1 dieses Stapels machen"
+msgstr "Konnte den Hauptverantwortlichen nicht zu einen %1 dieses Stapels machen"
 
-#: lib/RT/Ticket_Overlay.pm:1029
+#: lib/RT/Ticket_Overlay.pm:1443
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
-msgstr "Konnte diesen Chef nicht zu einen %1 dieses Tickets machen"
+msgstr "Konnte diesen Hauptverantwortlichen nicht zu einem %1 dieses Tickets machen"
 
-#: lib/RT/Queue_Overlay.pm:672
+#: lib/RT/Queue_Overlay.pm:740
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Konnte diesen Chef nicht als %1 dieses Stapels entfernen"
+msgstr "Konnte diesen Hauptverantwortlichen nicht als %1 dieses Stapels entfernen"
 
-#: lib/RT/Ticket_Overlay.pm:1145
+#: lib/RT/Ticket_Overlay.pm:1559
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "Konnte diesen Chef nicht als %1 dieses Tickets entfernen"
+msgstr "Konnte diesen Hauptverantwortlichen nicht als %1 dieses Tickets entfernen"
 
-#: lib/RT/Group_Overlay.pm:839
+#: lib/RT/Group_Overlay.pm:985
 msgid "Couldn't add member to group"
-msgstr "Konnte niemanden der Gruppe hinzufügen"
+msgstr "Konnte Mitglied nicht der Gruppe hinzufügen"
 
-#: lib/RT/Ticket_Overlay.pm:3065 lib/RT/Ticket_Overlay.pm:3121
+#: lib/RT/Ticket_Overlay.pm:3468 lib/RT/Ticket_Overlay.pm:3524
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Konnte die Transaktion nicht anlegen: %1"
 
-#: bin/enhanced-mailgate:494
+#: NOT FOUND IN SOURCE
 msgid "Couldn't figure out what to do from gpg's reply\\n"
-msgstr "Wusste nicht was ich mit der gpg-Rückgabe machen soll\\n"
-
-#: bin/rtadmin:587 bin/rtadmin:599
-msgid "Couldn't find group\\n"
-msgstr "Konnte diese Gruppe nicht finden\\n"
-
-#: lib/RT/Interface/Web.pm:820
-msgid "Couldn't find row"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:813
-msgid "Couldn't find that principal"
-msgstr "Konnte diesen Chef nicht finden"
+#: NOT FOUND IN SOURCE
+msgid "Couldn't find group\\n"
+msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:173
+#: lib/RT/Interface/Web.pm:866
+msgid "Couldn't find row"
+msgstr "Konne Zeile nicht finden"
+
+#: lib/RT/Group_Overlay.pm:959
+msgid "Couldn't find that principal"
+msgstr "Konnte diesen Hauptverantwortlichen nicht finden"
+
+#: lib/RT/CustomField_Overlay.pm:175
 msgid "Couldn't find that value"
 msgstr "Konnte diesen Wert nicht finden"
 
 #: NOT FOUND IN SOURCE
-msgid "Couldn't find that watcher"
-msgstr "Konnte diesen Beobachter nicht finden"
-
-#: bin/rtadmin:562 bin/rtadmin:574
 msgid "Couldn't find user\\n"
-msgstr "Konnte Benutzer nicht finden\\n"
+msgstr ""
 
-#: lib/RT/CurrentUser.pm:110
+#: lib/RT/CurrentUser.pm:112
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Konnte %1 nicht aus der Benutzerdatenbank laden.\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "Couldn't load KeywordSelects."
-msgstr "Konnte KeywordSelects nicht laden."
-
-#: lib/RT.pm:56
-#. ($config_file, $@)
 msgid "Couldn't load RT config file '%1' %2"
-msgstr "Konnte die RT-Konfigurationsdatei '%1' nicht laden %2"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load Scrips."
-msgstr "Konnte keine Scrips laden."
-
-#: html/Admin/Groups/GroupRights.html:87 html/Admin/Groups/UserRights.html:73
-#. ($id)
-msgid "Couldn't load group %1"
 msgstr ""
 
-#: lib/RT/Link_Overlay.pm:170 lib/RT/Link_Overlay.pm:197
-msgid "Couldn't load link"
-msgstr "Konnte die Beziehung nicht laden"
+#: html/Admin/Groups/GroupRights.html:88 html/Admin/Groups/UserRights.html:75
+#. ($id)
+msgid "Couldn't load group %1"
+msgstr "Konnte Gruppe %1 nicht laden"
 
-#: html/Admin/Queues/People.html:95
+#: lib/RT/Link_Overlay.pm:175 lib/RT/Link_Overlay.pm:184 lib/RT/Link_Overlay.pm:211
+msgid "Couldn't load link"
+msgstr "Konnte den Verweis nicht laden"
+
+#: html/Admin/Elements/EditCustomFields:147 html/Admin/Queues/People.html:121
 #. ($id)
 msgid "Couldn't load queue"
 msgstr "Konnte den Stapel nicht laden"
 
-#: html/Admin/Queues/GroupRights.html:102 html/Admin/Queues/UserRights.html:72
+#: html/Admin/Queues/GroupRights.html:100 html/Admin/Queues/UserRights.html:72
 #. ($id)
 msgid "Couldn't load queue %1"
 msgstr "Konnte den Stapel %1 nicht laden"
 
-#: bin/rtadmin:798
+#: NOT FOUND IN SOURCE
 msgid "Couldn't load scrip"
-msgstr "Konnte das Scrip nicht laden"
+msgstr ""
 
-#: bin/rtadmin:685
+#: NOT FOUND IN SOURCE
 msgid "Couldn't load template"
-msgstr "Konnte Vorlage nicht laden"
+msgstr ""
 
-#: html/Admin/Users/Prefs.html:77
+#: html/Admin/Users/Prefs.html:79
 #. ($id)
 msgid "Couldn't load that user (%1)"
 msgstr "Konnte diesen Benutzer nicht laden (%1)"
 
-#: html/SelfService/Display.html:165
+#: html/SelfService/Display.html:166
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Konnte das Ticket '%1' nicht laden"
 
-#: html/Admin/Elements/ModifyUser:86 html/Admin/Users/Modify.html:100
+#: html/Admin/Elements/ModifyUser:86 html/Admin/Users/Modify.html:149 html/User/Prefs.html:98
 msgid "Country"
 msgstr "Land"
 
-#: html/Admin/Elements/CreateUserCalled:26 html/Ticket/Create.html:129 html/Ticket/Create.html:193 html/Ticket/Create.html:37 html/Ticket/DetailedCreate.html:110
+#: html/Admin/Elements/CreateUserCalled:26 html/Ticket/Create.html:135 html/Ticket/Create.html:195
 msgid "Create"
 msgstr "Erstellen"
 
-#: sbin/insertdata:389
+#: etc/initialdata:128
 msgid "Create Tickets"
-msgstr ""
+msgstr "Erstelle Tickets"
 
-#: html/Admin/Queues/CustomField.html:59
+#: html/Admin/Elements/EditCustomField:58
 msgid "Create a CustomField"
 msgstr "Erstelle ein benutzerdefiniertes Feld"
 
-#: html/Admin/Queues/CustomFields.html:30
+#: html/Admin/Queues/CustomField.html:48
+#. ($QueueObj->Name())
+msgid "Create a CustomField for queue %1"
+msgstr "Erstelle ein benutzerdef. Feld für Stapel %1"
+
+#: html/Admin/Global/CustomField.html:48
+msgid "Create a CustomField which applies to all queues"
+msgstr "Erstelle ein benutzerdef. Feld für alle Stapel"
+
+#: NOT FOUND IN SOURCE
 msgid "Create a new Custom Field"
-msgstr "Erstelle ein neues benutzerdefiniertes Feld"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new global scrip"
 msgstr ""
 
-#: html/Admin/Groups/Modify.html:60 html/Admin/Groups/Modify.html:86 html/Admin/Groups/index.html:30
+#: html/Admin/Groups/Modify.html:67 html/Admin/Groups/Modify.html:93
 msgid "Create a new group"
 msgstr "Erstelle eine neue Gruppe"
 
-#: html/User/Groups/Modify.html:61 html/User/Groups/Modify.html:87 html/User/Groups/index.html:30
+#: html/User/Groups/Modify.html:67 html/User/Groups/Modify.html:92
 msgid "Create a new personal group"
+msgstr "Erstelle eine neue persönliche Gruppe"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new queue"
 msgstr ""
 
-#: html/Admin/Queues/index.html:32
-msgid "Create a new queue"
-msgstr "Erstelle einen neuen Stapel"
-
-#: html/Admin/Elements/EditScrips:31
+#: NOT FOUND IN SOURCE
 msgid "Create a new scrip"
 msgstr ""
 
-#: html/Admin/Global/Templates.html:29 html/Admin/Queues/Templates.html:30
+#: NOT FOUND IN SOURCE
 msgid "Create a new template"
-msgstr "Erstelle eine neue Vorlage"
+msgstr ""
 
-#: html/SelfService/Create.html:30 html/Ticket/Create.html:27 html/Ticket/Create.html:36 html/Ticket/DetailedCreate.html:25 html/Ticket/DetailedCreate.html:33
+#: html/SelfService/Create.html:30 html/Ticket/Create.html:25 html/Ticket/Create.html:28 html/Ticket/Create.html:36
 msgid "Create a new ticket"
 msgstr "Erstelle ein neues Ticket"
 
-#: html/Admin/Users/Modify.html:152 html/Admin/Users/Modify.html:178 html/Admin/Users/index.html:32
+#: html/Admin/Users/Modify.html:214 html/Admin/Users/Modify.html:241
 msgid "Create a new user"
 msgstr "Erstelle einen neuen Benutzer"
 
-#: html/Admin/Queues/Create.html:25 html/Admin/Queues/Create.html:26 html/Admin/Queues/Modify.html:99
+#: html/Admin/Queues/Modify.html:103
 msgid "Create a queue"
 msgstr "Erstelle einen Stapel"
 
-#: html/Admin/Elements/CreateQueueCalled:26
+#: NOT FOUND IN SOURCE
 msgid "Create a queue called"
-msgstr "Erstelle ein Stapel namens"
+msgstr ""
 
-#: html/SelfService/Create.html:25
+#: html/SelfService/Create.html:25 html/SelfService/Create.html:27
 msgid "Create a request"
 msgstr "Erstelle ein Ticket"
 
-#: html/Admin/Queues/Scrip.html:41
+#: html/Admin/Queues/Scrip.html:59
 #. ($QueueObj->Name)
 msgid "Create a scrip for queue %1"
-msgstr ""
+msgstr "Erstelle ein Scrip für den Stapel %1"
 
-#: html/Admin/Global/Template.html:55 html/Admin/Global/Workflow.html:111 html/Admin/Queues/Template.html:80
+#: html/Admin/Global/Template.html:69 html/Admin/Queues/Template.html:65
 msgid "Create a template"
 msgstr "Erstelle eine Vorlage"
 
-#: NOT FOUND IN SOURCE
-msgid "Create failed: %1 / %2 / %3 "
-msgstr "Erstellung gescheitert: %1 / %2 / %3 "
-
-#: NOT FOUND IN SOURCE
-msgid "Create failed: %1/%2/%3"
-msgstr "Erstellung gescheitert: %1/%2/%3"
-
-#: sbin/insertdata:390
+#: etc/initialdata:130
 msgid "Create new tickets based on this scrip's template"
-msgstr ""
+msgstr "Erstelle neue Tickets basierend auf der Vorlage dieses Scrips"
 
 #: html/SelfService/Create.html:81
 msgid "Create ticket"
 msgstr "Ticket erstellen"
 
-#: lib/RT/ACE_Overlay.pm:86
+#: lib/RT/Queue_Overlay.pm:84
 msgid "Create tickets in this queue"
-msgstr ""
+msgstr "Erstelle Tickets in diesem Stapel"
 
-#: lib/RT/ACE_Overlay.pm:74
+#: lib/RT/Queue_Overlay.pm:72
 msgid "Create, delete and modify custom fields"
-msgstr ""
+msgstr "Erstellen, löschen und modifizieren von benutzerdef. Felder"
 
-#: lib/RT/ACE_Overlay.pm:70
+#: lib/RT/Queue_Overlay.pm:68
 msgid "Create, delete and modify queues"
-msgstr ""
+msgstr "Erstelle, lösche und modifiziere Stapel"
 
-#: lib/RT/ACE_Overlay.pm:100
+#: NOT FOUND IN SOURCE
 msgid "Create, delete and modify the members of any user's personal groups"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:101
+#: lib/RT/System.pm:59
 msgid "Create, delete and modify the members of personal groups"
-msgstr ""
+msgstr "Erstellen, löschen und modifizieren von Mitgliedern persönlicher Gruppen"
 
-#: lib/RT/ACE_Overlay.pm:102
+#: lib/RT/System.pm:60
 msgid "Create, delete and modify users"
-msgstr ""
+msgstr "Erstellen, löschen und modifizieren von Benutzern"
 
-#: lib/RT/ACE_Overlay.pm:86
+#: lib/RT/Queue_Overlay.pm:84
 msgid "CreateTicket"
 msgstr ""
 
-#: bin/rt:1260 html/Elements/SelectDateType:26 html/Ticket/Elements/ShowDates:28 lib/RT/Ticket_Overlay.pm:753
+#: html/Elements/SelectDateType:26 html/Ticket/Elements/ShowDates:27 lib/RT/Ticket_Overlay.pm:1167
 msgid "Created"
 msgstr "Angelegt"
 
-#: html/Admin/Queues/CustomField.html:71
+#: html/Admin/Elements/EditCustomField:71
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "Erstelle ein benutzerdefiniertes Feld %1"
 
-#: html/Admin/Global/Template.html:63 html/Admin/Global/Workflow.html:126 html/Admin/Queues/Template.html:88
-#. (loc($TemplateObj->Name()))
-#. (loc( $TemplateObj->Name() ))
+#: NOT FOUND IN SOURCE
 msgid "Created template %1"
-msgstr "Erstelle eine Vorlage %1"
+msgstr ""
 
 #: html/Ticket/Elements/EditLinks:28
 msgid "Current Relationships"
 msgstr "Momentane Beziehungen"
 
-#: html/Admin/Elements/EditScrips:33
+#: html/Admin/Elements/EditScrips:30
 msgid "Current Scrips"
-msgstr ""
+msgstr "Aktuelle Scrips"
 
-#: html/Admin/Groups/Members.html:37 html/User/Groups/Members.html:40
+#: html/Admin/Groups/Members.html:39 html/User/Groups/Members.html:42
 msgid "Current members"
 msgstr "Aktuelle Mitglieder"
 
@@ -1193,47 +1191,60 @@ msgstr "Aktuelle Mitglieder"
 msgid "Current rights"
 msgstr "Aktuelle Rechte"
 
-#: html/Admin/Queues/People.html:39 html/Ticket/Elements/EditPeople:39
+#: html/Search/Listing.html:71
+msgid "Current search criteria"
+msgstr "Aktuelle Suchkriterien"
+
+#: html/Admin/Queues/People.html:41 html/Ticket/Elements/EditPeople:45
 msgid "Current watchers"
 msgstr "Aktuelle Beobachter"
 
-#: html/Admin/Elements/QueueTabs:43 html/Ticket/DetailedCreate.html:52 html/Ticket/Elements/ShowSummary:35
+#: html/Admin/Global/CustomField.html:55
+#. ($CustomField)
+msgid "Custom Field #%1"
+msgstr "Benutzerdef. Feld #%1"
+
+#: html/Admin/Elements/QueueTabs:53 html/Admin/Elements/SystemTabs:40 html/Admin/Global/index.html:50 html/Ticket/Elements/ShowSummary:35
 msgid "Custom Fields"
 msgstr "Benutzerdef. Felder"
 
-#: html/Admin/Elements/EditScrip:75
+#: html/Admin/Elements/EditScrip:73
 msgid "Custom action cleanup code"
-msgstr ""
+msgstr "Benutzerdefinierter Action-Cleanup-Code"
 
-#: html/Admin/Elements/EditScrip:67
+#: html/Admin/Elements/EditScrip:65
 msgid "Custom action preparation code"
-msgstr ""
+msgstr "Benutzerdefinierter Aktions-Vorbereitungs-Code"
 
-#: html/Admin/Elements/EditScrip:51
+#: html/Admin/Elements/EditScrip:49
 msgid "Custom condition"
-msgstr ""
+msgstr "Benutzerdefinierte Bedingung"
 
-#: lib/RT/Tickets_Overlay.pm:963
+#: lib/RT/Tickets_Overlay.pm:1618
 #. ($CF->Name , $args{OPERATOR} , $args{VALUE})
 msgid "Custom field %1 %2 %3"
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:958
+#: lib/RT/Tickets_Overlay.pm:1613
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 hat einen Wert."
 
-#: lib/RT/Tickets_Overlay.pm:955
+#: lib/RT/Tickets_Overlay.pm:1610
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 hat keinen Wert."
 
-#: lib/RT/Ticket_Overlay.pm:2966
+#: lib/RT/Ticket_Overlay.pm:3360
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Benutzerdefiniertes Feld %1 nicht gefunden"
 
-#: lib/RT/Ticket_Overlay.pm:3107
+#: html/Admin/Elements/EditCustomFields:197
+msgid "Custom field deleted"
+msgstr "Benutzerdefiniertes Feld wurde gelöscht"
+
+#: lib/RT/Ticket_Overlay.pm:3510
 msgid "Custom field not found"
 msgstr "Benutzerdefiniertes Feld nicht gefunden"
 
@@ -1242,12 +1253,11 @@ msgstr "Benutzerdefiniertes Feld nicht gefunden"
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Wert %1 des benutzerdefinierten Feldes %2 konnte nicht gefunden werden"
 
-#: lib/RT/Ticket_Overlay.pm:3042
-#. ($old_value, $new_value->Content)
+#: NOT FOUND IN SOURCE
 msgid "Custom field value changed from %1 to %2"
-msgstr "Wert des benutzerdefinierten Feldes von %1 auf %2 geändert"
+msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:183
+#: lib/RT/CustomField_Overlay.pm:185
 msgid "Custom field value could not be deleted"
 msgstr "Wert des benutzerdefinierten Felds konnte nicht gelöscht werden"
 
@@ -1255,253 +1265,246 @@ msgstr "Wert des benutzerdefinierten Felds konnte nicht gelöscht werden"
 msgid "Custom field value could not be found"
 msgstr "Wert des benutzerdefinierten Feldes konnte nicht gefunden werden"
 
-#: lib/RT/CustomField_Overlay.pm:181 lib/RT/CustomField_Overlay.pm:291
+#: lib/RT/CustomField_Overlay.pm:183 lib/RT/CustomField_Overlay.pm:291
 msgid "Custom field value deleted"
 msgstr "Wert des benutzerdefinierten Feldes gelöscht"
 
-#: NOT FOUND IN SOURCE
-msgid "Data error"
-msgstr "Datenfehler"
+#: lib/RT/Transaction_Overlay.pm:550
+msgid "CustomField"
+msgstr ""
 
-#: html/Ticket/Create.html:162 html/Ticket/DetailedCreate.html:78 html/Ticket/Elements/ShowSummary:53 html/Ticket/Elements/Tabs:41 html/Ticket/ModifyAll.html:40
+#: html/Ticket/Create.html:161 html/Ticket/Elements/ShowSummary:53 html/Ticket/Elements/Tabs:93 html/Ticket/ModifyAll.html:44
 msgid "Dates"
 msgstr "Datumsangaben"
 
-#: lib/RT/Date.pm:407
+#: lib/RT/Date.pm:422
 msgid "Dec."
 msgstr "Dez"
 
 #: NOT FOUND IN SOURCE
-msgid "December"
-msgstr "Dezember"
-
-#: sbin/insertdata:490
 msgid "Default Autoresponse Template"
 msgstr ""
 
-#: sbin/insertdata:563
+#: etc/initialdata:207
+msgid "Default Autoresponse template"
+msgstr "Standard Autoresponse-Vorlage"
+
+#: etc/initialdata:275
 msgid "Default admin comment template"
-msgstr ""
+msgstr "Standard Admin-Kommentar-Vorlage"
 
-#: sbin/insertdata:542
+#: etc/initialdata:257
 msgid "Default admin correspondence template"
-msgstr ""
+msgstr "Standard Admin-Korrespondenz-Vorlage"
 
-#: sbin/insertdata:554
+#: etc/initialdata:267
 msgid "Default correspondence template"
-msgstr ""
+msgstr "Standard Korrespondenz-Vorlage"
 
-#: sbin/insertdata:522
+#: etc/initialdata:238
 msgid "Default transaction template"
-msgstr ""
+msgstr "Standard Transaktions-Vorlage"
 
-#: lib/RT/Transaction_Overlay.pm:617
-#. ($self->Type, $self->Field, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction_Overlay.pm:645
+#. ($type, $self->Field, $self->OldValue, $self->NewValue)
 msgid "Default: %1/%2 changed from %3 to %4"
-msgstr ""
+msgstr "Standard: %1/%2 von \"%3\" in \"%4\" geändert."
 
-#: html/User/Delegation.html:25
+#: html/User/Delegation.html:25 html/User/Delegation.html:28
 msgid "Delegate rights"
-msgstr ""
+msgstr "Rechte delegieren"
 
-#: lib/RT/ACE_Overlay.pm:104
+#: lib/RT/System.pm:63
 msgid "Delegate specific rights which have been granted to you."
-msgstr ""
+msgstr "Delegiere dir gewährte Rechte"
 
-#: lib/RT/ACE_Overlay.pm:104
+#: lib/RT/System.pm:63
 msgid "DelegateRights"
 msgstr ""
 
+#: html/User/Elements/Tabs:38
+msgid "Delegation"
+msgstr "Delegierung"
+
 #: NOT FOUND IN SOURCE
 msgid "Delete"
-msgstr "Löschen"
-
-#: lib/RT/ACE_Overlay.pm:92
-msgid "Delete tickets"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:92
+#: lib/RT/Queue_Overlay.pm:90
+msgid "Delete tickets"
+msgstr "Lösche Tickets"
+
+#: lib/RT/Queue_Overlay.pm:90
 msgid "DeleteTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:181
+#: lib/RT/Transaction_Overlay.pm:187
 msgid "Deleting this object could break referential integrity"
 msgstr "Löschen dieses Objektes kann die referenzielle Integrität gefährden"
 
-#: lib/RT/Queue_Overlay.pm:241
+#: lib/RT/Queue_Overlay.pm:292
 msgid "Deleting this object would break referential integrity"
 msgstr "Löschen dieses Objektes würde die referenzielle Integrität gefährden"
 
-#: lib/RT/User_Overlay.pm:425
+#: lib/RT/User_Overlay.pm:430
 msgid "Deleting this object would violate referential integrity"
 msgstr "Löschen dieses Objektes würde die referenzielle Integrität verletzen"
 
-#: NOT FOUND IN SOURCE
-msgid "Deleting this object would violate referential integrity."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Deleting this object would violate referential integrity. That's bad."
-msgstr "Löschen dieses Objektes würde die referenzielle Integrität verletzen. Das ist nicht schön."
-
 #: html/Approvals/Elements/Approve:46
 msgid "Deny"
-msgstr ""
+msgstr "Ablehnen"
 
-#: html/Ticket/Create.html:179 html/Ticket/DetailedCreate.html:87 html/Ticket/Elements/EditLinks:115 html/Ticket/Elements/EditLinks:43 html/Ticket/Elements/ShowDependencies:32 html/Ticket/Elements/ShowLinks:35
+#: html/Ticket/Create.html:181 html/Ticket/Elements/EditLinks:123 html/Ticket/Elements/EditLinks:47 html/Ticket/Elements/ShowDependencies:32 html/Ticket/Elements/ShowLinks:35
 msgid "Depended on by"
-msgstr "Abhängig von"
-
-#: bin/rt:1142
-msgid "Dependencies: \\n"
-msgstr "Abhängigkeiten: \\n"
-
-#: html/Elements/SelectLinkType:27 html/Ticket/Create.html:178 html/Ticket/DetailedCreate.html:86 html/Ticket/Elements/EditLinks:114 html/Ticket/Elements/EditLinks:31 html/Ticket/Elements/ShowDependencies:25 html/Ticket/Elements/ShowLinks:25
-msgid "Depends on"
-msgstr "Abhängig von"
+msgstr "Abhängig gemacht von"
 
 #: NOT FOUND IN SOURCE
-msgid "DependsOn"
-msgstr "AbhängigVon"
+msgid "Dependencies: \\n"
+msgstr ""
+
+#: html/Elements/SelectLinkType:27 html/Ticket/Create.html:180 html/Ticket/Elements/EditLinks:119 html/Ticket/Elements/EditLinks:36 html/Ticket/Elements/ShowDependencies:25 html/Ticket/Elements/ShowLinks:27
+msgid "Depends on"
+msgstr "Abhängig von"
 
 #: html/Elements/SelectSortOrder:35
 msgid "Descending"
 msgstr "Absteigend"
 
-#: html/SelfService/Create.html:75 html/Ticket/Create.html:117 html/Ticket/DetailedCreate.html:102
+#: html/SelfService/Create.html:75 html/Ticket/Create.html:119
 msgid "Describe the issue below"
 msgstr "Beschreibe hier das Problem"
 
-#: html/Admin/Elements/AddCustomFieldValue:27 html/Admin/Elements/EditScrip:36 html/Admin/Elements/ModifyQueue:36 html/Admin/Elements/ModifyTemplate:36 html/Admin/Elements/ModifyTemplateAsWorkflow:107 html/Admin/Groups/Modify.html:47 html/Admin/Queues/CustomField.html:36 html/Admin/Queues/Modify.html:48 html/Admin/Queues/Template.html:52 html/User/Groups/Modify.html:47
+#: html/Admin/Elements/AddCustomFieldValue:27 html/Admin/Elements/EditCustomField:33 html/Admin/Elements/EditScrip:34 html/Admin/Elements/ModifyQueue:36 html/Admin/Elements/ModifyTemplate:36 html/Admin/Groups/Modify.html:49 html/Admin/Queues/Modify.html:48 html/Elements/SelectGroups:27 html/User/Groups/Modify.html:49
 msgid "Description"
 msgstr "Beschreibung"
 
 #: html/SelfService/Elements/MyRequests:44
 msgid "Details"
-msgstr "Detail"
+msgstr "Details"
 
-#: html/Ticket/Elements/Tabs:30
+#: html/Ticket/Elements/Tabs:85
 msgid "Display"
 msgstr "Anzeigen"
 
-#: lib/RT/ACE_Overlay.pm:71
+#: lib/RT/Queue_Overlay.pm:69
 msgid "Display Access Control List"
-msgstr ""
+msgstr "Zeige Zugriffskontrollliste an"
 
-#: lib/RT/ACE_Overlay.pm:77
+#: lib/RT/Queue_Overlay.pm:75
 msgid "Display Scrip templates for this queue"
-msgstr ""
+msgstr "Zeige Scrip-Vorlagen für diesen Stapel"
 
-#: lib/RT/ACE_Overlay.pm:80
+#: lib/RT/Queue_Overlay.pm:78
 msgid "Display Scrips for this queue"
-msgstr ""
+msgstr "Zeige Scrips für diesen Stapel"
 
-#: html/Ticket/Elements/ShowHistory:33
+#: html/Ticket/Elements/ShowHistory:35
 msgid "Display mode"
 msgstr "Anzeigemodus"
 
-#: html/SelfService/Display.html:25
+#: html/SelfService/Display.html:25 html/SelfService/Display.html:29
 #. ($Ticket->id)
 msgid "Display ticket #%1"
 msgstr "Zeige Ticket #%1 an"
 
-#: lib/RT/ACE_Overlay.pm:99
+#: lib/RT/System.pm:54
 msgid "Do anything and everything"
-msgstr ""
+msgstr "Mache irgend etwas und alles"
 
 #: html/Elements/Refresh:30
 msgid "Don't refresh this page."
 msgstr "Seite nicht aktualisieren."
 
-#: html/Ticket/Elements/ShowTransaction:106
+#: html/Search/Elements/PickRestriction:114
+msgid "Don't show search results"
+msgstr "Verstecke Suchergebnis"
+
+#: html/Ticket/Elements/ShowTransaction:105
 msgid "Download"
 msgstr "Download"
 
-#: bin/rt:1270 html/Elements/SelectDateType:32 html/Ticket/Create.html:168 html/Ticket/DetailedCreate.html:80 html/Ticket/Elements/EditDates:58 html/Ticket/Elements/ShowDates:61 lib/RT/Ticket_Overlay.pm:756
+#: html/Elements/SelectDateType:32 html/Ticket/Create.html:167 html/Ticket/Elements/EditDates:45 html/Ticket/Elements/ShowDates:43 lib/RT/Ticket_Overlay.pm:1171
 msgid "Due"
 msgstr "Fällig"
 
-#: bin/rt:780
-#. ($due)
+#: NOT FOUND IN SOURCE
 msgid "Due date '%1' could not be parsed"
-msgstr "Fälligkeitsdatum '%1' konnte nicht interpretiert werden"
+msgstr ""
 
-#: bin/enhanced-mailgate:619 bin/rt-commit-handler:754
+#: bin/rt-commit-handler:754
 #. ($1, $msg)
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "FEHLER: Konnte Ticket '%1' nicht laden: %2.\\n"
 
-#: html/Admin/Elements/EditScrips:46
+#: NOT FOUND IN SOURCE
 msgid "Edit"
 msgstr ""
 
-#: html/Admin/Queues/CustomFields.html:25 html/Admin/Queues/CustomFields.html:28
+#: html/Admin/Queues/CustomFields.html:45
 #. ($Queue->Name)
 msgid "Edit Custom Fields for %1"
 msgstr "Bearbeite benutzerdefinierte Felder für %1"
 
-#: html/Ticket/ModifyLinks.html:33
+#: html/Ticket/ModifyLinks.html:36
 msgid "Edit Relationships"
 msgstr "Bearbeite Beziehungen"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit keywords"
-msgstr "Bearbeite Schlüsselworte"
+#: html/Admin/Queues/Templates.html:41
+#. ($QueueObj->Name)
+msgid "Edit Templates for queue %1"
+msgstr "Bearbeite Vorlagen für Stapel %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit scrips"
-msgstr "Bearbeite Scrips"
+msgstr ""
 
-#: html/Admin/Global/Templates.html:25 html/Admin/Global/Templates.html:28
+#: html/Admin/Global/index.html:46
 msgid "Edit system templates"
 msgstr "Bearbeite Systemvorlagen"
 
-#: html/Admin/Queues/Templates.html:25 html/Admin/Queues/Templates.html:28
-#. ($Queue->Name)
+#: NOT FOUND IN SOURCE
 msgid "Edit templates for %1"
-msgstr "Bearbeite Vorlagen für %1"
+msgstr ""
 
-#: html/Admin/Elements/ModifyQueue:25 html/Admin/Queues/Modify.html:115
+#: html/Admin/Elements/ModifyQueue:25 html/Admin/Queues/Modify.html:117
 #. ($QueueObj->Name)
 #. ($QueueObj->Id)
 msgid "Editing Configuration for queue %1"
-msgstr "Bearbeite Einstellungen für den %1 Stapel"
+msgstr "Bearbeite Einstellungen für den Stapel %1"
 
 #: html/Admin/Elements/ModifyUser:25
 #. ($UserObj->Name)
 msgid "Editing Configuration for user %1"
 msgstr "Bearbeite Einstellungen für Benutzer %1"
 
-#: html/Admin/Queues/CustomField.html:74
+#: html/Admin/Elements/EditCustomField:74
 #. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
 msgstr "Bearbeite benutzerdefiniertes Feld %1"
 
-#: html/Admin/Groups/Members.html:30
+#: html/Admin/Groups/Members.html:32
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Bearbeite Mitgliedschaft für die Gruppe %1"
 
-#: html/User/Groups/Members.html:127
+#: html/User/Groups/Members.html:129
 #. ($Group->Name)
 msgid "Editing membership for personal group %1"
+msgstr "Bearbeite Mitgliedschaft der persönlichen Gruppe %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Editing template %1"
 msgstr ""
 
-#: html/Admin/Global/Template.html:67 html/Admin/Global/Workflow.html:136 html/Admin/Queues/Template.html:92
-#. (loc($TemplateObj->Name()))
-#. (loc( $TemplateObj->Name() ))
-msgid "Editing template %1"
-msgstr "Bearbeite Vorlage %1"
-
-#: lib/RT/Ticket_Overlay.pm:2253 lib/RT/Ticket_Overlay.pm:2321
+#: lib/RT/Ticket_Overlay.pm:2615 lib/RT/Ticket_Overlay.pm:2683
 msgid "Either base or target must be specified"
 msgstr "Es muß entweder eine Basis oder ein Ziel angegeben werden"
 
-#: html/Admin/Users/Modify.html:44 html/Admin/Users/Prefs.html:44 html/Elements/SelectUsers:27 html/Ticket/Elements/AddWatchers:45
+#: html/Admin/Users/Modify.html:53 html/Admin/Users/Prefs.html:46 html/Elements/SelectUsers:27 html/Ticket/Elements/AddWatchers:56 html/User/Prefs.html:42
 msgid "Email"
 msgstr "E-Mail"
 
-#: lib/RT/User_Overlay.pm:185
+#: lib/RT/User_Overlay.pm:188
 msgid "Email address in use"
 msgstr "E-Mail-Adresse bereits in Gebrauch"
 
@@ -1509,58 +1512,76 @@ msgstr "E-Mail-Adresse bereits in Gebrauch"
 msgid "EmailAddress"
 msgstr "E-Mail-Adresse"
 
+### muss das überhaupt übersetzt werden???
 #: html/Admin/Elements/ModifyUser:54
 msgid "EmailEncoding"
 msgstr "E-Mail-Kodierung"
 
-#: html/Admin/Queues/Modify.html:82
+### muss das überhaupt übersetzt werden???
+#: html/Admin/Elements/EditCustomField:36
+msgid "Enabled (Unchecking this box disables this custom field)"
+msgstr "Aktiviert (Abwählen deaktiviert dieses benutzerdef. Feld)"
+
+#: html/Admin/Groups/Modify.html:53 html/User/Groups/Modify.html:53
+msgid "Enabled (Unchecking this box disables this group)"
+msgstr "Aktiviert (Abwählen deaktiviert diese Gruppe)"
+
+#: html/Admin/Queues/Modify.html:84
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "Aktiviert (Abwählen deaktiviert diesen Stapel)"
 
-#: html/Admin/Queues/index.html:73
+#: html/Admin/Elements/EditCustomFields:99
+msgid "Enabled Custom Fields"
+msgstr "Aktivierte benutzerdefinierte Felder"
+
+#: html/Admin/Queues/index.html:56
 msgid "Enabled Queues"
 msgstr "Aktivierte Stapel"
 
-#: html/Admin/Queues/Modify.html:137 html/Admin/Users/Modify.html:220
+#: html/Admin/Elements/EditCustomField:90 html/Admin/Groups/Modify.html:117 html/Admin/Queues/Modify.html:138 html/Admin/Users/Modify.html:283 html/User/Groups/Modify.html:117
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
-msgstr "%1 Status aktiviert"
+msgstr "Status %1 aktiviert"
 
-#: html/Ticket/Elements/EditLinks:111
+#: lib/RT/CustomField_Overlay.pm:361
+msgid "Enter multiple values"
+msgstr "Mehrere Werte eingeben"
+
+#: lib/RT/CustomField_Overlay.pm:358
+msgid "Enter one value"
+msgstr "Einen Wert eingeben"
+
+#: html/Ticket/Elements/EditLinks:112
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
 msgstr "Ticketnummern oder URIs getrennt durch Leerzeichen eingeben."
 
-#: html/Elements/Login:29 html/SelfService/Error.html:25
+#: html/Elements/Login:29 html/SelfService/Error.html:25 html/SelfService/Error.html:26
 msgid "Error"
 msgstr "Fehler"
 
-#: NOT FOUND IN SOURCE
-msgid "Error adding watcher"
-msgstr "Fehler beim Hinzufügen von Beobachter"
-
-#: lib/RT/Queue_Overlay.pm:487
+#: lib/RT/Queue_Overlay.pm:555
 msgid "Error in parameters to Queue->AddWatcher"
-msgstr ""
+msgstr "Fehler in den Parameter für Queue-AddWatcher"
 
-#: lib/RT/Queue_Overlay.pm:645
+#: lib/RT/Queue_Overlay.pm:713
 msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Fehler in den Paramter für Queue->DelWatcher"
 
-#: lib/RT/Ticket_Overlay.pm:942
+#: lib/RT/Ticket_Overlay.pm:1356
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Fehler in den Parameter für Ticket->AddWatcher"
 
-#: lib/RT/Ticket_Overlay.pm:1118
+#: lib/RT/Ticket_Overlay.pm:1532
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Fehler in den Parameter für Ticket->DelWatcher"
 
-#: sbin/insertdata:147
+#: etc/initialdata:20
 msgid "Everyone"
-msgstr ""
+msgstr "Everyone"
 
 #: bin/rt-crontool:194
 msgid "Example:"
-msgstr ""
+msgstr "Beispiel:"
 
 #: html/Admin/Elements/ModifyUser:64
 msgid "ExternalAuthId"
@@ -1570,60 +1591,64 @@ msgstr "ExternalAuthId"
 msgid "ExternalContactInfoId"
 msgstr "ExternalContactInfoId"
 
-#: html/Admin/Users/Modify.html:50
+#: html/Admin/Users/Modify.html:73
 msgid "Extra info"
 msgstr "Zusatzinformationen"
 
-#: lib/RT/User_Overlay.pm:297
+#: lib/RT/User_Overlay.pm:302
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Konnte die Pseudogruppe 'Privileged' nicht finden."
 
-#: lib/RT/User_Overlay.pm:304
+#: lib/RT/User_Overlay.pm:309
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Failed to find 'Unprivileged' users pseudogroup"
 
 #: bin/rt-crontool:138
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
-msgstr ""
+msgstr "Konnte Modul %1 nicht laden. (%2)"
 
-#: lib/RT/Date.pm:397
+#: lib/RT/Date.pm:412
 msgid "Feb."
 msgstr "Feb"
 
 #: NOT FOUND IN SOURCE
-msgid "February"
-msgstr "Februar"
-
-#: bin/rt:1228
 msgid "Fin"
-msgstr "Fin"
+msgstr ""
 
-#: html/Ticket/Create.html:149 html/Ticket/DetailedCreate.html:47 html/Ticket/Elements/EditBasics:62 lib/RT/Tickets_Overlay.pm:441
+#: html/Ticket/Create.html:155 html/Ticket/Elements/EditBasics:59 lib/RT/Tickets_Overlay.pm:1091
 msgid "Final Priority"
 msgstr "Endpriorität"
 
-#: lib/RT/Ticket_Overlay.pm:748
+#: lib/RT/Ticket_Overlay.pm:1162
 msgid "FinalPriority"
 msgstr ""
+
+#: html/Admin/Queues/People.html:61 html/Ticket/Elements/EditPeople:34
+msgid "Find group whose"
+msgstr "Finde Gruppe wessen"
 
 #: html/Elements/Quicksearch:25
 msgid "Find new/open tickets"
 msgstr "Finde neue/offene Tickets"
 
-#: html/Admin/Queues/People.html:54 html/Admin/Users/index.html:41 html/Ticket/Elements/EditPeople:30
+#: html/Admin/Queues/People.html:57 html/Admin/Users/index.html:46 html/Ticket/Elements/EditPeople:30
 msgid "Find people whose"
 msgstr "Finde Leute deren"
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:90
+#: html/Search/Listing.html:108
+msgid "Find tickets"
+msgstr "Finde Tickets"
+
+#: NOT FOUND IN SOURCE
 msgid "Finish Approval"
 msgstr ""
 
-#: html/Ticket/Elements/Tabs:118
+#: html/Ticket/Elements/Tabs:58
 msgid "First"
-msgstr ""
+msgstr "Erste"
 
-#: html/Search/Listing.html:92
+#: html/Search/Listing.html:41
 msgid "First page"
 msgstr "Erste Seite"
 
@@ -1639,66 +1664,66 @@ msgstr "Foo!"
 msgid "Force change"
 msgstr "erzwinge Änderung"
 
-#: lib/RT/Interface/Web.pm:822
+#: html/Search/Listing.html:106
+#. ($ticketcount)
+msgid "Found %quant(%1,ticket)"
+msgstr "%quant(%1,ticket) gefunden"
+
+#: lib/RT/Interface/Web.pm:868
 msgid "Found Object"
-msgstr ""
+msgstr "Objekt gefunden"
 
 #: html/Admin/Elements/ModifyUser:44
 msgid "FreeformContactInfo"
 msgstr "FreeformContactInfo"
 
-#: lib/RT/CustomField_Overlay.pm:40
+#: lib/RT/CustomField_Overlay.pm:38
 msgid "FreeformMultiple"
 msgstr "FreieMehrfachauswahl"
 
-#: lib/RT/CustomField_Overlay.pm:39
+#: lib/RT/CustomField_Overlay.pm:37
 msgid "FreeformSingle"
 msgstr "FreieEinzelauswahl"
 
-#: lib/RT/Date.pm:377
+#: lib/RT/Date.pm:392
 msgid "Fri."
-msgstr ""
+msgstr "Fr"
 
-#: html/Ticket/Elements/ShowHistory:36 html/Ticket/Elements/ShowHistory:39
+#: html/Ticket/Elements/ShowHistory:41 html/Ticket/Elements/ShowHistory:51
 msgid "Full headers"
 msgstr "Alle Kopfzeilen"
 
-#: bin/enhanced-mailgate:407
+#: NOT FOUND IN SOURCE
 msgid "Getting the current user from a pgp sig\\n"
-msgstr "Hole aktuellen Benutzer über eine PGP-Signatur"
-
-#: lib/RT/Transaction_Overlay.pm:573
-#. ($New->Name)
-msgid "Given to %1"
 msgstr ""
 
-#: html/Admin/Elements/Tabs:39 html/Admin/index.html:38
+#: lib/RT/Transaction_Overlay.pm:595
+#. ($New->Name)
+msgid "Given to %1"
+msgstr "An %1 gegeben"
+
+#: html/Admin/Elements/Tabs:41 html/Admin/index.html:38
 msgid "Global"
 msgstr "Global"
 
 #: NOT FOUND IN SOURCE
-msgid "Global Keyword Selections"
-msgstr "Globale Schlüsselwortauswahl"
-
-#: NOT FOUND IN SOURCE
 msgid "Global Scrips"
-msgstr "Globale Scrips"
+msgstr ""
 
 #: html/Admin/Elements/SelectTemplate:38
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr ""
+msgstr "Globale Vorlage: %1"
 
-#: html/Admin/Queues/People.html:56 html/Admin/Queues/index.html:43 html/Admin/Users/index.html:44 html/Ticket/Elements/EditPeople:32 html/index.html:40
+#: html/Admin/Elements/EditCustomFields:75 html/Admin/Queues/People.html:59 html/Admin/Queues/People.html:63 html/Admin/Queues/index.html:44 html/Admin/Users/index.html:49 html/Ticket/Elements/EditPeople:32 html/Ticket/Elements/EditPeople:36 html/index.html:41
 msgid "Go!"
 msgstr "Los!"
 
-#: bin/enhanced-mailgate:460
-#. ($userid)
+#: NOT FOUND IN SOURCE
 msgid "Good pgp sig from %1\\n"
-msgstr "Gute PGP-Signatur von %1\\n"
+msgstr ""
 
-#: html/Search/Listing.html:97
+#: html/Search/Listing.html:50
 msgid "Goto page"
 msgstr "Gehe zu Seite"
 
@@ -1706,57 +1731,52 @@ msgstr "Gehe zu Seite"
 msgid "Goto ticket"
 msgstr "Zeig' Ticket"
 
-#: html/User/Elements/DelegateRights:74
+#: html/Ticket/Elements/AddWatchers:46 html/User/Elements/DelegateRights:78
 msgid "Group"
+msgstr "Gruppe"
+
+#: NOT FOUND IN SOURCE
+msgid "Group %1 %2: %3"
 msgstr ""
 
-#: bin/rtadmin:549
-#. ($group_obj->Name, $attrib, $msg)
-msgid "Group %1 %2: %3"
-msgstr "Gruppe %1 %2: %3"
-
-#: html/Admin/Elements/GroupTabs:36 html/Admin/Elements/QueueTabs:47 html/Admin/Elements/SystemTabs:36
+#: html/Admin/Elements/GroupTabs:45 html/Admin/Elements/QueueTabs:57 html/Admin/Elements/SystemTabs:44 html/Admin/Global/index.html:55
 msgid "Group Rights"
 msgstr "Gruppenrechte"
 
-#: lib/RT/Group_Overlay.pm:819
+#: lib/RT/Group_Overlay.pm:965
 msgid "Group already has member"
 msgstr "Gruppe hat bereits Mitglieder"
 
-#: NOT FOUND IN SOURCE
-msgid "Group could not be created."
-msgstr "Gruppe konnte nicht angelegt werden."
-
-#: html/Admin/Groups/Modify.html:70
+#: html/Admin/Groups/Modify.html:77
 #. ($create_msg)
 msgid "Group could not be created: %1"
-msgstr ""
+msgstr "Gruppe konnte nicht erstellt werden: %1"
 
-#: lib/RT/Group_Overlay.pm:430
+#: lib/RT/Group_Overlay.pm:497
 msgid "Group created"
 msgstr "Gruppe angelegt"
 
-#: lib/RT/Group_Overlay.pm:987
+#: lib/RT/Group_Overlay.pm:1133
 msgid "Group has no such member"
-msgstr ""
+msgstr "Gruppe hat kein solches Mitglied"
 
-#: lib/RT/Group_Overlay.pm:799 lib/RT/Queue_Overlay.pm:560 lib/RT/Queue_Overlay.pm:620 lib/RT/Ticket_Overlay.pm:1015 lib/RT/Ticket_Overlay.pm:1093
+#: lib/RT/Group_Overlay.pm:945 lib/RT/Queue_Overlay.pm:628 lib/RT/Queue_Overlay.pm:688 lib/RT/Ticket_Overlay.pm:1429 lib/RT/Ticket_Overlay.pm:1507
 msgid "Group not found"
 msgstr "Gruppe nicht gefunden"
 
-#: bin/rtadmin:529
+#: NOT FOUND IN SOURCE
 msgid "Group not found.\\n"
-msgstr "Gruppe nicht gefunden."
+msgstr ""
 
-#: bin/rtadmin:509
+#: NOT FOUND IN SOURCE
 msgid "Group not specified.\\n"
-msgstr "Keine Gruppe angegeben."
+msgstr ""
 
-#: html/Admin/Elements/SelectNewGroupMembers:30 html/Admin/Elements/Tabs:33 html/Admin/Groups/Members.html:62 html/Admin/Groups/index.html:33 html/Admin/index.html:32 html/User/Elements/Tabs:33 html/User/Groups/Members.html:65
+#: html/Admin/Elements/SelectNewGroupMembers:35 html/Admin/Elements/Tabs:35 html/Admin/Groups/Members.html:64 html/Admin/Queues/People.html:83 html/Admin/index.html:32 html/User/Groups/Members.html:67
 msgid "Groups"
 msgstr "Gruppen"
 
-#: lib/RT/Group_Overlay.pm:825
+#: lib/RT/Group_Overlay.pm:971
 msgid "Groups can't be members of their members"
 msgstr "Gruppen können nicht Mitglied eines ihrer Mitglieder sein"
 
@@ -1769,7 +1789,7 @@ msgstr "Hallo!"
 msgid "Hello, %1"
 msgstr "Hallo %1"
 
-#: html/Ticket/Elements/ShowHistory:30 html/Ticket/Elements/Tabs:34
+#: html/Ticket/Elements/ShowHistory:30 html/Ticket/Elements/Tabs:88
 msgid "History"
 msgstr "Historie"
 
@@ -1777,174 +1797,166 @@ msgstr "Historie"
 msgid "HomePhone"
 msgstr "TelefonZuhause"
 
-#: html/Elements/Tabs:111
+#: html/Elements/Tabs:46
 msgid "Homepage"
 msgstr "Start"
 
-#: lib/RT/Base.pm:73
+#: lib/RT/Base.pm:74
 #. (6)
+msgid "I have %quant(%1,concrete mixer)."
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "I have [quant,_1,concrete mixer]."
 msgstr ""
 
-#: etc/RT_Config.pm:347 html/Ticket/Elements/ShowBasics:27 lib/RT/Tickets_Overlay.pm:368
+#: html/Ticket/Elements/ShowBasics:27 lib/RT/Tickets_Overlay.pm:1018
 msgid "Id"
-msgstr "Id"
+msgstr "Nr."
 
-#: html/Admin/Users/Modify.html:41
+#: html/Admin/Users/Modify.html:44 html/User/Prefs.html:39
 msgid "Identity"
 msgstr "Identität"
 
-#: sbin/insert_approval_scrips:105
+#: etc/upgrade/2.1.71:86
 msgid "If an approval is rejected, reject the original and delete pending approvals"
-msgstr ""
+msgstr "Wenn eine Freigabe abgewiesen wird, weise das Original ab und lösche wartende Freigaben"
 
 #: bin/rt-crontool:190
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
-msgstr ""
+msgstr "Wenn dieses Werkzeug 'setgid' wäre könnte ein feindlicher lokaler User dadurch administrativen Zugriff auf RT erlangen."
 
-#: html/Admin/Queues/People.html:80 html/Ticket/Modify.html:38 html/Ticket/ModifyAll.html:77 html/Ticket/ModifyPeople.html:35
+#: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "If you've updated anything above, be sure to"
 msgstr "Wenn du irgend etwas aktualisiert hast, denke daran hier zu klicken"
 
-#: lib/RT/Interface/Web.pm:814
+#: lib/RT/Interface/Web.pm:860
 msgid "Illegal value for %1"
-msgstr ""
+msgstr "Unerlaubter Wert für %1"
 
-#: lib/RT/Interface/Web.pm:817
+#: lib/RT/Interface/Web.pm:863
 msgid "Immutable field"
-msgstr ""
+msgstr "Unveränderbares Feld"
 
-#: html/Admin/Queues/index.html:41
+#: html/Admin/Elements/EditCustomFields:74
+msgid "Include disabled custom fields in listing."
+msgstr "Zeige auch deaktivierte benutzerdefinierte Felder an."
+
+#: html/Admin/Queues/index.html:43
 msgid "Include disabled queues in listing."
 msgstr "Zeige auch deaktivierte Stapel an."
 
-#: html/Admin/Users/index.html:42
+#: html/Admin/Users/index.html:47
 msgid "Include disabled users in search."
 msgstr "Zeige deaktivierte Benutzer auch in der Suche an."
 
-#: lib/RT/Tickets_Overlay.pm:417
+#: lib/RT/Tickets_Overlay.pm:1067
 msgid "Initial Priority"
 msgstr "Anfängliche Priorität"
 
-#: lib/RT/Ticket_Overlay.pm:747 lib/RT/Ticket_Overlay.pm:749
+#: lib/RT/Ticket_Overlay.pm:1161 lib/RT/Ticket_Overlay.pm:1163
 msgid "InitialPriority"
 msgstr ""
 
-#: lib/RT/ScripAction_Overlay.pm:107
+#: lib/RT/ScripAction_Overlay.pm:105
 msgid "Input error"
 msgstr "Eingabefehler"
 
-#: NOT FOUND IN SOURCE
-msgid "Interest noted"
-msgstr "Interesse aufgenommen"
-
-#: lib/RT/Ticket_Overlay.pm:3325
+#: lib/RT/Ticket_Overlay.pm:3729
 msgid "Internal Error"
-msgstr ""
+msgstr "Interner Fehler"
 
-#: lib/RT/Record.pm:135
+#: lib/RT/Record.pm:143
 #. ($id->{error_message})
 msgid "Internal Error: %1"
-msgstr ""
+msgstr "Internet Fehler: %1"
 
-#: lib/RT/Group_Overlay.pm:577
+#: lib/RT/Group_Overlay.pm:644
 msgid "Invalid Group Type"
 msgstr "Ungültige Gruppenart"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Type"
-msgstr "Ungültiger Typ"
+#: lib/RT/Principal_Overlay.pm:128
+msgid "Invalid Right"
+msgstr "Ungültiges Recht"
 
-#: lib/RT/Interface/Web.pm:819
+#: lib/RT/Interface/Web.pm:865
 msgid "Invalid data"
-msgstr ""
+msgstr "Ungültige Daten"
 
-#: lib/RT/Ticket_Overlay.pm:426
+#: lib/RT/Ticket_Overlay.pm:438
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "Ungültiger Inhaber. Zurücksetzung auf 'nobody'."
 
-#: lib/RT/Scrip_Overlay.pm:133 lib/RT/Template_Overlay.pm:248
+#: lib/RT/Scrip_Overlay.pm:134 lib/RT/Template_Overlay.pm:251
 msgid "Invalid queue"
 msgstr "Ungültiger Stapel"
 
-#: lib/RT/ACE_Overlay.pm:274 lib/RT/ACE_Overlay.pm:282 lib/RT/ACE_Overlay.pm:287 lib/RT/ACE_Overlay.pm:292
+#: lib/RT/ACE_Overlay.pm:244 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:259 lib/RT/ACE_Overlay.pm:270 lib/RT/ACE_Overlay.pm:275
 msgid "Invalid right"
 msgstr "Ungültiges Recht"
 
-#: lib/RT/Record.pm:109
+#: lib/RT/Record.pm:118
 #. ($key)
 msgid "Invalid value for %1"
 msgstr "Ungültiger Wert für %1"
 
-#: lib/RT/Ticket_Overlay.pm:2973
+#: lib/RT/Ticket_Overlay.pm:3367
 msgid "Invalid value for custom field"
 msgstr "Ungültiger Wert für das benutzerdefinierte Feld"
 
-#: lib/RT/Ticket_Overlay.pm:341
+#: lib/RT/Ticket_Overlay.pm:345
 msgid "Invalid value for status"
 msgstr "Ungültiger Statuswert"
 
 #: bin/rt-crontool:191
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
-msgstr ""
+msgstr "Es ist sehr wichtig dass nichtprivilegierte Benutzer dieses Werkzeug nicht aufrufen können."
 
 #: bin/rt-crontool:192
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
-msgstr ""
+msgstr "Es wird empfohlen einen nichtprivilegierten Unix-User mit korrekter Gruppenzugehörigkeit zum Zugriff auf RT anzulegen um dieses Werkzeug aufzurufen."
 
 #: bin/rt-crontool:163
 msgid "It takes several arguments:"
+msgstr "Es verarbeitet verschiedene Parameter:"
+
+#: NOT FOUND IN SOURCE
+msgid "Items pending my approval"
 msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:25
-msgid "Items pending my approval"
-msgstr "Auf meine Freigabe wartende Anfragen"
-
-#: lib/RT/Date.pm:396
+#: lib/RT/Date.pm:411
 msgid "Jan."
 msgstr "Jan"
 
-#: NOT FOUND IN SOURCE
-msgid "January"
-msgstr "Januar"
-
-#: lib/RT/ACE_Overlay.pm:110
+#: lib/RT/Group_Overlay.pm:149
 msgid "Join or leave this group"
-msgstr ""
+msgstr "Betrete oder verlasse diese Gruppe"
 
-#: lib/RT/Date.pm:402
+#: lib/RT/Date.pm:417
 msgid "Jul."
 msgstr "Jul"
 
-#: NOT FOUND IN SOURCE
-msgid "July"
-msgstr "Juli"
-
-#: html/Ticket/Elements/Tabs:46
+#: html/Ticket/Elements/Tabs:99
 msgid "Jumbo"
 msgstr "Jumbo"
 
-#: lib/RT/Date.pm:401
+#: lib/RT/Date.pm:416
 msgid "Jun."
 msgstr "Jun"
 
 #: NOT FOUND IN SOURCE
-msgid "June"
-msgstr "Juni"
-
-#: lib/RT/Transaction_Overlay.pm:528
 msgid "Keyword"
-msgstr "Schlüsselwort"
+msgstr ""
 
 #: html/Admin/Elements/ModifyUser:52
 msgid "Lang"
 msgstr "Sprache"
 
-#: etc/RT_Config.pm:377 html/Ticket/Elements/Tabs:137
+#: html/Ticket/Elements/Tabs:73
 msgid "Last"
 msgstr "letzter Kontakt"
 
-#: html/Ticket/Elements/EditDates:49 html/Ticket/Elements/ShowDates:53
+#: html/Ticket/Elements/EditDates:38 html/Ticket/Elements/ShowDates:39
 msgid "Last Contact"
 msgstr "Letzter Kontakt"
 
@@ -1952,85 +1964,84 @@ msgstr "Letzter Kontakt"
 msgid "Last Contacted"
 msgstr "Zuletzt Kontaktiert"
 
+#: html/Search/Elements/TicketHeader:41
+msgid "Last Notified"
+msgstr "Letzte Änderung"
+
 #: html/Elements/SelectDateType:30
 msgid "Last Updated"
 msgstr "Zuletzt Aktualisiert"
 
 #: NOT FOUND IN SOURCE
-msgid "LastUpdated"
-msgstr "LastUpdated"
-
-#: bin/rt:1238
 msgid "Left"
-msgstr "Übrig"
+msgstr ""
 
-#: html/Admin/Users/Modify.html:57
+#: html/Admin/Users/Modify.html:83
 msgid "Let this user access RT"
 msgstr "Diesen Benutzer RT-Zugriff gewähren"
 
-#: html/Admin/Users/Modify.html:61
+#: html/Admin/Users/Modify.html:87
 msgid "Let this user be granted rights"
 msgstr "Diesen Benutzer mehr Rechte gewähren"
 
-#: bin/rt:483
-#. ($op, $val)
+#: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
-msgstr "Beschränke Inhaber zu %1 %2"
+msgstr ""
 
-#: bin/rt:460
-#. ($ op, $queue_obj->Name)
+#: NOT FOUND IN SOURCE
 msgid "Limiting queue to %1 %2"
-msgstr "Beschränke Stapel zu %1 %2"
+msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2335
+#: lib/RT/Ticket_Overlay.pm:2697
 msgid "Link already exists"
 msgstr "Beziehung existiert bereits"
 
-#: lib/RT/Ticket_Overlay.pm:2347
+#: lib/RT/Ticket_Overlay.pm:2709
 msgid "Link could not be created"
 msgstr "Beziehung konnte nicht erstellt werden"
 
-#: lib/RT/Ticket_Overlay.pm:2355 lib/RT/Ticket_Overlay.pm:2365
+#: lib/RT/Ticket_Overlay.pm:2717 lib/RT/Ticket_Overlay.pm:2727
 #. ($TransString)
 msgid "Link created (%1)"
 msgstr "Beziehung erstellt (%1)"
 
-#: lib/RT/Ticket_Overlay.pm:2276
+#: lib/RT/Ticket_Overlay.pm:2638
 #. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "Beziehung gelöscht (%1)"
 
-#: lib/RT/Ticket_Overlay.pm:2282
+#: lib/RT/Ticket_Overlay.pm:2644
 msgid "Link not found"
 msgstr "Beziehung nicht gefunden"
 
-#: html/Ticket/ModifyLinks.html:25
+#: html/Ticket/ModifyLinks.html:25 html/Ticket/ModifyLinks.html:29
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
 msgstr "Verweise auf Ticket #%1"
 
-#: NOT FOUND IN SOURCE
-msgid "Link ticket %1"
-msgstr "Verweise auf Ticket #%1"
-
-#: html/Ticket/Elements/Tabs:44
+#: html/Ticket/Elements/Tabs:97
 msgid "Links"
 msgstr "Beziehungen"
 
-#: html/Admin/Users/Modify.html:87
+#: html/Admin/Users/Modify.html:114 html/User/Prefs.html:85
 msgid "Location"
 msgstr "Adresse"
 
-#: lib/RT.pm:104
+#: lib/RT.pm:158
 #. ($RT::LogDir)
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Log-Verzeichnis %1 nicht gefunden oder kein Schreibzugriff.\\n RT kann nicht starten."
+
+#: html/Elements/Header:57
+#. ("<b>".$session{'CurrentUser'}->Name."</b>")
+msgid "Logged in as %1"
+msgstr "Angemeldet als %1"
 
 #: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:25 html/Elements/Login:34 html/Elements/Login:45
 msgid "Login"
 msgstr "Anmelden"
 
-#: html/Elements/Header:46
+#: html/Elements/Header:54
 msgid "Logout"
 msgstr "Abmelden"
 
@@ -2048,7 +2059,7 @@ msgstr "Mach Fälligkeitsdatum"
 
 #: html/Search/Bulk.html:110
 msgid "Make date Resolved"
-msgstr "Mach Lösungsdatum"
+msgstr "Mach Erledigungsdatum"
 
 #: html/Search/Bulk.html:107
 msgid "Make date Started"
@@ -2090,31 +2101,23 @@ msgstr "Verwalte Stapel und stapelspezifische Einstellungen"
 msgid "Manage users and passwords"
 msgstr "Verwalte Benutzer und Passworte"
 
-#: lib/RT/Date.pm:398
+#: lib/RT/Date.pm:413
 msgid "Mar."
 msgstr "Mär"
 
-#: NOT FOUND IN SOURCE
-msgid "March"
-msgstr "März"
-
-#: NOT FOUND IN SOURCE
-msgid "May"
-msgstr "Mai"
-
-#: lib/RT/Date.pm:400
+#: lib/RT/Date.pm:415
 msgid "May."
 msgstr "Mai."
 
-#: lib/RT/Group_Overlay.pm:836
+#: lib/RT/Group_Overlay.pm:982
 msgid "Member added"
 msgstr "Mitglied hinzugefügt"
 
-#: lib/RT/Group_Overlay.pm:994
+#: lib/RT/Group_Overlay.pm:1140
 msgid "Member deleted"
 msgstr "Mitglied gelöscht"
 
-#: lib/RT/Group_Overlay.pm:998
+#: lib/RT/Group_Overlay.pm:1144
 msgid "Member not deleted"
 msgstr "Mitglied nicht gelöscht"
 
@@ -2122,35 +2125,31 @@ msgstr "Mitglied nicht gelöscht"
 msgid "Member of"
 msgstr "Mitglied von"
 
-#: NOT FOUND IN SOURCE
-msgid "MemberOf"
-msgstr "MemberOf"
-
-#: html/Admin/Elements/GroupTabs:33 html/User/Elements/GroupTabs:33
+#: html/Admin/Elements/GroupTabs:42 html/User/Elements/GroupTabs:42
 msgid "Members"
 msgstr "Mitglieder"
 
-#: lib/RT/Ticket_Overlay.pm:2479
+#: lib/RT/Ticket_Overlay.pm:2843
 msgid "Merge Successful"
 msgstr "Zusammenführung erfolgreich"
 
-#: lib/RT/Ticket_Overlay.pm:2442
+#: lib/RT/Ticket_Overlay.pm:2804
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Zusammenführung fehlgeschlagen. Konnte EffectiveId nicht setztn"
 
-#: html/Ticket/Elements/EditLinks:113
+#: html/Ticket/Elements/EditLinks:115
 msgid "Merge into"
 msgstr "Zusammenführen in"
 
-#: html/Ticket/Update.html:82
+#: html/Ticket/Update.html:102
 msgid "Message"
 msgstr "Nachricht"
 
-#: lib/RT/Interface/Web.pm:821
+#: lib/RT/Interface/Web.pm:867
 msgid "Missing a primary key?: %1"
-msgstr ""
+msgstr "%1: Fehlt ein Primärschlüssel?"
 
-#: html/Admin/Users/Modify.html:116
+#: html/Admin/Users/Modify.html:169 html/User/Prefs.html:54
 msgid "Mobile"
 msgstr "Mobil"
 
@@ -2158,257 +2157,288 @@ msgstr "Mobil"
 msgid "MobilePhone"
 msgstr "Mobiltelefon"
 
-#: lib/RT/ACE_Overlay.pm:72
+#: lib/RT/Queue_Overlay.pm:70
 msgid "Modify Access Control List"
-msgstr ""
-
-#: html/Admin/Queues/CustomField.html:25
-#. ($CustomFieldObj->id)
-msgid "Modify Custom Field %1"
-msgstr "Ändere benutzerdefiniertes Feld %1"
-
-#: lib/RT/ACE_Overlay.pm:75
-msgid "Modify Scrip templates for this queue"
-msgstr ""
-
-#: lib/RT/ACE_Overlay.pm:78
-msgid "Modify Scrips for this queue"
-msgstr ""
+msgstr "Ändere Zugriffskontrollliste"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify System ACLS"
-msgstr "Ändere System-ACLS"
+msgid "Modify Custom Field %1"
+msgstr ""
 
-#: html/Admin/Global/Workflow.html:25
-#. ($TemplateObj->Id)
+#: html/Admin/Global/CustomFields.html:44 html/Admin/Global/index.html:51
+msgid "Modify Custom Fields which apply to all queues"
+msgstr "Ändere benutzdefinierte Felder für diesen Stapel"
+
+#: lib/RT/Queue_Overlay.pm:73
+msgid "Modify Scrip templates for this queue"
+msgstr "Ändere Scrip-Vorlagen für diesen Stapel"
+
+#: lib/RT/Queue_Overlay.pm:76
+msgid "Modify Scrips for this queue"
+msgstr "Ändere Scrips für diesen Stapel"
+
+#: NOT FOUND IN SOURCE
 msgid "Modify Template %1"
 msgstr ""
 
-#: html/Admin/Queues/Scrip.html:39
+#: html/Admin/Queues/CustomField.html:45
+#. ($QueueObj->Name())
+msgid "Modify a CustomField for queue %1"
+msgstr "Ändere ein benutzerdefiniertes Feld für Stapel %1"
+
+#: html/Admin/Global/CustomField.html:53
+msgid "Modify a CustomField which applies to all queues"
+msgstr "Ändere ein globales benutzerdefiniertes Feld"
+
+#: html/Admin/Queues/Scrip.html:54
 #. ($QueueObj->Name)
 msgid "Modify a scrip for queue %1"
-msgstr ""
+msgstr "Ändere ein Scrip für den Stapel %1"
 
-#: html/Admin/Global/Scrip.html:33
+#: html/Admin/Global/Scrip.html:48
 msgid "Modify a scrip which applies to all queues"
-msgstr ""
+msgstr "Ändere ein globales benutzerdefiniertes Feld"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify dates for # %1"
-msgstr "Ändere Datumsangaben für #%1"
-
-#: html/Ticket/ModifyDates.html:25
+#: html/Ticket/ModifyDates.html:25 html/Ticket/ModifyDates.html:29
 #. ($TicketObj->Id)
 msgid "Modify dates for #%1"
 msgstr "Ändere Datumsangaben für #%1"
 
-#: html/Ticket/ModifyDates.html:32
+#: html/Ticket/ModifyDates.html:35
 #. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
 msgstr "Ändere Datumsangaben für Ticket #%1"
 
-#: html/Admin/Global/GroupRights.html:25
+#: html/Admin/Global/GroupRights.html:25 html/Admin/Global/GroupRights.html:28 html/Admin/Global/index.html:56
 msgid "Modify global group rights"
 msgstr "Ändere globale Gruppenrechte"
 
-#: html/Admin/Global/GroupRights.html:31
+#: html/Admin/Global/GroupRights.html:33
 msgid "Modify global group rights."
 msgstr "Ändere globale Gruppenrechte."
 
 #: NOT FOUND IN SOURCE
-msgid "Modify global rights for groups"
-msgstr "Ändere globale Rechte für Gruppen"
+msgid "Modify global scrips"
+msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global rights for users"
+#: html/Admin/Global/UserRights.html:25 html/Admin/Global/UserRights.html:28 html/Admin/Global/index.html:60
+msgid "Modify global user rights"
 msgstr "Ändere globale Benutzerrechte"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global scrips"
-msgstr "Ändere globale Scrips"
-
-#: html/Admin/Global/UserRights.html:25 html/Admin/Global/UserRights.html:31
+#: html/Admin/Global/UserRights.html:33
 msgid "Modify global user rights."
 msgstr "Ändere globale Benutzerrechte."
 
-#: lib/RT/ACE_Overlay.pm:108
+#: lib/RT/Group_Overlay.pm:146
 msgid "Modify group metadata or delete group"
-msgstr ""
+msgstr "Ändere Gruppen-Metadaten oder lösche die Gruppe"
 
-#: html/Admin/Groups/GroupRights.html:25 html/Admin/Groups/GroupRights.html:32
+#: html/Admin/Groups/GroupRights.html:25 html/Admin/Groups/GroupRights.html:29 html/Admin/Groups/GroupRights.html:35
 #. ($GroupObj->Name)
 msgid "Modify group rights for group %1"
-msgstr ""
+msgstr "Ändere die Gruppenrechte der Gruppe %1"
 
-#: html/Admin/Queues/GroupRights.html:25 html/Admin/Queues/GroupRights.html:32
+#: html/Admin/Queues/GroupRights.html:25 html/Admin/Queues/GroupRights.html:29
 #. ($QueueObj->Name)
 msgid "Modify group rights for queue %1"
 msgstr "Ändere Gruppenrechte für Stapel %1"
 
-#: lib/RT/ACE_Overlay.pm:109
+#: lib/RT/Group_Overlay.pm:148
 msgid "Modify membership roster for this group"
-msgstr ""
+msgstr "Ändere Mitgliedsverzeichnis dieser Gruppe"
 
-#: lib/RT/ACE_Overlay.pm:103
+#: lib/RT/System.pm:61
 msgid "Modify one's own RT account"
-msgstr ""
+msgstr "Ändere jemandens eigenen RT-Zugang"
 
-#: html/Admin/Queues/People.html:25
+#: html/Admin/Queues/People.html:25 html/Admin/Queues/People.html:29
 #. ($QueueObj->Name)
 msgid "Modify people related to queue %1"
 msgstr "Ändere Leute bezogen auf Stapel %1"
 
-#: html/Ticket/ModifyPeople.html:25 html/Ticket/ModifyPeople.html:32
+#: html/Ticket/ModifyPeople.html:25 html/Ticket/ModifyPeople.html:29 html/Ticket/ModifyPeople.html:35
 #. ($Ticket->id)
 #. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
 msgstr "Ändere Personen des Tickets #%1"
 
-#: html/Admin/Queues/Scrips.html:39
+#: html/Admin/Queues/Scrips.html:44
 #. ($QueueObj->Name)
 msgid "Modify scrips for queue %1"
 msgstr "Ändere Scrips für den Stapel %1"
 
-#: html/Admin/Global/Scrips.html:31
+#: html/Admin/Global/Scrips.html:44 html/Admin/Global/index.html:42
 msgid "Modify scrips which apply to all queues"
-msgstr ""
+msgstr "Ändere auf alle Stapel angewandte Scrips"
 
-#: html/Admin/Global/Template.html:25 html/Admin/Queues/Template.html:25
+#: html/Admin/Global/Template.html:25 html/Admin/Global/Template.html:30 html/Admin/Global/Template.html:81 html/Admin/Queues/Template.html:78
+#. (loc($TemplateObj->Name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Ändere Vorlage %1"
 
-#: html/Admin/Groups/Modify.html:80 html/User/Groups/Modify.html:81
+#: html/Admin/Global/Templates.html:44
+msgid "Modify templates which apply to all queues"
+msgstr "Ändere globale Templates"
+
+#: html/Admin/Groups/Modify.html:87 html/User/Groups/Modify.html:86
 #. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "Ändere Gruppe %1"
 
-#: lib/RT/ACE_Overlay.pm:73
+#: lib/RT/Queue_Overlay.pm:71
 msgid "Modify the queue watchers"
-msgstr ""
+msgstr "Ändere die Stapelbeobachter"
 
-#: html/Admin/Users/Modify.html:173
+#: html/Admin/Users/Modify.html:236
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "Ändere Benutzer %1"
 
-#: html/Ticket/ModifyAll.html:34
+#: html/Ticket/ModifyAll.html:37
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
 msgstr "Ändere Ticket #%1"
 
-#: html/Ticket/Modify.html:25 html/Ticket/Modify.html:32
+#: html/Ticket/Modify.html:25 html/Ticket/Modify.html:28 html/Ticket/Modify.html:34
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
 msgstr "Ändere Ticket #%1"
 
-#: lib/RT/ACE_Overlay.pm:90
+#: lib/RT/Queue_Overlay.pm:88
 msgid "Modify tickets"
-msgstr ""
+msgstr "Ändere Tickets"
 
-#: html/Admin/Groups/UserRights.html:25 html/Admin/Groups/UserRights.html:32
+#: html/Admin/Groups/UserRights.html:25 html/Admin/Groups/UserRights.html:29 html/Admin/Groups/UserRights.html:35
 #. ($GroupObj->Name)
 msgid "Modify user rights for group %1"
-msgstr ""
+msgstr "Ändere Benutzerrechte für die Gruppe %1"
 
-#: html/Admin/Queues/UserRights.html:25 html/Admin/Queues/UserRights.html:32
+#: html/Admin/Queues/UserRights.html:25 html/Admin/Queues/UserRights.html:29
 #. ($QueueObj->Name)
 msgid "Modify user rights for queue %1"
 msgstr "Ändere Benutzerrechte für Stapel %1"
 
-#: html/Admin/Queues/People.html:33
-#. ($QueueObj->Name)
+#: NOT FOUND IN SOURCE
 msgid "Modify watchers for queue '%1'"
-msgstr "Ändere Beobachter für Stapel '%1'"
+msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:72
+#: lib/RT/Queue_Overlay.pm:70
 msgid "ModifyACL"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:110
+#: lib/RT/Group_Overlay.pm:149
 msgid "ModifyOwnMembership"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:73
+#: lib/RT/Queue_Overlay.pm:71
 msgid "ModifyQueueWatchers"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:78
+#: lib/RT/Queue_Overlay.pm:76
 msgid "ModifyScrips"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:103
+#: lib/RT/System.pm:61
 msgid "ModifySelf"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:75
+#: lib/RT/Queue_Overlay.pm:73
 msgid "ModifyTemplate"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:90
+#: lib/RT/Queue_Overlay.pm:88
 msgid "ModifyTicket"
 msgstr ""
 
-#: lib/RT/Date.pm:373
+#: lib/RT/Date.pm:388
 msgid "Mon."
-msgstr ""
+msgstr "Mo"
 
-#: html/Ticket/Elements/ShowRequestor:41
+#: html/Ticket/Elements/ShowRequestor:42
 #. ($name)
 msgid "More about %1"
 msgstr "Mehr über %1"
+
+#: html/Admin/Elements/EditCustomFields:61
+msgid "Move down"
+msgstr "Runter verschieben"
+
+#: html/Admin/Elements/EditCustomFields:53
+msgid "Move up"
+msgstr "Hoch verschieben"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:27
 msgid "Multiple"
 msgstr "Mehrere"
 
-#: lib/RT/User_Overlay.pm:176
+#: lib/RT/User_Overlay.pm:179
 msgid "Must specify 'Name' attribute"
 msgstr "Du musst eine Angabe bei 'Name' machen"
 
-#: html/Approvals/index.html:25
+#: NOT FOUND IN SOURCE
 msgid "My Approvals"
 msgstr ""
 
-#: html/Admin/Elements/AddCustomFieldValue:26 html/Admin/Elements/ModifyTemplate:28 html/Admin/Elements/ModifyUser:30 html/Admin/Groups/Modify.html:42 html/Admin/Queues/CustomField.html:35 html/Admin/Queues/Template.html:44 html/Elements/SelectUsers:28 html/User/Groups/Modify.html:42
+#: html/Approvals/index.html:25 html/Approvals/index.html:26
+msgid "My approvals"
+msgstr "Meine Freigaben"
+
+#: html/Admin/Elements/AddCustomFieldValue:26 html/Admin/Elements/EditCustomField:32 html/Admin/Elements/ModifyTemplate:28 html/Admin/Elements/ModifyUser:30 html/Admin/Groups/Modify.html:44 html/Elements/SelectGroups:26 html/Elements/SelectUsers:28 html/User/Groups/Modify.html:44
 msgid "Name"
 msgstr "Name"
 
-#: lib/RT/User_Overlay.pm:183
+#: lib/RT/User_Overlay.pm:186
 msgid "Name in use"
 msgstr "Benutzername ist bereits in Gebrauch"
 
-#: sbin/insert_approval_scrips:248
+#: NOT FOUND IN SOURCE
 msgid "Need approval from system administrator"
 msgstr ""
 
-#: html/Ticket/Elements/ShowDates:72
+#: html/Ticket/Elements/ShowDates:52
 msgid "Never"
-msgstr ""
+msgstr "Niemals"
 
 #: html/Elements/Quicksearch:30
 msgid "New"
 msgstr "Neu"
 
-#: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:67
+#: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:93 html/User/Prefs.html:65
 msgid "New Password"
 msgstr "Neues Passwort"
 
-#: sbin/insert_approval_scrips:228
+#: etc/initialdata:311 etc/upgrade/2.1.71:16
 msgid "New Pending Approval"
-msgstr ""
+msgstr "Neue wartende Freigaben"
 
-#: html/Ticket/Elements/EditLinks:110
+#: html/Ticket/Elements/EditLinks:111
 msgid "New Relationships"
 msgstr "Neue Beziehungen"
 
-#: html/SelfService/Prefs.html:32 html/User/Prefs.html:33
+#: html/Ticket/Elements/Tabs:36
+msgid "New Search"
+msgstr "Neue Suche"
+
+#: html/Admin/Global/CustomField.html:41 html/Admin/Global/CustomFields.html:39 html/Admin/Queues/CustomField.html:52 html/Admin/Queues/CustomFields.html:40
+msgid "New custom field"
+msgstr "Neues benutzerdef. Feld"
+
+#: html/Admin/Elements/GroupTabs:54 html/User/Elements/GroupTabs:52
+msgid "New group"
+msgstr "Neue Gruppe"
+
+#: html/SelfService/Prefs.html:32
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: lib/RT/User_Overlay.pm:634
+#: lib/RT/User_Overlay.pm:639
 msgid "New password notification sent"
 msgstr "Neue Passworterinnerung wurde verschickt"
+
+#: html/Admin/Elements/QueueTabs:70
+msgid "New queue"
+msgstr "Neuer Stapel"
 
 #: html/SelfService/Elements/Tabs:63
 msgid "New request"
@@ -2418,31 +2448,43 @@ msgstr "Neues Ticket"
 msgid "New rights"
 msgstr "Neue Rechte"
 
-#: html/Search/Listing.html:113
-msgid "New search"
-msgstr "Neue Suche"
+#: html/Admin/Global/Scrip.html:40 html/Admin/Global/Scrips.html:39 html/Admin/Queues/Scrip.html:43 html/Admin/Queues/Scrips.html:53
+msgid "New scrip"
+msgstr "Neues Scrip"
 
-#: lib/RT/Ticket_Overlay.pm:2409
+#: NOT FOUND IN SOURCE
+msgid "New search"
+msgstr ""
+
+#: html/Admin/Global/Template.html:60 html/Admin/Global/Templates.html:39 html/Admin/Queues/Template.html:58 html/Admin/Queues/Templates.html:46
+msgid "New template"
+msgstr "Neue Vorlage"
+
+#: lib/RT/Ticket_Overlay.pm:2771
 msgid "New ticket doesn't exist"
 msgstr "Neues Ticket existiert nicht"
+
+#: html/Admin/Elements/UserTabs:52
+msgid "New user"
+msgstr "Neuer Benutzer"
 
 #: html/Admin/Elements/CreateUserCalled:26
 msgid "New user called"
 msgstr "Neues Benutzer aufgerufen"
 
-#: html/Admin/Queues/People.html:53 html/Ticket/Elements/EditPeople:29
+#: html/Admin/Queues/People.html:55 html/Ticket/Elements/EditPeople:29
 msgid "New watchers"
 msgstr "Neue Beobachter"
 
-#: html/Admin/Users/Prefs.html:40
+#: html/Admin/Users/Prefs.html:42
 msgid "New window setting"
 msgstr "Speichere Fenstereinstellungen"
 
-#: html/Ticket/Elements/Tabs:135
+#: html/Ticket/Elements/Tabs:69
 msgid "Next"
-msgstr ""
+msgstr "Nächste"
 
-#: html/Search/Listing.html:96
+#: html/Search/Listing.html:48
 msgid "Next page"
 msgstr "Nächste Seite"
 
@@ -2450,145 +2492,153 @@ msgstr "Nächste Seite"
 msgid "NickName"
 msgstr "Spitzname"
 
-#: html/Admin/Users/Modify.html:46
+#: html/Admin/Users/Modify.html:63 html/User/Prefs.html:46
 msgid "Nickname"
 msgstr "Spitzname"
 
-#: html/Admin/Queues/CustomField.html:73
+#: html/Admin/Elements/EditCustomField:73 html/Admin/Elements/EditCustomFields:105
 msgid "No CustomField"
 msgstr "Kein benutzerdefiniertes Feld"
 
-#: html/Admin/Groups/GroupRights.html:83 html/Admin/Groups/UserRights.html:69
+#: html/Admin/Groups/GroupRights.html:84 html/Admin/Groups/UserRights.html:71
 msgid "No Group defined"
-msgstr ""
+msgstr "Keine Gruppe definiert"
 
-#: html/Admin/Queues/GroupRights.html:98 html/Admin/Queues/UserRights.html:68
+#: html/Admin/Queues/GroupRights.html:96 html/Admin/Queues/UserRights.html:68
 msgid "No Queue defined"
 msgstr "Kein Stapel vorhanden"
 
-#: bin/rt-crontool:56 bin/rt:58 bin/rtadmin:55
+#: bin/rt-crontool:56
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "Kein RT-Benutzer gefunden. Bitte kontaktiere deinen RT-Administrator.\\n"
 
-#: html/Admin/Global/Template.html:66 html/Admin/Global/Workflow.html:135 html/Admin/Queues/Template.html:91
+#: html/Admin/Global/Template.html:79 html/Admin/Queues/Template.html:76
 msgid "No Template"
 msgstr "Keine Vorlage"
 
 #: bin/rt-commit-handler:764
 msgid "No Ticket specified. Aborting ticket "
-msgstr ""
+msgstr "Kein Ticket angegeben. Bereche Ticket ab "
 
-#: bin/enhanced-mailgate:630
+#: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
 msgstr ""
 
 #: html/Approvals/Elements/Approve:47
 msgid "No action"
-msgstr ""
+msgstr "Keine Aktion"
 
-#: lib/RT/Interface/Web.pm:816
+#: lib/RT/Interface/Web.pm:862
 msgid "No column specified"
+msgstr "Keine Spalte angegeben"
+
+#: NOT FOUND IN SOURCE
+msgid "No command found\\n"
 msgstr ""
 
-#: bin/rtadmin:242
-msgid "No command found\\n"
-msgstr "Kein Kommentar gefunden\\n"
-
-#: html/Elements/ViewUser:36 html/Ticket/Elements/ShowRequestor:44
+#: html/Elements/ViewUser:36 html/Ticket/Elements/ShowRequestor:45
 msgid "No comment entered about this user"
 msgstr "Kein Kommentar über diesen Benutzer angegeben"
 
-#: lib/RT/Ticket_Overlay.pm:1818 lib/RT/Ticket_Overlay.pm:1886
+#: lib/RT/Ticket_Overlay.pm:2189 lib/RT/Ticket_Overlay.pm:2257
 msgid "No correspondence attached"
 msgstr "Keine Korrespondenz aufgezeichnet"
 
-#: lib/RT/Action/Generic.pm:150 lib/RT/Condition/Generic.pm:176 lib/RT/Search/ActiveTicketsInQueue.pm:57 lib/RT/Search/Generic.pm:114
+#: lib/RT/Action/Generic.pm:150 lib/RT/Condition/Generic.pm:176 lib/RT/Search/ActiveTicketsInQueue.pm:56 lib/RT/Search/Generic.pm:113
 #. (ref $self)
 msgid "No description for %1"
 msgstr "Keine Beschreibung für %1 vorhanden"
 
-#: lib/RT/Users_Overlay.pm:119
+#: lib/RT/Users_Overlay.pm:151
 msgid "No group specified"
 msgstr "Keine Gruppe angegeben"
 
-#: lib/RT/User_Overlay.pm:852
+#: lib/RT/User_Overlay.pm:857
 msgid "No password set"
 msgstr "Kein Passwort gesetzt"
 
-#: lib/RT/Queue_Overlay.pm:208
+#: lib/RT/Queue_Overlay.pm:259
 msgid "No permission to create queues"
 msgstr "Kein Recht Stapel anzulegen"
 
-#: lib/RT/Ticket_Overlay.pm:337
+#: lib/RT/Ticket_Overlay.pm:341
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Kein Recht um Tickets im Stapel '%1' anzulegen"
 
-#: lib/RT/User_Overlay.pm:153
+#: lib/RT/User_Overlay.pm:151
 msgid "No permission to create users"
 msgstr "Kein Recht Benutzer anzulegen"
 
-#: html/SelfService/Display.html:173
+#: html/SelfService/Display.html:174
 msgid "No permission to display that ticket"
 msgstr "Kein Recht dieses Ticket anzuzeigen"
 
-#: html/SelfService/Update.html:54
+#: html/SelfService/Update.html:55
 msgid "No permission to view update ticket"
 msgstr "Kein Recht dieses Ticket zu aktualisieren"
 
-#: lib/RT/Queue_Overlay.pm:607 lib/RT/Ticket_Overlay.pm:1074
+#: lib/RT/Queue_Overlay.pm:675 lib/RT/Ticket_Overlay.pm:1488
 msgid "No principal specified"
-msgstr "Kein Chef angegeben"
+msgstr "Kein Hauptverantwortlicher angegeben"
 
-#: html/Admin/Queues/People.html:128
+#: html/Admin/Queues/People.html:154 html/Admin/Queues/People.html:164
 msgid "No principals selected."
-msgstr "Keine Chefs ausgewählt."
+msgstr "Keine Hauptverantwortliche ausgewählt."
 
-#: html/Admin/Queues/index.html:52
+#: html/Admin/Queues/index.html:35
 msgid "No queues matching search criteria found."
 msgstr "Keine den Suchkriterien entsprechenden Stapel gefunden"
 
+#: html/Admin/Elements/SelectRights:81
+msgid "No rights found"
+msgstr "Keine Rechte gefunden"
+
 #: html/Admin/Elements/SelectRights:33
 msgid "No rights granted."
-msgstr ""
+msgstr "Keine Rechte gewährt."
 
 #: html/Search/Bulk.html:149
 msgid "No search to operate on."
+msgstr "Keine Suchliste zum bearbeiten."
+
+#: NOT FOUND IN SOURCE
+msgid "No ticket id specified"
 msgstr ""
 
-#: bin/enhanced-mailgate:314 bin/rt-mailgate:293
-msgid "No ticket id specified"
-msgstr "Keine Ticketnummer angegeben"
-
-#: lib/RT/Transaction_Overlay.pm:461 lib/RT/Transaction_Overlay.pm:496
+#: lib/RT/Transaction_Overlay.pm:480 lib/RT/Transaction_Overlay.pm:518
 msgid "No transaction type specified"
 msgstr "Kein Transaktionstyp angegeben"
 
-#: NOT FOUND IN SOURCE
-msgid "No user or email address specified"
-msgstr "Kein Benutzer ider E-Mail-Adresse angegeben"
-
-#: html/Admin/Users/index.html:54
+#: html/Admin/Users/index.html:36
 msgid "No users matching search criteria found."
 msgstr "Keine auf die Suchkriterien passende Benutzer gefunden"
 
 #: bin/rt-commit-handler:644
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
-msgstr "Kein gültiger RT-Benutzer gefunden. RT cvs-Handler weggefallen. Bitte kontaktiere deinen RT-Administrator.\\n"
+msgstr "Kein gültiger RT-Benutzer gefunden. RT CVS-Handler weggefallen. Bitte kontaktiere deinen RT-Administrator.\\n"
 
-#: lib/RT/Interface/Web.pm:813
+#: lib/RT/Interface/Web.pm:859
 msgid "No value sent to _Set!\\n"
-msgstr ""
+msgstr "Kein Wert an _Set geschickt!\\n"
 
-#: lib/RT/Interface/Web.pm:818
+#: html/Search/Elements/TicketRow:37
+msgid "Nobody"
+msgstr "Niemand"
+
+#: lib/RT/Interface/Web.pm:864
 msgid "Nonexistant field?"
-msgstr ""
+msgstr "Nichtexistierendes Feld?"
 
-#: html/Elements/Header:51 html/SelfService/Elements/Header:58
+#: html/Elements/Login:99
+msgid "Not logged in"
+msgstr "Nicht angemeldet"
+
+#: html/Elements/Header:59 html/SelfService/Elements/Header:58
 msgid "Not logged in."
 msgstr "Nicht angemeldet."
 
-#: lib/RT/Date.pm:354
+#: lib/RT/Date.pm:369
 msgid "Not set"
 msgstr "Nicht angegeben"
 
@@ -2602,126 +2652,118 @@ msgstr "Noch nicht implementiert..."
 
 #: html/Approvals/Elements/Approve:50
 msgid "Notes"
-msgstr ""
+msgstr "Bemerkungen"
 
-#: lib/RT/User_Overlay.pm:637
+#: lib/RT/User_Overlay.pm:642
 msgid "Notification could not be sent"
 msgstr "Benachrichtigung konnte nicht verschickt werden"
 
-#: sbin/insertdata:339
+#: etc/initialdata:94
 msgid "Notify AdminCcs"
-msgstr ""
+msgstr "Benachrichtige AdminCCs"
 
-#: sbin/insertdata:333
+#: etc/initialdata:90
 msgid "Notify AdminCcs as Comment"
-msgstr ""
+msgstr "Benachrichtige AdminCCs als Kommentar"
 
-#: sbin/insertdata:378
+#: etc/initialdata:121
 msgid "Notify Other Recipients"
-msgstr ""
+msgstr "Benachrichtige andere Empfänger"
 
-#: sbin/insertdata:372
+#: etc/initialdata:117
 msgid "Notify Other Recipients as Comment"
-msgstr ""
+msgstr "Benachrichtige andere Empfänger als Kommantar"
 
-#: sbin/insertdata:327
+#: etc/initialdata:86
 msgid "Notify Owner"
-msgstr ""
+msgstr "Benachrichte Inhaber"
 
-#: sbin/insertdata:321
+#: etc/initialdata:82
 msgid "Notify Owner as Comment"
-msgstr ""
+msgstr "Benachrichtige Inhaber als Kommentar"
 
-#: sbin/insert_approval_scrips:229
+#: etc/initialdata:313 etc/upgrade/2.1.71:17
 msgid "Notify Owners and AdminCcs of new items pending their approval"
-msgstr ""
+msgstr "Benachrichtige Inhaber und AdminCCs neuer auf Freigabe wartende Anfragen"
 
-#: sbin/insertdata:315
+#: etc/initialdata:78
 msgid "Notify Requestors"
-msgstr ""
+msgstr "Benachrichtige die Klienten"
 
-#: sbin/insertdata:353
+#: etc/initialdata:104
 msgid "Notify Requestors and Ccs"
-msgstr ""
+msgstr "Benachrichtige die Klienten und CCs"
 
-#: sbin/insertdata:346
+#: etc/initialdata:99
 msgid "Notify Requestors and Ccs as Comment"
-msgstr ""
+msgstr "Benachrichtige die Klienten und CCs als Kommentar"
 
-#: sbin/insertdata:366
+#: etc/initialdata:113
 msgid "Notify Requestors, Ccs and AdminCcs"
-msgstr ""
+msgstr "Benachrichtige die Klienten, CCs und AdminCCs"
 
-#: sbin/insertdata:360
+#: etc/initialdata:109
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
-msgstr ""
+msgstr "Benachrichtige die Klienten, CCs und AdminCCs als Kommentar"
 
-#: lib/RT/Date.pm:406
+#: lib/RT/Date.pm:421
 msgid "Nov."
 msgstr "Nov"
 
-#: NOT FOUND IN SOURCE
-msgid "November"
-msgstr "November"
-
-#: lib/RT/Record.pm:149
+#: lib/RT/Record.pm:157
 msgid "Object could not be created"
-msgstr ""
+msgstr "Objekt konnte nicht erstellt werden"
 
-#: lib/RT/Record.pm:168
+#: lib/RT/Record.pm:176
 msgid "Object created"
-msgstr ""
+msgstr "Objekt erstellt"
 
-#: lib/RT/Date.pm:405
+#: lib/RT/Date.pm:420
 msgid "Oct."
 msgstr "Okt"
-
-#: NOT FOUND IN SOURCE
-msgid "October"
-msgstr "Oktober"
 
 #: html/Elements/SelectDateRelation:35
 msgid "On"
 msgstr "am"
 
-#: sbin/insertdata:426
+#: etc/initialdata:155
 msgid "On Comment"
-msgstr ""
+msgstr "Beim Kommentieren"
 
-#: sbin/insertdata:418
+#: etc/initialdata:148
 msgid "On Correspond"
-msgstr ""
+msgstr "Beim Korrespondieren"
 
-#: sbin/insertdata:404
+#: etc/initialdata:137
 msgid "On Create"
-msgstr ""
+msgstr "Beim Erstellen"
 
-#: sbin/insertdata:441
+#: etc/initialdata:169
 msgid "On Owner Change"
-msgstr ""
+msgstr "Beim Eigentümerwechsel"
 
-#: sbin/insertdata:449
+#: etc/initialdata:177
 msgid "On Queue Change"
-msgstr ""
+msgstr "Beim Stapelwechsel"
 
-#: sbin/insertdata:456
+#: etc/initialdata:183
 msgid "On Resolve"
-msgstr ""
+msgstr "Beim Erledigen"
 
-#: sbin/insertdata:433
+#: etc/initialdata:161
 msgid "On Status Change"
-msgstr ""
+msgstr "Beim Statuswechsel"
 
-#: sbin/insertdata:411
+#: etc/initialdata:142
 msgid "On Transaction"
-msgstr ""
+msgstr "Bei einer Transaktion"
 
-#: html/Approvals/Elements/PendingMyApproval:48
+#: html/Approvals/Elements/PendingMyApproval:50
 #. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>")
 msgid "Only show approvals for requests created after %1"
-msgstr "Zeige nur Freigaben fÃ¼r nach dem %1 erstelle Anfragen"
+msgstr "Zeige nur Freigaben für nach dem %1 erstelle Anfragen"
 
-#: html/Approvals/Elements/PendingMyApproval:46
+#: html/Approvals/Elements/PendingMyApproval:48
 #. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>")
 msgid "Only show approvals for requests created before %1"
 msgstr "Zeige nur Freigaben für vor dem %1 erstellte Anfragen"
@@ -2730,66 +2772,70 @@ msgstr "Zeige nur Freigaben für vor dem %1 erstellte Anfragen"
 msgid "Open"
 msgstr "Offen"
 
-#: html/Ticket/Elements/Tabs:101
+#: html/Ticket/Elements/Tabs:136
 msgid "Open it"
-msgstr "Ãffnen"
+msgstr "Öffnen"
 
 #: html/SelfService/Elements/Tabs:57
 msgid "Open requests"
 msgstr "Offene Anfragen"
 
-#: html/Admin/Users/Prefs.html:39
+#: html/Admin/Users/Prefs.html:41
 msgid "Open tickets (from listing) in a new window"
-msgstr "Ãffne Tickets (aus der Liste) in neuem Fenster"
+msgstr "Öffne Tickets (aus der Liste) in neuem Fenster"
 
-#: html/Admin/Users/Prefs.html:38
+#: html/Admin/Users/Prefs.html:40
 msgid "Open tickets (from listing) in another window"
-msgstr "Ãffne Tickets (aus der Liste) in ein anderes Fenster"
+msgstr "Öffne Tickets (aus der Liste) in ein anderes Fenster"
 
-#: html/Search/PickRestriction:101
+#: etc/initialdata:133
+msgid "Open tickets on correspondence"
+msgstr "Öffne Tickets bei Korrespondenz"
+
+#: html/Search/Elements/PickRestriction:101
 msgid "Ordering and sorting"
 msgstr "Listung und Sortierung"
 
-#: html/Admin/Elements/ModifyUser:46 html/Admin/Users/Modify.html:88 html/Elements/SelectUsers:29
+#: html/Admin/Elements/ModifyUser:46 html/Admin/Users/Modify.html:117 html/Elements/SelectUsers:29 html/User/Prefs.html:86
 msgid "Organization"
 msgstr "Organisation"
 
 #: html/Approvals/Elements/Approve:34
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
-msgstr ""
+msgstr "Ursprungsticket: #%1"
 
-#: html/Admin/Elements/ModifyQueue:55 html/Admin/Queues/Modify.html:67
+#: html/Admin/Elements/ModifyQueue:55 html/Admin/Queues/Modify.html:69
 msgid "Over time, priority moves toward"
-msgstr "Ãber die Zeit steigt die PrioritÃ¤t bis"
+msgstr "Über die Zeit steigt die Priorität bis"
 
-#: lib/RT/ACE_Overlay.pm:89
+#: lib/RT/Queue_Overlay.pm:87
 msgid "Own tickets"
-msgstr ""
+msgstr "Eigene Tickets"
 
-#: lib/RT/ACE_Overlay.pm:89
+#: lib/RT/Queue_Overlay.pm:87
 msgid "OwnTicket"
 msgstr ""
 
-#: bin/rt:1250 etc/RT_Config.pm:383 html/Admin/Elements/ModifyTemplateAsWorkflow:103 html/Elements/MyRequests:32 html/SelfService/Elements/MyRequests:30 html/Ticket/Create.html:49 html/Ticket/DetailedCreate.html:62 html/Ticket/Elements/EditPeople:37 html/Ticket/Elements/EditPeople:38 html/Ticket/Elements/ShowPeople:25 html/Ticket/Update.html:59 lib/RT/ACE_Overlay.pm:117 lib/RT/Tickets_Overlay.pm:593 sbin/insertdata:168
+#: etc/initialdata:38 html/Elements/MyRequests:32 html/SelfService/Elements/MyRequests:30 html/Ticket/Create.html:48 html/Ticket/Elements/EditPeople:43 html/Ticket/Elements/EditPeople:44 html/Ticket/Elements/ShowPeople:27 html/Ticket/Update.html:63 lib/RT/ACE_Overlay.pm:86 lib/RT/Tickets_Overlay.pm:1244
 msgid "Owner"
 msgstr "Inhaber"
 
-#: lib/RT/Ticket_Overlay.pm:2640
+#: lib/RT/Ticket_Overlay.pm:3004
 #. ($OldOwnerObj->Name,  $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
-msgstr ""
+msgstr "Inhaberwechsel von %1 zu %2"
 
-#: lib/RT/Transaction_Overlay.pm:562
+#: lib/RT/Transaction_Overlay.pm:584
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Inhaber mit Gewalt von %1 in %2 geändert"
 
-#: html/Search/PickRestriction:31
+#: html/Search/Elements/PickRestriction:31
 msgid "Owner is"
 msgstr "Inhaber ist"
 
-#: html/Admin/Users/Modify.html:118
+#: html/Admin/Users/Modify.html:174 html/User/Prefs.html:56
 msgid "Pager"
 msgstr "Pager"
 
@@ -2797,11 +2843,11 @@ msgstr "Pager"
 msgid "PagerPhone"
 msgstr "PagerTelefon"
 
-#: html/Ticket/Create.html:180 html/Ticket/DetailedCreate.html:88 html/Ticket/Elements/EditLinks:116 html/Ticket/Elements/EditLinks:54 html/Ticket/Elements/ShowLinks:43
+#: html/Ticket/Create.html:182 html/Ticket/Elements/EditLinks:127 html/Ticket/Elements/EditLinks:58 html/Ticket/Elements/ShowLinks:43
 msgid "Parents"
 msgstr "Eltern"
 
-#: html/Elements/Login:43
+#: html/Elements/Login:43 html/User/Prefs.html:61
 msgid "Password"
 msgstr "Passwort"
 
@@ -2809,36 +2855,40 @@ msgstr "Passwort"
 msgid "Password Reminder"
 msgstr "Passworterinnerung"
 
-#: lib/RT/User_Overlay.pm:165 lib/RT/User_Overlay.pm:855
+#: lib/RT/User_Overlay.pm:168 lib/RT/User_Overlay.pm:860
 msgid "Password too short"
 msgstr "Passwort ist zu kurz"
 
-#: html/Admin/Users/Modify.html:228
+#: html/Admin/Users/Modify.html:291 html/User/Prefs.html:172
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "Passwort: %1"
 
-#: html/Ticket/DetailedCreate.html:61 html/Ticket/Elements/ShowSummary:43 html/Ticket/Elements/Tabs:44 html/Ticket/ModifyAll.html:47
+#: html/Ticket/Elements/ShowSummary:43 html/Ticket/Elements/Tabs:96 html/Ticket/ModifyAll.html:51
 msgid "People"
 msgstr "Personen"
 
-#: sbin/insertdata:385
+#: etc/initialdata:126
 msgid "Perform a user-defined action"
-msgstr ""
+msgstr "Führe eine benutzerdefinierte Aktion aus"
 
-#: lib/RT/ACE_Overlay.pm:242 lib/RT/ACE_Overlay.pm:254 lib/RT/ACE_Overlay.pm:265 lib/RT/ACE_Overlay.pm:587 lib/RT/ACE_Overlay.pm:594 lib/RT/ACE_Overlay.pm:667 lib/RT/CurrentUser.pm:82 lib/RT/CurrentUser.pm:90 lib/RT/CustomField_Overlay.pm:416 lib/RT/CustomField_Overlay.pm:422 lib/RT/Group_Overlay.pm:1013 lib/RT/Group_Overlay.pm:1017 lib/RT/Group_Overlay.pm:1023 lib/RT/Group_Overlay.pm:369 lib/RT/Group_Overlay.pm:451 lib/RT/Group_Overlay.pm:529 lib/RT/Group_Overlay.pm:537 lib/RT/Group_Overlay.pm:758 lib/RT/Group_Overlay.pm:762 lib/RT/Group_Overlay.pm:775 lib/RT/Group_Overlay.pm:948 lib/RT/Group_Overlay.pm:952 lib/RT/Group_Overlay.pm:961 lib/RT/Queue_Overlay.pm:472 lib/RT/Queue_Overlay.pm:482 lib/RT/Queue_Overlay.pm:496 lib/RT/Queue_Overlay.pm:631 lib/RT/Queue_Overlay.pm:640 lib/RT/Queue_Overlay.pm:653 lib/RT/Queue_Overlay.pm:863 lib/RT/Scrip_Overlay.pm:126 lib/RT/Scrip_Overlay.pm:136 lib/RT/Scrip_Overlay.pm:195 lib/RT/Scrip_Overlay.pm:432 lib/RT/Template_Overlay.pm:281 lib/RT/Template_Overlay.pm:86 lib/RT/Template_Overlay.pm:92 lib/RT/Ticket_Overlay.pm:1104 lib/RT/Ticket_Overlay.pm:1113 lib/RT/Ticket_Overlay.pm:1126 lib/RT/Ticket_Overlay.pm:1464 lib/RT/Ticket_Overlay.pm:1625 lib/RT/Ticket_Overlay.pm:1806 lib/RT/Ticket_Overlay.pm:1873 lib/RT/Ticket_Overlay.pm:2234 lib/RT/Ticket_Overlay.pm:2306 lib/RT/Ticket_Overlay.pm:2400 lib/RT/Ticket_Overlay.pm:2415 lib/RT/Ticket_Overlay.pm:2546 lib/RT/Ticket_Overlay.pm:2772 lib/RT/Ticket_Overlay.pm:2943 lib/RT/Ticket_Overlay.pm:3096 lib/RT/Ticket_Overlay.pm:3148 lib/RT/Ticket_Overlay.pm:3312 lib/RT/Ticket_Overlay.pm:927 lib/RT/Ticket_Overlay.pm:937 lib/RT/Ticket_Overlay.pm:951 lib/RT/Transaction_Overlay.pm:449 lib/RT/Transaction_Overlay.pm:456 lib/RT/Transaction_Overlay.pm:484 lib/RT/Transaction_Overlay.pm:491 lib/RT/User_Overlay.pm:1504 lib/RT/User_Overlay.pm:557 lib/RT/User_Overlay.pm:592 lib/RT/User_Overlay.pm:848
+#: lib/RT/ACE_Overlay.pm:231 lib/RT/ACE_Overlay.pm:237 lib/RT/ACE_Overlay.pm:563 lib/RT/ACE_Overlay.pm:573 lib/RT/ACE_Overlay.pm:583 lib/RT/ACE_Overlay.pm:648 lib/RT/CurrentUser.pm:83 lib/RT/CurrentUser.pm:92 lib/RT/CustomField_Overlay.pm:445 lib/RT/CustomField_Overlay.pm:451 lib/RT/Group_Overlay.pm:1095 lib/RT/Group_Overlay.pm:1099 lib/RT/Group_Overlay.pm:1108 lib/RT/Group_Overlay.pm:1159 lib/RT/Group_Overlay.pm:1163 lib/RT/Group_Overlay.pm:1169 lib/RT/Group_Overlay.pm:426 lib/RT/Group_Overlay.pm:518 lib/RT/Group_Overlay.pm:596 lib/RT/Group_Overlay.pm:604 lib/RT/Group_Overlay.pm:701 lib/RT/Group_Overlay.pm:705 lib/RT/Group_Overlay.pm:711 lib/RT/Group_Overlay.pm:904 lib/RT/Group_Overlay.pm:908 lib/RT/Group_Overlay.pm:921 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:550 lib/RT/Queue_Overlay.pm:564 lib/RT/Queue_Overlay.pm:699 lib/RT/Queue_Overlay.pm:708 lib/RT/Queue_Overlay.pm:721 lib/RT/Queue_Overlay.pm:931 lib/RT/Scrip_Overlay.pm:126 lib/RT/Scrip_Overlay.pm:137 lib/RT/Scrip_Overlay.pm:197 lib/RT/Scrip_Overlay.pm:430 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:88 lib/RT/Template_Overlay.pm:94 lib/RT/Ticket_Overlay.pm:1341 lib/RT/Ticket_Overlay.pm:1351 lib/RT/Ticket_Overlay.pm:1365 lib/RT/Ticket_Overlay.pm:1518 lib/RT/Ticket_Overlay.pm:1527 lib/RT/Ticket_Overlay.pm:1540 lib/RT/Ticket_Overlay.pm:1875 lib/RT/Ticket_Overlay.pm:2013 lib/RT/Ticket_Overlay.pm:2177 lib/RT/Ticket_Overlay.pm:2244 lib/RT/Ticket_Overlay.pm:2596 lib/RT/Ticket_Overlay.pm:2668 lib/RT/Ticket_Overlay.pm:2762 lib/RT/Ticket_Overlay.pm:2777 lib/RT/Ticket_Overlay.pm:2910 lib/RT/Ticket_Overlay.pm:3139 lib/RT/Ticket_Overlay.pm:3337 lib/RT/Ticket_Overlay.pm:3499 lib/RT/Ticket_Overlay.pm:3551 lib/RT/Ticket_Overlay.pm:3716 lib/RT/Transaction_Overlay.pm:468 lib/RT/Transaction_Overlay.pm:475 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/User_Overlay.pm:1334 lib/RT/User_Overlay.pm:562 lib/RT/User_Overlay.pm:597 lib/RT/User_Overlay.pm:853 lib/RT/User_Overlay.pm:941
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
 
-#: html/User/Groups/index.html:28 html/User/Groups/index.html:40
+#: html/User/Elements/Tabs:35
+msgid "Personal Groups"
+msgstr "Persönliche Gruppen"
+
+#: html/User/Groups/index.html:30 html/User/Groups/index.html:40
 msgid "Personal groups"
-msgstr ""
+msgstr "Persönliche Gruppen"
 
-#: html/User/Elements/DelegateRights:36
+#: html/User/Elements/DelegateRights:37
 msgid "Personal groups:"
-msgstr ""
+msgstr "Persönliche Gruppen:"
 
-#: html/Admin/Users/Modify.html:111
+#: html/Admin/Users/Modify.html:156 html/User/Prefs.html:49
 msgid "Phone numbers"
 msgstr "Telefonnummern"
 
@@ -2846,11 +2896,11 @@ msgstr "Telefonnummern"
 msgid "Placeholder"
 msgstr "Platzhalter"
 
-#: html/Elements/Header:44 html/SelfService/Prefs.html:25 html/User/Prefs.html:25
+#: html/Elements/Header:52 html/Elements/Tabs:55 html/SelfService/Prefs.html:25 html/User/Prefs.html:25 html/User/Prefs.html:28
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: html/User/Elements/Tabs:30
+#: NOT FOUND IN SOURCE
 msgid "Prefs"
 msgstr ""
 
@@ -2858,65 +2908,61 @@ msgstr ""
 msgid "Prepare Stubbed"
 msgstr "Vorbereitung abgehakt"
 
-#: html/Ticket/Elements/Tabs:120
+#: html/Ticket/Elements/Tabs:61
 msgid "Prev"
-msgstr ""
+msgstr "Vorherige"
 
-#: html/Search/Listing.html:94
+#: html/Search/Listing.html:44
 msgid "Previous page"
 msgstr "Vorherige Seite"
 
-#: bin/rt:1223
+#: NOT FOUND IN SOURCE
 msgid "Pri"
-msgstr "Pri"
+msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:169 lib/RT/ACE_Overlay.pm:223 lib/RT/ACE_Overlay.pm:576
+#: lib/RT/ACE_Overlay.pm:133 lib/RT/ACE_Overlay.pm:208 lib/RT/ACE_Overlay.pm:552
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
-msgstr "Chef %1 nicht gefunden."
+msgstr "Hauptverantwortlichen %1 nicht gefunden."
 
-#: html/Search/PickRestriction:54 html/SelfService/Display.html:75 html/Ticket/Create.html:148 html/Ticket/DetailedCreate.html:46 html/Ticket/Elements/EditBasics:55 html/Ticket/Elements/ShowBasics:42 lib/RT/Tickets_Overlay.pm:392
+#: html/Search/Elements/PickRestriction:54 html/SelfService/Display.html:76 html/Ticket/Create.html:154 html/Ticket/Elements/EditBasics:54 html/Ticket/Elements/ShowBasics:39 lib/RT/Tickets_Overlay.pm:1042
 msgid "Priority"
 msgstr "Priorität"
 
-#: html/Admin/Elements/ModifyQueue:51 html/Admin/Queues/Modify.html:63
+#: html/Admin/Elements/ModifyQueue:51 html/Admin/Queues/Modify.html:65
 msgid "Priority starts at"
 msgstr "Priorität beginnt bei"
 
-#: sbin/insertdata:153
+#: etc/initialdata:25
 msgid "Privileged"
-msgstr ""
+msgstr "Privilegiert"
 
-#: html/Admin/Users/Modify.html:208
+#: html/Admin/Users/Modify.html:271 html/User/Prefs.html:163
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "Privilegierungsstatus: %1"
 
-#: html/Admin/Users/index.html:76
+#: html/Admin/Users/index.html:62
 msgid "Privileged users"
 msgstr "Privilegierte Benutzer"
 
-#: sbin/insertdata:150 sbin/insertdata:157 sbin/insertdata:164 sbin/insertdata:192
+#: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
 msgid "Pseudogroup for internal use"
-msgstr ""
+msgstr "Pseudogruppe für internen Gebrauch"
 
-#: bin/rt:1213 etc/RT_Config.pm:363 html/Admin/Elements/ModifyTemplateAsWorkflow:101 html/Elements/MyRequests:30 html/Elements/MyTickets:30 html/Elements/Quicksearch:29 html/Search/PickRestriction:46 html/SelfService/Create.html:35 html/SelfService/Display.html:67 html/Ticket/Create.html:39 html/Ticket/DetailedCreate.html:37 html/Ticket/Elements/EditBasics:70 html/Ticket/Elements/ShowBasics:47 html/User/Elements/DelegateRights:76 lib/RT/Tickets_Overlay.pm:239
+#: html/Elements/MyRequests:30 html/Elements/MyTickets:30 html/Elements/Quicksearch:29 html/Search/Elements/PickRestriction:46 html/SelfService/Create.html:35 html/SelfService/Display.html:68 html/Ticket/Create.html:38 html/Ticket/Elements/EditBasics:64 html/Ticket/Elements/ShowBasics:43 html/User/Elements/DelegateRights:80 lib/RT/Tickets_Overlay.pm:883
 msgid "Queue"
 msgstr "Stapel"
 
-#: html/Admin/Queues/Scrip.html:36 html/Admin/Queues/Scrips.html:41
+#: html/Admin/Queues/CustomField.html:42 html/Admin/Queues/Scrip.html:50 html/Admin/Queues/Scrips.html:46 html/Admin/Queues/Templates.html:43
+#. ($Queue)
 #. ($id)
 msgid "Queue %1 not found"
-msgstr ""
-
-#: bin/rtadmin:415
-#. ($queue)
-msgid "Queue '%1' not found\\n"
-msgstr "Stapel '%1' nicht gefunden\\n"
+msgstr "Stapel %2 nicht gefunden"
 
 #: NOT FOUND IN SOURCE
-msgid "Queue Keyword Selections"
-msgstr "Stapelschlüsselwortauswahl"
+msgid "Queue '%1' not found\\n"
+msgstr ""
 
 #: html/Admin/Elements/ModifyQueue:31 html/Admin/Queues/Modify.html:43
 msgid "Queue Name"
@@ -2924,142 +2970,138 @@ msgstr "Name des Stapels"
 
 #: NOT FOUND IN SOURCE
 msgid "Queue Scrips"
-msgstr "Stapel Scrips"
+msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:212
+#: lib/RT/Queue_Overlay.pm:263
 msgid "Queue already exists"
 msgstr "Stapel existiert bereits"
 
-#: lib/RT/Queue_Overlay.pm:221 lib/RT/Queue_Overlay.pm:227
+#: lib/RT/Queue_Overlay.pm:272 lib/RT/Queue_Overlay.pm:278
 msgid "Queue could not be created"
 msgstr "Stapel konne nicht angelegt werden"
 
-#: html/Ticket/Create.html:203 html/Ticket/DetailedCreate.html:115
+#: html/Ticket/Create.html:209
 msgid "Queue could not be loaded."
-msgstr ""
+msgstr "Stapel konnte nicht geladen werden"
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:231
+#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:282
 msgid "Queue created"
 msgstr "Stapel angelegt"
 
-#: html/Admin/Global/Workflow.html:60
+#: NOT FOUND IN SOURCE
 msgid "Queue is not specified."
 msgstr ""
 
-#: html/SelfService/Display.html:128
+#: html/SelfService/Display.html:129
 msgid "Queue not found"
 msgstr "Stapel nicht gefunden"
 
-#: html/Admin/Elements/Tabs:36 html/Admin/index.html:35
+#: html/Admin/Elements/Tabs:38 html/Admin/index.html:35
 msgid "Queues"
 msgstr "Stapel"
 
 #: html/Elements/Login:34
 #. ($RT::VERSION)
 msgid "RT %1"
-msgstr ""
+msgstr "RT %1"
 
 #: docs/design_docs/string-extraction-guide.txt:70
 #. ($RT::VERSION, $RT::rtname)
 msgid "RT %1 for %2"
 msgstr "RT %1 für %2"
 
-#: html/Elements/Footer:27
+#: html/Elements/Footer:32
 #. ($RT::VERSION)
 msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
 msgstr "RT %1 von <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
 
-#: bin/rt:332
-#. ($RT::VERSION)
+#: NOT FOUND IN SOURCE
 msgid "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr ""
 
-#: html/Admin/index.html:25
+#: html/Admin/index.html:25 html/Admin/index.html:26
 msgid "RT Administration"
 msgstr "RT Administration"
 
-#: bin/enhanced-mailgate:486
+#: NOT FOUND IN SOURCE
 msgid "RT Authentication error."
-msgstr "RT Authentifizierungsfehler."
+msgstr ""
 
-#: bin/enhanced-mailgate:165 bin/enhanced-mailgate:199 bin/rt-mailgate:163 bin/rt-mailgate:203 bin/rt-mailgate:242
-#. ($Subject)
+#: NOT FOUND IN SOURCE
 msgid "RT Bounce: %1"
-msgstr "RT Bounce: %1"
+msgstr ""
 
-#: bin/enhanced-mailgate:378 bin/rt-mailgate:356
+#: NOT FOUND IN SOURCE
 msgid "RT Configuration error"
-msgstr "RT Konfigurationsfehler"
+msgstr ""
 
-#: bin/enhanced-mailgate:518 bin/rt-mailgate:382
+#: NOT FOUND IN SOURCE
 msgid "RT Critical error. Message not recorded!"
-msgstr "RT: Kritischer Fehler. Nachricht nicht aufgezeichnet!"
+msgstr ""
 
-#: html/Elements/Error:41 html/SelfService/Error.html:40
+#: html/Elements/Error:41 html/SelfService/Error.html:41
 msgid "RT Error"
 msgstr "RT Fehler"
 
-#: bin/enhanced-mailgate:194
-#. ($MessageId)
-msgid "RT Received mail (%1) from itself."
-msgstr "RT erhielt Mail (%1) von sich selbst."
-
 #: NOT FOUND IN SOURCE
-msgid "RT Recieved mail (%1) from itself."
-msgstr "RT erhielt Mail (%1) von sich selbst."
+msgid "RT Received mail (%1) from itself."
+msgstr ""
 
 #: html/SelfService/Closed.html:25
 msgid "RT Self Service / Closed Tickets"
 msgstr "RT Selbstbedienung / Geschlossene Tickets"
 
-#: bin/enhanced-mailgate:247
+#: html/index.html:25 html/index.html:28
+msgid "RT at a glance"
+msgstr "RT auf einen Blick"
+
+#: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
-msgstr "RT konnte dich nicht authentifizieren"
-
-#: bin/rt-mailgate:243
-msgid "RT couldn't find requestor via its external database lookup"
-msgstr "RT konnte den Klienten nicht via externen Datenbankaufruf finden"
-
-#: bin/enhanced-mailgate:166 bin/rt-mailgate:164
-#. ($Queue)
-msgid "RT couldn't find the queue: %1"
-msgstr "RT konnte den Stapel nicht finden: %1"
-
-#: bin/enhanced-mailgate:487
-msgid "RT couldn't validate this PGP signature. \\n"
-msgstr "RT konnte diese PGP-Signatur nicht überprüfen.\\n"
-
-#: html/Elements/Header:70
-#. ($RT::rtname)
-msgid "RT for %1"
 msgstr ""
 
-#: html/Elements/Header:68
-#. ($RT::rtname, $Title)
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't find requestor via its external database lookup"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't find the queue: %1"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't validate this PGP signature. \\n"
+msgstr ""
+
+#: html/Elements/PageLayout:26
+#. ($RT::rtname)
+msgid "RT for %1"
+msgstr "RT für %1"
+
+#: NOT FOUND IN SOURCE
 msgid "RT for %1: %2"
 msgstr ""
 
-#: bin/enhanced-mailgate:240
+#: NOT FOUND IN SOURCE
 msgid "RT has proccessed your commands"
-msgstr "RT hat deine Kommandos ausgeführt"
+msgstr "RT hat deine Befehle verarbeitet"
 
-#: html/Elements/Login:80
+#: html/Elements/Login:83
+#. ('2003')
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 msgstr "RT &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Vertrieben unter der <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 
-#: bin/enhanced-mailgate:200 bin/rt-mailgate:204
+#: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
-msgstr "RT denkt dieses Nachricht könnte gebounced sein"
+msgstr ""
 
-#: bin/enhanced-mailgate:488
+#: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
-msgstr "RT wird dieses Nachricht verarbeiten als wäre sie unsigniert.\\n"
+msgstr ""
 
-#: bin/enhanced-mailgate:250
+#: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
-msgstr "RT's E-Mail-Kommondomodus benötigt PGP-Authentifizierung. Entweder deine Nachricht ist nicht unterschrieben oder die Unterschrift konnte nicht verifiziert werden."
+msgstr ""
 
-#: html/Admin/Users/Modify.html:45 html/Admin/Users/Prefs.html:50
+#: html/Admin/Users/Modify.html:58 html/Admin/Users/Prefs.html:52 html/User/Prefs.html:44
 msgid "Real Name"
 msgstr "Realer Name"
 
@@ -3067,23 +3109,19 @@ msgstr "Realer Name"
 msgid "RealName"
 msgstr "RealerName"
 
-#: html/Ticket/Create.html:183 html/Ticket/DetailedCreate.html:91 html/Ticket/Elements/EditLinks:119 html/Ticket/Elements/EditLinks:93 html/Ticket/Elements/ShowLinks:70
+#: html/Ticket/Create.html:185 html/Ticket/Elements/EditLinks:139 html/Ticket/Elements/EditLinks:94 html/Ticket/Elements/ShowLinks:63
 msgid "Referred to by"
 msgstr "Bezogen von"
 
-#: html/Elements/SelectLinkType:28 html/Ticket/Create.html:182 html/Ticket/DetailedCreate.html:90 html/Ticket/Elements/EditLinks:118 html/Ticket/Elements/EditLinks:78 html/Ticket/Elements/ShowLinks:56
+#: html/Elements/SelectLinkType:28 html/Ticket/Create.html:184 html/Ticket/Elements/EditLinks:135 html/Ticket/Elements/EditLinks:80 html/Ticket/Elements/ShowLinks:55
 msgid "Refers to"
 msgstr "Bezieht sich auf"
 
 #: NOT FOUND IN SOURCE
-msgid "RefersTo"
-msgstr "RefersTo"
-
-#: html/Search/Listing.html:29 html/Search/PickRestriction:126
 msgid "Refine"
-msgstr "Verfeineren"
+msgstr ""
 
-#: html/Search/PickRestriction:27
+#: html/Search/Elements/PickRestriction:27
 msgid "Refine search"
 msgstr "Verfeinere Suche"
 
@@ -3092,7 +3130,7 @@ msgstr "Verfeinere Suche"
 msgid "Refresh this page every %1 minutes."
 msgstr "Aktualisiere diese Seite alle %1 Minuten."
 
-#: html/Ticket/Create.html:172 html/Ticket/DetailedCreate.html:83 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:53
+#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
 msgid "Relationships"
 msgstr "Beziehungen"
 
@@ -3108,64 +3146,60 @@ msgstr "Entferne CC"
 msgid "Remove Requestor"
 msgstr "Entferne Klient"
 
-#: html/Ticket/Elements/ShowTransaction:180 html/Ticket/Elements/Tabs:66
+#: html/Ticket/Elements/ShowTransaction:173 html/Ticket/Elements/Tabs:122
 msgid "Reply"
 msgstr "Antworten"
 
-#: lib/RT/ACE_Overlay.pm:87
+#: lib/RT/Queue_Overlay.pm:85
 msgid "Reply to tickets"
-msgstr ""
+msgstr "Antworte auf Tickets"
 
-#: lib/RT/ACE_Overlay.pm:87
+#: lib/RT/Queue_Overlay.pm:85
 msgid "ReplyToTicket"
 msgstr ""
 
-#: bin/rt:1255 html/Ticket/Update.html:36 lib/RT/ACE_Overlay.pm:118 sbin/insertdata:175
+#: etc/initialdata:44 html/Ticket/Update.html:40 lib/RT/ACE_Overlay.pm:87
 msgid "Requestor"
 msgstr "Klient"
 
-#: html/Search/PickRestriction:38
+#: html/Search/Elements/PickRestriction:38
 msgid "Requestor email address"
 msgstr "Klienten-E-Mail-Adresse"
 
-#: etc/RT_Config.pm:355
-msgid "Requestor(s)"
-msgstr "Klient(en)"
-
 #: NOT FOUND IN SOURCE
-msgid "RequestorAddresses"
-msgstr "Klienten-Adressen"
+msgid "Requestor(s)"
+msgstr ""
 
-#: html/SelfService/Create.html:43 html/SelfService/Display.html:41 html/Ticket/Create.html:57 html/Ticket/DetailedCreate.html:64 html/Ticket/Elements/EditPeople:42 html/Ticket/Elements/ShowPeople:27
+#: html/SelfService/Create.html:43 html/SelfService/Display.html:42 html/Ticket/Create.html:56 html/Ticket/Elements/EditPeople:48 html/Ticket/Elements/ShowPeople:31
 msgid "Requestors"
 msgstr "Klienten"
 
-#: html/Admin/Elements/ModifyQueue:61 html/Admin/Queues/Modify.html:73
+#: html/Admin/Elements/ModifyQueue:61 html/Admin/Queues/Modify.html:75
 msgid "Requests should be due in"
 msgstr "Anfragen sollten erlegt werden in"
 
-#: html/Elements/Submit:67
+#: html/Elements/Submit:62
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: html/Admin/Users/Modify.html:112
+#: html/Admin/Users/Modify.html:159 html/User/Prefs.html:50
 msgid "Residence"
 msgstr "Zuhause"
 
-#: html/Ticket/Elements/Tabs:94
+#: html/Ticket/Elements/Tabs:132
 msgid "Resolve"
-msgstr "Lösen"
+msgstr "Erledigen"
 
-#: html/Ticket/Update.html:106
+#: html/Ticket/Update.html:133
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr ""
+msgstr "Erledige Ticket #%1 (%2)"
 
-#: html/Elements/SelectDateType:28 sbin/insertdata:591
+#: etc/initialdata:302 html/Elements/SelectDateType:28 lib/RT/Ticket_Overlay.pm:1170
 msgid "Resolved"
-msgstr "Gelöst"
+msgstr "Erledigt"
 
-#: html/Search/Bulk.html:123 html/Ticket/ModifyAll.html:66 html/Ticket/Update.html:68
+#: html/Search/Bulk.html:123 html/Ticket/ModifyAll.html:73 html/Ticket/Update.html:73
 msgid "Response to requestors"
 msgstr "Antwort an alle Klienten"
 
@@ -3173,129 +3207,174 @@ msgstr "Antwort an alle Klienten"
 msgid "Results"
 msgstr "Ergebnisse"
 
-#: html/Search/PickRestriction:105
+#: html/Search/Elements/PickRestriction:105
 msgid "Results per page"
 msgstr "Ergebnisse pro Seite"
 
-#: html/Admin/Elements/ModifyUser:33 html/Admin/Users/Modify.html:74
+#: html/Admin/Elements/ModifyUser:33 html/Admin/Users/Modify.html:100 html/User/Prefs.html:72
 msgid "Retype Password"
 msgstr "Passwort wiederholen"
 
-#: bin/rtadmin:920
-#. ($right, $principal->{'type'}, $principal->{'id'}, $scope, $appliesto)
+#: NOT FOUND IN SOURCE
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
-msgstr "Recht %1 für %2 %3 nicht im Umfeld %4 nicht gefunden (%5)\\n"
-
-#: lib/RT/ACE_Overlay.pm:635
-msgid "Right Delegated"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:327
+#: lib/RT/ACE_Overlay.pm:613
+msgid "Right Delegated"
+msgstr "Recht delegiert"
+
+#: lib/RT/ACE_Overlay.pm:303
 msgid "Right Granted"
 msgstr "Recht erteilt"
 
-#: lib/RT/ACE_Overlay.pm:184
+#: lib/RT/ACE_Overlay.pm:161
 msgid "Right Loaded"
-msgstr ""
+msgstr "Recht geladen"
 
-#: lib/RT/ACE_Overlay.pm:697 lib/RT/ACE_Overlay.pm:712
+#: lib/RT/ACE_Overlay.pm:678 lib/RT/ACE_Overlay.pm:693
 msgid "Right could not be revoked"
 msgstr "Recht konnte nicht zurückgezogen werden"
 
-#: html/User/Delegation.html:62
+#: html/User/Delegation.html:64
 msgid "Right not found"
-msgstr ""
+msgstr "Recht nicht gefunden"
 
-#: lib/RT/ACE_Overlay.pm:569 lib/RT/ACE_Overlay.pm:660
+#: lib/RT/ACE_Overlay.pm:543 lib/RT/ACE_Overlay.pm:638
 msgid "Right not loaded."
-msgstr ""
+msgstr "Recht nicht gefunden."
 
-#: lib/RT/ACE_Overlay.pm:708
+#: lib/RT/ACE_Overlay.pm:689
 msgid "Right revoked"
 msgstr "Recht zurückgezogen"
 
-#: html/Admin/Elements/UserTabs:34 html/User/Elements/Tabs:36
+#: html/Admin/Elements/UserTabs:41
 msgid "Rights"
 msgstr "Rechte"
 
-#: html/Admin/Global/GroupRights.html:49 html/Admin/Queues/GroupRights.html:51
+#: lib/RT/Interface/Web.pm:758
+#. ($object_type)
+msgid "Rights could not be granted for %1"
+msgstr "Rechte konnten für %1 nicht gewährt werden"
+
+#: lib/RT/Interface/Web.pm:791
+#. ($object_type)
+msgid "Rights could not be revoked for %1"
+msgstr "Rechte konnten nicht für %1 entzogen werden"
+
+#: html/Admin/Global/GroupRights.html:51 html/Admin/Queues/GroupRights.html:52
 msgid "Roles"
 msgstr "Rollen"
 
-#: sbin/insert_approval_scrips:247
+#: NOT FOUND IN SOURCE
 msgid "RootApproval"
 msgstr ""
 
-#: lib/RT/Date.pm:378
+#: lib/RT/Date.pm:393
 msgid "Sat."
-msgstr ""
+msgstr "Sa"
 
-#: html/Admin/Queues/People.html:80 html/Ticket/Modify.html:38 html/Ticket/ModifyAll.html:77 html/Ticket/ModifyPeople.html:35
+#: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "Save Changes"
 msgstr "Speichere Änderungen"
 
-#: html/Ticket/ModifyLinks.html:36
+#: html/Ticket/ModifyLinks.html:39
 msgid "Save changes"
 msgstr "Speichere Änderungen"
 
-#: lib/RT/Scrip_Overlay.pm:174
+#: html/Admin/Global/Scrip.html:49
+#. ($ARGS{'id'})
+msgid "Scrip #%1"
+msgstr ""
+
+#: lib/RT/Scrip_Overlay.pm:176
 msgid "Scrip Created"
 msgstr "Scrip angelegt"
 
-#: html/Admin/Elements/EditScrips:93
+#: html/Admin/Elements/EditScrips:84
 msgid "Scrip deleted"
-msgstr ""
+msgstr "Scrip gelöscht"
 
-#: html/Admin/Elements/QueueTabs:36 html/Admin/Elements/SystemTabs:30
+#: html/Admin/Elements/QueueTabs:46 html/Admin/Elements/SystemTabs:33 html/Admin/Global/index.html:41
 msgid "Scrips"
 msgstr "Scrips"
 
-#: bin/rtadmin:771
-#. ($queue)
+#: NOT FOUND IN SOURCE
 msgid "Scrips for %1\\n"
-msgstr "Scripts für %1\\n"
+msgstr "Scrips für %1\\n"
 
-#: html/Admin/Queues/Scrips.html:28
+#: html/Admin/Queues/Scrips.html:33
 msgid "Scrips which apply to all queues"
-msgstr ""
+msgstr "Auf alle Stapel angewande Scrips"
 
-#: html/Elements/Tabs:114 html/Search/Listing.html:25
+#: html/Elements/SimpleSearch:27 html/Search/Elements/PickRestriction:126 html/Ticket/Elements/Tabs:159
 msgid "Search"
 msgstr "Suchen"
 
-#: html/Search/Listing.html:111
+#: NOT FOUND IN SOURCE
 msgid "Search Criteria"
-msgstr "Suchkriterien"
+msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:37
+#: html/Approvals/Elements/PendingMyApproval:39
 msgid "Search for approvals"
 msgstr "Suche nach Freigaben"
 
 #: bin/rt-crontool:188
 msgid "Security:"
-msgstr ""
+msgstr "Sicherheit:"
 
-#: lib/RT/ACE_Overlay.pm:69
+#: lib/RT/Queue_Overlay.pm:67
 msgid "SeeQueue"
 msgstr ""
 
-#: html/Admin/Groups/index.html:28
+#: html/Admin/Groups/index.html:40
 msgid "Select a group"
 msgstr "Wähle eine Gruppe aus"
 
-#: html/Admin/Queues/index.html:29
+#: NOT FOUND IN SOURCE
 msgid "Select a queue"
-msgstr "Wähle einen Stapel aus"
+msgstr ""
 
-#: html/Admin/Users/index.html:29
+#: html/Admin/Users/index.html:25 html/Admin/Users/index.html:28
 msgid "Select a user"
 msgstr "Wähle einen Benutzer aus"
 
-#: lib/RT/CustomField_Overlay.pm:38
+#: html/Admin/Global/CustomField.html:38 html/Admin/Global/CustomFields.html:36
+msgid "Select custom field"
+msgstr "Wähle ein benutzerdef. Feld"
+
+#: html/Admin/Elements/GroupTabs:52 html/User/Elements/GroupTabs:50
+msgid "Select group"
+msgstr "Wähle eine Gruppe"
+
+#: lib/RT/CustomField_Overlay.pm:355
+msgid "Select multiple values"
+msgstr "Wähle mehrere Werte"
+
+#: lib/RT/CustomField_Overlay.pm:352
+msgid "Select one value"
+msgstr "Wähle einen Wert"
+
+#: html/Admin/Elements/QueueTabs:67
+msgid "Select queue"
+msgstr "Wähle einen Stapel"
+
+#: html/Admin/Global/Scrip.html:37 html/Admin/Global/Scrips.html:36 html/Admin/Queues/Scrip.html:40 html/Admin/Queues/Scrips.html:50
+msgid "Select scrip"
+msgstr "Wähle ein Scrip"
+
+#: html/Admin/Global/Template.html:57 html/Admin/Global/Templates.html:36 html/Admin/Queues/Template.html:55
+msgid "Select template"
+msgstr "Wähle ein Template"
+
+#: html/Admin/Elements/UserTabs:49
+msgid "Select user"
+msgstr "Wähle einen Benutzer"
+
+#: lib/RT/CustomField_Overlay.pm:36
 msgid "SelectMultiple"
 msgstr "Mehrfachauswahlfeld"
 
-#: lib/RT/CustomField_Overlay.pm:37
+#: lib/RT/CustomField_Overlay.pm:35
 msgid "SelectSingle"
 msgstr "Einzelauswahlfeld"
 
@@ -3303,137 +3382,132 @@ msgstr "Einzelauswahlfeld"
 msgid "Self Service"
 msgstr "Selbstbedienung"
 
-#: sbin/insertdata:367
+#: etc/initialdata:114
 msgid "Send mail to all watchers"
-msgstr ""
+msgstr "Schicke eine Mail an alle Beobachter"
 
-#: sbin/insertdata:361
+#: etc/initialdata:110
 msgid "Send mail to all watchers as a \"comment\""
-msgstr ""
+msgstr "Schicke eine Mail an alle Beobachter als \"Kommentar\""
 
-#: sbin/insertdata:354
+#: etc/initialdata:105
 msgid "Send mail to requestors and Ccs"
-msgstr ""
+msgstr "Schicke eine Mail an die Klienten und CCs"
 
-#: sbin/insertdata:347
+#: etc/initialdata:100
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr ""
+msgstr "Schicke eine Mail an die Klienten und CCs als Kommentar"
 
-#: sbin/insertdata:316
+#: etc/initialdata:79
 msgid "Sends a message to the requestors"
-msgstr ""
+msgstr "Schicke eine Mail an die Klienten"
 
-#: sbin/insertdata:373 sbin/insertdata:379
+#: etc/initialdata:118 etc/initialdata:122
 msgid "Sends mail to explicitly listed Ccs and Bccs"
-msgstr ""
+msgstr "Schicke eine Mail an die direkt angegebenen CCs und BCCs"
 
-#: sbin/insertdata:340
+#: etc/initialdata:95
 msgid "Sends mail to the administrative Ccs"
-msgstr ""
+msgstr "Schicke eine Mail an die administrativen CCs"
 
-#: sbin/insertdata:334
+#: etc/initialdata:91
 msgid "Sends mail to the administrative Ccs as a comment"
-msgstr ""
+msgstr "Schicke eine Mail an die administrativen CCs als Kommentar"
 
-#: sbin/insertdata:322 sbin/insertdata:328
+#: etc/initialdata:83 etc/initialdata:87
 msgid "Sends mail to the owner"
-msgstr ""
+msgstr "Schicke eine Mail an den Inhaber"
 
-#: lib/RT/Date.pm:404
+#: lib/RT/Date.pm:419
 msgid "Sep."
 msgstr "Sep"
 
 #: NOT FOUND IN SOURCE
-msgid "September"
-msgstr "September"
-
-#: html/Search/PickRestriction:126
 msgid "Show Results"
-msgstr "Zeige die Ergebnisse"
+msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:42
+#: html/Approvals/Elements/PendingMyApproval:44
 msgid "Show approved requests"
 msgstr "Zeige freigegebene Anfragen"
 
-#: html/Ticket/Create.html:138 html/Ticket/Create.html:34
+#: html/Ticket/Create.html:144 html/Ticket/Create.html:34
 msgid "Show basics"
 msgstr "Zeige Basics"
 
-#: html/Approvals/Elements/PendingMyApproval:43
+#: html/Approvals/Elements/PendingMyApproval:45
 msgid "Show denied requests"
 msgstr "Zeige abgelehnte Anfragen"
 
-#: html/Ticket/Create.html:138 html/Ticket/Create.html:34
+#: html/Ticket/Create.html:144 html/Ticket/Create.html:34
 msgid "Show details"
 msgstr "Zeige Details"
 
-#: html/Approvals/Elements/PendingMyApproval:41
+#: html/Approvals/Elements/PendingMyApproval:43
 msgid "Show pending requests"
 msgstr "Zeige schwebende Anfragen"
 
-#: html/Approvals/Elements/PendingMyApproval:44
+#: html/Approvals/Elements/PendingMyApproval:46
 msgid "Show requests awaiting other approvals"
 msgstr "Zeige auf andere Freigaben wartende Anfragen"
 
-#: lib/RT/ACE_Overlay.pm:83
+#: lib/RT/Queue_Overlay.pm:81
 msgid "Show ticket private commentary"
-msgstr ""
+msgstr "Zeige private Kommentare des Tickets"
 
-#: lib/RT/ACE_Overlay.pm:81
+#: lib/RT/Queue_Overlay.pm:79
 msgid "Show ticket summaries"
 msgstr "Zeige Ticketzusammenfassungen"
 
-#: lib/RT/ACE_Overlay.pm:71
+#: lib/RT/Queue_Overlay.pm:69
 msgid "ShowACL"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:80
+#: lib/RT/Queue_Overlay.pm:78
 msgid "ShowScrips"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:77
+#: lib/RT/Queue_Overlay.pm:75
 msgid "ShowTemplate"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:81
+#: lib/RT/Queue_Overlay.pm:79
 msgid "ShowTicket"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:83
+#: lib/RT/Queue_Overlay.pm:81
 msgid "ShowTicketComments"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:84
+#: lib/RT/Queue_Overlay.pm:82
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
-msgstr ""
+msgstr "Als Klient eines Tickets oder Ticket- bzw. Stapel-CC eintragen"
 
-#: lib/RT/ACE_Overlay.pm:85
+#: lib/RT/Queue_Overlay.pm:83
 msgid "Sign up as a ticket or queue AdminCc"
-msgstr ""
+msgstr "Als Ticket- oder Stapel-AdminCC eintragen"
 
-#: html/Admin/Elements/ModifyUser:39 html/Admin/Users/Modify.html:128 html/Admin/Users/Prefs.html:30 html/SelfService/Prefs.html:37 html/User/Prefs.html:38
+#: html/Admin/Elements/ModifyUser:39 html/Admin/Users/Modify.html:191 html/Admin/Users/Prefs.html:32 html/SelfService/Prefs.html:37 html/User/Prefs.html:112
 msgid "Signature"
 msgstr "E-Mail-Signatur"
 
 #: html/SelfService/Elements/Header:52
 #. ($session{'CurrentUser'}->Name)
-msgid "Logged in as %1"
-msgstr "Angemeldet als %1"
-
-#: html/Elements/Header:49
-#. ($session{'CurrentUser'}->Name)
-msgid "Logged in as %1"
+msgid "Signed in as %1"
 msgstr "Angemeldet als %1"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Single"
 msgstr "Einzel"
 
+#: html/Elements/Header:51
+msgid "Skip Menu"
+msgstr "Überspringe Menü"
+
 #: html/Admin/Elements/EditCustomFieldValues:31
 msgid "Sort key"
 msgstr "Sortierschlüssel"
 
-#: html/Search/PickRestriction:109
+#: html/Search/Elements/PickRestriction:109
 msgid "Sort results by"
 msgstr "Sortiere Ergebnisse nach"
 
@@ -3441,326 +3515,323 @@ msgstr "Sortiere Ergebnisse nach"
 msgid "SortOrder"
 msgstr "Sortierreihenfolge"
 
-#: html/Elements/Quicksearch:32
+#: NOT FOUND IN SOURCE
 msgid "Stalled"
-msgstr "Auf Halte"
+msgstr ""
 
-#: html/index.html:25
+#: NOT FOUND IN SOURCE
 msgid "Start page"
-msgstr "Startseite"
+msgstr ""
 
-#: html/Elements/SelectDateType:27 html/Ticket/Elements/EditDates:37 html/Ticket/Elements/ShowDates:44
+#: html/Elements/SelectDateType:27 html/Ticket/Elements/EditDates:32 html/Ticket/Elements/ShowDates:35
 msgid "Started"
 msgstr "Begonnen"
 
-#: bin/rt:805
-#. ($started)
+#: NOT FOUND IN SOURCE
 msgid "Started date '%1' could not be parsed"
-msgstr "Startdatum '%1' konnte nicht interpretiert werden"
+msgstr ""
 
-#: html/Ticket/Create.html:167 html/Ticket/DetailedCreate.html:79 html/Ticket/Elements/EditDates:28 html/Ticket/Elements/ShowDates:36
+#: html/Elements/SelectDateType:31 html/Ticket/Create.html:166 html/Ticket/Elements/EditDates:27 html/Ticket/Elements/ShowDates:31
 msgid "Starts"
 msgstr "Beginnt"
 
-#: html/Elements/SelectDateType:31
+#: NOT FOUND IN SOURCE
 msgid "Starts By"
-msgstr "Beginnt"
+msgstr ""
 
-#: bin/rt:793
-#. ($starts)
+#: NOT FOUND IN SOURCE
 msgid "Starts date '%1' could not be parsed"
-msgstr "Startdatum '%1' konnte nicht interpretiert werden"
+msgstr ""
 
-#: html/Admin/Elements/ModifyUser:82 html/Admin/Users/Modify.html:96
+#: html/Admin/Elements/ModifyUser:82 html/Admin/Users/Modify.html:138 html/User/Prefs.html:94
 msgid "State"
 msgstr "Staat"
 
-#: bin/rt:1245 etc/RT_Config.pm:358 html/Elements/MyRequests:31 html/Elements/MyTickets:31 html/Search/PickRestriction:74 html/SelfService/Display.html:58 html/SelfService/Elements/MyRequests:29 html/SelfService/Update.html:30 html/Ticket/Create.html:43 html/Ticket/DetailedCreate.html:43 html/Ticket/Elements/EditBasics:35 html/Ticket/Elements/ShowBasics:32 html/Ticket/Update.html:56 lib/RT/Ticket_Overlay.pm:750 lib/RT/Tickets_Overlay.pm:264
+#: html/Elements/MyRequests:31 html/Elements/MyTickets:31 html/Search/Elements/PickRestriction:74 html/SelfService/Display.html:59 html/SelfService/Elements/MyRequests:29 html/SelfService/Update.html:31 html/Ticket/Create.html:42 html/Ticket/Elements/EditBasics:38 html/Ticket/Elements/ShowBasics:31 html/Ticket/Update.html:60 lib/RT/Ticket_Overlay.pm:1164 lib/RT/Tickets_Overlay.pm:908
 msgid "Status"
 msgstr "Status"
 
-#: lib/RT/Transaction_Overlay.pm:508
+#: etc/initialdata:288
+msgid "Status Change"
+msgstr "Ändere Status"
+
+#: lib/RT/Transaction_Overlay.pm:530
 #. ($self->loc($self->OldValue), $self->loc($self->NewValue))
 msgid "Status changed from %1 to %2"
 msgstr "Status von %1 auf %2 geändert"
 
-#: sbin/insertdata:577
+#: NOT FOUND IN SOURCE
 msgid "StatusChange"
 msgstr ""
 
-#: html/Ticket/Elements/Tabs:83
+#: html/Ticket/Elements/Tabs:147
 msgid "Steal"
 msgstr "Stehlen"
 
-#: lib/RT/Transaction_Overlay.pm:567
+#: lib/RT/Transaction_Overlay.pm:589
 #. ($Old->Name)
 msgid "Stolen from %1 "
 msgstr "Gestohlen von %1 "
 
-#: bin/rt:1218 etc/RT_Config.pm:352 html/Elements/MyRequests:29 html/Elements/MyTickets:29 html/Search/Bulk.html:126 html/Search/PickRestriction:43 html/SelfService/Create.html:59 html/SelfService/Elements/MyRequests:28 html/SelfService/Update.html:34 html/Ticket/Create.html:81 html/Ticket/DetailedCreate.html:40 html/Ticket/Elements/EditBasics:28 html/Ticket/ModifyAll.html:71 html/Ticket/Update.html:72 lib/RT/Ticket_Overlay.pm:746 lib/RT/Tickets_Overlay.pm:337
+#: html/Elements/MyRequests:29 html/Elements/MyTickets:29 html/Search/Bulk.html:126 html/Search/Elements/PickRestriction:43 html/SelfService/Create.html:59 html/SelfService/Elements/MyRequests:28 html/SelfService/Update.html:35 html/Ticket/Create.html:84 html/Ticket/Elements/EditBasics:28 html/Ticket/ModifyAll.html:79 html/Ticket/Update.html:77 lib/RT/Ticket_Overlay.pm:1160 lib/RT/Tickets_Overlay.pm:987
 msgid "Subject"
 msgstr "Betreff"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/Transaction_Overlay.pm:589
+#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/Transaction_Overlay.pm:611
 #. ($self->Data)
 msgid "Subject changed to %1"
-msgstr ""
+msgstr "Betreff wurde auf %1 geändert"
 
-#: html/Elements/Submit:64
+#: html/Elements/Submit:59
 msgid "Submit"
 msgstr "Übermitteln"
 
-#: html/Admin/Global/Workflow.html:49
+#: NOT FOUND IN SOURCE
 msgid "Submit Workflow"
 msgstr ""
 
-#: lib/RT/Date.pm:379
-msgid "Sun."
-msgstr ""
+#: lib/RT/Group_Overlay.pm:749
+msgid "Succeeded"
+msgstr "Geglückt"
 
-#: lib/RT/ACE_Overlay.pm:99
+#: lib/RT/Date.pm:394
+msgid "Sun."
+msgstr "So"
+
+#: lib/RT/System.pm:54
 msgid "SuperUser"
 msgstr ""
 
-#: html/User/Elements/DelegateRights:73
+#: html/User/Elements/DelegateRights:77
 msgid "System"
-msgstr ""
+msgstr "System"
 
-#: lib/RT/ACE_Overlay.pm:591
+#: html/Admin/Elements/SelectRights:81 lib/RT/ACE_Overlay.pm:567 lib/RT/Interface/Web.pm:757 lib/RT/Interface/Web.pm:790
 msgid "System Error"
-msgstr ""
+msgstr "Systemfehler"
 
-#: NOT FOUND IN SOURCE
-msgid "System Error. Right not granted."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "System Error. right not granted"
-msgstr "Systemfehler. Recht nicht erteilt."
-
-#: lib/RT/ACE_Overlay.pm:638
+#: lib/RT/ACE_Overlay.pm:616
 msgid "System error. Right not delegated."
-msgstr ""
+msgstr "Systemfehler. Recht nicht delegiert."
 
-#: lib/RT/ACE_Overlay.pm:1092 lib/RT/ACE_Overlay.pm:234 lib/RT/ACE_Overlay.pm:330
+#: lib/RT/ACE_Overlay.pm:146 lib/RT/ACE_Overlay.pm:223 lib/RT/ACE_Overlay.pm:306 lib/RT/ACE_Overlay.pm:898
 msgid "System error. Right not granted."
-msgstr ""
+msgstr "Systemfehler. Recht nicht gewährt."
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Unable to grant rights."
-msgstr "Systemfehler. Kann keine Rechte vergeben."
-
-#: html/Admin/Global/GroupRights.html:33 html/Admin/Groups/GroupRights.html:34 html/Admin/Queues/GroupRights.html:34
+#: html/Admin/Global/GroupRights.html:35 html/Admin/Groups/GroupRights.html:37 html/Admin/Queues/GroupRights.html:36
 msgid "System groups"
 msgstr "Systemgruppen"
 
-#: sbin/insertdata:171 sbin/insertdata:178 sbin/insertdata:185
+#: etc/initialdata:41 etc/initialdata:47 etc/initialdata:53
 msgid "SystemRolegroup for internal use"
-msgstr ""
+msgstr "SystemRolegroup für internen Gebrauch"
 
-#: lib/RT/CurrentUser.pm:353
+#: lib/RT/CurrentUser.pm:320
 msgid "TEST_STRING"
 msgstr "TEST_STRING"
 
-#: html/Ticket/Elements/Tabs:76
+#: html/Ticket/Elements/Tabs:143
 msgid "Take"
 msgstr "Übernehmen"
 
-#: lib/RT/Transaction_Overlay.pm:553
+#: lib/RT/Transaction_Overlay.pm:575
 msgid "Taken"
 msgstr "Übernommen"
 
-#: html/Admin/Elements/EditScrip:83
+#: html/Admin/Elements/EditScrip:81
 msgid "Template"
 msgstr "Vorlage"
 
-#: lib/RT/Scrip_Overlay.pm:151
+#: html/Admin/Global/Template.html:91 html/Admin/Queues/Template.html:90
+#. ($TemplateObj->Id())
+msgid "Template #%1"
+msgstr "Vorlage #%1"
+
+#: html/Admin/Elements/EditTemplates:89
+msgid "Template deleted"
+msgstr "Vorlage gelöscht"
+
+#: lib/RT/Scrip_Overlay.pm:153
 msgid "Template not found"
 msgstr "Vorlage nicht gefunden"
 
-#: bin/rtadmin:715
+#: NOT FOUND IN SOURCE
 msgid "Template not found\\n"
-msgstr "Vorlage nicht gefunden\\n"
+msgstr ""
 
-#: lib/RT/Template_Overlay.pm:344
+#: lib/RT/Template_Overlay.pm:347
 msgid "Template parsed"
 msgstr "Vorlagen eingelesen"
 
-#: html/Admin/Elements/QueueTabs:39 html/Admin/Elements/SystemTabs:33 html/Admin/Global/Templates.html:32
+#: html/Admin/Elements/QueueTabs:49 html/Admin/Elements/SystemTabs:36 html/Admin/Global/index.html:45
 msgid "Templates"
 msgstr "Vorlagen"
 
-#: bin/rtadmin:662
-#. ($queue)
+#: NOT FOUND IN SOURCE
 msgid "Templates for %1\\n"
-msgstr "Vorlage für %1\\n"
+msgstr "Vorlagen für %1\\n"
 
-#: lib/RT/Interface/Web.pm:812
+#: lib/RT/Interface/Web.pm:858
 msgid "That is already the current value"
-msgstr ""
+msgstr "Das ist bereits der aktuelle Wert"
 
-#: lib/RT/CustomField_Overlay.pm:176
+#: lib/RT/CustomField_Overlay.pm:178
 msgid "That is not a value for this custom field"
 msgstr "Dies ist kein gültiger Wert dieses benutzerdefinierten Feldes"
 
-#: lib/RT/Ticket_Overlay.pm:1475
+#: lib/RT/Ticket_Overlay.pm:1886
 msgid "That is the same value"
 msgstr "Das ist der gleiche Wert"
 
-#: lib/RT/Queue_Overlay.pm:565
+#: lib/RT/Queue_Overlay.pm:633
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
-msgstr "Dieser Chef ist bereits ein %1 dieses Stapels"
+msgstr "Dieser Hauptverantwortliche ist bereits ein %1 dieses Stapels"
 
-#: lib/RT/Ticket_Overlay.pm:1020
+#: lib/RT/Ticket_Overlay.pm:1434
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
-msgstr "Dieser Chef ist bereits ein %1 dieses Tickets"
+msgstr "Dieser Hauptverantwortliche ist bereits ein %1 dieses Tickets"
 
-#: lib/RT/Queue_Overlay.pm:664
+#: lib/RT/Queue_Overlay.pm:732
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
-msgstr "Dieser Chef ist nicht ein %1 dieses Stapels"
+msgstr "Dieser Hauptverantwortliche ist nicht ein %1 dieses Stapels"
 
-#: lib/RT/Ticket_Overlay.pm:1137
+#: lib/RT/Ticket_Overlay.pm:1551
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
-msgstr "Dieser Chef ist nicht ein %1 dieses Tickets"
+msgstr "Dieser Hauptverantwortliche ist nicht ein %1 dieses Tickets"
 
-#: lib/RT/Ticket_Overlay.pm:1471
+#: lib/RT/Ticket_Overlay.pm:1882
 msgid "That queue does not exist"
 msgstr "Dieser Stapel existiert nicht"
 
-#: lib/RT/Ticket_Overlay.pm:2776
+#: lib/RT/Ticket_Overlay.pm:3143
 msgid "That ticket has unresolved dependencies"
-msgstr ""
+msgstr "Dieses Ticket hat ungelöste Abhängigkeiten"
 
-#: lib/RT/ACE_Overlay.pm:309 lib/RT/ACE_Overlay.pm:619
+#: lib/RT/ACE_Overlay.pm:288 lib/RT/ACE_Overlay.pm:597
 msgid "That user already has that right"
 msgstr "Dieser Benutzer hat bereits dieses Recht"
 
-#: lib/RT/Ticket_Overlay.pm:2588
+#: lib/RT/Ticket_Overlay.pm:2952
 msgid "That user already owns that ticket"
 msgstr "Diesem Benutzer gehört bereits das Ticket"
 
-#: lib/RT/Ticket_Overlay.pm:2553
+#: lib/RT/Ticket_Overlay.pm:2918
 msgid "That user does not exist"
 msgstr "Dieser Benutzer existiert nicht"
 
-#: lib/RT/User_Overlay.pm:310
+#: lib/RT/User_Overlay.pm:315
 msgid "That user is already privileged"
 msgstr "Dieser Benutzer ist bereits privilegiert"
 
-#: lib/RT/User_Overlay.pm:327
+#: lib/RT/User_Overlay.pm:332
 msgid "That user is already unprivileged"
 msgstr "Dieser Benutzer ist bereits ungeprivilegiert"
 
-#: lib/RT/User_Overlay.pm:322
+#: lib/RT/User_Overlay.pm:327
 msgid "That user is now privileged"
 msgstr "Dieser Benutzer ist nun privilegiert"
 
-#: lib/RT/User_Overlay.pm:339
+#: lib/RT/User_Overlay.pm:344
 msgid "That user is now unprivileged"
-msgstr ""
+msgstr "Dieser Benutzer ist jetzt unprivelegiert"
 
-#: NOT FOUND IN SOURCE
-msgid "That user is now unprivilegedileged"
-msgstr "Dieser Benutzer ist nun unprivilegiert"
-
-#: lib/RT/Ticket_Overlay.pm:2580
+#: lib/RT/Ticket_Overlay.pm:2944
 msgid "That user may not own tickets in that queue"
 msgstr "Diesem Benutzer dürfen keine Tickets aus diesen Stapel gehören"
 
-#: lib/RT/Link_Overlay.pm:192
+#: lib/RT/Link_Overlay.pm:206
 msgid "That's not a numerical id"
 msgstr "Dies ist keine numerische Id"
 
-#: html/Ticket/Create.html:144 html/Ticket/DetailedCreate.html:36 html/Ticket/Elements/ShowSummary:28
+#: html/Ticket/Create.html:150 html/Ticket/Elements/ShowSummary:28
 msgid "The Basics"
 msgstr "Grundlagen"
 
-#: lib/RT/ACE_Overlay.pm:119
+#: lib/RT/ACE_Overlay.pm:88
 msgid "The CC of a ticket"
-msgstr ""
+msgstr "Der CC eines Tickets"
 
-#: lib/RT/ACE_Overlay.pm:120
+#: lib/RT/ACE_Overlay.pm:89
 msgid "The administrative CC of a ticket"
-msgstr ""
+msgstr "Der administrative CC eines Tickets"
 
-#: lib/RT/Ticket_Overlay.pm:1842
+#: lib/RT/Ticket_Overlay.pm:2213
 msgid "The comment has been recorded"
 msgstr "Der Kommentar wurde aufgezeichnet"
 
 #: bin/rt-crontool:198
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr ""
+msgstr "Das folgende Kommando wird alle aktiven Tickets des Stapels 'general' finden und ihre Priorität auf 99 setzen, wenn sie innerhalb der letzten 4 Stunden nicht angefasst wurden:"
 
-#: bin/enhanced-mailgate:621 bin/enhanced-mailgate:631 bin/rt-commit-handler:756 bin/rt-commit-handler:766
+#: bin/rt-commit-handler:756 bin/rt-commit-handler:766
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "Die folgenden Kommandos wurden nicht verarbeitet:\\n\\n"
 
-#: lib/RT/Interface/Web.pm:815
+#: lib/RT/Interface/Web.pm:861
 msgid "The new value has been set."
-msgstr ""
+msgstr "Der neue Wert wurde gesetzt."
 
-#: lib/RT/ACE_Overlay.pm:117
+#: lib/RT/ACE_Overlay.pm:86
 msgid "The owner of a ticket"
-msgstr ""
+msgstr "Der Inhaber eines Tickets"
 
-#: lib/RT/ACE_Overlay.pm:118
+#: lib/RT/ACE_Overlay.pm:87
 msgid "The requestor of a ticket"
-msgstr ""
+msgstr "Der Klient eines Tickets"
 
 #: html/Admin/Elements/EditUserComments:26
 msgid "These comments aren't generally visible to the user"
 msgstr "Diese Kommentare sind generell nicht für den Benutzer sichtbar"
 
-#: bin/rt:1147
-#. ($l->Type, $l->TargetObj->Id, $l->TargetObj->Subject)
+#: NOT FOUND IN SOURCE
 msgid "This ticket %1 %2 (%3)\\n"
-msgstr "Dieses Ticket %1 %2 (%3)\\n"
+msgstr ""
 
 #: bin/rt-crontool:189
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
-msgstr ""
+msgstr "Dieses Werkzeug erlaubt es Benutzern beliebige Perl-Module von RT aus aufzurufen."
 
-#: lib/RT/Transaction_Overlay.pm:284
+#: lib/RT/Transaction_Overlay.pm:253
 msgid "This transaction appears to have no content"
 msgstr "Diese Transaktion scheint keinen Inhalt zu haben"
 
-#: html/Ticket/Elements/ShowRequestor:46
-msgid "This user's 25 highest priority tickets"
-msgstr "Die 25 höchstpriorisiertesten Tickets diese Nutzers"
+#: html/Ticket/Elements/ShowRequestor:47
+#. ($rows)
+msgid "This user's %1 highest priority tickets"
+msgstr "Die %1 höchstpriorisiertesten Tickets dieses Benutzers"
 
-#: lib/RT/Date.pm:376
-msgid "Thu."
+#: NOT FOUND IN SOURCE
+msgid "This user's 25 highest priority tickets"
 msgstr ""
+
+#: lib/RT/Date.pm:391
+msgid "Thu."
+msgstr "Do"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket # %1  %2"
-msgstr "Ticket #%1 %2"
+msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket # %1 Jumbo update: %2"
-msgstr "Ticket #%1 Jumbo update: %2"
-
-#: html/Ticket/ModifyAll.html:25
+#: html/Ticket/ModifyAll.html:25 html/Ticket/ModifyAll.html:29
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Ticket #%1 Jumbo update: %2"
 
-#: html/Approvals/Elements/ShowDependency:42 html/Ticket/Display.html:25
-#. ($Ticket->Id, $Ticket->Subject)
+#: html/Approvals/Elements/ShowDependency:46
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr ""
+msgstr "Ticket #%1: %2"
 
-#: lib/RT/Ticket_Overlay.pm:553
+#: lib/RT/Ticket_Overlay.pm:608
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
-msgstr ""
+msgstr "Ticket %1 wurde im Ticket '%2' angelegt"
 
-#: bin/enhanced-mailgate:625 bin/rt-commit-handler:760
+#: bin/rt-commit-handler:760
 #. ($Ticket->Id)
 msgid "Ticket %1 loaded\\n"
 msgstr "Ticket %1 geladen\\n"
@@ -3768,78 +3839,78 @@ msgstr "Ticket %1 geladen\\n"
 #: html/Search/Bulk.html:181
 #. ($Ticket->Id,$_)
 msgid "Ticket %1: %2"
-msgstr ""
+msgstr "Ticket %1: %2"
 
-#: html/Ticket/History.html:25
+#: html/Ticket/History.html:25 html/Ticket/History.html:28
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Tciket Historie #%1 %2"
 
-#: html/SelfService/Display.html:33
+#: html/SelfService/Display.html:34
 msgid "Ticket Id"
 msgstr "Ticketnummer"
 
-#: sbin/insertdata:592
+#: etc/initialdata:303
 msgid "Ticket Resolved"
-msgstr ""
+msgstr "Ticket erledigt"
 
-#: html/Search/PickRestriction:63
+#: html/Search/Elements/PickRestriction:63
 msgid "Ticket attachment"
-msgstr ""
+msgstr "Ticketanhang"
 
-#: html/Ticket/DetailedCreate.html:94 lib/RT/Tickets_Overlay.pm:516
+#: lib/RT/Tickets_Overlay.pm:1166
 msgid "Ticket content"
 msgstr "Ticketinhalt"
 
-#: lib/RT/Tickets_Overlay.pm:562
+#: lib/RT/Tickets_Overlay.pm:1212
 msgid "Ticket content type"
 msgstr "Ticketinhaltstyp"
 
-#: lib/RT/Ticket_Overlay.pm:471 lib/RT/Ticket_Overlay.pm:564
+#: lib/RT/Ticket_Overlay.pm:495 lib/RT/Ticket_Overlay.pm:597
 msgid "Ticket could not be created due to an internal error"
 msgstr "Ticket konnte aufgrund eines internen Fehlers nicht angelegt werden"
 
-#: lib/RT/Transaction_Overlay.pm:500
+#: lib/RT/Transaction_Overlay.pm:522
 msgid "Ticket created"
 msgstr "Ticket angelegt"
 
-#: bin/enhanced-mailgate:302 bin/rt-mailgate:280
+#: NOT FOUND IN SOURCE
 msgid "Ticket creation failed"
-msgstr "Anlegen des Tickets gescheitert"
-
-#: lib/RT/Transaction_Overlay.pm:505
-msgid "Ticket deleted"
 msgstr ""
 
-#: html/REST/update:34
+#: lib/RT/Transaction_Overlay.pm:527
+msgid "Ticket deleted"
+msgstr "Ticket gelöscht"
+
+#: html/REST/1.0/modify:29 html/REST/1.0/update:34
 msgid "Ticket id not found"
-msgstr "Ticket-Id nicht gefunden"
+msgstr "Ticketnummer nicht gefunden"
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket killed"
-msgstr "Ticket getötet"
-
-#: html/REST/update:41
+#: html/REST/1.0/modify:36 html/REST/1.0/update:41
 msgid "Ticket not found"
 msgstr "Ticket nicht gefunden"
 
-#: sbin/insertdata:578
+#: etc/initialdata:289
 msgid "Ticket status changed"
-msgstr ""
+msgstr "Ticketstatus geändert"
 
-#: html/Ticket/Update.html:35
+#: html/Ticket/Update.html:39
 msgid "Ticket watchers"
 msgstr "Ticketbeobachter"
 
-#: lib/RT/Tickets_Overlay.pm:730
+#: html/Elements/Tabs:49
+msgid "Tickets"
+msgstr "Tickets"
+
+#: lib/RT/Tickets_Overlay.pm:1383
 #. ($self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'}))
 msgid "Tickets %1 %2"
-msgstr ""
+msgstr "Tickets %1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:695
+#: lib/RT/Tickets_Overlay.pm:1348
 #. ($self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'}))
 msgid "Tickets %1 by %2"
-msgstr ""
+msgstr "Tickets %2 von %2"
 
 #: html/Elements/ViewUser:26
 #. ($name)
@@ -3848,87 +3919,82 @@ msgstr "Tickets von %1"
 
 #: html/Approvals/Elements/ShowDependency:27
 msgid "Tickets which depend on this approval:"
-msgstr ""
+msgstr "Tickets welche von dieser Freigabe abhängen:"
 
-#: html/Ticket/Create.html:151 html/Ticket/DetailedCreate.html:49 html/Ticket/Elements/EditBasics:49
+#: html/Ticket/Create.html:157 html/Ticket/Elements/EditBasics:48
 msgid "Time Left"
 msgstr "Übrige Zeit"
 
-#: html/Ticket/Create.html:150 html/Ticket/DetailedCreate.html:48 html/Ticket/Elements/EditBasics:42
+#: html/Ticket/Create.html:156 html/Ticket/Elements/EditBasics:43
 msgid "Time Worked"
 msgstr "Arbeitszeit"
 
-#: lib/RT/Tickets_Overlay.pm:489
+#: lib/RT/Tickets_Overlay.pm:1139
 msgid "Time left"
 msgstr "Übrige Zeit"
 
-#: html/Elements/Footer:31
+#: html/Elements/Footer:36
 msgid "Time to display"
 msgstr "Benötigte Zeit"
 
-#: lib/RT/Tickets_Overlay.pm:465
+#: lib/RT/Tickets_Overlay.pm:1115
 msgid "Time worked"
 msgstr "Arbeitszeit"
 
-#: NOT FOUND IN SOURCE
-msgid "TimeLeft"
-msgstr "Übrige Zeit"
-
-#: lib/RT/Ticket_Overlay.pm:751
+#: lib/RT/Ticket_Overlay.pm:1165
 msgid "TimeWorked"
 msgstr "Gearbeitete Zeit"
 
 #: bin/rt-commit-handler:402
 msgid "To generate a diff of this commit:"
-msgstr ""
+msgstr "Um ein 'diff' dieser Übergabe zu erstellen:"
 
 #: bin/rt-commit-handler:391
 msgid "To generate a diff of this commit:\\n"
-msgstr ""
+msgstr "Um ein 'diff' dieser Übergabe zu erstellen:\\n"
 
-#: bin/rt:1275 etc/RT_Config.pm:369 lib/RT/Ticket_Overlay.pm:754
+#: lib/RT/Ticket_Overlay.pm:1168
 msgid "Told"
 msgstr "Eingegangen"
 
-#: sbin/insertdata:521
+#: etc/initialdata:237
 msgid "Transaction"
-msgstr ""
+msgstr "Transaktion"
 
-#: lib/RT/Transaction_Overlay.pm:614
+#: lib/RT/Transaction_Overlay.pm:642
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Transaktion %1 durchgeprügelt"
 
-#: lib/RT/Transaction_Overlay.pm:171
+#: lib/RT/Transaction_Overlay.pm:177
 msgid "Transaction Created"
 msgstr "Transaktion erstellt"
 
-#: lib/RT/Transaction_Overlay.pm:90
+#: lib/RT/Transaction_Overlay.pm:89
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
-msgstr ""
+msgstr "Transaction->Create konnte nicht ausgeführt werden da keine Ticketnummer angegeben wurde"
 
-#: lib/RT/Transaction_Overlay.pm:673
+#: lib/RT/Transaction_Overlay.pm:701
 msgid "Transactions are immutable"
 msgstr "Transaktionen sind unveränderbar"
 
-#: bin/rtadmin:912
-#. ($right \n)
+#: NOT FOUND IN SOURCE
 msgid "Trying to delete a right: %1"
-msgstr "Versuche ein Recht zu löschen: %1"
-
-#: lib/RT/Date.pm:374
-msgid "Tue."
 msgstr ""
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:99 html/Admin/Queues/CustomField.html:37 html/Ticket/Elements/AddWatchers:33 html/Ticket/Elements/AddWatchers:43 lib/RT/Ticket_Overlay.pm:752 lib/RT/Tickets_Overlay.pm:309
+#: lib/RT/Date.pm:389
+msgid "Tue."
+msgstr "Di"
+
+#: html/Admin/Elements/EditCustomField:34 html/Ticket/Elements/AddWatchers:33 html/Ticket/Elements/AddWatchers:44 html/Ticket/Elements/AddWatchers:54 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:959
 msgid "Type"
 msgstr "Typ"
 
-#: lib/RT/ScripCondition_Overlay.pm:106
+#: lib/RT/ScripCondition_Overlay.pm:104
 msgid "Unimplemented"
 msgstr "Nicht implementiert"
 
-#: html/Admin/Users/Modify.html:48
+#: html/Admin/Users/Modify.html:68
 msgid "Unix login"
 msgstr "Unix Login"
 
@@ -3936,7 +4002,7 @@ msgstr "Unix Login"
 msgid "UnixUsername"
 msgstr "UnixBenutzername"
 
-#: lib/RT/Attachment_Overlay.pm:251
+#: lib/RT/Attachment_Overlay.pm:265
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Unbekannte Inhalts-Kodierung %1"
@@ -3945,169 +4011,159 @@ msgstr "Unbekannte Inhalts-Kodierung %1"
 msgid "Unlimited"
 msgstr "unbegrenzt"
 
-#: sbin/insertdata:161
+#: etc/initialdata:32
 msgid "Unprivileged"
-msgstr ""
+msgstr "Unprivilegiert"
 
-#: lib/RT/Transaction_Overlay.pm:549
+#: lib/RT/Transaction_Overlay.pm:571
 msgid "Untaken"
 msgstr "Zurückgegeben"
 
-#: html/Elements/MyTickets:53 html/Search/Bulk.html:33
+#: html/Elements/MyTickets:64 html/Search/Bulk.html:33
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: html/Admin/Users/Prefs.html:60
+#: html/Admin/Users/Prefs.html:62
 msgid "Update ID"
 msgstr "Aktualisierungs-ID"
 
-#: html/Search/Bulk.html:120 html/Ticket/ModifyAll.html:61 html/Ticket/Update.html:62
+#: html/Search/Bulk.html:120 html/Ticket/ModifyAll.html:66 html/Ticket/Update.html:67
 msgid "Update Type"
 msgstr "Aktualisierungtyp"
 
-#: html/Search/Listing.html:102
+#: html/Search/Listing.html:61
 msgid "Update all these tickets at once"
 msgstr "Aktualisiere alle diese Tickets auf einmal"
 
-#: html/Admin/Users/Prefs.html:47
+#: html/Admin/Users/Prefs.html:49
 msgid "Update email"
 msgstr "Aktualisiere E-Mail"
 
-#: html/Admin/Users/Prefs.html:53
+#: html/Admin/Users/Prefs.html:55
 msgid "Update name"
 msgstr "Aktualisiere Name"
 
-#: lib/RT/Interface/Web.pm:384
+#: lib/RT/Interface/Web.pm:375
 msgid "Update not recorded."
-msgstr ""
+msgstr "Aktualisierung nicht aufgezeichnet."
 
 #: html/Search/Bulk.html:81
 msgid "Update selected tickets"
 msgstr "Aktualisiere ausgewählte Tickets"
 
-#: html/Admin/Users/Prefs.html:34
+#: html/Admin/Users/Prefs.html:36
 msgid "Update signature"
 msgstr "Aktualisiere Unterschrift"
 
-#: html/Ticket/ModifyAll.html:59
+#: html/Ticket/ModifyAll.html:63
 msgid "Update ticket"
 msgstr "Aktualisiere Ticket"
 
-#: html/SelfService/Update.html:25
+#: html/SelfService/Update.html:25 html/SelfService/Update.html:27
 #. ($Ticket->id)
 msgid "Update ticket # %1"
 msgstr "Aktualisiere Ticket #%1"
 
-#: html/SelfService/Update.html:49
+#: html/SelfService/Update.html:50
 #. ($Ticket->id)
 msgid "Update ticket #%1"
 msgstr "Aktualisiere Ticket #%1"
 
-#: html/Ticket/Update.html:108
+#: html/Ticket/Update.html:135
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr ""
+msgstr "Aktualisiere Ticket #%1 (%2)"
 
-#: lib/RT/Interface/Web.pm:382
+#: lib/RT/Interface/Web.pm:373
 msgid "Update type was neither correspondence nor comment."
-msgstr ""
+msgstr "Aktualisierungstyp war weder Korrespondenz noch Kommentar."
 
-#: bin/rt:1265 html/Elements/SelectDateType:33 html/Ticket/Elements/ShowDates:68 lib/RT/Ticket_Overlay.pm:755
+#: html/Elements/SelectDateType:33 html/Ticket/Elements/ShowDates:51 lib/RT/Ticket_Overlay.pm:1169
 msgid "Updated"
 msgstr "Aktualisiert"
 
-#: bin/rtadmin:340
-#. ($user_obj->Name, $attrib, $msg)
+#: NOT FOUND IN SOURCE
 msgid "User %1 %2: %3\\n"
-msgstr "Benutzer %1 %2: %3\\n"
-
-#: bin/rtadmin:348
-#. ($user_obj->Name, $msg)
-msgid "User %1 Password: %2\\n"
-msgstr "Passwort von Benutzer %1: %2\\n"
-
-#: bin/rt:477
-#. ($val)
-msgid "User '%1' not found"
-msgstr "Benutzer '%1' nicht gefunden"
-
-#: bin/rt:478 bin/rtadmin:314
-#. ($val)
-#. ($user)
-msgid "User '%1' not found\\n"
-msgstr "Benutzer '%1' nicht gefunden\\n"
-
-#: sbin/insertdata:384 sbin/insertdata:465
-msgid "User Defined"
 msgstr ""
 
-#: html/Admin/Users/Prefs.html:57
+#: NOT FOUND IN SOURCE
+msgid "User %1 Password: %2\\n"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "User '%1' not found"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "User '%1' not found\\n"
+msgstr ""
+
+#: etc/initialdata:125 etc/initialdata:191
+msgid "User Defined"
+msgstr "Benutzerdefiniert"
+
+#: html/Admin/Users/Prefs.html:59
 msgid "User ID"
 msgstr "Benutzer-ID"
 
 #: html/Elements/SelectUsers:26
 msgid "User Id"
-msgstr "Benutzer-ID"
+msgstr "Benutzername"
 
-#: html/Admin/Elements/GroupTabs:39 html/Admin/Elements/QueueTabs:50 html/Admin/Elements/SystemTabs:39
+#: html/Admin/Elements/GroupTabs:47 html/Admin/Elements/QueueTabs:60 html/Admin/Elements/SystemTabs:47 html/Admin/Global/index.html:59
 msgid "User Rights"
 msgstr "Benutzerrechte"
 
-#: html/Admin/Users/Modify.html:163
+#: html/Admin/Users/Modify.html:226
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "Benutzer konnte nicht angelegt werden: %1"
 
-#: lib/RT/User_Overlay.pm:257
+#: lib/RT/User_Overlay.pm:262
 msgid "User created"
 msgstr "Benutzer angelegt"
 
-#: html/Admin/Global/GroupRights.html:65 html/Admin/Groups/GroupRights.html:52 html/Admin/Queues/GroupRights.html:68
+#: html/Admin/Global/GroupRights.html:67 html/Admin/Groups/GroupRights.html:54 html/Admin/Queues/GroupRights.html:68
 msgid "User defined groups"
 msgstr "Benutzerdefinierte Gruppe"
 
-#: lib/RT/Transaction_Overlay.pm:592
+#: NOT FOUND IN SOURCE
 msgid "User notified"
-msgstr "Benutzer benachrichtigt"
+msgstr ""
 
-#: html/Admin/Users/Prefs.html:25
+#: html/Admin/Users/Prefs.html:25 html/Admin/Users/Prefs.html:29
 msgid "User view"
 msgstr "Benutzeransicht"
 
-#: html/Admin/Users/Modify.html:43 html/Elements/Login:42 html/Ticket/Elements/AddWatchers:35
-#, fuzzy
+#: html/Admin/Users/Modify.html:48 html/Elements/Login:42 html/Ticket/Elements/AddWatchers:35
 msgid "Username"
 msgstr "Benutzername"
 
-#: html/Admin/Elements/SelectNewGroupMembers:26 html/Admin/Elements/Tabs:30 html/Admin/Groups/Members.html:53 html/Admin/index.html:29 html/User/Groups/Members.html:56
+#: html/Admin/Elements/SelectNewGroupMembers:26 html/Admin/Elements/Tabs:32 html/Admin/Groups/Members.html:55 html/Admin/Queues/People.html:68 html/Admin/index.html:29 html/User/Groups/Members.html:58
 msgid "Users"
 msgstr "Benutzer"
 
-#: html/Admin/Users/index.html:79
+#: html/Admin/Users/index.html:65
 msgid "Users matching search criteria"
 msgstr "Auf diese Kriterien zutreffenede Benutzer"
 
-#: html/Search/PickRestriction:51
+#: html/Search/Elements/PickRestriction:51
 msgid "ValueOfQueue"
 msgstr "ValueOfQueue"
 
-#: html/Admin/Queues/CustomField.html:40
+#: html/Admin/Elements/EditCustomField:40
 msgid "Values"
 msgstr "Werte"
 
-#: lib/RT/ACE_Overlay.pm:84
+#: lib/RT/Queue_Overlay.pm:82
 msgid "Watch"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:85
+#: lib/RT/Queue_Overlay.pm:83
 msgid "WatchAsAdminCc"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Watcher loaded"
-msgstr "Beobachter geladen"
-
-#: html/Admin/Elements/QueueTabs:32
+#: html/Admin/Elements/QueueTabs:42
 msgid "Watchers"
 msgstr "Beobachter"
 
@@ -4115,59 +4171,59 @@ msgstr "Beobachter"
 msgid "WebEncoding"
 msgstr "Webkodierung"
 
-#: lib/RT/Date.pm:375
+#: lib/RT/Date.pm:390
 msgid "Wed."
-msgstr ""
+msgstr "Mi"
 
-#: sbin/insert_approval_scrips:173
+#: etc/upgrade/2.1.71:161
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
-msgstr ""
+msgstr "Füge Korrespondenz zum Originalticket wenn ein Ticket von allen Freigebende freigegeben wurde"
 
-#: sbin/insert_approval_scrips:146
+#: etc/upgrade/2.1.71:135
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr ""
+msgstr "Füge Korrespondenz zum Originalticket wenn ein Ticket von einem Freigebenden freigegeben wurde"
 
-#: sbin/insertdata:405
+#: etc/initialdata:138
 msgid "When a ticket is created"
-msgstr ""
+msgstr "Wenn ein Ticket erstellt wird"
 
-#: sbin/insert_approval_scrips:98
+#: etc/upgrade/2.1.71:79
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
-msgstr ""
+msgstr "Benachrichtige Inhaber und AdminCCs der auf Freigabe wartende Anfrage wenn ein Freigabeticket erstellt wurde"
 
-#: sbin/insertdata:412
+#: etc/initialdata:143
 msgid "When anything happens"
-msgstr ""
+msgstr "Wenn irgendetwas passiert"
 
-#: sbin/insertdata:457
+#: etc/initialdata:184
 msgid "Whenever a ticket is resolved"
-msgstr ""
+msgstr "Immer wenn ein Ticket erledigt wird"
 
-#: sbin/insertdata:442
+#: etc/initialdata:170
 msgid "Whenever a ticket's owner changes"
-msgstr ""
+msgstr "Immer wenn der Ticketeigentümer wechselt"
 
-#: sbin/insertdata:450
+#: etc/initialdata:178
 msgid "Whenever a ticket's queue changes"
-msgstr ""
+msgstr "Immer wenn der Ticketstapel wechselt"
 
-#: sbin/insertdata:434
+#: etc/initialdata:162
 msgid "Whenever a ticket's status changes"
-msgstr ""
+msgstr "Immer wenn der Ticketstatus sich ändert"
 
-#: sbin/insertdata:466
+#: etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
-msgstr ""
+msgstr "Wannimmer eine benutzerdefinierte Bedingung auftritt"
 
-#: sbin/insertdata:427
+#: etc/initialdata:156
 msgid "Whenever comments come in"
-msgstr ""
+msgstr "Immer wenn ein neuer Kommentar eingeht"
 
-#: sbin/insertdata:419
+#: etc/initialdata:149
 msgid "Whenever correspondence comes in"
-msgstr ""
+msgstr "Immer wenn neue Korrespondenz eingeht"
 
-#: html/Admin/Users/Modify.html:114
+#: html/Admin/Users/Modify.html:164 html/User/Prefs.html:52
 msgid "Work"
 msgstr "Arbeit"
 
@@ -4175,40 +4231,40 @@ msgstr "Arbeit"
 msgid "WorkPhone"
 msgstr "Arbeitstelefon"
 
-#: bin/rt:1233 html/SelfService/Display.html:85 html/Ticket/Elements/ShowBasics:37 html/Ticket/Update.html:61
+#: html/SelfService/Display.html:86 html/Ticket/Elements/ShowBasics:35 html/Ticket/Update.html:65
 msgid "Worked"
 msgstr "Arbeitszeit"
 
-#: lib/RT/Ticket_Overlay.pm:2692
+#: lib/RT/Ticket_Overlay.pm:3056
 msgid "You already own this ticket"
 msgstr "Du besitzt bereits dieses Ticket"
 
-#: html/autohandler:112
+#: html/autohandler:121
 msgid "You are not an authorized user"
 msgstr "Du bist kein authorisierter Benutzer"
 
-#: lib/RT/Ticket_Overlay.pm:2565
+#: lib/RT/Ticket_Overlay.pm:2930
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Du kannst nur Tickets ohne Inhaber jemanden zuweisen"
 
-#: bin/rt:928
+#: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
-msgstr "Du hast kein Recht dieses Ticket einzusehen.\\n"
+msgstr ""
 
 #: docs/design_docs/string-extraction-guide.txt:47
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
 msgstr "Du hast %1 Tickets in Stapel %2 gefunden"
 
-#: html/NoAuth/Logout.html:31 html/REST/logout:25
+#: html/NoAuth/Logout.html:31 html/REST/1.0/logout:25
 msgid "You have been logged out of RT."
 msgstr "Du wurdest von RT abgemeldet."
 
-#: html/SelfService/Display.html:133
+#: html/SelfService/Display.html:134
 msgid "You have no permission to create tickets in that queue."
 msgstr "Du hast kein Recht Tickets in diesen Stapel anzulegen."
 
-#: lib/RT/Ticket_Overlay.pm:1484
+#: lib/RT/Ticket_Overlay.pm:1895
 msgid "You may not create requests in that queue."
 msgstr "Du darfst in diesem Stapel keine Tickets erstellen"
 
@@ -4221,84 +4277,76 @@ msgstr "Du kannst dich gerne wieder anmelden"
 msgid "Your %1 requests"
 msgstr "Meine %1 Anfragen"
 
-#: bin/enhanced-mailgate:380 bin/rt-mailgate:358
+#: NOT FOUND IN SOURCE
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
-msgstr "Dein RT Administrator hat die Mail-Aliase zum Aufruf von RT falsch konfiguriert"
+msgstr ""
 
-#: sbin/insert_approval_scrips:158
+#: etc/initialdata:429 etc/upgrade/2.1.71:146
 msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr ""
+msgstr "Deine Anfrage wurde von %1 freigegeben. Andere Freigaben können noch ausstehen."
 
-#: sbin/insert_approval_scrips:192
+#: etc/initialdata:463 etc/upgrade/2.1.71:180
 msgid "Your request has been approved."
-msgstr ""
+msgstr "Deine Anfrage wurde freigegeben."
 
 #: NOT FOUND IN SOURCE
 msgid "Your request was rejected"
 msgstr ""
 
-#: sbin/insert_approval_scrips:120
+#: etc/initialdata:384 etc/upgrade/2.1.71:101
 msgid "Your request was rejected."
-msgstr ""
+msgstr "Deine Anfrage wurde abgewiesen"
 
-#: html/autohandler:127 html/autohandler:133
+#: html/autohandler:136 html/autohandler:142
 msgid "Your username or password is incorrect"
 msgstr "Dein Benutzername oder Passwort ist falsch"
 
-#: html/Admin/Elements/ModifyUser:84 html/Admin/Users/Modify.html:98
+#: html/Admin/Elements/ModifyUser:84 html/Admin/Users/Modify.html:144 html/User/Prefs.html:96
 msgid "Zip"
 msgstr "PLZ"
 
-#: NOT FOUND IN SOURCE
-msgid "[no subject]"
-msgstr "[kein Betreff]"
-
-#: html/User/Elements/DelegateRights:56
+#: html/User/Elements/DelegateRights:59
 #. ($right->PrincipalObj->Object->SelfDescription)
 msgid "as granted to %1"
-msgstr ""
+msgstr "wie an %1 gewährt"
 
-#: html/Elements/SelectMatch:34
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:34
 msgid "contains"
-msgstr "beinhaltet"
+msgstr "enthält"
 
 #: html/Elements/SelectAttachmentField:26
 msgid "content"
-msgstr ""
+msgstr "Inhalt"
 
 #: html/Elements/SelectAttachmentField:27
 msgid "content-type"
-msgstr ""
+msgstr "content-type"
 
-#: lib/RT/Ticket_Overlay.pm:1929
+#: lib/RT/Ticket_Overlay.pm:2282
 msgid "correspondence (probably) not sent"
 msgstr "Korrepsondenz (möglicherweise) nicht verschickt"
 
-#: lib/RT/Ticket_Overlay.pm:1940
+#: lib/RT/Ticket_Overlay.pm:2292
 msgid "correspondence sent"
 msgstr "Korrespondenz verschickt"
 
-#: html/Admin/Elements/ModifyQueue:63 html/Admin/Queues/Modify.html:75 lib/RT/Date.pm:304
+#: html/Admin/Elements/ModifyQueue:63 html/Admin/Queues/Modify.html:77 lib/RT/Date.pm:319
 msgid "days"
 msgstr "Tage"
 
-#: NOT FOUND IN SOURCE
-msgid "dead"
-msgstr ""
-
-#: html/Search/Listing.html:119
+#: html/Search/Listing.html:75
 msgid "delete"
 msgstr "löschen"
 
-#: lib/RT/Queue_Overlay.pm:60
+#: lib/RT/Queue_Overlay.pm:63
 msgid "deleted"
-msgstr ""
+msgstr "gelöscht"
 
-#: html/Search/PickRestriction:68
+#: html/Search/Elements/PickRestriction:68
 msgid "does not match"
 msgstr "entspricht nicht"
 
-#: html/Elements/SelectMatch:35
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:35
 msgid "doesn't contain"
 msgstr "beinhaltet nicht"
 
@@ -4306,52 +4354,48 @@ msgstr "beinhaltet nicht"
 msgid "equal to"
 msgstr "entspricht"
 
-#: NOT FOUND IN SOURCE
-msgid "false"
-msgstr "falsch"
-
 #: html/Elements/SelectAttachmentField:28
 msgid "filename"
-msgstr ""
+msgstr "Dateiname"
 
-#: html/Elements/SelectEqualityOperator:38
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectEqualityOperator:38
 msgid "greater than"
 msgstr "größer als"
 
-#: lib/RT/Group_Overlay.pm:160
+#: lib/RT/Group_Overlay.pm:194
 #. ($self->Name)
 msgid "group '%1'"
-msgstr ""
+msgstr "Gruppe '%1'"
 
-#: lib/RT/Date.pm:300
+#: lib/RT/Date.pm:315
 msgid "hours"
 msgstr "Stunden"
 
-#: bin/rt:1207
+#: NOT FOUND IN SOURCE
 msgid "id"
-msgstr "id"
+msgstr ""
 
-#: html/Elements/SelectBoolean:32 html/Elements/SelectMatch:36 html/Search/PickRestriction:47 html/Search/PickRestriction:76 html/Search/PickRestriction:88
+#: html/Elements/SelectBoolean:32 html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:36 html/Search/Elements/PickRestriction:47 html/Search/Elements/PickRestriction:76 html/Search/Elements/PickRestriction:88
 msgid "is"
 msgstr "ist"
 
-#: html/Elements/SelectBoolean:36 html/Elements/SelectMatch:37 html/Search/PickRestriction:48 html/Search/PickRestriction:77 html/Search/PickRestriction:89
+#: html/Elements/SelectBoolean:36 html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:37 html/Search/Elements/PickRestriction:48 html/Search/Elements/PickRestriction:77 html/Search/Elements/PickRestriction:89
 msgid "isn't"
 msgstr "ist nicht"
 
-#: html/Elements/SelectEqualityOperator:38
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectEqualityOperator:38
 msgid "less than"
 msgstr "kleiner als"
 
-#: html/Search/PickRestriction:67
+#: html/Search/Elements/PickRestriction:67
 msgid "matches"
 msgstr "entspricht"
 
-#: lib/RT/Date.pm:296
+#: lib/RT/Date.pm:311
 msgid "min"
 msgstr "Min"
 
-#: html/Ticket/Update.html:61
+#: html/Ticket/Update.html:66
 msgid "minutes"
 msgstr "Minuten"
 
@@ -4359,102 +4403,98 @@ msgstr "Minuten"
 msgid "modifications\\n\\n"
 msgstr "Änderungen\\n\\n"
 
-#: lib/RT/Date.pm:312
+#: lib/RT/Date.pm:327
 msgid "months"
 msgstr "Monate"
 
-#: lib/RT/Queue_Overlay.pm:55
+#: lib/RT/Queue_Overlay.pm:58
 msgid "new"
-msgstr ""
+msgstr "neu"
+
+#: html/Admin/Elements/EditScrips:43
+msgid "no value"
+msgstr "kein Wert"
 
 #: html/Ticket/Elements/EditWatchers:28
 msgid "none"
-msgstr ""
+msgstr "keine"
 
 #: html/Elements/SelectEqualityOperator:38
 msgid "not equal to"
 msgstr "entspricht nicht"
 
-#: NOT FOUND IN SOURCE
-msgid "notlike"
-msgstr "nichtgleich"
-
-#: lib/RT/Queue_Overlay.pm:56
+#: lib/RT/Queue_Overlay.pm:59
 msgid "open"
-msgstr ""
+msgstr "offen"
 
-#: lib/RT/Group_Overlay.pm:165
+#: lib/RT/Group_Overlay.pm:199
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
-msgstr ""
+msgstr "persönliche Gruppe '%1' für Benutzer '%2'"
 
-#: lib/RT/Group_Overlay.pm:173
+#: lib/RT/Group_Overlay.pm:207
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
-msgstr ""
+msgstr "Stapel %1 %2"
 
-#: lib/RT/Queue_Overlay.pm:59
+#: lib/RT/Queue_Overlay.pm:62
 msgid "rejected"
-msgstr ""
+msgstr "abgewiesen"
 
-#: lib/RT/Queue_Overlay.pm:58
+#: lib/RT/Queue_Overlay.pm:61
 msgid "resolved"
-msgstr ""
+msgstr "erledigt"
 
-#: lib/RT/Date.pm:292
+#: lib/RT/Date.pm:307
 msgid "sec"
 msgstr "Sek"
 
-#: lib/RT/Queue_Overlay.pm:57
+#: lib/RT/Queue_Overlay.pm:60
 msgid "stalled"
-msgstr ""
+msgstr "zurückgestellt"
 
-#: lib/RT/Group_Overlay.pm:168
+#: lib/RT/Group_Overlay.pm:202
 #. ($self->Type)
 msgid "system %1"
-msgstr ""
+msgstr "System %1"
 
-#: lib/RT/Group_Overlay.pm:179
+#: lib/RT/Group_Overlay.pm:213
 #. ($self->Type)
 msgid "system group '%1'"
-msgstr ""
+msgstr "Systemgruppe '%1'"
 
-#: html/Elements/Error:42 html/SelfService/Error.html:41
+#: html/Elements/Error:42 html/SelfService/Error.html:42
 msgid "the calling component did not specify why"
 msgstr "die aufrufende Komponente gab nicht an warum"
 
-#: lib/RT/Group_Overlay.pm:176
+#: lib/RT/Group_Overlay.pm:210
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
-msgstr ""
+msgstr "Ticket #%1 %2"
 
-#: NOT FOUND IN SOURCE
-msgid "true"
-msgstr "wahr"
-
-#: lib/RT/Group_Overlay.pm:182
+#: lib/RT/Group_Overlay.pm:216
 #. ($self->Id)
 msgid "undescribed group %1"
-msgstr ""
+msgstr "unbeschriebene Gruppe %1"
 
 #: NOT FOUND IN SOURCE
 msgid "undescripbed group %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:157
+#: lib/RT/Group_Overlay.pm:191
 #. ($user->Object->Name)
 msgid "user %1"
-msgstr ""
+msgstr "Benutzer %1"
 
-#: lib/RT/Date.pm:308
+#: lib/RT/Date.pm:323
 msgid "weeks"
 msgstr "Wochen"
 
 #: NOT FOUND IN SOURCE
 msgid "with template %1"
-msgstr "mit Vorlage %1"
+msgstr ""
 
-#: lib/RT/Date.pm:316
+#: lib/RT/Date.pm:331
 msgid "years"
 msgstr "Jahre"
 

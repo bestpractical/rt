@@ -184,8 +184,8 @@ sub update {
 
         chomp $msgid;
         chomp $msgstr;
-        $msgid  =~ s/^msgid "(.*)"$/$1/    or die $msgid;
-        $msgstr =~ s/^msgstr "(.*)"$/$1/ms or die $msgstr;
+        $msgid  =~ s/^msgid "(.*)"$/$1/    or warn $msgid;
+        $msgstr =~ s/^msgstr "(.*)"$/$1/ms or warn $msgstr;
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
