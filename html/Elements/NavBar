@@ -1,10 +1,14 @@
 <div align=right><a href="<%$RT::FM::WebPath%>/index.html">[Article listing]</a>
 <a href="<%$RT::FM::WebPath%>/search.html">[Search]</a>
+% if ($sesison{'CurrentUser'}->IsEditor) {
 <a href="<%$RT::FM::WebPath%>/edit/create_article.html?Parent=<%$article_id%>">[New article]</a>
 % if ($article) {
 <a href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article_id%>">[Edit]</a>
 % }
+% }
+% if ($session{'CurrentUser'}->IsAdministrator) {
 <a href="<%$RT::FM::WebPath%>/admin/">[Admin]</a>
+% }
 </div>
 
 <%ARGS>

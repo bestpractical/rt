@@ -34,6 +34,9 @@ Signed in as <b><%$session{'CurrentUser'}->Name%></b>.<BR>
 % }
 % } else {
 Not logged in.
+% unless ($RT::FM::WebExternalAuth) { 
+[<a class='inverse' href="<%$RT::FM::WebPath%>/login.html">Login</a>]
+% }
 % }
 </font>
 </TD>
