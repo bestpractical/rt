@@ -87,6 +87,15 @@ sub Abort {
 
 # {{{ sub LoadTicket - loads a ticket
 
+=head2  LoadTicket id
+
+Takes a ticket id as its only variable. if it's handed an array, it takes
+the first value.
+
+Returns an RT::Ticket object as the current user.
+
+=cut
+
 sub LoadTicket {
     my $id=shift;
 
