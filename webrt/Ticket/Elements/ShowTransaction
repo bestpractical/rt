@@ -14,7 +14,7 @@ unless ($Collapsed) {
  $attachments->GotoFirstItem;
  while (my $message=$attachments->Next) {
      #we don't want to show any empty transactions, unless they have kids
-     next unless ($message->Content || $message->Children->Count);
+     next unless (length $message->Content || $message->Children->Count);
      my ($headers, $content);
      
     </%PERL>
