@@ -32,15 +32,22 @@ sub print_transaction
 
 
 sub parse_args {
-    for ($i=0;$i<=$#ARGV;$i++) {
-	if ($ARGV[$i] eq "-create")   {
-	    &cli_create_req;
-	}
-	elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
-	    $serial_num=int($ARGV[++$i]);
-	    &cli_show_req ($serial_num);
-	    &cli_history_req($serial_num);
-	}
+  for ($i=0;$i<=$#ARGV;$i++) {
+    if ($ARGV[$i] eq "-create")   {
+      &cli_create_req;
+    }
+    elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
+      $serial_num=int($ARGV[++$i]);
+      if (&rt::can_display_request($serial_num, $current_user)) {
+	&cli_show_req($serial_num);
+	&cli_history_req($serial_num);
+      }
+      else {
+	print "You don't have permission to display request #$serial_num\n";
+      }
+    }
+    
+    
 	
 	elsif ($ARGV[$i] eq "-comment")	{
 	    $arg=int($ARGV[++$i]);
@@ -165,12 +172,12 @@ sub parse_args {
 	    ($trans,$message)=&rt::open ($serial_num, $current_user);
 	    print "$message\n";
 	}
-
-	else {
-	    &cli_help_req;
-	    }
-	next
-	}
+    
+    else {
+	  &cli_help_req;
+	  }
+    next
+      }
 }
 
    
@@ -178,11 +185,11 @@ sub parse_args {
 
 
 sub cli_create_req {	
-    my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due);
-    $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
-    $area=&rt::ui::cli::question_string("Place Request in area",);
-    $owner=&rt::ui::cli::question_string( "Give request to");
-    $requestors=&rt::ui::cli::question_string("Requestor(s)",);
+  my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due);
+  $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
+  $area=&rt::ui::cli::question_string("Place Request in area",);
+  $owner=&rt::ui::cli::question_string( "Give request to");
+  $requestors=&rt::ui::cli::question_string("Requestor(s)",);
     $subject=&rt::ui::cli::question_string("Subject",);
     $priority=&rt::ui::cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
     $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
@@ -204,30 +211,27 @@ sub cli_create_req {
 }
 
 sub cli_comment_req {	
-    my ($serial_num)=@_;
-    my ($subject,$content,$trans,$message,$cc,$bcc );
-   
-    if (&rt::can_manipulate_request($serial_num, $current_user)) {
-    $subject=&rt::ui::cli::question_string("Subject",);
-    $cc=&rt::ui::cli::question_string("Cc",);
-    $bcc=&rt::ui::cli::question_string("Bcc",);   
-    print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
-    while (<STDIN>) {
-	if(/^\.\n/) {
-	    last;
-	}
-	else {
-	    $content .= $_;
-		}
-  	}
-    
-    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$current_user);
-    print $message;
-	}
-	else {
-	print "You do not have permission to work with this request\n";
-	}
+  my ($serial_num)=@_;
+  my ($subject,$content,$trans,$message,$cc,$bcc );
+  
+  #    if (&rt::can_manipulate_request($serial_num, $current_user)) {
+  $subject=&rt::ui::cli::question_string("Subject",);
+  $cc=&rt::ui::cli::question_string("Cc",);
+  $bcc=&rt::ui::cli::question_string("Bcc",);   
+  print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
+  while (<STDIN>) {
+    if(/^\.\n/) {
+      last;
+    }
+    else {
+      $content .= $_;
+    }
+  }
+  
+  ($trans, $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$current_user);
+  print $message;
 }
+
 sub cli_respond_req {
     my ($serial_num)=@_;
     my ($subject,$content,$trans,$message,$cc,$bcc );

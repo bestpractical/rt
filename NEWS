@@ -1,3 +1,14 @@
+21 July 1999
+------------
+
+Fix for [fsck #102] Better checks in is_not_a_requestor. this should fix
+	issues with external users being equated with queue members.
+
+Fix for [fsck #114] Comment from bin/rt was accidentaly access controlled.
+
+Fix for [fsck #113] Display of requests users can't manipulate should now give 
+	ian error
+
 19 July 1999
 ------------
 Fix for [fsck #104]  We no longer try to reset the user's uid after writing
@@ -19,7 +30,7 @@ Fix for [fsck #92] "Allow non-members to create requests" appeared twice
 
 Fix for [fsck #94] web ui forms are now 78 chars wide
 
-7 Jul 99
+7 pul 99
 --------
 
 Now, only users with "manipulate" access are considered to be queue members.

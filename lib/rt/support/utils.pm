@@ -16,13 +16,27 @@ sub untaint {
 sub can_manipulate_request{
     my ($in_serial_num, $in_user) =@_;
     &req_in($in_serial_num,$in_user);
-    if (&can_manipulate_queue($rt::req[$in_serial_num]{queue_id},$in_user)) {
+    if (&can_manipulate_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
 	return(1);
     }
     else {
 	return(0);
     }
 }
+
+#can the named user display the named queue
+sub can_display_request{
+    my ($in_serial_num, $in_user) =@_;
+    &req_in($in_serial_num,$in_user);
+    if (&can_display_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
+	return(1);
+    }
+    else {
+	return(0);
+    }
+}
+
+
 sub can_create_request{
     my $in_queue = shift;
     my $in_user = shift;
@@ -54,6 +68,8 @@ sub can_manipulate_queue {
     }
 }
 
+
+
 sub can_display_queue {
     my ($in_queue, $in_user) =@_;
     if ($queues{$in_queue}{acls}{$in_user}{display}) {
@@ -83,6 +99,10 @@ sub can_admin_queue {
 }
 sub is_not_a_requestor{
     my($address,$serial_num) =@_;
+
+   if (($address !~ /\@/) and (exists $users{$address})) {
+        $address=$users{$address}{email}
+    }
     if ($req[$serial_num]{'requestors'} =~ /(^|\s|,)$address(,|\s|\b)/i) {
 	return(0);
     }
