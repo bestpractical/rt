@@ -80,6 +80,7 @@ my ( @id,
      @dependson,
      @memberof, 
      @refersto,
+     $mergeinto,
      @keywords,
      $time_taken,
      $verbose,
@@ -144,6 +145,7 @@ my @args =("id=s" => \@id,
 	   "edit!" => \$edit,
 	   "depends-on=s" => \@dependson,
 	   "member-of=s" => \@memberof, 
+	   "merge-into=s" => \$mergeinto, 
 	   "refers-to=s" => \@refersto,
 	   "time-left=i" => \$time_left,
 	   "time-taken=i" => \$time_taken,
@@ -693,14 +695,19 @@ else {
 	# }}}
 	
 	# {{{ deal with links
-	
+
+	# Deal with merging {
+	if ($mergeinto) {
+		my ($trans, $msg) =$Ticket->MergeInto($mergeinto);
+		print $msg."\n";
+	}	
 	# add /delete depends-ons
 
 	foreach my $value (@dependson) {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $ticket = $2;
-		if ($op eq '+') {
+		if (!$op or ($op eq '+')) {
 		    my ($trans, $msg) =
 		      $Ticket->AddLink(Type => 'DependsOn', Target => $ticket);
 		    print $msg."\n";
