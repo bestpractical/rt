@@ -352,7 +352,8 @@ sub DurationAsString {
         $s         = int( $duration / $YEAR );
         $time_unit = $self->loc("years");
     }
-    if (0) { # For now, never display the "AGO" # $negative) {
+
+    if ($negative) {
         return $self->loc( "[_1] [_2] ago", $s, $time_unit );
     }
     else {
