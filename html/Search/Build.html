@@ -44,9 +44,7 @@
 <input type=submit name="Toggle" DISABLED value="And/Or">
 <input type=submit name="DeleteClause" value="Delete">
 <input type=submit name="EditQuery" value="Edit">
-<input type=submit name="DoSearch" value="Search">
 </center>
-<br>
 <& /Elements/TitleBoxEnd &>
 
 </td>
@@ -55,9 +53,8 @@
 </td>
 </tr>
 <tr>
-<td>
-<&|/l&>Format:</&><br>
-<textarea name="Format" rows=5 cols=65><%($Format||$search_hash->{'Format'})%></textarea>
+<td colspan=2>
+<& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), %ARGS &>
 </td>
 <td></td>
 </table>
@@ -183,7 +180,7 @@ our $selectedclause = $ARGS{clauses};
 our %queues;
 
 if ($ARGS{"DoSearch"}) {
-    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format});
+    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format}, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
     $m->abort();
 } elsif ($ARGS{"EditQuery"}) {
     $m->comp("Edit.html", Query => $Query);
@@ -361,7 +358,7 @@ while (my $val = shift @options) {
 	}
 	$optionlist .= "<option value=$i $selected>";
 	$optionlist .= "&nbsp;" x (5 * ($depth-1));
-	$optionlist .= "$i: $key ";
+#	$optionlist .= "$i: $key ";
 	if ($num > 0 || $item{Subkey}) {
 	    $optionlist .= $ea . " ";
 	}
@@ -447,7 +444,7 @@ sub ParseQuery {
   my %depths;
 
   # get the FIELDS from Tickets_Overlay
-  my $tickets = new RT::Tickets($session{'currentuser'});
+  my $tickets = new RT::Tickets($session{'CurrentUser'});
   my %FIELDS = %{$tickets->FIELDS};
 
   # Lower Case version of FIELDS, for case insensitivity
