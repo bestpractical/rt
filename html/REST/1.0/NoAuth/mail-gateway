@@ -43,7 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
+<%flags>
+inherit => undef # inhibit UTF8 conversion done in /autohandler
+</%flags>
 <%ARGS>
 $message
 $queue => 1
@@ -53,23 +55,20 @@ $ticket => undef
 <%init>
 use RT::Interface::Email; 
 my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway(\%ARGS);
+ if ($status == -75 ) {
+$m->out("temporary failure - ". $error);
+ }
+    elsif ($status == 1) {
+$m->out('ok');
+        if ( $Ticket->Id ) {
+$m->out('Ticket: '. $Ticket->Id);
+$m->out('Queue: '. $Ticket->QueueObj->Name );
+$m->out('Owner: '. $Ticket->OwnerObj->Name);
+$m->out('Status: '. $Ticket->Status );
+$m->out('Subject: '. $Ticket->Subject );
+$m->out('Requestor: '. $Ticket->Requestors->MemberEmailAddressesAsString );
+        }
+ }   else { 
+$m->out('not ok - '.$error);
+ }
 </%init>
-<%flags>
-inherit => undef # inhibit UTF8 conversion done in /autohandler
-</%flags>
-% if ($status == -75 ) {
-temporary failure - <% $error %>
-% }
-%    elsif ($status == 1) {
-ok
-%        if ( $Ticket->Id ) {
-Ticket: <% $Ticket->Id %>
-Queue: <% $Ticket->QueueObj->Name %>
-Owner: <% $Ticket->OwnerObj->Name %>
-Status: <% $Ticket->Status %>
-Subject: <% $Ticket->Subject %>
-Requestor: <% $Ticket->Requestors->MemberEmailAddressesAsString %>
-%        }
-% }   else { 
-not ok - <%$error%> 
-% }

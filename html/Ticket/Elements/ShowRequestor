@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <%PERL>
 my $rows = 10;
 my $people = $Ticket->Requestors->UserMembersObj;

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <%init>
  my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
  $m->print($hand->maketext($m->content,@_));

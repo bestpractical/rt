@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 package RT::Interface::Email::Auth::MailFrom;
 use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
 

@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 # This Action will resolve all members of a resolved group ticket
 
 package RT::Action::ResolveMembers;

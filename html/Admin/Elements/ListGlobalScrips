@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 %   my $count = 0;
 %   while (my $scrip = $Scrips->Next ) {
 %   $count++;

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 % if ($Show ne 'Groups') {
 <b><&|/l&>Users</&></b>
 <SELECT MULTIPLE NAME="<%$Name%>Users"  SIZE=10>

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
 <TD rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A>&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>

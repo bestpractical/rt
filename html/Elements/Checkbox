@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <INPUT TYPE="Checkbox" NAME ="<%$Name%>" <%$IsChecked%>>
 
 <%ARGS>

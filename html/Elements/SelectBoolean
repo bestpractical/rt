@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="<%$TrueVal%>" <%$TrueDefault%>><%$True%></OPTION>
 <OPTION VALUE="<%$FalseVal%>" <%$FalseDefault%>><%$False%></OPTION>

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="MemberOf"><&|/l&>Member of</&></OPTION>
 <OPTION VALUE="DependsOn"><&|/l&>Depends on</&></OPTION>

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <SELECT NAME ="<%$Name%>">
 %for my $option ($cf->Types) {
 <OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyType($option) %></OPTION>

@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 package RT::URI::base;
 
 use strict;

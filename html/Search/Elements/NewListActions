@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 % if ($actions[0] ) {
 <b><%loc('Results')%></b><br>
 % foreach my $action (@actions) {

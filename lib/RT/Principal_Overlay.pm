@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 use strict;
 
 no warnings qw(redefine);

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 %while ( $queue = $queues->Next) {
 <A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->Name%></a><BR>
 %}

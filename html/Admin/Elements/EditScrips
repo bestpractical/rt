@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">

@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 =head1 NAME
 
   RT::Principals - a collection of RT::Principal objects

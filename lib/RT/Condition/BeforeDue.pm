@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 package RT::Condition::BeforeDue;
 require RT::Condition::Generic;
 

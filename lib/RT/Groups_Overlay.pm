@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 =head1 NAME
 
   RT::Groups - a collection of RT::Group objects

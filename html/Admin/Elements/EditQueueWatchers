@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 %if ($Members->Count == 0 ) {
 <ul>
 <li><i><&|/l&>none</&></i>

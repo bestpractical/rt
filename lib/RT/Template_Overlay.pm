@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
-
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 
 =head1 NAME

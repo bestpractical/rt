@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-
 %# REST/1.0/search/ticket
 %#
 <%ARGS>
@@ -136,7 +135,7 @@ if ($n == 0 && $format ne "i") {
 $output = form_compose(\@output) if @output;
 
 OUTPUT:
-</%INIT>
-RT/<% $RT::VERSION %> <% $status %>
+$m->out("RT/". $RT::VERSION . " " . $status);
 
-<% $output |n %>
+$m->out($output );
+</%INIT>
