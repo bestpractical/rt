@@ -1,7 +1,7 @@
 %# $Header$
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="True"><%$True%></OPTION>
-<OPTION VALUE="False"><%$False%></OPTION>
+% while my $queue=$q->Next
+<OPTION VALUE="<%$queue->Id%>"><%$queue->Description%></OPTION>
 </SELECT>
 
 <%ARGS>
@@ -10,3 +10,10 @@ $True => undef
 $False => undef
 $Default => undef
 </%ARGS>
+
+<%INIT>
+use RT::Queues;
+my $q=new RT::Queues;
+# TODO
+#$q->unlimited;
+</%INIT>
