@@ -160,7 +160,14 @@ sub InitLogging {
         die ("Log directory $RT::LogDir not found or couldn't be written.\n RT can't run.");
     }
 
-	my $filename = "$RT::LogDir/$RT::LogToFileNamed";
+	my $filename;
+	if ($RT::LogToFileNamed =~ m![/\\]!) {
+	    # looks like an absolute path.
+	    $filename = $RT::LogToFileNamed;
+	}
+	else {
+	    $filename = "$RT::LogDir/$RT::LogToFileNamed";
+	}
     require Log::Dispatch::File;
 
 
