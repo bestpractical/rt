@@ -264,8 +264,7 @@ my $acontent = $attachment->Content;
 
         warn "coming from the  database, the content is ".Digest::MD5::md5_base64($acontent);
 
-is($file, $acontent, 'The attachment isn\'t screwed up in the database.');
-
+is( $acontent, $file, 'The attachment isn\'t screwed up in the database.');
 # Log in as root
 use Getopt::Long;
 use LWP::UserAgent;
