@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<h2><&|/l&>Items pending my approval</&></h2>
 <table width="100%">
 % my ($i, $class);
 % my %done;
@@ -49,7 +48,7 @@
 <&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
 
 <&|/l, "<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>"&>Only show approvals for requests created after [_1]</&>
-
+<& /Elements/TitleBoxEnd &>
 
 <%init>
 my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
@@ -57,7 +56,6 @@ $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
 
 # also consider AdminCcs as potential approvers.
 my $group_tickets = RT::Tickets->new( $session{'CurrentUser'} );
-#$group_tickets->LimitWatcher( OPERATOR => '!=', TYPE => 'AdminCc', VALUE => 'FRANKEN'); #$session{'CurrentUser'}->EmailAddress );
 
 my $created_before = RT::Date->new( $session{'CurrentUser'} );
 my $created_after = RT::Date->new( $session{'CurrentUser'} );

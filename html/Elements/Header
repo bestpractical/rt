@@ -34,21 +34,20 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
-%#leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%$RT::WebImagesURL%>/indicator.gif')">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
     <td colspan=2><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td width="50%" align="right">
-<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A> |</SPAN>
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
+<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A> |</SPAN>
 <A  HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 &nbsp;|&nbsp;<A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 % }
 <BR>
-<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
+<&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>
 % } else {
 <&|/l&>Not logged in.</&>
 % }

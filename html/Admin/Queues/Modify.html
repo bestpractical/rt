@@ -24,11 +24,11 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
+    QueueObj => $QueueObj,
     current_tab => $current_tab, 
     Title => loc('Admin/Queue/Basics') &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => $title &>
 
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>
@@ -86,7 +86,6 @@
 </TR>
 
 </TABLE>
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </form>
 
@@ -103,7 +102,6 @@ if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
 } else {
-    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
     if ($id eq 'new') {
        my ($val, $msg) =  $QueueObj->Create(Name => $Name);
        if ($val == 0 ) {
@@ -118,6 +116,7 @@ if ($Create) {
     }
         $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
     
+    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
 if ($QueueObj->Id()) {
 my @attribs= qw(Description CorrespondAddress CommentAddress Name 

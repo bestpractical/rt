@@ -23,11 +23,14 @@
 %# 
 %# END LICENSE BLOCK
 <SELECT NAME ="<%$Name%>">
-%for my $option (RT::CustomField->Types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% loc($option) %></OPTION>
+%for my $option ($cf->Types) {
+<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyType($option) %></OPTION>
 %}
 </SELECT>
+<%INIT>
+my $cf = RT::CustomField->new($session{'CurrentUser'});
 
+</%INIT>
 <%ARGS>
 $Default=>undef
 $Name => 'Type'

@@ -43,15 +43,18 @@ my $subtabs = {
 			separator => 1,
 			   }
 	      };
-if ($CustomField) {
-    $current_subtab = "Admin/Global/CustomField.html?id=".$ARGS{'id'}."&Queue=0";
-    $title = loc('Modify a CustomField which applies to all queues');
-    $subtabs->{"C"} = { title => loc('Custom Field #[_1]', $ARGS{'id'}),
-  		     	path => "Admin/Global/CustomField.html?id=".$ARGS{'id'}."&Queue=0"
-			   }
-}else {
+if ( $ARGS{'create'} ) {
     $current_subtab = "Admin/Global/CustomField.html?create=1&Queue=0";
-    $title = loc('Create a CustomField which applies to all queues');
+    $title          = loc('Create a CustomField which applies to all queues');
+}
+else {
+    $current_subtab =
+      "Admin/Global/CustomField.html?id=" . $CustomField . "&Queue=0";
+    $title = loc('Modify a CustomField which applies to all queues');
+    $subtabs->{"C"} = {
+        title => loc( 'Custom Field #[_1]', $CustomField ),
+        path => "Admin/Global/CustomField.html?id=" . $CustomField . "&Queue=0"
+    };
 }
 </%INIT>
 <%ARGS>

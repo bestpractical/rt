@@ -3084,7 +3084,7 @@ msgid "Refine"
 msgstr "Verfeineren"
 
 #: html/Search/PickRestriction:27
-msgid "Refine Search"
+msgid "Refine search"
 msgstr "Verfeinere Suche"
 
 #: html/Elements/Refresh:36
@@ -3417,13 +3417,13 @@ msgstr "E-Mail-Signatur"
 
 #: html/SelfService/Elements/Header:52
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as %1"
+msgid "Logged in as %1"
 msgstr "Angemeldet als %1"
 
 #: html/Elements/Header:49
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as <b>%1</b>"
-msgstr "Angemeldet als <b>%1</b>"
+msgid "Logged in as %1"
+msgstr "Angemeldet als %1"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Single"

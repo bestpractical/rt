@@ -44,11 +44,6 @@
                 toptabs => $toptabs->{$tab}->{'subtabs'} &></li>
 % }
 %# }
-%# put a line after each top-level menu entry
-% if ($level eq 0) {
-%#<li style="line-height: 5%;">&nbsp;</li>
-%#<li style="line-height: 5%;border-top: solid white 1px;">&nbsp;</li>
-% }
 % }
 </ul>
 

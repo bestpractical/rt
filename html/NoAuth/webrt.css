@@ -106,6 +106,7 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 vertical-align: top;
 	 text-align: right;
          }
+
 td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 background-position: left top;
@@ -113,10 +114,14 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 .black { background-color: #000000;
 	 background-position: left top;
          }
-.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 20px;
+span.rtname {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 18px;
 	 font-weight: normal;
-	 color: #000000}
+	 color: #ffffff}
+span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 20px;
+	 font-weight: bold;
+	 color: #ffffff}
 .header {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 font-weight: bold;
@@ -143,16 +148,41 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 background-position: left top;
 	 vertical-align: top }
 
-TD {border-color: #cccccc }
 
 .currenttab { margin: 0.2em; background: #336699; }
 .othertab { margin: 0.2em; background: #efefef; }
 .oddline { background-color : #ccccee; }
 
+TD.mainbody {
+        padding-top: 0.5em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        margin-left: 1em;
+        margin-right: 1em;
+
+}
+
 TH { font-size: 80%;
      font-weight: bold;
-     font-color: #336699; }
-    
+     font-color: #336699;
+
+    }
+TH.titlebox {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        border-top: solid black 1px;
+        border-bottom: solid black 1px;
+        font-size: 13px;
+}    
+
+TD.titlebox {
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-top: 1em;
+        padding-bottom: 1em;
+}
 
 BLOCKQUOTE.message {
 	font-size: 80%;
@@ -169,13 +199,6 @@ BODY {
 
 }
 
-TD, TH { /* ns workaround */
-  font-family: "Helvetica", sans-serif;
-}
-
-TH {
-    background-color : #ccccee;
-}
 
 TR.oddline { 
     background-color : #ffffff;
@@ -235,16 +258,6 @@ span.productname { font-size: 2em;
 SPAN.titleboxtitle {
         font-size: 1.2em;
         color: #ffffff;
-        }
-
-
-
-
-SPAN.titleboxright {
-        font-size: 1em;
-        color: #ffffff;
-        }
-TD.titleboxright {
 	 vertical-align: bottom;
 	 text-align: right;
         }

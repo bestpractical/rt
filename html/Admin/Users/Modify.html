@@ -25,6 +25,7 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
+    UserObj => $UserObj,
     current_subtab => $current_tab, 
     Title => $title &>
 
@@ -75,7 +76,7 @@
 </TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-
+<br>
 <& /Elements/TitleBoxStart, title => loc('Access control') &>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>>
@@ -106,6 +107,7 @@
 % }
 <& /Elements/TitleBoxEnd &>
 </TD>
+</TR>
 <TR>
 
 <TD VALIGN=TOP>
@@ -150,6 +152,7 @@
 </TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
+<br>
 <& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
 <TABLE>
 <TR><TD ALIGN="RIGHT">

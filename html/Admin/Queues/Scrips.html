@@ -24,7 +24,9 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
+    QueueObj => $QueueObj,                                                      
     current_tab => 'Admin/Queues/Scrips.html?id='.$id, 
+    current_subtab => 'Admin/Queues/Scrips.html?id='.$id, 
     subtabs => $subtabs, 
     Title => $title &>
 
@@ -45,8 +47,12 @@ if ($QueueObj->id) {
 }
 
 my $subtabs = {
-	 A => { title => loc('New scrip'),
+	 A => { title => loc('Select scrip'),
+	     	path => "Admin/Queues/Scrips.html?id=".$id,
+			   },
+	 B => { title => loc('New scrip'),
 	     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$id,
+            separator => 1,
 			   }
 	      };
 </%init>

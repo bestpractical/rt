@@ -29,40 +29,41 @@
     Title => $Title &>
 <%INIT>
 my $tabs;
-if ($GroupObj and $GroupObj->id) {
-$tabs = { 
-             C => { title => loc('Basics'),
-                         path => "Admin/Groups/Modify.html?id=". $GroupObj->id
-                       },
 
-	     D =>  { title => loc('Members'),
-                         path => "Admin/Groups/Members.html?id=".$GroupObj->id },
+if ( $GroupObj and $GroupObj->id ) {
+$tabs->{"this"} = { class => "currentnav",                                                           
+                    path  => "Admin/Groups/Modify.html?id=" . $GroupObj->id,
+                    title => $GroupObj->Name,
+                    current_subtab => $current_subtab,
+        subtabs => {
+        C => { title => loc('Basics'),
+               path  => "Admin/Groups/Modify.html?id=" . $GroupObj->id },
 
-             F => { title => loc('Group Rights'),
-                          path => "Admin/Groups/GroupRights.html?id=".$GroupObj->id,
-                        },
-             G => { title => loc('User Rights'),
-                          path => "Admin/Groups/UserRights.html?id=".$GroupObj->id,
-                        },
-	};
+        D => { title => loc('Members'),
+               path  => "Admin/Groups/Members.html?id=" . $GroupObj->id },
+
+        F => { title => loc('Group Rights'),
+               path  => "Admin/Groups/GroupRights.html?id=" . $GroupObj->id, },
+        G => { title => loc('User Rights'),
+               path  => "Admin/Groups/UserRights.html?id=" . $GroupObj->id, },
+    }
+}
 }
 $tabs->{"A"} = { title => loc('Select group'),
-	     	path => "Admin/Groups/",
- 	  };
-$tabs->{"B"} = { title => loc('New group'),
-	     	path => "Admin/Groups/Modify.html?Create=1",
-		separator => 1,
- 	  };
+                 path  => "Admin/Groups/", };
+$tabs->{"B"} = { title     => loc('New group'),
+                 path      => "Admin/Groups/Modify.html?Create=1",
+                 separator => 1, };
 
-  # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+# Now let callbacks add their extra tabs
+$m->comp( '/Elements/Callback', tabs => $tabs, %ARGS );
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_subtab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+foreach my $tab ( sort keys %{$tabs} ) {
+    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {
+        $tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
     }
-  }
+}
 </%INIT>
 <%ARGS>
 $GroupObj => undef

@@ -22,20 +22,15 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $Queue->id, 
     current_tab => 'Admin/Queues/CustomFields.html?id='.$id, 
+    QueueObj => $Queue,                                                      
     subtabs => $subtabs,
-    Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
+    Title => $title
+    &>
 
-<UL>
-
-%while  (my $CustomFieldObj = $CustomFields->Next) { 
-
-<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
-
-%}
-
+<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
 <%INIT>
 my $Queue = new RT::Queue($session{'CurrentUser'});
 $Queue->Load($id);
@@ -47,6 +42,7 @@ my $subtabs = {
 			   }
 	      };
 
+my $title=  loc('Edit Custom Fields for [_1]', $Queue->Name);
 </%INIT>
 <%ARGS>
 $id => undef

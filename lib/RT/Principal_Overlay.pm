@@ -277,8 +277,8 @@ sub HasRight {
     };
     # }}}
 
-    #Anything older than 10 seconds needs to be rechecked
-    my $cache_timeout = ( time - 10 );
+    #Anything older than 60 seconds needs to be rechecked
+    my $cache_timeout = ( time - 60 );
 
     # {{{ if we've cached a positive result for this query, return 1
     if (    ( defined $self->_ACLCache->{"$hashkey"} )

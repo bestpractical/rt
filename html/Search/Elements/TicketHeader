@@ -1,14 +1,16 @@
 <TR>
-<TH>&nbsp;</TH>
+<& TicketHeaderCell , Attribute => 'id', Header => '#'&>
 <& TicketHeaderCell , Attribute => 'Subject'&>
 <& TicketHeaderCell , Attribute => 'Status'&>
 <& TicketHeaderCell , Attribute => 'Queue'&>
 <& TicketHeaderCell , Attribute => 'Owner'&>
+<& TicketHeaderCell , Attribute => 'Priority'&>
 </TR>
 <TR>
 <TH>&nbsp;</TH>
 <& TicketHeaderCell , Attribute => 'Requestor(s)'&>
 <& TicketHeaderCell , Attribute => 'Created'&>
-<& TicketHeaderCell , Attribute => 'Told', Header => 'Last Notified'&>
+<& TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact'&>
 <& TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated'&>
+<& TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left'&>
 </TR>

@@ -2887,7 +2887,7 @@ msgid "Refine"
 msgstr "Zjemnit"
 
 #: html/Search/PickRestriction:27
-msgid "Refine Search"
+msgid "Refine search"
 msgstr "Zjemnit vyhledání"
 
 #: html/Elements/Refresh:36
@@ -3213,13 +3213,13 @@ msgstr "Podpis"
 
 #: html/SelfService/Elements/Header:52
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as %1"
+msgid "Logged in as %1"
 msgstr "Přihlášen jako %1"
 
 #: html/Elements/Header:49
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as <b>%1</b>"
-msgstr "Přihlášen jako <b>%1</b>"
+msgid "Logged in as %1"
+msgstr "Přihlášen jako %1"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Single"

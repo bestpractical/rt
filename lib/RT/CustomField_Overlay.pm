@@ -332,6 +332,35 @@ sub Types {
 # }}}
 
 
+=item FriendlyType [TYPE]
+
+Returns a localized human-readable version of the custom field type.
+If a custom field type is specified as the parameter, the friendly type for that type will be returned
+
+=cut
+
+sub FriendlyType {
+    my $self = shift;
+
+    my $type = shift || $self->Type;
+
+    if ( $type eq 'SelectSingle' ) {
+        return ( $self->loc('Select one value') );
+    }
+    elsif ( $type eq 'SelectMultiple' ) {
+        return ( $self->loc('Select multiple values') );
+    }
+    elsif ( $type eq 'FreeformSingle' ) {
+        return ( $self->loc('Enter one value') );
+    }
+    elsif ( $type eq 'FreeformMultiple' ) {
+        return ( $self->loc('Enter multiple values') );
+    }
+    else {
+        return ( $self->loc( $self->Type ) );
+    }
+}
+
 
 =item ValidateType TYPE
 

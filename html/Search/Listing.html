@@ -22,28 +22,21 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Search"), Refresh => $session{'tickets_refresh_interval'} &>
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& /Ticket/Elements/Tabs, 
     current_tab => 'Search/Listing.html', 
-    Title => loc("Search") &>
+    Title => $title &>
 
-% unless ($ARGS{'Action'} eq loc('Refine')) {
+%if ($ticketcount > $session{'tickets_rows_per_page'} && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
 <& Elements/TicketHeader, %ARGS &>
-% $session{'tickets'}->RedoSearch();
-% my $ticketcount = $session{tickets}->Count();
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
 <& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
 %}
-
-
-
 </TABLE>
-
 <div align=center>
-%if ($ticketcount > $session{'tickets_rows_per_page'}) {
 <font size=2>
 <a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
@@ -56,15 +49,11 @@
 %  }
 %#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
-%}
 </div>
-% if ($session{'tickets'}->Count()) { 
 <!--<div align=right>-->
 <table width="100%" border=0 cellpadding=3 CELLSPACING=1>
 <tr>
 <td align=left>
-<&|/l, $ticketcount &>[quant,_1,result] found</&>
-<br>
 (<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
 </td>
 <td align=right>
@@ -74,27 +63,25 @@
 </td>
 </tr>
 </table>
-% }
-<HR>
 
-% } #endif {$ARGS{'Action'} eq 'Refine')
+% }
 <TABLE WIDTH="100%">
 <TR>
 <TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Search Criteria')&>
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
-<BR>
-<BR>
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach $row (keys %restrictions){
+%foreach my $row (keys %restrictions){
 <%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
 %}
+<BR>
+<BR>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>
 
-<& Elements/PickRestriction &>
+<& Elements/PickRestriction, %ARGS &>
 
 </TD>
 </TR>
@@ -102,22 +89,22 @@
 
 <%INIT>
 
-my $bgcolor;
-require RT::Interface::Web;
-
+my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
-    if ( ($ARGS{'ClearRestrictions'}) ||
-	 ($ARGS{'NewSearch'}) ) {
-	$session{'tickets'}->ClearRestrictions;
-    }
-    
     if ($ARGS{'DeleteRestriction'}) {
-	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+        $title = loc("Find tickets");
+    } else {
+        $session{'tickets'}->RedoSearch();
+       $ticketcount = $session{tickets}->Count();
+        $title = loc('Found [quant,_1,ticket]', $ticketcount);
     }
 }
 &ProcessSearchQuery(ARGS=>\%ARGS);
 
-my $row;
 
 </%INIT>

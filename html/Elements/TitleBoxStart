@@ -28,55 +28,30 @@
         BORDER=0
         WIDTH="<%$width%>"
         CELLPADDING="0">
-  <tr>
-    <td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" height="1"></td>
-  </tr>
+
   <TR>
-    <TD colspan="5" 
-        <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%>>
-      <img src="<%$RT::WebImagesURL%>/space.gif" alt="" height="3"></TD>
-  </TR>
-  <TR>
-    <TD <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%> width=5><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="5"></TD>
-    <TD valign=middle align=left
-        <%$color && "bgcolor=\"$color\""%>
+    <TH valign=middle align=left
+        <%$color && "style=\"color: $color;\""%>
         <%$class && "class=\"$class\""%>>
       <span class="titleboxtitle">
         <b>
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
       </span>
-    </TD>
-    <TD  
-         COLSPAN="2"
-         <%$color && "bgcolor=\"$color\""%>
+    </TH>
+    <TH  
+         <%$color && "style=\"color: $color;\""%>
          <%$class ? "class=\"$class\"": "class=\"titleboxright\""%>>
       <span class="titleboxright">
         <%$titleright ? $titleright : '&nbsp;' |n %>
       </span>
-    </TD>
-    <TD <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%>
-        width="3"
-        ><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="3"></TD>
-  </TR>
-  <TR>
-    <TD colspan="5" 
-        <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%>>
-      <img src="<%$RT::WebImagesURL%>/space.gif" alt="" height="3"></TD>
+    </TH>
   </TR>
   <tr>
-    <td class="black" colspan="5">
-      <img src="<%$RT::WebImagesURL%>/space.gif" alt="" height="1"></td>
-  </tr>
-  <tr>
-    <td bgcolor="<%$contentbg%>" colspan="5" >
+    <td bgcolor="<%$contentbg%>" colspan="2" class="<%defined($bodyclass) ? $bodyclass :  $class%>">
 <%ARGS>
 $width => "100%"
-$class => undef
-
+$class =>  'titlebox'
+$bodyclass => undef
 $title_href => undef
 $title => undef
 $title_class => undef

@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (@actions ) {
+% if ($actions[0] ) {
 <& /Elements/TitleBoxStart, title => loc('Results') &>
 <UL>
 % foreach my $action (@actions) {

@@ -3432,7 +3432,7 @@ msgid "Refine"
 msgstr "在结果范围内查询"
 
 #: html/Search/PickRestriction:27
-msgid "Refine Search"
+msgid "Refine search"
 msgstr "调整搜寻条件"
 
 #: html/Elements/Refresh:36
@@ -3820,13 +3820,13 @@ msgstr "签名档"
 
 #: html/SelfService/Elements/Header:52
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as %1"
+msgid "Logged in as %1"
 msgstr "使用者：%1"
 
 #: html/Elements/Header:50
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as <b>%1</b>"
-msgstr "使用者：<b>%1</b>"
+msgid "Logged in as %1"
+msgstr "使用者：%1"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Single"

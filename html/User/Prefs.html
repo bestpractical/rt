@@ -39,10 +39,21 @@
 <& /Elements/TitleBoxStart, title => loc('Identity') &>
 
 <input type=hidden name="Name" value="<%$UserObj->Name%>">
-<&|/l&>Email</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
-<&|/l&>Real Name</&>: <input name="RealName" value="<%$UserObj->RealName%>"> <BR>
-<&|/l&>Nickname</&>: <input name="NickName" value="<%$UserObj->NickName%>">
+<&|/l&>Email</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
 <BR>
+<&|/l&>Real Name</&>: <input name="RealName" value="<%$UserObj->RealName%>"> 
+<BR>
+<&|/l&>Nickname</&>: <input name="NickName" value="<%$UserObj->NickName%>">
+<& /Elements/TitleBoxEnd &>
+<br>
+<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
+<&|/l&>Residence</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
+<BR>
+<&|/l&>Work</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
+<BR>
+<&|/l&>Mobile</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
+<BR>
+<&|/l&>Pager</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TD VALIGN=TOP>
@@ -92,20 +103,10 @@
 </TD>
 </TR>
 <TR>
+
+
+
 <TD COLSPAN=2 VALIGN=TOP>
-
-
-<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
-<&|/l&>Residence</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
-
-<&|/l&>Work</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
-
-<&|/l&>Mobile</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
-
-<&|/l&>Pager</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
-<& /Elements/TitleBoxEnd &>
-<BR>
-
 %if ($UserObj->Privileged) {
 <BR>
 <& /Elements/TitleBoxStart, title => loc('Signature') &>

@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 <& /User/Elements/GroupTabs, 
-    current_tab => '/User/Groups/index.html', 
+    current_subtab => 'User/Groups/index.html', 
     Title => $title &>
 
 <&|/l&>Personal groups</&>:<BR>
@@ -34,7 +34,6 @@
 %}
 </UL>
 
-<& /Elements/TitleBoxEnd &>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToPersonalGroupsFor($session{'CurrentUser'}->PrincipalId());

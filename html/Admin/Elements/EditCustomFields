@@ -23,30 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@actions &>
-<& /Elements/TitleBoxStart, title => $title &>
 
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
-
-<FORM METHOD=GET ACTION="CustomFields.html">
-<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
-
-% if ($id) {
-<BR>
-<&|/l, $m->scomp('/Elements/SelectQueue', Name => 'Source') &>Override current custom fields with fields from [_1]</&>
-<INPUT TYPE="Submit" VALUE="<&|/l&>Go!</&>">
-</FORM>
-<FORM METHOD=GET ACTION="CustomFields.html">
-<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
-% }
-
-<P>
-<input type="checkbox" name="FindDisabledCustomFields"> <&|/l&>Include disabled custom fields in listing.</&>
-<input type=submit value="<&|/l&>Go!</&>">
-</FORM>
-
-<P>
 <%$caption%>:<BR>
 </TD></TR></TABLE>
 % if ($CustomFields->Count == 0 ) {
@@ -58,7 +38,9 @@
 <TD ROWSPAN="<% $CustomFields->Count %>">
 <UL>
 % while (my $CustomFieldObj = $CustomFields->Next) { 
-<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></A></LI>
+<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a> (<% $CustomFieldObj->FriendlyType %>)<br>
+<%$CustomFieldObj->Description%>
+</LI>
 % }
 </UL>
 </TD>
@@ -85,8 +67,14 @@
 </TR>
 </TABLE>
 % }
+<FORM METHOD=GET ACTION="CustomFields.html">
+% if ($id) {
+<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+% }
+<input type="checkbox" name="FindDisabledCustomFields"> <&|/l&>Include disabled custom fields in listing.</&>
+<input type=submit value="<&|/l&>Go!</&>">
+</FORM>
 
-<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});

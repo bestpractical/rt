@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I own...", $rows) &>
+<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I own...", $rows), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>

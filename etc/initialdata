@@ -196,7 +196,7 @@
       Content     => '', },
     {  Queue       => '0',
        Name        => 'Autoreply',                                         # loc
-       Description => 'Default Autoresponse Template',                     # loc
+       Description => 'Default Autoresponse template',                     # loc
        Content     => 'Subject: AutoReply: {$Ticket->Subject}
 
 

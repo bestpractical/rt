@@ -26,7 +26,6 @@
 
 <form action="Scrips.html" method="post">
 <input type="hidden" name="id" value="<%$id%>">
-<& /Elements/TitleBoxStart, title => $title &>
 
 <P><&|/l&>Current Scrips</&>:</P>
 % if ($Scrips->Count == 0 ) {
@@ -41,13 +40,8 @@
 <input type="checkbox" name="DeleteScrip-<%$scrip->Id%>">
 </TD>
 <TD>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><&|/l&>Edit</&></a>
-</TD>
-<TD>
-% if (length(my $name = loc($scrip->Description))) {
-<% $name %><BR>
-% }
-<font size="-1"><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></font>
+<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" %></a><br>
+<small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
 </TD>
 </TR>
 %   }
@@ -56,7 +50,6 @@
 
 % }
 <& /Elements/Submit &>
-<& /Elements/TitleBoxEnd &>
 </form>
 <%init>
 my (@actions);

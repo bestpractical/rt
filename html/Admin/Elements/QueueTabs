@@ -31,7 +31,11 @@
 <%INIT>
 my $tabs;
 if ($id) {
-  $tabs = {
+  $tabs->{'this'}  = {
+                title => $QueueObj->Name,
+  		     	path => "Admin/Queues/Modify.html?id=".$id,
+                    current_subtab => $current_tab,     
+                subtabs => {
 		 C => { title => loc('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
@@ -55,8 +59,9 @@ if ($id) {
 			},	
 		 I => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
-			},
-  };
+			}
+        }
+        };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
   $tabs->{"A"} = { title => loc('Select queue'),
@@ -66,20 +71,21 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQue
   		     	path => "Admin/Queues/Modify.html?Create=1",
 			separator => 1,
 			   };
+}
 
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
-
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
-}
+foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {  
+    if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab ) {
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"subtabs"}        = $subtabs; 
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_subtab; 
+    }                                                                           
+}   
+  		     	$current_tab = "Admin/Queues/Modify.html?id=".$id;
 </%INIT>
   
 <%ARGS>
+$QueueObj => undef
 $id => undef
 $subtabs => undef
 $current_subtab => undef

@@ -445,5 +445,14 @@ sub __Value {
     }
 }
 
+# Set up defaults for DBIx::SearchBuilder::Record::Cachable
+
+sub _CacheConfig {
+  {
+     'cache_p'        => 1,
+     'fast_update_p'  => 1,
+     'cache_for_sec'  => 30,
+  }
+}
 
 1;

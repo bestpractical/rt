@@ -23,19 +23,30 @@
 %# 
 %# END LICENSE BLOCK
 <table>
+<tr>
+<td valign="top" width="50%">
+<table>
+
 % my @entry_fields;
+% my $i;
+% my $cfcount = $CustomFields->Count;
+%  $cfcount++ if ($cfcount % 2) ; # if we have an odd number of 
+% #custom fields, fudge it so we know where to put in the table break
 % while (my $CustomField = $CustomFields->Next()) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
-% my $Values = $TicketObj->CustomFieldValues($CustomField->id);
+% if ($cfcount == 2 * $i) {
+</table>
+</td>
+<td valign="top" width="50%">
+<table>
+% }
+% $i++;
   <tr>
     <td class="labeltop">
-      <%$CustomField->Name%>:<br>
-      <i><%loc($CustomField->Type)%></i>
+      <b><%$CustomField->Name%></b><br>
+      <i><%$CustomField->FriendlyType%></i>
     </td>
     <td class="entry">
+% my $Values = $TicketObj->CustomFieldValues($CustomField->id);
 % if ($CustomField->Type eq 'FreeformSingle') {
       <input name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
           value="<%$Values->Count ? $Values->First->Content : ''%>">
@@ -63,10 +74,9 @@
   </tr>
 % }
 </table>
-
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, Prefix => 'AddEntry-', CustomFields => \@entry_fields, TicketObj => $TicketObj &>
-% }
+</td>
+</tr>
+</table>
 
 <%INIT>
 my $CustomFields = $TicketObj->QueueObj->CustomFields();

@@ -22,26 +22,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Admin/Groups') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
-    Title => loc('Admin/Groups') &>
+    Title => $title &>
 
-<& /Elements/TitleBoxStart, title => loc('Select a group') &>
 
-<P>
-<&|/l&>Groups</&>:<BR>
 <UL>
 %while ( my $Group = $Groups->Next) {
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}
 </UL>
-</P>
 
-<& /Elements/TitleBoxEnd &>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
+my $title = loc('Select a group');
 
 </%INIT>
 <%ARGS>

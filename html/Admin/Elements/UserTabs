@@ -29,8 +29,12 @@
     Title => $Title &>
 <%INIT>
 my $tabs;
+my $subtabs;
 if ($id) {
-$tabs = {
+$tabs->{'this'} = { title => $UserObj->Name,
+
+			   path => "Admin/Users/Modify.html?id=".$id,
+subtabs => {
 	       Queues => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
 			 },
@@ -38,7 +42,8 @@ $tabs = {
 #			   path => "Admin/Users/Rights.html?id=".$id
 #			 }
 	       
-	      };
+	      }
+}
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers')) {
   $tabs->{"A"} = { title => loc('Select user'),
@@ -52,11 +57,17 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
 
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
-
+                                                                                
+foreach my $tab ( sort keys %{$tabs} ) {                                        
+    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {                         
+        $tabs->{$tab}->{"current_subtab"} = $current_subtab;                    
+    }                                                                           
+}                                                                               
 </%INIT>
   
   
 <%ARGS>
+$UserObj => undef
 $id => undef
 $current_tab => undef
 $current_subtab => undef

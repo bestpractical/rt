@@ -22,14 +22,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"),  &>
+<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"), bodyclass => "" &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          
        <th align=left><&|/l&>Queue</&></th>                                         
        <th align=left><font size=-1><&|/l&>New</&></font></th>
        <th align=left><font size=-1><&|/l&>Open</&></font></th>          
-       <th align=left><font size=-1><&|/l&>Stalled</&></font></th>          
 </tr>
 
 <%PERL>
@@ -37,25 +36,20 @@ my $i;
 while (my $queue = $Queues->Next) {
      $Tickets->ClearRestrictions;                                           
      $Tickets->LimitStatus(VALUE => "open");                                
-     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
+     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
      my $open = $Tickets->Count();
 
      $Tickets->ClearRestrictions;                                           
      $Tickets->LimitStatus(VALUE => "new");
-     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
+     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
      my $new = $Tickets->Count();
 
-     $Tickets->ClearRestrictions; 
-     $Tickets->LimitStatus(VALUE => "stalled");
-     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
-     my $stalled = $Tickets->Count();
 </%PERL>
 % $i++;                                                                         
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$queue->Name%></a></TD>
-<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$new%></a></TD>
-<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&openSearch=1"><%$open%></a></TD>
-<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=stalled&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&stalledSearch=1"><%$stalled%></a></TD>
+<td><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$queue->Name%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$new%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&openSearch=1"><%$open%></a></TD>
 </TR>
 % }
 </TABLE>

@@ -11,7 +11,7 @@ CLASS="evenline"
 <TD><%$Ticket->Status%></TD>
 <TD><%$Ticket->QueueObj->Name%></TD>
 <TD><%$Ticket->OwnerObj->Name%></TD>
-
+<TD><%$Ticket->Priority%></TD>
 </TR>
 <TR
 % if ($i%2) {
@@ -23,6 +23,7 @@ CLASS="evenline"
 <TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
+<TD><SMALL><%$Ticket->TimeWorked%></SMALL></TD>
 </TR>
 </SPAN>
 <%ARGS>

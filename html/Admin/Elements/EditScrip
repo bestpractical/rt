@@ -24,12 +24,10 @@
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@actions &>
 
-<& /Elements/TitleBoxStart, title => $title &>
   
 <FORM METHOD=POST ACTION="Scrip.html">
 <input type="hidden" name="id" value="<%$id%>">
 <input type="hidden" name="Queue" value="<%$Queue%>">
-<%$title%>:
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT>
@@ -87,7 +85,6 @@
 </TD>
 </TR>
 
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </FORM>
 <%init>

@@ -51,7 +51,7 @@ else {
       . loc("Full headers") . "</a>]";
 }
 </%perl>
-<& /Elements/TitleBoxStart, title => $title, titleright => $titleright&>
+<& /Elements/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
 % }
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>

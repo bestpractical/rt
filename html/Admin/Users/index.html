@@ -22,29 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Admin users') &>
+<& /Admin/Elements/Header, Title => loc('Select a user') &>
 <& /Admin/Elements/UserTabs, current_tab => 'Admin/Users/', 
     current_subtab => 'Admin/Users/',
-    Title => loc('Admin users') &>
+    Title => loc('Select a user') &>
 
-<& /Elements/TitleBoxStart, title => loc('Select a user') &>
 
-<TABLE>
-<TR>
-<TD VALIGN=TOP>
 
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
 
-<&|/l&>Find people whose</&> <& /Elements/SelectUsers &><BR>
-<input type="checkbox" name="FindDisabledUsers"> <&|/l&>Include disabled users in search.</&>
-<BR>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
-</FORM>
-</TD>
-</TR>
-
-<TR>
-<TD>
 <%$caption%>:<BR>
 <UL>
 %if ($users->Count == 0) {
@@ -55,10 +40,14 @@
 %}
 
 </UL>
-</TD>
-</TR>
-</TABLE>
-<& /Elements/TitleBoxEnd &>
+<br><br>
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
+
+<&|/l&>Find people whose</&> <& /Elements/SelectUsers &><BR>
+<input type="checkbox" name="FindDisabledUsers"> <&|/l&>Include disabled users in search.</&>
+<BR>
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
+</FORM>
 
 <%INIT>
 my ($user, $caption);

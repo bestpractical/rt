@@ -852,7 +852,8 @@ sub ThawLimits {
 
 LimitQueue takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of = or !=. (It defaults to =).
-VALUE is a queue id.
+VALUE is a queue id or Name.
+
 
 =cut
 
@@ -863,7 +864,7 @@ sub LimitQueue {
 		@_);
 
     #TODO  VALUE should also take queue names and queue objects
-
+    #TODO FIXME why are we canonicalizing to name, not id, robrt?
     if ($args{VALUE} =~ /^\d+$/) {
       my $queue = new RT::Queue($self->CurrentUser);
       $queue->Load($args{'VALUE'});
@@ -1872,17 +1873,14 @@ sub _ProcessRestrictions {
       # SQL, and then join them with the appropriate DefaultEA.
       # Then join each subclause group with AND.
 
-      my $field;
-      $field = $restriction->{'FIELD'};
+      my $field = $restriction->{'FIELD'};
 
       # One special case
       if ($field =~ /LinkedTo/) {
 	$field = $restriction->{'TYPE'};
       }
 
-      die "I don't know about $field yet"
-	unless (exists $FIELDS{$field}
-		or $restriction->{CUSTOMFIELD});
+      die "I don't know about $field yet" unless (exists $FIELDS{$field} or $restriction->{CUSTOMFIELD});
 
     my $type = $FIELDS{$field}->[0];
     my $op   = $restriction->{'OPERATOR'};
@@ -1936,265 +1934,6 @@ sub _ProcessRestrictions {
 
 # }}}
 
-# }}}
-
-# {{{ Deal with displaying rows of the listing
-
-#
-#  Everything in this section is stub code for 2.2
-# It's not part of the API. It's not for your use
-# It's not for our use.
-#
-
-
-# {{{ sub SetListingFormat
-
-=head2 SetListingFormat
-
-Takes a single Format string as specified below. parses that format string and makes the various listing output
-things DTRT.
-
-=item Format strings
-
-Format strings are made up of a chain of Elements delimited with vertical pipes (|).
-Elements of a Format string
-
-
-FormatString:    Element[::FormatString]
-
-Element:         AttributeName[;HREF=<URL>][;TITLE=<TITLE>]
-
-AttributeName    Id | Subject | Status | Owner | Priority | InitialPriority | TimeWorked | TimeLeft |
-
-	
-                <Created|Starts|Started|Contacted|Due|Resolved>Date<AsString|AsISO|AsAge>
-
-
-=cut
-
-
-
-
-#accept a format string
-
-
-
-sub SetListingFormat {
-    my $self = shift;
-    my $listing_format = shift;
-
-    my ($element, $attribs);
-    my $i = 0;
-    foreach $element (split (/::/,$listing_format)) {
-	if ($element =~ /^(.*?);(.*)$/) {
-	    $element = $1;
-	    $attribs = $2;
-	}	
-	$self->{'format_string'}->[$i]->{'Element'} = $element;
-	foreach my $attrib (split (/;/, $attribs)) {
-	    my $value = "";
-	    if ($attrib =~ /^(.*?)=(.*)$/) {
-		$attrib = $1;
-		$value = $2;
-	    }	
-	    $self->{'format_string'}->[$i]->{"$attrib"} = $value;
-	
-	}
-
-    }
-    return(1);
-}
-
-# }}}
-
-# {{{ sub HeaderAsHTML
-sub HeaderAsHTML {
-    my $self = shift;
-    my $header = "";
-    my $col;
-    foreach $col ( @{[ $self->{'format_string'} ]}) {
-	$header .= "<TH>" . $self->_ColumnTitle($self->{'format_string'}->[$col]) . "</TH>";
-	
-    }
-    return ($header);
-}
-# }}}
-
-# {{{ sub HeaderAsText
-#Print text header
-sub HeaderAsText {
-    my $self = shift;
-    my ($header);
-
-    return ($header);
-}
-# }}}
-
-# {{{ sub TicketAsHTMLRow
-#Print HTML row
-sub TicketAsHTMLRow {
-    my $self = shift;
-    my $Ticket = shift;
-    my ($row, $col);
-    foreach $col (@{[$self->{'format_string'}]}) {
-	$row .= "<TD>" . $self->_TicketColumnValue($Ticket,$self->{'format_string'}->[$col]) . "</TD>";
-	
-    }
-    return ($row);
-}
-# }}}
-
-# {{{ sub TicketAsTextRow
-#Print text row
-sub TicketAsTextRow {
-    my $self = shift;
-    my ($row);
-
-    #TODO implement
-
-    return ($row);
-}
-# }}}
-
-# {{{ _ColumnTitle {
-
-sub _ColumnTitle {
-    my $self = shift;
-
-    # Attrib is a hash
-    my $attrib = shift;
-
-    # return either attrib->{'TITLE'} or..
-    if ($attrib->{'TITLE'}) {
-	return($attrib->{'TITLE'});
-    }	
-    # failing that, Look up the title in a hash
-    else {
-	#TODO create $self->{'ColumnTitles'};
-	return ($self->{'ColumnTitles'}->{$attrib->{'Element'}});
-    }	
-
-}
-
-# }}}
-
-# {{{ _TicketColumnValue
-sub _TicketColumnValue {
-    my $self = shift;
-    my $Ticket = shift;
-    my $attrib = shift;
-
-
-    my $out;
-
-  SWITCH: {
-	/^id/i && do {
-	    $out = $Ticket->id;
-	    last SWITCH;
-	};
-	/^subj/i && do {
-	    last SWITCH;
-	    $Ticket->Subject;
-		   };	
-	/^status/i && do {
-	    last SWITCH;
-	    $Ticket->Status;
-	};
-	/^prio/i && do {
-	    last SWITCH;
-	    $Ticket->Priority;
-	};
-	/^finalprio/i && do {
-	
-	    last SWITCH;
-	    $Ticket->FinalPriority
-	};
-	/^initialprio/i && do {
-	
-	    last SWITCH;
-	    $Ticket->InitialPriority;
-	};	
-	/^timel/i && do {
-	
-	    last SWITCH;
-	    $Ticket->TimeWorked;
-	};
-	/^timew/i && do {
-	
-	    last SWITCH;
-	    $Ticket->TimeLeft;
-	};
-	
-	/^(.*?)date(.*)$/i && do {
-	    my $o = $1;
-	    my $m = $2;
-	    my ($obj);
-	    #TODO: optimize
-	    $obj = $Ticket->DueObj         if $o =~ /due/i;
-	    $obj = $Ticket->CreatedObj     if $o =~ /created/i;
-	    $obj = $Ticket->StartsObj      if $o =~ /starts/i;
-	    $obj = $Ticket->StartedObj     if $o =~ /started/i;
-	    $obj = $Ticket->ToldObj        if $o =~ /told/i;
-	    $obj = $Ticket->LastUpdatedObj if $o =~ /lastu/i;
-	
-	    my $method;
-
-	    $method = 'ISO' if $m =~ /iso/i;
-	
-	    $method = 'AsString' if $m =~ /asstring/i;
-	    $method = 'AgeAsString' if $m =~ /age/i;
-	    last SWITCH;
-	    $obj->$method();
-	
-	};
-	
-	/^requestor/i && do {
-	    last SWITCH;
-	    $Ticket->RequestorAddresses();
-	};	
-	/^cc/i && do {
-	    last SWITCH;
-	    $Ticket->CCAsString();
-	};	
-	
-	
-	/^admincc/i && do {
-	    last SWITCH;
-	    $Ticket->AdminCcAddresses();
-	};
-	
-    }
-
-}
-
-# }}}
-
-# }}}
-
-# {{{ POD
-=head2 notes
-"Enum" Things that get Is, IsNot
-
-
-"Int" Things that get Is LessThan and GreaterThan
-id
-InitialPriority
-FinalPriority
-Priority
-TimeLeft
-TimeWorked
-
-"Text" Things that get Is, Like
-Subject
-TransactionContent
-
-
-"Link" OPERATORs
-
-
-"Date" OPERATORs Is, Before, After
-
-=cut
 # }}}
 
 1;

@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
+    QueueObj => $QueueObj,                                                      
     current_tab => 'Admin/Queues/Scrips.html?id='.$QueueObj->id, 
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 
@@ -40,16 +41,26 @@ unless($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
 }
 if ($id) {
+    $current_subtab = "Admin/Queues/Scrip.html?id=".$id."&Queue=".$QueueObj->id;
     $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
 }else {
     $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
     $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
 }
-my $subtabs = {
-		 A => { title => loc('New scrip'),
-  		     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id
-			   }
-	      };
+                                                                                             
+my $subtabs = {                                                                               
+     A => { title => loc('Select scrip'),                                                     
+            path => "Admin/Queues/Scrips.html?id=".$id,                                       
+               },                                                                             
+     B => { title => loc('New scrip'),                                                        
+            path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
+            separator => 1,                                                                   
+               }, 
+    this => { title => loc("#[_1]",$id),
+            path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id, 
+            }
+          };   
+
 </%init>
 
 <%ARGS>

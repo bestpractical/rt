@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
+    QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
     Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
 
@@ -32,7 +33,6 @@
  
 <FORM METHOD=POST ACTION="People.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
-<& /Elements/TitleBoxStart, title => loc("Modify watchers for queue '[_1]'", $QueueObj->Name), width => "100%" &>
 
 <TABLE WIDTH=100%>
 <TR>
@@ -102,7 +102,6 @@
 
 
 
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), Reset => 1 &>
 </form>
 

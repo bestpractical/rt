@@ -618,8 +618,12 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit Subject
     if ( $args{ARGS}->{'ValueOfSubject'} ne '' ) {
+            my $val = $args{ARGS}->{'ValueOfSubject'};
+        if ($args{ARGS}->{'SubjectOp'} =~ /like/) {
+            $val = "%".$val."%";
+        }
         $session{'tickets'}->LimitSubject(
-            VALUE    => $args{ARGS}->{'ValueOfSubject'},
+            VALUE    => $val,
             OPERATOR => $args{ARGS}->{'SubjectOp'},
         );
     }
@@ -647,9 +651,13 @@ sub ProcessSearchQuery {
     # }}}    
     # {{{ Limit Content
     if ( $args{ARGS}->{'ValueOfAttachmentField'} ne '' ) {
+        my $val = $args{ARGS}->{'ValueOfAttachmentField'};
+        if ($args{ARGS}->{'AttachmentFieldOp'} =~ /like/) {
+            $val = "%".$val."%";
+        }
         $session{'tickets'}->Limit(
             FIELD   => $args{ARGS}->{'AttachmentField'},
-            VALUE    => $args{ARGS}->{'ValueOfAttachmentField'},
+            VALUE    => $val,
             OPERATOR => $args{ARGS}->{'AttachmentFieldOp'},
         );
     }
@@ -672,6 +680,9 @@ sub ProcessSearchQuery {
         my $oper = $args{ARGS}->{ "CustomFieldOp" . $id };
         foreach my $value ( ref($form) ? @{$form} : ($form) ) {
             my $quote = 1;
+            if ($oper =~ /like/i) {
+                $value = "%".$value."%";
+            }
             if ( $value =~ /^null$/i ) {
 
                 #Don't quote the string 'null'
@@ -707,7 +718,7 @@ Returns an ISO date and time in GMT
 sub ParseDateToISO {
     my $date = shift;
 
-    my $date_obj = new RT::Date($session{'CurrentUser'});
+    my $date_obj = RT::Date->new($session{'CurrentUser'});
     $date_obj->Set(
         Format => 'unknown',
         Value  => $date

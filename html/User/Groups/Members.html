@@ -30,7 +30,6 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM ACTION="<%$RT::WebPath%>/User/Groups/Members.html" METHOD="POST">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
@@ -78,7 +77,6 @@
 </TD>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </form>
 

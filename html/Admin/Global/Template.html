@@ -30,13 +30,12 @@
     Title => loc("Modify template [_1]", $TemplateObj->id) &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM METHOD=POST ACTION="Template.html">
-%if ($create ) {
-<INPUT TYPE=HIDDEN NAME=template VALUE="new">
+%if ($Create ) {
+<INPUT TYPE=HIDDEN NAME="Template" VALUE="new">
 % } else {
-<INPUT TYPE=HIDDEN NAME=template VALUE="<%$TemplateObj->Id%>">
+<INPUT TYPE=HIDDEN NAME=Template" VALUE="<%$TemplateObj->Id%>">
 % }
 
 %# hang onto the queue id
@@ -44,7 +43,6 @@
 
 <& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
 
-<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </FORM>
 
@@ -60,13 +58,13 @@ my $subtabs = {
   		     	path => "Admin/Global/Templates.html"
 			   },
 		 B => { title => loc('New template'),
-  		     	path => "Admin/Global/Template.html?create=1&Queue=0",
+  		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
 			separator => 1,
 			   }
 	      };
 
 
-if ($create) {
+if ($Create) {
   $current_subtab = "Admin/Global/Template.html?create=1&Queue=0";
   $title = loc("Create a template");
 }
@@ -76,12 +74,11 @@ else {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
-     $title = loc('Created template [_1]', loc($TemplateObj->Name())); 
     }
     else {
        $TemplateObj->Load($Template) || Abort(loc('No Template'));
-      $title = loc('Editing template [_1]', loc($TemplateObj->Name())); 
     }
+      $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
   
     
 }
@@ -100,6 +97,6 @@ if ($TemplateObj->Id()) {
 <%ARGS>
 $Queue => undef
 $Template => undef
-$create => undef
+$Create => undef
 $Name => undef
 </%ARGS>

@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
+    QueueObj => $QueueObj,                                                      
     current_tab => 'Admin/Queues/CustomFields.html?id='.$QueueObj->id, 
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 

@@ -22,14 +22,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title=>loc("Start page"), Refresh => $session{'home_refresh_interval'} &>
+<& /Elements/Header, Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs, 
     current_toptab => '', 
-    Title=>loc("Start page") &>
+    Title=>loc("RT at a glance") &>
 <TABLE BORDER=0 WIDTH=100%>
 <TR VALIGN=TOP>
 <TD WIDTH=70%>
-<& /Elements/CustomHomepageHeader, %ARGS &>
 <& /Elements/MyTickets &>
 <BR>
 <& /Elements/MyRequests &>

@@ -22,54 +22,26 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc("Modify template [_1]", $TemplateObj->id) &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $Queue, 
+    QueueObj => $TemplateObj->QueueObj,
      current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
      current_subtab => $current_subtab, 
      subtabs => $subtabs, 
-     Title => loc("Modify template [_1]", $TemplateObj->id) &>
+     Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => $title &>
 <FORM METHOD=POST ACTION="Template.html">
-%if ($create ) {
-<INPUT TYPE=HIDDEN NAME=template VALUE="new">
+%if ($Create ) {
+<INPUT TYPE=HIDDEN NAME="Template" VALUE="new">
 % } else {
 <INPUT TYPE=HIDDEN NAME=template VALUE="<%$TemplateObj->Id%>">
 % }
 
 %# hang onto the queue id
 <INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
-
-<TABLE>
-<TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Name</&>:
-</TD>
-<TD>
-<input name="Name" VALUE="<% loc($TemplateObj->Name) %>" SIZE=20><BR>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Description</&>: 
-</TD>
-<TD>
-<input name="Description" VALUE="<% loc($TemplateObj->Description) %>" SIZE=80><BR>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT VALIGN=TOP>
-<&|/l&>Content</&>:<BR>
-</TD>
-<TD>
-<TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
-<%$TemplateObj->Content%></TEXTAREA>
-</TD>
-</TR>
-</TABLE>
-
-<& /Elements/TitleBoxEnd&>
+<& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
+$TemplateObj->Description, Content => $TemplateObj->Content &> 
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </FORM>
 
@@ -79,7 +51,7 @@
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab);
 
-if ($create) {
+if ($Create) {
   $title = loc("Create a template");
   $current_subtab = "Admin/Queues/Template.html?create=1&Queue=".$Queue;
 }
@@ -89,12 +61,11 @@ else {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
-     $title = loc('Created template [_1]', loc($TemplateObj->Name())); 
     }
     else {
        $TemplateObj->Load($Template) || Abort(loc('No Template'));
-      $title = loc('Editing template [_1]', loc($TemplateObj->Name())); 
     }
+     $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
   
     
 }
@@ -117,6 +88,6 @@ my $subtabs = {
 <%ARGS>
 $Queue => undef
 $Template => undef
-$create => undef
+$Create => undef
 $Name => undef
 </%ARGS>

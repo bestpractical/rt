@@ -23,24 +23,5 @@
 %# 
 %# END LICENSE BLOCK
 <table cellspacing=0 cellpadding=0 width=100% height=100%>
-%# bevelled edge
-<TR>
-  <TD bgcolor=#333333 colspan=3>
-    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="100%" height="1" >
-  </TD>
-</TR>
-<tr>
-  <td width=100% height=100%>
-    <table border=0 cellspacing=0 cellpadding=0 width=100% height=100%>
       <TR>
-        <TD height=1 bgcolor=#999999 colspan=2></TD>
-        <TD height=1 bgcolor=#333333>
-        </TD>
-        <TD height=1 bgcolor=black>
-        </TD>
-      </TR>
-      <TR>
-        <TD bgcolor=#999999>
-          <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="1">
-        </TD>
         <TD width=100% height=100%> 

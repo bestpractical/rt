@@ -26,28 +26,28 @@
 
 <FORM METHOD=GET ACTION="Templates.html">
 <INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
-<& /Elements/TitleBoxStart, title => $title &>
 
-<P><&|/l&>Current Templates</&>:</P>
 % if ($Templates->Count == 0 ) {
 <P><i><&|/l&>(No templates)</&></i></P>
 % } else {
 <TABLE>
-<P><i><&|/l&>(Check box to delete)</&></i></P>
-
+<TR>
+<TH>
+<i><&|/l&>(Check box to delete)</&></i>
+</TH>
+<TH>
+</TH>
+</TR>
 % my $count;
 % while (my $TemplateObj = $Templates->Next) { 
-
 <TR>
 <TD>
 <input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>">
 </TD>
 <TD>
-<A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>"><&|/l&>Edit</&></A>
-</TD>
-
-<TD>
-<%$TemplateObj->id%>/<% $TemplateObj->Name %>: <% $TemplateObj->Description %>
+<A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">
+<B><% loc($TemplateObj->Name) %></B></A>
+<br><% loc($TemplateObj->Description) %>
 </TD>
 </TR>
 
@@ -56,7 +56,6 @@
 % }
 
 <& /Elements/Submit &>
-<& /Elements/TitleBoxEnd &>
 </FORM>
 
 <%INIT>

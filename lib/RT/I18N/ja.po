@@ -3099,7 +3099,7 @@ msgid "Refine"
 msgstr "絞り込む"
 
 #: html/Search/PickRestriction:27
-msgid "Refine Search"
+msgid "Refine search"
 msgstr "絞込み検索"
 
 #: html/Elements/Refresh:36
@@ -3432,13 +3432,13 @@ msgstr "サイン"
 
 #: html/SelfService/Elements/Header:52
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as %1"
+msgid "Logged in as %1"
 msgstr "%1としてサインする"
 
 #: html/Elements/Header:49
 #. ($session{'CurrentUser'}->Name)
-msgid "Signed in as <b>%1</b>"
-msgstr "<b>%1</b>としてサインする"
+msgid "Logged in as %1"
+msgstr "%1としてサインする"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Single"
