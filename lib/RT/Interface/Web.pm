@@ -443,7 +443,7 @@ sub ProcessUpdateMessage {
 
         ## TODO: Implement public comments
         if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-            my ( $Transaction, $Description ) = $args{TicketObj}->Comment(
+            my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(
                 CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
                 BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
                 MIMEObj      => $Message,
@@ -452,7 +452,7 @@ sub ProcessUpdateMessage {
             push ( @{ $args{Actions} }, $Description );
         }
         elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-            my ( $Transaction, $Description ) = $args{TicketObj}->Correspond(
+            my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(
                 CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
                 BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
                 MIMEObj      => $Message,

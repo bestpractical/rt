@@ -138,6 +138,20 @@ sub Create {
 
 # }}}
 
+=head2 Scrips
+
+Returns the Scrips object for this transaction.
+This routine is only useful on a freshly created transaction object.
+Scrips do not get persisted to the database with transactions.
+
+
+=cut
+
+
+sub Scrips {
+    my $self = shift;
+    return($self->{'scrips'});
+}
 
 
 # {{{ sub Delete

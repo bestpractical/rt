@@ -1,0 +1,55 @@
+<%args>
+$TicketObj => undef
+
+</%args>
+
+<b><&|/l&>Preview of notifications</&></b>
+<%init>
+
+my $action;
+
+if ($ARGS{'UpdateType'} eq 'response' ) {
+    $action = 'Correspond';
+} else {
+    $action = 'Comment';
+}
+
+
+        my $Message = MakeMIMEEntity(
+            Subject             => $ARGS{'UpdateSubject'},
+            Body                => $ARGS{'UpdateContent'},
+        );
+
+
+        ## TODO: Implement public comments
+            my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
+                CcMessageTo  => $ARGS{'UpdateCc'},
+                BccMessageTo => $ARGS{'UpdateBcc'},
+                MIMEObj      => $Message,
+                TimeTaken    => $ARGS{'UpdateTimeWorked'},
+                DryRun => 1
+            );
+
+
+
+</%init>
+% foreach my $scrip (@{$Object->Scrips->Prepared}) {
+% next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
+<hr>
+<b><%$scrip->Description%></b><br>
+<%$scrip->ConditionObj->Name%> 
+<%$scrip->ActionObj->Name%> 
+<%$scrip->TemplateObj->Name%> <br>
+
+%foreach my $type qw(To Cc Bcc) {
+<%loc($type)%>:
+%foreach my $addr ($scrip->ActionObj->Action->$type()) {
+<%$addr->address%>
+%}
+<br>
+% }
+<textarea cols=80 rows="5">
+<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
+</textarea>
+%}
+<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Update Preview')&>  

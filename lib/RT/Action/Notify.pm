@@ -28,6 +28,20 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Action::SendEmail);
 
+
+=head2 Prepare
+
+Set up the relevant recipients, then call our parent.
+
+=cut
+
+
+sub Prepare {
+    my $self = shift;
+    $self->SetRecipients();
+    $self->SUPER::Prepare();
+}
+
 # {{{ sub SetRecipients
 
 =head2 SetRecipients
@@ -118,7 +132,7 @@ sub SetRecipients {
         @{ $self->{'Bcc'} } = grep ( !/^$creator$/, @Bcc );
     }
     @{ $self->{'PseudoTo'} } = @PseudoTo;
-    return (1);
+
 
 }
 

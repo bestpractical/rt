@@ -109,11 +109,11 @@ sub Prepare {
     # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
     $self->SetHeader( 'To', join ( ',', @{ $self->{'To'} } ) )
-      if ( $self->{'To'} && @{ $self->{'To'} } );
+      if ( ! $MIMEObj->head->get('To') &&  $self->{'To'} && @{ $self->{'To'} } );
     $self->SetHeader( 'Cc', join ( ',', @{ $self->{'Cc'} } ) )
-      if ( $self->{'Cc'} && @{ $self->{'Cc'} } );
+      if ( !$MIMEObj->head->get('Cc') && $self->{'Cc'} && @{ $self->{'Cc'} } );
     $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
-      if ( $self->{'Bcc'} && @{ $self->{'Bcc'} } );
+      if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header, drop in the pseudo-to header.

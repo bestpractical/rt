@@ -31,28 +31,6 @@
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
-<font size=-1>
-
-<TABLE>
-<TR><TD>
-<a href="ModifyPeople.html?id=<%$TicketObj->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
-<&|/l&>Requestor</&>:
-</TD><TD>
-<b><% $TicketObj->RequestorAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
-<&|/l&>Cc</&>:
-</TD><TD>
-<b><% $TicketObj->CcAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
-<&|/l&>AdminCc</&>:
-</TD><TD>
-<b><% $TicketObj->AdminCcAddresses %></b>
-</TD></TR>
-</TR>
-</TABLE>
-<hr>
 
 <TABLE BORDER=0>
 
@@ -113,10 +91,10 @@ value=<% $ARGS{UpdateCc} %>><BR>
 
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
-  </FORM>
 
+<& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 
-
+</FORM>
 <%INIT>
 
 my $CanRespond = 0;
