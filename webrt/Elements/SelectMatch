@@ -1,4 +1,4 @@
-%# $Header$
+%# $Header: /raid/cvsroot/rt/webrt/Elements/SelectMatch,v 1.2 2001/11/06 23:06:58 jesse Exp $
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="LIKE" <%$LikeDefault%>><%$Like%></OPTION>
 <OPTION VALUE="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></OPTION>

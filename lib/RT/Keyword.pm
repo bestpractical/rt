@@ -1,4 +1,4 @@
-#$Header$
+#$Header: /raid/cvsroot/rt/lib/RT/Keyword.pm,v 1.4 2001/12/14 19:03:08 jesse Exp $
 
 =head1 NAME
 

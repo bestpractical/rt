@@ -1,4 +1,4 @@
-%# $Header$
+%# $Header: /raid/cvsroot/rt/webrt/Elements/Checkbox,v 1.2 2001/11/06 23:06:57 jesse Exp $
 <INPUT TYPE="Checkbox" NAME ="<%$Name%>" <%$IsChecked%>>
 
 <%ARGS>

@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Action/OpenDependent.pm,v 1.2 2001/11/06 23:04:17 jesse Exp $
 # This Action will open the BASE if a dependent is resolved.
 
 package RT::Action::OpenDependent;

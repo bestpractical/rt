@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Interface/CLI.pm,v 1.2.2.1 2002/01/28 05:27:14 jesse Exp $
 # RT is (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 
 use strict;
@@ -13,7 +13,7 @@ BEGIN {
     use vars qw ($VERSION  @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
     
     # set the version for version checking
-    $VERSION = do { my @r = (q$Revision$ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r }; # must be all one line, for MakeMaker
+    $VERSION = do { my @r = (q$Revision: 1.2.2.1 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r }; # must be all one line, for MakeMaker
     
     @ISA         = qw(Exporter);
     

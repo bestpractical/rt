@@ -1,4 +1,4 @@
-#$Header$
+#$Header: /raid/cvsroot/rt/lib/RT/Action/Notify.pm,v 1.4 2002/01/11 00:02:34 jesse Exp $
 
 package RT::Action::Notify;
 require RT::Action::SendEmail;

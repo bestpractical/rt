@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/User.pm,v 1.5.2.1 2002/01/28 05:27:14 jesse Exp $
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 

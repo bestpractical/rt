@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/ACL.pm,v 1.2 2001/11/06 23:04:14 jesse Exp $
 # Distributed under the terms of the GNU GPL
 # Copyright (c) 2000 Jesse Vincent <jesse@fsck.com>
 

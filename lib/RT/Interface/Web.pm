@@ -1,4 +1,4 @@
-## $Header$
+## $Header: /raid/cvsroot/rt/lib/RT/Interface/Web.pm,v 1.4 2001/12/14 18:46:03 jesse Exp $
 ## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 ## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 

@@ -1,4 +1,4 @@
-#$Header$
+#$Header: /raid/cvsroot/rt/lib/RT/Action/Autoreply.pm,v 1.2 2001/11/06 23:04:17 jesse Exp $
 
 package RT::Action::Autoreply;
 require RT::Action::SendEmail;

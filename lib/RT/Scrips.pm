@@ -1,6 +1,6 @@
 # Copyright 1999-2001 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Scrips.pm,v 1.2 2001/11/06 23:04:14 jesse Exp $
 
 =head1 NAME
 

@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Action/SendEmail.pm,v 1.2 2001/11/06 23:04:17 jesse Exp $
 # Copyright 2000  Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
 # Released under the terms of the GNU Public License
 

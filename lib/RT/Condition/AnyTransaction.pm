@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Condition/AnyTransaction.pm,v 1.2 2001/11/06 23:04:18 jesse Exp $
 # Copyright 1996-2001 Jesse Vincent <jesse@fsck.com> 
 # Released under the terms of the GNU General Public License
 

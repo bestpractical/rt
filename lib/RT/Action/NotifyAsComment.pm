@@ -1,4 +1,4 @@
-#$Header$
+#$Header: /raid/cvsroot/rt/lib/RT/Action/NotifyAsComment.pm,v 1.2 2001/11/06 23:04:17 jesse Exp $
 
 package RT::Action::NotifyAsComment;
 require RT::Action::Notify;

@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Ticket.pm,v 1.7 2002/01/10 23:32:05 jesse Exp $
 # (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #

@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Attachment.pm,v 1.4 2002/01/11 00:02:34 jesse Exp $
 # Copyright 2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 

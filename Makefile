@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/Makefile,v 1.153.2.3 2002/01/28 05:40:16 jesse Exp $
 # Request Tracker is Copyright 1996-2002 Jesse Vincent <jessebestpractical.com>
 # RT is distributed under the terms of the GNU General Public License, version 2
 

@@ -1,4 +1,4 @@
-# $Header$	
+# $Header: /raid/cvsroot/rt/etc/Attic/RT_Config.pm,v 1.1.2.1 2002/01/28 05:27:13 jesse Exp $	
 
 package RT;
 

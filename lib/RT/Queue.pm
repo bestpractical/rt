@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Queue.pm,v 1.4 2002/01/11 00:01:02 jesse Exp $
 
 =head1 NAME
 

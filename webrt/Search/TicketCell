@@ -1,4 +1,4 @@
-%#$Header$
+%#$Header: /raid/cvsroot/rt/webrt/Search/TicketCell,v 1.2 2001/11/06 23:07:01 jesse Exp $
 <% $link |n%><%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %><% $endlink|n %>
 <%INIT>
 

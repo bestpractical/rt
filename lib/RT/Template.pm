@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Template.pm,v 1.4 2002/01/24 15:34:30 jesse Exp $
 # Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 # Released under the terms of the GNU General Public License

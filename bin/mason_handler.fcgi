@@ -1,5 +1,5 @@
 #!!!PERL!!
-# $Header$
+# $Header: /raid/cvsroot/rt/bin/mason_handler.fcgi,v 1.2.2.1 2002/01/28 05:27:12 jesse Exp $
 # RT is (c) 1996-2001 Jesse Vincent (jesse@fsck.com);
 
 use strict;

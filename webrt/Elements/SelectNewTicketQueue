@@ -1,4 +1,4 @@
-%# $Header$
+%# $Header: /raid/cvsroot/rt/webrt/Elements/SelectNewTicketQueue,v 1.2 2001/11/06 23:06:58 jesse Exp $
 <& SelectQueue, Name => $Name, Verbose => $Verbose, Default => $Default,
 	ShowAllQueues => 0, ShowNullOption => 0 &>
 

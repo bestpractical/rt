@@ -1,4 +1,4 @@
-#$Header$
+#$Header: /raid/cvsroot/rt/lib/RT.pm,v 1.2.2.1 2002/01/28 05:27:13 jesse Exp $
 
 package RT;
 use RT::CurrentUser;

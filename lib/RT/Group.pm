@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Group.pm,v 1.3 2001/12/14 19:03:08 jesse Exp $
 # Copyright 2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 #

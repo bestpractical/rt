@@ -1,4 +1,4 @@
-%# $Header$
+%# $Header: /raid/cvsroot/rt/webrt/Admin/Elements/SelectQueueRights,v 1.2 2001/11/06 23:06:10 jesse Exp $
 
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>

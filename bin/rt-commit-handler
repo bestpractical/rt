@@ -3,7 +3,7 @@
 # {{{ Docs
 # -*-Perl-*-
 #
-#ident	"@(#)ccvs/contrib:$Name$:$Id$"
+#ident	"@(#)ccvs/contrib:$Name:  $:$Id: rt-commit-handler,v 1.1.2.2 2002/01/28 05:44:41 jesse Exp $"
 #
 # Perl filter to handle the log messages from the checkin of files in multiple
 # directories.  This script will group the lists of files by log message, and

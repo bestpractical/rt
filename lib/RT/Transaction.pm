@@ -1,4 +1,4 @@
-# $Header$
+# $Header: /raid/cvsroot/rt/lib/RT/Transaction.pm,v 1.4 2002/01/24 18:30:54 jesse Exp $
 # Copyright 1999-2001 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 
