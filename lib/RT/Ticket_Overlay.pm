@@ -157,10 +157,8 @@ use vars '%LINKTYPEMAP';
                    Mode => 'Target', },
     DependedOnBy => { Type => 'DependsOn',
                       Mode => 'Base', },
-#!!pape:description_for_merge {{
     MergedInto => { Type => 'MergedInto',
                    Mode => 'Target', },
-#!!pape:description_for_merge }}
 
 );
 
@@ -179,10 +177,8 @@ use vars '%LINKDIRMAP';
                 Target => 'ReferredToBy', },
     DependsOn => { Base => 'DependsOn',
                    Target => 'DependedOnBy', },
-#!!pape:description_for_merge {{
     MergedInto => { Base => 'MergedInto',
                    Target => 'MergedInto', },
-#!!pape:description_for_merge }}
 
 );
 
