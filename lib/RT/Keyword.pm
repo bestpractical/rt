@@ -174,8 +174,7 @@ sub LoadByPath {
     }	
     #Now that we're through with the loop, the last keyword loaded
     # is the the one we wanted.
-    #we shouldn't need to explicitly load it like this. but we do *sigh*.
-    # once we get data caching, it won't matter so much.
+    # we shouldn't need to explicitly load it like this. but we do. Thanks SQL
     
     $self->Load($tempkey->Id);
     

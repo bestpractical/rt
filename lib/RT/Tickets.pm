@@ -1175,6 +1175,7 @@ sub _ProcessRestrictions {
 			      ENTRYAGGREGATOR => 'OR',
 			      OPERATOR => '=',
 			      VALUE => $restriction->{'VALUE'},
+			      CASESENSITIVE => 0
 			    );
 	    }
 	    elsif ($restriction->{'OPERATOR'} eq '!=') {
@@ -1182,6 +1183,7 @@ sub _ProcessRestrictions {
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '!=',
 			      VALUE => $restriction->{'VALUE'},
+			      CASESENSITIVE => 0
 			    );
 	    }
 	    elsif ($restriction->{'OPERATOR'} eq 'LIKE') {
@@ -1189,6 +1191,7 @@ sub _ProcessRestrictions {
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => 'LIKE',
 			      VALUE => $restriction->{'VALUE'},
+			      CASESENSITIVE => 0
 			    );
 	    }
 	    elsif ($restriction->{'OPERATOR'} eq 'NOT LIKE') {
@@ -1196,6 +1199,7 @@ sub _ProcessRestrictions {
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => 'NOT LIKE',
 			      VALUE => $restriction->{'VALUE'},
+			      CASESENSITIVE => 0
 			    );
 	    }
 	}
@@ -1230,7 +1234,9 @@ sub _ProcessRestrictions {
 				  ENTRYAGGREGATOR => 'AND',
 				  FIELD =>    $restriction->{'FIELD'},
 				  OPERATOR => $restriction->{'OPERATOR'} ,
-				  VALUE =>    $restriction->{'VALUE'} );
+				  VALUE =>    $restriction->{'VALUE'},
+			      	  CASESENSITIVE => 0
+ 				);
 	    
 
 	}
@@ -1376,7 +1382,9 @@ sub _ProcessRestrictions {
 				 FIELD => 'Email',
 				 ENTRYAGGREGATOR => 'OR',
 				 VALUE => $restriction->{'VALUE'},
-				 OPERATOR => $restriction->{'OPERATOR'});
+				 OPERATOR => $restriction->{'OPERATOR'},
+			         CASESENSITIVE => 0
+			);
 
 
 
@@ -1387,7 +1395,8 @@ sub _ProcessRestrictions {
 				FIELD => 'EmailAddress',
 				ENTRYAGGREGATOR => 'OR',
 				VALUE => $restriction->{'VALUE'},
-				OPERATOR => $restriction->{'OPERATOR'}
+				OPERATOR => $restriction->{'OPERATOR'},
+			        CASESENSITIVE => 0
 			       );
 
 	    

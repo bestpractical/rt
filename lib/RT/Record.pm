@@ -109,6 +109,43 @@ sub Create  {
 
 # }}}
 
+
+# {{{ sub LoadByCol
+
+=head2 LoadByCol
+
+Override DBIx::SearchBuilder::LoadByCol to do case-insensitive loads if the 
+DB is case sensitive
+
+=cut
+
+sub LoadByCols {
+    my $self = shift;
+    my %hash = (@_);
+
+    # If this database is case sensitive we need to uncase objects for
+    # explicit loading
+    if ($self->_Handle->CaseSensitive) {
+	 my %newhash;
+	 foreach my $key (keys %hash) {
+		# We don't need to explicitly downcase integers or an id.
+		if ($key =~ '^id$' || $hash{$key} =~/^\d+$/) {
+			$newhash{$key} = $hash{$key};
+		}
+		else {
+			$newhash{"lower(".$key.")"} = lc($hash{$key});	
+		}
+	 }
+	$self->SUPER::LoadByCols(%newhash);
+    }
+    else {
+	$self->SUPER::LoadByCols(%hash);
+    }
+}
+
+# }}}
+
+
 # {{{ Datehandling
 
 # There is room for optimizations in most of those subs:

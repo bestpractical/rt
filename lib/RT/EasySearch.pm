@@ -81,7 +81,7 @@ sub LimitToDeleted {
 
 =head2 Limit PARAMHASH
 
-This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 0, thus
+This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 1, thus
 making sure that by default lots of things don't do extra work trying to 
 match lower(colname) agaist lc($val);
 
@@ -89,7 +89,7 @@ match lower(colname) agaist lc($val);
 
 sub Limit {
 	my $self = shift;
-	my %args = ( CASESENSITIVE => 0,
+	my %args = ( CASESENSITIVE => 1,
 		     @_ );
 
    return $self->SUPER::Limit(%args);
