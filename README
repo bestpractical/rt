@@ -89,21 +89,30 @@ GENERAL INSTALLATION
 
 2   Read the documentation in /tmp/rt/docs. All of it.
 
-3   Create a user rt with primary group rt
+3   Make sure you've installed the perl modules that RT depends on.
 
-4   Check over /tmp/rt/Makefile
+        perl /tmp/rt/bin/testdeps.pl -warn
+                will tell you if it notices anything out of place.
+
+        perl /tmp/rt/bin/testdeps.pl -fix 
+                will fix things up if you've got CPAN installed.
+
+
+4   Create a user rt with primary group rt
+
+5   Check over /tmp/rt/Makefile
 
 	There are many variables you NEED to customize for your site.
 	Even if you are just upgrading, you must set ALL variables.
 
-5a  FOR A NEW INSTALLATION: (If you don't  have an "rt" database in Mysql)
+6a  FOR A NEW INSTALLATION: (If you don't  have an "rt" database in Mysql)
 
         As root, type:
 		 make install	(replace "make" with the local name for 
 				 GNU Make, if you need to)
 
 
-5b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
+6b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
 
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
@@ -112,9 +121,9 @@ GENERAL INSTALLATION
 	This will build new RT wrappers, config files and libraries without
 	overwriting your RT database.
 
-6   Configure the email and web gateways, as described below. 
+7   Configure the email and web gateways, as described below. 
 
-7   Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
+8   Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
     queue. This must be done as root, as the only user with acls to access rt 
     is root.
 	
@@ -135,7 +144,7 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "wordpass" 
     (without the quotes.)  Not changing this is a SECURITY risk  
  
-8   Edit templates to your liking. Templates are found in
+9   Edit templates to your liking. Templates are found in
     rt/etc/templates/queues/<queue-name>
 
 

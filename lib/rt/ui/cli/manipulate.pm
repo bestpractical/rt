@@ -286,7 +286,7 @@ sub cli_requestor_history_req {
     my ($in_serial_num)=@_;
     $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
     for ($temp=0; $temp < $total_transactions; $temp++){
-	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comment') {
+	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comments') {
 	        &print_transaction($temp, $in_serial_num);
 	}
     }

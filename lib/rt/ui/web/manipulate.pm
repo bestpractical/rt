@@ -63,7 +63,10 @@ sub InitDisplay {
 
 }
 sub DisplayForm {
-  
+ 
+
+   $serial_num=&rt::normalize_sn("$serial_num"); 
+ 
   
   if ($rt::ui::web::FORM{'display'} eq 'Request') {
     &frame_display_request();
