@@ -96,6 +96,25 @@ sub AuthForceLogin () {
   local ($AuthRealm) = @_;
   my ($default_user, $path);
   
+    # Did the user come here with a query_string (probably from an
+    # external page). Save it and create hidden variables so that the
+    # user ends up where they want to be once they are authenticated
+    # Don't do any of this if the query string contains display=Logout
+    my($hiddenInput) = '';
+    if ((defined %rt::ui::web::FORM) &&
+       (! ((defined $rt::ui::web::FORM{'display'}) &&
+           ($rt::ui::web::FORM{'display'} eq 'Logout'))))
+    {
+       my $name;
+       foreach $name (keys %rt::ui::web::FORM)
+       {
+           $value = $rt::ui::web::FORM{$name};
+           # Now, add a hidden input field
+           $hiddenInput .=
+               "<input type=\"hidden\" name=\"$name\" value=\"$value\">\n";
+       }
+    }
+  
   
   
   # lets set the user/pass cookies
@@ -151,6 +170,8 @@ sub AuthForceLogin () {
 </TABLE>
     
     <FORM ACTION=\"$rt::ui::web::ScriptURL?$NewQuery\" METHOD=\"POST\">
+
+$hiddenInput
 
 
 <CENTER>
