@@ -134,6 +134,7 @@ sub Commit {
                      'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
 
     $MIMEObj->make_multipart('mixed');
+    $self->SetHeader('MIME-Version', '1.0');
 
     # Build up a MIME::Entity that looks like the original message.
 
@@ -332,6 +333,7 @@ sub SetMessageID {
 
     $self->SetHeader( 'Message-ID',
                       "<rt-"
+                        . $RT::VERSION ."-"
                         . $self->TicketObj->id() . "-"
                         . $self->TransactionObj->id() . "."
                         . rand(20) . "\@"
