@@ -116,10 +116,11 @@ sub Prepare {
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
+    # If we don't have any 'To' header (but do have other reciepients), drop in
+    # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
       if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) );
+        and ( !$MIMEObj->head->get('To') ) ) and ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc'));
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
@@ -273,6 +274,7 @@ sub SendMessage {
 # }}}
 
 # {{{ AddAttachments 
+
 =head2 AddAttachments
 
 Takes any attachments to this transaction and attaches them to the message
@@ -325,6 +327,7 @@ sub AddAttachments {
 # }}}
 
 # {{{ RecordOutgoingMailTransaction
+
 =head2 RecordOutgoingMailTransaction MIMEObj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
