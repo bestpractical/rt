@@ -733,7 +733,8 @@ sub Update {
               my $method = "Set$attribute";
               my ( $code, $msg ) = $self->$method($value);
 
-              push @results, $self->loc("Ticket [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->CurrentUser->loc_fuzzy($msg);
+	      my($prefix) = ref($self) =~ /RT::(\w+)/;
+	      push @results,  $self->loc("$prefix [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->CurrentUser->loc_fuzzy($msg);
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
