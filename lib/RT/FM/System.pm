@@ -67,7 +67,7 @@ sub AvailableRights {
     my $self = shift;
     my $class = RT::FM::Class->new($RT::SystemUser);
     my $classrights = $class->AvailableRights();
-    my $CustomField = RT::FM::CustomField->new($RT::SystemUser);
+    my $CustomField = RT::CustomField->new($RT::SystemUser);
     my $cfrights = $CustomField->AvailableRights();
     my %rights = (%{$cfrights}, %{$classrights});
     
