@@ -74,7 +74,23 @@ sub encoding {
         my $encoding = $1;
 
 	# Doesn't make any sense if it's already utf8
-	return 'utf-8' if $encoding =~ /^utf-?8$/i;
+	if ($encoding =~ /^utf-?8$/i) {
+	    return 'utf-8' if $] >= 5.007003 or $] < 5.006;
+
+	    # 5.6.x is 1)stupid 2)special case.
+            no strict 'refs';
+            *{ ref($self) . '::maketext' } = sub {
+                my $self = shift;
+		my @args;
+		foreach my $arg (@_) {
+		    push @args, pack( 'C*', unpack('C*', $arg) );
+		}
+
+                return pack( 'U*', unpack('U0U*', $self->SUPER::maketext(@args) ) );
+            };
+
+            return ('utf-8');
+	}
 
         if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
 
@@ -91,16 +107,16 @@ sub encoding {
             $decoder{$encoding} ||= Text::Iconv->new( $encoding, 'utf-8' );
 
             # different quite broken ways to force utf8ness.
-            my $force_utf8 = sub {
-                return pack( 'U0A*', $_[0] );
-              };
-
             *{ ref($self) . '::maketext' } = sub {
                 my $self = shift;
+		my @args;
+		foreach my $arg (@_) {
+		    push @args, pack( 'C*', unpack('C*', $arg) );
+		}
 
-                return $force_utf8->(
-                      $decoder{$encoding}->convert( $self->SUPER::maketext(@_) )
-                );
+                return pack( 'U*', unpack('U0U*',
+		    $decoder{$encoding}->convert( $self->SUPER::maketext(@_) )
+                ) );
             };
 
             return ('utf-8');
@@ -122,9 +138,6 @@ foreach my $lang (@languages) {
     if ($] >= 5.007003) {
 	require Encode;
 	Encode::_utf8_on($_) for values %{"$pkg\::Lexicon"};
-    }
-    elsif ($] >= 5.006) {
-	$_ = pack( 'U0A*', $_ ) for values %{"$pkg\::Lexicon"};
     }
 }
 
