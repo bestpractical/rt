@@ -211,7 +211,7 @@ sub insert_schema {
     else {
         die "Couldn't find schema file for " . $RT::DatabaseType . "\n";
     }
-    print "schema sucessfully inserted\n";
+    print "Done setting up database schema.\n";
 
 }
 
@@ -278,20 +278,19 @@ sub create_db {
 # }}}
 
 sub get_dba_password {
-    print
-"In order to create a new database and grant RT access to that database,\n";
+    print "In order to create or update your RT database,";
     print "this script needs to connect to your "
       . $RT::DatabaseType
       . " instance on "
       . $RT::DatabaseHost . " as "
       . $args{'dba'} . ".\n";
-    print
-"Please specify that user's database password below. If the user has no database\n";
+    print "Please specify that user's database password below. If the user has no database\n";
     print "password, just press return.\n\n";
     print "Password: ";
     ReadMode('noecho');
     my $password = ReadLine(0);
     ReadMode('normal');
+    print "\n";
     return ($password);
 }
 
@@ -343,6 +342,7 @@ sub insert_acl {
             die "Problem with statement:\n $statement\n" . $sth->errstr;
         }
     }
+    print "Done setting up database ACLs.\n";
 }
 
 # }}}
@@ -442,6 +442,7 @@ sub insert_data {
                              ObjectType    => 'RT::System',
                              ObjectId      => '1' );
 
+        print "done.\n";
     }
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
@@ -615,7 +616,7 @@ sub insert_data {
         print "done.\n";
     }
     $RT::Handle->Disconnect() unless ($RT::DatabaseType eq 'SQLite');
-
+    print "Done setting up database content.\n";
 }
 
 =head2 ACLEquivGroupId
