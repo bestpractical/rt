@@ -533,7 +533,6 @@ sub _WatcherLimit {
   $self->_OpenParen;
 
   my $groups	    = $self->NewAlias('Groups');
-  my $group_princs  = $self->NewAlias('Principals');
   my $groupmembers  = $self->NewAlias('CachedGroupMembers');
   my $users	    = $self->NewAlias('Users');
 
@@ -592,12 +591,6 @@ sub _WatcherLimit {
   }
 
   $self->Join (ALIAS1 => $groups,  FIELD1 => 'id',
-	       ALIAS2 => $group_princs, FIELD2 => 'ObjectId');
-  $self->_SQLLimit(ALIAS => $group_princs,
-		   FIELD => 'PrincipalType',
-		   VALUE => 'Group',
-		   ENTRYAGGREGATOR => 'AND');
-  $self->Join( ALIAS1 => $group_princs, FIELD1 => 'id',
 	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
 
   $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
