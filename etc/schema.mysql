@@ -22,7 +22,7 @@ CREATE TABLE Scrips (
   Description VARCHAR(255), #another textual string
   Scope INT(11), #Queue Id. O for global
   Type VARCHAR(60), #Transaction type or 'any'	
-  Action VARCHAR(60), #Name of a perl module. inside RT::Scrips
+  Action VARCHAR(60), #Name of a perl module. inside RT::Action
   Template INT(11), #Link to the templates table of template to pass in.
   Argument VARCHAR(255), #an argument to pass in.
   Creator INT(11),
