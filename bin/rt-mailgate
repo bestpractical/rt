@@ -372,8 +372,8 @@ sub ParseMIMEEntityFromSTDIN {
     # }}} (temporary directory)
 
     #Ok. now that we're set up, let's get the stdin.
-
-    unless (my $entity = $parser->read(\*STDIN)) {
+    my $entity;
+    unless ($entity = $parser->read(\*STDIN)) {
 	die "couldn't parse MIME stream";
     }
     #Now we've got a parsed mime object. 

@@ -226,6 +226,8 @@ sub Parse {
 
   #We're passing in whatever we were passed. it's destined for _ParseContent
   my $content = $self->_ParseContent(@_);
+ 
+
   
   #Lets build our mime Entity
   use MIME::Entity;
@@ -233,7 +235,14 @@ sub Parse {
 
   $self->{'MIMEObj'}->build(Type => 'multipart/mixed');
 
-  (my $headers, my $body) = split(/\n\n/,$content,2);
+  my ($body, $headers);
+  
+  if ($content =~ /^(\S*):(.*?)\n/s) {
+     ($headers, $body) = split(/\n\n/,$content,2);
+  }
+  else {
+     $body = $content;
+  }
 
   $self->{'MIMEObj'}->attach(Data => $body);
 
