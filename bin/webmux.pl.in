@@ -90,7 +90,7 @@ use Carp;
     use Text::Wrapper;
     use CGI::Cookie;
     use Time::ParseDate;
-    use Time::Hires;
+    use Time::HiRes;
     use HTML::Entities;
     use HTML::Scrubber;
     use Text::Quoted;
