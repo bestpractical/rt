@@ -166,7 +166,7 @@ DB_RT_PASS		=	rt_pass
 # The user your webserver runs as. needed so that webrt can cache mason
 # objectcode
 
-WEB_USER		=	www-data
+WEB_USER		=	www
 WEB_GROUP		=	rt
 
 # }}}
@@ -195,7 +195,7 @@ upgrade: dirs config-replace upgrade-noclobber  upgrade-instruct
 
 upgrade-instruct: 
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
-	@echo "$(RT_CONFIG) for any necessarysite customization. Additionally,"
+	@echo "$(RT_CONFIG) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
 	@echo "	   $(RT_ETC_PATH)/insertdata <version>"
 	@echo "where <version> is the version of RT you're upgrading from."

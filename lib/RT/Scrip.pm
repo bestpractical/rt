@@ -51,8 +51,18 @@ sub _Accessible  {
 
 =head2 Create
 
-Creates a new entry in the Scrips table. Takes a paramhash with three
-fields, Queue, Template and Action.
+Creates a new entry in the Scrips table. Takes a paramhash with the attributes:
+
+    Queue           A queue id or 0 for a global scrip
+    Template        A template ID or name.  
+                    Behavior is undefined if you have multiple items with 
+                    the same name
+    ScripAction     A ScripAction id or name
+                    Behavior is undefined if you have multiple items with 
+                    the same name
+    ScripCondition  A ScripCondition id or name
+                    Behavior is undefined if you have multiple items with 
+                    the same name
 
 Returns (retval, msg);
 retval is 0 for failure or scrip id.  msg is a textual description of what happened.
@@ -87,7 +97,6 @@ sub Create  {
     }
 
     #TODO +++ validate input 
-    #TODO: Allow loading Template, ScripAction and ScripCondition by name
 
     require RT::ScripAction;
     my $action = new RT::ScripAction($self->CurrentUser);

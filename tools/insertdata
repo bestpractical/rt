@@ -485,6 +485,50 @@ further questions or concerns, please respond to this message.
 
 # }}}
 
+# {{{ Scrips;
+
+my @scrips;
+unless ($LastVersion) {
+     @scrips = (
+                { Queue => 0,
+                  ScripCondition => 'OnCreate',
+                  ScripAction => 'AutoreplyToRequestors',
+                  Template => 'Autoreply'
+                },
+                { Queue => 0,
+                  ScripCondition => 'OnCreate',
+                  ScripAction => 'NotifyAdminCcs',
+                  Template => 'Transaction',
+                },
+                { Queue => 0,
+                  ScripCondition => 'OnCorrespond',
+                  ScripAction => 'NotifyAllWatchers',
+                  Template => 'Correspondence',
+                },
+                { Queue => 0,
+                  ScripCondition => 'OnComment',
+                  ScripAction => 'NotifyAdminCcsAsComment',
+                  Template => 'AdminComment',
+                },
+     ) 
+}
+if ( $LastMinorVersion < 12 ) {
+    push (
+        @scrips,
+                { Queue => 0,
+                  ScripCondition => 'OnComment',
+                  ScripAction => 'NotifyOtherRecipientsAsComment',
+                  Template => 'Correspondence',
+                },
+                { Queue => 0,
+                  ScripCondition => 'OnCorrespond',
+                  ScripAction => 'NotifyOtherRecipients',
+                  Template => 'Correspondence',
+                },
+        );
+}
+# }}}
+
 print "Creating ACL...";
 use RT::ACE;
 for $item (@acl) {
@@ -553,6 +597,18 @@ for $item (@templates) {
     my $new_entry = new RT::Template($CurrentUser);
     my $return    = $new_entry->Create(%$item);
     print $return. ".";
+}
+print "done.\n";
+
+print "Creating Scrips...";
+
+use RT::Scrip;
+for $item (@scrips) {
+        my $new_entry = RT::Scrip->new($CurrentUser);
+        my ($return,$msg) = $new_entry->Create(%$item);
+        print "(Error: $msg)" unless ($return);
+        print $return.".";
+
 }
 print "done.\n";
 
