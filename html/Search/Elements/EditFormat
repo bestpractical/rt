@@ -1,21 +1,21 @@
 <table>
 <tr>
 <td>
-Available Columns:
+<&|/l&>Available Columns</&>:
 </td>
 <td>
 Format:
 </td>
 <td></td>
 <td>
-Show Columns:
+<&|/l&>Show Columns</&>:
 </td>
 <tr>
 <td valign=top>
-<select size=6 name="UnseenCols">
+<select size=6 name="SelectDisplayColumns">
 % my $i = 0;
-% while ($i < scalar @unseen) {
-% my $field = $unseen[$i];
+% while ($i < scalar @$AvailableColumns) {
+% my $field = $AvailableColumns->[$i];
 % if ($field) {
 <option value=<%$i%>
 ><%$field%></option>
@@ -46,13 +46,13 @@ Link:
 </select>
 </td>
 <td>
-<input type=submit name="AddCol" value="-->">
+<input type=submit name="AddCol" value="->">
 </td>
 <td valign=top>
-<select size=4 name="SeenCols" style="width : 100%">
+<select size=4 name="CurrentDisplayColumns" style="width : 100%">
 % $i = 0;
-% while ($i < scalar @seen) {
-% my $field = $seen[$i];
+% while ($i < scalar @$CurrentFormat) {
+% my $field = $CurrentFormat->[$i];
 % if ($field) {
 <option value=<%$i%>
 % if ($i eq $ARGS{SeenCols}) {
@@ -67,7 +67,7 @@ SELECTED
 <center>
 <input type=submit name="ColUp" value="^">
 <input type=submit name="ColDown" value="v">
-<input type=submit name="RemoveCol" value="Delete">
+<input type=submit name="RemoveCol" value="<%loc('Delete')%>">
 </center>
 </td>
 <td colspan=3 align=center>
@@ -76,6 +76,6 @@ SELECTED
 </table>
 
 <%ARGS>
-@seen => undef
-@unseen => undef
+$CurrentFormat => undef
+$AvailableColumns => undef
 </%ARGS>

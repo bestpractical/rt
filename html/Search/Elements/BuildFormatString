@@ -1,0 +1,155 @@
+<%args>
+$Format => undef
+</%args>
+<%init>
+
+unless ($Format) {         
+    $Format = qq{          
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+Status, 
+QueueName,
+OwnerName,
+Priority, 
+'__NEWLINE__',
+'', 
+'<small>__Requestors__</small>',
+'<small>__CreatedRelative__</small>',
+'<small>__ToldRelative__</small>',
+'<small>__LastUpdatedRelative__</small>',
+'<small>__TimeLeft__</small>'};
+}   
+    
+# escape the '#' symbols so they won't be parsed as part of a URL
+my $format = $ARGS{'Format'};
+$format =~ s/#/%23/g;
+$format =~ s/&/%26/g;
+    
+
+my @fields = (
+    "QueueName",           "OwnerName",
+    "id",                  "Status",
+    "Subject",             "ExtendedStatus",
+    "Priority",            "InitialPriority",
+    "FinalPriority",       "EffectiveId",
+    "Type",                "TimeWorked",
+    "TimeLeft",            "TimeEstimated",
+    "Requestors",          "Cc",
+    "AdminCc",             "StartsRelative",
+    "StartedRelative",     "CreatedRelative",
+    "LastUpdatedRelative", "ToldRelative",
+    "DueRelative",         "ResolvedRelative",
+    "Starts",              "Started",
+    "Created",             "LastUpdated",
+    "Told",                "Due",
+    "Resolved",            "NEWLINE",
+    "-",
+);
+
+my ( @seen);
+
+my @format = split( /,\s*/, $Format );
+foreach my $field (@format) {
+    my %column = ();
+    $field =~ s/'(.*)'/$1/;
+    my ( $prefix, $suffix );
+    if ( $field =~ m/(.*)__(.*)__(.*)/ ) {
+        $prefix = $1;
+        $suffix = $3;
+        $field  = $2;
+    }
+    $field = "<blank>" if !$field;
+    $column{Prefix} = $prefix;
+    $column{Suffix} = $suffix;
+    $field =~ s/\s*(.*)\s*/$1/;
+    $column{Column} = $field;
+    push @seen, \%column;
+}
+
+if ( $ARGS{"RemoveCol"} ) {
+    my $index  = $ARGS{'CurrentDisplayColumns'};
+    my $column = $seen[$index];
+    if ($index) {
+        delete $seen[$index];
+        my @temp = @seen;
+        @seen = ();
+        foreach my $element (@temp) {
+            next unless $element;
+            push @seen, $element;
+        }
+    }
+}
+elsif ( $ARGS{"AddCol"} ) {
+    if ( defined $ARGS{'SelectDisplayColumns'} ) {
+        my %column = ();
+        $column{Column} = $fields[ $ARGS{'SelectDisplayColumns'} ];
+
+        if ( $ARGS{Face} eq "Bold" ) {
+            $column{Prefix} .= "<B>";
+        }
+        if ( $ARGS{Face} eq "Italic" ) {
+            $column{Prefix} .= "<I>";
+        }
+        if ( $ARGS{Size} ) {
+            $column{Prefix} .= "<" . $ARGS{Size} . ">";
+        }
+        if ( $ARGS{Link} eq "Display" ) {
+            $column{Prefix} .= "<A HREF=\"".$RT::WebPath."/Ticket/Display.html?id=__id__\">";
+        }
+        elsif ( $ARGS{Link} eq "Take" ) {
+            $column{Prefix} .=
+              "<A HREF=\"".$RT::WebPath."/Ticket/Display.html?Action=Take&id=__id__\">";
+        }
+    
+        my $suffix;
+        if ( $ARGS{'Link'} eq "Display" || $ARGS{'Link'} eq "Take" ) {
+            $column{Suffix} .= "</a>";
+        }
+        if ( $ARGS{Size} ) {
+            $column{Suffix} .= "</" . $ARGS{Size} . ">";
+        }
+        if ( $ARGS{Face} eq "Italic" ) {
+            $column{Suffix} .= "</I>";
+        }
+        if ( $ARGS{Face} eq "Bold" ) {
+            $column{Suffix} .= "</B>";
+        }
+        if ( $ARGS{Title} ) {
+            $column{Suffix} .= "/TITLE:" . $ARGS{Title};
+        }
+        push @seen, \%column;
+    }
+}
+elsif ( $ARGS{"ColUp"} ) {
+    my $index = $ARGS{'CurrentDisplayColumns'};
+    if ( defined $index && ( $index - 1 ) >= 0 ) {
+        my $column = $seen[$index];
+        $seen[$index]       = $seen[ $index - 1 ];
+        $seen[ $index - 1 ] = $column;
+        $ARGS{CurrentDisplayColumns}     = $index - 1;
+    }
+}
+elsif ( $ARGS{"ColDown"} ) {
+    my $index = $ARGS{'CurrentDisplayColumns'};
+    if ( defined $index && ( $index + 1 ) < scalar @seen ) {
+        my $column = $seen[$index];
+        $seen[$index]       = $seen[ $index + 1 ];
+        $seen[ $index + 1 ] = $column;
+        $ARGS{CurrentDisplayColumns}     = $index + 1;
+    }
+}
+
+$Format = "";
+foreach my $field (@seen) {
+    next unless $field;
+    $Format .= ", \n" if $Format;
+    $Format .= "'";
+    $Format .= $field->{Prefix};
+    $Format .= "__" . $field->{Column} . "__" if ( $field->{Column} ne "<blank>" ) ;
+    $Format .= $field->{Suffix};
+    $Format .= "'";
+}
+return($Format, \@fields, \@seen);
+
+</%init>
+
