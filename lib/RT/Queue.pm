@@ -282,7 +282,9 @@ sub AdminCc {
 
 # {{{ IsWatcher, IsCc, IsAdminCc
 
+
 # {{{ sub IsWatcher
+# a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher
 
@@ -294,17 +296,62 @@ is a ticket watcher. Returns undef otherwise
 sub IsWatcher {
     my $self = shift;
     
-    my @args = (Type => 'Cc',
-		User => undef);
+    my %args = ( Type => 'Requestor',
+		 Id => undef,
+		 @_
+	       );
     
-#If we ACL this, we lose on ACL checks
-#    return (0, "Permission Denied")
-#      unless ($self->CurrentUserHasRight('ExploreQueue'));
+ 
+    my %cols = ('Type' => $args{'Type'},
+		'Scope' => 'Queue',
+		'Value' => $self->Id
+	       );
+    if (defined ($args{'Id'})) {
+	if (ref($args{'Id'})){ #If it's a ref, assume it's an RT::User object;
+	    #Dangerous but ok for now
+	    $cols{'Owner'} = $args{'Id'}->Id;
+	}
+	elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's an RT::User obj
+	    $cols{'Owner'} = $args{'Id'};
+	}
+	else {
+	    $cols{'Email'} = $args{'Id'};
+	}	
+    }	
     
-    $RT::Logger->warning( "Queue::IsWatcher unimplemented");
-    return (0);
-    #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
+    if (defined $args{'Email'}) {
+	$cols{'Email'} = $args{'Email'};
+    }
+    
 
+
+    my ($description);
+    $description = join(":",%cols);
+    
+    #If we've cached a positive match...
+    if (defined $self->{'watchers_cache'}->{"$description"}) {
+	if ($self->{'watchers_cache'}->{"$description"} == 1) {
+	    return(1);
+	}
+	#If we've cached a negative match...
+	else {
+	    return(undef);
+	}
+    }
+
+    my $watcher = new RT::Watcher($self->CurrentUser);
+    $watcher->LoadByCols(%cols);
+    
+    
+    if ($watcher->id) {
+	$self->{'watchers_cache'}->{"$description"} = 1;
+	return(1);
+    }	
+    else {
+	$self->{'watchers_cache'}->{"$description"} = 0;
+	return(undef);
+    }
+    
 }
 # }}}
 

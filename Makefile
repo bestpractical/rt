@@ -41,7 +41,7 @@ RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
 MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
-RT_LOG_PATH             =       $(RT_PATH)
+RT_LOG_PATH             =       /tmp
 
 # The location of your rt configuration file
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm

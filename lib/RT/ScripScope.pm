@@ -6,20 +6,20 @@ use RT::Record;
 
 # {{{ sub _Init
 sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "ScripScope";
-  return ($self->SUPER::_Init(@_));
+    my $self = shift;
+    $self->{'table'} = "ScripScope";
+    return ($self->SUPER::_Init(@_));
 }
 # }}}
 
 # {{{ sub _Accessible 
 sub _Accessible  {
-  my $self = shift;
-  my %Cols = ( Scrip  => 'read/write',
-	    	Queue => 'read/write', 
-	  	Template => 'read/write',
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
+    my $self = shift;
+    my %Cols = ( Scrip  => 'read/write',
+		 Queue => 'read/write', 
+		 Template => 'read/write',
+	       );
+    return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
 
@@ -33,25 +33,26 @@ fields, Queue, Template and Scrip.
 =cut
 
 sub Create  {
-  my $self = shift;
-  my %args = ( Queue => undef,
-               Template => undef,
-               Scrip => undef,
-               @_
-             );
+    my $self = shift;
+    my %args = ( Queue => undef,
+		 Template => undef,
+		 Scrip => undef,
+		 @_
+	       );
+    
+    
+    
+    #TODO +++ validate input 
 
-
-  
-  #TODO +++ validate input 
-
-  unless ($self->CurrentUserHasRight('ModifyScripScopes')) {
-    return (undef);
-  }
-  my $id = $self->SUPER::Create(Queue => $args{'Queue'},
-                                Template => $args{'Template'},
-                                Scrip => $args{'Scrip'}
-                                );
- return ($id); 
+    unless ($self->CurrentUserHasRight('ModifyScripScopes')) {
+	return (undef);
+    }
+    
+    my $id = $self->SUPER::Create(Queue => $args{'Queue'},
+				  Template => $args{'Template'},
+				  Scrip => $args{'Scrip'}
+				 );
+    return ($id); 
 }
 # }}}
 
@@ -65,16 +66,16 @@ Retuns an RT::Queue object with this Scope's queue
 =cut
 
 sub QueueObj {
-  my $self = shift;
-
-  if (!$self->{'QueueObj'})  {
-    require RT::Queue;
-    $self->{'QueueObj'} = RT::Queue->new($self->CurrentUser);
-    #TODO: why are we loading scrips with templates like this. 
-    # two seperate methods might make more sense
-    $self->{'QueueObj'}->Load($self->Queue);
-  }
-  return ($self->{'QueueObj'});
+    my $self = shift;
+    
+    if (!$self->{'QueueObj'})  {
+	require RT::Queue;
+	$self->{'QueueObj'} = RT::Queue->new($self->CurrentUser);
+	#TODO: why are we loading scrips with templates like this. 
+	# two seperate methods might make more sense
+	$self->{'QueueObj'}->Load($self->Queue);
+    }
+    return ($self->{'QueueObj'});
 }
 
 # }}}
@@ -89,16 +90,18 @@ Retuns an RT::Scrip object with this Scope's scrip
 =cut
 
 sub ScripObj {
-  my $self = shift;
-
-  if (!$self->{'ScripObj'})  {
-    require RT::Scrip;
-    $self->{'ScripObj'} = RT::Scrip->new($self->CurrentUser);
-    #TODO: why are we loading scrips with templates like this. 
-    # two seperate methods might make more sense
-    $self->{'ScripObj'}->Load($self->Scrip, $self->Template);
-  }
-  return ($self->{'ScripObj'});
+    my $self = shift;
+    
+    unless (defined $self->{'ScripObj'})  {
+	require RT::Scrip;
+	
+	$RT::Logger->debug("Now loading the scrip ". $self->Scrip."\n");
+	$self->{'ScripObj'} = RT::Scrip->new($self->CurrentUser);
+	#TODO: why are we loading scrips with templates like this. 
+	# two seperate methods might make more sense
+	$self->{'ScripObj'}->Load($self->Scrip, $self->Template);
+    }
+    return ($self->{'ScripObj'});
 }
 
 # }}}
@@ -107,11 +110,11 @@ sub ScripObj {
 # does an acl check and then passes off the call
 sub _Set {
     my $self = shift;
-   
+    
     unless ($self->CurrentUserHasRight('ModifyScripScopes')) {
         $RT::Logger->debug("CurrentUser can't modify ScripScopes for ".$self->Queue."\n");
-      return (undef);
-     }
+	return (undef);
+    }
     return $self->SUPER::_Set(@_);
 }
 # }}}
@@ -120,12 +123,11 @@ sub _Set {
 # does an acl check and then passes off the call
 sub _Value {
     my $self = shift;
-   
+    
     unless ($self->CurrentUserHasRight('ShowScripScopes')) {
         $RT::Logger->debug("CurrentUser can't show ScripScopes for ".$self->Queue."\n");
-      return (undef);
-      return (undef);
-     }
+	return (undef);
+    }
     return $self->SUPER::_Value(@_);
 }
 # }}}
@@ -152,8 +154,8 @@ sub CurrentUserHasRight {
     my $right = shift;
     return ($self->HasRight( Principal => $self->CurrentUser->UserObj,
                              Right => $right ));
-
-    }
+    
+}
 
 # }}}
 
@@ -172,19 +174,18 @@ sub HasRight {
     my %args = ( Right => undef,
                  Principal => undef,
                  @_ );
-
+    
     if ($self->SUPER::_Value('Queue') > 0) {
         return ( $args{'Principal'}->HasQueueRight(
                       Right => $args{'Right'},
                       Queue => $self->SUPER::_Value('Queue'),
                       Principal => $args{'Principal'}
-                     ) 
+                      ) 
                 );
 
     }
     else {
-        return( $args{'Principal'}->HasSystemRight(
-                       Right => $args{'Right'}) );
+        return( $args{'Principal'}->HasSystemRight( Right => $args{'Right'}) );
     }
 }
 # }}}

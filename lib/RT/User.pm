@@ -540,9 +540,9 @@ sub _HasRight {
     #TODO Security +++ check to make sure this is complete and right
     
     if (defined($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
-	$RT::Logger->debug("Got a cached ACL decision for ". 
-			   $args{'Right'}.$args{'Scope'}.
-			   $args{'AppliesTo'}."\n");	    
+#	$RT::Logger->debug("Got a cached ACL decision for ". 
+#			   $args{'Right'}.$args{'Scope'}.
+#			   $args{'AppliesTo'}."\n");	    
 	return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
     }
     
@@ -617,7 +617,7 @@ sub _HasRight {
     
     # {{{ deal with checking if the user has a right as a member of a group
 
-    $RT::Logger->debug("Now Trying $query_string_1\n");	
+#    $RT::Logger->debug("Now Trying $query_string_1\n");	
     $hitcount = $self->_Handle->FetchResult($query_string_1);
     
     #if there's a match, the right is granted
@@ -626,7 +626,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $query_string_1\n");	
+ #   $RT::Logger->debug("No ACL matched $query_string_1\n");	
     
     # }}}
 
@@ -645,7 +645,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $query_string_2\n");
+#    $RT::Logger->debug("No ACL matched $query_string_2\n");
 
     # }}}
 

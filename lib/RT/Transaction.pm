@@ -101,14 +101,16 @@ sub Create  {
     while (my $Scrip = $PossibleScrips->Next()) {
       
       #TODO: properly deal with errors raised in this scrip loop
-      
-      eval {
-	#local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
 	
-	#Load the scrip's action;
+      #$RT::Logger->debug("$self now dealing with ".$Scrip->Id. "\n");      
+      eval {
+	local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
+	
+
+        #Load the scrip's action;
+
 	$Scrip->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-				     TemplateObj => $Scrip->ScripObj->TemplateObj,
-				     TransactionObj => $self);
+		                     TransactionObj => $self);
 	
 	
 	#If it's applicable, prepare and commit it
@@ -419,7 +421,7 @@ passed in here.
 
 sub CurrentUserHasRight {
     my $self = shift;
-    my %args = (QueueObj => $self->TicketObj->QueueObj,
+    my %args = (TicketObj => $self->TicketObj,
 		@_);
     return ($self->CurrentUser->HasQueueRight(%args));
 }
