@@ -6,6 +6,21 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"><font size=+2>Request Tracker 2.0</font>
+</TD>
+<TD ALIGN=RIGHT>
+% if ($session{'CurrentUser'} ) {
+<a href="<%$RT::WebPath%>/User/Modify.html?id=<%$session{'CurrentUser'}->id%>">[Account]</a> [Preferences]<br>
+Signed in as <b><%$session{'CurrentUser'}->UserId%></b>.
+% } else {
+Not logged in.
+% }
+</TD>
+</TR>
+</TABLE>
+
 <BR>
 <%ARGS>
 $Title => 'WebRT'

@@ -1,8 +1,26 @@
-<& /Elements/Tabs, tabs => \@tabs, basepath => 'Admin' &>
+<& /Elements/Tabs, tabs => $tabs &>
 <hr>
 <%INIT>
-my ($tab);
-my @tabs = qw(Users Groups Queues Scrips Templates ACL);
+my $tabs = { Users => { title => 'Users',
+                        path => 'Admin/Users/',
+                      },
+             Groups => { title => 'Groups',
+                         path => 'Admin/Groups/',
+                       },
+             Queues => { title => 'Queues',
+                         path => 'Admin/Queues/',
+                       },
+             Scrips => { title => 'Scrips',
+                         path => 'Admin/Scrips/',
+                       },
+             Templates => { title => 'Templates',
+                         path => 'Admin/Templates/',
+                       },
+             ACL => { title => 'ACL',
+                         path => 'Admin/ACL/',
+                       }
+
+           };
 </%INIT>
 
 

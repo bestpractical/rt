@@ -2,7 +2,7 @@
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 
 <& /Elements/Header, Title => "Create a request" &>
-
+<& /Elements/Tabs &>
 <FORM ACTION="Display.html" METHOD="POST">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN Name="queue" VALUE="<%$Queue->Id%>">
@@ -89,11 +89,11 @@ Describe the issue below:<br>
 </TR>
 <TR>
 <TD ALIGN=RIGHT COLSPAN=2>
-<INPUT TYPE=SUBMIT VALUE="Create">
 </TD>
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Label => "Create ticket"&>
 
 
 </FORM>

@@ -2,6 +2,7 @@
 %# Copyleft 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 
 <& /Elements/Header, Title => "Create request" &>
+<& /Elements/Tabs &>
 
 <FORM METHOD="GET" ACTION="Create_Detail.html">
 
@@ -10,7 +11,7 @@ Queue: <& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
 <& /Elements/TitleBoxEnd &><BR><BR>
 
 
-<INPUT TYPE=SUBMIT VALUE="Next">
+<& /Elements/Submit &>
 </FORM>
 
 
