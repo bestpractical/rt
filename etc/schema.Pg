@@ -57,7 +57,7 @@ CREATE TABLE Queues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
@@ -108,7 +108,7 @@ CREATE TABLE Principals (
         id INTEGER DEFAULT nextval('principals_id_seq') not null,
         PrincipalType VARCHAR(16) not null,
         ObjectId integer, 
-        Disabled int2 NOT NULL DEFAULT 0 ,
+        Disabled integer NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 
 );
@@ -301,7 +301,7 @@ CREATE TABLE CachedGroupMembers (
         MemberId int, 
         Via int, 
         ImmediateParentId int, 
-        Disabled int2 NOT NULL DEFAULT 0 , 
+        Disabled integer NOT NULL DEFAULT 0 , 
         PRIMARY KEY (id)
 
 );
@@ -408,7 +408,7 @@ CREATE TABLE Tickets (
   LastUpdated TIMESTAMP NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
@@ -525,7 +525,7 @@ CREATE TABLE CustomFields (
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
-  Repeated int2 NOT NULL DEFAULT 0 , 
+  Repeated integer NOT NULL DEFAULT 0 , 
   Pattern varchar(255) NULL  ,
   LookupType varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
@@ -535,7 +535,7 @@ CREATE TABLE CustomFields (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
