@@ -1,0 +1,14 @@
+%# You are wise, witty, and wonderful, but you spend too much time reading
+%# this sort of trash.
+<%INIT>
+$RT::LogToFile or $m->abort;
+my $filename = eval { $RT::Logger->output('rtlog')->{filename} } or $m->abort;
+
+$r->content_type('text/plain');
+
+open my($fh), $filename or die $!;
+print <$fh>;
+close $fh;
+
+$m->abort;
+</%INIT>
