@@ -1,6 +1,7 @@
 ## $Header$
-## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
-## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+## Portions Copyright 2000 Tobias Brox <tobix@fsck.com>
+## Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 
 ## This is a library of static subs to be used by the Mason web
 ## interface to RT
@@ -256,29 +257,77 @@ sub ProcessUpdateMessage {
             AttachmentFieldName => 'UpdateAttachment'
         );
 
-        ## TODO: Implement public comments
-        if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-            my ( $Transaction, $Description ) = $args{TicketObj}->Comment(
-                CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-                BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
-                MIMEObj      => $Message,
-                TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-            );
-            push ( @{ $args{Actions} }, $Description );
-        }
-        elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-            my ( $Transaction, $Description ) = $args{TicketObj}->Correspond(
-                CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-                BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
-                MIMEObj      => $Message,
-                TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-            );
-            push ( @{ $args{Actions} }, $Description );
-        }
+	## Check whether this was a refresh or not.  
+
+	# Match Correspondence or Comments.
+        my $trans_flag = -2;
+	my $trans_type = undef;
+	my $orig_trans = $args{ARGSRef}->{'UpdateType'};
+        if ( $orig_trans =~ /^(private|public)$/ ) {
+	    $trans_type = "Comment";
+        }elsif ( $orig_trans eq 'response' ) {
+	    $trans_type = "Correspond";
+	}
+
+	# Do we have a transaction that we need to update on? session
+	if( defined( $trans_type ) ){
+	    $trans_flag = 0;
+
+	    # Prepare a checksum.
+	    # See perldoc -f unpack for example of this.
+	    my $this_checksum = unpack("%32C*", $Message->body_as_string ) % 65535;
+
+	    # The above *could* generate duplicate checksums.  Crosscheck with
+	    # the length.
+	    my $this_length = length( $Message->body_as_string );
+
+	    # Don't forget the ticket id.
+	    my $this_id = $args{TicketObj}->id;
+
+	    # Check whether the previous transaction in the
+	    # ticket is the same as the current transaction.
+	    if( defined( $session{'prev_trans_type'} ) && defined( $session{'prev_trans_chksum'} ) && defined( $session{'prev_trans_length'} ) && defined( $session{'prev_trans_tickid'} ) ){
+		if( $session{'prev_trans_type'} eq $orig_trans && $session{'prev_trans_chksum'} == $this_checksum && $session{'prev_trans_length'} == $this_length && $session{'prev_trans_tickid'} == $this_id ){
+		    # Its the same as the previous transaction for this user.
+		    $trans_flag = -1;
+		}
+	    }
+
+	    # Store them for next time.
+	    $session{'prev_trans_type'} = $orig_trans;
+	    $session{'prev_trans_chksum'} = $this_checksum;
+	    $session{'prev_trans_length'} = $this_length;
+	    $session{'prev_trans_tickid'} = $this_id;
+
+	    if( $trans_flag == -1 ){
+                push ( @{ $args{'Actions'} },
+"This appears to be a duplicate of your previous update (please do not refresh this page)" );
+	    }
+
+
+            if ( $trans_type eq 'Comment' && $trans_flag >= 0 ) {
+                my ( $Transaction, $Description ) = $args{TicketObj}->Comment(
+                    CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
+                    BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
+                    MIMEObj      => $Message,
+                    TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+                );
+                push ( @{ $args{Actions} }, $Description );
+            }
+            elsif ( $trans_type eq 'Correspond' && $trans_flag >= 0 ) {
+                my ( $Transaction, $Description ) = $args{TicketObj}->Correspond(
+                    CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
+                    BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
+                    MIMEObj      => $Message,
+                    TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+                );
+                push ( @{ $args{Actions} }, $Description );
+            }
+	}
         else {
             push ( @{ $args{'Actions'} },
-"Update type was neither correspondence nor comment. Update not recorded"
-            );
+    "Update type was neither correspondence nor comment. Update not recorded"
+                );
         }
     }
 }
