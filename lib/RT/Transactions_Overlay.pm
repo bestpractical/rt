@@ -62,6 +62,33 @@ sub _Init   {
 }
 # }}}
 
+# {{{ sub Next
+sub Next {
+    my $self = shift;
+ 	
+    my $Transaction = $self->SUPER::Next();
+    if ((defined($Transaction)) and (ref($Transaction))) {
+	if ($Transaction->__Value('Type') =~ /^Comment/ && 
+	    $Transaction->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	    return($Transaction);
+	} elsif ($Transaction->__Value('Type') !~ /^Comment/ && 
+		 $Transaction->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    return($Transaction);
+	}
+
+	#If the user doesn't have the right to show this ticket
+	else {	
+	    return($self->Next());
+	}
+    }
+
+    #if there never was any ticket
+    else {
+	return(undef);
+    }	
+}
+# }}}
+
 =head2 example methods
 
   Queue RT::Queue or Queue Id
