@@ -10,7 +10,7 @@ $IsChecked => undef
 </%ARGS>
 
 <%INIT>
-if ($Default =~ /checked/i ) {
+if ($Default and $Default =~ /checked/i ) {
 	my $IsChecked = " CHECKED ";
 }	
 </%INIT>
