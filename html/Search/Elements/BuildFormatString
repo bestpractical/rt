@@ -23,6 +23,7 @@ my @fields = (
     "DueRelative",         "ResolvedRelative",
     "Starts",              "Started",
     "Created",             "LastUpdated",
+    "LastUpdatedBy",
     "Told",                "Due",
     "Resolved",            "NEWLINE",
     "RefersTo",	           "ReferredToBy",

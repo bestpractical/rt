@@ -116,14 +116,14 @@ sub ColumnMap {
             return ( $cf->Name );
         }
         elsif ( $attr eq 'value' ) {
-               my $value = eval "sub {
+	    my $value = eval "sub {
                     my \$values = \$_[0]->CustomFieldValues('".$cf->id."');
                     return ( join( ', ', map { \$_->Content } \@{ \$values->ItemsArrayRef } ))
                   }" || die $@;
             return($value);
-            }
-        }
+	}
     }
+}
 $COLUMN_MAP = {
     QueueName => {
         attribute => 'Queue',
@@ -260,6 +260,10 @@ $COLUMN_MAP = {
     LastUpdated => {
         attribute => 'LastUpdated',
         value => sub { return $_[0]->LastUpdatedObj->AsString }
+    },
+    LastUpdatedBy => {
+        attribute => 'LastUpdatedBy',
+        value => sub { return $_[0]->LastUpdatedByObj->Name }
     },
     Told => {
         attribute => 'Told',
