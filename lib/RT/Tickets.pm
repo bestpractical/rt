@@ -3,7 +3,8 @@
 =head1 NAME
 
   RT::Tickets - A collection of Ticket objects
- 
+
+
 =head1 SYNOPSIS
 
   use RT::Tickets;
@@ -28,6 +29,8 @@ package RT::Tickets;
 use RT::EasySearch;
 use RT::Ticket;
 @ISA= qw(RT::EasySearch);
+
+use vars qw(%TYPES @SORTFIELDS);
 
 # {{{ TYPES
 
@@ -66,6 +69,28 @@ use RT::Ticket;
               Keyword => 'KEYWORDFIELD'
 
 	    );
+
+
+# }}}
+
+# {{{ sub SortFields
+
+@SORTFIELDS = qw(id Status Owner Created Due Starts Started
+		 Queue Subject Told Started 
+		    Resolved LastUpdated Priority TimeWorked TimeLeft);
+
+=head2 SortFields
+
+Returns the list of fields that lists of tickets can easily be sorted by
+
+=cut
+
+
+sub SortFields {
+	my $self = shift;
+	return(@SORTFIELDS);
+}
+
 
 # }}}
 
