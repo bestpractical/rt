@@ -153,7 +153,7 @@ CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(120),
-  content BLOB
+  content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
