@@ -340,14 +340,13 @@ my $i = 0;
 my $optionlist = "";
 while (my $val = shift @options) {
     last if (!$val->{Value});
-    my %item = %{$val->{Value}};
     my $key = $val->{Key};
     my ($prefix, $depth, $num) = parsekey($key);
     my $selected;
 
-    next unless ($item{Key} || $item{Subkey});
-    if (exists $item{EA}) {
-	$ea = $item{EA};
+    next unless ($val->{Value}->{Key} || $val->{Value}->{Subkey});
+    if (exists $val->{Value}->{EA} && $val->{Value}->{EA} ne "") {
+	$ea = $val->{Value}->{EA};
     }
 
     if ($depth > 0) {
@@ -359,10 +358,11 @@ while (my $val = shift @options) {
 	$optionlist .= "<option value=$i $selected>";
 	$optionlist .= "&nbsp;" x (5 * ($depth-1));
 #	$optionlist .= "$i: $key ";
-	if ($num > 0 || $item{Subkey}) {
+	if ($num > 0 || $val->{Value}->{Subkey}) {
 	    $optionlist .= $ea . " ";
-	}
-	$optionlist .= "$item{Key} $item{Op} $item{Value}";
+	} else {
+}
+	$optionlist .= "$val->{Value}->{Key} $val->{Value}->{Op} $val->{Value}->{Value}";
 	$optionlist .= "</option>\n";
 
     }
@@ -381,22 +381,21 @@ sub build_array {
 	my $j = 0;
 	while (my $item = $items->{$i + ($j / 10)}) {
 
-	    my %values = %{$item};
 	    if (!$ea) {
-		$ea = $values{EA};
+		$ea = $item->{EA};
 	    }
 	    
 	    my $depth = $i;
 
-	    my $subkey = $values{Subkey};
-	    if (defined $subkey && exists $values{Subkey}) {
+	    my $subkey = $item->{Subkey};
+	    if (defined $subkey && exists $item->{Subkey}) {
 		my $sendkey = "";
 		if ($parentkey) {
 		    $sendkey = $parentkey. "{Subkey}{$i.$j}"; 
 		} else {
 		    $sendkey = "{$i.$j}";
 		}
-		push @$keys, { Key => $sendkey, Value => \%values};
+		push @$keys, { Key => $sendkey, Value => $item};
 		$$Query .= " " . $ea . " " if ($j > 0);
 		$$Query .= "(" if $depth > 0;
 		my $x = $i+1;
@@ -411,11 +410,11 @@ sub build_array {
 			$mykey = " " . $i.$j . " ";
 		    }
 		    $$Query .= " " . $ea . " " if ($j > 0);
-		    $$Query .= "$values{Key} $values{Op} $values{Value}";
-		    push @$keys, { Key => $mykey, Value => \%values};
+		    $$Query .= "$item->{Key} $item->{Op} $item->{Value}";
+		    push @$keys, { Key => $mykey, Value => $item};
 		    
-		    if ($values{Key} eq "Queue") {
-			$queues{$values{Value}} = 1;
+		    if ($item->{Key} eq "Queue") {
+			$queues{$item->{Value}} = 1;
 		    }
 		}
 	    }
@@ -642,9 +641,9 @@ sub keyexists {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
     my $exists;
-    eval "\$exists = exists \$localhash$key";
+    $key =~ s/\}\{/\}->\{/g;
+    eval "\$exists = exists \$hash->$key";
     return $exists;
 }
 
@@ -652,11 +651,11 @@ sub subkeyexists {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
     my $exists;
     my $newkey = $key . "{Subkey}";
-    if (keyexists(\%localhash, $key)) {
-	eval "\$exists = exists \$localhash$newkey";
+    if (keyexists($hash, $key)) {
+	$newkey =~ s/\}\{/\}->\{/g;
+	eval "\$exists = exists \$hash->$newkey";
     }
 
     return $exists;
@@ -666,11 +665,9 @@ sub appendsubkey {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
-
     my $nextkey;
-    if (subkeyexists(\%localhash, nextkey($key))) {
-	$nextkey = appendkey(\%localhash, subkey(nextkey($key)));
+    if (subkeyexists($hash, nextkey($key))) {
+	$nextkey = appendkey($hash, subkey(nextkey($key)));
     } else {
         my ($prefix, $depth, $num) = parsekey($key);
 	$nextkey = subkey($key);
@@ -704,8 +701,8 @@ sub subkey {
 
 sub parentkey {
     my $key = shift;
+    $key =~ s/\}->\{/\}\{/g;
     my ($prefix, $depth, $num) = parsekey($key);
-
     if ($depth > 0) {
 	$prefix =~ s/(.*){Subkey}/$1/;
     } else {
@@ -731,8 +728,6 @@ sub reworkkeys {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
-
     # if our parent doesn't exist, return immediately
     if (!keyexists($hash, parentkey($key))) {
 	return;
@@ -740,47 +735,52 @@ sub reworkkeys {
 
     fixsubkeys($hash, $key);
     # don't try to rework keys if the first one exists
-    if (keyexists(\%localhash, $key) || 
-	subkeyexists(\%localhash, $key)) {
+    if (keyexists($hash, $key) || 
+	subkeyexists($hash, $key)) {
 	return;
     }
 
     my $nextkey = nextkey($key);
-    while (keyexists(\%localhash, $nextkey)) {
-	if (keyexists(\%localhash, $nextkey)) {
+    while (keyexists($hash, $nextkey)) {
+	if (keyexists($hash, $nextkey)) {
+	    $key =~ s/\}\{/\}->\{/g;
+	    $nextkey =~ s/\}\{/\}->\{/g;
+	    $currentkey =~ s/\}\{/\}->\{/g;
 	    $currentkey = $key . $2 if $currentkey =~ m/($nextkey)(.*)/;
-	    eval "\$localhash$key = \$localhash$nextkey";
+	    $currentkey =~ s/\}->\{/\}\{/g;
+	    eval "\$hash->$key = \$hash->$nextkey";
 	}
 
 	# set this so that we can return it;
 	$key = $nextkey;
 
-	if (subkeyexists(\%localhash, $key)) {
+	if (subkeyexists($hash, $key)) {
 	    my $subkey = subkey($key);
-	    reworkkeys(\%localhash, subkey($key));
+	    reworkkeys($hash, subkey($key));
 	}
 	
 	$nextkey = nextkey($key);
     }
-    eval "delete \$localhash$key";
+    $key =~ s/\}\{/\}->\{/g;
+    eval "delete \$hash->$key";
 }
 
 sub fixsubkeys {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
-    if (subkeyexists(\%localhash, $key)) {
+    if (subkeyexists($hash, $key)) {
 	my ($prefix, $depth, $num) = parsekey($key);
 	my %temp;
-	eval "%temp = %{\$localhash$key" . "{Subkey}}";
+	$key =~ s/\}\{/\}->\{/g;
+	eval "%temp = %{\$hash->$key" . "->{Subkey}}";
 	foreach my $i (keys %temp) {
 	    my $num = $i - int($i);
 	    my $new = int($depth) + 1 + $num;
 	    if ($i != $new) {
-		eval "\$localhash$key" . "{Subkey}{$new} = \$temp{$i}";
-		eval "delete \$localhash$key" . "{Subkey}{$i}";
-		fixsubkeys(\%localhash, $key . "{Subkey}{$new}");
+		eval "\$hash->$key" . "{Subkey}->{$new} = \$temp{$i}";
+		eval "delete \$hash->$key" . "{Subkey}->{$i}";
+		fixsubkeys($hash, $key . "{Subkey}->{$new}");
 	    }
 	    $num++;
 	}
@@ -792,9 +792,10 @@ sub getaggregator {
     my $hash = shift;
     my $key = shift;
 
-    my %localhash = %{$hash};
     my $ea;
-    eval "\$ea = \$localhash" . parentkey($key) . "{EA}";
+    my $parent = parentkey($key);
+    $parent =~ s/\}\{/\}->\{/g;
+    eval "\$ea = \$hash->$parent" . "->{EA}";
 
     return $ea;
 }
@@ -804,15 +805,14 @@ sub setaggregator {
     my $key = shift;
     my $ea = shift;
 
-    my %localhash = %{$hash};
     my $parent = parentkey($key);
-    eval "\$localhash$parent" . "{EA} = '$ea'";
+    $parent =~ s/\}\{/\}->\{/g;
+    eval "\$hash->$parent->" . "{EA} = '$ea'";
 }
 
 sub appendkey {
     my $hash = shift;
     my $key = shift;
-    my %localhash = %{$hash};
 
     my $newkey;
     if ($key) {
@@ -821,7 +821,7 @@ sub appendkey {
         $newkey = "{" . "0.0" . "}{Subkey}{1.0}";
     }
 
-    while (keyexists(\%localhash, $newkey)) {
+    while (keyexists($hash, $newkey)) {
 	$newkey = nextkey($newkey);
     }
 
@@ -831,19 +831,21 @@ sub appendkey {
 sub movecurrent {
     my $hash = shift;
     my $newkey = shift;
-    my %localhash = %{$hash};
     my %temp = {};
 
     my $origkey = $currentkey;
 
-    eval "%temp = %{\$localhash$currentkey}";
+    $origkey =~ s/\}\{/\}->\{/g;
+    eval "%temp = %{\$hash->$origkey}";
 
-    eval "delete \$localhash$currentkey";
-    eval "\$localhash$newkey = \\%temp";
+    eval "delete \$hash->$origkey";
+    my $orignewkey = $newkey;
+    $newkey =~ s/\}\{/\}->\{/g;
+    eval "\$hash->$newkey = \\%temp";
 
-    $currentkey = $newkey;
-    reworkkeys(\%localhash, $origkey);
-    reworkkeys(\%localhash, $newkey);
+    $currentkey = $orignewkey;
+    reworkkeys($hash, $origkey);
+    reworkkeys($hash, $orignewkey);
 
     return 1;
 }
@@ -852,17 +854,20 @@ sub swap {
     my $hash = shift;
     my $key1 = shift;
     my $key2 = shift;
-    my %localhash = %{$hash};
 
-    return 0 if !(keyexists(\%localhash,$key1) && keyexists(\%localhash,$key2));
+    return 0 if !(keyexists($hash,$key1) && keyexists($hash,$key2));
 
     my %temp = {};
 
     # store the value temporarily
-    eval "%temp = %{\$localhash$key1}";
-    eval "\$localhash$key1 = \$localhash$key2";
+    $key1 =~ s/\}\{/\}->\{/g;
+    eval "%temp = %{\$hash->$key1}";
 
-    eval "\$localhash$key2 = \\%temp";
+    eval "\$hash->$key1 = \$hash->$key2";
+
+    eval "\$hash->$key2 = \\%temp";
+
+    my $tempea = getaggregator($hash, $key1);
 
     return 1;
 }
