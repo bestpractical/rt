@@ -440,7 +440,7 @@ sub NiceHeaders {
     my $hdrs = "";
     my @hdrs = split(/\n/,$self->Headers);
     while (my $str = shift @hdrs) {
-	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Date|Subject): /i;
+	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc:Date|Subject): /i;
 	    $hdrs .= $str . "\n";
 	    $hdrs .= shift( @hdrs ) . "\n" while ($hdrs[0] =~ /^[ \t]+/);
     }

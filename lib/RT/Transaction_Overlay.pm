@@ -435,8 +435,10 @@ sub Description {
     my $self = shift;
 
     #Check those ACLs
-    #If it's a comment, we need to be extra special careful
-    if ( $self->__Value('Type') eq 'Comment' ) {
+    #If it's a comment or a comment email record,
+    #  we need to be extra special careful
+
+    if ( $self->__Value('Type') =~ /^Comment/ ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             return ( $self->loc("Permission Denied") );
         }
@@ -470,9 +472,9 @@ sub BriefDescription {
     my $self = shift;
 
 
-    #Check those ACLs
-    #If it's a comment, we need to be extra special careful
-    if ( $self->__Value('Type') eq 'Comment' ) {
+    #If it's a comment or a comment email record,
+    #  we need to be extra special careful
+    if ( $self->__Value('Type') =~ /^Comment/ ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             return ( $self->loc("Permission Denied") );
         }
@@ -518,6 +520,14 @@ sub BriefDescription {
 }
 
 %_BriefDescriptions = (
+    CommentEmailRecord => sub {
+        my $self = shift;
+        return $self->loc("Outgoing email about a comment recorded");
+    },
+    EmailRecord => sub {
+        my $self = shift;
+        return $self->loc("Outgoing email recorded");
+    },
     Correspond => sub {
         my $self = shift;
         return $self->loc("Correspondence added");

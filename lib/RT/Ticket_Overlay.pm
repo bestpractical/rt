@@ -3886,6 +3886,11 @@ sub Transactions {
                 OPERATOR => '!=',
                 VALUE    => "Comment"
             );
+            $transactions->Limit(
+                FIELD    => 'Type',
+                OPERATOR => '!=',
+                VALUE    => "CommentEmailRecord"
+            );
         }
     }
 
