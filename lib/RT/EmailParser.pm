@@ -628,8 +628,7 @@ A private instance method which sets up a mime parser to do its job
 sub _SetupMIMEParser {
     my $self   = shift;
     my $parser = shift;
-	
-    #$RT::Logger->crit(  $self->{'AttachmentDir'} );
+    
     # Set up output directory for files:
 
     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
