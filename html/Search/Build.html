@@ -80,26 +80,92 @@ my @actions        = ();
 my %queues;
 
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp(
-        "Results.html",
-        Query   => $Query,
-        Format  => $Format,
-        OrderBy => $ARGS{OrderBy},
-        Rows    => $ARGS{RowsPerPage}
-    );
-    $m->abort();
-}
-elsif ( $ARGS{"EditQuery"} ) {
-    $m->comp(
-        "Edit.html",
-        Query    => $Query,
-        Format   => $Format,
-        SearchId => $SearchId
-    );
+    $m->comp( "Results.html", Query   => $Query, Format  => $Format, OrderBy => $ARGS{OrderBy}, Rows    => $ARGS{RowsPerPage});
     $m->abort();
 }
 
-my $items = ParseQuery( $Query || $search_hash->{'Query'}, \@actions );
+# If the user wants a new search, clobber the search id
+if ( $ARGS{'CopySearch'} ) {
+    $ARGS{'SearchId'} = 'new';
+}
+
+# {{{ if we're asked to revert the current search, we just want to load it
+if ( $ARGS{'Revert'} ) {
+    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
+    $Format                  = undef;
+    $Query                   = undef;
+}
+
+# }}}
+
+# {{{ if we're asked to load a search, load it.
+if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (   ( $obj_type eq 'RT::User' )
+        && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
+
+    }
+
+    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
+    $ARGS{'Format'} = $Format   = $search->SubValue('Format');
+    $ARGS{'Query'} = $Query    = $search->SubValue('Query');
+
+
+
+}
+
+# }}}
+
+# if we've gotten to this point, without a $search, the user is doing _something_ other than
+# manipulating a search's saved status. whcih means we don't have a loaded
+# saved search.
+# we want to load the search they're working on and compare it to the currently
+# loaded search. this will let us present the right buttons.
+
+if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (   ( $obj_type eq 'RT::User' )
+        && ( $obj_id == $session{'CurrentUser'}->id ) )
+    {
+
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
+
+    }
+    else {
+
+        die "unsupported search type"
+
+    }
+
+}
+
+if ($search) {
+    $search_hash->{Description} = ( $search->Description() || loc('Untitled search') );
+    $search_hash->{Format}   = $search->SubValue('Format');
+    $search_hash->{Query}    = $search->SubValue('Query');
+    $search_hash->{Object} = $search;
+}
+else {
+    $search_hash->{Description} = loc('Untitled search');
+    $search_hash->{Format}      = '';
+    $search_hash->{Query}       = '';
+}
+
+my $items = ParseQuery( $Query, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -885,47 +951,10 @@ sub debug {
 
 # {{{ Deal with format changes
 my ($AvailableColumns, $CurrentFormat);
-($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);;
-use Data::Dumper;
+($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);
 
 $ARGS{'Format'} = $Format;
 $ARGS{'Query'}  = $Query;
-
-# }}}
-
-# If the user wants a new search, clobber the search id
-if ( $ARGS{'CopySearch'} ) {
-    $ARGS{'SearchId'} = 'new';
-}
-
-# {{{ if we're asked to revert the current search, we just want to load it
-if ( $ARGS{'Revert'} ) {
-    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
-    $Format                  = undef;
-    $Query                   = undef;
-}
-
-# }}}
-
-# {{{ if we're asked to load a search, load it.
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    # XXX TODO This will only let users save personal searches
-    # We explicitly list out the available types and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
-
-    }
-
-    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
-    $search_hash->{'Objectl'}  = $search;
-}
 
 # }}}
 
@@ -1005,56 +1034,18 @@ if ( $ARGS{'Delete'} ) {
 
     }
 
+    delete $ARGS{'SearchId'};
+
 }
 
 # }}}
 
-# if we've gotten to this point, without a $search, the user is doing _something_ other than
-# manipulating a search's saved status. whcih means we don't have a loaded
-# saved search.
-# we want to load the search they're working on and compare it to the currently
-# loaded search. this will let us present the right buttons.
-
-if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    # XXX TODO This will only let users save personal searches
-    # We explicitly list out the available types and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
-
-    }
-    else {
-
-        die "unsupported search type"
-
-    }
-
-}
-
-if ($search) {
-    $search_hash->{Description} =
-      ( $search->Description() || loc('Untitled search') );
-    $search_hash->{Format}   = $search->SubValue('Format');
-    $search_hash->{Query}    = $search->SubValue('Query');
-    $search_hash->{'Object'} = $search;
-}
-else {
-    $search_hash->{Description} = loc('Untitled search');
-    $search_hash->{Format}      = '';
-    $search_hash->{Query}       = '';
-}
-
+# Escape the format (need more than standard mason url escaping)
 $Format =~ s/#/%23/g;
 $Format =~ s/&/%26/g;
+
+# Build a querystring for the tabs
+
 my $QueryString;
 if ($Query) {
   $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";

@@ -1,7 +1,7 @@
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
 <input type="hidden" name="SearchId" value="<%$SearchId%>">
 <&|/l&>Privacy:</&>
-% if ($CurrentSearch->{'Object'}) {
+% if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
 <& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
 % } else {
 <& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
