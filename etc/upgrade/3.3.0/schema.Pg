@@ -33,10 +33,6 @@ alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
 
-drop index ticketcustomfieldvalues1;
-
-drop index ticketcustomfieldvalues2;
-
 create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,ObjectId,Content); 
 
 create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,ObjectId); 
