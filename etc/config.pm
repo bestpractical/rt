@@ -155,6 +155,10 @@ $LogToScreen = 'error';
 $LogToFile = 'debug';
 $LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
 
+# }}}
+
+# {{{ Web interface configuration
+
 
 
 # Define the directory name to be used for images in rt web
@@ -179,6 +183,11 @@ $MasonComponentRoot = "!!MASON_HTML_PATH!!";
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
 $MasonDataDir = "!!MASON_DATA_PATH!!";
+
+# RT needs to put session data (for preserving state between connections
+# via the web interface)
+$MasonSessionDir = "!!MASON_SESSION_PATH!!";
+
 
 
 #This is from tobias' prototype web search UI. it may stay and it may go.

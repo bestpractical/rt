@@ -23,6 +23,9 @@ use vars qw($VERSION %session $Nobody $SystemUser);
 # List of modules that you want to use from components (see Admin
 # manual for details)
 
+#Clean up our umask...so that the session files aren't world readable, writable or executable
+umask(0077);
+
   
 $VERSION="!!RT_VERSION!!";
 
@@ -89,8 +92,17 @@ my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
 
 my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 
+# chown !!WEB_USER!!.!!WEB_GROUP!!
 chown ( [getpwnam('!!WEB_USER!!')]->[2], [getgrnam('!!WEB_GROUP!!')]->[2],
-        $interp->files_written );   # chown !!WEB_USER!!.!!WEB_GROUP!!
+        ($RT::MasonSessionDir, $interp->files_written) ); 
+
+
+
+# Die if WebSessionDir doesn't exist or we can't write to it
+
+stat ($RT::MasonSessionDir);
+die "Can't read and write $RT::MasonSessionDir"
+  unless (( -d _ ) and ( -r _ ) and ( -w _ ));
 
 
 sub handler {
@@ -105,24 +117,30 @@ sub handler {
     
     my %cookies = parse CGI::Cookie($r->header_in('Cookie'));
     
-    
     eval { 
 	tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-	( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef );
+	  ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef ), 
+	    { Directory => $RT::MasonSessionDir,
+	      LockDirectory => $RT::MasonSessionDir,
+	    }	;
     };
     
     if ( $@ ) {
 	# If the session is invalid, create a new session.
 	if ( $@ =~ m#^Object does not exist in the data store# ) {
-	     tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef;
+	     tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
+	     { Directory => $RT::MasonSessionDir,
+	       LockDirectory => $RT::MasonSessionDir,
+	     };
 	     undef $cookies{'AF_SID'};
 	}
     }
     
     if ( !$cookies{'AF_SID'} ) {
-	my $cookie = new CGI::Cookie(-name=>'AF_SID', 
-				     -value=>$HTML::Mason::Commands::session{_session_id}, 
-				     -path => '/',);
+	my $cookie = new CGI::Cookie
+	  (-name=>'AF_SID', 
+	   -value=>$HTML::Mason::Commands::session{_session_id}, 
+	   -path => '/',);
 	$r->header_out('Set-Cookie', => $cookie);
     }
     

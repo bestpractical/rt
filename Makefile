@@ -42,6 +42,7 @@ RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
 MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
+MASON_SESSION_PATH	=       $(RT_PATH)/WebRT/sessiondata
 RT_LOG_PATH             =       /tmp
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant to be
@@ -222,12 +223,13 @@ fixperms:
 	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH)
 
 	# Make the web ui's data dir writable
-	chmod 0700  $(MASON_DATA_PATH)
-	chown -R $(WEB_USER) $(MASON_DATA_PATH)
+	chmod 0700  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
+	chown -R $(WEB_USER) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(MASON_DATA_PATH)
+	mkdir -p $(MASON_SESSION_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	mkdir -p $(RT_LIB_PATH)
 	mkdir -p $(MASON_HTML_PATH)
@@ -323,6 +325,7 @@ config-replace:
 	s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
+	s'!!MASON_SESSION_PATH!!'$(MASON_SESSION_PATH)'g;\
 	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
 	s'!!RT_LOG_PATH!!'$(RT_LOG_PATH)'g;\
 	s'!!RT_VERSION!!'$(RT_VERSION)'g;\

@@ -16,15 +16,14 @@ STATUS
 ------
 
 This is a development release in the cycle toward RT2. This is NOT 
-a stable release.  Lots of things are still missing.  Don't expect it 
-to just work out of the box.
+a stable release. 
 
 
 BUGS
 ----
 
-Have a look at <URL:http://fsck.com/rt2/> for known bugs. (login as
-guest/guest)
+Have a look at <URL:http://fsck.com/rt2/NoAuth/Buglist.html> for known bugs.
+(When prompted, login as guest/guest)
 
 To submit a bug, send an email to rt-2.0-bugs@fsck.com.
 
@@ -93,8 +92,6 @@ GENERAL INSTALLATION
 
 5b  FOR UPGRADING: (Within the RT 2.0.x series)
         
-        WARNING: This may not work within the 1.3.x series.
-
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
 				  Make, if you need to)
@@ -108,34 +105,27 @@ GENERAL INSTALLATION
 
         Not supported yet 
 
-6   Configure the email and web gateways, as described below. 
-
-7   Edit etc/config.pm in your RT installation directory.  In many
+6   Edit etc/config.pm in your RT installation directory.  In many
     cases sensible defaults have been included. In others, you MUST
     supply a value.
 
-8   Restart your webserver, so it picks up your configuration changes.
+7   Configure the email and web gateways, as described below. 
 
-9   The admin tools doesn't work yet, so this information is slightly
-    inaccurate:
+8   Stop and start your webserver, so it picks up your configuration changes.
 
-    Using rtadmin, or admin-webrt.cgi add a RT user for yourself.  Add an RT 
-    queue. This must be done as root, as the only user with acls to access rt 
-    is root.
+9   Using rtadmin, or the web interface add a RT user for yourself. 
+    This must be done as root, as no other user has permission to do anything inside RT yet.
+    Right now, root's password is 'password'. You should change that too.
 	
 	Commandline instructions:
 
-            [root@host bin]# ./rtadmin queue -create <queue name>
-            [root@host bin]# ./rtadmin user  -create <user name>
+            [root@host bin]# ./rtadmin --user <username> --create --password="<password>"
 
 	Web instructions:
-	
-	    Click on "Create a user called" (after filling out the text input 
-					     to the right of the button)
-	
-	    Click on "Create a queue called"  (after filling out the text input 
-                                             to the right of the button)
-
+	    Log into the web ui as root
+	    Click on "Administration"	
+	    Click on "Users"
+	    Click on "Create a new user"
 
     NOTE: root's password for the web interface is "password" 
     (without the quotes.)  Not changing this is a SECURITY risk
@@ -151,29 +141,14 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
-TODO: THE CALLING CONVENTION FOR THE MAILGATE HAS CHANGED
-
     rt-comment: "|/path/to/rt/bin/rt-mailgate --queue general --action comment"
     rt:         "|/path/to/rt/bin/rt-mailgate --queue general --action correspond"
-                                                    |          |
-                                   <<queue-name>----/          |
-                                                               |
-                <<correspond or comment depending on whether   |
-                 the mail shoud be resent to the requestor>---/
-		 "action" here will make this address only
-		  parse actions in the message without 
-		  recording the message as a transaction
-		  of its own"
+                                                         |          |
+                                         <queue-name>----/          |
+                                                                    |
+                      <correspond or comment depending on whether   |
+                      the mail should be resent to the requestor>---/
 
-
-The RT Mail Gateway can be used to perform actions on requests.
-For an explanation of how to use the Mail Gateway, send a message to
-any RT alias with the command %RT HELP on a line by itself.     
-
-You'll need an alias like the following for action requests:
-
-        rt-action:      "|/path/to/rt/bin/rt-mailgate --queue general --action action"
-NOTE: This is not yet implemented for RT2.
 
 
 THE WEB UI
@@ -202,11 +177,10 @@ PerlRequire /opt/rt/bin/webmux.pl
 
 THE CLI
 -------
-        Binaries for the CLI are located in /usr/local/rt/bin
+        Binaries for the CLI are located in rt/bin
         You've got:
 
-                "rtq" (display a request queue)
-                "rt" (manipulate a request)
+                "rt" (manipulate or display requests) 
                 "rtadmin" (modify queues, users and acls)
 
         All three of these programs take --help as an option.

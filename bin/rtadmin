@@ -268,7 +268,8 @@ sub AdminUser {
 
     my $user_obj = new RT::User($CurrentUser);
     
-    
+    $args{'Name'} = $user unless($args{'Name'});
+ 
     #Create the user if we need to 
     if ($args{'create'}) {
 	my ($status, $msg) = 
@@ -381,6 +382,7 @@ sub AdminQueue {
     use RT::Queue;
     my $queue_obj = new RT::Queue($CurrentUser);
     
+    $args{'Name'} = $queue unless ($args{'Name'});
     
     #Create the queue if we need to 
     if ($args{'create'}) {
@@ -651,6 +653,8 @@ sub AdminGroup {
 	return();
     }	
     
+    $args{'Name'} = $group unless ($args{'Name'});
+
     #Create the group if we need to
     if ($args{'create'}) {
 	my ($val, $msg) = $group_obj->create( Name => $args{'Name'},
