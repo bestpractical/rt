@@ -275,7 +275,7 @@ sub Content {
     
     # If it's a message or a plain part, just return the
     # body. 
-    if ($MIMEObj->ContentType() =~ '^(text|message)/') {
+    if ($MIMEObj->ContentType() =~ '^(text|message)(/|$)') {
 	$content = $MIMEObj->Content();
     }
     
@@ -299,7 +299,7 @@ sub Content {
 	    my $all_parts = $MIMEObj->Children();
 	    while (($content == undef) && 
 		   (my $part = $all_parts->Next)) {
-		if (($part->ContentType() =~ '^(text|message)/') and
+		if (($part->ContentType() =~ '^(text|message)(/|$)') and
 		    ($part->Content())) {
 		    $content = $part->Content;
 		}	
