@@ -960,16 +960,12 @@ sub CustomFieldValues {
 
     if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
 
-        unless ( $field =~ /^\d+$/ ) {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByName(
-                Name  => $field,
-                Queue => $self->Object->QueueObj->Id
-            );
-            unless ( $cf->id ) {
-                $cf->LoadByName( Name => $field, Queue => '0' );
-            }
-            $field = $cf->id;
+        unless ( $field =~ /^\d+$/o ) {
+            my $CFs = RT::CustomFields->new( $self->CurrentUser );
+             $CFs->Limit( FIELD => 'Name', VALUE => $field);
+            $CFs->LimitToLookupType($self->_LookupTypes);
+            $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
+            $field = $CFs->First->id if $CFs->First;
         }
     }
     return $self->SUPER::CustomFieldValues($field);

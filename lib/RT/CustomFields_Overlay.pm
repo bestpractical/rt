@@ -147,16 +147,6 @@ sub LimitToGlobal  {
 }
 # }}}
 
-sub LimitToObjectType {
-    my $self = shift;
-    my $type = shift;
-
-    return if $self->{_sql_limit_objectype}{$type}++;
-    $self->Limit (ALIAS => $self->_OCFAlias,
-		    ENTRYAGGREGATOR => 'OR',
-		    FIELD => 'ObjectType',
-		    VALUE => $type);
-}
 
 # {{{ sub _DoSearch 
 
