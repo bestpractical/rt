@@ -1,9 +1,5 @@
 
-DELETE FROM user WHERE user like 'rt';
-DELETE FROM db where db LIKE 'rt';
-INSERT INTO db VALUES ('%','rt','rt','Y','Y','Y','Y','N','N');
-#
-# CHANGE THE TEXT INSIDE OF "password('') below to something secret.
-# don't forget to change rt/lib/routines/RT.pm accordingly
-#
-INSERT INTO user VALUES ('localhost','rt',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
+DELETE FROM user WHERE user like '!!RTUSER!!';
+DELETE FROM db where db LIKE '!!RT_MYSQL_DATABASE!!';
+INSERT INTO db VALUES ('%','!!RT_MYSQL_DATABASE!!','!!RTUSER!!','Y','Y','Y','Y','N','N');
+INSERT INTO user VALUES ('!!RT_MYSQL_HOST!!','!!RTUSER!!',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
