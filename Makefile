@@ -41,7 +41,7 @@ RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
 
 # RT_FASTCGI_HANDLER is the mason handler script for fcgi
-RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/fastcgi_handler.cgi
+RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.cgi
 
 # The following are the names of the various binaries which make up RT 
 

@@ -26,7 +26,7 @@ HTML::Mason 0.87
 Date::Manip
 Date::Format
 MIME::Entity 5.108
-Mail::Mailer 1.19
+Mail::Mailer 1.20
 CGI::Cookie 1.06
 Log::Dispatch 1.6
 HTML::Entities 
