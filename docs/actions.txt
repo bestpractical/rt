@@ -1,0 +1,112 @@
+Actions on a Request
+
+All of the following actions are only available to you if you have
+Manipulate privileges or higher on a given Queue.
+
+		- Comment 
+		
+For a given Queue, anyone with Manipulate privileges or higher may Comment
+on a Request.  Commenting is the most common way to update a Request.  It
+adds a Transaction and may or may not (depending on how the Queue is
+configured) automatically send mail to the Requestor or the Queue members.
+It is intended to be used for "internal" correspondence that is not sent to
+the user.  Comments would only be sent to the requestor at installations which
+have enabled "Notify User on Action" which is not recommended, because of the
+sheer volume of mail involved.
+
+		- Reply
+
+Replying to a Request does much the same thing as Commenting on it does, but
+it also explicitly sends email to the Requestor, regardless of how the Queue
+is configured.  &RT& will note the time of this
+communication in the "Last User Contact" field.
+
+		- Take 
+
+Taking a Request assigns it to the Taker.  Their ID goes into the Owner
+field.  You may only Take a Request if it is unowned -- if someone else
+already Owns the Request, you have to Steal it from them to gain Ownership.
+
+		- Untake 
+		  
+Untaking a Request removes your name from the Assigned field, making the
+Request un-Owned again.  Useful in cases where you've Taken the wrong
+Request, or you've become overburdened, underinformed, fired, reassigned,
+amnesiac, promoted, or something else. 
+
+		- Steal
+
+Stealing a Request re-assigns an already Owned request to you, instead of to
+its current Owner.  Useful in cases where the original Owner (as compared to
+you) has become overburdened, underinformed, fired, reassigned, amnesiac,
+promoted, or something else. 
+
+		- Give
+
+Assign a Request to someone else, and remove yourself from the Assigned
+field.
+
+		- Notify Requestor
+
+Tells &RT& that somehow, the person who made the original Request has been
+contacted.  Automatically tagged when someone uses the Reply function,
+rather than simply Commenting.  Useful when trying to measure the
+reponse-time back to users. (##JRV## accurate?)
+
+  EX:  While standing at the buffet, Charlie notices he's standing elbow to
+  elbow with Biff, who sent in a Request that morning.  Charlie tells Biff
+  that he may wish to untoggle his caps lock key if he wants man pages to
+  work for him.  Biff walks away pleased, and after lunch, Charlie notes the
+  interaction in the Request, including the fact that the Requestor was
+  notified.  Charlie's boss notices the fast turnaround time and rewards
+  Charlie with a nerf weapon and permission to use it.
+
+		- Change Subject
+
+You may edit the Subject line of a Request.
+
+		- Change Queue
+
+Move a Request from one Queue to another.  (##JRV##  Exact privileges
+required in each Queue to do this?  Manipulate?  or do you have to be an RT
+admin...?  Will it ever be possible to have Requests belong to multiple
+Queues, such that something could sit in a public queue and someone's
+private queue at the same time?)
+
+		- Change Area
+
+Assign a Request to a particular Area within a Queue.
+
+		- Change Status 
+		
+You may change the Status of a Request to one of the four possible States:
+Open, Stalled, Resolved, or Dead.
+
+  EX: The Sphinx asked this riddle of a traveller: What is Open in the
+  morning, Stalled in midday, Resolved by evening, and Dead by night?   The
+  traveller responded, "Either metaphorically, Man, or literally, a
+  hyperactive Request."  She was right, but the Sphinx ate her anyhow.
+
+		- Change Requestor
+
+You may change the Requestor field if the Requestor or their email address
+changes.
+
+		- Change Due Date
+
+You may change the Due Date, which may or may not be set automatically,
+depending on Queue settings.  (##JRV## correct?)
+
+		- Change Priority
+
+You may change the current and/or Final Priority to reflect changes in the
+Request's importance in the grand scheme of things.
+
+		- Merge Request
+
+If a user opens a Request that turns out to be redundant, or which contains
+information more appropriate to continue an already open Request than to
+start one anew, you may merge all the entirety of one Request into another.
+(##JRV## --> )"Merge" may be something of a misnomer here, as the actual
+action being performed is appending -- the Request being merged becomes the
+newest transactions in the Request being merged into.
