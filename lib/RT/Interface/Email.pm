@@ -14,7 +14,8 @@ sub activate {
   if (!defined ($Action)) { $Action = "correspond";}
   
   my $time = time;
-  my $AttachmentDir = "/tmp/rt/$time";
+
+  my $AttachmentDir = "/tmp/rt-tmp-$time";
   mkdir "$AttachmentDir", 0700;
 
   # Create a new parser object:
@@ -34,7 +35,7 @@ sub activate {
   $parser->output_to_core(20000);
   
   #Ok. now that we're set up, let's get the stdin.
-  $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
+  my $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
   
   # Get the head, a MIME::Head:
   $head = $entity->head;
@@ -75,9 +76,9 @@ sub activate {
       $Ticket->Create ( Queue => $Queue,
 			Area => $Area,
 			Subject => $Subject,
-			Attachment => $entity
+			MIMEEntity => $entity
 		      );
-    
+   print "id/trans/err:  $id $Transaction $ErrStr\n"; 
   }
   else { #If we have a ticketid
     #   If the message contains commands, execute them
@@ -97,7 +98,7 @@ sub activate {
       my $Ticket = new RT::Ticket($CurrentUser);
       $Ticket->Load($TicketId);
       #TODO: Check for error conditions
-      $Ticket->Comment(MIMEObj => $entity);
+      $Ticket->Correspond(MIMEObj => $entity);
     }
   }
   
