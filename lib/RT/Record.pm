@@ -16,11 +16,11 @@
 
 
 package RT::Record;
-use DBIx::SearchBuilder::Record;
+use DBIx::SearchBuilder::Record::Cachable;
 use RT::Date;
 use RT::User;
 
-@ISA= qw(DBIx::SearchBuilder::Record);
+@ISA= qw(DBIx::SearchBuilder::Record::Cachable);
 
 # {{{ sub _Init 
 
