@@ -173,8 +173,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
      ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \
 @updateresults); 
     } 
-    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresul
-ts);
+    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults);
     @tempresults = map { "Ticket ".$Ticket->Id. ": ".$_ } @tempresults;
 
     

@@ -70,6 +70,7 @@ my ( @id,
      $status,
      $subject,
      $owner,
+     $steal,
      $queue,
      $time_left,
      $priority,
@@ -137,6 +138,7 @@ my @args =("id=s" => \@id,
 	   "status=s" => \$status,
 	   "subject=s" => \$subject,
 	   "owner=s" => \$owner,
+	   "steal" => \$steal,
 	   "queue=s" => \$queue,
 
 	   
@@ -245,6 +247,8 @@ Attributes
            sets subject
 	   --owner=<userid>
            set owner to 
+           --steal
+           Become the owner, even if someone else owns the ticket
 	   --queue=<queueid>
            set queue to
 	   
@@ -918,6 +922,12 @@ else {
 	    print $msg."\n";
 	}
 
+        # Steal
+        if ($steal) {
+                my ($trans, $msg) =
+                 $Ticket->Steal();
+                 print $msg . "\n";
+        }
 	#Set queue 
 	if ($queue) {
 	    my ($trans, $msg) = 
