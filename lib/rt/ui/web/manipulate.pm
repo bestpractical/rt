@@ -1125,7 +1125,7 @@ sub Summary_Area {
 sub Summary_Merge {
   my $Form;
   if (&rt::can_manipulate_request($serial_num, $current_user)) {
-    $Form .=  &Summary_Col_Header("Merge Into");
+    $Form =  &Summary_Col_Header("Merge Into");
     $Form .=  "<input size=5 name=\"req_merge_into\" value=\"$in_serial_num\">";
   }
   return ($Form);

@@ -2,37 +2,59 @@
 package rt::ui::cli::admin;
 
 
+
 sub activate {
-($current_user,$tmp)=getpwuid($<);
-($value, $message)=&rt::initialize($current_user);
-print "$message\n";
-if ($value == 0) {
-	return(0);
-} 
-&parse_args;
+  
+  ($current_user,$tmp)=getpwuid($<);
+  $CurrentUser = new RT::User($current_user);
+  $CurrentUser->load($current_user);
+  
+  
+  ($value, $message)=&rt::initialize($CurrentUser->UserId);
+  if ($value == 0) {
+    print "$message\n";
+    exit(0);
+  } 
+  else {
+    print "$message\n";
+  }
+  &parse_args;
 }
 
 sub parse_args {
     for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] =~ 'q') {
 	    $action=$ARGV[++$i];
-	    if (($action eq "-modify") or ($action eq "-create")) {
+	    if  ($action eq "-create") {
 		$queue_id=$ARGV[++$i];
 		if (!$queue_id) {
-			print "You must specify a queue.\n";
-			exit(0);
-			}
-
-		&cli_create_modify_queue($queue_id);
+		  print "You must specify a queue.\n";
+		  exit(0);
+		}
+		
+		&cli_create_queue($queue_id);
+	      }
+	    
+	    if ($action eq "-modify") {
+	      $queue_id=$ARGV[++$i];
+	      if (!$queue_id) {
+		print "You must specify a queue.\n";
+		exit(0);
+	      }
+	      
+	      &cli_modify_queue($queue_id);
 	    }
+	    
+	    
+	    
 	    elsif ($action eq "-delete")	{
-		$queue_id=$ARGV[++$i];
-            if (!$queue_id) {
-                        print "You must specify a queue.\n";
-                        exit(0);
-                        }
-
-		&cli_delete_queue($queue_id);
+	      $queue_id=$ARGV[++$i];
+	      if (!$queue_id) {
+		print "You must specify a queue.\n";
+		exit(0);
+	      }
+	      
+	      &cli_delete_queue($queue_id);
 	    }
 
 	    elsif ($action eq "-acl")	{
@@ -51,11 +73,11 @@ sub parse_args {
 		$area_name=$ARGV[++$i];
 		$queue_id=$ARGV[++$i];
 		if ($area_action =~ 'a') {
-		    ($flag, $message)=&rt::add_queue_area($queue_id, $area_name, $current_user);
+		    ($flag, $message)=&rt::add_queue_area($queue_id, $area_name, $CurrentUser->UserId);
 		    print "$message\n"
 		    }
 		elsif ($area_action =~  'd') {
-		    ($flag, $message)=&rt::delete_queue_area($queue_id, $area_name, $current_user);
+		    ($flag, $message)=&rt::delete_queue_area($queue_id, $area_name, $CurrentUser->UserId);
 		    print "$message\n"
 		    }	
 	    }
@@ -72,9 +94,15 @@ sub parse_args {
 
 
 		&cli_create_modify_user($user_id);
-	    } elsif ($action eq "-getpwent") {
+	    } 
+	    
+	    elsif ($action eq "-getpwent") {
 		$passwd=$ARGV[++$i];
 		$admin=$ARGV[++$i];
+
+		print "Getpwent is not currently supported. A patch would be appreciated\n";
+		exit(0);
+
 		if (!defined($admin)) {
 		    print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
 		    exit(0);
@@ -83,19 +111,22 @@ sub parse_args {
 		   while (my $login=$ARGV[++$i]) {
 		      ($login, $domain) = split('@', $login);
                       $domain || ($domain = $host);
-                      &add_pwent($domain, getpwnam($login), $current_user);		  
+                      &add_pwent($domain, getpwnam($login), $CurrentUser->UserId);		  
 		   }
 	       } else { 
 		   #Sometimes it really had been useful beeing able to combine while with
 		   #else..  
 		   
                      &setpwent;
-                     while (&add_pwent($host, getpwent, $current_user))
+                     while (&add_pwent($host, getpwent, $CurrentUser->UserId))
                           {;}
                      &endpwent;
-	       }
+		   }
    
-	    }
+	      }
+
+
+
 	    elsif ($action eq "-delete")	{
 		$user_id=$ARGV[++$i];
 
@@ -131,13 +162,13 @@ sub add_pwent {
       $quota,$comment,$gcos,$dir,$shell,$whoami) = @_;
   my ($realname,$office,$phone)=split(/,/,$gcos);
 
-  my ($result, $msg)=&rt::add_modify_user_info
-      ($name,$realname,$passwd,"$name\@$domain",$phone,$office,$comment,
-       ($name eq $whoami ? 1 : $admin),$whoami);
-
+#TODO replace this with an object call  
+#  my ($result, $msg)=&rt::add_modify_user_info ($name,$realname,$passwd,"$name\@$domain",$phone,$office,$comment,
+#						($name eq $whoami ? 1 : $admin),$whoami);
+  
   # Report to STDOUT:
   print "$msg\n" if ($msg);
-
+  
   return $result;
 }
 
@@ -151,82 +182,136 @@ sub cli_acl_queue {
 	&cli_print_acl($user_id,$queue_id);
     }
 }
- sub cli_create_modify_user{
-    my ($user_id)=@_;
-    if (($current_user eq $user_id) or ($rt::users{$current_user}{admin_rt})) {
-	$email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$rt::users{$user_id}{email});
-	$real_name=&rt::ui::cli::question_string("Real Name",$rt::users{$user_id}{'real_name'});
-	$password=&rt::ui::cli::question_string("RT Password (will echo)",$rt::users{$user_id}{password});
-	$phone=&rt::ui::cli::question_string("Phone Number",$rt::users{$user_id}{phone});
-	$office=&rt::ui::cli::question_string("Office Location",$rt::users{$user_id}{office});
-	$comments=&rt::ui::cli::question_string("Misc info about this user",$rt::users{$user_id}{comments});
-	if ($rt::users{$current_user}{admin_rt}) {
-	    $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$rt::users{$user_id}{admin_rt});
+ sub cli_modify_user{
+   my $user_id = shift;
+   my $User = new RT::User($CurrentUser->UserId);
+   my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
+   
+   $User->load($user_id);
+   if (($CurrentUser->UserId eq $user_id) or ($CurrentUser->IsAdministrator)) {
+     
+     $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$User->EmailAddress);
+     $real_name=&rt::ui::cli::question_string("Real Name",$User->RealName);
+     $password=&rt::ui::cli::question_string("RT Password (will echo)",$User->Password);
+     $phone=&rt::ui::cli::question_string("Phone Number",$User->Phone);
+     $office=&rt::ui::cli::question_string("Office Location",$User->Office});
+     $comments=&rt::ui::cli::question_string("Misc info about this user",$User->Comments);
+
+   if ($CurrentUser->IsAdministrator) {
+     $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$User->IsAdministrator);
+   }
+   else {
+     $admin_rt=0;
+   }
+   if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
+     $message = $User->EmailAddress($email);
+     $message .= $User->RealName($real_name);
+     $message .= $User->Password($password);
+     $message .= $User->Phone($phone);
+     $message .= $User->Office($office);
+     $message .= $User->Comments($comments);
+     $message .= $User->IsAdministrator($admin_rt);
+     print "$message\n";
 	}
-	else {
-	    $admin_rt=0;
+     else {
+       print "User modifications aborted.\n";
 	}
-	if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-	    ($flag, $message)=&rt::add_modify_user_info($user_id, $real_name, $password, $email, $phone, $office,$comments, $admin_rt, $current_user);
-	    print "$message\n";
-	}
-	else {
-	    print "User modifications aborted.\n";
-	}
-    }
-    else {
-	print "\nYou do not have privileges to modify that user's info\n";
-    }
+   }
+ else {
+   print "You do not have privileges to modify that user's info\n";
+ }
+}
+ 
+ 
+sub cli_create_user {
+  my $user_id = shift;
+  my $User = new RT::User($CurrentUser->UserId);
+  $User->Create($user_id);
+  #TODO. this is wasteful. we should just be passing around a queue object
+  &cli_modify_user($User->UserId);
+}
+}
+sub cli_create_queue {
+  my $queue_id = shift;
+  my $Queue = new RT::Queue($CurrentUser->UserId);
+  $Queue->Create($queue_id);
+  #TODO. this is wasteful. we should just be passing around a queue object
+  &cli_modify_queue($Queue->QueueId);
 }
 
 
+sub cli_modify_queue {
+    my $queue_id = shift;
+    my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
+	$m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
+	$default_final_prio, $Queue, $comment_alias);
 
-sub cli_create_modify_queue {
-    my ($queue_id)=@_;
-    my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans,$m_members_correspond, $m_user_create, $m_members_comment, $allow_user_create,$default_prio, $default_final_prio);
-    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" ,$rt::queues{$queue_id}{mail_alias});
-    $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",$rt::queues{$queue_id}{m_owner_trans});
+    # get a new queue object and fill it.
+    $Queue = new RT::Queue($CurrentUser->UserId);
+    $Queue->load($queue_id);
     
-    $m_members_trans=&rt::ui::cli::question_yes_no("Mail queue members on transaction",$rt::queues{$queue_id}{m_members_trans});
-    $m_user_trans=&rt::ui::cli::question_yes_no("Mail requestors on transaction",$rt::queues{$queue_id}{m_user_trans});
 
-    $m_user_create=&rt::ui::cli::question_yes_no("Autoreply to requestor on creation",$rt::queues{$queue_id}{m_user_create});
-    $m_members_correspond=&rt::ui::cli::question_yes_no("Mail correspondence to queue members",$rt::queues{$queue_id}{m_members_correspond});
-    $m_members_comment=&rt::ui::cli::question_yes_no("Mail queue members on comment",$rt::queues{$queue_id}{m_members_comment});
-    $allow_user_create=&rt::ui::cli::question_yes_no("Allow non-queue members to create requests",$rt::queues{$queue_id}{allow_user_create});
-    $default_prio=&rt::ui::cli::question_int("Default request priority (1-100)",$rt::queues{$queue_id}{default_prio});
-    $default_final_prio=&rt::ui::cli::question_int("Default final request priority (1-100)",$rt::queues{$queue_id}{default_final_prio});
+
+    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" , $Queue->CorrespondAlias);
+    $comment_alias=&rt::ui::cli::question_string("Queue comments alias (ex: support\@somewhere.com)" , $Queue->CommentAlias);
+
+    $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",$Queue->MailOwnerOnTransaction);
+    
+    $m_members_trans=&rt::ui::cli::question_yes_no("Mail queue members on transaction",$Queue->MailMembersOnTransaction);
+    $m_user_trans=&rt::ui::cli::question_yes_no("Mail requestors on transaction",$Queue->MailRequestorOnTransaction);
+    
+    $m_user_create=&rt::ui::cli::question_yes_no("Autoreply to requestor on creation",$Queue->MailRequestorOnCreation);
+    $m_members_correspond=&rt::ui::cli::question_yes_no("Mail correspondence to queue members",$Queue->MailMembersOnCorrespondence);
+    
+    $m_members_comment=&rt::ui::cli::question_yes_no("Mail queue members on comment",$Queue->MailMembersOnComment);
+    $allow_user_create=&rt::ui::cli::question_yes_no("Allow non-queue members to create requests",$Queue->PermitNonmemberCreate);
+    $default_prio=&rt::ui::cli::question_int("Default request priority (1-100)",$Queue->StartingPriority);
+    $default_final_prio=&rt::ui::cli::question_int("Default final request priority (1-100)",$Queue->FinalPriority);
     
     if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-	($flag, $message)=&rt::add_modify_queue_conf($queue_id, $mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_user_create, $m_members_correspond, $m_members_comment, $allow_user_create, $default_prio, $default_final_prio, $current_user);
-	print "$message\n";
-  }
-    else {
-	print "Queue modifications aborted.\n";
+      $message = $Queue->CorrespondAlias($mail_alias);
+      $message .= $Queue->CommentAlias($comment_alias);
+      $message .= $Queue->MailOwnerOnTransaction($m_owner_trans);
+      $message .= $Queue->MailMembersOnTransaction($m_members_trans);
+      $message .= $Queue->MailRequestorOnTransaction($m_user_trans);
+      $message .= $Queue->MailRequestorOnCreation($m_user_create);
+      $message .= $Queue->MailMembersOnCorrespondence($m_members_correspond);
+      $message .= $Queue->MailMembersOnComment($m_members_comment);
+      $message .= $Queue->PermitNonmemberCreate($allow_user_create)
+      $message .= $Queue->StartingPriority(default_prio);
+      $message .= $Queue->FinalPriority($default_final_prio);
+      print "$message\n";
     }
-}
+    else {
+      print "Queue modifications aborted.\n";
+    }
+  }
 
 sub cli_delete_queue {
-    my ($queue_id)=@_;
+    my  $queue_id = shift;
     # this function needs to ask about moving all requests into some other queue
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
-	($flag, $message)=&rt::delete_queue($queue_id, $current_user);
-	print "$message\n";
+      my $Queue = new RT::Queue($CurrentUser->UserId);
+      $Queue->Load($queue_id);
+      $message = $Queue->Delete();
+      print "$message\n";
     }
     else {
-	print "Queue deletion aborted.\n";
+      print "Queue deletion aborted.\n";
     }
-}
+  }
 
 sub cli_delete_user {
-    my ($user_id)=@_;
-    if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
-	($flag, $message)=&rt::delete_user($user_id, $current_user);
-	print "$message\n";
-    }
-    else {
-	print "User deletion aborted.\n";
-    }
+  my  $user_id = shift;
+  if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
+    my $User = new RT::User($CurrentUser->UserId);
+    $User->Load($user_id);
+    $message = $User->Delete();
+    print "$message\n";
+  }
+  else {
+    print "User deletion aborted.\n";
+  }
 }
 
 
@@ -276,7 +361,7 @@ sub cli_user_acl {
 	}
 
 	if (&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)) {
-	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $current_user);
+	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	else {
@@ -292,36 +377,39 @@ sub cli_user_acl {
 
 
 sub cli_print_acl {
-    my ($user_id, $queue_id) = @_;
-    
-    if (!&rt::is_a_queue($queue_id)){
-	print "$queue_id: That queue does not exist. (You should never see this error)\n";
-        return(0);
-    }
-   #print "Queue: $queue_id \n";
-    if (&rt::can_display_queue($queue_id,$user_id)){
-	print " Display";
-    }
-    else {
-	print "        ";
-    }
-    if (&rt::can_manipulate_queue($queue_id,$user_id)){
-	print "   Manipulate";
-    }
-    else {
-	print "             ";
-    }
-    if (&rt::can_admin_queue($queue_id,$user_id)){
-	print "   Admin\n";
-    }
-    else {
-	print "         \n";
-    }
-    
+  my  $user_id =  shift;
+  my  $queue_id  = shift;
+  
+  my $ACE = new RT::ACE($CurrentUser->UserId);
+  
+  if (!&rt::is_a_queue($queue_id)){
+    print "$queue_id: That queue does not exist. (You should never see this error)\n";
+    return(0);
+  }
+  #print "Queue: $queue_id \n";
+  if (&rt::can_display_queue($queue_id,$user_id)){
+    print " Display";
+  }
+  else {
+    print "        ";
+  }
+  if (&rt::can_manipulate_queue($queue_id,$user_id)){
+    print "   Manipulate";
+  }
+  else {
+    print "             ";
+  }
+  if (&rt::can_admin_queue($queue_id,$user_id)){
+    print "   Admin\n";
+  }
+  else {
+    print "         \n";
+  }
+  
     
 }
 sub cli_help_rt_admin{
-    print "
+  print "
 user
       -create <user> create a RT account for <user>
       -modify <user> modify user info for <user>

@@ -1,19 +1,27 @@
 $Header$
 package rt::ui::cli::query;
 
-
 sub activate {
-($current_user,$tmp)=getpwuid($<);
-($value, $message)=&rt::initialize($current_user);
-if ($value == 0) {
+  
+  ($current_user,$tmp)=getpwuid($<);
+  $CurrentUser = new RT::User($current_user);
+  $CurrentUser->load($current_user);
+  
+  
+  ($value, $message)=&rt::initialize($CurrentUser->UserId);
+  if ($value == 0) {
     print "$message\n";
     exit(0);
-} 
-else {
+  } 
+  else {
     print "$message\n";
+  }
+  &parse_args;
 }
+
+
 $criteria=&build_query();
-$count=&rt::get_queue($criteria,$current_user);
+$count=&rt::get_queue($criteria,$CurrentUser->UserId);
 if (!$format_string) {
     $format_string = "%n%p%o%g%l%t%r%s";
 }

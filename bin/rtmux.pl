@@ -16,6 +16,15 @@ package rt;
 $rt_dir = "!!RT_PATH!!";
 
 push (@INC, "!!RT_LIB_PATH!!");
+require "!!RT_ETC_PATH!!/config.pm";
+
+use DBIx::Handle;
+use DBIx::Record;
+use DBIx::EasySearch;
+#TODO: need to identify the database user here....
+DBIx::Handle::Connect($host, $dbname, $rtuser,  $rtpass, $rt_db);
+
+
 
 require "!!RT_ETC_PATH!!/config.pm";          
 

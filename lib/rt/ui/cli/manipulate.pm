@@ -2,18 +2,21 @@ package rt::ui::cli::manipulate;
 
 
 sub activate {
-
-	($current_user,$tmp)=getpwuid($<);
-
-	($value, $message)=&rt::initialize($current_user);
-	if ($value == 0) {
-	    print "$message\n";
-	    exit(0);
-	} 
-	else {
-	    print "$message\n";
-	}
-	&parse_args;
+  
+  ($current_user,$tmp)=getpwuid($<);
+  $CurrentUser = new RT::User($current_user);
+  $CurrentUser->load($current_user);
+  
+  
+  ($value, $message)=&rt::initialize($CurrentUser->UserId);
+  if ($value == 0) {
+    print "$message\n";
+    exit(0);
+  } 
+  else {
+    print "$message\n";
+  }
+  &parse_args;
 }
 
 sub print_transaction
@@ -38,7 +41,7 @@ sub parse_args {
     }
     elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
       $serial_num=int($ARGV[++$i]);
-      if (&rt::can_display_request($serial_num, $current_user)) {
+      if (&rt::can_display_request($serial_num, $CurrentUser->UserId)) {
 	&cli_show_req($serial_num);
 	&cli_history_req($serial_num);
       }
@@ -50,7 +53,7 @@ sub parse_args {
 
     elsif ($ARGV[$i] eq "-publichistory") {
       $serial_num=int($ARGV[++$i]);
-      if (&rt::can_display_request($serial_num, $current_user)) {
+      if (&rt::can_display_request($serial_num, $CurrentUser->UserId)) {
         &cli_show_req($serial_num);
         &cli_requestor_history_req($serial_num);
       }
@@ -64,7 +67,7 @@ sub parse_args {
 
 		$serial = int($ARGV[++$i]);
 		$trans = int($ARGV[++$i]);
-		&rt::req_in($serial,$current_user);
+		&rt::req_in($serial,$CurrentUser->UserId);
 		&print_transaction($serial, $trans);	
 
 	}
@@ -80,14 +83,14 @@ sub parse_args {
         }      	
 	elsif ($ARGV[$i] eq "-take")	{
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::take($serial_num, $current_user);
+	    ($trans,$message)=&rt::take($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-stall")	{
 	    $serial_num=int($ARGV[++$i]);
 	
-	    ($trans,$message)=&rt::stall ($serial_num, $current_user);
+	    ($trans,$message)=&rt::stall ($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 
@@ -95,7 +98,7 @@ sub parse_args {
 	    $serial_num=int($ARGV[++$i]);
 	    $response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$serial_num",);
 	    if ($response eq 'yes') { 
-		($trans,$message)=&rt::kill ($serial_num, $current_user);
+		($trans,$message)=&rt::kill ($serial_num, $CurrentUser->UserId);
 		print "$message\n";
 	    }
 	    else {
@@ -106,7 +109,7 @@ sub parse_args {
 	
 	elsif ($ARGV[$i] eq "-steal")	{
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::steal($serial_num, $current_user);
+	    ($trans,$message)=&rt::steal($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	    
 	}
@@ -114,82 +117,82 @@ sub parse_args {
 	elsif ($ARGV[$i] eq "-user")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $new_user=$ARGV[++$i];
-	    ($trans,  $message)=&rt::change_requestors($serial_num, $new_user, $current_user);
+	    ($trans,  $message)=&rt::change_requestors($serial_num, $new_user, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-untake")	{
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::untake($serial_num, $current_user);
+	    ($trans,$message)=&rt::untake($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-subject")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $subject=$ARGV[++$i];
-	    ($trans,  $message)=&rt::change_subject ($serial_num, $subject, $current_user);
+	    ($trans,  $message)=&rt::change_subject ($serial_num, $subject, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-queue")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $queue=$ARGV[++$i];
-	    ($trans,$message)=&rt::change_queue($serial_num, $queue, $current_user);
+	    ($trans,$message)=&rt::change_queue($serial_num, $queue, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	elsif ($ARGV[$i] eq "-area")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $area=$ARGV[++$i];
-	    ($trans,$message)=&rt::change_area($serial_num, $area, $current_user);
+	    ($trans,$message)=&rt::change_area($serial_num, $area, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 
 	elsif ($ARGV[$i] eq "-merge")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $merge_into=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::merge($serial_num, $merge_into, $current_user);
+	    ($trans,$message)=&rt::merge($serial_num, $merge_into, $CurrentUser->UserId);
 	    print "$message\n";	}
 	elsif ($ARGV[$i] eq "-due")	{
 	    $due_string=$ARGV[++$i];
 	    $due_date = &rt::date_parse($due_string);
-	    ($trans,$message)=&rt::change_date_due($serial_num, $due_date, $current_user);
+	    ($trans,$message)=&rt::change_date_due($serial_num, $due_date, $CurrentUser->UserId);
 	    print "$message\n";	}
 	
 	elsif ($ARGV[$i] eq "-prio") {
 	    $serial_num=int($ARGV[++$i]);
 	    $priority=int($ARGV[++$i]);
-	    ($trans,  $message)=&rt::change_priority ($serial_num, $priority,$current_user);
+	    ($trans,  $message)=&rt::change_priority ($serial_num, $priority,$CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-finalprio") {
 	    $serial_num=int($ARGV[++$i]);
 	    $priority=int($ARGV[++$i]);
-	    ($trans,  $message)=&rt::change_final_priority ($serial_num, $priority,$current_user);
+	    ($trans,  $message)=&rt::change_final_priority ($serial_num, $priority,$CurrentUser->UserId);
 	    print "$message\n";
 	}
 	elsif ($ARGV[$i] eq "-notify") {
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::notify($serial_num, $rt::time, $current_user);
+	    ($trans,$message)=&rt::notify($serial_num, $rt::time, $CurrentUser->UserId);
 	    print "$message\n";	
 	}
 	
 	elsif ($ARGV[$i] eq "-give")	{
 	    $serial_num=int($ARGV[++$i]);
 	    $owner=$ARGV[++$i];
-	    ($trans,  $message)=&rt::give($serial_num, $owner, $current_user);
+	    ($trans,  $message)=&rt::give($serial_num, $owner, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-resolve")	{
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::resolve($serial_num, $current_user);
+	    ($trans,$message)=&rt::resolve($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 	
 	elsif ($ARGV[$i] eq "-open")	{
 	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::open ($serial_num, $current_user);
+	    ($trans,$message)=&rt::open ($serial_num, $CurrentUser->UserId);
 	    print "$message\n";
 	}
 
@@ -226,7 +229,7 @@ sub cli_create_req {
 	    $content .= $_;
 	}
   	}	  
-    ($serial_num,$trans,$message)=&rt::add_new_request($queue_id,$area,$requestors,$alias,$owner,$subject,$final_priority,$priority,'open', $rt::time, 0, $date_due, $content,$current_user);
+    ($serial_num,$trans,$message)=&rt::add_new_request($queue_id,$area,$requestors,$alias,$owner,$subject,$final_priority,$priority,'open', $rt::time, 0, $date_due, $content,$CurrentUser->UserId);
     print "$message\n";
 }
 
@@ -234,7 +237,7 @@ sub cli_comment_req {
     my ($serial_num)=@_;
     my ($subject,$content,$trans,$message,$cc,$bcc );
    
-#    if (&rt::can_manipulate_request($serial_num, $current_user)) {
+#    if (&rt::can_manipulate_request($serial_num, $CurrentUser->UserId)) {
     $subject=&rt::ui::cli::question_string("Subject",);
     $cc=&rt::ui::cli::question_string("Cc",);
     $bcc=&rt::ui::cli::question_string("Bcc",);   
@@ -248,7 +251,7 @@ sub cli_comment_req {
 		}
   	}
     
-    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$current_user);
+    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$CurrentUser->UserId);
     print $message;
 #	}
 #	else {
@@ -273,13 +276,13 @@ n";
                 }
         }
 
-    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,"",1,$current_user);
+    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,"",1,$CurrentUser->UserId);
     print $message;
 }                   
 
 sub cli_history_req {
     my ($in_serial_num)=@_;
-    $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
+    $total_transactions=&rt::transaction_history_in($in_serial_num,$CurrentUser->UserId);
     for ($temp=0; $temp < $total_transactions; $temp++){
 	&print_transaction($temp, $in_serial_num);
     }   
@@ -287,7 +290,7 @@ sub cli_history_req {
 
 sub cli_requestor_history_req {
     my ($in_serial_num)=@_;
-    $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
+    $total_transactions=&rt::transaction_history_in($in_serial_num,$CurrentUser->UserId);
     for ($temp=0; $temp < $total_transactions; $temp++){
 	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comment') {
 	        &print_transaction($temp, $in_serial_num);
@@ -331,7 +334,7 @@ sub cli_show_req {
     my ($in_serial_num)=@_;
 use Time::Local;
 
-    &rt::req_in($in_serial_num,$current_user);
+    &rt::req_in($in_serial_num,$CurrentUser->UserId);
     print "        Serial Number:$in_serial_num\n";
     print "               Queue:$rt::req[$in_serial_num]{'queue_id'}\n";
     print "                Area:$rt::req[$in_serial_num]{'area'}\n";

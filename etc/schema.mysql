@@ -16,20 +16,23 @@ CREATE TABLE queue_acl (
 )\g
 
 CREATE TABLE queue_areas (
+ id int(11) AUTO_INCREMENT PRIMARY KEY,
   queue_id CHAR(40) NOT NULL,
+
   area CHAR(40) NOT NULL
 )\g
 
 CREATE TABLE users (
-  id CHAR(40) NOT NULL PRIMARY KEY, 
-  gecos CHAR(16),
-  real_name CHAR(40),
-  password CHAR(40), 			
-  email CHAR(40),
-  phone CHAR(15),
-  office CHAR(30),
-  comments CHAR(120),
-  admin_rt INT
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  UserId CHAR(40) NOT NULL,
+  Gecos CHAR(16),
+  RealName CHAR(40),
+  Password CHAR(40), 			
+  EmailAddress CHAR(40),
+  Phone CHAR(15),
+  Office CHAR(30),
+  Comments CHAR(120),
+  IsAdministrator INT
 )\g
 
 INSERT INTO users VALUES ('root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
