@@ -374,12 +374,19 @@ sub LanguageHandle {
 
 sub loc {
     my $self = shift;
+    return '' if $_[0] eq '';
     return($self->LanguageHandle->maketext(@_));
 }
 
 sub loc_fuzzy {
     my $self = shift;
-    return($self->LanguageHandle->maketext_fuzzy(@_));
+    return '' if $_[0] eq '';
+
+    # XXX: work around perl's deficiency when matching utf8 data
+    return $_[0] if Encode::is_utf8($_[0]);
+    my $result = $self->LanguageHandle->maketext_fuzzy(@_);
+
+    return($result);
 }
 # }}}
 

@@ -1,0 +1,61 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+% my $approving = $Ticket->DependedOnBy();
+% if ($approving->Count) {
+<h3><&|/l&>Tickets which depend on this approval:</&></h3>
+
+<table width=100%>
+<TR>
+<TD WIDTH="25" bgcolor="#999999">&nbsp;</TD><TD>
+% while (my $link = $approving->Next()) {
+%     next unless ($link->BaseURI->IsLocal());
+%     my $type = $link->BaseObj->Type;
+%     if ($type eq 'approval') {
+
+<& /Elements/TitleBoxStart, title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
+<& /Ticket/Elements/ShowCustomFields, Ticket => $link->BaseObj &>
+
+%     } elsif ($type eq 'ticket') {
+
+<& /Elements/TitleBoxStart, title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
+<& /Ticket/Elements/ShowSummary, Ticket => $link->BaseObj &>
+
+%     } else {
+<& /Elements/TitleBoxStart, title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
+%     }
+
+<& /Ticket/Elements/ShowHistory , Ticket => $link->BaseObj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+<& /Elements/TitleBoxEnd &>
+
+<& ShowDependency, Ticket => $link->BaseObj &>
+% }
+</TD>
+</TR>
+</TABLE>
+
+% }
+<%ARGS>
+$Ticket
+</%ARGS>

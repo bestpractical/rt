@@ -30,15 +30,15 @@ RT::I18N - a base class for localization of RT
 
 package RT::I18N;
 
-
-
+use strict;
 use Locale::Maketext 1.01;
 use base ('Locale::Maketext::Fuzzy');
+use vars qw( %Lexicon );
 
-#If we're running on 5.6, we desperately need Encode::compat. But if we're on 5.8, we don't want it.
-if ($] < 5.008) {
+#If we're running on 5.6, we desperately need Encode::compat. But if we're on 5.8, we don't really need it.
+BEGIN { if ($] < 5.007001) {
 require Encode::compat;
-}
+} }
 use Encode;
 
 use MIME::Entity;
@@ -109,23 +109,40 @@ sub encoding {
 
 	# Doesn't make any sense if it's already utf8
 	if ($encoding =~ /^utf-?8$/i) {
-	    return 'utf-8' if $] >= 5.007003 or $] < 5.006;
+	    no strict 'refs';
 
-	    # 5.6.x is 1)stupid 2)special case.
-            no strict 'refs';
-            *{ ref($self) . '::maketext' } = sub {
-                my $self = shift;
-		my @args;
-		foreach my $arg (@_) {
-		    push @args, pack( 'C*', unpack('C*', $arg) );
-		}
+	    if ($] >= 5.007001) {
+		*{ ref($self) . '::maketext' } = sub {
+		    my $self = shift;
+		    my @args;
+		    foreach (@_) {
+			my $arg = $_;
+			Encode::_utf8_on($arg);
+			push @args, $arg;
+		    }
 
-                return pack( 'U*', unpack('U0U*', $self->SUPER::maketext(@args) ) );
-            };
+		    my $val = $self->SUPER::maketext(@args);
+		    Encode::_utf8_on( $val );
+		    return $val;
+		};
+	    }
+	    else {
+		# 5.6.x is 1)stupid 2)special case.
+		*{ ref($self) . '::maketext' } = sub {
+		    my $self = shift;
+		    my @args;
+		    foreach my $arg (@_) {
+			push @args, pack( 'C*', unpack('C*', $arg) );
+		    }
+
+		    return pack( 'U*', unpack('U0U*', $self->SUPER::maketext(@args) ) );
+		};
+	    }
 
             return ('utf-8');
 	}
 
+	no warnings 'redefine';
 	no strict 'refs';
 	*{ ref($self) . '::maketext' } = sub {
 	    my $self = shift;
@@ -153,65 +170,103 @@ foreach my $lang (@languages) {
 =head2 SetMIMEEntityToUTF8 $entity
 
 An utility method which will try to convert entity body into utf8.
-It will iterate all the entities in $entity, and try to convert each
-one into utf-8 charset if whose Content-Type is 'text/plain'.
+It's now a wrap-up of SetMIMEEntityToEncoding($entity, 'utf-8').
+
+=cut
+
+sub SetMIMEEntityToUTF8 {
+    RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
+}
+
+# }}}
+
+# {{{ SetMIMEEntityToEncoding
+
+=head2 SetMIMEEntityToEncoding $entity, $encoding
+
+An utility method which will try to convert entity body into specified
+charset encoding.  It will iterate all the entities in $entity, and
+try to convert each one into specified charset if whose Content-Type
+is 'text/plain'.
 
 This method doesn't return anything meaningful.
 
 =cut
 
-sub SetMIMEEntityToUTF8 {
-    my $entity = shift;
+sub SetMIMEEntityToEncoding {
+    my ($entity, $enc) = (shift, shift);
 
     if ($entity->is_multipart) {
-	RT::I18N::SetMIMEEntityToUTF8($_) foreach $entity->parts;
+	RT::I18N::SetMIMEEntityToEncoding($_, $enc) foreach $entity->parts;
     } else {
 	my ($head, $body) = ($entity->head, $entity->bodyhandle);
 	my ($mime_type, $charset) =
 	    ($head->mime_type, $head->mime_attr("content-type.charset") || "");
-	$RT::Logger->debug("MIME type and charset of MIME Entity is " .
-			   "'$mime_type' and '$charset'");
 
 	# the entity is not text, nothing to do with it.
 	return unless ($mime_type eq 'text/plain');
 
 	# the entity is text and has charset setting, try convert
-	# message body into utf8
-	my @lines;
-	if ($charset) {
-	    # charset is specified, we'll use it to convert message body
-	    @lines = $body->as_lines;
-	    Encode::from_to($lines[$_], $charset, "utf8") foreach (0..$#lines);
-	} elsif (@RT::EmailInputEncodings) {
-	    # charset is not specified, and guess it using
-	    # @RT::EmailInputEncodings
+	# message body into $enc
+	my @lines = $body->as_lines or return;
 
-	    require Encode::Guess;
-	    Encode::Guess->set_suspects(@RT::EmailInputEncodings);
-	    my $decoder = Encode::Guess->guess($body->as_string);
+	if (!$charset) {
+	    if ( @RT::EmailInputEncodings and eval { require Encode::Guess; 1 } ) {
+		Encode::Guess->set_suspects(@RT::EmailInputEncodings);
+		my $decoder = Encode::Guess->guess($body->as_string);
 
-	    if (ref $decoder) {
-		# convert to utf8 is ok, replace the original body with
-		# the utf-8 body
-		$RT::Logger->debug("Guessed encoding is: ". $decoder->name);
-		@lines = map { $decoder->decode($_) } $body->as_lines;
+		if (ref $decoder) {
+		    $charset = $decoder->name;
+		    $RT::Logger->debug("Guessed encoding: $charset");
+		}
+		else {
+		    $charset = 'utf-8';
+		    $RT::Logger->warn("Cannot Encode::Guess: $decoder; fallback to utf-8");
+		}
 	    }
-	    # on failure, $decoder now contains an error message.
 	    else {
-		$RT::Logger->debug("Cannot Encode::Guess: $decoder");
-		return;
+		$charset = 'utf-8';
 	    }
 	}
 
-	# if empty body, no need to replace it with a new body.
-	if (@lines) {
-	    my $new_body = new MIME::Body::InCore \@lines;
-	    # set up the new entity
-	    $head->mime_attr("content-type.charset" => 'utf-8');
-	    $entity->bodyhandle($new_body);
+	# one and only normalization
+	$charset = 'utf-8' if $charset eq 'utf8';
+	$enc     = 'utf-8' if $enc     eq 'utf8';
+
+	if ($enc ne $charset) {
+	    $RT::Logger->debug("Converting '$charset' to '$enc'");
+
+	    # NOTE:: see the comments at the end of the sub.
+	    Encode::_utf8_off($lines[$_]) foreach (0 .. $#lines);
+
+	    if ($enc eq 'utf-8') {
+		$lines[$_] = Encode::decode($charset, $lines[$_]) foreach (0 .. $#lines);
+	    }
+	    else {
+		Encode::from_to($lines[$_], $charset => $enc) foreach (0 .. $#lines);
+	    }
 	}
+	elsif ($enc eq 'utf-8') {
+	    Encode::_utf8_on($lines[$_]) foreach (0 .. $#lines);
+	}
+
+	my $new_body = MIME::Body::InCore->new(\@lines);
+	# set up the new entity
+	$head->mime_attr("content-type.charset" => $enc);
+	$entity->bodyhandle($new_body);
     }
 }
+
+# NOTES:  Why Encode::_utf8_off before Encode::from_to
+#
+# All the strings in RT are utf-8 now.  Quotes from Encode POD:
+#
+# [$length =] from_to($octets, FROM_ENC, TO_ENC [, CHECK])
+# ... The data in $octets must be encoded as octets and not as
+# characters in Perl's internal format. ...
+#
+# Not turning off the UTF-8 flag in the string will prevent the string
+# from conversion.
 
 # }}}
 

@@ -60,8 +60,8 @@ ok (require RT::Condition::Generic);
 
 package RT::Condition::Generic;
 
-# TODO XXX we need to make this an RT::Somethingorother object so it gets a loc method
-
+use RT::Base;
+@ISA = qw(RT::Base);
 
 # {{{ sub new 
 sub new  {

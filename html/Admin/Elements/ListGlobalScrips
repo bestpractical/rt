@@ -22,10 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-%  while (my $scrip = $Scrips->Next ) {
-<% $scrip->ConditionObj->Name %> 
-<% $scrip->ActionObj->Name %> 
-with template <% $scrip->TemplateObj->Name %>
+%   my $count = 0;
+%   while (my $scrip = $Scrips->Next ) {
+%   $count++;
+<font size="-1"><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></font>
 <BR>
 %   }
 %   if (!$count) {

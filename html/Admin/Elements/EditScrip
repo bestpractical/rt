@@ -51,7 +51,7 @@
 <&|/l&>Custom condition</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -67,7 +67,7 @@
 <&|/l&>Custom action preparation code</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -75,7 +75,7 @@
 <&|/l&>Custom action cleanup code</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -83,7 +83,7 @@
 <&|/l&>Template</&>: 
 </TD>
 <TD>
-<& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id &>
+<& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id, Queue => $Queue &>
 </TD>
 </TR>
 

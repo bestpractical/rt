@@ -26,8 +26,8 @@
 # Released under the terms of the GNU General Public License
 
 package RT::Condition::UserDefined;
-require RT::Condition::Generic;
 
+use RT::Condition::Generic;
 @ISA = qw(RT::Condition::Generic);
 
 

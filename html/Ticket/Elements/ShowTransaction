@@ -52,7 +52,11 @@ unless ($Collapsed) {
 	  $headers = $message->NiceHeaders;
       }
       chomp $headers;
-      $headers .= "\n\n" if ($headers);
+      if ($headers) {
+	   # XXX TODO AUTRIJUS: WHAT DOES THIS CODE DO?
+	   $headers =~ s/^([^:]+)(?=:)/loc($1)/em;
+	   $headers .= "\n\n";
+      }
   }
      # 13456 is a random # of about the biggest size we want to see inline text
      my $MAX_INLINE_BODY = 13456;
@@ -93,10 +97,10 @@ my $size = length($message->Content());
 
 if ($size) {
     if ($size > 1024) {
-	$size = int($size/102.4)/10 . "k";
+	$size = loc("[_1]k", int($size/102.4)/10);
     }
     else {
-	$size = $size ."b";
+	$size = loc("[_1]b", $size);
     }
 </%PERL>
 <font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <% $message->Filename|| loc('(untitled)') %></a> <% $size %></font>

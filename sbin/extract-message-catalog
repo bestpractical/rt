@@ -82,7 +82,7 @@ sub extract_strings_from_code {
 
     unless (open _, $file) {
         print "Cannot open $file for reading ($!), skipping.\n";
-        next;
+        return;
     }
 
     $_ = <_>;
@@ -106,7 +106,7 @@ sub extract_strings_from_code {
 
         my ( $vars, $str );
         if ( $match =~
-                /\(($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\)$/ ) {
+                /\(\s*($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\s*\)$/ ) {
 
             $str = substr( $1, 1, -1 );       # $str comes before $vars now
             $vars = $9;

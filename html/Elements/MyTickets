@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("25 highest priority tickets I own...") &>
+<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I own...", $rows) &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
@@ -31,7 +31,10 @@
 <TH ALIGN=LEFT><&|/l&>Status</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
+% my $i;
 % while (my $Ticket = $MyTickets->Next) {
+%     next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
+%     last if $i++ >= $rows;
 <TR>
 <TD ALIGN=RIGHT>
 <%$Ticket->Id%>
@@ -56,12 +59,12 @@
 
 
 <%INIT>
+my $rows = 25;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
 $MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
-$MyTickets->RowsPerPage(25);
 
 </%INIT>

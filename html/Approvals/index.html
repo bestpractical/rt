@@ -29,7 +29,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 <form method="post">
 <& Elements/PendingMyApproval, %ARGS &>
-<& /Elements/Submit&>
+<& /Elements/Submit &>
 </form>
 <%init>
 
@@ -43,9 +43,11 @@ foreach my $arg ( keys %ARGS ) {
     my $ticket = LoadTicket($1);
 
     if ( $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ) {
-        my $notes =
-          MIME::Entity->build(
-                        Data => $ARGS{ "Approval-" . $ticket->Id . "-Notes" } );
+        my $notes = MIME::Entity->build(
+	    Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
+	);
+	RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
         my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
         if ($notesval) {
                 push ( @actions, loc("Approval #[_1]: Notes recorded",$ticket->Id ));

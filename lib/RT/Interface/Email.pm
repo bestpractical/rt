@@ -22,10 +22,11 @@
 # 
 # 
 # END LICENSE BLOCK
-use RT;
 package RT::Interface::Email;
 
 use strict;
+use RT;
+use RT::CurrentUser;
 use Mail::Address;
 use MIME::Entity;
 
@@ -40,9 +41,8 @@ BEGIN {
 
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK = qw(&CleanEnv
-      &MailError
-      &debug);
+    @EXPORT_OK = qw(&CleanEnv &GetCurrentUser
+      &MailError &debug &loc);
 }
 
 =head1 NAME
@@ -157,6 +157,39 @@ sub MailError {
 }
 
 # }}}
+
+
+# {{{ sub GetCurrentUser 
+
+=head2 GetCurrentUser
+
+  Figures out the uid of the current user and returns an RT::CurrentUser object
+loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
+
+=cut
+
+sub GetCurrentUser  {
+    
+    my $CurrentUser;
+
+    #Instantiate a user object
+    
+    my $Gecos= ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0];
+
+    #If the current user is 0, then RT will assume that the User object
+    #is that of the currentuser.
+
+    $CurrentUser = new RT::CurrentUser();
+    $CurrentUser->LoadByGecos($Gecos);
+    
+    unless ($CurrentUser->Id) {
+	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
+    }
+
+    return($CurrentUser);
+}
+# }}}
+
 
 
 1;

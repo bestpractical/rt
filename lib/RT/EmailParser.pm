@@ -196,7 +196,7 @@ sub ParseMIMEEntityFromFileHandle {
     #Now we've got a parsed mime object. 
 
     # try to convert text parts into utf-8 charset
-    RT::I18N::SetMIMEEntityToUTF8( $self->{'entity'} );
+    RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
     # ... and subject too
     {
 	my $head = $self->Head;

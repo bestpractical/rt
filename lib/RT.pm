@@ -94,10 +94,6 @@ sub InitLogging {
 
     $, = '';
     use Log::Dispatch 1.6;
-    use Log::Dispatch::Screen;
-
-    use Log::Dispatch::File;
-    use Log::Dispatch::Syslog;
 
     $RT::Logger=Log::Dispatch->new();
     
@@ -110,6 +106,8 @@ sub InitLogging {
     }
 
 	my $filename = $RT::LogToFileNamed || "$RT::LogDir/rt.log";
+    require Log::Dispatch::File;
+
 
 	  $RT::Logger->add(Log::Dispatch::File->new
 		       ( name=>'rtlog',
@@ -125,6 +123,7 @@ sub InitLogging {
 		       ));
     }
     if ($RT::LogToScreen) {
+	require Log::Dispatch::Screen;
 	$RT::Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',
 		       min_level => $RT::LogToScreen,
@@ -137,6 +136,7 @@ sub InitLogging {
 		     ));
     }
     if ($RT::LogToSyslog) {
+	require Log::Dispatch::Syslog;
 	$RT::Logger->add(Log::Dispatch::Syslog->new
 		     ( name => 'syslog',
 		       min_level => $RT::LogToSyslog,

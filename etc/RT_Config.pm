@@ -396,7 +396,7 @@ $WebExternalAuto = undef;
 # an attachment uses if not specified.  Must be recognized by
 # Encode::Guess.
 
-@EmailInputEncodings = (qw(big5 gb2312));
+@EmailInputEncodings = (qw(utf-8 big5 gb2312));
 
 # The charset for localized email.  Must be recognized by Encode.
 

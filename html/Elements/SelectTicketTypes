@@ -22,28 +22,19 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title =>  $title &>
+<SELECT NAME="<%$Name%>">
+%foreach (@Types) {
+<OPTION VALUE="<% $_ %>" <% ($_ eq $Default) && "SELECTED" %>><&|/l&><% $_ %></&>
+%}
+</SELECT>
 
-<& Elements/Tabs, current_tab => "Approvals/Display.html" &>
-<form method=post action="<%$RT::WebPath%>/Approvals/">
+<%INIT>
+# Approval # loc
+# Code # loc
+</%INIT>
 
-<& /Elements/TitleBoxStart, title => $title &>
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
-<hr>
-<table width=100%>
-<& Elements/Approve, ticket => $Ticket, ShowApproving => 0 &>
-</table>
-<& /Elements/TitleBoxEnd &>
-<& /Elements/Submit&>
-</form>
-<& Elements/ShowDependency, Ticket => $Ticket &>
-
-<%init>
-my $Ticket = LoadTicket($id);
-
-my $title = loc("Approval #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
-
-</%init>
 <%ARGS>
-$id => undef
+$Name => 'TickType'
+$Default => undef
+@Types => qw(Approval Ticket)
 </%ARGS>

@@ -26,8 +26,7 @@
 # Released under the terms of the GNU General Public License
 
 package RT::Action::UserDefined;
-require RT::Action::Generic;
-
+use RT::Action::Generic;
 @ISA = qw(RT::Action::Generic);
 
 =head2 Prepare
@@ -40,7 +39,7 @@ sub Prepare {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomPrepareCode;
     if ($@) {
-       $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Prepare failed: ".$@);
+        $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Prepare failed: ".$@);
         return (undef);
     }
     return ($retval);

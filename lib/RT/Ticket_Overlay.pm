@@ -56,8 +56,11 @@ ok($testcf->AddValue ( Name => 'Value1',
 ok($testcf->AddValue ( Name => 'Value2',
                         SortOrder => '2',
                         Description => 'Another testing value'));
+ok($testcf->AddValue ( Name => 'Value3',
+                        SortOrder => '3',
+                        Description => 'Yet Another testing value'));
                        
-ok($testcf->Values->Count == 2);
+ok($testcf->Values->Count == 3);
 
 use_ok(RT::Ticket);
 
@@ -89,6 +92,23 @@ ok($t2->Subject eq 'Testing');
 ok($t2->QueueObj->Id eq $testqueue->id);
 ok($t2->OwnerObj->Id == $u->Id);
 
+my $t3 = RT::Ticket->new($RT::SystemUser);
+my ($id3, $msg3) = $t3->Create( Queue => $testqueue->Id,
+                                Subject => 'Testing',
+                                Owner => $u->Id);
+my ($cfv1, $cfm1) = $t->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value1');
+ok($cfv1 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
+my ($cfv2, $cfm2) = $t3->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value2');
+ok($cfv2 != 0, "Adding a custom field to ticket 2 is successful: $cfm");
+my ($cfv3, $cfm3) = $t->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value3');
+ok($cfv3 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 2,
+   "This ticket has 2 custom field values");
+ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
+   "This ticket has 1 custom field value");
 
 =end testing
 
@@ -390,6 +410,7 @@ sub Create {
     #If we have a proposed owner and they don't have the right 
     #to own a ticket, scream about it and make them not the owner
     if (     ( defined($Owner) )
+         and ( $Owner->Id )
          and ( $Owner->Id != $RT::Nobody->Id )
          and ( !$Owner->HasQueueRight( QueueObj => $QueueObj,
                                        Right    => 'OwnTicket' ) )
@@ -530,7 +551,7 @@ sub Create {
     # {{{ Logging
     if ( $self->Id && $Trans ) {
         $ErrStr = $self->loc("Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name);
-        $ErrStr .= join ( "\n", @non_fatal_errors );
+        $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
 
         $RT::Logger->info($ErrStr);
     }
@@ -996,7 +1017,7 @@ sub _AddWatcher {
 
     if ( $group->HasMember( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a [_1] for this ticket', $args{'Type'}) );
+        return ( 0, $self->loc('That principal is already a [_1] for this ticket', $self->loc($args{'Type'})) );
     }
 
 
@@ -1005,7 +1026,7 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $args{'Type'}) );
+        return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $self->loc($args{'Type'})) );
     }
 
     unless ( $args{'Silent'} ) {
@@ -1016,7 +1037,7 @@ sub _AddWatcher {
         );
     }
 
-        return ( 1, $self->loc('Added principal as a [_1] for this ticket', $args{'Type'}) );
+        return ( 1, $self->loc('Added principal as a [_1] for this ticket', $self->loc($args{'Type'})) );
 }
 
 # }}}
@@ -1788,21 +1809,27 @@ sub Comment {
     unless ( $args{'MIMEObj'} ) {
         if ( $args{'Content'} ) {
             use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build( Data => $args{'Content'} );
-
+            $args{'MIMEObj'} = MIME::Entity->build(
+		Data => ( ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ] )
+	    );
         }
         else {
 
             return ( 0, $self->loc("No correspondence attached") );
         }
     }
+
+    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
+
     # If we've been passed in CcMessageTo and BccMessageTo fields,
     # add them to the mime object for passing on to the transaction handler
     # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
     # RT-Send-Bcc: headers
 
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} );
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} );
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} )
+	if defined $args{'CcMessageTo'};
+    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} )
+	if defined $args{'BccMessageTo'};
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
@@ -1849,7 +1876,9 @@ sub Correspond {
     unless ( $args{'MIMEObj'} ) {
         if ( $args{'Content'} ) {
             use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build( Data => $args{'Content'} );
+            $args{'MIMEObj'} = MIME::Entity->build(
+		Data => ( ref $args{'Content'} ?  $args{'Content'} : [ $args{'Content'} ] )
+	    );
 
         }
         else {
@@ -1858,13 +1887,17 @@ sub Correspond {
         }
     }
 
+    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
+
     # If we've been passed in CcMessageTo and BccMessageTo fields,
     # add them to the mime object for passing on to the transaction handler
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
     # headers
 
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} );
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} );
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} )
+	if defined $args{'CcMessageTo'};
+    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} )
+	if defined $args{'BccMessageTo'};
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
@@ -1996,8 +2029,9 @@ sub DependedOnBy {
 
 =head2 HasUnresolvedDependencies
 
-Returns true if $self->UnresolvedDependencies returns an object with one
-or more members. Returns false otherwise
+  Takes a paramhash of Type (default to '__any').  Returns true if
+$self->UnresolvedDependencies returns an object with one or more members
+of that type.  Returns false otherwise
 
 
 =begin testing
@@ -2015,6 +2049,7 @@ my ($lid, $lmsg) =
 ok ($t1->AddLink( Type => 'DependsOn', Target => $t2->id));
 
 ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
+ok (!$t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has no unresolved approvals");
 ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
 my ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
@@ -2028,7 +2063,22 @@ ok($t1->Resolve());
 
 sub HasUnresolvedDependencies {
     my $self = shift;
+    my %args = (
+        Type   => undef,
+        @_
+    );
+
     my $deps = $self->UnresolvedDependencies;
+
+    if ($args{Type}) {
+        $deps->Limit( FIELD => 'Type', 
+              OPERATOR => '=',
+              VALUE => $args{Type}); 
+    }
+    else {
+	$deps->IgnoreType;
+    }
+
     if ($deps->Count > 0) {
         return 1;
     }
@@ -2052,6 +2102,7 @@ RT::Queue->ActiveStatusArray
 sub UnresolvedDependencies {
     my $self = shift;
     my $deps = RT::Tickets->new($self->CurrentUser);
+
     my @live_statuses = RT::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
         $deps->LimitStatus(VALUE => $status);
@@ -2060,6 +2111,54 @@ sub UnresolvedDependencies {
 
     return($deps);
 
+}
+
+# }}}
+
+# {{{ AllDependedOnBy
+
+=head2 AllDependedOnBy
+
+Returns an array of RT::Ticket objects which (directly or indirectly)
+depends on this ticket; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the recursive
+dependency search.
+
+=cut
+
+sub AllDependedOnBy {
+    my $self = shift;
+    my $dep = $self->DependedOnBy;
+    my %args = (
+        Type   => undef,
+	_found => {},
+	_top   => 1,
+        @_
+    );
+
+    while (my $link = $dep->Next()) {
+	next unless ($link->BaseURI->IsLocal());
+	next if $args{_found}{$link->BaseObj->Id};
+
+	if (!$args{Type}) {
+	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
+	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	}
+	elsif ($link->BaseObj->Type eq $args{Type}) {
+	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
+	}
+	else {
+	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	}
+    }
+
+    if ($args{_top}) {
+	return map { $args{_found}{$_} } sort keys %{$args{_found}};
+    }
+    else {
+	return 1;
+    }
 }
 
 # }}}
@@ -2630,9 +2729,14 @@ sub ValidateStatus {
 
 # {{{ sub SetStatus
 
-=head2 SetStatus STATUS
+=head2 SetStatus STATUS, FORCE
 
 Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
+
+If FORCE is true, ignore unresolved dependencies and force a status change.
+
+BUG. XXX. TODO:  FORCE as a flag is the WRONG idiom for this. and should never be used. there should be a clean API for this. IT IS NOT OK TO USE IT. IF YOU USE IT IN CODE, YOU WILL GET HURT
+
 
 =begin testing
 
@@ -2660,13 +2764,14 @@ ok(!$id,$msg);
 sub SetStatus {
     my $self   = shift;
     my $status = shift;
+    my $force  = shift;
 
     #Check ACL
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ($self->HasUnresolvedDependencies) {
+    if (!$force and $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
@@ -2739,6 +2844,21 @@ sub Stall {
 
 # }}}
 
+# {{{ sub Reject
+
+=head2 Reject
+
+Sets this ticket's status to rejected
+
+=cut
+
+sub Reject {
+    my $self = shift;
+    return ( $self->SetStatus('rejected') );
+}
+
+# }}}
+
 # {{{ sub Open
 
 =head2 Open
@@ -2793,6 +2913,7 @@ sub CustomFieldValues {
 
     my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToCustomField($cf->id);
+    $cf_values->LimitToTicket($self->Id());
 
     # @values is a CustomFieldValues object;
     return ($cf_values);

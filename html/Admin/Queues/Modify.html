@@ -134,7 +134,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
     my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
-    push @results, loc('Enabled status [_1]', $msg);
+    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
 }
 
 unless ($QueueObj->Disabled()) {

@@ -29,6 +29,7 @@ require RT::Action::Generic;
 
 @ISA = qw(RT::Action::Generic);
 
+use MIME::Words qw(encode_mimeword);
 
 =head1 NAME
 
@@ -115,13 +116,16 @@ sub Commit  {
 	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
 	  if (@{$self->{'Bcc'}});;
     
-    $self->SetHeader('Content-Type', 'text/plain;charset="utf-8"');
-
     my $MIMEObj = $self->TemplateObj->MIMEObj;
-    
-
     $MIMEObj->make_singlepart;
-    
+
+    # try to convert message body from utf-8 to $RT::EmailOutputEncoding
+    $self->SetHeader('Content-Type',
+		     'text/plain;charset="utf-8"');
+    RT::I18N::SetMIMEEntityToEncoding($MIMEObj,
+				      $RT::EmailOutputEncoding);
+    $self->SetHeader('Content-Type',
+		     'text/plain;charset="'. $RT::EmailOutputEncoding .'"');
     
     #If we don't have any recipients to send to, don't send a message;
     unless ($MIMEObj->head->get('To') ||
@@ -192,9 +196,11 @@ sub Prepare  {
       $self->SetRecipients();  
       $self->SetReturnAddress();
       $self->SetRTSpecialHeaders();
-      # Utf-8 related header
-      $self->SetHeaderAsUTF8('Subject');
-      $self->SetHeaderAsUTF8('From');
+      if ($RT::EmailOutputEncoding) {
+	  # l10n related header
+	  $self->SetHeaderAsEncoding('Subject', $RT::EmailOutputEncoding);
+	  $self->SetHeaderAsEncoding('From', $RT::EmailOutputEncoding);
+      }
   }
 
   return $result;
@@ -484,38 +490,30 @@ sub SetSubjectToken {
 
 # {{{
 
-=head 2 SetHeaderAsUTF8
+=head 2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
- This routine needs a header field name and will set it into utf-8
- charset encoding
+ This routine converts the field into specified charset encoding.
 
 =cut
 
-sub SetHeaderAsUTF8 {
+sub SetHeaderAsEncoding {
     my $self = shift;
-    my $field = shift;
+    my ($field, $enc) = (shift, shift);
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
 
-    return unless $value =~ /[^\x20-\x7e]/; # don't bother if it's us-ascii
-
+    # don't bother if it's us-ascii
     chomp $value;
+    return unless $value =~ /[^\x20-\x7e]/;
+
     $value =~ s/\s*$//;
-    $value = $self->_encode_qp($value);
+    # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
+    Encode::_utf8_off($value);
+    my $res = Encode::from_to($value, "utf-8", $enc);
+    $value = encode_mimeword($value, 'b', $enc);
     $self->TemplateObj->MIMEObj->head->replace($field, $value);
 }
 
 # }}}
-
-sub _encode_qp {
-    my $self = shift;
-    my $str = shift;
-
-    my $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'()+,-./:=?";
-    # I don't want to reinvent wheel but MIME::QuotedPrint refuse to work here.
-    $str = join"",map{(index($valid,chr$_)!=-1)?chr$_:sprintf("=%02X", $_)}unpack("C*",$str);
-    return "=?UTF-8?Q?$str?=";
-}
-
 
 __END__
 

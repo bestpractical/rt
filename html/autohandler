@@ -147,9 +147,12 @@ if ( (defined $session{'CurrentUser'}) and
 	$m->abort();
     }
     else {
-	$m->call_next;
+	Encode::_utf8_on($ARGS{$_}) foreach (keys %ARGS);
+	$m->call_next(%ARGS);
     }
 }
+
+
 
 #If we have no credentials
 else {

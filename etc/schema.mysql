@@ -384,7 +384,7 @@ CREATE TABLE CustomFieldValues (
 
 CREATE TABLE sessions (
     id char(32) NOT NULL,
-    a_session TEXT,
+    a_session LONGTEXT,
     PRIMARY KEY (id)
 );
 

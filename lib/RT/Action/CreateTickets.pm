@@ -82,7 +82,8 @@ such sections absolutely can not span a ===Create-Ticket boundary.
 After each ticket is created, it's stuffed into a hash called %Tickets
 so as to be available during the creation of other tickets during the same 
 ScripAction.  The hash is prepopulated with the ticket which triggered the 
-ScripAction as $Tickets{'TOP'}.  
+ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
+shorthand $TOP.
 
 A simple example:
 
@@ -110,7 +111,14 @@ A convoluted example
     my $groupid = $groups->First->Id;
  
     my $adminccs = RT::Users->new($RT::SystemUser);
-    $adminccs->WhoHaveRight(Right => "AdminGroup" ObjectType =>"Group", IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, ObjectId => $groupid);
+    $adminccs->WhoHaveRight(
+	Right => "AdminGroup",
+	ObjectType =>"Group",
+	IncludeSystemRights => undef,
+	IncludeSuperusers => 0,
+	IncludeSubgroupMembers => 0,
+	ObjectId => $groupid,
+    );
  
      my @admins;
      while (my $admin = $adminccs->Next) {
@@ -146,7 +154,7 @@ A complete list of acceptable fields for this beastie:
 
     *  Queue           => Name or id# of a queue
        Subject         => A text string
-       Status          => A valid status. defaults to 'new'
+     ! Status          => A valid status. defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
                           format which RT will attempt to parse.
@@ -167,12 +175,12 @@ A complete list of acceptable fields for this beastie:
        InitialPriority => 
        FinalPriority   => 
        Type            => 
-    +  DependsOn       => 
-    +  DependedOnBy    =>
-    +  RefersTo        =>
-    +  ReferredToBy    => 
-    +  Members         =>
-    +  MemberOf        => 
+    +! DependsOn       => 
+    +! DependedOnBy    =>
+    +! RefersTo        =>
+    +! ReferredToBy    => 
+    +! Members         =>
+    +! MemberOf        => 
        Content         => content. Can extend to multiple lines. Everything
                           within a template after a Content: header is treated
                           as content until we hit a line containing only 
@@ -180,17 +188,20 @@ A complete list of acceptable fields for this beastie:
        ContentType     => the content-type of the Content field
        CustomField-<id#> => custom field value
 
-    
-     Fields marked with an * are required.
-     Fields marked with a + man have multiple values, simply
-     by repeating the fieldname on a new line with an additional value
-     
-     When parsed, field names are converted to lowercase and have -s stripped.
+Fields marked with an * are required.
 
-     Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
-     be treated as the same thing.
+Fields marked with a + man have multiple values, simply
+by repeating the fieldname on a new line with an additional value.
 
+Fields marked with a ! are postponed to be processed after all
+tickets in the same actions are created.  Except for 'Status', those
+field can also take a ticket name within the same action (i.e.
+the identifiers after ==Create-Ticket), instead of raw Ticket ID
+numbers.
 
+When parsed, field names are converted to lowercase and have -s stripped.
+Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
+be treated as the same thing.
 
 
 =begin testing
@@ -288,31 +299,61 @@ perl(1).
 
 =cut
 
+my %LINKTYPEMAP = (
+    MemberOf => { Type => 'MemberOf',
+                  Mode => 'Target', },
+    Members => { Type => 'MemberOf',
+                 Mode => 'Base', },
+    HasMember => { Type => 'MemberOf',
+                   Mode => 'Base', },
+    RefersTo => { Type => 'RefersTo',
+                  Mode => 'Target', },
+    ReferredToBy => { Type => 'RefersTo',
+                      Mode => 'Base', },
+    DependsOn => { Type => 'DependsOn',
+                   Mode => 'Target', },
+    DependedOnBy => { Type => 'DependsOn',
+                      Mode => 'Base', },
+
+);
+
 # {{{ Scrip methods (Commit, Prepare)
 
 # {{{ sub Commit 
 #Do what we need to do and send it out.
 sub Commit {
     my $self = shift;
+    my (@links, @postponed);
+
+    # XXX: cargo cult programming that works. i'll be back.
+    use bytes;
 
     # Create all the tickets we care about
 
-    $T::Tickets{'TOP'} = $self->TicketObj;
+    $T::Tickets{'TOP'} = $T::TOP = $self->TicketObj;
 
     foreach my $template_id ( @{ $self->{'template_order'} } ) {
 
-        
-        $T::Tickets{$template_id} = RT::Ticket->new($RT::SystemUser);
+	$T::ID = $template_id;
         my $template = Text::Template->new(
                                   TYPE   => STRING,
                                   SOURCE => $self->{'templates'}->{$template_id}
         );
 
-        my $filled_in = $template->fill_in( PACKAGE => T );
+	my $err;
+        my $filled_in = $template->fill_in( PACKAGE => T, BROKEN => sub {
+	    $err = { @_ }->{error};
+	} );
+
+	if ($err) {
+	    $RT::Logger->error("Ticket creation failed for ".$self->TicketObj->Id." ".$err);
+	    next;
+	}
+
         my %args;
         my @lines = ( split ( /\n/, $filled_in ) );
-        while ( my $line = shift @lines ) {
-            if ( $line =~ /^(.*?):\s+(.*)$/ ) {
+        while ( defined(my $line = shift @lines) ) {
+            if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
                 my $value = $2;
                 my $tag = lc ($1);
                 $tag =~ s/-//g;
@@ -328,9 +369,9 @@ sub Commit {
 
                 if ( $tag eq 'content' ) { #just build up the content
                         # convert it to an array
-                        $args{$tag} = [$args{$tag}."\n"];
-                      while ( my $l =shift @lines) {
-                        last if ($l =~  /^ENDOFCONTENT/) ;
+                        $args{$tag} = defined($value) ? [ $value."\n" ] : [];
+                      while ( defined(my $l = shift @lines) ) {
+                        last if ($l =~  /^ENDOFCONTENT\s*$/) ;
                         push @{$args{'content'}}, $l."\n";
                         }
                 }
@@ -352,10 +393,30 @@ sub Commit {
             # Now we have a %args to work with. 
             # Make sure we have at least the minimum set of 
             # reasonable data and do our thang
-            $T::Tickets{$template_id} = RT::Ticket->new($RT::SystemUser);
+            $T::Tickets{$template_id} ||= RT::Ticket->new($RT::SystemUser);
+
+	    # Deferred processing	
+	    push @links, (
+		$T::Tickets{$template_id}, {
+		    DependsOn		=> $args{'dependson'},
+		    DependedOnBy	=> $args{'dependedonby'},
+		    RefersTo		=> $args{'refersto'},
+		    ReferredToBy	=> $args{'referredtoby'},
+		    Members		=> $args{'members'},
+		    MemberOf		=> $args{'memberof'},
+		}
+	    );
+
+	    push @postponed, (
+		# Status is postponed so we don't violate dependencies
+		$T::Tickets{$template_id}, {
+		    Status		=> $args{'status'},
+		}
+	    );
+
             %ticketargs = ( Queue => $args{'queue'},
                           Subject=> $args{'subject'},
-                        Status => ($args{'status'}||'new'),
+                        Status => 'new',
                         Due => $args{'due'},
                         Starts => $args{'starts'},
                         Started => $args{'started'},
@@ -370,12 +431,6 @@ sub Commit {
                         InitialPriority => $args{'initialpriority'},
                         FinalPriority => $args{'finalpriority'},
                         Type => $args{'type'}, 
-                        DependsOn => $args{'dependson'},
-                        DependedOnBy => $args{'dependedonby'},
-                        RefersTo=>$args{'refersto'},
-                        ReferredToBy => $args{'referredtoby'},
-                        Members => $args{'members'},
-                        MemberOf => $args{'memberof'},
                         MIMEObj => $mimeobj);
 
     
@@ -389,6 +444,42 @@ sub Commit {
             }
 
         }
+
+    # postprocessing: add links
+
+    while (my $ticket = shift(@links)) {
+	$RT::Logger->debug("Handling links for $ticket");
+	my %args = %{shift(@links)};
+
+	foreach my $type ( keys %LINKTYPEMAP ) {
+	    next unless (defined $args{$type});
+	    foreach my $link (
+		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+	    {
+
+		$RT::Logger->debug("Building link for $link: $T::Tickets{$link}");
+		$link = $T::Tickets{$link}->Id if exists $T::Tickets{$link};
+
+		my ( $wval, $wmsg ) = $ticket->AddLink(
+		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
+		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+		    Silent                        => 1
+		);
+
+		push @non_fatal_errors, $wmsg unless ($wval);
+	    }
+
+	}
+    }
+
+    # postponed actions -- Status only, currently
+    while (my $ticket = shift(@postponed)) {
+	$RT::Logger->debug("Handling postponed actions for $ticket");
+	my %args = %{shift(@postponed)};
+
+	$ticket->SetStatus($args{Status}) if defined $args{Status};
+    }
+
     return(1);
 }
 # }}}

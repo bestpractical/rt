@@ -92,6 +92,15 @@ my @modperl_modules = qw(
 Apache::Request 
 );
 
+my @i18n_modules;
+
+if ($] >= 5.006 and $] < 5.007001) {
+    @i18n_modules = qw(
+Text::Iconv
+Encode::compat 0.04
+    );
+}
+
 my @db_modules;
 
 if ($dbd =~ /mysql/i) {

@@ -24,14 +24,18 @@
 %# END LICENSE BLOCK
 <%init>
 my %cookies = CGI::Cookie->fetch();
-my $IsMySQL = ($RT::DatabaseType eq 'mysql');;
-my $session_class = $IsMySQL ? 'Apache::Session::MySQL' : 'Apache::Session::File';
+my %backends = (
+    mysql	=> 'Apache::Session::MySQL',
+    Pg		=> 'Apache::Session::Postgres',
+    Oracle	=> 'Apache::Session::Oracle',
+);
+my $session_class = $backends{$RT::DatabaseType} || 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     eval {
         tie %session, $session_class,
           ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
-          $IsMySQL ? {
+          $backends{$RT::DatabaseType} ? {
             Handle     => $RT::Handle->dbh,
             LockHandle => $RT::Handle->dbh,
           } : {
@@ -44,7 +48,7 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
         # If the session is invalid, create a new session.
         if ( $@ =~ /Object does not/i ) {
             tie %session, $session_class, undef,
-              $IsMySQL ? {
+	      $backends{$RT::DatabaseType} ? {
                 Handle     => $RT::Handle->dbh,
                 LockHandle => $RT::Handle->dbh,
               } : {

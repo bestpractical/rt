@@ -103,15 +103,13 @@ my $Ticket = LoadTicket($id);
 
 
 if ($DefaultStatus eq 'resolved') {
-	$title = loc("Resolve");
+    $title = loc("Resolve ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
 } else {
-	$title = loc("Update");
+    $title = loc("Update ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
 }
 
-$title .= " ticket #" . $Ticket->id . " (" .$Ticket->Subject.")";
-
 # Things needed in the template - we'll do the processing here, just
-# for the convinience:
+# for the convenience:
 my $CommentDefault=$Action eq "Comment" ? "SELECTED" : "";
 my $ResponseDefault=$Action eq "Respond" ? "SELECTED" : "";
 

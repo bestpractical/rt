@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("25 highest priority tickets I requested...") &>
+<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I requested...", $rows) &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH align=right><&|/l&>#</&></TH>
@@ -44,9 +44,20 @@
 </TD>
 <TD>
 <%$Ticket->QueueObj->Name%>
-</TD><TD>
+</TD>
+<TD>
+% if ($Ticket->HasUnresolvedDependencies ) {
+%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) or
+%         $Ticket->HasUnresolvedDependencies( Type => 'code' )) {
+<em><&|/l&>(pending approval)</&></em>
+%     } else {
+<em><&|/l&>(pending other tickets)</&></em>
+%     }
+% } else {
 <%loc($Ticket->Status)%>
-</TD><TD>
+% }
+</TD>
+<TD>
 <%$Ticket->OwnerObj->Name%>
 </TD>
 </TR>
@@ -56,12 +67,12 @@
 
 
 <%INIT>
+my $rows = 25;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
 $MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
-$MyTickets->RowsPerPage(25);
 
 </%INIT>

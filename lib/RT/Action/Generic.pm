@@ -57,6 +57,13 @@ sub new  {
 }
 # }}}
 
+# {{{ sub new 
+sub loc {
+    my $self = shift;
+    return $self->{'ScripObj'}->loc(@_);
+}
+# }}}
+
 # {{{ sub _Init 
 sub _Init  {
   my $self = shift;

@@ -46,7 +46,9 @@
 <a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><&|/l&>Edit</&></a>
 </TD>
 <TD>
-<% loc($scrip->Description) %><BR>
+% if (length(my $name = loc($scrip->Description))) {
+<% $name %><BR>
+% }
 <font size="-1"><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></font>
 </TD>
 </TR>

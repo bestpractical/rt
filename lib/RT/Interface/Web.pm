@@ -230,10 +230,8 @@ sub CreateTicket {
     );
 
     if ($ARGS{'Attachments'}) {
-	$RT::Logger->debug("before adding attachments: ". scalar($MIMEObj->parts));
 	$MIMEObj->make_multipart;
 	$MIMEObj->add_part($_) foreach values %{$ARGS{'Attachments'}};
-	$RT::Logger->debug("after adding attachments: ". scalar($MIMEObj->parts));
     }
 
     my %create_args = (
@@ -348,11 +346,17 @@ sub ProcessUpdateMessage {
             $args{ARGSRef}->{'UpdateSubject'} = undef;
         }
 
-        my $Message = MakeMIMEEntity(
-            Subject             => $args{ARGSRef}->{'UpdateSubject'},
-            Body                => $args{ARGSRef}->{'UpdateContent'},
-            AttachmentFieldName => 'UpdateAttachment'
-        );
+        my $Message;
+	{
+	    # MIME::Head is not happy in utf-8 domain.
+	    no utf8;
+	    use bytes;
+	    $Message = MakeMIMEEntity(
+                Subject             => $args{ARGSRef}->{'UpdateSubject'},
+                Body                => $args{ARGSRef}->{'UpdateContent'},
+                AttachmentFieldName => 'UpdateAttachment'
+            );
+	}
 
         ## TODO: Implement public comments
         if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
@@ -929,7 +933,7 @@ sub ProcessTicketBasics {
 
         my ( $val, $msg ) =
           $TicketObj->SetOwner( $ARGSRef->{'Owner'}, $ChownType );
-        push ( @results, "$msg" );
+        push ( @results, $msg );
     }
 
     # }}}

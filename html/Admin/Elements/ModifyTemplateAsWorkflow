@@ -1,0 +1,138 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/TitleBoxStart, title => loc("Approval diagram"), color => "#cccc00" &>
+<TABLE WIDTH=100%>
+<%PERL>
+my $level = 0;
+my ($appv_id, $next_appv_id);
+
+{
+    my @top = grep { $_->{Id} =~ m/^\d+$/ } @{$session{WorkFlow}}
+	if exists $session{WorkFlow};
+
+    if (@top) {
+	$next_appv_id = $top[-1]{Id};
+	$next_appv_id =~ s/(\d+)$/$1+1/e;
+    } else {
+	$next_appv_id = 1;
+    }
+}
+</%PERL>
+<TR>
+<TD>[ <&|/l&>Begin Approval</&> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>"><&|/l&>AddNextState</&></A> ]</TD>
+<TD></TD>
+</TR>
+<%PERL>
+if (defined $session{WorkFlow}) {
+    {
+    use Data::Dumper;
+    $RT::Logger->debug(Dumper($session{WorkFlow}));
+    }
+    foreach my $item (@{$session{WorkFlow}}) {
+	$appv_id = $item->{Id};
+	my $cur_level;
+	{ my @a = $appv_id =~ m/\./g; $cur_level = scalar @a };
+
+	my $indent = "&nbsp;" x (($cur_level + 1) * 2);
+
+	my @children =
+	    grep { $_->{Id} =~ m/^${appv_id}\.\d+$/ } @{$session{WorkFlow}};
+	if (@children) {
+	    $next_appv_id = $children[-1]{Id};
+	    $next_appv_id =~ s/(\d+)$/$1+1/e;
+	} else {
+	    $next_appv_id = "$appv_id.1";
+	}
+
+	$level = $cur_level;
+	my $User = new RT::User($session{'CurrentUser'});
+	$User->Load($item->{Owner});
+	my $TicketQueue = new RT::Queue($session{'CurrentUser'});
+	$TicketQueue->Load($item->{Queue});
+	# DEBUG
+	$RT::Logger->debug("Id:". $item->{Id});
+	$RT::Logger->debug("Description:". $item->{Description});
+	$RT::Logger->debug("Type:". $item->{Type});
+	$RT::Logger->debug("Name:". $User->Name());
+	$RT::Logger->debug("TicketQueue:". $TicketQueue->Name());
+</%PERL>
+<TR>
+<TD><%$indent%>[ <% $item->{Id} %> - <% $item->{Type} %> - <% $User->Name() %> - <% $TicketQueue->Name() %> - <% $item->{Description} %> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>">AddNextState</A> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=delete&Queue=<%$Queue%>&WFId=<%$appv_id%>">Delete</A> ]</TD>
+</TR>
+%    }
+%}
+<TR>
+<TD>[ <&|/l&>Finish Approval</&> ]</TD>
+<TD></TD>
+<TD></TD>
+</TR>
+<& /Elements/TitleBoxEnd &>
+
+<& /Elements/TitleBoxStart, title => loc("Approval Details"), color => "#cccc00" &>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT><&|/l&>Type</&>:</TD>
+<TD><& /Elements/SelectTicketTypes, Name => 'WFType', Default => $WFType &></TD>
+<TD ALIGN=RIGHT><&|/l&>Queue</&>:</TD>
+<TD><& /Elements/SelectQueue, Name => 'WFQueue' &></TD>
+<TD ALIGN=RIGHT><&|/l&>Owner</&>:</TD>
+<TD><& /Elements/SelectOwner, Name => 'WFOwner',Default => $WFOwner &></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT><&|/l&>Description</&>:</TD>
+<TD COLSPAN=5>
+<input name="WFDescription" VALUE="<%$WFDescription%>" SIZE=80><BR>
+</TD>
+</TR>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<&|/l&>Content</&>:<BR>
+</TD>
+<TD COLSPAN=5>
+<TEXTAREA NAME=WFContent ROWS=10 COLS=80 WRAP=SOFT>
+<%$WFContent%></TEXTAREA>
+</TD>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+# don't loc because it must be programmer's fault.
+# TODO: XXX WHAT?
+Abort("URL must be specified") unless $URL;
+
+</%INIT>
+
+<%ARGS>
+$URL => undef
+$Queue => undef
+$template => undef
+$WFType => undef
+$WFQueue => undef
+$WFOwner => undef
+$WFDescription => undef
+$WFContent => undef
+</%ARGS>

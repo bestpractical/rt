@@ -355,7 +355,7 @@ sub AsString {
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($self->Unix);
 
-    return $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($$mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900));
+    return $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900));
 }
 # }}}
 
@@ -370,13 +370,13 @@ sub GetWeekday {
     my $self = shift;
     my $dow = shift;
     
-    return $self->loc('Mon.') if ($dow == 0);
-    return $self->loc('Tue.') if ($dow == 1);
-    return $self->loc('Wed.') if ($dow == 2);
-    return $self->loc('Thu.') if ($dow == 3);
-    return $self->loc('Fri.') if ($dow == 4);
-    return $self->loc('Sat.') if ($dow == 5);
-    return $self->loc('Sun.') if ($dow == 6);
+    return $self->loc('Mon.') if ($dow == 1);
+    return $self->loc('Tue.') if ($dow == 2);
+    return $self->loc('Wed.') if ($dow == 3);
+    return $self->loc('Thu.') if ($dow == 4);
+    return $self->loc('Fri.') if ($dow == 5);
+    return $self->loc('Sat.') if ($dow == 6);
+    return $self->loc('Sun.') if ($dow == 0);
 }
 
 # }}}

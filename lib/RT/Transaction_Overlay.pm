@@ -505,7 +505,7 @@ sub BriefDescription {
                 return ($self->loc("Ticket deleted"));
             }
             else {
-                return ( $self->loc("Status changed from [_1] to [_2]", $self->OldValue , $self->NewValue ));
+                return ( $self->loc("Status changed from [_1] to [_2]", $self->loc($self->OldValue), $self->loc($self->NewValue) ));
 
             }
         }
@@ -534,10 +534,10 @@ sub BriefDescription {
         }
 
         if ( $self->OldValue eq '' ) {
-            return ( $field . " " . $self->NewValue . " added" );
+            return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
         }
         elsif ( $self->NewValue eq '' ) {
-            return ( $field . " " . $self->OldValue . " deleted" );
+            return ( $self->loc("[_1] [_2] deleted", $field, $self->NewValue) );
 
         }
         else {

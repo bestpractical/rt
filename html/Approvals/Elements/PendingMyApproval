@@ -25,11 +25,12 @@
 <h2><&|/l&>Items pending my approval</&></h2>
 <table width="100%">
 % my ($i, $class);
+% my %done;
 % while (my $ticket = $tickets->Next() ) {
-% next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies;
-% $i++; 
-% $class = ($i%2) ?  "oddline" : "evenline";
-<& Approve, ticket => $ticket &>
+%     next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies( Type => 'approval' );
+%     $i++; 
+%     $class = ($i%2) ?  "oddline" : "evenline";
+<& Approve, ticket => $ticket, class => $class &>
 % }
 </table>
 
@@ -49,9 +50,8 @@
 
 <%init>
 my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$tickets->IgnoreType;
 $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
-$tickets->Limit( FIELD      => 'Type', VALUE => 'approval' );
+$tickets->Limit( FIELD      => 'Type', VALUE => 'Approval' );
 
 if ( $ARGS{'ShowResolved'} ) {
     $tickets->LimitStatus( VALUE => 'resolved' );
@@ -59,7 +59,7 @@ if ( $ARGS{'ShowResolved'} ) {
 if ( $ARGS{'ShowRejected'} ) {
     $tickets->LimitStatus( VALUE => 'rejected' );
 }
-if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && $ARGS{'Resolved'} ) ) {
+if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
     $tickets->LimitStatus( VALUE => 'open' );
     $tickets->LimitStatus( VALUE => 'new' );
     $tickets->LimitStatus( VALUE => 'stalled' );

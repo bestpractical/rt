@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Ticket # [_1]  [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Header, Title => loc("Ticket #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket, current_tab => 'Ticket/Display.html?id='.$Ticket->id &>
 
 <& /Elements/ListActions, actions => \@Actions &>

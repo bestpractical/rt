@@ -31,7 +31,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	37
+RT_VERSION_PATCH	=	38
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -85,7 +85,7 @@ RT_READABLE_DIR_MODE	=	0755
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
 # RT_MODPERL2_HANDLER is the mason handler script for mod_perl2
-RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/modperl2.pl
+RT_MODPERL2_HANDLER	=	$(RT_BIN_PATH)/modperl2.pl
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
@@ -233,7 +233,6 @@ fixperms:
 	chown $(BIN_OWNER) $(SETGID_BINARIES)
 	chgrp $(RTGROUP) $(SETGID_BINARIES)
 	chmod 0755  $(SETGID_BINARIES)
-	
 	chmod g+s $(SETGID_BINARIES)
 
 	# Make the web ui readable by all. 
