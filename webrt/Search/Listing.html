@@ -59,7 +59,8 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => 'Search Criteria'&>
 
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1">New search</a>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1">New search</a><br>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%> ">Bookmark this search</a>
 <BR>
 <BR>
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();

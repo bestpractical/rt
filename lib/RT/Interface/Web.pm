@@ -174,6 +174,12 @@ sub ProcessSearchQuery {
 	$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'});
     }
 
+    #Import a bookmarked search if we have one
+    if (defined $args{ARGS}->{'Bookmark'}) {
+	$session{'tickets'}->ThawLimits($args{ARGS}->{'Bookmark'});
+    }
+
+
     # {{{ Goto next/prev page
     if ($args{ARGS}->{'GotoPage'} eq 'Next') {
 	$session{'tickets'}->NextPage;
