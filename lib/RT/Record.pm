@@ -1148,6 +1148,14 @@ sub DependsOn {
 
 # {{{ sub _Links 
 
+=head2 Links DIRECTION TYPE 
+
+return links to/from this object. 
+
+=cut
+
+*Links = \&_Links;
+
 sub _Links {
     my $self = shift;
 
