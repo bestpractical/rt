@@ -1,0 +1,100 @@
+<& /Elements/Header, title => 'Modify people related to ticket # ' . $TicketObj->id &>
+<& /Ticket/Elements/Tabs, id => $id  &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+
+
+ 
+%#ACTION="" means submit to self.
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
+<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$TicketObj->Id,   width => "100%" &>
+
+<& Elements/EditPeople, TicketObj => $TicketObj, UserField => $UserField, UserOp => $UserOp, UserString => $UserString &>
+
+
+
+
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+<& /Elements/TitleBoxEnd &>
+
+</form>
+
+<%INIT>
+
+my $field;
+my @results;
+
+# {{{ Load the ticket
+#If we get handed two ids, mason will make them an array. bleck.
+# We want teh first one. Just because there's no other sensible way
+# to deal
+my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
+
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+# }}}
+# {{{ Set basic fields 
+my @fields = qw(
+          Owner 
+        );
+
+#run through each field in this list. update the value if apropriate
+foreach $field (@fields) {
+my ($code, $msg);
+my $check = "if ((defined \$ARGS{$field}) and 
+                 (\$ARGS{$field} ne \$TicketObj->$field)) {
+                  (\$code, \$msg) = \$TicketObj->Set$field(\$ARGS{'$field'});
+                  push \@results, \"\$msg\";
+                   }";
+
+            eval $check;
+            if ($@)  {
+		$RT::Logger->err("Web/Ticket/Modify.html: $@\n");
+	    }   
+}
+
+# }}}
+
+my ($key);
+
+# {{{ Delete deletable watchers
+
+foreach $key (keys %ARGS) {
+    if (($key =~ /^DelWatcher(\d*)$/) and
+	($ARGS{$key})) {
+	$RT::Logger->debug("Deleting watcher $1\n");
+	my ($code, $msg) = $TicketObj->DeleteWatcher($1);
+	
+	push @results, $msg;
+    }
+}
+# }}}
+
+# {{{ Add new watchers
+foreach $key (keys %ARGS) {
+    #They're in this order because otherwise $1 gets clobbered :/
+    if ( ($ARGS{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
+	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
+	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
+	my ($code, $msg) = 
+	  $TicketObj->AddWatcher(Type => $ARGS{$key},
+				 Owner => $1);
+	push @results, $msg;
+    }
+}
+
+# }}}
+
+</%INIT>
+
+
+
+<%ARGS>
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$id => undef
+</%ARGS>
+

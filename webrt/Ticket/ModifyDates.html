@@ -1,0 +1,78 @@
+<& /Elements/Header, title => 'Modify dates for ticket #'. $TicketObj->Id &>
+<& /Ticket/Elements/Tabs, id => $id  &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+
+
+ 
+%#ACTION="" means submit to self.
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
+<& /Elements/TitleBoxStart, title => 'Modify dates for ticket #'.$TicketObj->Id,  width => "100%" &>
+
+<& Elements/EditDates, TicketObj => $TicketObj &>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit &>
+</form>
+
+
+<%INIT>
+
+my $field;
+my @results;
+
+# {{{ Load the ticket
+#If we get handed two ids, mason will make them an array. bleck.
+# We want teh first one. Just because there's no other sensible way
+# to deal
+
+my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);
+
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj->Load($id[0]) || Abort("Couldn't load ticket '$id'");
+# }}}
+
+
+# {{{ Set date fields
+my @date_fields = qw(
+          Told  
+          Resolved  
+          Starts  
+          Started  
+          Due  
+        );
+#Run through each field in this list. update the value if apropriate
+foreach $field (@date_fields) {
+        my ($code, $msg);
+            my $check = "
+               my \$DateObj = RT::Date->new(\$session{'CurrentUser'});
+	       #If it's something other than just whitespace
+	       if (\$ARGS{'$field'.'_Date'} ne '') {
+               \$DateObj->Set(Format => 'unknown',
+                              Value => \$ARGS{'$field'. '_Date'});
+              if ((defined \$DateObj->Unix) and 
+                  (\$DateObj->Unix ne \$TicketObj->@{[$field]}Obj->Unix)) {
+                      (\$code, \$msg) = \$TicketObj->Set$field(\$DateObj->ISO);
+                      push \@results, \"\$msg\";
+                  }
+		}
+            ";
+	eval $check;
+	if ($@) {
+	    $RT::Logger->err("Web/Ticket/Modify.html Date $field update failed ".$@."\n");
+	}
+	
+    }
+
+# }}}
+
+</%INIT>
+
+
+<%ARGS>
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$id => undef
+</%ARGS>
