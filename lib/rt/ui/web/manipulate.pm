@@ -221,6 +221,10 @@ sub DisplayForm {
   }
   
   if ($rt::ui::web::FORM{'display'} eq 'History') {
+    	  if (!$frames) {
+	      &display_commands();
+	        }
+
     
     &display_summary($serial_num);
     print "<hr>";
