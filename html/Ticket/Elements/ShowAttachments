@@ -82,8 +82,12 @@ if ($size) {
 % }
 
 <%INIT>
-my %documents;
 
+# If we haven't been passed in an Attachments object (through the precaching mechanism)
+# then we need to find one
+$Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
+
+my %documents;
 while ( my $attach = $Attachments->Next() ) {
     next unless ($attach->Filename());
    unshift( @{ $documents{ $attach->Filename } }, $attach );
