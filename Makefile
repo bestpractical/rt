@@ -21,10 +21,10 @@ PERL		    =       /usr/bin/perl
 CONFIG_FILE_PATH	=       /opt/rt3/etc
 CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
 
-GETPARAM		=       $(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
+GETPARAM		=       $(PERL) -I/opt/rt3/lib -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
 
-RT_LIB_PATH	     =       `$(GETPARAM) "LibPath"`
-MASON_HTML_PATH	 =       `$(GETPARAM) "MasonLocalComponentRoot"`
+RT_LIB_PATH	     =       /opt/rt3/lib
+MASON_HTML_PATH	 =       /opt/rt3/local/html
 
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`

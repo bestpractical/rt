@@ -97,7 +97,7 @@ CREATE TABLE FM_ArticleCFValues (
 
   Article int NOT NULL  ,
   CustomField int NOT NULL  ,
-  Content int NOT NULL,
+  Content text,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
