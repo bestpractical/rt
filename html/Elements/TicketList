@@ -58,7 +58,7 @@ my $map = {
         value => sub { return $_[0]->Status }
     },
     Subject => {
-        value => sub { return $_[0]->Subject }
+        value => sub { return $_[0]->Subject || "(".loc('No subject').")" }
     },
     ExtendedStatus => {
         title => 'Status',

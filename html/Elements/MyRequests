@@ -21,12 +21,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
+<&|/Elements/TitleBox, title => loc('[_1] highest priority tickets I requested', $rows) &>
 <& /Elements/TicketList, 
         Title => loc("[_1] highest priority tickets I requested...", $rows),
-        Query => "SELECT '<a href=\"/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, OwnerName WHERE Requestor = '".$session{'CurrentUser'}->EmailAddress."' AND ( Status = 'new' OR Status = 'open')"
-        &>
+        Format => "'<a href=\"/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, OwnerName",
+        Query => "Requestor = '".$session{'CurrentUser'}->EmailAddress."' AND ( Status = 'new' OR Status = 'open')",
 
+        &>
+</&>
 <%init>
 my $rows = 10;
 </%init>
