@@ -1404,7 +1404,7 @@ sub _AddWatcher {
 
     my $principal = RT::Principal->new($self->CurrentUser);
     if ($args{'Email'}) {
-        my $user = RT::User->new($self->CurrentUser);
+        my $user = RT::User->new($RT::SystemUser);
         my ($pid, $msg) = $user->LoadOrCreateByEmail($args{'Email'});
         if ($pid) {
             $args{'PrincipalId'} = $pid; 
