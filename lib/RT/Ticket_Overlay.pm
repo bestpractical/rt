@@ -2712,11 +2712,17 @@ sub MergeInto {
     my $old_links_to = RT::Links->new($self->CurrentUser);
     $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);
 
+    my %old_seen;
     while (my $link = $old_links_to->Next) {
-        if ($link->Base eq $MergeInto->URI) {
+        if (exists $old_seen{$link->Base."-".$link->Type}) {
+            $link->Delete;
+        }   
+        elsif ($link->Base eq $MergeInto->URI) {
             $link->Delete;
         } else {
             $link->SetTarget($MergeInto->URI);
+            $link->SetLocalTarget($MergeInto->id);
+            $old_seen{$link->Base."-".$link->Type} =1;
         }
 
     }
@@ -2725,10 +2731,15 @@ sub MergeInto {
     $old_links_from->Limit(FIELD => 'Base', VALUE => $self->URI);
 
     while (my $link = $old_links_from->Next) {
+        if (exists $old_seen{$link->Type."-".$link->Target}) {
+            $link->Delete;
+        }   
         if ($link->Target eq $MergeInto->URI) {
             $link->Delete;
         } else {
             $link->SetBase($MergeInto->URI);
+            $link->SetLocalBase($MergeInto->id);
+             $old_seen{$link->Type."-".$link->Target} =1;
         }
 
     }
