@@ -500,7 +500,7 @@ sub Create {
     # We denormalize it into the Ticket table too because doing otherwise would 
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
 
-    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->MemberId , InsideTransaction => 1);
+    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId , InsideTransaction => 1);
 
     # {{{ Deal with setting up watchers
 
