@@ -23,8 +23,8 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc("Offline upload") &>
 <& /Elements/Tabs, 
-    current_toptab => "Ticket/Create.html", 
-    Title => loc("Create a new ticket") &>
+    current_toptab => "Tools/Offline.html", 
+    Title => loc("Offline edits") &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -39,33 +39,40 @@
 <%INIT>
 
 my @results;
-if ($ARGS{'string'}) {
-    use RT::Action::CreateTickets;
-    my $action = new RT::Action::CreateTickets;
-    $action->Parse($ARGS{string});
-    $action->CreateByTemplate();
-    $action->UpdateByTemplate();
-}		
-    
-my $string = qq[===Create-Ticket: ticket1
-Queue: General
-Subject: <subject here>
-Status: new
-Content: <content here>
-ENDOFCONTENT
-Due: 
-Starts: 
-Started: 
-Resolved: 
-Owner: 
-Requestor: 
-Cc: 
-AdminCc: 
-TimeWorked: 
-TimeEstimated: 
-TimeLeft: 
-InitialPriority: 
-FinalPriority: 
-];
+use RT::Action::CreateTickets;
+my $action = new RT::Action::CreateTickets;
+my $string;
 
+if ($ARGS{'string'}) {
+    $action->Parse($ARGS{string});
+    push @results, $action->CreateByTemplate();
+    push @results, $action->UpdateByTemplate();
+    $string = $ARGS{string};
+} else {
+    if ($ARGS{'Query'}) {
+	my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+	$Tickets->FromSQL($ARGS{'Query'});
+	
+	while (my $t = $Tickets->Next) {
+	    $string .= "===Update-Ticket: " . $t->Id . "\n";
+	    $string .= $action->GetUpdateTemplate($t);
+	    $string .= "" . "\n";
+	}
+	
+	$string .= "" . "\n";
+	$string .= "===# DO NOT EDIT BELOW THIS LINE#===\n";
+	$string .= "" . "\n";
+	
+	while (my $t = $Tickets->Next) {
+	    $string .= "===# DO NOT EDIT #===\n";
+		$string .= "===Base-Ticket: " . $t->Id . "\n";
+	    $string .= $action->GetBaseTemplate($t);
+	    $string .= "===# DO NOT EDIT #===\n";
+		$string .= "" . "\n";
+	}
+    } else {
+	$string .= "===Create-Ticket: ticket1\n";
+	$string .= $action->GetCreateTemplate();
+    }
+}
 </%INIT>
