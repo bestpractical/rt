@@ -46,7 +46,7 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$Ticket->OwnerObj->Name%></td>
+    <td class="value"><& ShowUserEntry, User => $Ticket->OwnerObj &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
