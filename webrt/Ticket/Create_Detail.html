@@ -10,7 +10,9 @@
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket in queue \"".$Queue->QueueId.'"' &>
 
 %# TODO: Totally ugly&untested code:
+%# TODO: Get a nice display also when more than one request is linked up
 
+<input type="hidden" name="queue" value="<%$Queue->id%>">
 <input type="hidden" name="id" value="new">
 % if ($Link eq 'DependsOn') {
 <input type="hidden" name="LinkType" value="DependsOn">
@@ -52,7 +54,8 @@ Cc: <INPUT NAME="Cc" SIZE=20><br>
 Subject: <INPUT Name="Subject" SIZE=20><br><br>
 Status:	<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
 
-Upload an attachment: <INPUT TYPE=FILE><br>
+%# TODO in Display.html or a more proper place:
+Upload an attachment (not implemented yet): <INPUT TYPE=FILE><br>
 Describe the issue below:<br>
 <TEXTAREA NAME="Content" ROWS=10 COLS=70 WRAP=SOFT></TEXTAREA><br>
 

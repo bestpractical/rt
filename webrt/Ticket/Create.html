@@ -18,9 +18,9 @@
 <input type="hidden" name="QuoteTransaction" value=<%$QuoteTransaction%>>
 % }
 <input type="radio" name="Link" value="" CHECKED>The new ticket should be independent.<BR><BR>
-<input type="radio" name="Link" value="DependsOn">Ticket(s) <input name="LinkFrom" value="<% $id %>"> should depend on the new ticket<BR><BR>
-<input type="radio" name="Link" value="MemberOf">Ticket(s) <input name="LinkFrom" value="<% $id %>"> should be a member of the new ticket<BR><BR>
-<input type="radio" name="Link" value="ParentOf">The new ticket is a member of ticket <input name="LinkFrom" value="<% $id %>"><BR><BR>
+<input type="radio" name="Link" value="DependsOn">Ticket(s) <input name="LinkFromD" value="<% $id %>"> should depend on the new ticket<BR><BR>
+<input type="radio" name="Link" value="MemberOf">Ticket(s) <input name="LinkFromM" value="<% $id %>"> should be a member of the new ticket<BR><BR>
+<input type="radio" name="Link" value="ParentOf">The new ticket is a member of ticket <input name="LinkTo" value="<% $id %>"><BR><BR>
 <& /Elements/TitleBoxEnd &>
 
 <FORM>

@@ -77,7 +77,6 @@ sub SetReturnAddress {
       $RT::CorrespondAddress
 	or warn "Can't find email address for queue?";
   
-  
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
     my $friendly_name=$self->{TransactionObj}->Creator->RealName;
     $self->TemplateObj->MIMEObj->head->add('From', "Request Tracker <$email_address>");

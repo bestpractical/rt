@@ -26,6 +26,10 @@
 
 <%INIT>
 
+# TODO.  This is ugly, ugly, ugly.  Most of it should be formatted "right"
+# and moved away from the template. -- TobiX
+
+# Check if we have an id:
   if (!$ARGS{'id'}) {
     &mc_comp("/Elements/Error" , Why => "No ticket specified");
     $m->abort;
@@ -38,6 +42,8 @@ my $CurrentUser = RT::CurrentUser->new(2);
 my $Ticket = RT::Ticket->new($CurrentUser);
 my $id=$ARGS{'id'};
 my @Actions=();
+
+# Eventually, create a new ticket:
 
   if ($id eq 'new') {
     require MIME::Entity;
@@ -64,8 +70,21 @@ my @Actions=();
     push(@Actions, $ErrMsg);
   }
 
+# Can we load it?
+
 unless ($Ticket->Load($id)) {
     &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
     $m->abort;
 }
+
+# Eventually, link up the ticket:
+
+  if (my $l=$ARGS{'Link'}) {
+    # There is some redundant information from the forms now - we'll
+    # ignore one bit of it:
+    # (the current configuration does not allow more than one link to
+    #  be set in one action)
+
+    my $lid=$ARGS{'LinkTo'} || $ARGS{'LinkFrom'};
+  }
 </%INIT>

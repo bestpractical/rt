@@ -85,8 +85,12 @@ sub Create  {
 	
 	if ($Scope->ScripObj->Type && 
 	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
+
 	    #TODO: properly deal with errors raised in this scrip loop
-	    
+
+	    # Why do we need an eval here anyway?  What errors can be
+	    # raised here?
+
 	    eval {
 		#Load the scrip's action;
 		$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
@@ -95,6 +99,10 @@ sub Create  {
 		
 		#If it's applicable, prepare and commit it
 		if ( $Scope->ScripObj->IsApplicable() ) {
+
+		    $RT::Logger->log(level=>'debug', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
+
+
 		    $Scope->ScripObj->Prepare() &&   
 		    $Scope->ScripObj->Commit();
 		   
@@ -103,10 +111,11 @@ sub Create  {
 		    $Scope->ScripObj->DESTROY();
 		}
 	    }
+	} else {
+	    #TODO: why the fuck does this not catch all
+	    # ScripObjs we create. and why do we explictly need to destroy them?
+	    $Scope->ScripObj->DESTROY;
 	}
-	#TODO: why the fuck does this not catch all
- 	# ScripObjs we create. and why do we explictly need to destroy them?
-	$Scope->ScripObj->DESTROY;
     }    
     return ($id, "Transaction Created");
 }
