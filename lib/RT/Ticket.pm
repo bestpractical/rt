@@ -937,11 +937,11 @@ sub _NewLink {
   my $b;
   my $t;
   if ($args{dir} eq 'T') {
-      $b=$args{Base};
-      $t='THIS';
-  } else {
-      $b='THIS';
       $t=$args{Target};
+      $b='THIS';
+  } else {
+      $t='THIS';
+      $b=$args{Base};
   }
   my $TransString="$b $args{Type} $t as of $linkid";
   my $Trans = $self->_NewTransaction

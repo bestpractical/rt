@@ -5,11 +5,9 @@
 
 <& /Ticket/Elements/ToolBar, Ticket => $Ticket &>
 
-<blink>Work in process; this probably won't work at the moment</blink>
-
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Make a link from/to this ticket (#" . $Ticket->Id . ": ". encode_entities($Ticket->Subject,"^A-Za-z0-9") . ")", titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
 
-<form action="Display.html" method="post">
+<form action="ProcessUpdate.html" method="post">
 <input type="hidden" name="id" value="<%$id%>">
 <input type="hidden" name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkTo"><input type=submit value="Create link!">
 </form>

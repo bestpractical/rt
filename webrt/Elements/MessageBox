@@ -4,10 +4,16 @@
 $QuoteTransaction => undef
 $Name=>'Content'
 $Default=>''
+$DefaultURI=>undef
 $Width=>72
+$MessageURI=>undef
 </%ARGS>
 
 <%INIT>
+if ($MessageURI) {
+	my $code;
+	($code, $Default)=RT::Link->GetContent($MessageURI);
+}
 if ($QuoteTransaction) {
     require RT::Ticket;
     require RT::Transaction;
@@ -16,8 +22,9 @@ if ($QuoteTransaction) {
     my $message=$transaction->Message->First;
     my $dumb="";
     my $d=\$dumb;
-    ($d, $Width)=$message->Quote
+    ($d, $Width)=$message->Quote(Reply=>$Default)
 	if $message;
     $Default=$$d;
 }
 </%INIT>
+

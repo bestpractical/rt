@@ -82,6 +82,37 @@ if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
     push(@Actions, $Description);
 }
 
+# Eventually, link up the ticket (this is CUT'N'PASTE from Display.html - CUT'N'PASTE sucks!):
+
+  if (my $l=$ARGS{'Link'}) {
+    # There is some redundant information from the forms now - we'll
+    # ignore one bit of it:
+
+    my $luris=$ARGS{'LinkTo'} || $ARGS{'LinkFrom'};
+    my $ltyp=$ARGS{'LinkType'};
+    if (ref $ltyp) {
+        &mc_comp("/Elements/Error" , Why => "Parameter error");
+        $m->abort;
+    }
+    for my $luri (split (/ /,$luris)) {
+      my ($LinkId, $Message);
+      if ($l eq 'LinkTo') {
+        ($LinkId,$Message)=$Ticket->LinkTo(Target=>$luri, Type=>$ltyp);
+      } elsif ($l eq 'LinkFrom') {
+        ($LinkId,$Message)=$Ticket->LinkFrom(Base=>$luri, Type=>$ltyp);
+      } else {
+        &mc_comp("/Elements/Error" , Why => "Parameter error");
+        $m->abort;
+      }
+      warn $Message;
+
+
+      
+      push(@Actions, $Message);
+    }
+}
+
+
 </%init>
 
 

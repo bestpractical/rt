@@ -161,8 +161,7 @@ sub TargetAsHREF {
 }
 # }}}
 
-# {{{ sub AsHREF
-# Converts Link URIs to HTTP URLs
+# {{{ sub AsHREF - Converts Link URIs to HTTP URLs
 sub AsHREF {
   my $self=shift;
   my $URI=shift;
@@ -175,6 +174,26 @@ sub AsHREF {
     }
 }
 
+# }}}
+
+# {{{ sub GetContent - gets the content from a link
+sub GetContent {
+    my ($self, $URI)=@_;
+    if ($self->_IsLocal($URI)) {
+	die "stub";
+    } else {
+	# Find protocol
+	if ($URI =~ m|^(.*?)://|) {
+	    if (exists $RT::ContentFromURI{$1}) {
+		return $RT::ContentFromURI{$1}->($URI);
+	    } else {
+		warn "No sub exists for fetching the content from a $1 in $URI";
+	    }
+	} else {
+	    warn "No protocol specified in $URI";
+	}
+    }
+}
 # }}}
 
 1;

@@ -126,7 +126,17 @@ $Logger->add(Log::Dispatch::File->new
      'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}
      );
-    
+
+# A hash table of subs for fetching content from an URI
+%ContentFromURI=   
+    (
+     'fsck.com-rt' => sub {warn "stub!";},
+     'mozilla.org-bugzilla' => sub {warn "stub!"},
+     'fsck.com-kb' => sub {warn "stub!"}
+     );
+
+# If you want to use those, ask at rt-devel or to tobix@fsck.com for
+# advices.
 
 # }}}
 

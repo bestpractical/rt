@@ -190,7 +190,7 @@ sub Quote {
     }
     
     $body .= "[REMOVE THIS LINE. DOES THE REPLY MATCH THE QUESTION?]\n$args{Reply}"
-	if (defined($args{Reply}));
+	if ($args{Reply});
     
     $max=60 if $max<60;
     $max=70 if $max>78;
