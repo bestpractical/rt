@@ -96,7 +96,7 @@ sub Delete {
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
 	return undef;
     }
-    return($self->$SUPER::Delete(@_));
+    return($self->SUPER::Delete(@_));
 }
 
 # }}}
@@ -124,6 +124,6 @@ sub _Set {
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
 	return undef;
     }
-    return($self->$SUPER::_Set(@_));
+    return($self->SUPER::_Set(@_));
 }
 # }}}

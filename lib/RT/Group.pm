@@ -274,7 +274,7 @@ sub _Set {
     my $self = shift;
     if ($self->CurrentUser->HasSystemRight('AdminGroups')) {
 	
-	$self->$SUPER::_Set(@_);
+	$self->SUPER::_Set(@_);
     }
     else {
 	return (undef);
