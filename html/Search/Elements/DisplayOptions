@@ -67,7 +67,7 @@ my %fields = %{$tickets->FIELDS};
 </%INIT>
 
 <%ARGS>
-$OrderBy => 'id'
-$RowsPerPage => 50
+$OrderBy => undef
+$RowsPerPage => undef
 $Format => undef
 </%ARGS>
