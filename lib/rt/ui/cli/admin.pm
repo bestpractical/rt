@@ -9,23 +9,20 @@ sub activate {
 
   require RT::User;  
   ($current_user,$tmp)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user,$Handle);
+  $CurrentUser = new RT::User($current_user,$RT::Handle);
   if (!$CurrentUser->load($current_user)) {
     print "You have no RT access.\n";
     return();
   }
 
-  
-
-  print "Your email address is",$CurrentUser->EmailAddress,"\n";
-  
-
-  &parse_args;
+  &parse_args();
   return(0);
+
 
 }
 
 sub parse_args {
+
     for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] =~ 'q') {
 	    $action=$ARGV[++$i];
@@ -188,7 +185,7 @@ sub cli_acl_queue {
 }
  sub cli_modify_user{
    my $user_id = shift;
-   my $User = new RT::User($CurrentUser->UserId);
+   my $User = new RT::User($CurrentUser->UserId, $RT::Handle);
    my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
    
    $User->load($user_id);
@@ -229,7 +226,7 @@ sub cli_acl_queue {
  
 sub cli_create_user {
   my $user_id = shift;
-  my $User = new RT::User($CurrentUser->UserId);
+  my $User = new RT::User($CurrentUser->UserId, $RT::Handle);
   $User->Create($user_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user($User->UserId);
@@ -237,32 +234,28 @@ sub cli_create_user {
 
 sub cli_create_queue {
   my $queue_id = shift;
-  require RT::Queue;
-  my $Queue = new RT::Queue($CurrentUser->UserId);
+  use RT::Queue;
+  my $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
   $Queue->Create($queue_id);
   #TODO. this is wasteful. we should just be passing around a queue object
-  &cli_modify_queue_helper($Queue->QueueId);
+  &cli_modify_queue($Queue->id);
 }
 
 
 sub cli_modify_queue {
-  my $queue_id = shift;
-  use RT::Queue;
-  $Queue = new RT::Queue($CurrentUser->UserId);
-  $Queue->load($queue_id);
-  &cli_modify_queue_helper($Queue);
-}
+    my $queue_id = shift;
+    my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
+	$m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
+	$default_final_prio, $Queue, $comment_alias);
 
-sub cli_modify_queue_helper {
-  my $queue_id = shift;
-  my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
-      $m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
-      $default_final_prio, $Queue, $comment_alias);
+    # get a new queue object and fill it.
+    use RT::Queue;
+    $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
+    $Queue->load($queue_id);
+    
 
-
-
-    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" , $Queue->CorrespondAlias);
-    $comment_alias=&rt::ui::cli::question_string("Queue comments alias (ex: support\@somewhere.com)" , $Queue->CommentAlias);
+    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" , $Queue->CorrespondAddress);
+    $comment_alias=&rt::ui::cli::question_string("Queue comments alias (ex: support\@somewhere.com)" , $Queue->CommentAddress);
 
     $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",$Queue->MailOwnerOnTransaction);
     
@@ -278,8 +271,8 @@ sub cli_modify_queue_helper {
     $default_final_prio=&rt::ui::cli::question_int("Default final request priority (1-100)",$Queue->FinalPriority);
     
     if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-      $message = $Queue->CorrespondAlias($mail_alias);
-      $message .= $Queue->CommentAlias($comment_alias);
+      $message = $Queue->CorrespondAddress($mail_alias);
+      $message .= $Queue->CommentAddress($comment_alias);
       $message .= $Queue->MailOwnerOnTransaction($m_owner_trans);
       $message .= $Queue->MailMembersOnTransaction($m_members_trans);
       $message .= $Queue->MailRequestorOnTransaction($m_user_trans);
@@ -300,7 +293,7 @@ sub cli_delete_queue {
     my  $queue_id = shift;
     # this function needs to ask about moving all requests into some other queue
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
-      my $Queue = new RT::Queue($CurrentUser->UserId);
+      my $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
       $Queue->Load($queue_id);
       $message = $Queue->Delete();
       print "$message\n";
