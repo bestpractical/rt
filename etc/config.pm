@@ -19,6 +19,17 @@ use Log::Dispatch::File;
 # information about how to get things by syslog, mail or anything
 # else, get debugging info in the log, etc.
 
+# I'm running this stuff to SysLog myself, but that's a bit more
+# complex - actually I had to fight a bit with Sys::Syslog and h2ph to
+# get it working.  I really don't want RT to break on such a stupid
+# thing as logging, so I'll leave logging to file as the default.
+
+# Version 1.11 of Log::Dispatch::File doesn't trail the message with a
+# newline, which might make the log file extremely messy.  You might
+# eventually hack it yourself.  Or I will eventually fix a
+# Log::Dispatch::LogFile, unless the next verson of Log::Dispatch is
+# likely to come around shortly.
+
 $Logger=Log::Dispatch->new;
 $Logger->add(Log::Dispatch::File->new
 	     ( name=>'rtlog',
@@ -187,8 +198,8 @@ $LocalePath = "!!LOCALE_PATH!!";
 ##### THINGS BELOW SHOULD ONLY BE MODIFIED BY REAL HACKERS! :)
 
 $Nobody=2;
-$SIG{__WARN__}=sub {$RT::Logger->log(level=>'warn',message=>$_[0])};
-$SIG{__DIE__}= sub {$RT::Logger->log(level=>'crit',message=>$_[0])};
+$SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
+$SIG{__DIE__}  = sub {$RT::Logger->log(level=>'crit',message=>$_[0]); print STDERR $_[0]; exit(-1);};
 
 
 1;
