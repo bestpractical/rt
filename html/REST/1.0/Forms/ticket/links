@@ -127,7 +127,7 @@ if ($changes) {
 else {
     my @data;
 
-    push @data, [ id => $ticket->Id."/links" ];
+    push @data, [ id => "ticket/".$ticket->Id."/links" ];
     foreach my $key (@fields) {
         my @val;
 

@@ -39,8 +39,12 @@ if ($format !~ /^[isl]$/) {
     goto OUTPUT;
 }
 
-my ($n, $s) = $tickets->FromSQL($query);
-if ($n == 0) {
+my ($n, $s);
+eval {
+    ($n, $s) = $tickets->FromSQL($query);
+};
+if ($@ || $n == 0) {
+    $s ||= $@;
     $status = "400 Bad request";
     $output = "Invalid query: '$s'.\n";
     goto OUTPUT;
@@ -51,7 +55,7 @@ while (my $ticket = $tickets->Next) {
     $n++;
 
     if ($format eq "i") {
-        $output .= $ticket->Id . "\n";
+        $output .= "ticket/" . $ticket->Id . "\n";
     }
     elsif ($format eq "s") {
         $output .= $ticket->Id . ": ". $ticket->Subject . "\n";

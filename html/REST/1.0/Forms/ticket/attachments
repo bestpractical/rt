@@ -67,7 +67,7 @@ else {
     if (@attachments) {
         $o = [ "id", "Attachments" ];
         $k = {
-            id => $ticket->Id,
+            id => "ticket/".$ticket->Id."/attachments",
             Attachments => \@attachments
         };
     }

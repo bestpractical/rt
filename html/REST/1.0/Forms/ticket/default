@@ -160,7 +160,7 @@ if ($changes) {
 else {
     my ($time, $key, $val, @data);
 
-    push @data, [ id    => $ticket->Id             ];
+    push @data, [ id    => "ticket/".$ticket->Id   ];
     push @data, [ Queue => $ticket->QueueObj->Name ];
     push @data, [ Owner => $ticket->OwnerObj->Name ];
 

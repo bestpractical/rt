@@ -108,7 +108,8 @@ elsif ($object eq 'edit' ||                             # $REST/edit
             $type =~ s|/$||;
 
             if (exists $k->{id}) {
-                ($id = $k->{id}) =~ s|^(?:$type/)?|$type/| if $type;
+                $id = $k->{id};
+                $id =~ s|^(?:$type/)?|$type/| if $type;
 
                 if ($id =~ m#^$name/(?:$label|\d+)(?:/.*)?#o) {
                     push @objects, $id;
@@ -191,10 +192,15 @@ foreach $object (@objects) {
         $handler = "Forms/$type/$attr";
 
         unless ($m->comp_exists($handler)) {
-            $i = 2;
-            $c = "# Invalid object data requested: $type/$attr";
+            $args = "$attr/$args";
+            $handler = "Forms/$type/default";
+
+            unless ($m->comp_exists($handler)) {
+                $i = 2;
+                $c = "# Unknown object type: $type";
+            }
         }
-        elsif ($id !~ /^\d+$/) {
+        elsif ($id ne 'new' && $id !~ /^\d+$/) {
             my $ns = "Forms/$type/ns";
 
             # Can we resolve named objects?

@@ -23,6 +23,11 @@
 # 
 # END LICENSE BLOCK
 
+use strict;
+
+# This program is intentionally written to have as few non-core module
+# dependencies as possible. It should stay that way.
+
 use Cwd;
 use LWP;
 use HTTP::Request::Common;
@@ -31,6 +36,7 @@ use HTTP::Request::Common;
 # and the RT* environment variables (in increasing order of precedence).
 # Session information is stored in ~/.rt_sessions.
 
+my $VERSION = 0.02;
 my $HOME = (getpwuid($<))[7] || $ENV{HOME} || $ENV{LOGDIR} || ".";
 my %config = (
     (
@@ -59,189 +65,193 @@ my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
 # Our command line looks like this:
 #
-#     rt [action] [object] [arguments]
+#     rt <action> [options] [arguments]
 #
 # We'll parse just enough of it to decide upon an action to perform, and
-# possibly the type of object it applies to ("edit ticket"); the rest is
-# left to a per-action handler function to interpret appropriately.
+# leave the rest to per-action handlers to interpret appropriately.
 
-my %command = (
-    help   => 0,
-    type   => undef,
-    action => undef,
+my %handlers = (
+#   handler     => [ ...aliases... ],
+    version     => ["version", "ver"],
+    logout      => ["logout"],
+    help        => ["help", "man"],
+    show        => ["show", "cat"],
+    edit        => ["create", "edit", "new", "ed"],
+    list        => ["search", "list", "ls"],
+    comment     => ["comment", "correspond"],
+    link        => ["link", "ln"],
+    merge       => ["merge"],
+    grant       => ["grant", "revoke"],
 );
 
-my %actions = (
-    logout     => \&logout,
-    show       => \&show,
-    create     => \&edit,
-    edit       => \&edit,
-    new        => \&edit,
-    search     => \&list,
-    list       => \&list,
-    ls         => \&list,
-    comment    => \&comment,
-    correspond => \&comment,
-    merge      => \&merge,
-    link       => \&link,
-    grant      => \&grant,
-    revoke     => \&grant,
-);
+# Once we find and call an appropriate handler, we're done.
 
-my %types = map { ( $_ => $_, "${_}s" => $_ ) }
-            qw(ticket user queue);
-
-# Now we look for some combination of upto one each of known actions and
-# object types: (), (action), (type), (action, type), or (type, action).
-# We may derive a type or action from the filename ("ln -sf rt ticket").
-# The entire clause may optionally be prefixed with "help".
-
-$command{help} = shift(@ARGV) if $ARGV[0] eq "help";
-if ($0 =~ m#([^/]+)$# && (exists $types{$1} || exists $actions{$1})) {
-    unshift(@ARGV, $1);
-}
-
-while (@ARGV) {
-    if (exists $types{$ARGV[0]}) {
-        if ($command{type}) {
-            warn "rt: Multiple types specified on command line.\n";
-            $command{help} = 1;
-            last;
-        }
-        $command{type} = $types{shift @ARGV};
-    }
-    elsif (exists $actions{$ARGV[0]}) {
-        if ($command{action}) {
-            warn "rt: Multiple actions specified on command line.\n";
-            $command{help} = 1;
-            last;
-        }
-        $command{action} = shift @ARGV;
-    }
-    else {
-        last;
+my (%actions, $action);
+foreach my $fn (keys %handlers) {
+    foreach my $alias (@{ $handlers{$fn} }) {
+        $actions{$alias} = \&{"$fn"};
     }
 }
-
-# We display help if the user asked for it, if the user didn't ask for
-# anything to be done, or if the handler couldn't understand what they
-# wanted to do. Otherwise, the handler completed its work, and we're
-# done.
-
-$command{action} ||= "show" if ($command{type} && !$command{help});
-my $act = $actions{$command{action}} if $command{action};
-
-if ($command{help} || !$act || $act->(\%command) == -1) {
-    help(\%command);
+if (@ARGV && exists $actions{$ARGV[0]}) {
+    $action = shift @ARGV;
 }
+$actions{$action || "help"}->($action || ());
 exit;
 
-# Handlers.
-# ---------
+# Handler functions.
+# ------------------
 #
-# The following subs are handlers for each entry in %actions. Each takes
-# a reference to %command, and is responsible for parsing the remainder
-# of @ARGV.
+# The following subs are handlers for each entry in %actions.
 
-sub logout {
-    if (defined $session->cookie) {
-        submit("$REST/logout");
-    }
+sub version {
+    print "rt $VERSION\n";
 }
 
-# Displays a list of objects that match some condition.
+sub logout {
+    submit("$REST/logout") if defined $session->cookie;
+}
+
+sub help {
+    my ($action, $type) = @_;
+    my (%help, $key);
+
+    # What help topics do we know about?
+    local $/ = undef;
+    foreach my $item (@{ Form::parse(<DATA>) }) {
+        my $title = $item->[2]{Title};
+        my @titles = ref $title eq 'ARRAY' ? @$title : $title;
+
+        foreach $title (@titles) {
+            $help{$title} = $item->[2]{Text};
+        }
+    }
+
+    # What does the user want help with?
+    undef $action if ($action && $actions{$action} eq \&help);
+    unless ($action || $type) {
+        # If we don't know, we'll look for clues in @ARGV.
+        foreach (@ARGV) {
+            if (exists $help{$_}) { $key = $_; last; }
+        }
+        unless ($key) {
+            # Tolerate possibly plural words.
+            foreach (@ARGV) {
+                if ($_ =~ s/s$// && exists $help{$_}) { $key = $_; last; }
+            }
+        }
+    }
+
+    if ($type && $action) {
+        $key = "$type.$action";
+    }
+    $key ||= $type || $action || "introduction";
+
+    # Find a suitable topic to display.
+    while (!exists $help{$key}) {
+        if ($type && $action) {
+            if ($key eq "$type.$action") { $key = $action;        }
+            elsif ($key eq $action)      { $key = $type;          }
+            else                         { $key = "introduction"; }
+        }
+        else {
+            $key = "introduction";
+        }
+    }
+
+    print STDERR $help{$key}, "\n\n";
+}
+
+# Displays a list of objects that match some specified condition.
 
 sub list {
-    my ($cmd) = @_;
-    my ($type, $data);
+    my ($q, $type, %data);
+    my $bad = 0;
 
-    $data = {};
     while (@ARGV) {
         $_ = shift @ARGV;
 
-        if (/^-(.*)$/) {
-            if ($1 =~ /^([isl])$/) {
-                $data->{format} = $1;
-            }
-            else {
-                whine "Unrecognised option '$_'.";
-                return -1;
-            }
+        if (/^-t$/) {
+            $bad = 1, last unless defined($type = get_type_argument());
         }
-        elsif (!exists $data->{query}) {
-            $data->{query} = $_;
+        elsif (/^-S$/) {
+            $bad = 1, last unless get_var_argument(\%data);
+        }
+        elsif (/^-([isl])$/) {
+            $data{format} = $1;
+        }
+        elsif (!defined $q && !/^-/) {
+            $q = $_;
         }
         else {
-            whine "Too many arguments: '$_'.\n";
-            return -1;
+            my $datum = /^-/ ? "option" : "argument";
+            whine "Unrecognised $datum '$_'.";
+            $bad = 1; last;
         }
     }
 
-    unless (defined($type = $cmd->{type}) &&
-            exists $data->{query})
-    {
-        my $item = exists $data->{query} ? "object type" : "query string";
+    $type ||= "ticket";
+    unless ($type && defined $q) {
+        my $item = $type ? "query string" : "object type";
         whine "No $item specified.";
-        return -1;
+        $bad = 1;
     }
+    return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", $data);
+    my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
 }
 
 # Displays selected information about a single object.
 
 sub show {
-    my ($cmd) = @_;
-    my (%options, $type, $object);
-
-    $type = $cmd->{type};
+    my ($type, @objects, %data);
+    my $slurped = 0;
+    my $bad = 0;
 
     while (@ARGV) {
         $_ = shift @ARGV;
 
-        if (/^(-.*)$/) {
-            if ($1 eq "-f") {
-                if ($ARGV[0] !~ /^(?:(?:$field,)*$field)$/) {
-                    whine "No valid field list in '-f $ARGV[0]'";
-                    return -1;
-                }
-                $options{fields} = shift @ARGV;
-            }
-            elsif ($1 eq "-") {
-                chomp(my @lines = <STDIN>);
-                $object = join(',', split(/\s+/, join(' ', @lines)));
-            }
-            else {
-                whine "Unrecognised option '$_'.";
-                return -1;
-            }
+        if (/^-t$/) {
+            $bad = 1, last unless defined($type = get_type_argument());
         }
-        elsif (my @t = m{^(?:($name)/)?($idlist|$labels)(/.*)?$}o) {
-            # This is an object specification.
-            if ($t[0]) {
-                $type = $cmd->{type} ||= $t[0];
-                unless ($t[0] eq $type) {
-                    whine "Conflicting object types: $type vs. $t[0].\n";
-                    return -1;
+        elsif (/^-S$/) {
+            $bad = 1, last unless get_var_argument(\%data);
+        }
+        elsif (/^-$/ && !$slurped) {
+            chomp(my @lines = <STDIN>);
+            foreach (@lines) {
+                unless (is_object_spec($_, $type)) {
+                    whine "Invalid object on STDIN: '$_'.";
+                    $bad = 1; last;
                 }
-                $_ = "$t[1]$t[2]";
+                push @objects, $_;
             }
-            $object = $_;
+            $slurped = 1;
+        }
+        elsif (/^-f$/) {
+            if ($ARGV[0] !~ /^(?:(?:$field,)*$field)$/) {
+                whine "No valid field list in '-f $ARGV[0]'.";
+                $bad = 1; last;
+            }
+            $data{fields} = shift @ARGV;
+        }
+        elsif (my $spec = is_object_spec($_, $type)) {
+            push @objects, $spec;
         }
         else {
-            whine "Unrecognised argument '$_'.";
-            return -1;
+            my $datum = /^-/ ? "option" : "argument";
+            whine "Unrecognised $datum '$_'.";
+            $bad = 1; last;
         }
     }
 
-    unless (defined $type && $object) {
-        my $x = $object ? "type" : "object";
-        whine "No $x specified.";
-        return -1;
+    unless (@objects) {
+        whine "No objects specified.";
+        $bad = 1;
     }
+    return help("show", $type) if $bad;
 
-    my $r = submit("$REST/show", { id => "$type/$object", %options } );
+    my $r = submit("$REST/show", { id => \@objects, %data });
     print $r->content;
 }
 
@@ -253,45 +263,42 @@ sub show {
 # or interactively via $EDITOR), and send the form back.
 
 sub edit {
-    my ($cmd) = @_;
-    my ($cl, $edit, $input, $output);
-    my ($type, $object, $text);
+    my ($action) = @_;
+    my (%data, $type, @objects);
+    my ($cl, $text, $edit, $input, $output);
 
+    use vars qw(%set %add %del);
     %set = %add = %del = ();
-    $type = $cmd->{type};
-
+    my $slurped = 0;
+    my $bad = 0;
+    
     while (@ARGV) {
         $_ = shift @ARGV;
 
-        if (/^(-.*)$/) {
-            if    ($1 eq "-e") { $edit = 1 }
-            elsif ($1 eq "-i") { $input = 1 }
-            elsif ($1 eq "-o") { $output = 1 }
-            elsif ($1 eq "-") {
-                chomp(my @lines = <STDIN>);
-                $object = join(',', split(/\s+/, join(' ', @lines)));
-            }
-            else {
-                whine "Unrecognised option '$_'.";
-                return -1;
-            }
+        if    (/^-e$/) { $edit = 1 }
+        elsif (/^-i$/) { $input = 1 }
+        elsif (/^-o$/) { $output = 1 }
+        elsif (/^-t$/) {
+            $bad = 1, last unless defined($type = get_type_argument());
         }
-        elsif (my @t = m{^(?:($name)/)?($idlist|$labels)(/.*)?$}o) {
-            # This is an object specification.
-            if ($t[0]) {
-                $type = $cmd->{type} ||= $t[0];
-                unless ($t[0] eq $type) {
-                    whine "Conflicting object types: $type vs. $t[0].\n";
-                    return -1;
+        elsif (/^-S$/) {
+            $bad = 1, last unless get_var_argument(\%data);
+        }
+        elsif (/^-$/ && !($slurped || $input)) {
+            chomp(my @lines = <STDIN>);
+            foreach (@lines) {
+                unless (is_object_spec($_, $type)) {
+                    whine "Invalid object on STDIN: '$_'.";
+                    $bad = 1; last;
                 }
-                $_ = "$t[1]$t[2]";
+                push @objects, $_;
             }
-            $object = $_;
+            $slurped = 1;
         }
         elsif (/^set$/i) {
             my $vars = 0;
 
-            while ($ARGV[0] =~ /^($field)([+-]?=)(.*)$/) {
+            while (@ARGV && $ARGV[0] =~ /^($field)([+-]?=)(.*)$/) {
                 my ($key, $op, $val) = ($1, $2, $3);
                 my $hash = ($op eq '=') ? \%set : ($op =~ /^\+/) ? \%add : \%del;
 
@@ -301,7 +308,7 @@ sub edit {
             }
             unless ($vars) {
                 whine "No variables to set.";
-                return -1;
+                $bad = 1; last;
             }
             $cl = $vars;
         }
@@ -309,7 +316,7 @@ sub edit {
             my $vars = 0;
             my $hash = ($_ eq "add") ? \%add : \%del;
 
-            while ($ARGV[0] =~ /^$field$/ && $ARGV[1]) {
+            while (@ARGV && $ARGV[0] =~ /^$field$/ && $ARGV[1]) {
                 my $key = shift @ARGV;
                 my $val = shift @ARGV;
 
@@ -318,46 +325,59 @@ sub edit {
             }
             unless ($vars) {
                 whine "No variables to set.";
-                return -1;
+                $bad = 1; last;
             }
             $cl = $vars;
         }
+        elsif (my $spec = is_object_spec($_, $type)) {
+            push @objects, $spec;
+        }
         else {
-            whine "Unrecognised argument '$_'.";
-            return -1;
+            my $datum = /^-/ ? "option" : "argument";
+            whine "Unrecognised $datum '$_'.";
+            $bad = 1; last;
         }
     }
 
-    $object = 'new' if $cmd->{action} ne 'edit';
-    unless (defined $type && $object) {
-        my $x = $object ? "type" : "object";
-        whine "No $x specified.";
-        return -1;
+    if ($action =~ /^ed(?:it)?$/) {
+        unless (@objects) {
+            whine "No objects specified.";
+            $bad = 1;
+        }
     }
+    else {
+        if (@objects) {
+            whine "You shouldn't specify objects as arguments to $action.";
+            $bad = 1;
+        }
+        unless ($type) {
+            whine "What type of object do you want to create?";
+            $bad = 1;
+        }
+        @objects = ("$type/new");
+    }
+    return help($action, $type) if $bad;
 
     # We need a form to make changes to. We usually ask the server for
     # one, but we can avoid that if we are fed one on STDIN, or if the
     # user doesn't want to edit the form by hand, and the command line
     # specifies only simple variable assignments.
-    #
-    # XXX: Theoretically, we can avoid asking the server in the latter
-    # case even if multiple objects are specified. We don't bother yet.
 
     if ($input) {
         local $/ = undef;
         $text = <STDIN>;
     }
-    else {
-        my $r = submit("$REST/show", { id => "$type/$object", format => 'l' });
+    elsif ($edit || !$cl) {
+        my $r = submit("$REST/show", { id => \@objects, format => 'l' });
         $text = $r->content;
     }
 
     # If any changes were specified on the command line, apply them.
     if ($cl) {
         if ($text) {
+            # We're updating forms from the server.
             my $forms = Form::parse($text);
 
-            # We'll update each valid form in turn.
             foreach my $form (@$forms) {
                 my ($c, $o, $k, $e) = @$form;
                 my ($key, $val);
@@ -398,10 +418,19 @@ sub edit {
             $text = Form::compose($forms);
         }
         else {
-            # We know that we're submitting a form for just one object.
-            # (We may duplicate the form for multiple objects later.)
-            $set{id} = $object;
-            $text = Form::compose([["", [keys %set], \%set]]);
+            # We're rolling our own set of forms.
+            my @forms;
+            foreach (@objects) {
+                my ($type, $ids, $args) =
+                    m{^($name)/($idlist|$labels)(?:(/.*))?$}o;
+
+                $args ||= "";
+                foreach my $obj (expand_list($ids)) {
+                    my %set = (%set, id => "$type/$obj$args");
+                    push @forms, ["", [keys %set], \%set];
+                }
+            }
+            $text = Form::compose(\@forms);
         }
     }
 
@@ -422,7 +451,7 @@ EDIT:
     }
 
     if ($text) {
-        my $r = submit("$REST/$type/edit", $text);
+        my $r = submit("$REST/edit", {content => $text, %data});
         if ($r->code == 409) {
             # If we submitted a bad form, we'll give the user a chance
             # to correct it and resubmit.
@@ -443,63 +472,51 @@ EDIT:
 # We roll "comment" and "correspond" into the same handler.
 
 sub comment {
-    my ($cmd) = @_;
-
-    my $data = {};
-    my ($action, $id);
-    my (@files, @bcc, @cc, $ctext, $wtime, $edit);
+    my ($action) = @_;
+    my (%data, $id, @files, @bcc, @cc, $msg, $wtime, $edit);
+    my $bad = 0;
 
     while (@ARGV) {
         $_ = shift @ARGV;
 
-        if (/^(-.*)$/) {
-            if (/-e/) { $edit = 1 }
-            elsif (/^-[abctw]$/) {
-                unless (@ARGV) {
-                    whine "No argument specified with $_.";
-                    return -1;
-                }
-
-                if (/-a/) {
-                    unless (-f $ARGV[0] && -r $ARGV[0]) {
-                        whine "Cannot read file: '$ARGV[0]'.";
-                        exit -1;
-                    }
-                    push @files, shift @ARGV;
-                }
-                elsif (/-[bc]/) {
-                    my $a = $_ eq "-b" ? \@bcc : \@cc;
-                    @$a = split /\s*,\s*/, shift @ARGV;
-                }
-                elsif (/-t/) { $ctext = shift @ARGV }
-                elsif (/-w/) { $wtime = shift @ARGV }
-            }
-            else {
-                whine "Unrecognised option '$_'.";
-                return -1;
-            }
+        if (/^-e$/) {
+            $edit = 1;
         }
-        elsif (/^\d+$/) {
-            $id = $_;
+        elsif (/^-[abcmw]$/) {
+            unless (@ARGV) {
+                whine "No argument specified with $_.";
+                $bad = 1; last;
+            }
+
+            if (/-a/) {
+                unless (-f $ARGV[0] && -r $ARGV[0]) {
+                    whine "Cannot read attachment: '$ARGV[0]'.";
+                    exit -1;
+                }
+                push @files, shift @ARGV;
+            }
+            elsif (/-([bc])/) {
+                my $a = $_ eq "-b" ? \@bcc : \@cc;
+                @$a = split /\s*,\s*/, shift @ARGV;
+            }
+            elsif (/-m/) { $msg = shift @ARGV }
+            elsif (/-w/) { $wtime = shift @ARGV }
+        }
+        elsif (!$id && m|^(?:ticket/)?($idlist)$|) {
+            $id = $1;
         }
         else {
-            whine "Unrecognised argument '$_'.";
-            return -1;
+            my $datum = /^-/ ? "option" : "argument";
+            whine "Unrecognised $datum '$_'.";
+            $bad = 1; last;
         }
     }
 
-    $action = $cmd->{action};
-    $cmd->{type} ||= "ticket";
-
-    if ($cmd->{type} ne "ticket") {
-        $cmd->{type} = "ticket";
-        whine "You can't $action on anything but tickets.";
-        return -1;
-    }
     unless ($id) {
-        whine "No ticket specified.";
-        return -1;
+        whine "No object specified.";
+        $bad = 1;
     }
+    return help($action, "ticket") if $bad;
 
     my $form = [
         "",
@@ -510,14 +527,14 @@ sub comment {
             Cc         => [ @cc ],
             Bcc        => [ @bcc ],
             Attachment => [ @files ],
-            TimeWorked => $wtime || undef,
-            Text       => $ctext || undef,
+            TimeWorked => $wtime || '',
+            Text       => $msg || '',
         }
     ];
 
     my $text = Form::compose([ $form ]);
 
-    if ($edit || !$ctext) {
+    if ($edit || !$msg) {
         my $error = 0;
         my ($c, $o, $k, $e);
 
@@ -546,47 +563,39 @@ sub comment {
 
     my $i = 1;
     foreach my $file (@files) {
-        $data->{"attachment_$i"} = [ $file ];
+        $data{"attachment_$i"} = bless([ $file ], "Attachment");
         $i++;
     }
-    $data->{content} = $text;
+    $data{content} = $text;
 
-    my $r = submit("$REST/ticket/comment/$id", $data);
+    my $r = submit("$REST/ticket/comment/$id", \%data);
     print $r->content;
 }
 
 # Merge one ticket into another.
 
 sub merge {
-    my ($cmd) = @_;
     my @id;
+    my $bad = 0;
 
     while (@ARGV) {
         $_ = shift @ARGV;
 
         if (/^\d+$/) {
             push @id, $_;
-            if (@id > 2) {
-                whine "Too many ticket ids specified.";
-                return -1;
-            }
         }
         else {
-            whine "Unrecognised argument: '$_'";
-            return -1;
+            whine "Unrecognised argument: '$_'.";
+            $bad = 1; last;
         }
     }
 
-    $cmd->{type} ||= "ticket";
-    if ($cmd->{type} ne "ticket") {
-        $cmd->{type} = "ticket";
-        whine "You can't merge anything but tickets.";
-        return -1;
-    }
     unless (@id == 2) {
-        whine "Source and target tickets not specified.";
-        return -1;
+        my $evil = @id > 2 ? "many" : "few";
+        whine "Too $evil arguments specified.";
+        $bad = 1;
     }
+    return help("merge", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/merge/$id[0]", {into => $id[1]});
     print $r->content;
@@ -595,53 +604,43 @@ sub merge {
 # Link one ticket to another.
 
 sub link {
-    my ($cmd) = @_;
-    my ($type, $del);
-
+    my ($bad, $del, %data) = (0, 0, ());
     my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
                                         ReferredToBy HasMember MemberOf);
 
-    $del = 0;
-    while ($ARGV[0] =~ /^-/) {
+    while (@ARGV && $ARGV[0] =~ /^-/) {
         $_ = shift @ARGV;
 
         if (/^-d$/) {
             $del = 1;
         }
         else {
-            whine "Unrecognised option: '$_'";
-            return -1;
+            whine "Unrecognised option: '$_'.";
+            $bad = 1; last;
         }
     }
 
-    if (@ARGV != 3) {
+    if (@ARGV == 3) {
+        my ($from, $rel, $to) = @ARGV;
+        if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
+            my $bad = $from =~ /^\d+$/ ? $to : $from;
+            whine "Invalid ticket ID '$bad' specified.";
+            $bad = 1;
+        }
+        unless (exists $ltypes{lc $rel}) {
+            whine "Invalid relationship '$rel' specified.";
+            $bad = 1;
+        }
+        %data = (id => $from, rel => $rel, to => $to, del => $del);
+    }
+    else {
         my $bad = @ARGV < 3 ? "few" : "many";
         whine "Too $bad arguments specified.";
-        return -1;
+        $bad = 1;
     }
+    return help("link", "ticket") if $bad;
 
-    my ($from, $rel, $to) = @ARGV;
-
-    if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
-        my $bad = $from =~ /^\d+$/ ? $to : $from;
-        whine "Invalid ticket ID '$bad' specified.";
-        return -1;
-    }
-    unless (exists $ltypes{lc $rel}) {
-        whine "Invalid relationship '$rel' specified.\n";
-        return -1;
-    }
-
-    $rel = $ltypes{lc $rel};
-    $cmd->{type} ||= "ticket";
-    if ($cmd->{type} ne "ticket") {
-        $cmd->{type} = "ticket";
-        whine "You can't link anything but tickets.";
-        return -1;
-    }
-
-    my $r = submit("$REST/ticket/link/$from",
-                   { del => $del, rel => $rel, to => $to });
+    my $r = submit("$REST/ticket/link", \%data);
     print $r->content;
 }
 
@@ -655,69 +654,6 @@ sub grant {
     }
 
     $revoke = 1 if $cmd->{action} eq 'revoke';
-    $cmd->{type} ||= "user";
-    if ($cmd->{type} ne "user") {
-        $cmd->{type} = "user";
-        whine "You can only grant rights to users.";
-        return -1;
-    }
-}
-
-# We display help based on what we think the user was trying to do.
-
-sub help {
-    my ($cmd) = @_;
-    my $key;
-
-    my %help = ();
-    my $type = $cmd->{type};
-    my $action = $cmd->{action};
-
-    local $/ = undef;
-    foreach my $item (@{ Form::parse(<DATA>) }) {
-        my $title = $item->[2]{Title};
-        my @titles = ref $title eq 'ARRAY' ? @$title : $title;
-
-        foreach $title (@titles) {
-            $help{$title} = $item->[2]{Text};
-        }
-    }
-
-    # What do we want to help the user with?
-    unless ($type || $action) {
-        # Look for clues in @ARGV.
-        foreach (@ARGV) {
-            if (exists $types{$_}) { $type = $_; last }
-        }
-        unless ($type) {
-            foreach (@ARGV) {
-                if (exists $actions{$_}) { $action = $_; last }
-            }
-        }
-        unless ($type || $action) {
-            foreach (@ARGV) {
-                if (exists $help{$_}) { $type = $_; last }
-            }
-        }
-    }
-
-    if ($type && $action) {
-        $key = "$type.$action";
-    }
-    $key ||= $type || $action || "introduction";
-
-    while (!exists $help{$key}) {
-        if ($type && $action) {
-            if ($key eq "$type.$action") { $key = $action;        }
-            elsif ($key eq $action)      { $key = $type;          }
-            else                         { $key = "introduction"; }
-        }
-        else {
-            $key = "introduction";
-        }
-    }
-
-    print $help{$key}, "\n\n";
 }
 
 # Client <-> Server communication.
@@ -733,24 +669,36 @@ sub submit {
     my $ua = new LWP::UserAgent(agent => "RT/3.0b", env_proxy => 1);
 
     # Did the caller specify any data to send with the request?
-    $data = {};
+    $data = [];
     if (defined $content) {
         unless (ref $content) {
             # If it's just a string, make sure LWP handles it properly.
             # (By pretending that it's a file!)
-            $content = { content => [undef, "", Content => $content] };
+            $content = [ content => [undef, "", Content => $content] ];
+        }
+        elsif (ref $content eq 'HASH') {
+            my @data;
+            foreach my $k (keys %$content) {
+                if (ref $content->{$k} eq 'ARRAY') {
+                    foreach my $v (@{ $content->{$k} }) {
+                        push @data, $k, $v;
+                    }
+                }
+                else { push @data, $k, $content->{$k} }
+            }
+            $content = \@data;
         }
         $data = $content;
     }
 
     # Should we send authentication information to start a new session?
     if (!defined $session->cookie) {
-        $data->{user} = $config{user};
-        $data->{pass} = $config{passwd} || read_passwd();
+        push @$data, ( user => $config{user} );
+        push @$data, ( pass => $config{passwd} || read_passwd() );
     }
 
     # Now, we construct the request.
-    if (keys %$data) {
+    if (@$data) {
         $req = POST($uri, $data, Content_Type => 'form-data');
     }
     else {
@@ -769,7 +717,6 @@ sub submit {
         # a blank line, and arbitrary text.
 
         my ($head, $text) = split /\n\n/, $res->content, 2;
-	$head =~ s/^\s*//s;
         my ($status, @headers) = split /\n/, $head;
         $text =~ s/\n*$/\n/;
 
@@ -786,7 +733,7 @@ sub submit {
         $res->code($1);
         $res->message($2);
         $res->content($text);
-        $session->update($res);
+        $session->update($res) if ($res->is_success || $res->code != 401);
 
         if (!$res->is_success) {
             # We can deal with authentication failures ourselves. Either
@@ -1168,6 +1115,7 @@ sub whine {
     my $sub = (caller(1))[3];
     $sub =~ s/^main:://;
     warn "rt: $sub: @_\n";
+    return;
 }
 
 sub read_passwd {
@@ -1232,6 +1180,64 @@ sub vsplit {
     }
 
     return \@words;
+}
+
+sub expand_list {
+    my ($list) = @_;
+    my ($elt, @elts, %elts);
+
+    foreach $elt (split /,/, $list) {
+        if ($elt =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
+        else                         { push @elts, $elt }
+    }
+
+    @elts{@elts}=();
+    return sort {$a<=>$b} keys %elts;
+}
+
+sub get_type_argument {
+    my $type;
+
+    if (@ARGV) {
+        $type = shift @ARGV;
+        unless ($type =~ /^[A-Za-z0-9_.-]+$/) {
+            # We want whine to mention our caller, not us.
+            @_ = ("Invalid type '$type' specified.");
+            goto &whine;
+        }
+    }
+    else {
+        @_ = ("No type argument specified with -t.");
+        goto &whine;
+    }
+    return $type;
+}
+
+sub get_var_argument {
+    my ($data) = @_;
+
+    if (@ARGV) {
+        my $kv = shift @ARGV;
+        if (my ($k, $v) = $kv =~ /^($field)=(.*)$/) {
+            push @{ $data->{$k} }, $v;
+        }
+        else {
+            @_ = ("Invalid variable specification: '$kv'.");
+            goto &whine;
+        }
+    }
+    else {
+        @_ = ("No variable argument specified with -S.");
+        goto &whine;
+    }
+}
+
+sub is_object_spec {
+    my ($spec, $type) = @_;
+
+    $spec =~ s|^(?:$type/)?|$type/| if defined $type;
+    return $spec if ($spec =~ m{^$name/(?:$idlist|$labels)(?:/.*)?$}o);
+    return;
 }
 
 __DATA__
@@ -1399,6 +1405,8 @@ Text:
         with tickets:
 
         links                   A ticket's relationships with others.
+        history                 All of a ticket's transactions.
+        history/type            Only a particular type of transaction.
         attachments             A list of attachments.
         attachments/$id         An individual attachment.
 
@@ -1461,6 +1469,10 @@ Text:
         -s      Short description.
         -l      Longer description.
 
+        In addition,
+        
+        -S var=val      Submits the specified variable with the request.
+
     Examples:
 
         rt ls tickets "Priority > 5 and Status='new'"
@@ -1495,6 +1507,7 @@ Text:
 
         -               Read IDs from STDIN instead of the command-line.
         -f a,b,c        Restrict the display to the specified fields.
+        -S var=val      Submits the specified variable with the request.
 
     Examples:
 
@@ -1545,6 +1558,8 @@ Text:
         -o      Dump the completed form to STDOUT instead of submitting.
         -e      Allows you to edit the form even if the command-line has
                 enough information to make a submission directly.
+        -S var=val
+                Submits the specified variable with the request.
 
     Examples:
 
@@ -1574,7 +1589,7 @@ Text:
 
     Options:
 
-        -t <text>       Specify comment text.
+        -m <text>       Specify comment text.
         -a <file>       Attach a file to the comment. (May be used more
                         than once to attach multiple files.)
         -c <addrs>      A comma-separated list of Cc addresses.
