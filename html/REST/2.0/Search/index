@@ -61,7 +61,7 @@ while (my $entry = $Collection->Next) {
     $entry{LastUpdated} =~ s/ /T/;
     $entry{URL} = $URL{$Type} . $entry{Id};
     if (my $queue = eval { $entry->Queue } ) {
-	$entry{URL} =~ s/Global/Queue/;
+	$entry{URL} =~ s/Global/Queues/;
 	$entry{Params} .= "&Queue=$queue";
     }
     push @entries, \%entry;
