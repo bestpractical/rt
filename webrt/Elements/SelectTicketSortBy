@@ -5,8 +5,8 @@
 </SELECT>
 
 <%INIT>
-my @sortfields = qw(id Status Owner Due Starts Started
-		    Resolved Priority TimeWorked TimeLeft);
+my @sortfields = qw(id Status Owner Created Due Starts Started
+		    Resolved LastUpdate Priority TimeWorked TimeLeft);
 </%INIT>
 <%ARGS>
 $Name => 'SortTicketsBy'

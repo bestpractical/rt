@@ -1,15 +1,16 @@
-<INPUT NAME="<%$Name%>" VALUE="<%$Default%>" size=10> 
+<INPUT NAME="<%$Name%>" VALUE="<%$Default%>" size=16> 
 
 <%init>
 unless ((defined $Default) or 
-	($current = 0)) {
+	($current <= 0)) {
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
                                             localtime($current);
 	$mon++;
 	$year+=1900;
 
-	$min = sprintf("%#2u",$min);
-	$Default = "$year-$mon-$mday $hour:$min";
+        $Default = sprintf("%04d-%02d-%02d %02d:%02d",                         
+                           $year+1900,$mon+1,$mday,                            
+                           $hour,$min);   
 }
 
 unless ($Name) {
