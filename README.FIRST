@@ -4,14 +4,12 @@ WARNING:
 
 Since RT 0.9.1, the codebase and database format have undergone incompatible 
 changes.  This version of the installation package does NOT come with an easy
-upgrade path from 0.9.1 or before.  I recommend that anyone using 0.9.1 or 
-earlier wait for 0.9.5 before attempting an upgrade.
+upgrade path from 0.9.1 or before.  
 
-Because of the numerous changes between RT 0.9.1 and 0.9.4, I strongly recommend
-that this version of RT be tested extensively before opening it up to user 
-requests.  It should be significantly more stable than 0.9.1, but new buglets
-may have crept into my code when I wasn't looking.  As always, I look forward to
-any comments you may have.
+
+This version of RT should be significantly more stable than 0.9.1, but new 
+buglets may have crept into my code when I wasn't looking.  As always, I look 
+forward to any comments you may have.
 
 	Jesse
 	jrvincent@wesleyan.edu
@@ -20,6 +18,11 @@ any comments you may have.
 To upgrade from .9.1 to .9.6:
 	"mysqldump -c -t rt"  -- dump out the data from your old rt database
 	copy your current RT installation to a safe location
-	install a fresh copy of RT .9.5, as if for the first time
+	install a fresh copy of RT .9.8, as if for the first time
 	mysql rt < (YOUR_RT_DUMP_FILE)
 	copy your transaction tree back into place
+	copy rt/etc/templates/queues back into place
+
+To upgrade from any version newer than .9.1:
+	See the README
+

@@ -6,8 +6,8 @@ RT is distributed under the GNU Public License.
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
 
-WARNING:  RT IS BETA SOFTWARE.  VERSIONS OF IT HAVE BEEN RUNNING IN
-SEVERALPLACES FOR OVER A YEAR, HOWEVER I MAKE NO PROMISES AS TO ITS
+WARNING:  RT IS BETA SOFTWARE.  VERSIONS OF IT HAVE BEEN RUNNING AT
+SEVERAL SITES FOR OVER A YEAR, HOWEVER I MAKE NO PROMISES AS TO ITS
 STABILITY.
 
 Development of RT has been sponsored in part by Utopia Inc, by The
@@ -25,7 +25,6 @@ REQUIRED PACKAGES:
 o   Perl5.x ( http://www.perl.com ) -- free
 
 o   MySQL 3.20.x ( http://www.tcx.se ) -- free
-
         
 	FTP mysql from www.tcx.se and follow the INSTALL instructions
         contained therein
@@ -76,7 +75,6 @@ GENERAL INSTALLATION
 4b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
 
         As ROOT: make upgrade
-	NOTE: UPGRADE DOES NOT YET EXIST
 	This will compile new RT wrappers and libraries without
 	overwriting your RT database or configuration files.
 
@@ -87,6 +85,7 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "wordpass" 
     (without the quotes)   
  
+
 
 SETTING UP THE MAIL GATEWAY 
 ---------------------------
@@ -119,14 +118,17 @@ If you don't already have an http daemon set up, you will probably want
 to start one to handle the CGI interface.  For now, I'd recommend the CERN
 httpd.  Apache with www.hughes.com's authentication patches has been
 reported to work, as well.  See the following URL for apache patches:
- 	http://www.Hughes.com.au/software/misc/apache_1.2.1_hughes.tar.gz 
-Netscape's servers don't allow nph-cgi scripts to perform their own 
-authentication so they don't really work well with WebRT.
+ 
+	http://www.Hughes.com.au/software/misc/apache_1.2.1_hughes.tar.gz 
+
+CAVEAT: Netscape's servers don't allow nph-cgi scripts to perform their own 
+authentication so they don't really work with WebRT. Besides, CERN and Apache are 
+free.
 
 The CERN httpd ( http://www.w3.org ) is free.  A sample config file
 is in rt/etc/httpd/cern.   Invoke it with the following command line:
 
-         /path/to/cern/httpd -r /usr/local/rt/etc/httpd/cern/httpd.conf
+         /path/to/cern/httpd -r /path/to/rt/etc/httpd/cern/httpd.conf
 
 o     you'll find rt-admin at http://host:8080/rt/nph-admin-webrt.cgi
 o     you'll find rt at http://host:8080/rt/nph-webrt.cgi and
@@ -174,10 +176,10 @@ A lot of people are responsible for making RT a better program.  Many
 thanks to Lauren Burka, who originally tasked me with writing this beast.
 She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
-Hirsch, Kit Kraysha, Robin Garner, Jens Glaser,John Adams, Trey Belew, 
-Sean Dague, Nathan Mehl and Kee Hinckley have all contributed bug reports 
-or ideas that have helped RT along.  If I've left you out, please drop 
-me a line....it wasn't intentional. 
+Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
+Sean Dague, Nathan Mehl, Kee Hinckley, Rich West and Dale Bewley have all
+contributed bug reports or ideas that have helped RT along.  If I've left 
+you out, please drop me a line....it wasn't intentional. 
  
         Enjoy
 

@@ -8,7 +8,7 @@ CC			=	gcc
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
-RT_VERSION		=	0.9.7
+RT_VERSION		=	0.9.8
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
@@ -130,6 +130,8 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
 
+upgrade: libs-install nondestruct
+
 nondestruct: mux-links glimpse fixperms
 
 all:
@@ -217,3 +219,7 @@ config-replace:
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
         s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
+
+dist:
+	mkdir /tmp/rt-$(RT_VERSION)
+	cvs co -d /tmp/rt-$(RT_VERSION) rt
