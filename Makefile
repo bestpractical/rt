@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	9
-RT_VERSION_PATCH	=	12
+RT_VERSION_PATCH	=	13
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -175,6 +175,7 @@ fixperms:
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
+	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
 	mkdir -p $(RT_TRANSACTIONS_PATH)
 	mkdir -p $(RT_GLIMPSE_PATH)
