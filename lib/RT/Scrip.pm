@@ -77,20 +77,19 @@ sub LoadAction {
   my %args = ( Transaction => undef,
 	       Ticket => undef,
 	       @_ );
+
+  #TODO: Put this in an eval  
+  my $type = "RT::Action::". $self->Action;
   
-  
-  #TODO this should be trapped in an EVAL block
-  my $type = $self->Type;
-  eval {
-    use RT::Action::$type;
-    $self->{'ScripObject'} = new RT::Action::$type ( Ticket => $args{'Ticket'},
-						     Transaction => $args{'Transaction'},
-						     Template => $self->Template,
-						     Argument => $self->Argument,
-						     Type => $self->Type,
-						   );
-  }
+  eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
+  $self->{'ScriptObject'}  = $type->new ( Ticket => $args{'Ticket'},
+					 Transaction => $args{'Transaction'},
+					 Template => $self->Template,
+					 Argument => $self->Argument,
+					 Type => $self->Type,
+				       );
 }
+
 
 #
 # The following methods call the action object
@@ -104,7 +103,7 @@ sub Prepare {
 
 sub Commit {
   my $self = shift;
-  return ($self->{'ScriptObject'}->Activate());
+  return ($self->{'ScriptObject'}->Commit());
   
 }
 sub Describe {

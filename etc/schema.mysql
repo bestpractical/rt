@@ -35,7 +35,7 @@ CREATE TABLE Scrips (
 # These are examples. We should redo them. it's not like they're used yet :)
 #
 
-INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',0,'Create','Autoreply',1,'$Requestor',1,20000129185915,1,20000129185915);
+INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',0,'Create','AutoReply',1,'$Requestor',1,20000129185915,1,20000129185915);
 INSERT INTO Scrips VALUES (2,'TellOwnerOnTransaction','Sends mail to owner when anything happens',0,'Any','SendMail',2,'$Owner',1,20000129190056,1,20000129190056);
 INSERT INTO Scrips VALUES (3,'MailCorrespondence','Sends mail to interested parties when email comes in',0,'Correspond','MailCorrespondence',3,'',1,20000129190151,1,20000129190151);
 INSERT INTO Scrips VALUES (4,'TellMembersOnMail','Sends mail to requestor when email comes in',0,'Correspond','SendMail',3,'$Requestor',1,20000129190151,1,20000129190151);

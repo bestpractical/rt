@@ -89,3 +89,6 @@ sub IsApplicable {
   my $self = shift;
   return(undef);
 }
+
+
+1;
