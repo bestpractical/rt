@@ -114,6 +114,12 @@ sub Prepare {
     $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
       if ( $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
+    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # If we don't have any 'To' header, drop in the pseudo-to header.
+    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
+      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
+        and ( !$MIMEObj->head->get('To') ) );
+
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
 
@@ -167,12 +173,7 @@ sub SendMessage {
         return (1);
     }
 
-    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
 
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
-      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) );
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
             open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;

@@ -448,14 +448,16 @@ sub Commit {
 # may have changed
     $args{'TicketObj'}->Load( $args{'TicketObj'}->Id );
 
-    $self->ActionObj->DESTROY();
-    $self->ConditionObj->DESTROY();
     if ($@) {
+        $self->ActionObj->DESTROY();
+        $self->ConditionObj->DESTROY();
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
         return (undef);
     }
-    $self->ActionObj->DESTROY();
-    $self->ConditionObj->DESTROY();
+
+    # Not destroying or weakening hte Action and Condition here could cause a
+    # leak
+
     return ($return);
 }
 
@@ -467,6 +469,8 @@ sub Commit {
 sub DESTROY {
     my $self = shift;
     $self->{'ActionObj'} = undef;
+    $self->ActionObj->DESTROY();
+    $self->ConditionObj->DESTROY();
 }
 
 # }}}
