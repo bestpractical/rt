@@ -176,6 +176,9 @@ sub list {
         elsif (/^-S$/) {
             $bad = 1, last unless get_var_argument(\%data);
         }
+        elsif (/^-o$/) {
+            $orderby = shift @ARGV;
+        }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
         }

@@ -1,0 +1,96 @@
+%# REST/1.0/Forms/ticket/history
+%#
+<%ARGS>
+$id
+$args => undef
+</%ARGS>
+<%perl>
+my $ticket = new RT::Ticket $session{CurrentUser};
+my ($c, $o, $k, $e) = ("", [], {}, "");
+
+$ticket->Load($id);
+unless ($ticket->Id) {
+    return [ "# Ticket $id does not exist.", [], {}, 1 ];
+}
+
+my $trans = $ticket->Transactions();
+my $total = $trans->Count();
+
+chomp $args;
+my @arglist = split('/', $args);
+my ($type, $tid);
+
+if ($arglist[0] eq 'type') {
+    $type = $arglist[1];
+} elsif ($arglist[0] eq 'id') {
+    $tid = $arglist[1];
+} else {
+    $type = $args;
+}
+
+if ($type) {
+    # Create, Set, Status, Correspond, Comment, Give, Steal, Take, Told
+    # CustomField, AddLink, DeleteLink, AddWatcher, DelWatcher
+    if ($args =~ /^links?$/) {
+        $trans->Limit(FIELD => 'Type', OPERATOR => 'LIKE', VALUE => '%Link');
+    }
+    elsif ($args =~ /^watchers?$/) {
+        $trans->Limit(FIELD => 'Type', OPERATOR => 'LIKE', VALUE => '%Watcher');
+    }
+    else {
+        $trans->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => $type);
+    }
+} elsif ($tid) {
+    $trans->Limit(FIELD => 'Id', OPERATOR => '=', VALUE => $tid);
+}
+
+my @data;
+if ($tid) {
+
+    my $t = new RT::Transaction $session{CurrentUser};
+    $t->Load($tid);
+
+    push @data, [ id    => $t->Id   ];
+    push @data, [ EffectiveTicket    => $t->EffectiveTicket   ];
+    push @data, [ Ticket    => $t->Ticket   ];
+    push @data, [ TimeTaken    => $t->TimeTaken   ];
+    push @data, [ Type    => $t->Type   ];
+    push @data, [ Field    => $t->Field   ];
+    push @data, [ OldValue    => $t->OldValue   ];
+    push @data, [ NewValue    => $t->NewValue   ];
+    push @data, [ Data    => $t->Data   ];
+
+    my $creator = new RT::User $session{CurrentUser};
+    $creator->Load($t->Creator);
+    push @data, [ Creator    => $creator->Name   ];
+    push @data, [ Created    => $t->Created   ];
+
+    my $attachlist;
+    my $attachments = $t->Attachments;
+    while (my $a = $attachments->Next) {
+	my $size = length($a->Content);
+	if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
+	else              { $size .= "b" }
+	$attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
+    }
+    
+    push @data, [Attachments => $attachlist];
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+
+} else {
+    while (my $t = $trans->Next) {
+	my $id = $t->Id;
+	
+	push @$o, $id;
+	$k->{$id} = $t->Description;
+    }   
+}
+
+my $sub = $trans->Count();
+$c = "# $sub/$total ($args/total)";
+
+return [ $c, $o, $k, $e ];
+</%perl>

@@ -36,19 +36,49 @@ $ticket->Load($id);
 unless ($ticket->Id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
-if ($args) {
-    unless ($args =~ /^\d+$/) {
-        return [ "# Invalid attachment id: $args", [], {}, 1 ];
-    }
+
+my @arglist = split('/', $args);
+my ($aid, $content);
+
+if ($arglist[1] eq 'content') {
+    $aid = $arglist[0];
+    $content = 1;
+} else {
+    $aid = $args;
+    $content = 0;
 }
 
-if ($args) {
-    my $attachment = new RT::Attachment $session{CurrentUser};
-    $attachment->Load($args);
-    unless ($attachment->Id eq $args) {
-        return [ "# Invalid attachment id: $args", [], {}, 1 ];
+if ($aid) {
+    unless ($aid =~ /^\d+$/) {
+        return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
-    $c = $attachment->Content;
+    my $attachment = new RT::Attachment $session{CurrentUser};
+    $attachment->Load($aid);
+    unless ($attachment->Id eq $aid) {
+        return [ "# Invalid attachment id: $aid", [], {}, 1 ];
+    }
+    if ($content) {
+	$c = $attachment->Content;
+    } else {
+	my @data;
+	push @data, [ id    => $attachment->Id   ];
+	push @data, [ Subject    => $attachment->Subject   ];
+	push @data, [ Creator    => $attachment->Creator   ];
+	push @data, [ Created    => $attachment->Created   ];
+	push @data, [ Transaction    => $attachment->TransactionId   ];
+	push @data, [ Parent    => $attachment->Parent   ];
+	push @data, [ MessageId    => $attachment->MessageId   ];
+	push @data, [ Filename    => $attachment->Filename   ];
+	push @data, [ ContentType    => $attachment->ContentType   ];
+	push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
+	push @data, [ Headers    => $attachment->Headers   ];
+	push @data, [ Content    => $attachment->Content   ];
+
+	my %k = map {@$_} @data;
+	$o = [ map {$_->[0]} @data ];
+	$k = \%k;
+    }
+
 }
 else {
     my @attachments;

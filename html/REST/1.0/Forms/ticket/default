@@ -11,7 +11,7 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
 my $ticket = new RT::Ticket $session{CurrentUser};
-my @dates  = qw(Starts Started Due Resolved Told);
+my @dates  = qw(Created Starts Started Due Resolved Told);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked
@@ -114,6 +114,7 @@ if (%data == 0) {
     push @data, [ id    => "ticket/".$ticket->Id   ];
     push @data, [ Queue => $ticket->QueueObj->Name ];
     push @data, [ Owner => $ticket->OwnerObj->Name ];
+    push @data, [ Creator => $ticket->CreatorObj->Name ];
 
     foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
         push @data, [$_ => $ticket->$_ ];
