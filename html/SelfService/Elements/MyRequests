@@ -49,6 +49,7 @@ $title ||= loc("My [_1] tickets", $friendly_status);
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
+$MyTickets->OrderBy(FIELD => 'id', ORDER => 'ASC');
 
 foreach my $status (@status) {
 
