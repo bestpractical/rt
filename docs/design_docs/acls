@@ -1,5 +1,9 @@
 $Header$
 
+
+#
+# {{{ Requirements 
+#
 Here's the rough scheme I was thinking of for RT2 acls. Thoughts? I think
 it's a lot more flexible than RT 1.0, but not so crazily complex that
 it will be impossible to implement.  One of the "interesting" features
@@ -49,3 +53,145 @@ What rights can be granted
 		at the ticket level governs acls for a given ticket
 		at the queue level, governs acls for a given queue  or any ticket in that queue
 		at the global level, grants the user supreme power.
+
+
+# }}}
+
+
+
+#
+# These are the entities in your Access Control Element
+#
+
+Principal: What user does this right apply to
+
+	User:<id>
+	Owner:<ticket>
+	TicketWatchers:<ticket>
+	TicketRequestors:<ticket>
+	TicketCc:<ticket>
+	TicketAdminCc:<ticket>
+	QueueWatchers:<queue>
+	QueueCc:<queue>
+	QueueAdminCc:<queue>
+
+	<id> is the id of a given user or the string "Any". if left blank, it means "this user" when evaluated. This is 
+		a terribly silly way to describe "all users"
+	<ticket> is the id of a given ticket or the string "Any". if left blank, it means "this ticket" when evaluated
+	<queue> is the id of a given queue or the string "Any". if left blank, it means "this queue" when evaluate
+
+
+
+Granularity: What object does this right apply to
+
+	System
+	Queue:<id>
+	Ticket:<id>
+	User:<id>
+	Transaction:<id> *maybe later. not going to be implemented for now.*
+
+	<id> is an integer reference to an object of the apropriate type or the string "Any", which shall
+	mean that the ACE applies to all items of that type.
+
+
+
+
+Right: (What does this entry give the principal the right to do)
+
+
+
+	For the granularity System:
+		System:SetACL
+		System:ModifyScripScopes
+						
+
+	For the granularity Queue:
+		Queue:SetACL
+		Queue:Admin
+		Queue:Create
+		Queue:Destroy
+		Queue:ModifyWatchers
+		Queue:Display
+		Ticket:Create
+		Ticket:Destroy
+		Ticket:Modify
+		Ticket:ModifyRequestors
+		Ticket:ModifyCc
+		Ticket:ModifuyAdminCc
+		Ticket:Comment
+		Ticket:Correspond
+		Ticket:SetStatus:	(Values)
+					Open
+					Resolved
+					Stalled
+					<null> means any
+
+	For the granularity Ticket:
+		Ticket:SetACL
+		Ticket:Create
+		Ticket:Destroy
+		Ticket:Display
+		Ticket:ModifyRequestors
+		Ticket:ModifyCc
+		Ticket:ModifyAdminCc
+		Ticket:SetStatus:	(Values>
+					Open
+					Resolved
+					Stalled
+					<null> means any
+		
+
+	For the granularity User:
+		User:Display
+		User:Modify
+		User:Create
+		User:Destroy
+		User:SetPassword
+		
+
+		
+
+Action:	Is this a grant or a deny
+
+	Grant
+	Deny
+
+
+
+#
+# {{{ Examples
+#
+
+
+Principal, 	 	Granularity,	Right, 			Value		Action
+
+#Let user 2 admin all acls
+User:2,			System:,	System:SetACL,		,		Grant
+
+#Don't let user 2 admin acls for queue 3
+User:2,			Queue:3,	Queue:SetACL,		,		Deny
+
+#Let all users see tickets in queue 5
+User:Any,		Queue:5,	Ticket:Display,		,		Grant
+
+#Let all users create tickets in all queues
+User:Any,		Queue:Any,	Ticket:Create,		,		Grant
+
+#Prevent user 20 from creating tickets in all queues
+User:20,		Queue:Any,	Ticket:Create,		,		Deny
+
+#Let the watchers of any ticket see that ticket
+TicketWatchers:,	Ticket:Any,	Ticket:Display		,		Grant
+
+#Allow all requestors of tickets in queue 6 to resolve tickets there
+TicketRequestors:,	Queue:6,	Ticket:SetStatus	Resolved,		Grant	
+
+
+# }}}	
+
+
+
+Unaddressed issues:
+
+	There needs to be a more refined method for grouping users, such that members of the customer service department
+can't change sysadmins' passwords.
