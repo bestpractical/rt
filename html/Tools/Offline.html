@@ -31,22 +31,30 @@
 <FORM ACTION="Offline.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <table>
-<tr><td class=label>
-<&|/l&>Upload file</&>:
+<tr>
+<td>
+<&|/l&>Default Queue</&>:
 </td>
 <td>
-<input name="Template" type="file" value="foo">
-<INPUT TYPE=SUBMIT NAME="Parse" VALUE="<&|/l&>Parse</&>">
+<& /Elements/SelectQueue, Name => "qname", NamedValues => 1 &>
+<i><&|/l&>If no queue is specified, create tickets in this queue.</&></i>
 </td>
 </tr>
-<tr>
 <tr><td class=labeltop>
 <&|/l&>Template</&>:
 </td>
-<td>
+<td colspan=2>
 <textarea name=string cols=80 rows=30>
 <%$string%>
 </textarea>
+</td>
+</tr>
+<tr><td class=label>
+<&|/l&>Get template from file</&>:
+</td>
+<td>
+<input name="Template" type="file" value="foo">
+<INPUT TYPE=SUBMIT NAME="Parse" VALUE="<&|/l&>Go</&>">
 </td>
 </tr>
 </table>
@@ -71,7 +79,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
 	$template .= $buffer;
     }
-    $action->Parse($template);
+    $action->Parse($template, $ARGS{'qname'});
     foreach (@{ $action->{'create_tickets'} }) {
 	my $id = $_;
 	$id =~ s/^create\-//;

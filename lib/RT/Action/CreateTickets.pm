@@ -594,6 +594,7 @@ sub UpdateByTemplate {
 sub Parse {
     my $self = shift;
     my $content = shift;
+    my $qname = shift;
 
     my @template_order;
     my $template_id;
@@ -640,6 +641,7 @@ sub Parse {
 	$content = substr($content, index($content, "\n") + 1);
 	$RT::Logger->debug("First: $first");
 	
+	my $queue;
 	foreach my $line (split(/\n/, $content)) {
 	    next unless $line;
 	    $RT::Logger->debug("Line: $line");
@@ -648,19 +650,45 @@ sub Parse {
 	    my $template_id;
 	    while ($line =~ /($justquoted|$delimited)/igx) {
 		if ($i == 0) {
+		    $queue = 0;
 		    $template_id = 'create-' . $1;
 		    $RT::Logger->debug("template_id: $1");
 		    push @{$self->{'create_tickets'}},$template_id;
 		} else {
-		    my $field = $1;
-		    if ($field =~ /$justquoted/) {
-			$field =~ s/^\"|\'//;
-			$field =~ s/\"|\'$//;
+		    my $value = $1;
+		    if ($value =~ /$justquoted/) {
+			$value =~ s/^\"|\'//;
+			$value =~ s/\"|\'$//;
 		    }
-		    $self->{'templates'}->{$template_id} .= $fields[$i] . ": $field\n";
-		    $RT::Logger->debug($fields[$i] . ": $1");
+		    my $field = $fields[$i];
+		    next unless $field;
+		    $field =~ s/^\s//;
+		    $field =~ s/\s$//;
+		    if ( $field =~ /Body/i || $field =~ /Data/i ||
+			 $field =~ /Message/i) {
+			$field = 'Content';
+		    }
+		    if ( $field =~ /Summary/i) {
+			$field = 'Subject';
+		    }
+		    if ( $field =~ /Queue/i) {
+			$queue = 1;
+			$RT::Logger->debug("queue!!: |$field|\n");
+			if (!$value) {
+			    $value = $qname;
+			}
+		    }
+		    $RT::Logger->debug("field: |$field|\n");
+		    $self->{'templates'}->{$template_id} .= $field . ": ";
+		    $self->{'templates'}->{$template_id} .= $value || "";
+		    $self->{'templates'}->{$template_id} .= "\n";
+		    $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n" if $field =~ /content/i;
+		    $RT::Logger->debug($field . ": $1");
 		}
 		$i++;
+	    }
+	    if (!$queue) {
+		$self->{'templates'}->{$template_id} .= "Queue: $qname\n";
 	    }
 	}
     }
