@@ -41,13 +41,9 @@ sub Create  {
 # {{{ sub delete 
 sub delete  {
   my $self = shift;
- # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
   
-  die ("Scrip->Delete not implemented yet");
-    
-      
-
+  die ("ScripScope->Delete not implemented yet");
 }
 # }}}
 
