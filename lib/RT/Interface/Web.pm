@@ -129,20 +129,6 @@ package HTML::Mason::Commands;
 use strict;
 use vars qw/$r $m %session/;
 
-# {{{ SetContentType
-
-=head2 SetContentType TYPE
-
-Set this response's output to content type TYPE
-
-=cut
-
-sub SetContentType {
-    my $type = shift;
-    $r->content_type($type);
-}
-
-# }}}
 
 # {{{ loc
 

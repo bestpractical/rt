@@ -51,7 +51,15 @@ use DBIx::SearchBuilder::Record::Cachable;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(DBIx::SearchBuilder::Record::Cachable RT::Base);
+
+@ISA = qw(RT::Base);
+
+if ($RT::DontCacheSearchBuilderRecords ) {
+    push (@ISA, 'DBIx::SearchBuilder::Record');
+} else {
+    push (@ISA, 'DBIx::SearchBuilder::Record::Cachable');
+
+}
 
 # {{{ sub _Init 
 

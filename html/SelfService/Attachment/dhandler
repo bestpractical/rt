@@ -44,7 +44,7 @@
 
      }
      my $content_type = $AttachmentObj->ContentType || 'text/plain';
-     SetContentType($content_type);
+     $r->content_type($content_type);
      $m->out($AttachmentObj->Content); 
      $m->abort; 
 </%perl>

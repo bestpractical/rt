@@ -59,7 +59,4 @@ if ( $session{'SessionType'} eq 'REST' ) {
     $m->out( $Details . "\n" );
     $m->abort();
 }
-else {
-    $r->content_type('text/html');
-}
 </%INIT>

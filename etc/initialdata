@@ -66,7 +66,7 @@
 
  @ScripActions = (
 
-    {  Name        => 'AutoreplyToRequestors',               # loc
+    {  Name        => 'Autoreply To Requestors',               # loc
        Description =>
 'Always sends a message to the requestors independent of message sender'
        ,                                                     # loc
@@ -246,7 +246,7 @@ Transaction: {$Transaction->Description}
     {
 
       Queue       => '0',
-      Name        => 'AdminCorrespondence',                      # loc
+      Name        => 'Admin Correspondence',                      # loc
       Description => 'Default admin correspondence template',    # loc
       Content     => '
 
@@ -265,7 +265,7 @@ Transaction: {$Transaction->Description}
     },
 
     {  Queue       => '0',
-       Name        => 'AdminComment',                            # loc
+       Name        => 'Admin Comment',                            # loc
        Description => 'Default admin comment template',          # loc
        Content     =>
 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
@@ -279,7 +279,7 @@ This is a comment.  It is not sent to the Requestor(s):
     },
 
     {  Queue       => '0',
-       Name        => 'StatusChange',                                      # loc
+       Name        => 'Status Change',                                      # loc
        Description => 'Ticket status changed',                             # loc
        Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
 

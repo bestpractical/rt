@@ -101,6 +101,8 @@ sub FromURI {
     my $self = shift;
     my $uri = shift;    
 
+    return undef unless ($uri);
+
 	my $scheme;
 	# Special case: integers passed in as URIs must be ticket ids
 	if ($uri =~ /^(\d+)$/) {

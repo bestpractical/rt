@@ -99,8 +99,6 @@ if ($session{'SessionType'} eq 'REST') {
                 $m->out(loc("Not logged in"));
         }
         $m->abort();
-} else {
-        $r->content_type('text/html');
 }
 
 
