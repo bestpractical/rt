@@ -86,7 +86,7 @@
 my $Values;
 if ($Object) {
     $Values = $Object->CustomFieldValues($CustomField->id);
-    $Values->Columns( qw( id CustomField ObjectType ObjectId Current Content ContentType ContentEncoding ) );
+    $Values->Columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');
 }
 my $Type = $CustomField->Type;
