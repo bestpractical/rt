@@ -167,7 +167,8 @@ VALUE is a status.
 
 sub LimitStatus {
     my $self = shift;
-    my %args = (@_);
+    my %args = ( OPERATOR => '=',
+                  @_);
     $self->Limit (FIELD => 'Status',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
