@@ -635,6 +635,17 @@ sub ToldAsString {
 
 # }}}
 
+# {{{ sub LastUpdatedByObj
+sub LastUpdatedByObj {
+    my $self=shift;
+    unless (exists $self->{LastUpdatedByObj}) {
+	$self->{LastUpdatedByObj}=RT::User->new;
+	$self->{LastUpdatedByObj}->Load($self->LastUpdatedBy);
+    }
+    return $self->{LastUpdatedByObj};
+}
+# }}}
+
 # }}}
 
 # {{{ Routines dealing with requestor metadata
@@ -677,6 +688,7 @@ sub Merge {
 # {{{ Routines dealing with correspondence/comments
 
 # {{{ sub Comment
+
 #takes a subject, a cc list, a bcc list
 sub Comment {
   my $self = shift;
@@ -711,6 +723,7 @@ sub Comment {
   
   return ($Trans, "The comment has been recorded");
 }
+
 # }}}
 
 # {{{ sub Correspond
@@ -731,11 +744,13 @@ sub Correspond {
   }
 
   #Record the correspondence (write the transaction)
-  my $Trans = $self->_NewTransaction(Type => 'Correspond',
-			 Data => $MIME->head->get('subject'),
-			 TimeTaken => $args{'TimeTaken'},
-			 MIMEEntity=> $MIME     
-			);
+  my ($Trans,$msg) 
+      = $self->_NewTransaction
+	  (Type => 'Correspond',
+	   Data => $MIME->head->get('subject'),
+	   TimeTaken => $args{'TimeTaken'},
+	   MIMEEntity=> $MIME     
+	   );
 
   # Probably this ones will be a part of the MIMEEntity above, and not
   # parts of %args.  In the Scrips, a new MIMEEntity is created, so
@@ -752,7 +767,23 @@ sub Correspond {
       $args{CcMessageTo}) {
       warn "stub"
   }
-  
+
+  unless ($Trans) {
+      # TODO ... check what errors might be catched here, and deal
+      # better with it
+      warn;
+      return ($Trans, "correspondence (probably) NOT sent", $MIME);
+  }
+
+  my $T=RT::Transaction->new($self->{'user'});
+  $T->Load($Trans);
+  unless ($T->IsInbound) {
+      # Should we record a transaction here or not?  I'll avoid it as
+      # for now - because the transaction will involve an extra email.
+      # -- TobiX
+      $self->_UpdateTold;
+  }
+
   return ($Trans, "correspondence (probably) sent", $MIME);
 }
 
@@ -771,6 +802,7 @@ sub Keywords {
   #TODO Implement
   return($self->{'article_keys'});
 }
+
 # }}}
 
 # {{{ sub NewKeyword
@@ -1114,12 +1146,20 @@ sub Resolve {
 
 # }}}
 
-# {{{ sub UpdateTold
+# {{{ sub UpdateTold and _UpdateTold
+
 sub UpdateTold {
     my $self=shift;
     my $timetaken=shift || 0;
     $self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1});
 }
+
+sub _UpdateTold {
+    my $self=shift;
+    my $timetaken=shift || 0;
+    $self->SUPER::_Set('Told','now()',$timetaken,1);
+}
+
 # }}}
 
 # {{{ sub Transactions 
@@ -1182,13 +1222,14 @@ sub _NewTransaction {
 # {{{ UTILITY METHODS
 
 # {{{ sub IsRequestor
+
 sub IsRequestor {
   my $self = shift;
   my $whom = shift;
 
   my $mail;
 
-  #Todo: more advanced checking
+  #Todo: more advanced checking ... this is not fail-safe
 
   if (ref $whom eq "Mail::Address") {
       $mail=$whom->Address;
@@ -1199,7 +1240,7 @@ sub IsRequestor {
   }
   
   #if the requestors string contains the username
-
+  
   if ($self->RequestorsAsString() =~ /$mail/) {
 
     return(1);
@@ -1208,6 +1249,7 @@ sub IsRequestor {
     return(undef);
   }
 };
+
 # }}}
 
 # {{{ PRIVATE UTILITY METHODS
@@ -1232,7 +1274,7 @@ sub _Accessible {
 	      Created => 'read/auto',
 	      Told => 'read',
 	      LastUpdated => 'read/auto',
-	      LastUpdatedBy => 'read',
+	      LastUpdatedBy => 'read/auto',
 	      Due => 'read/write'
 
 	     );
@@ -1256,6 +1298,7 @@ sub _UpdateTimeTaken {
   $self->SUPER::_Set("TimeWorked", $Total);
   return ($Total);
 }
+
 # }}}
 
 # {{{ sub _UpdateDateActed
@@ -1313,6 +1356,7 @@ sub _Set {
   }
   
 }
+
 # }}}
 
 # }}}

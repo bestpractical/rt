@@ -4,11 +4,11 @@
 	  <& /Elements/ShadedBox, title => 'Due' , content => $Ticket->Due ? $Ticket->DueAsString : "-" &>
 	</TD>
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedBy) : "Never" &>
+	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedByObj->UserId) : "Never" &>
 	</TD>
 
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Last Contact' , content => $Ticket->Told ? $Ticket->ToldAsString : "Never" &>
+	  <& /Elements/ShadedBox, title => '<a href="Display.html?id='.$Ticket->id.'&Action=UpdateTold">Last Contact</a>' , content => $Ticket->Told ? $Ticket->ToldAsString : "Never" &>
 	</TD>
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
 	  <& /Elements/ShadedBox, title => 'Created' , content => $Ticket->CreatedAsString &>

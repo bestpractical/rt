@@ -54,6 +54,8 @@ sub Create  {
   my $self = shift;
   my @args = (Creator => $self->CurrentUser->Id,
 	      @_);
+  push @args, 'Creator', $self->{'user'}->id
+	if $self->_Accessible('Creator', 'auto');
   #  print STDERR "In RT::Record->create\n";
   my $id = $self->SUPER::Create(@args);
   #  print STDERR "RT::Record->create Loading by Ref $id\n";
@@ -88,6 +90,8 @@ sub _Set  {
   my $field = shift;
   #if the user is trying to modify the record
   if ($self->ModifyPermitted) {
+    $self->SUPER::_Set('LastUpdatedBy', $self->{'user'}->id)
+	if ($self->_Accessible('LastUpdatedBy','auto'));
     $self->SUPER::_Set($field, @_);
   }
   else {

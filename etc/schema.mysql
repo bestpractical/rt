@@ -430,7 +430,7 @@ INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->Queue->QueueId}
-     Subject: {my $z=$Transaction->Message()->First(); $z && $z->Subject}
+     Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
        Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
@@ -454,7 +454,7 @@ To: {$Ticket->AdminCcAsString}
 NULL,20000227191745,NULL,00000000000000);
 
 INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL,
-'Subject: {$Transaction->Message()->First()->Subject}
+'Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Content-Type: text/plain; charset=ISO-8859-1
@@ -467,7 +467,7 @@ NULL,20000227191745,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
-'Subject: [Comment] {my $s=$Transaction->Message()->First()->Subject; $s =~ /\[Comment\]//g; $s;}
+'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\[Comment\]//g; $s;}
 Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}

@@ -114,9 +114,15 @@ unless ($Ticket->Load($id)) {
 	 push(@Actions, $msg);
       }
 
-      # Eventually, take the ticket:
+      # Eventually, kill the ticket:
       if (exists $ARGS{Action} && $ARGS{Action} eq "Kill") {
          my ($res, $msg)=$Ticket->Kill;
+	 push(@Actions, $msg);
+      }
+
+      # Eventually, touch the Told:
+      if (exists $ARGS{Action} && $ARGS{Action} eq "UpdateTold") {
+         my ($res, $msg)=$Ticket->UpdateTold;
 	 push(@Actions, $msg);
       }
 

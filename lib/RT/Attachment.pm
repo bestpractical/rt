@@ -89,7 +89,6 @@ sub Create  {
 			       ContentType  => $Attachment->mime_type,
 			       Headers => $Attachment->head->as_string,
 			       Subject => $Subject,
-			       Created => undef,
 	
 			      );
     
@@ -123,7 +122,6 @@ sub Create  {
 				  Headers => $Attachment->head->as_string,
 				  Subject => $Subject,
 				  Filename => $Filename,
-				  Created => undef,
 				 );
     return ($id);
   }
