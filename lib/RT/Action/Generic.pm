@@ -46,6 +46,8 @@ package RT::Action::Generic;
 use strict;
 use Scalar::Util;
 
+use base qw/RT::Base/;
+
 # {{{ sub new 
 sub new  {
   my $proto = shift;
@@ -54,13 +56,6 @@ sub new  {
   bless ($self, $class);
   $self->_Init(@_);
   return $self;
-}
-# }}}
-
-# {{{ sub new 
-sub loc {
-    my $self = shift;
-    return $self->{'ScripObj'}->loc(@_);
 }
 # }}}
 
@@ -73,6 +68,7 @@ sub _Init  {
 	       TemplateObj => undef,
 	       Argument => undef,
 	       Type => undef,
+            CurrentUser => undef,
 	       @_ );
   
   
@@ -82,6 +78,7 @@ sub _Init  {
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'TemplateObj'} = $args{'TemplateObj'};
   $self->{'Type'} = $args{'Type'};
+  $self->CurrentUser( $args{'CurrentUser'});
     Scalar::Util::weaken($self->{'ScripObj'});
     Scalar::Util::weaken($self->{'TicketObj'});
     Scalar::Util::weaken($self->{'TemplateObj'});

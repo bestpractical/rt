@@ -458,7 +458,7 @@ sub Create {
     }
 
     #If we've been handed something else, try to load the user.
-    elsif ( defined $args{'Owner'} ) {
+    elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 

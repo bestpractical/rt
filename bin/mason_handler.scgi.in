@@ -23,21 +23,22 @@
 # 
 # END LICENSE BLOCK
 
-use strict;
-require ('@RT_BIN_PATH@/webmux.pl');
+package RT::Mason;
 
-my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
+use strict;
+use vars '$Handler';
+require ('@RT_BIN_PATH@/webmux.pl');
 
 require CGI;
 
 RT::Init();
 
 my $cgi = CGI->new;
-if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
-    && ( $h->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
+    && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
     $cgi->path_info( $cgi->path_info . "/index.html" );
 }
 
-$h->handle_cgi_object($cgi);
+$Handler->handle_cgi_object($cgi);
 
 1;

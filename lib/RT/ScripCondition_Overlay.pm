@@ -157,7 +157,8 @@ sub LoadCondition  {
 					 'ScripObj' => $args{'ScripObj'},
 					 'TransactionObj' => $args{'TransactionObj'},
 					 'Argument' => $self->Argument,
-					 'ApplicableTransTypes' => $self->ApplicableTransTypes,
+				     'ApplicableTransTypes' => $self->ApplicableTransTypes,
+                     CurrentUser => $self->CurrentUser 
 				       );
 }
 # }}}

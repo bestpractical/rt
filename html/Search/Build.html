@@ -244,7 +244,6 @@ foreach my $arg ( keys %ARGS ) {
 	if ($currentkey) {
 	    my $newindex = $currentkey->getIndex() + 1;
 	    if (!$currentkey->getParent->getParent()->isRoot()) {
-		$currentkey->getParent()->setNodeValue($ARGS{'AndOr'});
 	    }
 	    $currentkey->insertSibling($newindex, $newnode);
 	    $currentkey = $newnode;
@@ -253,6 +252,7 @@ foreach my $arg ( keys %ARGS ) {
 	    $tree->getChild(0)->addChild($newnode);
 	    $currentkey = $newnode;
 	}
+	$newnode->getParent()->setNodeValue($ARGS{'AndOr'});
     }
 }
 # }}}

@@ -182,12 +182,11 @@ if ($ARGS{'UpdateContent'} &&
 
 #Iterate through each ticket we've been handed
 my @linkresults;
+my %queues;
 
 $Tickets->RedoSearch();
-
-my %queues;
 while (my $Ticket = $Tickets->Next) {
-    $queues{$Ticket->Queue}++;
+    $queues{$Ticket->QueueObj->Id}++;
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");

@@ -31,11 +31,6 @@
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
-<link rel="" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-% foreach my $service (qw( Feed Post Edit )) {
-%     my $uri = $ARGS{$service."URI"} or next;
-<link rel="service.<% lc($service) %>" type="application/x.atom+xml" href="<% $RT::WebPath %>/REST/2.0/<% $uri %>" title="Atom <% $service %>" />
-% }
 <script>
 function hideshow(num) {
     idstring = "element-" + num;

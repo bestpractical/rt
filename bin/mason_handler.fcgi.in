@@ -23,11 +23,12 @@
 # 
 # END LICENSE BLOCK
 
+package RT::Mason;
+
 use strict;
+use vars '$Handler';
 use File::Basename;
 require ('@RT_BIN_PATH@/webmux.pl');
-
-my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 
 # Enter CGI::Fast mode, which should also work as a vanilla CGI script.
 require CGI::Fast;
@@ -45,12 +46,12 @@ while ( my $cgi = CGI::Fast->new ) {
 
     RT::ConnectToDatabase();
 
-    if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
-        && ( $h->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+    if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
+        && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
         $cgi->path_info( $cgi->path_info . "/index.html" );
     }
 
-    eval { $h->handle_cgi_object($cgi); };
+    eval { $Handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);
     }

@@ -126,7 +126,7 @@ my %dispatch =
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD     => \&_CustomFieldLimit,
+    CUSTOMFIELD    => \&_CustomFieldLimit,
   );
 my %can_bundle =
   ( WATCHERFIELD => "yeps",
@@ -823,17 +823,17 @@ Meta Data:
 sub _CustomFieldLimit {
     my ( $self, $_field, $op, $value, @rest ) = @_;
 
-    my %rest  = @rest;
-    my $field = $rest{SUBKEY} || die "No field specified";
+  my %rest = @rest;
+  my $field = $rest{SUBKEY} || die "No field specified";
 
-    # For our sanity, we can only limit on one queue at a time
-    my $queue = 0;
+  # For our sanity, we can only limit on one queue at a time
+  my $queue = 0;
 
     if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
         $queue = $1;
-        $field = $2;
-    }
-    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+    $field = $2;
+   }
+    $field = $1 if $field =~ /^{(.+)}$/; # trim { }
 
 
 
@@ -866,10 +866,10 @@ sub _CustomFieldLimit {
 
     my $TicketCFs;
 
-    # Perform one Join per CustomField
+  # Perform one Join per CustomField
     if ( $self->{_sql_keywordalias}{$cfid} ) {
-        $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-    }
+    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
+  }
     else {
         $TicketCFs = $self->{_sql_keywordalias}{$cfid} = $self->_SQLJoin(
             TYPE   => 'left',
@@ -914,9 +914,9 @@ sub _CustomFieldLimit {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'OR',
         );
-    }
+  }
 
-    $self->_CloseParen;
+  $self->_CloseParen;
 
 }
 

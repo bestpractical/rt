@@ -144,6 +144,7 @@ sub LoadAction  {
 				      TransactionObj => $args{'TransactionObj'},
 				      TemplateObj => $self->TemplateObj,
 				      Argument => $self->Argument,
+                      CurrentUser => $self->CurrentUser
 				    );
 }
 # }}}

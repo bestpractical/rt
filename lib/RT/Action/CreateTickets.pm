@@ -280,7 +280,7 @@ unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
-my $action = new RT::Action::CreateTickets;
+my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);;
 
 # comma-delimited templates
 my $commas = <<"EOF";
@@ -290,6 +290,19 @@ ticket2,General,foo bar,root,blah
 ticket3,General,foo' bar,root,blah'boo
 ticket4,General,foo' bar,,blah'boo
 EOF
+
+
+# Comma delimited templates with missing data
+my $sparse_commas = <<"EOF";
+id,Queue,Subject,Owner,Requestor
+ticket14,General,,,bobby
+ticket15,General,,,tommy
+ticket16,General,,suzie,tommy
+ticket17,General,Foo "bar" baz,suzie,tommy
+ticket18,General,'Foo "bar" baz',suzie,tommy
+ticket19,General,'Foo bar' baz,suzie,tommy
+EOF
+
 
 # tab-delimited templates
 my $tabs = <<"EOF";
@@ -366,7 +379,49 @@ Content: blah'boo
 ENDOFCONTENT
 EOF
 
+
+$expected{'ticket14'} = <<EOF;
+Queue: General
+Subject: 
+Owner: 
+Requestor: bobby
+EOF
+$expected{'ticket15'} = <<EOF;
+Queue: General
+Subject: 
+Owner: 
+Requestor: tommy
+EOF
+$expected{'ticket16'} = <<EOF;
+Queue: General
+Subject: 
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket17'} = <<EOF;
+Queue: General
+Subject: Foo "bar" baz
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket18'} = <<EOF;
+Queue: General
+Subject: Foo "bar" baz
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket19'} = <<EOF;
+Queue: General
+Subject: 'Foo bar' baz
+Owner: suzie
+Requestor: tommy
+EOF
+
+
+
+
 $action->Parse(Content =>$commas);
+$action->Parse(Content =>$sparse_commas);
 $action->Parse(Content => $tabs);
 
 my %got;
@@ -374,7 +429,7 @@ foreach (@{ $action->{'create_tickets'} }) {
   $got{$_} = $action->{'templates'}->{$_};
 }
 
-foreach my $id ( keys %expected ) {
+foreach my $id ( sort keys %expected ) {
     ok(exists($got{"create-$id"}), "template exists for $id");
     is($got{"create-$id"}, $expected{$id}, "template is correct for $id");
 }
@@ -600,18 +655,20 @@ sub UpdateByTemplate {
         $template_id =~ m/^update-(.*)/;
         my $base_id = "base-$1";
         my $base    = $self->{'templates'}->{$base_id};
+        if ($base) {
         $base    =~ s/\r//g;
         $base    =~ s/\n+$//;
         $current =~ s/\n+$//;
 
-        if ( $base ne $current ) {
+        # If we have no base template, set what we can.
+        if ($base ne $current)  {
             push @results,
               "Could not update ticket "
               . $T::Tickets{$template_id}->Id
               . ": Ticket has changed";
             next;
         }
-
+        }
         push @results, $T::Tickets{$template_id}->Update(
             AttributesRef => \@attribs,
             ARGSRef       => $ticketargs
@@ -728,7 +785,7 @@ sub Parse {
                     my $value = $1;
                     $value =~ s/^\s//;
                     $value =~ s/\s$//;
-                    if ( !$value ) {
+                    if ( !$value && $args{'Queue'}) {
                         $value = $args{'Queue'};
                         $line  = "Queue: $value";
                     }
@@ -738,7 +795,7 @@ sub Parse {
                     my $value = $1;
                     $value =~ s/^\s//;
                     $value =~ s/\s$//;
-                    if ( !$value ) {
+                    if ( !$value && $args{'Requestor'}) {
                         $value = $args{'Requestor'};
                         $line  = "Requestor: $value";
                     }
@@ -760,10 +817,13 @@ sub Parse {
         else {
             $delimiter = ',';
         }
-        my $delimited = qr[[^$delimiter]+];
         my @fields    = split( /$delimiter/, $first );
-        my $empty     = qr[[$delimiter][$delimiter]];
+        
 
+        my $delimiter_re = qr[$delimiter];
+
+        my $delimited = qr[[^$delimiter]+];
+        my $empty     = qr[^[$delimiter](?=[$delimiter])];
         my $justquoted = qr[$RE{quoted}];
 
         $args{'Content'} = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
@@ -777,7 +837,7 @@ sub Parse {
             # first item is $template_id
             my $i = 0;
             my $template_id;
-            while ( $line =~ /($justquoted|$delimited|$empty)/igx ) {
+            while ($line && $line =~ s/^($justquoted|.*?)(?:$delimiter_re|$)//ix) {
                 if ( $i == 0 ) {
                     $queue     = 0;
                     $requestor = 0;
@@ -785,16 +845,29 @@ sub Parse {
                     $tid =~ s/^\s//;
                     $tid =~ s/\s$//;
                     next unless $tid;
-                    $template_id = 'create-' . $tid;
+                   
+                     
+                    if ($tid =~ /^\d+$/) {
+                        $template_id = 'update-' . $tid;
+                        push @{ $self->{'update_tickets'} }, $template_id;
+
+                    } elsif ($tid =~ /^#base-(\d+)$/) {
+
+                        $template_id = 'base-' . $1;
+                        push @{ $self->{'base_tickets'} }, $template_id;
+
+                    } else {
+                        $template_id = 'create-' . $tid;
+                        push @{ $self->{'create_tickets'} }, $template_id;
+                    }
                     $RT::Logger->debug("template_id: $tid");
-                    push @{ $self->{'create_tickets'} }, $template_id;
                 }
                 else {
                     my $value = $1;
-                    $value = '' if ( $value =~ /^$empty$/ );
-                    if ( $value =~ /$justquoted/ ) {
-                        $value =~ s/^\"|\'//;
-                        $value =~ s/\"|\'$//;
+                    $value = '' if ( $value =~ /^$delimiter$/ );
+                    if ($value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/) {
+                        substr($value,0,1) = "";
+                    substr($value,-1,1) = "";
                     }
                     my $field = $fields[$i];
                     next unless $field;
@@ -811,13 +884,13 @@ sub Parse {
                     }
                     if ( $field =~ /Queue/i ) {
                         $queue = 1;
-                        if ( !$value ) {
+                        if ( !$value && $args{'Queue'} ) {
                             $value = $args{'Queue'};
                         }
                     }
                     if ( $field =~ /Requestor/i ) {
                         $requestor = 1;
-                        if ( !$value ) {
+                        if ( !$value && $args{'Requestor'} ) {
                             $value = $args{'Requestor'};
                         }
                     }
@@ -826,7 +899,6 @@ sub Parse {
                     $self->{'templates'}->{$template_id} .= "\n";
                     $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
                       if $field =~ /content/i;
-                    $RT::Logger->debug( $field . ": $1" );
                 }
                 $i++;
             }
@@ -881,12 +953,12 @@ sub ParseLines {
         }
     }
     
-    my $TicketObj ||= RT::Ticket->new($RT::SystemUser);
+    my $TicketObj ||= RT::Ticket->new($self->CurrentUser);
 
     my %args;
     my @lines = ( split( /\n/, $content ) );
     while ( defined( my $line = shift @lines ) ) {
-        if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
+        if ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
             my $value = $2;
             my $tag   = lc($1);
             $tag =~ s/-//g;
@@ -923,7 +995,7 @@ sub ParseLines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new($RT::SystemUser);
+        my $dateobj = RT::Date->new($self->CurrentUser);
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
@@ -1134,6 +1206,10 @@ sub UpdateWatchers {
     foreach my $type qw(Requestor Cc AdminCc) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
+    
+    
+        # Skip unless we have a defined field
+        next unless defined $args->{$type};
         my $newaddr = $args->{$type};
 
         my @old = split( ', ', $oldaddr );

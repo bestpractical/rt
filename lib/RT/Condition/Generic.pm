@@ -21,6 +21,7 @@
 # 
 # 
 # END LICENSE BLOCK
+
 =head1 NAME
 
   RT::Condition::Generic - ;
@@ -57,10 +58,8 @@ ok (require RT::Condition::Generic);
 
 package RT::Condition::Generic;
 
-use RT::Base;
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Base);
+use base qw/RT::Base/;
 
 # {{{ sub new 
 sub new  {
@@ -82,6 +81,7 @@ sub _Init  {
 	       TemplateObj => undef,
 	       Argument => undef,
 	       ApplicableTransTypes => undef,
+           CurrentUser => undef,
 	       @_ );
   
   $self->{'Argument'} = $args{'Argument'};
@@ -89,6 +89,7 @@ sub _Init  {
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
+  $self->CurrentUser($args{'CurrentUser'});
 }
 # }}}
 

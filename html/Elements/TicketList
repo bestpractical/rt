@@ -152,7 +152,7 @@ $COLUMN_MAP = {
     },
     Subject => {
         attribute => 'Subject',
-        value => sub { return $_[0]->Subject || "(".loc('No subject').")" }
+        value => sub { length( $_[0]->Subject) ? $_[0]->Subject : "(".loc('No subject').")" }
     },
     ExtendedStatus => {
         title => 'Status',
