@@ -459,7 +459,8 @@ my %args = (
 $args{'message'} = <>;
 
 unless ( $args{message} =~ /\S/ ) {
-    die "$0: no message passed on STDIN!\n";
+    print STDERR "$0: no message passed on STDIN!\n";
+    exit 0;
 }
 
 if ($opts{'extension'}) {
