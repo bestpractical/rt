@@ -315,6 +315,17 @@ If you need RT to run through a high-traffic webserver, we recommend
 that you run RT on its own seperate apache server and proxy requests from
 your main webserver.  (see the next section)
 
+=head4 Running RT along with other content on a single virtual server
+
+Alias /rt2/ /usr/local/rt2/WebRT/html/                                          
+PerlRequire /usr/local/rt2/bin/webmux.pl                                        
+<Location /rt2>                                                                 
+SetHandler perl-script                                                          
+PerlHandler RT::Mason                                                           
+</Location>       
+
+If you set up RT this way, you must also change $WebPath in config.pm   
+
 =head4  using a seperate webserver with mod_proxypass
 
 

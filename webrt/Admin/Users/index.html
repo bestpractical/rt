@@ -8,7 +8,10 @@
 <UL>
 
 <LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
+</UL>
 
+<%$caption%><BR>
+<UL>
 %while ( $user = $users->Next) {
 <LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a></LI>
 %}
@@ -16,18 +19,24 @@
 </UL>
 
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
+% if ((!defined $IdLike) and (!defined $EmailLike) ) {
+To find users not listed above, search by email address or username below.<br>
+% }
 Find users with email addresses like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> and Names like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
 
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
-my ($user);
+my ($user, $caption);
 my $users = new RT::Users($session{'CurrentUser'});
 
 if ((!defined $IdLike) and (!defined $EmailLike) ) {
     $users->LimitToPrivileged();
+    $caption = "Privileged users";
 }
 else {
+    $caption = "Users matching search criteria";
+
     if (defined $IdLike) {
 $users->Limit(FIELD => 'Name',
               VALUE => $IdLike,
@@ -44,4 +53,5 @@ $users->Limit(FIELD => 'EmailAddress',
 <%ARGS>
 $IdLike => undef
 $EmailLike => undef
+
 </%ARGS>

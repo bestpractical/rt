@@ -6,23 +6,8 @@
 if ($m->base_comp->path =~ '^/NoAuth/') {
         $m->call_next();
 }
-
-  
-elsif ( (defined $session{'CurrentUser'}) and 
-	( $session{'CurrentUser'}->Id) ) {
-    unless ($session{'CurrentUser'}->Privileged) {
-	# If the user isn't privileged, they can only see SelfService
-           if ($m->base_comp->path =~ '^/SelfService/') {
-                $m->call_next;
-           } else {
-                $m->comp('/SelfService/index.html');
-           }
-    }
-    else {
-	$m->call_next;
-    }
-    
-}
+ 
+# If the user is loging in, let's authenticate
 elsif (defined ($user) && defined ($pass)){
     
     $session{'CurrentUser'} = RT::CurrentUser->new();
@@ -33,25 +18,35 @@ elsif (defined ($user) && defined ($pass)){
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
-	delete $session{'CurrentUser'} ;
+	delete $session{'CurrentUser'};
 	
 	$m->comp('/Elements/Login', Error => 'Your username or password is incorrect', %ARGS);
 	$m->abort();
     }
-    unless  ($session{'CurrentUser'}->Privileged) {
-	# If the user isn't priviledged, they can only see SelfService
-        if ($m->base_comp->path =~ '^/SelfService/') {
-                $m->call_next;
-                } else {
-        	$m->comp('/SelfService/index.html');
-                }
-    }
-    $m->call_next;
-    
 }
+  
+
+#If we've got credentials, lets serve the file up.
+if ( (defined $session{'CurrentUser'}) and 
+     ( $session{'CurrentUser'}->Id) ) {
+    
+    # If the user isn\'t privileged, they can only see SelfService
+    if ((! $session{'CurrentUser'}->Privileged) and
+	($m->base_comp->path !~ '^/SelfService/') ) {
+	$m->comp('/SelfService/index.html');
+	$m->abort();
+    }
+    else {
+	$m->call_next;
+    }
+}
+
+#If we have no credentials
 else {
     $m->comp('/Elements/Login', %ARGS);
+    $m->abort();
 }
+
 </%INIT>
 
 <%ARGS>
