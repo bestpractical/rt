@@ -216,6 +216,8 @@ instruct:
 
 upgrade: libs-install config-replace mux-install nondestruct
 
+upgrade-noclobber: libs-install mux-install nondestruct
+
 nondestruct: mux-links fixperms
 
 all:

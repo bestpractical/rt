@@ -1,7 +1,12 @@
+26 Feb 99
+---------
+Added make upgrade-noclobber that doesn't clobber the config.pm
+commandline -create no longer barfs on blank "due" dates.
+
+
 24 Feb 99
 ---------
-Added a better loop detection system.
-
+Added a better message loop detection system.
 
 23 Feb 99
 ---------
