@@ -900,18 +900,36 @@ sub NewKeyword {
 
 # {{{ Routines dealing with links
 
-#TODO: Links is not yet implemented
+#TODO: This is not done.
 #
-# {{{ sub Links
-sub Links {
+# What do we need?
+
+# directly from the web ticket display as of today:
+
+# _all_ links (to and from).  How to tell EasySearch that?
+
+# all unresolved dependencies (how to tell if a dependency is
+# unresolved?  Dependencies can point out of this RT instance!)
+
+# What else?
+
+# all members ... this one is already used in my Action, I'd
+# daresay.  The "pick all members"-logic should be moved to this file.
+
+# - (all) parent(s)/group ticket ...
+
+#
+# {{{ sub AllLinks
+sub AllLinks {
   my $self= shift;
+  die "Stub!";
   
-  if (! $self->{'pointer_to_links_object'}) {
-#    $self->{'pointer_to_links_object'} = new RT::Links;
-#    $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
+#  if (! $self->{'all_links'}) {
+#      $self->{'all_links'} = new RT::Links;
+#    $self->{'all_links'}->Limit(FIELD => 'article',
 #					      VALUE => $self->id);
-  }
-  return($self->{'pointer_to_links_object'});
+#  }
+#  return($self->{'pointer_to_links_object'});
 }
 # }}}
 
