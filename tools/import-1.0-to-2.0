@@ -6,6 +6,12 @@
 #  RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 
 
+#
+# Still to come:
+#	importing ACLs 
+#	importing merged tickets
+
+
 my $RT1USER = "bje";
 my $RT1PASSWORD = undef;
 my $RT1DATABASE = "rt";
