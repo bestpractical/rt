@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket , 
+    Ticket => $TicketObj, 
     Title=> $title &>
 
 <FORM ACTION="Update.html" NAME="TicketUpdate" 
@@ -35,20 +35,20 @@
 
 <TABLE>
 <TR><TD>
-<a href="ModifyPeople.html?id=<%$Ticket->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
+<a href="ModifyPeople.html?id=<%$TicketObj->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
 <&|/l&>Requestor</&>:
 </TD><TD>
-<b><% $Ticket->RequestorAddresses %></b>
+<b><% $TicketObj->RequestorAddresses %></b>
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD align=right>
 <&|/l&>Cc</&>:
 </TD><TD>
-<b><% $Ticket->CcAddresses %></b>
+<b><% $TicketObj->CcAddresses %></b>
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD align=right>
 <&|/l&>AdminCc</&>:
 </TD><TD>
-<b><% $Ticket->AdminCcAddresses %></b>
+<b><% $TicketObj->AdminCcAddresses %></b>
 </TD></TR>
 </TR>
 </TABLE>
@@ -60,7 +60,7 @@
 <td>
 <& /Elements/SelectStatus, Name=>"Status", Default => $DefaultStatus &>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $Ticket->OwnerObj->Id()), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
+<& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $TicketObj->OwnerObj->Id()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -72,7 +72,7 @@
 % }
 </select> 
 </td></tr>
-<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $Ticket->Subject()%>"></td></tr>
+<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $TicketObj->Subject()%>"></td></tr>
 <tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
 value=<% $ARGS{UpdateCc} %>><BR>
 <i><font size=-2>
@@ -106,7 +106,7 @@ value=<% $ARGS{UpdateCc} %>><BR>
 <& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
 % }
 </td></tr>
-		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
+		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>"><br>
 </table>
 
 
@@ -123,10 +123,10 @@ my $CanRespond = 0;
 my $CanComment = 0;
 my $title;
 
-my $Ticket = LoadTicket($id);
+my $TicketObj = LoadTicket($id);
 
 unless($DefaultStatus){
-    $DefaultStatus=($ARGS{'Status'} ||$Ticket->Status());
+    $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
 if ($DefaultStatus =~ '^new$'){
@@ -134,9 +134,9 @@ if ($DefaultStatus =~ '^new$'){
 }
 
 if ($DefaultStatus eq 'resolved') {
-    $title = loc("Resolve ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+    $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 } else {
-    $title = loc("Update ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+    $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 }
 
 # Things needed in the template - we'll do the processing here, just
@@ -150,11 +150,11 @@ if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
 }
 
 
-$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+$CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
+                     $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
 
-$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+$CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
+                     $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
 
 
 # {{{ deal with deleting uploaded attachments
@@ -193,7 +193,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->comp('Display.html', %ARGS);
+    $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }
 </%INIT>

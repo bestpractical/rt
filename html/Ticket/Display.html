@@ -22,20 +22,20 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, 
-    Title => loc("#[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
+    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => 'Ticket/Display.html?id='.$Ticket->id,
-    Title => loc("#[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
+    Ticket => $TicketObj, 
+    current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
+    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
 
-<& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj &>
 
 
 <BR>
 <& /Ticket/Elements/ShowHistory , 
-      Ticket => $Ticket, 
+      Ticket => $TicketObj, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
@@ -45,14 +45,13 @@ $id => undef
 $Create => undef
 $ShowHeaders => undef
 $Collapsed => undef
+$TicketObj => undef
 </%ARGS>
 
 <%INIT>
-  my ($linkid, $message, $tid, $Ticket, @Actions);  
+  my ($linkid, $message, $tid, @Actions);  
 
-$Ticket = new RT::Ticket($session{'CurrentUser'});
-
-unless ($id) {
+unless ($id || $TicketObj) {
     Abort('No ticket specified');
 }
 
@@ -67,29 +66,31 @@ if ($ARGS{'id'} eq 'new') {
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
-    ($Ticket, @Actions) =
-       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    ($TicketObj, @Actions) =
+	CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
     delete $session{'Attachments'};
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Ticket->id.".");
-    }
+    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+	Abort("No permission to view newly created ticket #".$TicketObj->id.".");
+	}
     # }}}
-}
+} else { 
+    if (!$TicketObj) {
 
-else { 
-    $Ticket = LoadTicket($ARGS{'id'});
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-	Abort("No permission to view ticket");
+	$TicketObj = RT::Ticket->new($session{'CurrentUser'});
+
+	$TicketObj = LoadTicket($ARGS{'id'});
+	unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    Abort("No permission to view ticket");
+	}
     }
 
-
-if (defined $ARGS{'Action'}) {
-  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-    my $action = $1;
-    my ($res, $msg)=$Ticket->$action();
-    push(@Actions, $msg);
-  }
-}
+    if (defined $ARGS{'Action'}) {
+	if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+	    my $action = $1;
+	    my ($res, $msg)=$TicketObj->$action();
+	    push(@Actions, $msg);
+	}
+    }
 
     if ( $ARGS{'UpdateContent'} || $session{'Attachments'}) {
         $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
@@ -100,15 +101,15 @@ if (defined $ARGS{'Action'}) {
             $ARGS{UpdateAttachments} = $session{'Attachments'};
             ProcessUpdateMessage( ARGSRef   => \%ARGS,
                                   Actions   => \@Actions,
-                                  TicketObj => $Ticket );
+                                  TicketObj => $TicketObj );
             delete $session{'Attachments'};
         }
     }
-#Process status updates
-my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
-my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);                            
+    #Process status updates
+    my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
+    my @results = ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%ARGS);                            
 
-push (@Actions, @BasicActions, @results);
+    push (@Actions, @BasicActions, @results);
 }
 </%INIT>
 
