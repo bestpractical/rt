@@ -1,18 +1,111 @@
-<& /Elements/Header &>
-<& /Elements/Tabs &>
+<& /Elements/Header, Title => 'Display ticket #'.$Ticket->id &>
+<& Elements/Tabs &>
 
-<h1>Modify a ticket</h1>
+
 <& /Elements/ListActions, actions => \@results &>
-<& Elements/ModifyTicket, TicketObj => $TicketObj, %ARGS  &>
+
+<TABLE>
+    <TR>
+	<TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Ticket Id
+	</TD>
+      <TD>
+	<%$Ticket->Id%>
+% if ($Ticket->Alias) {
+	(<%$Ticket->Alias%>)
+% }
+
+	</TD>
+      </TR>
+    <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Requestors
+	</TD>
+      <TD>
+	<%$Ticket->RequestorsAsString%>
+      </TD>
+      </TR>
+    <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Cc
+	</TD>
+      <TD>
+	<%$Ticket->CcAsString%>
+      </TD>
+    </TR>
+
+  <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Status
+	</TD>
+      <TD>
+	<%$Ticket->Status%>
+      </TD>
+    </TR>
+
+    <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Queue
+	</TD>
+      <TD>
+	<%$Ticket->QueueObj->QueueId%> (<%$Ticket->QueueObj->Description%>)
+      </TD>
+    </TR>
+    <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Priority
+      </TD>
+      <TD>
+	<%$Ticket->Priority %>
+      </TD>
+    </TR>
+ 
+%  if ($Ticket->TimeWorked) {
+   <TR>	
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	Worked
+      </TD>
+      <TD>
+	<%$Ticket->TimeWorked %> minutes
+      </TD>
+    </TR>
+% }
+    
+% my $selects = $Ticket->QueueObj->KeywordSelects;
+% while (my $select = $selects->Next) {
+    <TR>
+      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
+	<%$select->Name%>
+      </TD>
+      <TD>
+% my $object_keywords = $Ticket->KeywordsObj($select->id);	
+% while (my $keyword = $object_keywords->Next) {
+	<%$keyword->KeywordObj->RelativePath($select->KeywordObj)%>
+% }
+%}
+	</TD>
+      </TR>
+
+
+
+
+	</TABLE>
+%while (my $Transaction = $Transactions->Next) {
+
+%	if ($Transactions->IsLast) {
+	<a name="lasttrans">
+% 	}
+	<& Elements/ShowTransaction, Transaction => $Transaction&>
+
+<BR>
+%}
+
+
 
 <%INIT>
 
 my $field;
 my @results;
-
-use RT::Ticket;
-use MIME::Entity;
-use RT::Interface::Web;
 
 # {{{ Load the ticket
 #If we get handed two ids, mason will make them an array. bleck.
@@ -20,101 +113,21 @@ use RT::Interface::Web;
 # to deal
 my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
 
-my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-$TicketObj->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+my $Ticket = new RT::Ticket($session{'CurrentUser'});
+$Ticket->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
 # }}}
 
-# {{{ Set basic fields 
-my @fields = qw(
-          Queue 
-          Owner 
-          Subject 
-          FinalPriority 
-          Priority 
-          Status 
-          TimeWorked  
-          TimeLeft 
-        );
 
-#run through each field in this list. update the value if apropriate
-foreach $field (@fields) {
 my ($code, $msg);
-my $check = "if ((defined \$ARGS{$field}) and 
-                 (\$ARGS{$field} ne \$TicketObj->$field)) {
-                  (\$code, \$msg) = \$TicketObj->Set$field(\$ARGS{'$field'});
-                  push \@results, \"\$msg\";
-                   }";
 
-            eval $check;
-            if ($@)  {
-		$RT::Logger->err("Web/Ticket/Modify.html: $@\n");
-	    }   
+#Update the status
+if ((defined $ARGS{'Status'}) and 
+    ($ARGS{'Status'} ne $Ticket->Status)) {
+    ($code, $msg) = $Ticket->SetStatus($ARGS{'Status'});
+    push @results, "$msg";
 }
 
-# }}}
-
-# {{{ Set date fields
-my @date_fields = qw(
-          Told  
-          Resolved  
-          Starts  
-          Started  
-          Due  
-        );
-#Run through each field in this list. update the value if apropriate
-foreach $field (@date_fields) {
-        my ($code, $msg);
-            my $check = "
-               my \$DateObj = RT::Date->new(\$session{'CurrentUser'});
-	       #If it's something other than just whitespace
-	       if (\$ARGS{'$field'.'_Date'} ne '') {
-               \$DateObj->Set(Format => 'unknown',
-                              Value => \$ARGS{'$field'. '_Date'});
-              if ((defined \$DateObj->Unix) and 
-                  (\$DateObj->Unix ne \$TicketObj->@{[$field]}Obj->Unix)) {
-                      (\$code, \$msg) = \$TicketObj->Set$field(\$DateObj->ISO);
-                      push \@results, \"\$msg\";
-                  }
-		}
-            ";
-	eval $check;
-	if ($@) {
-	    $RT::Logger->err("Web/Ticket/Modify.html Date $field update failed ".$@."\n");
-	}
-	
-    }
-
-# }}}
-
-my ($key);
-
-# {{{ Delete deletable watchers
-
-foreach $key (keys %ARGS) {
-    if (($key =~ /^DelWatcher(\d*)$/) and
-	($ARGS{$key})) {
-	$RT::Logger->debug("Deleting watcher $1\n");
-	my ($code, $msg) = $TicketObj->DeleteWatcher($1);
-	
-	push @results, $msg;
-    }
-}
-# }}}
-
-# {{{ Add new watchers
-foreach $key (keys %ARGS) {
-    #They're in this order because otherwise $1 gets clobbered :/
-    if ( ($ARGS{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
-	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
-	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = 
-	  $TicketObj->AddWatcher(Type => $ARGS{$key},
-				 Owner => $1);
-	push @results, $msg;
-    }
-}
-
-# }}}
+my $Transactions = $Ticket->Transactions;
 
 </%INIT>
 
