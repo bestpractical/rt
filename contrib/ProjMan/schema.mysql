@@ -17,14 +17,12 @@ CREATE TABLE Worktask (
 # Those should be set only once:
 
 	OrigTypTimeEst INT,
-	OrigMinTimeEst INT,
 	OrigMaxTimeEst INT,
 
 # Those should be updated all the time while the project gets more and
 # more delayed:
 
 	CurrTypTimeEst INT,
-	CurrMinTimeEst INT,
 	CurrMaxTimeEst INT,
 
 # If TimeWorked (in the Tickets table) is higher than CurrMaxTimeEst,
