@@ -1,0 +1,6 @@
+%# Forbid direct access in this directory -- everything goes thru dhandler
+% $r->content_type('text/html; charset=utf-8');
+% $m->abort(403);
+<%flags>
+inherit	=> undef
+</%flags>

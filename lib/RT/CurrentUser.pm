@@ -403,6 +403,47 @@ sub CurrentUser {
 
 }
 
+=head2 Authenticate
+
+Takes $password, $created and $nonce, and returns a boolean value
+representing whether the authentication succeeded.
+
+If both $nonce and $created are specified, validate $password against:
+
+    encode_base64(sha1(
+	$nonce .
+	$created .
+	sha1_hex( "$username:$realm:$server_pass" )
+    ))
+
+where $server_pass is the md5_hex(password) digest stored in the
+database, $created is in ISO time format, and $nonce is a random
+string no longer than 32 bytes.
+
+=cut
+
+sub Authenticate { 
+    my ($self, $password, $created, $nonce, $realm) = @_;
+
+    require Digest::SHA1;
+    require MIME::Base64;
+
+    my $username = $self->UserObj->Name or return;
+    my $server_pass = $self->UserObj->__Value('Password') or return;
+    my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
+	$nonce .
+	$created .
+	Digest::SHA1::sha1_hex("$username:$realm:$server_pass")
+    ));
+
+    chomp($password);
+    chomp($auth_digest);
+
+    return ($password eq $auth_digest);
+}
+
+# }}}
+
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});

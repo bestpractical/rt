@@ -1,0 +1,84 @@
+%# The main dispatcher for RT/REST 2.0
+<%INIT>
+my $realm = $RT::rtname;
+$realm =~ s/[^\w.]//g;
+
+# XXX - do Digest auth here too?
+$r->header_out(
+    'WWW-Authenticate' => qq(WSSE realm="$realm", profile="UsernameToken")
+);
+
+my $CurrentUser;
+
+AUTH: {
+    my $auth = $r->header_in('Authorization');
+    $auth =~ /^WSSE (?=.*\bprofile="UsernameToken")/ or last;
+
+    my $wsse = $r->header_in('X-WSSE');
+    $wsse =~ s/^(?:WSSE|UsernameToken) // or last;
+
+    my %param;
+    foreach my $i (split /,\s*/, $wsse) {
+	my ($k, $v) = split /=/, $i, 2;
+	$v =~ s/^"//; $v =~ s/"$//;
+	$param{lc($k)} = $v;
+    }
+
+    my ($username, $auth_digest, $auth_nonce, $auth_created)
+	= map { defined($_) ? $_ : last AUTH }
+	    @param{qw(username passworddigest nonce created)};
+
+    require RT::CurrentUser;
+    $CurrentUser = RT::CurrentUser->new;
+    $CurrentUser->Load($username) or last;
+
+    # check against reused nonces
+    my $nonce_cache;
+    if ($auth_nonce) {
+	require Cache::FileCache;
+	$nonce_cache = Cache::FileCache->new({
+	    namespace => 'RT-Nonces',
+	    default_expires_in => 1728000,
+	    auto_purge_interval => 3600,
+	});
+        $auth_nonce = substr($auth_nonce, 0, 32);
+        last if $nonce_cache->get( $auth_nonce );
+    }
+
+    # if ($auth_created and abs($auth_created - time) >= 864000) {
+    #	last; # system clock differ by more than one day, oops!
+    # }
+
+    delete $INC{'RT/CurrentUser.pm'};
+    require RT::CurrentUser;
+
+    require MIME::Base64;
+    $auth_nonce = MIME::Base64::decode_base64($auth_nonce);
+
+    $CurrentUser->Authenticate(
+	$auth_digest, $auth_created, $auth_nonce, $realm
+    ) or (undef($CurrentUser), last);
+
+    # remember issued nonces
+    $nonce_cache->set( $auth_nonce, 1 );
+}
+
+if ($CurrentUser and $CurrentUser->Id) {
+    # $m->comp( $m->dhandler_arg ); # XXX - proper delegation goes here
+    print << ".";
+<?xml version="1.0" encoding="utf-8"?>
+<feed version="0.3" xmlns="http://purl.org/atom/ns#">
+  <title>Ticket search results</title>
+  <modified>2000-01-01T01:01:01Z</modified>
+  <author><name>$RT::rtname</name></author>
+</feed>
+.
+}
+else {
+    $r->status(401);
+}
+
+</%INIT>
+<%FLAGS>
+inherit	=> undef
+</%FLAGS>
