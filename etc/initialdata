@@ -307,7 +307,7 @@ This is a comment.  It is not sent to the Requestor(s):
       Queue       => '0',
       Name        => 'Resolved',                 # loc
       Description => 'Ticket Resolved',          # loc
-      Content     => 'Subject: Ticket Resolved
+      Content     => 'Subject: Resolved: {$Ticket->Subject}
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
