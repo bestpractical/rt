@@ -47,19 +47,19 @@ my  $Message = MIME::Entity->build ( Subject => "This is a subject",
 				     From => "jesse\@fsck.com",
 				     Data => "This is a simple little bit of data which isn't meant to exercise MIME::Entity and database storage.");
 
-
+print STDERR time."\n";
 use RT::Ticket;
 for (my $i = 0; $i < 1000; $i++) {
 	my $ticket = RT::Ticket->new($SystemUser);
 	$ticket->Create(QueueTag => 'general',
 		Subject => "This is a subject",
 		Status => "Open",
-		Requestor => 'jesse+rttest\@fsck.com',
+		Requestor => $SystemUser->UserObj,
 		MIMEObj => $Message);
 
 }
 $RT::Handle->Disconnect();
 
-print STDERR "Ok. all done \n\n";
+print STDERR "Ok. all done".time." \n\n";
 1;
 
