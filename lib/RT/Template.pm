@@ -249,6 +249,9 @@ sub Parse {
   if ($headers) {
     foreach $header (split(/\n/,$headers)) {
       (my $key, my $value) = (split(/: /,$header,2));
+      chomp $key;
+      chomp $value;
+      $self->{'MIMEObj'}->head->fold_length($key,10000);
       $self->{'MIMEObj'}->head->add($key, $value);
     }
   }
@@ -275,9 +278,14 @@ sub _ParseContent  {
   $T::Argument = $args{'Argument'};
   $T::rtname=$RT::rtname;
   $T::WebRT=$RT::WebRT;
-  
+
+  # We need to untaint the content of the template, since we'll be working
+  # with it
+  $self->Content =~ /^(.*)$/;  
+  my $untainted_content = $1; 
+ 
   $template=Text::Template->new(TYPE=>STRING, 
-				SOURCE=>$self->Content);
+				SOURCE=>$untainted_content);
   
   return ($template->fill_in(PACKAGE=>T));
 }

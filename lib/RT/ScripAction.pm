@@ -113,8 +113,10 @@ sub LoadAction  {
 		 @_ );
     
     #TODO: Put this in an eval  
-    my $type = "RT::Action::". $self->ExecModule;
-    
+    $self->ExecModule =~ /^(\w+)$/;
+    my $module = $1;
+    my $type = "RT::Action::". $module;
+ 
     $RT::Logger->debug("now requiring $type\n"); 
     eval "require $type" || die "Require of $type failed.\n$@\n";
     

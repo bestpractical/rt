@@ -2627,7 +2627,7 @@ sub _NewTransaction {
 
 sub _ClassAccessible {
     {
-	EffectiveId => { 'read' => 1, 'write' => 1 },
+	EffectiveId => { 'read' => 1, 'write' => 1, 'public' => 1 },
 	Queue => { 'read' => 1, 'write' => 1 },
 	Requestors => { 'read' => 1, 'write' => 1 },
 	Owner => { 'read' => 1, 'write' => 1 },

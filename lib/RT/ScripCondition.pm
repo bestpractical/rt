@@ -121,7 +121,9 @@ sub LoadCondition  {
 		 @_ );
     
     #TODO: Put this in an eval  
-    my $type = "RT::Condition::". $self->ExecModule;
+    $self->ExecModule =~ /^(\w+)$/;
+    my $module = $1;
+    my $type = "RT::Condition::". $module;
     
     $RT::Logger->debug("now requiring $type\n"); 
     eval "require $type" || die "Require of $type failed.\n$@\n";
