@@ -19,10 +19,12 @@ sub Prepare {
   my $self = shift;
 
   print "Preparing\n";
+  
+  my $id=$self->{TicketObject}->id || die;
+  my $subject=$self->{TransactionObject}->Subject || "(no subject)";
 
   $self->{'Header'}->add('Subject', 
-			 "[$RT::rtname \#$$self{Ticket}] Autoreply: ".
-			 $self->{TicketObject}->Subject());
+			 "[$RT::rtname \#$id] Autoreply: $subject");
 
   $self->{'Header'}->add('Precedence', 'bulk');
 

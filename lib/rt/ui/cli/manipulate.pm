@@ -313,7 +313,7 @@ sub ParseArgs {
    # print "Message CC is ". $message->head->get('From');
     require RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
-    my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue_id,
+    my ($id, $Transaction, $ErrStr) = $Ticket->Create ( QueueTag => $queue_id,
 			       Area => $area,
 			       Alias => $alias,
 			       Owner => $owner,

@@ -24,6 +24,7 @@ sub Create {
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
+	      QueueTag => undef,
 	      Requestor => undef,
 	      Alias => undef,
 	      Type => undef,
@@ -41,6 +42,12 @@ sub Create {
 	      @_);
 
   #TODO Load queue defaults
+
+  if (!$args{'Queue'} && $args{'QueueTag'}) {
+      $q=RT::Queue->new($self->{user});
+      $q->LoadByCol("QueueId", $args{'QueueTag'});
+      $args{'Queue'}=$q->id;
+  }
   
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
@@ -85,7 +92,9 @@ sub Create {
       $self->AddWatcher ( Email => $Cc->address,
 			  Type => "Cc");
     }
-    
+
+    # Should we store this at all?  There might be a point keeping
+    # blind cc's secret.
     my @Bcc = Mail::Address->parse($head->get('Bcc'));
     foreach $Bcc (@Bcc) {
       $self->AddWatcher ( Email => $Bcc->address,
@@ -95,13 +104,8 @@ sub Create {
   }
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction(Type => "Create",
-				     TimeTaken => 0);
-  
-  
-  #Attach the content to the transaction
-  if ($args{'MIMEEntity'}){
-    $Trans->Attach($args{'MIMEEntity'});
-  }
+				     TimeTaken => 0, 
+				     MIMEEntity=>$args{'MIMEEntity'});
   
   
   return($self->Id, $Trans, $ErrStr);
@@ -709,6 +713,7 @@ sub _NewTransaction {
 	     NewValue => undef,
 	     Data => undef,
 	     Field => undef,
+	     MIMEEntity => undef,
 	     @_);
   
   
@@ -721,6 +726,7 @@ sub _NewTransaction {
 		  Field => $args{'Field'},
 		  NewValue => $args{'NewValue'},
 		  OldValue => $args{'OldValue'},
+		  MIMEEntity => $args{'MIMEEntity'}
 		);
   
   $self->_UpdateDateActed;

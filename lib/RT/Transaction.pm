@@ -46,6 +46,7 @@ sub Create {
 	       Field => undef,
 	       OldValue => undef,
 	       NewValue => undef,
+	       MIMEEntity => undef,
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
@@ -65,6 +66,9 @@ sub Create {
 				Created => undef
 			       );
   $self->Load($id);
+
+  $self->Attach($args{'MIMEEntity'})
+      if defined $args{'MIMEEntity'};
 
   #We're really going to need a non-acled ticket for the scrips to work
   use RT::Ticket;

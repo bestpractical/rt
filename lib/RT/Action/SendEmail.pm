@@ -51,6 +51,9 @@ sub Prepare {
   if (my $a=$self->{Argument}) {
       my $receipient;
       if ($a eq '$Requestor') {
+	  # TODO
+	  # I guess this is wrong - I guess we should fetch the
+	  # Requestor(s) from the Watcher table.
 	  $receipient=$self->{TicketObject}->Creator()->EmailAddress();
       } else {
 	  warn "stub - no support for argument/receipient $a yet";
