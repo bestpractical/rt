@@ -27,9 +27,6 @@ $Name => undef
 $Attr => undef
 </%ARGS>
 
-<%perl>
-return ColumnMap($Name, $Attr);
-</%perl>
 
 <%INIT>
 our ( $COLUMN_MAP, $CUSTOM_FIELD_MAP );
@@ -153,14 +150,17 @@ $COLUMN_MAP = {
     },
     TimeWorked => {
         attribute => 'TimeWorked',
+        title => 'Time Worked',
         value     => sub { return $_[0]->TimeWorked }
     },
     TimeLeft => {
         attribute => 'TimeLeft',
+        title     => 'Time Left',
         value     => sub { return $_[0]->TimeLeft }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
+        title => 'Time Estimated',
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
@@ -188,7 +188,7 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->CreatedObj->AgeAsString }
     },
     LastUpdatedRelative => {
-        title     => 'LastUpdated',
+        title     => 'Last Updated',
         attribute => 'LastUpdated',
         value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
     },
@@ -228,14 +228,17 @@ $COLUMN_MAP = {
     },
     CreatedBy => {
         attribute => 'CreatedBy',
+        title => 'Created By',
         value     => sub { return $_[0]->CreatorObj->Name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',
+        title     => 'Last Updated',
         value     => sub { return $_[0]->LastUpdatedObj->AsString }
     },
     LastUpdatedBy => {
         attribute => 'LastUpdatedBy',
+        title     => 'Last Updated By',
         value     => sub { return $_[0]->LastUpdatedByObj->Name }
     },
     Told => {
@@ -252,6 +255,7 @@ $COLUMN_MAP = {
     },
 
     DependedOnBy => {
+        title => 'Depended On By',
         value => sub {
             my $links = $_[0]->DependedOnBy;
             return (
@@ -300,6 +304,7 @@ $COLUMN_MAP = {
           }
     },
     ReferredToBy => {
+        title => 'Referred to By',
         value => sub {
             my $links = $_[0]->ReferredToBy;
             return (
@@ -317,6 +322,7 @@ $COLUMN_MAP = {
     },
 
     DependsOn => {
+        title => 'Depends On',
         value => sub {
             my $links = $_[0]->DependsOn;
             return (
@@ -333,6 +339,7 @@ $COLUMN_MAP = {
           }
     },
     MemberOf => {
+        title => 'Member Of',
         value => sub {
             my $links = $_[0]->MemberOf;
             return (
@@ -365,6 +372,7 @@ $COLUMN_MAP = {
           }
     },
     RefersTo => {
+        title => 'Refers To',
         value => sub {
             my $links = $_[0]->RefersTo;
             return (
@@ -391,4 +399,5 @@ $COLUMN_MAP = {
 
 # }}}
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+return ColumnMap($Name, $Attr);
 </%INIT>

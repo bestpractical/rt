@@ -624,15 +624,6 @@ SPAN.label { font-size: 0.8em;
 BLOCKQUOTE {
   font-style: italic;
 }
-
-ADDRESS { 
-  text-align: right;
-  font-weight: bold;
-  font-style: italic 
-}
-
-
-
 div.menu {
         float: top;
         top: 51px;
@@ -652,7 +643,6 @@ div.menu {
 /* IE hack */
 
 body>div.menu {position: fixed;}
-
 
 table.ticket-overview {
     width: 15%;
@@ -711,9 +701,21 @@ span.topaction {
 
 
 
-TH.collection-as-table {  text-align: center;}
+TH.collection-as-table {  text-align: center;
+                          font-size: 0.8em; 
+                          padding-left: .5em;
+                          padding-right: .5em;
+                          color: #333333;
+                          background-color: #999999;
+                          white-space: nowrap;
+                          border-collapse: collapse;
+                          border-bottom: solid #999999 1px; 
+                  }
 
-TD.collection-as-table {  text-align: left;}
+TD.collection-as-table {  text-align: left;
+                          padding-left: .5em;
+                          padding-right: .5em;
+                        }
 
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:

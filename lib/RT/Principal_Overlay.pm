@@ -43,7 +43,9 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+#
 use strict;
+use warnings;
 
 no warnings qw(redefine);
 use vars qw(%_ACL_KEY_CACHE);
@@ -252,8 +254,7 @@ sub HasRight {
     }
 
     if ( !defined $args{'Right'} ) {
-        require Carp;
-        $RT::Logger->debug( Carp::cluck("HasRight called without a right") );
+        $RT::Logger->crit("HasRight called without a right" );
         return (undef);
     }
 

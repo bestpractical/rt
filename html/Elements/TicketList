@@ -22,17 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 
-% if ($ShowNavigation) {
-%     my $FirstItem = $maxitems*($Page-1)+1;
-%     my $LastItem = $FirstItem + $Rows - 1;
-<&|/l, $FirstItem, $LastItem&>Results [_1] to [_2]</&>
-% }
-
-%# If you're having TicketList display a single record, you need
-%# to wrap the calls in your own table(s).
-% unless (defined $SingleRecord) {
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-% }
 
 % if ($ShowHeader) {
 <& /Elements/CollectionAsTable/Header, 
@@ -47,39 +37,37 @@
     maxitems => \$maxitems &> 
 % }
 
-% if (defined $SingleRecord) {
-<&   /Elements/CollectionAsTable/Row, Format => \@Format, i => 0, record => $SingleRecord, maxitems => $maxitems &>
-% } else {
 %   my $i;
 %   while (my $record = $Collection->Next) {
 %   $i++;
 <&   /Elements/CollectionAsTable/Row, Format => \@Format, i => $i, record => $record, maxitems => $maxitems &>
 %   }
-% }
 
-% unless (defined $SingleRecord) {
 </TABLE>
-% }
 
 % if ($Rows && $ShowNavigation) {
 <hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 
 <%perl>
-my $prev =  $m->comp('/Elements/QueryString',
-                     Query => $Query,
-                     Format => $Format,
-                     Rows => $Rows,
-                     OrderBy => $OrderBy,
-                     Order => $Order,
-                     Page => ($Page-1));
-my $next =  $m->comp('/Elements/QueryString',
-                     Query => $Query,
-                     Format => $Format,
-                     Rows => $Rows,
-                     OrderBy => $OrderBy,
-                     Order => $Order,
-                     Page => ($Page+1));
+my $prev = $m->comp(
+    '/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+    Page    => ( $Page - 1 )
+);
+my $next = $m->comp(
+    '/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+    Page    => ( $Page + 1 )
+);
 </%perl>
 % if ($Page > 1) {
 <A href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
@@ -115,7 +103,6 @@ $Rows => 50
 $Page => 1
 $Title => 'Ticket Search'
 $Collection => undef
-$SingleRecord => undef
 $AllowSorting => undef
 $Order => undef
 $OrderBy => undef
