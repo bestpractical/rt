@@ -69,6 +69,12 @@ o   Internet::Mail ( CPAN or http://www.perl.com ) -- free
 	out of the box, but if it doesn't, complain to
 	rt-devel@lists.fsck.com.
 
+o Libwww-perl / LWP::UserAgent and HTTP::Request 
+	( http://www.perl.com or CPAN ) -- free
+
+	You will only eventually need this if you need RT to maintain
+	links from external web-based databases.
+
 
 INSTALL INSTRUCTIONS
 --------------------
