@@ -51,11 +51,11 @@ Cc: $in_cc
 Bcc: $in_bcc
 X-Request-ID: $in_serial_num
 X-Sender: $in_current_user
-X-Managed-By: Request Tracker ($rt::version)
+X-Managed-By: Request Tracker ($rt::rtversion)
 	 
 $template
 -------------------------------------------- Managed by Request Tracker\n";
-    close (MAIL2);
+    close (MAIL);
 
     return("template_mail:Message Sent");
 }
