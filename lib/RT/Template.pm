@@ -142,6 +142,41 @@ sub Load  {
 }
 # }}}
 
+# {{{ sub LoadGlobalTemplate
+
+=head2 LoadGlobalTemplate NAME
+
+Load the global tempalte with the name NAME
+
+=cut
+
+sub LoadGlobalTemplate {
+	my $self = shift;
+	my $id = shift;
+	
+	return ($self->LoadQueueTemplate(Queue => 0, Name => $id));
+}
+
+# }}}
+
+# {{{ sub LoadQueueTemplate
+
+=head2  LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
+
+Loads the Queue template named NAME for Queue QUEUE.
+
+=cut
+
+sub LoadQueueTemplate {
+    my $self = shift;
+    my %args = (Queue => undef,
+    		Name => undef);
+
+    return($self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'}));	
+  
+}
+# }}}
+
 # {{{ sub Create
 
 =head2 Create
