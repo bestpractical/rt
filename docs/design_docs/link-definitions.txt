@@ -19,8 +19,18 @@ For 2.0, those Linking actions should be supported:
  Dependency links should be made when we (think we) can't do more work on
  one ticket before another ticket is resolved.
 
+#
+# Where I am, dependencies should get added from the start. It doesn't matter
+# whether there's work we can do now or not. resolution of this ticket has
+# a dependency on that other tickets.   -jv
+#
+
  Dependency links are usually 1:1, but n:n-links makes sense.  Loops doesn't
  make sense at all, but the system above won't break if it encounter loops.
+
+#
+# Er, one to many, perhaps? One ticket may depend on several others. -JV
+#
 
  Dependency links is more for workflow than anything else.  When a new
  TARGET is created, some of the work might be passed over to another
