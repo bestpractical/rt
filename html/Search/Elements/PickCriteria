@@ -62,12 +62,10 @@
   </tr>
   <tr>
     <td valign=top>
+      <table cellspacing=0 border=0>
       <& PickBasics &>
-    </td>
-  </tr>
-  <tr>
-    <td valign=top>
     <& PickCFs, cfqueues => \%cfqueues &>
+    </table>
     </td>
   </tr>
   <tr><td>&nbsp;</td></tr>

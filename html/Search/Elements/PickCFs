@@ -43,23 +43,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-<table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
-<tr><td>
 % my $name = "'CF." . $CustomField->Name . "'";
+<tr><td class="label">
 <% $CustomField->Name %> 
+</td>
+<td>
         <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
                                     True => loc("is"), 
                                     False => loc("isn't"), 
                                     TrueVal=> '=', FalseVal => '!=' &>
-
+</td>
+<td>
 <& /Elements/SelectCustomFieldValue, Name => "ValueOf" . $name,
                             CustomField => $CustomField,
                             &>
 </td></tr>
 % }
-</table>
-
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {

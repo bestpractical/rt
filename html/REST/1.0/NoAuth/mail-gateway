@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%flags>
 inherit => undef # inhibit UTF8 conversion done in /autohandler
 </%flags>
@@ -71,4 +72,6 @@ $m->out('Requestor: '. $Ticket->Requestors->MemberEmailAddressesAsString );
  }   else { 
 $m->out('not ok - '.$error);
  }
+
+$m->abort();
 </%init>

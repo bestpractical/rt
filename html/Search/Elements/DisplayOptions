@@ -91,7 +91,6 @@ SELECTED
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Caption => "Do the Search", Label => loc('Search'), Name => 'DoSearch'&>
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
