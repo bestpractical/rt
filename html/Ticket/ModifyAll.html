@@ -136,7 +136,6 @@ my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
  @cf_results = ProcessTicketCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -159,15 +158,11 @@ unless ($OnlySearchForPeople) {
 
     $ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
 
-    if ($ARGS{'UpdateAttachments'} || (
-        $ARGS{'UpdateContent'} &&
-	$ARGS{'UpdateContent'} ne  "-- \n" . 
-				$session{'CurrentUser'}->UserObj->Signature
-       )) {
-   	 ProcessUpdateMessage(TicketObj => $Ticket, 
-			      ARGSRef=>\%ARGS, 
-                              Actions=>\@results);
+    if ($ARGS{'UpdateAttachments'} || ( $ARGS{'UpdateContent'} && $ARGS{'UpdateContent'} ne  "-- \n" . 
+				$session{'CurrentUser'}->UserObj->Signature)) {
+   	 ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef=>\%ARGS, Actions=>\@results);
 	}
+    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
 push @results, @wresults;
 push @results, @dresults;

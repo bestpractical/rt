@@ -294,8 +294,18 @@ sub CreateTicket {
     );
     foreach my $arg (%ARGS) {
         if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
+            my $cfid = $1;
+
             next if ($arg =~ /-Magic$/);
-            $create_args{"CustomField-".$1} = $ARGS{"$arg"};
+            my $cf = new RT::CustomField( $RT::SystemUser );
+            $cf->Load($cfid);
+
+            if ($cf->Type eq 'FreeformMultiple') {
+                $ARGS{$arg} =~ s/\r\n/\n/g;
+                $ARGS{$arg} = [split('\n', $ARGS{$arg})];
+            }
+
+            $create_args{"CustomField-".$cfid} = $ARGS{"$arg"};
         }
     }
 
