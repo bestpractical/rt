@@ -8,13 +8,14 @@ Serial Number: <%$Ticket->Id%>   Status:<%$Ticket->Status%> Worked: <%$Ticket->T
            Cc: <%$Ticket->CcAsString%>
           Bcc: <%$Ticket->AdminCcAsString%>
         Owner: <%$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"%>
+% if ($Ticket->Priority || $Ticket->FinalPriority) {
      Priority: <%$Ticket->Priority%> / <%$Ticket->FinalPriority%>
+% }
           Due: <%$Ticket->DueAsString%>
       Created: <%$Ticket->CreatedAsString%> (<%$Ticket->Age%>) ago)
-% if ($Ticket->Told+0) {
- Last Contact: <%$Ticket->ToldAsString%> (<%$Ticket->SinceTold%> ago)
-% }
-% if ($Ticket->LastUpdated+0) {
-  Last Update: <%$Ticket->LastUpdatedAsString%> by <%$Ticket->LastUpdatedBy%>
-% }
+ Last Contact: <%$Ticket->ToldAsString%> <% $Ticket->Told+0 ? "($Ticket->SinceTold ago)" : "" %>
+  Last Update: <%$Ticket->LastUpdatedAsString%> <% $Ticket->LastUpdated+0 ? "by $Ticket->LastUpdatedBy" : "" %>
 </pre>
+
+
+
