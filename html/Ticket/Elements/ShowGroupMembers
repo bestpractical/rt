@@ -25,7 +25,7 @@
 
 % my $UserMembers = $Group->UserMembersObj;
 % while (my $member = $UserMembers->Next()) {
-<& ShowUserEntry, User => $member &>
+<& ShowUserEntry, User => $member &><br>
 % }
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
