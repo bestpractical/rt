@@ -278,6 +278,15 @@ Set($WebImagesURL , $WebURL . "NoAuth/images/");
 
 Set($LogoURL , $WebImagesURL . "rt.jpg");
 
+# For message boxes, set the entry box width and what type of wrapping
+# to use.
+#
+# Default width: 72
+Set($MessageBoxWidth , 72);
+
+# Default wrapping: "HARD"  (choices "SOFT", "HARD")
+Set($MessageBoxWrap, "HARD");
+
 # if TrustHTMLAttachments is not defined, we will display them
 # as text. This prevents malicious HTML and javascript from being
 # sent in a request (although there is probably more to it than that)
