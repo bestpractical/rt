@@ -44,6 +44,7 @@
    &>
 <div align=right>
 <a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br>
+<a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
 <a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
@@ -74,10 +75,10 @@ if ( $session{'tickets'}->Query()) {
 my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Query => $Query,
                                Format => $Format,
-                               Rows => $ARGS{'Rows'},
-                               OrderBy => $ARGS{'OrderBy'},
-                               Order => $ARGS{'Order'},
-                               Page => $ARGS{'Page'});
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
 
 
 
