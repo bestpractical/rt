@@ -1,6 +1,12 @@
 Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerObj->Id &>
+<BR>
 
+Current Watchers:<br>
 <& EditWatchers, TicketObj => $TicketObj &>
+
+Find people whose
+<& /Elements/SelectUsers &>
+
 <& AddWatchers, TicketObj => $TicketObj, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField &>
 <%ARGS>

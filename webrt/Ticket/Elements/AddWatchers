@@ -1,4 +1,3 @@
-<& /Elements/SelectUsers &> 
 <BR>
 Add new watchers:<br>
 
@@ -7,7 +6,7 @@ Add new watchers:<br>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Name => "Type".$u->Id &> <%$u->UserId%>
+<li><&/Elements/SelectWatcherType, Name => "WatcherTypeUser".$u->Id &> <%$u->UserId%>
 (<%$u->RealName%>)
 % }
 </ul>

@@ -1789,7 +1789,7 @@ sub _Accessible {
 	      FinalPriority => 'read/write',
 	      Priority => 'read/write',
 	      Status => 'read/write',
-	      TimeWorked => 'read',
+	      TimeWorked => 'read/write',
 	      TimeLeft => 'read/write',
 	      Created => 'read/auto',
 	      Creator => 'auto',

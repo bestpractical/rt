@@ -1,7 +1,9 @@
 % foreach $action (@actions) {
    <%$action%><br>
 % }
+<%INIT>
+my $action;
+</%INIT>
 <%ARGS>
-$action => undef
-@actions => undef
+@actions = undef
 </%ARGS>

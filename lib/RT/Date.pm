@@ -57,7 +57,7 @@ sub Set {
 		 Value => time,
 		 @_);
     if (($args{'Value'} =~ /^\d*$/) and ($args{'Value'} == 0)) {
-	$self->{'time'} = 0;
+	$self->{'time'} = -1;
 	return($self->Unix());
     }
 
@@ -84,7 +84,7 @@ sub Set {
 	    #now that we've parsed it, deal with the case where everything
 	    #was 0
             if ($mon == -1) {
-	        $self->{'time'} = 0;
+	        $self->{'time'} = -1;
 		return($self->Unix());
     	    }
 	    

@@ -3,8 +3,8 @@
 Starts: 
 </TD>
 <TD>
-<& /Elements/SelectDate, menu_prefix => 'Starts', current => $TicketObj->StartsObj->Unix &>
-
+<& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+        (<% $TicketObj->StartsObj->ISO %>)
 </TD>
 </TR>
 <TR>
@@ -12,7 +12,8 @@ Starts:
 Started:
 </TD>
 <TD>
-<& /Elements/SelectDate, menu_prefix => 'Started', current => $TicketObj->StartedObj->Unix &>
+<& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->ISO %> )
+
 
 
 </TD>
@@ -23,7 +24,7 @@ Started:
 Last Contact:
 </TD>
 <TD>
-<& /Elements/SelectDate, menu_prefix => 'Told', current => $TicketObj->ToldObj->Unix &>
+<& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->ISO %>)
 
 </TD>
 </TR>
@@ -33,8 +34,7 @@ Due:
 </TD>
 <TD>
 
-<& /Elements/SelectDate, menu_prefix => 'Due', current => $TicketObj->DueObj->Unix &>
-
+<& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->ISO %>)
 </TD>
 </TR>
 

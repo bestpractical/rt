@@ -1,4 +1,4 @@
-<INPUT NAME="<%$menu_prefix%>_Date" VALUE="<%$DefDate%>" size=10> 
+<INPUT NAME="<%$menu_prefix%>_Date" VALUE="<%$DefDate%><%$DefTime%>" size=10> 
 <SELECT NAME="<%$menu_prefix%>_DateSelect">
 <OPTION VALUE="-365">1 year ago</option>
 <OPTION VALUE="-90">90 days ago</OPTION>
@@ -17,11 +17,6 @@
 <OPTION>in 1 year</OPTION>
 </SELECT>
 
-%if ($ShowTime) {
-
-at <INPUT NAME="<%$menu_prefix%>_Time" VALUE="<%$DefTime%>" size=6> GMT <font size=-2>(ex 21:34 or 9:34 PM)</font>
-<FONT COLOR=#FF0000">Note: all times are currently GMT</FONT>
-%}
 
 
 <%init>
@@ -35,7 +30,7 @@ if ($current > 0) {
 	$DefDate = "$year-$mon-$mday";
 	
 	$min = sprintf("%#2u",$min);
-	$DefTime = "$hour:$min";
+	$DefTime = " $hour:$min";
 }
 else {
 	$DefDate ="";

@@ -16,13 +16,13 @@
 </TR>
 
 <TR>
-<TD>
+<TD VALIGN=TOP WIDTH=50%>
 <& /Elements/TitleBoxStart, title => 'People', &>
 <& EditPeople, TicketObj => $TicketObj, UserField => $UserField, UserOp => $UserOp, UserString => $UserString &>
 <& /Elements/TitleBoxEnd &>
 
 </TD>
-<TD>
+<TD VALIGN=TOP WIDTH=50%>
 <& /Elements/TitleBoxStart, title => 'Dates' &>
 <& EditDates, TicketObj => $TicketObj &>
 <& /Elements/TitleBoxEnd &>
