@@ -186,8 +186,8 @@ CREATE TABLE Links (
 CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(120),
-  content BLOB,
+  Title VARCHAR(120),
+  Content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
   ExtraHeaders BLOB,
