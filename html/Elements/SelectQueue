@@ -22,6 +22,8 @@
 %# 
 %# END LICENSE BLOCK
 % if ($Lite) {
+% my $d = new RT::Queue($session{'CurrentUser'});
+% $d->Load($Default);
 <INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
 % } else {
 <SELECT NAME ="<%$Name%>">
@@ -53,8 +55,5 @@ $Lite => 0
 
 my $q=new RT::Queues($session{'CurrentUser'});
 $q->UnLimit;
-
-my $d = new RT::Queue($session{'CurrentUser'});
-$d->Load($Default);
 
 </%INIT>
