@@ -143,8 +143,6 @@ sub handler {
 	$r->header_out('Set-Cookie', => $cookie);
     }
 
-    tied(%HTML::Mason::Commands::session)->make_modified(); 
-    
     my $status = $ah->handle_request($r);
     untie %HTML::Mason::Commands::session;
     
