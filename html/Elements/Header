@@ -36,8 +36,9 @@ function hideshow(num) {
     idstring = "element-" + num;
     chunk = document.getElementById(idstring);
     if ( chunk.style.display == "none")  {
-    chunk.style.display = "show";
+    chunk.style.display = chunk.style.tag;
     } else {
+        chunk.style.tag = chunk.style.display;
         chunk.style.display = "none";
     }
 }   
