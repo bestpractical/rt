@@ -532,13 +532,6 @@ SPAN.titleboxtitle a:after {
 	content: "...";
 }
 
-SPAN.titleboxright {
-        font-size: 0.8em;
-        color: #ffffff;
-	 vertical-align: middle;
-	 text-align: right;
-        }
-
 SPAN.attribution {
   font-weight: bold;
 }
@@ -601,6 +594,13 @@ TD.collection-as-table {  text-align: left;
                           padding-left: .5em;
                           padding-right: .5em;
                         }
+
+SPAN.titleboxright a {
+        font-size: 0.5em;
+        color: #ffffff;
+         vertical-align: top;
+         text-align: right;
+        }
 
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:

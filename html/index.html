@@ -72,7 +72,11 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <& /Elements/Header, Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs, 
     current_toptab => '', 
-    Title=>loc("RT at a glance") &>
+    Title=>loc("RT at a glance"),
+    actions => { A => { title => loc('Edit'),
+                        path => 'Prefs/MyRT.html'
+             } } 
+    &>
 <& /Elements/ListActions, actions => \@results &>    
 <& /Elements/MyRT &>
 <%init>

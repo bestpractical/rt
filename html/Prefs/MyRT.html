@@ -57,13 +57,14 @@
 <&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
 <form method="POST" action="MyRT.html">
 <&|/l&>Summary rows</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>">
-<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save' &>
+<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save' &>
 </form>
 </&>
+<br>
 % for my $pane (@panes) {
 <&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane &>
-</&>
+<& /Widgets/SelectionBox:show, self => $pane &></&>
+<br>
 % }
 <%INIT>
 my @actions;
