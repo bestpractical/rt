@@ -161,6 +161,26 @@ sub ParseMIMEEntityFromSTDIN {
 
 sub ParseMIMEEntityFromScalar {
     my $self = shift;
+    my $message = shift;
+
+    # Create a new parser object:
+
+    my $parser = MIME::Parser->new();
+    $self->_SetupMIMEParser($parser);
+
+
+    # TODO: XXX 3.0 we really need to wrap this in an eval { }
+
+    unless ( $self->{'entity'} = $parser->parse_data($message) ) {
+        # Try again, this time without extracting nested messages
+        $parser->extract_nested_messages(0);
+        unless ( $self->{'entity'} = $parser->parse_data($message) ) {
+            $RT::Logger->crit("couldn't parse MIME stream");
+            return ( undef);
+        }
+    }
+    $self->_PostProcessNewEntity();
+    return (1);
 }
 
 # {{{ ParseMIMEEntityFromFilehandle *FH
@@ -192,6 +212,21 @@ sub ParseMIMEEntityFromFileHandle {
             return ( undef);
         }
     }
+    $self->_PostProcessNewEntity();
+    return (1);
+}
+
+
+# {{{ _PostProcessNewEntity 
+
+=head2 _PostProcessNewEntity
+
+cleans up and postprocesses a newly parsed MIME Entity
+
+=cut
+
+sub _PostProcessNewEntity {
+    my $self = shift;
 
     #Now we've got a parsed mime object. 
 
@@ -208,7 +243,6 @@ sub ParseMIMEEntityFromFileHandle {
     # Unfold headers that are have embedded newlines
     $self->Head->unfold;
 
-    return (1);
 
 }
 

@@ -106,6 +106,8 @@ ok( $u->Id != 0, " user does not exist and was not created by failed ticket subm
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
+
+
 =end testing
 
 =cut
@@ -305,10 +307,35 @@ they behave as described below.
 What's actually going on in the above is that C<@RT::MailPlugins> is a
 list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
 to form a package name, and then C<use>'s this module. The module is
-expected to provide a C<GetCurrentUser> subroutine, which takes three
-parameters: a C<MIME::Entity> object representing the email, and the
-C<RT::CurrentUser> object and authentication level returned from the
-previous plugin.
+expected to provide a C<GetCurrentUser> subroutine, which takes a hash of
+several parameters: 
+
+=over 4
+
+=item Message 
+
+A C<MIME::Entity> object representing the email
+=item CurrentUser 
+
+An C<RT::CurrentUser> object 
+
+=item AuthStat
+
+The authentication level returned from the previous plugin.
+
+=item Ticket [OPTIONAL]
+
+The ticket under discussion 
+
+=item Queue [OPTIONAL]
+
+If we don't already have a ticket id, we need to know which queue we're talking about
+
+=item Action
+
+The action being performed. At the moment, it's one of "comment" or "correspond"
+
+=back 4
 
 It returns two values, the new C<RT::CurrentUser> object, and the new
 authentication level. The authentication level can be zero, not allowed

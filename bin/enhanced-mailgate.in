@@ -121,7 +121,8 @@ while (my $flag = shift @ARGV) {
 # }}}
 
 # get the current mime entity from stdin
-my ($entity, $head) = ParseMIMEEntityFromSTDIN();
+my ($entity) = ParseMIMEEntityFromSTDIN();
+my $head = $entity->head;
 
 #Get someone to send runtime errors to;
 my $ErrorsTo = ParseErrorsToAddressFromHead($head);
