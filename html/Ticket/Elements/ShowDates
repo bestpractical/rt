@@ -21,6 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+
 <TABLE>
   <TR>
     <TD class="label"><&|/l&>Created</&>:</TD>
@@ -48,9 +49,15 @@
   </TR>
   <TR>
     <TD class="label"><&|/l&>Updated</&>:</TD>
-    <TD class="value"><A HREF="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></TD>
+% my $UpdatedString = $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never");
+% if ($UpdatedLink) {
+    <TD class="value"><A HREF="#lasttrans"><% $UpdatedString | h %></a></TD>
+% } else {
+    <TD class="value"><% $UpdatedString | h %></TD>
+% }
   </TR>
 </TABLE>
 <%ARGS>
 $Ticket => undef
+$UpdatedLink => 1
 </%ARGS>

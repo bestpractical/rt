@@ -38,7 +38,7 @@
           <& /Elements/TitleBoxStart, title => loc("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
-          <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+          <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
           <& /Elements/TitleBoxEnd &>
 </TD>
 </TR>
@@ -46,7 +46,7 @@
 
 
 
-<& /Ticket/Elements/ShowHistory, Ticket => $Ticket&>
+<& /Ticket/Elements/ShowHistory, Ticket => $Ticket, AttachPath => "Attachment" &>
 
 
 
@@ -101,6 +101,12 @@ if ( $id[0] eq 'new' ) {
     push ( @results, $ErrMsg );
 
     # }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+# }}}
 }
 else {
     unless ( $Ticket->Load( $id[0] ) ) {
@@ -127,9 +133,42 @@ if (     ( defined $ARGS{'Status'} )
     push @results, "$msg";
 }
 
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+    my $subject = "$ARGS{'Attach'}";
+    # since CGI.pm deutf8izes the magic field, we need to add it back.
+    Encode::_utf8_on($subject);
+    # strip leading directories
+    $subject =~ s#^.*[\\/]##;
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => $subject,
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
+				$ARGS{'Attach'} => $attachment };
+}
+# }}}
+
+if ( $session{'Attachments'} || 
+     (   $ARGS{'UpdateContent'} ne ''
+	 && $ARGS{'UpdateContent'} ne "-- \n"
+	 . $session{'CurrentUser'}->UserObj->Signature )) {
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
+}
 ProcessUpdateMessage( ARGSRef   => \%ARGS,
                       Actions   => \@results,
                       TicketObj => $Ticket );
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+# }}}
 
 my $Transactions = $Ticket->Transactions;
 

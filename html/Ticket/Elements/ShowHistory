@@ -62,7 +62,7 @@ else {
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans"></a>
 % 	}
-	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i, ShowTitleBarCommands => $ShowTitleBarCommands  &>
+	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i, ShowTitleBarCommands => $ShowTitleBarCommands, %ARGS &>
 % }
 </TABLE>
 % if ($ShowDisplayModes or $ShowTitle) {
