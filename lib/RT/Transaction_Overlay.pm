@@ -94,8 +94,8 @@ sub Create {
     $args{ObjectId} ||= $args{Ticket};
 
     #if we didn't specify a ticket, we need to bail
-    unless ( $args{'Ticket'} ) {
-        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify a ticket id"));
+    unless ( $args{'ObjectId'} && $args{'ObjectType'}) {
+        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify an object type and id"));
     }
 
 
