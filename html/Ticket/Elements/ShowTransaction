@@ -84,7 +84,7 @@ unless ($Collapsed) {
 	<PRE>
 <& ShowMessageHeaders, Headers => $headers, Transaction => $Transaction &>
 </PRE>
-% if (!length($quoted) && $message->ContentType =~ m#^text/#) {
+% if ($message->ContentLength && !length($quoted) && $message->ContentType =~ m#^text/#) {
 <blockquote><i><&|/l&>Message body not shown because it is too large or is not plain text.</&><br>
 <&|/l&>You can access it with the Download button on the right.</&></i></blockquote>
 % } else {
