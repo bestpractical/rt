@@ -63,7 +63,6 @@ unless ($ClassObj->Id) {
 my     $CustomFields = $ClassObj->ArticleCustomFields();
 
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Text');
-$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Freeform');
 </%init>
 <%ARGS>
 $Class=>undef
