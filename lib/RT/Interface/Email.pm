@@ -726,7 +726,7 @@ EOT
     my $Ticket = RT::Ticket->new($CurrentUser);
 
     # {{{ If we don't have a ticket Id, we're creating a new ticket
-    if ( !$args{'ticket'} ) {
+    if ( !$SystemTicket || !$SystemTicket->Id) {
 
         # {{{ Create a new ticket
 
