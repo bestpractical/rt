@@ -219,14 +219,14 @@ sub Attachments  {
     
     #If it's a comment, return an empty object if they don't have the right to see it
     if ($self->Type eq 'Comment') {
-	unless ($self->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
 	    return ($Attachments);
 	    
 	}
     }	
     #if they ain't got rights to see, return an empty object
     else {
-	unless ($self->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	unless ($self->CurrentUserHasRight('ShowTicket')) {
 	    return ($Attachments);
 	}
     }
@@ -460,7 +460,7 @@ sub IsInbound {
 sub _Set {
     my $self = shift;
     
-    unless ($self->TicketObj->CurrentUserHasRight('ModifyTicket')) {
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
     
@@ -535,9 +535,11 @@ passed in here.
 
 sub CurrentUserHasRight {
     my $self = shift;
+    my $right = shift;
     my %args = (TicketObj => $self->TicketObj,
 		@_);
-    return ($self->CurrentUser->HasQueueRight(%args));
+    return ($self->CurrentUser->HasQueueRight(Right => "$right", 
+                                              TicketObj => $self->TicketObj));            
 }
 
 1;

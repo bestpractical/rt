@@ -23,7 +23,7 @@
 %# I had to temporarly move this one because the box grew too wide when a message was too wide.
 <& /Elements/TitleBoxEnd &>
 
-% $attachments->GotoFirstItem();
+% $attachments->GotoFirstItem;
 %  while (my $message=$attachments->Next) {
 
 <TABLE WIDTH="100%">

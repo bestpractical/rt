@@ -697,7 +697,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $MetaGroupRightsQuery\n");	
+    #$RT::Logger->debug("No ACL matched $MetaGroupRightsQuery\n");	
     
     # }}}    
 	
@@ -722,7 +722,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
+    #$RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
     
     # }}}
 
@@ -745,9 +745,7 @@ sub _HasRight {
 
     else { #If the user just doesn't have the right
 	
-	$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
-	use Carp;
-	Carp::cluck();
+	#$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
 	
 	#If nothing matched, return 0.
 	$self->{'rights'}{"$hashkey"}{'set'} = time;
