@@ -159,9 +159,9 @@ sub Description {
   elsif ($self->Type eq 'link') {
     #TODO: make this fit with the rest of things.
     
-    my ($db, $fid, $type, $remote)=split(/\/, $self->{'data'});
+    #my ($db, $fid, $type, $remote)=split(/\/, $self->{'data'});
     if ($type =~ /^dependency(-?)$/) {
-      $remote=(defined $remote) ? " at $remote" : "";
+      #$remote=(defined $remote) ? " at $remote" : "";
       if ($1 eq '-') {
 	return ("Request \#$fid$remote made dependent on this request by ".$self->Actor);
       } else {
@@ -177,11 +177,8 @@ sub Description {
   else {
     return($self->Type . " modified. RT Should be more explicit about this!");
   }
+  
     
-    
-}
-
-
 }
 
 1;

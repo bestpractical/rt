@@ -36,7 +36,7 @@ sub delete {
  # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
   
-  die ("Queue->Delete not implemented yet";)
+  die ("Queue->Delete not implemented yet");
     
     
     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
@@ -71,7 +71,7 @@ sub Load {
 
 sub load {
   my $self = shift;
-  return($self->Load(@_);)
+  return($self->Load(@_));
 }
 
 sub CorrespondAddress {
@@ -178,7 +178,7 @@ sub Areas {
 sub ACL {
  my $self = shift;
  if (!$self->{'acl'}) {
-   my $self->{'acl'} = new RT::ACL($self->{'user'});
+   $self->{'acl'} = RT::ACL->new($self->{'user'});
    $self->{'acl'}->Limit(FIELD => 'queue', 
 			 VALUE => "$self->id");
  }
@@ -197,33 +197,59 @@ sub ACL {
 
 #
 #
- 
-sub Admin_Permitted {
-  my $self = shift;
-  my $actor = shift || my $actor = $self->{'user'};
-  return(1);
-  #if it's not permitted,
-  return(0);
-
-}
-
-
+ #
+#ACCESS CONTROL
+# 
 sub Display_Permitted {
   my $self = shift;
-  my $actor = shift || my $actor = $self->{'user'};
-  return(1);
-  #if it's not permitted,
-  return(0);
 
+  my $actor = shift;
+  if (!$actor) {
+   my $actor = $self->CurrentUser;
+ }
+  if ($self->Queue->DisplayPermitted($actor)) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
 sub Modify_Permitted {
   my $self = shift;
- my $actor = shift || my $actor = $self->{'user'};
-  return(1);
-  #if it's not permitted,
-  return(0);
-
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
+  if ($self->Queue->ModifyPermitted($actor)) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
+
+sub Admin_Permitted {
+  my $self = shift;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
+
+
+  if ($self->Queue->AdminPermitted($actor)) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
+
 
 1;
 

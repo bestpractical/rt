@@ -1,3 +1,9 @@
+# $Header$
+# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
+#
+
+
 package RT::Ticket;
 @ISA= qw(RT::Record);
 
@@ -51,7 +57,8 @@ sub QueueId {
   
   #TODO: does this work?
   if ($new_queue = shift) {
-    if (!$self->Queue->load($new_queue);) {
+  #TODO this will clobber the old queue definition. is this what we want?
+    if (!$self->Queue->load($new_queue)) {
       return (0, "That queue does not exist");
     }
     if (!$self->Queue->Create_Permitted) {
@@ -148,7 +155,13 @@ sub Priority {
 
 sub Status { 
   my $self = shift;
-  my $status = shift || my $status = undef;
+  if (@_) {
+   my $status = shift;
+ }
+  else {
+    my $status = undef;
+  }
+  
   if (($status) and ($status != 'open') and ($status != 'stalled') and 
       ($status != 'resolved') and ($status != 'dead') ) {
     return ("That status is not valid.");
@@ -464,8 +477,9 @@ sub _set_and_return {
 
 sub Queue {
   my $self = shift;
-  if (!$self->{'queue'}) {
-    my $self->{'queue'} = new RT::Queue($self->CurrentUser);
+  if (!$self->{'queue'})  {
+    require RT::Queue;
+    $self->{'queue'} = RT::Queue->new($self->CurrentUser);
     $self->{'queue'}->load($self->QueueId);
   }
   return ($self->{'queue'});
@@ -478,9 +492,12 @@ sub Queue {
 # 
 sub Display_Permitted {
   my $self = shift;
-  my $actor = shift || my $actor = $self->CurrentUser;
 
-  if (($self->Queue->DisplayPermitted($actor))) {
+  my $actor = shift;
+  if (!$actor) {
+   my $actor = $self->CurrentUser;
+ }
+  if ($self->Queue->DisplayPermitted($actor)) {
     
     return(1);
   }
@@ -491,9 +508,11 @@ sub Display_Permitted {
 }
 sub Modify_Permitted {
   my $self = shift;
-  my $actor = shift || my $actor = $self->CurrentUser;
-
-  if (($self->Queue->ModifyPermitted($actor))) {
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
+  if ($self->Queue->ModifyPermitted($actor)) {
     
     return(1);
   }
@@ -505,9 +524,13 @@ sub Modify_Permitted {
 
 sub Admin_Permitted {
   my $self = shift;
-  my $actor = shift || my $actor = $self->CurrentUser;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser;
+  }
 
-  if (($self->Queue->AdminPermitted($actor))) {
+
+  if ($self->Queue->AdminPermitted($actor)) {
     
     return(1);
   }

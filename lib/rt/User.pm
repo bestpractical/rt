@@ -16,7 +16,7 @@ sub new {
   $self->{'table'} = "users";
   $self->{'user'} = shift;
   return $self;
-
+}
 
 sub create {
   my $self = shift;
@@ -33,7 +33,7 @@ sub create {
   
   
   
-  return (0,"That password is too short") if length(%args{'Password'}) < $RT::user_passwd_min;
+  return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
   my $id = $self->SUPER::create(%args);
   $self->load_by_reference($id);
@@ -51,7 +51,7 @@ sub create {
   # TODO: created is not autoset
   
 
- 
+}
  
 sub delete {
   my $self = shift;
@@ -155,10 +155,10 @@ sub Comments {
 
 }
 sub IsAdministrator {
- my $self = shift;
- #todo validate input
- 
- $self->_set_and_return('IsAdministrator',@_);
+  my $self = shift;
+  #todo validate input
+  
+  $self->_set_and_return('IsAdministrator',@_);
 };
 
 
