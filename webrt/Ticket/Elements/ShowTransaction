@@ -1,7 +1,5 @@
-<A NAME="#<%$Transaction->Id%>">
 <TR bgcolor="<%$rowbgcolor%>">
-
-<TD bgcolor="<%$bgcolor%>">&nbsp&nbsp;</TD>
+<TD bgcolor="<%$bgcolor%>"><A NAME="#<%$Transaction->Id%>"></A>&nbsp&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>
 <TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
 <TD ALIGN="LEFT"><b><%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$Transaction->BriefDescription%>
