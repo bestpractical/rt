@@ -125,7 +125,7 @@
 <TD COLSPAN=6>
 <&|/l&>Describe the issue below</&>:<br>
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content} &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
 % } else {
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 %}

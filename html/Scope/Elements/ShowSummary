@@ -57,7 +57,7 @@
 	  <& /Elements/TitleBoxStart, title => loc('Relationships'), 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
-	        <& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
+	        <& /Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
         <BR>
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>

@@ -157,6 +157,8 @@ use vars '%LINKTYPEMAP';
                    Mode => 'Target', },
     DependedOnBy => { Type => 'DependsOn',
                       Mode => 'Base', },
+    MergedInto => { Type => 'MergedInto',
+                   Mode => 'Target', },
 
 );
 
@@ -175,6 +177,8 @@ use vars '%LINKDIRMAP';
                 Target => 'ReferredToBy', },
     DependsOn => { Base => 'DependsOn',
                    Target => 'DependedOnBy', },
+    MergedInto => { Base => 'MergedInto',
+                   Target => 'MergedInto', },
 
 );
 
@@ -517,9 +521,9 @@ sub Create {
     }
 
 
-    my $id = $self->SUPER::Create( %params);
+    my ($id,$ticket_message) = $self->SUPER::Create( %params);
     unless ($id) {
-        $RT::Logger->crit( "Couldn't create a ticket");
+        $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message);
         $RT::Handle->Rollback();
         return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error") );
     }
@@ -3552,6 +3556,13 @@ sub Transactions {
                 OPERATOR => '!=',
                 VALUE    => "Comment"
             );
+            $transactions->Limit(
+                FIELD    => 'Type',
+                OPERATOR => '!=',
+                VALUE    => "CommentEmailRecord",
+                ENTRYAGGREGATOR => 'AND'
+            );
+
         }
     }
 

@@ -54,7 +54,7 @@
 <BR>
 
 <& /Elements/TitleBoxStart, title => loc('Relationships'), color => "#336633"&>
-<& Elements/EditLinks, Ticket => $Ticket &>
+<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 <& /Elements/TitleBoxEnd &>
 
 <BR>
@@ -69,7 +69,7 @@
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-        <option value="response"><&|/l&>Response to requestors</&></option>
+        <option value="response"><&|/l&>Reply to requestors</&></option>
 % }
       </select> 
     </td>

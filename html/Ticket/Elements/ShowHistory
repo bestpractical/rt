@@ -39,7 +39,7 @@ if ($ShowHeaders) {
       . "</a>] <b>["
       . loc("Full headers") . "]</b>";
 }
-elsif ($ShowHeaderModes) {
+else {
     $titleright .= "<b>["
       . loc("Brief headers")
       . "]</b> [<A HREF=\""
@@ -49,9 +49,6 @@ elsif ($ShowHeaderModes) {
       . $Ticket->id . "\">"
       . loc("Full headers") . "</a>]";
 }
-else {
-    $titleright = '';
-}
 </%perl>
 <& /Elements/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
 % }
@@ -59,6 +56,7 @@ else {
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 <%perl>
 my @attachments = @{$Attachments->ItemsArrayRef()};
+my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
 
 
 
@@ -78,11 +76,16 @@ while ( my $Transaction = $Transactions->Next ) {
 
     my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
 
+    my $trans_content = {};
+    grep { ($_->TransactionId == $Transaction->Id ) && ($trans_content->{$_->Id} = $_)  } @attachment_content;
+
    
     #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
             %ARGS,
 
+	      AttachPath	  => $AttachPath,
+	      UpdatePath	   => $UpdatePath,
               Ticket               => $Ticket,
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
@@ -90,6 +93,7 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               ShowTitleBarCommands => $ShowTitleBarCommands,
               Attachments          => \@trans_attachments,
+              AttachmentContent    => $trans_content
  );
 }
 
@@ -112,6 +116,9 @@ if ($Tickets) {
 my $i;
 
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
+$AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
+
+
 
 </%INIT>
 <%ARGS>
@@ -125,5 +132,7 @@ $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
 $ShowTitleBarCommands => 1
-$ShowHeaderModes => 1
+$AttachPath => $RT::WebPath."/Ticket/Attachment"
+$UpdatePath => $RT::WebPath."/Ticket/Update.html"
+
 </%ARGS>

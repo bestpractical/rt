@@ -46,7 +46,9 @@
 
 
 
-<& /Ticket/Elements/ShowHistory, Ticket => $Ticket, AttachPath => "Attachment" &>
+%#!!pape: selfservice_find_attachments.patch {{
+<& /Ticket/Elements/ShowHistory, Ticket => $Ticket, AttachPath => "Attachment", Attachments => $attachments, UpdatePath => "Update.html" &>
+%#!!pape: selfservice_find_attachments.patch }}
 
 
 
@@ -171,6 +173,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 my $Transactions = $Ticket->Transactions;
+
+my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>
 

@@ -28,7 +28,13 @@
 
 <BR>
       
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, ShowHeaders => $ARGS{'ShowHeaders'}, URIFile => 'History.html', Attachments => $attachments &> 
+<& /Ticket/Elements/ShowHistory , 
+    Ticket => $Ticket, 
+    ShowHeaders => $ARGS{'ShowHeaders'}, 
+    URIFile => 'History.html', 
+    Attachments => $attachments,
+    AttachmentContent => $attachment_content
+    &> 
 
 
 <%ARGS>
@@ -46,6 +52,9 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket =>
+$Ticket);
+
 
 </%INIT>
 

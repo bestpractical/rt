@@ -40,14 +40,18 @@
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $TicketObj->OwnerObj->Id()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
-
+% my $skip;
+<& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
+% if (!$skip) {
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>"><br>
+% }
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
   <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
+   <option value="response" <%$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
 </td></tr>
@@ -95,7 +99,6 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 <& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
 % }
 </td></tr>
-		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>"><br>
 </table>
 
 

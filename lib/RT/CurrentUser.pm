@@ -61,14 +61,28 @@ use base qw/RT::Record/;
 
 sub _Init  {
   my $self = shift;
-  my $Name = shift;
+    my $User = shift;
 
   $self->{'table'} = "Users";
 
-  if (defined($Name)) {
-    $self->Load($Name);
+    if ( defined($User) ) {
+
+        if (   UNIVERSAL::isa( $User, 'RT::User' )
+            || UNIVERSAL::isa( $User, 'RT::CurrentUser' ) )
+        {
+            $self->Load( $User->id );
+
+        }
+        elsif ( ref($User) ) {
+            $RT::Logger->crit(
+                "RT::CurrentUser->new() called with a bogus argument: $User");
+        }
+        else {
+            $self->Load($User);
+        }
   }
-    $self->_BuildTableAttributes();  
+
+    $self->_BuildTableAttributes();
 
 }
 # }}}

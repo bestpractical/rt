@@ -129,7 +129,9 @@ $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
+$UpdatePath => $RT::WebPath."/Ticket/Update.html"
 $Attachments => undef
+$AttachmentContent => undef
 $ShowBody => 1
 </%ARGS>
 
@@ -172,7 +174,7 @@ if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = "Ticket " . $Transaction->Ticket . ": ";
 }
 
-if ( $Transaction->TimeTaken > 0 ) {
+if ( $Transaction->TimeTaken != 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";
 }
 
@@ -212,7 +214,7 @@ else {
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"Update.html?id="
+                "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
               . "&QuoteTransaction="
               . $Transaction->Id
@@ -222,7 +224,7 @@ else {
         }
         if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"Update.html?id="
+                "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
               . "&QuoteTransaction="
               . $Transaction->Id

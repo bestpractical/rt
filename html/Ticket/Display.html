@@ -41,7 +41,8 @@
       Tickets => $Tickets, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'},
-      Attachments => $attachments 
+      Attachments => $attachments,
+      AttachmentContent => $attachment_content
       
       &> 
 
@@ -123,5 +124,6 @@ $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
 
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
 
 </%INIT>

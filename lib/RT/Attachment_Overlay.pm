@@ -164,63 +164,11 @@ sub Create {
     #If it's not multipart
     else {
 
-        my $ContentEncoding = 'none';
 
         my $Body = $Attachment->bodyhandle->as_string;
 
-        #get the max attachment length from RT
-        my $MaxSize = $RT::MaxAttachmentSize;
 
-        #if the current attachment contains nulls and the 
-        #database doesn't support embedded nulls
-
-        if ( $RT::AlwaysUseBase64 or
-	     ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
-
-            # set a flag telling us to mimencode the attachment
-            $ContentEncoding = 'base64';
-
-            #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize\n");
-            $MaxSize = $MaxSize * 3 / 4;
-        # Some databases (postgres) can't handle non-utf8 data 
-        } elsif (    !$RT::Handle->BinarySafeBLOBs
-                  && $Attachment->mime_type !~ /text\/plain/gi
-                  && !Encode::is_utf8( $Body, 1 ) ) {
-              $ContentEncoding = 'quoted-printable';
-        }
-
-        #if the attachment is larger than the maximum size
-        if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
-
-            # if we're supposed to truncate large attachments
-            if ($RT::TruncateLongAttachments) {
-
-                # truncate the attachment to that length.
-                $Body = substr( $Body, 0, $MaxSize );
-
-            }
-
-            # elsif we're supposed to drop large attachments on the floor,
-            elsif ($RT::DropLongAttachments) {
-
-                # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
-                return (undef);
-            }
-        }
-
-        # if we need to mimencode the attachment
-        if ( $ContentEncoding eq 'base64' ) {
-
-            # base64 encode the attachment
-            Encode::_utf8_off($Body);
-            $Body = MIME::Base64::encode_base64($Body);
-
-        } elsif ($ContentEncoding eq 'quoted-printable') {
-       	    Encode::_utf8_off($Body);
-            $Body = MIME::QuotedPrint::encode($Body);
-        }
+	my ($ContentEncoding, $Body) = $self->_EncodeLOB($Attachment->bodyhandle->as_string, $Attachment->mime_type);
 
 
         my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
@@ -544,10 +492,14 @@ sub _Value  {
     }
     
     #If it's a comment, we need to be extra special careful
-    elsif ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
-	     ($self->TransactionObj->Type eq 'Comment') )  or
-	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
-		return($self->__Value($field, @_));
+    elsif ( $self->TransactionObj->Type =~ /^Comment/ ) {
+        if ( $self->TransactionObj->CurrentUserHasRight('ShowTicketComments') )
+        {
+            return ( $self->__Value( $field, @_ ) );
+        }
+    }
+    elsif ( $self->TransactionObj->CurrentUserHasRight('ShowTicket') ) {
+        return ( $self->__Value( $field, @_ ) );
     }
     #if they ain't got rights to see, don't let em
     else {

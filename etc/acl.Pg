@@ -7,6 +7,8 @@ sub acl {
 
       attachments_id_seq
       Attachments
+      Attributes
+      attributes_id_seq
       queues_id_seq
       Queues
       links_id_seq

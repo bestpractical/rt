@@ -108,16 +108,16 @@ sub Prepare {
 
     # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'To'} } ) )
+    $self->SetHeader( 'To', join ( ', ', @{ $self->{'To'} } ) )
       if ( ! $MIMEObj->head->get('To') &&  $self->{'To'} && @{ $self->{'To'} } );
-    $self->SetHeader( 'Cc', join ( ',', @{ $self->{'Cc'} } ) )
+    $self->SetHeader( 'Cc', join ( ', ', @{ $self->{'Cc'} } ) )
       if ( !$MIMEObj->head->get('Cc') && $self->{'Cc'} && @{ $self->{'Cc'} } );
-    $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
+    $self->SetHeader( 'Bcc', join ( ', ', @{ $self->{'Bcc'} } ) )
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header, drop in the pseudo-to header.
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
+    $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
       if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
         and ( !$MIMEObj->head->get('To') ) );
 
@@ -234,10 +234,11 @@ sub SendMessage {
     }
     else {
         my @mailer_args = ($RT::MailCommand);
+
         local $ENV{MAILADDRESS};
 
         if ( $RT::MailCommand eq 'sendmail' ) {
-            push @mailer_args, $RT::SendmailArguments;
+            push @mailer_args, split(/\s+/, $RT::SendmailArguments);
         }
         elsif ( $RT::MailCommand eq 'smtp' ) {
             $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');

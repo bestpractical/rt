@@ -567,12 +567,6 @@ sub ParseQuery {
             $key =~ s!\\(.)!$1!g;
             $val =~ s!\\(.)!$1!g;
 
-            my $subkey;
-            if ( $key =~ /^(.+?)\.(.+)$/ ) {
-                $key    = $1;
-                $subkey = $2;
-            }
-
             my $class;
             if ( exists $lcfields{ lc $key } ) {
                 $key   = $lcfields{ lc $key };
