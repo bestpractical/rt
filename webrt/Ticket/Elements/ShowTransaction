@@ -1,4 +1,4 @@
- <& /Elements/TitleBoxStart, title => $Transaction->Description  titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
+ <& /Elements/TitleBoxStart, title => $Transaction->Description,  titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
 
 
     <TABLE WIDTH="100%">
