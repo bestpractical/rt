@@ -12,3 +12,6 @@ This is an unfriendly error message.
 <%args>
 $Why => "the calling component did not specify why"
 </%args>
+<%INIT>
+$RT::Logger->log(message=>"WebRT: $Why" level=>"error");
+</%INIT>
