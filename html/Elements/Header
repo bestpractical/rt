@@ -107,7 +107,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 <%ARGS>
 $Prefs => '/User/Prefs.html'
 $Focus => 'focus'
-$Title => undef
+$Title =>  'RT'
 $Code => undef
 $Refresh => 0
 $Why => undef

@@ -76,6 +76,6 @@ while (my $queue=$q->Next) {
 
 <%ARGS>
 $Name => 'Queue'
-$Verbose => undef
-$Default => undef
+$Verbose =>  0
+$Default => 0
 </%ARGS>

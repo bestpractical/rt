@@ -59,7 +59,7 @@ $groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
 </%INIT>
 <%ARGS>
 $AllowNull => 1
-$Default=>undef
+$Default=> ''
 $Name => 'Group'
 $Domain => 'UserDefined';
 </%ARGS>

@@ -97,7 +97,7 @@
 <%INIT>
 
   foreach my $tab (sort keys %{$toptabs}) {
-    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
+    if ($current_toptab && $toptabs->{$tab}->{'path'} eq $current_toptab) {
       $toptabs->{$tab}->{"subtabs"} = $tabs;
       $toptabs->{$tab}->{"current_subtab"} = $current_tab;
     }
