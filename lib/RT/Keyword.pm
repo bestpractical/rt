@@ -186,6 +186,7 @@ sub LoadByPath {
 # }}}
 
 # {{{ sub LoadByNameAndParentId
+
 =head2 LoadByNameAndParentId NAME PARENT_ID
   
 Takes two arguments, a keyword name and a parent id. Loads a keyword into 
@@ -206,6 +207,30 @@ sub LoadByNameAndParentId {
 	return (0, 'Keyword could not be found');
     }
   }
+
+# }}}
+
+
+# {{{ sub Load
+
+=head2 Load KEYWORD
+
+Loads KEYWORD, either by id if it's an integer or by Path, otherwise
+
+=cut
+
+sub Load {
+    my $self = shift;
+    my $id = shift;
+	
+    if ($id =~ /^(\d+)$/) {
+	 return ($self->SUPER::Load($id));
+    }
+    else {
+	 return($self->LoadByPath($id));
+    }
+}
+
 
 # }}}
 
