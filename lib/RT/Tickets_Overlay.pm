@@ -358,11 +358,12 @@ sub _DateLimit {
   require Time::ParseDate;
   use POSIX 'strftime';
 
+  # FIXME: Replace me with RT::Date( Type => 'unknown' ...)
   my $time = Time::ParseDate::parsedate( $value,
 			UK => $RT::DateDayBeforeMonth,
 			PREFER_PAST => $RT::AmbiguousDayInPast,
 			PREFER_FUTURE => !($RT::AmbiguousDayInPast));
-  $value = strftime("%Y-%m-%d %H:%M",localtime($time));
+  $value = strftime("%Y-%m-%d %H:%M", gmtime($time));
 
   $sb->_SQLLimit(
 	     FIELD => $meta->[1],
