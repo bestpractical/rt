@@ -1,6 +1,9 @@
 #!@PERL@ -w
 
+package RT::Mason;
+
 use strict;
+use vars '$Handler';
 
 require ('@RT_BIN_PATH@/webmux.pl');
 
@@ -11,8 +14,6 @@ use Socket;
 RT::Init();
 
 my $port = shift || '8080';
-if ( @RT::MasonParameters) {} # Shut up the warnings;
-my $h = &RT::Interface::Web::Handler::NewCGIHandler(@RT::MasonParameters);
 
 main_loop($port);
 
@@ -72,13 +73,13 @@ sub main_loop {
 
             print "HTTP/1.0 200 OK\n";    # probably OK by now
 
-            if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
-                && ($h->interp->comp_exists( $cgi->path_info . "/index.html" ) )
+            if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
+                && ($Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) )
               ) {
                 $cgi->path_info( $cgi->path_info . "/index.html" );
             }
 
-            eval { $h->handle_cgi_object($cgi); };
+            eval { $Handler->handle_cgi_object($cgi); };
             $RT::Logger->crit($@) if ($@);
 
             if ( $RT::Handle->TransactionDepth ) {

@@ -27,7 +27,7 @@ sub new {
     if ($MasonX::Apache2Handler::VERSION) {
         goto &NewApache2Handler;
     }
-    elsif ($mod_perl::VERSION >= 1.9908) {
+    elsif ($mod_perl::VERSION and $mod_perl::VERSION >= 1.9908) {
 	require Apache::RequestUtil;
 	no warnings 'redefine';
 	my $sub = *Apache::request{CODE};
