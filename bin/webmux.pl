@@ -3,7 +3,7 @@
 
 use strict;
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
-ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
 $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
