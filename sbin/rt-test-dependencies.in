@@ -144,7 +144,7 @@ Tree::Simple 1.04
 Scalar::Util
 Module::Versions::Report
 Cache::Simple::TimedExpiry
-YAML
+XML::Simple
 .
 
 $deps{'MASON'} = [ _( << '.') ];

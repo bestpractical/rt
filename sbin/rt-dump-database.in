@@ -47,7 +47,7 @@
 use strict;
 use lib "@RT_LIB_PATH@";
 use RT;
-use YAML;
+use XML::Simple;
 
 RT::LoadConfig();
 RT::Init();
@@ -142,7 +142,16 @@ foreach my $class (@classes) {
     }
 }
 
-print(<< '.', YAML::Dump({ map { ($_ => ($RV{$_} || [])) } @classes }));
-no strict;use YAML;*_=YAML::Load(do{local$/;<DATA>});@$_=@{$_{$_}}for keys%_;1
+print(<< ".");
+no strict; use XML::Simple; *_ = XMLin(do { local \$/; readline(DATA) }, ForceArray => [qw(
+ @classes Values
+)]); *\$_=( \$_{\$_} || [] ) for keys \%_; 1; # vim: filetype=xml
 __DATA__
 .
+
+print XMLout(
+    { map { ($_ => ($RV{$_} || [])) } @classes },
+    RootName => 'InitialData',
+    AttrIndent => 1,
+    XMLDecl => '<?xml version="1.0" encoding="UTF-8"?>',
+);
