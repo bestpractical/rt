@@ -39,6 +39,10 @@ WEBRT_DATA_PATH		=       $(RT_PATH)/WebRT/data
 
 RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 
+# RT_WEB_MUX is the mason handler script for apache 
+RT_WEB_MUX		=	$(RT_BIN_PATH)/webmux.pl
+
+
 #
 # The following are the names of the various binaries which make up RT 
 #
@@ -237,18 +241,20 @@ acls:
 	sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
 
 mux-install:
-	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
+	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
+	cp -rp ./bin/webmux.pl $(RT_WEB_MUX)
+
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 				s'!!RT_ACTION_BIN!!'$(RT_ACTION_BIN)'g;\
-				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
+r				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!WEBRT_CGI_BIN!!'$(WEBRT_CGI_BIN)'g;\
 				s'!!WEBRT_HTML_PATH!!'$($WEBRT_HTML_PATH)'g;\
 				s'!!WEBRT_DATA_PATH!!'$($WEBRT_DATA_PATH)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX) $(RT_WEB_MUX)
 
 mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)

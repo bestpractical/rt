@@ -1,0 +1,3 @@
+<& /Elements/Header &>
+<% $m->call_next %>
+<& /Elements/Footer &>

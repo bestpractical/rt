@@ -2,7 +2,6 @@
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
 
 use strict;
-
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
 $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
@@ -12,6 +11,7 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 package HTML::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 
+use vars qw($VERSION);
 $VERSION="!!RT_VERSION!!";
 
 use lib "!!RT_LIB_PATH!!";
@@ -33,6 +33,7 @@ use RT::Templates;
 use RT::Queue;
 use RT::Queues;
 use MIME::Entity;
+use CGI::Cookie;
 
 #TODO: need to identify the database user here....
 $RT::Handle = new DBIx::Handle;
@@ -46,8 +47,11 @@ $RT::Handle->Connect(Host => $RT::DatabaseHost,
 my $parser = new HTML::Mason::Parser;
 
 #TODO: Make this draw from the config file
+
+#We allow recursive autohandlers to allow for RT auth.
 my $interp = new HTML::Mason::Interp (
-            parser=>$parser,
+            allow_recursive_autohandlers =>1, 
+	    parser=>$parser,
             comp_root=>'/opt/rt/WebRT/html',
             data_dir=>'/opt/rt/WebRT/data');
 my $ah = new HTML::Mason::ApacheHandler (interp=>$interp);

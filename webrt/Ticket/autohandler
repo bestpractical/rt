@@ -1,0 +1,10 @@
+<& /Elements/Header &>
+%if  ((defined $cookies{ID}) && ($cookies{ID}->value == '123456')) {
+	<% $m->call_next %>
+% } else {
+<& /Login.html &>
+% }
+<& /Elements/Footer &>
+<%INIT>
+my %cookies = fetch CGI::Cookie;
+</%INIT>
