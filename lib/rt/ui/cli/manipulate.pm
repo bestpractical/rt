@@ -303,11 +303,11 @@ sub ParseArgs {
       }
     }	 
     use MIME::Entity;
-    $Message = MIME::Entity->build ( Subject => "$Subject",
-				     From => "$Requestor",
-				     Cc => "$Cc",
-				     Bcc => "$Bcc",
-				     Data => "$content");
+    $Message = MIME::Entity->build ( Subject => $Subject||"",
+				     From => $Requestor||"",
+				     Cc => $Cc||"",
+				     Bcc => $Bcc||"",
+				     Data => $content||"");
 
     use RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);

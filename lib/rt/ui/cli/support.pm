@@ -62,10 +62,10 @@ sub input_string {
     local ($default) =@_;
     local ($input);
  
-    chop($input=<STDIN>);
+    chop($input=<STDIN>||"");
  
     if (!$input) {
-	$input=$default;
+	$input=$default||"";
  
     }
     return($input);
@@ -75,8 +75,8 @@ sub input_int {
     local ($default) =@_;
     local ($input);
     
-    chop($input=<STDIN>); 
-    return $input eq "" ? $default : int($input);
+    chop($input=<STDIN>||""); 
+    return $input eq "" ? ($default||undef) : int($input);
 }
 
 1;
