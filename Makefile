@@ -255,7 +255,7 @@ database:
 	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) -p -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
+	-$(PERL) -p$(ROOT_MYSQL_PASS) -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
 		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
