@@ -292,23 +292,10 @@ sub Description  {
   elsif ($self->Type eq 'subreqrsv') {
     return "Subrequest #".$self->Data." resolved by ".$self->Creator->UserId;
   }
-  elsif ($self->Type eq 'link') {
-    #TODO: make this fit with the rest of things.
+  elsif ($self->Type eq 'Link') {
+    #TODO: make pretty output.
     
-    #my ($db, $fid, $type, $remote)=split(/\/, $self->{'data'});
-    if ($type =~ /^dependency(-?)$/) {
-      #$remote=(defined $remote) ? " at $remote" : "";
-      if ($1 eq '-') {
-	return ("Request \#$fid$remote made dependent on this request by ".$self->Creator->UserId);
-      } else {
-	return ("This request made dependent on request \#$fid$remote by ".$self->Creator->UserId);
-      }
-    } else {
-      
-      # Some kind of plugin system needed here.
-      
-      return ("$type linked to $fid at $remote by ".$self->Creator->UserId);
-    }
+    return "Linked up.  (  ". $self->Data. "  )";
   }
   else {
     return($self->Type . " modified. RT Should be more explicit about this!");
