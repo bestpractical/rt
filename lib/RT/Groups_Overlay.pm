@@ -154,5 +154,55 @@ sub LimitToRolesForSystem {
 }
 
 # }}}
+
+=head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
+
+Limits the set of groups returned to groups which have
+Principal PRINCIPAL_ID as a member
+   
+=begin testing
+
+my $u = RT::User->new($RT::SystemUser);
+$u->Create(Name => 'Membertests');
+my $g = RT::Group->new($RT::SystemUser);
+my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
+ok ($id,$msg);
+
+my ($aid, $amsg) =$g->AddMember($u->id);
+ok ($aid, $amsg);
+ok($g->HasMember($u->PrincipalObj),"G has member u");
+
+my $groups = RT::Groups->new($RT::SystemUser);
+$groups->LimitToUserDefinedGroups();
+$groups->WithMember(PrincipalId => $u->id);
+ok ($groups->Count == 1,"found the 1 group - " . $groups->Count);
+ok ($groups->First->Id == $g->Id, "it's the right one");
+
+
+
+
+=end testing
+
+
+=cut
+
+sub WithMember {
+    my $self = shift;
+    my %args = ( PrincipalId => undef,
+                 Recursively => undef,
+                 @_);
+    my $members;
+
+    if ($args{'Recursively'}) {
+        $members = $self->NewAlias('CachedGroupMembers');
+    } else {
+        $members = $self->NewAlias('GroupMembers');
+    }
+    $self->Join(ALIAS1 => 'main', FIELD1 => 'Id',
+                ALIAS2 => $members, FIELD2 => 'GroupId');
+
+    $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
+}
+
 1;
 

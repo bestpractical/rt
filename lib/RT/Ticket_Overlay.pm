@@ -1,5 +1,5 @@
 # (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# This software is redistributable under the terms of the GNU GPL
+# This software is redistributable under the terms version 2 of the GNU GPL
 
 # {{{ Front Material 
 
@@ -92,8 +92,6 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 =cut
 
 # }}}
-
-# {{{ Routines dealing with ticket creation, deletion, loading 
 
 # {{{ sub Load
 
@@ -205,9 +203,11 @@ Returns: TICKETID, Transaction Object, Error Message
 
 my $t = RT::Ticket->new($RT::SystemUser);
 
-ok( $t->Create(Queue => 'General', Subject => 'This is a subject'), "Ticket Created");
+ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
 
 ok ( my $id = $t->Id, "Got ticket id");
+ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
+ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
 
 =end testing
 
@@ -222,7 +222,7 @@ sub Create {
                  Cc              => undef,
                  AdminCc         => undef,
                  Type            => 'ticket',
-                 Owner           => $RT::Nobody->UserObj,
+                 Owner           => undef,
                  Subject         => '',
                  InitialPriority => undef,
                  FinalPriority   => undef,
@@ -232,30 +232,29 @@ sub Create {
                  TimeEstimated        => 0,
                  Due             => undef,
                  Starts          => undef,
+                 Started         => undef,
+                 Resolved        => undef,
                  MIMEObj         => undef,
                  @_ );
 
-    my ( $ErrStr, $QueueObj, $Owner, $resolved );
+    my ( $ErrStr, $Owner, $resolved );
     my (@non_fatal_errors);
 
-    my $now = RT::Date->new( $self->CurrentUser );
-    $now->SetToNow();
+    my $QueueObj = RT::Queue->new($RT::SystemUser);
 
+    
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Queue->new($RT::SystemUser);
         $QueueObj->Load( $args{'Queue'} );
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
-        $QueueObj = RT::Queue->new($RT::SystemUser);
         $QueueObj->Load( $args{'Queue'}->Id );
     }
     else {
-        $RT::Logger->debug(
-                "$self " . $args{'Queue'} . " not a recognised queue object." );
+        $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object.");
     }
-
+;
     #Can't create a ticket without a queue.
-    unless ( defined($QueueObj) ) {
+    unless ( defined($QueueObj) && $QueueObj->Id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
         return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
     }
@@ -267,6 +266,11 @@ sub Create {
         return ( 0, 0,
                  $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name ) );
     }
+
+    unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
+        return ( 0, 0, $self->loc('Invalid value for status') );
+    }
+
 
     #Since we have a queue, we can set queue defaults
     #Initial Priority
@@ -281,25 +285,44 @@ sub Create {
     $args{'FinalPriority'} = ( $QueueObj->FinalPriority || 0 )
       unless ( defined $args{'FinalPriority'} );
 
+    # {{{ Dates
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $due = new RT::Date( $self->CurrentUser );
+    my $Due = new RT::Date( $self->CurrentUser );
+
     if ( defined $args{'Due'} ) {
-        $due->Set( Format => 'ISO',
-                   Value  => $args{'Due'} );
+        $Due->Set( Format => 'ISO', Value  => $args{'Due'} );
     }
     elsif ( defined( $QueueObj->DefaultDueIn ) ) {
-        $due->SetToNow;
-        $due->AddDays( $QueueObj->DefaultDueIn );
+        $Due->SetToNow;
+        $Due->AddDays( $QueueObj->DefaultDueIn );
     }
 
-    my $starts = new RT::Date( $self->CurrentUser );
+    my $Starts = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Starts'} ) {
-        $starts->Set( Format => 'ISO',
-                      Value  => $args{'Starts'} );
+        $Starts->Set( Format => 'ISO', Value  => $args{'Starts'} );
     }
+
+    my $Started = new RT::Date( $self->CurrentUser );
+    if ( defined $args{'Started'} ) {
+        $Started->Set( Format => 'ISO', Value  => $args{'Started'} );
+    }
+
+    my $Resolved = new RT::Date( $self->CurrentUser );
+    if ( defined $args{'Resolved'} ) {
+        $Resolved->Set( Format => 'ISO', Value  => $args{'Resolved'} );
+    }
+
+
+    #If the status is an inactive status, set the resolved date
+    if (( grep $args{'Status'}, @{$QueueObj->InactiveStatusArray} ) &&
+        (!defined($args{'Resolved'}))) {
+        $Resolved->SetToNow;
+    }
+
+    # }}}
 
     # {{{ Deal with setting the owner
 
@@ -312,25 +335,6 @@ sub Create {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 
-    }
-
-    #If we can't handle it, call it nobody
-    else {
-        if ( ref( $args{'Owner'} ) ) {
-            $RT::Logger->warning(
-                           "$ticket ->Create called with an Owner of " . "type "
-                             . ref( $args{'Owner'} )
-                             . ". Defaulting to nobody.\n" );
-
-            push @non_fatal_errors,
-              $self->loc("Invalid owner. Defaulting to 'nobody'.");
-        }
-        else {
-            $RT::Logger->warning( "$self ->Create called with an "
-                                  . "unknown datatype for Owner: "
-                                  . $args{'Owner'}
-                                  . ". Defaulting to Nobody.\n" );
-        }
     }
 
     #If we have a proposed owner and they don't have the right 
@@ -354,23 +358,12 @@ sub Create {
     }
 
     #If we haven't been handed a valid owner, make it nobody.
-    unless ( defined($Owner) ) {
+    unless ( defined($Owner) && $Owner->Id ) {
         $Owner = new RT::User( $self->CurrentUser );
-        $Owner->Load( $RT::Nobody->UserObj->Id );
+        $Owner->Load( $RT::Nobody->Id );
     }
 
     # }}}
-
-    unless ( $self->ValidateStatus( $args{'Status'} ) ) {
-        return ( 0, 0, $self->loc('Invalid value for status') );
-    }
-
-    if ( $args{'Status'} eq 'resolved' ) {
-        $resolved = $now->ISO;
-    }
-    else {
-        $resolved = undef;
-    }
 
     $RT::Handle->BeginTransaction();
 
@@ -385,9 +378,10 @@ sub Create {
                                    TimeEstimated   => $args{'TimeEstimated'},
                                    TimeLeft        => $args{'TimeLeft'},
                                    Type            => $args{'Type'},
-                                   Starts          => $starts->ISO,
-                                   Resolved        => $resolved,
-                                   Due             => $due->ISO );
+                                   Starts          => $Starts->ISO,
+                                   Starts          => $Started->ISO,
+                                   Resolved        => $Resolved->ISO,
+                                   Due             => $Due->ISO );
 
     #Set the ticket's effective ID now that we've created it.
     my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => $id );
@@ -412,64 +406,105 @@ sub Create {
 
     $self->OwnerGroup->_AddMember( $Owner->PrincipalId );
 
-    # Set the requestors in the Groups table
+    # {{{ Deal with setting up watchers
 
-    # Set the Cc in the Groups table
 
-    # Set the ADminCc in the Groups table
+    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
+        next unless (defined $args{$type});
+        foreach my $watcher (
+                  ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
 
-    foreach my $watcher ( @{ $args{'Cc'} } ) {
-        my ( $wval, $wmsg ) =
-          $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
-        push @non_fatal_errors, $wmsg unless ($wval);
+            if ( $type eq 'AdminCc' ) {
+
+                # Note that we're using AddWatcher, rather than _AddWatcher, as we 
+                # actually _want_ that ACL check. Otherwise, random ticket creators
+                # could make themselves adminccs and maybe get ticket rights. that would
+                # be poor
+                my ( $wval, $wmsg ) = $self->AddWatcher( Type   => $type,
+                                                         Email  => $watcher,
+                                                         Silent => 1 );
+            }
+            else {
+                my ( $wval, $wmsg ) = $self->_AddWatcher( Type   => $type,
+                                                          Email  => $watcher,
+                                                          Silent => 1 );
+            }
+
+            push @non_fatal_errors, $wmsg unless ($wval);
+        }
     }
 
-    foreach my $watcher ( @{ $args{'Requestor'} } ) {
-        my ( $wval, $wmsg ) = $self->_AddWatcher( Type   => 'Requestor',
-                                                  Email  => $watcher,
-                                                  Silent => 1 );
-        push @non_fatal_errors, $wmsg unless ($wval);
+    # }}}
+    # {{{ Deal with setting up links
+
+
+    my %linktypemap =( 
+        MemberOf => {
+            Type => 'MemberOf',
+            Mode => 'Target',
+        },
+        HasMember => {
+            Type => 'MemberOf',
+            Mode => 'Base',
+        },
+        RefersTo => {
+            Type => 'RefersTo',
+            Mode => 'Target',
+        },
+        ReferredToBy => {
+            Type => 'RefersTo',
+            Mode => 'Base',
+        },
+        DependsOn => {
+            Type => 'DependsOn',
+            Mode => 'Target',
+        },
+        DependedOnBy => {
+            Type => 'DependsOn',
+            Mode => 'Base',
+        },
+
+   ); 
+    foreach my $type ( keys %linktypemap ) {
+        next unless (defined $args{$type});
+        foreach my $link (
+            ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+        {
+            my ( $wval, $wmsg ) = $self->AddLink(
+                Type                          => $linktypemap{$type}->{'Type'},
+                $linktypemap{$type}->{'Mode'} => $link,
+                Silent                        => 1
+            );
+
+            push @non_fatal_errors, $wmsg unless ($wval);
+        }
     }
 
-    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
+    # }}}
 
-        # Note that we're using AddWatcher, rather than _AddWatcher, as we 
-        # actually _want_ that ACL check. Otherwise, random ticket creators
-        # could make themselves adminccs and maybe get ticket rights. that would
-        # be poor
-        my ( $wval, $wmsg ) = $self->AddWatcher( Type   => 'AdminCc',
-                                                 Email  => $watcher,
-                                                 Silent => 1 );
-        push @non_fatal_errors, $wmsg unless ($wval);
-    }
+   # {{{ Add all the custom fields 
 
-
-
-   # Add all the custom fields 
-
-   foreach my $arg (keys %args) {
-	if ($arg =~ /^CustomField-(\d+)$/i) {
-  	    $cfid = $1; 
-	} else {
-	    next;
-	}
+    foreach my $arg ( keys %args ) {
+    next unless ( $arg =~ /^CustomField-(\d+)$/i );
+    $cfid = $1;
     foreach
       my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
-	next unless ($value);
-        $self->_AddCustomFieldValue(
-            Field => $cfid,
-            Value => $value
-        );
+        next unless ($value);
+        $self->_AddCustomFieldValue( Field => $cfid,
+                                     Value => $value );
     }
-	}
-    #Add a transaction for the create
+    }
+    # }}}
+
+    # {{{ Add a transaction for the create
     my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                      Type      => "Create",
                                                      TimeTaken => 0,
                                                      MIMEObj => $args{'MIMEObj'}
     );
-
-    # Logging
+    # }}}
+    
+    # {{{ Logging
     if ( $self->Id && $Trans ) {
         $ErrStr = $self->loc("Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name);
         $ErrStr .= join ( "\n", @non_fatal_errors );
@@ -2089,6 +2124,7 @@ sub AddLink {
         Target => '',
         Base   => '',
         Type   => '',
+        Silent => undef,
         @_
     );
 
@@ -2144,19 +2180,24 @@ sub AddLink {
         return ( 0, $self->loc("Link could not be created") );
     }
 
-    #Write the transaction
-
     my $TransString =
       "Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
 
-    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-        Type      => 'AddLink',
-        Field     => $args{'Type'},
-        Data      => $TransString,
-        TimeTaken => 0
-    );
+    # Don't write the transaction if we're doing this on create
+    if ( $args{'Silent'} ) {
+        return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
+    }
+    else {
 
-    return ( $Trans, $self->loc("Link created ([_1])", $TransString) );
+        #Write the transaction
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+            Type      => 'AddLink',
+            Field     => $args{'Type'},
+            Data      => $TransString,
+            TimeTaken => 0
+        );
+        return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
+    }
 
 }
 

@@ -140,9 +140,9 @@ sub LimitToPrivileged {
 
 # }}}
 
-# {{{ WhoHaveGroupRight
+# {{{ WhoHaveRight
 
-=head2 WhoHaveRight { Right => 'name', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
+=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
 =begin testing
 
@@ -154,38 +154,12 @@ ok($users->Count == 2, "There are two superusers - Found ". $users->Count);
 =end testing
 
 
-
-=cut
-
-
-sub WhoHaveRight {
-
-    my $self = shift;
-    my %args = ( Right => undef,
-                 ObjectType => undef,
-                 ObjectId => undef,
-                 IncludeSystemRights => undef, 
-                 IncludeSuperusers => undef,
-                 IncludeSubgroupMembers => undef, 
-                 @_);
-
-
-# find all users who the right Right for this group, either individually
-# or as members of groups
-
-
-}
-# }}}
-
-# {{{ WhoHaveRight
-
-=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, 
-
+find all users who the right Right for this group, either individually
+or as members of groups
 
 
 In the future, we'll also allow these parameters:
 
-    IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
 
 =cut
