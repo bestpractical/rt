@@ -49,7 +49,7 @@
 % if ($Link->TargetURI->IsLocal) {
 % my $member = $Link->TargetObj;
 
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->TargetURI->HREF%>"><%$Link->Target%></A>
 % }
@@ -61,7 +61,7 @@
 <LI>
 % if ($Link->BaseURI->IsLocal) {
 % my $member = $Link->BaseObj;
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->BaseURI->HREF%>"><%$Link->Base%></A>
 %}
