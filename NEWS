@@ -1,3 +1,19 @@
+23 Dec 1999
+-----------
+
+* Enabled a status = unresolved option for the web ui. thanks to
+  brandon allbery <allbery@ece.cmu.edu> and Marion Hakanson <hakanson@cse.ogi.edu>
+
+* Made most of the permissions and directory changes from Marion 
+  Hakanson <hakanson@cse.ogi.edu> generally cleaned things up. but DID not
+  include the changes to the directory creation, file copying and permission
+  fixing code to enable RT_VAR_DIR
+
+* Made the web ui use $MESSAGE_FONT when putting up the compose window.
+    Marion Hakanson <hakanson@cse.ogi.edu>
+
+* Genericised the templates to not mention the mythical "systems group"
+
 6 Dec 1999
 ----------
 * Fixed a bug with admin-webrt.cgi/frames. Thanks to

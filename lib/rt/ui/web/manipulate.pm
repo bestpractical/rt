@@ -398,7 +398,11 @@ sub display_queue {
     if ($status_ops){
       $status_ops .= " OR ";
     }
-    if ($rt::ui::web::FORM{'q_status'} ne "any") {
+   if ($rt::ui::web::FORM{'q_status'} eq "unresolved") {
+	 $status_ops = " status <> \'dead\' AND status <> \'resolved\'"; 
+    }
+   elsif ($rt::ui::web::FORM{'q_status'} ne "any") {
+
       
       $status_ops .= " status =  \'" .$rt::ui::web::FORM{'q_status'}."\'" ;
     }

@@ -1,4 +1,4 @@
-# $Header: /usr/local/cvsroot/rt/Makefile,v 1.69 1999/04/13 07:07:35 jesse Exp O
+# $Header$
 # 
 #
 # Request Tracker is Copyright 1997-9 Jesse Reed Vincent <jesse@fsck.com>
@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	2
+RT_VERSION_PATCH	=	2pre2
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -30,7 +30,17 @@ RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
-RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
+
+
+# You might want to store RT's transaction content in your /var directory
+# rather than with the rest of RT. If so, comment out the first RT_VAR_PATH
+# line and uncomment the second
+
+RT_VAR_PATH		=	$(RT_PATH)
+#RT_VAR_PATH		=	/var/rt
+
+
+RT_TRANSACTIONS_PATH	= 	$(RT_VAR_PATH)/transactions
 
 # Where you keep the templates for your various queues
 RT_TEMPLATE_PATH	=	$(RT_ETC_PATH)/templates
@@ -85,8 +95,8 @@ RT_MAIL_TAG		=	change-this-string-or-perish
 RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
 
 #
-# RT_USER_MIN_PASS specifies the minimum length of RT user passwords.  If you don't
-# want such functionality, simply set it to 0
+# RT_USER_PASSWD_MIN specifies the minimum length of RT user passwords.  
+# If you don't want such functionality, simply set it to 0
 #
 RT_USER_PASSWD_MIN	=	5
 
@@ -154,9 +164,11 @@ RT_MYSQL_PASS           =       My!word%z0t
 RT_MYSQL_HOST		=	localhost
 
 #
-# Set this to the canonical name of the interface RT will be talking to the mysql database on.
+# Set this to the canonical name of the interface RT will be talking to the 
+# mysql database on.
 # If you said that the RT_MYSQL_HOST above was "localhost," this should be too.
-# This value will be used by mysql to grant  rt on your RT server access to the Mysql database.
+# This value will be used by mysql to grant  rt on your RT server access 
+# to the Mysql database.
 #
 
 RT_HOST			=	localhost
@@ -223,29 +235,45 @@ upgrade-noclobber: libs-install mux-install nondestruct
 nondestruct: mux-links fixperms
 
 all:
-	@echo "Read the readme."
+	@echo "Read the README."
 fixperms:
-	chown -R $(RTUSER) $(RT_PATH)
-	chgrp -R $(RTGROUP) $(RT_PATH)  
-	chmod -R 755 $(RT_LIB_PATH)
-	chmod -R 0700 $(RT_ETC_PATH)
-	chmod 0755 $(RT_PATH)
-	chmod 0755 $(RT_BIN_PATH)
-	chmod 0755 $(RT_CGI_PATH)
+
+#  Main, read-only directories.
+	chown -R root $(RT_PATH)
+	chgrp -R root $(RT_PATH)
+	chmod -R a+r,a-w $(RT_PATH)
+	( cd $(RT_PATH) && find . -type d -exec chmod a+x {} \; )
+#  Restricted and special access areas.
+	chown -R $(RTUSER) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
+	chgrp -R $(RTGROUP) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
+#  Some password & config info is sensitive.
+	chmod -R a-w,o-r $(RT_ETC_PATH)
+	chmod ug+x,o-x $(RT_ETC_PATH)
+#  This covers RT_TRANSACTIONS_PATH
+	chmod -R a-w,o-r,u+rw,g+r $(RT_TRANSACTIONS_PATH)
+	( cd $(RT_TRANSACTIONS_PATH) && find . -type d -exec chmod ug+x,o-x {} \; )
+# Do the same for the templates
+	chmod -R a-w,o-r,u+rw,g+r $(RT_TEMPLATE_PATH)
+	( cd $(RT_TEMPLATE_PATH) && find . -type d -exec chmod ug+x,o-x {} \; )
+
+#  Individual executable files.
+
 	chmod 0755 $(RT_PERL_MUX)
+	chown $(RTUSER) $(RT_WRAPPER)
 	chmod 4111 $(RT_WRAPPER)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
 	mkdir -p $(RT_ETC_PATH)
-	cp -rp ./etc/* $(RT_ETC_PATH)
+	cp -p ./etc/config.pm ./etc/mysql.acl $(RT_ETC_PATH)
+	mkdir -p $(RT_TEMPLATE_PATH)
+	cp -rp ./etc/templates $(RT_TEMPLATE_PATH)/..
 	mkdir -p $(RT_TRANSACTIONS_PATH)
 
 libs-install: 
 	mkdir -p $(RT_LIB_PATH)
 	cp -rp ./lib/* $(RT_LIB_PATH)    
-	chmod -R 0755 $(RT_LIB_PATH)
 
 
 initialize: database acls

@@ -2,7 +2,7 @@
 
 	This message has been automatically generated in response to your
 message regarding "%subject%", the content of which appears below.  There is
-no need to reply to it now. The Systems group has received your message and
+no need to reply to it now. Request Tracker has received your message and
 it has been assigned a ticket ID of [%rtname% #%serial_num%]. Please
 include the string
 
@@ -15,7 +15,7 @@ problem. To do so, you may reply to this message.
 	
 			Thank you,
 
-			The Systems Group
+			Request Tracker
 			%queue:mailalias%
 
 -------------------------------------------------------------------------

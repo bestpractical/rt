@@ -1,6 +1,7 @@
- Request number %serial_num% was commented on by %actor%.
-
-			The Systems Group
+Request number %serial_num% was commented on by %actor%. 
+Responding to this message will send mail to the requestor.
+			
+			Request Tracker
 			%mailalias%
 
 --------------------------------------------------------------

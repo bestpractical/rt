@@ -26,6 +26,10 @@ sub FormQueueOptions{
     print "<OPTION> open" if (! (($rt::ui::web::FORM{'q_status'} eq "open" ) or (!$rt::ui::web::FORM{'q_status'})) );
     print "<OPTION SELECTED> stalled" if ($rt::ui::web::FORM{'q_status'} eq "stalled");
     print "<OPTION> stalled" if ($rt::ui::web::FORM{'q_status'} ne "stalled");
+    
+    print "<OPTION SELECTED> unresolved" if ($rt::ui::web::FORM{'q_status'} eq "unresolved");
+    print "<OPTION> unresolved" if ($rt::ui::web::FORM{'q_status'} ne "unresolved");
+    
     print "<OPTION SELECTED> resolved"  if ($rt::ui::web::FORM{'q_status'} eq "resolved");
     print "<OPTION> resolved" if ($rt::ui::web::FORM{'q_status'} ne "resolved");
     print "<OPTION SELECTED> dead" if ($rt::ui::web::FORM{'q_status'} eq "dead");
@@ -518,7 +522,7 @@ Final priority:
 
 </TD></TR>
 <TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
-<font size=\"-1\">
+<font size=\"$MESSAGE_FONT\">
 <textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $template
 </textarea>
