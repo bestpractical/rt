@@ -1,33 +1,18 @@
- <& /Elements/TitleBoxStart, title => $Transaction->Description,  titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
+ <& /Elements/TitleBoxStart, 
+	title => 
+$Transaction->CreatedAsString. " " . 
+$TicketString .
+$Transaction->Description.  
+$TimeTaken,
 
-
-    <TABLE WIDTH="100%">
-      <TR>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Date' , content => $Transaction->CreatedAsString &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Id' , content => $Transaction->Id &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%"> 
-	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->CreatorObj->Name &>
-	</TD>
-	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeTaken &>
-	</TD>
-	
-	
-      </TR>
-    </TABLE>
+	titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
 
 % unless ($Collapsed) {
 
 %# I had to temporarly move this one because the box grew too wide when a message was too wide.
 
-
 % $attachments->GotoFirstItem;
 %  while (my $message=$attachments->Next) {
-
 <TABLE WIDTH="100%">
 <TR>
 <TD>
@@ -46,14 +31,11 @@
 % } else {
 <A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
 %}
-
-
-
 </TD>
 </TR>
 </TABLE>
 
-%   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
+%   if ($message->ContentType =~ m{^(text/plain|message)}i && length($message->Content)<13456) {
 <pre>
 %#TODO We're now HTML escaping the message content, but should
 %#TODO probably deal with converting links
@@ -70,20 +52,25 @@ Attachment: <A HREF="Attachment/<%$Transaction->TicketObj->id%>/<%$Transaction->
 % }
 
 % }
-
 <& /Elements/TitleBoxEnd &>
 
 
 <%ARGS>
+$Ticket => undef
 $Transaction => undef
-$TimeTaken => undef
 $FullHeaders => undef
 $Collapsed => undef
 </%ARGS>
 
 <%INIT>
+my ($TimeTaken, $TicketString);
+
+if ($Ticket->Id != $Transaction->Ticket) {
+	$TicketString = "(Ticket ".$Transaction->Ticket .") ";
+}
+
 if ($Transaction->TimeTaken > 0) {
-	$TimeTaken = $Transaction->TimeTaken." minutes"
+	$TimeTaken = " (". $Transaction->TimeTaken." min) "
 }
 my $attachments = $Transaction->Attachments;
 
