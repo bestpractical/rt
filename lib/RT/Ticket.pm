@@ -832,7 +832,7 @@ sub _NewLink {
  
   # Storing the link in the DB.
   my $link = RT::Link->new($self->CurrentUser);
-  my $linkid = $link->Create(Target => $args{Target}, Base => $args{Base}, Type => $args{Type});
+  my ($linkid) = $link->Create(Target => $args{Target}, Base => $args{Base}, Type => $args{Type});
 
   #Write the transaction
   my $b;

@@ -1,6 +1,6 @@
 # This Action will stall the BASE if a dependency link is created.
 
-package RT::Links::StallDependent;
+package RT::Action::StallDependent;
 require RT::Action;
 @ISA=qw|RT::Action|;
 
@@ -57,6 +57,5 @@ sub IsApplicable  {
   return 0;
 }
 # }}}
-
 
 1;
