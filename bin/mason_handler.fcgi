@@ -45,7 +45,7 @@ use DBIx::SearchBuilder::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;
     use CGI::Cookie;
-    use Date::Manip;
+    use Date::Parse;
     use HTML::Entities;
     use Apache::Session::File;
     use FCGI;

@@ -88,7 +88,7 @@ my $q=$cgi{CGI}; # $q now contains the object tied to %cgi.
     use RT::Interface::Web;    
     use MIME::Entity;
     use CGI::Cookie;
-    use Date::Manip;
+    use Date::Parse;
     use HTML::Entities;
 
     

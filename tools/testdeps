@@ -28,7 +28,7 @@ Params::Validate 0.02
 HTML::Mason 0.896
 CGI::Cookie 1.06
 Apache::Session 1.53
-Date::Manip 
+Date::Parse
 Date::Format 
 MIME::Entity 5.108
 Mail::Mailer 1.20

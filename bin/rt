@@ -973,22 +973,11 @@ Returns an ISO date and time in GMT
 sub ParseDateToISO {
     my $date = shift;
 
-    use Date::Manip;
-    my $parsed_date = Date::Manip::ParseDate($date);
-    if ($parsed_date) {
-	my $unixdate = Date::Manip::UnixDate($parsed_date, "%s");
-	$RT::Logger->debug("Parsed date is $parsed_date (localtime)");
 	my $date_obj = new RT::Date($CurrentUser);
-	$date_obj->Set( Format => 'unix',
-			Value => $unixdate
+	$date_obj->Set( Format => 'unknown',
+			Value => $date
 		      );
 	return ($date_obj->ISO);
-    }
-    
-    #if we couldn't parse the date...
-    else {
-	return(undef);
-    }
 }
 
 # }}}

@@ -76,7 +76,7 @@ use Carp;
     use RT::Interface::Web;    
     use MIME::Entity;
     use CGI::Cookie;
-    use Date::Manip;
+    use Date::Parse;
     use HTML::Entities;
     #TODO: make this use DBI
     use Apache::Session::File;

@@ -8,7 +8,7 @@ WriteMakefile(
                      'DBI'                 => 1.13,
                      'DBIx::SearchBuilder' => 0.31,
                      'HTML::Mason'         => 0.896,
-                     'Date::Manip'         => 0,
+                     'Date::Parse'         => 0,
                      'Date::Format'        => 0,
                      'MIME::Entity'        => 5.108,
                      'Mail::Mailer'        => 1.20,
