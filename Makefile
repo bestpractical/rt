@@ -185,7 +185,6 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
 
-
 default:
 	@echo "Read the README"
 
