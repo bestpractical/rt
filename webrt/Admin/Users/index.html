@@ -6,9 +6,10 @@
 
 
 <UL>
-
+% if ($session{'CurrentUser'}->HasSystemRight('AdminUsers')) {
 <LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
 </UL>
+% }
 
 <%$caption%><BR>
 <UL>
