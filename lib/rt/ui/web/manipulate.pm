@@ -697,7 +697,7 @@ sub display_history_tables {
  print "
 <BR><BR>
 <font size=\"-1\">
-<TABLE WIDTH=\"100%\" cellpadding=0 cellspacing=0 border=0>
+<TABLE WIDTH=\"100%\" cellpadding=2 cellspacing=0 border=0>
 
 
 ";
@@ -721,7 +721,7 @@ sub display_history_tables {
     print "
 <TR BGCOLOR=\"$bgcolor\">
 <TD align=\"left\" valign=\"middle\" width=\"15%\">
-<font color=\"\#ffffff\" size=\"-1\">
+<font color=\"\#ffffff\" size=\"-1\" face=helvetica,arial,sanserif>
 $date
 $time
 </font>
@@ -769,7 +769,7 @@ print "</FONT></TD>
    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
      print "
 
-<TR><TD BGCOLOR=\"#FFFFFF\" colspan=3>
+<TR><TD BGCOLOR=\"#FFFFFF\" colspan=4>
 <TABLE CELLPADDING=20 width=\"100%\"><TR><TD BGCOLOR=\"\#EEEEEE\">
 <font size=\"$MESSAGE_FONT\">";
       
@@ -826,7 +826,7 @@ sub display_summary {
   use Time::Local;
   
   $bg_color="#FFFFFF";
-  $fg_color="#EEEEEE";
+  $fg_color="#000000";
   
   if ($frames) {
     $target = "target=\"summary\"";
@@ -849,6 +849,11 @@ sub display_summary {
 
   print "
 <font color=\"$fg_color\">
+
+<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+<TR>
+<TD>
+
 <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 
 <TR VALIGN=\"TOP\">
@@ -919,6 +924,9 @@ $rt::req[$in_serial_num]{'owner'}
 $rt::req[$in_serial_num]{'status'}
 </TD>
 </TR> 
+</TD>
+<TR>
+<TD>
 <TR VALIGN=\"TOP\">
 <TD ALIGN=\"RIGHT\">
 <b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
@@ -993,6 +1001,9 @@ scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
 </TD>
 </TR>
   </TABLE>
+</TD>
+</TR>
+</TABLE>
   </font>
 ";
 
