@@ -34,11 +34,49 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $CORE_CONFIG_FILE
         $SITE_CONFIG_FILE
         $VENDOR_CONFIG_FILE
+        $BasePath
+        $EtcPath
+        $VarPath
+        $LocalLexiconPath
+        $LogDir
+        $MasonComponentRoot
+        $MasonLocalComponentRoot
+        $MasonDataDir
+        $MasonSessionDir
 );
 
 $VERSION = '2.1.46';
 $CORE_CONFIG_FILE = "/opt/rt3/etc/RT_Config.pm";
 $SITE_CONFIG_FILE = "/opt/rt3/etc/RT_SiteConfig.pm";
+
+$BasePath = '/opt/rt3';
+
+$EtcPath = '/opt/rt3/etc';
+$VarPath = '/opt/rt3/var';
+$LocalLexiconPath = '/opt/rt3/local/po';
+
+
+# This directory should be writable by your rt group
+$LogDir = '/opt/rt3/var/log';
+                         
+# $MasonComponentRoot is where your rt instance keeps its mason html files
+
+$MasonComponentRoot = '/opt/rt3/html';
+
+# $MasonLocalComponentRoot is where your rt instance keeps its site-local
+# mason html files.
+
+$MasonLocalComponentRoot = '/opt/rt3/local/html';
+
+# $MasonDataDir Where mason keeps its datafiles
+
+$MasonDataDir = '/opt/rt3/var/mason_data';
+
+# RT needs to put session data (for preserving state between connections
+# via the web interface)
+$MasonSessionDir = '/opt/rt3/var/session_data';
+
+
 
 =head1 NAME
 

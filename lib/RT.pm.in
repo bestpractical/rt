@@ -34,11 +34,49 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $CORE_CONFIG_FILE
         $SITE_CONFIG_FILE
         $VENDOR_CONFIG_FILE
+        $BasePath
+        $EtcPath
+        $VarPath
+        $LocalLexiconPath
+        $LogDir
+        $MasonComponentRoot
+        $MasonLocalComponentRoot
+        $MasonDataDir
+        $MasonSessionDir
 );
 
 $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
 $CORE_CONFIG_FILE = "@CONFIG_FILE_PATH@/RT_Config.pm";
 $SITE_CONFIG_FILE = "@CONFIG_FILE_PATH@/RT_SiteConfig.pm";
+
+$BasePath = '@RT_PATH@';
+
+$EtcPath = '@RT_ETC_PATH@';
+$VarPath = '@RT_VAR_PATH@';
+$LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
+
+
+# This directory should be writable by your rt group
+$LogDir = '@RT_LOG_PATH@';
+                         
+# $MasonComponentRoot is where your rt instance keeps its mason html files
+
+$MasonComponentRoot = '@MASON_HTML_PATH@';
+
+# $MasonLocalComponentRoot is where your rt instance keeps its site-local
+# mason html files.
+
+$MasonLocalComponentRoot = '@MASON_LOCAL_HTML_PATH@';
+
+# $MasonDataDir Where mason keeps its datafiles
+
+$MasonDataDir = '@MASON_DATA_PATH@';
+
+# RT needs to put session data (for preserving state between connections
+# via the web interface)
+$MasonSessionDir = '@MASON_SESSION_PATH@';
+
+
 
 =head1 NAME
 

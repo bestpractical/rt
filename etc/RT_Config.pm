@@ -34,38 +34,6 @@ $MinimumPasswordLength = "5";
 # $Timezone is used to convert times entered by users into GMT and back again
 # It should be set to a timezone recognized by your local unix box.
 $Timezone =  'US/Eastern'; 
-
-$BasePath = '/opt/rt3';
-
-$EtcPath = '/opt/rt3/etc';
-$VarPath = '/opt/rt3/var';
-$LocalLexiconPath = '/opt/rt3/local/po';
-
-
-# This directory should be writable by your rt group
-$LogDir = '/opt/rt3/var/log';
-
-
-# $MasonComponentRoot is where your rt instance keeps its mason html files
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonComponentRoot = '/opt/rt3/html';
-
-# $MasonLocalComponentRoot is where your rt instance keeps its site-local
-# mason html files.
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonLocalComponentRoot = '/opt/rt3/local/html';
-
-# $MasonDataDir Where mason keeps its datafiles
-# (this should be autoconfigured during 'make install' or 'make upgrade')
-
-$MasonDataDir = '/opt/rt3/var/mason_data';
-
-# RT needs to put session data (for preserving state between connections
-# via the web interface)
-$MasonSessionDir = '/opt/rt3/var/session_data';
-
 # }}}
 
 
