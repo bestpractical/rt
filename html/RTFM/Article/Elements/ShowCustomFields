@@ -1,0 +1,28 @@
+<table>
+% while (my $cf = $cfs->Next) {
+% my $values = $article->CustomFieldValues($cf->Id);
+<tr>
+<td valign=top><b><%$cf->Name%></b></td>
+<td>
+<% ($cf->Type !~ /Single$/) && '<ul>' |n%>
+%   while (my $value = $values->Next) {
+%       my $content;
+%       if ( $value) {$content = $value->Content};
+%       if ($cf->Type =~ /^(FreeForm|Text)/) {
+%           $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
+%       }
+<%($cf->Type !~ /Single$/) && '<li>'|n%>
+<%$content|n%>
+% }
+<%($cf->Type !~ /Single$/ )&& '</ul>'|n%>
+% }
+</td>
+</tr>
+</table>
+<%init>
+my $cfs = $article->ClassObj->CustomFields;
+</%init>
+
+<%args>
+$article => undef
+</%args>

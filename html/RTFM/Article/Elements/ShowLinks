@@ -1,0 +1,51 @@
+    <table width="100%">
+    <tr>
+    <td valign="top">
+
+<&|/l&>Refers to</&>:<BR>
+<UL>
+% my $refersto = $article->RefersTo;
+
+% while (my $link = $refersto->Next) {
+% my $member = $link->TargetURI;
+<LI>
+% if ($link->TargetURI->IsLocal) {
+
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
+% } else {
+<A HREF="<%$member->Resolver->HREF%>"><%$link->Target%></A>
+% }
+%}
+</UL>
+</td>
+<td valign="top">
+<&|/l&>Referred to by</&>:<BR>
+<UL>
+% my $referredtoby = $article->ReferredToBy;
+% while (my $link = $referredtoby->Next) {
+% my $member = $link->BaseURI;
+<LI>
+% if ($member->URI->IsLocal) {
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
+% } else {
+<A HREF="<%$member->Resolver->HREF%>"><%$link->Base%></A>
+%}
+% }
+</UL>
+</tr>
+</table>
+<%args>
+$article => undef
+</%args>

@@ -1,0 +1,30 @@
+<table width="100%" cellspacing="0" cellpadding="2">
+% my $i;
+% while (my $transaction = $transactions->Next) {
+<TR class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >
+<td width="20%"><small><%$transaction->CreatedObj->AsString%></small></td>
+<td><%$transaction->CreatorObj->Name%></td>
+<td><%$transaction->Description%></td>
+</tr>
+% }
+</table>
+<%init>
+
+my $article = RT::FM::Article->new($session{'CurrentUser'}); 
+
+$article->Load($id);
+unless ($article->Id) {
+    $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
+}
+
+unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
+                                           Right => 'ShowArticle')) {
+    $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
+}
+
+my $transactions = $article->Transactions();
+
+</%init>
+<%args>
+$id => undef
+</%args>

@@ -1,0 +1,10 @@
+<ul>
+% while (my $article = $articles->Next) {
+<li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
+<br><font size="-1"><%$article->Summary%></font>
+</li>
+% }
+</ul>
+<%args>
+$articles => undef
+</%args>

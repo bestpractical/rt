@@ -1,0 +1,78 @@
+% if ($ARGS{'HideOptions'} == 1) {
+% my $qs = $ENV{'QUERY_STRING'};
+% $qs =~ s/HideOptions=1//gi;
+<a href="Search.html?<%$qs%>">Show advanced search options...</a>
+% }  else { 
+<& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
+<form target="Search.html" method="GET">
+<br>Class is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
+5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+and is not <& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1,
+Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
+<br>Name matches 
+<input name="Name~" value="<%$ARGS{'Name~'}%>">
+and does not match 
+<input name="Name!~" value="<%$ARGS{'Name!~'}%>">
+<br>Summary matches 
+<input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
+and does not match 
+<input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
+
+<br>Created between
+<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+and 
+<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+
+<br>Updated between
+<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
+and 
+<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
+($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
+<br>
+Which refer to <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
+<i>Seperate multiple URLs with spaces</i>
+<br>
+Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
+<i>Seperate multiple URLs with spaces</i>
+
+
+<table>
+%# for each custom field 
+% while (my $field = $customfields->Next ) {
+
+<tr>
+<td><%$field->Name%> matches</td><td valign=top>
+% my $matches = $field->Name."~";
+% my $nomatches = $field->Name."!~";
+<& /RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $matches,
+    Values => $ARGS{$matches} &>
+    </td>
+    <td>and doesn't match</td>
+    <td valign="top">
+<& /RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $nomatches,
+    Values => $ARGS{$nomatches}
+    &>
+    </td>
+    </tr>
+
+% }
+</table>
+
+<div align="right"><input type="submit"></div>
+<&/Elements/TitleBoxEnd&>
+% }
+</form>
+
+
+</%init>
+<%ARGS>
+$dates =>undef
+$RefersTo => undef
+$ReferredToBy => undef
+$customfields => undef
+</%ARGS>

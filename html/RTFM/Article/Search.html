@@ -1,93 +1,9 @@
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
+<& Elements/ShowSearchResults, articles => $articles &>
 
-
-<ul>
-% while (my $article = $articles->Next) {
-
-<li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
-<br><font size="-1"><%$article->Summary%></font>
-</li>
-% }
-</ul>
-
-% if ($ARGS{'HideOptions'} == 1) {
-% my $qs = $ENV{'QUERY_STRING'};
-% $qs =~ s/HideOptions=1//gi;
-<a href="Search.html?<%$qs%>">Show advanced search options...</a>
-% }  else { 
-<& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
-<form target="Search.html" method="GET">
-<br>Class is <& ../Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
-5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
-and is not <& ../Elements/SelectClass, Name => 'Class!', Multiple =>1,
-Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
-<br>Name matches 
-<input name="Name~" value="<%$ARGS{'Name~'}%>">
-and does not match 
-<input name="Name!~" value="<%$ARGS{'Name!~'}%>">
-<br>Summary matches 
-<input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
-and does not match 
-<input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
-
-<br>Created between
-<& /Elements/SelectDate, Name=>"Created>", Default => ($dates{'Created>'} ? $dates{'Created>'}->ISO : '') &>
-and 
-<& /Elements/SelectDate, Name=>"Created<", Default => ($dates{'Created<'} ? $dates{'Created<'}->ISO:'')&>
-
-<br>Updated between
-<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
-($dates{'LastUpdated>'} ? $dates{'LastUpdated>'}->AsString:'')&>
-and 
-<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
-($dates{'LastUpdated<'} ? $dates{'LastUpdated<'}->AsString:'')&>
-<br>
-Which refer to <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
-<i>Seperate multiple URLs with spaces</i>
-<br>
-Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
-<i>Seperate multiple URLs with spaces</i>
-
-
-<table>
-%# for each custom field 
-% while (my $field = $customfields->Next ) {
-
-<tr>
-<td><%$field->Name%> matches</td><td valign=top>
-% my $matches = $field->Name."~";
-% my $nomatches = $field->Name."!~";
-<& Elements/SearchByCustomField, 
-    Field => $field, 
-    Name => $matches,
-    Values => $ARGS{$matches} &>
-    </td>
-    <td>and doesn't match</td>
-    <td valign="top">
-<& Elements/SearchByCustomField, 
-    Field => $field, 
-    Name => $nomatches,
-    Values => $ARGS{$nomatches}
-    &>
-    </td>
-    </tr>
-
-% }
-</table>
-
-<div align="right"><input type="submit"></div>
-<&/Elements/TitleBoxEnd&>
-% }
-</form>
+<& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <%init>
-my $user;
 my @results;
-if ( $session{'CurrentUser'} ) {
-    $user = $session{'CurrentUser'};
-}
-else {
-    $user = RT::CurrentUser->new('RTFM-Guest');
-}
 
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
@@ -130,7 +46,7 @@ foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
 }
 
 my %cfs;
-my $all_cfs = RT::FM::CustomFieldCollection->new($user);
+my $all_cfs = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
 $all_cfs->UnLimit();
 while ( my $cf = $all_cfs->Next ) {
     $cfs{ $cf->Name } = $cf->Id;

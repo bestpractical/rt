@@ -1,0 +1,9 @@
+<%init>
+unless ($session{'CurrentUser'}) {
+        $session{'CurrentUser'} = RT::User->new($RT::SystemUser);
+       $session{'CurrentUser'}->LoadByName('RTFM Guest');
+}
+unless ($session{'CurrentUser'}->Id) {
+        $m->comp("/RTFM/Elements/Error", Details => "No 'RTFM Guest' user exists");
+}
+</%init>

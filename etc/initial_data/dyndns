@@ -28,3 +28,9 @@
                    { Name => 'general', } ] }
 
 );
+
+@Users = (
+        { Name => 'RTFM Guest',
+          Privileged => '0',
+         }
+); 

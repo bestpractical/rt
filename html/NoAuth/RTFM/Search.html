@@ -1,112 +1,198 @@
-<& Elements/Header &>
-<& Elements/Results &>
+<& /NoAuth/RTFM/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
+<& /RTFM/Article/Elements/ShowSearchResults, articles => $articles &>
 
+<& /RTFM/Article/Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <%init>
-my $user;
-if ($session{'CurrentUser'}) {
-        $user = $session{'CurrentUser'};
-} else {
-        $user = RT::CurrentUser->new('RTFM-Guest');
+my @results;
+
+my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+
+
+my $customfields = RT::FM::CustomFieldCollection->new( $session{'CurrentUser'} );
+if ( $ARGS{'Class'} ) {
+    $customfields->LimitToClass( $ARGS{'Class'} );
+}
+else {
+    $customfields->UnLimit();
+
 }
 
-my $customfields = RT::FM::CustomFields->new($user);
-$customfields->UnLimit();
+# Don't want to search for a null class when there is no class specced
+my %dates;
+foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
+    next unless ( $ARGS{$date} );
+    my $seconds = parsedate( $ARGS{$date}, FUZZY => 1, PREFER_PAST => 1 );
+    my $date_obj = RT::Date->new( $session{'CurrentUser'} );
+    $date_obj->Set( Format => 'unix', Value => $seconds );
+    $dates{$date} = $date_obj;
 
-while (my $cf = $customfields->Next) {
-        $cfs{$cf->Name} = $cf->Id;
+    if ( $date =~ /^(.*?)<$/i ) {
+        $articles->Limit( FIELD           => $1, OPERATOR        => "<=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
+    }
+
+    if ( $date =~ /^(.*?)>$/i ) {
+        $articles->Limit( FIELD           => $1, OPERATOR        => ">=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
+    }
+
+}
+foreach my $link ( split ( /\s+/, $RefersTo ) ) {
+    next unless ($link);
+    $articles->LimitRefersTo($link);
 }
 
-my $articles = RT::FM::Articles->new($user);
-
-
-foreach my $field (keys $cfs) {
-    my ( @Match, @NoMatch );
-    @Match = ( ref( $ARGS{$field} ) ? $ARGS{$field} : [ $ARGS{$field} ] );
-    @NoMatch = ( ref( $ARGS{ $field . "!" } ) ? $ARGS{ $field . "!" } : [ $ARGS{ $field . "!" } ] );
-
-        foreach my $value (@Match) {
-            my $op;
-            if ( $value =~ /^~(.*)$/ ) {
-                $value = "%$1%";
-                $op    = 'LIKE';
-            }
-            else {
-                $op = '=';
-            }
-            $articles->LimitCustomField( FIELD           => $cfs{$field},
-                                         VALUE           => $value,
-                                         ENTRYAGGREGATOR => 'OR',
-                                         OPERATOR        => $op );
-        }
-        foreach my $value (@NoMatch) {
-            my $op;
-            if ( $value =~ /^~(.*)$/ ) {
-                $value = "%$1%";
-                $op    = 'NOT LIKE';
-            }
-            else {
-                $op = '!=';
-            }
-            $articles->LimitCustomField( FIELD           => $cfs{$field},
-                                         VALUE           => $value,
-                                         ENTRYAGGREGATOR => 'OR',
-                                         OPERATOR        => $op );
-        }
+foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
+    next unless ($link);
+    $articles->LimitReferredToBy($link);
 }
 
-foreach my $field qw(Name Summary Class) {
-    my ( @Match, @NoMatch );
-    @Match = ( ref( $ARGS{$field} ) ? $ARGS{$field} : [ $ARGS{$field} ] );
-    @NoMatch = ( ref( $ARGS{ $field . "!" } ) ? $ARGS{ $field . "!" } : [ $ARGS{ $field . "!" } ] );
+my %cfs;
+my $all_cfs = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
+$all_cfs->UnLimit();
+while ( my $cf = $all_cfs->Next ) {
+    $cfs{ $cf->Name } = $cf->Id;
+}
 
-    my $op;
+foreach my $field ( keys %cfs ) {
+   
+   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
+   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
+
+   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
+   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
+
+    foreach my $val (@MatchLike) {
+        next unless $val;
+        push @Match, "~".$val;
+    }
+
+    foreach my $val (@NoMatchLike) {
+        next unless $val;
+        push @NoMatch, "~".$val;
+    }
+
+
     foreach my $value (@Match) {
-        # preprocess Classes, so we can search on class
-        if ($field eq 'Class') {
-                my $class = RT::FM::Class->new($RT::SystemUser);
-                $class->Load($field);
-                $value = $class->Id;
-        }
-
+        next unless $value;
+        my $op;
         if ( $value =~ /^~(.*)$/ ) {
             $value = "%$1%";
-            $op   = 'LIKE';
+            $op    = 'LIKE';
         }
         else {
             $op = '=';
         }
+        $articles->LimitCustomField( FIELD           => $cfs{$field},
+                                     VALUE           => $value,
+                                     ENTRYAGGREGATOR => 'OR',
+                                     OPERATOR        => $op );
     }
-
-    $self->Limit( SUBCLAUSE       => $field . 'Match',
-                  FIELD           => 'Name',
-                  OPERATOR        => $op,
-                  NAME            => $value,
-                  ENTRYAGGREGATOR => 'OR' );
-
     foreach my $value (@NoMatch) {
-        # preprocess Classes, so we can search on class
-        if ($field eq 'Class') {
-                my $class = RT::FM::Class->new($RT::SystemUser);
-                $class->Load($field);
-                $value = $class->Id;
-        }
-        if ( $value =~ /^~(.*)/ ) {
+        next unless $value;
+        my $op;
+        if ( $value =~ /^~(.*)$/ ) {
             $value = "%$1%";
-            $op   = 'NOT LIKE';
+            $op    = 'NOT LIKE';
         }
         else {
             $op = '!=';
         }
+        $articles->LimitCustomField( FIELD           => $cfs{$field},
+                                     VALUE           => $value,
+                                     ENTRYAGGREGATOR => 'OR',
+                                     OPERATOR        => $op );
     }
-    $self->Limit( SUBCLAUSE       => $field . 'NoMatch',
-                  OPERATOR        => $op,
-                  NAME            => $value,
-                  FIELD           => $field,
-                  ENTRYAGGREGATOR => 'AND' );
+}
 
+
+foreach my $field qw(Name Summary Class) {
+    
+
+
+   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
+   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
+
+   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
+   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
+
+    foreach my $val (@MatchLike) {
+        next unless $val;
+        push @Match, "~".$val;
+    }
+
+    foreach my $val (@NoMatchLike) {
+        next unless $val;
+        push @NoMatch, "~".$val;
+    }
+
+    my $op;
+    foreach my $value (@Match) {
+        if ( $value =~ /^~(.*)$/ ) {
+            $value = "%$1%";
+            $op    = 'LIKE';
+        }
+        else {
+            $op = '=';
+        }
+
+        # preprocess Classes, so we can search on class
+        if ( $field eq 'Class' ) {
+            my $class = RT::FM::Class->new($RT::SystemUser);
+            $class->Load($value);
+            $value = $class->Id;
+        }
+
+        # now that we've pruned the value, get out if it's different.
+        next unless $value;
+
+        $articles->Limit( SUBCLAUSE       => $field . 'Match',
+                          FIELD           => $field,
+                          OPERATOR        => $op,
+                          VALUE            => $value,
+                          ENTRYAGGREGATOR => 'OR' );
+
+    }
+    foreach my $value (@NoMatch) {
+        $RT::Logger->debug( "noMatch value is '$value' for $field");
+        
+
+        # preprocess Classes, so we can search on class
+        if ( $value =~ /^~(.*)/ ) {
+            $value = "%$1%";
+            $op    = 'NOT LIKE';
+        }
+        else {
+            $op = '!=';
+        }
+        if ( $field eq 'Class' ) {
+            my $class = RT::FM::Class->new($RT::SystemUser);
+            $class->Load($value);
+            $value = $class->Id;
+        }
+
+        # now that we've pruned the value, get out if it's different.
+        next unless $value;
+
+        $articles->Limit( SUBCLAUSE       => $field . 'NoMatch',
+                          OPERATOR        => $op,
+                          VALUE            => $value,
+                          FIELD           => $field,
+                          ENTRYAGGREGATOR => 'AND' );
+
+    }
 }
 
 
 
+</%init>
+
 
 </%init>
+<%ARGS>
+$CreatedBefore => ''
+$CreatedAfter => ''
+$LastUpdatedBefore => ''
+$LastUpdatedAfter => ''
+$RefersTo => undef
+$ReferredToBy => undef
+
+</%ARGS>
