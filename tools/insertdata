@@ -346,7 +346,8 @@ Transaction: {$Transaction->Description}
                   Queue   => '0',
                   Name => 'AdminCorrespondence',
                   Description => 'Default admin correspondence template',
-                  Content => 'Subject: {$Transaction->Subject|| "(No subject given)"}
+                  Content => '
+
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 
@@ -366,7 +367,7 @@ Transaction: {$Transaction->Description}
                   Queue   => '0',
                   Name => 'AdminComment',
                   Description => 'Default admin comment template',
-                  Content =>  'Subject: [Comment] {my $s=$Transaction->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
+                  Content =>  'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
