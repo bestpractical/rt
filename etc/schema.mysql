@@ -96,8 +96,8 @@ INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 			  'Sends mail to owner when anything happens',
 			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
 
-INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips follows', 'None', 
-			  NULL, NULL, NULL, NULL, NULL);
+INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
+			  NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 # }}}
 
@@ -338,8 +338,9 @@ CREATE TABLE Templates (
 
 # {{{ Values for Templates
 # Default templates
-# Should eventually be created through some init script calling on the CLI
-INSERT INTO Templates VALUES (1,'Default Autoresponse Template', NULL, NULL
+# Should eventually be created through some init script calling on the CLI admin tools
+
+INSERT INTO Templates VALUES (1,'Default Autoresponse Template', NULL, NULL,
 'Subject: AutoReply: {$Ticket->Subject}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
@@ -364,7 +365,7 @@ problem. To do so, you may reply to this message.
 ',
 NULL,20000227191248,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL
+INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 'Reply-To: {$Ticket->Queue->CommentAddress} (Replies will be entered as comments)
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
@@ -382,19 +383,19 @@ NULL,20000227191543,NULL,00000000000000);
 
 
 
-INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, NULL
+INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, NULL,
 'Subject: {$object->{Subject}}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminWatchersAsString}
 
-{$Argument->{Inbound} ? "In" : "Out"}bound correspondence:
+{$Transaction->is_inbound() ? "In" : "Out"}bound correspondence:
 
 <URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
 
 {$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL
+INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL,
 'Subject: Re: {$Transaction->Subject}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
@@ -407,7 +408,7 @@ NULL,20000227191745,NULL,00000000000000);
 
 
 
-INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL
+INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
 'Subject: [Comment] $object->{Subject}
 Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
@@ -421,7 +422,7 @@ This is a comment.  It is not sent to the Requestor(s):
 NULL,20000227191745,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (6,'Status Change', NULL, NULL
+INSERT INTO Templates VALUES (6,'Status Change', NULL, NULL,
 'Subject: Status Changed to: {$Transaction->NewValue}
 Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
@@ -433,7 +434,7 @@ http://{$WebRT}/ticket/display.html?id={$Ticket->id}
 ',
 NULL,20000227191745,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (7,'Ticket Resolved',
+INSERT INTO Templates VALUES (7,'Ticket Resolved', NULL, NULL,
 'Subject: Ticket Resolved
 Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
