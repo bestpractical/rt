@@ -22,7 +22,7 @@
  <&|/l&>Name</&>
 </td>
 <td>
-<input name=Name value="<%$ArticleObj->Name || $ARGS{'Name'} |h%>"  SIZE=50>
+<input name="Name" value="<%($ARGS{'id'} eq 'new' ? "" : $ArticleObj->Name) || $ARGS{'Name'} |h%>" size="50" />
 </TD>
 </TR>
 <TR>
@@ -30,7 +30,7 @@
  <&|/l&>Summary</&>
 </td>
 <td>
-<input name=Summary value="<%$ArticleObj->Summary || $ARGS{'Summary'} |h%>"  SIZE=50>
+<input name="Summary" value="<%($ARGS{'id'} eq 'new' ? "" : $ArticleObj->Summary) || $ARGS{'Summary'} |h%>" size="50" />
 </TD>
 </TR>
 <TR>
