@@ -1,3 +1,108 @@
+2 Aug 98
+--------
+
+	Incorporated a LOT of changes from Serge Zhuk (CHECK SPELLING AND EMAIL)
+
+
+Bug fixes:
+
+- mail header <From:> was inserted using sendmail -f, what produces
+  X-Authentication warning on each message
+
+- 'Merge' function was completely incorrect- needed special handling of 
+  effective_sn field, e-mail addresses of requestors were merged incorrectly,
+  transaction had an empty date and text, webrt displayed junk 
+  (empty transactions) as it didn't change the SN after the 'Merge',
+  a lot of related bugs
+
+- Area-s handling in 'Create request' was incorrect due to the bug in acl
+  check (non-existent variable was checked)
+
+- Several 'SELECTED' entries in a menu is a bug as web browsers handle it
+  differently. Netscape takes the first 'SELECTED' entry while IE4 takes the
+  last one. There should be only one ;)
+  
+  So with IE4, users ACL in Q configuration was displayed incorrectly (all
+  users have 'Display' privelege) and if you press 'Update', new ACL will be
+  set to 'Display' only, including the Q admin.  The option was exclusive 
+  anyway, so it doesn't make any sense to SELECT several entries.
+
+- Q admin had possibility to remove his own Q admin privelege, so with the
+  above bug, he locks himself out.  Note, that this bug didn't affect 'RT 
+  admin' attrib.
+
+- only RT admin could change Q config as Q admin attrib was checked
+  incorrectly (wrong variable name)
+
+- 'change area' transaction was producing incorrect message when request was
+  moved from an area to the main Q (to area 'None')
+
+- 'change Q' option didn't work properly. rt didn't notice the change, 
+  resulting empty transactions and junk on the screen
+
+- duplicate transactions in attempt to change any field which wasn't
+  actually changed (like change of status from 'open' to 'open' etc)
+
+- a lot of other bugs i don't remember about ;)
+
+New features:
+
+
+- password length check added, empty passwords are not allowed 6 chars min
+
+- mail header <From:> is using an e-mail address of the Q, user sent request
+  to, not the generic rt_alias as it's confusing for the users
+
+- don't mail message headers to anybody
+
+- don't display message headers either as this is annoying
+
+- notify requestors/owners/q_members according to the Q settings
+  (was totally broken before)
+
+- e-mail addresses are always fully qualified now option '$domain' added 
+  to /etc/config.pm for that and for checking the duplicates in the 
+  'requestors' field.  '/etc/domainname' etc could be inefficient as your 
+  mail domain could be different of your host domain.
+  
+- real_name field is in use now you can enter/change it from the admin web page
+
+- alias %owner% (newly added) expands to the real name and e-mail address of
+  the request's owner in a mail template
+
+
+- send message to the request owner in case of the owner change because
+  of 'steal' or 'merge'.
+
+- 'Modify Q' in web admin changed to View/Modify depending on user's priveleges
+
+- Sort users and Q-s by name in all web selections.  Helps to find needed 
+  Q/person if you have many Q-s and/or Q members
+
+- allow Q member to change the request's Q even if he doesn't own the
+  request don't make him 'take' and then change Q, 'cause it's annoying and 
+  was done only because it was easy to code ;)
+
+- display requestor's personal information if company phone directory is
+  available on the web.  Change '$isweb_uinfo' in web/manipulate.pm sub 
+  display_summary() to the appropriate URL for your company
+
+
+
+Additionally, serge added some functionality to mail to the user on "take, give, steal, etc." which I didn't patch into the main codebase, as it goes against my philosophy of how RT should work in this incarnation.  He also added functionality to make webrt work as a non-ssl-based script.  I removed this, as I'll be adding cookie-auth soon.  
+
+ISSUES:
+	cookie-auth
+	cli updates
+	with view only, the user should NOT be able to have options to change 
+	things in webrt.
+
+	optionally, don't show/send headers.
+
+
+
+
+
 26 Jun 98
 ---------
 	

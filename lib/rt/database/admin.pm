@@ -134,7 +134,7 @@ sub add_modify_queue_conf {
 	if ($update_clause) {
 	    $update_clause =~ s/,(\s),/, /g;
 
-	    if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{$in_current_user}{admin_queue})) {
+	    if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
 		$query_string = "UPDATE queues SET $update_clause WHERE queue_id = $queue_id";
 	       
 		$query_string =~ s/,(\s*)WHERE/ WHERE/g;
@@ -196,6 +196,8 @@ sub add_modify_queue_acl {
         return(0,"That user does not exist");
     }
     if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
+# don't lock yourself out
+        $in_admin = 1 if $in_user_id eq $in_current_user && ! $in_admin && $queues{$in_queue_id}{acls}{$in_current_user}{admin};
 	if (!($queues{$in_queue_id}{acls}{$in_user_id}{display})){
 	    $query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulate, $in_admin)";
 	    $dbh->Query($query_string) or return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
@@ -245,10 +247,15 @@ sub add_modify_queue_acl {
 }
 
 sub add_modify_user_info {
-    my  ($in_user_id, $in_password, $in_email, $in_phone, $in_office, $in_comments, $in_admin_rt, $in_current_user) = @_;
+    my  ($in_user_id, $in_real_name,$in_password,$in_email, $in_phone, $in_office, $in_comments, $in_admin_rt, $in_current_user) = @_;
     my ($query_string,$update_clause);
 
+    my $passwd_limit = 6;
+    my $passwd_err = "Use longer password ($passwd_limit chars minimum)";
+    
     $new_user_id = $rt::dbh->quote($in_user_id);
+    $new_real_name = $rt::dbh->quote($in_real_name);
+    $in_password =~ s/\s//g;
     $new_password =$rt::dbh->quote($in_password);
     $new_email = $rt::dbh->quote($in_email);
     $new_phone = $rt::dbh->quote($in_phone);
@@ -257,8 +264,11 @@ sub add_modify_user_info {
   
 
     if (!(&is_a_user($in_user_id))){
+# make sure one didn't specify too short password
+	return (0,$passwd_err) if length($in_password) < $passwd_limit;
+
 	if ($users{$in_current_user}{admin_rt}){
-	    $query_string="INSERT INTO users (user_id, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
+	    $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
 	    $dbh->Query($query_string) or warn "[add_modify_user_info] Query had some problem: $Mysql::db_errstr\n";
 
 	    &rt::load_user_info();
@@ -273,13 +283,18 @@ sub add_modify_user_info {
     }
     else {
 	if ($users{$in_current_user}{admin_rt} or ($in_current_user eq $in_user_id)) {
+	    if ($in_real_name ne $users{$in_user_id}{'real_name'}) {$update_clause .= "real_name = $new_real_name, ";}
 	    if ($in_email ne $users{$in_user_id}{'email'}) {$update_clause .= "email = $new_email, ";}
 	    if ($in_user_id ne $users{$in_user_id}{'user_id'}) {$update_clause .= "user_id = $new_user_id, ";}
 	    if ($in_phone ne $users{$in_user_id}{'phone'}) {$update_clause .= "phone = $new_phone, ";}
 	    if ($in_office ne $users{$in_user_id}{'office'}) {$update_clause .= "office = $new_office, ";}
 	    if ($in_comments ne $users{$in_user_id}{'comments'}) {$update_clause .= "comments = $new_comments, ";}
 	    if ($in_admin_rt ne $users{$in_user_id}{'admin_rt'}) {$update_clause .= "admin_rt = $in_admin_rt, ";}
-	    if (($in_password ne $users{$in_user_id}{'password'}) && ($in_password ne '')) {$update_clause .= "password = $new_password ";}
+	    if (($in_password ne $users{$in_user_id}{'password'}) && ($in_password ne ''))
+	    {
+		return (0,$passwd_err) if length($in_password) < $passwd_limit;
+	    	$update_clause .= "password = $new_password ";
+	    }
 	    if ($update_clause) {
 		$query_string = "UPDATE users SET $update_clause WHERE user_id = $new_user_id";
 		$query_string =~ s/,(\s*)WHERE/ WHERE/g;

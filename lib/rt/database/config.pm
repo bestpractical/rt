@@ -54,7 +54,7 @@ sub load_queue_areas {
 sub load_user_info {
     my ($row);
 
-    $query_string="SELECT user_id, password, email,  phone, office, comments, admin_rt FROM users";
+    $query_string="SELECT user_id, password, email,  phone, office, comments, admin_rt, real_name FROM users";
     $sth = $dbh->Query($query_string) or warn "[load_user_info] Query had some problem: $Mysql::db_errstr\n$query_string\n";
     while (@row=$sth->FetchRow) { 
 	$user_id=$row[0];
@@ -65,6 +65,7 @@ sub load_user_info {
 	$users{$user_id}{office}=$row[4];
 	$users{$user_id}{comments}=$row[5];
 	$users{$user_id}{admin_rt}=$row[6];
+	$users{$user_id}{real_name}=$row[7];
     }
     
 }

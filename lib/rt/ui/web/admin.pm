@@ -1,8 +1,8 @@
 package rt::ui::web;
 
 sub activate { 
-use Time::Local;
-require rt::ui::web::auth;
+  use Time::Local;
+  require rt::ui::web::auth;
 
 &rt::ui::web::cgi_vars_in();
 $ScriptURL=$ENV{'SCRIPT_NAME'}.$ENV{'PATH_INFO'};
@@ -85,7 +85,7 @@ sub DisplayForm {
 	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the User called'){
        	    &FormModifyUser($rt::ui::web::FORM{'user_id'});
 	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the Queue called'){
+	elsif ($rt::ui::web::FORM{'display'} =~ /(View|Modify) the Queue called/){
 	    &FormModifyQueue($rt::ui::web::FORM{'queue_id'});
 	}
 	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this Queue'){
@@ -106,10 +106,11 @@ sub take_action {
 
     if ($rt::ui::web::FORM{action} eq "Update Queue") {
 	
-      ($flag, $message)=&rt::add_modify_queue_conf($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{email}, &rt::booleanize($rt::ui::web::FORM{m_owner_trans}), &rt::booleanize($rt::ui::web::FORM{m_members_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_create}), &rt::booleanize($rt::ui::web::FORM{m_members_correspond}), &rt::booleanize($rt::ui::web::FORM{m_members_comment}), &rt::booleanize($rt::ui::web::FORM{allow_user_create}), "$rt::ui::web::FORM{'initial_prio_tens'}$rt::ui::web::FORM{'initial_prio_ones'}","$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}", $current_user);
+      ($flag, $message)=&rt::add_modify_queue_conf($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{email}, &rt::booleanize($rt::ui::web::FORM{m_owner_trans}), &rt::booleanize($rt::ui::web::FORM{m_members_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_create}), &rt::booleanize($rt::ui::web::FORM{m_members_correspond}), &rt::booleanize($rt::ui::web::FORM{m_members_comment}), &rt::booleanize($rt::ui::web::FORM{allow_user_create}), "$rt::ui::web::FORM{'initial_prio_tens'}$rt::ui::web::FORM{'initial_prio_ones'}","$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}",$current_user);
 
 
-	while (($user_id,$value)= each %rt::users) {
+	for( sort keys %rt::users) {
+	    $user_id = $rt::users{$_};
 	    $acl_string="acl_" . $rt::ui::web::FORM{queue_id} . "_" . $user_id;
 	    $acl=$rt::ui::web::FORM{$acl_string};
 	    if ($acl eq 'admin') {
@@ -130,6 +131,7 @@ sub take_action {
 
     if ($rt::ui::web::FORM{action} eq "delete_user") {
 	($flag, $message)=&rt::delete_user($rt::ui::web::FORM{user_id}, $current_user);
+
 	
 	}
     if ($rt::ui::web::FORM{action} eq "delete_queue") {
@@ -137,10 +139,10 @@ sub take_action {
 
         }       
     if ($rt::ui::web::FORM{action} eq "Update User") {
+	($flag, $message)=&rt::add_modify_user_info($rt::ui::web::FORM{user_id}, $rt::ui::web::FORM{real_name}, $rt::ui::web::FORM{password}, $rt::ui::web::FORM{email}, $rt::ui::web::FORM{phone}, $rt::ui::web::FORM{office},$rt::ui::web::FORM{comments}, &rt::booleanize($rt::ui::web::FORM{admin_rt}), $current_user);
 
-	
-	($flag, $message)=&rt::add_modify_user_info($rt::ui::web::FORM{user_id}, $rt::ui::web::FORM{password}, $rt::ui::web::FORM{email}, $rt::ui::web::FORM{phone}, $rt::ui::web::FORM{office},$rt::ui::web::FORM{comments}, &rt::booleanize($rt::ui::web::FORM{admin_rt}), $current_user);
-	while (($queue_id,$value)= each %rt::queues) {
+
+	foreach $queue_id (sort keys %rt::queues) {
 
 	    $acl_string="acl_" . $queue_id . "_" . $rt::ui::web::FORM{user_id};
 	    $acl=$rt::ui::web::FORM{$acl_string};
@@ -194,7 +196,7 @@ sub menu () {
 <input type=Submit name=display value=\"Create a User called\"> <input size=15 name=\"new_user_id\">
 <br>
 <input type=submit name=display value=\"Modify the User called\"> <select name=\"user_id\">\n";
-		    while (($user_id,$value)= each %rt::users) {
+		    foreach $user_id (sort keys %rt::users) {
 			print "<option value=\"$user_id\">$user_id\n";
 			
 		    }
@@ -212,11 +214,42 @@ sub menu () {
 	print "<input type=Submit name=display value=\"Create a Queue called\"> <input size=15 name=\"new_queue_id\">
 <br>";
 }
-    print "<input type=submit name=display value=\"Modify the Queue called\"> <select name=\"queue_id\">";
-    while (($queue_id,$value)= each %rt::queues) {
-	#if (&rt::can_admin_queue($queue_id, $current_user)){
-	    print "<option value=\"$queue_id\">$queue_id";
-	#}
+    my $q = 0;
+    for( keys %rt::queues ) {
+        next if ! &rt::can_admin_queue($_, $current_user);
+	$q = 1;
+	last;
+    }
+    if( ! $q && ! $rt::users{$current_user}{admin_rt} )
+    {
+        $q = 0;
+	for( keys %rt::queues ) {
+    	    next if ! &rt::can_manipulate_queue($_, $current_user);
+	    $q = 1;
+	    last;
+	}
+	if( ! $q )
+	{
+	    print "<BR>You're not allowed to view/modify queue configuration";
+	    print "</TD></TR></TABLE>";
+    	    print "</form>\n";
+	    return;
+	}
+        print "<input type=submit name=display value=\"View the Queue called\"> <select name=\"queue_id\">";
+	for( sort keys %rt::queues) {
+	    if( &rt::can_manipulate_queue($_, $current_user)){
+		print "<option value=\"$_\">$_";
+	    }
+	}
+    }    	
+    else
+    {
+        print "<input type=submit name=display value=\"Modify the Queue called\"> <select name=\"queue_id\">";
+	for( sort keys %rt::queues) {
+	    if( $rt::users{$current_user}{admin_rt} or &rt::can_admin_queue($_, $current_user)){
+		print "<option value=\"$_\">$_";
+	    }
+	}
     }
     print "</select>\n";
 	print "</TD></TR></TABLE>";
@@ -224,10 +257,6 @@ sub menu () {
     print "</form>\n";
     
 }
-
-
-
-
 
 sub FormModifyUser{
     my ($user_id) = @_;
@@ -260,6 +289,14 @@ Username:
 </td>
 <td>
 $user_id
+</td>
+</tr>
+<tr>
+<td>
+Real name:   
+</td>
+<td>
+<input name=\"real_name\" size=30 value=\"$rt::users{$user_id}{real_name}\">
 </td>
 </tr>
 <tr>
@@ -312,7 +349,7 @@ misc:
 		    print "RT Admin: <input type=\"checkbox\" name=\"admin_rt\" ";
 		    print "checked" if ($rt::users{$user_id}{admin_rt});
 		    print "><br><hr>\n";
-		    while (($queue_id,$value)= each %rt::queues) {
+		    foreach $queue_id ( sort keys %rt::queues) {
 			print "<b><A HREF=\"$ScriptURL?display=Modify+the+Queue+called&queue_id=$queue_id\">$queue_id</a>:</b>\n";
 			
 			if (!&rt::is_a_queue($queue_id)){
@@ -327,7 +364,7 @@ misc:
 		    if ($rt::users{user_id}{admin_rt}) {
 			print "<b>This user is an RT administrator</b><br>\n";
 		    }
-		    while (($queue_id,$value)= each %rt::queues) {
+		    foreach $queue_id (sort keys %rt::queues) {
 			print "<b>$queue_id:</b>\n";
 			if (!&rt::can_display_queue($queue_id,$user_id)){
 			    print "No Access\n";
@@ -376,7 +413,7 @@ sub FormModifyQueue{
 
 	}
     else {
-	&page_head("Modify the queue <b>$queue_id</b>");
+	&page_head("View\/Modify the queue <b>$queue_id</b>");
     }
 
 
@@ -449,7 +486,7 @@ Access Control
 </H2>
 
 ";
-    while (($user_id,$value)= each %rt::users) {
+    foreach $user_id (sort keys %rt::users) {
       print "<A HREF=\"$ScriptURL?display=Modify+the+User+called&user_id=$user_id\">$user_id</a>:";
 
 	&select_queue_acls($user_id, $queue_id);
@@ -569,6 +606,8 @@ Be careful not to leave yourself authenticated from a public terminal
 
 sub select_queue_acls {
     my ($user_id, $queue_id) = @_;
+    my $flag = 0;
+    
 	print "<select name=\"acl_". $queue_id . "_" .$user_id. "\">\n";
 	print "<option value=\"none\"";
 	if (!&rt::can_display_queue($queue_id,$user_id)){
@@ -579,16 +618,18 @@ sub select_queue_acls {
 	print "<option value=\"admin\"";
 	if ((&rt::can_admin_queue($queue_id,$user_id))== 1){
 	    print "SELECTED";
+	    $flag = 1;
 	}
 	print">Admin\n";
 
 	print "<option value=\"manip\"";
-	if ((&rt::can_manipulate_queue($queue_id,$user_id))==1){
+	if (! $flag && (&rt::can_manipulate_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
+	    $flag = 1;
 	}
 	print">Manipulate\n";
 	print "<option value=\"disp\"";
-	if ((&rt::can_display_queue($queue_id,$user_id))==1){
+	if (! $flag && (&rt::can_display_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
 	}
 	print">Display\n";	

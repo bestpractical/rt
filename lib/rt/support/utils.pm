@@ -52,6 +52,7 @@ sub can_manipulate_queue {
 	return(0);
     }
 }
+
 sub can_display_queue {
     my ($in_queue, $in_user) =@_;
     if ($queues{$in_queue}{acls}{$in_user}{display}) {
@@ -65,6 +66,7 @@ sub can_display_queue {
 	return(0);
     }
 }
+
 sub can_admin_queue {
     my ($in_queue, $in_user) =@_;
     if ($queues{$in_queue}{acls}{$in_user}{admin}) {
@@ -361,6 +363,27 @@ sub getmonth {
     }
     
     
+}
+
+# make sure we're using full e-mail addresses rather than username w/o
+# the domain part
+sub norm_requestors
+{
+my $reqs = shift;
+my %nreqs;
+my $err = "ERROR: Incorrect requestor(s): '$reqs'";
+
+   $reqs =~ s/\s//g;
+   return ('',$err) if ! $reqs;
+   @l = split(/,/,$reqs);
+   for( @l )
+   {
+	$_ .= "\@$rt::domain" if ! /\@/;
+	$nreqs{$_} = 1;
+   }
+   $res = join(",",sort keys %nreqs);
+   return ('',$err) if ! $res;
+   return ($res,'');
 }
 
 1;

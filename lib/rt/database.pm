@@ -100,7 +100,7 @@ sub add_transaction {
     &req_in($in_serial_num, $in_current_user);
 
     $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $in_actor, $in_type, $in_data, $in_time)";
-     $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
+    $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
     $transaction_num = $sth->insert_id;       
 
     
@@ -110,20 +110,18 @@ sub add_transaction {
         $content_file=&write_content($time,$in_serial_num,$transaction_num,$in_content);
     }
 
-
     if ($in_do_mail) {
       if (!&is_owner($in_serial_num,$in_current_user) and ($owner ne "") and ($queues{$queue_id}{m_owner_trans})){
 	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email},"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
       }
       if ($queues{$queue_id}{m_members_trans}){
 	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list},"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
-    }
-	if ($queues{queue_id}{m_user_trans}){
+      }
+      if ($queues{$queue_id}{m_user_trans}){
 	  &rt::template_mail ('transaction',$queue_id,$requestors,"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+      }
     }
-      
-      
-}
+
     return ($transaction_num);
 }
 
@@ -131,29 +129,17 @@ sub update_each_req {
     my ($in_serial_num, $in_field, $in_new_value) = @_;
     my $query_string;
     
-   
-
- # DANGER, WILL ROBINSON!  
- # the following code works great right now, but if we modify the fields in the schema, 
- # we'll need to update the if below.  I'd rather just rewrite scrub to be intelligent about 
- # how to scrub...but to do that, we'd have to read the field type for each field...which 
- # we don't do yet
- #
-   
+	
+    # if we're not actually changing the field, just abort 
+    return 0 if $rt::req[$in_serial_num]{$in_field} eq $in_new_value;
+    #quote the string before we update
     $in_new_value = $dbh->quote($in_new_value); 
-#    $in_new_value =~ s/\'/\\\'/g; #we'd do this with scrub, but $in_field might be an int.
-#    $in_new_value =~ s/\\/\\\\/g; #that would cause it to puke
-                                  #so for now, we've got to resort to this EVIL hack
-
-    # this if really means "single quote it if the field is not an int field....but
-    # it's terribly non-obvious.
- #   if (($in_field !~ /date/) and ($in_field !~ /time/) and ($in_field !~ /effective_sn/) and ($in_field !~ /priority/)) {
-  #  	$in_new_value = "\'$in_new_value\'";
-  #  }
-
-	$query_string="UPDATE each_req SET $in_field = $in_new_value WHERE effective_sn = $in_serial_num";
+    
+    #set the field in the database
+    $query_string="UPDATE each_req SET $in_field = $in_new_value WHERE effective_sn = $in_serial_num";
     #print "update_each_req: $query_string\n\n";
     $dbh->Query($query_string) or warn "[update_each_req] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
+    return 1;
 }
 
 sub update_request
@@ -165,7 +151,14 @@ sub update_request
 
     $effective_sn=&normalize_sn($in_serial_num);
     if (($in_current_user eq '_rt_system') or (&can_manipulate_queue($req[$effective_sn]{queue_id},$in_current_user))) {
-	&update_each_req($effective_sn, $in_variable, $in_new_value);
+	if( $in_variable eq 'effective_sn' )
+	{
+		&update_each_req($effective_sn, 'date_acted', $time);        #make now the last acted time
+		$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',$time,1,$in_current_user);
+		return 0 if ! &update_each_req($effective_sn, $in_variable, $in_new_value);
+		return ($transaction_num);
+	}
+	return 0 if ! &update_each_req($effective_sn, $in_variable, $in_new_value);
 	&update_each_req($effective_sn, 'date_acted', $time);        #make now the last acted time
 	$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',$time,1,$in_current_user);
 	return ($transaction_num);
@@ -263,7 +256,9 @@ sub transaction_text {
     }
 
     elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'area')  {
-	return( "Area changed to $rt::req[$serial_num]{'trans'}[$index]{'data'} by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+	my $to = $rt::req[$serial_num]{'trans'}[$index]{'data'};
+	$to = 'none' if ! $to;
+	return( "Area changed to $to by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
     }
     
     elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'status'){

@@ -1,6 +1,6 @@
 #jesse@fsck.com
 #
-
+# $Header$
 
 package rt::ui::web;
 
@@ -34,7 +34,7 @@ sub FormQueueOptions{
 <font size=\"-1\">
 <b>Queue</b>: <select name=\"q_queue\">
 <option value=\"\">Any\n";
-    while(($queue, $value)= each %rt::queues) {
+    foreach $queue (sort keys %rt::queues) {
         if ($queue) {
         if (&rt::can_display_queue($queue, $current_user)) {
             print "<option";
@@ -66,7 +66,7 @@ sub FormQueueOptions{
     if (!$FORM{'q_owner'}) {
       $FORM{'q_owner'} = $current_user;
     }
-    while  (($user_id,$value) = each %rt::users ) {
+    foreach $user_id (sort keys %rt::users ) {
 	
 	print "<option ";
 	if ($FORM{'q_owner'} eq $user_id) {
@@ -178,7 +178,7 @@ sub FormSetGive{
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
 <input type=\"submit\" value =\"Give to\"><select name=\"do_req_give_to\">
 <option value=\"\">Nobody ";	
-    foreach $user_id ( keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
+    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
 	if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
 	    print "<option ";
 		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
@@ -195,13 +195,13 @@ sub FormSetArea{
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
 <input type=\"submit\" value =\"Set area to\"><select name=\"area\">
 <option value=\"\">None ";	
-    foreach $area ( keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
-	if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
+    if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
+       foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
 	    print "<option ";
 		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{area});
 		print ">$area\n";
 	    }
-	}
+    }
     print "</select>
 <input type=\"hidden\" name=\"do_req_area\" value=\"true\">
 </FORM>
@@ -251,7 +251,7 @@ sub FormSetQueue{
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
 <input type=\"submit\" value =\"Set queue to\"> <select name=\"queue\">";
-    while(($queue, $value)= each %rt::queues) {
+    foreach $queue (sort keys %rt::queues) {
 	if (&rt::can_create_request($queue, $current_user)) {
 	    print "<option";
 	    if ($rt::req[$serial_num]{queue_id} eq $queue) {
@@ -381,7 +381,7 @@ sub FormCreate{
     }
     print ">
 <input type=\"submit\" value=\"Create request in queue\"><select name=\"queue_id\">\n";
-    while(($queue, $value)= each %rt::queues) {
+    foreach $queue (sort keys %rt::queues) {
 	if (&rt::can_create_request($queue, $current_user)) {
 	    print "<option>$queue\n";
 	}
@@ -393,9 +393,11 @@ sub FormCreate{
 }
 sub FormCreate_Step2 {   
     my ($template,$actions,$user_id, $value);
-
+    my $queue_id;
     require rt::support::mail;
 
+    $queue_id = $rt::ui::web::FORM{'queue_id'};
+    
     print "<form action=\"$ScriptURL\" method=\"post\"";
     if ($frames) { print "target=\"summary\" ";
 	       }
@@ -405,7 +407,7 @@ sub FormCreate_Step2 {
 <TD align=\"right\">
 Queue:
 </TD>
-<TD> $rt::ui::web::FORM{'queue_id'} *</TR>
+<TD> $queue_id *</TR>
 <TR><TD align=\"right\"> Created by:
 </TD> 
 <TD>
@@ -421,9 +423,8 @@ Queue:
 </TD>
 <TD><select name=\"area\">
 <option value=\"\">None ";	
-    if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
-	foreach $area ( keys % {$rt::queues{$rt::ui::web::FORM{queue_id}}{areas}} ) {
-	    
+    if (&rt::can_manipulate_queue ($queue_id, $current_user)) {
+	foreach $area (sort keys % {$rt::queues{$queue_id}{areas}}) {
 	    print "<option>$area\n";
 	}
     }
@@ -442,7 +443,7 @@ print "
     
 print "<TR><TD align=\"right\">Owner:</TD><TD><select name=\"owner\">
 <option value=\"\">Nobody ";	
-	foreach $user_id ( keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
+	foreach $user_id ( sort keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
 	    if (&rt::can_manipulate_queue ($rt::ui::web::FORM{'queue_id'}, $user_id)) {
 		print "<option>$user_id\n";
 	    }
@@ -471,7 +472,7 @@ Final priority:
 	print "value=\"$rt::users{$current_user}{email}\"";
     }
     print "></TD></TR>
-<TR><TD align=\"right\">Summary:</TD><TD>  <input name=\"subject\" size=\"50\">
+<TR><TD align=\"right\">Subject:</TD><TD>  <input name=\"subject\" size=\"50\">
 </TD></TR>
 <TR><TD valign=\"top\" align=\"right\">Content:</TD><TD>
 <font size=\"-1\">
