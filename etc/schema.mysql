@@ -408,6 +408,7 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 # }}}
 
 
+# {{{ Attributes
 
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -424,7 +425,10 @@ CREATE TABLE Attributes (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Attributes1 on Attributes(Name, ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(Name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+
+# }}}
 
 # {{{ Sessions
 

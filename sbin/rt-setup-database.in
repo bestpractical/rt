@@ -114,7 +114,7 @@ elsif ( $args{'action'} eq 'drop' ) {
     drop_db();
 }
 elsif ( $args{'action'} eq 'insert' ) {
-    insert_data( $args{'datafile'} );
+    insert_data( $args{'datafile'} || ($args{'datadir'}."/content"));
 }
 elsif ($args{'action'} eq 'acl') {
     $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )

@@ -1,6 +1,6 @@
 # BEGIN LICENSE BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# Copyright (c) 1996-2004 Jesse Vincent <jesse@bestpractical.com>
 # 
 # (Except where explictly superceded by other copyright notices)
 # 
@@ -29,10 +29,16 @@ completed. It is available under the terms of version 2 of the GNU
 General Public License (GPL), so it doesn't cost anything to set
 up and use.
 
+RT is commercially supported software. To purchase consulting services, 
+support or training, please write to sales@bestpractical.com
 
         Jesse Vincent
         Best Practical Solutions, LLC
         March 2003
+
+
+
+
 
 REQUIRED PACKAGES:
 ------------------
@@ -150,7 +156,7 @@ http://www.bestpractical.com/rt
                 make dropdb 
         and start over from step 5a
 
-5b  FOR UPGRADING: (Within the RT 3.0.x series)
+5b  FOR UPGRADING: (Within the RT 3.x series)
 
 
         Read through the UPGRADING document included in this distribution.
