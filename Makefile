@@ -133,6 +133,7 @@ fixperms:
 	chgrp -R $(RTGROUP) $(RT_PATH)  
 	chmod -R 770 $(RT_LIB_PATH)
 	chmod -R 770 $(RT_ETC_PATH)
+	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
 	chmod 4755 $(RTMUX)
