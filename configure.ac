@@ -227,6 +227,7 @@ AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 dnl Configure the output files, and generate them.
 
 AC_CONFIG_FILES([
+		 sbin/rt-dump-database
 		 sbin/rt-setup-database
                  sbin/rt-test-dependencies
                  Makefile

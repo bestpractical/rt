@@ -405,9 +405,12 @@ etc-install:
 
 sbin-install:
 	mkdir -p $(DESTDIR)/$(RT_SBIN_PATH)
-	chmod +x sbin/rt-setup-database \
+	chmod +x \
+		sbin/rt-dump-database \
+		sbin/rt-setup-database \
 		sbin/rt-test-dependencies
 	-cp -rp \
+		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		$(DESTDIR)/$(RT_SBIN_PATH)
