@@ -1242,10 +1242,6 @@ This takes the params:
 
     Object => an RT style object (->id will get its id)
 
-    or 
-
-    ObjectId => id #
-    ObjectType => an object type
 
 
 
@@ -1260,33 +1256,11 @@ sub HasRight {
     my $self = shift;
     my %args = ( Right      => undef,
                  Object     => undef,
-                 ObjectId     => undef,
-                 ObjectType     => undef,
+                 EquivObjects    => undef,
                  @_ );
-
-
-    my ($object_id, $object_type) ;
-    if ( defined( $args{'Object'} ) && UNIVERSAL::can( $args{'Object'}, 'id' ) )
-    {
-        $object_id   = $args{'Object'}->id;
-        $object_type = ref( $args{'Object'} );
-    }
-    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
-        $object_id   = $args{'ObjectId'};
-        $object_type = $args{'ObjectType'};
-
-    }
-    else {
-        $RT::Logger->crit("$self HasRight called with no valid object");
-        return (undef);
-    }
-
 
     if ( $self->PrincipalObj->Disabled ) {
         $RT::Logger->err( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} );
-        if ($object_type) {
-            $RT::Logger->err ( " for $object_type $object_id");
-        } 
         return (undef);
     }
 
@@ -1295,6 +1269,27 @@ sub HasRight {
         $RT::Logger->debug( Carp::cluck("HasRight called without a right") );
         return (undef);
     }
+
+    if ( defined( $args{'Object'} )) {
+        return (undef) unless (UNIVERSAL::can( $args{'Object'}, 'id' ) );
+        push(@{$args{'EquivObjects'}}, $args{Object});
+    }
+    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
+        $RT::Logger->crit(Carp::cluck("API not supprted"));
+    }
+    else {
+        $RT::Logger->crit("$self HasRight called with no valid object");
+        return (undef);
+    }
+
+    # If this object is a ticket, we care about ticket roles and queue roles
+    if ( (ref($args{'Object'}) eq 'RT::Ticket') && $args{'Object'}->Id) {
+        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
+        # and ask all the rest of our questions about the queue.
+        push (@{$args{'EquivObjects'}}, $args{'Object'}->QueueObj);
+
+    }
+
 
     # {{{ If we've cached a win or loss for this lookup say so
 
@@ -1362,53 +1357,39 @@ sub HasRight {
     # }}}
 
     my ( $or_look_at_object_rights, $or_check_roles );
-
     my $right = $args{'Right'};
-   
 
     my @roles;
 
 
-    # {{{ If this object is a ticket , we want to look at ticket roles
-    if ( $object_type eq 'RT::Ticket' ) {
-          push (@roles, $self->_RolesForObject($object_type, $object_id));
-
-        # {{{ If we're looking at ticket rights, we also want to look at the associated queue rights.
-        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
-        # and ask all the rest of our questions about the queue.
-        my $ticket = RT::Ticket->new($RT::SystemUser);
-        $ticket->Load($object_id);
-        $args{'Object'}   = $ticket->QueueObj;
-        $object_type = ref($args{'Object'});
-        $object_id = $args{'Object'}->Id;
-        # }}}
-
+    foreach my $object (@{$args{'EquivObjects'}}) { 
+          push (@roles, $self->_RolesForObject(ref($object), $object->id));
     }
-    # }}}
 
 
-    # {{{ If we're looking at a queue, we want to check queue roles
-    # We don't want to do an "elsif" here because ticket rights above transmute into queue rights
-    if ( $object_type eq 'RT::Queue' ) {
-          push (@roles, $self->_RolesForObject( $object_type, $object_id));
-
+    if (@roles) {
         $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
         " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
-    }
-    # }}}
 
-    
+   } 
     # {{{ If an object is defined, we want to look at rights for that object
-    if ( $object_type && $object_id) {
-        $or_look_at_object_rights =
-          " OR (ACL.ObjectType = '" . $object_type . "'  AND ACL.ObjectId = '" . $object_id . "') ";
+   
+    my @look_at_objects;
+    push (@look_at_objects, "ACL.ObjectType = 'RT::System'");
 
-    }
+
+
+    foreach my $obj (@{$args{'EquivObjects'}}) {
+            next unless (UNIVERSAL::can($obj, 'id'));
+            my $type = ref($obj);
+            my $id = $obj->id;
+            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
+            }
+
+     
     # }}}
 
     #  {{{ Build that honkin-big SQL query
-
-
 
     
 
@@ -1423,7 +1404,7 @@ sub HasRight {
    "AND Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->PrincipalId . "' ". 
 
     # Make sure the rights apply to the entire system or to the object in question
-    "AND (   ACL.ObjectType = 'RT::System' $or_look_at_object_rights ) ".
+    "AND ( ".join(' OR ', @look_at_objects).") ".
 
     # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
     "AND ( (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND ".

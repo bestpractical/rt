@@ -730,10 +730,27 @@ sub ProcessACLChanges {
             my $principal = RT::Principal->new($session{'CurrentUser'});
             $principal->Load($principal_id);
 
+            my $obj;
+
+            if ($object_type eq 'RT::Queue') {
+                $obj = RT::Queue->new($session{'CurrentUser'};
+                $obj->Load($object_id);      
+            } elsif ($object_type eq 'RT::Group') {
+                $obj = RT::Group->new($session{'CurrentUser'};
+                $obj->Load($object_id);      
+
+            } elsif ($object_type eq 'RT::System') {
+                $obj = $RT::System;
+            } else {
+                push (@results, loc("System Error").
+                                loc("Rights could not be granted for [_1]", $object_type));
+                next;
+            }
+
             my @rights = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
             foreach my $right (@rights) {
                 next unless ($right);
-                my ($val, $msg) = $principal->GrantRight(ObjectType => $object_type, ObjectId => $object_id, Right => $right);
+                my ($val, $msg) = $principal->GrantRight(Object => $obj, Right => $right);
                 push (@results, $msg);
             }
         }
@@ -746,7 +763,23 @@ sub ProcessACLChanges {
             my $principal = RT::Principal->new($session{'CurrentUser'});
             $principal->Load($principal_id);
             next unless ($right);
-            my ($val, $msg) = $principal->RevokeRight(ObjectType => $object_type, ObjectId => $object_id, Right => $right);
+            my $obj;
+
+            if ($object_type eq 'RT::Queue') {
+                $obj = RT::Queue->new($session{'CurrentUser'};
+                $obj->Load($object_id);      
+            } elsif ($object_type eq 'RT::Group') {
+                $obj = RT::Group->new($session{'CurrentUser'};
+                $obj->Load($object_id);      
+
+            } elsif ($object_type eq 'RT::System') {
+                $obj = $RT::System;
+            } else {
+                push (@results, loc("System Error").
+                                loc("Rights could not be revoked for [_1]", $object_type));
+                next;
+            }
+            my ($val, $msg) = $principal->RevokeRight(Object => $obj, Right => $right);
             push (@results, $msg);
         }
 

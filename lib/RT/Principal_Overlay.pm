@@ -100,8 +100,6 @@ sub Object {
 
 # {{{ ACL Related routines
 
-        
-
 # {{{ GrantRight 
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
@@ -113,8 +111,6 @@ A helper function which calls RT::ACE->Create
 sub GrantRight {
     my $self = shift;
     my %args = ( Right => undef,
-                ObjectId => undef,
-                ObjectType => undef,
                 Object => undef,
                 @_);
 
@@ -135,8 +131,6 @@ sub GrantRight {
     # user equivalence group
         return ( $ace->Create(RightName => $args{'Right'},
                           Object => $args{'Object'},
-                          ObjectType => $args{'ObjectType'},
-                          ObjectId => $args{'ObjectId'},
                           PrincipalType =>  $type,
                           PrincipalId => $self->Id
                           ) );
@@ -157,8 +151,6 @@ sub RevokeRight {
     my %args = (
         Right      => undef,
         Object => undef,
-        ObjectType => undef,
-        ObjectId => undef,
         @_
     );
 
@@ -173,8 +165,6 @@ sub RevokeRight {
     $ace->LoadByValues(
         RightName     => $args{'Right'},
         Object    => $args{'Object'},
-                          ObjectType => $args{'ObjectType'},
-                          ObjectId => $args{'ObjectId'},
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );

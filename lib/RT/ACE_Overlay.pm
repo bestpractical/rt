@@ -192,8 +192,6 @@ sub Create {
                  PrincipalType => undef,
                  RightName     => undef,
                  Object    => $RT::System,
-                 ObjectType => undef,
-                 ObjectId =>undef,
                  @_ );
 
     # {{{ Validate the principal
@@ -216,22 +214,14 @@ sub Create {
     }
 
 
-    my ($object_type, $object_id);
     
-    if ($args{'Object'} && UNIVERSAL::can($args{'Object'},'id')) {
-        $object_type = ref($args{'Object'}) ;
-        $object_id = $args{'Object'}->id;
-    } elsif ($args{'ObjectId'} || $args{'ObjectType'}) {
-        $object_type = $args{'ObjectType'};
-        $object_id = $args{'ObjectId'};
-    } else {
+    unless ($args{'Object'} && UNIVERSAL::can($args{'Object'},'id')) {
             return ( 0, $self->loc("System error. Right not granted.") );
     }
     # {{{ Check the ACL
 
     if (ref( $args{'Object'}) eq 'RT::Group' ) {
-        unless ( $self->CurrentUser->HasRight( ObjectType => $object_type,
-                                               ObjectId => $object_id,
+        unless ( $self->CurrentUser->HasRight( Object => $args{'Object'},
                                                   Right => 'AdminGroup' )
           ) {
             return ( 0, $self->loc('Permission Denied') );
@@ -239,10 +229,7 @@ sub Create {
     }
 
     else {
-        unless ( $self->CurrentUser->HasRight( ObjectType => $object_type,
-                                                ObjectId => $object_id,
-                                                  Right => 'ModifyACL' )
-          ) {
+        unless ( $self->CurrentUser->HasRight( Object => $args{'Object'}, Right => 'ModifyACL' )) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
@@ -256,21 +243,19 @@ sub Create {
     $args{'RightName'} = $self->CanonicalizeRightName( $args{'RightName'} );
 
     #check if it's a valid RightName
-    if ( $object_type eq 'RT::Queue' ) {
-        my $obj = RT::Queue->new($self->CurrentUser);
-        unless ( exists $obj->AvailableRights->{ $args{'RightName'} } ) {
+    if ( ref ($args{'Object'} eq 'RT::Queue'  )) {
+        unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
             $RT::Logger->warning("Couldn't validate right name". $args{'RightName'});
             return ( 0, $self->loc('Invalid right') );
         }
     }
-    elsif ( $object_type eq 'RT::Group'  ) {
-        my $obj = RT::Group->new($self->CurrentUser);
-        unless ( exists $obj->AvailableRights->{ $args{'RightName'} } ) {
+    elsif ( ref ($args{'Object'} eq 'RT::Group'  )) {
+        unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
             $RT::Logger->warning("Couldn't validate group right name". $args{'RightName'});
             return ( 0, $self->loc('Invalid right') );
         }
     }
-    elsif ( $object_type eq 'RT::System'  ) {
+    elsif ( ref ($args{'Object'} eq 'RT::System'  )) {
         my $q = RT::Queue->new($self->CurrentUser);
         my $g = RT::Group->new($self->CurrentUser);
 
@@ -288,8 +273,8 @@ sub Create {
     $self->LoadByCols( PrincipalId   => $princ_obj->id,
                        PrincipalType => $args{'PrincipalType'},
                        RightName     => $args{'RightName'},
-                       ObjectType    => $object_type,
-                       ObjectId      => $object_id,
+                       ObjectType    => ref($args{'Object'}),
+                       ObjectId      => $args{'Object'}->id,
                        DelegatedBy   => 0,
                        DelegatedFrom => 0 );
     if ( $self->Id ) {
@@ -299,13 +284,12 @@ sub Create {
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
                                    PrincipalType => $args{'PrincipalType'},
                                    RightName     => $args{'RightName'},
-                                   ObjectType    => $object_type,
-                                   ObjectId      => $object_id,
+                                   ObjectType    => ref( $args{'Object'} ),
+                                   ObjectId      => $args{'Object'}->id,
                                    DelegatedBy   => 0,
                                    DelegatedFrom => 0 );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
     RT::User->_InvalidateACLCache();
 
     if ( $id > 0 ) {
