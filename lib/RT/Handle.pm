@@ -48,7 +48,13 @@ use vars qw/@ISA/;
 
 eval "use DBIx::SearchBuilder::Handle::$RT::DatabaseType;
 \@ISA= qw(DBIx::SearchBuilder::Handle::$RT::DatabaseType);";
-#TODO check for errors here.
+
+if ($@) {
+    die "Unable to load DBIx::SearchBuilder database handle for '$RT::DatabaseType'.".
+        "\n".
+        "Perhaps you've picked an invalid database type or spelled it incorrectly.".
+        "\n". $@;
+}
 
 =head2 Connect
 

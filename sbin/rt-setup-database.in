@@ -277,6 +277,10 @@ sub insert_acl {
         do $base_path . "/acl.mysql"
           || die "Couldn't find ACLS for mysql in " . $RT::EtcPath . "\n" . $@;
     }
+    elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
+        do $base_path . "/acl.Sybase"
+          || die "Couldn't find ACLS for Sybase in " . $RT::EtcPath . "\n" . $@;
+    }
     elsif ( $RT::DatabaseType =~ /^informix$/i ) {
         do $base_path . "/acl.Informix"
           || die "Couldn't find ACLS for Informix in " . $RT::EtcPath . "\n" . $@;
