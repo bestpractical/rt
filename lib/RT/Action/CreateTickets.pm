@@ -392,51 +392,11 @@ sub CreateByTemplate {
 	$RT::Logger->debug("Assigned $template_id with $id");
 	$T::Tickets{$template_id}->SetOriginObj($self->TicketObj)
 	    if $self->TicketObj && 
-		$T::Tickets{$template_id}->can('SetOriginObj');
+		$T::Tickets{$template_id}->can('SetOriginObj');	
+
     }
 
-    # postprocessing: add links
-
-    while (my $ticket = shift(@links)) {
-	$RT::Logger->debug("Handling links for " . $ticket->Id);
-	my %args = %{shift(@links)};
-
-	foreach my $type ( keys %LINKTYPEMAP ) {
-	    next unless (defined $args{$type});
-	    foreach my $link (
-		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-	    {
-		if ($link !~ m/\d+/) {
-		    if (!exists $T::Tickets{$link}) {
-			$RT::Logger->debug("Skipping $type link for $link (non-existent)");
-			next;
-		    }
-		    $link = $T::Tickets{$link}->Id;
-		    $RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
-		} else {
-		    $RT::Logger->debug("Building $type link for $link")
-		}
-		
-		my ( $wval, $wmsg ) = $ticket->AddLink(
-		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
-		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
-		    Silent                        => 1
-		);
-
-		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
-		# push @non_fatal_errors, $wmsg unless ($wval);
-	    }
-
-	}
-    }
-
-    # postponed actions -- Status only, currently
-    while (my $ticket = shift(@postponed)) {
-	$RT::Logger->debug("Handling postponed actions for $ticket");
-	my %args = %{shift(@postponed)};
-
-	$ticket->SetStatus($args{Status}) if defined $args{Status};
-    }
+    $self->PostProcess(\@links, \@postponed);
 
     return @results;
 }
@@ -543,48 +503,8 @@ sub UpdateByTemplate {
         }
     }
 
-    # postprocessing: add links
+    $self->PostProcess(\@links, \@postponed);
 
-    while (my $ticket = shift(@links)) {
-	$RT::Logger->debug("Handling links for " . $ticket->Id);
-	my %args = %{shift(@links)};
-
-	foreach my $type ( keys %LINKTYPEMAP ) {
-	    next unless (defined $args{$type});
-	    foreach my $link (
-		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-	    {
-		if ($link !~ m/\d+/) {
-		    if (!exists $T::Tickets{$link}) {
-			$RT::Logger->debug("Skipping $type link for $link (non-existent)");
-			next;
-		    }
-		    $link = $T::Tickets{$link}->Id;
-		    $RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
-		} else {
-		    $RT::Logger->debug("Building $type link for $link")
-		}
-		
-		my ( $wval, $wmsg ) = $ticket->AddLink(
-		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
-		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
-		    Silent                        => 1
-		);
-
-		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
-		# push @non_fatal_errors, $wmsg unless ($wval);
-	    }
-
-	}
-    }
-
-    # postponed actions -- Status only, currently
-    while (my $ticket = shift(@postponed)) {
-	$RT::Logger->debug("Handling postponed actions for $ticket");
-	my %args = %{shift(@postponed)};
-
-	$ticket->SetStatus($args{Status}) if defined $args{Status};
-    }
     return @results;
 }
 
@@ -595,6 +515,7 @@ sub Parse {
     my @template_order;
     my $template_id;
     foreach my $line (split(/\n/, $content)) {
+	$line =~ s/\r$//;
 	if ($line =~ /^===Create-Ticket: (.*)$/) {
 	    $template_id = "create-$1";
 	    $RT::Logger->debug("****  Create ticket: $template_id");
@@ -654,7 +575,7 @@ sub ParseLines {
 	    my $tag = lc ($1);
 	    $tag =~ s/-//g;
 	    
-	    $value =~ s/\r$//;
+	    $value =~ s/\r$// if $value;
 	    
 	    if (ref($args{$tag})) { #If it's an array, we want to push the value
 		push @{$args{$tag}}, $value;
@@ -707,8 +628,8 @@ sub ParseLines {
 		       TimeWorked =>$args{'timeworked'},
 		       TimeEstimated =>$args{'timeestimated'},
 		       TimeLeft =>$args{'timeleft'},
-		       InitialPriority => $args{'initialpriority'},
-		       FinalPriority => $args{'finalpriority'},
+		       InitialPriority => $args{'initialpriority'} || 0,
+		       FinalPriority => $args{'finalpriority'} || 0,
 		       Type => $args{'type'}, 
 		       );
 
@@ -729,7 +650,7 @@ sub ParseLines {
 	$ticketargs{ "CustomField-" . $1 } = $args{$key};
     }
 
-    $self->GetDeferred(\%args, $TicketObj->Id, $links, $postponed);
+    $self->GetDeferred(\%args, $template_id, $links, $postponed);
 
     return $TicketObj, \%ticketargs;
 }
@@ -786,6 +707,26 @@ sub GetUpdateTemplate {
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
+    foreach my $type (sort keys %LINKTYPEMAP) {
+	if ($type eq "HasMember") {
+	    next;
+	}
+	$string .= "$type: ";
+
+	my $mode = $LINKTYPEMAP{$type}->{Mode};
+
+	my $links;
+	while (my $link = $t->$type->Next) {
+	    $links .= ", " if $links;
+
+	    my $method = $mode . "Obj";
+	    my $member = $link->$method;
+	    $links .= $member->Id;
+	}
+	$string .= $links;
+	$string .= "\n";
+    }
+
     return $string;
 }
 
@@ -838,6 +779,9 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
+    foreach (keys %LINKTYPEMAP) {
+	$string .= "$_: \n";
+    }
     return $string;
 }
 
@@ -879,6 +823,59 @@ sub UpdateWatchers {
 	}
     }
     return @results;
+}
+
+sub PostProcess {
+    my $self = shift;
+    my $links = shift;
+    my $postponed = shift;
+
+    # postprocessing: add links
+
+    while (my $template_id = shift(@$links)) {
+	my $ticket = $T::Tickets{$template_id};
+	$RT::Logger->debug("Handling links for " . $ticket->Id);
+	my %args = %{shift(@$links)};
+
+	foreach my $type ( keys %LINKTYPEMAP ) {
+	    next unless (defined $args{$type});
+	    foreach my $link (
+		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+	    {
+		next unless $link;
+		if ($link !~ m/^\d+$/) {
+		    my $key = "create-$link";
+		    if (!exists $T::Tickets{$key}) {
+			$RT::Logger->debug("Skipping $type link for $key (non-existent)");
+			next;
+		    }
+		    $RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$key}->Id);
+		    $link = $T::Tickets{$key}->Id;
+		} else {
+		    $RT::Logger->debug("Building $type link for $link")
+		}
+		
+		my ( $wval, $wmsg ) = $ticket->AddLink(
+		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
+		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+		    Silent                        => 1
+		);
+
+		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
+		# push @non_fatal_errors, $wmsg unless ($wval);
+	    }
+
+	}
+    }
+
+    # postponed actions -- Status only, currently
+    while (my $template_id = shift(@$postponed)) {
+	my $ticket = $T::Tickets{$template_id};
+	$RT::Logger->debug("Handling postponed actions for $ticket");
+	my %args = %{shift(@$postponed)};
+	$ticket->SetStatus($args{Status}) if defined $args{Status};
+    }
+
 }
 
 eval "require RT::Action::CreateTickets_Vendor";
