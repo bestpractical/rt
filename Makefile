@@ -294,15 +294,16 @@ libs-install:
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
 	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
 	( cd ./lib; \
-	  $(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
-			      INSTALLMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
-			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
+	  $(PERL) Makefile.PL INSTALLSITELIB=$(RT_LIB_PATH) \
+			      INSTALLMAN1DIR=$(RT_MAN_PATH)/man1 \
+			      INSTALLMAN3DIR=$(RT_MAN_PATH)/man3 \
 	    && make \
 	    && make test \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" blib/lib/RT.pm ;\
 	    make install \
-			   INSTALLSITEMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
-			   INSTALLSITEMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
+			   INSTALLSITEMAN1DIR=$(RT_MAN_PATH)/man1 \
+			   INSTALLSITEMAN3DIR=$(RT_MAN_PATH)/man3 \
+			   DESTDIR=$(DESTDIR) \
 	)
 
 html-install:
