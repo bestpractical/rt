@@ -185,6 +185,12 @@ sub DeleteWatcher {
 # }}}
 
 # {{{ sub Watchers
+
+# TODO: Should this one only return the _ticket_ watchers or the queue
+# + ticket watchers?  I think the latter would make most sense, and
+# the current AdminCcAsString and CcAsString subs (which are used for
+# mail sending) is using this sub. -- TobiX
+
 sub Watchers {
   my $self = shift;
   if (! defined ($self->{'Watchers'}) 
@@ -256,7 +262,7 @@ sub Requestors {
 # }}}
 
 # {{{ sub Cc
-
+# (see also AdminCc comments)
 sub Cc {
   my $self = shift;
   if (! defined ($self->{'Cc'})) {
@@ -273,6 +279,9 @@ sub Cc {
 
 
 # {{{ sub AdminCc
+# TODO: Should this also return queue watchers?
+# ...and are this used anywhere anyway?
+# -- TobiX
 sub AdminCc {
   my $self = shift;
   if (! defined ($self->{'AdminCc'})) {
