@@ -9,7 +9,6 @@ sub Describe {
   return ("Sends an autoresponse to the requestor and all interested parties.");
 }
 
-
 sub Commit {
   my $self = shift;
   print "AutoReply Commiting\n";
@@ -22,6 +21,7 @@ sub Prepare {
   #Set the subject
   #Set the body 
   print "Preparing\n";
+  return $self->SUPER::Prepare();
 }
 
 1;

@@ -30,6 +30,7 @@ sub _Accessible {
 	      Creator => 'read',
 	      Created => 'read'
 	     );
+  return $self->SUPER::_Accessible(@_, %Cols);
 }
 #take simple args and call RT::Record to do the real work.
 
