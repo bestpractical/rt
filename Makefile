@@ -1,12 +1,12 @@
 # $Header$
-# Request Tracker is Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
-# RT is distributed under the terms of the GNU General Public License
+# Request Tracker is Copyright 1996-2001 Jesse Vincent <jessebestpractical.com>
+# RT is distributed under the terms of the GNU General Public License, version 2
 
 PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	6-pre1
+RT_VERSION_PATCH	=	6-pre3
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -121,6 +121,12 @@ DB_DBA_PASSWORD	  =
 
 DB_HOST		=	localhost
 
+# If you're not running your database server on its default port, 
+# specifiy the port the database server is running on below.
+# It's generally safe to leave this blank 
+
+DB_PORT		=	
+
 #
 # Set this to the canonical name of the interface RT will be talking to the 
 # database on. # If you said that the RT_DB_HOST above was "localhost," this 
@@ -129,7 +135,7 @@ DB_HOST		=	localhost
 # to grant those database rights by hand.
 #
 
-DB_RT_HOST			=	localhost
+DB_RT_HOST	=	localhost
 
 # set this to the name you want to give to the RT database in 
 # your database server. For Oracle, this should be the name of your sid
@@ -268,7 +274,7 @@ html-install:
 
 
 genschema:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' generate
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' generate
 
 
 initialize.Pg: createdb initdb.dba acls 
@@ -279,27 +285,27 @@ initialize.Oracle: acls initdb.rtuser
 
 acls:
 	cp etc/acl.$(DB_TYPE) '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
-	$(PERL) -p -i -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
-				s'!!DB_HOST!!'$(DB_HOST)'g;\
-				s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
-				s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
-				s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
-				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
-	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
+	$(PERL) -p -i -e " s'!!DB_TYPE!!'"$(DB_TYPE)"'g;\
+				s'!!DB_HOST!!'"$(DB_HOST)"'g;\
+				s'!!DB_RT_PASS!!'"$(DB_RT_PASS)"'g;\
+				s'!!DB_RT_HOST!!'"$(DB_RT_HOST)"'g;\
+				s'!!DB_RT_USER!!'"$(DB_RT_USER)"'g;\
+				s'!!DB_DATABASE!!'"$(DB_DATABASE)"'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
+	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
 
 
 
 dropdb: 
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' drop
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' drop
 
 
 createdb: 
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' create
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' create
 initdb.dba:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' insert
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' insert
 
 initdb.rtuser:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_RT_USER)' '$(DB_DATABASE)' insert
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT') '$(DB_RT_USER)' '$(DB_DATABASE)' insert
 
 
 
@@ -318,11 +324,11 @@ bin-install:
 	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
 	cp -p ./bin/mason_handler.scgi $(RT_SPEEDYCGI_HANDLER)
 
-	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
-				s'!!PERL!!'$(PERL)'g;\
-			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
-				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;"\
+	$(PERL) -p -i -e "s'!!RT_PATH!!'"$(RT_PATH)"'g;\
+				s'!!PERL!!'"$(PERL)"'g;\
+			      	s'!!RT_VERSION!!'"$(RT_VERSION)"'g;\
+				s'!!RT_ETC_PATH!!'"$(RT_ETC_PATH)"'g;\
+				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
 		$(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN) \
 		$(RT_MAILGATE_BIN)
@@ -333,17 +339,18 @@ config-replace:
 	 chmod 000 $(RT_CONFIG).old
 	cp -rp ./etc/config.pm $(RT_CONFIG)
 	$(PERL) -p -i -e "\
-	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
-	s'!!DB_HOST!!'$(DB_HOST)'g;\
-	s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
-	s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
-	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
-	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
-	s'!!MASON_LOCAL_HTML_PATH!!'$(MASON_LOCAL_HTML_PATH)'g;\
-	s'!!MASON_SESSION_PATH!!'$(MASON_SESSION_PATH)'g;\
-	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
-	s'!!RT_LOG_PATH!!'$(RT_LOG_PATH)'g;\
-	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
+	s'!!DB_TYPE!!'"$(DB_TYPE)"'g;\
+	s'!!DB_HOST!!'"$(DB_HOST)"'g;\
+	s'!!DB_PORT!!'"$(DB_PORT)"'g;\
+	s'!!DB_RT_PASS!!'"$(DB_RT_PASS)"'g;\
+	s'!!DB_RT_USER!!'"$(DB_RT_USER)"'g;\
+	s'!!DB_DATABASE!!'"$(DB_DATABASE)"'g;\
+	s'!!MASON_HTML_PATH!!'"$(MASON_HTML_PATH)"'g;\
+	s'!!MASON_LOCAL_HTML_PATH!!'"$(MASON_LOCAL_HTML_PATH)"'g;\
+	s'!!MASON_SESSION_PATH!!'"$(MASON_SESSION_PATH)"'g;\
+	s'!!MASON_DATA_PATH!!'"$(MASON_DATA_PATH)"'g;\
+	s'!!RT_LOG_PATH!!'"$(RT_LOG_PATH)"'g;\
+	s'!!RT_VERSION!!'"$(RT_VERSION)"'g;\
 	" $(RT_CONFIG)
 
 

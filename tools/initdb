@@ -4,7 +4,7 @@
 use strict;
 use vars qw($PROMPT $SCHEMA_FILE $SCHEMA_DIR
 	    $ACTION $DEBUG $DB_TYPE $DB_HOME 
-	    $DB_HOST $DB_DBA $DB_DATABASE $DB_DBA_PASSWORD);
+	    $DB_HOST $DB_PORT $DB_DBA $DB_DATABASE $DB_DBA_PASSWORD);
 
 use DBI;
 use DBIx::DataSource qw( create_database drop_database );
@@ -17,7 +17,7 @@ $PROMPT = 1; #by default, should at least *ask* before nuking databases
 $SCHEMA_DIR ="etc";
 $SCHEMA_FILE = "$SCHEMA_DIR/schema.pm"; #hmm
 
-($DB_TYPE, $DB_HOME, $DB_HOST, $DB_DBA, $DB_DATABASE, $ACTION) = @ARGV;
+($DB_TYPE, $DB_HOME, $DB_HOST, $DB_PORT, $DB_DBA, $DB_DATABASE, $ACTION) = @ARGV;
 
 
 if ($DEBUG) {
@@ -26,7 +26,7 @@ if ($DEBUG) {
 my $dsn = "dbi:$DB_TYPE:";
 
 if (($DB_TYPE eq 'Pg') or ($DB_TYPE eq 'mysql')) {
-   $dsn .= "dbname=$DB_DATABASE;host=$DB_HOST";
+   $dsn .= "dbname=$DB_DATABASE;host=$DB_HOST;port=$DB_PORT";
 }
 elsif ($DB_TYPE eq 'Oracle') {
    $dsn .= "$DB_DATABASE";

@@ -2,10 +2,11 @@
 
 DATABASEHOME=$1
 HOSTNAME=$2
-DATABASEADMIN=$3
-DBAPASSWD=$4
-DATABASENAME=$5
-DATABASEACLS=$6
+PORT=$3
+DATABASEADMIN=$4
+DBAPASSWD=$5
+DATABASENAME=$6
+DATABASEACLS=$7
 
 BINDIR=${DATABASEHOME}/bin
 
@@ -13,7 +14,7 @@ PATH=$PATH:$BINDIR
 export PATH
 
 echo "Enter the mysql administrator's database password to create a new user for RT"
-$BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} mysql < $DATABASEACLS
+$BINDIR/mysql --host=${HOSTNAME} --port=${PORT} --user=${DATABASEADMIN} -p${DBAPASSWD} mysql < $DATABASEACLS
 
 echo "Enter the mysql administrator's database password to nondestructively reload the database"
-$BINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} reload
+$BINDIR/mysqladmin --host=${HOSTNAME} --port=${PORT} --user=${DATABASEADMIN} -p${DBAPASSWD} reload
