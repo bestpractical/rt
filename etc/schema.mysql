@@ -137,7 +137,7 @@ CREATE TABLE Links (
 
 # }}}
 
-# {{{ User and watchers handling
+# {{{ Users, ACL and watchers
 
 # {{{ Table Users 
 
@@ -181,6 +181,13 @@ CREATE TABLE Users (
 
 # }}}
 
+# {{{ AlternateEmails (stubbed!)
+# Create Table AlternateEmails (
+#    id int,
+#    Email VARCHAR(120) PRIMARY KEY
+# );
+# }}}
+
 # {{{ Values for Users
 INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
@@ -190,6 +197,20 @@ INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Cre
 
 INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
+# }}}
+
+# {{{ Table ACL {
+
+CREATE TABLE ACL (
+	id int primary key auto_increment,
+	PrincipalId INT(11),
+	PrincipalType VARCHAR(16),
+	PrincipalScope VARCHAR(16),
+	ObjectType VARCHAR(16),
+	ObjectId  INT,
+	Right VARCHAR(16)
+);
+
 # }}}
 
 # {{{ TABLE Watchers
@@ -212,20 +233,6 @@ CREATE TABLE Watchers (
 )\g
 
 # }}}
-
-# }}}
-
-# {{{ Table ACL {
-
-CREATE TABLE ACL (
-	id int primary key auto_increment,
-	PrinicpalId INT(11),
-	PrincipalType VARCHAR(16),
-	PrincipalScope VARCHAR(16),
-	ObjectType VARCHAR(16),
-	ObjectId  INT,
-	Right VARCHAR(16)
-);
 
 # }}}
 
