@@ -751,9 +751,14 @@ sub LimitDate {
 
 
 
+
 sub LimitCreated {
     my $self = shift;
     $self->LimitDate( FIELD => 'Created', @_);
+}
+sub LimitDue {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Due', @_);
 
 }
 sub LimitStarts {
