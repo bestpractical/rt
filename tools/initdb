@@ -1,0 +1,71 @@
+#!/usr/bin/perl -w
+
+use strict;
+use vars qw($PROMPT $SCHEMA_FILE);
+use subs qw(_yesno);
+use DBI;
+use DBIx::DataSource qw( create_database drop_database );
+use DBIx::DBSchema;
+
+$PROMPT = 1; #by default, should at least *ask* before nuking databases
+$SCHEMA_FILE = "etc/schema.pm"; #hmm
+
+$|=1;
+
+my $schema_href = do "etc/schema.pm" or die $@ || $!;
+my $schema = DBIx::DBSchema->pretty_read($schema_href);
+
+my($DB_TYPE, $DB_HOME, $DB_HOST, $DB_DBA, $DB_DATABASE) = @ARGV;
+print "Enter the $DB_TYPE password for $DB_DBA: ";
+system "stty -echo";
+my $DB_DBA_PASSWORD = scalar(<STDIN>); #keep off commandline
+system "stty echo";
+chomp $DB_DBA_PASSWORD;
+
+print <<END;
+
+
+Database creation parameters:
+
+DB_TYPE         = $DB_TYPE
+DB_HOME         = $DB_HOME
+DB_HOST         = $DB_HOST
+DB_DBA          = $DB_DBA
+DB_DBA_PASSWORD = <hidden>
+DB_DATABASE     = $DB_DATABASE
+END
+
+if ( $PROMPT ) {
+  print <<END;
+
+About to drop $DB_TYPE database $DB_DATABASE.
+WARNING: This will erase all data in $DB_DATABASE.
+If you have an existing RT 2.x installation, this will destory all your data.
+END
+  exit unless _yesno;
+}
+
+my $dsn = "dbi:$DB_TYPE:dbname=$DB_DATABASE;host=$DB_HOST";
+
+print "\nDropping $DB_TYPE database $DB_DATABASE.\n";
+drop_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
+  or warn $DBIx::DataSource::errstr;
+
+print "\nCreating $DB_TYPE database $DB_DATABASE.\n";
+create_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
+  or die $DBIx::DataSource::errstr;
+
+my $dbh = DBI->connect( $dsn, $DB_DBA, $DB_DBA_PASSWORD ) or die $DBI::errstr;
+foreach my $statement ( $schema->sql($dsn) ) {
+  my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+  $sth->execute or die $sth->errstr;
+}
+
+$dbh->disconnect;
+
+sub _yesno {
+  print "Proceed [y/N]:";
+  my $x = scalar(<STDIN>);
+  $x =~ /^y/i;
+}
+

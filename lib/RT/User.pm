@@ -94,11 +94,12 @@ sub _Accessible  {
 
 sub Create  {
   my $self = shift;
-  my %args = (#TODO: insert argument list +++
+  my %args = (
 	      CanManipulate => 0,
 	      @_ # get the real argumentlist
 	     );
 
+  #TODO: insert argument list +++
   ##TODO: unless defined $args{'Password'}, make a random password.
 
   #Todo we shouldn't do anything if we have no password to start.
@@ -108,19 +109,17 @@ sub Create  {
   #TODO check ACLs
 
   my $id = $self->SUPER::Create(%args);
+
+  #If the create failed.
+  return (0, 'User creation failed') if ($id == 0);
+
   $self->Load($id);
   
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
 
-  ## TODO: Document WelcomeMessage in config.pm
 
-  ## TODO: It makes a difference if the user was created via email or
-  ## via web (by themselves) or via the admin tools.  Tobix actually
-  ## thinks that it makes more sense having "send welcome message" as
-  ## a User object method, and do it through the respective tools than
-  ## through Users.pm.
-  if ($RT::WelcomeMessage) {
+  if ($args{'SendWelcomeMessage'}) {
       #TODO: Check if the email exists and looks valid
       #TODO: Send the user a "welcome message"  see [fsck.com #290]
   }
@@ -342,7 +341,7 @@ Returns undef if this user doesn't
 sub HasSystemRight {
 	my $self = shift;
 	my %args = ( Right => 'undef',
-				 @_);
+	   	     @_);
 
 	if (!defined $args{'Right'}) {
 		$RT::Logger->debug("RT::User::HasSystemRight was passed in no right. this won't do");

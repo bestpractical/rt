@@ -29,6 +29,8 @@
 #                     'Text::Template'      => 0,
 #                     'DBIx::SearchBuilder' => 0,
 #                     'Apache::Session'     => 1.03,
+#                     'DBIx::DataSource'    => 0,
+#                     'DBIx::DBSchema'      => 0,
 #                   },
 
 use strict;
@@ -51,6 +53,8 @@ Text::Wrapper
 Text::Template
 DBIx::SearchBuilder 0.05
 Apache::Session 1.03
+DBIx::DataSource
+DBIx::DBSchema
 );
 use CPAN;
 

@@ -22,7 +22,5 @@ echo "Creating RT_USER."
 echo "sqlplus $DATABASEADMIN/$DBAPASSWD@$DATABASENAME @etc/user.oracle $RT_USER $RT_PASS"
 sqlplus $DATABASEADMIN/$DBAPASSWD@$DATABASENAME @etc/user.oracle $RT_USER $RT_PASS
 
-echo "Create RT schema."
-sqlplus $RT_USER/$RT_PASS@$DATABASENAME @etc/schema.oracle
-
-
+echo "Populating RT seed data."
+sqlplus $RT_USER/$RT_PASS@$DATABASENAME @etc/insert.sql

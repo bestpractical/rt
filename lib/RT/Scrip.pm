@@ -33,12 +33,16 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create 
+=head2 Create
+
+Takes a hash. Creates a new scrip entry.
+ should be better documented.
 sub Create  {
   my $self = shift;
-  die "RT::Scrip->create stubbed\n";
-  my $id = $self->SUPER::Create(Name => @_);
+  #TODO check these args and do smart things.
+  my $id = $self->SUPER::Create ( @_);
   $self->LoadById($id);
-  
+  #TODO proper return values 
 }
 # }}}
 

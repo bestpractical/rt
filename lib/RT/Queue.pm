@@ -44,12 +44,13 @@ sub Create  {
   my %args = (@_); 
   
   #Check them ACLs
-  return (0, "No permission to create queues") unless ($self->CurrentUserHasRight('CreateQueue'));
+  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight(Right => 'CreateQueue'));
   
+  #TODO better input validation
 
-  my $id = $self->SUPER::Create(QueueId => $args{'QueueId'});
+  my $id = $self->SUPER::Create(%args);
   $self->LoadById($id);
-  return ($id, "Queue $id created");
+  return ($id);
 }
 # }}}
 

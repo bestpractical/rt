@@ -10,14 +10,18 @@ use vars qw (%SCOPE
 	     %SYSTEMRIGHTS
 	     %METAPRINCIPALS); 
 
-%SCOPES = ( System => 'System-level right',
+
+
+%SCOPES = (Ticket => 'Rights that apply to the tickets in a queue', 
+	   System => 'System-level right',
 	   Queue => 'Queue-level right'
 		 );
 
+# {{{ Descriptions of rights
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 %QUEUERIGHTS = ( See => 'Can this principal see this queue',
-         Explore => 'Look at this queue\'s configuration, watchers, etc',
+		 Explore => 'Look at this queue\'s configuration, watchers, etc',
 		 ListQueue => 'Display a listing of ticket',
 		 ModifyWatchers => 'Modify the queue watchers',
 		 ModifyACL => 'Modify this queue\'s ACL',
@@ -45,6 +49,10 @@ use vars qw (%SCOPE
 		  DeleteTicket => 'Delete ticket'
 		);
 
+# }}}
+
+# {{{ Descriptions of principals
+
 %TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',
 			   Requestor => 'The requestor of a ticket',
 			   Cc => 'The CC of a ticket',
@@ -53,7 +61,7 @@ use vars qw (%SCOPE
 
 %GLOBAL_METAPRINCIPALS = ( Everyone => 'Any valid RT principal' );
 
-
+# }}}
 
 
 # {{{ sub new 
@@ -68,60 +76,121 @@ sub new  {
 }
 # }}}
 
-# {{{ sub _Create
+# {{{ sub Create
 
-sub _Create {
-my $self = shift;
-my %args = ( PrincipalId => undef,
-	     PrincipalType => undef,
-	     RightName => undef,
-	     RightScope => undef,
-	     RightAppliesTo => undef
-	   );
-	use Carp;
+sub Create {
+    my $self = shift;
+    my %args = ( PrincipalId => undef,
+		 PrincipalType => undef,
+		 RightName => undef,
+		 RightScope => undef,
+		 RightAppliesTo => undef,
+		 @_
+	       );
 
-	Carp::confess "RT::ACE::_Create not yet implemented\n";
-return (1, 'Granted');
+
+
+
+    if ($args{'RightScope'} eq 'System') {
+	return (0, 'No permission to grant rights')
+	  unless ($self->CurrentUser->HasRight('ModifySystemACL'));
+
+	#TODO check if it's a valid RightName/Principaltype
+    }
+    elsif (($args{'RightScope'} eq 'Queue') and
+	   ($args{'RightAppliesTo'} eq '0')) {
+	return (0, 'No permission to grant rights')
+	  unless ($self->CurrentUser->HasRight('ModifySystemACL'));	
+
+	#TODO check if it's a valid RightName/Principaltype
+
+    }
+    elsif ($args{'RightScope'} eq 'Queue') {
+	#TODO add logic here
+   	#unless $self->CurrentUser->id has 'ModifyQueueACL' for (queue == $args->{'AppliesTo'}) {
+	# if the user can't do it, return a (0, 'No permission to grant rights');
+	#}
+	
+	#TODO check if it's a valid RightName/Principaltype
+	
+    }
+    elsif ($args{'RightScope'} eq 'Ticket') {
+	#TODO add logic here
+ 
+	#TODO check if it's a valid ticket right
+	#TODO check if it's a valid PrincipalType/Id
+
+   }
+    #If it's not a scope we recognise, something scary is happening.
+    else {
+	$RT::Logger->err("RT::ACE->Create got a scope it didn't recognize: ".$args{'RightScope'}."\n");
+	return(0,"System error. Unable to grant rights.");
+    }
+    
+    my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
+			  PrincipalType => $args{'PrincipalType'},
+			  RightName => $args{'RightName'},
+			  RightScope => $args {'RightScope'},
+			  RightAppliesTo => $args{'RightAppliesTo'}
+			);
+
+
+    if ($id > 0 ) {
+     return ($id);
+    }
+    else {
+	$RT::Logger->err('System error. right not granted.');
+	return(0);
+    }
 }
 # }}}
 
 # {{{ sub GrantQueueRight 
 
+=head2 GrantQueueRight
+
+A convenience method for Create that autosets RightScope to 'Queue'
+
+=cut
+
 sub GrantQueueRight {
 	
 	my $self = shift;
-	my %args = ( PrincipalType => undef,
-				 PrincipalId => undef,
-				 @_);
+	my %args = ( RightScope => 'Queue',
+		     @_);
 	
-	
-	if ($args->{'RightScope'} ne 'Queue') {
-		return (0, 'Scope must be queue for queue rights');
-	}
-	
-	
-	#unless $self->CurrentUser->id has 'ModifyQueueACL' for (queue == $args->{'AppliesTo'}) {
-    # if the user can't do it, return a (0, 'No permission to grant rights');
-	#}
-   
-  return ($self->_Create($args));
+	return ($self->Create(%args));
 }
 
 # }}}
 
 # {{{ sub GrantGlobalQueueRight
 
+=head2 GrantGlobalQueueRight
+
+A convenience method for Create that sets RightAppliesTo to '0' and RightScope to 'Queue'
+
+=cut
+
 sub GrantGlobalQueueRight {
   my $self = shift;
   my %args = ( RightAppliesTo => 0,
+	       RightScope => 'Queue',
 	       @_);
 
-  return ($self->GrantQueueRight($args));
+  return ($self->Create(%args));
 }
 
 # }}}
 
 # {{{ sub GrantSystemRight
+
+=head2 GrantSystemRight
+
+A convenience method for Create
+Presets RightScope to 'System' and RightAppliesTo to '0'
+
+=cut
 
 sub GrantSystemRight {
   my $self = shift;
@@ -129,12 +198,7 @@ sub GrantSystemRight {
 	      RightAppliesTo => 0,
 	      @_);
   
-  #If the user can't grant system rights, 
-  unless ($self->CurrentUser->HasRight('ModifySystemACL')) {
-    
-    return (0, 'No permission to grant rights');
-  }
-  return ($self->_Create( $args ));
+  return ($self->Create( %args ));
 		       
 }
 # }}}
@@ -162,6 +226,8 @@ sub _Set {
 1;
 
 __DATA__
+
+# {{{ POD
 
 =title RT::ACE
 
@@ -329,3 +395,6 @@ Modify System ACL
   Everyone,NULL
 
 =cut
+
+
+# }}}

@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	18
+RT_VERSION_PATCH	=	19
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -67,7 +67,7 @@ DB_TYPE	        =	mysql
 # DB_HOME is where the Database's commandline tools live
 # Note: $DB_HOME/bin is where the database binary tools are installed.
  
-DB_HOME	       = /opt/mysql
+DB_HOME	      	= /usr
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL tools
@@ -133,12 +133,15 @@ default:
 	@echo "Please read RT's readme before installing. Not doing so could"
 	@echo "be dangerous."
 
-install: dirs initialize upgrade instruct
+install: dirs initialize upgrade insert instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "You must now configure it by editing $(RT_CONFIG)."
 	@echo "From here on in, you should refer to the users guide."
+
+insert: insert-install
+	$(PERL) $(RT_ETC_PATH)/insertdata
 
 upgrade: config-replace upgrade-noclobber
 
@@ -180,7 +183,7 @@ initialize: database acls
 
 
 database:
-	bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_RT_USER)' '$(DB_RT_PASS)'
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' '$(DB_RT_USER)'
 
 acls:
 	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
@@ -191,6 +194,14 @@ acls:
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
 	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
+
+
+
+insert-install:
+	cp -rp ./tools/insertdata $(RT_ETC_PATH)/insertdata
+	$(PERL) -p -i.orig -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
+				$(RT_ETC_PATH)/insertdata
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
@@ -208,6 +219,7 @@ mux-install:
 				s'!!WEB_USER!!'$(WEB_USER)'g;\
 				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
 					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER)
+
 
 mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
