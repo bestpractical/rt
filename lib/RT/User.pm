@@ -129,7 +129,7 @@ sub Delete {
 
 sub Load {
   my $self = shift;
-  my $identifier = shift;
+  my $identifier = shift || return undef;
   my ($package, $filename, $line) = caller;
 #  print STDERR "RT::User->Load called from $package, line $line with arguments (",@_,")\n";
   

@@ -306,7 +306,7 @@ sub ParseArgs {
       
       $owner=&rt::ui::cli::question_string( "Give request to");
       
-      while (!$Owner->Load($owner) || !$Queue->ModifyPermitted($Owner)) {
+      while ($owner && (!$Owner->Load($owner) || !$Queue->ModifyPermitted($Owner))) {
 	
 	print "That user doesn't exist or can't own tickets in that queue\n";
 	$owner=&rt::ui::cli::question_string( "Give request to")
