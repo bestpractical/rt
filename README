@@ -11,6 +11,26 @@ companies.
 Some code for RT has been derived from Remy Evard's req package.
 
 All of these works are distributed under the GPL
+
+STATUS
+------
+
+This is the README file for RT 1.1/2.0.  It's currently under
+development, expected release in June.  Some working prealpha version
+is expected any moment
+
+
+BUGS
+----
+
+Have a look at <URL:
+http://www.fsck.com/rt/webrt.cgi?username=rt2guest&password=rt2guest&q_status=open&q_queue=RT+2.0+Bugs&display=Queue
+> for known bugs.
+
+To submit a bug, send an email to rt-2.0-bugs@fsck.com.
+
+For documentation bugs, or if you have suggestions to the
+documentation, send a mail to rt-docs@fsck.com
  
 
 REQUIRED PACKAGES:
@@ -232,9 +252,14 @@ Address questions to the mailinglist.  If you feel your questions are
 best not asked publically, send them to me personally at:
 jesse@fsck.com
 
-If you're interested in hacking on rt, you'll want to subscribe to 
-rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to those 
-above.
+If you're interested in hacking on rt, you'll want to subscribe to
+rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to
+those above. 
+
+There is also a mailing list rt-commit where all CVS updates are
+mailed, it might be quite useful for developers, wanna-be developers
+and those who always want the freshest version.
+
 
 RT WEBSITE
 ----------
