@@ -99,15 +99,17 @@ sub Limit {
 
 =head2 LimitQueue
 
-LimitQueue takes a paramhash with the fields OPERATOR and QUEUE.
-OPERATOR is one of = or !=.
+LimitQueue takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=. (It defaults to =).
 VALUE is a queue id. 
 
 =cut
 
 sub LimitQueue {
     my $self = shift;
-    my %args = (@_);
+    my %args = (VALUE => undef,
+		OPERATOR => '=',
+		@_);
 
     #TODO  VALUE should also take queue names and queue objects
     my $queue = new RT::Queue($self->CurrentUser);
