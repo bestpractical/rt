@@ -28,7 +28,7 @@
 <font color="#ffffff">
 % if ($session{'CurrentUser'}->Id) {
 Signed in as <b><%$session{'CurrentUser'}->Name%></b>.<BR>
-[<A class='inverse' HREF="<%$RT::FM::WebPath%>/User/Prefs.html" >Preferences</A>] 
+%[<A class='inverse' HREF="<%$RT::FM::WebPath%>/User/Prefs.html" >Preferences</A>] 
 % unless ($RT::FM::WebExternalAuth) { 
 [<A class='inverse' HREF="<%$RT::FM::WebPath%>/logout.html">Logout</a>]
 % }
