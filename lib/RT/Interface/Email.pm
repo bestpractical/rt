@@ -429,7 +429,7 @@ sub Gateway {
 
         if ( -f $temp_file ) {
             $parser->ParseMIMEEntityFromFile($temp_file);
-            File::Temp::unlink0( $fh, $temp_file );
+            unlink( $temp_file );
             if ($parser->Entity) {
                 delete $args{'message'};
             }
