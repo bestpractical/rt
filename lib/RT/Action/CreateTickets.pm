@@ -468,6 +468,10 @@ sub UpdateByTemplate {
 			 TimeLeft
 			 Status
 			 Queue
+			 Due
+			 Starts
+			 Started
+			 Resolved
 			 );
 
 	my $id = $template_id;
@@ -494,11 +498,13 @@ sub UpdateByTemplate {
 	if ($base ne $current) {
 	    push @results, "Could not update ticket " . $T::Tickets{$template_id}->Id . ": Ticket has changed";
 	    next;
-	} 
+	}
 
 	push @results,
 	    $T::Tickets{$template_id}->Update(AttributesRef => \@attribs,
 					      ARGSRef => $ticketargs);
+
+	push @results, $self->UpdateWatchers($T::Tickets{$template_id}, $ticketargs);
 
 	next unless exists $ticketargs->{'UpdateType'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|public)$/ ) {
@@ -826,6 +832,46 @@ sub GetCreateTemplate {
     $string .= "FinalPriority: \n";
 
     return $string;
+}
+
+sub UpdateWatchers {
+    my $self = shift;
+    my $ticket = shift;
+    my $args = shift;
+
+    my @results;
+
+    foreach my $type qw(Requestor Cc AdminCc) {
+	my $method = $type.'Addresses';
+	my $oldaddr = $ticket->$method;
+	my $newaddr = $args->{$type};
+	
+	my @old = split (', ', $oldaddr);
+	my @new = split (', ', $newaddr);
+	my %oldhash = map {$_ => 1} @old;
+	my %newhash = map {$_ => 1} @new;
+	
+	my @add = grep(!defined $oldhash{$_}, @new);
+	my @delete = grep(!defined $newhash{$_}, @old);
+	
+	foreach (@add) {
+	    my ($val, $msg) =
+		$ticket->AddWatcher(Type => $type,
+				    Email => $_);
+	    
+	    push @results, $ticket->loc("Ticket [_1]", $ticket->Id) . 
+		': ' . $msg;
+	}
+	
+	foreach (@delete) {
+	    my ($val, $msg) =
+		$ticket->DeleteWatcher(Type => $type,
+				       Email => $_);
+	    push @results, $ticket->loc("Ticket [_1]", $ticket->Id) . 
+		': ' . $msg;
+	}
+    }
+    return @results;
 }
 
 eval "require RT::Action::CreateTickets_Vendor";
