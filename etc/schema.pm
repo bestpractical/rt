@@ -25,7 +25,8 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [ ['RightScope','RightAppliesTo','RightName','PrincipalType','PrincipalId'] ],
+  'index' => [ ['RightScope', 'PrincipalId'], 
+  	       ['RightScope','RightAppliesTo','RightName','PrincipalType','PrincipalId'] ],
 },
 
 'Watchers' => {
@@ -104,7 +105,9 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [ ['Name'] ],
-  'index' => [ ['EmailAddress'] ],
+  'index' => [ ['Name'], 
+  	       ['id', 'EmailAddress'],
+  	       ['EmailAddress'] ],
 },
 
 'Tickets' => {
@@ -136,7 +139,11 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [ [] ],
-  'index' => [ ['Queue', 'Status'], ['Owner'], ['EffectiveId'], [ 'id', 'Status' ] ],
+  'index' => [ ['Queue', 'Status'], 
+  	       ['Owner'], 
+	       ['EffectiveId'], 
+	       ['id', 'Status'], 
+	       ['id', 'EffectiveId'] ],
 },
 
 'GroupMembers' => {
@@ -272,7 +279,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [ ['Parent'], ['TransactionId'] ],
+  'index' => [ ['Parent'], ['TransactionId'], ['Parent', 'TransactionId'] ],
 },
 
 'Templates' => {

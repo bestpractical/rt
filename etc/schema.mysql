@@ -29,6 +29,7 @@ CREATE TABLE Attachments (
 );
 CREATE INDEX Attachments1 ON Attachments (Parent);
 CREATE INDEX Attachments2 ON Attachments (TransactionId);
+CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(40) NOT NULL  ,
@@ -134,7 +135,8 @@ CREATE TABLE ACL (
   RightAppliesTo integer NULL  ,
   PRIMARY KEY (id)
 );
-CREATE INDEX ACL1 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
+CREATE INDEX ACL1 ON ACL (RightScope, PrincipalId);
+CREATE INDEX ACL2 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   GroupId integer NULL  ,
@@ -202,7 +204,9 @@ CREATE TABLE Users (
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Users1 ON Users (Name);
-CREATE INDEX Users2 ON Users (EmailAddress);
+CREATE INDEX Users2 ON Users (Name);
+CREATE INDEX Users3 ON Users (id, EmailAddress);
+CREATE INDEX Users4 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   EffectiveId integer NULL  ,
@@ -234,6 +238,7 @@ CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);
 CREATE INDEX Tickets3 ON Tickets (EffectiveId);
 CREATE INDEX Tickets4 ON Tickets (id, Status);
+CREATE INDEX Tickets5 ON Tickets (id, EffectiveId);
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,

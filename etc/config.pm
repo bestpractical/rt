@@ -371,15 +371,15 @@ $MasonSessionDir = "!!MASON_SESSION_PATH!!";
 
 
        { Header => 'Told',
-	 TicketAttribute => 'LongSinceToldAsString'
+	 TicketAttribute => 'ToldObj->AgeAsString'
 	 },
 
        { Header => 'Age',
-	 TicketAttribute => 'AgeAsString'
+	 TicketAttribute => 'CreatedObj->AgeAsString'
 	 },
 
        { Header => 'Last',
-	 TicketAttribute => 'LongSinceUpdateAsString'
+	 TicketAttribute => 'LastUpdatedObj->AgeAsString'
 	 },
 
        # TODO: It would be nice with a link here to the Owner and all
