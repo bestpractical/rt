@@ -223,7 +223,7 @@ sub frame_display_request {
 sub frame_display_queue {
   &rt::ui::web::content_header();
   print "
-<frameset rows=\"35,65\" border=\"1\">
+<frameset rows=\"35,65\" framespacing=\"3\"  border=\"1\">
 <frame src=\"$ScriptURL?display=Queue\" name=\"queue\">
 <frame src=\"$ScriptURL?display=Request\" name=\"workspace\">
 </frameset>";

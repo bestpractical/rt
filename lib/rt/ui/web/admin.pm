@@ -9,6 +9,8 @@ sub activate {
   use Time::Local;
   require rt::ui::web::auth;
 
+$ENV{'PATH_INFO'} =~ s/\/frames//;
+
 &rt::ui::web::cgi_vars_in();
 $ScriptURL=$ENV{'SCRIPT_NAME'}.$ENV{'PATH_INFO'};
 ($value, $message)=&rt::initialize('web_not_authenticated_yet');
