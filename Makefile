@@ -404,4 +404,4 @@ dist: commit predist
 
 rpm:
 	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
-	rpm -ba rt.spec
+	rpm -ba etc/rt.spec

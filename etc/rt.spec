@@ -14,9 +14,9 @@ Requires: perl-DBIx-SearchBuilder >= 0.43
 Requires: perl-HTML-Parser
 Requires: perl-MLDBM
 Requires: perl-libnet
+Requires: perl-CGI.pm >= 2.78
 Requires: perl-Params-Validate >= 0.02
 Requires: perl-HTML-Mason >= 0.896
-Requires: perl-CGI-Cookie >= 1.20
 Requires: perl-libapreq
 Requires: perl-Apache-Session >= 1.53
 Requires: perl-MIME-tools >= 5.411
