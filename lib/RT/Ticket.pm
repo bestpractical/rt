@@ -145,6 +145,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Due -- an ISO date describing the ticket\'s due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
 
+  KeywordSelect-<id> -- an array of keyword ids for that keyword select
+
+
 Returns: TICKETID, Transaction Object, Error Message
 
 =cut
@@ -168,11 +171,12 @@ sub Create {
 		Due => undef,
 		MIMEObj => undef,
 		@_);
+
+    my (@non_fatal_errors);
     
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$QueueObj=RT::Queue->new($RT::SystemUser);
 	$QueueObj->Load($args{'Queue'});
-	#TODO error check this and return 0 if it\'s not loading properly +++
     }
     elsif (ref($args{'Queue'}) eq 'RT::Queue') {
 	$QueueObj=RT::Queue->new($RT::SystemUser);
@@ -236,6 +240,8 @@ sub Create {
 	if (ref($args{'Owner'})) {
 	    $RT::Logger->warning("$ticket ->Create called with an Owner of ".
 		 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
+
+	    push @non_fatal_errors, "Invalid owner. Defaulting to 'nobody'.";
 	}
 	else { 
 	    $RT::Logger->warning("$self ->Create called with an ".
@@ -255,7 +261,9 @@ sub Create {
 			     ") was proposed ".
 			     "as a ticket owner but has no rights to own ".
 			     "tickets in this queue\n");
-	
+
+	push @non_fatal_errors, "Invalid owner. Defaulting to 'nobody'.";
+
 	$Owner = undef;
     }
     
@@ -294,14 +302,47 @@ sub Create {
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
-	$self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
+	my ($wval, $wmsg) = 
+	  $self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
+	push @non_fatal_errors, $wmsg	unless ($wval);
     }	
-    foreach $watcher (@{$args{'AdminCc'}}) {
-	$self->_AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
-    }	
+
     foreach $watcher (@{$args{'Requestor'}}) {
-	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
-   }
+	my ($wval, $wmsg) = 
+	  $self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
+	push @non_fatal_errors, $wmsg	unless ($wval);
+    }
+
+    foreach $watcher (@{$args{'AdminCc'}}) {
+	# Note that we're using AddWatcher, rather than _AddWatcher, as we 
+	# actually _want_ that ACL check. Otherwise, random ticket creators
+	# could make themselves adminccs and maybe get ticket rights. that would
+	# be poor
+	my ($wval, $wmsg) = 
+	  $self->AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
+	push @non_fatal_errors, $wmsg	unless ($wval);
+    }
+
+    # Iterate through all the KeywordSelect-<int> params passed in, calling _AddKeyword
+    # for each of them
+
+
+    foreach my $key (keys %args) {
+	
+	next unless ($key =~ /^KeywordSelect-(.*)$/);
+	
+	my $ks = $1;
+	my @keywords = @{$args{$key}};
+	
+	foreach my $keyword (@keywords) {  
+	    my ($kval, $kmsg) = $self->_AddKeyword(KeywordSelect => $ks,
+						   Keyword => $keyword,
+						   Silent => 1);
+	}	
+	push @non_fatal_errors, $kmsg unless ($kval);
+    }
+
+    
     
     #Add a transaction for the create
     my ($Trans, $Msg, $TransObj) = 
@@ -311,17 +352,16 @@ sub Create {
     
     # Logging
     if ($self->Id && $Trans) {
-	$ErrStr='Ticket '.$self->Id . " created in queue '". $QueueObj->Name. "'";
+	$ErrStr = "Ticket ".$self->Id . " created in queue '". $QueueObj->Name. 
+	  "'.\n" . join("\n", @non_fatal_errors);
 	
 	$RT::Logger->info($ErrStr);
-    } 
+    }
     else {
 	# TODO where does this get errstr from?
 	$RT::Logger->warning("Ticket couldn't be created: $ErrStr");
     }
     
-    # Hmh ... shouldn't $ErrStr be the second return argument?
-    # Eventually, are all the callers updated?
     return($self->Id, $TransObj->Id, $ErrStr);
 }
 
@@ -2080,18 +2120,26 @@ are coming from the right part of the tree. really should.
 
 sub AddKeyword {
     my $self = shift;
-    my %args = ( KeywordSelect => undef,  # id of a keyword select record
-		 Keyword => undef, #id of the keyword to add
-		 @_
-	       );
-    
-    my ($OldValue);
-
-
    #ACL check
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, 'Permission denied');
     }
+    
+    return($self->_AddKeyword(@_));
+    
+}
+
+
+# Helper version of AddKeyword without that pesky ACL check
+sub _AddKeyword {
+    my $self = shift;
+    my %args = ( KeywordSelect => undef,  # id of a keyword select record
+		 Keyword => undef, #id of the keyword to add
+		 Silent => 0,
+		 @_
+	       );
+    
+    my ($OldValue);
 
     #TODO make sure that $args{'Keyword'} is valid for $args{'KeywordSelect'}
 
@@ -2131,12 +2179,6 @@ sub AddKeyword {
 	
     }
 
-    # record a single transaction.
-    my ($TransactionId, $Msg, $TransactionObj) = 
-      $self->_NewTransaction( Type => 'Keyword',
-			      OldValue => $OldValue,
-			      NewValue => $Keyword->Name );
-    
     # create the new objectkeyword 
     my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
     my $result = $ObjectKeyword->Create( Keyword => $Keyword->Id,
@@ -2144,7 +2186,15 @@ sub AddKeyword {
 					 ObjectId => $self->Id,
 					 KeywordSelect => $KeywordSelectObj->Id );
     
-    
+
+    # record a single transaction, unless we were told not to
+    unless ($args{'Silent'}) {
+	my ($TransactionId, $Msg, $TransactionObj) = 
+	  $self->_NewTransaction( Type => 'Keyword',
+				  Field => $KeywordSelectObj->Id,
+				  OldValue => $OldValue,
+				  NewValue => $Keyword->Name );
+    }
     return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ." added.");    
 
 }	
