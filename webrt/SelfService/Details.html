@@ -1,5 +1,8 @@
-<& /Elements/Header, Title => 'Display ticket #'.$Ticket->id &>
-<& Elements/Tabs &>
+%# $Header$
+%# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
+
+<& /SelfService/Elements/Header, Title => 'Display ticket #'.$Ticket->id &>
+<& /SelfService/Elements/Tabs &>
 
 
 <& /Elements/ListActions, actions => \@results &>
@@ -104,8 +107,7 @@
 
 <%INIT>
 
-my $field;
-my @results;
+my ($field, @results);
 
 # {{{ Load the ticket
 #If we get handed two ids, mason will make them an array. bleck.
@@ -113,10 +115,54 @@ my @results;
 # to deal
 my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
 
+
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
-$Ticket->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+if ($id[0] eq 'new') {
+    # {{{ Create a new ticket
+    
+    my $Queue = new RT::Queue($session{'CurrentUser'});	
+    unless ($Queue->Load($ARGS{'Queue'})) {
+	Abort('Queue not found');
+    }
+    
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    
+    my @Requestors = split(/,/,$ARGS{'Requestors'});
+    my @Cc = split(/,/,$ARGS{'Cc'});
+    
+    
+    require MIME::Entity;
+    my $MIMEObj = MIME::Entity->build(Subject => $ARGS{Subject},
+				      From => $ARGS{Requestors},
+				      Cc => $ARGS{Cc},
+				      Data => $ARGS{Content}
+				     );
+    
+    #TODO in Create_Details.html: priorities and due-date      
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{Queue},
+					       Requestor=> \@Requestors,
+					       Cc => \@Cc,
+					       Subject=>$ARGS{Subject},
+					       MIMEObj => $MIMEObj	  
+					      );         
+    unless ($id && $Trans) {
+	Abort($ErrMsg);
+    }
+
+    push(@results, $ErrMsg);
+
+    # }}}
+}
+else {
+    $Ticket->Load($id[0]) || Abort("Couldn't load ticket '$id'");
+}
 # }}}
 
+unless ($Ticket->Id) {
+    Abort("no permission to display that ticket");
+}
 
 my ($code, $msg);
 

@@ -437,13 +437,11 @@ sub HasQueueRight {
     
     my ($QueueId, $Requestor, $Cc, $AdminCc);
     
-
     if (defined $args{'Queue'}) {
 	$args{'QueueObj'} = new RT::Queue($self->CurrentUser);
 	$args{'QueueObj'}->Load($args{'Queue'});
     }
-
-
+    
     if (defined $args{'QueueObj'}) {
 	$QueueId = $args{'QueueObj'}->Id;
 	
@@ -463,6 +461,7 @@ sub HasQueueRight {
 	if ($args{'TicketObj'}->IsRequestor($self)) {#user is requestor
 	    $IsRequestor = 1;
 	}	
+
 	if ($args{'TicketObj'}->IsCc($self)) { #If user is a cc
 	    $IsCc = 1;
 	}
@@ -476,21 +475,14 @@ sub HasQueueRight {
     }
 
     else {
-    	use Carp;
-	Carp::confess();
-	$RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
+    	require Carp;
+	$RT::Logger->debug( Carp::cluck() . "$self ->HasQueueRight found no valid queue id.");
     }
 
+    #If the user wants to create a ticket, that would make them a requestor
+    #A stupid hack to make the metaprincipals stuff work.
+    #I wish we weren't hardcoding specific rights in here.
 
-    #we use this so that "CreateTicket" rights can be granted to the requestor
-    if ($args{'IsRequestor'}) {
-	$IsRequestor=1;
-	$RT::Logger->debug("The user in question is the requestor\n");
-	
-    }	
-    
-
-    
     my $retval = $self->_HasRight(Scope => 'Queue',
 				  AppliesTo => $QueueId,
 				  Right => $args{'Right'},
@@ -631,9 +623,6 @@ sub _HasRight {
     { #it's ugly, but we need to turn off warning, cuz we're joining nulls.
 	local $^W=0;
 	$hashkey =join(':',%args);
-	#    my $hashkey = "Right:".$args{'Right'}."-".
-	#      "AppliesTo:".$args{'AppliesTo'} ."-".
-	#	"Scope:".$args{'Scope'};
     }	
     
   # $RT::Logger->debug($hashkey."\n");
@@ -646,9 +635,9 @@ sub _HasRight {
 	    ($self->{'rights'}{"$hashkey"} == 1 ) &&
         (defined $self->{'rights'}{"$hashkey"}{'set'} ) &&
 	    ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
-	#  $RT::Logger->debug("Got a cached positive ACL decision for ". 
-	#			       $args{'Right'}.$args{'Scope'}.
-	#		       $args{'AppliesTo'}."\n");	    
+	  $RT::Logger->debug("Cached ACL win for ". 
+			     $args{'Right'}.$args{'Scope'}.
+			     $args{'AppliesTo'}."\n");	    
 	return ($self->{'rights'}{"$hashkey"});
     }
     elsif ((defined $self->{'rights'}{"$hashkey"}) &&
@@ -656,9 +645,9 @@ sub _HasRight {
            (defined $self->{'rights'}{"$hashkey"}{'set'}) &&
 	       ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
 	
-	#   $RT::Logger->debug("Got a cached negative ACL decision for ". 
-	#		       $args{'Right'}.$args{'Scope'}.
-	#	       $args{'AppliesTo'}."\n");	    
+	$RT::Logger->debug("Cached ACL loss decision for ". 
+			   $args{'Right'}.$args{'Scope'}.
+			   $args{'AppliesTo'}."\n");	    
 	
 	return(undef);
     }
@@ -676,15 +665,12 @@ sub _HasRight {
     
     # The generic principals clause looks for users with my id
     # and Rights that apply to _everyone_
-    my $PrincipalsClause =  "( (PrincipalType = 'Everyone') OR ".
-      "((PrincipalType = 'User') AND (PrincipalId = ".$self->Id.")))";
+    my $PrincipalsClause = "((PrincipalType = 'User') AND (PrincipalId = ".$self->Id."))";
     
     
     # If the user is the superuser, grant them the damn right ;)
     my $SuperUserClause = 
-      "(RightName = 'SuperUser') AND ".
-	" (RightScope = 'System') AND ".
-	  " (RightAppliesTo = 0)";
+      "(RightName = 'SuperUser') AND (RightScope = 'System') AND (RightAppliesTo = 0)";
     
     # If we've been passed in an extended principals clause, we should lump it
     # on to the existing principals clause. it'll make life easier
@@ -694,8 +680,7 @@ sub _HasRight {
     }
     
     my $GroupPrincipalsClause = "((PrincipalType = 'Group') AND ".
-      "(PrincipalId = GroupMembers.Id) AND ".
-	" (GroupMembers.UserId = ".$self->Id."))";
+      "(PrincipalId = GroupMembers.Id) AND  (GroupMembers.UserId = ".$self->Id."))";
     
     
 
@@ -705,6 +690,10 @@ sub _HasRight {
     # we add the type of ACL check needed
     my (@MetaPrincipalsSubClauses, $MetaPrincipalsClause);
     
+    #The user is always part of the 'Everyone' Group
+    push (@MetaPrincipalsSubClauses,  "((Groups.Name = 'Everyone') AND 
+                                       (PrincipalType = 'Group') AND 
+                                       (Groups.Id = PrincipalId))");
 
     if ($args{'IsAdminCc'}) {
 	push (@MetaPrincipalsSubClauses,  "((Groups.Name = 'AdminCc') AND 
@@ -729,9 +718,9 @@ sub _HasRight {
     }
 
     # }}}
-
+    
     my ($GroupRightsQuery, $MetaGroupRightsQuery, $IndividualRightsQuery, $hitcount);
-
+    
     # {{{ If there are any metaprincipals to be checked
     if (@MetaPrincipalsSubClauses) {
 	#chop off the leading or
@@ -743,20 +732,20 @@ sub _HasRight {
 	    " ($ScopeClause) AND ($RightClause) AND ($MetaPrincipalsClause)";
 	
 	# {{{ deal with checking if the user has a right as a member of a metagroup
-    
-    #  $RT::Logger->debug("Now Trying $GroupRightsQuery\n");	
-    $hitcount = $self->_Handle->FetchResult($MetaGroupRightsQuery);
-    
-    #if there's a match, the right is granted
-    if ($hitcount) {
-	$self->{'rights'}{"$hashkey"}{'set'} = time;
-	$self->{'rights'}{"$hashkey"} = 1;
-	return (1);
-    }
-    
-    #$RT::Logger->debug("No ACL matched $MetaGroupRightsQuery\n");	
-    
-    # }}}    
+	
+	$RT::Logger->debug("Now Trying $GroupRightsQuery\n");	
+	$hitcount = $self->_Handle->FetchResult($MetaGroupRightsQuery);
+	
+	#if there's a match, the right is granted
+	if ($hitcount) {
+	    $self->{'rights'}{"$hashkey"}{'set'} = time;
+	    $self->{'rights'}{"$hashkey"} = 1;
+	    return (1);
+	}
+	
+	$RT::Logger->debug("No ACL matched MetaGroups query: $MetaGroupRightsQuery\n");	
+	
+	# }}}    
 	
     }
     # }}}
@@ -802,7 +791,7 @@ sub _HasRight {
 
     else { #If the user just doesn't have the right
 	
-	#$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
+	$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
 	
 	#If nothing matched, return 0.
 	$self->{'rights'}{"$hashkey"}{'set'} = time;

@@ -195,7 +195,6 @@ sub Create {
     
     #Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
-					      IsRequestor => 'true',
 					      QueueObj => $Queue )) {
 	return (0,0,"No permission to create tickets in that queue");
     }

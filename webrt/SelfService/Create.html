@@ -1,9 +1,9 @@
 %# $Header$
-%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+%# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-<& /Elements/Header, Title => "Create a request" &>
-<& Elements/Tabs &>
-<FORM ACTION="Display.html" METHOD="POST">
+<& Elements/Header, Title => "Create a request" &>
+
+<FORM ACTION="<%$RT::WebPath%>/SelfService/Details.html" METHOD="POST">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket " &>
 

@@ -37,7 +37,7 @@ my $tabs = { A  => { title => 'Open requests',
                          path => 'SelfService/Closed.html',
                        },
              C => { title => 'New request',
-                    patch => 'SelfService/Create.html'
+                    path => 'SelfService/Create.html'
                     }
            };
 my $actions = {
