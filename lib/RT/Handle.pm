@@ -89,7 +89,9 @@ sub Connect {
     my $self = shift;
 
     if ($RT::DatabaseType eq 'Oracle') {
-        $ENV{'NLS_LANG'} = ".UTF8";
+        $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
+        $ENV{'NLS_NCHAR'} = "AL32UTF8";
+        
     }
 
     $self->SUPER::Connect(
