@@ -1,0 +1,32 @@
+<%ARGS>
+$Transaction => undef
+$attachments => $Transaction->Attachments
+
+</%ARGS>
+
+Date: <%$Transaction->CreatedAsString%> 
+
+% if ($Transaction->TimeTaken > 0) {
+(<%$Transaction->TimeTaken%> minutes)
+% }
+<%$Transaction->Description%>
+
+
+%  while (my $message=$attachments->Next) {
+
+<hr width=60%>
+<pre>
+<%$message->Headers%>
+</pre>
+
+%   if ($message->ContentType =~ m{^(text/plain|message)}) {
+<pre>
+<%$message->Content%>
+</pre>
+%    } 
+% else {
+	
+<% $message->ContentType %> not shown
+%    }
+
+% }
