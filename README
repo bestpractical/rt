@@ -29,8 +29,9 @@ completed. It is available under the terms of version 2 of the GNU
 General Public License (GPL), so it doesn't cost anything to set
 up and use.
 
-RT is commercially supported software. To purchase consulting services, 
-support or training, please write to sales@bestpractical.com
+RT is commercially supported software. To purchase support, training,
+custom development or professional services, please write to
+sales@bestpractical.com. 
 
         Jesse Vincent
         Best Practical Solutions, LLC
@@ -48,7 +49,7 @@ o   Perl 5.8.3 or later (http://www.perl.com).
 	    is unsupported in that configuration.
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:  Mysql 4.0.13 or later. 
+        Currently supported:  Mysql 4.0.13 or later with InnoDB support.
                               Postgres 7.2 or later.
                               Oracle 9iR2.
         Beta-quality support for Informix and SQLite is also available.
@@ -82,9 +83,10 @@ o    Various and sundry perl modules
 GENERAL INSTALLATION
 --------------------
 
-This is a rough guide to installing RT. For more detail, you'll want 
-to read 'Chapter 2: Installing' in RT's manual, available at
-http://www.bestpractical.com/rt 
+This is a rough guide to installing RT. For more detail, you'll
+want to read a more comprehensive installation guide at:
+
+    http://wiki.bestpractical.com/index.cgi?InstallationGuides
 
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
@@ -265,14 +267,15 @@ rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url ht
 BUGS
 ----
 
-To report a bug, send email to rt-3.0-bugs@fsck.com.
+To report a bug, send email to rt-bugs@fsck.com.
 
 GETTING HELP
 ------------
 
 If RT is mission-critical for you or if you use it heavily, we recommend that
 you purchase a commercial support contract.  Details on support contracts
-are available at http://www.bestpractical.com.
+are available at http://www.bestpractical.com or by writing to
+sales@bestpractical.com.
 
 If you're interested in having RT extended or customized or would like more
 information about commercial support options, please send email to 
@@ -293,8 +296,7 @@ With the body of the message consisting of only the word:
 
 If you're interested in hacking on RT, you'll want to subscribe to
 rt-devel@lists.bestpractical.com.  Subscribe to it with instructions
-similar to
-those above.
+similar to those above.
 
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
@@ -307,6 +309,7 @@ RT WEBSITE
 
 For current information about RT, check out the RT website at 
         http://www.bestpractical.com/  
+
 
 You'll find screenshots, a pointer to the current version of RT, contributed 
 patches, and lots of other great stuff.

@@ -211,9 +211,9 @@ upgrade-instruct:
 	@echo ""
 	@echo "For each item in that directory whose name is greater than"
 	@echo "your previously installed RT version, run:"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action schema --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action acl --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --action insert --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct
@@ -223,10 +223,10 @@ upgrade-noclobber: config-install libs-install html-install bin-install local-in
 
 # {{{ dependencies
 testdeps:
-	$(PERL) ./sbin/rt-test-dependencies --with-$(DB_TYPE)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE)
 
 fixdeps:
-	$(PERL) ./sbin/rt-test-dependencies --install --with-$(DB_TYPE)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE)
 
 #}}}
 
@@ -297,7 +297,7 @@ files-install: libs-install etc-install bin-install sbin-install html-install lo
 
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	-cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
 	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || cp etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
 
 	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)

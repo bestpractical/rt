@@ -44,6 +44,18 @@ SELECTED
 ><%$field%></option>
 % }
 </select>
+<select name="Order">
+<option value="ASC"
+% if ($Order eq "ASC") {
+SELECTED
+% }
+><&|/l&>Ascending</&></option>
+<option value="DESC"
+% if ($Order eq "DESC") {
+SELECTED
+% }
+><&|/l&>Descending</&></option>
+</select>
 </td>
 </tr>
 <td class=label>
@@ -67,7 +79,8 @@ my %fields = %{$tickets->FIELDS};
 </%INIT>
 
 <%ARGS>
-$OrderBy => 'id'
-$RowsPerPage => 50
+$Order => undef
+$OrderBy => undef
+$RowsPerPage => undef
 $Format => undef
 </%ARGS>

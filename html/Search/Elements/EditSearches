@@ -1,5 +1,4 @@
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
-<input type="hidden" name="SearchId" value="<%$SearchId%>">
 <&|/l&>Privacy:</&>
 % if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
 <& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
@@ -39,15 +38,10 @@ $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
                     Recursively => 1);
 
                     push (@Objects, @{$groups->ItemsArrayRef()});
-
-if ($CurrentSearch->{'SearchId'}) {
-    $SearchId= $CurrentSearch->{'SearchId'};
-}
-
 </%INIT>
 
 <%ARGS>
-$SearchId => 'new'
+$SearchId => undef
 $CurrentSearch => undef
 $Description => undef
 $HideResults => 0

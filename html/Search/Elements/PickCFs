@@ -40,10 +40,9 @@
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach (keys %cfqueues) {
-    my $id = $_;
+foreach my $id (keys %cfqueues) {
     $id =~ s/^.'*(.*).'*$/$1/;
-    # Gotta load up the $queue object, since queues get stored by name now.
+    # Gotta load up the $queue object, since queues get stored by name now. my $id
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
     $CustomFields->LimitToQueue($queue->Id);

@@ -65,7 +65,7 @@ GetOptions( "search=s"        => \$search,
             "help"            => \$help,
             "verbose|v"       => \$verbose );
 
-help() if $help or not @ARGV or not $action;
+help() if $help or not $search or not $action;
 
 # We _must_ have a search object
 load_module($search);

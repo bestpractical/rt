@@ -58,6 +58,7 @@ ok (require RT::Tickets);
 use strict;
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
+use RT::CustomFields;
 
 
 # Configuration Tables:
@@ -246,7 +247,7 @@ sub _EnumLimit {
     $o->Load( $value );
     $value = $o->Id;
   }
-  $sb->_SQLLimit( FIELD => $field,,
+  $sb->_SQLLimit( FIELD => $field,
 	      VALUE => $value,
 	      OPERATOR => $op,
 	      @rest,
@@ -820,103 +821,102 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$_field,$op,$value,@rest) = @_;
+    my ( $self, $_field, $op, $value, @rest ) = @_;
 
-  my %rest = @rest;
-  my $field = $rest{SUBKEY} || die "No field specified";
+    my %rest  = @rest;
+    my $field = $rest{SUBKEY} || die "No field specified";
 
-  # For our sanity, we can only limit on one queue at a time
-  my $queue = undef;
-  # Ugh.    This will not do well for things with underscores in them
+    # For our sanity, we can only limit on one queue at a time
+    my $queue = 0;
 
-  use RT::CustomFields;
-  my $CF = RT::CustomFields->new( $self->CurrentUser );
-  #$CF->Load( $cfid} );
-
-  my $q;
-  if ($field =~ /^(.+?)\.{(.+)}$/) {
-    my $q = RT::Queue->new($self->CurrentUser);
-    $q->Load($1);
-    $field = $2;
-    $CF->LimitToQueue( $q->Id );
-    $queue = $q->Id;
-  } else {
-    $field = $1 if $field =~ /^{(.+)}$/; # trim { }
-    $CF->LimitToGlobal;
-  }
-  $CF->FindAllRows;
-
-  my $cfid = 0;
-
-  # this is pretty inefficient for huge numbers of CFs...
-  while ( my $CustomField = $CF->Next ) {
-    if (lc $CustomField->Name eq lc $field) {
-      $cfid = $CustomField->Id;
-      last;
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+        $queue = $1;
+        $field = $2;
     }
-  }
-  die "No custom field named $field found\n"
-    unless $cfid;
-
-#   use RT::CustomFields;
-#   my $CF = RT::CustomField->new( $self->CurrentUser );
-#   $CF->Load( $cfid );
-
-
-  my $null_columns_ok;
-
-  my $TicketCFs;
-  # Perform one Join per CustomField
-  if ($self->{_sql_keywordalias}{$cfid}) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-  } else {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->_SQLJoin( TYPE   => 'left',
-		   ALIAS1 => 'main',
-		   FIELD1 => 'id',
-		   TABLE2 => 'ObjectCustomFieldValues',
-		   FIELD2 => 'ObjectId' );
-  }
-
-  $self->_OpenParen;
-
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'ObjectType',
-		    VALUE      => ref($self),
-		);
-
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'Content',
-		    OPERATOR   => $op,
-		    VALUE      => $value,
-		    QUOTEVALUE => 1,
-		    @rest );
-
-  if (   $op =~ /^IS$/i
-	 or ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
-  }
-
-  #If we're trying to find tickets where the keyword isn't somethng,
-  #also check ones where it _IS_ null
-
-  if ( $op eq '!=' ) {
-    $self->_SQLLimit( ALIAS           => $TicketCFs,
-		      FIELD           => 'Content',
-		      OPERATOR        => 'IS',
-		      VALUE           => 'NULL',
-		      QUOTEVALUE      => 0,
-		      ENTRYAGGREGATOR => 'OR', );
-  }
-
-  $self->_SQLLimit( LEFTJOIN => $TicketCFs,
-		    FIELD    => 'CustomField',
-		    VALUE    => $cfid,
-		    ENTRYAGGREGATOR => 'OR' );
+    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
 
 
-  $self->_CloseParen;
+# If we're trying to find custom fields that don't match something, we want tickets
+# where the custom field has no value at all
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
+    }
+
+
+
+    my $q = RT::Queue->new( $self->CurrentUser );
+    $q->Load($queue) if ($queue);
+
+    my $cf;
+    if ( $q->id ) {
+        $cf = $q->CustomField($field);
+    }
+    else {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
+    }
+
+    my $cfid = $cf->id;
+
+    die "No custom field named $field found\n" unless $cfid;
+
+
+    my $TicketCFs;
+
+    # Perform one Join per CustomField
+    if ( $self->{_sql_keywordalias}{$cfid} ) {
+        $TicketCFs = $self->{_sql_keywordalias}{$cfid};
+    }
+    else {
+        $TicketCFs = $self->{_sql_keywordalias}{$cfid} = $self->_SQLJoin(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId'
+        );
+
+    $self->_SQLLimit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD => 'ObjectType',
+        VALUE => ref($self->NewItem), # we want a single item, not a collection
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    $self->_SQLLimit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'CustomField',
+        VALUE           => $cfid,
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    }
+
+    $self->_OpenParen;
+
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => 'Content',
+        OPERATOR   => $op,
+        VALUE      => $value,
+        QUOTEVALUE => 1,
+        @rest
+    );
+    if ($null_columns_ok) {
+        $self->_SQLLimit(
+            ALIAS           => $TicketCFs,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
+    }
+
+    $self->_CloseParen;
 
 }
 
@@ -1797,7 +1797,6 @@ sub LimitCustomField {
                  QUOTEVALUE    => 1,
                  @_ );
 
-    use RT::CustomFields;
     my $CF = RT::CustomField->new( $self->CurrentUser );
     if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
 	$CF->Load( $args{CUSTOMFIELD} );

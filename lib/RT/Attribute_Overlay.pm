@@ -223,8 +223,9 @@ If it's data structure returns a ref to that data structure.
 
 sub Content {
     my $self = shift;
+    # Here we call _Value to get the ACL check.
     my $content = $self->_Value('Content');
-    if ($self->ContentType eq 'storable') {
+    if ($self->__Value('ContentType') eq 'storable') {
         eval {$content = $self->_DeserializeContent($content); };
         if ($@) {
             $RT::Logger->error("Deserialization of content for attribute ".$self->Id. " failed. Attribute was: ".$content);
@@ -245,8 +246,9 @@ sub _SerializeContent {
 sub SetContent {
     my $self = shift;
     my $content = shift;
-
-    if ($self->ContentType eq 'storable') {
+    
+    # Call __Value to avoid ACL check.
+    if ($self->__Value('ContentType') eq 'storable') {
     # We eval the serialization because it will lose on a coderef.
     eval  {$content = $self->_SerializeContent($content); };
     if ($@) {

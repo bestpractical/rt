@@ -263,7 +263,7 @@ sub SendMessage {
       . $MIMEObj->head->get('Bcc') );
     $success =~ s/\n//gi;
 
-    $self->RecordOutgoingMailTransaction($MIMEObj);
+    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
     $RT::Logger->info($success);
 
@@ -315,6 +315,7 @@ sub AddAttachments {
             Data     => $attach->OriginalContent,
             Filename => $self->MIMEEncodeString( $attach->Filename,
                 $RT::EmailOutputEncoding ),
+            'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
             Encoding => '-SUGGEST'
         );
     }
@@ -335,6 +336,27 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 sub RecordOutgoingMailTransaction {
     my $self = shift;
     my $MIMEObj = shift;
+           
+
+    my @parts = $MIMEObj->parts;
+    my @attachments;
+    my @keep;
+    foreach my $part (@parts) {
+        my $attach = $part->head->get('RT-Attachment');
+        if ($attach) {
+            $RT::Logger->debug("We found an attachment. we want to not record it.");
+            push @attachments, $attach;
+        } else {
+            $RT::Logger->debug("We found a part. we want to record it.");
+            push @keep, $part;
+        }
+    }
+    $MIMEObj->parts(\@keep);
+    foreach my $attachment (@attachments) {
+        $MIMEObj->head->add('RT-Attachment', $attachment);
+    }
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
 
     my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
 
@@ -348,7 +370,14 @@ sub RecordOutgoingMailTransaction {
     }
 
 
-    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => $type, Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+      
+    my ( $id, $msg ) = $transaction->Create(
+        Ticket         => $self->TicketObj->Id,
+        Type           => $type,
+        Data           => $MIMEObj->head->get('Message-Id'),
+        MIMEObj        => $MIMEObj,
+        ActivateScrips => 0
+    );
 
 
 }

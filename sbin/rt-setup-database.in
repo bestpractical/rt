@@ -87,6 +87,17 @@ if ( $args{'action'} eq 'init' ) {
         print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
     }
 
+    # MySQL must have InnoDB support
+    if ($RT::DatabaseType eq "mysql") {
+        my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
+        if ($innodb eq "NO") {
+            die "RT requires that MySQL be compiled with InnoDB table support.\n".
+              "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
+        } elsif ($innodb eq "DISABLED") {
+            die "RT requires that MySQL be InnoDB table support be enabled.\n".
+              "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n"
+        }
+    }
     
     # SQLite can't deal with the disconnect/reconnect
     unless ($RT::DatabaseType eq 'SQLite') {
