@@ -53,6 +53,7 @@ use vars qw(%_USERS_KEY_CACHE);
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
+use RT::EmailParser;
 
 
 # {{{ sub _Accessible 
@@ -595,13 +596,17 @@ sub LoadOrCreateByEmail {
 
         my ($val, $message);
 
+	my ( $Address, $Name ) =
+		RT::EmailParser::ParseAddressFromHeader('', $email);
+	$email = $Address;
+
         $self->LoadByEmail($email);
         $message = $self->loc('User loaded');
         unless ($self->Id) {
             ( $val, $message ) = $self->Create(
                 Name => $email,
                 EmailAddress => $email,
-                RealName     => $email,
+                RealName     => $Name,
                 Privileged   => 0,
                 Comments     => 'Autocreated when added as a watcher');
             unless ($val) {
