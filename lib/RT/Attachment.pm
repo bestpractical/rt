@@ -286,9 +286,6 @@ sub Quote {
     $max=70 if $max>78;
     $max+=2;
 
-    #Attache the user's signature if we have it. 
-    $body .= "\n\n-- \n" . $self->CurrentUser->UserObj->Signature
-	if ($self->CurrentUser->UserObj->Signature);
     return (\$body, $max);
 }
 # }}}
