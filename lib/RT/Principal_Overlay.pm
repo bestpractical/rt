@@ -461,7 +461,18 @@ sub _RolesForObject {
     my $self = shift;
     my $type = shift;
     my $id = shift;
-    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = '" . $id. "') ";
+
+    unless ($id) {
+	$id = '0';
+   }
+
+   # This should never be true.
+   unless ($id =~ /^\d+$/) {
+	$RT::Logger->crit("RT::Prinicipal::_RolesForObject called with type $type and a non-integer id: '$id'");
+	$id = "'$id'";
+   }
+
+    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = $id) ";
 
     return($clause);
 }
