@@ -23,9 +23,10 @@
 #
 # 
 # END LICENSE BLOCK
+
+
 WARNING
 -------
-
 
 This is a DEVELOPMENT RELEASE OF RT. PROCEED AT YOUR OWN RISK.
 
@@ -98,8 +99,6 @@ GENERAL INSTALLATION
 
 5b  FOR UPGRADING: (Within the RT 3.0.x series)
 
-	Make a backup of /path/to/rt/etc/config.pm
- 
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
 				  Make, if you need to)
@@ -107,15 +106,10 @@ GENERAL INSTALLATION
 	This will build new binaries, config files and libraries without
 	overwriting your RT database. 
         
-        It will then instruct you to update your RT system database objects 
-        by running rt/etc/insertdata <version> where <version> is the version 
-        of RT you're upgrading from.
+        It may then instruct you to update your RT system database objects 
 
-	WARNING: This WILL clobber your existing configuration file!
-	
-6   Edit etc/RT_Config.pm in your RT installation directory.  In many
-    cases sensible defaults have been included. In others, you MUST
-    supply a value.
+6   Edit etc/RT_SiteConfig.pm in your RT installation directory, by specifying
+    any values you need to change from the defaults in etc/RT_Config.pm
 
 7   Configure the email and web gateways, as described below. 
 
@@ -168,7 +162,6 @@ Apache
     DocumentRoot /path/to/rt3/share/html
     AddDefaultCharset UTF-8
 
-    PerlFreshRestart On			# only for Apache/mod_perl 1.x
     PerlModule Apache2 Apache::compat	# only for Apache/mod_perl 2.x
 
     PerlModule Apache::DBI
@@ -214,15 +207,7 @@ THE CLI
 BUGS
 ----
 
-Known issues with releases of RT2 are listed at 
-<URL:http://fsck.com/rt2/NoAuth/Errata.html>.  This includes every bug known
-to exist in each release of RT.  (When prompted, login as guest/guest)
-
-To find out more about currently open bugs, check out the live 
-Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
-(When prompted, login as guest/guest)
-
-To report a bug, send an email to rt-3.0-bugs@fsck.com.
+To report a bug, send email to rt-3.0-bugs@fsck.com.
 
 GETTING HELP
 ------------
@@ -272,7 +257,7 @@ TROUBLESHOOTING
 
 
 If the solution to the problem you're running into isn't obvious and you've 
-checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
+checked the FAQ, feel free to send mail to rt-users@fsck.com (for released 
 versions of RT) or rt-devel@fsck.com (for development versions).
 
 Thanks!

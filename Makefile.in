@@ -179,9 +179,9 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "Next, you need to initialize RT's database by running" 
 	@echo " 'make initialize-database' or by executing "       
-	@echo " '$(RT_SBIN_PATH)/rt-initialize-database --action init \ "
+	@echo " '$(RT_SBIN_PATH)/rt-setup-database --action init \ "
 	@echo "     --dba $(DB_DBA) --prompt-for-dba-password'"
-	@echo "You must now configure it by editing $(SITE_CONFIG_FILE)."
+	@echo "You must now configure RT by editing $(SITE_CONFIG_FILE)."
 	@echo "From here on in, you should refer to the administrator's guide."
 
 
@@ -199,11 +199,11 @@ upgrade-noclobber: libs-install html-install bin-install local-install doc-insta
 
 
 # {{{ dependencies
-testdeps:
-	$(PERL) ./sbin/testdeps --with-$(DB_TYPE)
+rt-test-dependencies:
+	$(PERL) ./sbin/rt-test-dependencies --with-$(DB_TYPE)
 
 fixdeps:
-	$(PERL) ./sbin/testdeps --install --with-$(DB_TYPE)
+	$(PERL) ./sbin/rt-test-dependencies --install --with-$(DB_TYPE)
 
 #}}}
 
@@ -227,6 +227,7 @@ fixperms:
 	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
 	chmod 0550 $(DESTDIR)/$(CONFIG_FILE)
+	chmod 0550 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 	# Make the interfaces executable and setgid rt
 	chown $(BIN_OWNER) $(SETGID_BINARIES)
@@ -277,8 +278,13 @@ files-install: libs-install etc-install bin-install sbin-install html-install lo
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
 	cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || cp etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
+
 	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)
 	chown $(BIN_OWNER) $(DESTDIR)/$(CONFIG_FILE)
+
+	chgrp $(RTGROUP) $(DESTDIR)/$(SITE_CONFIG_FILE)
+	chown $(BIN_OWNER) $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
@@ -298,14 +304,14 @@ regression-instruct:
 # {{{ database-installation
 
 regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@ --dba-password ''
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@ --dba-password ''
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba @DB_DBA@ --dba-password ''
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba @DB_DBA@ --dba-password ''
 
 initialize-database: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@ --prompt-for-dba-password
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba @DB_DBA@ --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@ --prompt-for-dba-password
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba @DB_DBA@ --prompt-for-dba-password
 
 insert-approval-data: 
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
@@ -346,8 +352,8 @@ etc-install:
 sbin-install:
 	mkdir -p $(DESTDIR)/$(RT_SBIN_PATH)
 	cp -rp \
-		sbin/initdb \
-		sbin/testdeps \
+		sbin/rt-setup-database \
+		sbin/rt-test-dependencies \
 		sbin/insert_approval_scrips \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 # }}}

@@ -174,15 +174,16 @@ AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
 dnl Configure the output files, and generate them.
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([
+		 sbin/rt-setup-database
+                 sbin/rt-test-dependencies
+                 Makefile
 		 etc/RT_Config.pm
 		 lib/RT.pm
                  lib/t/00smoke.t
                  lib/t/01harness.t
                  lib/t/02regression.t
                  lib/t/03web.pl
-		 sbin/initdb
-                 sbin/testdeps
  		 sbin/insert_approval_scrips
  		 bin/enhanced-mailgate
  		 bin/mason_handler.fcgi
@@ -193,7 +194,7 @@ AC_CONFIG_FILES([Makefile
  		 bin/rt-mailgate
  		 bin/rtadmin
  		 bin/webmux.pl],
-		[chmod +x sbin/initdb
-		chmod +x sbin/testdeps]
+		[chmod +x sbin/rt-setup-database
+		chmod +x sbin/rt-test-dependencies]
                 )
 AC_OUTPUT
