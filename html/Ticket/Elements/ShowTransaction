@@ -112,6 +112,7 @@ $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
 $UpdatePath => $RT::WebPath."/Ticket/Update.html"
 $Attachments => undef
+$AttachmentContent => undef
 $ShowBody => 1
 </%ARGS>
 
@@ -154,7 +155,7 @@ if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = "Ticket " . $Transaction->Ticket . ": ";
 }
 
-if ( $Transaction->TimeTaken > 0 ) {
+if ( $Transaction->TimeTaken != 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";
 }
 

@@ -40,7 +40,8 @@
       Ticket => $TicketObj, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'},
-      Attachments => $attachments 
+      Attachments => $attachments,
+      AttachmentContent => $attachment_content
       
       &> 
 
@@ -118,6 +119,7 @@ if ($ARGS{'id'} eq 'new') {
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
 
 
 </%INIT>

@@ -234,10 +234,11 @@ sub SendMessage {
     }
     else {
         my @mailer_args = ($RT::MailCommand);
+
         local $ENV{MAILADDRESS};
 
         if ( $RT::MailCommand eq 'sendmail' ) {
-            push @mailer_args, $RT::SendmailArguments;
+            push @mailer_args, split(/\s+/, $RT::SendmailArguments);
         }
         elsif ( $RT::MailCommand eq 'smtp' ) {
             $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');

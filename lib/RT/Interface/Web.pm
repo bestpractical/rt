@@ -530,7 +530,7 @@ sub MakeMIMEEntity {
         # on NFS and NTFS, it is possible that tempfile() conflicts
         # with other processes, causing a race condition. we try to
         # accommodate this by pausing and retrying.
-        last if ($fh, $temp_file) = eval { tempfile() };
+        last if ($fh, $temp_file) = eval { tempfile( UNLINK => 1) };
         sleep 1;
     }
 
