@@ -282,7 +282,14 @@ sub DropSetGIDPermissions {
 
 =head1 BUGS
 
+Please report them to rt-3.0-bugs@fsck.com, if you know what's broken and have at least some idea of what needs to be fixed.
+If you're not sure what's going on, report them rt-devel@lists.fsck.com.
+
 =head1 SEE ALSO
+
+L<RT::StyleGuide>
+L<DBIx::SearchBuilder>
+
 
 
 =begin testing
