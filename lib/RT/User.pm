@@ -440,23 +440,28 @@ sub HasQueueRight {
     }
     #if they don't have the queue right, see if they have the system right.
     else {
-        $retval = $self->HasSystemRight( Right => $args{'Right'},
-					 IsOwner => $IsOwner,
-					 IsCc => $IsCc,
-					 IsAdminCc => $IsAdminCc,
-					 IsRequestor => $IsRequestor
+        $retval = $self->HasSystemRight( $args{'Right'},
+					 (
+					  IsOwner => $IsOwner,
+					  IsCc => $IsCc,
+					  IsAdminCc => $IsAdminCc,
+					  IsRequestor => $IsRequestor
+					  )
 				       );
         return ($retval);
     }
     
 }
 
-  
 # }}}
   
 # {{{ sub HasSystemRight
 
-=head2 HasSystemRight ( Right => 'right')
+=head2 HasSystemRight
+
+takes an array of a single value and a paramhash.
+The single argument is the right being passed in.
+the param hash is some additional data. (IsCc, IsOwner, IsAdminCc and IsRequestor)
 
 Returns 1 if this user has the listed 'right'. Returns undef if this user doesn't.
 
@@ -464,20 +469,21 @@ Returns 1 if this user has the listed 'right'. Returns undef if this user doesn'
 
 sub HasSystemRight {
     my $self = shift;
-    my %args = ( Right => undef,
-		 IsOwner => undef,
+    my $right = shift;
+
+    my %args = ( IsOwner => undef,
 		 IsCc => undef,
 		 IsAdminCc => undef,
 		 IsRequestor => undef,
 		 @_);
     
-    if (!defined $args{'Right'}) {
+    if (!defined $right) {
 	$RT::Logger->debug("RT::User::HasSystemRight was passed in no right.");
 	return(undef);
     }	
     return ( $self->_HasRight ( Scope => 'System',
 				AppliesTo => '0',
-				Right => $args{'Right'},
+				Right => $right,
 				IsOwner => $argS{'IsOwner'},
 				IsCc => $args{'IsCc'},
 				IsAdminCc => $args{'IsAdminCc'},

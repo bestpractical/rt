@@ -354,6 +354,7 @@ sub IsWatcher {
 	}
     }
 
+    require RT::Watcher;
     my $watcher = new RT::Watcher($self->CurrentUser);
     $watcher->LoadByCols(%cols);
     
