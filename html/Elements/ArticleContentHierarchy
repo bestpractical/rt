@@ -2,7 +2,7 @@
 % while (my $article = $articles->Next()) {
 <LI><a href="article.html?id=<%$article->Id%>"><% $article->Summary %></a>
 <BR>
-<%$article->FriendlyContent |n%>
+<%$article->ContentObj->Body |n%>
 % if ($Depth > 0) {
 <& ArticleHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
