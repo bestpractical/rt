@@ -980,9 +980,9 @@ sub AdminRights {
 		  $principal->{'id'} . " in scope $scope ($appliesto)\n";
 		next;
 	    }	
-	    $ace->Delete;
-	    #TODO: check some return values
-	    print "ACE deleted\n";
+	    my ($delval, $delmsg) =$ace->Delete;
+	    print "$delmsg\n";
+	    
 	    
 	}
 

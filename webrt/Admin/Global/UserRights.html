@@ -10,24 +10,20 @@
 %	while (my $UserObj = $Users->Next()) {
   <TR ALIGN=RIGHT> 
 	<TD VALIGN=TOP>
-
-
-	    <A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$UserObj->id%>"><% $UserObj->Name %></A>
-		  </TD>
-		<TD>
-	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
-                                  PrincipalType => 'User',
-                                  Scope => 'System' &>
-
-		</TD>
-	      </TR>
+	  <A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$UserObj->id%>"><% $UserObj->Name %></A>
+	</TD>
+	<TD>
+	  <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
+	      PrincipalType => 'User',
+	      Scope => 'System' &>
+	  
+	</TD>
+      </TR>
+	
 % }
-	    </TABLE>
-      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
-remove rights that were granted previously.
-	</P>
-      
-      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+    </TABLE>
+    
+    <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
   </FORM>
   
 <%INIT>

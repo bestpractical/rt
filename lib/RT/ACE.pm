@@ -288,8 +288,14 @@ sub Delete {
 	return (0, 'Permission denied');
     }	
     
-    return ($self->SUPER::Delete(@_));
     
+    my ($val,$msg) = $self->SUPER::Delete(@_);
+    if ($val) {
+	return ($val, 'ACE Deleted');
+    }	
+    else {
+	return (0, 'ACE could not be deleted');
+    }
 }
 
 # }}}

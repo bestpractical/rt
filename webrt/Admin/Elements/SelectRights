@@ -1,21 +1,25 @@
 <INPUT TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
-      
-    <SELECT SIZE=5  MULTIPLE  NAME="ACL-<%$ACLDesc%>">
+     <TABLE BORDER=0>
+<TR>
+<TD valign=top>
+<h3>New rights</h3> 
+    <SELECT SIZE=5  MULTIPLE  NAME="GrantACE-<%$ACLDesc%>">
             
 % foreach $right (sort keys %Rights) {
       <OPTION VALUE="<%$right%>"  
-	<%  $ACLObj->HasEntry(PrincipalId=> $PrincipalObj->Id , 
-				  PrincipalType => $PrincipalType, 
-				  RightName => "$right", 
-				  RightScope => $Scope, 
-				  RightAppliesTo => $AppliesTo) 
-	  && 'SELECTED'  %>
 	><%$right%></OPTION>
 % }
     </SELECT>
-    
-    
-    
+</TD>
+<TD valign=top> 
+<h3>Current rights</h3>
+<i>(Check box to revoke right)</i> <BR>
+% while (my $right = $ACLObj->Next()) {
+<input type=checkbox value="<%$right->Id%>" name="RevokeACE"> <%$right->RightName%><br>
+% } 
+</TD>
+</TR>
+</TABLE>
 <%INIT>
     my ($right, $ACLDesc, $AppliesTo, %Rights);
    

@@ -5,11 +5,9 @@
   <FORM METHOD=POST>
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
-
-
 <& /Elements/TitleBoxStart, title => 'Modify user rights for queue '.$QueueObj->Name &>
       
-      <TABLE>
+<TABLE>
         
 %	while (my $UserObj = $Users->Next()) {
   <TR ALIGN=RIGHT> 
@@ -25,18 +23,13 @@
 	</TR>
 % }
       </TABLE>
-	
-      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
-	remove rights that were granted previously.
-      </P>
             
       <& /Elements/TitleBoxEnd &>
       <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
-
       
   </FORM>
   
-  <%INIT>
+<%INIT>
  
   #Update the acls.
   my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
@@ -61,23 +54,14 @@ $QueueObj->Load($id) ||
 
 # Find out which users we want to display ACL selects for
 my $Users = new RT::Users($session{'CurrentUser'});
-#$Users->UnLimit;
 $Users->LimitToPrivileged();
-
-# Find out which groups we want to display ACL selects for.
-my $Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->UnLimit();
 
 # }}}
     
   
-  # }}}
+# }}}
     
-
-
-
-  
-  </%INIT>
+</%INIT>
 
 <%ARGS>
 $id = undef

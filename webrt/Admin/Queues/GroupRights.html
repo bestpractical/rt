@@ -48,19 +48,15 @@
 % }
 	
       </TABLE>
-      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
-remove rights that were granted previously.
-	</P>
-      
 
       <& /Elements/TitleBoxEnd &>
       <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
   </FORM>
   
-  <%INIT>
+<%INIT>
  
-  #Update the acls.
-  my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
+#Update the acls.
+my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
 
 # {{{ Deal with setting up the display of current rights.
 
@@ -95,12 +91,8 @@ $QueueObj->Load($id) ||
     
   
   # }}}
-    
 
-
-
-  
-  </%INIT>
+</%INIT>
 
 <%ARGS>
 $id = undef

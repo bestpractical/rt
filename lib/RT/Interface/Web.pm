@@ -455,17 +455,19 @@ sub ProcessACLChanges {
 	    
 	    
 	    #Hack to turn the ACL returned into an array
-	    my @rights = ref($ARGS{"ACL-$ACL"}) eq 'ARRAY' ?
-	      @{$ARGS{"ACL-$ACL"}} : ($ARGS{"ACL-$ACL"});
+
+	    my @rights = ref($ARGS{"GrantACE-$ACL"}) eq 'ARRAY' ?
+	      @{$ARGS{"GrantACE-$ACL"}} : ($ARGS{"GrantACE-$ACL"});
+	    
+	    my @RevokeACE = ref($ARGS{"RevokeACE"}) eq 'ARRAY' ?
+	      @{$ARGS{"RevokeACE"}} : ($ARGS{"RevokeACE"});
 	    
 	    # }}}
 	    
 	    # {{{ Add any rights we need. at the same time, build up
 	    # a hash of what rights have been selected 
 	    
-	    my ($right,%rights);
-	    foreach $right (@rights) {
-		
+	    foreach my $right (@rights) {
 		next unless ($right);
 		
 		#if the right that's been selected wasn't there before, add it.
@@ -477,13 +479,11 @@ sub ProcessACLChanges {
 		    
 		    #Add new entry to list of rights.
 		    if ($Scope eq 'Queue') {
-			
 			my $Queue = new RT::Queue($session{'CurrentUser'});
 			$Queue->Load($AppliesTo);
 			unless ($Queue->id) {
 			    Abort("Couldn't find a queue called $AppliesTo");
 			}
-
 
 			my ($val, $msg) = 
 			  $Principal->GrantQueueRight( RightAppliesTo => $Queue->id,
@@ -511,35 +511,33 @@ sub ProcessACLChanges {
 			    }	
 		    }
 		}
-		# Build up a hash of rights, so that we can easily check
-		# to make sure the user has not turned off any rights.
-		
-		$rights{"$right"} = 1;
-		
 	    }
 	    # }}}
 	    
 	    # {{{ remove any rights that have been deleted
-	    while ($right = $CurrentACL->Next()) {
-		#If @rights doesn't contain what $entry does, then the user has
-		# removed that right.
+	    foreach my $aceid (@RevokeACE) {
+		next unless ($aceid);
+		my $right = new RT::ACE($session{'CurrentUser'});
+		$right->Load($aceid);
 		
-		unless ($rights{$right->RightName}) {
-		    #yank the entry out of  the ACL
-		    $right->Delete();
-
-		    my $phrase = "Revoked ".$right->PrincipalType." ".
-		      $right->PrincipalObj->Name . "'s right to ". $right->RightName;
-
-		    if ($right->RightScope eq 'System') {
-			$phrase .= ' across all queues.';
-		    }
-		    else {
-			$phrase .= ' for the queue '.$right->AppliesToObj->Name. '.';
-		    }
+		my $phrase = "Revoked ".$right->PrincipalType." ".
+		  $right->PrincipalObj->Name . "'s right to ". $right->RightName;
+		
+		if ($right->RightScope eq 'System') {
+		    $phrase .= ' across all queues.';
+		}
+		else {
+		    $phrase .= ' for the queue '.$right->AppliesToObj->Name. '.';
+		}
+		my ($val, $msg )= $right->Delete();
+		if ($val) {
 		    push (@results, $phrase);
 		}
+		else {
+		    push (@results, $msg);
+		}	
 	    }
+
 	    # }}}
 	}
     }
