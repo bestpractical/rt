@@ -61,7 +61,7 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 default:
 	@echo "Read the readme"
 
-install: dirs initialize nondestruct instruct
+install: dirs initialize nondestruct config-replace mux-replace instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -124,8 +124,8 @@ acls:
 
 
 mux-replace:
-	$(PERL) -p -i.orig -e"s's'!!RT_PATH!!'$(RT_PATH)'g;\
-				  !!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
+	$(PERL) -p -i.orig -e"s'!!RT_PATH!!'$(RT_PATH)'g;\
+			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
 
 config-replace:
 	 $(PERL) -p -i.bak  -e"\

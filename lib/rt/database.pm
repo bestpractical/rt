@@ -59,10 +59,17 @@ sub add_request {
 
     $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $in_queue_id, $in_area, $in_alias, $in_requestors, $in_owner, $in_subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $in_status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
               $time_id = $sth->insert_id;   
-    $sth = $dbh->Query($query_string) or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
-    if ($serial_num eq 'NULL') {
+    $sth = $dbh->Query($query_string) 
+	or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+   
+  # if we just assigned the fact a serial number, get it and then set effective serial_num 
+  # to the same number
+  if ($serial_num eq 'NULL') {
       $serial_num = $sth->insert_id;   
-    }
+    	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE serial_num = $serial_num";
+	$sth = $dbh->Query($query_string) 
+		or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+	}
     return ($serial_num);
 }
 
@@ -72,7 +79,7 @@ sub add_transaction {
     my ($transaction_num, $query_string, $queue_id, $owner, $requestors);
 
     
-        $in_actor = $rt::dbh->quote($in_actor);
+    $in_actor = $rt::dbh->quote($in_actor);
     $in_type = $rt::dbh->quote($in_type);
     $in_data = $rt::dbh->quote($in_data);
     
@@ -84,7 +91,7 @@ sub add_transaction {
     &req_in($in_serial_num, $in_current_user);
 
     $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $in_actor, $in_type, $in_data, $in_time)";
-     $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
+     $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
     $transaction_num = $sth->insert_id;       
 
     

@@ -7,7 +7,7 @@ require "ctime.pl";
 package rt;
 
 #set this to the root of your RT Installation
-$rt_dir = "/projects/rt";
+$rt_dir = "!!RT_PATH!!";
 push (@INC, "$rt_dir/lib/");
 
 require "$rt_dir/etc/config.pm";          
@@ -15,7 +15,7 @@ require "$rt_dir/etc/config.pm";
 
 &initialize();
 
-if ($0 eq 'rt') {
+if ($0 =~ '/rt$') {
   # load rt-cli
   require rt::ui::cli::support;
  
@@ -23,14 +23,14 @@ if ($0 eq 'rt') {
   require rt::database::manipulate; 
   &rt::ui::cli::manipulate::activate();
 }
-elsif ($0 eq 'rtq') {
+elsif ($0 =~ '/rtq$') {
   # load rt-query
   require rt::database;      
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
 }
-elsif ($0 eq 'rtadmin') {
+elsif ($0 =~ '/rtadmin$') {
   #load rt_admin
   require rt::database::admin;
   require rt::support::utils;     
@@ -38,14 +38,14 @@ elsif ($0 eq 'rtadmin') {
   require rt::ui::cli::admin;
   &rt::ui::cli::admin::activate();
 }
-elsif ($0 eq 'webrt') {
+elsif ($0 =~ '/webrt$') {
   #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
   &rt::ui::web::manipulate::activate();
 }
-elsif ($0 eq 'webadminrt') {
+elsif ($0 =~ '/webadminrt$') {
   #load web-admin
   require rt::ui::web::support;
   require rt::ui::web::auth;
@@ -54,14 +54,14 @@ elsif ($0 eq 'webadminrt') {
   &rt::ui::web::admin::activate();
 
 }
-elsif ($0 eq 'rtmailgate') {
+elsif ($0 =~ '/rtmailgate$') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;
   &rt::ui::mail::manipulate::activate();
 }
 else {
-  print STDERR "RT Has been launched with an illegal launch program ($ARGV[0])\n";
+  print STDERR "RT Has been launched with an illegal launch program ($0)\n";
   exit(1);
 }
 

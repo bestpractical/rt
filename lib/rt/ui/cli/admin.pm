@@ -119,7 +119,7 @@ sub cli_create_modify_queue {
     $m_user_trans=&RT_UI_Cli::question_yes_no("Mail requestors on transaction",$rt::queues{$queue_id}{m_user_trans});
 
     $m_user_create=&RT_UI_Cli::question_yes_no("Autoreply to requestor on creation",$rt::queues{$queue_id}{m_user_create});
-    $m_members_correspond=&RT_UI_Cli::question_yes_no("Mail correspondencequeue members",$rt::queues{$queue_id}{m_members_correspond});
+    $m_members_correspond=&RT_UI_Cli::question_yes_no("Mail correspondence to queue members",$rt::queues{$queue_id}{m_members_correspond});
     $m_members_comment=&RT_UI_Cli::question_yes_no("Mail queue members on comment",$rt::queues{$queue_id}{m_members_comment});
     $allow_user_create=&RT_UI_Cli::question_yes_no("Allow non-queue members to create requests",$rt::queues{$queue_id}{allow_user_create});
     $default_prio=&RT_UI_Cli::question_int("Default request priority (1-100)",$rt::queues{$queue_id}{default_prio});
@@ -264,4 +264,4 @@ queue -create <queue>              create a new queue called <queue>
       -area delete <area> <queue>  remove <area> from <queue>
 ";
 }
-
+1;
