@@ -44,7 +44,7 @@ sub SetRecipients {
             push ( @Cc, @{ $self->TicketObj->QueueObj->Cc->Emails } );
         }
         else {
-            push ( @Cc, @{ $self->TicketObj->CcAsString } );
+            push ( @Cc, @{ $self->TicketObj->Cc->Emails } );
             push ( @To, @{ $self->TicketObj->QueueObj->Cc->Emails } );
         }
     }
@@ -72,8 +72,8 @@ sub SetRecipients {
     if ($RT::UseFriendlyToLine) {
         unless (@To) {
             push ( @PseudoTo,
-                "'$arg of $RT::rtname Ticket #"
-                  . $self->TicketObj->id . "':;" );
+                "\"$arg of $RT::rtname Ticket #"
+                  . $self->TicketObj->id . "\":;" );
         }
     }
 
