@@ -113,7 +113,8 @@ o   DBIx::Record and DBIx::EasySearch
 	These will be used for RT's new Object interface...
 
 o   HTML::Mason (CPAN) 
-	For the web ui
+
+        For the web ui
 
 o   Log::Dispatch (CPAN)
 
@@ -126,9 +127,18 @@ o   Log::Dispatch (CPAN)
 	real reason why those are called, I'd be very happy.
 
 o   Locale::Maketext (CPAN) -- not in use yet
-	Will probably be used by RT for localization in the future.
 
-o   Apache + mod_perl -- free, optional 
+        Will probably be used by RT for localization in the future.
+
+o   Date::Kronos -- http://sourceforge.net/cvs/?group_id=3821
+
+        This is an object oriented approach to timestamps. I'm a bit
+	uncertain about this package (though I've programmed most of it
+	myself).  It will appear on CPAN upon positive feedback, or I will
+	eventually trash it upon negative feedback.
+
+o   Apache + mod_perl -- free, optional
+
 	You might choose to run without a Web UI, and you can choose
         to run the Web UI as a cgi under the web server of your
  	choise.  However, Apache works out pretty well, and Mason is
