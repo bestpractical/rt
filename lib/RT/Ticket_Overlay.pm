@@ -3221,6 +3221,7 @@ sub SetStatus {
    my ($val, $msg)= $self->_Set( Field           => 'Status',
                           Value           => $args{Status},
                           TimeTaken       => 0,
+                          CheckACL      => 0,
                           TransactionType => 'Status'  );
 
     return($val,$msg);
