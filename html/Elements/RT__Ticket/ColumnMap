@@ -307,12 +307,8 @@ $COLUMN_MAP = {
     },
 
 };
-
-
-
-# }}}
-$m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
 </%ONCE>
 <%init>
+$m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
 return ColumnMap($Name, $Attr);
 </%init>
