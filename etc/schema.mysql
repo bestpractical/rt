@@ -3,7 +3,7 @@
 # Request Tracker is Copyright 1996-1999 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU Public License
 
-
+# {{{ Table QueueACL
 CREATE TABLE QueueACL (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Queue INT,
@@ -15,8 +15,10 @@ CREATE TABLE QueueACL (
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
+# }}}
 
 
+# {{{ TABLE Scrips
 CREATE TABLE Scrips (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Name VARCHAR(255),	    #Textual string
@@ -32,12 +34,15 @@ CREATE TABLE Scrips (
   LastUpdated TIMESTAMP  
 )\g
 
+# }}}
+
 # TODO: 
 # -steal & give (should be sent both to old and new)
 # mechanisms to avoid sending more than one mail to a party
 # dealing with CC and BCC.
 
 
+# {{{ Values for Scrips
 INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',
 			  'Create','AutoReply',1,'$Requestor',0,NULL,0,NULL);
 
@@ -62,8 +67,9 @@ INSERT INTO Scrips VALUES (9, 'NotifyAllWatchersOnResolve', 'Send mail to watche
 			  'Status','NotifyWatchersOnResolve',6,'All',1,0,1,0);
 
 
+# }}}
 
-
+# {{{ TABLE ScripScope
 CREATE TABLE ScripScope (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Scrip int(11), #Scrip Id
@@ -77,6 +83,9 @@ CREATE TABLE ScripScope (
 )\g
 
 
+# }}}
+
+# {{{ Table USers 
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -106,13 +115,17 @@ CREATE TABLE Users (
 )\g
 
 
+# }}}
+
+# {{{ Values for Users
 INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
 
 INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (2, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
+# }}}
 
-
+# {{{ TABLE Queues 
 CREATE TABLE Queues (
  id int(11) AUTO_INCREMENT PRIMARY KEY,
  QueueId CHAR(40) NOT NULL,
@@ -129,9 +142,15 @@ CREATE TABLE Queues (
   LastUpdated TIMESTAMP
 )\g
 
+# }}}
+
+# {{{ Values for Queues
 # Default queue - should eventually be created by the admin-cli through some init script
 INSERT INTO Queues VALUES (1, 'general','A General Catch-all queue' ,'rt@localhost', 'rt-comment@localhost', 1, 0, 0, NULL, NULL, NULL, NULL, NULL);
 
+# }}}
+
+# {{{ TABLE Watchers
 CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
    Type VARCHAR(16), 	# One of: Requestor, Cc, AdminCc
@@ -150,6 +169,9 @@ CREATE TABLE Watchers (
    LastUpdated TIMESTAMP
 )\g
 
+# }}}
+
+# {{{ TABLE Tickets
 CREATE TABLE Tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   EffectiveId INT,
@@ -175,6 +197,9 @@ CREATE TABLE Tickets (
   LastUpdated TIMESTAMP
 ) \g
 
+# }}}
+
+# {{{ TABLE Transactions
 
 CREATE TABLE Transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -191,7 +216,9 @@ CREATE TABLE Transactions (
   
 )\g
 
+# }}}
 
+# {{{ TABLE Attachments
 CREATE TABLE Attachments (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   TransactionId	 INT(11) NOT NULL,
@@ -206,7 +233,9 @@ CREATE TABLE Attachments (
   Created TIMESTAMP
   
 )\g
+# }}}
 
+# {{{ TABLE Links
 CREATE TABLE Links (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Base int(11),
@@ -227,18 +256,25 @@ CREATE TABLE Links (
 
 )\g
 
+# }}}
+
+# {{{ TABLE Templates
 CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Title VARCHAR(120),
   Content BLOB,
+  Headers BLOB,
   Creator INT(11),
   Created TIMESTAMP,
-  ExtraHeaders BLOB,
+
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
 
+# }}}
+
+# {{{ Values for Templates
 # Default templates
 # Should eventually be created through some init script calling on the CLI
 INSERT INTO Templates VALUES (1,'Default Autoresponse Template',
@@ -259,7 +295,9 @@ problem. To do so, you may reply to this message.
 
 -------------------------------------------------------------------------
 {$object->{TransactionObject}->Message()->First()->Content()}\n',
-NULL,20000227191248,NULL,NULL,00000000000000);
+'Subject: AutoReply: $object->{Subject}
+Content-Type: text/plain; charset=ISO-8859-1 ',
+NULL,20000227191248,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (2,'Default Transaction Template',
@@ -273,16 +311,25 @@ Transaction: {$object->{TransactionObject}->Description}
       Status: {$object->{TicketObject}->Status}
 -------------------------------------------------------------------------
 {$object->{TransactionObject}->Message()->First()->Content() if $object->{TransactionObject}->Message()->First()}\n',
-NULL,20000227191543,NULL,NULL,00000000000000);
+'Subject: $object->{Subject}
+Content-Type: text/plain; charset=ISO-8859-1',
+NULL,20000227191543,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (3,'Default Correspondance template','{$object->{TransactionObject}->Message()->First()->Content()}',NULL,20000227191745,NULL,NULL,00000000000000);
+INSERT INTO Templates VALUES (3,'Default Correspondance template','{$object->{TransactionObject}->Message()->First()->Content()}',
+'Subject: $object->{Subject}
+Content-Type: text/plain; charset=ISO-8859-1',
+NULL,20000227191745,NULL,00000000000000);
 
 INSERT INTO Templates VALUES (4,'Default Comment template','This is a comment.  It is not sent to the Requestor(s):
 
 {$object->{TransactionObject}->Message()->First()->Content()}
-',NULL,20000227191745,NULL,NULL,00000000000000);
+',
+'Subject: [Comment] $object->{Subject}
+Content-Type: text/plain; charset=ISO-8859-1
+',
+NULL,20000227191745,NULL,00000000000000);
 
 
-
+# }}}
 

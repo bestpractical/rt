@@ -54,7 +54,6 @@ sub Commit  {
 }
 # }}}
 
-
 # {{{ sub Prepare 
 sub Prepare  {
   my $self = shift;
@@ -91,25 +90,30 @@ sub Prepare  {
 
   }
 
+  #TODO We should _Always_ insert the [RT::rtname #$ticket] tag here.
+
   # From, RT-Originator (was Sender) and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
   my $email_address=$self->{comment} ? 
       $self->{TicketObject}->Queue->CommentAddress :
       $self->{TicketObject}->Queue->CorrespondAddress
 	  or warn "Can't find email address for queue?";
+
+
   unless ($self->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
       $self->{'Header'}->add('From', "$friendly_name <$email_address>");
       $self->{'Header'}->add('Reply-To', "$email_address");
   }
   
-  # Ref Jesse, <20000228222813.W20787@pallas.eruditorum.org>
+
   $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
 
-  # This should perhaps be in the templates table. ISO-8859-1 just
+  #. ISO-8859-1 just
   # isn't sufficient for international usage (it's even not enough for
   # European usage ... there are people using ISO-8859-2 and KOI-8 and
   # stuff like that).
+  # By default, the Template's Content-Type is used. 
 
   unless ($self->{'Header'}->get('Content-Type')) {
       $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
@@ -132,52 +136,28 @@ sub Prepare  {
       "\n-------------------------------------------- Managed by Request Tracker\n\n";
  
 
+  
+  $self->{'Header'}->add
+    ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+
 
   $self->{'Header'}->add
-      ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+    ('References', "<rt-ticket-".$self->{'TicketObject'}->id()."\@".$RT::rtname.">");
+
+  #TODO We should always add In-Reply-To and References headers for previous messages
+  # related to this ticket.
+  
+
 
 }
 # }}}
 
-# Override this sub for more fine grained control of receipients.
+
 # {{{ sub SetReceipients 
-sub SetReceipients  {
-  my $self=shift;
-
-  my $receipients;
-  if (my $a=$self->{Argument}) {
-
-      # TODO: Do some checks to enforce that one person won't get more
-      # than one email about the same transaction.  -- TobiX
-
-      # This is a bit messy, I guess it needs to be cleaned a bit.
-      if ($a =~ /^\$/) {
-	  $receipients=$self->{TicketObject}->Watchers()->Emails($');
-	  my ($r2,$r3)=(undef, undef);
-	  if ($' eq 'Owner') {
-	      $r2=$self->{TicketObject}->Owner->EmailAddress();
-	  } else {
-	      $r2=$self->{TicketObject}->{values}->{$'};
-	      $r3=$self->{TransactionObject}->{values}->{$'};
-	  }
-	  push @$receipients, $r2 if $r2;
-	  push @$receipients, $r3 if $r3;
-      } else {
-	  warn "stub - no support for argument/receipient $a yet";
-      } 
-  } else {
-      # Find ALL interessting parties.
-      # TODO: Need to separate BCC, CC and other  -- TobiX
-      $receipients=$self->{TicketObject}->Queue->Watchers()->Emails();
-      push (@$receipients, @{$self->{TicketObject}->Watchers()->Emails()});
-  }
-  @$receipients || return undef;
-  for my $receipient (@$receipients) { 
-      $self->{Header}->add('To', $receipient); 
-  }
-  return 1;
+sub SetRecipients {
 }
 # }}}
+
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {
