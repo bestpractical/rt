@@ -429,7 +429,6 @@ INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->Queue->QueueId}
-        Area: (stubbed!)               
      Subject: {my $z=$Transaction->Message()->First(); $z && $z->Subject}
        Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
