@@ -45,11 +45,11 @@
 %# END BPS TAGGED BLOCK }}}
 <SELECT NAME=<%$Name%>>
 <OPTION VALUE="" 
-<% $Default eq undef && 'SELECTED' %>
+<% ! defined $Default && 'SELECTED' %>
 >-</OPTION>
 %while  (my $ScripCondition = $ScripConditions->Next) {
 <OPTION VALUE=<%$ScripCondition->Id%>
-<% $ScripCondition->Id == $Default && 'SELECTED' %>
+<% defined $Default && $ScripCondition->Id == $Default && 'SELECTED' %>
 ><% loc($ScripCondition->Name) %>
 </OPTION>
 %}

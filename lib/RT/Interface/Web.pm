@@ -77,6 +77,7 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
+        return unless defined $$ref;
         my $val = $$ref;
         use bytes;
         $val =~ s/&/&#38;/g;

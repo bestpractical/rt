@@ -117,6 +117,7 @@ else {
 if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = "Ticket " . $Transaction->Ticket . ": ";
 }
+$TicketString ||= '';
 
 if ( $Transaction->TimeTaken != 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";

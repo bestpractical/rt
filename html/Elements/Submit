@@ -91,7 +91,7 @@ NAME="<%$Name%>"
 </TABLE>
 <%ARGS>
 $color => "#336699"
-$Caption => undef
+$Caption => ''
 $AlternateCaption => undef
 $AlternateLabel => undef
 $Label => loc('Submit')

@@ -124,10 +124,11 @@ if ($ARGS{'id'} eq 'new') {
 	}
     }
 
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
     if ( $ARGS{'UpdateTimeWorked'} ||
 	 $session{'Attachments'} || 
-	 (   $ARGS{'UpdateContent'} ne ''
+	 (   defined $ARGS{'UpdateContent'}
+             && $ARGS{'UpdateContent'} ne ''
 	     && $ARGS{'UpdateContent'} ne "-- \n"
 	     . $session{'CurrentUser'}->UserObj->Signature )) {
 	$ARGS{UpdateAttachments} = $session{'Attachments'};

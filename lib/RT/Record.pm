@@ -1749,7 +1749,7 @@ sub CustomFieldValues {
     # If we've been handed a value that contains at least one non-digit,
     # it's a name.  Resolve it into an id.
     #
-    if ( $field =~ /\D+/ ) {
+    if ( defined $field && $field =~ /\D+/ ) {
 
         # Look up the field ID.
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
