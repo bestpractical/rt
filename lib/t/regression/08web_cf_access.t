@@ -7,7 +7,7 @@ RT::LoadConfig;
 RT::Init;
 use Test::WWW::Mechanize;
 
-
+$RT::WebPath ||= ''; # Shut up a warning
 use constant BaseURL => "http://localhost".$RT::WebPath."/";
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
