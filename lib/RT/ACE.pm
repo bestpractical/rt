@@ -4,6 +4,57 @@ package RT::ACE;
 use RT::Record;
 @ISA= qw(RT::Record);
 
+use vars qw (%SCOPE 
+   	     %QUEUERIGHTS
+	     %TICKETRIGHTS
+	     %SYSTEMRIGHTS
+	     %METAPRINCIPALS); 
+
+%SCOPE = ( System => 'System-level right',
+	   Queue => 'Queue-level right'
+		 );
+
+# Queue rights are the sort of queue rights that can only be granted
+# to real people or groups
+%QUEUERIGHTS = ( See => 'Can this principal see this queue',
+		 List => 'Display a listing of ticket',
+		 ModifyWatchers => 'Modify the queue watchers',
+		 ModifyACL => 'Modify this queue\'s ACL',
+		 CreateTicket => 'Create a ticket in this queue'
+	   );
+
+# System rights are rights granted to the whole system
+%SYSTEMRIGHTS = ( CreateQueue => 'Create queues',
+		  DeleteQueue => 'Delete queues',
+		  AdminUsers => 'Create, Delete and Modify users',
+		  ModifySelf => 'Modify one\'s own RT account',
+		  ModifySystemACL => 'Modify system ACLs'
+		);
+
+#Ticket rights are the sort of queue rights that can be granted to 
+#principals and metaprincipals
+
+%TICKETRIGHTS = ( ShowTicket => 'Show ticket summary',
+		  ShowTicketHistory => 'Show ticket history',
+		  ShowTicketComments => 'Show ticket private commentary',
+		  CorrespondOnTicket => 'Reply to ticket',
+		  CommentOnTicket => 'Comment on ticket',
+		  OwnTicket => 'Own a ticket',
+		  ModifyTicket => 'Modify ticket',
+		  DeleteTicket => 'Delete ticket'
+		);
+
+%TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',
+			   Requestor => 'The requestor of a ticket',
+			   Cc => 'The CC of a ticket',
+			   AdminCc => 'The administrative CC of a ticket',
+			 );
+
+%GLOBAL_METAPRINCIPALS = ( Everyone => 'Any valid RT principal' );
+
+
+
+
 # {{{ sub new 
 sub new  {
   my $proto = shift;
@@ -17,6 +68,7 @@ sub new  {
 # }}}
 
 # {{{ sub _Create
+
 sub _Create {
 my $self = shift;
 my %args = ( PrincipalId => undef,
@@ -31,30 +83,34 @@ return (1, 'Granted');
 # }}}
 
 # {{{ sub GrantQueueRight 
+
 sub GrantQueueRight {
-  my $self = shift;
-  my $args = ( Scope => 'Queue',
-	       @_);
-
-  if ($args->{'Scope'} ne 'Queue') {
-    return (0, 'Scope must be queue for queue rights');
-  }
-  
-
-  #unless $self->CurrentUser->id has 'ModifyQueueACL' for (queue == $args->{'AppliesTo'})
-  {
+	
+	my $self = shift;
+	my %args = ( PrincipalType => undef,
+				 PrincipalId => undef,
+				 @_);
+	
+	
+	if ($args->{'Scope'} ne 'Queue') {
+		return (0, 'Scope must be queue for queue rights');
+	}
+	
+	
+	#unless $self->CurrentUser->id has 'ModifyQueueACL' for (queue == $args->{'AppliesTo'}) {
     # if the user can't do it, return a (0, 'No permission to grant rights');
-  }
-  
+	#}
+   
   return ($self->_Create($args));
 }
 
 # }}}
 
 # {{{ sub GrantGlobalQueueRight
+
 sub GrantGlobalQueueRight {
   my $self = shift;
-  my $args = ( AppliesTo => 0,
+  my %args = ( AppliesTo => 0,
 	       @_);
 
   return ($self->GrantQueueRight($args));
@@ -63,15 +119,18 @@ sub GrantGlobalQueueRight {
 # }}}
 
 # {{{ sub GrantSystemRight
+
 sub GrantSystemRight {
   my $self = shift;
-  my $args = (Scope => 'System',
+  my %args = (Scope => 'System',
 	      AppliesTo => 0,
 	      @_);
   
   #If the user can't grant system rights, 
-  # return (0, 'No permission to grant rights');
-  
+  unless ($self->CurrentUser->HasRight('ModifySystemACL')) {
+    
+    return (0, 'No permission to grant rights');
+  }
   return ($self->_Create( $args ));
 		       
 }
@@ -91,10 +150,12 @@ sub _Accessible  {
 }
 # }}}
 
+# {{{ sub _Set
 sub _Set {
   my $self = shift;
   return (0, "ACEs can only be created and deleted.");
 }
+# }}}
 1;
 
 __DATA__
@@ -106,10 +167,22 @@ __DATA__
 PrincipalType, PrincipalId, Right,Scope,AppliesTo
 
 
-=head1 Valid Scopes
+=head1 Scopes
 
-  Queue
-  System
+Scope is the scope of the right granted, not the granularity of the grant.
+For example, Queue and Ticket rights are both granted for a "queue." 
+Rights with a scope of "Ticket" are rights that act on a single existing ticket.The 'AppliesTo' for a right with the scope of 'Ticket' is the Queue that the
+right applies to.  The 'AppliesTo' for a right with the scope of 'Queue' is the
+Queue that the right applies to.  Rights with a scope of 'System' don't have an
+AppliesTo. (They're global).
+Rights with a scope of "Queue" are rights that act on a queue.
+Rights with a scope of "System" are rights that act on some other aspect
+of the system.
+
+
+=item Ticket 
+=item Queue
+=item System
 
 
 =head1 Rights
@@ -211,6 +284,10 @@ Modify Users
         Name: ModifyUser
 	Principals: <user> <group>
 
+Modify Self
+        Name: ModifySelf
+	Principals: <user> <group>
+
 Browse Users
 
         Name: BrowseUsers (NOT IMPLEMENTED in 2.0)
@@ -238,3 +315,4 @@ Modify System ACL
   TicketAdminCc,NULL
   Everyone,NULL
 
+=cut

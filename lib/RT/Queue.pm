@@ -212,22 +212,15 @@ sub Watchers  {
 #
 
 
-sub Grant {
-  my $self = shift;
-  my $principal_type = shift;
-  my $principal_id = shift;
-  my $right = shift;
-
-}
 
 #returns an EasySearch of ACEs everyone who has anything to do with this queue.
 # {{{ sub ACL 
 sub ACL  {
   my $self = shift;
   if (!$self->{'acl'}) {
-    $self->{'acl'} = RT::ACL->new($self->{'self'});
-    $user->{'acl'}->Limit(FIELD => 'queue', 
-			  VALUE => "$self->id");
+    use RT::ACL;
+    $self->{'acl'} = new RT::ACL;
+    $self->{'acl'}->LimitScopeToQueue($self->Id);
   }
   
  return ($self->{'acl'});
@@ -240,31 +233,59 @@ sub ACL  {
  #
 #ACCESS CONTROL
 
+# {{{ sub CurrentUserHasRight
 sub CurrentUserHasRight {
-  my $self = shift;
-  return 1;
-}
-sub HasRight {
   my $self = shift;
   my $right = shift;
 
-  return (1);
-
-  # by default, the actor is the current user
-  if (!@_) {
-    my $actor = $self->CurrentUser->Id();
-  }
-  else {
-    my $actor = shift;   
-  }
-  
-
-  
-  
-
+  return ($self->HasRight( Principal=> $self->CurrentUser,
+                            Right => "$right"));
 
 }
 
+# }}}
+
+# {{{ sub HasRight
+
+# TAKES: Right and optional "Actor" which defaults to the current user
+sub HasRight {
+    my $self = shift;
+        my %args = ( Right => undef,
+                     Principal => undef,
+                     @_);
+        unless(defined $args{'Principal'}) {
+                $RT::Logger->warn("Principal attrib undefined for Queue::HasRight");
+
+        }
+        return($args{'Principal'}->HasQueueRight(QueueObj => $self,
+          Right => $args{'Right'}));
+
+}
+
+=head2 sub Grant
+
+Grant is a convenience method for creating a new ACE  in the ACL.
+It passes off its values along with a scope and applies to of 
+the current object.
+Grant takes a param hash of the following fields PrincipalType, PrincipalId and Right. 
+
+=cut 
+
+sub Grant {
+	my $self = shift;
+	my %args = ( PrincipalType => 'User',
+		     PrincipalId => undef,
+		     Right => undef,
+		     @_
+		    );
+	use RT::ACE;
+	my $ACE = new RT::ACE;
+	return($ACE->Create(PrincipalType => $args{'PrinicpalType'},
+			    PrincipalId =>   $args{'PrincipalId'},
+			    Right => $args{'Right'},
+			    Scope => 'Queue',
+			    AppliesTo => $self->Id ));
+}
 # 
 
 # {{{ sub CreatePermitted 

@@ -3,8 +3,8 @@
 # Copyright (c) 2000 Jesse Vincent <jesse@fsck.com>
 
 package RT::ACL;
-use DBIx::EasySearch;
-@ISA= qw(DBIx::EasySearch);
+use RT::EasySearch;
+@ISA= qw(RT::EasySearch);
 
 # {{{ sub new 
 sub new  {
@@ -86,7 +86,7 @@ sub LimitScopeToQueue {
 Limit the ACL to global queue rights. (Rights granted across all queues)
 =cut
 
-sub LimitScopeToQueue {
+sub LimitScopeToAllQueues {
   my $self = shift;
   
   $self->Limit( FIELD =>'Scope',
@@ -104,7 +104,7 @@ Limit the ACL to system rights
 
 =cut 
 
-sub LimitScopeToQueue {
+sub LimitScopeToSystem {
   my $self = shift;
   
   $self->Limit( FIELD =>'Scope',
@@ -119,7 +119,7 @@ $right is a right listed in perldoc RT::ACE
 
 =cut
 
-sub LimitScopeToQueue {
+sub LimitRightTo {
   my $self = shift;
   my $right = shift;
   
@@ -188,9 +188,8 @@ sub LimitPrincipalsToType {
   my $self=shift;
   my $type=shift;  
   $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'PrincipalType',
-	       VALUE => $type );
+		FIELD => 'PrincipalType',
+		VALUE => $type );
 }
-
 
 1;

@@ -3,12 +3,15 @@
 # This software is redistributable under the terms of the GNU GPL
 #
 package rt::ui::cli::admin;
+use RT::User;
+use RT::Queue;
+
 
 # {{{ sub activate 
 sub activate  {
   my ($current_user);
   
-  require RT::CurrentUser;  
+  use RT::CurrentUser;  
   ($current_user,undef)=getpwuid($<);
   $CurrentUser = new RT::CurrentUser($current_user);
   if (!$CurrentUser) {
@@ -28,7 +31,19 @@ sub activate  {
 sub ParseArgs  {
 
   for ($i=0;$i<=$#ARGV;$i++) {
-    if ($ARGV[$i] =~ 'q') {
+	if ($ARGV[$i] =~ /listacl/i) {
+		my $type = $ARGV[++$i];
+		if ($type =~ /us/i) {
+			my $user = $ARGV[++$i];
+			&UserACLList($user);
+		}
+		elsif ($type =~ /q/i) {
+			my $queue = $ARGV[++$i];
+			&QueueACLList($queue);
+		}
+	}
+	
+    elsif ($ARGV[$i] =~ 'q') {
       $action=$ARGV[++$i];
       
       if ($action eq "-list") {
@@ -117,7 +132,17 @@ sub ParseArgs  {
       require RT::User;
       
       $action=$ARGV[++$i];
-      
+     
+      if ($action =~ /-disable/) {
+	my $userid = $ARGV[++$i];
+	&DisableUser($userid);
+      }
+      if ($action =~ /-enable/) {
+	my $userid = $ARGV[++$i];
+	&EnableUser($userid);
+	}
+  	
+ 
     if ($action eq "-modify") {
       $user_id=$ARGV[++$i];
       if (!$user_id) {
@@ -136,35 +161,6 @@ sub ParseArgs  {
       &cli_create_user($user_id);
     } 
     
-    elsif ($action eq "-getpwent") {
-      $passwd=$ARGV[++$i];
-      $admin=$ARGV[++$i];
-      
-      print "Getpwent is not currently supported. A patch would be appreciated\n";
-      exit(0);
-      
-      if (!defined($admin)) {
-	print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
-	exit(0);
-      }
-      if (defined($ARGV[$i++])) {
-	while (my $login=$ARGV[++$i]) {
-	  ($login, $domain) = split('@', $login);
-	  $domain || ($domain = $host);
-	  &add_pwent($domain, getpwnam($login), $CurrentUser);		  
-	}
-      } else { 
-	#Sometimes it really had been useful beeing able to combine while with
-	  #else..  
-	
-	&setpwent;
-	while (&add_pwent($host, getpwent, $CurrentUser))
-	  {;}
-	&endpwent;
-      }
-      
-    }
-    
     elsif ($action eq "-delete")	{
       $user_id=$ARGV[++$i];
       if (!$user_id) {
@@ -176,12 +172,6 @@ sub ParseArgs  {
     }	
     
     }
-  elsif ($ARGV[$i] =~ 'a')	{
-    $user_id=$ARGV[++$i];
-    $queue_id=$ARGV[++$i];
-    $privs=$ARGV[++$i];
-    &cli_user_acl($user_id,$queue_id,$privs);
-  }	
   
     else{
       &cli_help_rt_admin();
@@ -192,26 +182,76 @@ sub ParseArgs  {
 
 # }}}
 
-# Add/Modify users by pwent:
-# This code by tobix...
-# {{{ sub add_pwent 
-sub add_pwent  {
-  if (!@_) {return undef;}
-  my ($domain, $name,$pass,$uid,$gid,
-      $quota,$comment,$gcos,$dir,$shell,$whoami) = @_;
-  my ($realname,$office,$phone)=split(/,/,$gcos);
-  
-  #TODO replace this with an object call  
-  #  my ($result, $msg)=&rt::add_modify_user_info ($name,$realname,$passwd,"$name\@$domain",$phone,$office,$comment,
-  #						($name eq $whoami ? 1 : $admin),$whoami);
-  
-  # Report to STDOUT:
-  print "$msg\n" if ($msg);
-  
-  return $result;
-}
-# }}}
+# {{{ sub DisableUser
 
+=head2 DisableUser
+
+This routine takes a userid as its argument and tries to disable it.
+If the user's already disabled, it tells the user. If it's not,
+it checks that the currentuser can modify user records. if so, it
+does what it needs
+
+=cut
+
+sub DisableUser {
+	my $userid = shift;
+        use RT::User;
+	my $User = new RT::User($CurrentUser);
+	
+	#TODO: Error check the load
+	my $res = $User->Load($userid);	
+	if (!$res) {
+		print "Couldn't load user $userid\n";
+		exit(-1);
+	}
+	unless ($CurrentUser->HasSystemRight('AdminUsers')) {
+		print "Permission denied";
+	}
+	my $result = $User->Disable();
+	if ($result) {
+		print "User ".$User->UserId."(".$User->Id.") disabled.\n";
+		return;
+	}
+	else {
+		print "There's been an error\n";
+	}
+}
+
+# }}}	
+# {{{ sub EnableUser
+
+=head2 EnableUser
+
+This routine takes a userid as its argument and tries to enable it.
+
+=cut
+
+sub EnableUser {
+        my $userid = shift;
+        use RT::User;
+        my $User = new RT::User($CurrentUser);
+
+        #TODO: Error check the load
+        my $res = $User->Load($userid);
+        if (!$res) {
+                print "Couldn't load user $userid\n";
+                exit(-1);
+        }
+        unless ($CurrentUser->HasSystemRight('AdminUsers')) {
+                print "Permission denied";
+		exit(-1);
+        }
+        my $result = $User->Enable();
+        if ($result) {
+                print "User ".$User->UserId."(".$User->Id.") enabled.\n";
+                return;
+        }
+        else {
+                print "There's been an error\n";
+        }
+}
+
+# }}}
 
 # {{{ sub cli_modify_user
 sub cli_modify_user {
@@ -447,8 +487,53 @@ sub cli_list_queues  {
   }
 }
 # }}}
+# {{{ sub UserACLList
+sub UserACLList {
+	my $userid = shift;
+
+                require RT::ACL;
+                my $ACLObj = new RT::ACL;
 
 
+	# If they're looking for rights that apply to all users.
+	if ($userid eq '-global') {
+		$ACLObj->LimitPrincipalsToUser(0);
+	}
+	else {
+		my $UserObj = new RT::User;
+		$UserObj->Load($userid);
+		$ACLObj->LimitPrincipalsToUser($UserObj->Id());
+	}	
+	while (my $ACEObj = $ACLObj->Next()) {
+		print $ACEObj->Scope . "/".$ACEObj->AppliesTo . ": ".$ACEObj->Right."\n";
+	}
+}
+
+# }}}
+# {{{ sub QueueACLList
+sub QueueACLList {
+        my $queueid = shift;
+	my ($ACLObj, $QueueObj, $ACEObj);
+	# if they're looking for things that apply to 'all queues'
+        if ($queueid eq '-global') {
+                require RT::ACL;
+                $ACLObj = new RT::ACL;
+		$ACLObj->LimitScopeToQueue(0);
+        }
+        else {
+        	$QueueObj = new RT::Queue;
+       		$QueueObj->Load($queueid);
+		$ACLObj =$QueueObj->ACL;	
+	}
+        while ($ACEObj = $ACLObj->Next()) {
+                print $ACEObj->PrincipalType. " ".$ACEObj->PrincipalId . " ".
+		      $ACEObj->Scope . "/".$ACEObj->AppliesTo . ": ".
+		      $ACEObj->Right."\n";
+        }
+}
+
+# }}}
+# {{{ sub ACLAdd
 sub ACLAdd {
   my $action = shift;
   my $princtype = shift;
@@ -475,30 +560,29 @@ sub ACLAdd {
     print "$action not a valid action\n";
     return();
   }
-
+} 
+# }}}
 # {{{ sub cli_help_rt_admin
 sub cli_help_rt_admin {
   print "
-user
+user	
+      -enable <user>
+      -disable <user>
+
+	To implement:
       -create <user> create a RT account for <user>
       -modify <user> modify user info for <user>
-      -delete <user> delete <user>'s RT account
-      -getpwent <password> <admin> [<users>]  Creates user(s) from the
-                    data in the /etc/passwd file. If no users are 
-		    specified, ALL of /etc/passwd will be processed.
+
+listacl 
+	-queue <queueid>/-global
+	-user <userid>/-global
 
 
 
-acl (add|del) <principal type> <principal id> <right> <scope> <object>
-
-
-
-
-queue -create <queue>              create a new queue called <queue>
+queue  to implement:
+      -create <queue>              create a new queue called <queue>
       -modify <queue>              modify <queue>'s settings
       -delete <queue>              completely wipe out <queue>
-      -area add <area> <queue>     adds <area> to <queue>
-      -area delete <area> <queue>  remove <area> from <queue>
 ";
 }
 # }}}
@@ -511,7 +595,11 @@ sub LoadQueue {
   # get a new queue object and fill it.
   use RT::Queue;
   $Queue = new RT::Queue($CurrentUser);
-  $Queue->Load($queue_id) || die "Couldn't load the queue called $queue_id";
+  my $Status = $Queue->Load($queue_id);
+  if (!$status) {
+	$RT::Logger->debug( "Couldn\'t load the queue called $queue_id");
+	exit (-1);
+	}
   return ($Queue);
 }
 # }}}

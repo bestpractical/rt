@@ -38,7 +38,7 @@ sub GetCurrentUser  {
 # {{{ sub ParseArgs 
 
 sub ParseArgs  {
-
+  my $Message;
   for ($i=0;$i<=$#ARGV;$i++) {
     if ($ARGV[$i] eq "-create")   {
       &cli_create_req;
@@ -100,7 +100,9 @@ sub ParseArgs  {
       elsif ($ARGV[$i] eq "-take")	{
 	my $id = int($ARGV[++$i]);
        	my $Ticket = &LoadTicket($id);
-	$Message .= $Ticket->Take();
+	my ($trans, $msg);	
+	($trans, $msg) = $Ticket->Take;
+	$Message .= $msg;
       }
       
       elsif ($ARGV[$i] eq "-stall")	{
@@ -232,10 +234,10 @@ sub ParseArgs  {
 	my $due_string=$ARGV[++$i];
 
 	require Date::Manip;
-	$due_date = &Date::Manip::ParseDate($due_string);	
+	$due_date = &Date::Manip::UnixDate($due_string, "%s");
 	
 	my $date = new RT::Date;
-	$date->Set(Format => 'DateManip',
+	$date->Set(Format => 'unix',
 		   Value => $due_date);
 		
 	$Message .= $Ticket->SetDue($date->ISO, $CurrentUser->Id);
@@ -305,8 +307,8 @@ sub ParseArgs  {
 # {{{ sub cli_create_req 
 
 sub cli_create_req  {	
-    my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio,
-	$Cc, $Bcc, $date_due, $due_string, $Owner);
+    my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio, $due,
+	$Cc, $Bcc, $date_due,$due_iso, $due_string, $Owner);
 
     require RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
@@ -315,14 +317,13 @@ sub cli_create_req  {
 
     require RT::Queue;
     my $Queue = RT::Queue->new($CurrentUser);
-    
     while ($Queue->Load($queue_id) eq undef ) {
       print "That Queue does not exist\n";
       $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     }
-   
-    if (!$Queue->CurrentUserHasRight("CreateTicket")) {
-      print "You may not create a ticket in that queue";
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+        print "No permission to create tickets in '".$Queue->QueueId."'\n";
+        return();
     }
 
     
@@ -346,13 +347,17 @@ sub cli_create_req  {
       $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
       if ($due_string ne '') {
 	require Date::Manip;
-	$date_due = &Date::Manip::ParseDate($due_string);
+	$date_due = &Date::Manip::UnixDate($due_string, "%s");
       }  
-      my $due = new RT::Date;
-      $due->Set(Format => 'DateManip',
-		 Value => $due_date);
+      $due = new RT::Date;
+      $due->Set(Format => 'unix',
+		 Value => $date_due);
       
-      
+      $due_iso = $due->ISO;  
+    }
+    else {
+	$Owner = new RT::User;
+	$Owner->Load('Nobody');
     }
 
     $Requestor = &rt::ui::cli::question_string("Requestor",);
@@ -378,20 +383,21 @@ sub cli_create_req  {
 				     Data => $content||"");
 
 
-   # print "Message CC is ". $message->head->get('From');
-
-    my ($id, $Transaction, $ErrStr) = $Ticket->Create ( QueueTag => $queue_id,
+    my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue_id,
 #			       Alias => $alias,
 			       Owner => $Owner->id,
 			       Subject => $Subject,
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       Due => $due->ISO,
+			       Due => $due_iso,
 	      		       MIMEObj => $Message			
 						      );
-
-    printf("Request %s created\n",$id);
+    if ($id == 0) {
+	print "Ticket creation aborted: $ErrStr\n";
+	return();
+     }
+    printf("Ticket %s created\n",$id);
   }
 
 # }}}
@@ -593,10 +599,10 @@ sub LoadTicket  {
   #print "Current User is ".$CurrentUser->Id."\n";;
   require RT::Ticket;
   $Ticket = RT::Ticket->new($CurrentUser);
-  ($Status, $Message) = $Ticket->Load($id);
-  if (!$Status) {
-    print ("The ticket could not be loaded\n$Message\n");
-    return (0);
+  ($Status) = $Ticket->Load($id);
+  if ($Status == 0) {
+    print ("Ticket $id could not be loaded\n");
+    exit (-1);
  }
   else {
     return ($Ticket);

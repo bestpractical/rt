@@ -12,29 +12,8 @@ an RT1 queue at a remote box.  This is Tobix' list as of May 11 2000:
 
 - probably a lot of work with the GUI, particularly handling links
 
-- date handling
 
 - user information + user prioritying.
-
-Locally, we often have users with different emails.  We need to keep track
-of them, also when they change emails.  We need to store comments about
-them.  Most important; we must be able to rate them!  Good customers
-should get a higher priority than ordinary requestors, and those
-should get a higher priority than those who constantly bother us with
-stupid FAQs.
-
-I'd daresay that this will not be included in the official RT 2.0 release,
-but it will be available as a user contributed patch, and it will be
-included in post-2.0 releases (from now on; contr).
-
-- Admin tools & ACL.
-
-We don't need it locally for some weeks, at least - I handle it through
-SQL as for now.  Anyway, it must come before the official RT 2.0 release.  
-
-- Groups
-
-This is essensial for us if an admin tool should be useful. contr.
 
 - "Smart" Next/Prev-links
 

@@ -66,7 +66,7 @@ sub Set {
 	    $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
 	}
 	else {
-	    die "Couldn't parse date format for ".$args{'Value'}."\n";
+	    $RT::Logger->debug( "Couldn't parse date $args{'Value'} as a $args{'Format'}");
 	}
 		
     }
@@ -79,6 +79,13 @@ sub Set {
 
 # }}}
 
+
+# {{{ sub SetToNow
+sub SetToNow {
+	my $self = shift;
+	return($self->Set(Format => 'unix', Value => time))
+}
+# }}}
 # {{{ sub Diff
 
 =head2 Diff

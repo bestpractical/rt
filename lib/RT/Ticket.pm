@@ -2,8 +2,8 @@
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
-
 package RT::Ticket;
+use RT::User;
 use RT::Record;
 use RT::Link;
 use RT::Links;
@@ -60,7 +60,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
     id 
     EffectiveId
-    Queue
+    Queue  - Either a Queue object or a QueueId
     QueueTag
     Requestor -- A requestor object, if available.  Eventually taken from the MIME object.
     RequestorEmail -- the requestors email.  Eventually taken from Requestor or the MIME object
@@ -83,9 +83,8 @@ Returns: TICKETID, Transaction Object, Error Message
 
 sub Create {
   my $self = shift;
-  my $ErrStr;
+  my ( $ErrStr, $Queue);
 
-  
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
@@ -102,26 +101,31 @@ sub Create {
 	      TimeWorked => 0,
 	      Due => undef,
 	      MIMEObj => undef,
-	     
 	      @_);
-
-  unless ($self->CurrentUserHasRight('CreateTicket')) {
-    return (0, "Permission Denied");
-  }
 
   #TODO Load queue defaults
 
-  if (!$args{'Queue'} && $args{'QueueTag'}) {
-    my $q=RT::Queue->new($self->CurrentUser);
-    $q->LoadByCol("QueueId", $args{'QueueTag'});
-    $args{'Queue'}=$q->id;
+  
+  if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
+    $Queue=RT::Queue->new($self->CurrentUser);
+    $Queue->Load($args{'Queue'});
+    #TODO error check this and return 0 if it's not loading properly
+  }
+  elsif (ref($args{'Queue'}) eq 'RT::Queue') {
+	$Queue = $args{'Queue'};
+  }
+  else {
+	$RT::Logger->err($args{'Queue'} . " not a recognised queue object.");
+	}
+  #Can't create a ticket without a queue.
+  unless (defined ($Queue)) {
+    $RT::Logger->err( "No queue given for ticket create request '".$args{'Subject'}."'");
+    return (0, 0,'Queue not set');
   }
 
-  #Can't create a ticket without a queue.
-  unless ($args{'Queue'}) {
-    $RT::Logger->log(level=>'warning', 
-		     message=>"No queue given for ticket create request '".$args{'Subject'}."'");
-    return (0, 0,'Queue not set');
+
+   unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+    return (0,0,"Permission Denied");
   }
 
   #TODO we should see what sort of due date we're getting, rather
@@ -132,7 +136,7 @@ sub Create {
 
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
-				Queue => $args{'Queue'},
+				Queue => $Queue->Id,
 				Alias => $args{'Alias'},
 				Owner => $args{'Owner'} || $RT::Nobody,
 				Subject => $args{'Subject'},
@@ -151,8 +155,7 @@ sub Create {
   #Now that we know the self
   (my $error, my $message) = $self->SUPER::_Set("EffectiveId",$id);
   if ($error == 0) {
-    $RT::Logger->log(level=>'warning', 
-			 message=>"Couldn't set EffectiveId for Ticket $id: $message.");
+    $RT::Logger->warning("Couldn't set EffectiveId for Ticket $id: $message.");
     return (0, 0, $message);
   }
 
@@ -310,7 +313,8 @@ sub AddAdminCc {
   my $self = shift;
   return ($self->AddWatcher ( Type => 'AdminCc', @_));
 }
-# }}}1
+
+# }}}
 
 # }}}
 
@@ -705,9 +709,6 @@ sub Queue {
 
 # {{{ Date printing routines
 
-# Created and LastUpdated belongs to the DBIx::Record layer (and maybe even deeper)
-
-
 # {{{ sub DueAsString 
 
 sub DueAsString {
@@ -725,8 +726,7 @@ sub GraceTimeAsString {
 
     if ($self->Due) {
 	my $now=new RT::Date;
-	$now->Set(Format => 'unix',
-		  Value => time);
+	$now->SetToNow();	
 	return($now->DiffAsString($self->DueObj));
     } else {
 	return "";
@@ -771,8 +771,8 @@ sub LongSinceToldAsString {
   my $self = shift;
 
   if ($self->Told) {
-
       my $now = new RT::Date;
+      $now->SetToNow();
       return $now->DiffAsString($self->ToldObj);
   } else {
       return "Never";
@@ -790,8 +790,6 @@ sub ToldAsString {
 	return("Never");
     }
 }
-# }}}
-
 # }}}
 
 # {{{ sub LastUpdatedByObj
@@ -822,7 +820,6 @@ sub TimeWorkedAsString {
 # }}}
 
 # }}}
-
 
 # {{{ Routines dealing with correspondence/comments
 
@@ -1189,29 +1186,28 @@ sub SetOwner {
   my $more_params={TransactionType=>$Type};
   my ($NewOwnerObj);
 
-  require RT::User;
+   $RT::Logger->debug("in RT::Ticket->SetOwner()");
+  
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   my $OldOwnerObj = $self->Owner;
   
   if (!$NewOwnerObj->Load($NewOwner)) {
-    
-    return (0, "That user does not exist");
+	return (0, "That user does not exist");
   }
-  
   
   #If thie ticket has an owner and it's not the current user
 
-  # TODO: check this
-  
-  if ($Type ne 'Steal' and 
-      $self->Owner->Id != $RT::Nobody and 
-      $self->CurrentUser->Id ne $self->Owner->Id()) {
-    
+  if (($Type ne 'Steal' ) and  #If we're not stealing
+      ($self->Owner->Id != $RT::Nobody ) and  #and the owner is set
+      ($self->CurrentUser->Id ne $self->Owner->Id())) { #and it's not us
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
+
   #If we've specified a new owner and that user can't modify the ticket
-  elsif (($NewOwner) and (!$self->HasRight('OwnTickets',$NewOwnerObj->Id))) {
-    return (0, "That user may not own requests in that queue")
+  elsif (($NewOwnerObj) and (!$NewOwnerObj->HasTicketRight(Right => 'OwnTicket',
+							   TicketObj => $self,
+							))) {
+        return (0, "That user may not own requests in that queue");
   }
   
   
@@ -1222,17 +1218,7 @@ sub SetOwner {
   }
   
   
-  #  elsif ( #TODO $new_owner doesn't have queue perms ) {
-  #	return (0,"That user doesn't have permission to modify this request");
-  #	}
-  
-  else {
-    #TODO
-    #If we're giving the request to someone other than $self->CurrentUser
-    #send them mail
-  }
-
-  my ($trans,$msg)=$self->_Set('Owner',$NewOwnerObj->Id,0,$more_params);
+ my ($trans,$msg)=$self->_Set('Owner',$NewOwnerObj->Id,0,$more_params);
   return ($trans, 
 	  ($trans 
 	  ? ("Owner changed from ".$OldOwnerObj->UserId." to ".$NewOwnerObj->UserId)
@@ -1244,11 +1230,12 @@ sub SetOwner {
 # {{{ sub Take
 sub Take {
   my $self = shift;
+  $RT::Logger->debug("in RT::Ticket->Take()");
   my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Take');
-  return ($trans, 
-	  $trans 
-	  ? "Ticket taken"
-	  : $msg);
+  if ($trans == 0) {
+	return (0, $msg);
+  }
+  return ($trans, $msg);
 }
 # }}}
 
@@ -1285,8 +1272,6 @@ sub Steal {
 }
 
 # }}}
-
-
 
 # }}}
 
@@ -1347,7 +1332,6 @@ sub Resolve {
 # }}}
 
 # }}}
-
 # {{{ sub UpdateTold and _UpdateTold
 
 # UpdateTold - updates the told and makes a transaction
@@ -1355,7 +1339,11 @@ sub Resolve {
 sub UpdateTold {
     my $self=shift;
     my $timetaken=shift || 0;
-    return($self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1}));
+    my $now = new RT::Date;
+    $now->SetToNow(); 
+    #TODO: Update _Set's syntax. we need to deal with the ugly format.
+    return($self->_Set('Told',$now->ISO,$timetaken,
+			{TransactionType=>'Told'}));
 }
 
 # _UpdateTold - updates the told without the transaction, that's
@@ -1363,7 +1351,9 @@ sub UpdateTold {
 
 sub _UpdateTold {
     my $self=shift;
-    return($self->SUPER::_Set('Told','now()',1));
+    my $now = new RT::Date;
+    $now->SetToNow();
+    return($self->SUPER::_Set('Told',$now->ISO,1));
 }
 
 # }}}
@@ -1468,6 +1458,7 @@ sub _Accessible {
 sub _Set {
   my $self = shift;
   
+  $RT::Logger->debug("now in _Set\n"); 
   unless ($self->CurrentUserHasRight('ModifyTicket')) {
     return (0, "Permission Denied");
   }
@@ -1520,11 +1511,12 @@ sub _Value  {
 
   my $self = shift;
   my $field = shift;
-  my ($package, $filename, $line) = caller;
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
+
+ #If the current user doesn't have ACLs, don't let em at it.  
+ 
+ unless ($self->CurrentUserHasRight('ShowTicket')) {
     return (0, "Permission Denied");
   }
-  
   
   return($self->SUPER::_Value($field));
   
@@ -1541,7 +1533,7 @@ sub _UpdateTimeTaken {
   my $self = shift;
   my $Minutes = shift;
   my ($Total);
-  
+   
   $Total = $self->_Value("TimeWorked");
   $Total = ($Total || 0) + ($Minutes || 0);
   $self->SUPER::_Set("TimeWorked", $Total);
@@ -1565,9 +1557,10 @@ sub _UpdateDateActed {
 sub CurrentUserHasRight {
   my $self = shift;
   my $right = shift;
-#  TODO this is is a stub
-  return 1;
-  return ($self->HasRight("$right",$self->CurrentUser->Id()));
+
+  return ($self->HasRight( Principal=> $self->CurrentUser,
+			    Right => "$right"));
+
 }
 
 # }}}
@@ -1577,39 +1570,26 @@ sub CurrentUserHasRight {
 # TAKES: Right and optional "Actor" which defaults to the current user
 sub HasRight {
     my $self = shift;
-    my $right = shift;
-    my $actor = shift;   
-    
-    my $RightClause = "(Right = '$right') OR (Right = 'SuperUser')";
-    my $ScopeClause = "(Scope = 'Queue') AND ((AppliesTo = ".$self->Queue->id().") OR (AppliesTo = 0))";
-    my $PrincipalsClause =   "(PrincipalType = 'User') AND ((PrincipalId = $actor) OR (PrincipalId = 0))";
-    
+	my %args = ( Right => undef,
+		     Principal => undef,
+	 	     @_);
+	unless(defined $args{'Principal'}) {
+		croak;
+		#$RT::Logger->warn("Principal attrib undefined for Ticket::HasRight");
+	}
+	return($args{'Principal'}->HasTicketRight(TicketObj => $self, 
+											  Right => $args{'Right'}));
+	
+	    
+	#TODO this needs to move into User.pm's 'hasTicketRight'
+
     $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->Owner->Id);
     $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if ($self->IsRequestor($actor));
     $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  ($self->IsCc($actor));
     $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if ($self->IsAdminCc($actor));
-    
-    $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor))";
-
-    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($GroupPrincipalsClause))";    
-    
-    my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
-    
-    my ($hitcount);
-    
-    $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
-    
-    #if there's a match, the right is granted
-    return (1) if ($hitcount);
-    
-    $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
-      return (1) if ($hitcount);
-
-    return(0);
-  }
+}
 
 # }}}
 
-# }}}
 
 1;

@@ -54,11 +54,14 @@ sub _Handle  {
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
+      if ($self->_Accessible('Created', 'auto')) {
+	my $now = new RT::Date;
+	$now->Set(Format=> 'unix', Value => time);
+	   push @_, 'Created', $now->ISO();
+	}
   push @_, 'Creator', $self->{'user'}->id
 	if $self->_Accessible('Creator', 'auto');
-  #  print STDERR "In RT::Record->create\n";
   my $id = $self->SUPER::Create(@_);
-  #  print STDERR "RT::Record->create Loading by Ref $id\n";
   return($id);
 
 }
@@ -142,8 +145,8 @@ sub _Set  {
   my $self = shift;
   my $field = shift;
   #if the user is trying to modify the record
-  
-  $self->SUPER::_Set('LastUpdatedBy', $self->{'user'}->id)
+  $RT::Logger->debug("in RT::Record::Set for $self ".$self->Id ."\n"); 
+  $self->SUPER::_Set('LastUpdatedBy', $self->CurrentUser->id)
     if ($self->_Accessible('LastUpdatedBy','auto'));
   $self->SUPER::_Set($field, @_);
   

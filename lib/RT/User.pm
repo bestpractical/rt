@@ -1,8 +1,7 @@
 # $Header$
-# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
-
 
 package RT::User;
 use RT::Record;
@@ -33,6 +32,8 @@ sub _Accessible  {
 	      EmailAddress => 'read/write',
 	      FreeformContactInfo => 'read/write',
 	      Organization => 'read/write',
+	      Disabled => 'read', #To modify this attribute, we have helper
+				  #methods
 	      CanManipulate => 'read/write',
 	      # }}}
 	      
@@ -127,6 +128,7 @@ sub Create  {
 # }}}
 
 # {{{ sub Delete 
+
 sub Delete  {
   my $self = shift;
 
@@ -164,6 +166,7 @@ sub Delete  {
   }
   
 }
+
 # }}}
 
 # {{{ sub Load 
@@ -196,6 +199,11 @@ sub LoadByEmail {
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
+  
+  if ($self->Disabled) {
+  	$RT::Logger->info("Disabled user ".$self->UserId." tried to log in");
+	return(undef);
+  }
   if ($value == $self->_Value('Password')) {
     return (1);
   }
@@ -205,80 +213,245 @@ sub IsPassword {
 }
 # }}}
 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
-}
-# }}}
-
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
-}
-# }}}
-
 # {{{ sub Signature 
+
 sub Signature {
     my $self=shift;
     return ($self->SUPER::Signature);
     
     ## TODO: The stuff below might be a nice feature, but since we don't need it
     ## at the moment, it's left out.
-
+	
     if (0) {
-	my @entry=getpwnam($self->Gecos || $self->UserId);
-	my $home=$entry[7];
-## TODO: Check if the commented out line might work better
-#       for my $trythis (@RT::signature) {
-	for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
-	    if (-r $trythis) {
-		local($/);
-		undef $/;
-		open(SIGNATURE, "<$trythis"); 
-		$signature=<SIGNATURE>;
-		close(SIGNATURE);
-		return $signature;
-	    }
-	}
-	return undef;
+		my @entry=getpwnam($self->Gecos || $self->UserId);
+		my $home=$entry[7];
+		## TODO: Check if the commented out line might work better
+		#       for my $trythis (@RT::signature) {
+		for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+			if (-r $trythis) {
+				local($/);
+				undef $/;
+				open(SIGNATURE, "<$trythis"); 
+				$signature=<SIGNATURE>;
+				close(SIGNATURE);
+				return $signature;
+			}
+		}
+		return undef;
     }
 }
 # }}}
 
+# {{{ sub Disable
 
-# {{{ sub HasSystemRight
-sub HasSystemRight {
-  my $self = shift;
-  my $right = shift;
+=head2 Sub Disable
 
-  my $RightClause = "(Right = '$right') OR (Right = 'SuperUser')";
-  my $ScopeClause = "(Scope = 'System')";
-  my $PrincipalsClause =   "(PrincipalType = 'User') AND ((PrincipalId = $actor) OR (PrincipalId = 0))";
-    
-  $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor))";
-  
-  my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($GroupPrincipalsClause))";    
-  
-  my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
-  
-  my ($hitcount);
-  
-  $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
-  
-  #if there's a match, the right is granted
-  return (1) if ($hitcount);
-  
-  $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
-  return (1) if ($hitcount);
-  
-  return(0);
+Disable takes no arguments and returns 1 on success and undef on failure.
+It causes this user to have his/her disable flag set.  If this flag is
+set, all password checks for this user will fail. All ACL checks for this
+user will fail.
+
+=cut 
+
+sub Disable {
+        my $self = shift;
+			   if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+				   return($self->_Set('Disabled',1));
+			   }
+}
+# }}}
+
+# {{{ sub Enable
+
+=head2 Sub Enable
+
+Disable takes no arguments and returns 1 on success and undef on failure.
+It causes this user to have his/her disable flag unset.  see sub Disable
+for a fuller treatment of this
+
+=cut 
+
+sub Enable {
+	my $self = shift;
+	
+	if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+	  return($self->_Set('Disabled',0));
+}
+}
+
+# }}}
+# {{{ sub HasQueueRight
+=head2 HasQueueRight( QueueObj => RT::Queue, Right => 'Right' )
+
+Returns 1 if this user has the right specified in the paramhash. for the queue
+passed in.
+
+Returns undef if they don't
+
+=cut
+
+sub HasQueueRight {
+	my $self = shift;
+	my %args = ( QueueObj => undef,
+				 Right => undef,
+				 @_);
+	
+	unless (ref ($args{'QueueObj'}) =~ /^RT::Queue/) {
+		$RT::Logger->debug("RT::User::HasQueueRight was passed $args{'QueueObj'} as a queue object");
+	}
+	
+	return ($self->_HasRight(Scope => 'Queue',
+				AppliesTo => $args{'QueueObj'}->Id,
+				Right => "$args{'Right'}"));
+	
 }
 
 # }}}
 
+
+# {{{ sub HasTicketRight
+
+=head2 HasTicketRight( TicketObj => RT::Ticket, Right => 'Right' )
+
+Returns 1 if this user has the ticket right specified for the ticket object
+passed in.
+
+Returns undef if they don't
+
+=cut
+
+sub HasTicketRight {
+	my $self = shift;
+	my %args = ( TicketObj => undef,
+			 Right => undef,
+			 @_);
+
+	#Check to make sure that the ticketobj is really a ticketobject	
+	unless (ref ($args{'TicketObj'}) =~ /^RT::Ticket/) {
+		$RT::Logger->debug("RT::User::HasTicketRight was passed $args{'TicketObj'} as a ticket object. It's type is ".ref($args{'TicketObj'})."\n ");
+	}
+	
+	return ($self->_HasRight(Scope => 'Ticket',
+				AppliesTo => $args{'TicketObj'}->Queue->Id,
+				Right => "$args{'Right'}"));
+	
+}
+
+# }}}
+
+# {{{ sub HasSystemRight
+
+=head2 HasSystemRight ( Right => 'right')
+
+Returns 1 if this user has the right 'right'
+
+Returns undef if this user doesn't
+
+=cut
+
+sub HasSystemRight {
+	my $self = shift;
+	my %args = ( Right => 'undef',
+				 @_);
+	
+	return ($self->_HasRight ( Scope => 'System',
+				   Right => $args{'Right'}));
+	
+}
+
+# }}}
+
+# {{{ sub _HasRight
+
+=head2 sub _HasRight (Right => 'right', Scope => 'scope',  AppliesTo => int,
+					  ExtendedPrincipals => SQL)
+
+_HasRight is a private helper method for checking a user's rights. It takes
+several options:
+
+=item Right is a textual right name
+
+=item Scope is a textual scope name. (As of July these were Queue, Ticket and System
+
+=item AppliesTo is the numerical Id of the object identified in the scope. For tickets, this is the queue #. for queues, this is the queue #
+
+=item ExtendedPrincipals is an  SQL select clause which assumes that the only
+table in play is ACL.  It's used by HasTicketRight to pass in which 
+metaprincipals apply
+
+Returns 1 if a matching ACE was found.
+
+Returns undef if no ACE was found.
+
+=cut
+
+
+sub _HasRight {
+	
+	my $self = shift;
+	my %args = ( Right => undef,
+			 Scope => undef,
+			 AppliesTo => 0,
+			 ExtendedPrincipals => undef,
+			 @_);
+	
+
+	if ($self->Disabled) {
+		$RT::Logger->debug ("Disabled User:  ".$self->UserId." failed access check for ".$args{'Right'}." to object ".$args{'Scope'}."/".$args{'AppliesTo'}."\n");
+		return (undef);
+	}
+	my $RightClause = "(Right = '$args{'Right'}')";
+	
+	my $ScopeClause = "(Scope = '$args{'Scope'}')";
+	
+	#If an AppliesTo was passed in, we should pay attention to it.
+	#otherwise, none is needed
+
+	$ScopeClause = "($ScopeClause AND ((AppliesTo = 0) OR (AppliesTo = $args{'AppliesTo'})))"
+	  if ($args{'AppliesTo'});
+	
+	
+	# The generic principals clause looks for users with my id
+	# and Rights that apply to _everyone_
+	my $PrincipalsClause =  "(((PrincipalType = 'User') AND (PrincipalId = ".$self->Id.")) OR (PrincipalType = 'Everyone'))";
+    
+	# If the user is the superuser, grant them the damn right ;)
+	my $SuperUserClause = "(Right = 'SuperUser') AND (Scope = 'System') AND (AppliesTo = 0)";
+	
+	# If we've been passed in an extended principals clause, we should lump it
+	# on to the existing principals clause. it'll make life easier
+	if ($args{'ExtendedPrincipals'}) {
+		$PrincipalsClause = "(($PrincipalsClause) OR ($args{'ExtendedPrincipalsClause'}))";
+	}
+	my $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = ".$self->Id."))";
+	
+	
+	# This query checks to se whether the user has the right as a member of a group
+	my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) AND ($GroupPrincipalsClause))";    
+	
+	# This query checks to see whether the current user has the right directly
+	my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) AND ($PrincipalsClause))";
+	
+
+
+	my ($hitcount);
+#	$RT::Logger->debug("Now Trying $query_string_1\n");	
+	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
+  
+	#if there's a match, the right is granted
+	return (1) if ($hitcount);
+#	$RT::Logger->debug("No ACL matched $query_string_1\n");	
+	
+
+	
+	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
+	return (1) if ($hitcount);
+
+	$RT::Logger->debug("No ACL matched $query_string_2\n")	;
+	
+	return(0);
+}
+
+# }}}
 1;
  

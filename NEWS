@@ -1,3 +1,42 @@
+Weekend of 1 Aug 2000
+---------------------
+I'm in DC this weekend hacking. Sadly, I have no access to the CVS server,
+so I'll be batching a bunch of commits.
+
+1. Enabled CLI admin tool
+2. Added ACL listing functionality to the CLI admin tool.
+3. Enhanced RT::Queue->Grant such that it works with the structure of RT2
+   ACLs
+4. Made the Logging framework actually log errors to STDERR.
+   (This makes debugging the CLI tools much easier. It also means
+    that the cli tools explain _why_ they're dying.)
+5. Fully expunged use of Mysql's SQL keyword "now()". I'd have left this 
+   stuff in, except mysql doesn't seem to deal well with the idea that the
+   entire world isn't one timezone.  On top of that, it doesn't seem to
+   have a way to force it into GMT mode that doesn't involve modifying init 
+   scripts. *sigh*
+6. Did a whole bunch more work on the ACL checking in RT::User
+7. Wrote up some preliminary docs on local hacks to RT
+8. Added in a routine to allow local canonicalization of email addresses   
+9. Added in the concept of "Disabled users"  To preserve RT2's database
+   Integrity, whacking user accounts would be a bad thing. So, instead,
+   we've got the concept of 'disabled' users. A disabled user fails ANY
+   ACL check, ANY password check and doesn't appear in any lists of ACLs.
+   (note that the lastmost statement isn't yet true)  
+   
+10. rtadmin user -enable and rtadmin user -disable now work.
+11. ACLs are now enforced for many ticket related actions.
+    (this does mean that you'll want to insert some acls like those below)
+
+INSERT INTO ACL VALUES (1,0,'User','SuperUser','Queue',0);
+INSERT INTO ACL VALUES (2,3,'User','CreateTicket','Queue',0);
+INSERT INTO ACL VALUES (3,3,'User','ShowTicket','Ticket',0);
+INSERT INTO ACL VALUES (4,3,'User','ShowTicketHistory','Ticket',0);
+INSERT INTO ACL VALUES (6,3,'User','CreateTicket','Queue',1);
+INSERT INTO ACL VALUES (7,3,'User','ModifyTicket','Ticket',1);
+INSERT INTO ACL VALUES (8,1,'User','Superuser','System',0);
+INSERT INTO ACL VALUES (9,0,'Everyone','Superuser','System',0);
+
 1 Mar 2000
 ----------
 

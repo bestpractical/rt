@@ -37,6 +37,25 @@ sub NewItem  {
 }
 # }}}
 
+# {{{ sub Next 
+sub Next {
+	my $self = shift;
+	my $Ticket = $self->SUPER::Next();
+	if ((defined($Ticket)) && 
+  	    ($Ticket->CurrentUserHasRight('ShowTicket'))) {
+		return($Ticket);
+	}
+	#If the user doesn't have the right to show this ticket
+	elsif (defined($Ticket)) {
+		return($self->Next());
+	}
+	#if there never was any ticket
+	else {
+		return(undef);
+	}	
+
+}
+# }}}
 # {{{ sub Owner 
 sub Owner  {
    my $self = shift;

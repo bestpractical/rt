@@ -150,7 +150,9 @@ CREATE TABLE Users (
   EmailAddress VARCHAR(120),
   FreeformContactInfo BLOB,
   Organization VARCHAR(200),
-
+  Disabled INT, # Disabled users can't get granted ACLs and doesn't show up
+	        # in user lists. 
+		
   CanManipulate INT,  #Whether this user can be granted rights
 		      #If 0, the user can only be a requestor
   # }}}
@@ -242,14 +244,12 @@ CREATE TABLE GroupMembers (
 
 # {{{ Table ACL {
 
-# TODO: Comments or documentation needed here :)
-
 CREATE TABLE ACL (
 	id int primary key auto_increment,
 	PrincipalId INT,
-	PrincipalType VARCHAR(16),
-	Right VARCHAR(16),
-	Scope VARCHAR(16),
+	PrincipalType VARCHAR(25),
+	Right VARCHAR(25),
+	Scope VARCHAR(25),
 	AppliesTo INT
 
 );
