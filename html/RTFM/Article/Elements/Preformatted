@@ -33,7 +33,7 @@
 <%$content%>
 % } else {
 % my $val = $values->Next;
-<%$cf->Name%>: <%$val%>
+<%$cf->Name%>: <%$val && $val->Content%>
 % while ($val = $values->Next) { 
 % my $content = $val->Content;
 <%' ' x length($cf->Name)%>  <%$content%>
