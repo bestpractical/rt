@@ -75,7 +75,6 @@ sub LinkUpIfRequested {
 	    $m->abort;
 	}
 	for my $luri (split (/ /,$luris)) {
-	    warn $luri;
 	    my ($LinkId, $Message);
 	    if ($l eq 'LinkTo') {
 		($LinkId,$Message)=$args{Ticket}->LinkTo(Target=>$luri, Type=>$ltyp);
@@ -85,7 +84,6 @@ sub LinkUpIfRequested {
 		&mc_comp("/Elements/Error" , Why => "Parameter error");
 		$m->abort;
 	    }
-	    warn $Message;
 	    
 	    push(@{$args{Actions}}, $Message);
 	}

@@ -545,7 +545,7 @@ my @args = (Type => 'Requestor',
 	    Id => undef);
 
 
-carp "Ticket::IsWatcher unimplemented\n";
+carp "Ticket::IsWatcher unimplemented";
 return (0);
 #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
 
