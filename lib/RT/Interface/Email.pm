@@ -437,10 +437,14 @@ sub ParseAddressFromHeader{
 
 # {{{ sub ParseTicketId 
 
+
 sub ParseTicketId {
     my $Subject = shift;
+    my $id;
 
-    if ( $Subject =~ s/\[\Q$RT::rtname\E\s+\#(\d+)\s*\]//i ) {
+    my $test_name = $RT::EmailSubjectTagRegex || qr/\Q$RT::rtname\E/;
+
+    if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
         my $id = $1;
         $RT::Logger->debug("Found a ticket ID. It's $id");
         return ($id);
