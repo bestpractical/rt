@@ -361,7 +361,7 @@ sub CreateByTemplate {
     my (@links, @postponed);
     foreach my $template_id ( @{ $self->{'create_tickets'} } ) {
 	$T::Tickets{'TOP'} = $T::TOP = $top if $top;
-	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
+	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP") if $T::TOP;
 
 	$T::ID = $template_id;
 	@T::AllID = @{ $self->{'create_tickets'} };
@@ -516,6 +516,7 @@ sub Parse {
     my $template_id;
     foreach my $line (split(/\n/, $content)) {
 	$line =~ s/\r$//;
+	$RT::Logger->debug("Line: $line");
 	if ($line =~ /^===Create-Ticket: (.*)$/) {
 	    $template_id = "create-$1";
 	    $RT::Logger->debug("****  Create ticket: $template_id");
@@ -575,8 +576,6 @@ sub ParseLines {
 	    my $tag = lc ($1);
 	    $tag =~ s/-//g;
 	    
-	    $value =~ s/\r$// if $value;
-	    
 	    if (ref($args{$tag})) { #If it's an array, we want to push the value
 		push @{$args{$tag}}, $value;
 	    }
@@ -634,15 +633,12 @@ sub ParseLines {
 		       );
 
     my $content = $args{'content'};
-    $content =~ s/\s//g;
-    $content =~ s/\S//g;
-    $content =~ s/\r//g;
     if ($content) {
 	my $mimeobj = MIME::Entity->new();
 	$mimeobj->build(Type => $args{'contenttype'},
 			Data => $args{'content'});
 	$ticketargs{MIMEObj} = $mimeobj;
-	$ticketargs{UpdateType} = $args{'updatetype'}, 
+	$ticketargs{UpdateType} = $args{'updatetype'} if $args{'updatetype'};
     }
     
     foreach my $key (keys(%args)) {
