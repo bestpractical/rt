@@ -290,7 +290,7 @@ sub FromSQL {
   my ($self,$query) = @_;
 
   $self->CleanSlate;
-
+  $self->_InitSQL();
    return unless $query;
 
   $self->{_sql_query} = $query;
