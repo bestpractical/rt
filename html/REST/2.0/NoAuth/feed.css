@@ -25,7 +25,6 @@ title {
 tagline, author {
   text-align:left;
   display:block;
-  font-size:90%;
 }
 
 feed>link.html:before {
@@ -62,32 +61,13 @@ entry title {
   background:#eeeeee;
 }
 
-id {
+id, modified, generator, created, issued, url {
   display:none;
 }
-
-modified {
-  display:none;
-}
-
-generator {
-  font-size:90%;
-  display:none;
-  margin:0px 0px 30px 0px;
-}
-
 
 entry modified {
   display:inline;
   font-style: italic;
-}
-
-created {
-  display:none;
-}
-
-issued {
-  display:none;
 }
 
 content {
