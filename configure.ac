@@ -240,6 +240,7 @@ AC_CONFIG_FILES([
                  lib/t/04_send_email.pl
 		 lib/t/05cronsupport.pl
 		 lib/t/06mailgateway.pl
+		 lib/t/07acl.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd

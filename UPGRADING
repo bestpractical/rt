@@ -16,6 +16,14 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADING FROM 3.2 and earlier - Changes:
+
+= Rights changes =
+
+Now, if you want any user to be able to access the Admin tools (a.k.a. 
+the Configuration tab), you must grant that user the "ShowConfigTab" 
+right.  Making the user a privileged user is no longer sufficient.
+
 
 UPGRADING FROM 3.0.x - Changes:
 
