@@ -122,7 +122,7 @@ tag-and-release-never-by-hand:
 			 aegis -cp -ind -delta $(TAG) . ;\
 			 chmod 600 Makefile;\
 			 aegis --report --project rtfm.2 \
-				--change 1
+				--change 0 \
 				--page_width 80 \
 				--page_length 9999 \
 				--output Changelog Change_Log;
