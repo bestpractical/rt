@@ -768,10 +768,6 @@ sub _CustomFieldLimit {
 
   die "No custom field named $field found\n" unless $cfid;
 
-
-
-  my $null_columns_ok;
-
   my $TicketCFs;
   # Perform one Join per CustomField
   if ($self->{_sql_keywordalias}{$cfid}) {
@@ -798,12 +794,9 @@ sub _CustomFieldLimit {
    # If we're trying to find custom fields that don't match something, we want tickets
    # where the custom field has no value at all
 
-  if (   ($op =~ /^IS$/i) or ($op =~ /^NOT LIKE$/i) or ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
-  }
-    
-
-  if ( $null_columns_ok) {
+  if ( (uc $op eq "IS NOT"  && uc $value ne "NULL")
+       || uc $op eq "NOT LIKE"
+       || $op eq '!=' ) {
     $self->_SQLLimit( ALIAS           => $TicketCFs,
 		      FIELD           => 'Content',
 		      OPERATOR        => 'IS',
