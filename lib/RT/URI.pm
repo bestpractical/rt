@@ -27,7 +27,7 @@ package RT::URI;;
 use vars qw/@ISA/;
 @ISA = qw(RT::Base);
 
-use RT::URI::null;
+use RT::URI::base;
 use Carp;
 
 =head1 NAME
@@ -129,7 +129,7 @@ sub FromURI {
 =private _GetResolver <scheme>
 
 Gets an RT URI resolver for the scheme <scheme>. 
-Falls back to a null resolver. RT::URI::null.
+Falls back to a null resolver. RT::URI::base.
 
 =cut
 
@@ -149,7 +149,7 @@ sub _GetResolver {
         if ($resolver) {
         $self->{'resolver'} = $resolver;
         } else {
-        $self->{'resolver'} = RT::URI::null->new($self->CurrentUser); 
+        $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
         }
 
 }

@@ -22,13 +22,14 @@
 # 
 # 
 # END LICENSE BLOCK
-package RT::URI::null;
+
+package RT::URI::base;
 
 use base qw(RT::Base);
 
 =head1 NAME
 
-RT::URI::null
+RT::URI::base
 
 =head1 DESCRIPTION
 
