@@ -349,6 +349,10 @@ sub Apply {
             return (undef);
         }
 
+        #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
+        # may have changed
+        $args{'TicketObj'}->Load($args{'TicketObj'}->Id);
+
         #We're done with it. lets clean up.
         #TODO: something else isn't letting these get garbage collected. check em out.
         $self->ActionObj->DESTROY();
