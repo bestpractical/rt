@@ -52,7 +52,7 @@ CREATE TABLE queues (
 #
 
 CREATE TABLE each_req (
-  serial_num int(11) AUTO_INCREMENT,
+  serial_num int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_sn INT,
   queue_id CHAR(40),
   area CHAR(40),
@@ -77,7 +77,7 @@ CREATE TABLE each_req (
 #
 
 CREATE TABLE transactions (
-  id int(11) AUTO_INCREMENT,
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_sn INT,
   serial_num INT,
   actor CHAR(40),
