@@ -151,39 +151,6 @@ my %queues;
 # Clean unwanted junk from the format
 $Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
 
-sub _load_container_object {
-    my ($obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-	return $session{'CurrentUser'}->UserObj;
-    }
-    elsif ($obj_type eq 'RT::Group') {
-	my $group = RT::Group->new($session{'CurrentUser'});
-	$group->Load($obj_id);
-	return $group;
-    }
-    elsif ($obj_type eq 'RT::System') {
-	# XXX: check hasright
-	return RT::System->new($session{'CurrentUser'});
-    }
-    else {
-#	push( @actions, [ loc("error: Invalid object type"), -1 ] );
-    }
-
-}
-
-sub _parse_saved_search {
-    my $spec = shift;
-    if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-#	push( @actions, [ loc("error: Invalid argument"), -1 ] );
-	return;
-    }
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    return (_load_container_object ($obj_type, $obj_id), $search_id);
-}
-
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
 
