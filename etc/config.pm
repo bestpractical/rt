@@ -202,7 +202,11 @@ $LocalePath = "!!LOCALE_PATH!!";
 
 $Nobody=2;
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
-$SIG{__DIE__}  = sub {$RT::Logger->log(level=>'crit',message=>$_[0]); print STDERR $_[0]; exit(-1);};
+$SIG{__DIE__}  = sub {
+    die @_ if $^S;
+    $RT::Logger->log(level=>'crit',message=>$_[0]); 
+    exit(-1);
+};
 
 
 1;
