@@ -12,7 +12,7 @@
 </ul>
 
 % if ($ARGS{'HideOptions'} == 1) {
-% my $qs = $ENV{'QueryString'};
+% my $qs = $ENV{'QUERY_STRING'};
 % $qs =~ s/HideOptions=1//gi;
 <a href="Search.html?<%$qs%>">Show advanced search options...</a>
 % }  else { 
@@ -56,19 +56,19 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
 
 <tr>
 <td><%$field->Name%> matches</td><td valign=top>
-% my $arg = $field->Name;
+% my $matches = $field->Name."~";
+% my $nomatches = $field->Name."!~";
 <& Elements/SearchByCustomField, 
     Field => $field, 
-    Name => $field->Name, 
-    Values => $ARGS{$arg} &>
+    Name => $matches,
+    Values => $ARGS{$matches} &>
     </td>
     <td>and doesn't match</td>
     <td valign="top">
-% $arg = $field->Name;
 <& Elements/SearchByCustomField, 
     Field => $field, 
-    Name => $field->Name."!", 
-    Values => $ARGS{$arg."!"}
+    Name => $nomatches,
+    Values => $ARGS{$nomatches}
     &>
     </td>
     </tr>
@@ -138,9 +138,23 @@ while ( my $cf = $all_cfs->Next ) {
 }
 
 foreach my $field ( keys %cfs ) {
+   
+   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
+   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
 
    my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
    my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
+
+    foreach my $val (@MatchLike) {
+        next unless $val;
+        push @Match, "~".$val;
+    }
+
+    foreach my $val (@NoMatchLike) {
+        next unless $val;
+        push @NoMatch, "~".$val;
+    }
+
 
     foreach my $value (@Match) {
         next unless $value;
