@@ -3756,8 +3756,6 @@ sub _ClassAccessible {
           TimeEstimated      => { 'read' => 1,  'write' => 1 },
           TimeWorked      => { 'read' => 1,  'write' => 1 },
           TimeLeft        => { 'read' => 1,  'write' => 1 },
-          Created         => { 'read' => 1,  'auto'  => 1 },
-          Creator         => { 'read' => 1,  'auto'  => 1 },
           Told            => { 'read' => 1,  'write' => 1 },
           Resolved        => { 'read' => 1 },
           Type            => { 'read' => 1 },
