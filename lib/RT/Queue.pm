@@ -90,6 +90,15 @@ sub Create  {
 
 # }}}
 
+# {{{ sub Delete 
+
+sub Delete {
+    my $self = shift;
+    return (0, 'Deleting this object would break referential integrity');
+}
+
+# }}}
+
 # {{{ sub SetDisabled
 
 =head2 SetDisabled

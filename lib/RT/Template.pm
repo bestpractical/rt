@@ -188,6 +188,27 @@ sub Create {
 
 # }}}
 
+# {{{ sub Delete
+
+=head2 Delete
+
+Delete this template.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyTemplate')) {
+	return (0, 'Permission Denied');
+    }
+    
+    return ($self->SUPER::Delete(@_));
+}
+
+
+# }}}
+
 # {{{ sub MIMEObj
 sub MIMEObj {
   my $self = shift;

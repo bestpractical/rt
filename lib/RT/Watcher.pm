@@ -1,5 +1,5 @@
 # $Header$
-# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 
 =head1 NAME

@@ -45,6 +45,22 @@ sub _Init  {
 }
 # }}}
 
+# {{{ sub Create
+
+sub Create {
+    return (0, 'Permission Denied');
+}
+
+# }}}
+
+# {{{ sub Delete
+
+sub Delete {
+    return (0, 'Permission Denied');
+}
+
+# }}}
+
 # {{{ sub UserObj
 
 =head2 UserObj
@@ -161,6 +177,7 @@ sub Load  {
       $self->LoadByCol("Name",$identifier);
   }
 }
+
 # }}}
 
 # {{{ sub IsPassword
@@ -181,6 +198,7 @@ sub IsPassword {
   
   return ($self->UserObj->IsPassword($value)); 
 }
+
 # }}}
 
 # {{{ sub Privileged

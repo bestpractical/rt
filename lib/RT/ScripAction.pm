@@ -67,7 +67,7 @@ sub Create  {
 sub Delete  {
     my $self = shift;
     
-    return (0, "ScripAction->Delete not implemented yet");
+    return (0, "ScripAction->Delete not implemented");
 }
 # }}}
 

@@ -169,7 +169,16 @@ sub Create  {
     # }}}
     return ($id, "Transaction Created");
 }
-  
+
+# }}}
+
+# {{{ sub Delete
+
+sub Delete {
+    my $self = shift;
+    return (0, 'Deleting this object could break referential integrity');
+}
+
 # }}}
 
 # {{{ Routines dealing with Attachments

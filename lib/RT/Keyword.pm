@@ -111,6 +111,16 @@ sub Create {
 
 # }}}
 
+# {{{ sub Delete
+
+sub Delete {
+    my $self = shift;
+    
+    return (0, 'Deleting this object would break referential integrity.');
+}
+
+# }}}
+
 # {{{ sub LoadByPath 
 
 =head2 LoadByPath STRING

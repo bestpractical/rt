@@ -132,7 +132,6 @@ sub BaseObj {
 }
 # }}}
 
-
 # {{{ sub _TicketObj
 sub _TicketObj {
   my $self = shift;
@@ -152,7 +151,6 @@ sub _TicketObj {
   return $self->{$tag};
 }
 # }}}
-
 
 # {{{ sub _Accessible 
 sub _Accessible  {
@@ -358,5 +356,6 @@ sub CanonicalizeURI {
 }
 
 # }}}
+
 1;
  

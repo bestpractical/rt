@@ -114,6 +114,26 @@ sub Create {
 
 # }}}
 
+# {{{ sub Delete
+
+=head2 Delete
+
+Delete this object
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+	return (0, 'Permission Denied');
+    }
+    
+    return($self->SUPER::Delete(@_));    
+}
+
+# }}}
+
 # {{{ MembersObj
 
 =head2 MembersObj

@@ -272,6 +272,27 @@ sub Create {
 
 # }}}
 
+
+# {{{ sub Delete 
+
+=head2 Delete
+
+Delete this object.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyACL')) {
+	return (0, 'Permission denied');
+    }	
+    
+    return ($self->SUPER::Delete(@_));
+    
+}
+# }}}
+
 # {{{ sub _BootstrapRight 
 
 =head2 _BootstrapRight

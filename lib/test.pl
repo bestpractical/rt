@@ -18,3 +18,35 @@ print "ok 1\n";
 # (correspondingly "not ok 13") depending on the success of chunk 13
 # of the test code):
 
+use RT::Record;
+use RT::EasySearch;
+use RT::Handle;
+use RT::Ticket;
+use RT::Tickets;
+use RT::ACE;
+use RT::ACL;
+use RT::Watcher;
+use RT::Watchers;
+use RT::Scrip;
+use RT::Scrips;
+use RT::ScripAction;
+use RT::ScripCondition;
+use RT::ScripActions;
+use RT::ScripConditions;
+use RT::Transaction;
+use RT::Transactions;
+use RT::Group;
+use RT::GroupMembers;
+use RT::User;
+use RT::Users;
+use RT::CurrentUser;
+use RT::Attachment;
+use RT::Attachments;
+use RT::Keyword;
+use RT::Keywords;
+use RT::KeywordSelect;
+use RT::KeywordSelects;
+use RT::ObjectKeyword;
+use RT::ObjectKeywords;
+use RT::Date;
+

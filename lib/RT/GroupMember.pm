@@ -88,6 +88,7 @@ Takes no arguments. deletes the currently loaded member from the
 group in question.
 
 =cut
+
 sub Delete {
     my $self = shift;
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {

@@ -174,13 +174,10 @@ sub Create  {
 
 # {{{ sub Delete 
 
-#This should probably not ever exist. deleting users 
-#would hose the schema.
 sub Delete  {
     my $self = shift;
     
-    return(0, "$self: Delete not implemented");
-    
+    return(0, 'Deleting this object would violate referential integrity');
     
 }
 

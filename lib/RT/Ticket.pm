@@ -310,6 +310,16 @@ sub Create {
 
 # }}}
 
+# {{{ sub Delete
+
+sub Delete {
+    my $self = shift;
+    return (0, 'Deleting this object would violate referential integrity.'.
+	    ' That\'s bad.');
+}
+# }}}
+
+
 # {{{ Routines dealing with watchers.
 
 # {{{ Routines dealing with adding new watchers

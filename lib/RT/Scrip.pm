@@ -96,6 +96,25 @@ sub Create  {
 
 # }}}
 
+# {{{ sub Delete
+
+=head2 Delete
+
+Delete this object
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyScrips')) {
+	return (0, 'Permission Denied');
+    }
+    
+    return ($self->SUPER::Delete(@_));
+}
+# }}}
+
 # {{{ sub QueueObj
 
 =head2 QueueObj
