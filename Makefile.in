@@ -24,18 +24,18 @@
 # END LICENSE BLOCK
 
 
-PERL			= 	/usr/local/bin/perl
+PERL			= 	@PERL@
 
-CONFIG_FILE_PATH	=	/opt/rt3/etc
+CONFIG_FILE_PATH	=	@CONFIG_FILE_PATH@
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)";\
 		   print $${$$RT::{$$ARGV[0]}};'
 
-RT_VERSION_MAJOR	=	2
-RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	45
+RT_VERSION_MAJOR	=	@RT_VERSION_MAJOR@
+RT_VERSION_MINOR	=	@RT_VERSION_MINOR@
+RT_VERSION_PATCH	=	@RT_VERSION_PATCH@
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -46,16 +46,16 @@ RTGROUP			=	rt
 
 
 # User which should own rt binaries.
-BIN_OWNER		=	root
+BIN_OWNER		=	@BIN_OWNER@
 
 # User that should own all of RT's libraries, generally root.
-LIBS_OWNER 		=	root
+LIBS_OWNER 		=	@LIBS_OWNER@
 
 # Group that should own all of RT's libraries, generally root.
-LIBS_GROUP		=	bin
+LIBS_GROUP		=	@LIBS_GROUP@
 
-WEB_USER		=	www
-WEB_GROUP		=	www
+WEB_USER		=	@WEB_USER@
+WEB_GROUP		=	@WEB_GROUP@
 
 # {{{ Files and directories 
 
@@ -65,20 +65,20 @@ WEB_GROUP		=	www
 DESTDIR			=	
 
 
-RT_PATH			=	/opt/rt3
-RT_ETC_PATH		=	/opt/rt3/etc
-RT_BIN_PATH		=	/opt/rt3/bin
-RT_SBIN_PATH		=	/opt/rt3/sbin
-RT_LIB_PATH		=	/opt/rt3/lib
-RT_MAN_PATH		=	/opt/rt3/man
-RT_VAR_PATH		=	/opt/rt3/var
-RT_LOCAL_PATH		=	/opt/rt3/local
-LOCAL_LEXICON_PATH	=	/opt/rt3/local/po
-MASON_HTML_PATH		=	/opt/rt3/html
-MASON_LOCAL_HTML_PATH	=	/opt/rt3/local/html
-MASON_DATA_PATH		=	/opt/rt3/var/mason_data
-MASON_SESSION_PATH	=	/opt/rt3/var/session_data
-RT_LOG_PATH             =       /opt/rt3/var/log
+RT_PATH			=	@RT_PATH@
+RT_ETC_PATH		=	@RT_ETC_PATH@
+RT_BIN_PATH		=	@RT_BIN_PATH@
+RT_SBIN_PATH		=	@RT_SBIN_PATH@
+RT_LIB_PATH		=	@RT_LIB_PATH@
+RT_MAN_PATH		=	@RT_MAN_PATH@
+RT_VAR_PATH		=	@RT_VAR_PATH@
+RT_LOCAL_PATH		=	@RT_LOCAL_PATH@
+LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH@
+MASON_HTML_PATH		=	@MASON_HTML_PATH@
+MASON_LOCAL_HTML_PATH	=	@MASON_LOCAL_HTML_PATH@
+MASON_DATA_PATH		=	@MASON_DATA_PATH@
+MASON_SESSION_PATH	=	@MASON_SESSION_PATH@
+RT_LOG_PATH             =       @RT_LOG_PATH@
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant
 # to be accessable
@@ -126,7 +126,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 # "mysql" is known to work.
 # "Pg" is known to work
 
-DB_TYPE			=	mysql
+DB_TYPE			=	@DB_TYPE@
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL sbin
@@ -139,13 +139,13 @@ DB_TYPE			=	mysql
 # For Pg, you probably want 'postgres' 
 # For oracle, you want 'system'
 
-DB_HOST			=	localhost
+DB_HOST			=	@DB_HOST@
 
 # If you're not running your database server on its default port, 
 # specifiy the port the database server is running on below.
 # It's generally safe to leave this blank 
 
-DB_PORT			=	`
+DB_PORT			=	`@DB_PORT@
 
 #
 # Set this to the canonical name of the interface RT will be talking to the 
@@ -155,14 +155,14 @@ DB_PORT			=	`
 # to grant those database rights by hand.
 #
 
-DB_RT_HOST		=	localhost
+DB_RT_HOST		=	@DB_RT_HOST@
 
 # set this to the name you want to give to the RT database in 
 # your database server. For Oracle, this should be the name of your sid
 
-DB_DATABASE		=	rt3
-DB_RT_USER		=	rt_user
-DB_RT_PASS		=	rt_pass
+DB_DATABASE		=	@DB_DATABASE@
+DB_RT_USER		=	@DB_RT_USER@
+DB_RT_PASS		=	@DB_RT_PASS@
 
 # }}}
 

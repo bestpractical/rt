@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 package RT::URI::base;
 
 use base qw(RT::Base);

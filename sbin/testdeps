@@ -30,76 +30,86 @@
 #
 
 # ExtUtils::AutoInstall Bootstrap Code, version 4.
-BEGIN{my$p='ExtUtils::AutoInstall';my$v=.42;eval"use $p $v;1"or
-($ENV{PERL_EXTUTILS_AUTOINSTALL}!~/--(?:default|skip|testonly)/
-and(-t STDIN)or eval"use ExtUtils::MakeMaker;WriteMakefile('PR'
-.'EREQ_PM'=>{'$p',$v});1"and exit)and print"==> $p $v needed. "
-."Install it from CPAN? [Y/n] "and<STDIN>!~/^n/i and print"***"
-." Fetching $p\n"and do{eval{require CPANPLUS;CPANPLUS::install
-$p};eval"use $p $v;1"or eval{require CPAN;CPAN::install$p};eval
-"use $p $v;1"or die"Please install $p $v manually first...\n"}}
+BEGIN {
+    my $p = 'ExtUtils::AutoInstall';
+    my $v = .42;
+    eval "use $p $v;1"
+      or ( $ENV{PERL_EXTUTILS_AUTOINSTALL} !~ /--(?:default|skip|testonly)/
+           and ( -t STDIN )
+           or eval
+           "use ExtUtils::MakeMaker;WriteMakefile('PREREQ_PM'=>{'$p',$v});1"
+           and exit )
+      and print "==> $p $v needed. " . "Install it from CPAN? [Y/n] "
+      and <STDIN> !~ /^n/i
+      and print "***" . " Fetching $p\n"
+      and do {
+        eval {
+            require CPANPLUS;
+            CPANPLUS::install $p;
+        };
+        eval "use $p $v;1" or eval { require CPAN; CPAN::install $p};
+        eval "use $p $v;1" or die "Please install $p $v manually first...\n";
+      }
+}
 
 use strict;
 no warnings qw(numeric redefine);
 
 use File::Spec;
-use File::Basename  qw/dirname/;
+use File::Basename qw/dirname/;
 
 my $mode = shift || print_help();
-my $dbd = shift || print_help();
+my $dbd  = shift || print_help();
 
 push @ARGV, '--checkdeps';
 
-if ($mode =~ /-q/i) {
+if ( $mode =~ /-q/i ) {
     require Symbol;
-    my $fh  = Symbol::gensym();
+    my $fh = Symbol::gensym();
     my $out = tie *$fh, __PACKAGE__;
     select(*$fh);
 }
 
 ExtUtils::AutoInstall->import(
-    -version			=> 0.42,
-    -config			=> [
-	-skiptest		=> 1,
-	-force			=> 1,
-    ],
-    -core			=> &CORE_MODULES,
-(map {(
-    "$_ Database Driver"	=> &DB_MODULES->{ $_ },
-)} grep {($dbd =~ /$_/i)} keys %{&DB_MODULES}),
-($] >= 5.006 and $] < 5.007001) ? (
-    'I18N Compatibility'	=> &I18N_COMPAT_MODULES,
-) : (),
-    'WebRT Interface'		=> &MASON_MODULES,
-    'Command Line Tools'	=> &CLI_MODULES,
-    'Developer Tools'		=> &DEV_MODULES,
-    'FastCGI Support'		=> &FCGI_MODULES,
-(eval{require mod_perl; mod_perl->VERSION >= 1.99}) ? (
-    'Mod_Perl 2.x support'	=> &MODPERL_2_MODULES,
-) : (
-    'Mod_Perl 1.x support'	=> &MODPERL_1_MODULES,
-),
-);
+    -version => 0.42,
+    -config  => [-skiptest => 1,
+                 -force    => 1, ],
+    -core => &CORE_MODULES,
+    (  map {
+           ( "$_ Database Driver" => &DB_MODULES->{$_}, )
+         } grep { ( $dbd =~ /$_/i ) } keys %{&DB_MODULES} ),
+    ( $] >= 5.006 and $] < 5.007001 )
+    ? ( 'I18N Compatibility' => &I18N_COMPAT_MODULES, )
+    : (),
+    'WebRT Interface'    => &MASON_MODULES,
+    'Command Line Tools' => &CLI_MODULES,
+    'Developer Tools'    => &DEV_MODULES,
+    'FastCGI Support'    => &FCGI_MODULES,
+    ( eval { require mod_perl; mod_perl->VERSION >= 1.99 } )
+    ? ( 'Mod_Perl 2.x support' => &MODPERL_2_MODULES, )
+    : ( 'Mod_Perl 1.x support' => &MODPERL_1_MODULES, ), );
 
-if ($mode =~ /-q/i) {
-    exit(ExtUtils::AutoInstall->missing_modules ? 1 : 0);
+if ( $mode =~ /-q/i ) {
+    exit( ExtUtils::AutoInstall->missing_modules ? 1 : 0 );
 }
-elsif ($mode =~ /-f/i) {
+elsif ( $mode =~ /-f/i ) {
     ExtUtils::AutoInstall->do_install;
 }
-elsif ($mode =~ /-w/i) {
-    if (my @mods = ExtUtils::AutoInstall->missing_modules) {
-	print "*** Following module(s) are missing on your system:\n";
-	while (my ($mod, $ver) = splice(@mods, 0, 2)) {
-	    print "$mod $ver\n";
-	}
+elsif ( $mode =~ /-w/i ) {
+    if ( my @mods = ExtUtils::AutoInstall->missing_modules ) {
+        print "*** Following module(s) are missing on your system:\n";
+        while ( my ( $mod, $ver ) = splice( @mods, 0, 2 ) ) {
+            print "$mod $ver\n";
+        }
     }
     else {
-	print "*** All module(s) are present on your system!\n";
+        print "*** All module(s) are present on your system!\n";
     }
 }
 
-sub _ { map { /(\S+)\s*(\S*)/; $1=>0+$2 } split(/\n/, $_[0]) }
+sub _ {
+    map { /(\S+)\s*(\S*)/; $1 => 0 + $2 } split ( /\n/, $_[0] );
+}
 
 use constant CORE_MODULES => [ _( << '.') ];
 Digest::MD5
@@ -111,7 +121,7 @@ Text::Template
 File::Spec 0.8
 HTML::Entities 
 Net::Domain
-Log::Dispatch 1.6
+Log::Dispatch 2.0
 Locale::Maketext
 Locale::Maketext::Lexicon 0.10
 Locale::Maketext::Fuzzy
@@ -154,11 +164,13 @@ CGI::Fast
 .
 
 use constant MODPERL_1_MODULES => [ _( << '.') ];
-Apache::Request 
+Apache::Request
+Apache::DBI
 .
 
 use constant MODPERL_2_MODULES => [ _( << '.') ];
 CGI 2.89
+Apache::DBI
 .
 
 use constant I18N_COMPAT_MODULES => [ _( << '.') ];
@@ -167,20 +179,19 @@ Encode::compat 0.04
 .
 
 use constant DB_MODULES => {
-    MySQL	=> [ _( << '.') ],
+    MySQL => [ _( << '.') ],
 DBD::mysql 2.0416
 .
-    Oracle	=> [ _( << '.') ],
+    Oracle => [ _( << '.') ],
 DBD::Oracle
 .
-    Pg		=> [ _( << '.') ],
+    Pg => [ _( << '.') ],
 DBD::Pg
 .
 };
 
-
 sub print_help {
-print << "EOF";
+    print << "EOF";
 
 $0 FLAG DBTYPE
 
@@ -202,11 +213,14 @@ DBTYPE is one of:
 
 EOF
 
-exit(0);
+    exit(0);
 }
 
 # tiehandle trick to intercept STDOUT.
-sub PRINT  { my $self = shift; $$self .= join '', @_; }
-sub PRINTF { my $self = shift; $$self .= sprintf(shift, @_); }
+sub PRINT { my $self = shift; $$self .= join '', @_; }
+sub PRINTF { my $self = shift; $$self .= sprintf( shift, @_ ); }
 sub TIEHANDLE { my $self = ''; return bless \$self, shift; }
-sub READ {} sub READLINE {} sub GETC {} sub FILENO {}
+sub READ      { }
+sub READLINE  { }
+sub GETC      { }
+sub FILENO    { }

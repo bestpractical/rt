@@ -22,22 +22,13 @@
 # 
 # 
 # END LICENSE BLOCK
-
-
 WARNING
 -------
 
 
-        This is a DEVELOPMENT RELEASE OF RT. PROCEED AT YOUR OWN RISK.
+This is a DEVELOPMENT RELEASE OF RT. PROCEED AT YOUR OWN RISK.
 
 
-
-INSTALLATION INSTRUCTIONS
--------------------------
-
-These instructions are a summary of those at http://www.helgrim.com/rtdocs.
-The docs on the web at www.helgrim.com/rtdocs are likely to be more up to
-date and complete than this readme.  You should consult them before proceeding
 
 REQUIRED PACKAGES:
 ------------------
@@ -49,9 +40,9 @@ o   Perl5.6.1 or later with support for setgid perl scripts
 	 "setuid scripts".
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:    Mysql 3.23.51 or newer. 
+        Currently supported:    Mysql 4.0.3 or newer. 
 				 (Some older releases had crippling SQL bugs)
-				Postgres 7.22
+				Postgres 7.2 or later
 
 o   Apache + mod_perl -- ( http://perl.apache.org) 
     or A webserver with FastCGI support (www.fastcgi.com)
@@ -74,13 +65,12 @@ GENERAL INSTALLATION
 
         	tar xzvf rt.tar.gz -C /tmp
 
-2   Check over /tmp/rt/Makefile
+2   Run the "configure" script. 
 
-	There are many variables you NEED to customize for your site.
-	Even if you are just upgrading, you must set ALL variables.
+        ./configure --help to see the list of options
+        ./configure (with the flags you want)
 
-3   Satisfy RT's myriad dependencies.  There's a perl script in rt/tools
-    called testdeps that uses CPAN to automate all of this.
+3   Satisfy RT's myriad dependencies. 
 
 3.1   Check for compliance:
 	make testdeps
@@ -88,11 +78,6 @@ GENERAL INSTALLATION
 3.2   If there are unsatisfied dependencies, install them by hand or run
 	make fixdeps
 	
-       (You may need to install Apache::Session and Apache::DBI by hand.
-
-	You might need to install Msql-Mysql-Modules by hand.
-	perl -MCPAN -e'install DBD::mysql::Install' should do it for you.
-       )
 
 3.3   Check to make sure everything was installed properly:
 	make testdeps
@@ -153,8 +138,8 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
-rt:         "|/path/to/rt2/bin/rt-mailgate --queue general --action correspond"
-rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
+rt:         "|/path/to/rt3/bin/rt-mailgate --queue general --action correspond"
+rt-comment: "|/path/to/rt3/bin/rt-mailgate --queue general --action comment"
                                                    |                |
                                    <queue-name>----/                |
                                                                     |
@@ -178,11 +163,11 @@ Apache
 
 
 <VirtualHost your.ip.address>
-DocumentRoot /path/to/rt2/WebRT/html
+DocumentRoot /path/to/rt3/html
 ServerName your.rt.server.hostname
 PerlModule Apache::DBI
 PerlFreshRestart On
-PerlRequire /path/to/rt2/bin/webmux.pl
+PerlRequire /path/to/rt3/bin/webmux.pl
 <Location />
  SetHandler perl-script
  PerlHandler RT::Mason
@@ -201,18 +186,17 @@ Additionally, you should set up a cron job to remove stale session data.
 # Every hour, nuke session files and lockfiles that haven't been 
 # touched in 10 hours
 
-0 * * * * find /path/to/rt2/WebRT/sessiondata -type f -amin +600 -exec rm {} \;
+0 * * * * find /path/to/rt3/WebRT/sessiondata -type f -amin +600 -exec rm {} \;
 
 
 THE CLI
 -------
-        Binaries for the CLI are located in rt/bin
+        Binaries for the CLI are located in rt3/bin
         You've got:
 
-                "rt" (manipulate or display requests) 
                 "rtadmin" (modify queues, users and acls)
 
-        Both of these programs take --help as an option.
+        This program takes --help as an option.
 
 
 BUGS
@@ -226,7 +210,7 @@ To find out more about currently open bugs, check out the live
 Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
 (When prompted, login as guest/guest)
 
-To report a bug, send an email to rt-2.0-bugs@fsck.com.
+To report a bug, send an email to rt-3.0-bugs@fsck.com.
 
 GETTING HELP
 ------------
@@ -261,15 +245,12 @@ questions about the development version to the rt-devel list.  If you feel
 your questions are best not asked publically, send them personally to
 <jesse@bestpractical.com>.
 
-If you want to be informed of every commit to the CVS repository,
-subscribe to rt-commit@fsck.com using similar instructions to those above.
-
 
 RT WEBSITE
 ----------
 
 For current information about RT, check out the RT website at 
-http://www.bestpractical.com/rt  You'll find screenshots, a pointer
+http://www.bestpractical.com/  You'll find screenshots, a pointer
 to the current version of rt, contributed patches and lots of other great
 stuff.
 
@@ -277,51 +258,12 @@ stuff.
 TROUBLESHOOTING
 ---------------
 
-All errors will be appended to a logfile, which lives in /tmp/rt.log.* unless 
-you've reconfigured it.  Check etc/config.pm for details.
 
 If the solution to the problem you're running into isn't obvious and you've 
 checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
 versions of RT) or rt-devel@fsck.com (for development versions).
 
-GIVING SOMETHING BACK
----------------------
-
-RT is free software. You are not obligated to pay for it.  You should be 
-aware, however, that bestpractical.com's sole source of revenue is commercial
-work related to RT. If you are able, either a contract to extend RT in some 
-way that would be useful to your organization, a financial contribution, or 
-even something off the author's amazon wishlist 
-	( http://www.amazon.com/exec/obidos/wishlist/2GMHUDAFBT2XR/ )
-would be much appreciated. 
-
 Thanks!
-
-
-CREDITS
--------
-
-A lot of people are responsible for making RT a better program.  Many
-thanks to Lauren Burka, who originally tasked me with writing this beast.
-She forced me to use a database backend.  I've thanked her for it every
-day since.  Rich West rewrote this readme and did some UI hacking.  Adam
-Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
-Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
-John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
-Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
-Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan Kohler, Alex
-Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow, Tristan Horn,
-Lee Ann Goldstein, Karel P Kerezman, Feargal Reilly, Christian Steger,
-Christian Kurz, JD Falk, Arthur de Jong, Ben Carter, Mark Vevers
-and many others
-have all contributed bug reports, code or ideas that have helped RT along.  
-
-Arepa, Inc, Utopia Inc, Wesleyan University and The Leftbank Operation 
-have paid me to maintain RT and release it to the public.  Without their 
-support RT would not exist.  
-
-If I've left you out, please drop me a line ....it wasn't intentional. 
- 
 
         Enjoy
 

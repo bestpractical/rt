@@ -30,7 +30,7 @@ use vars qw($PROMPT $DEBUG);
 
 
 BEGIN {
-    use lib "/opt/rt3/lib";
+    use lib "@RT_LIB_PATH@";
     use RT;
     RT::LoadConfig();
 }

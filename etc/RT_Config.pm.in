@@ -35,10 +35,10 @@ $MinimumPasswordLength = "5";
 # It should be set to a timezone recognized by your local unix box.
 $Timezone =  'US/Eastern'; 
 
-$BasePath = '/opt/rt3';
+$BasePath = '@RT_PATH@';
 
-$EtcPath = '/opt/rt3/etc';
-$VarPath = '/opt/rt3/var';
+$EtcPath = '@RT_ETC_PATH@';
+$VarPath = '@RT_VAR_PATH@';
 $LocalLexiconPath = '@RT_LOCAL_PO_PATH@';
 
 
@@ -49,22 +49,22 @@ $LogDir = '@RT_LOG_DIR@';
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonComponentRoot = '/opt/rt3/html';
+$MasonComponentRoot = '@MASON_HTML_PATH@';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonLocalComponentRoot = '/opt/rt3/local/html';
+$MasonLocalComponentRoot = '@MASON_LOCAL_HTML_PATH@';
 
 # $MasonDataDir Where mason keeps its datafiles
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonDataDir = '/opt/rt3/var/mason_data';
+$MasonDataDir = '@MASON_DATA_PATH@';
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-$MasonSessionDir = '/opt/rt3/var/session_data';
+$MasonSessionDir = '@MASON_SESSION_PATH@';
 
 # }}}
 
