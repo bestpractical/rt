@@ -138,8 +138,8 @@ Add the following lines to /etc/aliases (or your local equivalent) :
 
 TODO: THE CALLING CONVENTION FOR THE MAILGATE HAS CHANGED
 
-    rt-comment: |"/path/to/rt/bin/rt-mailgate --queue general --action comment"
-    rt:         |"/path/to/rt/bin/rt-mailgate --queue general --action correspond"
+    rt-comment: "|/path/to/rt/bin/rt-mailgate --queue general --action comment"
+    rt:         "|/path/to/rt/bin/rt-mailgate --queue general --action correspond"
                                                     |          |
                                    <<queue-name>----/          |
                                                                |
@@ -150,22 +150,23 @@ TODO: THE CALLING CONVENTION FOR THE MAILGATE HAS CHANGED
 		  recording the message as a transaction
 		  of its own"
 
+
 The RT Mail Gateway can be used to perform actions on requests.
 For an explanation of how to use the Mail Gateway, send a message to
 any RT alias with the command %RT HELP on a line by itself.     
 
 You'll need an alias like the following for action requests:
 
-        rt-action:      |"/path/to/rt/bin/rt-mailgate --queue general --action action"
-	
+        rt-action:      "|/path/to/rt/bin/rt-mailgate --queue general --action action"
+NOTE: This is not yet implemented for RT2.
+
 
 THE WEB UI
 ----------
-If you don't already have an http daemon set up, you will probably want
-to start one to handle the CGI interface.  For now, I'd recommend the Apache
-httpd.  Additionally, you'll need a web browser that supports unless you've 
-enabled "external" authentication above.
 
+RT's web ui is based around HTML::Mason, which works best with the mod_perl
+perl interpreter within Apache httpd.  We're working on a FastCGI version as
+well, but for now, apache's your best bet.
 Apache 
         RT Uses HTML::Mason.  You'll need to add a few lines to your
         httpd.conf telling it to use rt's web ui.  If you have mod-perl
@@ -250,7 +251,8 @@ Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew,
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
 John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
 Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
-Robin Shostack, Eric Mumpower, Jerrod Weisman and Adam Hammer 
+Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan, Alex
+Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow and many others
 have all contributed bug reports, code or ideas that have helped RT along.  
 
 Arepa, Inc, Utopia Inc, Wesleyan University and The Leftbank Operation 

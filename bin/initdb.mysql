@@ -1,28 +1,43 @@
-#!/bin/sh
+#!/usr/bin/perl -w
+#$Header$
 
-DATABASEHOME=$1
-HOSTNAME=$2
-DATABASEADMIN=$3
-DBAPASSWD=$4
-DATABASENAME=$5
+use strict;
 
-MYSQLBINDIR=${DATABASEHOME}/bin
+my ($DATABASEHOME, $HOSTNAME, $DATABASEADMIN, $DBAPASSWD, $DATABASENAME) = @ARGV;
+my $MYSQLBINDIR = "${DATABASEHOME}/bin";
 
-echo "DBHOME = $DATABASEHOME"
-echo "HOSTNAME = $HOSTNAME"
-echo "DATABASEADMIN = $DATABASEADMIN"
-echo "DBAPASSWD = $DBAPASSWD"
-echo "DATABASENAME = $DATABASENAME"
+print <<END;
+Database creation parameters:
 
-PATH=$PATH:$MYSQLBINDIR
-export PATH
+DBHOME = $DATABASEHOME
+HOSTNAME = $HOSTNAME
+DATABASEADMIN = $DATABASEADMIN
+DBAPASSWD = $DBAPASSWD
+DATABASENAME = $DATABASENAME
+END
 
-echo "Dropping database $DATABASENAME."
-$MYSQLBINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} drop $DATABASENAME
+$ENV{PATH} .= ":$MYSQLBINDIR";
 
-echo "Creating database $DATABASENAME."
-$MYSQLBINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} create $DATABASENAME
+print "\nDropping database $DATABASENAME. \nWARNING: This will erase all data in $DATABASENAME. If you have an existing\n RT 2.x installation, this could destroy all your data.\n";
+system("$MYSQLBINDIR/mysqladmin", "--host=$HOSTNAME", "--user=$DATABASEADMIN",
+       "-p$DBAPASSWD", "drop", $DATABASENAME );
 
-echo "Reading schema."
-$MYSQLBINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} $DATABASENAME < etc/schema.mysql
+print "Creating database $DATABASENAME.\n";
+system("$MYSQLBINDIR/mysqladmin", "--host=$HOSTNAME", "--user=$DATABASEADMIN",
+       "-p$DBAPASSWD", "create", $DATABASENAME );
+
+
+print "Reading schema from ../etc/schema.mysql\n";
+defined ( my $pid = open(KID_TO_WRITE,"|-") ) or die "can't fork: $!";
+$SIG{ALRM} = sub { die "Pipe of schema to mysql broke.\n" };
+
+if ($pid) { #parent
+  open(SCHEMA, "<etc/schema.mysql");
+  while(<SCHEMA>) { print KID_TO_WRITE; }
+  close KID_TO_WRITE or warn "mysql exited $?";
+} else { #child
+  print "Now importing schema into $DATABASENAME.\n";
+  exec("$MYSQLBINDIR/mysql", "--host=$HOSTNAME", "--user=$DATABASEADMIN",
+       "-p$DBAPASSWD", $DATABASENAME );
+}
 

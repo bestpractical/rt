@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	17
+RT_VERSION_PATCH	=	18
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -72,7 +72,6 @@ DB_HOME	       = /opt/mysql
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL tools
 
-# I don't think this should be needed.  At least not with mysql!
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
 DB_DBA	           =	root
@@ -181,7 +180,7 @@ initialize: database acls
 
 
 database:
-	sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_RT_USER)' '$(DB_RT_PASS)'
+	bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_RT_USER)' '$(DB_RT_PASS)'
 
 acls:
 	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
@@ -191,7 +190,7 @@ acls:
 				s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
-	sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
+	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
@@ -247,6 +246,7 @@ predist: commit
 	cvs tag -r rt-1-1 -F $(TAG)
 	rm -rf /tmp/$(TAG)
 	cvs export -D now -d /tmp/$(TAG) -r rt-1-1 rt
+	cd /tmp/$(TAG); /usr/local/bin/cvs2cl.pl --tags --revisions --no-wrap --separate-header
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 

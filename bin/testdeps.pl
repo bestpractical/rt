@@ -49,7 +49,7 @@ Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
 Text::Template
-DBIx::SearchBuilder 0.03
+DBIx::SearchBuilder 0.05
 Apache::Session 1.03
 );
 use CPAN;

@@ -90,7 +90,7 @@ SQL and database debugging
 ==========================
 
 Probably you don't have to care much about the Database Access.  It's
-abstracted into DBIx::EasySearch and DBIx::Record, which just seems to
+abstracted into DBIx::SearchBuilder which just seems to
 work - at least with mysql.
 
 Currently RT writes out very much verbose debug information, including
