@@ -74,7 +74,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   &RT::Interface::Email::activate();
 }
 
-elsif ($program eq '!!RT_CGI_BIN!!') {
+elsif ($program eq '!!WEBRT_CGI_BIN!!') {
   use HTML::Mason;
   package HTML::Mason;
   my $parser = new HTML::Mason::Parser;
@@ -82,8 +82,8 @@ elsif ($program eq '!!RT_CGI_BIN!!') {
   #TODO: Make this draw from the config file
   my $interp = new HTML::Mason::Interp (
 					parser=>$parser,
-					comp_root=>'/opt/rt/WebRT/html',
-					data_dir=>'/opt/rt/WebRT/data');
+					comp_root=>'!!WEBRT_HTML_PATH!!',
+					data_dir=>'!!WEBRT_DATA_PATH!!');
   chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
 	  $interp->files_written );   # chown nobody
   

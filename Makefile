@@ -29,8 +29,9 @@ RT_PATH			=	/opt/rt-1.3
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
-RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
-RT_HTML_PATH		=	$(RT_PATH)/WebRT/html
+WEBRT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
+WEBRT_HTML_PATH		=	$(RT_PATH)/WebRT/html
+WEBRT_DATA_PATH		=       $(RT_PATH)/WebRT/data
 #
 # The rtmux is the setuid script which invokes whichever rt program it needs to.
 #
@@ -44,7 +45,7 @@ RT_ACTION_BIN		=	rt
 RT_QUERY_BIN		=	rtq
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
-RT_CGI_BIN		=	webrt.cgi
+WEBRT_CGI_BIN		=	webrt.cgi
 
 #
 # The location of your rt configuration file
@@ -187,12 +188,12 @@ fixperms:
 	chmod -R 0750 $(RT_ETC_PATH)
 	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
-	chmod 0755 $(RT_CGI_PATH)
+	chmod 0755 $(WEBRT_CGI_PATH)
 	chmod 4755 $(RT_PERL_MUX)
-	chmod 777  /opt/rt/WebRT/data
+	chmod 777  $(WEBRT_DATA_PATH)
 dirs:
 	mkdir -p $(RT_BIN_PATH)
-	mkdir -p $(RT_CGI_PATH)
+	mkdir -p $(WEBRT_CGI_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
 
@@ -202,9 +203,9 @@ libs-install:
 	chmod -R 0755 $(RT_LIB_PATH)
 
 html-install:
-	mkdir -p $(RT_HTML_PATH)
-	cp -rp ./webrt/* $(RT_HTML_PATH)
-	chmod -R 0755 $(RT_HTML_PATH)
+	mkdir -p $(WEBRT_HTML_PATH)
+	cp -rp ./webrt/* $(WEBRT_HTML_PATH)
+	chmod -R 0755 $(WEBRT_HTML_PATH)
 
 initialize: database acls
 
@@ -214,7 +215,8 @@ database:
 
 acls:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
-	$(PERL) -p -i.orig -e "	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
+	$(PERL) -p -i.orig -e "
+				s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 				s'!!DB_HOST!!'$(DB_HOST)'g;\
 			        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
 			        s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
@@ -231,7 +233,9 @@ mux-install:
 				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
-				s'!!RT_CGI_BIN!!'$(RT_CGI_BIN)'g;\
+				s'!!WEBRT_CGI_BIN!!'$(WEBRT_CGI_BIN)'g;\
+				s'!!WEBRT_HTML_PATH!!'$($WEBRT_HTML_PATH)'g;\
+				s'!!WEBRT_DATA_PATH!!'$($WEBRT_DATA_PATH)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
 
@@ -248,8 +252,8 @@ mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 
-	rm -f $(RT_CGI_PATH)/$(RT_CGI_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_CGI_BIN)
+	rm -f $(WEBRT_CGI_PATH)/$(WEBRT_CGI_BIN)
+	ln -s $(RT_PERL_MUX) $(WEBRT_CGI_PATH)/$(WEBRT_CGI_BIN)
 
 
 
