@@ -37,9 +37,6 @@ if ($id) {
 			A => { title => loc('Basics'),
 				path => "Admin/Users/Modify.html?id=".$id
 			},
-			D => { title => loc('MemberOf'),
-				path => "Admin/Users/MemberOf.html?id=".$id
-			},
 		}
 	}
 }
