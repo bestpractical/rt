@@ -4,7 +4,7 @@
 
 RTFM_VERSION_MAJOR	=	0
 RTFM_VERSION_MINOR	=	9
-RTFM_VERSION_PATCH	=	4
+RTFM_VERSION_PATCH	=	5
 
 
 RTFM_VERSION =	$(RTFM_VERSION_MAJOR).$(RTFM_VERSION_MINOR).$(RTFM_VERSION_PATCH)
@@ -114,7 +114,7 @@ install-libs:
 	cp -rp ./html/* $(HTML_PATH)
 	cp -rp ./lib/* $(LIB_PATH)
 
-install-binaries:
+install-binaries: 
 	cp -rp ./bin/* $(BIN_PATH)	
 	cp -rp ./sbin/* $(SBIN_PATH)	
 
@@ -122,6 +122,7 @@ replace-paths:
 	$(PERL) -p -i -e " \
 			   s'!!CONFIG_FILE_PATH!!'$(CONFIGFILE)'g;\
                            s'!!LIB_PATH!!'$(LIB_PATH)'g;"\
-                $(MODPERL_HANDLER) $(SBIN_PATH)/insertdata
+                $(MODPERL_HANDLER) $(BIN_PATH)/notify $(SBIN_PATH)/insertdata
 
 
+upgrade: install-files replace-paths

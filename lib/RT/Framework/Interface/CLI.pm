@@ -17,7 +17,7 @@ BEGIN {
     
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK   = qw(&CleanEnv &LoadConfig &DBConnect 
+    @EXPORT_OK   = qw(&CleanEnv &DBConnect 
 		      &GetCurrentUser &GetMessageContent &debug);
 }
 =head1 NAME
@@ -66,23 +66,6 @@ sub CleanEnv {
     $ENV{'ENV'} = '' if defined $ENV{'ENV'};
     $ENV{'IFS'} = ''		if defined $ENV{'IFS'};
 }
-
-
-
-=head2 LoadConfig
-
-Loads RT's config file and then drops setgid privileges.
-
-=cut
-
-sub LoadConfig {
-    
-    #This drags in  RT's config.pm
-    use RT::FM::Config;
-    
-}	
-
-
 
 =head2 DBConnect
 

@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w
+#
+# $Header$
+# RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
+
+use strict;
+use Carp;
+use Getopt::Long qw(:config pass_through);
+
+
+my $VERSION="!!RT_VERSION!!";
+my $CONFIGFILE = '!!CONFIG_FILE_PATH!!';
+
+use lib "!!LIB_PATH!!";
+
+#This drags in  RT's config.pm
+use RT::FM;
+RT::FM::Init($CONFIGFILE);
+
+use RT::Date;
+use RT::FM::ArticleCollection;
+
+my $CurrentUser = RT::FM::SystemUser();
+
+my $dayago = new RT::Date($CurrentUser);
+$dayago->SetToNow();
+$dayago->AddDays(-5);
+
+my $EditedToday = new RT::FM::ArticleCollection($CurrentUser);
+$EditedToday->Limit( FIELD => 'Updated',
+		     VALUE => $dayago->ISO,
+		     OPERATOR => '>=' );
+
+if ($EditedToday->Count) {
+
+open (SENDMAIL, "|/usr/sbin/sendmail -oi -t");
+
+print SENDMAIL <<HEADER;
+From: rt-doc-workers-admin\@lists.fsck.com
+To: jesse\@fsck.com
+Subject: RT/FM updates for the 24 hours leading up to @{[scalar localtime]}
+
+HEADER
+
+
+while (my $article = $EditedToday->Next) {
+
+print SENDMAIL <<EOLINE;
+
+@{[$article->Id]}: @{[$article->Summary]}
+ Updated by @{[$article->UpdatedByObj->Name]}
+ http://fsck.com/rtfm/factoid.html?id=@{[$article->Id()]}  
+
+EOLINE
+
+
+}
+
+
+} else {
+
+print "Nothing\n";
+
+}
+

@@ -1,5 +1,10 @@
+# $Version$
+# Copyright 2001 Jesse Vincent <jesse@bestpractical.com>
+
 package RT::FM;
 use strict;
+use RT::FM::CurrentUser;
+
 
 use vars qw($VERSION $SystemUser $Nobody $Handle $Logger);
 
