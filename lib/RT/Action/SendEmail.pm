@@ -30,7 +30,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
-use MIME::Words qw(encode_mimeword);
+use MIME::Words qw(encode_mimewords);
 
 =head1 NAME
 
@@ -589,7 +589,7 @@ sub SetHeaderAsEncoding {
     # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
     Encode::_utf8_off($value);
     my $res = Encode::from_to( $value, "utf-8", $enc );
-    $value = encode_mimeword( $value, 'b', $enc );
+    $value = encode_mimewords( $value, 'b', $enc );
     $self->TemplateObj->MIMEObj->head->replace( $field, $value );
 }
 
