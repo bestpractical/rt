@@ -84,7 +84,7 @@ unless ($OnlySearchForPeople) {
 
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
+    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef=>\%ARGS, Actions=>\@results);
 
 }
 push @results, @wresults;
