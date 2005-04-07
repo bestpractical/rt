@@ -47,10 +47,19 @@ if ($class) {
 % if ($display) {
 <br/>
 <& /Elements/TitleBoxStart, title => loc('Articles') &>
-% my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
-% $Articles->Limit(FIELD => 'Topic',      VALUE => $id);
-% $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
-% if ($Articles->Count) {
+<%perl>
+my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
+$Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+if ($id) {
+    $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
+    my $kids = $currtopic->Children;
+    while (my $k = $kids->Next) {
+        $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
+	                 ENTRYAGGREGATOR => 'OR');
+    }
+}
+if ($Articles->Count) {
+</%perl>
 <ul>
 % while (my $obj = $Articles->Next) {
 %   my $a = RT::FM::Article->new($session{'CurrentUser'});
@@ -115,7 +124,7 @@ sub ProduceTree {
 	    # List the topics.
 	    while (my $t = pop @showtopics) {
 		print "<ul>";
-		print &MakeLinks($t, $c, $t->HasKids);
+		print &MakeLinks($t, $c, $t->Children->Count);
 		if ($t->Id == $restrictid) {
 		    &ProduceTree($Actions, $c, $restrictid, undef);
 		}
@@ -129,7 +138,7 @@ sub ProduceTree {
 	$topics->LimitToKids($parentid);
 	while (my $t = $topics->Next) {
 	    print "<ul>";
-	    if ($t->HasKids) {
+	    if ($t->Children->Count) {
 		print &MakeLinks($t, $c, 1);
 		&ProduceTree($Actions, $c, $t->Id);
 	    } else {

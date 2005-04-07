@@ -129,20 +129,22 @@ sub ParentObj {
 
 # }}}
 
-# {{{ HasKids
+# {{{ Children
 
-=head2 HasKids
+=head2 Children
 
-Returns a true value if this topic has child topics.
+Returns a TopicCollection object containing this topic's children.
 
 =cut
 
-sub HasKids {
+sub Children {
     my $self = shift;
-    my $kids = RT::FM::TopicCollection->new($self->CurrentUser);
-    $kids->Limit('FIELD' => 'Parent',
-		 'VALUE' => $self->Id);
-    return $kids->Count;
+    unless ($self->{'Children'}) {
+	$self->{'Children'} = RT::FM::TopicCollection->new($self->CurrentUser);
+	$self->{'Children'}->Limit('FIELD' => 'Parent',
+				   'VALUE' => $self->Id);
+    }
+    return $self->{'Children'};
 }
 
 # {{{ _Set
