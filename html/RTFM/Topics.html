@@ -18,38 +18,34 @@
 
 <& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Topic hierarchy'), class => $class, topic => $id &>
 
+<& /Elements/ListActions, actions => \@Actions &>
 <a href="Topics.html">Root</a>
 % if (defined $class) {
-% my $c = RT::FM::Class->new($session{'CurrentUser'});
-% $c->Load($class);
-&gt; <a href="Topics.html?class=<% $c->Id %>"><% $c->Name %></a>
+&gt; <a href="Topics.html?class=<%$currclass->Id%>"><% $currclass->Name %></a>
+% }
 
 % if ($id != 0) {
-% my $t = RT::FM::Topic->new($session{'CurrentUser'});
-% $t->Load($id);
-&gt; <& /RTFM/Elements/ShowTopic, topic => $t &>
+&gt; <& /RTFM/Elements/ShowTopic, topic => $currtopic &>
 % }
 <br />
-
 <& /Elements/TitleBoxStart, title => loc('Topics') &>
-% my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
-% $Topics->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
-% $Topics->Limit(FIELD => 'ObjectId',   VALUE => $class);
-% $Topics->Limit(FIELD => 'Parent',     VALUE => $id);
-% if ($Topics->Count) {
 <ul>
-% while (my $t = $Topics->Next) {
-<li><a href="Topics.html?class=<% $class %>&id=<% $t->Id %>"><% $t->Name %></a></li>
-% }
+<%perl>
+if ($class) {
+    print MakeLinks(undef, $currclass);
+    ProduceTree(\@Actions, $currclass, 0, $id);
+} else {
+    while (my $c = $Classes->Next) {
+	print MakeLinks(undef, $c);
+	ProduceTree(\@Actions, $c, 0, $id);
+    }
+}
+</%perl>
 </ul>
-% } else {
-<i>No sub-topics</i>
-% }
 <& /Elements/TitleBoxEnd &>
 
-<br />
-
-% if ($id != 0) {
+% if ($display) {
+<br/>
 <& /Elements/TitleBoxStart, title => loc('Articles') &>
 % my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
 % $Articles->Limit(FIELD => 'Topic',      VALUE => $id);
@@ -68,21 +64,120 @@
 <& /Elements/TitleBoxEnd &>
 % }
 
-% } else {
-<br />
-<& /Elements/TitleBoxStart, title => loc('Classes') &>
-<ul>
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
-% $Classes->UnLimit;
-% while (my $c = $Classes->Next) {
-<li><a href="Topics.html?class=<%$c->Id%>"><% $c->Name %></li>
-% }
-</ul>
-<& /Elements/TitleBoxEnd &>
 
-% }
+<%init>
+my @Actions;
+my $Classes;
+my $currclass;
+my $currtopic;
+
+if ($class) {
+    $currclass = RT::FM::Class->new($session{'CurrentUser'});
+    $currclass->Load($class);
+} else {
+    $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+    $Classes->UnLimit;
+}
+
+if ($id) {
+    $currtopic = RT::FM::Topic->new($session{'CurrentUser'});
+    $currtopic->Load($id);
+}
+
+# A subroutine that iterates through topics and their children, producing
+# the necessary ul, li, and href links for the table of contents.  Thank
+# heaven for query caching.  The $restrict variable is used to display only
+# the branch of the hierarchy which contains that topic ID.
+
+sub ProduceTree {
+    my ($Actions, $c, $parentid, $restrictid) = @_;
+    $parentid = 0 unless $parentid;
+
+    # Deal with tree restriction, if any.
+    if ($restrictid) {
+        my $rtopic = RT::FM::Topic->new($session{'CurrentUser'});
+	$rtopic->Load($restrictid);
+	unless ($rtopic->Id() &&
+	        $rtopic->ObjectId() == $c->Id) {
+	    push(@{$Actions}, "Could not restrict view to topic $restrictid");
+	    # Start over, without the restriction.
+	    &ProduceTree($Actions, $c, $parentid, undef);
+	} else {
+	    my @showtopics;
+	    push(@showtopics, $rtopic);
+	    my $parent = $rtopic->ParentObj;
+	    while ($parent->Id) {
+		push(@showtopics, $parent);
+		my $newparent = $parent->ParentObj;
+		$parent = $newparent;
+	    }
+	    
+	    # List the topics.
+	    while (my $t = pop @showtopics) {
+		print "<ul>";
+		print &MakeLinks($t, $c, $t->HasKids);
+		if ($t->Id == $restrictid) {
+		    &ProduceTree($Actions, $c, $restrictid, undef);
+		}
+	    }
+	    print "</ul>" x scalar(@showtopics);
+	}
+    } else {
+	# No restriction in place.  Build the entire tree.
+	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+	$topics->LimitToObject($c);
+	$topics->LimitToKids($parentid);
+	while (my $t = $topics->Next) {
+	    print "<ul>";
+	    if ($t->HasKids) {
+		print &MakeLinks($t, $c, 1);
+		&ProduceTree($Actions, $c, $t->Id);
+	    } else {
+		print &MakeLinks($t, $c, 0);
+	    }
+	    print "</ul>\n";
+	}
+    }
+}
+
+sub MakeLinks {
+    my ($topic, $c, $haschild) = @_;
+    my $query;
+    my $output;
+
+    if (ref($topic) eq 'RT::FM::Topic') {
+	if ($haschild) {
+	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id;
+	} else {
+	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id .
+		"&display=1";
+	}
+	
+	$output = "<li><a href=\"$query\">" . $topic->Name();
+	$output .= ": " . $topic->Description() if $topic->Description();
+	$output .= "</a>";
+	
+	if ($haschild) {
+	    $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&display=1\">Show all articles</a> ]";
+	}
+	
+	$output .= "</li>\n";
+	
+    } else {
+	# This builds a link for the class specified, with no particular
+	# topic.
+	$query = "Topics.html?class=" . $c->Id;
+	$output = "<li><a href=\"$query\">" . $c->Name . "</a>";
+	$output .= ": " . $c->Description if $c->Description;
+    }
+    
+    return $output;
+}
+
+</%init>
 
 <%args>
 $id => 0
 $class => undef
+$display => undef
 </%args>

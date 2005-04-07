@@ -129,6 +129,21 @@ sub ParentObj {
 
 # }}}
 
+# {{{ HasKids
+
+=head2 HasKids
+
+Returns a true value if this topic has child topics.
+
+=cut
+
+sub HasKids {
+    my $self = shift;
+    my $kids = RT::FM::TopicCollection->new($self->CurrentUser);
+    $kids->Limit('FIELD' => 'Parent',
+		 'VALUE' => $self->Id);
+    return $kids->Count;
+}
 
 # {{{ _Set
 
