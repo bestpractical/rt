@@ -44,7 +44,9 @@ if ($class) {
 </ul>
 <& /Elements/TitleBoxEnd &>
 
-% if ($display) {
+% if ($id || $showall) {
+%# TODO: Eventually it would be nice to show all for classes too.  Thus
+%# the condition above.
 <br/>
 <& /Elements/TitleBoxStart, title => loc('Articles') &>
 <%perl>
@@ -52,10 +54,12 @@ my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
 $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
 if ($id) {
     $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
-    my $kids = $currtopic->Children;
-    while (my $k = $kids->Next) {
-        $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
-	                 ENTRYAGGREGATOR => 'OR');
+    if ($showall) {
+        my $kids = $currtopic->Children;
+	while (my $k = $kids->Next) {
+	    $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
+	                     ENTRYAGGREGATOR => 'OR');
+	}
     }
 }
 if ($Articles->Count) {
@@ -159,7 +163,7 @@ sub MakeLinks {
 	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id;
 	} else {
 	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id .
-		"&display=1";
+		"&showall=1";
 	}
 	
 	$output = "<li><a href=\"$query\">" . $topic->Name();
@@ -167,7 +171,7 @@ sub MakeLinks {
 	$output .= "</a>";
 	
 	if ($haschild) {
-	    $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&display=1\">Show all articles</a> ]";
+	    $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&showall=1\">Show all articles</a> ]";
 	}
 	
 	$output .= "</li>\n";
@@ -188,5 +192,5 @@ sub MakeLinks {
 <%args>
 $id => 0
 $class => undef
-$display => undef
+$showall => undef
 </%args>
