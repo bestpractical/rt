@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc('Add Criteria')&>
+<& /Widgets/TitleBoxStart, title => loc('Add Criteria')&>
 <table width=100% cellspacing=0 cellpadding=0 border=0>
   <tr>
     <td>
@@ -71,7 +71,7 @@
   <tr><td>&nbsp;</td></tr>
 </table>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <%ARGS>
 $addquery => 0

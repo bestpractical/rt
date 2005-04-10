@@ -60,22 +60,22 @@ while (my $link = $approving->Next()) {
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
 
     if ($type eq 'approval') {
-	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
     } elsif ($type eq 'ticket') {
-	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
     } else {
-	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
 	$text .= $head;
     }
 
     $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->BaseObj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
 
-    $head .= $m->scomp('/Elements/TitleBoxEnd');
-    $text .= $m->scomp('/Elements/TitleBoxEnd');
+    $head .= $m->scomp('/Widgets/TitleBoxEnd');
+    $text .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $dep;
     $text .= '</a>';
     $show{$link->BaseObj->Id} = {

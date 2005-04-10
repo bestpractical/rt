@@ -56,31 +56,38 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
-<DIV class="dialog">
+<div class="dialog">
 % if ($Error) {
-<& /Elements/TitleBoxStart, title => loc('Error') &>
+<& /Widgets/TitleBoxStart, title => loc('Error') &>
 <% $Error %>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 % }
-<BR>
-<& /Elements/TitleBoxStart, width=> "40%", titleright => loc("RT [_1]", $RT::VERSION), title => loc('Login') ,
+
+<div id="loginform">
+<& /Widgets/TitleBoxStart,titleright => loc("RT [_1]", $RT::VERSION), title => loc('Login') ,
 contentbg=>"#cccccc" &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<FORM id="login" name="login" METHOD=POST ACTION="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>" >
-<TABLE BORDER=0 WIDTH=100%>
-<TR ALIGN=RIGHT>
-<TD ALIGN=RIGHT><&|/l&>Username</&>:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Password</&>:</TD><TD ALIGN=LEFT><input type=password name=pass></TD></TR>
-<TR><TD colspan=2 align=right>
-<input type=submit Value="<&|/l&>Login</&>">
-</TD></TR>
-</TABLE>
+<form id="login" name="login" method="post" action="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>">
+
+<div class="input-row">
+    <span class="label"><&|/l&>Username</&>:</span>
+    <span class="input"><input name="user" value="<%$user%>" /></span>
+</div>
+
+<div class="input-row">
+    <span class="label"><&|/l&>Password</&>:</span>
+    <span class="input"><input type="password" name="pass" /></span>
+</div>
+
+<div class="button-row">
+    <span class="input"><input type="submit" Value="<&|/l&>Login</&>"></span>
+</div>
 
 %# Give callbacks a chance to add more control elements
 <& /Elements/Callback, %ARGS &>
 
-<&/Elements/TitleBoxEnd&>
+<&/Widgets/TitleBoxEnd&>
 % # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
 % # But on Mason 1.15 it's fixed again, so we still use it.
 % # The code below iterates through everything in the passed in arguments
@@ -100,9 +107,10 @@ contentbg=>"#cccccc" &>
 % 	}
 %  }
 % }
-</FORM>
+</form>
 % }
-</DIV>
+</div><!-- #loginform -->
+</div><!-- .dialog -->
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""

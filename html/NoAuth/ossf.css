@@ -47,10 +47,9 @@
 @import "common.css";
 
 div.frontmatter {
-    padding-left: 13%;
-    width: 87%;
-    margin-top: 51px;    
-    white-space: nowrap;
+	margin-left: 170px;
+	margin-top: 51px;    
+padding:0px;
 }
 
 div.logo {
@@ -60,7 +59,6 @@ position: absolute;
 	  border-bottom: solid #999999 1px;
 	  z-index: 2;
 }
-body>div.logo {position: fixed;}
 
 
 div.login-information {
@@ -94,7 +92,7 @@ background: #ffffff;
 	font-size: 9px;
 }
 
-SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+span.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 color: #FFFFFF;
 	 text-decoration: none;
@@ -437,19 +435,18 @@ body>div.rtname {position: fixed;}
 UL.topnav LI :focus { text-decoration: underline; }
 
 div.dialog {
-                position: absolute;
-                width: 20%;
-                            left: 40%;
-                                        top: 20%;
-
+             margin-left: auto;
+             margin-right: auto;
+             min-width: 200px;
+             width: 30%;
+             margin-top: 10%;
 }
 
 div.mainbody {
-position: absolute;
-left: 13%;
+padding-left: 170px;
+padding-right: 10px;
 top: 80px;
 margin: 0px;
-padding: 1em;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
@@ -464,31 +461,47 @@ th.ticketheader { font-size: 80%;
      background: #cccccc; 
 }
 
-table.box td {
-       border-collapse: collapse; 
-       border: 0;
-       margin: 0;
-     padding: 0px; 
+/* TitleBox */
+
+div.titlebox {
+	border: 1px solid #cccccc;
 }
 
-div.titlebox div.titlebox-title{
-	background: #336699;	
+div.titlebox div.titlebox-title {
+	background: #666699;
+	padding-left: 0.5em;
+	padding-bottom: 3px;
+	padding-top: 3px;
+	font-size: 14pt;
+	font-family: Arial ,sans serif;
 }
+
+/* END */
+
+table.box td {
+border: 0;
+margin: 0;
+padding: 0px; 
+	border-collapse: collapse; 
+}
+
+table.box th {
+	background: #666699;
+}
+
 
 table.titlebar {
-    width: 100%;
-     color: #ffffff;
-     background: #003399;
-
-
+color: #ffffff;
+background: #afc7af;
 }
 th.titlebox {
-        text-align: left;
-	     vertical-align: middle;
+	text-align: left;
+	vertical-align: middle;
 }    
+
 th.titleboxright {
-	     vertical-align: middle;
-        text-align: right;
+	vertical-align: middle;
+	text-align: right;
 }    
 
 TD.titlebox {
@@ -498,15 +511,26 @@ TD.titlebox {
         padding-bottom: 1em; 
 }
 
-SPAN.message {
+
+
+span.message {
 	font-size: 100%;
         font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 
-BODY {
-  color: #000;
-  background: #FFFFFF;
+body {
+color: #000;
+background: #FFFFFF;
+padding: 0px;
+margin: 0px;
+}
+
+div#all
+{
+	min-width: 750px;
+	margin: 0px;
+	padding: 0px;
 }
 
 
@@ -554,56 +578,53 @@ a:hover {  text-decoration: underline}
   color: white;
 }
 
-SPAN.date { font-size: 0.8em }
+span.date { font-size: 0.8em }
 
 div.title {
-color: #ffffff;
-background: #336699; 
-position: fixed;
-left: 14%;
-right:0px;
-margin: 0px;
-padding: 5px;
-	 font-size: 1em;
+color: #333333;
+padding-left: 5px;
+	 font-size: 16pt;
 	 font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-weight: bold;
 	 z-index: 999;
 }
-body>div.title {position: fixed;}
 
 span.productname { font-size: 2em;
              color: #0066cc;}
 
 
 
-SPAN.titleboxtitle, SPAN.titleboxclose {
+span.titleboxtitle, SPAN.titleboxclose {
         font-size: 80%;
         color: #ffffff;
 	 vertical-align: middle;
 	 text-align: left;
         }
 
+span.titleboxclose a:hover {
+	color: red;
+}
 
 
-SPAN.titleboxtitle a {
+span.titleboxtitle a {
         color: #ffffff;
 }
-SPAN.titleboxtitle a:after {
+span.titleboxtitle a:after {
 	content: "...";
 }
 
-SPAN.titleboxright {
+span.titleboxright {
         font-size: 0.8em;
         color: #ffffff;
 	 vertical-align: middle;
 	 text-align: right;
         }
 
-SPAN.attribution {
+span.attribution {
   font-weight: bold;
 }
 
-SPAN.label { font-size: 0.8em; 
+span.label { font-size: 0.8em; 
 }
 
 DIV.page-stats { font-size: 0.8em;
@@ -616,24 +637,41 @@ BLOCKQUOTE {
   font-style: italic;
 }
 div.menu {
-        float: top;
-        top: 51px;
-        bottom: 0em;
-        left: 0em;
-          margin: 0;
-    font-size: 70%;
-    float: left;
-      position: absolute; 
-     background: #336699;
-	 text-align: left;
-     padding-right: 1%;
-     width: 13%;
-     height: 100%;
-     z-index: 99;
+top: 51px;
+left: 0;
+position: absolute; 
+background: white;
+width: 160px;
+	font-size: 70%;
+	text-align: left;
+	padding-right: 1%;
+	z-index: 99;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 1em;
 }
-/* IE hack */
 
-body>div.menu {position: fixed;}
+ul.topnav li
+{
+  background: #afc7af;
+  border: 1px solid #669966;
+  margin-top: 3px;
+  margin-bottom: 7px;
+  padding-left: 7px;
+}
+
+ul.topnav li a
+{
+  font-family: Verdana, Sans Serif;
+  font-size: 12pt;
+  width: 100%;
+}
+
+ul.topnav li a[name=focus]
+{
+  color: black;
+}
+
 
 table.ticket-overview {
 width: 100px;
@@ -674,7 +712,6 @@ div.topactions {
     width:  86%;
     z-index: 4;
 }
-body>div.topactions {position: fixed;}
 
 span.topaction {
     text-align: right;
@@ -712,12 +749,17 @@ textarea.messagebox {
 /* Home */
 
 div.quick-create, div.my-requests, div.my-tickets {
-	width: 60%;
 	margin-bottom: 1em;
 }
 
+div.content {
+	margin-right: 220px;
+	width: auto;
+}
+
 div.widget {
-	width: 35%;
+	width: 200px;
+	overflow: hidden;
 	float: right;
 }
 div.ticket-overview {

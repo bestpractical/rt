@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+<& /Widgets/TitleBoxStart, title => loc('Saved searches') &>
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
@@ -74,7 +74,7 @@
 <&|/l&>Load saved search:</&><br>
 <& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
 <input value="<%loc('Load')%>" type="submit">
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <%init>
 

@@ -50,19 +50,19 @@
   <TABLE WIDTH="100%" class="ticketsummary" >
       <TR>
         <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
-          <& /Elements/TitleBoxStart, title => loc('The Basics'), 
+          <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
                 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
-          <& /Elements/TitleBoxEnd &>
+          <& /Widgets/TitleBoxEnd &>
 </TD>
         <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
-          <& /Elements/TitleBoxStart, title => loc("Dates"),
+          <& /Widgets/TitleBoxStart, title => loc("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
-          <& /Elements/TitleBoxEnd &>
+          <& /Widgets/TitleBoxEnd &>
 </TD>
 </TR>
 </TABLE>

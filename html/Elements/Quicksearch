@@ -44,11 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-overview">
-<& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "", class=> 'ticket-overview' &>
+<& /Widgets/TitleBoxStart, title => loc("Quick search"), bodyclass => "", class=> 'ticket-overview' &>
 
 <TABLE>
 <tr>                                                                          
-       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>                                         
+       <th class="collection-as-table" align=left><&|/l&>Queue</&></th> 
        <th class="collection-as-table" align=right><&|/l&>New</&></th>
        <th class="collection-as-table" align=right><&|/l&>Open</&></th>          
 </tr>
@@ -79,7 +79,7 @@ while (my $queue = $Queues->Next) {
 </TR>
 % }
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </div>
 <%INIT>
 my $Queues = RT::Queues->new($session{'CurrentUser'}); 

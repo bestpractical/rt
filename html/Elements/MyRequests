@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/Elements/TitleBox, 
+<&|/Widgets/TitleBox, 
         title => loc("[_1] newest unowned tickets", $rows),
         class => 'my-requests',
 	title_href => "Search/Results.html".$QueryString &>

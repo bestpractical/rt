@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/Elements/TitleBox, 
+<&|/Widgets/TitleBox, 
     class => 'my-tickets',
 	title => loc('[_1] highest priority tickets I own', $rows),
 	title_href => "Search/Results.html".$QueryString &>

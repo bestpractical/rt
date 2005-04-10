@@ -52,7 +52,8 @@
 % }
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
+<link rel="stylesheet" title="RT Classic" href="<%$RT::WebPath%>/NoAuth/ossf.css" type="text/css">
+<link rel="stylesheet" title="OSSF" href="<%$RT::WebPath%>/NoAuth/ossf.css" type="text/css">
 <script>
 function hideshow(num) {
     idstring = "element-" + num;
@@ -67,7 +68,7 @@ function hideshow(num) {
 </script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
 </HEAD>
-<BODY BGCOLOR="<%$BgColor%>"
+<body
 % if ($Focus) {
 ONLOAD="
     var tmp = (document.getElementsByName('<% $Focus %>'));
@@ -75,6 +76,7 @@ ONLOAD="
 "
 % }
 >
+<div id="all">
 <div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a></div>
 <div class="login-information">
 <SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A></SPAN>

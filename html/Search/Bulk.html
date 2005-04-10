@@ -96,7 +96,7 @@ while (my $Ticket = $Tickets->Next) {
 <HR>
 
 
-<& /Elements/TitleBoxStart, title => loc('Update selected tickets') &>
+<& /Widgets/TitleBoxStart, title => loc('Update selected tickets') &>
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
@@ -142,8 +142,8 @@ while (my $Ticket = $Tickets->Next) {
 </TD>
 </TR>
 </table>
-<& /Elements/TitleBoxEnd&>
-<& /Elements/TitleBoxStart, title => loc('Add comments or replies to selected tickets') &>
+<& /Widgets/TitleBoxEnd&>
+<& /Widgets/TitleBoxStart, title => loc('Add comments or replies to selected tickets') &>
 <table>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -167,13 +167,13 @@ while (my $Ticket = $Tickets->Next) {
  </td></tr>
  </table>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 
-<& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
+<& /Widgets/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></i><br>
 <& /Ticket/Elements/BulkLinks &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <& /Elements/Submit, Label => loc('Update All') &>
 

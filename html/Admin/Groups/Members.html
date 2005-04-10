@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<& /Elements/TitleBoxStart, title => loc('Editing membership for group [_1]', $Group->Name) &>
+<& /Widgets/TitleBoxStart, title => loc('Editing membership for group [_1]', $Group->Name) &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Members.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
@@ -98,7 +98,7 @@
 </TD>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
 </form>
 

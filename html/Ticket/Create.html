@@ -54,7 +54,7 @@
 	
 [<a class="currenttab"><&|/l&>Show basics</&></a>] [<A HREF="#detail"><&|/l&>Show details</&></a>]
 <BR>
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
+<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
 <TABLE border=0 cellpadding=0 cellspacing=0>
 <TR><TD class=label><&|/l&>Queue</&>:</TD>
 <TD class=value><% $QueueObj->Name %>
@@ -161,7 +161,7 @@
 </TD>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <& /Elements/Submit, Label => loc("Create")&>
 
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
@@ -177,7 +177,7 @@
 <TR>
 <TD WIDTH="50%" VALIGN=TOP>
 
-	  <& /Elements/TitleBoxStart, title => loc('The Basics'), 
+	  <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <TABLE BORDER=0>
@@ -186,9 +186,9 @@
 <TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></TD></TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <br>
-<& /Elements/TitleBoxStart, title => loc("Dates"),
+<& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
@@ -197,12 +197,12 @@
 <TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due" value="<%
 $ARGS{Due}%>"></TD></TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <BR>
 </TD>
 
 <TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Links'), 
+<& /Widgets/TitleBoxStart, title => loc('Links'), 
 	title_class=> 'inverse',  
 	titleright => '', color=> "#336633" &>
 
@@ -217,7 +217,7 @@ $ARGS{Due}%>"></TD></TR>
 
 
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <BR>
 
 </TD>

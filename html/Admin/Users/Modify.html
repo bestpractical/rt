@@ -62,7 +62,7 @@
 <TR>
 
 <TD VALIGN=TOP class="boxcontainer">
-<& /Elements/TitleBoxStart, title => loc('Identity') &>
+<& /Widgets/TitleBoxStart, title => loc('Identity') &>
 
 <TABLE>
 <TR><TD ALIGN="RIGHT">
@@ -101,9 +101,9 @@
 <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
 </TD></TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <br>
-<& /Elements/TitleBoxStart, title => loc('Access control') &>
+<& /Widgets/TitleBoxStart, title => loc('Access control') &>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>>
 <&|/l&>Let this user access RT</&><BR>
@@ -131,11 +131,11 @@
 </TR>
 </TABLE>
 % }
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </TD>
 
 <TD VALIGN=TOP class="boxcontainer">
-<& /Elements/TitleBoxStart, title => loc('Location') &>
+<& /Widgets/TitleBoxStart, title => loc('Location') &>
 <TABLE>
 <TR><TD ALIGN="RIGHT">
 <&|/l&>Organization</&>: 
@@ -175,9 +175,9 @@
 <input name="Country" value="<%$UserObj->Country%>">
 </TD></TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <br>
-<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
+<& /Widgets/TitleBoxStart, title => loc('Phone numbers') &>
 <TABLE>
 <TR><TD ALIGN="RIGHT">
 <&|/l&>Residence</&>: 
@@ -198,14 +198,14 @@
 <&|/l&>Pager</&>: 
 </TD><TD>
 <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13><br>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </TD>
 
 <TR>
 </TR>
 </TABLE>
 <BR>
-<& /Elements/TitleBoxStart, title => loc('Custom Fields') &>
+<& /Widgets/TitleBoxStart, title => loc('Custom Fields') &>
 <TABLE>
 % my $CFs = $UserObj->CustomFields;
 % while (my $CF = $CFs->Next) {
@@ -218,17 +218,17 @@
 <TR>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <TR>
 <TD colspan="2">
-<& /Elements/TitleBoxStart, title => loc('Comments about this user') &>
+<& /Widgets/TitleBoxStart, title => loc('Comments about this user') &>
 <TEXTAREA class="comments" name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 %if ($UserObj->Privileged) {
 <BR>
-<& /Elements/TitleBoxStart, title => loc('Signature') &>
+<& /Widgets/TitleBoxStart, title => loc('Signature') &>
 <TEXTAREA class="signature" COLS=80 ROWS=5 name="Signature" WRAP=HARD><%$UserObj->Signature%></TEXTAREA>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 % }
 
 </TD>

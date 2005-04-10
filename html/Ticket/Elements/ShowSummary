@@ -46,46 +46,46 @@
       <TABLE WIDTH="100%" class="ticketsummary" >
       <TR>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
-	  <& /Elements/TitleBoxStart, title => loc('The Basics'), 
+	  <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
+	  <& /Widgets/TitleBoxEnd &>
           <br>
 % if ($Ticket->QueueObj->TicketCustomFields->First) {
-	  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), 
+	  <& /Widgets/TitleBoxStart, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
+	  <& /Widgets/TitleBoxEnd &>
 
 <br>
 % }
-	  <& /Elements/TitleBoxStart, title => loc('People'), 
+	  <& /Widgets/TitleBoxStart, title => loc('People'), 
 		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#333399" &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
+	  <& /Widgets/TitleBoxEnd &>
 	<BR>
 	</TD>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
 
-	  <& /Elements/TitleBoxStart, title => loc("Dates"),
+	  <& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
+	  <& /Widgets/TitleBoxEnd &>
 	<BR>  
-	  <& /Elements/TitleBoxStart, title => loc('Links'), 
+	  <& /Widgets/TitleBoxStart, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
-	<& /Elements/TitleBoxEnd &>
+	<& /Widgets/TitleBoxEnd &>
         <BR>
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 

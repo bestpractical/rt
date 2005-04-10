@@ -52,10 +52,10 @@
 
 <& /Elements/ListActions, actions => \@Actions &>
 
-<& /Elements/TitleBoxStart, title => loc('Ticket metadata'), contentbg =>
+<& /Widgets/TitleBoxStart, title => loc('Ticket metadata'), contentbg =>
 '#ffffff' &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 <& /Ticket/Elements/ShowHistory , 

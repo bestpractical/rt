@@ -55,33 +55,33 @@
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 
 
-<& /Elements/TitleBoxStart, title => loc('Modify ticket # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
+<& /Widgets/TitleBoxStart, title => loc('Modify ticket # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 
-<& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
+<& /Widgets/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
 <& Elements/EditDates, TicketObj => $Ticket &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 
 
-<& /Elements/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
+<& /Widgets/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 
-<& /Elements/TitleBoxStart, title => loc('Links'), color => "#336633"&>
+<& /Widgets/TitleBoxStart, title => loc('Links'), color => "#336633"&>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 
-<& /Elements/TitleBoxStart, title => loc('Update ticket') &>
+<& /Widgets/TitleBoxStart, title => loc('Update ticket') &>
 <table>
   <tr>
     <td class="label"><&|/l&>Update Type</&>:</td>
@@ -120,7 +120,7 @@
     <td class="entry"><& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &></td>
   </tr>
 </table>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
   
 
 <& /Elements/Submit, 

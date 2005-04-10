@@ -57,7 +57,7 @@
 % }
 </table>
 
-<& /Elements/TitleBoxStart, title => loc("Search for approvals") &>
+<& /Widgets/TitleBoxStart, title => loc("Search for approvals") &>
 <input type=checkbox value="1" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})
@@ -69,7 +69,7 @@
 <&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
 
 <&|/l, "<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>"&>Only show approvals for requests created after [_1]</&>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <%init>
 my $tickets = RT::Tickets->new( $session{'CurrentUser'} );

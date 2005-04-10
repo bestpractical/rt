@@ -43,30 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE CLASS="box" 
-%# <%$class|n%>" 
-        BGCOLOR="<%$color%>" 
-        <% $width && "WIDTH=\"$width\""%>
->
-
-  <TR>
-    <TH 
-        <%$color && "style=\"color: $color;\""|n%>
-        <%$class ? "class=\"$class\"" : "class=\"titlebox\""|n%>>
-      <span class="titleboxclose">
-        <a href="#" onClick="hideshow('<%$id%>')">X</A></span>&nbsp;
+<div class="titlebox">
+  <div class="titlebox-title">
+      <span class="titleboxclose"><a href="#" onClick="hideshow('<%$id%>')">X</a></span>
       <span class="titleboxtitle">
-        <b><% $title_href && "<A $title_class HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
+        <strong><% $title_href && "<a $title_class href=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></strong>
       </span>
-    </TH>
-    <TH  
-         <%$color && "style=\"color: $color;\""|n%>
-         <%$class ? "class=\"$class\"": "class=\"titleboxright\""|n%>>
-      <span class="titleboxright"><%$titleright ? $titleright : '&nbsp;' |n %></span>
-    </TH>
-  </TR>
-  <tr id="element-<%$id%>">
-    <td bgcolor="<%$contentbg%>" colspan="3" class="<%defined($bodyclass) ? $bodyclass :  $class|n%>">
+   </div>
+   <div id="element-<%$id%>">
+
 <%ARGS>
 $width => undef
 $class =>  undef

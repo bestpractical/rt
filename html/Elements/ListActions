@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($actions[0] ) {
-<& /Elements/TitleBoxStart, title => loc('Results') &>
+<& /Widgets/TitleBoxStart, title => loc('Results') &>
 <UL>
 % foreach my $action (@actions) {
 % next unless ($action);
@@ -54,7 +54,7 @@
 <LI><%$action%></LI>
 % }
 </UL>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <BR>
 % }
 <%init>
