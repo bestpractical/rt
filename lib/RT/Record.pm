@@ -142,9 +142,11 @@ is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
 
 sub ObjectTypeStr {
     my $self = shift;
-    my $type = ref($self);
-    $type =~ s/^.*::(\w+)$/$1/;
-    return $type;
+    if (ref($self) =~ /^.*::(\w+)$/) {
+	return $self->loc($1);
+    } else {
+	return $self->loc(ref($self));
+    }
 }
 
 =head2 Attributes

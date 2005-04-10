@@ -1265,6 +1265,26 @@ sub HasGroupRight {
 
 # }}}
 
+# {{{ sub OwnGroups 
+
+=head2 OwnGroups
+
+Returns a group collection object containing the groups of which this
+user is a member.
+
+=cut
+
+sub OwnGroups {
+    my $self = shift;
+    my $groups = RT::Groups->new($self->CurrentUser);
+    $groups->LimitToUserDefinedGroups;
+    $groups->WithMember(PrincipalId => $self->Id, 
+			Recursively => 1);
+    return $groups;
+}
+
+# }}}
+
 # {{{ sub Rights testing
 
 =head2 Rights testing
