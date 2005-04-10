@@ -19,6 +19,8 @@
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
 <& Elements/ShowSearchResults, articles => $articles &>
 
+<& Elements/ShowSavedSearches &>
+
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <%init>
 my @results;
@@ -41,8 +43,6 @@ if ( $ARGS{'Class'} ) {
 else {
     $customfields->LimitToGlobalOrObjectId();
 }
-$customfields->GroupByCols({FIELD => 'id'});
-
 
 my %dates;
 foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
