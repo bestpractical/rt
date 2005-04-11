@@ -49,7 +49,7 @@
 
 =head1 SYNOPSIS
 
-  use RT::Date
+  use RT::SavedSearch
 
 =head1 DESCRIPTION
 
@@ -75,17 +75,16 @@ sub new  {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = {};
+    $self->{'Id'} = 0;
     bless ($self, $class);
     $self->CurrentUser(@_);
-    $self->{'Id'} = 0;
     return $self;
 }
 
 =head2 Load
 
-Takes an object type, which must be either 'RT::User' or 'RT::Group',
-an object ID, and a search ID.  Loads the given search ID if it belongs
-to the stated user or group.
+Takes a privacy specification, an object ID, and a search ID.  Loads
+the given search ID if it belongs to the stated user or group.
 
 =begin testing
 
@@ -97,42 +96,84 @@ use_ok(RT::SavedSearch);
 
 sub Load {
     my $self = shift;
-    my ($obj_type, $obj_id, $id) = @_;
-    my $object = $self->_GetObject($obj_type, $obj_id);
+    my ($privacy, $id) = @_;
+    my $object = $self->_GetObject($privacy);
 
     if ($object) {
 	$self->{'Attribute'} = $object->Attributes->WithId($id);
-	$self->{'Id'} = $self->{'Attribute'}->Id();
+	$self->{'Id'} = $self->{'Attribute'}->Id;
+	$self->{'Privacy'} = $privacy;
+	$self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+	use Data::Dumper;
+	print Dumper($self);
+    } else {
+	$RT::Logger->error("Could not find object $privacy when loading search");
     }
 
 }
 
+=head2 Save
+
+Takes a privacy, an optional type, a name, and a hash containing the
+search parameters.  Saves the given parameters to the appropriate user/
+group object, and loads the resulting search.
+
+=cut
+
 sub Save {
     my $self = shift;
-    my ($obj_type, $obj_id, $description, %params) = @_;
-    my $object = $self->_GetObject($obj_type, $obj_id);
+    my ($privacy, $type, $name, %params) = @_;
 
-    # Save the info.
-    if ($object->Id == $obj_id) {
-	my ($att_id, $att_msg) = $object->AddAttribute(
-			            'Name' => 'SavedSearch',
-				    'Description' => $description,
-				    'Content' => \%params);
-	if ($att_id) {
-	    $self->{'Attribute'} = $object->Attributes->WithId($att_id);
-	    $self->{'Id'} = $att_id;
-	} else {
-	    $RT::Logger->warning("SavedSearch save failure: $att_msg");
+    unless($privacy || $name) {
+	# Save to the current object.
+	unless($self->{'Attribute'}) {
+	    $RT::Logger->error("Tried to save to a nonexistent search without specifying a privacy!");
+	    return;
+	}
+	my ($ret, $msg) = $self->_UpdateContent(%params);
+	unless($ret) {
+	    $RT::Logger->error("Could not update content of search " 
+				 . $self->Id . ": $msg");
+	}
+    } else {
+	$params{'SearchType'} = $type;
+	my $object = $self->_GetObject($privacy);
+	if ($object->Id) {
+	    my ($att_id, $att_msg) = $object->AddAttribute(
+					   'Name' => 'SavedSearch',
+					   'Description' => $name,
+					   'Content' => \%params);
+	    if ($att_id) {
+		$self->{'Attribute'} = $object->Attributes->WithId($att_id);
+		$self->{'Id'} = $att_id;
+		$self->{'Privacy'} = $privacy;
+		$self->{'Type'} = $type;
+	    } else {
+		$RT::Logger->error("SavedSearch save failure: $att_msg");
+	    }
+	}
     }
 }
 
 ### Accessor methods
 
-sub Description {
+=head2 Name
+
+Returns the name of the search.
+
+=cut
+
+sub Name {
     my $self = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
     return $self->{'Attribute'}->Description();
 }
+
+=head2 GetParameter
+
+Returns the given named parameter of the search, e.g. 'Query', 'Format'.
+
+=cut
 
 sub GetParameter {
     my $self = shift;
@@ -141,19 +182,53 @@ sub GetParameter {
     return $self->{'Attribute'}->SubValue($param);
 }
 
+=head2 Id
+
+Returns the numerical id of this search.
+
+=cut
+
 sub Id {
-    my $self = shift;
-    return $self->{'Id'};
+     my $self = shift;
+     return $self->{'Id'};
 }
 
-### _GetObject: helper routine to load the correct object whose parameters
-###   have been passed.
+=head2 Privacy
+
+Returns the principal object to whom this search belongs, in a string
+"<class>-<id>", e.g. "RT::Group-16".
+
+=cut
+
+sub Privacy {
+    my $self = shift;
+    return $self->{'Privacy'};
+}
+
+=head2 Type
+
+Returns the type of this search, e.g. 'Ticket'.  Useful for denoting the
+saved searches that are relevant to a particular search page.
+
+=cut
+
+sub Type {
+    my $self = shift;
+    return $self->{'Type'};
+}
+
+### Internal methods
+
+# _GetObject: helper routine to load the correct object whose parameters
+#  have been passed.
 
 sub _GetObject {
     my $self = shift;
-    my ($obj_type, $obj_id) = @_;
+    my $privacy = shift;
+
+    my ($obj_type, $obj_id) = split(/\-/, $privacy);
     unless ($obj_type eq 'RT::User' || $obj_type eq 'RT::Group') {
-	$RT::Logger->warning("Tried to load a search belonging to $obj_type $obj_id, which is neither a user nor a group");
+	$RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
 	return undef;
     }
 
@@ -161,9 +236,10 @@ sub _GetObject {
     eval "
          require $obj_type;
          \$object = $obj_type->new(\$self->CurrentUser);
+         \$object->Load(\$obj_id);
     ";
     unless (ref($object) eq $obj_type) {
-	$RT::Logger->warning("Could not load object of type $obj_type with ID $obj_id");
+	$RT::Logger->error("Could not load object of type $obj_type with ID $obj_id");
 	return undef;
     }
     
@@ -172,14 +248,24 @@ sub _GetObject {
 
     if ($obj_type eq 'RT::User') {
 	return undef 
-	    unless $object->Id == $self->{'CurrentUser'}->UserObj->Id();
+	    unless $object->Id == $self->CurrentUser->UserObj->Id();
     }
     if ($obj_type eq 'RT::Group') {
-	return undef 
-	    unless $object->HasMember($self->{'CurrentUser'}->PrincipalObj);
+	return undef unless 
+	    $object->HasMemberRecursively($self->CurrentUser->PrincipalObj);
     }
 
     return $object;
+}
+
+# _UpdateContent: Change the parameters of an existing saved search.
+
+sub _UpdateContent {
+    my $self = shift;
+    my %params = shift;
+
+    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%params);
+    return ($status, $msg);
 }
 
 eval "require RT::SavedSearch_Vendor";
