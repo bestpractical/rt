@@ -44,12 +44,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+%# Keep track of what our current search ID is.
+<input type="hidden" name="CurrentSearch" value="<% $CurrentSearch ? $CurrentSearch : 'new' %>">
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
 <&|/l&>Save the current search:</&><br>
-<&|/l&>Name:</&> <input name="NewSearchName">
-<&|/l&>Privacy:</&> <& SelectSearchPrivacy &><br>
+<&|/l&>Name:</&> <input name="NewSearchName" value="<%$Description%>">
+<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy' &><br>
 <input value="<%loc('Save')%>" name="Save" type="submit">
 <hr>
 % } # if HasRight 'CreateSavedSearch'
@@ -68,9 +70,6 @@ unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
 </%INIT>
 
 <%ARGS>
-$SearchId => undef
 $CurrentSearch => undef
 $Description => undef
-$HideResults => 0
-$Dirty => 0
 </%ARGS>

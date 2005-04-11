@@ -44,25 +44,27 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-% foreach my $object (@objects) {
-%     my @searches = $object->Attributes->Named('ArticleSavedSearch');
-%     next unless @searches;
-%     if ($object->Id == $session{'CurrentUser'}->UserObj->Id) {
+% foreach my $privacy (keys %privacies) {
+%     my $searches = RT::SavedSearches->new($session{'CurrentUser'});
+%     $searches->Limit($privacy, 'Article');
+%     next unless $searches->Count;
+%     if ($privacy =~ /^RT::User/) {
 <option value=""><&|/l&>My saved searches</&></option>
 %     } else {
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+<option value=""><&|/l, $privacies{$privacy}->Name&>[_1]'s saved searches</&></option>
 %     }
-%     foreach my $search (@searches) { 
-<option value="<%ref($object)%>-<%$object->id%>-ArticleSavedSearch-<%$search->Id%>"> -<%$search->Description||loc('Unnamed search')%></option>
+%     while (my $search = $searches->Next) {
+<option value="<%$privacy%>-SavedSearch-<%$search->Id%>"> -<%$search->Name||loc('Unnamed search')%></option>
 %     }
 % }
 </select>
 
 <%init>
+use RT::SavedSearches;
 my $groups = $session{'CurrentUser'}->UserObj->OwnGroups;
-my @objects;
-push(@objects, $session{'CurrentUser'}->UserObj);
-push(@objects, @{$groups->ItemsArrayRef});
+my %privacies;
+$privacies{'RT::User-' . $session{'CurrentUser'}->UserObj->Id} = 1;
+map { $privacies{'RT::Group-'.$_->Id} = $_ } @{$groups->ItemsArrayRef};
 </%init>
 
 <%args>

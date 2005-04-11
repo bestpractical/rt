@@ -22,7 +22,6 @@
 <a href="Search.html?<%$qs%>"><&|/l&>Show advanced search options...</&></a>
 % }  else { 
 <& /Elements/TitleBoxStart, title => loc('Advanced Search Criteria')&>
-<form action="Search.html" method="GET">
 <br>
 <table>
 <tr valign="middle">

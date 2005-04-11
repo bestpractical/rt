@@ -17,16 +17,93 @@
 %# END LICENSE BLOCK
 
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
+<& /Elements/ListActions, actions => \@results &>
 <& Elements/ShowSearchResults, articles => $articles &>
 
-<& Elements/ShowSavedSearches &>
-
+<form action="Search.html" method="GET">
+<& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
+    Description => ($search ? $search->Name : undef) &>
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <%init>
+use RT::SavedSearch;
 my @results;
-
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
+
+# {{{ Saved search logic
+
+my $search;
+
+# The keys that are not saved and loaded with named searches.  These
+# need to be treated specially.
+my @metakeys = qw/NewSearchName CurrentSearch SearchPrivacy Save Load/;
+
+if ($CurrentSearch =~ /^(.*-\d+)-SavedSearch-(\d+)$/) {
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    $search->Load($1, $2);
+}
+
+# Have we been asked to load a search?
+
+if ( $ARGS{'LoadSavedSearch'} =~ /^(.*-\d+)-SavedSearch-(\d+)$/ ) {
+    my $privacy = $1;
+    my $search_id = $3;
+
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    $search->Load($privacy, $search_id);
+    if ($search->Id) {
+        my $searchargs = $search->GetParameter('args');
+	# Clean out ARGS and fill it in with the saved args from the 
+	# loaded search.
+	foreach my $key (@metakeys) {
+	    $searchargs->{$key} = $ARGS{$key};
+	}
+	%ARGS = %{$searchargs};
+	$CurrentSearch = "$privacy-SavedSearch-$search_id";
+    } else {
+        push(@results, "Error: could not load saved search "
+	         . $ARGS{'LoadSavedSearch'});
+    }
+}
+
+# ...or have we been asked to save a search?
+
+if ( $ARGS{'Save'} ) {
+    my %searchargs = %ARGS;
+    foreach my $key (@metakeys) {
+	delete $searchargs{$key};
+    }
+
+    # Is it a new search, or have we asked for a different name than the
+    # current search has?  If not, just update the current search.
+    if ($CurrentSearch ne 'new' 
+	&& $search->Name eq $ARGS{'NewSearchName'} 
+	&& $search->Privacy eq $ARGS{'SearchPrivacy'}) {
+	# There is a search loaded; we just want to update it.
+	$search->Save(undef, 'Article', undef, ('args' => \%searchargs));
+    } else {
+	# This is a new search.
+	$search = RT::SavedSearch->new($session{'CurrentUser'});
+	if ($ARGS{'SearchPrivacy'} =~ /^(.*)-(\d+)$/) {
+	    $search->Save($ARGS{'SearchPrivacy'}, 'Article', 
+			  $ARGS{'NewSearchName'}, ('args' => \%searchargs));
+	    $CurrentSearch = $ARGS{'SearchPrivacy'} . "-SavedSearch-" . 
+		$search->Id;
+	    push(@results, "Updated search " . $search->Name);
+	} else {
+	    # No search privacy chosen?  Warn and default to current user.
+	    # Really this should never happen.
+	    push(@results, "WARNING: Saving search to user-level privacy");
+	    $search->Save('RT::User-'.$session{'CurrentUser'}->Id, 'Article',
+			  $ARGS{'NewSearchName'}, ('args' => \%searchargs));
+	    $CurrentSearch = "RT::User-" . $session{'CurrentUser'}->Id .
+		"-SavedSearch-" . $search->Id;
+	    push(@results, "Created search" . $search->Name);
+	}
+    }
+}
+
+# }}}
 
 # Don't want to search for a null class when there is no class specced
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
@@ -239,5 +316,5 @@ $LastUpdatedBefore => ''
 $LastUpdatedAfter => ''
 $RefersTo => undef
 $ReferredToBy => undef
-
+$CurrentSearch => 'new'
 </%ARGS>
