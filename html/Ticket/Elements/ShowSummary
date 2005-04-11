@@ -46,46 +46,42 @@
       <TABLE WIDTH="100%" class="ticketsummary" >
       <TR>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
-	  <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
+	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		color => "#993333" &>
+		title_class=> 'inverse' &>
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-	  <& /Widgets/TitleBoxEnd &>
+	  </&>
           <br>
 % if ($Ticket->QueueObj->TicketCustomFields->First) {
-	  <& /Widgets/TitleBoxStart, title => loc('Custom Fields'), 
+	  <|& /Widgets/TitleBox, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		color => "#993333" &>
+		title_class=> 'inverse'  &> 
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
-	  <& /Widgets/TitleBoxEnd &>
+	  </&>
 
 <br>
 % }
-	  <& /Widgets/TitleBoxStart, title => loc('People'), 
+	  <&| /Widgets/TitleBox, title => loc('People'), 
 		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		color => "#333399" &>
+		title_class=> 'inverse' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
-	  <& /Widgets/TitleBoxEnd &>
+	  </&>
 	<BR>
 	</TD>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
 
-	  <& /Widgets/TitleBoxStart, title => loc("Dates"),
+	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		 color => "#663366" &>
+		title_class=> 'inverse' &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
-	  <& /Widgets/TitleBoxEnd &>
+	  </&>
 	<BR>  
-	  <& /Widgets/TitleBoxStart, title => loc('Links'), 
+	  <&| /Widgets/TitleBox, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
-		titleright => '', color=> "#336633" &>
+		titleright => ''&>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
-	<& /Widgets/TitleBoxEnd &>
+	</&>
         <BR>
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 

@@ -45,13 +45,13 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Error') &>
 <h2 class="title"><%loc('Error')%></h2>
-<& /Widgets/TitleBoxStart, title => $Title &>
+<&| /Widgets/TitleBox, title => $Title &>
 <%$Why%>
 <br>
 <font size=-1>
 <%$Details%>
 </font>
-<& /Widgets/TitleBoxEnd &>
+</&>
 </body>
 </HTML>
 

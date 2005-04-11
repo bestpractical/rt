@@ -53,7 +53,7 @@
   <FORM METHOD=POST ACTION="GroupRights.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $GroupObj->id %>">
       
-<& /Widgets/TitleBoxStart, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+<&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
       
 <h1><&|/l&>System groups</&></h1>
 <TABLE>
@@ -90,7 +90,7 @@
 % }
 </TABLE>
             
-      <& /Widgets/TitleBoxEnd &>
+      </&>
       <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
       
   </FORM>

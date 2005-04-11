@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
-<& /Widgets/TitleBoxStart, title => join(': ', grep defined, loc("Query"), $Description) &>
+<&| /Widgets/TitleBox, title => join(': ', grep defined, loc("Query"), $Description) &>
 <select size="10" name="clauses" style="width: 100%" multiple>
 % $m->out($optionlist);
 </select>
@@ -57,7 +57,7 @@
 <input type=submit name="DeleteClause" value="<&|/l&>Delete</&>">
 %#<input type=submit name="EditQuery" value="Advanced">
 </p>
-<& /Widgets/TitleBoxEnd &>
+</&>
 <%ARGS>
 $Description
 $optionlist

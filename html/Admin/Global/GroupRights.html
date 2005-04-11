@@ -51,7 +51,7 @@
 
   <FORM METHOD=POST ACTION="GroupRights.html">
       
-<& /Widgets/TitleBoxStart, title => loc('Modify global group rights.')&>
+<&| /Widgets/TitleBox, title => loc('Modify global group rights.')&>
       
 <h1><&|/l&>System groups</&></h1>
 <TABLE>
@@ -102,7 +102,7 @@
 % }
 </TABLE>
             
-      <& /Widgets/TitleBoxEnd &>
+      </&>
       <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
       
   </FORM>

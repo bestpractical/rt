@@ -53,11 +53,10 @@
 
 <FORM METHOD=POST ACTION="ModifyDates.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
-<& /Widgets/TitleBoxStart, title => loc('Modify dates for ticket # [_1]', $TicketObj->Id),  width => "100%", color => "#663366"  &>
-
+<&| /Widgets/TitleBox title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
-<& /Widgets/TitleBoxEnd &>
-<& /Elements/Submit, Label => loc('Save Changes'), color => "#663366" &>
+</&>
+<& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 
 

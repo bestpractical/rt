@@ -72,7 +72,7 @@ else {
       . loc("Full headers") . "</a>]";
 }
 </%perl>
-<& /Widgets/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
+<&| /Widgets/TitleBox, title => $title, titleright => $titleright, bodyclass=> ''&>
 % }
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
@@ -125,7 +125,7 @@ $m->flush_buffer();
 </%perl>
 </TABLE>
 % if ($ShowDisplayModes or $ShowTitle) {
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 <%INIT>
 my $Transactions = new RT::Transactions($session{'CurrentUser'});

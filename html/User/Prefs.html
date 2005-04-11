@@ -57,7 +57,7 @@
 <TR>
 
 <TD VALIGN=TOP class="boxcontainer">
-<& /Widgets/TitleBoxStart, title => loc('Identity') &>
+<&| /Widgets/TitleBox, title => loc('Identity') &>
 
 <input type=hidden name="Name" value="<%$UserObj->Name%>">
 <table callspacing=0 cellpadding=0>
@@ -77,9 +77,9 @@
     <td class=value><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
   </tr>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 <br>
-<& /Widgets/TitleBoxStart, title => loc('Phone numbers') &>
+<&| /Widgets/TitleBox, title => loc('Phone numbers') &>
 <table callspacing=0 cellpadding=0>
   <tr>
     <td class=label><&|/l&>Residence</&>:</td>
@@ -98,11 +98,11 @@
     <td class=value><input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13></td>
   </tr>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 </TD>
 <TD VALIGN=TOP class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<& /Widgets/TitleBoxStart, title => loc('Password') &>
+<&| /Widgets/TitleBox, title => loc('Password') &>
 <TABLE>
 <TR>
 <TD class=label>
@@ -120,10 +120,10 @@
 </TD>
 </TR>
 </TABLE>
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 
-<& /Widgets/TitleBoxStart, title => loc('Location') &>
+<&| /Widgets/TitleBox, title => loc('Location') &>
 <table callspacing=0 cellpadding=0>
   <tr>
     <td class=label><&|/l&>Organization</&>:</td>
@@ -154,7 +154,7 @@
     <td class=value><input name="Country" value="<%$UserObj->Country%>"></td>
   </tr>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 </TD>
 </TR>
 <TR>
@@ -164,10 +164,10 @@
 <TD COLSPAN=2 VALIGN=TOP class="boxcontainer">
 %if ($UserObj->Privileged) {
 <BR>
-<& /Widgets/TitleBoxStart, title => loc('Signature') &>
+<&| /Widgets/TitleBox, title => loc('Signature') &>
 <TEXTAREA COLS=80 ROWS=5 name="Signature" class="signature" WRAP=HARD>
 <%$UserObj->Signature%></TEXTAREA>
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 
 </TD>

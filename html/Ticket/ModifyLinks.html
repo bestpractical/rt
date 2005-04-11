@@ -54,10 +54,10 @@
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 
-<& /Widgets/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
+<&| /Widgets/TitleBox, title => loc('Edit Links') &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
-<& /Widgets/TitleBoxEnd &>
-<& /Elements/Submit, color => "#336633", Label => loc('Save Changes') &>
+</&>
+<& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 
 

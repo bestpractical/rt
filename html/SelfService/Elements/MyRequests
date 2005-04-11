@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Widgets/TitleBoxStart, title =>  $title &>
+<&| /Widgets/TitleBox, title =>  $title &>
 <TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
 <TR>
 <TH><&|/l&>Subject</&></TH>
@@ -63,8 +63,7 @@
 </TR>
 % }
 </TABLE>
-<& /Widgets/TitleBoxEnd &>
-
+</&>
 
 <%INIT>
 $title ||= loc("My [_1] tickets", $friendly_status);

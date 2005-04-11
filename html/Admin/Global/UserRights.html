@@ -51,7 +51,7 @@
 
   <FORM METHOD=POST ACTION="UserRights.html">
       
-<& /Widgets/TitleBoxStart, title => loc('Modify global user rights.') &>
+<&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
       
 <TABLE>
         
@@ -71,7 +71,7 @@
 % }
 </TABLE>
             
-      <& /Widgets/TitleBoxEnd &>
+      </&>
       <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
       
   </FORM>

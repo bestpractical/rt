@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Widgets/TitleBoxStart, title => loc("Display Columns") &>
+<&| /Widgets/TitleBox, title => loc("Display Columns") &>
 <table>
 <tr>
 <td>
@@ -91,7 +91,7 @@ SELECTED
 </td>
 </tr>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <%INIT>
 my $tickets = new RT::Tickets($session{'CurrentUser'});

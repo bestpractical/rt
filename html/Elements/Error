@@ -46,13 +46,11 @@
 <& /Elements/Callback, %ARGS, error => $error &>
 <& /Elements/Header, Code => $Code, Why => $Why &>
 <& /Elements/Tabs &>
-<& /Widgets/TitleBoxStart, class=> "error",  title => $Title &>
+<&| /Widgets/TitleBox, class=> "error",  title => $Title &>
 <%$Why%>
 <br>
-<font size=-1>
 <%$Details%>
-</font>
-<& /Widgets/TitleBoxEnd &>
+</&>
 </body>
 </HTML>
 

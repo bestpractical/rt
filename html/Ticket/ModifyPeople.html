@@ -53,9 +53,9 @@
 
 <FORM METHOD=POST ACTION="ModifyPeople.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
-<& /Widgets/TitleBoxStart, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399" &>
+<&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &> 
-<& /Widgets/TitleBoxEnd &>
+</&>
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 

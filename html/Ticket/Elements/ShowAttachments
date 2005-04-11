@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (keys %documents) {
-<& /Widgets/TitleBoxStart, title => loc('Attachments'), 
+<&| /Widgets/TitleBox, title => loc('Attachments'), 
         title_class=> 'inverse',  
         color => "#336699" &>
 
@@ -77,7 +77,8 @@ if ($size) {
 </ul>
 
 % }
-<& /Widgets/TitleBoxEnd &>
+</&>
+
 <BR>
 % }
 

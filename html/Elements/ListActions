@@ -44,18 +44,18 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($actions[0] ) {
-<& /Widgets/TitleBoxStart, title => loc('Results') &>
-<UL>
+<&| /Widgets/TitleBox, title => loc('Results') &>
+<ul>
 % foreach my $action (@actions) {
 % next unless ($action);
 % my $skip = 0;
 % $m->comp('/Elements/Callback', _CallbackName => 'ModifyRow', row => \$action, skip => \$skip, %ARGS);
 % next if $skip;
-<LI><%$action%></LI>
+<li><%$action%></li>
 % }
-</UL>
-<& /Widgets/TitleBoxEnd &>
-<BR>
+</ul>
+</&>
+<br />
 % }
 <%init>
 @actions = grep (/./,@actions);

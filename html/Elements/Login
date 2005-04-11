@@ -58,14 +58,13 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 
 <div class="dialog">
 % if ($Error) {
-<& /Widgets/TitleBoxStart, title => loc('Error') &>
+<&| "/Widgets/TitleBox" , title => loc('Error') &>
 <% $Error %>
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 
 <div id="loginform">
-<& /Widgets/TitleBoxStart,titleright => loc("RT [_1]", $RT::VERSION), title => loc('Login') ,
-contentbg=>"#cccccc" &>
+<&| /Widgets/TitleBox ,title => loc('Login') &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <form id="login" name="login" method="post" action="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>">
@@ -87,7 +86,6 @@ contentbg=>"#cccccc" &>
 %# Give callbacks a chance to add more control elements
 <& /Elements/Callback, %ARGS &>
 
-<&/Widgets/TitleBoxEnd&>
 % # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
 % # But on Mason 1.15 it's fixed again, so we still use it.
 % # The code below iterates through everything in the passed in arguments
@@ -109,6 +107,7 @@ contentbg=>"#cccccc" &>
 % }
 </form>
 % }
+</&>
 </div><!-- #loginform -->
 </div><!-- .dialog -->
 <& /Elements/Footer, Menu => 0 &>

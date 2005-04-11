@@ -49,7 +49,7 @@
 <FORM METHOD=POST ACTION="Scrip.html">
 <input type="hidden" name="id" value="<%$id%>">
 <input type="hidden" name="Queue" value="<%$Queue%>">
-<& /Widgets/TitleBoxStart, title => loc('Scrip Fields') &>
+<&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT>
@@ -91,11 +91,11 @@
 </TD>
 </TR>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 
 <br>
-<& /Widgets/TitleBoxStart, title => loc('User Defined conditions and actions') &>
+<&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
 <table>
 <TR>
 <TD colspan=2>
@@ -127,7 +127,7 @@
 </TD>
 </TR>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
 

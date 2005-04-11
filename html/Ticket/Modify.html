@@ -52,10 +52,10 @@
 <FORM METHOD=POST ACTION="Modify.html" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
-<& /Widgets/TitleBoxStart, title => loc('Modify ticket #[_1]',$TicketObj->Id),   color=> "#993333", width => "100%" &>
+<|& /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>

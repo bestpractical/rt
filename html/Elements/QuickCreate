@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
-<& /Widgets/TitleBoxStart, title => loc('Quick ticket creation') &>
+<&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
 <form method="post" action="<%$RT::WebPath%>/index.html">
 <input type="hidden" name="QuickCreate" value="1">
 <table>
@@ -64,6 +64,6 @@
 </table>
 <div align="right"><input type="submit" value="<%loc('Create')%>"></div>
 </form>
-<& /Widgets/TitleBoxEnd &>
+</&>
 </div>
 
