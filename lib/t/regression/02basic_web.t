@@ -64,7 +64,13 @@ ok($agent->submit(), "Created new ticket with $string as Subject");
 
 like( $agent->{'content'}, qr{$string} , "Found the content");
 
+# Update time worked in hours
+$agent->follow_link( text_regex => qr/Basics/ );
+$agent->submit_form( form_number => 3,
+    fields => { TimeWorked => 5, TimeWorkedUnits => "hrs" }
+);
 
+like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
 
 # }}}
 
