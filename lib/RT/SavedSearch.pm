@@ -88,7 +88,6 @@ the given search ID if it belongs to the stated user or group.
 
 =begin testing
 
-use_ok(RT::SavedSearch);
 
 =end testing
 
@@ -101,11 +100,14 @@ sub Load {
 
     if ($object) {
 	$self->{'Attribute'} = $object->Attributes->WithId($id);
-	$self->{'Id'} = $self->{'Attribute'}->Id;
-	$self->{'Privacy'} = $privacy;
-	$self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-	use Data::Dumper;
-	print Dumper($self);
+	if ($self->{'Attribute'}->Id) {
+	    $self->{'Id'} = $self->{'Attribute'}->Id;
+	    $self->{'Privacy'} = $privacy;
+	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+	} else {
+	    $RT::Logger->error("Could not load attribute " . $id
+			       . " for object " . $privacy);
+	}
     } else {
 	$RT::Logger->error("Could not find object $privacy when loading search");
     }
@@ -114,45 +116,62 @@ sub Load {
 
 =head2 Save
 
-Takes a privacy, an optional type, a name, and a hash containing the
+Takes a privacy, an optional type, a name, and a hashref containing the
 search parameters.  Saves the given parameters to the appropriate user/
-group object, and loads the resulting search.
+group object, and loads the resulting search.  Defaults are:
+  Privacy:      undef
+  Type:         Ticket
+  Name:         "new search"
+  SearchParams: (empty hash)
 
 =cut
 
 sub Save {
     my $self = shift;
-    my ($privacy, $type, $name, %params) = @_;
+    my %args = ('Privacy' => 'RT::User-' . $self->CurrentUser->Id,
+		'Type' => 'Ticket',
+		'Name' => 'new search',
+		'SearchParams' => {},
+		@_);
+    my $privacy = $args{'Privacy'};
+    my $type = $args{'Type'};
+    my $name = $args{'Name'};
+    my %params = %{$args{'SearchParams'}};
 
-    unless($privacy || $name) {
-	# Save to the current object.
-	unless($self->{'Attribute'}) {
-	    $RT::Logger->error("Tried to save to a nonexistent search without specifying a privacy!");
-	    return;
-	}
-	my ($ret, $msg) = $self->_UpdateContent(%params);
-	unless($ret) {
-	    $RT::Logger->error("Could not update content of search " 
-				 . $self->Id . ": $msg");
-	}
-    } else {
-	$params{'SearchType'} = $type;
-	my $object = $self->_GetObject($privacy);
-	if ($object->Id) {
-	    my ($att_id, $att_msg) = $object->AddAttribute(
-					   'Name' => 'SavedSearch',
-					   'Description' => $name,
-					   'Content' => \%params);
-	    if ($att_id) {
-		$self->{'Attribute'} = $object->Attributes->WithId($att_id);
-		$self->{'Id'} = $att_id;
-		$self->{'Privacy'} = $privacy;
-		$self->{'Type'} = $type;
-	    } else {
-		$RT::Logger->error("SavedSearch save failure: $att_msg");
-	    }
+    $params{'SearchType'} = $type;
+    my $object = $self->_GetObject($privacy);
+    if ($object) {
+	my ($att_id, $att_msg) = $object->AddAttribute(
+						       'Name' => 'SavedSearch',
+						       'Description' => $name,
+						       'Content' => \%params);
+	if ($att_id) {
+	    $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+	    $self->{'Id'} = $att_id;
+	    $self->{'Privacy'} = $privacy;
+	    $self->{'Type'} = $type;
+	} else {
+	    $RT::Logger->error("SavedSearch save failure: $att_msg");
 	}
     }
+}
+
+=head2 Update
+
+Updates the parameters of an existing search.  Takes a hashref with
+the new parameters.
+
+=cut
+
+sub Update {
+    my $self = shift;
+    my $params = shift;
+
+    return(0, "No search loaded!") unless $self->Id;
+    return(0, "Could not load search attribute") 
+	unless $self->{'Attribute'}->Id;
+    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$params});
+    return ($status, $msg);
 }
 
 ### Accessor methods
@@ -256,16 +275,6 @@ sub _GetObject {
     }
 
     return $object;
-}
-
-# _UpdateContent: Change the parameters of an existing saved search.
-
-sub _UpdateContent {
-    my $self = shift;
-    my %params = shift;
-
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%params);
-    return ($status, $msg);
 }
 
 eval "require RT::SavedSearch_Vendor";
