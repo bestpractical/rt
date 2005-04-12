@@ -99,7 +99,7 @@ use_ok(RT::SavedSearches);
 
 =cut
 
-sub Limit {
+sub LimitToPrivacy {
     my $self = shift;
     my $privacy = shift;
     my $type = shift;

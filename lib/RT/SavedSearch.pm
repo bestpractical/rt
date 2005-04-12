@@ -109,7 +109,7 @@ sub Load {
 			       . " for object " . $privacy);
 	}
     } else {
-	$RT::Logger->error("Could not find object $privacy when loading search");
+	$RT::Logger->error("Could not load object $privacy when loading search");
     }
 
 }
@@ -265,13 +265,16 @@ sub _GetObject {
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
-    if ($obj_type eq 'RT::User') {
-	return undef 
-	    unless $object->Id == $self->CurrentUser->UserObj->Id();
+    if ($obj_type eq 'RT::User' 
+	&& $object->Id != $self->CurrentUser->UserObj->Id()) {
+	$RT::Logger->error("Permission denied for user other than self");
+	return undef;
     }
-    if ($obj_type eq 'RT::Group') {
-	return undef unless 
-	    $object->HasMemberRecursively($self->CurrentUser->PrincipalObj);
+    if ($obj_type eq 'RT::Group' &&
+	!$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
+	$RT::Logger->error("Permission denied, ".$self->CurrentUser->Name.
+			   " is not a member of group");
+	return undef;
     }
 
     return $object;

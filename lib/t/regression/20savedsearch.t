@@ -6,6 +6,7 @@ use RT::Ticket;
 use RT::Queue;
 
 use_ok(RT::SavedSearch);
+use_ok(RT::SavedSearches);
 
 RT::LoadConfig();
 RT::Init();
@@ -154,5 +155,20 @@ like($loadedsearch1->GetParameter('Query'), qr/Queue/,
 is($loadedsearch1->Type, 'Ticket', "mysearch is still for tickets");
 is($loadedsearch1->Privacy, 'RT::User-'.$curruser->Id,
    "mysearch still belongs to searchuser");
-is($mysearch->GetParameter('Query'), qr/Queue/, 
-   "other mysearch object updated");
+like($mysearch->GetParameter('Query'), qr/Queue/, "other mysearch object updated");
+
+
+## Right ho.  Test the pseudo-collection object.
+
+my $genericsearch = RT::SavedSearch->new($curruser);
+$genericsearch->Save(Name => 'generic search',
+		     Type => 'all',
+		     SearchParams => {'Query' => "Queue = 'General'"});
+
+my $ticketsearches = RT::SavedSearches->new($curruser);
+$ticketsearches->LimitToPrivacy('RT::User-'.$curruser->Id, 'Ticket');
+is($ticketsearches->Count, 1, "Found searchuser's ticket searches");
+
+my $allsearches = RT::SavedSearches->new($curruser);
+$allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
+is($allsearches->Count, 2, "Found all searchuser's searches");
