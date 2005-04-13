@@ -66,7 +66,7 @@ ok (require RT::Search::Generic);
 
 =cut
 
-package RT::Search::Googlish;
+package RT::Search::Googleish;
 
 use strict;
 use base qw(RT::Search::Generic);

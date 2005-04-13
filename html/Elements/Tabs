@@ -65,6 +65,9 @@ my $basetopactions = {
 my $basetabs = {     A => { title => loc('Homepage'),
                            path => '',
                          },
+                    Ab => { title => loc('Simple Search'),
+                        path => 'Search/Simple.html'
+                         },
                     B => { title => loc('Tickets'),
                         path => 'Search/Build.html'
                       },
