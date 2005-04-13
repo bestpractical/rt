@@ -43,32 +43,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Quick.html?q=".$ARGS{"q"}, 
+    current_tab => "Search/Simple.html"
 &>
 
 <DIV align="center">
 
-<& /Elements/TitleBoxStart, width=> "40%", titleright => loc("RT [_1]", $RT::VERSION), title => loc('Search') , contentbg=>"#cccccc" &>
-<FORM ACTION="Quick.html">
-<table width="100%" cellpadding="5">
-    <tr>
-        <td width="100%">
-            <input name="q">
-        </td>
-    </tr>
-    <tr>
-        <td align="right">
-            <input type="submit" Value="<&|/l&>Search</&>">
-        </td>
-    </td>
-</table>
+<FORM ACTION="Simple.html" METHOD="GET">
+            <input name="q" size="60"><input type="submit" Value="<&|/l&>Search</&>">
 </FORM>
-<&/Elements/TitleBoxEnd&>
+</&>
 
 <%INIT>
-my $title = loc("Quick Search");
+my $title = loc("Search for tickets");
 use RT::Search::Quick;
 
 if ( $ARGS{"q"}) {
@@ -77,6 +65,7 @@ if ( $ARGS{"q"}) {
                                          TicketsObj => $tickets);
 
     $m->comp( "Results.html", Query   => $search->QueryToSQL());
+    $m->comp( "/Elements/Footer" );
     $m->abort();
 }
 </%INIT>
