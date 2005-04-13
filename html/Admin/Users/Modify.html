@@ -110,7 +110,7 @@
 
 
 <INPUT TYPE=HIDDEN NAME="SetPrivileged" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Privileged" CHECKED <%$PrivilegedChecked%>> <&|/l&>Let this user be granted rights</&><BR>
+<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> <&|/l&>Let this user be granted rights</&><BR>
 		    
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <TABLE>
