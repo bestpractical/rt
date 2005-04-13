@@ -61,6 +61,7 @@
 
 =cut
 
+#### TESTS are in lib/t/20savedsearch.t
 
 package RT::SavedSearch;
 
@@ -87,11 +88,6 @@ Takes a privacy specification, an object ID, and a search ID.  Loads
 the given search ID if it belongs to the stated user or group.
 Returns a tuple of status and message, where status is true on
 success.
-
-=begin testing
-
-
-=end testing
 
 =cut
 
@@ -176,18 +172,19 @@ the new parameters.
 sub Update {
     my $self = shift;
     my $params = shift;
-
+    
     return(0, $self->loc("No search loaded")) unless $self->Id;
     return(0, $self->loc("Could not load search attribute"))
 	unless $self->{'Attribute'}->Id;
     my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$params});
     if ($status) {
 	# Update all the accessor variables.
-    return ($status, $self->loc("Search update: [_1]", $msg));
+	return ($status, $self->loc("Search update: [_1]", $msg));
+    }
 }
 
 =head2 Delete
-
+    
 Deletes the existing search.  Returns a tuple of status and message,
 where status is true upon success.
 

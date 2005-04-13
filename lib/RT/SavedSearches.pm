@@ -61,6 +61,7 @@
 
 =cut
 
+#### TESTS are in lib/t/20savedsearch.t
 
 package RT::SavedSearches;
 
@@ -90,12 +91,6 @@ by RT::SavedSearch::Type().  The SavedSearches object will load the
 searches belonging to that user or group that are of the type
 specified.  If no type is specified, all the searches belonging to the
 user/group will be loaded.  Repeated calls to the same object should DTRT.
-
-=begin testing
-
-use_ok(RT::SavedSearches);
-
-=end testing
 
 =cut
 
