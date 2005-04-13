@@ -281,12 +281,15 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 Set($WebPath , "");
 
-Set($WebPort , 80 + ($< * 7274) % 32766 + ($< && 1024));
+# If we're running as a superuser, run on port 80
+# Otherwise, pick a high port for this user.
+
+Set($WebPort , 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-Set($WebBaseURL , "http://RT::WebBaseURL.not.configured:$WebPort");
+Set($WebBaseURL , "http://localhost:$WebPort");
 
 Set($WebURL , $WebBaseURL . $WebPath . "/");
 
