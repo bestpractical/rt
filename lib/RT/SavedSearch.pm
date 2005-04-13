@@ -59,9 +59,15 @@
 
 =head1 METHODS
 
-=cut
+=begin testing
 
-#### TESTS are in lib/t/20savedsearch.t
+use_ok(RT::SavedSearch);
+
+# Real tests are in lib/t/20savedsearch.t
+
+=end testing
+
+=cut
 
 package RT::SavedSearch;
 
