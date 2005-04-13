@@ -67,46 +67,45 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__LastUpdatedRelative__</small>\',
 \'<small>__TimeLeft__</small>\'';
 
+my ($ret, $msg);
 my $mysearch = RT::SavedSearch->new($curruser);
-$mysearch->Save(Privacy => 'RT::User-' . $searchuser->Id,
-		Type => 'Ticket',
-		Name => 'owned by me',
-		SearchParams => {'Format' => $format,
-				 'Query' => "Owner = '" 
-				     . $searchuser->Name . "'"});
-is($mysearch->Type, 'Ticket', "mysearch was created");
+($ret, $msg) = $mysearch->Save(Privacy => 'RT::User-' . $searchuser->Id,
+			       Type => 'Ticket',
+			       Name => 'owned by me',
+			       SearchParams => {'Format' => $format,
+						'Query' => "Owner = '" 
+						    . $searchuser->Name 
+						    . "'"});
+ok($ret, "mysearch was created");
 
 
 my $groupsearch = RT::SavedSearch->new($curruser);
-$groupsearch->Save(Privacy => 'RT::Group-' . $ingroup->Id,
-		   Type => 'Ticket',
-		   Name => 'search queue',
-		   SearchParams => {'Format' => $format,
-				    'Query' => "Queue = '"
-					. $queue->Name . "'"});
-is($groupsearch->Type, 'Ticket', "groupsearch was created");
-like($groupsearch->GetParameter('Query'), qr/Queue/, 
-     "Retrieved query of groupsearch");
+($ret, $msg) = $groupsearch->Save(Privacy => 'RT::Group-' . $ingroup->Id,
+				  Type => 'Ticket',
+				  Name => 'search queue',
+				  SearchParams => {'Format' => $format,
+						   'Query' => "Queue = '"
+						       . $queue->Name . "'"});
+ok($ret, "groupsearch was created");
 
 my $othersearch = RT::SavedSearch->new($curruser);
-$othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
-		   Type => 'Ticket',
-		   Name => 'searchuser requested',
-		   SearchParams => {'Format' => $format,
-				    'Query' => 
-					"Requestor.Name LIKE 'search'"});
-is($othersearch->Id, 0, "othersearch NOT created");
+($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
+				  Type => 'Ticket',
+				  Name => 'searchuser requested',
+				  SearchParams => {'Format' => $format,
+						   'Query' => 
+						       "Requestor.Name LIKE 'search'"});
+ok(!$ret, "othersearch NOT created");
+like($msg, qr/Failed to load object for/, "...for the right reason");
 
 $othersearch = RT::SavedSearch->new($RT::SystemUser);
-$othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
-		   Type => 'Ticket',
-		   Name => 'searchuser requested',
-		   SearchParams => {'Format' => $format,
-				    'Query' => 
-					"Requestor.Name LIKE 'search'"});
-is($othersearch->Type, 'Ticket', "othersearch created by systemuser");
-like($othersearch->GetParameter('Query'), qr/Requestor/, 
-     "Retrieved query of othersearch");
+($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
+				  Type => 'Ticket',
+				  Name => 'searchuser requested',
+				  SearchParams => {'Format' => $format,
+						   'Query' => 
+						       "Requestor.Name LIKE 'search'"});
+ok($ret, "othersearch created by systemuser");
 
 # Now try to load some searches.
 
@@ -172,3 +171,10 @@ is($ticketsearches->Count, 1, "Found searchuser's ticket searches");
 my $allsearches = RT::SavedSearches->new($curruser);
 $allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
 is($allsearches->Count, 2, "Found all searchuser's searches");
+
+# Delete a search.
+($ret, $msg) = $genericsearch->Delete;
+ok($ret, "Deleted genericsearch");
+$allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
+is($allsearches->Count, 1, "Found all searchuser's searches after deletion");
+

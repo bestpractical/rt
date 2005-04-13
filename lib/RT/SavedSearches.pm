@@ -89,7 +89,7 @@ produced by RT::SavedSearch::Privacy(); and a type string, as produced
 by RT::SavedSearch::Type().  The SavedSearches object will load the
 searches belonging to that user or group that are of the type
 specified.  If no type is specified, all the searches belonging to the
-user/group will be loaded.
+user/group will be loaded.  Repeated calls to the same object should DTRT.
 
 =begin testing
 
@@ -107,6 +107,7 @@ sub LimitToPrivacy {
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
+	$self->{'objects'} = [];
 	my @search_atts = $object->Attributes->Named('SavedSearch');
 	foreach my $att (@search_atts) {
 	    my $search = RT::SavedSearch->new($self->CurrentUser);

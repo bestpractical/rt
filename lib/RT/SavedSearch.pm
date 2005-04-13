@@ -85,6 +85,8 @@ sub new  {
 
 Takes a privacy specification, an object ID, and a search ID.  Loads
 the given search ID if it belongs to the stated user or group.
+Returns a tuple of status and message, where status is true on
+success.
 
 =begin testing
 
@@ -104,12 +106,15 @@ sub Load {
 	    $self->{'Id'} = $self->{'Attribute'}->Id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+	    return (1, $self->loc("Loaded search [_1]", $self->Name));
 	} else {
 	    $RT::Logger->error("Could not load attribute " . $id
 			       . " for object " . $privacy);
+	    return (0, $self->loc("Search attribute load failure"));
 	}
     } else {
 	$RT::Logger->error("Could not load object $privacy when loading search");
+	return (0, $self->loc("Could not load object for [_1]", $privacy));
     }
 
 }
@@ -118,7 +123,8 @@ sub Load {
 
 Takes a privacy, an optional type, a name, and a hashref containing the
 search parameters.  Saves the given parameters to the appropriate user/
-group object, and loads the resulting search.  Defaults are:
+group object, and loads the resulting search.  Returns a tuple of status
+and message, where status is true on success.  Defaults are:
   Privacy:      undef
   Type:         Ticket
   Name:         "new search"
@@ -150,9 +156,13 @@ sub Save {
 	    $self->{'Id'} = $att_id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $type;
+	    return (1, $self->loc("Saved search [_1]", $name));
 	} else {
 	    $RT::Logger->error("SavedSearch save failure: $att_msg");
+	    return (0, $self->loc("Failed to create search attribute"));
 	}
+    } else {
+	return (0, $self->loc("Failed to load object for [_1]", $privacy));
     }
 }
 
@@ -167,12 +177,33 @@ sub Update {
     my $self = shift;
     my $params = shift;
 
-    return(0, "No search loaded!") unless $self->Id;
-    return(0, "Could not load search attribute") 
+    return(0, $self->loc("No search loaded")) unless $self->Id;
+    return(0, $self->loc("Could not load search attribute"))
 	unless $self->{'Attribute'}->Id;
     my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$params});
-    return ($status, $msg);
+    if ($status) {
+	# Update all the accessor variables.
+    return ($status, $self->loc("Search update: [_1]", $msg));
 }
+
+=head2 Delete
+
+Deletes the existing search.  Returns a tuple of status and message,
+where status is true upon success.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+
+    my ($status, $msg) = $self->{'Attribute'}->Delete;
+    if ($status) {
+	return (1, $self->loc("Deleted search"));
+    } else {
+	return (0, $self->loc("Delete failed: [_1]", $msg));
+    }
+}
+	
 
 ### Accessor methods
 
