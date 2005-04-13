@@ -57,6 +57,9 @@ $Name => undef
 % }
 % my @searches = $object->Attributes->Named('SavedSearch');
 % foreach my $search (@searches) { 
+%     # Skip it if it is not a ticket search.
+%     next if ($search->SubValue('SearchType')
+%              && $search->SubValue('SearchType') ne 'Ticket');
 <option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"> -<%$search->Description||loc('Unnamed search')%></option>
 % }
 % }
