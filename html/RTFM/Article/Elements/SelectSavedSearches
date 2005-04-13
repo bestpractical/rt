@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-% foreach my $privacy (keys %privacies) {
+% foreach my $privacy (reverse sort keys %privacies) {
 %     my $searches = RT::SavedSearches->new($session{'CurrentUser'});
-%     $searches->Limit($privacy, 'Article');
+%     $searches->LimitToPrivacy($privacy, 'Article');
 %     next unless $searches->Count;
 %     if ($privacy =~ /^RT::User/) {
 <option value=""><&|/l&>My saved searches</&></option>
@@ -54,7 +54,8 @@
 <option value=""><&|/l, $privacies{$privacy}->Name&>[_1]'s saved searches</&></option>
 %     }
 %     while (my $search = $searches->Next) {
-<option value="<%$privacy%>-SavedSearch-<%$search->Id%>"> -<%$search->Name||loc('Unnamed search')%></option>
+%          my $optionval = "$privacy-SavedSearch-". $search->Id;
+<option value="<%$optionval%>"<% $optionval eq $Default ? 'selected' : '' %>> - <%$search->Name||loc('Unnamed search')%></option>
 %     }
 % }
 </select>
@@ -69,4 +70,5 @@ map { $privacies{'RT::Group-'.$_->Id} = $_ } @{$groups->ItemsArrayRef};
 
 <%args>
 $Name => undef
+$Default => undef
 </%args>

@@ -50,15 +50,22 @@
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
 <&|/l&>Save the current search:</&><br>
-<&|/l&>Name:</&> <input name="NewSearchName" value="<%$Description%>">
-<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy' &><br>
+<&|/l&>Name:</&> <input name="NewSearchName" value="<%$Name%>">
+<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy',
+	Default => $Privacy &><br>
+%     if ($CurrentSearch && $CurrentSearch ne 'new') {
+<input value="<%loc('Update')%>" name="Update" type="submit">&nbsp;
+<input value="<%loc('Save new')%>" name="Save" type="submit">&nbsp;
+<input value="<%loc('Delete')%>" name="Delete" type="submit">&nbsp;
+%     } else {
 <input value="<%loc('Save')%>" name="Save" type="submit">
+%     }
 <hr>
 % } # if HasRight 'CreateSavedSearch'
 
 <&|/l&>Load saved search:</&><br>
-<& SelectSavedSearches, Name => 'LoadSavedSearch' &>
-<input value="<%loc('Load')%>" type="submit">
+<& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
+<input value="<%loc('Load')%>" name="Load" type="submit">
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
@@ -71,5 +78,6 @@ unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
 
 <%ARGS>
 $CurrentSearch => undef
-$Description => undef
+$Name => undef
+$Privacy => undef
 </%ARGS>

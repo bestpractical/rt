@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-<option value="RT::User-<% $user->Id %>">My searches</option>
+<option value="RT::User-<% $user->Id %>" <% $Default eq 'RT::User-'.$user->Id ? 'selected' : '' %>>My searches</option>
 % while (my $group = $groups->Next) {
-<option value="RT::Group-<% $group->Id %>"><% $group->Name %>'s searches</option>
+<option value="RT::Group-<% $group->Id %>" <% $Default eq 'RT::Group-'.$group->Id ? 'selected' : '' %>><% $group->Name %>'s searches</option>
 % }
 </select>
 <%INIT>
@@ -56,4 +56,5 @@ my $groups = $session{'CurrentUser'}->UserObj->OwnGroups;
 </%INIT>
 <%ARGS>
 $Name => 'GroupField'
+$Default => undef
 </%ARGS>

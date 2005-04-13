@@ -22,21 +22,22 @@
 
 <form action="Search.html" method="GET">
 <& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
-    Description => ($search ? $search->Name : undef) &>
+    Name => ($search ? $search->Name : undef),
+    Privacy => ($search ? $search->Privacy : undef) &>
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <%init>
 use RT::SavedSearch;
 my @results;
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
-
 # {{{ Saved search logic
 
 my $search;
 
-# The keys that are not saved and loaded with named searches.  These
-# need to be treated specially.
-my @metakeys = qw/NewSearchName CurrentSearch SearchPrivacy Save Load/;
+# The keys in %ARGS that are not saved and loaded with named searches.
+# These need to be treated specially.
+my @metakeys = qw/NewSearchName CurrentSearch SearchPrivacy Save Load
+    Update Delete/;
 
 if ($CurrentSearch =~ /^(.*-\d+)-SavedSearch-(\d+)$/) {
     $search = RT::SavedSearch->new($session{'CurrentUser'});
@@ -45,65 +46,94 @@ if ($CurrentSearch =~ /^(.*-\d+)-SavedSearch-(\d+)$/) {
 
 # Have we been asked to load a search?
 
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*-\d+)-SavedSearch-(\d+)$/ ) {
-    my $privacy = $1;
-    my $search_id = $3;
-
-    $search = RT::SavedSearch->new($session{'CurrentUser'});
-    $search->Load($privacy, $search_id);
-    if ($search->Id) {
-        my $searchargs = $search->GetParameter('args');
-	# Clean out ARGS and fill it in with the saved args from the 
-	# loaded search.
-	foreach my $key (@metakeys) {
-	    $searchargs->{$key} = $ARGS{$key};
+if ($ARGS{'Load'}) {
+    if ($ARGS{'LoadSavedSearch'} =~ /^(.*-\d+)-SavedSearch-(\d+)$/ ) {
+	my $privacy = $1;
+	my $search_id = $2;
+	
+	$search = RT::SavedSearch->new($session{'CurrentUser'});
+	my ($ret, $msg) = $search->Load($privacy, $search_id);
+	if ($ret) {
+	    my $searchargs = $search->GetParameter('args');
+	    # Clean out ARGS and fill it in with the saved args from the 
+	    # loaded search.
+	    foreach my $key (@metakeys) {
+		$searchargs->{$key} = $ARGS{$key};
+	    }
+	    %ARGS = %{$searchargs};
+	    $CurrentSearch = "$privacy-SavedSearch-$search_id";
+	} else {
+	    push(@results, loc("Error: could not load saved search [_1]: [_2]",
+			       $ARGS{'LoadSavedSearch'}, $msg));
 	}
-	%ARGS = %{$searchargs};
-	$CurrentSearch = "$privacy-SavedSearch-$search_id";
     } else {
-        push(@results, "Error: could not load saved search "
-	         . $ARGS{'LoadSavedSearch'});
+	push(@results, loc("Invalid [_1] argument", 'LoadSavedSearch'));
     }
 }
 
-# ...or have we been asked to save a search?
+# ...or have we been asked to save, update, or delete a search?
 
-if ( $ARGS{'Save'} ) {
+if ($ARGS{'Save'}) {
     my %searchargs = %ARGS;
     foreach my $key (@metakeys) {
 	delete $searchargs{$key};
     }
 
-    # Is it a new search, or have we asked for a different name than the
-    # current search has?  If not, just update the current search.
-    if ($CurrentSearch ne 'new' 
-	&& $search->Name eq $ARGS{'NewSearchName'} 
-	&& $search->Privacy eq $ARGS{'SearchPrivacy'}) {
-	# There is a search loaded; we just want to update it.
-	$search->Save(undef, 'Article', undef, ('args' => \%searchargs));
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    unless ($ARGS{'SearchPrivacy'} =~ /^(.*)-(\d+)$/) {
+	# This shouldn't really happen, but hey.
+	push(@results, loc("WARNING: Saving search to user-level privacy"));
+	$ARGS{'SearchPrivacy'} = 'RT::User-'.$session{'CurrentUser'}->Id;
+    }
+    my ($ret, $msg) = $search->Save(Privacy => $ARGS{'SearchPrivacy'}, 
+				    Type => 'Article',
+				    Name => $ARGS{'NewSearchName'}, 
+				    SearchParams => {'args' => \%searchargs});
+    if ($ret) {
+	$CurrentSearch = $ARGS{'SearchPrivacy'} . "-SavedSearch-" . 
+	    $search->Id;
+	push(@results, loc("Created search [_1]", $search->Name));
     } else {
-	# This is a new search.
-	$search = RT::SavedSearch->new($session{'CurrentUser'});
-	if ($ARGS{'SearchPrivacy'} =~ /^(.*)-(\d+)$/) {
-	    $search->Save($ARGS{'SearchPrivacy'}, 'Article', 
-			  $ARGS{'NewSearchName'}, ('args' => \%searchargs));
-	    $CurrentSearch = $ARGS{'SearchPrivacy'} . "-SavedSearch-" . 
-		$search->Id;
-	    push(@results, "Updated search " . $search->Name);
-	} else {
-	    # No search privacy chosen?  Warn and default to current user.
-	    # Really this should never happen.
-	    push(@results, "WARNING: Saving search to user-level privacy");
-	    $search->Save('RT::User-'.$session{'CurrentUser'}->Id, 'Article',
-			  $ARGS{'NewSearchName'}, ('args' => \%searchargs));
-	    $CurrentSearch = "RT::User-" . $session{'CurrentUser'}->Id .
-		"-SavedSearch-" . $search->Id;
-	    push(@results, "Created search" . $search->Name);
+	push(@results, loc("Could not create search: [_1]", $msg));
+    }
+} elsif ($ARGS{'Update'}) {
+    my %searchargs = %ARGS;
+    foreach my $key (@metakeys) {
+	delete $searchargs{$key};
+    }
+    
+    # We already have a search loaded, because CurrentSearch is set,
+    # or else we would not have gotten here.
+    my ($ret, $msg) = $search->Update(\%searchargs);
+    if ($ret) {
+	push(@results, loc("Search [_1] updated", $search->Name));
+    } else {
+	push(@results, loc("Error: search [_1] not updated: [_2]",
+			   $search->Name, $msg));
+    }
+} elsif ($ARGS{'Delete'}) {
+    # Keep track of this, as we are about to delete the search.
+    my $searchname = $search->Name;
+    my ($ret, $msg) = $search->Delete;
+    if ($ret) {
+	$ARGS{'CurrentSearch'} = undef;
+	push(@results, loc("Deleted search [_1]", $searchname));
+	# Get rid of all the state.
+	foreach my $key (keys %ARGS) {
+	    delete $ARGS{$key};
 	}
+	$CurrentSearch = 'new';
+	$search = undef;
+	$RefersTo = undef;
+	$ReferredToBy = undef;
+    } else {
+	push(@results, loc("Could not delete search [_1]: [_2]", 
+	     $searchname, $msg));
     }
 }
 
 # }}}
+
 
 # Don't want to search for a null class when there is no class specced
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
