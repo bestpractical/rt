@@ -44,6 +44,9 @@ sub handle_request {
 
     my $self = shift;
     my $cgi = shift;
+
+    Module::Refresh->refresh if $RT::DevelMode;
+
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if ($@);
 
