@@ -53,7 +53,7 @@
 
 <FORM METHOD=POST ACTION="ModifyDates.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
-<&| /Widgets/TitleBox title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
+<&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes') &>

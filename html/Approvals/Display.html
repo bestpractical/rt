@@ -50,7 +50,7 @@
     Title =>  $title &>
 <form method=post action="<%$RT::WebPath%>/Approvals/index.html">
 
-<|& /Widgets/TitleBox, title => $title &>
+<&| /Widgets/TitleBox, title => $title &>
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
 <hr>
 <table width=100%>
