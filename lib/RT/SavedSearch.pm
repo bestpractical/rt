@@ -301,12 +301,12 @@ sub _GetObject {
 
     if ($obj_type eq 'RT::User' 
 	&& $object->Id != $self->CurrentUser->UserObj->Id()) {
-	$RT::Logger->error("Permission denied for user other than self");
+	$RT::Logger->debug("Permission denied for user other than self");
 	return undef;
     }
     if ($obj_type eq 'RT::Group' &&
 	!$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
-	$RT::Logger->error("Permission denied, ".$self->CurrentUser->Name.
+	$RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
 			   " is not a member of group");
 	return undef;
     }
