@@ -68,6 +68,10 @@
 <&|/l&>Which are referred to by </&> <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
 <i><&|/l&>Separate multiple URLs with spaces</&></i>
 
+<br><&|/l&>Article text matches</&>
+<input name="Article~" value="<%$ARGS{'Article~'}%>">
+<&|/l&>and not</&>
+<input name="Article!~" value="<%$ARGS{'Article!~'}%>">
 
 <table>
 %# for each custom field 

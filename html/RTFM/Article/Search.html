@@ -258,6 +258,35 @@ foreach my $field ( keys %cfs ) {
     }
 }
 
+### Searches for any custom field
+
+if ($ARGS{'Article~'}) {
+    if (ref($ARGS{'Article~'}) eq 'ARRAY') {
+	my @Match = @{$ARGS{'Article~'}};
+	foreach my $value (@Match) {
+	    $articles->LimitCustomField( VALUE => $value,
+					 ENTRYAGGREGATOR => 'OR',
+					 OPERATOR => 'LIKE' );
+	}
+    } else {
+	$articles->LimitCustomField( VALUE => $ARGS{'Article~'},
+				     OPERATOR => 'LIKE' );
+    }
+}
+
+if ($ARGS{'Article!~'}) {
+    if (ref($ARGS{'Article!~'}) eq 'ARRAY') {
+	my @NoMatch = @{$ARGS{'Article!~'}};
+	foreach my $value (@NoMatch) {
+	    $articles->LimitCustomField( VALUE => $value,
+					 ENTRYAGGREGATOR => 'OR',
+					 OPERATOR => 'NOT LIKE' );
+	}
+    } else {
+	$articles->LimitCustomField( VALUE => $ARGS{'Article!~'},
+				     OPERATOR => 'NOT LIKE' );
+    }
+}
 
 foreach my $field qw(Name Summary Class) {
 
