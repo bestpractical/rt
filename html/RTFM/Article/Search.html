@@ -30,6 +30,28 @@ use RT::SavedSearch;
 my @results;
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
+# {{{ Quicksearch logic
+
+# If it is a number, load the article with that ID.  Otherwise, search
+# on name and summary.
+if ($ARGS{'q'} =~ /^(\d+)$/) {
+    $m->comp("/RTFM/Article/Display.html", id => $1);
+    return;
+} elsif ($ARGS{'q'}) {
+    $articles->Limit( FIELD => 'Name',
+		      SUBCLAUSE => 'NameOrSummary',
+		      OPERATOR => 'LIKE',
+		      ENTRYAGGREGATOR => 'OR',
+		      VALUE => $ARGS{'q'} );
+    $articles->Limit( FIELD => 'Summary',
+		      SUBCLAUSE => 'NameOrSummary',
+		      OPERATOR => 'LIKE',
+		      ENTRYAGGREGATOR => 'OR',
+		      VALUE => $ARGS{'q'} );
+}
+
+# }}}
+
 # {{{ Saved search logic
 
 my $search;

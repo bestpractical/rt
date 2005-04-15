@@ -18,7 +18,7 @@
 
 <FORM ACTION="<%$RT::WebPath%>/RTFM/Article/Search.html">
 <input type="hidden" name="HideOptions" value="1">
-<input size="12" name="Summary~" accesskey="0">
+<input size="12" name="q" accesskey="0">
 % if ($class or $topic) {
 <input type="hidden" name="ExpandTopics" value="1">
 <select name="Topics">
