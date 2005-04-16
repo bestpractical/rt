@@ -84,17 +84,20 @@ sub QueryToSQL {
   my $self = shift;
   my $query = shift || $self->Argument;
   my @keywords = split /\s+/, $query;
-  my @tql_clauses;
+  my (@tql_clauses, @owner_clauses, @queue_clauses, @user_clauses, @id_clauses);
   my ($Queue, $User);
   for my $key (@keywords) {
       # Is this a ticket number? If so, go to it.
-      #if ($key =~ m/^\d+$/) {
-      #    $self->TicketsObj->Limit(FIELD => "id", VALUE => $key);
-      #    last;
-      #}
+   if ($key =~ m/^\d+$/) {
+        push @id_clauses, "id = '$key'";
+   }
+
+    elsif ($key =~ /\w+\@\w+/) {
+        push @user_clauses, "Requestor LIKE '$key'";
+    }
 
       # Is there a queue named $key?
-      if ($Queue =  RT::Queue->new($self->TicketsObj->CurrentUser) 
+      elsif ($Queue =  RT::Queue->new($self->TicketsObj->CurrentUser) 
               and $Queue->Load($key)) {
           push @tql_clauses, "Queue = '". $Queue->Name. "'";
       } 
@@ -102,7 +105,7 @@ sub QueryToSQL {
       elsif ($User = RT::User->new($self->TicketsObj->CurrentUser)
               and $User->Load($key)
               and $User->Privileged) {
-          push @tql_clauses, "Owner = '". $User->Name. "'";
+          push @owner_clauses, "Owner = '". $User->Name. "'";
       } 
       # Else, content must contain $key
       else {
@@ -110,6 +113,12 @@ sub QueryToSQL {
           push @tql_clauses, "Content LIKE '$key'";
       }
   }
+
+    push @tql_clauses,  join( " OR " , @id_clauses);
+    push @tql_clauses,  join( " OR " , @owner_clauses);
+    push @tql_clauses,  join( " OR " , @user_clauses);
+    push @tql_clauses, join( " OR " , @queue_clauses) ;
+    @tql_clauses =grep { $_ ? "( $_ )" : undef } @tql_clauses;
   return join " AND ", @tql_clauses;
 }
 # }}}
@@ -118,6 +127,9 @@ sub QueryToSQL {
 sub Prepare  {
   my $self = shift;
   my $tql = $self->QueryToSQL($self->Argument);
+
+  $RT::Logger->crit($tql);
+
   $self->TicketsObj->FromSQL($tql);
   return(1);
 }
