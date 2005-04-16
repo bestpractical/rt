@@ -193,12 +193,15 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
+        attribute => 'Requestor.EmailAddress',
         value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
     },
     Cc => {
+        attribute => 'Cc.EmailAddress',
         value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
     },
     AdminCc => {
+        attribute => 'AdminCc.EmailAddress',
         value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
     },
     StartsRelative => {

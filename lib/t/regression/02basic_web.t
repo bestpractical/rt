@@ -52,6 +52,9 @@ $agent->field('Subject' => "Ticket with utf8 body");
 $agent->field('Content' => $string);
 ok($agent->submit(), "Created new ticket with $string as Content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
+ok($agent->{redirected_uri}, "Did redirection");
+
+
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form(3);
