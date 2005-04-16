@@ -283,7 +283,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
-    return();
+    $m->comp('/Elements/Footer');
+    $m->abort();
 }
 </%INIT>
 
