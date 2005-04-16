@@ -51,11 +51,14 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
-use Test::More qw/no_plan/;
+use Test::More tests => 57;
 use RT;
 RT::LoadConfig();
 RT::Init();
 use RT::I18N;
+no warnings 'once';
+my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+
 # Make sure that when we call the mailgate wrong, it tempfails
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://this.test.for.non-connection.is.expected.to.generate.an.error"), "Opened the mailgate - The error below is expected - $@");
@@ -74,7 +77,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate  --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate  --debug --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -102,7 +105,7 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # {{{This is a test of new ticket creation as an unknown user
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -138,7 +141,7 @@ my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 ok ($val, "Granted everybody the right to create tickets - $msg");
 
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -171,7 +174,7 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -196,7 +199,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -222,7 +225,7 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -247,7 +250,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -288,7 +291,7 @@ $entity->attach(Path => $LOGO_FILE,
                 Encoding => 'base64');
 
 # Create a ticket with a binary attachment
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
 
 $entity->print(\*MAIL);
 
@@ -333,7 +336,7 @@ use LWP::UserAgent;
 # Grab the binary attachment via the web ui
 my $ua      = LWP::UserAgent->new();
 
-my $full_url = "http://localhost".$RT::WebPath."/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/bplogo.gif?&user=root&pass=password";
+my $full_url = "$url/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/bplogo.gif?&user=root&pass=password";
 my $r = $ua->get( $full_url);
 
 
@@ -346,7 +349,7 @@ is($file, $r->content, 'The attachment isn\'t screwed up in download');
 
 # {{{ Simple I18N testing
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -380,7 +383,7 @@ is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attac
 ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost

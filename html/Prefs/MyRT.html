@@ -43,65 +43,87 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
-%# Hide all the save functionality if the user shouldn't see it.
-% if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
-%                                       Object=> $RT::System )) {
-<&|/l&>Privacy:</&>
-% if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
-<& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
-% } else {
-<& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
-% }
-<&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
-<nobr>
-% if ($SearchId ne 'new') {
-% if ($Dirty) {
-<input type="submit" name="Revert" value="<%loc('Revert')%>">
-% }
-<input type="submit" name="Delete" value="<%loc('Delete')%>">
-<input type="submit" name="CopySearch" value="<%loc('Copy')%>">
-</nobr>
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+    current_toptab => '',
+    Title => $title
+&>
 
-% }
+<& /Widgets/SelectionBox:header &>
 
-% if ($Dirty or $SearchId eq 'new') {
-<input type="submit" name="Save" value="<%loc('Save')%>">
-% }
-<hr>
-% }
-<&|/l&>Load saved search:</&><br>
-<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
-<input value="<%loc('Load')%>" type="submit">
-</&>
+<& /Elements/ListActions, actions => \@actions &>
+<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
 
-<%init>
+% for my $pane (@panes) {
+<& /Widgets/SelectionBox:show, self => $pane &>
+% }
+<%INIT>
+my @actions;
+
+my $title = loc("Customize").' '.loc("My RT");
+my $user = $session{'CurrentUser'}->UserObj;
+$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
+
+unless (exists $session{'my_rt_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
+    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
+}
+
+my $portlets = $session{'my_rt_portlets'};
+
+my %allowed_components = map {$_ => 1}
+    qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
+my @items;
+
+push @items, map {["component-$_", $_]} sort keys %allowed_components;
+
+my $sys = RT::System->new($session{'CurrentUser'});
 
 unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-                                          Object=> $RT::System )) {
+					   Object=> $RT::System )) {
     return;
 }
-my @Objects;
-
-push @Objects,  $session{CurrentUser}->UserObj;
 
 my $groups = RT::Groups->new($session{'CurrentUser'});
-
 $groups->LimitToUserDefinedGroups;
 $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
                     Recursively => 1);
+for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
+    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+	my ($desc, $search) = @$_;
+	if ($object eq $sys) {
+	    push @items, ["system-$desc", $desc],
+	}
+	else {
+	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+	    push @items, ["saved-$oid", "Saved Search: $desc"];
+	}
+    }
+}
 
-push (@Objects, @{$groups->ItemsArrayRef()});
-push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
+my %item_map = map {$_->[0] => $_->[1]} @items;
+my @panes;
+for my $pane ('main', 'right') {
+    push @panes,
+	$m->comp ('/Widgets/SelectionBox:new',
+		  Action => 'MyRT.html',
+		  Name => $pane,
+		  Available => \@items,
+		  OnSubmit =>
+		  sub { my $sel = shift;
+			$portlets->{$pane} =
+			    [map { m/(\w+)-(.*)$}/;
+				   { type => $1,
+				     name => $2,
+				 }} @{$sel->{Current}}];
+			$user->SetPreferences('My RT', $portlets);
+			push @actions, loc ('Preferences saved for [_1].', $pane);
+			delete $session{'my_rt_portlets'};
+
+		  },
+		  Selected => [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}]);
+}
+
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_) for @panes;
+
 </%INIT>
-
-<%ARGS>
-$SearchId => undef
-$CurrentSearch => undef
-$Description => undef
-$HideResults => 0
-$Dirty => 0
-</%ARGS>

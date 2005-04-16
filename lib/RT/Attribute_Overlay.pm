@@ -312,7 +312,10 @@ $attr->SetSubValues(Format => 'This is a format');
 my $attr2 = RT::Attribute->new($RT::SystemUser);
 $attr2->Load($id);
 is ($attr2->SubValue('Format'), 'This is a format');
-
+$attr2->Delete;
+my $attr3 = RT::Attribute->new($RT::SystemUser);
+my ($id) = $attr3->Load($id);
+is ($id, 0);
 
 =end testing
 

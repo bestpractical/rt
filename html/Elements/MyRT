@@ -43,65 +43,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
-%# Hide all the save functionality if the user shouldn't see it.
-% if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
-%                                       Object=> $RT::System )) {
-<&|/l&>Privacy:</&>
-% if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
-<& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
-% } else {
-<& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
-% }
-<&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
-<nobr>
-% if ($SearchId ne 'new') {
-% if ($Dirty) {
-<input type="submit" name="Revert" value="<%loc('Revert')%>">
-% }
-<input type="submit" name="Delete" value="<%loc('Delete')%>">
-<input type="submit" name="CopySearch" value="<%loc('Copy')%>">
-</nobr>
 
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD WIDTH=70% class="boxcontainer">
+
+% for my $portlet (@{$portlets->{main}}) {
+<% _show($portlet) %>
+<BR>
 % }
 
-% if ($Dirty or $SearchId eq 'new') {
-<input type="submit" name="Save" value="<%loc('Save')%>">
-% }
-<hr>
-% }
-<&|/l&>Load saved search:</&><br>
-<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
-<input value="<%loc('Load')%>" type="submit">
-</&>
+%#GAH!
+</TD>
+<TD class="boxcontainer">
 
-<%init>
+% for my $portlet (@{$portlets->{right}}) {
+<% _show($portlet) %>
+<BR>
+% }
 
-unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-                                          Object=> $RT::System )) {
-    return;
+</TD>
+</TR>
+</TABLE>
+<a href="<%$RT::WebPath%>/Prefs/MyRT.html"><&|/l&>Customize</&></a>
+
+
+<%INIT>
+
+my %allowed_components = map {$_ => 1}
+    qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
+
+unless (exists $session{'my_rt_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
+    my $user = $session{'CurrentUser'}->UserObj;
+    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
 }
-my @Objects;
 
-push @Objects,  $session{CurrentUser}->UserObj;
+my $portlets = $session{'my_rt_portlets'};
 
-my $groups = RT::Groups->new($session{'CurrentUser'});
+sub _show {
+    my $entry = shift;
+    my $type = $entry->{type};
+    if ($type eq 'component') {
+	my $name = $entry->{name};
+	# security check etc.
+	$m->comp ($name);
+    }
+    elsif ($type eq 'system') {
+	$m->comp ('/Elements/ShowSearch', Name => $entry->{name});
+    }
+    elsif ($type eq 'saved') {
+	$m->comp ('/Elements/ShowSearch', SavedSearch => $entry->{name});
+    }
+    else {
+	$RT::Logger->error ("unknown portlet type $type");
+    }
+}
 
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
-
-push (@Objects, @{$groups->ItemsArrayRef()});
-push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
 </%INIT>
-
-<%ARGS>
-$SearchId => undef
-$CurrentSearch => undef
-$Description => undef
-$HideResults => 0
-$Dirty => 0
-</%ARGS>

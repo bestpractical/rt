@@ -1580,6 +1580,50 @@ sub CurrentUserHasRight {
     return ( $self->CurrentUser->HasRight(Right => $right, Object => $RT::System) );
 }
 
+sub _PrefName {
+    my $name = shift;
+    if (ref $name) {
+	$name = ref ($name).'-'.$name->Id;
+    }
+
+    return 'Pref-'.$name;
+}
+
+# {{{ sub Preferences
+
+=head2 Preferences NAME/OBJ DEFAULT
+
+  Obtain user preferences associated with given object or name.
+  Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
+  override the entries with user preferences.
+
+=cut
+
+sub Preferences {
+    my $self  = shift;
+    my $name = _PrefName (shift);
+    my $default = shift;
+
+    my $attr = RT::Attribute->new ($self->CurrentUser);
+    $attr->LoadByNameAndObject (Object => $self, Name => $name);
+
+    my $content = $attr->Id ? $attr->Content : undef;
+    if (ref ($content) eq 'HASH') {
+	if (ref ($default) eq 'HASH') {
+	    for (keys %$default) {
+		exists $content->{$_} or $content->{$_} = $default->{$_};
+	    }
+	}
+	elsif (defined $default) {
+	    $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
+	}
+	return $content;
+    }
+    else {
+	return defined $content ? $content : $default;
+    }
+}
+
 # }}}
 
 # {{{ sub _CleanupInvalidDelegations
@@ -1649,6 +1693,30 @@ sub _CleanupInvalidDelegations {
 
     $RT::Handle->Commit() unless $in_trans;
     return (1);
+}
+
+# }}}
+
+# {{{ sub SetPreferences
+
+=head2 SetPreferences NAME/OBJ VALUE
+
+  Set user preferences associated with given object or name.
+
+=cut
+
+sub SetPreferences {
+    my $self  = shift;
+    my $name = _PrefName (shift);
+    my $value = shift;
+    my $attr = RT::Attribute->new ($self->CurrentUser);
+    $attr->LoadByNameAndObject (Object => $self, Name => $name);
+    if ($attr->Id) {
+	return $attr->SetContent ($value);
+    }
+    else {
+	return $self->AddAttribute ( Name => $name, Content => $value );
+    }
 }
 
 # }}}
