@@ -667,42 +667,16 @@ TD.collection-as-table {  text-align: left;
                           padding-right: .5em;
                         }
 
-textarea.signature {
-    width: 100%;
-}
-textarea.comments {
-    width: 100%;
-}
 
-textarea.messagebox {
-    width: 100%;
-}
-
-/* Home */
-
-div.quick-create, div.my-requests, div.my-tickets {
-	width: 60%;
-	margin-bottom: 1em;
-}
-
-div.right-column {
-	width: 35%;
-	float: right;
-}
-div.ticket-overview {
-	margin-bottom: 1em;
-}
-div.page-refresh {
-	text-align: right;
-}
-
-/* END */
-
-SPAN.titleboxright a {
+SPAN.titleboxright  {
         font-size: 0.5em;
-        color: #ffffff;
+        color: #000000;
          vertical-align: top;
          text-align: right;
+        }
+
+SPAN.titleboxright a {
+        color: #ffffff;
         }
 
 textarea.signature {
