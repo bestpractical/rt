@@ -170,23 +170,27 @@ sub Save {
 
 =head2 Update
 
-Updates the parameters of an existing search.  Takes a hashref with
-the new parameters.
+Updates the parameters of an existing search.  Takes the arguments
+"Name" and "SearchParams"; SearchParams should be a hashref containing
+the new parameters of the search.  If Name is not specified, the name
+will not be changed.
 
 =cut
 
 sub Update {
     my $self = shift;
-    my $params = shift;
+    my %args = ('Name' => '',
+		'SearchParams' => {},
+		@_);
     
     return(0, $self->loc("No search loaded")) unless $self->Id;
     return(0, $self->loc("Could not load search attribute"))
 	unless $self->{'Attribute'}->Id;
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$params});
-    if ($status) {
-	# Update all the accessor variables.
-	return ($status, $self->loc("Search update: [_1]", $msg));
+    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$args{'SearchParams'}});
+    if ($status && $args{'Name'}) {
+	($status, $msg) = $self->{'Attribute'}->SetDescription($args{'Name'});
     }
+    return ($status, $self->loc("Search update: [_1]", $msg));
 }
 
 =head2 Delete

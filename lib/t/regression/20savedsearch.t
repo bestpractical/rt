@@ -147,8 +147,8 @@ $loadedsearch4->Load($othersearch->Privacy, $othersearch->Id);
 isnt($loadedsearch4->Id, $othersearch->Id, "Did not load othersearch");
 
 # Try to update an existing search.
-$loadedsearch1->Update({'Format' => $format,
-			'Query' => "Queue = '" . $queue->Name . "'" });
+$loadedsearch1->Update(	SearchParams => {'Format' => $format,
+			'Query' => "Queue = '" . $queue->Name . "'" } );
 like($loadedsearch1->GetParameter('Query'), qr/Queue/,
      "Updated mysearch parameter");
 is($loadedsearch1->Type, 'Ticket', "mysearch is still for tickets");
