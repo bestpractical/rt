@@ -67,11 +67,14 @@
 %# and selected is an arrayref of selected values from @items.
 %#
 %# and in html:
-%# <& /Widgets/SelectionBox:show, self => $sel &>
+%# <& /Widgets/SelectionBox:sow, self => $sel &>
 %# 
 <%method header>
+% if (0) {
+% # no javascript for now. it's broken in ie
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/class.js"></script>
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/list.js"></script>
+% }
 </%method>
 
 <%method new>
@@ -174,9 +177,6 @@ $self => undef
 <& SelectionBox:current, self => $self &>
 <input type="hidden" name="fromjs" value="0">
 <&|/l&>Available</&>:
-% if ($self->{Modified}) {
-<b><&|/l&>(Modified, Please save)</&></b>
-% }
 <br>
 <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Available}}) {
@@ -197,7 +197,11 @@ SELECTED
  <input name="movedown" type="submit" value="v"/>
  <input name="remove" type="submit" value="<&|/l&>Delete</&>"/>
 
-<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>
+% my $caption = "";
+% if ($self->{Modified}) {
+% $caption = loc('Selections modified. Please save your changes');
+% }
+<& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
 
 </form>
 
