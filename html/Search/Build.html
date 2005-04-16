@@ -774,20 +774,21 @@ if ( $ARGS{'Save'} ) {
                     RowsPerPage => $RowsPerPage,
                 }
             );
-            $search =
-              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+	    if ( $search_id ) {
+		$search =
+		    $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+		# Build new SearchId
+		$SearchId =
+		    ref( $session{'CurrentUser'}->UserObj ) . '-'
+			. $session{'CurrentUser'}->UserObj->Id
+			. '-SavedSearch-'
+			. $search->Id;
+	    }
+	    else {
+		push @actions, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
+	    }
 
-            # Build new SearchId
-            $SearchId =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-              . $session{'CurrentUser'}->UserObj->Id
-              . '-SavedSearch-'
-              . $search->Id;
-        }
-        unless ( $search->id ) {
-            push @actions, [ loc("Can't find a saved search to work with"), 0 ];
-        }
-
+	}
     }
     else {
         push @actions, [ loc("Can't save this search"), 0 ];
