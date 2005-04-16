@@ -45,6 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 @Format => undef
+$FormatString => undef
 $AllowSorting => undef
 $Order=>undef
 $BaseURL => undef
@@ -56,7 +57,7 @@ $maxitems => undef
 <TR class="collection-as-table">
 <%perl>
 
-my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
+my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format => $FormatString );
 
 my $item = 0;
 foreach my $col (@Format) {
