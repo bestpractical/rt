@@ -228,7 +228,8 @@ my @format_string;
 foreach my $field (@seen) {
     next unless $field;
     my $row = "'" . $field->{Prefix};
-    $row .= "__" . $m->interp->apply_escapes( $field->{Column}, 'h' ) . "__"
+    $row .= "__" . ($field->{Column} =~ m/\(/ ? $field->{Column} # func, don't escape
+		    : $m->interp->apply_escapes( $field->{Column}, 'h' )) . "__"
       unless ( $field->{Column} eq "<blank>" );
     $row .= $field->{Suffix} . "'";
     push( @format_string, $row );
