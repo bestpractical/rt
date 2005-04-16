@@ -62,7 +62,7 @@
 <tr valign="top">
 <td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
-<& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
+<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Refine'), Name => 'AddClause'&>
 </td>
 
 <td>
@@ -71,6 +71,7 @@
     actions => \@actions,
     optionlist => $optionlist,
     Description => $Description &>
+<& /Elements/Submit, Label => loc('Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 
@@ -85,11 +86,6 @@
 
 <& Elements/DisplayOptions, %ARGS, Format=> $Format,
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
-</td>
-</tr>
-<tr>
-<td colspan=2 class="boxcontainer">
-<& /Elements/Submit, Caption => loc("Do the Search"), Label => loc('Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 </table>
@@ -826,7 +822,7 @@ $session{'CurrentSearchHash'} = $search_hash;
 # }}}
 
 # {{{ Show the results, if we were asked.
-if ( $ARGS{"DoSearch"} ) {
+if ( $ARGS{"DoSearch"}) {
     $m->comp(
         "Results.html",
         Query   => $Query,
