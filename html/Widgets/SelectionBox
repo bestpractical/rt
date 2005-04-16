@@ -72,11 +72,13 @@
 %# if the SelectionBox is created with AutoSave option, OnSubmit will be called
 %# on every button clicked in non-js mode.
 <%method header>
-% if (0) {
-% # no javascript for now. it's broken in ie
+% unless ($nojs) {
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/class.js"></script>
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/list.js"></script>
 % }
+<%ARGS>
+$nojs => 0
+</%ARGS>
 </%method>
 
 <%method new>
@@ -174,7 +176,11 @@ $self => undef
 </%method>
 
 <%method show>
-<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>" onSubmit="//list_<% $name %>.selectAll();">
+<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
+% unless ($nojs) {
+onSubmit="list_<% $name %>.selectAll();"
+% }
+>
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
 <input type="hidden" name="fromjs" value="0">
@@ -208,12 +214,15 @@ SELECTED
 % }
 </form>
 
+% unless ($nojs) {
 <script type="text/javascript">
-//var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
+var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
 </script>
+% }
 <%ARGS>
 $self => undef
 $size => 10
+$nojs => 0
 </%ARGS>
 <%INIT>
 my $name = $self->{Name};

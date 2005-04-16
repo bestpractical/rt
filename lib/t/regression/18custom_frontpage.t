@@ -54,7 +54,7 @@ $m->form_name ('SelectionBox-body');
 $m->field ('body-Selected' => ['component-QuickCreate', 'system-Unowned Tickets', 'system-My Tickets']);
 $m->click_button (name => 'remove');
 $m->form_name ('SelectionBox-body');
-$m->click_button (name => 'body-Save');
+#$m->click_button (name => 'body-Save');
 $m->get ( BaseURL );
 $m->content_lacks ('highest priority tickets', 'remove everything from body pane');
 
@@ -71,6 +71,6 @@ $m->form_name ('SelectionBox-body');
 $m->click_button (name => 'movedown');
 
 $m->form_name ('SelectionBox-body');
-$m->click_button (name => 'body-Save');
+#$m->click_button (name => 'body-Save');
 $m->get ( BaseURL );
 $m->content_like (qr'highest priority tickets', 'adds them back');

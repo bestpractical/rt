@@ -50,13 +50,13 @@
     Searches => \@sys_searches
 &>
 
-<& /Widgets/SelectionBox:header &>
+<& /Widgets/SelectionBox:header, nojs => 1 &>
 
 <& /Elements/ListActions, actions => \@actions &>
 <br />
 % for my $pane (@panes) {
 <&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane &></&>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
 <&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
@@ -142,6 +142,6 @@ for my $pane ('body', 'summary') {
 		  Selected => [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}]);
 }
 
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_) for @panes;
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @panes;
 
 </%INIT>
