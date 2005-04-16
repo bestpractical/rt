@@ -119,35 +119,22 @@ sub Limit  {
 }
 # }}}
 
-# {{{ sub Next 
+# {{{ sub AddRecord
 
-=head2 Next
+=head2 AddRecord
 
-Returns the next queue that this user can see.
+Adds a record object to this collection if this user can see.
+This is used for filtering objects for both Next and ItemsArrayRef.
 
 =cut
-  
-sub Next {
-    my $self = shift;
-    
-    
-    my $Queue = $self->SUPER::Next();
-    if ((defined($Queue)) and (ref($Queue))) {
 
-	if ($Queue->CurrentUserHasRight('SeeQueue')) {
-	    return($Queue);
-	}
-	
-	#If the user doesn't have the right to show this queue
-	else {	
-	    return($self->Next());
-	}
-    }
-    #if there never was any queue
-    else {
-	return(undef);
-    }	
-    
+sub AddRecord {
+    my $self = shift;
+    my $Queue = shift;
+    return unless $Queue->CurrentUserHasRight('SeeQueue');
+
+    push @{$self->{'items'}}, $Queue;
+    $self->{'rows'}++;
 }
 # }}}
 

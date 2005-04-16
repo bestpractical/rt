@@ -23,7 +23,7 @@ $m->content_like(qr/Logout/, 'we did log in');
 $m->get ( BaseURL.'Prefs/MyRT.html' );
 $m->form_name ('SelectionBox-body');
 # can't use submit form for mutli-valued select as it uses set_fields
-$m->field ('body-Selected' => ['component-QuickCreate', 'system-My Requests', 'system-My Tickets']);
+$m->field ('body-Selected' => ['component-QuickCreate', 'system-Unowned Tickets', 'system-My Tickets']);
 $m->click_button (name => 'remove');
 $m->form_name ('SelectionBox-body');
 $m->click_button (name => 'body-Save');
@@ -32,7 +32,7 @@ $m->content_lacks ('highest priority tickets', 'remove everything from body pane
 
 $m->get ( BaseURL.'Prefs/MyRT.html' );
 $m->form_name ('SelectionBox-body');
-$m->field ('body-Available' => ['component-QuickCreate', 'system-My Requests', 'system-My Tickets']);
+$m->field ('body-Available' => ['component-QuickCreate', 'system-Unowned Tickets', 'system-My Tickets']);
 $m->click_button (name => 'add');
 
 $m->form_name ('SelectionBox-body');

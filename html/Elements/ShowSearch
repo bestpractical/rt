@@ -83,6 +83,7 @@ else {
 my $rows = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
 $SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
 $SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
+$SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 my $QueryString = '?' . $m->comp('/Elements/QueryString',
 	    map { $_ => $SearchArg->{$_} } qw(Query Order OrderBy));
 
