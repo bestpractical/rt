@@ -63,7 +63,7 @@
     <TH  
          <%$color && "style=\"color: $color;\""|n%>
          <%$class ? "class=\"$class\"": "class=\"titleboxright\""|n%>>
-      <span class="titleboxright"><%$titleright ? $titleright : '&nbsp;' |n %></span>
+      <span class="titleboxright"><% $titleright_href && "<A $title_class HREF=\"$titleright_href\">"|n%><%$titleright ? $titleright : '&nbsp;' |n %><%  $titleright_href && "</A>" |n%></span>
     </TH>
   </TR>
   <tr id="element-<%$id%>">

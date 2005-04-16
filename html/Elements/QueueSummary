@@ -43,21 +43,48 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
-$Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<tr>
+       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>
+% for my $condition (@$conditions) {
+       <th class="collection-as-table" align=right><% $condition->{name} %></th>
 % }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
+</tr>
+% my $i;
+% for my $queue (@queues) {
+%   $i++;
+%   my $queue_cond = "Queue = '$queue->{Name}' AND ";
+%   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new')";
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->{Description} %>"><%$queue->{Name}%></a></TD>
+%   for my $condition (@$conditions) {
+%       $Tickets->FromSQL($queue_cond.$condition->{cond}), 
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$queue_cond.$condition->{cond}%>&Rows=50"><% $Tickets->Count %></a></TD>
+%   }
+</TR>
 % }
-% }
-</select>
+</TABLE>
+<%INIT>
+my @queues;
+
+if ($cache && exists $session{$cache}) {
+    @queues = @{$session{$cache}};
+}
+else {
+    my $Queues = RT::Queues->new($session{'CurrentUser'});
+    $Queues->UnLimit();
+    @queues = map {
+	{ Name => $_->Name, Description => $_->Description,
+	  id => $_->Id } }
+	grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
+
+    $session{$cache} = \@queues if $cache;
+}
+
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+</%INIT>
+<%ARGS>
+$cache => undef
+$queue_filter => undef
+$conditions => ()
+</%ARGS>

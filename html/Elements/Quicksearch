@@ -43,45 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "" &>
-
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
-<tr>                                                                          
-       <th class="collection-as-table" align=left><&|/l&>Queue</&></th> 
-       <th class="collection-as-table" align=right><&|/l&>New</&></th>
-       <th class="collection-as-table" align=right><&|/l&>Open</&></th>          
-</tr>
-
-<%PERL>
-my $i;
-while (my $queue = $Queues->Next) {
-       next unless ($queue->CurrentUserHasRight('ShowTicket'));
-
-        my $new_q = "Queue = '".$queue->Name."' AND Status = 'new'";
-        my $open_q = "Queue = '".$queue->Name."' AND Status = 'open'";
-        my $all_q = "Queue = '".$queue->Name."' AND (Status = 'open' OR Status = 'new')";
-
-    $Tickets->FromSQL($open_q);
-     my $open = $Tickets->Count();
-
-        $Tickets->FromSQL($new_q);
-     my $new = $Tickets->Count();
-
-
-
-</%PERL>
-% $i++;                                                                         
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$new_q%>&Rows=50"><%$new%></a></TD>
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$open_q%>&Rows=50"><%$open%></a></TD>
-</TR>
-% }
-</TABLE>
-<& /Elements/TitleBoxEnd &>
-
+<&|/Elements/TitleBox, title => loc("Quick search"), bodyclass => "",
+   titleright => loc("Customize"), titleright_href => $RT::WebPath.'/Prefs/Quicksearch.html' &>
+<& /Elements/QueueSummary,
+   cache => 'quick_search_queues',
+   queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
+   conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
+		   {cond => "Status = 'open'", name => loc ('open') },
+		   {cond => "Status = 'stalled'", name => loc ('stalled') }] &>
+</&>
 <%INIT>
-my $Queues = RT::Queues->new($session{'CurrentUser'}); 
-$Queues->UnLimit();
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
 </%INIT>

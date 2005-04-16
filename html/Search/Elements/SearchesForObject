@@ -44,20 +44,20 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-@Objects => undef
-$Name => undef
+$Object => undef
 </%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
-% }
-% }
-</select>
+<%init>
+# Returns an array of search objects associated on $Object,
+# in the form of [Description, searchObj]
+my @result;
+while (my $search = $Object->Attributes->Next) {
+    my $desc;
+    if ($search->Name eq 'SavedSearch') {
+	push @result, [$search->Description, $search];
+    }
+    elsif ($search->Name =~ m/^Search - (.*)/) {
+	push @result, [$1, $search];
+    }
+}
+return @result;
+</%init>

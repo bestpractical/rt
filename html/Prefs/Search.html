@@ -43,21 +43,53 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
-$Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
-% }
-% }
-</select>
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+#    current_tab => "Search/Build.html".$QueryString, 
+    Title => $title, %$SearchArg
+&>
+<& /Elements/ListActions, actions => \@actions &>
+<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
+<FORM METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
+<input type=hidden name=name value="<%$ARGS{name}%>">
+<input type=hidden name=referer value="<%$ARGS{referer}%>">
+<input type=hidden name=Format value="<%$ARGS{Format}%>">
+
+<& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
+   AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save'&>
+
+</FORM>
+
+<%INIT>
+my @actions;
+$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
+my $title = loc("Customize").' ';
+
+my @fields = qw(Format Order OrderBy RowsPerPage);
+my ($class, $id) = $ARGS{name} =~ m/^(.*)-(\d+)$/;
+
+Abort('No search specified')
+    unless $class eq 'RT::Attribute';
+
+my $search = $class->new ($session{'CurrentUser'});
+$search->LoadById ($id);
+$title .= loc ($search->Description, 'N');
+my $user = $session{'CurrentUser'}->UserObj;
+my $SearchArg = $user->Preferences($search, $search->Content);
+for (@fields) {
+    $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
+}
+my ( $AvailableColumns, $CurrentFormat );
+( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
+    '/Search/Elements/BuildFormatString',
+    cfqueues => {}, %ARGS
+);
+
+if ($ARGS{'Save'}) {
+    my $hash = {map { $_ => $ARGS{$_}} @fields};
+    my $pref = $user->SetPreferences ($search, $hash);
+    push @actions, loc ('Preferences saved.');
+}
+
+</%INIT>

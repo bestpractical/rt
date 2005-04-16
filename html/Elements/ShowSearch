@@ -43,21 +43,51 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
+<&|/Elements/TitleBox,
+    title => loc($search->Description, $rows),
+    title_href => "Search/Results.html".$QueryString,
+    titleright => loc('Customize'),
+    titleright_href => $customize &>
+<& /Elements/TicketList, %$SearchArg,
+        Rows => $rows,
+        ShowNavigation => 0
+        &>
+</&>
+<%init>
+my $search;
+my $user = $session{'CurrentUser'}->UserObj;
+my $SearchArg;
+my $customize;
+
+if ($SavedSearch) {
+    my ($container_object, $search_id ) = _parse_saved_search ($SavedSearch);
+    $search = $container_object->Attributes->WithId($search_id);
+    unless ($search->Id && ref ($SearchArg = $search->Content) eq 'HASH') {
+	$m->out ("Saved Search $SavedSearch not found");
+	return;
+    }
+    $customize = $RT::WebPath.'/Search/Build.html?'.
+	$m->comp('/Elements/QueryString',
+		 LoadSavedSearch => $SavedSearch);
+}
+else {
+    ($search) = RT::System->new($session{'CurrentUser'})->Attributes->Named('Search - '.$Name);
+    unless ($search->Id) {
+	$m->out ("Predefined search $Name not found");
+	return;
+    }
+    $SearchArg = $user->Preferences($search, $search->Content);
+    $customize = $RT::WebPath.'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search).'-'.$search->Id)
+}
+
+my $rows = $SearchArg->{SummaryRows} || 10;
+$SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
+$SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
+my $QueryString = '?' . $m->comp('/Elements/QueryString',
+	    map { $_ => $SearchArg->{$_} } qw(Query Order OrderBy));
+
+</%init>
+<%ARGS>
 $Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
-% }
-% }
-</select>
+$SavedSearch => undef
+</%ARGS>

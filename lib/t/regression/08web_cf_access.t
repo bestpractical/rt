@@ -1,14 +1,16 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More qw/no_plan/;
-use RT;
-RT::LoadConfig;
-RT::Init;
+use Test::More tests => 15;
+BEGIN {
+    use RT;
+    RT::LoadConfig;
+    RT::Init;
+}
 use Test::WWW::Mechanize;
 
 $RT::WebPath ||= ''; # Shut up a warning
-use constant BaseURL => "http://localhost".$RT::WebPath."/";
+use constant BaseURL => "http://localhost:".$RT::WebPort.$RT::WebPath."/";
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
     local $/;

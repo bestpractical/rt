@@ -43,21 +43,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
-$Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD WIDTH=70% class="boxcontainer">
+
+% for my $portlet (@{$portlets->{main}}) {
+<% _show($portlet) %>
+<BR>
 % }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
+
+%#GAH!
+</TD>
+<TD class="boxcontainer">
+
+% for my $portlet (@{$portlets->{right}}) {
+<% _show($portlet) %>
+<BR>
 % }
-% }
-</select>
+
+</TD>
+</TR>
+</TABLE>
+<a href="<%$RT::WebPath%>/Prefs/MyRT.html"><&|/l&>Customize</&></a>
+
+
+<%INIT>
+
+my %allowed_components = map {$_ => 1}
+    qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
+
+unless (exists $session{'my_rt_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
+    my $user = $session{'CurrentUser'}->UserObj;
+    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
+}
+
+my $portlets = $session{'my_rt_portlets'};
+
+sub _show {
+    my $entry = shift;
+    my $type = $entry->{type};
+    if ($type eq 'component') {
+	my $name = $entry->{name};
+	# security check etc.
+	$m->comp ($name);
+    }
+    elsif ($type eq 'system') {
+	$m->comp ('/Elements/ShowSearch', Name => $entry->{name});
+    }
+    elsif ($type eq 'saved') {
+	$m->comp ('/Elements/ShowSearch', SavedSearch => $entry->{name});
+    }
+    else {
+	$RT::Logger->error ("unknown portlet type $type");
+    }
+}
+
+</%INIT>

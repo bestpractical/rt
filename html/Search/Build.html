@@ -151,35 +151,51 @@ my %queues;
 # Clean unwanted junk from the format
 $Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
 
+sub _load_container_object {
+    my ($obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+	return $session{'CurrentUser'}->UserObj;
+    }
+    elsif ($obj_type eq 'RT::Group') {
+	my $group = RT::Group->new($session{'CurrentUser'});
+	$group->Load($obj_id);
+	return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+	# XXX: check hasright
+	return RT::System->new($session{'CurrentUser'});
+    }
+    else {
+#	push( @actions, [ loc("error: Invalid object type"), -1 ] );
+    }
+
+}
+
+sub _parse_saved_search {
+    my $spec = shift;
+    if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+#	push( @actions, [ loc("error: Invalid argument"), -1 ] );
+	return;
+    }
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    return (_load_container_object ($obj_type, $obj_id), $search_id);
+}
+
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
 
     # We set $SearchId to 'new' above already, so peek into the %ARGS
-    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        my $obj_type  = $1;
-        my $obj_id    = $2;
-        my $search_id = $3;
-
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
-        {
-            $container_object = $session{'CurrentUser'}->UserObj;
-        }
-        elsif ( $obj_type eq 'RT::Group' ) {
-            $container_object = RT::Group->new( $session{'CurrentUser'} );
-            $container_object->Load($obj_id);
-        }
-
-        if ( $container_object->id ) {
-
-            # We have the object the entry is an attribute on; delete
-            # the entry..
-            $container_object->Attributes->DeleteEntry(
-                Name => 'SavedSearch',
-                id   => $search_id
+    my ($container_object, $search_id) = _parse_saved_search ($ARGS{'SearchId'});
+    if ($container_object && $container_object->id) {
+	# We have the object the entry is an attribute on; delete the
+	# entry..
+	$container_object->Attributes->DeleteEntry(
+            Name => 'SavedSearch',
+	    id   => $search_id
             );
-        }
-
     }
 }
 
@@ -203,25 +219,8 @@ if ( $ARGS{'Revert'} ) {
 
 # {{{ if we're asked to load a search, load it.
 
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    # We explicitly list out the available types (user and group) and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-
-    }
-    elsif ( $obj_type eq 'RT::Group' ) {
-        my $group = RT::Group->new( $session{'CurrentUser'} );
-        $group->Load($obj_id);
-        $search = $group->Attributes->WithId($search_id);
-    }
+if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSavedSearch'})) {
+    $search = $container_object->Attributes->WithId($search_id);
 
     # We have a $search and now; import the others
     $SearchId    = $ARGS{'LoadSavedSearch'};
@@ -775,21 +774,12 @@ if ( $ARGS{'Save'} ) {
 
     }
     elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-
         # We're saving a new search
         my $obj_type = $1;
         my $obj_id   = $2;
 
         # Find out if we're saving on the user, or a group
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
-        {
-            $container_object = $session{'CurrentUser'}->UserObj;
-        }
-        elsif ( $obj_type eq 'RT::Group' ) {
-            $container_object = RT::Group->new( $session{'CurrentUser'} );
-            $container_object->Load($obj_id);
-        }
+        my $container_object = _load_container_object ($obj_type, $obj_id);
 
         if ( $container_object->id ) {
 

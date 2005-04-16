@@ -43,21 +43,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
-$Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+#    current_tab => "Search/Build.html".$QueryString, 
+    Title => $title
+&>
+<& /Elements/ListActions, actions => \@actions &>
+<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
+
+<FORM METHOD="POST" ACTION="Quicksearch.html" NAME="Preferences">
+<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
+
+% for my $queue (@queues) {
+<input type=checkbox name="Want-<%$queue->Name%>" value="1"
+% unless ($unwanted->{$queue->Name}) {
+CHECKED
 % }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
+><%$queue->Name%>
+<br>
+
 % }
-% }
-</select>
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save'&>
+
+</form>
+
+<%INIT>
+my @actions;
+$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
+my $title = loc("Customize").' '.loc("Quick search");
+# The queue list is not loaded from cache, so it might be a bit inconsistent
+my $user = $session{'CurrentUser'}->UserObj;
+my $unwanted = $user->Preferences('QuickSearch', {});
+my $Queues = RT::Queues->new($session{'CurrentUser'});
+$Queues->UnLimit;
+my @queues = grep {$_->CurrentUserHasRight('ShowTicket')} @{$Queues->ItemsArrayRef};
+
+if ($ARGS{'Save'}) {
+    for my $queue (@queues) {
+        if ($ARGS{"Want-".$queue->Name}) {
+	    delete $unwanted->{$queue->Name};
+	}
+        else {
+	    ++$unwanted->{$queue->Name};
+        }
+    }
+
+    $user->SetPreferences('QuickSearch', $unwanted);
+    push @actions, loc ('Preferences saved.');
+    # Let QueueSummary rebuild the cache
+    delete $session{'quick_search_queues'};
+}
+
+</%INIT>

@@ -74,29 +74,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
     current_toptab => '', 
     Title=>loc("RT at a glance") &>
 <& /Elements/ListActions, actions => \@results &>    
-
-
-<div class="right-column">
-<& /Elements/Quicksearch &>
-
-<div class="page-refresh">
-<form method="get" action="<%$RT::WebPath%>/index.html">
-<& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
-<input type="submit" value="<&|/l&>Go!</&>" />
-</form>
-</div>
-
-</div>
-
-<& /Elements/MyTickets &>
-<BR>
-<& /Elements/MyRequests &>
-<BR>
-<& /Elements/QuickCreate &>
-
-</TD>
-</TR>
-</TABLE>
+<& /Elements/MyRT &>
 <%init>
 
 my @results;
