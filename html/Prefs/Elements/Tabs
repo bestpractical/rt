@@ -43,59 +43,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
-<& /Prefs/Elements/Tabs,
+<& /User/Elements/Tabs,
+    subtabs => $tabs,
     current_tab => 'Prefs/MyRT.html',
-#    current_subtab => 'Prefs/Search.html?name='.$m->comp('/Elements/QueryString', name => $ARGS{name}),
-    current_subtab => 'Prefs/Search.html?name='.$ARGS{name},
-    Title => $title
-&>
-<& /Elements/ListActions, actions => \@actions &>
-% if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-<&|/l&>You can also edit the predefined search itself</&>:
-<a href="<% $RT::WebPath.'/Search/Build.html?'.
-	$m->comp('/Elements/QueryString',
-		 LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
-% }
-<br>
-<FORM METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
-<input type=hidden name=name value="<%$ARGS{name}%>">
-<input type=hidden name=Format value="<%$ARGS{Format}%>">
-
-<& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
-   AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
-<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save'&>
-
-</FORM>
+    current_subtab => $current_subtab,
+    Title => $Title &>
 
 <%INIT>
-my @actions;
-my $title = loc("Customize").' ';
-
-my @fields = qw(Format Order OrderBy RowsPerPage);
-my ($class, $id) = $ARGS{name} =~ m/^(.*)-(\d+)$/;
-
-Abort('No search specified')
-    unless $class eq 'RT::Attribute';
-
-my $search = $class->new ($session{'CurrentUser'});
-$search->LoadById ($id);
-$title .= loc ($search->Description, loc ('"N"'));
-my $user = $session{'CurrentUser'}->UserObj;
-my $SearchArg = $user->Preferences($search, $search->Content);
-for (@fields) {
-    $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
-}
-my ( $AvailableColumns, $CurrentFormat );
-( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
-    '/Search/Elements/BuildFormatString',
-    cfqueues => {}, %ARGS
-);
-
-if ($ARGS{'Save'}) {
-    my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my $pref = $user->SetPreferences ($search, $hash);
-    push @actions, loc ('Preferences saved.');
+my $tabs;
+unless ($Searches) {
+    $Searches = [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new($session{'CurrentUser'}))];
 }
 
+$tabs->{a} = { title => loc('Quick search'),
+	       path => 'Prefs/Quicksearch.html' };
+for my $search (@$Searches) {
+    $tabs->{$search->[0]} = { title => $search->[0],
+			      path  => "Prefs/Search.html?".$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id) };
+}
 </%INIT>
+<%ARGS>
+$GroupObj => undef
+$current_subtab => undef
+$Title => undef
+$Searches => undef
+</%ARGS>

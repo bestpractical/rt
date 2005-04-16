@@ -366,6 +366,16 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 13456);
 
+# $DefaultSummaryRows is default number of rows displayed in for search
+# results on the frontpage.
+
+Set($DefaultSummaryRows, 10);
+
+
+# $MaxInlineBody is an arrayref of allowed components customized homepage.
+
+Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage)]);
+
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful
 # for debugging, eg. profiling individual components with:

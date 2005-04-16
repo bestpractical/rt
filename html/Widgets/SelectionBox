@@ -77,6 +77,7 @@
 <%method new>
 
 <%init>
+$ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{Available}}};
 return \%ARGS;
 </%init>
 </%method>
@@ -91,7 +92,9 @@ unless ($ARGS{$self->{Name}.'-Submit'}) {
 }
 
 $self->{Selected} = $ARGS{$self->{Name}.'-Selected'};
-$self->{Selected} = [$self->{Selected}] unless ref ($self->{Selected});
+if ($self->{Selected} && !ref($self->{Selected})) {
+    $self->{Selected} = [$self->{Selected}];
+}
 
 if ($ARGS{fromjs}) {
     $self->{Current} = $self->{Selected};
@@ -139,9 +142,9 @@ else {
     $self->{Current} = $current;
 }
 
-# XXX: Verify Current are within $self->{Available} here
+@{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
 
-if ($ARGS{submit}) {
+if ($ARGS{$self->{Name}.'-Save'}) {
     $self->{OnSubmit}->($self);
     delete $self->{Modified};
 }
@@ -166,38 +169,35 @@ $self => undef
 </%method>
 
 <%method show>
-<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
+<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>" onSubmit="list_<% $name %>.selectAll();">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
-<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
 <input type="hidden" name="fromjs" value="0">
 <&|/l&>Available</&>:
 % if ($self->{Modified}) {
 <b><&|/l&>(Modified, Please save)</&></b>
 % }
 <br>
-<select name="<%$name%>-Available" multiple >
+<select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Available}}) {
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
 <input name="add" type="submit" value="->"/>
-<select name="<%$name%>-Selected" multiple>
+<select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
 % if (exists $selected{$_}) {
 SELECTED
 % }
-><% $item_map{$_} %></option>
+><% $self->{_item_map}{$_} %></option>
 % }
 </select>
  <input name="moveup" type="submit" value="^"/>
  <input name="movedown" type="submit" value="v"/>
- <input name="remove" type="submit" value="X"/>
- <input name="submit" type="submit" value="<&|/l&>Save</&>"/>
+ <input name="remove" type="submit" value="<&|/l&>Delete</&>"/>
 
-%# the save button does not work because it's not direct child of the form element
-%#<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>
 
 </form>
 
@@ -206,12 +206,11 @@ var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"
 </script>
 <%ARGS>
 $self => undef
+$size => 10
 </%ARGS>
 <%INIT>
 my $name = $self->{Name};
 my %selected = map {$_ => 1} @{$self->{Selected}};
-my %item_map = map {$_->[0] => $_->[1]} @{$self->{Available}};
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 </%INIT>
 
 </%method>

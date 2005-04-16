@@ -595,8 +595,7 @@ return 0; # ignore $passed;
       { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Priority',
-        Order   => 'DESC',
-	SummaryRows => 10, },
+        Order   => 'DESC' },
     },
     { Name => 'Search - My Requests',
       Description => '[_1] newest unowned tickets', # loc
@@ -606,8 +605,7 @@ return 0; # ignore $passed;
 
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Created',
-        Order   => 'DESC',
-	SummaryRows => 10, },
+        Order   => 'DESC' },
     },
     { Name => 'HomepageSettings',
       Description => 'HomepageSettings',
