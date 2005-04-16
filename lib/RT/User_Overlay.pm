@@ -1626,6 +1626,30 @@ sub Preferences {
 
 # }}}
 
+# {{{ sub SetPreferences
+
+=head2 SetPreferences NAME/OBJ VALUE
+
+  Set user preferences associated with given object or name.
+
+=cut
+
+sub SetPreferences {
+    my $self  = shift;
+    my $name = _PrefName (shift);
+    my $value = shift;
+    my $attr = RT::Attribute->new ($self->CurrentUser);
+    $attr->LoadByNameAndObject (Object => $self, Name => $name);
+    if ($attr->Id) {
+	return $attr->SetContent ($value);
+    }
+    else {
+	return $self->AddAttribute ( Name => $name, Content => $value );
+    }
+}
+
+# }}}
+
 # {{{ sub _CleanupInvalidDelegations
 
 =head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }

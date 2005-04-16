@@ -597,12 +597,11 @@ return 0; # ignore $passed;
         OrderBy => 'Priority',
         Order   => 'DESC' },
     },
-    { Name => 'Search - My Requests',
+    { Name => 'Search - Unowned Tickets',
       Description => '[_1] newest unowned tickets', # loc
       Content     =>
-# take care of the loc here for 'Take'
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">Take</a>/TITLE:&nbsp;' ",
-
+# 'Take' #loc
+      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Created',
         Order   => 'DESC' },
@@ -612,7 +611,7 @@ return 0; # ignore $passed;
       Content =>
       { 'body' => # loc
 	[ { type => 'system', name => 'My Tickets' },
-	  { type => 'system', name => 'My Requests' },
+	  { type => 'system', name => 'Unowned Tickets' },
 	  { type => 'component',  name => 'QuickCreate'},
 	],
         'summary' => # loc
