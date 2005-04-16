@@ -55,9 +55,11 @@ $Name => undef
 <option value=""></option>
 <option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
 % }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
+% foreach my $search (@searches) { 
+%     # Skip it if it is not a ticket search.
+%     next if ($search->SubValue('SearchType')
+%              && $search->SubValue('SearchType') ne 'Ticket');
+<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"> -<%$search->Description||loc('Unnamed search')%></option>
 % }
 % }
 </select>
