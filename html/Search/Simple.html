@@ -57,11 +57,11 @@
 
 <%INIT>
 my $title = loc("Search for tickets");
-use RT::Search::Quick;
+use RT::Search::Googlish;
 
 if ( $ARGS{"q"}) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my $search  = RT::Search::Quick->new(Argument   => $ARGS{"q"},
+    my $search  = RT::Search::Googlish->new(Argument   => $ARGS{"q"},
                                          TicketsObj => $tickets);
 
     $m->comp( "Results.html", Query   => $search->QueryToSQL());

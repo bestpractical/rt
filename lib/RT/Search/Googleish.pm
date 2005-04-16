@@ -46,7 +46,7 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Search::Quick
+  RT::Search::Googlish
 
 =head1 SYNOPSIS
 
@@ -66,7 +66,7 @@ ok (require RT::Search::Generic);
 
 =cut
 
-package RT::Search::Quick;
+package RT::Search::Googlish;
 
 use strict;
 use base qw(RT::Search::Generic);
@@ -135,9 +135,9 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::Quick_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Quick_Vendor.pm});
-eval "require RT::Search::Quick_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Quick_Local.pm});
+eval "require RT::Search::Googlish_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googlish_Vendor.pm});
+eval "require RT::Search::Googlish_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googlish_Local.pm});
 
 1;
