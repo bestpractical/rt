@@ -1,5 +1,4 @@
 /* by TKirby, released under GPL */
-
 /* Define the "list" Class */
 Class("list").define({
  name : null,
@@ -43,8 +42,13 @@ Class("list").define({
 	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
 	    && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
 
-	     if (src.childNodes[i].name.indexOf("Save") < 0)
-		 src.childNodes[i].type = "button";
+	     if (src.childNodes[i].name.indexOf("Save") < 0) {
+		 var tmp	= document.createElement("input");
+		 tmp.type	= "button";
+		 tmp.name	= src.childNodes[i].name;
+		 tmp.value	= src.childNodes[i].value;
+		 src.replaceChild(tmp,src.childNodes[i]);
+	     }
 
 	     if(src.childNodes[i].name=="add")
 		 src.childNodes[i].onclick = new Function(this.name+".add();");
@@ -106,5 +110,3 @@ Class("list").define({
   for(i=0;i<this.sels[1].length;i++) this.sels[1][i].selected = true;
  }
 });
-
-

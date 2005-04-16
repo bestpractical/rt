@@ -227,7 +227,8 @@ my ($bgcolor, @results);
 my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
 
 $Format ||= $RT::DefaultSearchResultFormat;
-$Format =~ s/^'\s+/'___CHECKBOX__/;
+# inject _CHECKBOX to the first field.
+$Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
