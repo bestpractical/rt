@@ -208,6 +208,7 @@ ParseQuery( $Query, \$tree, \@actions );
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
     $m->comp( "Edit.html", Query => $Query, actions => \@actions );
+    $m->comp('/Elements/Footer');
     $m->abort();
 }
 
@@ -834,6 +835,7 @@ if ( $ARGS{"DoSearch"} ) {
         OrderBy => $OrderBy,
         Rows    => $RowsPerPage
     );
+    $m->comp('/Elements/Footer');
     $m->abort();
 }
 
