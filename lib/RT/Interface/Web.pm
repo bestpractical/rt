@@ -1508,6 +1508,49 @@ sub _UploadedFile {
     };
 }
 
+=head2 _load_container_object ( $type, $id );
+
+Instantiate container object for saving searches.
+
+=cut
+
+sub _load_container_object {
+    my ($obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+	return $session{'CurrentUser'}->UserObj;
+    }
+    elsif ($obj_type eq 'RT::Group') {
+	my $group = RT::Group->new($session{'CurrentUser'});
+	$group->Load($obj_id);
+	return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+	# XXX: check hasright
+	return RT::System->new($session{'CurrentUser'});
+    }
+    else {
+    }
+}
+
+=head2 _parse_saved_search ( $arg );
+
+Given a serialization string for saved search, and returns the
+container object and the search id.
+
+=cut
+
+sub _parse_saved_search {
+    my $spec = shift;
+    if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+	return;
+    }
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    return (_load_container_object ($obj_type, $obj_id), $search_id);
+}
+
 eval "require RT::Interface::Web_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm});
 eval "require RT::Interface::Web_Local";
