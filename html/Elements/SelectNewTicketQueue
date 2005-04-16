@@ -46,7 +46,7 @@
 <LABEL ACCESSKEY="9">
 <SELECT NAME ="<%$Name%>">
 % foreach my $queue (@{$session{'create_in_queues'}}) {
-<OPTION VALUE="<%$queue->{'id'}%>" <%$Default && ($queue->{'id'} == $Default) && 'SELECTED'%>><%$queue->{'Name'}%><%$Verbose && $queue->{'Description'} && "(".$queue->{'Description'}.")"%></OPTION>
+<OPTION VALUE="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ?'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></OPTION>
 % }
 </SELECT>
 </LABEL>

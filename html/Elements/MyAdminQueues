@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/Elements/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
 <& /Elements/QueueSummary,
    cache => 'my_admin_queues',
    queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },

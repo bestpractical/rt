@@ -74,7 +74,7 @@
 
 <& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
 <br>
-<& /Elements/TitleBoxStart, title => $title &>
+<&|/Widgets/TitleBox, title => $title &>
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
@@ -146,7 +146,7 @@
  </table>
 
 </&>
-<&|/Elements/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
+<&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
 <%perl>
 my $cfs = RT::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
@@ -178,7 +178,7 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 </table>
 </&>
 
-<& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
+<&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></i><br>
 <& /Ticket/Elements/BulkLinks &>
 </&>

@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/Elements/TitleBox,
+<&|/Widgets/TitleBox,
     title => loc($search->Description, $rows),
     title_href => "Search/Results.html".$QueryString,
     titleright => loc('Edit'),
