@@ -85,6 +85,19 @@
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>
+# Read from user preferences
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+
+# These variables are what define a search_hash; this is also
+# where we give sane defaults.
+$Format      ||= $prefs->{'Format'};
+$Order       ||= $prefs->{'Order'} || 'ASC';
+$OrderBy     ||= $prefs->{'OrderBy'} || 'id';
+$Rows = (  $prefs->{'RowsPerPage'} || 50 )
+  unless defined($Rows);
+
+
+
 my ($title, $ticketcount);
 $session{'i'}++;
 $session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
@@ -131,8 +144,8 @@ $session{'tickets'}->PrepForSerialization();
 $Query => undef
 $Format => undef 
 $HideResults => 0
-$Rows => 50
+$Rows => undef
 $Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
+$OrderBy => undef
+$Order => undef
 </%ARGS>

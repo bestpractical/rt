@@ -127,15 +127,19 @@ if ( $NewQuery or $ARGS{'Delete'} ) {
 # We don't read or write to the session again until the end
 $search_hash = $session{'CurrentSearchHash'};
 
+# Read from user preferences
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $Query       ||= $search_hash->{'Query'};
-$Format      ||= $search_hash->{'Format'};
+$Format      ||= $search_hash->{'Format'} || $prefs->{'Format'};
 $Description ||= $search_hash->{'Description'};
 $SearchId    ||= $search_hash->{'SearchId'} || 'new';
-$Order       ||= $search_hash->{'Order'} || 'ASC';
-$OrderBy     ||= $search_hash->{'OrderBy'} || 'id';
-$RowsPerPage = ( $search_hash->{'RowsPerPage'} || 50 )
+$Order       ||= $search_hash->{'Order'} || $prefs->{'Order'} || 'ASC';
+$OrderBy     ||= $search_hash->{'OrderBy'} || $prefs->{'OrderBy'} || 'id';
+$RowsPerPage = ( $search_hash->{'RowsPerPage'} || $prefs->{'RowsPerPage'} 
+                                               || 50 )
   unless defined($RowsPerPage);
 $search ||= $search_hash->{'Object'};
 
