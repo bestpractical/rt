@@ -57,10 +57,10 @@ BEGIN {
 
 RT::Init();
 
+my $port = shift @ARGV || $RT::WebPort || '8080';
 use RT::Interface::Web::Standalone;
-
 my $server = RT::Interface::Web::Standalone->new;
-$server->port(shift @ARGV) if ($ARGV[0]);
+$server->port($port);
 $server->run();
 
 
