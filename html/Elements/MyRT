@@ -48,7 +48,7 @@
 <TR VALIGN=TOP>
 <TD WIDTH=70% class="boxcontainer">
 
-% for my $portlet (@{$portlets->{main}}) {
+% for my $portlet (@{$portlets->{body}}) {
 <% _show($portlet) %>
 <BR>
 % }
@@ -57,7 +57,7 @@
 </TD>
 <TD class="boxcontainer">
 
-% for my $portlet (@{$portlets->{right}}) {
+% for my $portlet (@{$portlets->{summary}}) {
 <% _show($portlet) %>
 <BR>
 % }
@@ -65,8 +65,6 @@
 </TD>
 </TR>
 </TABLE>
-<a href="<%$RT::WebPath%>/Prefs/MyRT.html"><&|/l&>Customize</&></a>
-
 
 <%INIT>
 
@@ -74,9 +72,9 @@ my %allowed_components = map {$_ => 1}
     qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
     my $user = $session{'CurrentUser'}->UserObj;
-    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
+    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
 }
 
 my $portlets = $session{'my_rt_portlets'};

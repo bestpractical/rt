@@ -59,6 +59,9 @@
 	       h => { title => loc('Delegation'),
 			   path => 'User/Delegation.html',
 			 },
+	       r => { title => loc('RT at a glance'),
+			   path => 'Prefs/MyRT.html',
+			 },
 	     };
 
   foreach my $tab (sort keys %{$tabs}) {

@@ -166,15 +166,14 @@ $self => undef
 </%method>
 
 <%method show>
-<h2><% $name %></h2>
 <FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
 <input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
 <input type="hidden" name="fromjs" value="0">
-Available:
+<&|/l&>Available</&>:
 % if ($self->{Modified}) {
-<b>(Modified, Please save)</b>
+<b><&|/l&>(Modified, Please save)</&></b>
 % }
 <br>
 <select name="<%$name%>-Available" multiple >
@@ -195,7 +194,7 @@ SELECTED
  <input name="moveup" type="submit" value="^"/>
  <input name="movedown" type="submit" value="v"/>
  <input name="remove" type="submit" value="X"/>
- <input name="submit" type="submit" value="Save"/>
+ <input name="submit" type="submit" value="<&|/l&>Save</&>"/>
 
 %# the save button does not work because it's not direct child of the form element
 %#<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => $name.'-Save' &>

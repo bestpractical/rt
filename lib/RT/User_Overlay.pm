@@ -1721,6 +1721,77 @@ sub SetPreferences {
 
 # }}}
 
+# {{{ sub _CleanupInvalidDelegations
+
+=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+
+Revokes all ACE entries delegated by this user which are inconsistent
+with their current delegation rights.  Does not perform permission
+checks.  Should only ever be called from inside the RT library.
+
+If called from inside a transaction, specify a true value for the
+InsideTransaction parameter.
+
+Returns a true value if the deletion succeeded; returns a false value
+and logs an internal error if the deletion fails (should not happen).
+
+=cut
+
+# XXX Currently there is a _CleanupInvalidDelegations method in both
+# RT::User and RT::Group.  If the recursive cleanup call for groups is
+# ever unrolled and merged, this code will probably want to be
+# factored out into RT::Principal.
+
+sub _CleanupInvalidDelegations {
+    my $self = shift;
+    my %args = ( InsideTransaction => undef,
+		  @_ );
+
+    unless ( $self->Id ) {
+	$RT::Logger->warning("User not loaded.");
+	return (undef);
+    }
+
+    my $in_trans = $args{InsideTransaction};
+
+    return(1) if ($self->HasRight(Right => 'DelegateRights',
+				  Object => $RT::System));
+
+    # Look up all delegation rights currently posessed by this user.
+    my $deleg_acl = RT::ACL->new($RT::SystemUser);
+    $deleg_acl->LimitToPrincipal(Type => 'User',
+				 Id => $self->PrincipalId,
+				 IncludeGroupMembership => 1);
+    $deleg_acl->Limit( FIELD => 'RightName',
+		       OPERATOR => '=',
+		       VALUE => 'DelegateRights' );
+    my @allowed_deleg_objects = map {$_->Object()}
+	@{$deleg_acl->ItemsArrayRef()};
+
+    # Look up all rights delegated by this principal which are
+    # inconsistent with the allowed delegation objects.
+    my $acl_to_del = RT::ACL->new($RT::SystemUser);
+    $acl_to_del->DelegatedBy(Id => $self->Id);
+    foreach (@allowed_deleg_objects) {
+	$acl_to_del->LimitNotObject($_);
+    }
+
+    # Delete all disallowed delegations
+    while ( my $ace = $acl_to_del->Next() ) {
+	my $ret = $ace->_Delete(InsideTransaction => 1);
+	unless ($ret) {
+	    $RT::Handle->Rollback() unless $in_trans;
+	    $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->Id);
+	    return (undef);
+	}
+    }
+
+    $RT::Handle->Commit() unless $in_trans;
+    return (1);
+}
+
+# }}}
+
 # {{{ sub _Set
 
 sub _Set {
