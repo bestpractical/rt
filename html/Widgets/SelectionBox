@@ -200,11 +200,12 @@ SELECTED
  <input name="remove" type="submit" value="<&|/l&>Delete</&>"/>
 
 % my $caption = "";
+% unless ($self->{'AutoSave'}) {
 % if ($self->{Modified}) {
 % $caption = loc('Selections modified. Please save your changes');
 % }
 <& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
-
+% }
 </form>
 
 <script type="text/javascript">
