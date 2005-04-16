@@ -51,17 +51,24 @@
 <DIV align="center">
 
 <FORM ACTION="Simple.html" METHOD="GET">
-            <input name="q" size="60"><input type="submit" Value="<&|/l&>Search</&>">
+<p>Search for tickets. Enter <b>id</b> numbers,<b>queues</b> by name, Owners by <b>username</b> and Requestors by <b>email address</b>.</p>
+<p>RT will look for anything else you enter in ticket bodies and attachments.</p>
+
+<br>
+<br>
+<div align="center">
+<input name="q" size="60"><input type="submit" Value="<&|/l&>Search</&>">
+</div>
 </FORM>
 </&>
 
 <%INIT>
 my $title = loc("Search for tickets");
-use RT::Search::Googlish;
+use RT::Search::Googleish;
 
 if ( $ARGS{"q"}) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my $search  = RT::Search::Googlish->new(Argument   => $ARGS{"q"},
+    my $search  = RT::Search::Googleish->new(Argument   => $ARGS{"q"},
                                          TicketsObj => $tickets);
 
     $m->comp( "Results.html", Query   => $search->QueryToSQL());
