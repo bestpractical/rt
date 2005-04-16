@@ -91,6 +91,7 @@ package RT::Tickets;
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
 use RT::CustomFields;
+use DBIx::SearchBuilder::Unique;
 
 # Configuration Tables:
 
@@ -775,41 +776,7 @@ sub _WatcherLimit {
     my $meta = $FIELDS{$fieldname};
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
-# We only want _one_ clause for all of requestors, cc, admincc
-# It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
-    my $groups = $self->{ 'watcherlimit_' . ('global') . "_groups" } ||=
-      $self->NewAlias('Groups');
-    my $groupmembers =
-      $self->{ 'watcherlimit_' . ('global') . "_groupmembers" } ||=
-      $self->NewAlias('CachedGroupMembers');
-    my $users = $self->{ 'watcherlimit_' . ('global') . "_users" } ||=
-      $self->NewAlias('Users');
-
-# Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
-    $self->SUPER::Limit(
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::Ticket-Role',
-        ENTRYAGGREGATOR => 'AND'
-    );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'Instance',
-        ALIAS2 => 'main',
-        FIELD2 => 'id'
-    );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $groupmembers,
-        FIELD2 => 'GroupId'
-    );
-    $self->Join(
-        ALIAS1 => $groupmembers,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
-    );
+    my $users = $self->_WatcherJoin($type);
 
     # If we're looking for multiple watchers of a given type,
     # TicketSQL will be handing it to us as an array of clauses in
@@ -840,15 +807,60 @@ sub _WatcherLimit {
         );
     }
 
-    $self->_SQLLimit(
+    $self->_CloseParen;
+}
+
+=head2 _WatcherJoin
+
+Helper function which provides joins to a watchers table both for limits
+and for ordering.
+
+=cut
+
+sub _WatcherJoin {
+    my $self  = shift;
+    my $type  = shift;
+    my $key   = shift || "limit";
+    my $groups = $self->{ 'alias_' . $key . "_groups" } ||=
+      $self->NewAlias('Groups');
+    my $groupmembers =
+      $self->{ 'alias_' . $key . "_groupmembers" } ||=
+      $self->NewAlias('CachedGroupMembers');
+    my $users = $self->{ 'alias_' . $key . "_users" } ||=
+      $self->NewAlias('Users');
+
+    $self->SUPER::Limit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'Instance',
+        ALIAS2 => 'main',
+        FIELD2 => 'id'
+    );
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        ALIAS2 => $groupmembers,
+        FIELD2 => 'GroupId'
+    );
+    $self->Join(
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $users,
+        FIELD2 => 'id'
+    );
+    $self->SUPER::Limit(
         ALIAS           => $groups,
         FIELD           => 'Type',
         VALUE           => $type,
         ENTRYAGGREGATOR => 'AND'
       )
       if ($type);
-
-    $self->_CloseParen;
+    return $users;
 }
 
 =head2 _WatcherMembershipLimit
@@ -1189,6 +1201,41 @@ sub _CustomFieldLimit {
 # End Helper Functions
 
 # End of SQL Stuff -------------------------------------------------
+
+# {{{ Allow sorting on watchers
+
+=head2 OrderByCols ARRAY
+
+A modified version of the OrderBy method which automatically joins where
+C<ALIAS> is set to the name of a watcher type.
+
+=cut
+
+sub OrderByCols {
+    my $self = shift;
+    my @args = @_;
+    my $clause;
+    my @res = ();
+    my $order = 0;
+
+   foreach my $row( @args ) {
+       if( $row->{ALIAS} || $row->{FIELD} !~ /\./ ) {
+           push @res, $row;
+           next;
+       }
+       my ($field, $subkey) = split /\./, $row->{FIELD};
+       my $meta = $self->FIELDS->{ $field };
+       if( $meta->[0] eq 'WATCHERFIELD' ) {
+           my $users = $self->_WatcherJoin( $meta->[1], "order".$order++ );
+           push @res, { %$row, ALIAS => $users, FIELD => $subkey };
+       } else {
+           push @res, $row;
+       }
+   }
+   return $self->SUPER::OrderByCols( @res );
+}
+
+# }}}
 
 # {{{ Limit the result set based on content
 

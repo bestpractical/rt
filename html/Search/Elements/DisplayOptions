@@ -98,6 +98,7 @@ my $tickets = new RT::Tickets($session{'CurrentUser'});
 my %fields = %{$tickets->FIELDS};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};
+$fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
 
 
 </%INIT>

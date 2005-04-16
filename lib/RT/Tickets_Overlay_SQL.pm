@@ -443,7 +443,7 @@ while (my $tick = $tix->Next) {
     push @expectedids, $tick->Id;
 }
 ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
-
+#
 $query = ("id = $ids[0] OR MemberOf = $ids[0]");
 
 my ($id, $msg) = $tix->FromSQL($query);
@@ -452,12 +452,15 @@ ok ($id, $msg);
 
 is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
 
+my ($id, $msg) = $tix->FromSQL($query);
 @expectedids = ();
+
+
 while (my $tick = $tix->Next) {
     push @expectedids, $tick->Id;
 }
 
-ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets". join(",",@ids) . "==".join(",",@expectedids));
 
 =end testing
 
