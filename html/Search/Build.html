@@ -758,7 +758,12 @@ my ( $AvailableColumns, $CurrentFormat );
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
-
+    # permission check
+    if ($search->Object->isa('RT::System')) {
+	unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+	    Abort("No permission to save system-wide searches");
+	}
+    }
     if ( $search && $search->id ) {
 
         # This search is based on a previously loaded search -- so

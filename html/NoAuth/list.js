@@ -43,7 +43,7 @@ Class("list").define({
 	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
 	    && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
 
-	     if(src.childNodes[i].name != "submit") 
+	     if (src.childNodes[i].name.indexOf("Save") < 0)
 		 src.childNodes[i].type = "button";
 
 	     if(src.childNodes[i].name=="add")
@@ -54,10 +54,6 @@ Class("list").define({
 		 src.childNodes[i].onclick = new Function(this.name+".moveup();");
 	     if(src.childNodes[i].name=="movedown") 
 		 src.childNodes[i].onclick = new Function(this.name+".movedown();");
-	     if(src.childNodes[i].type=="submit") {
-		 src.childNodes[i].onclick = new Function(this.name+".selectAll();");
-	     }
-
 	 } 
      }
      if (esrc) {

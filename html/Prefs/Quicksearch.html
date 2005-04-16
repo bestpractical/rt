@@ -44,15 +44,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/Tabs,
+<& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
+    current_subtab => 'Prefs/Quicksearch.html',
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
 
 <FORM METHOD="POST" ACTION="Quicksearch.html" NAME="Preferences">
-<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
 
 % for my $queue (@queues) {
 <input type=checkbox name="Want-<%$queue->Name%>" value="1"
@@ -69,7 +68,6 @@ CHECKED
 
 <%INIT>
 my @actions;
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 my $title = loc("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = $session{'CurrentUser'}->UserObj;
