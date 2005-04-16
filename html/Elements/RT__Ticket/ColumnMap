@@ -291,6 +291,12 @@ $COLUMN_MAP = {
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
     },
+    '_CHECKBOX' => {
+        attribute => 'checkbox',
+        title => loc('Update'),
+        align     => 'right',
+        value     => sub { return \('<input type=checkbox name="UpdateTicket'.$_[0]->id.'" CHECKED>') }
+    },
 
 };
 </%ONCE>

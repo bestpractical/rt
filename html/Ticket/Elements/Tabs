@@ -179,7 +179,8 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 }
 
-my $args = "?" . $m->comp(
+my $args;
+$args= "?" . $m->comp(
     '/Elements/QueryString',
     Query   => $ARGS{'Query'}   || $session{'CurrentSearchHash'}->{'Query'},
     Format  => $ARGS{'Format'}  || $session{'CurrentSearchHash'}->{'Format'},
@@ -196,7 +197,7 @@ $tabs->{"g"} = { path      => "Search/Build.html$args",
 $tabs->{"h"} = { path      => "Search/Edit.html$args",
                  title     => loc('Advanced'),
                  separator => 1 };
-if (defined $session{'tickets'} and $session{'tickets'}->Count) {
+if ($args) {
   $tabs->{"i"} = { path      => "Search/Results.html$args",
                    title     => loc('Show Results'),
                    separator => 1,
@@ -204,7 +205,14 @@ if (defined $session{'tickets'} and $session{'tickets'}->Count) {
   if ($current_tab =~  "Search/Results.html") {
     $current_tab = "Search/Results.html$args";
   }
+  $tabs->{"j"} = { path      => "Search/Bulk.html$args",
+                   title     => loc('Bulk Update'),
+                   };
+  if ($current_tab =~  "Search/Bulk.html") {
+    $current_tab = "Search/Bulk.html$args";
+  }
 }
+
 
 </%INIT>
 
