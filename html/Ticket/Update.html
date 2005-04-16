@@ -61,7 +61,13 @@
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
-<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
+<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
+$ARGS{UpdateTimeWorked}%>"> 
+<select name="TimeWorkedUnits">
+    <option value="mins"><&|/l&>mins</&></option>
+    <option value="hrs"><&|/l&>hrs</&></option>
+</select>
+</td></tr>
 % my $skip;
 <& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
 % if (!$skip) {
