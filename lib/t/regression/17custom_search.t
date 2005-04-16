@@ -29,8 +29,9 @@ my $t_link = $m->find_link( text => "for custom search" );
 like ($t_link->url, qr/$id/, 'link to the ticket we created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
-
-my ($cus_hp, undef, $cus_qs) = $m->find_all_links( text => "Customize" );
+$m->get ( BaseURL.'Prefs/MyRT.html' );
+my $cus_hp = $m->find_link( text => "My Tickets" );
+my $cus_qs = $m->find_link( text => "Quick search" );
 $m->get ($cus_hp);
 $m->content_like (qr'highest priority tickets');
 
@@ -43,7 +44,7 @@ $m->click_button (name => 'AddCol') ;
 $m->form_name ('BuildQuery');
 $m->click_button (name => 'Save');
 
-$m->follow_link (text => 'Go back') or die;
+$m->get( BaseURL );
 $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 
 
@@ -57,7 +58,7 @@ $m->click_button (name => 'RemoveCol') ;
 $m->form_name ('BuildQuery');
 $m->click_button (name => 'Save');
 
-$m->follow_link (text => 'Go back') or die;
+$m->get( BaseURL );
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 
 
@@ -73,7 +74,7 @@ $m->form_name ('Preferences');
 $m->untick('Want-General', '1');
 $m->click_button (name => 'Save');
 
-$m->follow_link (text => 'Go back') or die;
+$m->get( BaseURL );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks - 1,
     'General gone from quicksearch list');
 
@@ -83,6 +84,6 @@ $m->form_name ('Preferences');
 $m->tick('Want-General', '1');
 $m->click_button (name => 'Save');
 
-$m->follow_link (text => 'Go back') or die;
+$m->get( BaseURL );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks,
     'General back in quicksearch list');

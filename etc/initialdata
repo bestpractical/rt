@@ -609,15 +609,15 @@ return 0; # ignore $passed;
         Order   => 'DESC',
 	SummaryRows => 10, },
     },
-    { Name => 'My RT',
-      Description => 'My RT',
+    { Name => 'HomepageSettings',
+      Description => 'HomepageSettings',
       Content =>
-      { main =>
+      { 'body' => # loc
 	[ { type => 'system', name => 'My Tickets' },
 	  { type => 'system', name => 'My Requests' },
 	  { type => 'component',  name => 'QuickCreate'},
 	],
-        right =>
+        'summary' => # loc
 	[ { type => 'component', name => 'Quicksearch' },
 	  { type => 'component', name => 'MySupportQueues' },
 	  { type => 'component', name => 'MyAdminQueues' },
