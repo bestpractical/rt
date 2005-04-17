@@ -51,46 +51,46 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="GroupRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
+  <form METHOD=POST ACTION="GroupRights.html">
+    <input TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
       
       
 <h1><&|/l&>System groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% loc($Group->Type) %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         Object => $CustomFieldObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
 <h1><&|/l&>User defined groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $Group->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         Object => $CustomFieldObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
             
       <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

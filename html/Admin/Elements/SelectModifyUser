@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %while ( $user = $users->Next) {
-<A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a><BR>
+<a HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a><br/>
 %}
 <%INIT>
 my ($user);

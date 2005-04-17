@@ -54,19 +54,19 @@
 %    my $lookup = $CustomFieldObj->FriendlyLookupType;
 %    if ($lookup ne $prev_lookup) {
 %        if ($prev_lookup) {
-</UL>
+</ul>
 %        }
-<H2><% loc("Custom Fields for [_1]", $lookup) %></H2>
-<UL>
+<h2><% loc("Custom Fields for [_1]", $lookup) %></h2>
+<ul>
 %        $prev_lookup = $lookup;
 %    }
 %    
-<LI>
-<A HREF="Modify.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a>
-</LI>
+<li>
+<a HREF="Modify.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a>
+</li>
 % }
 % if ($prev_lookup) {
-</UL>
+</ul>
 % }
 
 <%INIT>

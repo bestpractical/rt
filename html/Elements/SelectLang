@@ -43,18 +43,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 % if ($ShowNullOption) {
-<OPTION VALUE="">-</OPTION>
+<option VALUE="">-</option>
 % }
 % foreach my $lang (@lang) {
-<OPTION VALUE="<%$lang%>" <%($Default && ($lang eq $Default)) && 'SELECTED'%>><% $lang_to_desc{$lang} %>
+<option VALUE="<%$lang%>" <%($Default && ($lang eq $Default)) && 'SELECTED'%>><% $lang_to_desc{$lang} %>
 %   if (($Verbose) and (my $description = I18N::LangTags::List::native_name($lang)) ){
 (<%$description%>)
 %  }
-</OPTION>
+</option>
 % }
-</SELECT>
+</select>
 <%ARGS>
 $ShowNullOption => 1
 $ShowAllQueues => 1

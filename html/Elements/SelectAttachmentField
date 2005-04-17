@@ -43,12 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
-<OPTION VALUE="Subject"><&|/l&>Subject</&></OPTION>
-<OPTION VALUE="Content"><&|/l&>Content</&></OPTION>
-<OPTION VALUE="ContentType"><&|/l&>Content-Type</&></OPTION>
-<OPTION VALUE="Filename"><&|/l&>Filename</&></OPTION>
-</SELECT>
+<select NAME="<%$Name%>">
+<option VALUE="Subject"><&|/l&>Subject</&></option>
+<option VALUE="Content"><&|/l&>Content</&></option>
+<option VALUE="ContentType"><&|/l&>Content-Type</&></option>
+<option VALUE="Filename"><&|/l&>Filename</&></option>
+</select>
 <%ARGS>
 $Name => 'AttachmentField'
 </%ARGS>

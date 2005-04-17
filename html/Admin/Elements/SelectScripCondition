@@ -43,17 +43,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME=<%$Name%>>
-<OPTION VALUE="" 
+<select NAME=<%$Name%>>
+<option VALUE="" 
 <% ! defined $Default && 'SELECTED' %>
->-</OPTION>
+>-</option>
 %while  (my $ScripCondition = $ScripConditions->Next) {
-<OPTION VALUE=<%$ScripCondition->Id%>
+<option VALUE=<%$ScripCondition->Id%>
 <% defined $Default && $ScripCondition->Id == $Default && 'SELECTED' %>
 ><% loc($ScripCondition->Name) %>
-</OPTION>
+</option>
 %}
-</SELECT>
+</select>
 
 <%INIT>
 my $ScripConditions = RT::ScripConditions->new($session{'CurrentUser'});

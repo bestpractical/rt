@@ -176,7 +176,7 @@ $self => undef
 </%method>
 
 <%method show>
-<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
+<form METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
 % unless ($nojs) {
 onSubmit="list_<% $name %>.selectAll();"
 % }
@@ -196,7 +196,7 @@ onSubmit="list_<% $name %>.selectAll();"
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
 % if (exists $selected{$_}) {
-SELECTED
+selected="selected"
 % }
 ><% $self->{_item_map}{$_} %></option>
 % }
@@ -216,7 +216,9 @@ SELECTED
 
 % unless ($nojs) {
 <script type="text/javascript">
+//<![CDATA[
 var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
+//]]>
 </script>
 % }
 <%ARGS>

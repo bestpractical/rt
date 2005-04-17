@@ -100,11 +100,11 @@ sub LinkCallback {
 
     return sub {
         map {
-            \'<A HREF="',
+            \'<a href="',
             $_->$mode_uri->Resolver->HREF,
             \'">',
             ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
-            \'</A><BR>',
+            \'</a><br/>',
         } @{ $_[0]->Links($mode,$type)->ItemsArrayRef }
     }
 }

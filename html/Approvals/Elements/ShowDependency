@@ -48,8 +48,8 @@
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
 <table width=100%>
-<TR>
-<TD WIDTH="25" bgcolor="#999999">&nbsp;</TD><TD>
+<tr>
+<td WIDTH="25" bgcolor="#999999">&nbsp;</td><td>
 <%PERL>
 my %show;
 while (my $link = $approving->Next()) {
@@ -96,9 +96,9 @@ foreach my $id (sort keys %show) {
 $m->print($refer);
 
 </%PERL>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 
 % }
 <%ARGS>

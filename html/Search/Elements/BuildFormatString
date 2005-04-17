@@ -175,12 +175,12 @@ elsif ( $AddCol ) {
 	    $column{Column} = $col;
 
     if ( $Face eq "Bold" ) {
-        $column{Prefix} .= "<B>";
-        $column{Suffix} .= "</B>";
+        $column{Prefix} .= "<b>";
+        $column{Suffix} .= "</b>";
     }
     if ( $Face eq "Italic" ) {
-        $column{Prefix} .= "<I>";
-        $column{Suffix} .= "</I>";
+        $column{Prefix} .= "<i>";
+        $column{Suffix} .= "</i>";
     }
     if ($Size) {
         $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
@@ -188,11 +188,11 @@ elsif ( $AddCol ) {
     }
     if ( $Link eq "Display" ) {
         $column{Prefix} .=
-          "<A HREF=\"" . $RT::WebPath . "/Ticket/Display.html?id=__id__\">";
+          "<a HREF=\"" . $RT::WebPath . "/Ticket/Display.html?id=__id__\">";
         $column{Suffix} .= "</a>";
     }
     elsif ( $Link eq "Take" ) {
-        $column{Prefix} .= "<A HREF=\"" . $RT::WebPath
+        $column{Prefix} .= "<a HREF=\"" . $RT::WebPath
           . "/Ticket/Display.html?Action=Take&id=__id__\">";
         $column{Suffix} .= "</a>";
     }

@@ -45,11 +45,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="<%$RT::WebPath%><% $m->request_comp->path |n %>" METHOD="POST" NAME="EditCustomFields">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>"/>
-<INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>"/>
-<INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>"/>
-<INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1"/>
+<form ACTION="<%$RT::WebPath%><% $m->request_comp->path |n %>" METHOD="POST" NAME="EditCustomFields">
+<input TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>"/>
+<input TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>"/>
+<input TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>"/>
+<input TYPE=HIDDEN NAME="UpdateCFs" VALUE="1"/>
 
 % if ($Object->Id) {
 <h2><&|/l&>Global Custom Fields</&></h2>
@@ -61,7 +61,7 @@
 <& PickCustomFields, CustomFields => \@UnassignedCFs, id => $id, SubType => $SubType &>
 
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
-</FORM>
+</form>
 
 
 <%INIT>
@@ -71,7 +71,7 @@ my (@GlobalCFs, @UnassignedCFs);
 
 my $id = $Object->Id;
 if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
-    $m->out('<P><i>', loc('(No custom fields)'), '</i></P>');
+    $m->out('<p><i>', loc('(No custom fields)'), '</i></p>');
     return;
 }
 

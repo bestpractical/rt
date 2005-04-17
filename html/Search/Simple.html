@@ -43,23 +43,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Simple.html"
+    current_tab => "Search/Simple.html",
+    Title => $title
 &>
 
-<DIV align="center">
+<div id="SimpleSearchForm">
+<form action="Simple.html" method="get">
 
-<FORM ACTION="Simple.html" METHOD="GET">
-<p>Search for tickets. Enter <b>id</b> numbers,<b>queues</b> by name, Owners by <b>username</b> and Requestors by <b>email address</b>.</p>
-<p>RT will look for anything else you enter in ticket bodies and attachments.</p>
+<p>Search for tickets. Enter <b>id</b> numbers,<b>queues</b> by name,
+Owners by <b>username</b> and Requestors by <b>email address</b>.
+RT will look for anything else you enter in ticket bodies and attachments.</p>
 
-<br>
-<br>
-<div align="center">
-<input name="q" size="60"><input type="submit" Value="<&|/l&>Search</&>">
+<input name="q" size="60"><input type="submit" Value="<&|/l&>Search</&>" />
+
+</form>
 </div>
-</FORM>
 
 <%INIT>
 my $title = loc("Search for tickets");

@@ -43,12 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME=<%$Name%>>
+<select NAME=<%$Name%>>
 % foreach my $stage (@stages) {
-<OPTION VALUE=<%$stage%>
+<option VALUE=<%$stage%>
 <% ($stage eq $Default) && 'SELECTED' %>
 ><% loc($stage) %>
-</OPTION>
+</option>
 % }
 <%INIT>
 if ($Default eq '') {

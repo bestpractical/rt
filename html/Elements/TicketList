@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<table BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 
 % if ($ShowHeader) {
 <& /Elements/CollectionAsTable/Header, 
@@ -67,7 +67,7 @@
 <&   /Elements/CollectionAsTable/Row, Format => \@Format, i => $i, record => $record, maxitems => $maxitems &>
 %   }
 
-</TABLE>
+</table>
 
 % if ($Rows && $ShowNavigation) {
 <hr>
@@ -94,10 +94,10 @@ my $next = $m->comp(
 );
 </%perl>
 % if ($Page > 1) {
-<A href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
+<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<A href="<%$BaseURL%><%$next%>"><&|/l&>Next Page</&></a>
+<a href="<%$BaseURL%><%$next%>"><&|/l&>Next Page</&></a>
 % }
 % }
 <%INIT>

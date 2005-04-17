@@ -43,11 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 %for my $option ($cf->TypeComposites) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></OPTION>
+<option VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></option>
 %}
-</SELECT>
+</select>
 <%INIT>
 my $cf = RT::CustomField->new($session{'CurrentUser'});
 

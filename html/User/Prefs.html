@@ -50,13 +50,13 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="<%$RT::WebPath%>/User/Prefs.html" METHOD=POST>
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
+<form ACTION="<%$RT::WebPath%>/User/Prefs.html" METHOD=POST>
+<input TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 
-<TABLE WIDTH=100% BORDER=0>
-<TR>
+<table WIDTH=100% BORDER=0>
+<tr>
 
-<TD VALIGN=TOP class="boxcontainer">
+<td VALIGN=TOP class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity') &>
 
 <input type=hidden name="Name" value="<%$UserObj->Name%>">
@@ -99,27 +99,27 @@
   </tr>
 </table>
 </&>
-</TD>
-<TD VALIGN=TOP class="boxcontainer">
+</td>
+<td VALIGN=TOP class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <&| /Widgets/TitleBox, title => loc('Password') &>
-<TABLE>
-<TR>
-<TD class=label>
+<table>
+<tr>
+<td class=label>
 <&|/l&>New Password</&>:
-</TD>
-<TD class=value>
+</td>
+<td class=value>
 <input type=password name="Pass1">
-</TD>
-</TR>
-<TR><TD class=label>
+</td>
+</tr>
+<tr><td class=label>
 <&|/l&>Retype Password</&>:
-</TD>
-<TD class=value>
+</td>
+<td class=value>
 <input type=password name="Pass2">
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 </&>
 % }
 
@@ -155,25 +155,25 @@
   </tr>
 </table>
 </&>
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 
 
 
-<TD COLSPAN=2 VALIGN=TOP class="boxcontainer">
+<td COLSPAN=2 VALIGN=TOP class="boxcontainer">
 %if ($UserObj->Privileged) {
-<BR>
+<br/>
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<TEXTAREA COLS=80 ROWS=5 name="Signature" class="signature" WRAP=HARD>
-<%$UserObj->Signature%></TEXTAREA>
+<textarea COLS=80 ROWS=5 name="Signature" class="signature" WRAP=HARD>
+<%$UserObj->Signature%></textarea>
 </&>
 % }
 
-</TD>
+</td>
 
-</TR>
-</TABLE>
+</tr>
+</table>
 
 
 <& /Elements/Submit, Label => loc('Save Preferences') &>

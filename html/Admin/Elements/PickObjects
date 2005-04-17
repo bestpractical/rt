@@ -44,36 +44,36 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (@Objects == 0) {
-<P><i><&|/l&>(None)</&></i></P>
+<p><i><&|/l&>(None)</&></i></p>
 % } else {
-<TABLE cellspacing=0 cellpadding=2>
+<table cellspacing=0 cellpadding=2>
 % my $count;
 % foreach my $Object (@Objects) {
-<TR>
+<tr>
 %   if (!$ReadOnly) {
-  <TD valign="TOP">
+  <td valign="TOP">
 <input type="checkbox"
 name="Object-<%$Object->id%>-CF-<%$id%>"
 value="1" 
 <% $Checked && 'CHECKED' %>
 >
-  </TD>
+  </td>
 %   }
-  <TD valign="TOP">
+  <td valign="TOP">
 % if ($Object->Name) {
     <b><%$Object->Name%></b><br>
 % } else {
     <i>(<%loc("no name")%>)</i><br>
 % }
     <%$Object->can('Description') && $Object->Description%>
-  </TD>
-%#  <TD valign="TOP">
+  </td>
+%#  <td valign="TOP">
 %#    <i><% $CustomFieldObj->FriendlyTypeComposite %></i>
-%#  </TD>
-  </TD>
-</TR>
+%#  </td>
+  </td>
+</tr>
 % }
-</TABLE>
+</table>
 % }
 <%ARGS>
 @Objects

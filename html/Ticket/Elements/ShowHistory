@@ -55,7 +55,7 @@ else {
 }
 $titleright = loc('Display mode') . ":";
 if ($ShowHeaders) {
-    $titleright .= "[<A HREF=\"" . $URIFile . "?id="
+    $titleright .= "[<a HREF=\"" . $URIFile . "?id="
       . $Ticket->id . "\">"
       . loc("Brief headers")
       . "</a>] <b>["
@@ -64,7 +64,7 @@ if ($ShowHeaders) {
 else {
     $titleright .= "<b>["
       . loc("Brief headers")
-      . "]</b> [<A HREF=\""
+      . "]</b> [<a HREF=\""
       . $URIFile
       . "?ShowHeaders=1"
       . "&id="
@@ -75,7 +75,7 @@ else {
 <& /Widgets/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
 % }
 
-<TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
+<table WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 <%perl>
 my @attachments = @{$Attachments->ItemsArrayRef()};
 my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
@@ -123,7 +123,7 @@ $m->flush_buffer();
 }
 
 </%perl>
-</TABLE>
+</table>
 % if ($ShowDisplayModes or $ShowTitle) {
 <& /Widgets/TitleBoxEnd &>
 % }

@@ -47,7 +47,7 @@
 %   while (my $CustomFieldObj = $CustomFields->Next) { 
 %   $count++;
 <font size="-1"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></font>
-<BR>
+<br/>
 %   }
 %   if (!$count) {
 <font size="-1"><&|/l&>(No custom fields)</&></font>

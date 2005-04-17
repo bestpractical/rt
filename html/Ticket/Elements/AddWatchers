@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<BR>
+<br/>
 <%$msg%><br>
 
 <&|/l&>Add new watchers</&>:<br>

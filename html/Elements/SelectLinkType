@@ -43,11 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
-<OPTION VALUE="MemberOf"><&|/l&>Member of</&></OPTION>
-<OPTION VALUE="DependsOn"><&|/l&>Depends on</&></OPTION>
-<OPTION VALUE="RefersTo"><&|/l&>Refers to</&></OPTION>
-</SELECT>
+<select NAME ="<%$Name%>">
+<option VALUE="MemberOf"><&|/l&>Member of</&></option>
+<option VALUE="DependsOn"><&|/l&>Depends on</&></option>
+<option VALUE="RefersTo"><&|/l&>Refers to</&></option>
+</select>
 
 <%ARGS>
 $Name => "LinkType"

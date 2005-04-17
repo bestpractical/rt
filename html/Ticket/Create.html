@@ -47,105 +47,105 @@
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket") &>
-<FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
-<INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<A NAME="top">
+<form ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
+<input TYPE=HIDDEN Name="id" VALUE="new">
+<a NAME="top">
 	
 	
-[<a class="currenttab"><&|/l&>Show basics</&></a>] [<A HREF="#detail"><&|/l&>Show details</&></a>]
-<BR>
+[<a class="currenttab"><&|/l&>Show basics</&></a>] [<a HREF="#detail"><&|/l&>Show details</&></a>]
+<br/>
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
-<TABLE border=0 cellpadding=0 cellspacing=0>
-<TR><TD class=label><&|/l&>Queue</&>:</TD>
-<TD class=value><% $QueueObj->Name %>
-<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-</TD>
-<TD class=label><&|/l&>Status</&>:
-</TD>
-<TD class=value>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td class=label><&|/l&>Queue</&>:</td>
+<td class=value><% $QueueObj->Name %>
+<input TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
+</td>
+<td class=label><&|/l&>Status</&>:
+</td>
+<td class=value>
 <& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
-</TD>
-<TD class=label>
+</td>
+<td class=label>
 <&|/l&>Owner</&>:
-</TD>
-<TD class=value>
+</td>
+<td class=value>
 <& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
-</TD>
-</TR>
-<TR>
-<TD class=label>
+</td>
+</tr>
+<tr>
+<td class=label>
 <&|/l&>Requestors</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT Name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" SIZE=40>
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+<td class=value COLSPAN=5>
+<input Name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" SIZE=40>
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Cc</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT NAME="Cc" SIZE=40 VALUE="<% $ARGS{Cc} %>"><BR>
+</td>
+<td class=value COLSPAN=5>
+<input NAME="Cc" SIZE=40 VALUE="<% $ARGS{Cc} %>"><br/>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Admin Cc</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT NAME="AdminCc" SIZE=40 VALUE="<% $ARGS{AdminCc} %>"><BR>
+</td>
+<td class=value COLSPAN=5>
+<input NAME="AdminCc" SIZE=40 VALUE="<% $ARGS{AdminCc} %>"><br/>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-</TD>
-</TR>
-<TR>
-<TD class=label>
+</td>
+</tr>
+<tr>
+<td class=label>
 <&|/l&>Subject</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
-</TD>
-</TR>
-<TR>
-<TD COLSPAN=6>
+</td>
+<td class=value COLSPAN=5>
+<input Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
+</td>
+</tr>
+<tr>
+<td COLSPAN=6>
 <& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
-</TD>
-</TR>
+</td>
+</tr>
 % if ($TxnCFs->Count) {
 % while (my $CF = $TxnCFs->Next()) {
-<TR>
-<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
-</TD></TR>
+<tr>
+<td ALIGN=RIGHT><% $CF->Name %>:</td>
+<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+</td></tr>
 % }
 % }
-<TR>
+<tr>
 % if (exists $session{'Attachments'}) {
-<TD class=label>
+<td class=label>
 <&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+</td>
+<td COLSPAN=5>
+<&|/l&>Check box to delete</&><br/>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><br/>
 % } # end of foreach
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 % } # end of if
-<TD>
+<td>
 <&|/l&>Attach file</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT TYPE=FILE NAME="Attach">
-<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
-</TD>
-</TR>
-<TR>
-<TD COLSPAN=6>
+</td>
+<td class=value COLSPAN=5>
+<input TYPE=FILE NAME="Attach">
+<input TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
+</td>
+</tr>
+<tr>
+<td COLSPAN=6>
 <&|/l&>Describe the issue below</&>:<br>
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
@@ -153,79 +153,79 @@
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 %}
 
-<BR>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT COLSPAN=2>
-</TD>
-</TR>
-</TABLE>
+<br/>
+</td>
+</tr>
+<tr>
+<td ALIGN=RIGHT COLSPAN=2>
+</td>
+</tr>
+</table>
 </&>
 <& /Elements/Submit, Label => loc("Create")&>
 
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-<A NAME="detail">
-	[<A HREF="#top"><&|/l&>Show basics</&></a>] [<a class="currenttab"><&|/l&>Show details</&></a>]
-<BR>
-<TABLE WIDTH="100%" BORDER=0>
-<TR>
-<TD WIDTH="50%" VALIGN=TOP>
+<a NAME="detail">
+	[<a HREF="#top"><&|/l&>Show basics</&></a>] [<a class="currenttab"><&|/l&>Show details</&></a>]
+<br/>
+<table WIDTH="100%" BORDER=0>
+<tr>
+<td WIDTH="50%" VALIGN=TOP>
 
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
-<TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></TD></TR>
-</TABLE>
+<table BORDER=0>
+<tr><td ALIGN=RIGHT><&|/l&>Priority</&>:</td><td><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Final Priority</&>:</td><td><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Time Worked</&>:</td><td><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Time Left</&>:</td><td><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></td></tr>
+</table>
 </&>
 <br>
 <&| /Widgets/TitleBox, title => loc("Dates"), title_class=> 'inverse' &>
 
-<TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due" value="<%
-$ARGS{Due}%>"></TD></TR>
-</TABLE>
+<table BORDER=0>
+<tr><td ALIGN=RIGHT><&|/l&>Starts</&>:</td><td><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Due</&>:</td><td><input size=10 name="Due" value="<%
+$ARGS{Due}%>"></td></tr>
+</table>
 </&>
-<BR>
-</TD>
+<br/>
+</td>
 
-<TD VALIGN="TOP">
+<td VALIGN="TOP">
 <&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
 
 <i><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></i>
-<TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>"></TD></TR>
+<table BORDER=0>
+<tr><td ALIGN=RIGHT><&|/l&>Depends on</&></td><td><input size=10 name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Depended on by</&></td><td><input size=10 name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Parents</&></td><td><input size=10 name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Children</&></td><td><input size=10 name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Refers to</&></td><td><input size=10 name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>"></td></tr>
+<tr><td ALIGN=RIGHT><&|/l&>Referred to by</&></td><td><input size=10 name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>"></td></tr>
 
 
-</TABLE>
+</table>
 </&>
-<BR>
+<br/>
 
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 <& /Elements/Submit, Label => loc("Create") &>
-</FORM>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
-<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+</form>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <%INIT>
 

@@ -46,50 +46,50 @@
 <& /Elements/ListActions, actions => \@actions &>
 
   
-<FORM METHOD=POST ACTION="Scrip.html">
+<form METHOD=POST ACTION="Scrip.html">
 <input type="hidden" name="id" value="<%$id%>">
 <input type="hidden" name="Queue" value="<%$Queue%>">
 <&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
-<TABLE>
-<TR>
-<TD ALIGN=RIGHT>
+<table>
+<tr>
+<td ALIGN=RIGHT>
 <&|/l&>Description</&>:
-</TD>
-<TD>
+</td>
+<td>
 <input Name="Scrip-<%$id%>-Description" value="<%$scrip->Description%>">
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
+</tr>
+<tr>
+<td ALIGN=RIGHT>
 <&|/l&>Condition</&>:
-</TD>
-<TD>
-<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-ScripCondition", Default => $scrip->ConditionObj->Id &><BR>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
+</td>
+<td>
+<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-ScripCondition", Default => $scrip->ConditionObj->Id &><br/>
+</td>
+</tr>
+<tr>
+<td ALIGN=RIGHT>
 <&|/l&>Action</&>:
-</TD>
-<TD>
+</td>
+<td>
 <& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-ScripAction", Default => $scrip->ActionObj->Id &>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
+</td>
+</tr>
+<tr>
+<td ALIGN=RIGHT>
 <&|/l&>Template</&>: 
-</TD>
-<TD>
+</td>
+<td>
 <& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id, Queue => $Queue &>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
+</td>
+</tr>
+<tr>
+<td ALIGN=RIGHT>
 <&|/l&>Stage</&>: 
-</TD>
-<TD>
+</td>
+<td>
 <& /Admin/Elements/SelectStage, Name => "Scrip-$id-Stage", Default => $scrip->Stage &>
-</TD>
-</TR>
+</td>
+</tr>
 </table>
 </&>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
@@ -97,41 +97,41 @@
 <br>
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
 <table>
-<TR>
-<TD colspan=2>
+<tr>
+<td colspan=2>
 <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Custom condition</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+<td>
+<textarea COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></textarea>
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Custom action preparation code</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+<td>
+<textarea COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></textarea>
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Custom action cleanup code</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
-</TD>
-</TR>
+</td>
+<td>
+<textarea COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></textarea>
+</td>
+</tr>
 </table>
 </&>
 
 <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
 
-</FORM>
+</form>
 <%init>
 my (@actions);
 

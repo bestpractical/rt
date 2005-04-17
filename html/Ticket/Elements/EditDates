@@ -43,32 +43,32 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE>
-  <TR>
-    <TD class="label"><&|/l&>Starts</&>:</TD>
-    <TD class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
-        (<% $TicketObj->StartsObj->AsString %>)</TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Started</&>:</TD>
-    <TD class="entry"><& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)</TD>
-  </TR>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Starts</&>:</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+        (<% $TicketObj->StartsObj->AsString %>)</td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Started</&>:</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)</td>
+  </tr>
 
-  <TR>
-    <TD class="label">
+  <tr>
+    <td class="label">
       <&|/l&>Last Contact</&>:
-    </TD>
-    <TD class="entry">
+    </td>
+    <td class="entry">
       <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
-    </TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Due</&>:</TD>
-    <TD class="entry">
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Due</&>:</td>
+    <td class="entry">
       <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
-    </TD>
-  </TR>
-</TABLE>
+    </td>
+  </tr>
+</table>
 <%ARGS>
 $TicketObj => undef
 </%ARGS>

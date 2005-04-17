@@ -43,11 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
+<select NAME="<%$Name%>">
 % foreach my $field (@sortfields) {
-<OPTION VALUE="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></OPTION>
+<option VALUE="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></option>
 % }
-</SELECT>
+</select>
 
 <%INIT>
 my $tickets = new RT::Tickets($session{'CurrentUser'});

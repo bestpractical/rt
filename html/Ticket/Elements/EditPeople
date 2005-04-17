@@ -43,16 +43,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE>
-<TR>
-<TD VALIGN=TOP>
+<table>
+<tr>
+<td VALIGN=TOP>
 
 <h3><&|/l&>New watchers</&></h3>
-<&|/l&>Find people whose</&><BR>
+<&|/l&>Find people whose</&><br/>
 <& /Elements/SelectUsers &>
 <input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
-<BR>
-<&|/l&>Find groups whose</&><BR>
+<br/>
+<&|/l&>Find groups whose</&><br/>
 <& /Elements/SelectGroups &>
 <input type=submit name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
 
@@ -60,7 +60,7 @@
         UserOp => $UserOp, UserField => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
 	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
-</TD><TD VALIGN=TOP>
+</td><td VALIGN=TOP>
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
@@ -75,9 +75,9 @@
 <&|/l&>Administrative Cc</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
 
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 
 <%ARGS>
 $UserField => undef

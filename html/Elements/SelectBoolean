@@ -43,10 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
-<OPTION VALUE="<%$TrueVal%>" <%$TrueDefault%>><%$True%></OPTION>
-<OPTION VALUE="<%$FalseVal%>" <%$FalseDefault%>><%$False%></OPTION>
-</SELECT>
+<select NAME ="<%$Name%>">
+<option VALUE="<%$TrueVal%>" <%$TrueDefault%>><%$True%></option>
+<option VALUE="<%$FalseVal%>" <%$FalseDefault%>><%$False%></option>
+</select>
 
 <%ARGS>
 $Name => undef

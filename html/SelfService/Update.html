@@ -48,7 +48,7 @@
 &>
 
 
-<FORM ACTION="Display.html" METHOD=POST ENCTYPE="multipart/form-data">
+<form ACTION="Display.html" METHOD=POST ENCTYPE="multipart/form-data">
 <input type=hidden name="UpdateType" value="response">
 <input TYPE="hidden" NAME="id" VALUE="<%$Ticket->Id%>">
 <table>
@@ -71,16 +71,16 @@
     </tr>
 % if (exists $session{'Attachments'}) {
 <tr>
-    <TD class="label">
+    <td class="label">
     <&|/l&>Attached file</&>
-    </TD>
-    <TD COLSPAN=5 class="value">
-    <&|/l&>Check box to delete</&><BR>
+    </td>
+    <td COLSPAN=5 class="value">
+    <&|/l&>Check box to delete</&><br/>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-    <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+    <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><br/>
 % } # end of foreach
-    </TD>
-</TR>
+    </td>
+</tr>
 % } # end of if
 <tr>
     <td class"label">
@@ -101,7 +101,7 @@
 
 
 <& /Elements/Submit &>
-  </FORM>
+  </form>
 
 
 

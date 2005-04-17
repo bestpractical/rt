@@ -53,27 +53,27 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<FORM ACTION="<%$RT::WebPath%>/User/Groups/Modify.html" METHOD=POST>
+<form ACTION="<%$RT::WebPath%>/User/Groups/Modify.html" METHOD=POST>
 
 %unless ($Group->Id) {
-<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+<input TYPE=HIDDEN NAME=id VALUE="new">
 % } else {
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
+<input TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
 % }
-<TABLE>
-<TR><TD ALIGN=RIGHT>
+<table>
+<tr><td ALIGN=RIGHT>
 <&|/l&>Name</&>:
-</TD>
-<TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
-</TR><TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD>
-</TR><TR>
-<TD COLSPAN=2>
-<INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><BR>
-</TR>
-</TABLE>
+</td>
+<td><input name="Name" value="<%$Group->Name%>"></td>
+</tr><tr>
+<td ALIGN=RIGHT>
+<&|/l&>Description</&>:</td><td COLSPAN=3><input name="Description" value="<%$Group->Description%>" size=60></td>
+</tr><tr>
+<td COLSPAN=2>
+<input TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
+</tr>
+</table>
 <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
 </form>
 <%INIT>

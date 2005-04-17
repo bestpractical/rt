@@ -442,12 +442,13 @@ div.dialog {
              margin-top: 10%;
 }
 
-div.mainbody {
-padding-left: 170px;
-padding-right: 10px;
-top: 80px;
-margin: 0px;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
+div.mainbody
+{
+  padding-left: 170px;
+  padding-right: 10px;
+  top: 80px;
+  margin: 0px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 td.boxcontainer + td.boxcontainer {
@@ -477,6 +478,22 @@ div.titlebox div.titlebox-title {
 }
 
 /* END */
+
+/* Simple Search */
+
+div#SimpleSearchForm
+{
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div#SimpleSearchForm p
+{
+  margin-bottom: 3em;
+}
+
+/* End */
 
 table.box td {
 border: 0;

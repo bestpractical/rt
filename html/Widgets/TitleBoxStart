@@ -47,7 +47,7 @@
   <div class="titlebox-title">
       <span class="titleboxclose"><a href="#" onClick="hideshow('<%$id%>')">X</a></span>
       <span class="titleboxtitle">
-        <strong><% $title_href && "<a $title_class href=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></strong>
+        <strong><% $title_href && "<a $title_class href=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</a>" |n%></strong>
       </span>
    </div>
    <div id="element-<%$id%>">

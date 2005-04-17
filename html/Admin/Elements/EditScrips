@@ -48,26 +48,26 @@
 <form action="Scrips.html" method="post">
 <input type="hidden" name="id" value="<%$id%>">
 
-<P><&|/l&>Current Scrips</&>:</P>
+<p><&|/l&>Current Scrips</&>:</p>
 % if ($Scrips->Count == 0 ) {
-<P><i><&|/l&>(No scrips)</&></i></P>
+<p><i><&|/l&>(No scrips)</&></i></p>
 % } else {
-<TABLE>
-<P><i><&|/l&>(Check box to delete)</&></i></P>
+<table>
+<p><i><&|/l&>(Check box to delete)</&></i></p>
 
 %   while (my $scrip = $Scrips->Next ) {
-<TR>
-<TD>
+<tr>
+<td>
 <input type="checkbox" name="DeleteScrip-<%$scrip->Id%>">
-</TD>
-<TD>
+</td>
+<td>
 <a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br>
 <small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
-</TD>
-</TR>
+</td>
+</tr>
 %   }
 
-</TABLE>
+</table>
 
 % }
 <& /Elements/Submit, 

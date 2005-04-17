@@ -49,31 +49,31 @@ current_tab => "Admin/CustomFields/UserRights.html?id=".$id,
 Title => $title, &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="UserRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
+  <form METHOD=POST ACTION="UserRights.html">
+    <input TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
       
       
-<TABLE>
+<table>
         
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $UserObj->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
         Object => $CustomFieldObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-      </TABLE>
+      </table>
             
       <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

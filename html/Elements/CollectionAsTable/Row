@@ -53,7 +53,7 @@ $Warning => undef
 </%ARGS>
 
 <%PERL>
-$m->out('<TR class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+$m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column (@Format) {
     if ( $column->{title} eq 'NEWLINE' ) {
@@ -62,8 +62,8 @@ foreach my $column (@Format) {
             $item++;
         }
         $item = 0;
-        $m->out('</TR>');
-        $m->out('<TR class="'
+        $m->out('</tr>');
+        $m->out('<tr class="'
               . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
               . '" >' );
         next;
@@ -104,5 +104,5 @@ foreach my $column (@Format) {
     }
     $m->out('</td>');
 }
-$m->out('</TR>');
+$m->out('</tr>');
 </%PERL>

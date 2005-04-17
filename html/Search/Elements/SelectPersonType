@@ -43,20 +43,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 % if ($AllowNull) {
-<OPTION VALUE="">-</OPTION>
+<option VALUE="">-</option>
 % }
 % for my $option (@types) {
 %  if ($Suffix) {
-<OPTION VALUE="<% $option %><% $Suffix %>" <%$option eq $Default && "SELECTED"%> ><%loc($option)%></OPTION>
+<option VALUE="<% $option %><% $Suffix %>" <%$option eq $Default && "SELECTED"%> ><%loc($option)%></option>
 %   next;
 %  }
 %  foreach my $subtype (@subtypes) {
-<OPTION VALUE="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><% loc($option) %> <% loc($subtype) %></OPTION>
+<option VALUE="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><% loc($option) %> <% loc($subtype) %></option>
 %  }
 % }
-</SELECT>
+</select>
 
 <%INIT>
 my @types;

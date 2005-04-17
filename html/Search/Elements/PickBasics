@@ -49,7 +49,7 @@
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "idOp" &>
 </td><td>
-<INPUT Name="ValueOfid" SIZE=5>
+<input Name="ValueOfid" SIZE=5>
 </td>
 </tr>
 
@@ -63,7 +63,7 @@
 			    FalseVal => 'NOT LIKE' 
 &> 
 </td><td>
-<Input Name="ValueOfAttachment" Size=20>
+<input Name="ValueOfAttachment" Size=20>
 </td>
 </tr>
 <tr>
@@ -97,11 +97,11 @@
 </td>
 </tr>
 <tr><td class="label">
-<SELECT NAME="ActorField">
-<OPTION VALUE="Owner"><&|/l&>Owner</&></OPTION>
-<OPTION VALUE="Creator"><&|/l&>Creator</&></OPTION>
-<OPTION VALUE="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></OPTION>
-</SELECT>
+<select NAME="ActorField">
+<option VALUE="Owner"><&|/l&>Owner</&></option>
+<option VALUE="Creator"><&|/l&>Creator</&></option>
+<option VALUE="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></option>
+</select>
 </td><td>
 <& /Elements/SelectBoolean, Name => "ActorOp", 
 					  TrueVal=> '=', 
@@ -117,7 +117,7 @@
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
-<Input Name="ValueOfWatcher" Size=20>
+<input Name="ValueOfWatcher" Size=20>
 </tr>
 <tr>
 <td class="label">
@@ -129,28 +129,28 @@
 </td></tr>
 <tr>
 <td class="label">
-<SELECT NAME="TimeField">
-<OPTION VALUE="TimeWorked"><&|/l&>Time Worked</&></OPTION>
-<OPTION VALUE="TimeEstimated"><&|/l&>Time Estimated</&></OPTION>
-<OPTION VALUE="TimeLeft"><&|/l&>Time Left</&></OPTION>
-</SELECT>
+<select NAME="TimeField">
+<option VALUE="TimeWorked"><&|/l&>Time Worked</&></option>
+<option VALUE="TimeEstimated"><&|/l&>Time Estimated</&></option>
+<option VALUE="TimeLeft"><&|/l&>Time Left</&></option>
+</select>
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
 </td><td>
-<INPUT Name="ValueOfTime" SIZE=5>
+<input Name="ValueOfTime" SIZE=5>
 </td>
 </tr>
 <tr>
 <td class="label">
-<SELECT NAME="PriorityField">
-<OPTION VALUE="Priority"><&|/l&>Priority</&></OPTION>
-<OPTION VALUE="InitialPriority"><&|/l&>Initial Priority</&></OPTION>
-<OPTION VALUE="FinalPriority"><&|/l&>Final Priority</&></OPTION>
-</SELECT>
+<select NAME="PriorityField">
+<option VALUE="Priority"><&|/l&>Priority</&></option>
+<option VALUE="InitialPriority"><&|/l&>Initial Priority</&></option>
+<option VALUE="FinalPriority"><&|/l&>Final Priority</&></option>
+</select>
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 </td><td>
-<INPUT Name="ValueOfPriority" SIZE=5>
+<input Name="ValueOfPriority" SIZE=5>
 </td>
 </tr>
 <tr>
@@ -163,7 +163,7 @@
 			    TrueVal=> '=', 
 			    FalseVal => '!=' &>  
 </td><td>
-<INPUT Name="ValueOfLinks" value="" SIZE=5>
+<input Name="ValueOfLinks" value="" SIZE=5>
 </td></tr>
 <%INIT>
 my @people = ('Actor',

@@ -43,13 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<UL>
+<ul>
 %while(my $ACE = $ACL->Next) {
 
-<LI><checkbox name="delete_ace_<%$ACE->id%>"> <% loc($ACE->RightName) %> (<%$ACE->UserObj->RealName%>)
+<li><checkbox name="delete_ace_<%$ACE->id%>"> <% loc($ACE->RightName) %> (<%$ACE->UserObj->RealName%>)
 
 %}
-</UL>
+</ul>
 
 <%INIT>
 my $ACL = new RT::ACL($session{'CurrentUser'});

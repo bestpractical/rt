@@ -52,20 +52,20 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<FORM METHOD=POST ACTION="Template.html">
+<form METHOD=POST ACTION="Template.html">
 %if ($Create ) {
-<INPUT TYPE=HIDDEN NAME="Template" VALUE="new">
+<input TYPE=HIDDEN NAME="Template" VALUE="new">
 % } else {
-<INPUT TYPE=HIDDEN NAME="Template" VALUE="<%$TemplateObj->Id%>">
+<input TYPE=HIDDEN NAME="Template" VALUE="<%$TemplateObj->Id%>">
 % }
 
 %# hang onto the queue id
-<INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
+<input TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 
 <& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
-</FORM>
+</form>
 
 
 

@@ -45,31 +45,31 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => "What I did today" &>
 (displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
-<FORM METHOD=POST ACTION="MyDay.html">
-<TABLE width=100% cellpadding=0 cellspacing=0>
+<form METHOD=POST ACTION="MyDay.html">
+<table width=100% cellpadding=0 cellspacing=0>
 % while ( my $Ticket = $Tickets->Next()) {
 % my $class;
 % $i++;
 % if ($i % 2 ) {
 %  $class = 'class="oddline"';
 % }
-<TR <%$class|n%>><TD COLSPAN=2><h2><A
-HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
-<%$Ticket->Subject%></A></h2></td></tr>
-<TR <%$class|n%>><TD><SPAN CLASS=label>Worked:</SPAN><input size=3 name="UpdateTimeWorked-<%$Ticket->Id%>"> minutes
-</TD>
-<TD ROWSPAN=2><SPAN CLASS=label>Comments:<br></SPAN><textarea name="UpdateContent-<%$Ticket->Id%>" rows=5
-cols=60></textarea></TD></TR>
-<TR <%$class|n%>>
-<TD><SPAN CLASS="label">Status:</SPAN> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
-				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></TD>
-                  </TR>
+<tr <%$class|n%>><td COLSPAN=2><h2><a
+href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
+<%$Ticket->Subject%></a></h2></td></tr>
+<tr <%$class|n%>><td><span CLASS=label>Worked:</span><input size=3 name="UpdateTimeWorked-<%$Ticket->Id%>"> minutes
+</td>
+<td ROWSPAN=2><span CLASS=label>Comments:<br></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows=5
+cols=60></textarea></td></tr>
+<tr <%$class|n%>>
+<td><span CLASS="label">Status:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
+				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></td>
+                  </tr>
 
 % }
-</TABLE>
+</table>
 <& /Elements/Submit, Label => "Record all updates" ,  Reset => 'Clear'&>
-</FORM>
-</HTML>
+</form>
+</html>
 
 <%INIT>
 

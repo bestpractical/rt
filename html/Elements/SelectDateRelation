@@ -43,11 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
-<OPTION VALUE="&lt;"><%$Before%></OPTION>
-<OPTION VALUE="="><%$On%></OPTION>
-<OPTION VALUE="&gt;"><%$After%></OPTION>
-</SELECT>
+<select NAME ="<%$Name%>">
+<option VALUE="&lt;"><%$Before%></option>
+<option VALUE="="><%$On%></option>
+<option VALUE="&gt;"><%$After%></option>
+</select>
 
 <%ARGS>
 $Name => undef

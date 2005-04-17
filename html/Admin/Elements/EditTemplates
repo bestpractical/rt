@@ -45,39 +45,39 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@actions &>
 
-<FORM METHOD=GET ACTION="Templates.html">
-<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+<form METHOD=GET ACTION="Templates.html">
+<input TYPE="Hidden" NAME="id" VALUE="<%$id%>">
 
 % if ($Templates->Count == 0 ) {
-<P><i><&|/l&>(No templates)</&></i></P>
+<p><i><&|/l&>(No templates)</&></i></p>
 % } else {
-<TABLE>
-<TR>
-<TH>
+<table>
+<tr>
+<th>
 <i><&|/l&>(Check box to delete)</&></i>
-</TH>
-<TH>
-</TH>
-</TR>
+</th>
+<th>
+</th>
+</tr>
 % my $count;
 % while (my $TemplateObj = $Templates->Next) { 
-<TR>
-<TD>
+<tr>
+<td>
 <input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>">
-</TD>
-<TD>
-<A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">
-<B><% loc($TemplateObj->Name) %></B></A>
+</td>
+<td>
+<a href="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">
+<strong><% loc($TemplateObj->Name) %></strong></a>
 <br><% loc($TemplateObj->Description) %>
-</TD>
-</TR>
+</td>
+</tr>
 
 % }
-</TABLE>
+</table>
 % }
 
 <& /Elements/Submit, Label => loc('Delete Template') &>
-</FORM>
+</form>
 
 <%INIT>
 my $Templates = RT::Templates->new($session{'CurrentUser'});

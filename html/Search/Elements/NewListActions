@@ -51,12 +51,12 @@
 % if ($item[1] < 0) {
 <font color=red> 
 % }
-&nbsp;<%$item[0]%><BR>
+&nbsp;<%$item[0]%><br/>
 % if ($item[1] < 0) {
 </font>
 % }
 % }
-<BR>
+<br/>
 % }
 <%init>
 @actions = grep (/./,@actions);

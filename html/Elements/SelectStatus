@@ -43,15 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 %if ($DefaultValue) {
-<OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
+<option <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></option>
 %}
 %foreach my $status (@status) {
 %next if ($SkipDeleted && $status eq 'deleted');
-<OPTION <% ($status eq $Default) && "SELECTED" %> VALUE="<%$status%>"><%loc($status)%></OPTION>
+<option <% ($status eq $Default) && "SELECTED" %> VALUE="<%$status%>"><%loc($status)%></option>
 % }
-</SELECT>
+</select>
 <%ONCE>
 my $queue = new RT::Queue($session{'CurrentUser'});
 my @status = $queue->StatusArray();

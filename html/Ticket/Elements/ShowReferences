@@ -43,30 +43,30 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<UL>
+<ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
-<LI>
+<li>
 % if ($Link->TargetURI->IsLocal) {
 % my $member = $Link->TargetObj;
 
 <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-<A HREF="<%$Link->TargetURI->HREF%>"><%$Link->Target%></A>
+<a href="<%$Link->TargetURI->HREF%>"><%$Link->Target%></a>
 % }
 %}
 
 
 
 % while (my $Link = $Ticket->ReferredToBy->Next) {
-<LI>
+<li>
 % if ($Link->BaseURI->IsLocal) {
 % my $member = $Link->BaseObj;
 <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-<A HREF="<%$Link->BaseURI->HREF%>"><%$Link->Base%></A>
+<a href="<%$Link->BaseURI->HREF%>"><%$Link->Base%></a>
 %}
 % }
-</UL>
+</ul>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

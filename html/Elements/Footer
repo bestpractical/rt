@@ -67,16 +67,16 @@
 % }
 <div class="page-stats"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></div>
 % if ($Menu) {
-</TD>
-</TR>
-</TABLE>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 % }
 </div>
 </body>
-</HTML>
+</html>
 % $m->abort();
 
 <%ARGS>

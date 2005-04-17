@@ -43,13 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
+<select NAME="<%$Name%>">
 %foreach my $order (@orders) {
-<OPTION VALUE="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
+<option VALUE="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
 <% shift @order_names %>
-</OPTION>
+</option>
 % }
-</SELECT>
+</select>
 
 <%INIT>
 my @orders = qw (ASC DESC);

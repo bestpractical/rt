@@ -54,7 +54,7 @@
     Rows => $RowsPerPage
 &>
 
-<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
+<form METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
 <input type=hidden name=SearchId value="<%$SearchId%>">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
@@ -89,7 +89,7 @@ AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPer
 </td>
 </tr>
 </table>
-</FORM>
+</form>
 
 <%INIT>
 use Tree::Simple;

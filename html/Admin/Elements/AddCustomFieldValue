@@ -44,20 +44,20 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <b><&|/l&>Add Value</&></b></b></b></b>
-<TABLE BORDER="0">
-<TR><TD><small>
+<table BORDER="0">
+<tr><td><small>
 <&|/l&>Sort</&>:<br>
 <input size=3 name="CustomField-<%$CustomField->Id%>-Value-new-SortOrder" >
-</TD>
-<TD><small>
+</td>
+<td><small>
 <&|/l&>Name</&>:<br>
 <input type="text" size=30 name="CustomField-<%$CustomField->Id%>-Value-new-Name" >
-</TD>
-<TD><small>
+</td>
+<td><small>
 <&|/l&>Description</&>:<br>
 <input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-new-Description">
-</TD></TR>
-</TABLE>
+</td></tr>
+</table>
 
 <%init>
 </%init>

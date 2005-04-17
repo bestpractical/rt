@@ -43,41 +43,41 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE>
-  <TR>
-    <TD class="label"><&|/l&>Created</&>:</TD>
-    <TD class="value"><% $Ticket->CreatedObj->AsString %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Starts</&>:</TD>
-    <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Started</&>:</TD>
-    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</TD>
-    <TD class="value"><% $Ticket->ToldObj->AsString %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Due</&>:</TD>
-    <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Closed</&>:</TD>
-    <TD class="value"><% $Ticket->ResolvedObj->AsString  %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Updated</&>:</TD>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Created</&>:</td>
+    <td class="value"><% $Ticket->CreatedObj->AsString %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Starts</&>:</td>
+    <td class="value"><% $Ticket->StartsObj->AsString %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Started</&>:</td>
+    <td class="value"><% $Ticket->StartedObj->AsString %></td>
+  </tr>
+  <tr>
+    <td class="label"><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
+    <td class="value"><% $Ticket->ToldObj->AsString %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Due</&>:</td>
+    <td class="value"><% $Ticket->DueObj->AsString  %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Closed</&>:</td>
+    <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Updated</&>:</td>
 % my $UpdatedString = $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never");
 % if ($UpdatedLink) {
-    <TD class="value"><A HREF="#lasttrans"><% $UpdatedString | h %></a></TD>
+    <td class="value"><a HREF="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {
-    <TD class="value"><% $UpdatedString | h %></TD>
+    <td class="value"><% $UpdatedString | h %></td>
 % }
-  </TR>
-</TABLE>
+  </tr>
+</table>
 <%ARGS>
 $Ticket => undef
 $UpdatedLink => 1

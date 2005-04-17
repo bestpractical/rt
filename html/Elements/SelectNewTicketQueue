@@ -43,13 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<LABEL ACCESSKEY="9">
-<SELECT NAME ="<%$Name%>">
+<label ACCESSKEY="9">
+<select NAME ="<%$Name%>">
 % foreach my $queue (@{$session{'create_in_queues'}}) {
-<OPTION VALUE="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ?'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></OPTION>
+<option VALUE="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ?'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></option>
 % }
-</SELECT>
-</LABEL>
+</select>
+</label>
 
 <%INIT>
 unless ($session{'create_in_queues'}) { 

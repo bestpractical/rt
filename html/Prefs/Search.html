@@ -58,7 +58,7 @@
 		 LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
 % }
 <br>
-<FORM METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
+<form METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
 <input type=hidden name=name value="<%$ARGS{name}%>">
 <input type=hidden name=Format value="<%$ARGS{Format}%>">
 
@@ -66,7 +66,7 @@
    AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
 <& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save'&>
 
-</FORM>
+</form>
 
 <%INIT>
 my @actions;

@@ -50,31 +50,31 @@
     Title => loc('Modify user rights for queue [_1]', $QueueObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="UserRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
+  <form METHOD=POST ACTION="UserRights.html">
+    <input TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
       
-<TABLE>
+<table>
 <& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $UserObj->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
         Object => $QueueObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-      </TABLE>
+      </table>
             
       <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

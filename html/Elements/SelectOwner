@@ -43,20 +43,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
+<select NAME="<%$Name%>">
 %if ($DefaultValue) {
-<OPTION <% !$Default ? "SELECTED" : '' %> VALUE=""><%$DefaultLabel%></OPTION>
+<option <% !$Default ? "SELECTED" : '' %> VALUE=""><%$DefaultLabel%></option>
 %}
 %foreach my $User ( @users)  {
-<OPTION <% ($User->Id == $Default) ? "SELECTED" : ''%>
+<option <% ($User->Id == $Default) ? "SELECTED" : ''%>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($ValueAttribute eq 'Name') {
     value="<%$User->Name%>"
 %}
-><%$User->Name()%></OPTION>
+><%$User->Name()%></option>
 %}
-</SELECT>
+</select>
 <%INIT>
 my @objects;
 my @users;

@@ -46,34 +46,34 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<FORM METHOD=POST ACTION="CustomField.html">
-<INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
-<INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
+<form METHOD=POST ACTION="CustomField.html">
+<input TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
+<input TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 
-<TABLE WIDTH="100%" BORDER="0">
-<TR><TD ALIGN="RIGHT">
+<table WIDTH="100%" BORDER="0">
+<tr><td ALIGN="RIGHT">
 <&|/l&>Name</&>:
-</TD><TD>
+</td><td>
 <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20>
-</TD></TR>
-<TR><TD ALIGN="RIGHT">
+</td></tr>
+<tr><td ALIGN="RIGHT">
 <&|/l&>Description</&>:
-</TD><TD>
+</td><td>
 <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80>
-</TD></TR>
-<TR><TD ALIGN="RIGHT">
+</td></tr>
+<tr><td ALIGN="RIGHT">
 <&|/l&>Type</&>:
-</TD><TD>
+</td><td>
 <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
-</TD></TR>
-<TR><TD>
-</TD><TD>
-<INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
-</TD></TR>
-</TABLE>
+</td></tr>
+<tr><td>
+</td><td>
+<input TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+</td></tr>
+</table>
 
-<P>
+<p>
 % if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
 <h2><&|/l&>Values</&></h2>
 <font size=-1>
@@ -82,7 +82,7 @@
 </font>
 % }
 <&/Elements/Submit, Label => loc('Create') &>
-</FORM>
+</form>
 
 
 

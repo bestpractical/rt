@@ -50,63 +50,63 @@
     Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="GroupRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
+  <form METHOD=POST ACTION="GroupRights.html">
+    <input TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
       
 <h1><&|/l&>System groups</&></h1>
-<TABLE>
+<table>
 <& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% loc($Group->Type) %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         Object => $QueueObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
 <h1><&|/l&>Roles</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToRolesForQueue($QueueObj->Id);
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% loc($Group->Type) %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         Object => $QueueObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
 <h1><&|/l&>User defined groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $Group->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         Object => $QueueObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
             
       <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

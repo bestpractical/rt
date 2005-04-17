@@ -49,7 +49,7 @@
     current_tab => "Prefs/SearchOptions.html", 
 &>
 
-<FORM METHOD="POST" ACTION="SearchOptions.html">
+<form METHOD="POST" ACTION="SearchOptions.html">
 <input type="hidden" name="Format" value="<%$Format%>">
     <& /Search/Elements/DisplayOptions, %ARGS, 
             Format=> $Format, 
@@ -60,7 +60,7 @@
             Order => $Order &>
 
 <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
-</FORM>
+</form>
 
 <%INIT>
 

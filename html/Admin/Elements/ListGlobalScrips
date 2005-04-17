@@ -47,7 +47,7 @@
 %   while (my $scrip = $Scrips->Next ) {
 %   $count++;
 <font size="-1"><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></font>
-<BR>
+<br/>
 %   }
 %   if (!$count) {
 <font size="-1"><&|/l&>(No scrips)</&></font>

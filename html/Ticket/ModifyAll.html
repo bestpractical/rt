@@ -51,8 +51,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM METHOD=POST ACTION="ModifyAll.html" ENCTYPE="multipart/form-data">
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<form METHOD=POST ACTION="ModifyAll.html" ENCTYPE="multipart/form-data">
+<input TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
@@ -79,7 +79,7 @@
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 
-<BR>
+<br/>
 
 <&| /Widgets/TitleBox, title => loc('Update ticket') &>
 <table>
@@ -102,13 +102,13 @@
   </tr>
 % if (my $TxnCFs = $Ticket->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
-<TR>
-<TD class="label"><% $CF->Name %>:</TD>
-<TD class="entry"><& /Elements/EditCustomField, 
+<tr>
+<td class="label"><% $CF->Name %>:</td>
+<td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
     NamePrefix => "Object-RT::Transaction--CustomField-"
-    &><em><% $CF->FriendlyType %></em></TD>
-</TD></TR>
+    &><em><% $CF->FriendlyType %></em></td>
+</td></tr>
 %    } # end if while
 % } # end of if
   <tr>

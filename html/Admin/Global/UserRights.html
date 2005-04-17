@@ -49,32 +49,32 @@
     Title => loc('Modify global user rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="UserRights.html">
+  <form METHOD=POST ACTION="UserRights.html">
       
 <&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
       
-<TABLE>
+<table>
         
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $UserObj->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $group->PrincipalId,
         Object => $RT::System  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
             
       </&>
       <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

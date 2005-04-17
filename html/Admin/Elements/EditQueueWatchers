@@ -47,11 +47,11 @@
 <ul>
 <li><i><&|/l&>none</&></i>
 % } else {
-<i><&|/l&>(Check box to delete)</&></i><br><BR>
+<i><&|/l&>(Check box to delete)</&></i><br><br/>
 <ul>
 % while (my $watcher=$Members->Next) {
 <li>
-<INPUT  TYPE=CHECKBOX 
+<input  TYPE=CHECKBOX 
         NAME="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" 
         UNCHECKED>
 % if ($watcher->MemberObj->IsUser) { 

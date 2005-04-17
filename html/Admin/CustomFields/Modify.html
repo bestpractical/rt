@@ -51,8 +51,8 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<FORM METHOD="POST" ACTION="Modify.html" NAME="ModifyCustomField">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id %>">
+<form METHOD="POST" ACTION="Modify.html" NAME="ModifyCustomField">
+<input TYPE=HIDDEN NAME="id" VALUE="<%$id %>">
 <table>
 <tr>
 <td class="label"><&|/l&>Name</&></td>
@@ -79,21 +79,21 @@
 <tr>
 <td class="label">&nbsp;</td>
 <td>
-<INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td>
 </tr>
 </table>
-<BR>
+<br/>
 % if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
-<H2><&|/l&>Values</&></H2>
+<h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </div>
 % }
 <&/Elements/Submit&>
-</FORM>
+</form>
 
 
 

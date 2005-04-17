@@ -54,7 +54,7 @@ $Rows => undef
 $Page => undef
 $maxitems => undef
 </%ARGS>
-<TR class="collection-as-table">
+<tr class="collection-as-table">
 <%perl>
 
 my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format => $FormatString );
@@ -69,10 +69,10 @@ foreach my $col (@Format) {
         }
 
         $item = 0;
-        $m->out(qq{</TR>\n<TR class="collection-as-table">});
+        $m->out(qq{</tr>\n<tr class="collection-as-table">});
     }
     else {
-        $m->out('<TH class="collection-as-table">');
+        $m->out('<th class="collection-as-table">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
         $title = (
@@ -116,8 +116,8 @@ foreach my $col (@Format) {
         else {
             $m->out( loc($title) );
         }
-        $m->out('</TH>');
+        $m->out('</th>');
     }
 }
 </%perl>
-</TR>
+</tr>

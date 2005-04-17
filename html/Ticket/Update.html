@@ -48,13 +48,13 @@
     Ticket => $TicketObj, 
     Title=> $title &>
 
-<FORM ACTION="Update.html" NAME="TicketUpdate" 
+<form ACTION="Update.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
 
-<TABLE BORDER=0>
+<table BORDER=0>
 
 <tr><td align=right><&|/l&>Status</&>:</td>
 <td>
@@ -71,7 +71,7 @@ $ARGS{UpdateTimeWorked}%>">
 % my $skip;
 <& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
 % if (!$skip) {
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>"><br>
+<input TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>"><br>
 % }
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -85,39 +85,39 @@ $ARGS{UpdateTimeWorked}%>">
 </td></tr>
 <tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>"></td></tr>
 <tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
-value="<% $ARGS{UpdateCc} %>"><BR>
+value="<% $ARGS{UpdateCc} %>"><br/>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60 VALUE="<%$ARGS{UpdateBcc}%>"><BR>
+<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60 VALUE="<%$ARGS{UpdateBcc}%>"><br/>
 <i><font size=-2>
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
 % if (exists $session{'Attachments'}) {
-<TD>
+<td>
 <&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+</td>
+<td COLSPAN=5>
+<&|/l&>Check box to delete</&><br/>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><br/>
 % } # end of foreach
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 % } # end of if
 
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
-<TR>
-<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
-</TR>
+<tr>
+<td ALIGN=RIGHT><% $CF->Name %>:</td>
+<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+</tr>
 %    } # end if while
 % } # end of if
 
-<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
+<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><input TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', %ARGS &>
@@ -137,7 +137,7 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 % }
-</FORM>
+</form>
 <%INIT>
 my $CanRespond = 0;
 my $CanComment = 0;

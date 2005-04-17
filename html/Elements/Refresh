@@ -43,20 +43,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
-<OPTION VALUE="-1"
+<select NAME="<%$Name%>">
+<option VALUE="-1"
 %unless ($Default) {
  SELECTED
 %}
-><&|/l&>Don't refresh this page.</&></OPTION>
+><&|/l&>Don't refresh this page.</&></option>
 %foreach my $value (@refreshevery) {
-<OPTION VALUE="<%$value%>"
+<option VALUE="<%$value%>"
 % if  ( $Default && ($value == $Default)) {
 SELECTED 
 % }
-><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></OPTION>
+><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></option>
 %}
-</SELECT>
+</select>
 
 <%INIT>
 my @refreshevery = qw(120 300 600 1200 3600 7200);

@@ -43,9 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-      <TABLE WIDTH="100%" class="ticketsummary" >
-      <TR>
-	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
+      <table WIDTH="100%" class="ticketsummary" >
+      <tr>
+	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse' &>
@@ -66,31 +66,31 @@
 		title_class=> 'inverse' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  </&>
-	<BR>
-	</TD>
-	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
+	<br/>
+	</td>
+	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
 
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse' &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  </&>
-	<BR>  
+	<br/>  
 	  <&| /Widgets/TitleBox, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => ''&>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
 	</&>
-        <BR>
+        <br/>
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
 
-	</TD>
-      </TR>
-    </TABLE>
+	</td>
+      </tr>
+    </table>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef

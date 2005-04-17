@@ -53,7 +53,7 @@
 <& /Elements/Callback, Requestor => \$requestoraddress,
     Queue => \$qname, %ARGS &>
 
-<FORM ACTION="Offline.html" NAME="TicketUpdate" 
+<form ACTION="Offline.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <table>
 <tr>
@@ -88,13 +88,13 @@
 </td>
 <td>
 <input name="Template" type="file" value="foo">
-<INPUT TYPE=SUBMIT NAME="Parse" VALUE="<&|/l&>Go</&>">
+<input TYPE=SUBMIT NAME="Parse" VALUE="<&|/l&>Go</&>">
 </td>
 </tr>
 </table>
 <& /Elements/Submit, Name => 'UpdateTickets', Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
 
-</FORM>
+</form>
 <%args>
 $requestoraddress => undef
 $qname => undef

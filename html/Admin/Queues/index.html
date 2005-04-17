@@ -52,19 +52,19 @@
 
 <h1><%$caption%></h1>
 <p><&|/l&>Select a queue</&>:</p>
-<UL>
+<ul>
 %if ($queues->Count == 0) {
 <li><i><&|/l&>No queues matching search criteria found.</&></i></li>
 % }
 %while ( $queue = $queues->Next) {
-<li><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->Name%></a></li>
+<li><a HREF="Modify.html?id=<%$queue->id%>"><%$queue->Name%></a></li>
 %}
-</UL>
-<BR>
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Queues/index.html">
+</ul>
+<br/>
+<form METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Queues/index.html">
 <input type="checkbox" name="FindDisabledQueues"> <&|/l&>Include disabled queues in listing.</&>
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
-</FORM>
+</form>
 
 <%INIT>
 my ($queue, $caption);

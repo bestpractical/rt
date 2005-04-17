@@ -43,16 +43,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<HTML>
-<HEAD>
-<TITLE><%$Title%></TITLE>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title><%$Title%></title>
 % if ($Refresh > 0) {
-<META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
+<meta http-equiv="refresh" content="<%$Refresh%>" />
 % }
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-<link rel="stylesheet" title="RT Classic" href="<%$RT::WebPath%>/NoAuth/ossf.css" type="text/css">
+<link rel="stylesheet" title="RT Classic" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 <link rel="stylesheet" title="OSSF" href="<%$RT::WebPath%>/NoAuth/ossf.css" type="text/css">
 <script>
 function hideshow(num) {
@@ -67,10 +69,10 @@ function hideshow(num) {
 }   
 </script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
-</HEAD>
+</head>
 <body
 % if ($Focus) {
-ONLOAD="
+onload="
     var tmp = (document.getElementsByName('<% $Focus %>'));
     if (tmp.length > 0) tmp[tmp.length-1].focus();
 "
@@ -79,14 +81,14 @@ ONLOAD="
 <div id="all">
 <div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a></div>
 <div class="login-information">
-<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A></SPAN>
+<span style="display: none"><a href="#skipnav"><&|/l&>Skip Menu</&></a></span>
 %if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
-<A  HREF="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></A>
+<a  href="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></a>
 % }
 <& /Elements/Callback, %ARGS &>
 <&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-| <A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
+| <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % } else {
 <&|/l&>Not logged in.</&>
 % }

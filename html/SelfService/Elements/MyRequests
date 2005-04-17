@@ -44,25 +44,25 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
-<TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
-<TR>
-<TH><&|/l&>Subject</&></TH>
-<TH><&|/l&>Status</&></TH>
-<TH><&|/l&>Owner</&></TH>
-</TR>
-<TR>
+<table BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
+<tr>
+<th><&|/l&>Subject</&></th>
+<th><&|/l&>Status</&></th>
+<th><&|/l&>Owner</&></th>
+</tr>
+<tr>
 % while (my $Ticket = $MyTickets->Next) {
-<TR>
-<TD>
+<tr>
+<td>
 <a href="<%$RT::WebPath%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
-</TD>
-<TD>
+</td>
+<td>
 <%loc($Ticket->Status)%>
-</TD><TD>
+</td><td>
 <%$Ticket->OwnerObj->Name%>
-</TR>
+</tr>
 % }
-</TABLE>
+</table>
 </&>
 
 <%INIT>

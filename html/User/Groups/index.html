@@ -48,12 +48,12 @@
     current_subtab => 'User/Groups/index.html', 
     Title => $title &>
 
-<&|/l&>Personal groups</&>:<BR>
-<UL>
+<&|/l&>Personal groups</&>:<br/>
+<ul>
 %while ( my $Group = $Groups->Next) {
-<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
+<li><a HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br/>
 %}
-</UL>
+</ul>
 
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});

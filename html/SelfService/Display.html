@@ -47,25 +47,25 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-  <TABLE WIDTH="100%" class="ticketsummary" >
-      <TR>
-        <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
+  <table WIDTH="100%" class="ticketsummary" >
+      <tr>
+        <td VALIGN=TOP WIDTH="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
                 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
           </&>
-</TD>
-        <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
+</td>
+        <td VALIGN=TOP WIDTH="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
           </&>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 
 
 

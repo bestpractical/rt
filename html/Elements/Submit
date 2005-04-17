@@ -56,39 +56,39 @@ function set_checkbox (obj, val) {
 }
 --></script>
 % }
-<TABLE WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
-<TR>
-<TD>
+<table WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
+<tr>
+<td>
 % if ($CheckAll) {
-<INPUT TYPE=BUTTON VALUE="<%$CheckAllLabel%>" ONCLICK="set_checkbox(this, true)">
+<input TYPE=BUTTON VALUE="<%$CheckAllLabel%>" ONCLICK="set_checkbox(this, true)">
 % }
 % if ($ClearAll) {
-<INPUT TYPE=BUTTON VALUE="<%$ClearAllLabel%>" ONCLICK="set_checkbox(this, false)">
+<input TYPE=BUTTON VALUE="<%$ClearAllLabel%>" ONCLICK="set_checkbox(this, false)">
 % }
 % if ($Reset) {
-<INPUT TYPE=RESET VALUE="<%$ResetLabel%>">
+<input TYPE=RESET VALUE="<%$ResetLabel%>">
 %}
-</TD>
-<TD>
+</td>
+<td>
 &nbsp;
-</TD>
-<TD ALIGN=RIGHT VALIGN=CENTER><FONT COLOR=#ffd800>
+</td>
+<td ALIGN=RIGHT VALIGN=CENTER><font COLOR=#ffd800>
 % if ($AlternateLabel) {
-<B><%$AlternateCaption%>
-<INPUT TYPE=SUBMIT
+<b><%$AlternateCaption%>
+<input TYPE=SUBMIT
 %if ($Name) {
 NAME="<%$Name%>"
 %}
-VALUE='<%$AlternateLabel%>'></B>
+VALUE='<%$AlternateLabel%>'></b>
 % }
-<B><%$Caption%> <INPUT TYPE=SUBMIT
+<b><%$Caption%> <input TYPE=SUBMIT
 %if ($Name) {
 NAME="<%$Name%>"
 % }
- VALUE='<%$Label%>'></B></FONT>
-</TD>
-</TR>
-</TABLE>
+ VALUE='<%$Label%>'></b></font>
+</td>
+</tr>
+</table>
 <%ARGS>
 $color => "#336699"
 $Caption => ''

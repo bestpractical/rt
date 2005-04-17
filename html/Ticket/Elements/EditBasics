@@ -43,29 +43,29 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE>
-  <TR>
+<table>
+  <tr>
       <td class="label"><&|/l&>Subject</&>:</td>
       <td class="value"><input name=Subject value="<%$TicketObj->Subject|h%>" SIZE=50></td>
-    </TR>
+    </tr>
 
-  <TR>
+  <tr>
       <td class="label"><&|/l&>Status</&>:</td>
       <td class="value"><%$SelectStatus|n%></td>
-    </TR>
-  <TR>
+    </tr>
+  <tr>
       <td class="label"><&|/l&>Queue</&>:</td>
       <td class="value"><%$SelectQueue|n%></td>
-    </TR>
-  <TR>
+    </tr>
+  <tr>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
       <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5">
 <select name="TimeEstimatedUnits">
     <option value="mins"><&|/l&>mins</&></option>
     <option value="hrs"><&|/l&>hrs</&></option>
 </select></td>
-    </TR>
-  <TR>
+    </tr>
+  <tr>
       <td class="label"><&|/l&>Time Worked</&>:</td>
       <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5">
 <select name="TimeWorkedUnits">
@@ -73,28 +73,28 @@
     <option value="hrs"><&|/l&>hrs</&></option>
 </select></td>
 
-    </TR>
-  <TR>
+    </tr>
+  <tr>
       <td class="label"><&|/l&>Time Left</&>:</td>
       <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5">
 <select name="TimeLeftUnits">
     <option value="mins"><&|/l&>mins</&></option>
     <option value="hrs"><&|/l&>hrs</&></option>
 </select></td>
-    </TR>
-    </TR>
+    </tr>
+    </tr>
 
-  <TR>
+  <tr>
       <td class="label"><&|/l&>Priority</&>:</td>
       <td class="value"><input name=Priority value="<%$TicketObj->Priority|h%>" SIZE="5"></td>
-    </TR>
+    </tr>
 
-  <TR>
+  <tr>
       <td class="label"><&|/l&>Final Priority</&>:</td>
       <td class="value"><input name=FinalPriority value="<%$TicketObj->FinalPriority|h%>" SIZE="5"></td>
-    </TR>
+    </tr>
 <& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS &>
-</TABLE>
+</table>
 
 <%INIT>
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.

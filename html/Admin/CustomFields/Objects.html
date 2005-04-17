@@ -52,9 +52,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="Objects.html" METHOD=POST>
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $id %>">
-<INPUT TYPE=HIDDEN NAME="UpdateObjs" VALUE="1">
+<form ACTION="Objects.html" METHOD=POST>
+<input TYPE=HIDDEN NAME="id" VALUE="<% $id %>">
+<input TYPE=HIDDEN NAME="UpdateObjs" VALUE="1">
 
 <h2><&|/l&>Selected objects</&></h2>
 <& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>
@@ -62,7 +62,7 @@
 <& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
 
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
-</FORM>
+</form>
 
 <%INIT>
 my $CF = RT::CustomField->new($session{'CurrentUser'});

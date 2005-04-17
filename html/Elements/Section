@@ -43,13 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE WIDTH=100%>
-<TR>
-<TD>
+<table WIDTH=100%>
+<tr>
+<td>
 <font size=+4><%$title%></font>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 
 <%ARGS>
 $title => undef

@@ -67,9 +67,9 @@
 % } else {
 % $sep=0;
 % }
-<li class="<%$class%>-<%$level%>-<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" class="<%$class%>-<%$level%>" 
+<li class="<%$class%>-<%$level%>-<%$style%>"><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" class="<%$class%>-<%$level%>" 
 <%($class eq 'currenttopnav') ? "name='focus'" : ""|n %> 
-<% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></A>
+<% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
 %# Second-level items
 % if ($toptabs->{$tab}->{'subtabs'}) {
         <& /Elements/Menu, level => $level+1, 

@@ -43,33 +43,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<TABLE>
-  <TR>
-    <TD class="label"><&|/l&>Merge into</&>:</TD>
-    <TD class="entry"><input name="Ticket-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Depends on</&>:</TD>
-    <TD class="entry"><input name="Ticket-DependsOn"></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Depended on by</&>:</TD>
-    <TD class="entry"><input name="DependsOn-Ticket"></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Parents</&>:</TD>
-    <TD class="entry"><input name="Ticket-MemberOf"></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Children</&>:</TD>
-    <TD class="entry"> <input name="MemberOf-Ticket"></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Refers to</&>:</TD>
-    <TD class="entry"><input name="Ticket-RefersTo"></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Referred to by</&>:</TD>
-    <TD class="entry"> <input name="RefersTo-Ticket"></TD>
-  </TR>
-</TABLE>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Merge into</&>:</td>
+    <td class="entry"><input name="Ticket-MergeInto"> <i><&|/l&>(only one ticket)</&></i></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Depends on</&>:</td>
+    <td class="entry"><input name="Ticket-DependsOn"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Depended on by</&>:</td>
+    <td class="entry"><input name="DependsOn-Ticket"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Parents</&>:</td>
+    <td class="entry"><input name="Ticket-MemberOf"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Children</&>:</td>
+    <td class="entry"> <input name="MemberOf-Ticket"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Refers to</&>:</td>
+    <td class="entry"><input name="Ticket-RefersTo"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Referred to by</&>:</td>
+    <td class="entry"> <input name="RefersTo-Ticket"></td>
+  </tr>
+</table>

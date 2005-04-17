@@ -45,13 +45,13 @@
 %# END BPS TAGGED BLOCK }}}
 %# TODO: Better default handling
 
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 % foreach my $value (@values) {
-<OPTION VALUE="<%$value%>" <% $value == $Default && 'SELECTED' %>>
+<option VALUE="<%$value%>" <% $value == $Default && 'SELECTED' %>>
 <% shift @labels %>
-</OPTION>
+</option>
 % }
-</SELECT>
+</select>
 
 <%INIT>
 my @values = qw(0 10 25 50 100);

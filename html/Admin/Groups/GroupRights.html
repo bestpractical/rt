@@ -50,50 +50,50 @@
     Title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="GroupRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $GroupObj->id %>">
+  <form METHOD=POST ACTION="GroupRights.html">
+    <input TYPE=HIDDEN NAME=id VALUE="<% $GroupObj->id %>">
       
 <&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
       
 <h1><&|/l&>System groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% loc($Group->Type) %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         PrincipalType => 'Group',
         Object => $GroupObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
 <h1><&|/l&>User defined groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
+  <tr ALIGN=RIGHT> 
+	<td VALIGN=TOP>
 	    <% $Group->Name %>
-		  </TD>
-	  <TD>
+		  </td>
+	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         PrincipalType => 'Group',
         Object => $GroupObj  &>
-	  </TD>
-	</TR>
+	  </td>
+	</tr>
 % }
-</TABLE>
+</table>
             
       </&>
       <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
       
-  </FORM>
+  </form>
   
 <%INIT>
  

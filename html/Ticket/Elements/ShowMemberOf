@@ -43,12 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<UL>
+<ul>
 % my $memberof = $Ticket->MemberOf;
 % while (my $member_of = $memberof->Next) {
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: <%$member_of->Subject%> [<%$member_of->Status%>]
+<li><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: <%$member_of->Subject%> [<%$member_of->Status%>]
 % }
-</UL>
+</ul>
 
 <%INIT>
 </%INIT>

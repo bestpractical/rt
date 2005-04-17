@@ -43,14 +43,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/l&>Depends on</&>:<BR>
+<&|/l&>Depends on</&>:<br/>
 % while (my $Link = $Ticket->DependsOn->Next) {
 % my $member = $Link->TargetObj;
 <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
  <br>
 % }
-<&|/l&>Depended on by</&>:<BR>
+<&|/l&>Depended on by</&>:<br/>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
 % my $member = $Link->TargetObj;
 <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 

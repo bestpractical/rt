@@ -43,16 +43,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME ="<%$Name%>">
+<select NAME ="<%$Name%>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
-<OPTION VALUE="<%$value%>"
+<option VALUE="<%$value%>"
 % if ($Default eq $value) {
 SELECTED
 % }
-><%$option%></OPTION>
+><%$option%></option>
 % }
-</SELECT>
+</select>
 
 <%ARGS>
 $Name => undef
