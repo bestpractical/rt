@@ -3206,7 +3206,7 @@ msgstr "Nuevas relaciones"
 
 #: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
 msgid "New Password"
-msgstr "Nueva contraseñaa"
+msgstr "Nueva contraseña"
 
 #: etc/initialdata:332
 msgid "New Pending Approval"
@@ -3230,7 +3230,7 @@ msgstr "Nuevo grupo"
 
 #: html/SelfService/Prefs.html:53
 msgid "New password"
-msgstr "Nueva contraseñaa"
+msgstr "Nueva contraseña"
 
 #: lib/RT/User_Overlay.pm:811
 msgid "New password notification sent"
@@ -3775,7 +3775,7 @@ msgstr "Padres"
 
 #: html/Elements/Login:74 html/User/Prefs.html:105
 msgid "Password"
-msgstr "Contraseñaa"
+msgstr "Contraseña"
 
 #: html/NoAuth/Reminder.html:46
 msgid "Password Reminder"
@@ -3783,7 +3783,7 @@ msgstr "Recordatorio de contraseña"
 
 #: lib/RT/User_Overlay.pm:1038
 msgid "Password changed"
-msgstr ""
+msgstr "Contraseña cambiado"
 
 #: lib/RT/User_Overlay.pm:1032 lib/RT/User_Overlay.pm:214
 msgid "Password too short"
