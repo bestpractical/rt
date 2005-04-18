@@ -43,35 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% my $Values = $Object->CustomFieldValues($CustomField->Id);
-  <tr>
-    <td class="label"><%$CustomField->Name%>:</td>
-    <td class="value">
-<ul>
-% while (my $Value = $Values->Next()) {
-<li>
-% my $comp = "ShowCustomField".$CustomField->Type;
-% if ($m->comp_exists($comp)) {
-<& $comp, Object => $Value &>
-%   } else {
-<%$Value->Content%>
-%   }
-</li>
-% }
-% unless ($Values->Count()) {
-<li><i><&|/l&>(no value)</&></i></li>
-% }
-</ul>
-    </td>
-  </tr>
-% }
-</table>
-<%INIT>
-my $CustomFields = $Object->CustomFields;
-</%INIT>
+% my $content = $Object->LargeContent || $Object->Content;
+% my $wiki_content = Text::WikiFormat::format( $content."\n" );
+<%$wiki_content|n%>
+<%init>
+use Text::WikiFormat;
+</%init>
 <%ARGS>
-$Object => undef
+$Object
 </%ARGS>

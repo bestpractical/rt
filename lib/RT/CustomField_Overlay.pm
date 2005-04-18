@@ -48,18 +48,43 @@ package RT::CustomField;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(%TYPES $RIGHTS %FRIENDLY_OBJECT_TYPES);
+use vars qw(%FieldTypes $RIGHTS %FRIENDLY_OBJECT_TYPES);
 
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
 
-# Enumerate all valid types for this custom field
-%TYPES = (
-    Freeform => 1,	# loc
-    Select => 1,	# loc
-    Text => 1,     # loc
-    Image => 1,    # loc
-    Binary => 1,   # loc
+
+%FieldTypes = (
+    Select => [
+        'Select multiple values',	# loc
+        'Select one value',		# loc
+        'Select up to [_1] values',	# loc
+    ],
+    Freeform => [
+        'Enter multiple values',	# loc
+        'Enter one value',		# loc
+        'Enter up to [_1] values',	# loc
+    ],
+    Text => [
+        'Fill in multiple text areas',	# loc
+        'Fill in one text area',	# loc
+        'Fill in up to [_1] text areas',# loc
+    ],
+    Wikitext => [
+        'Fill in multiple wikitext areas',	# loc
+        'Fill in one wikitext area',	# loc
+        'Fill in up to [_1] wikitext areas',# loc
+    ],
+    Image => [
+        'Upload multiple images',	# loc
+        'Upload one image',		# loc
+        'Upload up to [_1] images',	# loc
+    ],
+    Binary => [
+        'Upload multiple files',	# loc
+        'Upload one file',		# loc
+        'Upload up to [_1] files',	# loc
+    ],
 );
 
 
@@ -523,7 +548,7 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub Types {
-	return (keys %TYPES);
+	return (keys %FieldTypes);
 }
 
 # }}}
@@ -535,42 +560,13 @@ Returns a localized human-readable version of the custom field type.
 If a custom field type is specified as the parameter, the friendly type for that type will be returned
 
 =cut
-
-my %FriendlyTypes = (
-    Select => [
-        'Select multiple values',	# loc
-        'Select one value',		# loc
-        'Select up to [_1] values',	# loc
-    ],
-    Freeform => [
-        'Enter multiple values',	# loc
-        'Enter one value',		# loc
-        'Enter up to [_1] values',	# loc
-    ],
-    Text => [
-        'Fill in multiple text areas',	# loc
-        'Fill in one text area',	# loc
-        'Fill in up to [_1] text areas',# loc
-    ],
-    Image => [
-        'Upload multiple images',	# loc
-        'Upload one image',		# loc
-        'Upload up to [_1] images',	# loc
-    ],
-    Binary => [
-        'Upload multiple files',	# loc
-        'Upload one file',		# loc
-        'Upload up to [_1] files',	# loc
-    ],
-);
-
 sub FriendlyType {
     my $self = shift;
 
     my $type = @_ ? shift : $self->Type;
     my $max  = @_ ? shift : $self->MaxValues;
 
-    if (my $friendly_type = $FriendlyTypes{$type}[$max>2 ? 2 : $max]) {
+    if (my $friendly_type = $FieldTypes{$type}[$max>2 ? 2 : $max]) {
 	return ( $self->loc( $friendly_type, $max ) );
     }
     else {
@@ -609,7 +605,7 @@ sub ValidateType {
 	$RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead");
     }
 
-    if( $TYPES{$type}) {
+    if( $FieldTypes{$type}) {
         return(1);
     }
     else {
