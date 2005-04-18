@@ -62,7 +62,7 @@
 <tr valign="top">
 <td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
-<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Refine'), Name => 'AddClause'&>
+<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
 </td>
 
 <td>
@@ -71,7 +71,7 @@
     actions => \@actions,
     optionlist => $optionlist,
     Description => $Description &>
-<& /Elements/Submit, Label => loc('Search'), Name => 'DoSearch'&>
+<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 
@@ -86,6 +86,7 @@
 
 <& Elements/DisplayOptions, %ARGS, Format=> $Format,
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
+<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 </table>
