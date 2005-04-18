@@ -29,8 +29,8 @@ my $quick = RT::Search::Googleish->new(Argument => "",
 my @tests = (
     $queue                 => "Queue = '$queue'",
     "root $queue"          => "Queue = '$queue' AND Owner = 'root'",
-    "notauser $queue"      => "Content LIKE 'notauser' AND Queue = '$queue'",
-    "notauser $queue root" => "Content LIKE 'notauser' AND Queue = '$queue'".
+    "notauser $queue"      => "Subject LIKE 'notauser' AND Queue = '$queue'",
+    "notauser $queue root" => "Subject LIKE 'notauser' AND Queue = '$queue'".
                               " AND Owner = 'root'"
 );
 

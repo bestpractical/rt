@@ -81,45 +81,64 @@ sub Describe  {
 
 # {{{ sub QueryToSQL
 sub QueryToSQL {
-  my $self = shift;
-  my $query = shift || $self->Argument;
-  my @keywords = split /\s+/, $query;
-  my (@tql_clauses, @owner_clauses, @queue_clauses, @user_clauses, @id_clauses);
-  my ($Queue, $User);
-  for my $key (@keywords) {
-      # Is this a ticket number? If so, go to it.
-   if ($key =~ m/^\d+$/) {
-        push @id_clauses, "id = '$key'";
-   }
+    my $self     = shift;
+    my $query    = shift || $self->Argument;
+    my @keywords = split /\s+/, $query;
+    my (
+        @tql_clauses,  @owner_clauses, @queue_clauses,
+        @user_clauses, @id_clauses,    @status_clauses
+    );
+    my ( $Queue, $User );
+    for my $key (@keywords) {
 
-    elsif ($key =~ /\w+\@\w+/) {
-        push @user_clauses, "Requestor LIKE '$key'";
+        # Is this a ticket number? If so, go to it.
+        if ( $key =~ m/^\d+$/ ) {
+            push @id_clauses, "id = '$key'";
+        }
+
+        elsif ( $key =~ /\w+\@\w+/ ) {
+            push @user_clauses, "Requestor LIKE '$key'";
+        }
+
+        # Is there a status with this name?
+        elsif (
+            $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
+            and $Queue->IsValidStatus($key)
+          )
+        {
+            push @status_clauses, "Status = '" . $key . "'";
+        }
+
+        # Is there a owner named $key?
+        # Is there a queue named $key?
+        elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
+            and $Queue->Load($key) )
+        {
+            push @queue_clauses, "Queue = '" . $Queue->Name . "'";
+        }
+
+        # Is there a owner named $key?
+        elsif ( $User = RT::User->new( $self->TicketsObj->CurrentUser )
+            and $User->Load($key)
+            and $User->Privileged )
+        {
+            push @owner_clauses, "Owner = '" . $User->Name . "'";
+        }
+
+        # Else, content must contain $key
+        else {
+            $key =~ s/['\\].*//;
+            push @tql_clauses, "Subject LIKE '$key'";
+        }
     }
 
-      # Is there a queue named $key?
-      elsif ($Queue =  RT::Queue->new($self->TicketsObj->CurrentUser) 
-              and $Queue->Load($key)) {
-          push @tql_clauses, "Queue = '". $Queue->Name. "'";
-      } 
-      # Is there a owner named $key?
-      elsif ($User = RT::User->new($self->TicketsObj->CurrentUser)
-              and $User->Load($key)
-              and $User->Privileged) {
-          push @owner_clauses, "Owner = '". $User->Name. "'";
-      } 
-      # Else, content must contain $key
-      else {
-          $key =~ s/['\\].*//;
-          push @tql_clauses, "Content LIKE '$key'";
-      }
-  }
-
-    push @tql_clauses,  join( " OR " , @id_clauses);
-    push @tql_clauses,  join( " OR " , @owner_clauses);
-    push @tql_clauses,  join( " OR " , @user_clauses);
-    push @tql_clauses, join( " OR " , @queue_clauses) ;
-    @tql_clauses =grep { $_ ? "( $_ )" : undef } @tql_clauses;
-  return join " AND ", @tql_clauses;
+    push @tql_clauses, join( " OR ", @id_clauses );
+    push @tql_clauses, join( " OR ", @owner_clauses );
+    push @tql_clauses, join( " OR ", @status_clauses );
+    push @tql_clauses, join( " OR ", @user_clauses );
+    push @tql_clauses, join( " OR ", @queue_clauses );
+    @tql_clauses = grep { $_ ? "( $_ )" : undef } @tql_clauses;
+    return join " AND ", @tql_clauses;
 }
 # }}}
 
