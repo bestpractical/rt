@@ -71,7 +71,11 @@
 
 % if ($Rows && $ShowNavigation) {
 <hr>
-<&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
+% my $oddRows;
+% if (($TotalFound % $Rows) == 0) {
+% $oddRows = 0;
+% } else { $oddRows = 1; }
+<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page [_1] of [_2]</&>
 
 <%perl>
 my $prev = $m->comp(
