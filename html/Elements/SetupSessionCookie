@@ -75,18 +75,25 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
         # If the session is invalid, create a new session.
         if ( $@ =~ /Object does not/i ) {
-            tie %session, $session_class, undef,
-	      $backends{$RT::DatabaseType} ? {
+            tie %session, $session_class, undef, $backends{$RT::DatabaseType}
+              ? {
                 Handle     => $RT::Handle->dbh,
                 LockHandle => $RT::Handle->dbh,
-              } : {
+              }
+              : {
                 Directory     => $RT::MasonSessionDir,
                 LockDirectory => $RT::MasonSessionDir,
               };
             undef $cookies{$cookiename};
         }
         else {
-            die "RT Couldn't write to session directory '$RT::MasonSessionDir': $@. Check that this dir ectory's permissions are correct.";
+            die loc("RT couldn't store your session.") . "\n"
+              . loc(
+"This may mean that that the directory '[_1]' isn't writable or a database table is missing or corrupt.",
+                $RT::MasonSessionDir
+              )
+              . "\n\n"
+              . $@;
         }
     }
 
