@@ -145,17 +145,11 @@ $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
 is($tix->Count, 5, "matched LIKE subject");
 
-#$tix = RT::Tickets->new($RT::SystemUser);
-#$tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL");
-#is($tix->Count, 2, "LIKE null CF");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL");
-SKIP: {
     
-        skip "Negative CF searches don't work", 1; 
-    is($tix->Count, 2, "IS null CF");};
-
+    is($tix->Count, 2, "IS null CF");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search1'");
@@ -169,9 +163,14 @@ $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search'");
 is($tix->Count, 6, "LIKE requestor");
 
-$tix = RT::Tickets->new($RT::SystemUser);
-$tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
-SKIP  {skip "Can't search for 'no requestor", 1; is($tix->Count, 1, "Search for no requestor")};
+TODO: {
+    
+    local $TODO = "Can't search for 'no requestor"; 
+    $tix = RT::Tickets->new($RT::SystemUser);
+    $tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
+    is($tix->Count, 1, "Search for no requestor");
+
+};
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = 'SearchTest1'");
@@ -223,19 +222,14 @@ $tix->FromSQL("CF.SearchTest LIKE 'foo' AND Subject LIKE 'SearchTest'");
 is($tix->Count, 4, "like cf and like subject");
 
 $tix = RT::Tickets->new($RT::SystemUser);
-$tix->FromSQL("CF.SearchTest IS NULL AND CF.SearchTest2 = 'bar5'");
-SKIP: { 
+$tix->FromSQL("CF.SearchTest IS NULL AND CF.SearchTest2 = 'bar2'");
     
-        skip "Negative CF searches don't work", 1; 
-    is($tix->Count, 1, "null cf and is cf"); };
-
+    is($tix->Count, 1, "null cf and is cf");
 
 
 $tix = RT::Tickets->new($RT::SystemUser);
-$tix->FromSQL("Queue = '$$' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
-SKIP: { 
-        skip "Negative CF searches don't work", 1; 
+$tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
 
-        is($tix->Count, 1, "null cf and null cf"); };
+        is($tix->Count, 1, "null cf and null cf"); 
 
 
