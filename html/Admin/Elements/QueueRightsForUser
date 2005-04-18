@@ -46,7 +46,7 @@
 <UL>
 %while(my $ACE = $ACL->Next) {
 
-<LI><checkbox name="delete_ace_<%$ACE->id%>"> <% loc($ACE->RightName) %> (<%$ACE->UserObj->RealName%>)
+<LI><checkbox name="delete_ace_<%$ACE->id%>" value="1"> <% loc($ACE->RightName) %> (<%$ACE->UserObj->RealName%>)
 
 %}
 </UL>

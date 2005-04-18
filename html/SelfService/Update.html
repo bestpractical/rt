@@ -77,7 +77,7 @@
     <TD COLSPAN=5 class="value">
     <&|/l&>Check box to delete</&><BR>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-    <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+    <input type="checkbox" name="DeleteAttach-<%$attach_name%>" value="1"><%$attach_name%><BR>
 % } # end of foreach
     </TD>
 </TR>
