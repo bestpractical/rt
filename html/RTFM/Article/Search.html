@@ -18,13 +18,12 @@
 
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
 <& /Elements/ListActions, actions => \@results &>
-<& Elements/ShowSearchResults, articles => $articles &>
-
 <form action="Search.html" method="GET">
 <& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
     Name => ($search ? $search->Name : undef),
     Privacy => ($search ? $search->Privacy : undef) &>
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
+<& Elements/ShowSearchResults, articles => $articles &>
 <%init>
 use RT::SavedSearch;
 my @results;
