@@ -218,7 +218,7 @@ $deps{'ORACLE'} = [ _( << '.') ];
 DBD::Oracle
 .
 $deps{'POSTGRESQL'} = [ _( << '.') ];
-DBD::Pg
+DBD::Pg 1.41
 .
 
 $deps{'SQLITE'} = [ _( << '.') ];
