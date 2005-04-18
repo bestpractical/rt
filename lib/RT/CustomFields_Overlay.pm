@@ -69,6 +69,7 @@ package RT::CustomFields;
 
 use strict;
 no warnings qw(redefine);
+use DBIx::SearchBuilder::Unique;
 
 
 sub _OCFAlias {

@@ -42,8 +42,6 @@ alternate short form of specifying a full ticket URI.
 use_ok("RT::URI::t");
 my $uri = RT::URI::t->new($RT::SystemUser);
 ok(ref($uri), "URI object exists");
-is($uri->LocalURIPrefix, 't://example.com', 
-   "URI has correct local prefix");
 
 my $uristr = "t:1";
 $uri->ParseURI($uristr);
