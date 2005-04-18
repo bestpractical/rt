@@ -292,8 +292,6 @@ else {
 		push @results, loc('User could not be created: [_1]', $msg);
 	}	
 
-	# set the id, so the the menu will have the right info
-	$id = $UserObj->Id;	
     } else {
 	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
 	$val = $UserObj->Id();
@@ -373,6 +371,11 @@ if ($UserObj->Privileged()) {
 }
 
 # }}}
+
+# set the id, so the the menu will have the right info, this needs to
+# be done here to avoid creating and then modifying a user
+$id = $UserObj->Id;
+
 </%INIT>
 
 
