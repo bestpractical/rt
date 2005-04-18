@@ -1081,13 +1081,15 @@ sub _CustomFieldLimit {
     $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
 
-# If we're trying to find custom fields that don't match something, we want tickets
-# where the custom field has no value at all
+# If we're trying to find custom fields that don't match something, we
+# want tickets where the custom field has no value at all.  Note that
+# we explicitly don't include the "IS NULL" case, since we would
+# otherwise end up with a redundant clause.
 
     my $null_columns_ok;
-    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+    if ( ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
         $null_columns_ok = 1;
-    } 
+    }
 
     my $cfid = 0;
     if ($queue) {
@@ -1106,24 +1108,53 @@ sub _CustomFieldLimit {
 
         $cfid = $cf->id;
 
-    } else { # if we have no id, we're going to search on name.
-        $cfid = $field;
     }
 
     my $TicketCFs;
+    my $cfkey = $cfid ? $cfid : "$queue.$field";
 
     # Perform one Join per CustomField
-    if ( $self->{_sql_object_cf_alias}{$cfid} ) {
-        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
+    if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey};
     }
     else {
-        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->Join(
-            TYPE   => 'left',
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'ObjectCustomFieldValues',
-            FIELD2 => 'ObjectId'
-        );
+        if ($cfid) {
+            $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
+                TYPE   => 'left',
+                ALIAS1 => 'main',
+                FIELD1 => 'id',
+                TABLE2 => 'ObjectCustomFieldValues',
+                FIELD2 => 'ObjectId',
+            );
+            $self->SUPER::Limit(
+                LEFTJOIN        => $TicketCFs,
+                FIELD           => 'CustomField',
+                VALUE           => $cfid,
+                ENTRYAGGREGATOR => 'AND'
+            );
+        } else {
+            my $cfalias = $self->Join(
+                TYPE   => 'left',
+                EXPRESSION =>   "'$field'",
+                TABLE2 => 'CustomFields',
+                FIELD2 => 'Name',
+            );
+
+            $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
+                TYPE   => 'left',
+                ALIAS1 => $cfalias,
+                FIELD1 => 'id',
+                TABLE2 => 'ObjectCustomFieldValues',
+                FIELD2 => 'CustomField',
+            );
+            $self->SUPER::Limit(
+                LEFTJOIN => $TicketCFs,
+                FIELD => 'ObjectId',
+                VALUE => 'main.id',
+                QUOTEVALUE => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
         $self->SUPER::Limit(
             LEFTJOIN => $TicketCFs,
             FIELD    => 'ObjectType',
@@ -1137,30 +1168,6 @@ sub _CustomFieldLimit {
             OPERATOR    => '=',
             VALUE => '0',
             ENTRYAGGREGATOR => 'AND');
-
-        if ($cfid =~ /^\d+$/) { # we have a numerical cfid. we know which cf we want
-            $self->SUPER::Limit(
-                LEFTJOIN        => $TicketCFs,
-                FIELD           => 'CustomField',
-                VALUE           => $cfid,
-                ENTRYAGGREGATOR => 'AND'
-            );
-        }
-        else { # we're going to need to search on cf name
-            my $cfalias = $self->Join(
-                ALIAS1 => $TicketCFs,
-                TYPE => 'left',
-                FIELD1 => 'CustomField',
-                TABLE2 => 'CustomFields',
-                FIELD2 => 'id'
-            );
-            $self->SUPER::Limit(
-                LEFTJOIN => $cfalias,
-                FIELD    => 'Name',
-                VALUE    => $field,
-            );
-
-        }
     }
 
     $self->_OpenParen if ($null_columns_ok);
@@ -1173,7 +1180,8 @@ sub _CustomFieldLimit {
         QUOTEVALUE => 1,
         @rest
     );
-    if ($null_columns_ok && ($op ne 'IS' && $value ne 'NULL')) {
+
+    if ($null_columns_ok) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
             FIELD           => 'Content',
