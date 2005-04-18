@@ -298,7 +298,7 @@ $COLUMN_MAP = {
         attribute => 'checkbox',
         title => loc('Update'),
         align     => 'right',
-        value     => sub { return \('<input type=checkbox name="UpdateTicket'.$_[0]->id.'" CHECKED>') }
+        value     => sub { return \('<input type=checkbox name="UpdateTicket'.$_[0]->id.'" value="1" CHECKED>') }
     },
 
 };
