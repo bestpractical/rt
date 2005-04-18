@@ -75,7 +75,7 @@ while (my $Ticket = $Tickets->Next) {
  }
       </%PERL>
 <TR bgcolor="<%$bgcolor%>">
-<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
+<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" value="1" CHECKED></TD>
 %foreach my $col (@cols) {
 <TD>
 % if ($col eq 'id') {

@@ -78,7 +78,7 @@
 % $UserMembers->LimitToUsers();
 <UL>
 % while (my $member = $UserMembers->Next()) {
-<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>" value="1">
 <%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
 % }
 </ul>
@@ -87,7 +87,7 @@
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->Next()) {
-<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>" value="1">
 <%$member->MemberObj->Object->Name%>
 % }
 % }

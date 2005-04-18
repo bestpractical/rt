@@ -63,7 +63,7 @@
 % while (my $TemplateObj = $Templates->Next) { 
 <TR>
 <TD>
-<input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>">
+<input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>" value="1">
 </TD>
 <TD>
 <A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">

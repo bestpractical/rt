@@ -57,7 +57,7 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 % while (my $link = $Object->DependsOn->Next) {
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
@@ -67,7 +67,7 @@
     <td class="value">
 % while (my $link = $Object->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
@@ -76,7 +76,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $link = $Object->MemberOf->Next) {
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
@@ -85,7 +85,7 @@
     <td class="labeltop"><&|/l&>Children</&>:</td>
     <td class="value">
 % while (my $link = $Object->Members->Next) {
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
@@ -94,7 +94,7 @@
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
 % while (my $link = $Object->RefersTo->Next) {
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1">
         <& ShowLink, URI => $link->TargetURI &><br>
 %}
     </td>
@@ -103,7 +103,7 @@
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
 % while (my $link = $Object->ReferredToBy->Next) {
-      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
