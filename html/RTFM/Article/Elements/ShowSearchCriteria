@@ -102,7 +102,6 @@
 <div align="right"><input type="submit"></div>
 <&/Elements/TitleBoxEnd&>
 % }
-</form>
 
 
 </%init>

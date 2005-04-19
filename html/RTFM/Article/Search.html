@@ -23,6 +23,8 @@
     Name => ($search ? $search->Name : undef),
     Privacy => ($search ? $search->Privacy : undef) &>
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
+</form>
+
 <& Elements/ShowSearchResults, articles => $articles &>
 <%init>
 use RT::SavedSearch;
@@ -118,19 +120,25 @@ if ($ARGS{'Save'}) {
 	push(@results, loc("Could not create search: [_1]", $msg));
     }
 } elsif ($ARGS{'Update'}) {
-    my %searchargs = %ARGS;
-    foreach my $key (@metakeys) {
-	delete $searchargs{$key};
-    }
-    
-    # We already have a search loaded, because CurrentSearch is set,
-    # or else we would not have gotten here.
-    my ($ret, $msg) = $search->Update(\%searchargs);
-    if ($ret) {
-	push(@results, loc("Search [_1] updated", $search->Name));
+    if ($ARGS{'SearchPrivacy'} != $search->Privacy) {
+	push(@results, 
+	     loc("Error: cannot change privacy value of existing search"));
     } else {
-	push(@results, loc("Error: search [_1] not updated: [_2]",
-			   $search->Name, $msg));
+	my %searchargs = %ARGS;
+	foreach my $key (@metakeys) {
+	    delete $searchargs{$key};
+	}
+	
+	# We already have a search loaded, because CurrentSearch is set,
+	# or else we would not have gotten here.
+	my ($ret, $msg) = $search->Update(Name => $ARGS{'NewSearchName'},
+					  SearchParams => \%searchargs);
+	if ($ret) {
+	    push(@results, loc("Search [_1] updated", $search->Name));
+	} else {
+	    push(@results, loc("Error: search [_1] not updated: [_2]",
+			       $search->Name, $msg));
+	}
     }
 } elsif ($ARGS{'Delete'}) {
     # Keep track of this, as we are about to delete the search.
