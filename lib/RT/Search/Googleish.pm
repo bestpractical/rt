@@ -125,20 +125,27 @@ sub QueryToSQL {
             push @owner_clauses, "Owner = '" . $User->Name . "'";
         }
 
-        # Else, content must contain $key
+        elsif ($key =~ /^fulltext:(.*?)$/i) {
+            $key = $1;
+            $key =~ s/['\\].*//g;
+            push @tql_clauses, "Content LIKE '$key'";
+
+        }
+
+        # Else, subject must contain $key
         else {
-            $key =~ s/['\\].*//;
+            $key =~ s/['\\].*//g;
             push @tql_clauses, "Subject LIKE '$key'";
         }
     }
 
-    push @tql_clauses, join( " OR ", @id_clauses );
-    push @tql_clauses, join( " OR ", @owner_clauses );
-    push @tql_clauses, join( " OR ", @status_clauses );
-    push @tql_clauses, join( " OR ", @user_clauses );
-    push @tql_clauses, join( " OR ", @queue_clauses );
+    push @tql_clauses, join( " OR ", sort @id_clauses );
+    push @tql_clauses, join( " OR ", sort @owner_clauses );
+    push @tql_clauses, join( " OR ", sort @status_clauses );
+    push @tql_clauses, join( " OR ", sort @user_clauses );
+    push @tql_clauses, join( " OR ", sort @queue_clauses );
     @tql_clauses = grep { $_ ? "( $_ )" : undef } @tql_clauses;
-    return join " AND ", @tql_clauses;
+    return join " AND ", sort @tql_clauses;
 }
 # }}}
 

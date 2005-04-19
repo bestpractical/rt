@@ -27,12 +27,11 @@ my $tickets = RT::Tickets->new($RT::SystemUser);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
+    "fulltext:jesse"       => "Content LIKE 'jesse'",
     $queue                 => "Queue = '$queue'",
-    "root $queue"          => "Queue = '$queue' AND Owner = 'root'",
-    "notauser $queue"      => "Subject LIKE 'notauser' AND Queue = '$queue'",
-    "notauser $queue root" => "Subject LIKE 'notauser' AND Queue = '$queue'".
-                              " AND Owner = 'root'"
-);
+    "root $queue"          => "Owner = 'root' AND Queue = '$queue'",
+    "notauser $queue"      => "Queue = '$queue' AND Subject LIKE 'notauser'",
+    "notauser $queue root" => "Owner = 'root' AND Queue = '$queue' AND Subject LIKE 'notauser'");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");
