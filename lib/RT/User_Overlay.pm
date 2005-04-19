@@ -1082,6 +1082,31 @@ sub _GeneratePasswordBase64 {
 
 # }}}
 
+                                                                                
+=head2 HasPassword()                                                            
+                                                                                
+Returns true if the user has a valid password, otherwise returns false.         
+                                                                               
+=cut
+
+
+sub HasPassword {
+    my $self = shift;
+    if (   ( $self->__Value('Password') eq '' )
+        || ( $self->__Value('Password') eq undef ) )
+    {
+
+        return (undef);
+    }
+    if ( $self->__Value('Password') eq '*NO-PASSWORD*' ) {
+        return undef;
+    }
+
+    return 1;
+
+}
+
+
 # {{{ sub IsPassword 
 
 =head2 IsPassword
@@ -1108,8 +1133,7 @@ sub IsPassword {
         return (undef);
     }
 
-    if ( ($self->__Value('Password') eq '') || 
-         ($self->__Value('Password') eq undef) )  {
+    unless ($self->HasPassword) {
         return(undef);
      }
 
