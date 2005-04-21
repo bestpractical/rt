@@ -144,7 +144,7 @@ sub QueryToSQL {
     push @tql_clauses, join( " OR ", sort @status_clauses );
     push @tql_clauses, join( " OR ", sort @user_clauses );
     push @tql_clauses, join( " OR ", sort @queue_clauses );
-    @tql_clauses = grep { $_ ? "( $_ )" : undef } @tql_clauses;
+    @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
     return join " AND ", sort @tql_clauses;
 }
 # }}}
