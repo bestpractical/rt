@@ -415,6 +415,8 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
+    my $parse_status;
+    eval { # Traip failures to create a file
     my ( $fh, $temp_file );
     for ( 1 .. 10 ) {
 
@@ -427,27 +429,27 @@ sub Gateway {
     if ($fh) {
         binmode $fh;    #thank you, windows
         $fh->autoflush(1);
-        print $fh $args{'message'};
+        print $fh $args{'message'} || die $@;
         close($fh);
 
         if ( -f $temp_file ) {
-            $parser->ParseMIMEEntityFromFile($temp_file);
+            $parse_status = $parser->ParseMIMEEntityFromFile($temp_file);
             unlink( $temp_file );
-            if ($parser->Entity) {
+            if ($parse_status && $parser->Entity) {
                 delete $args{'message'};
             }
         }
 
     }
-
+    };
     #If for some reason we weren't able to parse the message using a temp file 
     # try it with a scalar
     if ($args{'message'}) {
-        $parser->ParseMIMEEntityFromScalar($args{'message'});
+        $parse_status = $parser->ParseMIMEEntityFromScalar($args{'message'});
 
     } 
 
-    if (!$parser->Entity()) {
+    if (!$parse_status) {
         MailError(
             To          => $RT::OwnerEmail,
             Subject     => "RT Bounce: Unparseable message",
@@ -455,7 +457,7 @@ sub Gateway {
             Attach     => $args{'message'}
         );
 
-        return(0,"Failed to parse this message. Something is likely badly wrong with the message");
+        return(-75,"Failed to parse this message. Something is likely badly wrong with the message or mail server");
     }
 
     my $Message = $parser->Entity();

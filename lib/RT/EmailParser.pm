@@ -175,7 +175,7 @@ sub ParseMIMEEntityFromScalar {
     my $self = shift;
     my $message = shift;
 
-    $self->_DoParse('parse_data', $message);
+   return $self->_DoParse('parse_data', $message);
 
 }
 
@@ -191,7 +191,7 @@ sub ParseMIMEEntityFromFileHandle {
     my $self = shift;
     my $filehandle = shift;
 
-    $self->_DoParse('parse', $filehandle);
+    return $self->_DoParse('parse', $filehandle);
 
 }
 
@@ -209,7 +209,7 @@ sub ParseMIMEEntityFromFile {
     my $self = shift;
 
     my $file = shift;
-    $self->_DoParse('parse_open', $file);
+    return $self->_DoParse('parse_open', $file);
 }
 
 # }}}
@@ -224,28 +224,34 @@ A helper for the various parsers to turn around and do the dispatch to the actua
 =cut
 
 sub _DoParse {
-    my $self = shift;
+    my $self   = shift;
     my $method = shift;
-    my $file = shift;
+    my $file   = shift;
 
     # Create a new parser object:
-
+    warn "herE";
     my $parser = MIME::Parser->new();
     $self->_SetupMIMEParser($parser);
-
-
-    # TODO: XXX 3.0 we really need to wrap this in an eval { }
-
-    unless ( $self->{'entity'} = $parser->$method($file) ) {
-
+    warn "here2";
+    eval { $self->{'entity'} = $parser->$method($file); };
+    warn "here3";
+    unless ( $self->{'entity'} ) {
+        warn "here4";
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
-        unless ( $self->{'entity'} = $parser->$method($file) ) {
+        warn "here5";
+        eval { $self->{'entity'} = $parser->$method($file); };
+        warn "here6";
+        unless ( $self->{'entity'} ) {
+            warn "here7";
             $RT::Logger->crit("couldn't parse MIME stream");
-            return ( undef);
+            return (undef);
         }
+        warn "her8";
     }
+    warn "here9";
     $self->_PostProcessNewEntity();
+    warn "ehre10";
     return (1);
 }
 
