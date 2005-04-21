@@ -1,0 +1,42 @@
+<%args>
+$Query => "id > 0"
+$PrimaryGroupBy => 'Queue'
+$SecondaryGroupBy => undef
+</%args>
+<%init>
+my @keys;
+my @values;
+use GD::Graph::bars;
+use RT::Report::Tickets;
+
+my $chart =GD::Graph::bars->new(600 => 400);
+my $tix = RT::Report::Tickets->new($session{'CurrentUser'});
+
+my @groupby = (
+{ FIELD => $PrimaryGroupBy},
+#{ FIELD => $SecondaryGroupBy}
+);
+$tix->GroupByCols( @groupby);
+$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->Column( FIELD => $PrimaryGroupBy);
+#$tix->Column( FIELD => $SecondaryGroupBy);
+$tix->FromSQL($Query);
+while (my $entry = $tix->Next) {
+        my $q = RT::Queue->new($session{'CurrentUser'});
+       $q->Load($entry->__Value($PrimaryGroupBy)) ;
+    push @keys, $q->Name();
+    push @values, $entry->id;
+}
+
+         $chart->set(
+             x_label           => $PrimaryGroupBy,
+             y_label           => 'Tickets',
+             title             => "$Query\n split by $PrimaryGroupBy",
+         ) or die $chart->error;
+
+
+my $plot = $chart->plot([[@keys], [@values]]) or die $chart->error;
+$r->content_type('image/png');
+$m->out($plot->png);
+$m->abort();
+</%init>
