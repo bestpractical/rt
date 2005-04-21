@@ -1,24 +1,8 @@
-# BEGIN LICENSE BLOCK
-# 
-#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of version 2 of the GNU General Public License 
-#  as published by the Free Software Foundation.
-# 
-#  A copy of that license should have arrived with this
-#  software, but in any event can be snarfed from www.gnu.org.
-# 
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-# 
-# END LICENSE BLOCK
-
 RTFM (The RT FAQ Manager) is a tool for maintaining an organizational
-knowledgebase. Out of the box, it integrates with RT 3.0 (Also available 
-from bestpractical.com) Best Practical sells support and customization for RT
+knowledgebase. Out of the box, it integrates with RT 3.4 (Also available 
+from bestpractical.com) 
+
+Best Practical sells support and customization for RT
 and RTFM.  Feel free to contact us at sales@bestpractical.com if you have
 any questions about our service offerings.
 
@@ -34,14 +18,14 @@ standartd dependencies.  You can install it by executing the command:
     perl -MCPAN -e'install HTML::Format'
 
 
-Upgrade instructions (From an earlier 2.0.x release):
+Upgrade instructions (From any  2.0.x release):
 -----------------------------------------------------
 
-1) Edit RTFM's Makefile to point to your RT 3 instance
+1) perl Makefile.PL
 
-2) make sure that mysql or pgsql's commandline tool is in your path
+2) perl -I/path/to/your/rt/lib sbin/migrate-2.0-to-2.1
 
-3) Type "make upgrade"
+3) Type "make install"
 
 4) Type "ls etc/upgrade"; For each item in that directory whose name
    is greater than your previously installed RT version, run:
@@ -59,16 +43,16 @@ Upgrade instructions (From an earlier 2.0.x release):
 Installation instructions:
 --------------------------
 
-1) Install RT 3.0.5 or newer
+1) Install RT 3.4.2 or newer
 
-2) Once RT 3.0 appears to be happily installed, cd into the directory you
+2) Once RT appears to be happily installed, cd into the directory you
    unpacked RTFM into.
 
-3) Edit RTFM's Makefile to point to your RT 3 instance
+3) perl Makefile.PL
 
-4) make sure that mysql or pgsql's commandline tool is in your path
+4) make install
 
-5) Type "make install"
+5) make initdb
 
 6) stop and start your web server
 
@@ -80,7 +64,7 @@ for name, summary and some other basic metadata). So, you need to go create
 some custom fields. You've got five choices. "SelectSingle" and
 "SelectMultiple" let you pick one or many choices from a list respectively.
 "FreeformSingle" and "FreeformMultiple" let you hand-enter one or many lines of
-text. "TextSingle" or "WikiTextSingle"  is what you want for the "Body" of articles. 
+text. "TextSingle" or "WikitextSingle"  is what you want for the "Body" of articles. 
 Once you've created your custom fields, go into your classes and click on "Custom Fields"
 and add the Custom Fields you want to each class.
 
