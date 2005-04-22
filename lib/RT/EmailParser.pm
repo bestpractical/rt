@@ -591,10 +591,16 @@ sub _SetupMIMEParser {
     my $parser = shift;
 
     # Set up output directory for files:
+    eval {  
+     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+     push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
+     $parser->output_dir($tmpdir);
 
-    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-    push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
-    $parser->output_dir($tmpdir);
+     };
+     if ($@) {
+        $RT::Logger->crit("Failed to create a temp directory for MIME Decoding: $@");
+
+     }
     $parser->filer->ignore_filename(1);
 
     #If someone includes a message, extract it
@@ -614,7 +620,7 @@ sub _SetupMIMEParser {
 
 sub DESTROY {
     my $self = shift;
-    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1);
+    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1) if exists $self->{'AttachmentDirs'};
 }
 
 
