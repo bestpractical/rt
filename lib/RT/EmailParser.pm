@@ -229,29 +229,19 @@ sub _DoParse {
     my $file   = shift;
 
     # Create a new parser object:
-    warn "herE";
     my $parser = MIME::Parser->new();
     $self->_SetupMIMEParser($parser);
-    warn "here2";
     eval { $self->{'entity'} = $parser->$method($file); };
-    warn "here3";
     unless ( $self->{'entity'} ) {
-        warn "here4";
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
-        warn "here5";
         eval { $self->{'entity'} = $parser->$method($file); };
-        warn "here6";
         unless ( $self->{'entity'} ) {
-            warn "here7";
             $RT::Logger->crit("couldn't parse MIME stream");
             return (undef);
         }
-        warn "her8";
     }
-    warn "here9";
     $self->_PostProcessNewEntity();
-    warn "ehre10";
     return (1);
 }
 
