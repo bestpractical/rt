@@ -468,7 +468,7 @@ sub build_array {
 
             my $selected;
             if ( grep { $_ == $_tree } @$values_ref ) {
-                $selected = "SELECTED";
+                $selected = "selected";
             }
             else {
                 $selected = "";
@@ -482,7 +482,7 @@ sub build_array {
             }
 
             $optionlist .=
-                "<option value="$i" $selected>"
+                "<option value=\"$i\" $selected>"
               . ( "&nbsp;" x 5 x ( $_tree->getDepth() - 1 ) )
               . $m->interp->apply_escapes( $str, 'h' )
               . "</option>\n";
