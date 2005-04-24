@@ -49,8 +49,8 @@
     Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
 
 <& /Elements/ListActions, actions => \@results &>
-<form METHOD=POST ACTION="Modify.html" ENCTYPE="multipart/form-data">
-<input TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
+<form method="POST" action="Modify.html" enctype="multipart/form-data">
+<input type="HIDDEN" name="id" value="<%$TicketObj->Id%>">
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>

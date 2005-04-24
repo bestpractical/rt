@@ -51,10 +51,10 @@
 &>
 <& /Elements/ListActions, actions => \@actions &>
 <h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
-<form METHOD="POST" ACTION="Quicksearch.html" NAME="Preferences">
+<form method="POST" action="Quicksearch.html" name="Preferences">
 <ul>
 % for my $queue (@queues) {
-<li><input type=checkbox name="Want-<%$queue->Name%>" value="1"
+<li><input type="checkbox" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 CHECKED
 % }

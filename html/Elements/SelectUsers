@@ -52,7 +52,7 @@
 % }
 </select>
 <& /Elements/SelectMatch, Name=> 'UserOp' &>
-<input size=8 name="UserString">
+<input size="8" name="UserString">
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::User');

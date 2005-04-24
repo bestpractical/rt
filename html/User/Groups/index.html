@@ -51,7 +51,7 @@
 <&|/l&>Personal groups</&>:<br/>
 <ul>
 %while ( my $Group = $Groups->Next) {
-<li><a HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br/>
+<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br/>
 %}
 </ul>
 

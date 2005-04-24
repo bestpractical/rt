@@ -45,10 +45,10 @@
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
 % if ($AllowNull) {
-<option VALUE="">-</option>
+<option value="">-</option>
 % }
 %for my $option (@types) {
-<option VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></option>
+<option value="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></option>
 %}
 </select>
 

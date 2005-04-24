@@ -86,7 +86,7 @@ onload="
 <a  href="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></a>
 % }
 <& /Elements/Callback, %ARGS &>
-<&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>
+<&|/l, "<strong>".$session{'CurrentUser'}->Name."</strong>" &>Logged in as [_1]</&>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 | <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % } else {

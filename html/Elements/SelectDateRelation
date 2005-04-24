@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
-<option VALUE="&lt;"><%$Before%></option>
-<option VALUE="="><%$On%></option>
-<option VALUE="&gt;"><%$After%></option>
+<option value="&lt;"><%$Before%></option>
+<option value="="><%$On%></option>
+<option value="&gt;"><%$After%></option>
 </select>
 
 <%ARGS>

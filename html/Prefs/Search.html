@@ -57,10 +57,10 @@
 	$m->comp('/Elements/QueryString',
 		 LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
 % }
-<br>
-<form METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
-<input type=hidden name=name value="<%$ARGS{name}%>">
-<input type=hidden name=Format value="<%$ARGS{Format}%>">
+<br/>
+<form method="POST" action="Search.html" name="BuildQuery">
+<input type="hidden" name="name" value="<%$ARGS{name}%>">
+<input type="hidden" name="Format" value="<%$ARGS{Format}%>">
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>

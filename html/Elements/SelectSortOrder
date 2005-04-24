@@ -43,9 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME="<%$Name%>">
+<select name="<%$Name%>">
 %foreach my $order (@orders) {
-<option VALUE="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
+<option value="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
 <% shift @order_names %>
 </option>
 % }

@@ -43,9 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME="<%$Name%>">
+<select name="<%$Name%>">
 % foreach my $field (@sortfields) {
-<option VALUE="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></option>
+<option value="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></option>
 % }
 </select>
 

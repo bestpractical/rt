@@ -65,7 +65,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <pre>
 % my $report =  Module::Versions::Report::report();
 % my @report = grep { /v\d/ } split("\n",$report);
-<%join('<br>', @report)|n%>
+<%join('<br/>', @report)|n%>
 
 
 </pre>
@@ -81,7 +81,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <tr><td>RT::<%$key%></td>
 <td>
 % if ($key =~ /Password(?!Length)/i) { 
-<i>Password not printed</i>
+<em>Password not printed</em>
 % } else {
 <%${'RT::'.$key} %>
 % }

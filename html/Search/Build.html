@@ -54,11 +54,11 @@
     Rows => $RowsPerPage
 &>
 
-<form METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
-<input type=hidden name=SearchId value="<%$SearchId%>">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
-<table width=100% border="0" cellpadding="5">
+<form method="POST" action="Build.html" name="BuildQuery">
+<input type="hidden" name="SearchId" value="<%$SearchId%>">
+<input type="hidden" name="Query" value="<%$Query%>">
+<input type="hidden" name="Format" value="<%$Format%>">
+<table width="100%" border="0" cellpadding="5">
 <tr valign="top">
 <td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
@@ -82,7 +82,7 @@
 </tr>
 
 <tr>
-<td colspan=2 class="boxcontainer">
+<td colspan="2" class="boxcontainer">
 
 <& Elements/DisplayOptions, %ARGS, Format=> $Format,
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
@@ -482,7 +482,7 @@ sub build_array {
             }
 
             $optionlist .=
-                "<option value=$i $selected>"
+                "<option value="$i" $selected>"
               . ( "&nbsp;" x 5 x ( $_tree->getDepth() - 1 ) )
               . $m->interp->apply_escapes( $str, 'h' )
               . "</option>\n";
@@ -707,7 +707,7 @@ sub _match {
 
 sub debug {
     my $message = shift;
-    $m->print( $message . "<br>" );
+    $m->print( $message . "<br/>" );
 }
 
 # }}}

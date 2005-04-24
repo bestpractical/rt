@@ -43,11 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
 <tr>
-       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>
+       <th class="collection-as-table" align="left"><&|/l&>Queue</&></th>
 % for my $condition (@$conditions) {
-       <th class="collection-as-table" align=right><% $condition->{name} %></th>
+       <th class="collection-as-table" align="right"><% $condition->{name} %></th>
 % }
 </tr>
 % my $i;
@@ -56,7 +56,7 @@
 %   my $queue_cond = "Queue = '$queue->{Name}' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><a href="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->{Description} %>"><%$queue->{Name}%></a></td>
+<td><a href="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" title="<% $queue->{Description} %>"><%$queue->{Name}%></a></td>
 %   for my $condition (@$conditions) {
 %       $Tickets->FromSQL($queue_cond.$condition->{cond}), 
 <td align="right"><a href="<% $RT::WebPath%>/Search/Results.html?Query=<%$queue_cond.$condition->{cond}%>&Rows=50"><% $Tickets->Count %></a></td>

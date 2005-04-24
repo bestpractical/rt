@@ -43,6 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form ACTION="<% $RT::WebPath %>/Ticket/Create.html" NAME="CreateTicketInQueue">
+<form action="<% $RT::WebPath %>/Ticket/Create.html" name="CreateTicketInQueue">
 <&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
 </form>

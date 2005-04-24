@@ -43,9 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table width=100%>
+<table width="100%">
   <tr>
-    <td VALIGN=TOP WIDTH=50%>
+    <td valign="TOP" width="50%">
       <h3><&|/l&>Current Links</&></h3>
 
 <table>
@@ -57,7 +57,7 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 % while (my $link = $Object->DependsOn->Next) {
-      <input TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
@@ -67,7 +67,7 @@
     <td class="value">
 % while (my $link = $Object->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
-      <input TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
@@ -76,7 +76,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $link = $Object->MemberOf->Next) {
-      <input TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
@@ -85,7 +85,7 @@
     <td class="labeltop"><&|/l&>Children</&>:</td>
     <td class="value">
 % while (my $link = $Object->Members->Next) {
-      <input TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
@@ -94,7 +94,7 @@
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
 % while (my $link = $Object->RefersTo->Next) {
-      <input TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 %}
     </td>
@@ -103,7 +103,7 @@
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
 % while (my $link = $Object->ReferredToBy->Next) {
-      <input TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
@@ -111,7 +111,7 @@
 </table>
 			    
 </td>
-<td VALIGN=TOP>
+<td valign="TOP">
 <h3><&|/l&>New Links</&></h3>
 % if (ref($Object) eq 'RT::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>

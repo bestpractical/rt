@@ -52,9 +52,9 @@
 
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Name) &>
 
-<form ACTION="<%$RT::WebPath%>/Admin/Groups/Members.html" METHOD=POST>
-<input TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
-<table WIDTH="100%">
+<form action="<%$RT::WebPath%>/Admin/Groups/Members.html" method="POST">
+<input type="HIDDEN" name="id" value="<%$Group->Id%>">
+<table width="100%">
 <tr>
 <td>
 <h3><&|/l&>Current members</&></h3>
@@ -65,20 +65,20 @@
 </tr>
 
 <tr>
-<td VALIGN=TOP>
+<td valign="TOP">
 
 % if ($Group->MembersObj->Count == 0 ) {
-<i><&|/l&>(No members)</&></i>
+<em><&|/l&>(No members)</&></em>
 % } else {
-<i><&|/l&>(Check box to delete)</&></i>
-<br>
-<br>
+<em><&|/l&>(Check box to delete)</&></em>
+<br/>
+<br/>
 <&|/l&>Users</&>
 % my $UserMembers = $Group->MembersObj;
 % $UserMembers->LimitToUsers();
 <ul>
 % while (my $member = $UserMembers->Next()) {
-<li><input TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<li><input type="CHECKBOX" Name="DeleteMember-<%$member->MemberId%>">
 <%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
 % }
 </ul>
@@ -87,13 +87,13 @@
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->Next()) {
-<li><input TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<li><input type="CHECKBOX" Name="DeleteMember-<%$member->MemberId%>">
 <%$member->MemberObj->Object->Name%>
 % }
 % }
 </ul>
 </td>
-<td VALIGN=TOP>
+<td valign="TOP">
 <& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group &>
 </td>
 </tr>

@@ -49,7 +49,7 @@
     Title => loc('Modify global user rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <form METHOD=POST ACTION="UserRights.html">
+  <form method="POST" action="UserRights.html">
       
 <&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
       
@@ -59,8 +59,8 @@
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <tr ALIGN=RIGHT> 
-	<td VALIGN=TOP>
+  <tr align="RIGHT"> 
+	<td valign="TOP">
 	    <% $UserObj->Name %>
 		  </td>
 	  <td>

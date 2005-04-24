@@ -47,76 +47,76 @@
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket") &>
-<form ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
-<input TYPE=HIDDEN Name="id" VALUE="new">
-<a NAME="top">
+<form action="<%$RT::WebPath%>/Ticket/Create.html" method="POST" enctype="multipart/form-data" name="TicketCreate">
+<input type="HIDDEN" Name="id" value="new">
+<a name="top">
 	
 	
-[<a class="currenttab"><&|/l&>Show basics</&></a>] [<a HREF="#detail"><&|/l&>Show details</&></a>]
+[<a class="currenttab"><&|/l&>Show basics</&></a>] [<a href="#detail"><&|/l&>Show details</&></a>]
 <br/>
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
-<table border=0 cellpadding=0 cellspacing=0>
-<tr><td class=label><&|/l&>Queue</&>:</td>
-<td class=value><% $QueueObj->Name %>
-<input TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td class="label"><&|/l&>Queue</&>:</td>
+<td class="value"><% $QueueObj->Name %>
+<input type="HIDDEN" name="Queue" Value="<%$QueueObj->Name%>">
 </td>
-<td class=label><&|/l&>Status</&>:
+<td class="label"><&|/l&>Status</&>:
 </td>
-<td class=value>
+<td class="value">
 <& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
 </td>
-<td class=label>
+<td class="label">
 <&|/l&>Owner</&>:
 </td>
-<td class=value>
+<td class="value">
 <& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
-<td class=label>
+<td class="label">
 <&|/l&>Requestors</&>:
 </td>
-<td class=value COLSPAN=5>
-<input Name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" SIZE=40>
+<td class="value" colspan="5">
+<input name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" size="40">
 </td>
 </tr>
 <tr>
-<td class=labeltop>
+<td class="labeltop">
 <&|/l&>Cc</&>:
 </td>
-<td class=value COLSPAN=5>
-<input NAME="Cc" SIZE=40 VALUE="<% $ARGS{Cc} %>"><br/>
-<i><font size=-2>
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+<td class="value" colspan="5">
+<input name="Cc" size="40" value="<% $ARGS{Cc} %>"><br/>
+<i><font size="-2">
+<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
 </tr>
 <tr>
-<td class=labeltop>
+<td class="labeltop">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class=value COLSPAN=5>
-<input NAME="AdminCc" SIZE=40 VALUE="<% $ARGS{AdminCc} %>"><br/>
-<i><font size=-2>
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+<td class="value" colspan="5">
+<input name="AdminCc" size="40" value="<% $ARGS{AdminCc} %>"><br/>
+<i><font size="-2">
+<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
 </tr>
 <tr>
-<td class=label>
+<td class="label">
 <&|/l&>Subject</&>:
 </td>
-<td class=value COLSPAN=5>
-<input Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
+<td class="value" colspan="5">
+<input name="Subject" size="60" maxsize="100" value="<%$ARGS{Subject} || ''%>">
 </td>
 </tr>
 <tr>
-<td COLSPAN=6>
+<td colspan="6">
 <& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
 </td>
 </tr>
 % if ($TxnCFs->Count) {
 % while (my $CF = $TxnCFs->Next()) {
 <tr>
-<td ALIGN=RIGHT><% $CF->Name %>:</td>
+<td align="RIGHT"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
     "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
@@ -124,10 +124,10 @@
 % }
 <tr>
 % if (exists $session{'Attachments'}) {
-<td class=label>
+<td class="label">
 <&|/l&>Attached file</&>:
 </td>
-<td COLSPAN=5>
+<td colspan="5">
 <&|/l&>Check box to delete</&><br/>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
 <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><br/>
@@ -139,14 +139,14 @@
 <td>
 <&|/l&>Attach file</&>:
 </td>
-<td class=value COLSPAN=5>
-<input TYPE=FILE NAME="Attach">
-<input TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
+<td class="value" colspan="5">
+<input type="FILE" name="Attach">
+<input type="SUBMIT" name="AddMoreAttach" value="<&|/l&>Add More Files</&>">
 </td>
 </tr>
 <tr>
-<td COLSPAN=6>
-<&|/l&>Describe the issue below</&>:<br>
+<td colspan="6">
+<&|/l&>Describe the issue below</&>:<br/>
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
 % } else {
@@ -157,7 +157,7 @@
 </td>
 </tr>
 <tr>
-<td ALIGN=RIGHT COLSPAN=2>
+<td align="RIGHT" colspan="2">
 </td>
 </tr>
 </table>
@@ -170,46 +170,46 @@
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-<a NAME="detail">
-	[<a HREF="#top"><&|/l&>Show basics</&></a>] [<a class="currenttab"><&|/l&>Show details</&></a>]
+<a name="detail">
+	[<a href="#top"><&|/l&>Show basics</&></a>] [<a class="currenttab"><&|/l&>Show details</&></a>]
 <br/>
-<table WIDTH="100%" BORDER=0>
+<table width="100%" border="0">
 <tr>
-<td WIDTH="50%" VALIGN=TOP>
+<td width="50%" valign="TOP">
 
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
-<table BORDER=0>
-<tr><td ALIGN=RIGHT><&|/l&>Priority</&>:</td><td><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Final Priority</&>:</td><td><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Time Worked</&>:</td><td><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Time Left</&>:</td><td><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></td></tr>
+<table border="0">
+<tr><td align="RIGHT"><&|/l&>Priority</&>:</td><td><input size="3" name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Final Priority</&>:</td><td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Time Worked</&>:</td><td><&|/l,'<input size="3" name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></td></tr>
+<tr><td align="RIGHT"><&|/l&>Time Left</&>:</td><td><&|/l,'<input size="3" name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></td></tr>
 </table>
 </&>
-<br>
+<br/>
 <&| /Widgets/TitleBox, title => loc("Dates"), title_class=> 'inverse' &>
 
-<table BORDER=0>
-<tr><td ALIGN=RIGHT><&|/l&>Starts</&>:</td><td><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Due</&>:</td><td><input size=10 name="Due" value="<%
+<table border="0">
+<tr><td align="RIGHT"><&|/l&>Starts</&>:</td><td><input size="10" name="Starts" value="<% $ARGS{Starts} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Due</&>:</td><td><input size="10" name="Due" value="<%
 $ARGS{Due}%>"></td></tr>
 </table>
 </&>
 <br/>
 </td>
 
-<td VALIGN="TOP">
+<td valign="TOP">
 <&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
 
-<i><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></i>
-<table BORDER=0>
-<tr><td ALIGN=RIGHT><&|/l&>Depends on</&></td><td><input size=10 name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Depended on by</&></td><td><input size=10 name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Parents</&></td><td><input size=10 name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Children</&></td><td><input size=10 name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Refers to</&></td><td><input size=10 name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>"></td></tr>
-<tr><td ALIGN=RIGHT><&|/l&>Referred to by</&></td><td><input size=10 name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>"></td></tr>
+<em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
+<table border="0">
+<tr><td align="RIGHT"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>"></td></tr>
+<tr><td align="RIGHT"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>"></td></tr>
 
 
 </table>

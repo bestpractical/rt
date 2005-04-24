@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form method=get action="<%$RT::WebPath%>/index.html">
+<form method="get" action="<%$RT::WebPath%>/index.html">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
+<div align="right"><input type="submit" value="<&|/l&>Go!</&>"></div>
 </form>

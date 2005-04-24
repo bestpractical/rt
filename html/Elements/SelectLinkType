@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
-<option VALUE="MemberOf"><&|/l&>Member of</&></option>
-<option VALUE="DependsOn"><&|/l&>Depends on</&></option>
-<option VALUE="RefersTo"><&|/l&>Refers to</&></option>
+<option value="MemberOf"><&|/l&>Member of</&></option>
+<option value="DependsOn"><&|/l&>Depends on</&></option>
+<option value="RefersTo"><&|/l&>Refers to</&></option>
 </select>
 
 <%ARGS>

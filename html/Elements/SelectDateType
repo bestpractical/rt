@@ -43,15 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME="<%$Name%>">
-<option VALUE="Created"><&|/l&>Created</&></option>
-<option VALUE="Started"><&|/l&>Started</&></option>
-<option VALUE="Resolved"><&|/l&>Resolved</&></option>
-<option VALUE="Told"><&|/l&>Last Contacted</&></option>
-<option VALUE="LastUpdated"><&|/l&>Last Updated</&></option>
-<option VALUE="Starts"><&|/l&>Starts</&></option>
-<option VALUE="Due"><&|/l&>Due</&></option>
-<option VALUE="Updated"><&|/l&>Updated</&></option>
+<select name="<%$Name%>">
+<option value="Created"><&|/l&>Created</&></option>
+<option value="Started"><&|/l&>Started</&></option>
+<option value="Resolved"><&|/l&>Resolved</&></option>
+<option value="Told"><&|/l&>Last Contacted</&></option>
+<option value="LastUpdated"><&|/l&>Last Updated</&></option>
+<option value="Starts"><&|/l&>Starts</&></option>
+<option value="Due"><&|/l&>Due</&></option>
+<option value="Updated"><&|/l&>Updated</&></option>
 </select>
 <%ARGS>
 $Name => 'DateType'

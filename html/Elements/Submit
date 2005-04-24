@@ -56,36 +56,36 @@ function set_checkbox (obj, val) {
 }
 --></script>
 % }
-<table WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
+<table width="100%" bgcolor="<%$color%>" cellspacing="0" border="0" cellpadding="0" >
 <tr>
 <td>
 % if ($CheckAll) {
-<input TYPE=BUTTON VALUE="<%$CheckAllLabel%>" ONCLICK="set_checkbox(this, true)">
+<input type="BUTTON" value="<%$CheckAllLabel%>" onclick="set_checkbox(this, true)">
 % }
 % if ($ClearAll) {
-<input TYPE=BUTTON VALUE="<%$ClearAllLabel%>" ONCLICK="set_checkbox(this, false)">
+<input type="BUTTON" value="<%$ClearAllLabel%>" onclick="set_checkbox(this, false)">
 % }
 % if ($Reset) {
-<input TYPE=RESET VALUE="<%$ResetLabel%>">
+<input type="RESET" value="<%$ResetLabel%>">
 %}
 </td>
 <td>
 &nbsp;
 </td>
-<td ALIGN=RIGHT VALIGN=CENTER><font COLOR=#ffd800>
+<td align="RIGHT" valign="CENTER"><font color="#ffd800">
 % if ($AlternateLabel) {
-<b><%$AlternateCaption%>
-<input TYPE=SUBMIT
+<strong><%$AlternateCaption%>
+<input type="SUBMIT"
 %if ($Name) {
 NAME="<%$Name%>"
 %}
-VALUE='<%$AlternateLabel%>'></b>
+VALUE='<%$AlternateLabel%>'></strong>
 % }
-<b><%$Caption%> <input TYPE=SUBMIT
+<strong><%$Caption%> <input type="SUBMIT"
 %if ($Name) {
 NAME="<%$Name%>"
 % }
- VALUE='<%$Label%>'></b></font>
+ VALUE='<%$Label%>'></strong></font>
 </td>
 </tr>
 </table>

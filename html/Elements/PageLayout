@@ -60,7 +60,7 @@
 % if ($actions->{"$action"}->{'html'}) {
 % push @actions, $actions->{"$action"}->{'html'}; 
 % } else {
-]% push @actions,  "<a class=\"actions\" href=\"".$RT::WebPath."/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</a>";
+]% push @actions,  "<a class="\""actions\" href="\""".$RT::WebPath."/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</a>";
 % }
 %  }
 <% join(" | ", @actions) | n %>

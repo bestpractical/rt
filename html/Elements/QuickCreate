@@ -60,7 +60,7 @@
 </select>
 </td>
 </tr>
-%#<tr><td colspan="3"><font size="-2"><textarea cols="50" rows="3"></textarea></font></td></tr>
+%#<tr><td colspan="3"><textarea cols="50" rows="3"></textarea></td></tr>
 </table>
 <div align="right"><input type="submit" value="<%loc('Create')%>"></div>
 </form>

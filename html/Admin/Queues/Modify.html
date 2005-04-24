@@ -52,57 +52,57 @@
 
 
 
-<form ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>
+<form action="<%$RT::WebPath%>/Admin/Queues/Modify.html" method="POST">
 %if ($Create ) { 
-<input TYPE=HIDDEN NAME=id VALUE="new">
+<input type="HIDDEN" name="id" value="new">
 % } else {
-<input TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+<input type="HIDDEN" name="id" value="<%$QueueObj->Id%>">
 % }
 
 <table>
-<tr><td ALIGN=RIGHT>
+<tr><td align="RIGHT">
 <&|/l&>Queue Name</&>: 
 </td>
 <td><input name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>"></td>
 </tr><tr>
-<td ALIGN=RIGHT>
-<&|/l&>Description</&>:</td><td COLSPAN=3><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size=60></td></tr>
+<td align="RIGHT">
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60"></td></tr>
 <tr>
-<td ALIGN=RIGHT>
+<td align="RIGHT">
 <&|/l&>Reply Address</&>:
 </td><td>
 <input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>">
-<br/><font size="-1"><i><&|/l , $RT::CorrespondAddress&>(If left blank, will default to [_1]</&></i></font>
+<br/><span><em><&|/l , $RT::CorrespondAddress&>(If left blank, will default to [_1]</&></em></span>
 </td>
-<td ALIGN=RIGHT>
+<td align="RIGHT">
 
 <&|/l&>Comment Address</&>: </td><td>
-<input NAME="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>">
-<br/><font size="-1"><i><&|/l , $RT::CommentAddress&>(If left blank, will default to [_1]</&></i></font>
+<input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>">
+<br/><span><em><&|/l , $RT::CommentAddress&>(If left blank, will default to [_1]</&></em></span>
 </td>
 </tr><tr>
 
-<td ALIGN=RIGHT>
+<td align="RIGHT">
 <&|/l&>Priority starts at</&>: 
-</td><td><input NAME="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>">
+</td><td><input name="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>">
 </td>
-<td ALIGN=RIGHT>
+<td align="RIGHT">
 <&|/l&>Over time, priority moves toward</&>:
-</td><td><input NAME="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>">
+</td><td><input name="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>">
 </td>
 </tr>
 <tr>
-<td ALIGN=RIGHT>
+<td align="RIGHT">
 <&|/l&>Requests should be due in</&>:
 </td><td>
-<input NAME="DefaultDueIn" VALUE="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>"> <&|/l&>days</&>.
+<input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>"> <&|/l&>days</&>.
 </td>
 </tr>
 <tr>
 <td>
 </td>
-<td COLSPAN=4><input TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this queue)</&><br/>
+<td colspan="4"><input type="HIDDEN" name="SetEnabled" value="1">
+<input type="CHECKBOX" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this queue)</&><br/>
 <& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 </td>
 </tr>

@@ -44,10 +44,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
-<option VALUE="LIKE" <%$LikeDefault%>><%$Like%></option>
-<option VALUE="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></option>
-<option VALUE="=" <%$TrueDefault%>><%$True%></option>
-<option VALUE="!=" <%$FalseDefault%>><%$False%></option>
+<option value="LIKE" <%$LikeDefault%>><%$Like%></option>
+<option value="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></option>
+<option value="=" <%$TrueDefault%>><%$True%></option>
+<option value="!=" <%$FalseDefault%>><%$False%></option>
 </select>
 
 <%ARGS>

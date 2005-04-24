@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<table BORDER=0 WIDTH=100%>
-<tr VALIGN=TOP>
-<td WIDTH=70% class="boxcontainer">
+<table border="0" width="100%">
+<tr valign="TOP">
+<td width="70%" class="boxcontainer">
 
 % for my $portlet (@{$portlets->{body}}) {
 <% _show($portlet) %>

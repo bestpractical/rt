@@ -49,28 +49,28 @@
     Title => $title &>
 <%$caption%>:<br/> <ul> 
 %if ($Groups->Count == 0) {
-<li> <i><&|/l&>No groups matching search criteria found.</&></i>
+<li> <em><&|/l&>No groups matching search criteria found.</&></em>
 % }
 %my @ids;
 %while ( my $Group = $Groups->Next) {
 %    push @ids, $Group->Id;
-<li><a HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br/>
+<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br/>
 %}
 </ul>
 %if (my $ids = join(',', @ids)) {
-<em>(<a href="<%$RT::WebPath%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br>
+<em>(<a href="<%$RT::WebPath%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br/>
 %}
-<br><br>
-<form METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Groups/index.html">
+<br/><br/>
+<form method="POST" action="<% $RT::WebPath %>/Admin/Groups/index.html">
 <input type="checkbox" name="FindDisabledGroups"> <&|/l&>Include disabled groups in listing.</&>
 <br/>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
+<div align="right"><input type="submit" value="<&|/l&>Go!</&>"></div> 
 </form>
 
-<br><br>
-<form METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Groups/index.html">
+<br/><br/>
+<form method="POST" action="<% $RT::WebPath %>/Admin/Groups/index.html">
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br/>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
+<div align="right"><input type="submit" value="<&|/l&>Go!</&>"></div> 
 </form>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});

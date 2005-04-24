@@ -49,7 +49,7 @@
     Title => loc('Modify global group rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <form METHOD=POST ACTION="GroupRights.html">
+  <form method="POST" action="GroupRights.html">
       
 <&| /Widgets/TitleBox, title => loc('Modify global group rights.')&>
       
@@ -58,8 +58,8 @@
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {
-  <tr ALIGN=RIGHT> 
-	<td VALIGN=TOP>
+  <tr align="RIGHT"> 
+	<td valign="TOP">
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
@@ -74,8 +74,8 @@
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToRolesForSystem();
 %	while (my $Group = $Groups->Next()) {
-  <tr ALIGN=RIGHT> 
-	<td VALIGN=TOP>
+  <tr align="RIGHT"> 
+	<td valign="TOP">
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
@@ -90,8 +90,8 @@
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->Next()) {
-  <tr ALIGN=RIGHT> 
-	<td VALIGN=TOP>
+  <tr align="RIGHT"> 
+	<td valign="TOP">
 	    <% $Group->Name %>
 		  </td>
 	  <td>

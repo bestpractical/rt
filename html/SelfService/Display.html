@@ -47,9 +47,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-  <table WIDTH="100%" class="ticketsummary" >
+  <table width="100%" class="ticketsummary" >
       <tr>
-        <td VALIGN=TOP WIDTH="50%" class="boxcontainer">
+        <td valign="TOP" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
@@ -57,7 +57,7 @@
                 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
           </&>
 </td>
-        <td VALIGN=TOP WIDTH="50%" class="boxcontainer">
+        <td valign="TOP" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>

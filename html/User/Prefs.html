@@ -50,73 +50,73 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form ACTION="<%$RT::WebPath%>/User/Prefs.html" METHOD=POST>
-<input TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
+<form action="<%$RT::WebPath%>/User/Prefs.html" method="POST">
+<input type="HIDDEN" name="id" value="<%$UserObj->Id%>">
 
-<table WIDTH=100% BORDER=0>
+<table width="100%" border="0">
 <tr>
 
-<td VALIGN=TOP class="boxcontainer">
+<td valign="TOP" class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity') &>
 
-<input type=hidden name="Name" value="<%$UserObj->Name%>">
-<table callspacing=0 cellpadding=0>
+<input type="hidden" name="Name" value="<%$UserObj->Name%>">
+<table callspacing="0" cellpadding="0">
   <tr>
-    <td class=label><&|/l&>Email</&>: </td>
-    <td class=value><input name="EmailAddress" value="<%$UserObj->EmailAddress%>"></td>
+    <td class="label"><&|/l&>Email</&>: </td>
+    <td class="value"><input name="EmailAddress" value="<%$UserObj->EmailAddress%>"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Real Name</&>:</td>
-    <td class=value><input name="RealName" value="<%$UserObj->RealName%>"></td>  </tr>
+    <td class="label"><&|/l&>Real Name</&>:</td>
+    <td class="value"><input name="RealName" value="<%$UserObj->RealName%>"></td>  </tr>
   <tr>
-    <td class=label><&|/l&>Nickname</&>:</td>
-    <td class=value><input name="NickName" value="<%$UserObj->NickName%>"></td>
+    <td class="label"><&|/l&>Nickname</&>:</td>
+    <td class="value"><input name="NickName" value="<%$UserObj->NickName%>"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Language</&>:</td>
-    <td class=value><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
+    <td class="label"><&|/l&>Language</&>:</td>
+    <td class="value"><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
   </tr>
 </table>
 </&>
-<br>
+<br/>
 <&| /Widgets/TitleBox, title => loc('Phone numbers') &>
-<table callspacing=0 cellpadding=0>
+<table callspacing="0" cellpadding="0">
   <tr>
-    <td class=label><&|/l&>Residence</&>:</td>
-    <td class=value><input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13></td>
+    <td class="label"><&|/l&>Residence</&>:</td>
+    <td class="value"><input name="HomePhone" value="<%$UserObj->HomePhone%>" size="13"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Work</&>:</td>
-    <td class=value><input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13></td>
+    <td class="label"><&|/l&>Work</&>:</td>
+    <td class="value"><input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size="13"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Mobile</&>:</td>
-    <td class=value><input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13></td>
+    <td class="label"><&|/l&>Mobile</&>:</td>
+    <td class="value"><input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size="13"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Pager</&>:</td>
-    <td class=value><input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13></td>
+    <td class="label"><&|/l&>Pager</&>:</td>
+    <td class="value"><input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size="13"></td>
   </tr>
 </table>
 </&>
 </td>
-<td VALIGN=TOP class="boxcontainer">
+<td valign="TOP" class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <&| /Widgets/TitleBox, title => loc('Password') &>
 <table>
 <tr>
-<td class=label>
+<td class="label">
 <&|/l&>New Password</&>:
 </td>
-<td class=value>
-<input type=password name="Pass1">
+<td class="value">
+<input type="password" name="Pass1">
 </td>
 </tr>
-<tr><td class=label>
+<tr><td class="label">
 <&|/l&>Retype Password</&>:
 </td>
-<td class=value>
-<input type=password name="Pass2">
+<td class="value">
+<input type="password" name="Pass2">
 </td>
 </tr>
 </table>
@@ -124,34 +124,34 @@
 % }
 
 <&| /Widgets/TitleBox, title => loc('Location') &>
-<table callspacing=0 cellpadding=0>
+<table callspacing="0" cellpadding="0">
   <tr>
-    <td class=label><&|/l&>Organization</&>:</td>
-    <td class=value><input name="Organization" value="<%$UserObj->Organization%>"></td>
+    <td class="label"><&|/l&>Organization</&>:</td>
+    <td class="value"><input name="Organization" value="<%$UserObj->Organization%>"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Address1</&>:</td>
-    <td class=value><input name="Address1" value="<%$UserObj->Address1%>"></td>
+    <td class="label"><&|/l&>Address1</&>:</td>
+    <td class="value"><input name="Address1" value="<%$UserObj->Address1%>"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Address2</&>:</td>
-    <td class=value><input name="Address2" value="<%$UserObj->Address2%>"></td>
+    <td class="label"><&|/l&>Address2</&>:</td>
+    <td class="value"><input name="Address2" value="<%$UserObj->Address2%>"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>City</&>:</td>
-    <td><input name="City" value="<%$UserObj->City%>" size=14></td>
+    <td class="label"><&|/l&>City</&>:</td>
+    <td><input name="City" value="<%$UserObj->City%>" size="14"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>State</&>:</td>
-    <td class=value><input name="State" value="<%$UserObj->State%>" size=3></td>
+    <td class="label"><&|/l&>State</&>:</td>
+    <td class="value"><input name="State" value="<%$UserObj->State%>" size="3"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Zip</&>:</td>
-    <td class=value><input name="Zip" value="<%$UserObj->Zip%>" size=9></td>
+    <td class="label"><&|/l&>Zip</&>:</td>
+    <td class="value"><input name="Zip" value="<%$UserObj->Zip%>" size="9"></td>
   </tr>
   <tr>
-    <td class=label><&|/l&>Country</&>:</td>
-    <td class=value><input name="Country" value="<%$UserObj->Country%>"></td>
+    <td class="label"><&|/l&>Country</&>:</td>
+    <td class="value"><input name="Country" value="<%$UserObj->Country%>"></td>
   </tr>
 </table>
 </&>
@@ -161,11 +161,11 @@
 
 
 
-<td COLSPAN=2 VALIGN=TOP class="boxcontainer">
+<td colspan="2" valign="TOP" class="boxcontainer">
 %if ($UserObj->Privileged) {
 <br/>
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea COLS=80 ROWS=5 name="Signature" class="signature" WRAP=HARD>
+<textarea cols="80" rows="5" name="Signature" class="signature" wrap="HARD">
 <%$UserObj->Signature%></textarea>
 </&>
 % }

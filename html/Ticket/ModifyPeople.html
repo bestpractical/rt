@@ -51,8 +51,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form METHOD=POST ACTION="ModifyPeople.html">
-<input TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<form method="POST" action="ModifyPeople.html">
+<input type="HIDDEN" name="id" value="<%$Ticket->Id%>">
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &> 
 </&>

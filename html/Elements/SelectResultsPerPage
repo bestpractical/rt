@@ -47,7 +47,7 @@
 
 <select NAME ="<%$Name%>">
 % foreach my $value (@values) {
-<option VALUE="<%$value%>" <% $value == $Default && 'SELECTED' %>>
+<option value="<%$value%>" <% $value == $Default && 'SELECTED' %>>
 <% shift @labels %>
 </option>
 % }

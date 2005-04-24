@@ -45,11 +45,11 @@
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
 %if ($DefaultValue) {
-<option <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></option>
+<option <% !$Default && "SELECTED" %> value=""><%$DefaultLabel%></option>
 %}
 %foreach my $status (@status) {
 %next if ($SkipDeleted && $status eq 'deleted');
-<option <% ($status eq $Default) && "SELECTED" %> VALUE="<%$status%>"><%loc($status)%></option>
+<option <% ($status eq $Default) && "SELECTED" %> value="<%$status%>"><%loc($status)%></option>
 % }
 </select>
 <%ONCE>

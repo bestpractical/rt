@@ -44,8 +44,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
-<option VALUE="<%$TrueVal%>" <%$TrueDefault%>><%$True%></option>
-<option VALUE="<%$FalseVal%>" <%$FalseDefault%>><%$False%></option>
+<option value="<%$TrueVal%>" <%$TrueDefault%>><%$True%></option>
+<option value="<%$FalseVal%>" <%$FalseDefault%>><%$False%></option>
 </select>
 
 <%ARGS>

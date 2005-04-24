@@ -51,8 +51,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form METHOD=POST ACTION="ModifyAll.html" ENCTYPE="multipart/form-data">
-<input TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<form method="POST" action="ModifyAll.html" enctype="multipart/form-data">
+<input type="HIDDEN" name="id" value="<%$Ticket->Id%>">
 
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
@@ -98,7 +98,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="entry"><input name="UpdateSubject" size=60 value="<%$Ticket->Subject%>"></td>
+    <td class="entry"><input name="UpdateSubject" size="60" value="<%$Ticket->Subject%>"></td>
   </tr>
 % if (my $TxnCFs = $Ticket->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
@@ -113,7 +113,7 @@
 % } # end of if
   <tr>
     <td class="label"><&|/l&>Attach</&>:</td>
-    <td class="entry"><input name="UpdateAttachment" type=file></td>
+    <td class="entry"><input name="UpdateAttachment" type="file"></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>

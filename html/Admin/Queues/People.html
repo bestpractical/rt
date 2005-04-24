@@ -52,12 +52,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
  
-<form METHOD=POST ACTION="People.html">
-<input TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+<form method="POST" action="People.html">
+<input type="HIDDEN" name="id" value="<%$QueueObj->Id%>">
 
-<table WIDTH=100%>
+<table width="100%">
 <tr>
-<td VALIGN=TOP >
+<td valign="TOP" >
 
 <h3><&|/l&>Current watchers</&></h3>
 
@@ -72,24 +72,24 @@
 
 
 </td>
-<td VALIGN=TOP>
+<td valign="TOP">
 <h3><&|/l&>New watchers</&></h3>
 
 <&|/l&>Find people whose</&><br/>
 <& /Elements/SelectUsers &>
-<input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
+<input type="submit" name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
 <br/>
 <&|/l&>Find groups whose</&><br/>
 <& /Elements/SelectGroups &>
-<input type=submit name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
+<input type="submit" name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
 
 <p>
-<&|/l&>Add new watchers</&>:<br>
+<&|/l&>Add new watchers</&>:<br/>
 <p>
-<b><&|/l&>Users</&></b>
+<strong><&|/l&>Users</&></strong>
 % if ($user_msg) {
-<br>
-<i><%$user_msg%></i>
+<br/>
+<em><%$user_msg%></em>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
@@ -101,11 +101,11 @@
 % }
 
 <p>
-<b><&|/l&>Groups</&></b>
+<strong><&|/l&>Groups</&></strong>
 
 % if ($group_msg) {
-<br>
-<i><%$group_msg%></i>
+<br/>
+<em><%$group_msg%></em>
 % } elsif ($Groups) {
 <ul>
 % while (my $g = $Groups->Next ) {

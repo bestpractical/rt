@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
 
 % if ($ShowHeader) {
 <& /Elements/CollectionAsTable/Header, 

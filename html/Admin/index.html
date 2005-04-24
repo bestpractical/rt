@@ -48,7 +48,7 @@
 
 <ul>
 %    foreach my $key (sort keys %$tabs) {
-<li><font size="+2"><a href="<%$RT::WebPath%>/<%$tabs->{$key}->{'path'}|n %>"><%$tabs->{$key} ->{'title'}%></a></font><br>
+<li><span><a href="<%$RT::WebPath%>/<%$tabs->{$key}->{'path'}|n %>"><%$tabs->{$key} ->{'title'}%></a></span><br/>
 <%$tabs->{$key}->{description}%>
 </li>
 %}

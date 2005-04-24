@@ -46,7 +46,7 @@
 <select NAME ="<%$Name%>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
-<option VALUE="<%$value%>"
+<option value="<%$value%>"
 % if ($Default eq $value) {
 SELECTED
 % }

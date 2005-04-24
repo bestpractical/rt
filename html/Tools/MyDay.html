@@ -45,23 +45,23 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => "What I did today" &>
 (displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
-<form METHOD=POST ACTION="MyDay.html">
-<table width=100% cellpadding=0 cellspacing=0>
+<form method="POST" action="MyDay.html">
+<table width="100%" cellpadding="0" cellspacing="0">
 % while ( my $Ticket = $Tickets->Next()) {
 % my $class;
 % $i++;
 % if ($i % 2 ) {
 %  $class = 'class="oddline"';
 % }
-<tr <%$class|n%>><td COLSPAN=2><h2><a
+<tr <%$class|n%>><td colspan="2"><h2><a
 href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
-<tr <%$class|n%>><td><span CLASS=label>Worked:</span><input size=3 name="UpdateTimeWorked-<%$Ticket->Id%>"> minutes
+<tr <%$class|n%>><td><span class="label">Worked:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->Id%>"> minutes
 </td>
-<td ROWSPAN=2><span CLASS=label>Comments:<br></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows=5
+<td rowspan="2"><span class="label">Comments:<br/></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows="5"
 cols=60></textarea></td></tr>
 <tr <%$class|n%>>
-<td><span CLASS="label">Status:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
+<td><span class="label">Status:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
 				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></td>
                   </tr>
 
