@@ -56,10 +56,10 @@
 %   my $queue_cond = "Queue = '$queue->{Name}' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->{Description} %>"><%$queue->{Name}%></a></TD>
+<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>" TITLE="<% $queue->{Description} %>"><%$queue->{Name}%></a></TD>
 %   for my $condition (@$conditions) {
 %       $Tickets->FromSQL($queue_cond.$condition->{cond}), 
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$queue_cond.$condition->{cond}%>&Rows=50"><% $Tickets->Count %></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$queue_cond.$condition->{cond}%>"><% $Tickets->Count %></a></TD>
 %   }
 </TR>
 % }
