@@ -292,7 +292,7 @@ Set($WebURL , $WebBaseURL . $WebPath . "/");
 
 Set($WebImagesURL , $WebPath . "/NoAuth/images/");
 
-# $RTLogoURL points to the URL of the RT logo displayed in the web UI
+# $LogoURL points to the URL of the RT logo displayed in the web UI
 
 Set($LogoURL , $WebImagesURL . "bplogo.gif");
 
