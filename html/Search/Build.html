@@ -139,10 +139,20 @@ $Description ||= $search_hash->{'Description'};
 $SearchId    ||= $search_hash->{'SearchId'} || 'new';
 $Order       ||= $search_hash->{'Order'} || $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $search_hash->{'OrderBy'} || $prefs->{'OrderBy'} || 'id';
-$RowsPerPage = ( $search_hash->{'RowsPerPage'} || $prefs->{'RowsPerPage'} 
-                                               || 50 )
-  unless defined($RowsPerPage);
-$search ||= $search_hash->{'Object'};
+
+unless ( defined $RowsPerPage ) {
+    if ( defined $search_hash->{'RowsPerPage'} ) {
+        $RowsPerPage = $search_hash->{'RowsPerPage'};
+    }
+    elsif ( defined $prefs->{'RowsPerPage'} ) {
+        $RowsPerPage = $prefs->{'RowsPerPage'};
+    }
+    else {
+        $RowsPerPage = 50;
+    }
+}
+
+  $search ||= $search_hash->{'Object'};
 
 # }}}
 
