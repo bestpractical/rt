@@ -89,7 +89,7 @@
 </tr>
 </table>
 <BR>
-% if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
+% if ($CustomFieldObj->Id && $CustomFieldObj->IsSelectionType) {
 <H2><&|/l&>Values</&></H2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>

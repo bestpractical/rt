@@ -536,6 +536,22 @@ sub Types {
 
 # }}}
 
+# {{{ IsSelectionType
+
+=head2 IsSelectionType 
+
+Retuns a boolean value indicating whether the C<Values> method makes sense
+to this Custom Field.
+
+=cut
+
+sub IsSelectionType {
+    my $self = shift;
+    $self->Type =~ /(?:Select|Combobox|Cascaded)/;
+}
+
+# }}}
+
 
 =head2 FriendlyType [TYPE, MAX_VALUES]
 
@@ -576,14 +592,14 @@ my %FriendlyTypes = (
         'Select up to [_1] values',	# loc
     ],
     Combobox => [
-        'Select or enter multiple values',	# loc
-        'Select or enter one value',		# loc
-        'Select or enter up to [_1] values',	# loc
+        'Combobox: Select or enter multiple values',	# loc
+        'Combobox: Select or enter one value',		# loc
+        'Combobox: Select or enter up to [_1] values',	# loc
     ],
     Cascaded => [
-        'Select multiple cascaded values',	# loc
-        'Select one cascaded value',		# loc
-        'Select up to [_1] cascaded values',	# loc
+        'Cascaded: Select multiple cascaded values',	# loc
+        'Cascaded: Select one cascaded value',		# loc
+        'Cascaded: Select up to [_1] cascaded values',	# loc
     ],
 );
 
@@ -865,7 +881,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/Text-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:Text|Cascade|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 LookupTypes
