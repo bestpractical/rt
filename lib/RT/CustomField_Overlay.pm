@@ -60,6 +60,8 @@ use RT::ObjectCustomFieldValues;
     Text => 1,     # loc
     Image => 1,    # loc
     Binary => 1,   # loc
+    Combobox => 1,	# loc
+    Cascaded => 1,	# loc
 );
 
 
@@ -567,6 +569,21 @@ my %FriendlyTypes = (
         'Upload multiple files',	# loc
         'Upload one file',		# loc
         'Upload up to [_1] files',	# loc
+    ],
+    Select => [
+        'Select multiple values',	# loc
+        'Select one value',		# loc
+        'Select up to [_1] values',	# loc
+    ],
+    Combobox => [
+        'Select or enter multiple values',	# loc
+        'Select or enter one value',		# loc
+        'Select or enter up to [_1] values',	# loc
+    ],
+    Cascaded => [
+        'Select multiple cascaded values',	# loc
+        'Select one cascaded value',		# loc
+        'Select up to [_1] cascaded values',	# loc
     ],
 );
 
