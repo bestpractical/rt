@@ -166,6 +166,12 @@ sub Create {
         }
 	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
     }
+
+    my ($ok, $msg) = $self->_IsValidRegex($args{'Pattern'});
+    if (!$ok) {
+        return (0, $self->loc("Invalid pattern: [_1]", $msg));
+    }
+
     my $rv = $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
@@ -628,6 +634,50 @@ sub SetType {
     $self->SUPER::SetType($type);
 }
 
+=head2 SetPattern STRING
+
+Takes a single string representing a regular expression.  Performs basic
+validation on that regex, and sets the C<Pattern> field for the CF if it
+is valid.
+
+=cut
+
+sub SetPattern {
+    my $self = shift;
+    my $regex = shift;
+
+    my ($ok, $msg) = $self->_IsValidRegex($regex);
+    if ($ok) {
+        return $self->SUPER::SetPattern($regex);
+    }
+    else {
+        return (0, $self->loc("Invalid pattern: [_1]", $msg));
+    }
+}
+
+=head2 _IsValidRegex(Str $regex) returns (Bool $success, Str $msg)
+
+Tests if the string contains an invalid regex.
+
+=cut
+
+sub _IsValidRegex {
+    my $self  = shift;
+    my $regex = shift or return (1, 'valid');
+
+    local $^W; local $@;
+    $SIG{__DIE__} = sub { 1 };
+    $SIG{__WARN__} = sub { 1 };
+
+    if (eval { qr/$regex/; 1 }) {
+        return (1, 'valid');
+    }
+
+    my $err = $@;
+    $err =~ s{[,;].*}{};    # strip debug info from error
+    return (0, $err);
+}
+
 # {{{ SingleValue
 
 =head2 SingleValue
@@ -940,6 +990,10 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    unless ( $self->_MatchPattern($args{Content}) ) {
+        return ( 0, $self->loc('Invalid input') );
+    }
+
     $RT::Handle->BeginTransaction;
 
     my $current_values = $self->ValuesForObject($obj);
@@ -987,6 +1041,15 @@ sub AddValueForObject {
     return ($val);
 
 }
+
+sub _MatchPattern {
+    my $self = shift;
+    my $regex = $self->Pattern;
+
+    return 1 if !length($regex);
+    return ($_[0] =~ $regex);
+}
+
 
 # }}}
 
