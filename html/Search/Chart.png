@@ -2,14 +2,35 @@
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
 $SecondaryGroupBy => undef
+$ChartStyle => 'bars'
 </%args>
 <%init>
 my @keys;
 my @values;
-use GD::Graph::bars;
+my $chart_class; 
+use GD;
+use GD::Text;
+
+if ($ChartStyle eq 'pie') {
+    require GD::Graph::pie;
+    $chart_class= "GD::Graph::pie";
+} else {
+    require GD::Graph::bars;
+    $chart_class= "GD::Graph::bars";
+}
 use RT::Report::Tickets;
 
-my $chart = GD::Graph::bars->new( 600 => 400 );
+my $chart = $chart_class->new( 600 => 400 );
+if ($chart_class eq "GD::Graph::bars") {
+    $chart->set(
+        x_label => $PrimaryGroupBy,
+        x_labels_vertical => 1,
+        y_label => 'Tickets',
+        show_values => 1
+      );
+    $chart->set_legend_font( ['verdana', 'arial', gdMediumBoldFont], 12);
+
+}
 my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
 my @groupby = (
@@ -34,26 +55,29 @@ while ( my $entry = $tix->Next ) {
              $class = "RT::User";
         }
         if ($class) {
-            warn "Trying to load class $class";
-            warn  $entry->__Value($PrimaryGroupBy);
             my $q = $class->new( $session{'CurrentUser'} );
             $q->Load( $entry->__Value($PrimaryGroupBy) );
-            push @keys, $q->Name();
+            if ($chart_class eq 'GD::Graph::pie') { 
+                 push @keys, $q->Name() . " - ".$entry->id;
+            }
+            else {
+                 push @keys, $q->Name();
+            }
         }
         else {
-            push @keys, $entry->__Value($PrimaryGroupBy);
+            if ($chart_class eq 'GD::Graph::pie') { 
+                push @keys, $entry->__Value($PrimaryGroupBy). "- ".$entry->id;
+            }   
+            else {
+                push @keys, $entry->__Value($PrimaryGroupBy);
+                }
         }
         push @values, $entry->id;
     }
-    use YAML;
-    warn YAML::Dump \@keys;
 
-    $chart->set(
-        x_label => $PrimaryGroupBy,
-        y_label => 'Tickets',
-        title   => "$Query\n split by $PrimaryGroupBy",
-      )
-      or die $chart->error;
+      $chart->set( title   => loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy) 
+      ) or die $chart->error;
+
 
     my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
     $r->content_type('image/png');
