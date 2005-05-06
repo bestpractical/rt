@@ -329,7 +329,7 @@ sub CreateTicket {
                 $ARGS{$arg} = [split('\n', $ARGS{$arg})];
             }
 
-            if ( $cf->Type eq 'Text') {
+            if ( $cf->Type =~ /text/i) { # Catch both Text and Wikitext
                 $ARGS{$arg} =~ s/\r//g;
             }
 
@@ -1144,7 +1144,7 @@ sub ProcessObjectCustomFieldUpdates {
 		    my @values = ();
 		    if (ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) {
 			@values = @{ $ARGSRef->{$arg} };
-		    } elsif ($CustomFieldObj->Type eq 'Text') {
+		    } elsif ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
 			@values = ($ARGSRef->{$arg});
 		    } else {
 			@values = split /\n/, $ARGSRef->{$arg};
@@ -1152,7 +1152,7 @@ sub ProcessObjectCustomFieldUpdates {
 		    
 		    if ( ($CustomFieldObj->Type eq 'Freeform' 
 			  && ! $CustomFieldObj->SingleValue) ||
-			  $CustomFieldObj->Type eq 'Text') {
+			  $CustomFieldObj->Type =~ /text/i) {
 			foreach my $val (@values) {
 			    $val =~ s/\r//g;
 			}

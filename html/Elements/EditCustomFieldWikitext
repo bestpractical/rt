@@ -43,35 +43,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% my $Values = $Object->CustomFieldValues($CustomField->Id);
-  <tr>
-    <td class="label"><%$CustomField->Name%>:</td>
-    <td class="value">
-<ul>
-% while (my $Value = $Values->Next()) {
-<li>
-% my $comp = "ShowCustomField".$CustomField->Type;
-% if ($m->comp_exists($comp)) {
-<& $comp, Object => $Value &>
-%   } else {
-<%$Value->Content%>
-%   }
-</li>
+% while ($Values and my $value = $Values->Next ) {
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $value->Content %></textarea><br>
 % }
-% unless ($Values->Count()) {
-<li><i><&|/l&>(no value)</&></i></li>
+% if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $Default %></textarea>
 % }
-</ul>
-    </td>
-  </tr>
-% }
-</table>
 <%INIT>
-my $CustomFields = $Object->CustomFields;
+# XXX - MultiValue textarea is for now outlawed.
+$MaxValues = 1;
 </%INIT>
 <%ARGS>
 $Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Default => undef
+$Values => undef
+$MaxValues => undef
+$Cols
+$Rows
 </%ARGS>
