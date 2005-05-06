@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use lib "/opt/rt3.4/lib";
-use lib "/opt/rt3.4/local/lib";
 use Test::More qw/no_plan/;
 
 use_ok("RT");
