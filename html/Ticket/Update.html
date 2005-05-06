@@ -121,11 +121,14 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', %ARGS &>
+% { # localize %ARGS 
+% local (%ARGS); 
 % if (exists $ARGS{UpdateContent}) {
 % delete $ARGS{'QuoteTransaction'};
 <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
 % } else {
 <& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
+% }
 % }
 </td></tr>
 </table>

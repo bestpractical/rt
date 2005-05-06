@@ -431,15 +431,9 @@ sub SetRTSpecialHeaders {
     $self->SetHeaderAsEncoding( 'Subject', $RT::EmailOutputEncoding )
       if ($RT::EmailOutputEncoding);
     $self->SetReturnAddress();
+    $self->SetReferencesHeaders();
 
-    # TODO: this one is broken.  What is this email really a reply to?
-    # If it's a reply to an incoming message, we'll need to use the
-    # actual message-id from the appropriate Attachment object.  For
-    # incoming mails, we would like to preserve the In-Reply-To and/or
-    # References.
 
-    $self->SetHeader( 'In-Reply-To',
-        "<rt-" . $self->TicketObj->id() . "\@" . $RT::rtname . ">" );
 
     # TODO We should always add References headers for all message-ids
     # of previous messages related to this ticket.
@@ -713,6 +707,78 @@ sub SetSubjectToken {
 }
 
 # }}}
+
+=head2 SetReferencesHeaders
+
+Set References and In-Reply-To headers for this message.
+
+=cut
+
+sub SetReferencesHeaders {
+
+    my $self = shift;
+    my ( @in_reply_to, @references, @msgid );
+
+    my $attachments = $self->TransactionObj->Message;
+
+    if ( my $top = $attachments->First() ) {
+        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') );  
+        @references = split(/\s+/m, $top->GetHeader('References') );  
+        @msgid = split(/\s+/m,$top->GetHeader('Message-Id')); 
+    }
+    else {
+        return (undef);
+    }
+
+    #   RFC 2822 - Section 3.6.4
+    #
+    #   The "In-Reply-To:" field will contain the contents of the "Message-
+    #   ID:" field of the message to which this one is a reply (the "parent
+    #   message").  If there is more than one parent message, then the "In-
+    #   Reply-To:" field will contain the contents of all of the parents'
+    #   "Message-ID:" fields.  If there is no "Message-ID:" field in any of
+    #   the parent messages, then the new message will have no "In-Reply-To:"
+    #   field.
+
+    # We interpret this section to mean that since this outgoing message is
+    # a child both of whatever the user was replying to and that user's reply,
+    # we want both headers.
+
+    # Scenario:
+    #   RT sends joe messageid "A".
+    #   Joe replies with message "B"
+    #   RT forwards that to the team as "C"
+
+    # Message A has an unspecified reply-to
+    # Message B is in-reply-to A
+    # Message C is in-reply-to A and B
+
+    # XXX FIXME TODO Sadly, MUAs hate can't cope with multiple in-reply-to
+    $self->SetHeader( 'In-Reply-To', join( " ",  ( @in_reply_to ))); # , @msgid ) ) );
+
+    #   RFC 2822 - Section 3.6.4
+    #
+    #   The "References:" field will contain the contents of the parent's
+    #   "References:" field (if any) followed by the contents of the parent's
+    #   "Message-ID:" field (if any).  If the parent message does not contain
+    #   a "References:" field but does have an "In-Reply-To:" field
+    #   containing a single message identifier, then the "References:" field
+    #   will contain the contents of the parent's "In-Reply-To:" field
+    #   followed by the contents of the parent's "Message-ID:" field (if
+    #   any).  If the parent has none of the "References:", "In-Reply-To:",
+    #   or "Message-ID:" fields, then the new message will have no
+    #   "References:" field.
+
+    if ( !@references && scalar(@in_reply_to) ) {
+        @references = @in_reply_to;
+    }
+   
+    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.$RT::Organization .'>';
+    @references = grep { $_ ne $pseudo_ref } @references;
+
+    $self->SetHeader( 'References', join( " ",  ( @references, @msgid, $pseudo_ref )));
+
+}
 
 # }}}
 
