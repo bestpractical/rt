@@ -772,15 +772,29 @@ sub SetReferencesHeaders {
     if ( !@references && scalar(@in_reply_to) ) {
         @references = @in_reply_to;
     }
-   
-    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.$RT::Organization .'>';
+  
+    my $pseudo_ref = $self->PseudoReference;
     @references = grep { $_ ne $pseudo_ref } @references;
 
-    $self->SetHeader( 'References', join( " ",  ( @references, @msgid, $pseudo_ref )));
+    $self->SetHeader( 'References', join( " ",  ( $pseudo_ref, @references, @msgid )));
 
 }
 
 # }}}
+
+=head2 PseudoReference
+
+Returns a fake Message-Id: header for the ticket to allow a base level of threading
+
+=cut
+
+sub PseudoReference {
+
+    my $self = shift;
+    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.$RT::Organization .'>';
+    return $pseudo_ref;
+}
+
 
 # {{{ SetHeadingAsEncoding
 
