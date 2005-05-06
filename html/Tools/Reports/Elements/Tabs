@@ -43,23 +43,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'Tools/index.html', 
-    current_tab => $current_tab, 
+<& /Tools/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'Tools/Reports/index.html', 
+    current_subtab => $current_tab, 
     Title => $Title &>
 
 <%INIT>
 my $tabs = {
     a => {
-        title => loc('Offline'),
-        path  => 'Tools/Offline.html',
+        title => loc('Resolved by owner'),
+        path  => 'Tools/Reports/ResolvedByOwner.html',
     },
     b => {
-        title => loc('Reports'),
-        path  => 'Tools/Reports/index.html',
+        title => loc('Resolved in date range'),
+        path  => 'Tools/Reports/ResolvedByDates.html',
+    },
+    c => {
+        title => loc('Created in a date range'),
+        path  => 'Tools/Reports/CreatedByDates.html',
     },
 };
+
 foreach my $tab ( sort keys %{$tabs} ) {
     if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
         $tabs->{$tab}->{"subtabs"}        = $subtabs;
@@ -67,6 +72,8 @@ foreach my $tab ( sort keys %{$tabs} ) {
     }
 }
 </%INIT>
+
+
 <%ARGS>
 $subtabs => undef
 $current_tab => undef

@@ -1,76 +1,12 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
-$SecondaryGroupBy => undef
-$ChartStyle => 'bars'
 </%args>
 <%init>
-my @keys;
-my @values;
-
-use RT::Report::Tickets;
-
-my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
-
-my @groupby = (
-    { FIELD => $PrimaryGroupBy },
-
-    #{ FIELD => $SecondaryGroupBy}
-);
-$tix->GroupByCols(@groupby);
-$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->Column( FIELD => $PrimaryGroupBy );
-
-#$tix->Column( FIELD => $SecondaryGroupBy);
-$tix->FromSQL($Query);
-$tix->_DoSearch();
-while ( my $entry = $tix->Next ) {
-    my $class;
-    if ( $PrimaryGroupBy eq 'Queue' ) {
-         $class = "RT::Queue";
-        }
-        elsif ( $PrimaryGroupBy eq 'Owner' ) {
-             $class = "RT::User";
-        }
-        if ($class) {
-            my $q = $class->new( $session{'CurrentUser'} );
-            $q->Load( $entry->__Value($PrimaryGroupBy) );
-                 push @keys, $q->Name();
-        }
-        else {
-                push @keys, $entry->__Value($PrimaryGroupBy);
-        }
-        push @values, $entry->id;
-    }
 
 my      $title = loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy);
 
-my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs &>
-
-<img src="<%$RT::WebPath%>/Search/Chart.png?<%$query_string|n%>">
-<br>
-
-<table class="collection-as-table">
-<tr>
-<th class="collection-as-table"><%loc($PrimaryGroupBy)%>
-</th>
-<th class="collection-as-table"><&|/l&>Tickets</&>
-</th>
-</tr>
-% my $i;
-% while (my $key = shift @keys) {
-% $i++;
-<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
-<td class="label collection-as-table">
-<%$key%>
-</td>
-<td class="value collection-as-table">
-<%shift @values%>
-</td>
-</tr>
-% }
-</table>
-
+<& /Ticket/Elements/Tabs, Title => $title &>
+<& /Search/Elements/Chart, %ARGS &>

@@ -45,7 +45,6 @@ $tix->Column( FIELD => $PrimaryGroupBy );
 #$tix->Column( FIELD => $SecondaryGroupBy);
 $tix->FromSQL($Query);
 $tix->_DoSearch();
-warn YAML::Dump($tix);
 while ( my $entry = $tix->Next ) {
     my $class;
     if ( $PrimaryGroupBy eq 'Queue' ) {
@@ -78,6 +77,11 @@ while ( my $entry = $tix->Next ) {
       $chart->set( title   => loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy) 
       ) or die $chart->error;
 
+
+    unless (@keys && @values) {
+        @keys = ('');
+        @values = (0);
+    }
 
     my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
     $r->content_type('image/png');

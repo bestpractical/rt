@@ -1,0 +1,48 @@
+<%args>
+$Queue => undef
+$ResolvedBefore => undef
+$ResolvedAfter => undef
+</%args>
+<%init>
+my $title = loc("Resolved tickets in period, grouped by owner");
+my $q = RT::Queue->new($session{'CurrentUser'});
+my $before = RT::Date->new($session{'CurrentUser'});
+my $after = RT::Date->new($session{'CurrentUser'});
+my $query = '';
+
+
+if ($ResolvedAfter) {
+    $after->Set(Format => 'unknown', Value => $ResolvedAfter);
+    $ResolvedAfter = $after->AsString;
+}
+if ($ResolvedBefore) {
+    $before->Set(Format => 'unknown', Value => $ResolvedBefore);
+    $ResolvedBefore = $before->AsString;
+}
+
+
+$q->LoadByCols(Name => $Queue);
+</%init>
+<& /Elements/Header, Title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>
+<form method="post" action="ResolvedByDates.html">
+% if ($Queue|| $ResolvedBefore ||$ResolvedAfter) {
+% # if we have a queue, do the search
+% $query = "Status = 'resolved'";
+% if ($Queue) { $query .= " AND Queue = '$Queue'"}
+% if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO."'"; }
+% if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO."'"}
+% my $groupby = 'Owner';
+<& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
+% }
+
+<hr>
+
+<br/><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
+<br/><&|/l&>Tickets resolved after</&>: 
+<input size=20 name="ResolvedAfter" value="<%$ResolvedAfter%>"/>
+<br/><&|/l&>Tickets resolved before</&>: 
+<input size=20 name="ResolvedBefore" value="<%$ResolvedBefore%>"/>
+
+<& /Elements/Submit&>
+</form>
