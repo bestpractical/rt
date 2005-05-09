@@ -12,16 +12,9 @@ use RT::Report::Tickets;
 
 my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-my @groupby = (
-    { FIELD => $PrimaryGroupBy },
-
-    #{ FIELD => $SecondaryGroupBy}
-);
-$tix->GroupByCols(@groupby);
+$tix->GroupBy($PrimaryGroupBy);
 $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
 $tix->Column( FIELD => $PrimaryGroupBy );
-
-#$tix->Column( FIELD => $SecondaryGroupBy);
 $tix->FromSQL($Query);
 $tix->_DoSearch();
 while ( my $entry = $tix->Next ) {

@@ -3,7 +3,12 @@ $Name => 'GroupBy'
 $Default => 'Status'
 </%args>
 <select name="<%$Name%>">
-% foreach my $option qw(Owner Queue Status) {
+% foreach my $option (@options) {
 <option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%loc($option)%></option>
 % }
 </select>
+<%init>
+use RT::Report::Tickets;
+my $report = RT::Report::Tickets->new($session{'CurrentUser'});
+my @options = $report->Groupings;
+</%init>
