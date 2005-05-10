@@ -416,7 +416,7 @@ sub ValidateName {
 
     #If this queue exists, return undef
     #Avoid the ACL check.
-    if ( $tempqueue->Name() ) {
+    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
         return (undef);
     }
 
