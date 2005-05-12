@@ -751,10 +751,17 @@ sub SetReferencesHeaders {
 
     # Message A has an unspecified reply-to
     # Message B is in-reply-to A
-    # Message C is in-reply-to A and B
+    # Message C is in-reply-to A. (should be A and B
+    # XXX FIXME TODO Sadly, MUAs hate can't cope with multiple in-reply-to)
 
-    # XXX FIXME TODO Sadly, MUAs hate can't cope with multiple in-reply-to
-    $self->SetHeader( 'In-Reply-To', join( " ",  ( @in_reply_to ))); # , @msgid ) ) );
+    my @source_msg;
+    if ( @in_reply_to) {
+        @source_msg = @in_reply_to;
+    }
+    else {
+        @source_msg = @msgid;
+    }
+    $self->SetHeader( 'In-Reply-To', join( " ",  ( @source_msg ))); # , @msgid ) ) );
 
     #   RFC 2822 - Section 3.6.4
     #
