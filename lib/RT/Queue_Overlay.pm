@@ -447,7 +447,7 @@ sub ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() ) {
+    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
         return (undef);
     }
 

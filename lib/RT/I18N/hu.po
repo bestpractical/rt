@@ -114,14 +114,6 @@ msgstr "%1 - Adja meg a használandó kondiciómodult!"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Adja meg a használandó keres?modult!"
 
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#: html/Elements/Footer:58
-#. ('&#187;&#124;&#171;', 
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
 
