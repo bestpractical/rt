@@ -104,9 +104,18 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 $Format      ||= $prefs->{'Format'};
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
-$Rows = (defined $prefs->{'RowsPerPage'} ? $prefs->{'RowsPerPage'} : 50)
-  unless defined($Rows);
 
+# Some forms pass in "RowsPerPage" rather than "Rows"
+# We call it RowsPerPage everywhere else.
+if ( !$Rows && $ARGS{'RowsPerPage'} ) {
+    $Rows = $ARGS{'RowsPerPage'};
+}
+elsif ( !$Rows && defined $prefs->{'RowsPerPage'} ) {
+    $Rows = $prefs->{'RowsPerPage'};
+}
+else {
+    $Rows = 50;
+}
 
 
 my ($title, $ticketcount);
