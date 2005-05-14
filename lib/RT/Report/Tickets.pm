@@ -42,7 +42,8 @@ sub Column {
     my $self = shift;
     my %args = (@_);
 
-    if ( $args{'FIELD'} ) { ( undef, $args{'FUNCTION'} ) = $self->_FieldToFunction( $args{'FIELD'} ); }
+    if ( $args{'FIELD'} && !$args{'FUNCTION'} ) {
+        ( undef, $args{'FUNCTION'} ) = $self->_FieldToFunction( $args{'FIELD'} ); }
 
     return $self->SUPER::Column(%args);
 }
