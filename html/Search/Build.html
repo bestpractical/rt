@@ -236,7 +236,7 @@ my @current_values = @options[@clauses];
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
     if (
-        $arg =~ m/^ValueOf(.+)/
+        $arg =~ m/^ValueOf(\w+)$/
         && ( ref $ARGS{$arg} eq "ARRAY"
             ? grep { $_ ne "" } @{ $ARGS{$arg} }
             : $ARGS{$arg} ne "" )

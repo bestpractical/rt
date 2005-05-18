@@ -1045,9 +1045,6 @@ sub ProcessTicketBasics {
       Queue
     );
 
-    for my $arg (qw(TimeLeft TimeEstimated TimeWorked)) {
-        $ARGSRef->{$arg} *= 60 if $ARGSRef->{$arg."Units"} eq "hrs";
-    }
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
         my $tempqueue = RT::Queue->new($RT::SystemUser);
