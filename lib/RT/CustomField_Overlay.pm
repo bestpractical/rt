@@ -361,26 +361,19 @@ ok ($delval,"Deleting a cf value: $delmsg");
 =cut
 
 sub AddValue {
-	my $self = shift;
-	my %args = ( Name => undef,
-		     Description => undef,
-		     SortOrder => undef,
-		     @_ );
+    my $self = shift;
+    my %args = @_;
 
     unless ($self->CurrentUserHasRight('AdminCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
-    unless ($args{'Name'}) {
+    unless (length $args{'Name'}) {
         return(0, $self->loc("Can't add a custom field value without a name"));
     }
-	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
-	return($newval->Create(
-		     CustomField => $self->Id,
-             Name =>$args{'Name'},
-             Description => ($args{'Description'} || ''),
-             SortOrder => ($args{'SortOrder'} || '0')
-        ));    
+
+    my $newval = RT::CustomFieldValue->new($self->CurrentUser);
+    return($newval->Create(%args, CustomField => $self->Id));
 }
 
 

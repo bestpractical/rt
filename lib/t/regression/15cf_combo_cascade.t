@@ -31,20 +31,20 @@ my $t = new(RT::Ticket);
 my ($id,undef,$msg) = $t->Create(Queue => $q->id, Subject => 'CF Test');
 ok($id,$msg);
 
-sub cnt { $cf->Values->Count };
-sub add { $cf->AddValue(Field => $cf->id, Value => $_[0], Category => $_[1]) };
+sub add_ok {
+    my ($id, $msg) = $cf->AddValue(Name => $_[0], Description => $_[0], Category => $_[1]);
+    ok($id, $msg);
+};
 
-ok(add('value1', '1. Category A'));
-is(cnt(), 1, "Value filled");
-ok(add('value2'));
-is(cnt(), 2, "Value filled");
-ok(add('value3', '1.1. A-sub one'));
-is(cnt(), 3, "Value filled");
-ok(add('value4', '1.2. A-sub two'));
-is(cnt(), 4, "Value filled");
-ok(add('value5', ''));
-is(cnt(), 5, "Value filled");
+add_ok('value1', '1. Category A');
+add_ok('value2');
+add_ok('value3', '1.1. A-sub one');
+add_ok('value4', '1.2. A-sub two');
+add_ok('value5', '');
 
-is($cf->Values->First->Category('1. Category A'), '1. Category A');
+my $cfv = $cf->Values->First;
+is($cfv->Category, '1. Category A');
+ok($cfv->SetCategory('1. Category AAA'));
+is($cfv->Category, '1. Category AAA');
 
 1;
