@@ -71,6 +71,11 @@
 <input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Description" value="<%$value->Description%>">
 </font>
 </td>
+<td>
+<font size="-1">
+<input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Category" value="<%$value->Category%>">
+</font>
+</td>
 </tr>
 % }
 </table>

@@ -171,7 +171,7 @@ foreach my $key (keys %ARGS) {
 # Update any existing values
 my $values = $CustomFieldObj->ValuesObj;
 while (my $value = $values->Next) {
-	foreach my $attr qw(Name Description SortOrder) {
+	foreach my $attr qw(Name Description SortOrder Category) {
 	my $param = $paramtag.$value->Id."-".$attr;
 
 	if ( $ARGS{$param} && ($value->$attr() ne $ARGS{$param}))  {
@@ -190,7 +190,8 @@ while (my $value = $values->Next) {
 if ($ARGS{$paramtag."new-Name"}) {
 	my ($id, $msg) = $CustomFieldObj->AddValue ( Name => $ARGS{$paramtag."new-Name"},
 						 Description => $ARGS{$paramtag."new-Description"},
-						 SortOrder => $ARGS{$paramtag."new-SortOrder"});
+						 SortOrder => $ARGS{$paramtag."new-SortOrder"},
+						 Category => $ARGS{$paramtag."new-Category"});
 	push (@results, $msg);
 }
 
