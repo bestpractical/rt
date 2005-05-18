@@ -35,13 +35,14 @@ sub Create {
 
 sub Category {
     my $self = shift;
-    return '';
+    my $attr = $self->FirstAttribute('Category') or return undef;
+    return $attr->Content;
 }
 
 sub SetCategory {
     my $self = shift;
     my $category = shift;
-    return (0, '');
+    $self->SetAttribute(Name => 'Category', Content => $category);
 }
 
 sub ValidateName { 1 };
