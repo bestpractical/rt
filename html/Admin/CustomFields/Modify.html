@@ -119,7 +119,8 @@ else {
         my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
                                                     TypeComposite => $TypeComposite,
                                                     LookupType => $LookupType,
-                                                    Description => $Description,);
+                                                    Description => $Description,
+                                                    Pattern => $Pattern,);
         $m->comp("/Elements/Error", Why =>  loc( "Could not create CustomField", $msg ) ) unless ($val);
         push @results, $msg;
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name() );
@@ -188,10 +189,10 @@ while (my $value = $values->Next) {
 
 # Add any new values
 if ($ARGS{$paramtag."new-Name"}) {
-	my ($id, $msg) = $CustomFieldObj->AddValue ( Name => $ARGS{$paramtag."new-Name"},
-						 Description => $ARGS{$paramtag."new-Description"},
-						 SortOrder => $ARGS{$paramtag."new-SortOrder"},
-						 Category => $ARGS{$paramtag."new-Category"});
+	my ($id, $msg) = $CustomFieldObj->AddValue (
+            map { $_ => $ARGS{$paramtag."new-$_"} }
+                qw( Name Description SortOrder Category )
+        );
 	push (@results, $msg);
 }
 
@@ -211,6 +212,7 @@ $LookupType => undef
 $MaxValues => undef
 $SortOrder => undef
 $Description => undef
+$Pattern => undef
 $Name => undef
 $SetEnabled => undef
 $Enabled => undef
