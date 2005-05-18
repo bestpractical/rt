@@ -1,0 +1,9 @@
+<%args>
+$Name => 'ChartType'
+$Default => 'bar'
+</%args>
+<select name="<%$Name%>">
+% foreach my $option qw(bar pie) {
+<option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%loc($option)%></option>
+% }
+</select>

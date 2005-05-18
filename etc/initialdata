@@ -351,7 +351,7 @@ batch-process all your pending approvals.
        Name        => "Approval Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by some approver", # loc
-       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 

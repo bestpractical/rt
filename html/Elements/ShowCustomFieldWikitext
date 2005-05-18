@@ -43,33 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'Tools/index.html', 
-    current_tab => $current_tab, 
-    Title => $Title &>
-
-<%INIT>
-my $tabs = {
-    a => {
-        title => loc('Offline'),
-        path  => 'Tools/Offline.html',
-    },
-    b => {
-        title => loc('Reports'),
-        path  => 'Tools/Reports/index.html',
-    },
-};
-foreach my $tab ( sort keys %{$tabs} ) {
-    if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
-        $tabs->{$tab}->{"subtabs"}        = $subtabs;
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-}
-</%INIT>
+% my $content = $Object->LargeContent || $Object->Content;
+% my $wiki_content = Text::WikiFormat::format( $content."\n" );
+<%$wiki_content|n%>
+<%init>
+use Text::WikiFormat;
+</%init>
 <%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
+$Object
 </%ARGS>

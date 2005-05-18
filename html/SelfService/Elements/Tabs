@@ -68,11 +68,15 @@ my $tabs = { A  => { title => loc('Open tickets'),
                        },
              C => { title => loc('New ticket'),
                     path => 'SelfService/CreateTicketInQueue.html'
-                    },
-             Z => { title => loc('Preferences'),
-                    path => 'SelfService/Prefs.html'
                     }
            };
+if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf',
+				       Object => $RT::System )) {
+	$tabs->{Z} = { title => loc('Preferences'),
+		       path => 'SelfService/Prefs.html'
+		       };
+}
+
 my $actions = {
 	B => { html => $m->scomp('GotoTicket') 
 		}

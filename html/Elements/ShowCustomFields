@@ -53,8 +53,9 @@
 <ul>
 % while (my $Value = $Values->Next()) {
 <li>
-%   if ($CustomField->Type eq 'Image') {
-<& ShowCustomFieldImage, Object => $Value &>
+% my $comp = "ShowCustomField".$CustomField->Type;
+% if ($m->comp_exists($comp)) {
+<& $comp, Object => $Value &>
 %   } else {
 <%$Value->Content%>
 %   }
