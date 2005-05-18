@@ -46,18 +46,10 @@
       <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
         size="<%$Rows%>"
         <% $Multiple && 'MULTIPLE' %>>
-% my $selected;
-% my $CFVs = $CustomField->Values;
-% while ($CFVs and my $value = $CFVs->Next ) {
-        <option value="<%$value->Name%>" 
-% if ($Values) {
-            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
-% } elsif ($Default) {
-            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
-% }
-            ><% $value->Name%></option>
-% }
+%       my $selected = 0;
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected);
         <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+%       $m->out($out);
       </select>
 <%ARGS>
 $Object => undef
@@ -68,3 +60,46 @@ $Values => undef
 $Multiple => 0
 $Rows => undef
 </%ARGS>
+
+<%method options>
+% my $selected;
+% my $CFVs = $CustomField->Values;
+% my @levels;
+% while ($CFVs and my $value = $CFVs->Next ) {
+%       my $category = $value->Category;
+%       if (length $category) {
+%           my $level = (split(/\s/, $category))[0];
+%           while (@levels) {
+%               if ($levels[-1] eq $level) {
+%                   undef $level;
+%                   last;
+%               } elsif (index($level, $levels[-1]) != 0) {
+        </optgroup>
+%                   pop @levels;
+%               } else {
+%                   last;
+%               }
+%           }
+%           if (defined $level) {
+        <optgroup label="<% '&nbsp;' x @levels |n %><%$category%>">
+%               push @levels, $level;
+%           }
+%       }
+        <option value="<%$value->Name%>" 
+% if ($Values) {
+            <% $Values->HasEntry($value->Name) && ($$SelectedRef = 1) && 'SELECTED' %>
+% } elsif ($Default) {
+            <% ($Default eq $value->Name) && ($$SelectedRef = 1) && 'SELECTED' %>
+% }
+            ><% $value->Name%></option>
+% }
+% for (@levels) {
+            </optgroup>
+% }
+<%args>
+$CustomField
+$Default
+$Values
+$SelectedRef
+</%args>
+</%method>

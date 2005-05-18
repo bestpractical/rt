@@ -620,6 +620,15 @@ textarea.messagebox {
     width: 100%;
 }
 
+select optgroup {
+    background-color: #ddd;
+}
+
+select optgroup option {
+    background-color: white;
+}
+
+
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
 %#   "latter specified rule wins"
