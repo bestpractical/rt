@@ -1001,8 +1001,8 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    unless ( $self->_MatchPattern($args{Content}) ) {
-        return ( 0, $self->loc('Invalid input') );
+    unless ( $self->MatchPattern($args{Content}) ) {
+        return ( 0, $self->loc('Input must match [_1]', $self->Pattern) );
     }
 
     $RT::Handle->BeginTransaction;
@@ -1053,7 +1053,18 @@ sub AddValueForObject {
 
 }
 
-sub _MatchPattern {
+# }}}
+
+# {{{ MatchPattern
+
+=head2 MatchPattern STRING
+
+Tests the incoming string against the Pattern of this custom field object
+and returns a boolean; returns true if the Pattern is empty.
+
+=cut
+
+sub MatchPattern {
     my $self = shift;
     my $regex = $self->Pattern;
 

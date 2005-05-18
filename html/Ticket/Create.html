@@ -240,6 +240,12 @@ $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->TicketCustomFields();
 my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
 
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CFs,
+    ARGSRef => \%ARGS
+);
+
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
@@ -285,7 +291,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new') and $ValidCFs) { # new ticket?
     $m->comp('Display.html', %ARGS);
     $m->comp('/Elements/Footer');
     $m->abort();
