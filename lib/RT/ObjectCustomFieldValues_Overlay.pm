@@ -117,6 +117,8 @@ sub HasEntry {
     my $self = shift;
     my $value = shift;
 
+    $RT::Logger->crit(" $self - looking for value $value"); 
+    
     #TODO: this could cache and optimize a fair bit.
     foreach my $item (@{$self->ItemsArrayRef}) {
         return(1) if ($item->Content eq $value);  
