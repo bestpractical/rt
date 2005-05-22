@@ -78,6 +78,7 @@
           <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 <div class="mainbody">
+<& /Elements/Callback, __CallbackName => 'BeforeBody',  %ARGS &>
 %$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 <%INIT>
 
