@@ -68,6 +68,23 @@ if ($m->request_comp->attr_exists('AutoFlush')) {
 	? { map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } %$_ } : $_
     } %ARGS;
 
+
+# This code canonicalizes time inputs in hours into minutes
+my @TimeUnitFields = grep { /-TimeUnits$/ } keys %ARGS;
+foreach my $field (@TimeUnitFields) { 
+    $RT::Logger->crit("Checking $field");
+    next unless ($field =~ /^(.*?)-TimeUnits$/i);
+    my $local = $1;
+    if ($ARGS{$field} =~ /hours/i) {
+        $ARGS{$local} *= 60;
+        $RT::Logger->crit("Multiplied $local by 60");
+    }
+    delete $ARGS{$field};
+}
+
+
+
+
 $m->{'rt_base_time'} = [Time::HiRes::gettimeofday()];
         
 $m->comp('/Elements/SetupSessionCookie', %ARGS);
