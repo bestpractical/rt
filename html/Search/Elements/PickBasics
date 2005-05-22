@@ -138,6 +138,7 @@
 <& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
 </td><td>
 <INPUT Name="ValueOfTime" SIZE=5>
+<& /Elements/SelectTimeUnits, Name =>'ValueOfTime-TimeUnits' &>
 </td>
 </tr>
 <tr>
