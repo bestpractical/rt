@@ -565,12 +565,14 @@ sub CreateByTemplate {
     # XXX: cargo cult programming that works. i'll be back.
     use bytes;
 
-    %T::Tickets = ();
+    local %T::Tickets = %T::Tickets;
+    local $T::TOP = $T::TOP;
+    local $T::ID = $T::ID;
+    $T::Tickets{'TOP'} = $T::TOP = $top if $top;
 
     my $ticketargs;
     my ( @links, @postponed );
     foreach my $template_id ( @{ $self->{'create_tickets'} } ) {
-        $T::Tickets{'TOP'} = $T::TOP = $top if $top;
         $RT::Logger->debug("Workflow: processing $template_id of $T::TOP")
           if $T::TOP;
 
@@ -628,7 +630,8 @@ sub UpdateByTemplate {
     use bytes;
 
     my @results;
-    %T::Tickets = ();
+    local %T::Tickets = %T::Tickets;
+    local $T::ID = $T::ID;
 
     my $ticketargs;
     my ( @links, @postponed );

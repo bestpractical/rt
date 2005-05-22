@@ -1,0 +1,22 @@
+<%INIT>
+my $valid = 1;
+$CustomFields->GotoFirstItem;
+while (my $CF = $CustomFields->Next) {
+    my $pattern = $CF->Pattern;
+    my $field = $NamePrefix . $CF->Id . "-Value";
+    $m->notes(('Field-' . $CF->Id) => $ARGSRef->{$field});
+    next if $CF->MatchPattern($ARGSRef->{$field});
+    $m->notes(
+        ('InvalidField-' . $CF->Id)
+            => (loc("Input must match [_1]", $pattern))
+    );
+    $valid = 0;
+}
+$m->notes('ValidFields', $valid);
+return $valid;
+</%INIT>
+<%ARGS>
+$CustomFields
+$ARGSRef
+$NamePrefix => "Object-RT::Ticket--CustomField-"
+</%ARGS>

@@ -297,7 +297,7 @@ Set($WebURL , $WebBaseURL . $WebPath . "/");
 
 Set($WebImagesURL , $WebPath . "/NoAuth/images/");
 
-# $RTLogoURL points to the URL of the RT logo displayed in the web UI
+# $LogoURL points to the URL of the RT logo displayed in the web UI
 
 Set($LogoURL , $WebImagesURL . "bplogo.gif");
 
@@ -474,7 +474,7 @@ Set($AmbiguousDayInPast , 1);
 #  * More to come
 #
 
-Set($DevelMode => '@RT_DEVEL_MODE@');
+Set($DevelMode, '@RT_DEVEL_MODE@');
 
 # }}}
 

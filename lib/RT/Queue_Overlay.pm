@@ -307,9 +307,18 @@ sub IsInactiveStatus {
 
 
 
-=head2 Create
+=head2 Create(ARGS)
 
-Create takes the name of the new queue 
+Arguments: ARGS is a hash of named parameters.  Valid parameters are:
+
+  Name (required)
+  Description
+  CorrespondAddress
+  CommentAddress
+  InitialPriority
+  FinalPriority
+  DefaultDueIn
+ 
 If you pass the ACL check, it creates the queue and returns its queue id.
 
 =begin testing
@@ -438,7 +447,7 @@ sub ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() ) {
+    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
         return (undef);
     }
 

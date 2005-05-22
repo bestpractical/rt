@@ -453,8 +453,8 @@ sub _DateLimit {
     require Time::ParseDate;
     use POSIX 'strftime';
 
-    # FIXME: Replace me with RT::Date( Type => 'unknown' ...)
-    my $time = Time::ParseDate::parsedate(
+    # XXX TODO FIXME: Replace me with RT::Date( Type => 'unknown' ...)
+    my $time =  Time::ParseDate::parsedate(
         $value,
         UK            => $RT::DateDayBeforeMonth,
         PREFER_PAST   => $RT::AmbiguousDayInPast,

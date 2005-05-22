@@ -187,32 +187,31 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 
 
 </form>
+
 <%INIT>
 my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
 
-my ( @results);
+my (@results);
 
 $Page ||= 1;
 
-
 $Format ||= $RT::DefaultSearchResultFormat;
+
 # inject _CHECKBOX to the first field.
 $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
-
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $Tickets->FromSQL($Query);
-$Tickets->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+$Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 $Tickets->RowsPerPage($Rows) if ($Rows);
-$Tickets->GotoPage($Page-1); # SB uses page 0 as the first page
+$Tickets->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
-Abort(loc("No search to operate on.")) unless ($Tickets);
+Abort( loc("No search to operate on.") ) unless ($Tickets);
 
-
-# build up a list of all custom fields for tickets that we're displaying, so 
+# build up a list of all custom fields for tickets that we're displaying, so
 # we can display sane edit widgets.
 
 my $fields      = {};
@@ -252,6 +251,8 @@ my $cf_del_keys;
 @$cf_del_keys = grep { /^Bulk-Delete-CustomField/ } keys %ARGS;
 my $cf_add_keys;
 @$cf_add_keys = grep { /^Bulk-Add-CustomField/ } keys %ARGS;
+
+
 while ( my $Ticket = $Tickets->Next ) {
     next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
 
@@ -292,8 +293,10 @@ while ( my $Ticket = $Tickets->Next ) {
     my @cfresults;
 
     foreach my $list ( $cf_add_keys, $cf_del_keys ) {
-        my $op;
+        next unless $list->[0];
 
+
+        my $op;
         if ( $list->[0] =~ /Add/ ) {
             $op = 'add';
 
@@ -303,7 +306,8 @@ while ( my $Ticket = $Tickets->Next ) {
         }
         else {
             $RT::Logger->crit(
-                "Got an op that was neither add nor delete. can never happen");
+                "Got an op that was neither add nor delete. can never happen"
+                  . $list->[0] );
             last;
         }
 
@@ -314,20 +318,19 @@ while ( my $Ticket = $Tickets->Next ) {
                 $cf   = RT::CustomField->new( $session{'CurrentUser'} );
                 $cf->Load($cfid);
             }
-            else { next }
+            else {next}
             my @values =
               ref( $ARGS{$key} ) eq 'ARRAY'
               ? @{ $ARGS{$key} }
               : ( $ARGS{$key} );
             map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
-            # now break the multiline values into multivalues
-            @values = map { split( /\n/, $_ ) } @values unless ( $cf->SingleValue );
+                 # now break the multiline values into multivalues
+            @values = map { split( /\n/, $_ ) } @values
+              unless ( $cf->SingleValue );
 
             my $current_values = $Ticket->CustomFieldValues($cfid);
             foreach my $value (@values) {
-
                 if ( $op eq 'del' && $current_values->HasEntry($value) ) {
-
                     my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
                         Field => $cfid,
                         Value => $value
@@ -357,7 +360,7 @@ while ( my $Ticket = $Tickets->Next ) {
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
-$TxnCFs->LimitToLookupType(RT::Transaction->CustomFieldLookupType);
+$TxnCFs->LimitToLookupType( RT::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 
 </%INIT>

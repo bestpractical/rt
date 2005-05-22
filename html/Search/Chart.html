@@ -1,0 +1,12 @@
+<%args>
+$Query => "id > 0"
+$PrimaryGroupBy => 'Queue'
+</%args>
+<%init>
+
+my      $title = loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy);
+
+</%init>
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, Title => $title &>
+<& /Search/Elements/Chart, %ARGS &>

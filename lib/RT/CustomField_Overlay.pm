@@ -48,20 +48,48 @@ package RT::CustomField;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(%TYPES $RIGHTS %FRIENDLY_OBJECT_TYPES);
+use vars qw(%FieldTypes $RIGHTS %FRIENDLY_OBJECT_TYPES);
 
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
 
-# Enumerate all valid types for this custom field
-%TYPES = (
-    Freeform => 1,	# loc
-    Select => 1,	# loc
-    Text => 1,     # loc
-    Image => 1,    # loc
-    Binary => 1,   # loc
-    Combobox => 1,	# loc
-    Cascaded => 1,	# loc
+
+%FieldTypes = (
+    Select => [
+        'Select multiple values',	# loc
+        'Select one value',		# loc
+        'Select up to [_1] values',	# loc
+    ],
+    Freeform => [
+        'Enter multiple values',	# loc
+        'Enter one value',		# loc
+        'Enter up to [_1] values',	# loc
+    ],
+    Text => [
+        'Fill in multiple text areas',	# loc
+        'Fill in one text area',	# loc
+        'Fill in up to [_1] text areas',# loc
+    ],
+    Wikitext => [
+        'Fill in multiple wikitext areas',	# loc
+        'Fill in one wikitext area',	# loc
+        'Fill in up to [_1] wikitext areas',# loc
+    ],
+    Image => [
+        'Upload multiple images',	# loc
+        'Upload one image',		# loc
+        'Upload up to [_1] images',	# loc
+    ],
+    Binary => [
+        'Upload multiple files',	# loc
+        'Upload one file',		# loc
+        'Upload up to [_1] files',	# loc
+    ],
+    Combobox => [
+        'Combobox: Select or enter multiple values',	# loc
+        'Combobox: Select or enter one value',		# loc
+        'Combobox: Select or enter up to [_1] values',	# loc
+    ],
 );
 
 
@@ -333,26 +361,19 @@ ok ($delval,"Deleting a cf value: $delmsg");
 =cut
 
 sub AddValue {
-	my $self = shift;
-	my %args = ( Name => undef,
-		     Description => undef,
-		     SortOrder => undef,
-		     @_ );
+    my $self = shift;
+    my %args = @_;
 
     unless ($self->CurrentUserHasRight('AdminCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
-    unless ($args{'Name'}) {
+    unless (length $args{'Name'}) {
         return(0, $self->loc("Can't add a custom field value without a name"));
     }
-	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
-	return($newval->Create(
-		     CustomField => $self->Id,
-             Name =>$args{'Name'},
-             Description => ($args{'Description'} || ''),
-             SortOrder => ($args{'SortOrder'} || '0')
-        ));    
+
+    my $newval = RT::CustomFieldValue->new($self->CurrentUser);
+    return($newval->Create(%args, CustomField => $self->Id));
 }
 
 
@@ -531,13 +552,13 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub Types {
-	return (keys %TYPES);
+	return (keys %FieldTypes);
 }
 
 # }}}
 
 # {{{ IsSelectionType
-
+ 
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -547,7 +568,7 @@ to this Custom Field.
 
 sub IsSelectionType {
     my $self = shift;
-    $self->Type =~ /(?:Select|Combobox|Cascaded)/;
+    $self->Type =~ /(?:Select|Combobox)/;
 }
 
 # }}}
@@ -559,57 +580,13 @@ Returns a localized human-readable version of the custom field type.
 If a custom field type is specified as the parameter, the friendly type for that type will be returned
 
 =cut
-
-my %FriendlyTypes = (
-    Select => [
-        'Select multiple values',	# loc
-        'Select one value',		# loc
-        'Select up to [_1] values',	# loc
-    ],
-    Freeform => [
-        'Enter multiple values',	# loc
-        'Enter one value',		# loc
-        'Enter up to [_1] values',	# loc
-    ],
-    Text => [
-        'Fill in multiple text areas',	# loc
-        'Fill in one text area',	# loc
-        'Fill in up to [_1] text areas',# loc
-    ],
-    Image => [
-        'Upload multiple images',	# loc
-        'Upload one image',		# loc
-        'Upload up to [_1] images',	# loc
-    ],
-    Binary => [
-        'Upload multiple files',	# loc
-        'Upload one file',		# loc
-        'Upload up to [_1] files',	# loc
-    ],
-    Select => [
-        'Select multiple values',	# loc
-        'Select one value',		# loc
-        'Select up to [_1] values',	# loc
-    ],
-    Combobox => [
-        'Combobox: Select or enter multiple values',	# loc
-        'Combobox: Select or enter one value',		# loc
-        'Combobox: Select or enter up to [_1] values',	# loc
-    ],
-    Cascaded => [
-        'Cascaded: Select multiple cascaded values',	# loc
-        'Cascaded: Select one cascaded value',		# loc
-        'Cascaded: Select up to [_1] cascaded values',	# loc
-    ],
-);
-
 sub FriendlyType {
     my $self = shift;
 
     my $type = @_ ? shift : $self->Type;
     my $max  = @_ ? shift : $self->MaxValues;
 
-    if (my $friendly_type = $FriendlyTypes{$type}[$max>2 ? 2 : $max]) {
+    if (my $friendly_type = $FieldTypes{$type}[$max>2 ? 2 : $max]) {
 	return ( $self->loc( $friendly_type, $max ) );
     }
     else {
@@ -648,7 +625,7 @@ sub ValidateType {
 	$RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead");
     }
 
-    if( $TYPES{$type}) {
+    if( $FieldTypes{$type}) {
         return(1);
     }
     else {
@@ -708,6 +685,7 @@ sub _IsValidRegex {
 
     my $err = $@;
     $err =~ s{[,;].*}{};    # strip debug info from error
+    chomp $err;
     return (0, $err);
 }
 
@@ -881,7 +859,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:Text|Cascade|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 LookupTypes
@@ -1023,8 +1001,8 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    unless ( $self->_MatchPattern($args{Content}) ) {
-        return ( 0, $self->loc('Invalid input') );
+    unless ( $self->MatchPattern($args{Content}) ) {
+        return ( 0, $self->loc('Input must match [_1]', $self->Pattern) );
     }
 
     $RT::Handle->BeginTransaction;
@@ -1075,7 +1053,18 @@ sub AddValueForObject {
 
 }
 
-sub _MatchPattern {
+# }}}
+
+# {{{ MatchPattern
+
+=head2 MatchPattern STRING
+
+Tests the incoming string against the Pattern of this custom field object
+and returns a boolean; returns true if the Pattern is empty.
+
+=cut
+
+sub MatchPattern {
     my $self = shift;
     my $regex = $self->Pattern;
 

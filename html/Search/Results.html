@@ -82,6 +82,17 @@
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
 <a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br/>
+<form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
+% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
+%while (my $var = shift (@vars)) {
+<input type="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+%}
+</%perl>
+<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
+<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
+
+<input type="submit" value="<%loc('Go')%>"/>
+</form>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>
@@ -93,9 +104,18 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 $Format      ||= $prefs->{'Format'};
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
-$Rows = (defined $prefs->{'RowsPerPage'} ? $prefs->{'RowsPerPage'} : 50)
-  unless defined($Rows);
 
+# Some forms pass in "RowsPerPage" rather than "Rows"
+# We call it RowsPerPage everywhere else.
+if ( !$Rows && $ARGS{'RowsPerPage'} ) {
+    $Rows = $ARGS{'RowsPerPage'};
+}
+elsif ( !$Rows && defined $prefs->{'RowsPerPage'} ) {
+    $Rows = $prefs->{'RowsPerPage'};
+}
+else {
+    $Rows = 50;
+}
 
 
 my ($title, $ticketcount);

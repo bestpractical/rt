@@ -1,0 +1,23 @@
+<%args>
+$Queue => undef
+</%args>
+<%init>
+my $title = loc("Resolved tickets, grouped by owner");
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->LoadByCols(Name => $Queue);
+</%init>
+<& /Elements/Header, Title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_subtab => '/Tools/Reports/ResolvedByOwner', Title => $title &>
+<form method="post" action="ResolvedByOwner.html">
+% if ($Queue) {
+% # if we have a queue, do the search
+% my $query = "Status = 'resolved' AND Queue = '$Queue'";
+% my $groupby = 'Owner';
+<& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
+% }
+
+<hr>
+
+<&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
+<& /Elements/Submit&>
+</form>

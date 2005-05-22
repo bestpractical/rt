@@ -14,6 +14,6 @@
 #
 #   perl -C /opt/rt3/etc/RT_SiteConfig.pm
 
-Set( $rtname => 'example.com');
-
+Set( $rtname, 'example.com');
+Set( $DevelMode => 1);
 1;

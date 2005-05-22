@@ -44,18 +44,22 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><& ShowCustomFieldImage, Object => $value &>
-<br>
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $value->Content %></textarea><br>
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
-...
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $Default %></textarea>
 % }
+<%INIT>
+# XXX - MultiValue textarea is for now outlawed.
+$MaxValues = 1;
+</%INIT>
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
 $Default => undef
 $Values => undef
-$Multiple => 0
-$Rows => undef
+$MaxValues => undef
+$Cols
+$Rows
 </%ARGS>

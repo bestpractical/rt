@@ -122,7 +122,7 @@ Digest::MD5 2.27
 DBI 1.37
 Test::Inline
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.26
+DBIx::SearchBuilder 1.27
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -161,7 +161,12 @@ Digest::MD5 2.27
 CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
-XML::RSS
+XML::RSS 1.05
+HTTP::Server::Simple 0.07
+HTTP::Server::Simple::Mason 0.03
+GD
+GD::Graph
+GD::Text
 HTTP::Server::Simple 0.07
 HTTP::Server::Simple::Mason 0.03
 .

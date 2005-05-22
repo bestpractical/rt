@@ -63,12 +63,14 @@ sub LimitToObjectId {
 sub LimitToLookupType {
     my $self = shift;
     my $lookup = shift;
-    my $cfs = $self->NewAlias('CustomFields');
+    unless ($self->{'_cfs_alias'}) {
+        $self->{'_cfs_alias'}  = $self->NewAlias('CustomFields');
+    }
     $self->Join( ALIAS1 => 'main',
                 FIELD1 => 'CustomField',
-                ALIAS2 => $cfs,
+                ALIAS2 => $self->{'_cfs_alias'},
                 FIELD2 => 'id' );
-    $self->Limit( ALIAS           => $cfs,
+    $self->Limit( ALIAS           => $self->{'_cfs_alias'},
                  FIELD           => 'LookupType',
                  OPERATOR        => '=',
                  VALUE           => $lookup );
@@ -95,6 +97,17 @@ sub CustomFields {
     my $self = shift;
     my %seen;
     map { $_->CustomFieldObj } @{$self->ItemsArrayRef};
+}
+
+sub _DoSearch {
+    my $self = shift;
+    if ($self->{'_cfs_alias'}) {
+    $self->Limit( ALIAS           => $self->{'_cfs_alias'},
+                 FIELD           => 'Disabled',
+                 OPERATOR        => '!=',
+                 VALUE           =>  1);
+    }
+    $self->SUPER::_DoSearch()
 }
 
 1;
