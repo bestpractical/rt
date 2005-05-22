@@ -444,9 +444,10 @@ sub ProcessUpdateMessage {
     );
 
     #Make the update content have no 'weird' newlines in it
-    if ( $args{ARGSRef}->{'UpdateTimeWorked'} ||
-	 $args{ARGSRef}->{'UpdateContent'} ||
-	 $args{ARGSRef}->{'UpdateAttachments'}) {
+    if (   $args{ARGSRef}->{'UpdateTimeWorked'}
+        || $args{ARGSRef}->{'UpdateContent'}
+        || $args{ARGSRef}->{'UpdateAttachments'} )
+    {
 
         if (
             $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject() )
@@ -455,57 +456,62 @@ sub ProcessUpdateMessage {
         }
 
         my $Message = MakeMIMEEntity(
-            Subject             => $args{ARGSRef}->{'UpdateSubject'},
-            Body                => $args{ARGSRef}->{'UpdateContent'},
+            Subject => $args{ARGSRef}->{'UpdateSubject'},
+            Body    => $args{ARGSRef}->{'UpdateContent'},
         );
 
-        if ($args{ARGSRef}->{'QuoteTransaction'} ) {
-            my $old_txn = RT::Transaction->new($session{'CurrentUser'}); 
-            $old_txn->Load($args{ARGSRef}->{'QuoteTransaction'} );
-            if ($old_txn->Message->First) {
-                $Message->head->replace('In-Reply-To',$old_txn->Message->First->GetHeader('Message-Id')); 
-                $Message->head->replace('References',
-                            $old_txn->Message->First->GetHeader('References')
-                            . " ".
-                            $old_txn->Message->First->GetHeader('Message-Id')
-                        ); 
-            }
-
-        }
-        if ($args{ARGSRef}->{'UpdateAttachments'}) {
-            $Message->make_multipart;
-            $Message->add_part($_) foreach values %{$args{ARGSRef}->{'UpdateAttachments'}};
-        }
-
-        ## TODO: Implement public comments
-        if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-            my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(
-                CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-                BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
-                MIMEObj      => $Message,
-                TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-            );
-            push ( @{ $args{Actions} }, $Description );
-	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
-        }
-        elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-            my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(
-                CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-                BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
-                MIMEObj      => $Message,
-                TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-            );
-            push ( @{ $args{Actions} }, $Description );
-	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
+        if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
+            $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
         }
         else {
-            push ( @{ $args{'Actions'} },
-                loc("Update type was neither correspondence nor comment.").
-                " ".
-                loc("Update not recorded.")
-            );
+            $old_txn = $args{TicketObj}->Transactions->First();
         }
+
+        if ( $old_txn->Message && $old_txn->Message->First ) {
+            $Message->head->replace( 'In-Reply-To',
+                $old_txn->Message->First->GetHeader('Message-Id') );
+            $Message->head->replace( 'References',
+                    $old_txn->Message->First->GetHeader('References') . " "
+                  . $old_txn->Message->First->GetHeader('Message-Id') );
+        }
+
+    if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
+        $Message->make_multipart;
+        $Message->add_part($_)
+          foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
+
+    ## TODO: Implement public comments
+    if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
+        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(
+            CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
+            BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
+            MIMEObj      => $Message,
+            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+        );
+        push( @{ $args{Actions} }, $Description );
+        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+    }
+    elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
+        my ( $Transaction, $Description, $Object ) =
+          $args{TicketObj}->Correspond(
+            CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
+            BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
+            MIMEObj      => $Message,
+            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+          );
+        push( @{ $args{Actions} }, $Description );
+        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+    }
+    else {
+        push(
+            @{ $args{'Actions'} },
+            loc("Update type was neither correspondence nor comment.") . " "
+              . loc("Update not recorded.")
+        );
+    }
+}
 }
 
 # }}}
