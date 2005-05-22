@@ -93,7 +93,7 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 $Format      ||= $prefs->{'Format'};
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
-$Rows = (  $prefs->{'RowsPerPage'} || 50 )
+$Rows = (defined $prefs->{'RowsPerPage'} ? $prefs->{'RowsPerPage'} : 50)
   unless defined($Rows);
 
 

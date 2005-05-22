@@ -62,7 +62,7 @@
 <%INIT>
   
 my $TicketObj = LoadTicket($id);
-my $CustomFields = $TicketObj->QueueObj->CustomFields();
+my $CustomFields = $TicketObj->QueueObj->TicketCustomFields();
 
 # Now let callbacks have a chance at editing %ARGS
 $m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, %ARGS);

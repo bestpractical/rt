@@ -58,7 +58,7 @@
 %   while (my $scrip = $Scrips->Next ) {
 <tr>
 <td>
-<input type="checkbox" name="DeleteScrip-<%$scrip->Id%>">
+<input type="checkbox" name="DeleteScrip-<%$scrip->Id%>" value="1">
 </td>
 <td>
 <a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br>

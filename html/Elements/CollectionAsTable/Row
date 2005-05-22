@@ -80,23 +80,26 @@ foreach my $column (@Format) {
                 Name => $col,
                 Attr => 'value'
             );
+            my @out;
 
             if ( $value && ref($value) ) {
 
                 # All HTML snippets are returned by the callback function
                 # as scalar references.  Data fetched from the objects are
                 # plain scalars, and needs to be escaped properly.
-                $m->out(
+                @out =
                     map {
                         ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' )
                       } &{$value}( $record, $i )
-                );
+                ;
             }
             else {
 
                 # Simple value; just escape it.
-                $m->out( $m->interp->apply_escapes( $value => 'h' ) );
+                @out = $m->interp->apply_escapes( $value => 'h' );
             }
+            s/\n/<br>/gs for @out;
+            $m->out( @out );
         }
         else {
             $m->out($subcol);

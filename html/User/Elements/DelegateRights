@@ -81,7 +81,7 @@ while ( my $delegation = $delegations->Next) {
        </td>
 % while (my $pg = $personalgroups->Next) {
 <td align=center>
-        <input name="Delegate-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>" type=checkbox <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %>>
+        <input name="Delegate-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>" type=checkbox value="1" <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %>>
 % if ( $del_hash->{$pg->PrincipalId}) {
 <input type=hidden name="Delegate-Existing-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>-as-<%$del_hash->{$pg->PrincipalId}->Id%>">
 % }

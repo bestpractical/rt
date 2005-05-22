@@ -77,6 +77,10 @@
 </td>
 </tr>
 <tr>
+<td class="label"><&|/l&>Pattern</&></td>
+<td><input name="Pattern" VALUE="<%$CustomFieldObj->Pattern%>" SIZE=20></td></tr>
+</tr>
+<tr>
 <td class="label">&nbsp;</td>
 <td>
 <input type="HIDDEN" name="SetEnabled" value="1">
@@ -85,7 +89,7 @@
 </tr>
 </table>
 <br/>
-% if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
+% if ($CustomFieldObj->Id && $CustomFieldObj->IsSelectionType) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -124,7 +128,7 @@ else {
         $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why =>  loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
 
-        my @attribs = qw( Name TypeComposite LookupType Description);
+        my @attribs = qw( Pattern Name TypeComposite LookupType Description);
         my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
                                            Object        => $CustomFieldObj,
                                            ARGSRef       => \%ARGS );

@@ -43,34 +43,39 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%if ($Members->Count == 0 ) {
-<ul>
-<li><i><&|/l&>none</&></i>
-% } else {
-<i><&|/l&>(Check box to delete)</&></i><br><br/>
-<ul>
-% while (my $watcher=$Members->Next) {
-<li>
-<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" value="1"
-        UNCHECKED>
-% if ($watcher->MemberObj->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
-% } else {
-<a href="<%$RT::WebPath%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
+% while ($Values and my $value = $Values->Next and $Multiple) {
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><% $value->Content %>
+<br>
 % }
-<%$watcher->MemberObj->Object->Name%></a>
-% }
-% }
-</ul>
+% (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
+% my $name = $NamePrefix . $CustomField->Id . "-Values";
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
 
-<%INIT>
-my $Members = $Watchers->MembersObj;
-</%INIT>
-
+<span id="<% $name %>_Container">
+<input name="<% $name %>" value="<% $Default %>" type="text" id="<% $name %>" autocomplete="off" />
+<span id="<% $name %>_Button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
+% my $CFVs = $CustomField->Values;
+% while ($CFVs and my $value = $CFVs->Next ) {
+        <option value="<%$value->Name%>"><% $value->Name%></option>
+% }
+</select>
+<script language="javascript"><!--
+var ComboBoxes =  new Array('<% $name %>');
+if ( typeof( window.addEventListener ) != "undefined" ) {
+    window.addEventListener("load", ComboBox_Init, false);
+} else if ( typeof( window.attachEvent ) != "undefined" ) {
+    window.attachEvent("onload", ComboBox_Init);
+} else {
+    ComboBox_Init();
+}
+//--></script>
 <%ARGS>
-$QueueObj => undef
-$Watchers => undef
+$Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Default => undef
+$Values => undef
+$Multiple => 0
+$Rows => undef
+$MaxValues => undef
 </%ARGS>
-
-
-

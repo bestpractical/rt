@@ -100,7 +100,7 @@ value="<% $ARGS{UpdateCc} %>"><br/>
 <td colspan="5">
 <&|/l&>Check box to delete</&><br/>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><br/>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>" value="1"><%$attach_name%><br />
 % } # end of foreach
 </td>
 </tr>

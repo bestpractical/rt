@@ -60,6 +60,8 @@ use RT::ObjectCustomFieldValues;
     Text => 1,     # loc
     Image => 1,    # loc
     Binary => 1,   # loc
+    Combobox => 1,	# loc
+    Cascaded => 1,	# loc
 );
 
 
@@ -166,6 +168,12 @@ sub Create {
         }
 	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
     }
+
+    my ($ok, $msg) = $self->_IsValidRegex($args{'Pattern'});
+    if (!$ok) {
+        return (0, $self->loc("Invalid pattern: [_1]", $msg));
+    }
+
     my $rv = $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
@@ -528,6 +536,22 @@ sub Types {
 
 # }}}
 
+# {{{ IsSelectionType
+
+=head2 IsSelectionType 
+
+Retuns a boolean value indicating whether the C<Values> method makes sense
+to this Custom Field.
+
+=cut
+
+sub IsSelectionType {
+    my $self = shift;
+    $self->Type =~ /(?:Select|Combobox|Cascaded)/;
+}
+
+# }}}
+
 
 =head2 FriendlyType [TYPE, MAX_VALUES]
 
@@ -561,6 +585,21 @@ my %FriendlyTypes = (
         'Upload multiple files',	# loc
         'Upload one file',		# loc
         'Upload up to [_1] files',	# loc
+    ],
+    Select => [
+        'Select multiple values',	# loc
+        'Select one value',		# loc
+        'Select up to [_1] values',	# loc
+    ],
+    Combobox => [
+        'Combobox: Select or enter multiple values',	# loc
+        'Combobox: Select or enter one value',		# loc
+        'Combobox: Select or enter up to [_1] values',	# loc
+    ],
+    Cascaded => [
+        'Cascaded: Select multiple cascaded values',	# loc
+        'Cascaded: Select one cascaded value',		# loc
+        'Cascaded: Select up to [_1] cascaded values',	# loc
     ],
 );
 
@@ -626,6 +665,50 @@ sub SetType {
 	$self->SetMaxValues($1 ? 1 : 0);
     }
     $self->SUPER::SetType($type);
+}
+
+=head2 SetPattern STRING
+
+Takes a single string representing a regular expression.  Performs basic
+validation on that regex, and sets the C<Pattern> field for the CF if it
+is valid.
+
+=cut
+
+sub SetPattern {
+    my $self = shift;
+    my $regex = shift;
+
+    my ($ok, $msg) = $self->_IsValidRegex($regex);
+    if ($ok) {
+        return $self->SUPER::SetPattern($regex);
+    }
+    else {
+        return (0, $self->loc("Invalid pattern: [_1]", $msg));
+    }
+}
+
+=head2 _IsValidRegex(Str $regex) returns (Bool $success, Str $msg)
+
+Tests if the string contains an invalid regex.
+
+=cut
+
+sub _IsValidRegex {
+    my $self  = shift;
+    my $regex = shift or return (1, 'valid');
+
+    local $^W; local $@;
+    $SIG{__DIE__} = sub { 1 };
+    $SIG{__WARN__} = sub { 1 };
+
+    if (eval { qr/$regex/; 1 }) {
+        return (1, 'valid');
+    }
+
+    my $err = $@;
+    $err =~ s{[,;].*}{};    # strip debug info from error
+    return (0, $err);
 }
 
 # {{{ SingleValue
@@ -798,7 +881,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/Text-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:Text|Cascade|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 LookupTypes
@@ -940,6 +1023,10 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    unless ( $self->_MatchPattern($args{Content}) ) {
+        return ( 0, $self->loc('Invalid input') );
+    }
+
     $RT::Handle->BeginTransaction;
 
     my $current_values = $self->ValuesForObject($obj);
@@ -987,6 +1074,15 @@ sub AddValueForObject {
     return ($val);
 
 }
+
+sub _MatchPattern {
+    my $self = shift;
+    my $regex = $self->Pattern;
+
+    return 1 if !length($regex);
+    return ($_[0] =~ $regex);
+}
+
 
 # }}}
 
