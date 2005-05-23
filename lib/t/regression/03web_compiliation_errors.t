@@ -15,9 +15,11 @@ my $agent = WWW::Mechanize->new();
 
 $agent->cookie_jar($cookie_jar);
 
+use RT;
+RT::LoadConfig;
 
 # get the top page
-my $url = "http://localhost".$RT::WebPath."/";
+my $url = $RT::WebURL;
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page");

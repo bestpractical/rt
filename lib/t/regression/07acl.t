@@ -29,10 +29,10 @@ $agent->cookie_jar($cookie_jar);
 
 
 # get the top page
-my $url = "http://localhost".$RT::WebPath."/";
+my $url = $RT::WebURL;
 $agent->get($url);
 
-is ($agent->{'status'}, 200, "Loaded a page - http://localhost".$RT::WebPath);
+is ($agent->{'status'}, 200, "Loaded a page - $RT::WebURL");
 # {{{ test a login
 
 # follow the link marked "Login"
