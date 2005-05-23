@@ -284,7 +284,7 @@ Set($WebPath , "");
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-Set($WebBaseURL , "http://RT::WebBaseURL.not.configured:80");
+Set($WebBaseURL , "http://localhost");
 
 Set($WebURL , $WebBaseURL . $WebPath . "/");
 
