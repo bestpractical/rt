@@ -1052,6 +1052,12 @@ ok ($addid, $addmsg);
 ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t3->id));
 
 ok ($addid, $addmsg);
+my $link = RT::Link->new($RT::SystemUser);
+my ($rv, $msg) = $link->Load($addid);
+ok ($rv, $msg);
+ok ($link->LocalTarget == $t3->id, "Link LocalTarget is correct");
+ok ($link->LocalBase   == $t1->id, "Link LocalBase   is correct");
+
 ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
 ok (!$t1->HasUnresolvedDependencies( Type => 'blah' ), "Ticket ".$t1->Id." has no unresolved blahs");
 ok ($t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has unresolved approvals");
@@ -1300,7 +1306,7 @@ sub _AddLink {
     my $TransString =
       "Record $args{'Base'} $args{Type} record $args{'Target'}.";
 
-    return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
+    return ( $linkid, $self->loc( "Link created ([_1])", $TransString ) );
 }
 
 # }}}
