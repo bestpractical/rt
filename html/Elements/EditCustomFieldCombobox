@@ -49,6 +49,7 @@
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
 % my $name = $NamePrefix . $CustomField->Id . "-Values";
+<nobr>
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
 
 <span id="<% $name %>_Container">
@@ -69,6 +70,7 @@ if ( typeof( window.addEventListener ) != "undefined" ) {
     ComboBox_Init();
 }
 //--></script>
+</nobr>
 <%ARGS>
 $Object => undef
 $CustomField => undef
