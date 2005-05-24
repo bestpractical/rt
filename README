@@ -29,7 +29,7 @@ o   A supported SQL database
 
         Currently supported:  Mysql 4.0.13 or later with InnoDB support.
                               Postgres 7.2 or later.
-                              Oracle 9iR2.
+                              Oracle 9iR2 or later.
                               SQLite 3.0. (Not recommended for production)
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
