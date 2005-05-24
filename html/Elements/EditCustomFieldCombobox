@@ -62,14 +62,7 @@
 % }
 </select>
 <script language="javascript"><!--
-var ComboBoxes =  new Array('<% $name %>');
-if ( typeof( window.addEventListener ) != "undefined" ) {
-    window.addEventListener("load", ComboBox_Init, false);
-} else if ( typeof( window.attachEvent ) != "undefined" ) {
-    window.attachEvent("onload", ComboBox_Init);
-} else {
-    ComboBox_Init();
-}
+ComboBox_InitWith('<% $name %>');
 //--></script>
 </nobr>
 <%ARGS>
