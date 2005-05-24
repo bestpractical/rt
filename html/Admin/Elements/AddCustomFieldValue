@@ -57,10 +57,13 @@
 <&|/l&>Description</&>:<br>
 <input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-new-Description">
 </TD>
+% if ($CustomField->Type ne 'Combobox') {
 <TD><small>
 <&|/l&>Category</&>:<br>
 <input type="text" size=10 name="CustomField-<%$CustomField->Id%>-Value-new-Category">
-</TD></TR>
+</TD>
+% }
+</TR>
 </TABLE>
 
 <%init>
