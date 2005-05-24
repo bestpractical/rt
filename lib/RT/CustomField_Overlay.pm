@@ -1002,7 +1002,7 @@ sub AddValueForObject {
     }
 
     unless ( $self->MatchPattern($args{Content}) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->Pattern) );
+        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
     $RT::Handle->BeginTransaction;
@@ -1070,6 +1070,31 @@ sub MatchPattern {
 
     return 1 if !length($regex);
     return ($_[0] =~ $regex);
+}
+
+
+# }}}
+
+# {{{ FriendlyPattern
+
+=head2 FriendlyPattern
+
+Prettify the pattern of this custom field, by taking the text in C<(?#text)>
+and localizing it.
+
+=cut
+
+sub FriendlyPattern {
+    my $self = shift;
+    my $regex = $self->Pattern;
+
+    return '' if !length($regex);
+    if ($regex =~ /\(\?#([^)]*)\)/) {
+        return '[' . $self->loc($1) . ']';
+    }
+    else {
+        return $regex;
+    }
 }
 
 

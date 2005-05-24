@@ -20,7 +20,7 @@ while (my $CF = $CustomFields->Next) {
     next if $CF->MatchPattern($value);
     $m->notes(
         ('InvalidField-' . $CF->Id)
-            => (loc("Input must match [_1]", $pattern))
+            => (loc("Input must match [_1]", $CF->FriendlyPattern))
     );
     $valid = 0;
 }

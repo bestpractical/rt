@@ -78,7 +78,18 @@
 </tr>
 <tr>
 <td class="label"><&|/l&>Pattern</&></td>
-<td><input name="Pattern" VALUE="<%$CustomFieldObj->Pattern%>" SIZE=20></td></tr>
+<td>
+<& /Widgets/ComboBox,
+    Name    => 'Pattern',
+    Default => $CustomFieldObj->Pattern,
+    Size    => 20,
+    Values  => [
+        '(?#Mandatory).',
+        '(?#Digits)^[\d.]+$',
+        '(?#Year)^[12]\d{3}$',
+    ],
+&>
+</td></tr>
 </tr>
 <tr>
 <td class="label">&nbsp;</td>

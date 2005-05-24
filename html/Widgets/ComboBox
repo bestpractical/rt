@@ -47,7 +47,7 @@
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
 
 <span id="<% $Name %>_Container">
-<input name="<% $Name %>" id="<% $Name %>" value="<% $Default %>" type="text" autocomplete="off" />
+<input name="<% $Name %>" id="<% $Name %>" value="<% $Default %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
 <br style="display: none"><span id="<% $Name %>_Button"></span></span><select name="List-<% $Name %>" id="<% $Name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " rows="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
@@ -60,6 +60,7 @@ ComboBox_InitWith('<% $Name %>');
 </nobr>
 <%ARGS>
 $Name
+$Size    => undef
 $Rows    => 5
 $Default => ''
 @Values  => ()
