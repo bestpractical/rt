@@ -164,6 +164,7 @@ Apache::Session 1.53
 XML::RSS 1.05
 HTTP::Server::Simple 0.07
 HTTP::Server::Simple::Mason 0.03
+Text::WikiFormat
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];
