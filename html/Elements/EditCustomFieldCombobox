@@ -54,8 +54,9 @@
 
 <span id="<% $name %>_Container">
 <input name="<% $name %>" value="<% $Default %>" type="text" id="<% $name %>" autocomplete="off" />
-<span id="<% $name %>_Button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
+<br style="display: none"><span id="<% $name %>_Button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
 % my $CFVs = $CustomField->Values;
+<option style="display: none" value="">-</option>
 % while ($CFVs and my $value = $CFVs->Next ) {
         <option value="<%$value->Name%>"><% $value->Name%></option>
 % }
