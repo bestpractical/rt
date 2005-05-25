@@ -51,7 +51,7 @@ o    Various and sundry perl modules
 
 	The tool supplied with RT uses Perl's CPAN system
 	(http://www.cpan.org) to install modules. Some operating
-	systems package all or some of the modules required and
+	systems package all or some of the modules required, and
 	you may be better off installing the modules that way.
 
 
