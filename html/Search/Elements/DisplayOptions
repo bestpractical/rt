@@ -62,7 +62,7 @@
 % if ($field =~ /^$OrderBy$/i) {
 SELECTED
 % }
-><%$field%></option>
+><&|/l&><%$field%></&></option>
 % }
 </select>
 <select name="Order">
