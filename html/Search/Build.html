@@ -253,7 +253,7 @@ $Query  = "";
 # Build the optionlist from the tree, so we can do additions and movements based on it
 $optionlist = build_array( \$Query, \@clauses, $tree, \@options, \%queues );
 
-my @current_values = @options[@clauses];
+my @current_values = grep { defined } @options[@clauses];
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
