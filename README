@@ -22,8 +22,7 @@ o   Perl 5.8.3 or later (http://www.perl.com).
 
        Perl versions prior to 5.8.3 contain bugs that could result
        in data corruption. We recommend strongly that you use 5.8.3
-       or newer. RT may function with perl 5.8.0 and later, but it
-       is unsupported in that configuration.
+       or newer.
 
 o   A supported SQL database
 
@@ -163,7 +162,7 @@ want to read a more comprehensive installation guide at:
     
 10   Set up users, groups, queues, scrips and access control.
 
-    Until you do this, RT will not be able to send or receive e-mail,
+    Until you do this, RT will not be able to send or receive email,
     nor will it be more than marginally functional.  This is not an
     optional step.
 
@@ -235,9 +234,9 @@ Apache configuration file telling it about RT:
 SETTING UP THE MAIL GATEWAY 
 ---------------------------
 
-To let e-mail flow to your RT server, you need to add a few lines of
+To let email flow to your RT server, you need to add a few lines of
 configuration to your mail server's "aliases" file. These lines "pipe"
-incoming e-mail messages from your mail server to RT.
+incoming email messages from your mail server to RT.
 
 Add the following lines to /etc/aliases (or your local equivalent) on your mail server:
 
@@ -245,7 +244,7 @@ rt:         "|/opt/rt3/bin/rt-mailgate --queue general --action correspond --url
 rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
 
 You'll need to add similar lines for each queue you want to be able
-to send e-mail to. To find out more about how to configure RT's e-mail
+to send email to. To find out more about how to configure RT's email
 gateway, type:
 
        perldoc /opt/rt3/bin/rt-mailgate
@@ -261,7 +260,7 @@ are available at http://www.bestpractical.com or by writing to
 <sales@bestpractical.com>. 
 
 If you're interested in having RT extended or customized or would like more
-information about commercial support options, please send e-mail to 
+information about commercial support options, please send email to 
 <sales@bestpractical.com> to discuss rates and availability.
 
 
