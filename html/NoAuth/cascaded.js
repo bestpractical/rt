@@ -7,7 +7,7 @@ function filter_cascade (id, val) {
         var style = children[i].style;
         if (!style) { continue };
         if (val == '') {
-            style.display = children[i].label ? 'none' : 'block';
+            style.display = 'block';
             continue;
         }
         if (children[i].label.substr(0, val.length) == val) {
