@@ -117,10 +117,10 @@ $Rows => undef
             </optgroup>
 % }
 <%args>
-$CustomField
-$Default
-$Values
-$SelectedRef
-$CategoryRef
+$CustomField => undef
+$Default => undef
+$Values => undef
+$SelectedRef => undef
+$CategoryRef => undef
 </%args>
 </%method>

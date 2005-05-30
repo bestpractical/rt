@@ -72,12 +72,10 @@ if ($m->request_comp->attr_exists('AutoFlush')) {
 # This code canonicalizes time inputs in hours into minutes
 my @TimeUnitFields = grep { /-TimeUnits$/ } keys %ARGS;
 foreach my $field (@TimeUnitFields) { 
-    $RT::Logger->crit("Checking $field");
     next unless ($field =~ /^(.*?)-TimeUnits$/i);
     my $local = $1;
     if ($ARGS{$field} =~ /hours/i) {
         $ARGS{$local} *= 60;
-        $RT::Logger->crit("Multiplied $local by 60");
     }
     delete $ARGS{$field};
 }
