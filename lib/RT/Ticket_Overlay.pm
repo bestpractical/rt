@@ -151,6 +151,7 @@ use RT::Date;
 use RT::CustomFields;
 use RT::Tickets;
 use RT::Transactions;
+use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
@@ -3582,6 +3583,26 @@ sub HasRight {
 # }}}
 
 # }}}
+
+=head2 Reminders
+
+Return the Reminders object for this ticket. (It's an RT::Reminders object.)
+It isn't acutally a searchbuilder collection itself.
+
+=cut
+
+sub Reminders {
+    my $self = shift;
+    
+    unless ($self->{'__reminders'}) {
+        $self->{'__reminders'} = RT::Reminders->new($self->CurrentUser);
+        $self->{'__reminders'}->Ticket($self->id);
+    }
+    return $self->{'__reminders'};
+
+}
+
+
 
 # {{{ sub Transactions 
 
