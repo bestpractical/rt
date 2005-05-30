@@ -348,7 +348,7 @@ Returns an HTTP url to access the base of this link
 sub BaseAsHREF {
   my $self = shift;
   $RT::Logger->crit("Link::BaseAsHREF deprecated in favor of ->BaseURI->AsHREF");
-  return $self->BaseURI->HREF;
+  return $self->BaseURI->AsHREF;
 }
 # }}}
 
@@ -363,7 +363,7 @@ return an HTTP url to access the target of this link
 sub TargetAsHREF {
   my $self = shift;
   $RT::Logger->crit("Link::TargetAsHREF deprecated in favor of ->TargetURI->AsHREF");
-  return $self->TargetURI->HREF;
+  return $self->TargetURI->AsHREF;
 }
 # }}}
 
