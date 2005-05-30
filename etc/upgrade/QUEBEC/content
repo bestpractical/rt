@@ -24,9 +24,9 @@
 	  { type => 'component',  name => 'QuickCreate'},
 	],
         'summary' =>
-	[ { type => 'component', name => 'Quicksearch' },
-	  { type => 'component', name => 'MySupportQueues' },
-	  { type => 'component', name => 'MyAdminQueues' },
+	[ 
+	  { type => 'component', name => 'MyReminders' },
+          { type => 'component', name => 'Quicksearch' },
 	  { type => 'component', name => 'RefreshHomepage' },
 	]
     },

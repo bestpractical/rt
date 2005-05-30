@@ -629,6 +629,22 @@ select optgroup option {
 }
 
 
+div.horizontal {
+        float: left;
+        display: block;
+        margin: 0.5em;
+
+}
+
+
+label.horizontal {
+        display: block;
+        margin: 0;
+
+}
+
+
+
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
 %#   "latter specified rule wins"

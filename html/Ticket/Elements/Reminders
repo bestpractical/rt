@@ -1,0 +1,99 @@
+<%args>
+$Ticket => undef
+$id => undef
+$ShowCompleted => 0
+</%args>
+<%init>
+
+$Ticket = LoadTicket($id) if ($id);
+
+my $request_args = $m->request_args();
+
+
+my $reminder_collection = $Ticket->Reminders->Collection;
+
+while (my $reminder = $reminder_collection->Next) {
+    # If they've just checked the box, make sure we resolve it
+   if ($reminder->Status ne 'resolved'   
+       && $request_args->{'Complete-Reminder-'.$reminder->id}) {
+        $reminder->SetStatus('resolved');
+   }
+   elsif ($reminder->Status eq 'resolved' && ! $request_args->{'Complete-Reminder-'.$reminder->id}) {
+           $reminder->SetStatus('open');
+              }
+
+}
+
+
+foreach my $arg (keys %$request_args) {
+    if ($arg =~ /Complete-Reminder-(\d+)$/) {
+        my $reminder = LoadTicket($1);
+    }
+
+
+}
+
+
+if ( $request_args->{'NewReminder-Subject'} ) {
+    my $due_obj = RT::Date->new( $session{'CurrentUser'} );
+    my $date    = Time::ParseDate::parsedate(
+        $request_args->{'NewReminder-Due'},
+        UK            => $RT::DateDayBeforeMonth,
+        PREFER_PAST   => 0,
+        PREFER_FUTURE => 1
+    );
+    $due_obj->Set( Value => $date, Format => 'unix' );
+    my ( $id, $msg, $txnid ) = $Ticket->Reminders->Add(
+
+        Subject => $request_args->{'NewReminder-Subject'},
+        Owner   => $request_args->{'NewReminder-Owner'},
+        Due     => $due_obj->ISO
+    );
+}
+
+# We've made changes, let's reload our search
+
+$reminder_collection = $Ticket->Reminders->Collection; 
+</%init>
+<input type="hidden" name="id" value="<%$Ticket->id%>">
+% while (my $reminder = $reminder_collection->Next) {
+% next if ($reminder->Status eq 'resolved' && !$ShowCompleted);
+<& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
+% }
+<br />
+<br />
+<&|/l&>New reminder:</&><br />
+<& SELF:NewReminder, Ticket => $Ticket &>
+
+<%method NewReminder>
+<%args>
+$Ticket
+</%args>
+
+<div class="horizontal">
+<label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label> 
+<input type="text" size="15" name="NewReminder-Subject">
+</div>
+<div class="horizontal">
+<label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
+<& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj &>
+</div>
+<div class="horizontal">
+<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&>:</label> 
+<input type="text" size="10" name="NewReminder-Due">
+</div>
+</%method>
+
+<%method ShowEntry>
+<%args>
+$Reminder
+</%args>
+<input
+    type="checkbox" 
+    name="Complete-Reminder-<%$Reminder->id%>" 
+    <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
+/> 
+    <%$Reminder->Subject%> &bull; 
+    <%$Reminder->OwnerObj->Name%>
+    <%$Reminder->DueObj->Unix>0  ? "&bull; ". $Reminder->DueObj->AgeAsString : '' |n%><br/>
+</%method>
