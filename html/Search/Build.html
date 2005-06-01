@@ -472,7 +472,7 @@ sub build_array {
     my $tree       = shift;
     my ( $keys, $queues ) = @_;
     my $i = 0;
-    my $optionlist;
+    my @optionlist;
     my $depth = 0;
     my %parens;
 
@@ -506,6 +506,10 @@ sub build_array {
             else {
                 $selected = "";
             }
+            
+            # These two variables are for display in the optionlists only.
+            my $before_parens = '';
+            my $after_parens = '';
 
             foreach my $p ( keys %parens ) {
                 if ( $p > $_tree->getDepth ) {
@@ -514,11 +518,6 @@ sub build_array {
                 }
             }
 
-            $optionlist .=
-                "<option value=$i $selected>"
-              . ( "&nbsp;" x 5 x ( $_tree->getDepth() - 1 ) )
-              . $m->interp->apply_escapes( $str, 'h' )
-              . "</option>\n";
             my $parent = $_tree->getParent();
             if (   !( $parent->isRoot || $parent->getParent()->isRoot )
                 && !ref( $parent->getNodeValue() ) )
@@ -534,6 +533,13 @@ sub build_array {
                 $$Query .= ')';
                 $parens{$depth}--;
             }
+            
+            push @optionlist, {
+                TEXT     => $m->interp->apply_escapes($str, 'h'),
+                INDEX    => $i,
+                SELECTED => $selected,
+                DEPTH    => $_tree->getDepth() - 1,
+            };
 
             $i++;
         }
@@ -543,7 +549,9 @@ sub build_array {
         $$Query .= ") " x $parens{$p};
     }
 
-    return $optionlist;
+    return join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
+                            . ("&nbsp;" x (5 * $_->{DEPTH}))
+                            . $_->{TEXT} . qq(</option>) } @optionlist;
 
 }
 
