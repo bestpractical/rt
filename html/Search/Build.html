@@ -43,6 +43,26 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+%#
+%# Data flow here:
+%#   The page receives a Query from the previous page, and maybe arguments
+%#   corresponding to actions.  (If it doesn't get a Query argument, it pulls
+%#   one out of the session hash.  Also, it could be getting just a raw query from
+%#   Build/Edit.html (Advanced).)
+%#
+%#   After doing some stuff with default arguments and saved searches, the ParseQuery
+%#   function (which is similar to, but not the same as, _parser in RT/Tickets_Overlay_SQL)
+%#   converts the Query into a RT::Interface::Web::QueryBuilder::Tree.  This mason file
+%#   then adds stuff to or modifies the tree based on the actions that had been requested
+%#   by clicking buttons.  It then calls GetQueryAndOptionList on the tree to generate
+%#   the SQL query (which is saved as a hidden input) and the option list for the Clauses
+%#   box in the top right corner.
+%#
+%#   Worthwhile refactoring: the tree manipulation code for the actions could use some cleaning
+%#   up.  The node-adding code is different in the "add" actions from in ParseQuery, which leads
+%#   to things like ParseQuery correctly not quoting numbers in numerical fields, while the "add"
+%#   action does quote it (this breaks SQLite).
+%#
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
