@@ -362,7 +362,7 @@ msgstr "(Syötä tapausten numerot tai www-osoitteet, välilyönneillä erotettu
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
+msgid "(If left blank, will default to %1)"
 msgstr "(Jos jätetään tyhjäksi, palaa arvoon %1)"
 
 #: NOT FOUND IN SOURCE

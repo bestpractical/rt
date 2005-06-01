@@ -346,7 +346,7 @@ msgstr ""
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
+msgid "(If left blank, will default to %1)"
 msgstr ""
 
 #: html/Admin/Elements/EditCustomFields:74 html/Admin/Elements/ListGlobalCustomFields:53

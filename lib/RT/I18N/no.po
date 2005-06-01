@@ -380,7 +380,7 @@ msgstr "(Skriv inn referansenummer eller URler, separert med mellomrom)"
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
+msgid "(If left blank, will default to %1)"
 msgstr "(Settes til standard %1 hvis blank)"
 
 #: NOT FOUND IN SOURCE

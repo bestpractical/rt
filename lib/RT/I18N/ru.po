@@ -368,8 +368,8 @@ msgstr "(Введите идентификаторы или ссылки на з
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
-msgstr "(Если пустое, то по-умолчанию равно %1"
+msgid "(If left blank, will default to %1)"
+msgstr "(Если пустое, то по-умолчанию равно %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"

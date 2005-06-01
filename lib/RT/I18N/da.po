@@ -354,8 +354,8 @@ msgstr "(Indtast ticket ids eller URLSs, separeret af mellemrum)"
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
-msgstr "(Hvis ikke angivet vil defaulte til %1"
+msgid "(If left blank, will default to %1)"
+msgstr "(Hvis ikke angivet vil defaulte til %1)"
 
 #: html/Admin/Elements/EditCustomFields:74 html/Admin/Elements/ListGlobalCustomFields:53
 msgid "(No custom fields)"

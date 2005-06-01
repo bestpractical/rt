@@ -405,7 +405,7 @@ msgstr "(键入申请单编号或网址，以空白分隔)"
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
+msgid "(If left blank, will default to %1)"
 msgstr "(如果留白, 则预设为 %1)"
 
 #: NOT FOUND IN SOURCE
