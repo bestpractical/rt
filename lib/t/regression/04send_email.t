@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 42; # I made this number up
+use Test::More tests => 137;
 use RT;
 RT::LoadConfig();
 RT::Init;

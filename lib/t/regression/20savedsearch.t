@@ -1,5 +1,5 @@
 use RT;
-use Test::More test => 51; # I made this number up
+use Test::More tests => 26;
 use RT::User;
 use RT::Group;
 use RT::Ticket;
