@@ -158,6 +158,33 @@ sub GetQueryAndOptionList {
     return (join ' ', map { $_->{TEXT} } @$optionlist), $optionlist;
 }
 
+sub PruneChildlessAggregators {
+    my $self = shift;
+
+
+    $self->TraversePrePost(
+        sub {
+        },
+        sub {
+            my $node = shift;
+
+            return if $node->isRoot or $node->getParent->isRoot;
+            
+            # We're only looking for aggregators (AND/OR)
+            return if ref $node->getNodeValue;
+            
+            return if $node->getChildCount != 0;
+            
+            # OK, this is a childless aggregator.  Remove self.
+            
+            $node->getParent->removeChild($node);
+            
+            # Deal with circular refs
+            $node->DESTROY;
+        }
+    );
+}
+
 
 eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm});

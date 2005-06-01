@@ -449,9 +449,8 @@ elsif ( $ARGS{"Toggle"} ) {
         push( @actions, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
-elsif ( $ARGS{"Clear"} ) {
-    $tree = RT::Interface::Web::QueryBuilder::Tree->new;
-}
+
+$tree->PruneChildlessAggregators;
 
 # }}}
 
