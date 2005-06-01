@@ -514,6 +514,11 @@ sub build_array {
             foreach my $p ( keys %parens ) {
                 if ( $p > $_tree->getDepth ) {
                     $$Query .= ')' x $parens{$p};
+                    # The fact that I am writing this line implies
+                    # that the whole function should be rewritten, because
+                    # it ought to be possible to have figured out this
+                    # information earlier:
+                    $optionlist[-1]{TEXT} .= ')' x $parens{$p};
                     $parens{$p}--;
                 }
             }
@@ -524,6 +529,7 @@ sub build_array {
             {
                 if ( $_tree->getIndex() == 0 ) {
                     $$Query .= '(';
+                    $before_parens .= '(';
                     $parens{ $_tree->getDepth }++;
                 }
             }
@@ -531,11 +537,12 @@ sub build_array {
 
             if ( $_tree->getDepth < $depth ) {
                 $$Query .= ')';
+                $after_parens .= ')';
                 $parens{$depth}--;
             }
             
             push @optionlist, {
-                TEXT     => $m->interp->apply_escapes($str, 'h'),
+                TEXT     => $before_parens . $str . $after_parens,
                 INDEX    => $i,
                 SELECTED => $selected,
                 DEPTH    => $_tree->getDepth() - 1,
@@ -547,11 +554,21 @@ sub build_array {
 
     foreach my $p ( keys %parens ) {
         $$Query .= ") " x $parens{$p};
+        $optionlist[-1]{TEXT} .= ") " x $parens{$p};
     }
+    
+    my $should_be_query = join ' ', map { $_->{TEXT} } @optionlist;
+    
+#   So, $should_be_query *ought* to be the same as $$Query but calculated in a much
+#   simpler way, but this has not been tested enough to make sure, so I won't commit it. 
+#   my $sbq_tmp = $should_be_query;
+#   my $q_tmp = $$Query;
+#   $sbq_tmp =~ tr/ //d; $q_tmp =~ tr/ //d;
+#   $RT::Logger->crit("query check: " . ($q_tmp eq $sbq_tmp ? 'yay' : 'nay') );
 
     return join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                             . ("&nbsp;" x (5 * $_->{DEPTH}))
-                            . $_->{TEXT} . qq(</option>) } @optionlist;
+                            . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @optionlist;
 
 }
 
