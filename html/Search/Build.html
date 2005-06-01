@@ -458,10 +458,9 @@ elsif ( $ARGS{"Clear"} ) {
 
 # {{{ Rebuild $Query based on the additions / movements
 $Query      = "";
-@options    = ();
 %queues     = ();
 my $optionlist =
-  build_array( \$Query, \@current_values, $tree, \@options, \%queues );
+  build_array( \$Query, \@current_values, $tree, \%queues );
 
 # This function returns an array ref of the nodes of the tree in depth-first
 # order which correspond to options in the "clauses" multi-select box.
@@ -483,7 +482,8 @@ sub build_array {
     my $Query      = shift;
     my $values_ref = shift;
     my $tree       = shift;
-    my ( $keys, $queues ) = @_;
+    my $queues     = shift;
+    
     my $i = 0;
     my @optionlist;
     my $depth = 0;
@@ -495,7 +495,6 @@ sub build_array {
 
             return if $_tree->getParent->isRoot();
 
-            push @$keys, $_tree;
             my $clause = $_tree->getNodeValue();
             my $str;
             my $ea = $_tree->getParent()->getNodeValue();
