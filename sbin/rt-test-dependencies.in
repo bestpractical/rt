@@ -52,7 +52,6 @@
 use strict;
 no warnings qw(numeric redefine);
 use Getopt::Long;
-use CPAN;
 my %args;
 my %deps;
 GetOptions(
@@ -310,13 +309,13 @@ sub test_dep {
 
 sub resolve_dep {
     my $module = shift;
-    use CPAN;
-    CPAN::Shell->install($module);		
+    system( qq[@PERL@ -MCPAN -e'install("$module")'] );
 }
 
 sub download_mods {
     my %modules;
-
+    use CPAN;
+    
     foreach my $key (keys %deps) {
         my @deps = (@{$deps{$key}});
         while (@deps) {
