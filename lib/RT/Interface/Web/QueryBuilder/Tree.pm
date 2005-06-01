@@ -50,6 +50,17 @@ use warnings;
 
 use base qw/Tree::Simple/;
 
+=head1 NAME
+
+  RT::Interface::Web::QueryBuilder::Tree - subclass of Tree::Simple used in Query Builder
+
+=head1 DESCRIPTION
+
+This class provides support functionality for the Query Builder (Search/Build.html).
+It is a subclass of L<Tree::Simple>.
+
+=head1 METHODS
+
 =head2 TraversePrePost PREFUNC POSTFUNC
 
 Traverses the tree depth-first.  Before processing the node's children,
@@ -102,6 +113,19 @@ sub GetReferencedQueues {
     return $queues;
 }
 
+=head2 GetQueryAndOptionList SELECTED_NODES
+
+Given an array reference of tree nodes that have been selected by the user,
+traverses the tree and returns the equivalent SQL query and a list of hashes
+representing the "clauses" select option list.  Each has contains the keys
+TEXT, INDEX, SELECTED, and DEPTH.  TEXT is the displayed text of the option
+(including parentheses, not including indentation); INDEX is the 0-based
+index of the option in the list (also used as its CGI parameter); SELECTED
+is either 'SELECTED' or '', depending on whether the node corresponding
+to the select option was in the SELECTED_NODES list; and DEPTH is the
+level of indentation for the option.
+
+=cut 
 
 sub GetQueryAndOptionList {
     my $self           = shift;
@@ -158,9 +182,15 @@ sub GetQueryAndOptionList {
     return (join ' ', map { $_->{TEXT} } @$optionlist), $optionlist;
 }
 
+=head2 PruneChildLessAggregators
+
+If tree manipulation has left it in a state where there are ANDs, ORs,
+or parenthesizations with no children, get rid of them.
+
+=cut
+
 sub PruneChildlessAggregators {
     my $self = shift;
-
 
     $self->TraversePrePost(
         sub {
@@ -183,6 +213,27 @@ sub PruneChildlessAggregators {
             $node->DESTROY;
         }
     );
+}
+
+=head2 GetDisplayedNodes
+
+This function returns a list of the nodes of the tree in depth-first
+order which correspond to options in the "clauses" multi-select box.
+In fact, it's all of them but the root and its child.
+
+=cut
+
+sub GetDisplayedNodes {
+    my $self = shift;
+    my @lines;
+
+    $self->traverse(sub {
+        my $node = shift;
+
+        push @lines, $node unless $node->isRoot or $node->getParent->isRoot;
+    });
+
+    return @lines;
 }
 
 

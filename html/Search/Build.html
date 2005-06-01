@@ -247,7 +247,7 @@ if ( $actions[0] ) {
 
 $Query  = "";
 
-my @options = get_displayed_nodes($tree);
+my @options = $tree->GetDisplayedNodes;
 
 my @current_values = grep { defined } @options[@clauses];
 
@@ -466,21 +466,6 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
 
 
 
-# This function returns an array ref of the nodes of the tree in depth-first
-# order which correspond to options in the "clauses" multi-select box.
-# In fact, it's all of them but the top-level ones.
-sub get_displayed_nodes {
-    my $tree = shift;
-    my @keys;
-    
-    $tree->traverse(sub {
-        my $node = shift;
-        
-        push @keys, $node unless $node->getParent->isRoot;
-    });
-    
-    return @keys;
-}
 
 use Regexp::Common qw /delimited/;
 
