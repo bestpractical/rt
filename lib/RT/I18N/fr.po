@@ -380,7 +380,7 @@ msgstr "(Entrer le ID du ticket ou le URL, s/par/ par des espaces)"
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
 msgid "(If left blank, will default to %1)"
-msgstr "(Si laissé à blanc, valeur par défaut : )"
+msgstr "(Si laissé à blanc, valeur par défaut : %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
