@@ -245,13 +245,10 @@ if ( $actions[0] ) {
     $m->abort();
 }
 
-my @options;
-my $optionlist;
 $Query  = "";
 %queues = ();
 
-# Build the optionlist from the tree, so we can do additions and movements based on it
-$optionlist = build_array( \$Query, \@clauses, $tree, \@options, \%queues );
+my @options = get_displayed_nodes($tree);
 
 my @current_values = grep { defined } @options[@clauses];
 
@@ -463,8 +460,24 @@ elsif ( $ARGS{"Clear"} ) {
 $Query      = "";
 @options    = ();
 %queues     = ();
-$optionlist =
+my $optionlist =
   build_array( \$Query, \@current_values, $tree, \@options, \%queues );
+
+# This function returns an array ref of the nodes of the tree in depth-first
+# order which correspond to options in the "clauses" multi-select box.
+# In fact, it's all of them but the top-level ones.
+sub get_displayed_nodes {
+    my $tree = shift;
+    my @keys;
+    
+    $tree->traverse(sub {
+        my $node = shift;
+        
+        push @keys, $node unless $node->getParent->isRoot;
+    });
+    
+    return [ @keys ];
+}
 
 sub build_array {
     my $Query      = shift;
