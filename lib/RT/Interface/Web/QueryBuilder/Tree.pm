@@ -50,24 +50,112 @@ use warnings;
 
 use base qw/Tree::Simple/;
 
-=head2 traverse_pre_post PREFUNC POSTFUNC
+=head2 TraversePrePost PREFUNC POSTFUNC
 
 Traverses the tree depth-first.  Before processing the node's children,
 calls PREFUNC with the node as its argument; after processing all of the
 children, calls POSTFUNC with the node as its argument.
 
+(Note that unlike Tree::Simple's C<traverse>, it actually calls its functions
+on the root node passed to it.)
+
 =cut
 
-sub traverse_pre_post {
+sub TraversePrePost {
    my ($self, $prefunc, $postfunc) = @_;
 
    $prefunc->($self);
    
    foreach my $child ($self->getAllChildren()) { 
-           $child->traverse_pre_post($prefunc, $postfunc);
+           $child->TraversePrePost($prefunc, $postfunc);
    }
    
    $postfunc->($self);
+}
+
+=head2 GetReferencedQueues
+
+Returns a hash reference with keys each queue name referenced in a clause in
+the key (even if it's "Queue != 'Foo'"), and values all 1.
+
+=cut
+
+sub GetReferencedQueues {
+    my $self = shift;
+
+    my $queues = {};
+
+    $self->traverse(
+        sub {
+            my $node = shift;
+
+            return if $node->isRoot;
+
+            my $clause = $node->getNodeValue();
+         
+            if ( ref($clause) and $clause->{Key} eq 'Queue' ) {
+                $queues->{ $clause->{Value} } = 1;
+            };
+        }
+    );
+
+    return $queues;
+}
+
+
+sub GetQueryAndOptionList {
+    my $self           = shift;
+    my $selected_nodes = shift;
+
+    my $optionlist = [];
+
+    my $i = 0;
+
+    $self->TraversePrePost(
+        sub { # This is called before recursing to the node's children.
+            my $node = shift;
+
+            return if $node->isRoot or $node->getParent->isRoot;
+
+            my $clause = $node->getNodeValue();
+            my $str = ' ';
+            my $aggregator_context = $node->getParent()->getNodeValue();
+            $str = $aggregator_context . " " if $node->getIndex() > 0;
+
+            if ( ref($clause) ) { # ie, it's a leaf              
+                $str .=
+                  $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
+            }
+
+            unless ($node->getParent->getParent->isRoot) {
+        #        used to check !ref( $parent->getNodeValue() ) )
+                if ( $node->getIndex() == 0 ) {
+                    $str = '( ' . $str;
+                }
+            }
+
+            push @$optionlist, {
+                TEXT     => $str,
+                INDEX    => $i,
+                SELECTED => (grep { $_ == $node } @$selected_nodes) ? 'SELECTED' : '',
+                DEPTH    => $node->getDepth() - 1,
+            };
+
+            $i++;
+        }, sub {
+            # This is called after recursing to the node's children.
+            my $node = shift;
+
+            return if $node->isRoot or $node->getParent->isRoot or $node->getParent->getParent->isRoot;
+
+            # Only do this for the rightmost child.
+            return unless $node->getIndex == $node->getParent->getChildCount - 1;
+
+            $optionlist->[-1]{TEXT} .= ' )';
+        }
+    );
+
+    return (join ' ', map { $_->{TEXT} } @$optionlist), $optionlist;
 }
 
 

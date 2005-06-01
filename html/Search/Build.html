@@ -457,10 +457,9 @@ elsif ( $ARGS{"Clear"} ) {
 
 # {{{ Rebuild $Query based on the additions / movements
 $Query      = "";
-my($optionlist_arrayref, $queues);
+my $optionlist_arrayref;
 
-($optionlist_arrayref, $Query, $queues) =
-  RT::Interface::Web::QueryBuilder::TreeToQueryAndOptionListAndQueues( $tree, \@current_values );
+($Query, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
   
 my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
@@ -683,6 +682,8 @@ sub debug {
 # }}}
 
 # }}}
+
+my $queues = $tree->GetReferencedQueues;
 
 # {{{ Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
