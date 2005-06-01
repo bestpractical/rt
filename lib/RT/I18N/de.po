@@ -3615,8 +3615,8 @@ msgstr "AnfrageÜbernehmen"
 
 #. ($Old->Name)
 #: lib/RT/Transaction_Overlay.pm:619
-msgid "Stolen from %1 "
-msgstr "Gestohlen von %1 "
+msgid "Stolen from %1"
+msgstr "Gestohlen von %1"
 
 #: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47
 #: html/Search/Bulk.html:154 html/SelfService/Create.html:79
@@ -8554,8 +8554,8 @@ msgstr "AnfrageÜbernehmen"
 
 #. ($Old->Name)
 #: lib/RT/Transaction_Overlay.pm:619
-msgid "Stolen from %1 "
-msgstr "Gestohlen von %1 "
+msgid "Stolen from %1"
+msgstr "Gestohlen von %1"
 
 #: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47
 #: html/Search/Bulk.html:154 html/SelfService/Create.html:79

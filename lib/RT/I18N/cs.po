@@ -4567,8 +4567,8 @@ msgstr "Vzít požadavek"
 
 #: lib/RT/Transaction_Overlay.pm.orig:665 lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1 "
-msgstr "Vzato %1 "
+msgid "Stolen from %1"
+msgstr "Vzato %1"
 
 #: html/Search/Elements/EditFormat:81
 msgid "Style"

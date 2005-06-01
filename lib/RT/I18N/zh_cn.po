@@ -6376,7 +6376,7 @@ msgstr "强制承办申请单"
 
 #: lib/RT/Transaction_Overlay.pm.orig:665 lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1 "
+msgid "Stolen from %1"
 msgstr "承办人从 %1 强制更换"
 
 #: html/Search/Elements/EditFormat:81
