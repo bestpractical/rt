@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 15;
 use RT;
 RT::LoadConfig;
 RT::Init;

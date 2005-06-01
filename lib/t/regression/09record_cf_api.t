@@ -2,7 +2,7 @@
 
 use strict;
 #use warnings FATAL => 'all';
-use Test::More qw/no_plan/;
+use Test::More tests => 130;
 
 use RT;
 RT::LoadConfig();
