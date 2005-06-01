@@ -1,5 +1,5 @@
 use RT;
-use Test::More qw/no_plan/;
+use Test::More test => 51; # I made this number up
 use RT::User;
 use RT::Group;
 use RT::Ticket;
