@@ -475,7 +475,7 @@ sub get_displayed_nodes {
         push @keys, $node unless $node->getParent->isRoot;
     });
     
-    return [ @keys ];
+    return @keys;
 }
 
 sub build_array {
