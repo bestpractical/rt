@@ -74,6 +74,8 @@ sub Prepare {
     if ( ( $self->TicketObj->Status eq 'open' )
          || ( ( $self->TicketObj->Status eq 'new' )
               && $self->TransactionObj->IsInbound )
+         || ( defined $self->TransactionObj->Message->First
+              && $self->TransactionObj->Message->First->GetHeader('RT-Control') =~ /\bno-autoopen\b/i )
       ) {
 
         return undef;
