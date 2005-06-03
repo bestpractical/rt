@@ -1,0 +1,69 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+% my %uri;
+% $uri{$_}++ for split ' ', $ARGS{$ARGS{'id'}.'-RefersTo'};
+% my $TicketObj = LoadTicket($ARGS{'id'});
+% $uri{$_->TargetURI->Resolver->AsString}++ while $_ = $TicketObj->RefersTo->Next;
+% foreach my $arg (keys %ARGS) {
+% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
+% my $art = RT::FM::Article->new($session{'CurrentUser'});
+% $art->Load($1);
+% if ($art->Id) {
+% $uri{$art->URI}++;
+% }
+
+% }
+%}
+<input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>">
+<table>
+<tr><td><&|/l&>Search for RTFM articles matching</&></td>
+<td><input size=20 name="RTFM_Content"></td>
+</tr>
+<tr>
+<td><&|/l&>Include RTFM article:</&></td><td><input size=20 name="RTFM-Include-Article-Named"></td><td><input type=submit value="Go"></td>
+</tr>
+% while (my $article = $articles_content->Next) {
+<tr><td>&nbsp;</td><td><%$article->Name|| loc('(unnamed)')%>: <%$article->Summary%></td><td><input type=submit name="RTFM-Include-Article-<%$article->Id%>" value="Go"></td></tr>
+%}
+% while (my $article = $articles_basics->Next) {
+<tr><td>&nbsp;</td><td><%$article->Name || loc('(unnamed)')%>: <%$article->Summary%></td><td><input type=submit name="RTFM-Include-Article-<%$article->Id%>" value="Go"></td></tr>
+%}
+</table>
+<%init>
+use RT::FM::ArticleCollection;
+
+my $articles_content =
+  RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+if ( $ARGS{'RTFM_Content'} ) {
+    $articles_content->LimitToCustomFieldValue( VALUE => $ARGS{'RTFM_Content'},
+                                                OPERATOR => 'LIKE' );
+
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Name',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Summary',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+}
+</%init>
