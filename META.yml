@@ -1,12 +1,16 @@
 name: RT-FM
-version: 2.1.10
+version: 2.1.20
 abstract: RT FM Extension
 license: GPL version 2
 distribution_type: module
 requires:
   perl: 5.8.0
   Text::WikiFormat: 0
-  RT: 3.4.0
+  RT: 3.4.2
+  Tree::Simple: 0
+  HTML::TreeBuilder: 0
+  Time::ParseDate: 0
+  HTML::FormatText: 0
 no_index:
   directory:
     - bin

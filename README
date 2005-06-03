@@ -1,21 +1,33 @@
 RTFM (The RT FAQ Manager) is a tool for maintaining an organizational
-knowledgebase. Out of the box, it integrates with RT 3.4 (Also available 
-from bestpractical.com) 
+knowledgebase. Out of the box, it integrates with RT 3.4.2 or later
+(Also available from bestpractical.com) 
 
 Best Practical sells support and customization for RT
 and RTFM.  Feel free to contact us at sales@bestpractical.com if you have
 any questions about our service offerings.
 
-RTFM requires Text::WikiFormat in addition to RT's standartd dependencies.
-You can install it by executing the command:
+RTFM requires a few modules in addition to RT's standartd dependencies.
+You can install them by executing the command:
 
     perl -MCPAN -e'install Text::WikiFormat'
-
-RTFM requires HTML::TreeBuilder and HTML::Format in addition to RT's
-standartd dependencies.  You can install it by executing the command:
-
     perl -MCPAN -e'install HTML::TreeBuilder'
     perl -MCPAN -e'install HTML::Format'
+
+Installation instructions:
+--------------------------
+
+1) Install RT 3.4.2 or newer
+
+2) Once RT appears to be happily installed, cd into the directory you
+   unpacked RTFM into.
+
+3) perl Makefile.PL
+
+4) make install
+
+5) make initdb
+
+6) stop and start your web server
 
 
 Upgrade instructions (From any  2.0.x release):
@@ -40,36 +52,17 @@ Upgrade instructions (From any  2.0.x release):
 5) stop and start your web server
 
 
-Installation instructions:
---------------------------
-
-1) Install RT 3.4.2 or newer
-
-2) Once RT appears to be happily installed, cd into the directory you
-   unpacked RTFM into.
-
-3) perl Makefile.PL
-
-4) make install
-
-5) make initdb
-
-6) stop and start your web server
 
 Staff users should be now have a new "RTFM" menu item RT's top level menu.
 As an administrator, you should go create some "Classes" of articles in RTFM.
 Classes are equivalent to RT's queues. Unlike RTFM 1.0, RTFM 2.0 doesn't have a
 single "body" section for each article. Everything is a custom field (except
 for name, summary and some other basic metadata). So, you need to go create
-some custom fields. You've got five choices. "SelectSingle" and
-"SelectMultiple" let you pick one or many choices from a list respectively.
-"FreeformSingle" and "FreeformMultiple" let you hand-enter one or many lines of
-text. "TextSingle" or "WikitextSingle"  is what you want for the "Body" of articles. 
-Once you've created your custom fields, go into your classes and click on "Custom Fields"
-and add the Custom Fields you want to each class.
+some custom fields.
+
+Once you've created your custom fields, go into your classes and click on "Custom Fields" and add the Custom Fields you want to each class.
 
 Grant some ACLs to your users and start creating articles.
-
 
 Of course, RTFM integrates with RT.  You can extract the body of a ticket into
 an article. Within RT, you should now see an "Extract to article" button in
@@ -84,13 +77,12 @@ search for and include RTFM articles in your reply. (They're editable, of
 course).
 
 
-You probably want to discuss rtfm on rt-users@lists.fsck.com at this point. 
+You probably want to discuss RTFM on rt-users@lists.bestpractical.com.
 (Send mail to rt-users-request@lists.fsck.com to subscribe)
 
-Bug reports can be sent to rtfm-bugs@fsck.com. 
-You can look at open bug reports at
+Bug reports can be sent to rtfm-bugs@bestpractical.com.com. 
+You can look at open bug reports at http://rt3.fsck.com/
 
-        http://rt3.fsck.com/NoAuth/Buglist.html?q=rtfm
 
 Log in as guest/guest to see the content of bug reports
 
