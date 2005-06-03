@@ -505,7 +505,7 @@ sub Commit {
     $args{'TicketObj'}->Load( $args{'TicketObj'}->Id );
 
     if ($@) {
-        $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
+        $RT::Logger->error( "Scrip Commit " . $self->Id . " died. - " . $@ );
         return (undef);
     }
 
