@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Scrips - a collection of RT Scrip objects
@@ -257,6 +258,7 @@ sub Prepared {
 
 
 # {{{ sup _SetupSourceObjects
+
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
 
 Setup a ticket and transaction for this Scrip collection to work with as it runs through the 

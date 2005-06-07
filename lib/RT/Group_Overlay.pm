@@ -439,6 +439,7 @@ sub LoadSystemRoleGroup {
 # }}}
 
 # {{{ sub Create
+
 =head2 Create
 
 You need to specify what sort of group you're creating by calling one of the other
@@ -719,6 +720,7 @@ If passed a positive value, this group will be disabled. No rights it commutes o
 It will not appear in most group listings.
 
 This routine finds all the cached group members that are members of this group  (recursively) and disables them.
+
 =cut 
 
  # }}}

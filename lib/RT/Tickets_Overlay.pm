@@ -887,6 +887,7 @@ AND
     CachedGroupMembers_2.MemberId = Users_3.id
 ORDER BY main.id ASC
 LIMIT 25
+
 =cut
 
 sub _WatcherMembershipLimit {
@@ -2102,8 +2103,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
-=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional
-parameter QUEUE may also be passed to distinguish the custom field.
+=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional parameter QUEUE may also be passed to distinguish the custom field.
 
 =item OPERATOR - The usual Limit operators
 

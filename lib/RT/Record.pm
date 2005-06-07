@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Record - Base class for RT record objects
@@ -925,6 +926,7 @@ sub Update {
         push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
 
 =for loc
+
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
                                    "No value sent to _Set!\n",             # loc
@@ -937,6 +939,7 @@ sub Update {
                                    "Couldn't find row",                    # loc
                                    "Missing a primary key?: [_1]",         # loc
                                    "Found Object",                         # loc
+
 =cut
 
     }

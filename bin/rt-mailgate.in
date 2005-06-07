@@ -44,6 +44,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 rt-mailgate - Mail interface to RT3.
@@ -270,6 +271,7 @@ several parameters:
 =item Message
 
 A C<MIME::Entity> object representing the email
+
 =item CurrentUser
 
 An C<RT::CurrentUser> object
