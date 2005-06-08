@@ -182,7 +182,7 @@ Returns false, otherwise.
 =cut
 
 sub IsRTAddress {
-    my $address = shift;
+    my $address = shift || '';
 
     # Example: the following rule would tell RT not to Cc 
     #   "tickets@noc.example.com"
@@ -206,13 +206,7 @@ Returns the same array with any IsRTAddress()es weeded out.
 =cut
 
 sub CullRTAddresses {
-    my @addresses = (@_);
-    my @addrlist;
-
-    foreach my $addr( @addresses ) {
-      push (@addrlist, $addr) unless IsRTAddress($addr);
-    }
-    return (@addrlist);
+    return (grep { IsRTAddress($_) } @_);
 }
 
 # }}}
@@ -498,14 +492,15 @@ sub Gateway {
     my %args = %$argsref;
 
     # Set some reasonable defaults
-    $args{'action'} = 'correspond' unless ( $args{'action'} );
-    $args{'queue'}  = '1'          unless ( $args{'queue'} );
+    $args{'action'} ||= 'correspond';
+    $args{'queue'}  ||= '1';
 
     # Validate the action
-    unless ( $args{'action'} =~ /^(comment|correspond|action)$/ ) {
+    my ($status, @actions) = IsCorrectAction( $args{'action'} );
+    unless ( $status ) {
 
         # Can't safely loc this. What object do we loc around?
-        $RT::Logger->crit("Mail gateway called with an invalid action paramenter '".$args{'action'}."' for queue '".$args{'queue'}."'");
+        $RT::Logger->crit("Mail gateway called with an invalid action paramenter '".$actions[0]."' for queue '".$args{'queue'}."'");
 
         return ( -75, "Invalid 'action' parameter", undef );
     }
@@ -528,7 +523,7 @@ sub Gateway {
     my $Message = $parser->Entity();
     my $head    = $Message->head;
 
-    my ( $CurrentUser, $AuthStat, $status, $error );
+    my ( $CurrentUser, $AuthStat, $error );
 
     # Initalize AuthStat so comparisons work correctly
     $AuthStat = -9999999;
@@ -592,22 +587,28 @@ sub Gateway {
             }
         }
 
-        ( $CurrentUser, $NewAuthStat ) = $Code->(
-            Message     => $Message,
-            RawMessageRef => \$args{'message'},
-            CurrentUser => $CurrentUser,
-            AuthLevel   => $AuthStat,
-            Action      => $args{'action'},
-            Ticket      => $SystemTicket,
-            Queue       => $SystemQueueObj
-        );
+	foreach my $action ( @actions ) {
+
+            ( $CurrentUser, $NewAuthStat ) = $Code->(
+                Message     => $Message,
+                RawMessageRef => \$args{'message'},
+                CurrentUser => $CurrentUser,
+                AuthLevel   => $AuthStat,
+                Action      => $action,
+                Ticket      => $SystemTicket,
+                Queue       => $SystemQueueObj
+            );
 
 
-        # If a module returns a "-1" then we discard the ticket, so.
-        $AuthStat = -1 if $NewAuthStat == -1;
+            # If a module returns a "-1" then we discard the ticket, so.
+            $AuthStat = -1 if $NewAuthStat == -1;
 
-        # You get the highest level of authentication you were assigned.
-        $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
+            # You get the highest level of authentication you were assigned.
+            $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
+
+            last if $AuthStat == -1;
+	}
+
         last if $AuthStat == -1;
     }
 
@@ -730,7 +731,8 @@ EOT
     my $Ticket = RT::Ticket->new($CurrentUser);
 
     # {{{ If we don't have a ticket Id, we're creating a new ticket
-    if ( !$SystemTicket || !$SystemTicket->Id) {
+    if ( (!$SystemTicket || !$SystemTicket->Id) && 
+           grep /^(comment|correspond)$/, @actions ) {
 
         # {{{ Create a new ticket
 
@@ -762,72 +764,113 @@ EOT
             $RT::Logger->error("Create failed: $id / $Transaction / $ErrStr ");
             return ( 0, "Ticket creation failed", $Ticket );
         }
+	# strip comments&corresponds from the actions we don't need record twice
+	@actions = grep !/^(comment|correspond)$/, @actions;
+	$args{'ticket'} = $id;
 
         # }}}
     }
 
-    # }}}
-
-    #   If the action is comment, add a comment.
-    elsif ( $args{'action'} =~ /^(comment|correspond)$/i ) {
-        $Ticket->Load( $args{'ticket'} );
-        unless ( $Ticket->Id ) {
-            my $message = "Could not find a ticket with id " . $args{'ticket'};
-            MailError(
-                To          => $ErrorsTo,
-                Subject     => "Message not recorded",
-                Explanation => $message,
-                MIMEObj     => $Message
-            );
-
-            return ( 0, $message );
-        }
-
-        my ( $status, $msg );
-        if ( $args{'action'} =~ /^correspond$/ ) {
-            ( $status, $msg ) = $Ticket->Correspond( MIMEObj => $Message );
-        }
-        else {
-            ( $status, $msg ) = $Ticket->Comment( MIMEObj => $Message );
-        }
-        unless ($status) {
-
-            #Warn the sender that we couldn't actually submit the comment.
-            MailError(
-                To          => $ErrorsTo,
-                Subject     => "Message not recorded",
-                Explanation => $msg,
-                MIMEObj     => $Message
-            );
-            return ( 0, "Message not recorded", $Ticket );
-        }
-    }
-
-    else {
-
-        #Return mail to the sender with an error
+    $Ticket->Load( $args{'ticket'} );
+    unless ( $Ticket->Id ) {
+        my $message = "Could not find a ticket with id " . $args{'ticket'};
         MailError(
             To          => $ErrorsTo,
-            Subject     => "RT Configuration error",
-            Explanation => "'"
-              . $args{'action'}
-              . "' not a recognized action."
-              . " Your RT administrator has misconfigured "
-              . "the mail aliases which invoke RT",
-            MIMEObj => $Message
+            Subject     => "Message not recorded",
+            Explanation => $message,
+            MIMEObj     => $Message
         );
-        $RT::Logger->crit( $args{'action'} . " type unknown for $MessageId" );
-        return (
-            -75,
-            "Configuration error: "
-              . $args{'action'}
-              . " not a recognized action",
-            $Ticket
-        );
+    
+        return ( 0, $message );
+    }
 
+    # }}}
+    foreach my $action( @actions ) {
+        #   If the action is comment, add a comment.
+        if ( $action =~ /^(comment|correspond)$/i ) {
+            my ( $status, $msg );
+            if ( $action =~ /^correspond$/i ) {
+                ( $status, $msg ) = $Ticket->Correspond( MIMEObj => $Message );
+            }
+            else {
+                ( $status, $msg ) = $Ticket->Comment( MIMEObj => $Message );
+            }
+            unless ($status) {
+    
+                #Warn the sender that we couldn't actually submit the comment.
+                MailError(
+                    To          => $ErrorsTo,
+                    Subject     => "Message not recorded",
+                    Explanation => $msg,
+                    MIMEObj     => $Message
+                );
+                return ( 0, "Message not recorded", $Ticket );
+            }
+        }
+        elsif ( $action =~ /^take$/i ) {
+            my ( $status, $msg ) = $Ticket->SetOwner( $CurrentUser->id );
+            unless ($status) {
+    
+                #Warn the sender that we couldn't actually submit the comment.
+                MailError(
+                    To          => $ErrorsTo,
+                    Subject     => "Ticket not taken",
+                    Explanation => $msg,
+                    MIMEObj     => $Message
+                );
+                return ( 0, "Ticket not taken", $Ticket );
+            }
+        }
+        elsif ( $action =~ /^resolve$/i ) {
+            my ( $status, $msg ) = $Ticket->SetStatus( 'resolved' );
+            unless ($status) {
+                #Warn the sender that we couldn't actually submit the comment.
+                MailError(
+                    To          => $ErrorsTo,
+                    Subject     => "Ticket not resolved",
+                    Explanation => $msg,
+                    MIMEObj     => $Message
+                );
+                return ( 0, "Ticket not resolved", $Ticket );
+            }
+        }
+    
+        else {
+    
+            #Return mail to the sender with an error
+            MailError(
+                To          => $ErrorsTo,
+                Subject     => "RT Configuration error",
+                Explanation => "'"
+                  . $args{'action'}
+                  . "' not a recognized action."
+                  . " Your RT administrator has misconfigured "
+                  . "the mail aliases which invoke RT",
+                MIMEObj => $Message
+            );
+            $RT::Logger->crit( $args{'action'} . " type unknown for $MessageId" );
+            return (
+                -75,
+                "Configuration error: "
+                  . $args{'action'}
+                  . " not a recognized action",
+                $Ticket
+            );
+    
+        }
     }
 
     return ( 1, "Success", $Ticket );
+}
+
+sub IsCorrectAction
+{
+	my $action = shift;
+	my @actions = split /-/, $action;
+	foreach ( @actions ) {
+		return (0, $_) unless /^(?:comment|correspond|take|resolve)$/;
+	}
+	return (1, @actions);
 }
 
 
