@@ -47,7 +47,6 @@
 inherit => undef # inhibit UTF8 conversion done in /autohandler
 </%flags>
 <%ARGS>
-$message
 $queue => 1
 $action => "correspond"
 $ticket => undef

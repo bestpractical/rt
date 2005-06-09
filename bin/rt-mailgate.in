@@ -72,7 +72,6 @@ for (qw(url)) {
     die "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n" unless $opts{$_};
 }
 
-undef $/;
 my $ua      = LWP::UserAgent->new();
 $ua->cookie_jar( { file => $opts{jar} } );
 
@@ -83,7 +82,7 @@ my %args = (
 );
 
 # Read the message in from STDIN
-$args{'message'} = <>;
+$args{'message'} = do { local (@ARGV, $/); <> };
 
 unless ( $args{message} =~ /\S/ ) {
     print STDERR "$0: no message passed on STDIN!\n";
@@ -156,7 +155,7 @@ sub check_failure {
 
 Usual invocation (from MTA):
 
-    rt-mailgate --action (correspond|comment) --queue queuename
+    rt-mailgate --action (correspond|comment|...) --queue queuename
                 --url http://your.rt.server/
                 [ --debug ]
                 [ --extension (queue|action|ticket) ]
@@ -172,7 +171,16 @@ See C<man rt-mailgate> for more.
 
 =item C<--action>
 
-Specifies whether this is a correspondence or comment address.
+Specifies what action this would be.
+Basic actions: C<correspond>, C<comment>, C<take> and C<resolve>.
+Also you can use two or more actions with C<-> separated list,
+for example you can use C<take-comment> or C<correspond-resolve> actions.
+
+Note that C<take> and C<resolve> actions ignore message text if use them
+alone, so use with C<comment> or C<correspond> actions if you want RT
+write message.
+
+Default action is C<correspond>.
 
 =item C<--queue>
 
