@@ -276,17 +276,8 @@ sub _PostProcessNewEntity {
 
 sub ParseTicketId {
     my $self = shift;
-
-    my $Subject = shift;
-
-    if ( $Subject =~ s/\[\Q$RT::rtname\E\s+\#(\d+)\s*\]//i ) {
-        my $id = $1;
-        $RT::Logger->debug("Found a ticket ID. It's $id");
-        return ($id);
-    }
-    else {
-        return (undef);
-    }
+    $RT::Logger->warnings("RT::EmailParser->ParseTicketId deprecated. You should be using RT::Interface::Email");
+    RT::Interface::Email::ParseTicketId(@_);
 }
 
 # }}}
