@@ -72,7 +72,7 @@
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 	</td>
 	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
-	  <&|/Elements/TitleBox, title => loc("Reminders"),
+	  <&|/Widgets/TitleBox, title => loc("Reminders"),
 		title_href =>"$RT::WebPath/Ticket/Reminders.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		 color => "#666699" &>
