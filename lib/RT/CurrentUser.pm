@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::CurrentUser - an RT object representing the current user
@@ -244,6 +245,7 @@ sub LoadByGecos  {
 
 Loads a User into this CurrentUser object.
 Takes a Name.
+
 =cut
 
 sub LoadByName {

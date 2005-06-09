@@ -1,5 +1,5 @@
 
-use Test::More qw/no_plan/;
+use Test::More tests => 24;
 use RT;
 RT::LoadConfig();
 RT::Init();

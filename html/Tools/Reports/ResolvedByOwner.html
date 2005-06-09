@@ -7,7 +7,7 @@ my $q = RT::Queue->new($session{'CurrentUser'});
 $q->LoadByCols(Name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_subtab => '/Tools/Reports/ResolvedByOwner', Title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', Title => $title &>
 <form method="post" action="ResolvedByOwner.html">
 % if ($Queue) {
 % # if we have a queue, do the search

@@ -40,7 +40,7 @@ while ( my $entry = $tix->Next ) {
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
-<img src="<%$RT::WebPath%>/Search/Chart.png?<%$query_string|n%>">
+<img src="<%$RT::WebPath%>/Search/Chart?<%$query_string|n%>">
 <br>
 
 <table class="collection-as-table">

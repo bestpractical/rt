@@ -2232,6 +2232,8 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the TransactionObj
 
+Returns: Transaction id, Error Message, Transaction Object
+(note the different order from Create()!)
 
 =cut
 
@@ -2280,6 +2282,9 @@ if there's no MIMEObj, Content is used to build a MIME::Entity object
 
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the TransactionObj
+
+Returns: Transaction id, Error Message, Transaction Object
+(note the different order from Create()!)
 
 
 =cut

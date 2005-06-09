@@ -43,6 +43,26 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+%#
+%# Data flow here:
+%#   The page receives a Query from the previous page, and maybe arguments
+%#   corresponding to actions.  (If it doesn't get a Query argument, it pulls
+%#   one out of the session hash.  Also, it could be getting just a raw query from
+%#   Build/Edit.html (Advanced).)
+%#
+%#   After doing some stuff with default arguments and saved searches, the ParseQuery
+%#   function (which is similar to, but not the same as, _parser in RT/Tickets_Overlay_SQL)
+%#   converts the Query into a RT::Interface::Web::QueryBuilder::Tree.  This mason file
+%#   then adds stuff to or modifies the tree based on the actions that had been requested
+%#   by clicking buttons.  It then calls GetQueryAndOptionList on the tree to generate
+%#   the SQL query (which is saved as a hidden input) and the option list for the Clauses
+%#   box in the top right corner.
+%#
+%#   Worthwhile refactoring: the tree manipulation code for the actions could use some cleaning
+%#   up.  The node-adding code is different in the "add" actions from in ParseQuery, which leads
+%#   to things like ParseQuery correctly not quoting numbers in numerical fields, while the "add"
+%#   action does quote it (this breaks SQLite).
+%#
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
@@ -61,7 +81,7 @@
 <table width=100% border="0" cellpadding="5">
 <tr valign="top">
 <td class="boxcontainer" rowspan="2" width="65%">
-<& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
+<& Elements/PickCriteria, query => $Query, cfqueues => $queues &>
 <& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
 </td>
 
@@ -93,7 +113,8 @@ AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPer
 </FORM>
 
 <%INIT>
-use Tree::Simple;
+use RT::Interface::Web::QueryBuilder;
+use RT::Interface::Web::QueryBuilder::Tree;
 
 my $search_hash = {};
 my $search;
@@ -157,7 +178,6 @@ unless ( defined $RowsPerPage ) {
 # }}}
 
 my @actions = ();
-my %queues;
 
 # Clean unwanted junk from the format
 $Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
@@ -223,15 +243,11 @@ if ( $actions[0] ) {
     $m->abort();
 }
 
-my @options;
-my $optionlist;
 $Query  = "";
-%queues = ();
 
-# Build the optionlist from the tree, so we can do additions and movements based on it
-$optionlist = build_array( \$Query, \@clauses, $tree, \@options, \%queues );
+my @options = $tree->GetDisplayedNodes;
 
-my @current_values = @options[@clauses];
+my @current_values = grep { defined } @options[@clauses];
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
@@ -296,7 +312,7 @@ foreach my $arg ( keys %ARGS ) {
                 Value => $value
             };
 
-            my $newnode = Tree::Simple->new($clause);
+            my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
             if (@current_values) {
                 foreach my $value (@current_values) {
                     my $newindex = $value->getIndex() + 1;
@@ -386,7 +402,7 @@ elsif ( $ARGS{"Right"} ) {
                 my $sibling = $parent->getChild( $index - 1 );
                 if ( ref( $sibling->getNodeValue ) ) {
                     $parent->removeChild($value);
-                    my $newtree = Tree::Simple->new( 'AND', $parent );
+                    my $newtree = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $parent );
                     $newtree->addChild($value);
                 }
                 else {
@@ -396,7 +412,7 @@ elsif ( $ARGS{"Right"} ) {
             }
             else {
                 $parent->removeChild($value);
-                $newparent = Tree::Simple->new( 'AND', $parent );
+                $newparent = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $parent );
                 $newparent->addChild($value);
             }
         }
@@ -431,99 +447,23 @@ elsif ( $ARGS{"Toggle"} ) {
         push( @actions, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
-elsif ( $ARGS{"Clear"} ) {
-    $tree = Tree::Simple->new( Tree::Simple->ROOT );
-}
+
+$tree->PruneChildlessAggregators;
 
 # }}}
 
 # {{{ Rebuild $Query based on the additions / movements
 $Query      = "";
-@options    = ();
-%queues     = ();
-$optionlist =
-  build_array( \$Query, \@current_values, $tree, \@options, \%queues );
+my $optionlist_arrayref;
 
-sub build_array {
-    my $Query      = shift;
-    my $values_ref = shift;
-    my $tree       = shift;
-    my ( $keys, $queues ) = @_;
-    my $i = 0;
-    my $optionlist;
-    my $depth = 0;
-    my %parens;
+($Query, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
+  
+my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
+                                  . ("&nbsp;" x (5 * $_->{DEPTH}))
+                                  . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
-    $tree->traverse(
-        sub {
-            my ($_tree) = @_;
 
-            return if $_tree->getParent->isRoot();
 
-            push @$keys, $_tree;
-            my $clause = $_tree->getNodeValue();
-            my $str;
-            my $ea = $_tree->getParent()->getNodeValue();
-            if ( ref($clause) ) {
-                $str .= $ea . " " if $_tree->getIndex() > 0;
-                $str .=
-                  $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
-
-                if ( $clause->{Key} eq "Queue" ) {
-                    $queues->{ $clause->{Value} } = 1;
-                }
-            }
-            else {
-                $str = $ea if $_tree->getIndex() > 0;
-            }
-
-            my $selected;
-            if ( grep { $_ == $_tree } @$values_ref ) {
-                $selected = "SELECTED";
-            }
-            else {
-                $selected = "";
-            }
-
-            foreach my $p ( keys %parens ) {
-                if ( $p > $_tree->getDepth ) {
-                    $$Query .= ')' x $parens{$p};
-                    $parens{$p}--;
-                }
-            }
-
-            $optionlist .=
-                "<option value=$i $selected>"
-              . ( "&nbsp;" x 5 x ( $_tree->getDepth() - 1 ) )
-              . $m->interp->apply_escapes( $str, 'h' )
-              . "</option>\n";
-            my $parent = $_tree->getParent();
-            if (   !( $parent->isRoot || $parent->getParent()->isRoot )
-                && !ref( $parent->getNodeValue() ) )
-            {
-                if ( $_tree->getIndex() == 0 ) {
-                    $$Query .= '(';
-                    $parens{ $_tree->getDepth }++;
-                }
-            }
-            $$Query .= " " . $str . " ";
-
-            if ( $_tree->getDepth < $depth ) {
-                $$Query .= ')';
-                $parens{$depth}--;
-            }
-
-            $i++;
-        }
-    );
-
-    foreach my $p ( keys %parens ) {
-        $$Query .= ") " x $parens{$p};
-    }
-
-    return $optionlist;
-
-}
 
 use Regexp::Common qw /delimited/;
 
@@ -544,8 +484,8 @@ sub ParseQuery {
     my $depth = 1;
 
     # make a tree root
-    $$tree = Tree::Simple->new( Tree::Simple->ROOT );
-    my $root       = Tree::Simple->new( 'AND', $$tree );
+    $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
     my $lastnode   = $root;
     my $parentnode = $root;
 
@@ -618,7 +558,7 @@ sub ParseQuery {
                 $depth++;
 
                 # make a new node that the clauses can be children of
-                $parentnode = Tree::Simple->new( $ea, $parentnode );
+                $parentnode = RT::Interface::Web::QueryBuilder::Tree->new( $ea, $parentnode );
             }
             else {
                 $depth--;
@@ -686,7 +626,7 @@ sub ParseQuery {
             };
 
             # explicity add a child to it
-            $lastnode = Tree::Simple->new( $clause, $parentnode );
+            $lastnode = RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
             $lastnode->getParent()->setNodeValue($ea);
 
             ( $ea, $key, $op, $value ) = ( "", "", "", "" );
@@ -725,11 +665,13 @@ sub debug {
 
 # }}}
 
+my $queues = $tree->GetReferencedQueues;
+
 # {{{ Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
 ( $Format, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
-    cfqueues => \%queues,
+    cfqueues => $queues,
     %ARGS, Format => $Format
 );
 

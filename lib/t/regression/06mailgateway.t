@@ -51,7 +51,7 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
-use Test::More tests => 57;
+use Test::More tests => 77;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -180,7 +180,7 @@ From: doesnotexist-2\@example.com
 To: rt\@example.com
 Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
 
-Blah!
+Blah!  (Should not work.)
 Foob!
 EOF
 close (MAIL);
@@ -231,7 +231,7 @@ From: doesnotexist-3\@example.com
 To: rt\@example.com
 Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
 
-Blah!
+Blah!  (Should not work.)
 Foob!
 EOF
 close (MAIL);
@@ -422,8 +422,74 @@ ok ($tick2->Transactions->First->Content =~ $unistring, "It appears to be unicod
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
+# {{{ Check take and resolve actions
+
+# create ticket that is owned by nobody
+use RT::Ticket;
+$tick = RT::Ticket->new($RT::SystemUser);
+my ($id) = $tick->Create( Queue => 'general', Subject => 'test');
+ok( $id, 'new ticket created' );
+is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
+
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action take"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: root\@localhost
+Subject: [example.com \#$id] test
+
+EOF
+close (MAIL);
+is ($? >> 8, 0, "The mail gateway exited normally");
+
+$tick = RT::Ticket->new($RT::SystemUser);
+$tick->Load( $id );
+is( $tick->Id, $id, 'load correct ticket');
+is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
+
+# check that there is no text transactions writen
+is( $tick->Transactions->Count, 2, 'no superfluous transactions');
+
+($status, $msg) = $tick->SetOwner( $RT::Nobody->Id, 'Force' );
+ok( $status, 'successfuly changed owner: '. ($msg||'') );
+is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
+
+
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action take-correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: root\@localhost
+Subject: [example.com \#$id] correspondence
+
+test
+EOF
+close (MAIL);
+is ($? >> 8, 0, "The mail gateway exited normally");
+
+$tick = RT::Ticket->new($RT::SystemUser);
+$tick->Load( $id );
+is( $tick->Id, $id, 'load correct ticket');
+is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
+my $txns = $tick->Transactions;
+$txns->Limit( FIELD => 'Type', VALUE => 'Correspond');
+is( $txns->Last->Subject, "[example.com \#$id] correspondence", 'successfuly add correspond within take via email' );
+# +1 because of auto open
+is( $tick->Transactions->Count, 6, 'no superfluous transactions');
+
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action resolve --debug"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: root\@localhost
+Subject: [example.com \#$id] test
+
+EOF
+close (MAIL);
+is ($? >> 8, 0, "The mail gateway exited normally");
+
+DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+$tick = RT::Ticket->new($RT::SystemUser);
+$tick->Load( $id );
+is( $tick->Id, $id, 'load correct ticket');
+is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
+is( $tick->Transactions->Count, 7, 'no superfluous transactions');
+
+# }}}
 
 1;
-
-1;
-

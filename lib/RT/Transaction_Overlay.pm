@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Transaction - RT\'s transaction object
@@ -662,7 +663,7 @@ sub BriefDescription {
         my $self = shift;
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
-        return $self->loc("Stolen from [_1] ",  $Old->Name);
+        return $self->loc("Stolen from [_1]",  $Old->Name);
     },
     Give => sub {
         my $self = shift;

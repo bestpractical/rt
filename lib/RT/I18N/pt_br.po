@@ -377,8 +377,8 @@ msgstr ""
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
-msgstr "(Se deixado em branco, será entendido como %1"
+msgid "(If left blank, will default to %1)"
+msgstr "(Se deixado em branco, será entendido como %)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
@@ -4860,8 +4860,8 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm.orig:665 lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1 "
-msgstr "Roubado de %1 "
+msgid "Stolen from %1"
+msgstr "Roubado de %1"
 
 #: html/Search/Elements/EditFormat:81
 msgid "Style"

@@ -95,7 +95,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
 <b><%$scrip->Description%></b><br>
-<&|/l, $scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name&>[_1] [_2] with template [_3]</&>
+<&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
 <br>
 %foreach my $type qw(To Cc Bcc) {
 %my @addresses =  $scrip->ActionObj->Action->$type();

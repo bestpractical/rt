@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More 'no_plan';
+use Test::More tests => 19;
 use WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;

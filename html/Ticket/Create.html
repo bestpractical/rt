@@ -185,13 +185,13 @@
 <TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Time Estimated</&>:</TD>
 <TD>
-<input size=3 name="TimeEstimated" value="<$ARGS{TimeEstimated}%>">
+<input size=3 name="TimeEstimated" value="<%$ARGS{TimeEstimated}%>">
 <& /Elements/SelectTimeUnits, Name =>'TimeEstimated-TimeUnits' &>
 
 </TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
 <TD>
-<input size=3 name="TimeWorked" value="<$ARGS{TimeWorked}%>">
+<input size=3 name="TimeWorked" value="<%$ARGS{TimeWorked}%>">
 <& /Elements/SelectTimeUnits, Name =>'TimeWorked-TimeUnits' &>
 
 </TD></TR>

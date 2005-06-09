@@ -381,8 +381,8 @@ msgstr "(Entrer le ID du ticket ou le URL, s/par/ par des espaces)"
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
-msgstr "Si laissé à blanc, valeur par défaut : %1"
+msgid "(If left blank, will default to %1)"
+msgstr "(Si laissé à blanc, valeur par défaut : %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
@@ -4912,7 +4912,7 @@ msgstr "VolerTicket"
 
 #: lib/RT/Transaction_Overlay.pm.orig:665 lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1 "
+msgid "Stolen from %1"
 msgstr "Volé à %1"
 
 #: html/Search/Elements/EditFormat:81

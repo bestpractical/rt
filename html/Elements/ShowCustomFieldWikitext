@@ -44,6 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % my $content = $Object->LargeContent || $Object->Content;
+% $content = $m->comp('/Elements/ScrubHTML', Content => $content);
 % my $wiki_content = Text::WikiFormat::format( $content."\n" );
 <%$wiki_content|n%>
 <%init>

@@ -202,14 +202,15 @@ AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$(groups|cut -f1 -d' ')
+my_user=${USER:-$LOGNAME}
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
                            [set all users and groups to current user/group]),
             RTGROUP=$my_group
-            BIN_OWNER=$USER
-            LIBS_OWNER=$USER
+            BIN_OWNER=$my_user
+            LIBS_OWNER=$my_user
             LIBS_GROUP=$my_group
-            WEB_USER=$USER
+            WEB_USER=$my_user
             WEB_GROUP=$my_group)
 
 

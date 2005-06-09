@@ -308,6 +308,7 @@ sub LoadByName {
 # {{{ Dealing with custom field values 
 
 =begin testing
+
 use_ok(RT::CustomField);
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
 ok(my ($id, $msg)=  $cf->Create( Name => 'TestingCF',
@@ -580,6 +581,7 @@ Returns a localized human-readable version of the custom field type.
 If a custom field type is specified as the parameter, the friendly type for that type will be returned
 
 =cut
+
 sub FriendlyType {
     my $self = shift;
 
@@ -839,6 +841,7 @@ sub SetLookupType {
     }
     $self->SUPER::SetLookupType($lookup);
 }
+
 =head2 TypeComposite
 
 Returns a composite value composed of this object's type and maximum values
