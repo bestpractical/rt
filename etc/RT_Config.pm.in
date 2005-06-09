@@ -28,12 +28,26 @@ Set($rtname , "example.com");
 
 
 # This regexp controls what subject tags RT recognizes as its own.
-# Be VERY CAREFUL with it. Note that it overrides $rtname.
-#
 # If you're not dealing with historical $rtname values, you'll likely
-# never have to enable this feature
-# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/ );
+# never have to enable this feature.
 #
+# Be VERY CAREFUL with it. Note that it overrides $rtname for subject
+# token matching and that you should use only "non-capturing" parenthesis
+# grouping. For example:
+#
+# 	Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/ );
+#
+# and NOT
+# 
+# 	Set($EmailSubjectTagRegex, qr/(example.com|example.org)/ );
+#
+# This setting would make RT behave exactly as it does without the 
+# setting enabled.
+#
+# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/ );
+
+
+
 # You should set this to your organization's DNS domain. For example,
 # fsck.com or asylum.arkham.ma.us. It's used by the linking interface to
 # guarantee that ticket URIs are unique and easy to construct.
@@ -385,7 +399,7 @@ Set($DefaultSummaryRows, 10);
 
 # $MaxInlineBody is an arrayref of allowed components customized homepage.
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage)]);
+Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders  RefreshHomepage)]);
 
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful

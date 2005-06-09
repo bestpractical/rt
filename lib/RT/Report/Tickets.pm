@@ -32,6 +32,9 @@ sub Groupings {
 sub GroupBy {
     my $self = shift;
     my $field = shift;
+
+    $self->{'_group_by_field'} = $field; 
+
     my $function;
     (undef, $function) = $self->_FieldToFunction($field);
     $self->GroupByCols({ FIELD => $field, FUNCTION => $function});
@@ -47,6 +50,22 @@ sub Column {
 
     return $self->SUPER::Column(%args);
 }
+
+=head2 _DoSearch
+
+Subclass _DoSearch from our parent so we can go through and add in empty 
+columns if it makes sense 
+
+=cut
+
+sub _DoSearch {
+    my $self = shift;
+    $self->SUPER::_DoSearch(@_);
+    $self->AddEmptyRows();
+
+}
+
+
 
 =head2 _FieldToFunction FIELD
 
@@ -108,7 +127,28 @@ sub NewItem {
 }
 
 
+=head2 AddEmptyRows
 
+If we're grouping on a criterion we know how to add zero-value rows
+for, do that.
 
+=cut
 
+sub AddEmptyRows {
+    my $self = shift;
+     if ( $self->{'_group_by_field'} eq 'Status' ) {
+            foreach my $status (RT::Queue->new($self->CurrentUser)->StatusArray ) {
+            unless ( grep { $_->__Value('Status') eq $status } @{ $self->ItemsArrayRef } )  {
+                my $record =     $self->NewItem;
+                $record->LoadFromHash(
+                        {
+                            id     => 0,
+                            status => $status
+                        }
+                    );
+                $self->AddRecord($record);
+            } 
+    }
+}
+}
 1;

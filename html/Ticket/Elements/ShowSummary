@@ -67,9 +67,21 @@
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  </&>
 	<br/>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
+        <br/>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 	</td>
 	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
-
+	  <&|/Elements/TitleBox, title => loc("Reminders"),
+		title_href =>"$RT::WebPath/Ticket/Reminders.html?id=".$Ticket->Id, 
+		title_class=> 'inverse',  
+		 color => "#666699" &>
+            <form action="<%$RT::WebPath%>/Ticket/Display.html" method="post">
+	  <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+        <div align="right"><input type="submit" value="Save" /></div>
+        </form>
+	  </&>
+        <br />
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse' &>
@@ -82,11 +94,6 @@
 		titleright => ''&>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
 	</&>
-        <br/>
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
-
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
-
 
 	</td>
       </tr>

@@ -43,30 +43,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<ul>
-% while (my $Link = $Ticket->RefersTo->Next) {
-<li>
-% if ($Link->TargetURI->IsLocal) {
-% my $member = $Link->TargetObj;
+<& /Elements/Header, Title => loc("Reminder ticket #[_1]", $Ticket->Id) &>
+<& /Ticket/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
+    Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
+<form action="<%$RT::WebPath%>/Ticket/Reminders.html" method="post">
+<&|/Elements/TitleBox, title => loc("Reminders"),
+                       title_class=> 'inverse',
+                       color => "#666699" &>
 
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-<a href="<%$Link->TargetURI->HREF%>"><%$Link->Target%></a>
-% }
-%}
+<& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1 &>
+</&>
+<& /Elements/Submit, Label => 'Save'&>
+</form>
 
 
-
-% while (my $Link = $Ticket->ReferredToBy->Next) {
-<li>
-% if ($Link->BaseURI->IsLocal) {
-% my $member = $Link->BaseObj;
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-<a href="<%$Link->BaseURI->HREF%>"><%$Link->Base%></a>
-%}
-% }
-</ul>
+<%INIT>
+  
+my $Ticket = LoadTicket($id);
+    
+</%INIT>
 <%ARGS>
-$Ticket => undef
+$id => undef
 </%ARGS>

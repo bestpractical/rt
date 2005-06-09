@@ -8,7 +8,7 @@ use strict;
 # This test script validates that when merging two tickets, the comments from both tickets
 # are integrated into the new ticket
 
-use Test::More qw/no_plan/;
+use Test::More tests => 13;
 use RT;
 RT::LoadConfig;
 RT::Init;

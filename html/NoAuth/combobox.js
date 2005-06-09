@@ -1,13 +1,22 @@
-function ComboBox_Init() {
-    if ( ComboBox_UplevelBrowser() ) {
-        for( var i = 0; i < ComboBoxes.length; i++ ) {
-            ComboBox_Load( ComboBoxes[i] );
+function ComboBox_InitWith(n) {
+    if ( typeof( window.addEventListener ) != "undefined" ) {
+        window.addEventListener("load", ComboBox_Init(n), false);
+    } else if ( typeof( window.attachEvent ) != "undefined" ) {
+        window.attachEvent("onload", ComboBox_Init(n));
+    } else {
+        ComboBox_Init(n)();
+    }
+}
+function ComboBox_Init(n) {
+    return function () {
+        if ( ComboBox_UplevelBrowser( n ) ) {
+            ComboBox_Load( n );
         }
     }
 }
-function ComboBox_UplevelBrowser() {
+function ComboBox_UplevelBrowser( n ) {
     if( typeof( document.getElementById ) == "undefined" ) return false;
-    var combo = document.getElementById( ComboBoxes[0] + "_Container" );
+    var combo = document.getElementById( n + "_Container" );
     if( combo == null || typeof( combo ) == "undefined" ) return false;
     if( typeof( combo.style ) == "undefined" ) return false;
     if( typeof( combo.innerHTML ) == "undefined" ) return false;

@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 7;
 
 use RT;
 RT::LoadConfig();

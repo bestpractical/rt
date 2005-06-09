@@ -43,11 +43,30 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
-        size="<%$Rows%>"
-        <% $Multiple && 'MULTIPLE' %>>
+
+%# Build up the set of cascading select boxes as "guides"
+%# each one limits the options of the final one a bit
+%# (perhaps by tweaking the .display style?)
 %       my $selected = 0;
-%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected);
+%       my @category;
+%       my $id = $NamePrefix . $CustomField->Id;
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
+%       if (@category) {
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/cascaded.js"></script>
+%#      XXX - Hide this select from w3m?
+      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<%$id%>-Category"
+        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+%           foreach my $cat (@category) {
+%               my ($depth, $name) = @$cat;
+        <option value="<% $name %>"><% '&nbsp;' x $depth |n %><%$name%></option>
+%           }
+      </select>
+%       }
+      <select name="<%$id%>-Values" id="<%$id%>-Values"
+%       if ($Multiple or !@category) {
+        size="<%$Rows%>"
+%       }
+        <% $Multiple && 'MULTIPLE' %>>
         <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
@@ -68,7 +87,7 @@ $Rows => undef
 % while ($CFVs and my $value = $CFVs->Next ) {
 %       my $category = $value->Category;
 %       if (length $category) {
-%           my $level = (split(/\s/, $category))[0];
+%           my $level = (split(/:/, $category))[0];
 %           while (@levels) {
 %               if ($levels[-1] eq $level) {
 %                   undef $level;
@@ -81,7 +100,8 @@ $Rows => undef
 %               }
 %           }
 %           if (defined $level) {
-        <optgroup label="<% '&nbsp;' x @levels |n %><%$category%>">
+%               push @$CategoryRef, [0+@levels, $level];
+        <optgroup style="padding-left: <% @levels/2 %>em" label="<%$category%>">
 %               push @levels, $level;
 %           }
 %       }
@@ -97,9 +117,10 @@ $Rows => undef
             </optgroup>
 % }
 <%args>
-$CustomField
-$Default
-$Values
-$SelectedRef
+$CustomField => undef
+$Default => undef
+$Values => undef
+$SelectedRef => undef
+$CategoryRef => undef
 </%args>
 </%method>

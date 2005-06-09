@@ -15,6 +15,8 @@ my $agent = WWW::Mechanize->new();
 
 $agent->cookie_jar($cookie_jar);
 
+use RT;
+RT::LoadConfig;
 
 use RT;
 RT::LoadConfig();

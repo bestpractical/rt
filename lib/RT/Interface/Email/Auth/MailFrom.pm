@@ -122,6 +122,36 @@ sub GetCurrentUser {
             }
 
         }
+        elsif ( $args{'Action'} =~ /^take$/i ) {
+
+            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
+            unless ( $everyone->PrincipalObj->HasRight(Object => $args{'Queue'},
+                                                       Right  => 'OwnTicket'
+                     )
+                     || $unpriv->PrincipalObj->HasRight(
+                                                       Object => $args{'Queue'},
+                                                       Right  => 'OwnTicket'
+                     )
+              ) {
+                return ( $args{'CurrentUser'}, 0 );
+            }
+
+        }
+        elsif ( $args{'Action'} =~ /^resolve$/i ) {
+
+            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
+            unless ( $everyone->PrincipalObj->HasRight(Object => $args{'Queue'},
+                                                       Right  => 'ModifyTicket'
+                     )
+                     || $unpriv->PrincipalObj->HasRight(
+                                                       Object => $args{'Queue'},
+                                                       Right  => 'ModifyTicket'
+                     )
+              ) {
+                return ( $args{'CurrentUser'}, 0 );
+            }
+
+        }
         else {
             return ( $args{'CurrentUser'}, 0 );
         }

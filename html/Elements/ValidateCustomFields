@@ -4,11 +4,23 @@ $CustomFields->GotoFirstItem;
 while (my $CF = $CustomFields->Next) {
     my $pattern = $CF->Pattern;
     my $field = $NamePrefix . $CF->Id . "-Value";
-    $m->notes(('Field-' . $CF->Id) => $ARGSRef->{$field});
-    next if $CF->MatchPattern($ARGSRef->{$field});
+    my $value;
+
+    if ($ARGSRef->{"${field}s-Magic"}) {
+        $value = $ARGSRef->{"${field}s"};
+
+        # We only validate Single Combos -- multis can never be user input
+        next if ref $value;
+    }
+    else {
+        $value = $ARGSRef->{$field};
+    }
+
+    $m->notes(('Field-' . $CF->Id) => $value);
+    next if $CF->MatchPattern($value);
     $m->notes(
         ('InvalidField-' . $CF->Id)
-            => (loc("Input must match [_1]", $pattern))
+            => (loc("Input must match [_1]", $CF->FriendlyPattern))
     );
     $valid = 0;
 }

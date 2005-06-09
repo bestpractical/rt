@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More qw/no_plan/;
+use Test::More tests => 137;
 use RT;
 RT::LoadConfig();
 RT::Init;
@@ -50,6 +50,7 @@ my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick= $tickets->First();
+isa_ok($tick, "RT::Ticket", "got a ticket object");
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /The original message was received/, "It's the bounce");

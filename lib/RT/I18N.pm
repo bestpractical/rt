@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 RT::I18N - a base class for localization of RT

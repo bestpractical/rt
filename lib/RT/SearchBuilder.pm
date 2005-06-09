@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::SearchBuilder - a baseclass for RT collection objects
@@ -225,8 +226,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
-=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional
-parameter QUEUE may also be passed to distinguish the custom field.
+=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional parameter QUEUE may also be passed to distinguish the custom field.
 
 =item OPERATOR - The usual Limit operators
 

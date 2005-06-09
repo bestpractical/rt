@@ -48,27 +48,12 @@
 <br>
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
-% my $name = $NamePrefix . $CustomField->Id . "-Values";
-<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
-
-<span id="<% $name %>_Container">
-<input name="<% $name %>" value="<% $Default %>" type="text" id="<% $name %>" autocomplete="off" />
-<span id="<% $name %>_Button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
-% my $CFVs = $CustomField->Values;
-% while ($CFVs and my $value = $CFVs->Next ) {
-        <option value="<%$value->Name%>"><% $value->Name%></option>
-% }
-</select>
-<script language="javascript"><!--
-var ComboBoxes =  new Array('<% $name %>');
-if ( typeof( window.addEventListener ) != "undefined" ) {
-    window.addEventListener("load", ComboBox_Init, false);
-} else if ( typeof( window.attachEvent ) != "undefined" ) {
-    window.attachEvent("onload", ComboBox_Init);
-} else {
-    ComboBox_Init();
-}
-//--></script>
+<& /Widgets/ComboBox,
+    Name    => $NamePrefix . $CustomField->Id . "-Values",
+    Default => $Default,
+    Rows    => $Rows,
+    Values  => [map {$_->Name} @{$CustomField->Values->ItemsArrayRef}],
+&>
 <%ARGS>
 $Object => undef
 $CustomField => undef

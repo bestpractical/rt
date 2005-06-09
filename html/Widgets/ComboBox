@@ -43,15 +43,25 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<ul>
-% my $memberof = $Ticket->MemberOf;
-% while (my $member_of = $memberof->Next) {
-<li><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: <%$member_of->Subject%> [<%$member_of->Status%>]
-% }
-</ul>
+<nobr>
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
 
-<%INIT>
-</%INIT>
+<span id="<% $Name %>_Container">
+<input name="<% $Name %>" id="<% $Name %>" value="<% $Default %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
+<br style="display: none"><span id="<% $Name %>_Button"></span></span><select name="List-<% $Name %>" id="<% $Name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " rows="<% $Rows %>">
+<option style="display: none" value="">-</option>
+% foreach my $value (@Values) {
+        <option value="<%$value%>"><% $value%></option>
+% }
+</select>
+<script language="javascript"><!--
+ComboBox_InitWith('<% $Name %>');
+//--></script>
+</nobr>
 <%ARGS>
-$Ticket => undef
+$Name
+$Size    => undef
+$Rows    => 5
+$Default => ''
+@Values  => ()
 </%ARGS>

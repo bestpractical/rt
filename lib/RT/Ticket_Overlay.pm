@@ -151,6 +151,7 @@ use RT::Date;
 use RT::CustomFields;
 use RT::Tickets;
 use RT::Transactions;
+use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
@@ -2231,6 +2232,8 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the TransactionObj
 
+Returns: Transaction id, Error Message, Transaction Object
+(note the different order from Create()!)
 
 =cut
 
@@ -2279,6 +2282,9 @@ if there's no MIMEObj, Content is used to build a MIME::Entity object
 
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the TransactionObj
+
+Returns: Transaction id, Error Message, Transaction Object
+(note the different order from Create()!)
 
 
 =cut
@@ -3582,6 +3588,26 @@ sub HasRight {
 # }}}
 
 # }}}
+
+=head2 Reminders
+
+Return the Reminders object for this ticket. (It's an RT::Reminders object.)
+It isn't acutally a searchbuilder collection itself.
+
+=cut
+
+sub Reminders {
+    my $self = shift;
+    
+    unless ($self->{'__reminders'}) {
+        $self->{'__reminders'} = RT::Reminders->new($self->CurrentUser);
+        $self->{'__reminders'}->Ticket($self->id);
+    }
+    return $self->{'__reminders'};
+
+}
+
+
 
 # {{{ sub Transactions 
 

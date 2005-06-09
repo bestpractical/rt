@@ -52,7 +52,6 @@
 use strict;
 no warnings qw(numeric redefine);
 use Getopt::Long;
-use CPAN;
 my %args;
 my %deps;
 GetOptions(
@@ -80,8 +79,43 @@ $args{'with-CORE'} = 1;
 $args{'with-DEV'} =1; 
 $args{'with-CLI'} =1; 
 $args{'with-MAILGATE'} =1; 
+{
+  my $section;
+  my %always_show_sections = (
+    perl => 1,
+    users => 1,
+  );
 
+  sub section {
+    my $s = shift;
+    $section = $s;
+    print "$s:\n";
+  }
 
+  my $any_missing = 0;
+  sub found {
+    my $msg = shift;
+    my $test = shift;
+    my $extra = shift;
+  
+    $any_missing = 1 unless $test;
+    if ($args{'v'} or not $test or $always_show_sections{$section}) {
+      print "\t$msg...";
+      print $test ? "found" : "MISSING";
+      print "\n";
+    }
+    
+    print "\t\t$extra\n" if defined $extra;
+  }
+
+  sub conclude {
+    if ($any_missing) {
+      print "\nSOMETHING WAS MISSING!\n";
+    } else {
+      print "\nEverything was found.\n";
+    }
+  }
+}
 
 sub help {
 
@@ -167,8 +201,7 @@ HTTP::Server::Simple::Mason 0.03
 GD
 GD::Graph
 GD::Text
-HTTP::Server::Simple 0.07
-HTTP::Server::Simple::Mason 0.03
+Text::WikiFormat
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];
@@ -244,7 +277,7 @@ check_users();
 foreach my $type (keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
     my $type = $1;
-    print "$type dependencies:\n";
+    section("$type dependencies");
     my @deps = (@{$deps{$type}});
     while (@deps) {
         my $module = shift @deps;
@@ -257,6 +290,8 @@ foreach my $type (keys %args) {
     }
 }
 
+conclude();
+
 sub test_dep {
     my $module = shift;
     my $version = shift;
@@ -265,26 +300,25 @@ sub test_dep {
     if ($@) {
         my $error = $@;
         $error =~ s/\n(.*)$//s;
-        print "\t$module $version";
-        print "...MISSING\n";
-        print "\t\t$error\n" if $error =~ /this is only/;
+        undef $error unless $error =~ /this is only/;
+        found("$module $version", 0, $error);
 
         return undef;
     } else {
-        print "\t$module $version...found\n" if $args{'v'};
+        found("$module $version", 1);
         return 1;
     }
 }
 
 sub resolve_dep {
     my $module = shift;
-    use CPAN;
-    CPAN::Shell->install($module);		
+    system( qq[@PERL@ -MCPAN -e'install("$module")'] );
 }
 
 sub download_mods {
     my %modules;
-
+    use CPAN;
+    
     foreach my $key (keys %deps) {
         my @deps = (@{$deps{$key}});
         while (@deps) {
@@ -323,38 +357,24 @@ sub download_mods {
 }
 
 sub check_perl_version {
-
-
-print "perl:\n";
-print "\t5.8.3";
-eval {require 5.008003};
-if ($@) {
-    print "...MISSING.\n";
-    eval {require 5.008000};
-    if ($@) {
-        print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
-        die;
-    } 
-
-    eval {require 5.008003};
-    if ($@) {
-        print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
-    }
-} else {
-    print "...found\n" if $args{'v'};
-}
+  section("perl");
+  eval {require 5.008003};
+  if ($@) {
+    found("5.8.3", 0, "RT is known to be non-functional on versions of perl older than 5.8.3. Please upgrade to 5.8.3 or newer.");
+    die;
+  } else {
+    found("5.8.3", 1);
+  }
 }
 
 sub check_users {
-
-print "users:\n";
-print "\trt group (@RTGROUP@)...",      (defined getgrnam("@RTGROUP@")    ? "found" : "MISSING"), "\n";
-print "\tbin owner (@BIN_OWNER@)...",   (defined getpwnam("@BIN_OWNER@")  ? "found" : "MISSING"), "\n";
-print "\tlibs owner (@LIBS_OWNER@)...", (defined getpwnam("@LIBS_OWNER@") ? "found" : "MISSING"), "\n";
-print "\tlibs group (@LIBS_GROUP@)...", (defined getgrnam("@LIBS_GROUP@") ? "found" : "MISSING"), "\n";
-print "\tweb owner (@WEB_USER@)...",    (defined getpwnam("@WEB_USER@")   ? "found" : "MISSING"), "\n";
-print "\tweb group (@WEB_GROUP@)...",   (defined getgrnam("@WEB_GROUP@")  ? "found" : "MISSING"), "\n";
-
+  section("users");
+  found("rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@"));
+  found("bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@"));
+  found("libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@"));
+  found("libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@"));
+  found("web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@"));
+  found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
 }
 
 

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::ScripAction - RT Action object
@@ -92,10 +93,12 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create 
+
 =head2 Create
-  
- Takes a hash. Creates a new Action entry.
- should be better documented.
+
+Takes a hash. Creates a new Action entry.  should be better
+documented.
+
 =cut
 
 sub Create  {

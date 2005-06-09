@@ -90,8 +90,7 @@ sub new {
     if ($MasonX::Apache2Handler::VERSION) {
         goto &NewApache2Handler;
     }
-    elsif ( $mod_perl::VERSION && $mod_perl::VERSION >= 1.9908 ) {
-        require Apache::RequestUtil;
+    elsif ( $mod_perl::VERSION && $mod_perl::VERSION >= 2 ) {
         no warnings 'redefine';
         my $sub = *Apache::request{CODE};
         *Apache::request = sub {
@@ -120,11 +119,10 @@ sub InitSessionDir {
         # Clean up our umask to protect session files
         umask(0077);
 
-        if ($CGI::MOD_PERL) {
+        if ($CGI::MOD_PERL) { local $@; eval {
             chown( Apache->server->uid, Apache->server->gid,
                 $RT::MasonSessionDir )
-            if Apache->server->can('uid');
-        }
+        } }
 
         # Die if WebSessionDir doesn't exist or we can't write to it
         stat($RT::MasonSessionDir);

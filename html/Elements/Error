@@ -51,9 +51,11 @@
 <br>
 <%$Details%>
 </&>
-</body>
-</html>
 
+<%cleanup>
+$m->comp('/Elements/Footer');
+$m->abort();
+</%cleanup>
 
 <%args>
 $Code => undef
