@@ -117,6 +117,15 @@ sub Delete  {
 # }}}
 
 # {{{ sub Load 
+
+=head2 Load IDENTIFIER
+
+Loads an action by its Name.
+
+Returns: Id, Error Message
+
+= cut
+
 sub Load  {
     my $self = shift;
     my $identifier = shift;
@@ -139,7 +148,7 @@ sub Load  {
 	
 	$self->{'Template'} = $template;
     }
-    return ($self->loc('[_1] ScripAction loaded', $self->Id));
+    return ($self->Id, ($self->loc('[_1] ScripAction loaded', $self->Id)));
 }
 # }}}
 
