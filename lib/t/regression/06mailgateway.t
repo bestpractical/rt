@@ -180,7 +180,7 @@ From: doesnotexist-2\@example.com
 To: rt\@example.com
 Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
 
-Blah!
+Blah!  (Should not work.)
 Foob!
 EOF
 close (MAIL);
@@ -231,7 +231,7 @@ From: doesnotexist-3\@example.com
 To: rt\@example.com
 Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
 
-Blah!
+Blah!  (Should not work.)
 Foob!
 EOF
 close (MAIL);
