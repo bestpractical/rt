@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 35;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();

@@ -83,6 +83,7 @@
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><BR>
 </TR>
+<& /Elements/Callback, GroupObj => $Group, results => \@results, %ARGS &>
 </TABLE>
 <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
 </form>

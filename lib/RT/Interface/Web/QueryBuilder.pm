@@ -43,68 +43,14 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-# This Action will open the BASE if a dependent is resolved.
-
-package RT::Action::AutoOpen;
-require RT::Action::Generic;
+package RT::Interface::Web::QueryBuilder;
 
 use strict;
-use vars qw/@ISA/;
-@ISA=qw(RT::Action::Generic);
+use warnings;
 
-#Do what we need to do and send it out.
-
-#What does this type of Action does
-
-# {{{ sub Describe 
-sub Describe  {
-  my $self = shift;
-  return (ref $self );
-}
-# }}}
-
-
-# {{{ sub Prepare 
-sub Prepare {
-    my $self = shift;
-
-    # if the ticket is already open or the ticket is new and the message is more mail from the
-    # requestor, don't reopen it.
-
-    if ( ( $self->TicketObj->Status eq 'open' )
-         || ( ( $self->TicketObj->Status eq 'new' )
-              && $self->TransactionObj->IsInbound )
-         || ( defined $self->TransactionObj->Message->First
-              && $self->TransactionObj->Message->First->GetHeader('RT-Control') =~ /\bno-autoopen\b/i )
-      ) {
-
-        return undef;
-    }
-    else {
-        return (1);
-    }
-}
-# }}}
-
-sub Commit {
-    my $self = shift;
-      my $oldstatus = $self->TicketObj->Status();
-        $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
-        $self->TicketObj->_NewTransaction(
-                         Type     => 'Status',
-                         Field    => 'Status',
-                         OldValue => $oldstatus,
-                         NewValue => 'open',
-                         Data => 'Ticket auto-opened on incoming correspondence'
-        );
-
-
-    return(1);
-}
-
-eval "require RT::Action::AutoOpen_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Vendor.pm});
-eval "require RT::Action::AutoOpen_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
+eval "require RT::Interface::Web::QueryBuilder_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder_Vendor.pm});
+eval "require RT::Interface::Web::QueryBuilder_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder_Local.pm});
 
 1;

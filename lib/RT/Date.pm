@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Date - a simple Object Oriented date.
@@ -398,6 +399,7 @@ sub AsString {
 # }}}
 
 # {{{ GetWeekday
+
 =head2 GetWeekday DAY
 
 Takes an integer day of week and returns a localized string for that day of week
@@ -420,6 +422,7 @@ sub GetWeekday {
 # }}}
 
 # {{{ GetMonth
+
 =head2 GetMonth DAY
 
 Takes an integer month and returns a localized string for that month 
@@ -572,6 +575,7 @@ sub W3CDTF {
 # }}}
 
 # {{{ sub LocalTimezone 
+
 =head2 LocalTimezone
 
   Returns the current timezone. For now, draws off a system timezone, RT::Timezone. Eventually, this may

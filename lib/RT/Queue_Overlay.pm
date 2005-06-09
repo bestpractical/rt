@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -234,6 +235,7 @@ sub StatusArray {
 Returns true if VALUE is a valid status.  Otherwise, returns 0
 
 =for testing
+
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsValidStatus('new')== 1, 'New is a valid status');
 ok($q->IsValidStatus('f00')== 0, 'f00 is not a valid status');
@@ -258,6 +260,7 @@ sub IsValidStatus {
 Returns true if VALUE is a Active status.  Otherwise, returns 0
 
 =for testing
+
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsActiveStatus('new')== 1, 'New is a Active status');
 ok($q->IsActiveStatus('rejected')== 0, 'Rejected is an inactive status');
@@ -283,6 +286,7 @@ sub IsActiveStatus {
 Returns true if VALUE is a Inactive status.  Otherwise, returns 0
 
 =for testing
+
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsInactiveStatus('new')== 0, 'New is a Active status');
 ok($q->IsInactiveStatus('rejected')== 1, 'rejeected is an Inactive status');

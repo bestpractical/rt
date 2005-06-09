@@ -53,9 +53,11 @@
 <%$Details%>
 </font>
 <& /Elements/TitleBoxEnd &>
-</body>
-</HTML>
 
+<%cleanup>
+$m->comp('/Elements/Footer');
+$m->abort();
+</%cleanup>
 
 <%args>
 $Code => undef
