@@ -781,9 +781,16 @@ sub SetReferencesHeaders {
     }
   
     my $pseudo_ref = $self->PseudoReference;
-    @references = grep { $_ ne $pseudo_ref } @references;
+    @references = ($pseudo_ref, grep { $_ ne $pseudo_ref } @references , @msgid);
 
-    $self->SetHeader( 'References', join( " ",  ( $pseudo_ref, @references, @msgid )));
+    # If there are more than 10 references headers, remove all but the first four and the last six
+    # (Gotta keep this from growing forever)
+    splice(@references, 4, -6) if ($#references >= 10);
+
+
+
+    $self->SetHeader( 'References', join( " ",   @references) );
+    $self->TemplateObj->MIMEObj->head->fold_length( 'References', 80 );
 
 }
 

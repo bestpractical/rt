@@ -460,6 +460,14 @@ sub ProcessUpdateMessage {
             Body    => $args{ARGSRef}->{'UpdateContent'},
         );
 
+        $Message->head->add( 'Message-Id' => "<rt-"
+              . $RT::VERSION . "-"
+              . $args{TicketObj}->id . "-"
+              . $$ . "-"
+              . time() . "-"
+              . rand(2000) . '@'
+              . $RT::Organization
+              . ">" );
         my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
         if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
             $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
