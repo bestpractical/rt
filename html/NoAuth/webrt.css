@@ -60,7 +60,7 @@ position: absolute;
 	  border-bottom: solid #999999 1px;
 	  z-index: 2;
 }
-body>div.logo {position: fixed;}
+body>div.logo {}
 
 
 div.login-information {
@@ -80,12 +80,12 @@ height: 50px;
 	border-bottom: solid #999999 1px;
 	z-index: 1;
 }
-body>div.login-information {position: fixed;}
+body>div.login-information {}
 div.bpscredits {
 color: #666666;
 right: 1em;
 bottom: 0;
-position: fixed;
+
 width: 85%;
 background: #ffffff;
 	margin-top: 1em;
@@ -407,7 +407,7 @@ div.rtname {  font-family: Verdana, Arial, Helvetica, sans-serif;
      padding-left: .5em;
      z-index: 3;
 }
-body>div.rtname {position: fixed;}
+body>div.rtname {}
 .header {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 font-weight: bold;
@@ -559,7 +559,7 @@ SPAN.date { font-size: 0.8em }
 div.title {
 color: #ffffff;
 background: #336699; 
-position: fixed;
+
 left: 14%;
 right:0px;
 margin: 0px;
@@ -569,7 +569,7 @@ padding: 5px;
 	 font-weight: bold;
 	 z-index: 999;
 }
-body>div.title {position: fixed;}
+body>div.title {}
 
 span.productname { font-size: 2em;
              color: #0066cc;}
@@ -626,7 +626,7 @@ div.menu {
 }
 /* IE hack */
 
-body>div.menu {position: fixed;}
+body>div.menu {}
 
 table.ticket-overview {
 width: 100px;
@@ -667,7 +667,7 @@ div.topactions {
     width:  86%;
     z-index: 4;
 }
-body>div.topactions {position: fixed;}
+body>div.topactions {}
 
 span.topaction {
     text-align: right;
