@@ -45,6 +45,7 @@
 
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
+                        OnlyThisClass => 1,
                         %ARGS &>
 <& Elements/EditLinks, ArticleObj => $ArticleObj, 
                         id => $id,
@@ -118,6 +119,7 @@ elsif ( $id eq 'new' ) {
     push( @results, $msg );
     if ($id) {
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
+        delete $ARGS{id};
     }
     else {
         $ClassObj->Load($Class);
@@ -180,13 +182,14 @@ else {
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Target => $luri, Type => $linktype );
             push @results, $msg;
+            delete $ARGS{ $ArticleObj->Id . "-$linktype" } if $val;
         }
 
         for my $luri ( split( / /, $ARGS{ "$linktype-" . $ArticleObj->Id } ) ) {
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Base => $luri, Type => $linktype );
-
             push @results, $msg;
+            delete $ARGS{ "$linktype-" . $ArticleObj->Id } if $val;
         }
 
     }
