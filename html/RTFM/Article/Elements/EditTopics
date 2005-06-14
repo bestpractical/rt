@@ -26,7 +26,8 @@
 <select multiple size="<% $rows > 10 ? 10 : $rows %>" name="Topics">
 <%perl>
 if ($ClassObj->Id) {
-   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">");
+   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">")
+     unless $OnlyThisClass;
    $inTree->traverse(sub {
      my $tree = shift;
      my $topic = $tree->getNodeValue;
@@ -35,6 +36,7 @@ if ($ClassObj->Id) {
        .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
    });
  }
+ unless ($OnlyThisClass) {
  my $class = $ClassObj->Id;
  $otherTree->traverse(sub {
    my $tree = shift;

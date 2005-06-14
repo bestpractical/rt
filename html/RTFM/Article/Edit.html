@@ -60,9 +60,8 @@
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
                         OnlyThisClass => 1,
                         %ARGS,
-                        id =>$id
+                        id => $id
                         &>
-
 <& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333" &>
 </form>
 </table>
