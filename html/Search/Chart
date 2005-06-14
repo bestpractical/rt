@@ -68,9 +68,7 @@ while ( my $entry = $tix->Next ) {
         push @values, $entry->id;
     }
 
-      $chart->set( title   => loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy) 
-      ) or die $chart->error;
-
+    #$chart->set( title   => loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy) ) or die $chart->error;
 
     unless (@keys && @values) {
         @keys = ('');

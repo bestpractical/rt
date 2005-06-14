@@ -41,8 +41,10 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
 <img src="<%$RT::WebPath%>/Search/Chart?<%$query_string|n%>">
-<br>
+<br/>
+<%$Query%>
 
+<br/>
 <table class="collection-as-table">
 <tr>
 <th class="collection-as-table"><%loc($PrimaryGroupBy)%>
