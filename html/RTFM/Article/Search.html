@@ -26,6 +26,9 @@
 </form>
 
 <& Elements/ShowSearchResults, articles => $articles &>
+<div align=right>
+<a href="<%$RT::WebPath%>/RTFM/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
+</div>
 <%init>
 use RT::SavedSearch;
 my @results;
@@ -393,6 +396,10 @@ foreach my $field qw(Name Summary Class) {
 
 $m->comp('/Elements/Callback', %ARGS, _Search => $articles);
 
+my %filtered = %ARGS;
+delete $filtered{$_} for (@metakeys, "EditTopics", "ExpandTopics");
+delete $filtered{$_} for grep {$filtered{$_} !~ /\S/} keys %filtered;
+my $QueryString = "?".$m->comp('/Elements/QueryString', %filtered);
 </%init>
 
 
