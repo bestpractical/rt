@@ -20,14 +20,18 @@
     id => $id, 
     Title => $title, 
     current_subtab => 'RTFM/Article/Display.html?id='.$id &>
-<& Elements/ShowTopics, article => $article &>
-
+<h2><&|/l&>Basics</&></h2>
+<&|/l&>Class</&>: <%$article->ClassObj->Name%><br/>
 <emp><%$article->Summary%></emp>
-<br><br><br>
+<h2><&|/l&>Content</&></h2>
 <& /Elements/ShowCustomFields, Object => $article &>
-<br>
-<br>
+
+
+<h2><&|/l&>Links</&></h2>
 <& Elements/ShowLinks, article => $article &>
+
+<h2><&|/l&>Topics</&></h2>
+<& Elements/ShowTopics, article => $article &>
 <%init>
 
 my $article = RT::FM::Article->new( $session{'CurrentUser'} );

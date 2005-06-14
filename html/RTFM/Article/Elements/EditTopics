@@ -17,41 +17,40 @@
 %# END LICENSE BLOCK
 
 % if ($ClassObj->Id) {
-<table>
 <tr>
-<td>Topics in this class:</td>
+<td class="label"><&|/l&>Topics</&></td>
 <td>
 % }
 
 <input type="hidden" name="EditTopics" value="1" />
 <select multiple size="<% $rows > 10 ? 10 : $rows %>" name="Topics">
-% if ($ClassObj->Id) {
-%   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">")
-%     unless $OnlyThisClass;
-%   $inTree->traverse(sub {
-%     my $tree = shift;
-%     my $topic = $tree->getNodeValue;
-%     $m->print("<option value=\"".$topic->Id."\""
-%       .(exists $topics{$topic->Id} ? " selected" : "").">"
-%       .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
-%   });
-% }
-% unless ($OnlyThisClass) {
-%   my $class = $ClassObj->Id;
-%   $otherTree->traverse(sub {
-%     my $tree = shift;
-%     my $topic = $tree->getNodeValue;
-%     if ($topic->ObjectId != $class) {
-%       $class = $topic->ObjectId;
-%       $m->print("</optgroup>\n");
-%       my $c = new RT::FM::Class($session{'CurrentUser'});
-%       $c->Load($topic->ObjectId);
-%       $m->print("<optgroup label=\"".$c->Name."\">\n");
-%     }
-%     $m->print("<option value=\"".$topic->Id."\""
-%       .(exists $topics{$topic->Id} ? " selected" : "").">"
-%       .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
-%   });
+<%perl>
+if ($ClassObj->Id) {
+   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">");
+   $inTree->traverse(sub {
+     my $tree = shift;
+     my $topic = $tree->getNodeValue;
+     $m->print("<option value=\"".$topic->Id."\""
+       .(exists $topics{$topic->Id} ? " selected" : "").">"
+       .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+   });
+ }
+ my $class = $ClassObj->Id;
+ $otherTree->traverse(sub {
+   my $tree = shift;
+   my $topic = $tree->getNodeValue;
+   if ($topic->ObjectId != $class) {
+     $class = $topic->ObjectId;
+     $m->print("</optgroup>\n");
+     my $c = new RT::FM::Class($session{'CurrentUser'});
+     $c->Load($topic->ObjectId);
+     $m->print("<optgroup label=\"".$c->Name."\">\n");
+   }
+   $m->print("<option value=\"".$topic->Id."\""
+     .(exists $topics{$topic->Id} ? " selected" : "").">"
+     .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+ });
+</%perl>
 </optgroup>
 % }
 </select>

@@ -16,10 +16,10 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Topic hierarchy'), class => $class, topic => $id &>
+<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Browse by topic'), class => $class, topic => $id &>
 
 <& /Elements/ListActions, actions => \@Actions &>
-<a href="Topics.html">Root</a>
+<a href="Topics.html"><&|/l&>All topics</&></a>
 % if (defined $class) {
 &gt; <a href="Topics.html?class=<%$currclass->Id%>"><% $currclass->Name %></a>
 % }
@@ -28,27 +28,29 @@
 &gt; <& /RTFM/Elements/ShowTopic, topic => $currtopic &>
 % }
 <br />
-<& /Elements/TitleBoxStart, title => loc('Topics') &>
+<h1><&|/l&>Browse by topic</&></h1>
 <ul>
 <%perl>
-if ($class) {
-    print MakeLinks(undef, $currclass);
+if (defined $class) {
+        $m->print('<li><h2>'.'<a href="'.
+        $RT::WebPath."/RTFM/Topics.html?class=" . $currclass->Id
+        .'">'.$currclass->Name.'</a></h2></li>');
     ProduceTree(\@Actions, $currclass, 0, $id);
 } else {
     while (my $c = $Classes->Next) {
-	print MakeLinks(undef, $c);
+        $m->print('<li><h2>'.'<a href="'.
+        $RT::WebPath."/RTFM/Topics.html?class=" . $c->Id
+        .'">'.$c->Name.'</a></h2></li>');
 	ProduceTree(\@Actions, $c, 0, $id);
     }
 }
 </%perl>
 </ul>
-<& /Elements/TitleBoxEnd &>
 
 % if ($id || $showall) {
 %# TODO: Eventually it would be nice to show all for classes too.  Thus
 %# the condition above.
 <br/>
-<& /Elements/TitleBoxStart, title => loc('Articles') &>
 <%perl>
 my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
 $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
@@ -62,8 +64,10 @@ if ($id) {
 	}
     }
 }
-if ($Articles->Count) {
 </%perl>
+
+% if ($Articles->Count) {
+<h2>Articles in this topic</h2>
 <ul>
 % while (my $obj = $Articles->Next) {
 %   my $a = RT::FM::Article->new($session{'CurrentUser'});
@@ -72,9 +76,8 @@ if ($Articles->Count) {
 % }
 </ul>
 % } else {
-<i>No articles in this topic</i>
+<i><&|/l&>No articles found in this topic</&></i>
 % }
-<& /Elements/TitleBoxEnd &>
 % }
 
 
@@ -132,8 +135,8 @@ sub ProduceTree {
 		if ($t->Id == $restrictid) {
 		    &ProduceTree($Actions, $c, $restrictid, undef);
 		}
+	    print "</ul>";# x scalar(@showtopics);
 	    }
-	    print "</ul>" x scalar(@showtopics);
 	}
     } else {
 	# No restriction in place.  Build the entire tree.
@@ -171,7 +174,9 @@ sub MakeLinks {
 	$output .= "</a>";
 	
 	if ($haschild) {
-	    $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&showall=1\">Show all articles</a> ]";
+        #  Commented out by Jesse, since it seems confusing
+        #  
+        #   $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&showall=1\">Show all articles</a> ]";
 	}
 	
 	$output .= "</li>\n";

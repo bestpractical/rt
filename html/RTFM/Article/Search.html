@@ -19,12 +19,18 @@
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
 <& /Elements/ListActions, actions => \@results &>
 <form action="Search.html" method="GET">
+<& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
+<br />
+<br />
 <& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
     Name => ($search ? $search->Name : undef),
     Privacy => ($search ? $search->Privacy : undef) &>
-<& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
-</form>
 
+</form>
+<br />
+<br />
+<hr />
+<br />
 <& Elements/ShowSearchResults, articles => $articles &>
 <div align=right>
 <a href="<%$RT::WebPath%>/RTFM/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>

@@ -21,85 +21,101 @@
 % $qs =~ s/HideOptions=1//gi;
 <a href="Search.html?<%$qs%>"><&|/l&>Show advanced search options...</&></a>
 % }  else { 
-<& /Elements/TitleBoxStart, title => loc('Advanced Search Criteria')&>
-<br>
+<& /Elements/TitleBoxStart, title => loc('Advanced search')&>
 <table>
-<tr valign="middle">
-<td>
-<&|/l&>Class is</&>
-</td>
-<td>
-<& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
-</td>
-<td>
-<&|/l&>and is not</&>
-</td>
-<td>
+<tr><td class="label">
+<h2><&|/l&>Basics</&></h2>
+</td></tr>
+
+<td class="label"><&|/l&>Class</&></td><td class="value">
+is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<&|/l&>and not</&>
 <& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
-</td>
-</tr>
-</table>
-<br><&|/l&>Has topic</&><& /RTFM/Article/Elements/EditTopics, %ARGS &>
-<br /><&|/l&>Include subtopics of selected topics</&> <input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
-<br><&|/l&>Name matches</&>
-<input name="Name~" value="<%$ARGS{'Name~'}%>">
+</td></tr>
+
+<td class="label"><&|/l&>Name</&></td><td class="value">
+<&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>">
 <&|/l&>and not</&>
 <input name="Name!~" value="<%$ARGS{'Name!~'}%>">
-<br><&|/l&>Summary matches</&>
+</td></tr>
+<td class="label">
+<&|/l&>Summary</&></td><td class="value">
+<&|/l&>matches</&> 
 <input name="Summary~" value="<%$ARGS{'Summary~'}%>">
 <&|/l&>and not</&>
 <input name="Summary!~" value="<%$ARGS{'Summary!~'}%>">
+</td></tr>
+<tr><td class="label">
+<h2><&|/l&>Content</&></h2>
+</td></tr>
 
-<br><&|/l&>Created during</&>
-<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
-<&|/l&>till</&>
-<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
-
-<br><&|/l&>Created during</&>
-<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
-($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
-<&|/l&>till</&>
-<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
-($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
-<br>
-<&|/l&>Which refer to</&> <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
-<i><&|/l&>Separate multiple URLs with spaces</&></i>
-<br>
-<&|/l&>Which are referred to by </&> <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
-<i><&|/l&>Separate multiple URLs with spaces</&></i>
-
-<br><&|/l&>Article text matches</&>
+<td class="label"><&|/l&>Any field</&></td><td class="value">
+<&|/l&>matches</&> 
 <input name="Article~" value="<%$ARGS{'Article~'}%>">
 <&|/l&>and not</&>
 <input name="Article!~" value="<%$ARGS{'Article!~'}%>">
+</td></tr>
 
-<table>
-%# for each custom field 
 % while (my $field = $customfields->Next ) {
 
-<tr>
-<td><&|/l, $field->Name &>[_1] matches</&></td><td valign=top>
+<td class="label">
+<% $field->Name %>
+</td><td class="value">
+<&|/l&>matches</&> 
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
 <& /RTFM/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $matches,
     Values => $ARGS{$matches} &>
-    </td>
-    <td><&|/l&>and not</&></td>
-    <td valign="top">
+    <&|/l&>and not</&>
 <& /RTFM/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $nomatches,
     Values => $ARGS{$nomatches}
     &>
-    </td>
-    </tr>
-
+</td></tr>
 % }
-</table>
+<tr><td class="label">
+<h2><&|/l&>Dates</&></h2>
+</td></tr>
 
-<div align="right"><input type="submit"></div>
+<td class="label"><&|/l&>Created</&></td><td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+
+</td></tr>
+<td class="label"><&|/l&>Last updated</&></td><td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
+($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
+</td></tr>
+
+<tr><td class="label">
+<h2><&|/l&>Links</&></h2>
+</td></tr>
+<tr><td class="label"></td><td>
+<& LinkEntryInstructions &>
+</td></tr>
+<td class="label"><&|/l&>Refer to</&></td><td class="value">
+<input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
+</td></tr>
+<td class="label"><&|/l&>Referred to by</&></td><td class="value">
+<input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
+</td></tr>
+
+<tr><td class="label">
+<h2><&|/l&>Topics</&></h2>
+</td></tr>
+<tr><td class="label"></td><td>
+<& /RTFM/Article/Elements/EditTopics, %ARGS &>
+<br /><input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+<&|/l&>Include subtopics</&> 
+</td></tr>
+<& /Elements/Submit, Label => loc('Search') &>
 <&/Elements/TitleBoxEnd&>
 % }
 

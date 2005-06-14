@@ -16,7 +16,6 @@
 %# 
 %# END LICENSE BLOCK
 
-<table>
 % while (my $CustomField = $CustomFields->Next()) {
   <tr>
     <td class="labeltop">
@@ -27,13 +26,16 @@
         Object => $ArticleObj, 
         CustomField => $CustomField, 
         NamePrefix => $NamePrefix,
-        Default => $CFContent->{$CustomField->Id},
+        Default => 
+            ($CFContent->{$CustomField->Id} || 
+              $ARGS{$NamePrefix .$CustomField->id .'-Values'} ||
+              $ARGS{$NamePrefix .$CustomField->id .'-Value'})
+              ,
         Rows => 15,
         Cols => 70
         &></td>
   </tr>
 % }
-</table>
 <%INIT>
 my $CustomFields;
 my $NamePrefix;

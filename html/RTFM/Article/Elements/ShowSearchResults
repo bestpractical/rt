@@ -16,6 +16,11 @@
 %# 
 %# END LICENSE BLOCK
 
+% # THIS IS A HORRIBLE HACK TO SEE IF WE TRIED TO SEARCH
+% # IT CAN GO AWAY WHEN SEARCHBUILDER'S _isLimited IS 
+% # PROMOTED TO A PUBLIC API XXX TODO
+% if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+<h2><&|/l&>Search results</&></h2>
 % if ($articles->Count){
 
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
@@ -77,9 +82,14 @@ CLASS="evenline"
 % }
 </table>
 % }
+% else {
+<i><&|/l&>No articles found.</&></i>
+% }
+% }
 <%init>
 my $i;
 </%init>
 <%args>
 $articles => undef
+$did_search => 1
 </%args>

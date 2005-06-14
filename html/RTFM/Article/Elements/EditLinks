@@ -15,13 +15,16 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
-<TABLE>
-<TD VALIGN=TOP>
-<i><&|/l&>Enter articles, tickets, or other URIs to link this article to.  Articles may be specified as "a:###" and tickets may be specified as "t:###", where ### represents the ID of the article or ticket.  Separate multiple entries with spaces.</&></i><br>
+<tr><td class="label"></td>
+<td class="value">
+<i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&>
+<& LinkEntryInstructions &>
+% unless ($id eq 'new') {
 <i><&|/l&>(Check boxes to delete)</&></i><br>
-<TABLE>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>"><br>
+% }
+</td>
+</tr>
+<TR><TD class="label"><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>"><br>
 <UL>
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
@@ -44,7 +47,7 @@
 % }
 </UL>
 </TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}%>">
+<TR><TD class="label"><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}%>">
 <br>
 <UL>
 % if ($id ne 'new') {
@@ -67,13 +70,7 @@
 %   }
 % }
 </UL>
-
-
 </TD></TR>
-</TABLE>
-</TD>
-</TR>
-</TABLE>
 
 
       

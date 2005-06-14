@@ -16,9 +16,6 @@
 %# 
 %# END LICENSE BLOCK
 
-    <table width="100%">
-    <tr>
-    <td valign="top">
 
 <&|/l&>Refers to</&>:<BR>
 <UL>
@@ -40,8 +37,7 @@
 % }
 %}
 </UL>
-</td>
-<td valign="top">
+
 <&|/l&>Referred to by</&>:<BR>
 <UL>
 % my $referredtoby = $article->ReferredToBy;
@@ -61,8 +57,6 @@
 %}
 % }
 </UL>
-</tr>
-</table>
 <%args>
 $article => undef
 </%args>

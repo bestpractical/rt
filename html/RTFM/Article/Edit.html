@@ -27,34 +27,45 @@
        Title => loc('Create a new article') &>
 % }
 <& /Elements/ListActions, actions => \@results &>
-
+<table width="100%">
 <FORM METHOD=POST ACTION="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id%>"/>
-
+<tr><td><&|/l&>Basics</&>
+</td><td></td></tr>
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
                         EditClass =>$EditClass,
                         ClassObj => $ClassObj,  
-                        id => $id,
-                        %ARGS &>
+                        %ARGS ,
+                        id => $id
+                        &>
 
+<tr><td><&|/l&>Content</&>
+</td><td></td></tr>
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
                               ClassObj => $ClassObj, 
+                              %ARGS,
                               id =>$id,
-                              %ARGS &>
+                              &>
 
+<tr><td><&|/l&>Links</&>
+</td><td></td></tr>
+<& Elements/EditLinks, ArticleObj => $ArticleObj, 
+                       %ARGS,
+                        id => $id
+                       &>
+<tr><td><&|/l&>Topics</&>
+</td><td></td></tr>
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
                         OnlyThisClass => 1,
-                        %ARGS &>
-<& Elements/EditLinks, ArticleObj => $ArticleObj, 
-                        id => $id,
-                       %ARGS &>
+                        %ARGS,
+                        id =>$id
+                        &>
 
-<& /Elements/Submit, Label => loc('Save Changes'), 
-                     Caption => loc("If you've updated anything above, be sure to"), 
-                     color => "#993333" &>
+<& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333" &>
 </form>
+</table>
 <%INIT>
 
 if ( exists $ARGS{'Topics'} ) {
@@ -110,14 +121,14 @@ elsif ( $id eq 'new' ) {
         Topics  => $ARGS{'Topics'},
         %create_args
     );
+    push( @results, $msg );
+    if ($id) {
     my @cf_results = ProcessObjectCustomFieldUpdates(
         Object  => $ArticleObj,
         ARGSRef => \%ARGS
     );
     @results = ( @results, @cf_results );
 
-    push( @results, $msg );
-    if ($id) {
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
         delete $ARGS{id};
     }
