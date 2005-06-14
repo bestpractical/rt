@@ -22,7 +22,7 @@ use vars qw/$System/;
 use RT::FM::System;
 
 
-our $VERSION = '2.1.20';
+our $VERSION = '2.1.21';
 
 # Create a system object for RTFM
 $RT::FM::System = RT::FM::System->new($RT::SystemUser);

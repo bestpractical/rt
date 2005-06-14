@@ -8,6 +8,7 @@ requires(RT => '3.4.2',
     HTML::TreeBuilder => 0,
     Time::ParseDate => 0,
     HTML::FormatText => 0,
+    YAML => 0
 
 );
 &WriteAll;

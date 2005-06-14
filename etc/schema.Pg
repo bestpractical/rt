@@ -12,35 +12,6 @@ LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
 
-
-CREATE TABLE FM_ClassCustomFields (
-id SERIAL,
-Class integer not NULL,
-CustomField integer not NULL,
-Creator integer NOT NULL DEFAULT 0,
-Created TIMESTAMP NULL,
-SortOrder smallint not null default '0',
-Display varchar(255) not null default '',
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-PRIMARY KEY (id)
-);
-
-
-CREATE TABLE FM_CustomFields (
-id SERIAL,
-Name varchar(200) NOT NULL DEFAULT '',
-Type varchar(200) NOT NULL DEFAULT '',
-Description varchar(200) NOT NULL DEFAULT '',
-SortOrder integer NOT NULL DEFAULT 0,
-Creator integer NOT NULL DEFAULT 0,
-Created TIMESTAMP NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-PRIMARY KEY (id)
-);
-
-
 CREATE TABLE FM_Articles (
 id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -53,47 +24,6 @@ Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
-PRIMARY KEY (id)
-);
-
-
-CREATE TABLE FM_CustomFieldValues (
-id SERIAL,
-CustomField int NOT NULL,
-Name varchar(255) NOT NULL DEFAULT '',
-Description varchar(255) NOT NULL DEFAULT '',
-SortOrder integer NOT NULL DEFAULT 0,
-Creator integer NOT NULL DEFAULT 0,
-Created TIMESTAMP NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-PRIMARY KEY (id)
-);
-
-
-CREATE TABLE FM_ArticleCFValues (
-id SERIAL,
-Article int NOT NULL,
-CustomField int NOT NULL,
-Content text,
-Creator integer NOT NULL DEFAULT 0,
-Created TIMESTAMP NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-PRIMARY KEY (id)
-);
-
-
-CREATE TABLE FM_Transactions (
-id SERIAL,
-Article integer NOT NULL DEFAULT 0,
-ChangeLog text NOT NULL DEFAULT '',
-Type varchar(64) NOT NULL DEFAULT '',
-Field varchar(64) NOT NULL DEFAULT '',
-OldContent text NOT NULL DEFAULT '',
-NewContent text NOT NULL DEFAULT '',
-Creator integer NOT NULL DEFAULT 0,
-Created TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
 

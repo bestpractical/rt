@@ -20,5 +20,3 @@ ObjectId NUMBER(11,0) NOT NULL
 );
 
 
-ALTER TABLE FM_ClassCustomFields
-ADD Display varchar2(255) DEFAULT '' NOT NULL;

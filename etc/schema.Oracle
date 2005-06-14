@@ -13,37 +13,6 @@ LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
 
-
-CREATE SEQUENCE FM_ClassCustomFields_seq;
-CREATE TABLE FM_ClassCustomFields (
-id NUMBER(11,0)
-  CONSTRAINT FM_ClassCustomFields_key PRIMARY KEY,
-Class NUMBER(11,0) NOT NULL,
-CustomField NUMBER(11,0) NOT NULL,
-Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
-Created DATE,
-SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
-Display varchar2(255) DEFAULT '' NOT NULL,
-LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
-LastUpdated DATE
-);
-
-
-CREATE SEQUENCE FM_CustomFields_seq;
-CREATE TABLE FM_CustomFields (
-id NUMBER(11,0)
-  CONSTRAINT FM_CustomFields_key PRIMARY KEY,
-Name varchar2(200) DEFAULT '' NOT NULL,
-Type varchar2(200) DEFAULT '' NOT NULL,
-Description varchar2(200) DEFAULT '' NOT NULL,
-SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
-Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
-Created DATE,
-LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
-LastUpdated DATE
-);
-
-
 CREATE SEQUENCE FM_Articles_seq;
 CREATE TABLE FM_Articles (
 id NUMBER(11,0)
@@ -58,50 +27,6 @@ Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
 Created DATE,
 LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
-);
-
-
-CREATE SEQUENCE FM_CustomFieldValues_seq;
-CREATE TABLE FM_CustomFieldValues (
-id NUMBER(11,0)
-  CONSTRAINT FM_CustomFieldValues_key PRIMARY KEY,
-CustomField NUMBER(11,0) NOT NULL,
-Name varchar2(255) DEFAULT '' NOT NULL,
-Description varchar2(255) DEFAULT '',
-SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
-Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
-Created DATE,
-LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
-LastUpdated DATE
-);
-
-
-CREATE SEQUENCE FM_ArticleCFValues_seq;
-CREATE TABLE FM_ArticleCFValues (
-id NUMBER(11,0)
-  CONSTRAINT FM_ArticleCFValues_key PRIMARY KEY,
-Article NUMBER(11,0) NOT NULL,
-CustomField NUMBER(11,0) NOT NULL,
-Content CLOB,
-Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
-Created DATE,
-LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
-LastUpdated DATE
-);
-
-
-CREATE SEQUENCE FM_Transactions_seq;
-CREATE TABLE FM_Transactions (
-id NUMBER(11,0)
-  CONSTRAINT FM_Transactions_key PRIMARY KEY,
-Article NUMBER(11,0) DEFAULT 0 NOT NULL,
-ChangeLog CLOB DEFAULT EMPTY_CLOB(),
-Type varchar2(64) DEFAULT '' NOT NULL,
-Field varchar2(64) DEFAULT '' NOT NULL,
-OldContent CLOB DEFAULT EMPTY_CLOB() NOT NULL,
-NewContent CLOB DEFAULT EMPTY_CLOB() NOT NULL,
-Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
-Created DATE
 );
 
 
