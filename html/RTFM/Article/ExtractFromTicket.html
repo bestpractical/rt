@@ -26,7 +26,7 @@
 <p><&|/l&>Use the dropdown menus to select which transactions you want to extract into a new RTFM article</&></p>
 
 <tr>
-<th>Custom field</th>
+<th>Custom freeform, wikitext, or text field</th>
 <th>Ticket update</th>
 </tr>
 % my $i;
@@ -63,6 +63,8 @@ unless ($ClassObj->Id) {
 my     $CustomFields = $ClassObj->ArticleCustomFields();
 
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Text');
+$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Wikitext');
+$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Freeform');
 </%init>
 <%ARGS>
 $Class=>undef
