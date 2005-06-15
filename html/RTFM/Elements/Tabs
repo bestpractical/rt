@@ -47,6 +47,13 @@ my $second_tabs = { 'aab' => { title => loc('Overview'),
                                    path => 'RTFM/Topics.html'},
                   };
 
+if ($session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab',
+                                       Object => $RT::System )) {
+    $second_tabs->{config} = { title => loc('Configuration'),
+                               path => 'Admin/RTFM/index.html',
+                             };
+}
+
 my $topactions = {
         B => { html => $m->scomp('/RTFM/Elements/GotoArticle', %ARGS) }
         };

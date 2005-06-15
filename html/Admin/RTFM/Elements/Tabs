@@ -27,6 +27,9 @@
 	       Global => { title => loc('Global'),
 			   path => 'Admin/RTFM/Global/index.html',
 			 },
+               CFs => { title => loc('Custom Fields'),
+                        path => 'Admin/CustomFields/index.html?type=RT::FM::Class-RT::FM::Article',
+                      },
 	     };
   foreach my $tab (sort keys %{$tabs}) {
     if ($tabs->{$tab}->{'path'} eq $current_tab) {
