@@ -50,10 +50,12 @@
 % }
 <%INIT>
 if ($Multiple and $Values) {
-    $Default = '';
-    while (my $value = $Values->Next ) {
-	$Default .= $value->Content."\n";
-    }
+  $Default = '';
+  while (my $value = $Values->Next ) {
+    $Default .= $value->Content."\n";
+  }
+} else {
+  $Default =~ s/\s*\n\s*/ /g if $Default;
 }
 </%INIT>
 <%ARGS>
