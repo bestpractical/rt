@@ -20,6 +20,9 @@
 <form action="Edit.html" method="post">
 <input type="hidden" name="Class" value="<%$ARGS{'Class'}%>">
 <input type="hidden" name="Summary" value="<%$ticket->Subject%>">
+% for (@Topics) {
+<input type="hidden" name="Topics" value="<% $_ %>">
+% }
 <input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>">
 <table width="100%" valign="top" border=0 cellspacing=0>
 
@@ -67,6 +70,7 @@ $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Wikitext');
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Freeform');
 </%init>
 <%ARGS>
-$Class=>undef
+$Class => undef
 $Ticket => undef
+@Topics => ()
 </%ARGS>

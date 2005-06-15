@@ -16,12 +16,6 @@
 %# 
 %# END LICENSE BLOCK
 
-% if ($ClassObj->Id) {
-<tr>
-<td class="label"><&|/l&>Topics</&></td>
-<td>
-% }
-
 <input type="hidden" name="EditTopics" value="1" />
 <select multiple size="<% $rows > 10 ? 10 : $rows %>" name="Topics">
 <%perl>
@@ -56,10 +50,6 @@ if ($ClassObj->Id) {
 </optgroup>
 % }
 </select>
-% if ($ClassObj->Id) {
-</td>
-</tr>
-% }
 
 <%INIT>
 use Tree::Simple;

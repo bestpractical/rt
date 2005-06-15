@@ -56,12 +56,17 @@
                        &>
 <tr><td><&|/l&>Topics</&>
 </td><td></td></tr>
+<tr>
+<td class="label"><&|/l&>Topics</&></td>
+<td>
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
                         OnlyThisClass => 1,
                         %ARGS,
                         id => $id
                         &>
+</td>
+</tr>
 <& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333" &>
 </form>
 </table>
