@@ -1,5 +1,5 @@
 name: RT-FM
-version: 2.1.20
+version: 2.1.21
 abstract: RT FM Extension
 license: GPL version 2
 distribution_type: module
@@ -11,6 +11,7 @@ requires:
   HTML::TreeBuilder: 0
   Time::ParseDate: 0
   HTML::FormatText: 0
+  YAML: 0
 no_index:
   directory:
     - bin

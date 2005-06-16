@@ -126,6 +126,8 @@ if ($ARGS{'Save'}) {
 	    $search->Id;
 	push(@results, loc("Created search [_1]", $search->Name));
     } else {
+        undef $search; # if we bomb out creating a search
+                        # we don't want to have the empty object hang around
 	push(@results, loc("Could not create search: [_1]", $msg));
     }
 } elsif ($ARGS{'Update'}) {
