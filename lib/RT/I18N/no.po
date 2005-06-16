@@ -25,7 +25,7 @@ msgstr "#%1"
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
-#: lib/RT/Record.pm:925
+#: lib/RT/Record.pm:926
 #. ($label)
 msgid "$prefix %1"
 msgstr ""
@@ -35,7 +35,7 @@ msgstr ""
 msgid "%1 #%2"
 msgstr ""
 
-#: lib/RT/Date.pm:360
+#: lib/RT/Date.pm:361
 #. ($s, $time_unit)
 msgid "%1 %2"
 msgstr "%1 %2"
@@ -44,30 +44,30 @@ msgstr "%1 %2"
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
-#: lib/RT/Date.pm:396
+#: lib/RT/Date.pm:397
 #. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3. %2 %7 %4:%5:%6"
 
-#: lib/RT/Record.pm:1674 lib/RT/Transaction_Overlay.pm.orig:634 lib/RT/Transaction_Overlay.pm.orig:677 lib/RT/Transaction_Overlay.pm:634 lib/RT/Transaction_Overlay.pm:677
+#: lib/RT/Record.pm:1683 lib/RT/Transaction_Overlay.pm:635 lib/RT/Transaction_Overlay.pm:678
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 added"
 msgstr "%1 %2 lagt til"
 
-#: lib/RT/Date.pm:357
+#: lib/RT/Date.pm:358
 #. ($s, $time_unit)
 msgid "%1 %2 ago"
 msgstr "%1 %2 siden"
 
-#: lib/RT/Record.pm:1681 lib/RT/Transaction_Overlay.pm.orig:641 lib/RT/Transaction_Overlay.pm:641
+#: lib/RT/Record.pm:1690 lib/RT/Transaction_Overlay.pm:642
 #. ($cf->Name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ble endret til %3"
 
-#: lib/RT/Record.pm:1678 lib/RT/Transaction_Overlay.pm.orig:637 lib/RT/Transaction_Overlay.pm.orig:683 lib/RT/Transaction_Overlay.pm:637 lib/RT/Transaction_Overlay.pm:683
+#: lib/RT/Record.pm:1687 lib/RT/Transaction_Overlay.pm:638 lib/RT/Transaction_Overlay.pm:684
 #. ($cf->Name, $old_value->Content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -80,7 +80,6 @@ msgstr "%1 %2 av gruppen %3"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:49 html/Ticket/Elements/PreviewScrips:98
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
-#. ($scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name)
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 med mal %3"
 
@@ -147,6 +146,9 @@ msgstr "%1 - Oppgi søkemodulen du ønsker å bruke"
      $RT::VERSION, 
      '2004', 
     '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+     $RT::VERSION, 
+     '2005', 
+    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: html/Elements/Footer:58
 #. ('&#187;&#124;&#171;', 
      $RT::VERSION, 
@@ -155,12 +157,12 @@ msgstr "%1 - Oppgi søkemodulen du ønsker å bruke"
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
 
-#: lib/RT/ScripAction_Overlay.pm:139
+#: lib/RT/ScripAction_Overlay.pm:142
 #. ($self->Id)
 msgid "%1 ScripAction loaded"
 msgstr "%1 KommandoScript lastet"
 
-#: lib/RT/Record.pm:1711
+#: lib/RT/Record.pm:1720
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 ble lagt til som verdi for %2"
@@ -177,31 +179,31 @@ msgstr "%1 alias trenger en saksnummer å jobbe mot "
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "%1 alias trenger et saksnummer å jobbe mot (fra %2) %3"
 
-#: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
+#: lib/RT/Link_Overlay.pm:145 lib/RT/Link_Overlay.pm:152
 #. ($args{'Base'})
 #. ($args{'Target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 ser ut til å være et lokalt objekt, men kan ikke finnes i databasen"
 
-#: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm.orig:518 lib/RT/Transaction_Overlay.pm:518
+#: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:519
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 av %2"
 
-#: lib/RT/Transaction_Overlay.pm.orig:775 lib/RT/Transaction_Overlay.pm.orig:784 lib/RT/Transaction_Overlay.pm.orig:787 lib/RT/Transaction_Overlay.pm:775 lib/RT/Transaction_Overlay.pm:784 lib/RT/Transaction_Overlay.pm:787
+#: lib/RT/Transaction_Overlay.pm:776 lib/RT/Transaction_Overlay.pm:785 lib/RT/Transaction_Overlay.pm:788
 #. ($self->Field , $q1->Name , $q2->Name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 ble endret fra %2 til %3"
 
-#: html/Search/Build.html:192
+#: html/Search/Build.html:212
 #. ($Description)
 msgid "%1 copy"
 msgstr ""
 
-#: lib/RT/Record.pm:928
+#: lib/RT/Record.pm:930
 msgid "%1 could not be set to %2."
 msgstr "%1 kunne ikke settes til %2."
 
@@ -209,17 +211,17 @@ msgstr "%1 kunne ikke settes til %2."
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1 kunne ikke starte en transaksjon (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm:2710
+#: lib/RT/Ticket_Overlay.pm:2715
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 kunne ikke sette status til løst. RT-basen kan være inkonsistent."
 
-#: lib/RT/Transaction_Overlay.pm.orig:558 lib/RT/Transaction_Overlay.pm:558
+#: lib/RT/Transaction_Overlay.pm:559
 #. ($obj_type)
 msgid "%1 created"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:563 lib/RT/Transaction_Overlay.pm:563
+#: lib/RT/Transaction_Overlay.pm:564
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr ""
@@ -242,7 +244,7 @@ msgstr "Mine %1 høyst prioriterte forespørsler..."
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 er et verktøy for å behandle saker fra eksterne verktøy, slik som cron."
 
-#: lib/RT/Queue_Overlay.pm:847
+#: lib/RT/Queue_Overlay.pm:860
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 er ikke lenger en %2 for denne køen."
@@ -277,7 +279,7 @@ msgstr ""
 msgid "%1 not shown"
 msgstr "%1 vises ikke"
 
-#: lib/RT/CustomField_Overlay.pm:813
+#: lib/RT/CustomField_Overlay.pm:816
 msgid "%1 objects"
 msgstr ""
 
@@ -311,11 +313,11 @@ msgstr "%1 vil løse alle medlemmer av en løst gruppesak."
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "%1 vil stoppe en [lokal] BASE hvis den er avhengig av/medlem av en tilkoblet sak."
 
-#: lib/RT/CustomField_Overlay.pm:814
+#: lib/RT/CustomField_Overlay.pm:817
 msgid "%1's %2 objects"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:815
+#: lib/RT/CustomField_Overlay.pm:818
 msgid "%1's %2's %3 objects"
 msgstr ""
 
@@ -325,7 +327,7 @@ msgstr ""
 msgid "%1's saved searches"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:468 lib/RT/Transaction_Overlay.pm:468
+#: lib/RT/Transaction_Overlay.pm:469
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1: ingen vedlegg oppgitt"
@@ -447,7 +449,7 @@ msgstr "(navn ikke oppgitt)"
 msgid "(no subject)"
 msgstr "(ingen overskrift)"
 
-#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:60 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:65 lib/RT/Transaction_Overlay.pm.orig:578 lib/RT/Transaction_Overlay.pm:578
+#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:60 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:65 lib/RT/Transaction_Overlay.pm:579
 msgid "(no value)"
 msgstr "(ingen verdi)"
 
@@ -475,7 +477,7 @@ msgstr "(venter på andre saker)"
 msgid "(requestor's group)"
 msgstr "(kundens gruppe)"
 
-#: html/Admin/Users/Modify.html.orig:71 html/Admin/Users/Modify.html:71
+#: html/Admin/Users/Modify.html:71
 msgid "(required)"
 msgstr "(nødvendig)"
 
@@ -501,6 +503,10 @@ msgstr "<% $_ %>"
 
 #: html/Search/Elements/SelectLinks:48
 msgid "<%$_%>"
+msgstr ""
+
+#: html/Search/Elements/DisplayOptions:65
+msgid "<%$field%>"
 msgstr ""
 
 #: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:47 lib/RT/StyleGuide.pod:787
@@ -532,11 +538,11 @@ msgstr "ACE kunne ikke slettes"
 msgid "ACE could not be found"
 msgstr "fant ikke ACE"
 
-#: lib/RT/ACE_Overlay.pm:181 lib/RT/Principal_Overlay.pm:224
+#: lib/RT/ACE_Overlay.pm:182 lib/RT/Principal_Overlay.pm:224
 msgid "ACE not found"
 msgstr "ACE ikke funnet"
 
-#: lib/RT/ACE_Overlay.pm:866
+#: lib/RT/ACE_Overlay.pm:867
 msgid "ACEs can only be created and deleted."
 msgstr "ACEr kan bare opprettes og slettes."
 
@@ -552,7 +558,7 @@ msgstr "Avbryter for å ungå uånsket saksendring"
 msgid "About me"
 msgstr "Om meg"
 
-#: html/Admin/Users/Modify.html.orig:106 html/Admin/Users/Modify.html:106
+#: html/Admin/Users/Modify.html:106
 msgid "Access control"
 msgstr "Aksesskontroll"
 
@@ -560,7 +566,7 @@ msgstr "Aksesskontroll"
 msgid "Action"
 msgstr "Handling"
 
-#: lib/RT/Scrip_Overlay.pm:172
+#: lib/RT/Scrip_Overlay.pm:173
 #. ($args{'ScripAction'})
 msgid "Action %1 not found"
 msgstr "Handling %1 finnes ikke"
@@ -577,7 +583,7 @@ msgstr ""
 msgid "Action prepared..."
 msgstr "Handling forberedt"
 
-#: html/Search/Build.html:65
+#: html/Search/Build.html:85
 msgid "Add"
 msgstr ""
 
@@ -637,7 +643,7 @@ msgstr "Legg til et Scrip til denne køen"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Legg til et Scrip som vil gjelde for alle køer"
 
-#: html/Search/Build.html:65
+#: html/Search/Build.html:85
 msgid "Add additional criteria"
 msgstr ""
 
@@ -661,7 +667,7 @@ msgstr ""
 msgid "AddNextState"
 msgstr "AddNextState"
 
-#: lib/RT/Queue_Overlay.pm:747
+#: lib/RT/Queue_Overlay.pm:760
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "La til primær som en %1 for denne køen"
@@ -671,11 +677,11 @@ msgstr "La til primær som en %1 for denne køen"
 msgid "Added principal as a %1 for this ticket"
 msgstr "La til primær som en %1 for denne saken"
 
-#: html/Admin/Users/Modify.html.orig:146 html/Admin/Users/Modify.html:146 html/User/Prefs.html:133
+#: html/Admin/Users/Modify.html:146 html/User/Prefs.html:133
 msgid "Address1"
 msgstr "Adresse1"
 
-#: html/Admin/Users/Modify.html.orig:151 html/Admin/Users/Modify.html:151 html/User/Prefs.html:137
+#: html/Admin/Users/Modify.html:151 html/User/Prefs.html:137
 msgid "Address2"
 msgstr "Adresse2"
 
@@ -715,7 +721,7 @@ msgstr "Admin/Køer/Grunnleggende"
 msgid "AdminAllPersonalGroups"
 msgstr "AdminAllePersonalGrupper"
 
-#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:60 lib/RT/ACE_Overlay.pm:113
+#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:60 lib/RT/ACE_Overlay.pm:114
 msgid "AdminCc"
 msgstr "AdminCc"
 
@@ -743,15 +749,15 @@ msgstr "AdminGruppe"
 msgid "AdminGroupMembership"
 msgstr "AdminGruppeMedlemskap"
 
-#: lib/RT/System.pm:80
+#: lib/RT/System.pm:81
 msgid "AdminOwnPersonalGroups"
 msgstr "AdminEgnePersonligeGrupper"
 
-#: lib/RT/Queue_Overlay.pm:92
+#: lib/RT/Queue_Overlay.pm:93
 msgid "AdminQueue"
 msgstr "AdminKø"
 
-#: lib/RT/System.pm:81
+#: lib/RT/System.pm:82
 msgid "AdminUsers"
 msgstr "AdminBrukere"
 
@@ -868,7 +874,7 @@ msgstr "Godkjenn"
 msgid "Approver's notes: %1"
 msgstr "Godkjenners notater: %1"
 
-#: lib/RT/Date.pm:437
+#: lib/RT/Date.pm:440
 msgid "Apr."
 msgstr "Apr."
 
@@ -876,15 +882,15 @@ msgstr "Apr."
 msgid "April"
 msgstr "April"
 
-#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:73
+#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions.orig:73 html/Search/Elements/DisplayOptions:73
 msgid "Ascending"
 msgstr "Stigende"
 
-#: lib/RT/Queue_Overlay.pm:96
+#: lib/RT/Queue_Overlay.pm:97
 msgid "Assign and remove custom fields"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:96
+#: lib/RT/Queue_Overlay.pm:97
 msgid "AssignCustomFields"
 msgstr ""
 
@@ -905,11 +911,11 @@ msgstr "Vedlagt fil"
 msgid "Attachment '%1' could not be loaded"
 msgstr "Vedlegg '%1' kunne ikke lastes"
 
-#: lib/RT/Transaction_Overlay.pm.orig:476 lib/RT/Transaction_Overlay.pm:476
+#: lib/RT/Transaction_Overlay.pm:477
 msgid "Attachment created"
 msgstr "Vedlegg opprettet"
 
-#: lib/RT/Tickets_Overlay.pm:1672
+#: lib/RT/Tickets_Overlay.pm:1673
 msgid "Attachment filename"
 msgstr "Vedleggsnavn"
 
@@ -917,11 +923,11 @@ msgstr "Vedleggsnavn"
 msgid "Attachments"
 msgstr "Vedlegg"
 
-#: lib/RT/Attributes_Overlay.pm:170
+#: lib/RT/Attributes_Overlay.pm:172
 msgid "Attribute Deleted"
 msgstr ""
 
-#: lib/RT/Date.pm:441
+#: lib/RT/Date.pm:444
 msgid "Aug."
 msgstr "Aug."
 
@@ -973,7 +979,7 @@ msgstr "Bcc"
 msgid "Be sure to save your changes"
 msgstr "Sørg for å lagre endringene dine"
 
-#: html/Elements/SelectDateRelation:55 lib/RT/CurrentUser.pm:358
+#: html/Elements/SelectDateRelation:55 lib/RT/CurrentUser.pm:360
 msgid "Before"
 msgstr "Før"
 
@@ -1009,15 +1015,15 @@ msgstr "Begrens headere"
 msgid "Bulk ticket update"
 msgstr "Masseoppdatering av saker"
 
-#: lib/RT/User_Overlay.pm:1717
+#: lib/RT/User_Overlay.pm:1718
 msgid "Can not modify system users"
 msgstr "Kan ikke endre systembrukere"
 
-#: lib/RT/Queue_Overlay.pm:91
+#: lib/RT/Queue_Overlay.pm:92
 msgid "Can this principal see this queue"
 msgstr "Kan denne primæren se denne køen"
 
-#: lib/RT/CustomField_Overlay.pm:364
+#: lib/RT/CustomField_Overlay.pm:365
 msgid "Can't add a custom field value without a name"
 msgstr "Kan ikke legge til en verdi for et fleksifelt uten navn"
 
@@ -1026,11 +1032,11 @@ msgstr "Kan ikke legge til en verdi for et fleksifelt uten navn"
 msgid "Can't find a collection class for '%1'"
 msgstr ""
 
-#: html/Search/Build.html:819
+#: html/Search/Build.html:761
 msgid "Can't find a saved search to work with"
 msgstr ""
 
-#: lib/RT/Link_Overlay.pm:159
+#: lib/RT/Link_Overlay.pm:160
 msgid "Can't link a ticket to itself"
 msgstr "Kan ikke koble en sak til seg selv"
 
@@ -1038,11 +1044,11 @@ msgstr "Kan ikke koble en sak til seg selv"
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "Kan ikke flette inn i en flettet sak. Denne meldingen bør ikke forekomme"
 
-#: html/Search/Build.html:824
+#: html/Search/Build.html:766
 msgid "Can't save this search"
 msgstr ""
 
-#: lib/RT/Record.pm:1257 lib/RT/Record.pm:1335
+#: lib/RT/Record.pm:1266 lib/RT/Record.pm:1344
 msgid "Can't specifiy both base and target"
 msgstr "Kan ikke spesifisere både base og mål."
 
@@ -1051,7 +1057,7 @@ msgstr "Kan ikke spesifisere både base og mål."
 msgid "Cannot create user: %1"
 msgstr "Kunne ikke oprette bruker: %1"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:85 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:81 lib/RT/ACE_Overlay.pm:112
+#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:85 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:81 lib/RT/ACE_Overlay.pm:113
 msgid "Cc"
 msgstr "Cc"
 
@@ -1075,7 +1081,7 @@ msgstr "Merk for å trekke tilbake rettighet"
 msgid "Children"
 msgstr "Barn"
 
-#: html/Admin/Users/Modify.html.orig:156 html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
+#: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
 msgstr "By"
 
@@ -1119,11 +1125,11 @@ msgstr "Kommentaraddresse"
 msgid "Comment not recorded"
 msgstr "Kommentaren ble ikke lagret"
 
-#: lib/RT/Queue_Overlay.pm:111
+#: lib/RT/Queue_Overlay.pm:112
 msgid "Comment on tickets"
 msgstr "Kommenter saker"
 
-#: lib/RT/Queue_Overlay.pm:111
+#: lib/RT/Queue_Overlay.pm:112
 msgid "CommentOnTicket"
 msgstr "KommenterSak"
 
@@ -1143,15 +1149,15 @@ msgstr "Kommentarer (ikke sendt til kunder)"
 msgid "Comments about %1"
 msgstr "Kommentarer til %1"
 
-#: html/Admin/Users/Modify.html.orig:224 html/Admin/Users/Modify.html:224 html/Ticket/Elements/ShowRequestor:67
+#: html/Admin/Users/Modify.html:224 html/Ticket/Elements/ShowRequestor:67
 msgid "Comments about this user"
 msgstr "Kommentarer om denne brukeren"
 
-#: lib/RT/Transaction_Overlay.pm.orig:621 lib/RT/Transaction_Overlay.pm:621
+#: lib/RT/Transaction_Overlay.pm:622
 msgid "Comments added"
 msgstr "La til kommentarer "
 
-#: lib/RT/Action/Generic.pm:168
+#: lib/RT/Action/Generic.pm:169
 msgid "Commit Stubbed"
 msgstr "Lagring forkortet"
 
@@ -1167,7 +1173,7 @@ msgstr "Forutsetning"
 msgid "Condition matches..."
 msgstr "Forutsetning gjelder..."
 
-#: lib/RT/Scrip_Overlay.pm:188
+#: lib/RT/Scrip_Overlay.pm:189
 msgid "Condition not found"
 msgstr "Forutsetning ikke funnet"
 
@@ -1211,7 +1217,7 @@ msgstr "Korrespondanse"
 msgid "Correspondence Address"
 msgstr "Korrespondanseaddresse"
 
-#: lib/RT/Transaction_Overlay.pm.orig:617 lib/RT/Transaction_Overlay.pm:617
+#: lib/RT/Transaction_Overlay.pm:618
 msgid "Correspondence added"
 msgstr "Korrespondanse lagt til"
 
@@ -1227,16 +1233,16 @@ msgstr "Kunne ikke legge til nye fleksifeltverdier for saken. "
 msgid "Could not add new custom field value for ticket. %1 "
 msgstr "Kunne ikke legge til nye fleksifeltverdier for saken. %1 "
 
-#: lib/RT/Record.pm:1696
+#: lib/RT/Record.pm:1705
 msgid "Could not add new custom field value. "
 msgstr ""
 
-#: lib/RT/Record.pm:1649
+#: lib/RT/Record.pm:1658
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2971 lib/RT/Ticket_Overlay.pm:2979 lib/RT/Ticket_Overlay.pm:2996
+#: lib/RT/Ticket_Overlay.pm:2976 lib/RT/Ticket_Overlay.pm:2984 lib/RT/Ticket_Overlay.pm:3001
 msgid "Could not change owner. "
 msgstr "Kunne ikke endre eier. "
 
@@ -1250,7 +1256,7 @@ msgstr "Kunne ikke opprette fleksifelt"
 msgid "Could not create CustomField: %1"
 msgstr ""
 
-#: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:501 lib/RT/Group_Overlay.pm:508
+#: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:502 lib/RT/Group_Overlay.pm:509
 msgid "Could not create group"
 msgstr "Kunne ikke opprette gruppe"
 
@@ -1263,7 +1269,7 @@ msgstr "Kunne ikke opprette mal: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "Kunne ikke opprette sak. Kø ikke satt"
 
-#: lib/RT/User_Overlay.pm:255 lib/RT/User_Overlay.pm:269 lib/RT/User_Overlay.pm:278 lib/RT/User_Overlay.pm:287 lib/RT/User_Overlay.pm:296 lib/RT/User_Overlay.pm:310 lib/RT/User_Overlay.pm:320 lib/RT/User_Overlay.pm:496
+#: lib/RT/User_Overlay.pm:256 lib/RT/User_Overlay.pm:270 lib/RT/User_Overlay.pm:279 lib/RT/User_Overlay.pm:288 lib/RT/User_Overlay.pm:297 lib/RT/User_Overlay.pm:311 lib/RT/User_Overlay.pm:321 lib/RT/User_Overlay.pm:497
 msgid "Could not create user"
 msgstr "Kunne ikke opprette bruker"
 
@@ -1279,11 +1285,11 @@ msgstr "Kunne ikke finne en sak med id %1"
 msgid "Could not find group %1."
 msgstr "Kunne ikke finne gruppen %1."
 
-#: lib/RT/Queue_Overlay.pm:725 lib/RT/Ticket_Overlay.pm:1384
+#: lib/RT/Queue_Overlay.pm:738 lib/RT/Ticket_Overlay.pm:1384
 msgid "Could not find or create that user"
 msgstr "Kunne ikke finne eller lage den brukeren"
 
-#: lib/RT/Queue_Overlay.pm:786 lib/RT/Ticket_Overlay.pm:1465
+#: lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1465
 msgid "Could not find that principal"
 msgstr "Kunne ikke finne den primæren"
 
@@ -1299,16 +1305,16 @@ msgstr ""
 msgid "Could not load group"
 msgstr "Kunne ikke hente gruppen"
 
-#: lib/RT/SavedSearch.pm:119
+#: lib/RT/SavedSearch.pm:120
 #. ($privacy)
 msgid "Could not load object for %1"
 msgstr ""
 
-#: lib/RT/SavedSearch.pm:187
+#: lib/RT/SavedSearch.pm:188
 msgid "Could not load search attribute"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:745
+#: lib/RT/Queue_Overlay.pm:758
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Kunne ikke sette den primæren som %1 for denne køen"
@@ -1318,7 +1324,7 @@ msgstr "Kunne ikke sette den primæren som %1 for denne køen"
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Kunne ikke sette den primæren som %1 for denne saken"
 
-#: lib/RT/Queue_Overlay.pm:844
+#: lib/RT/Queue_Overlay.pm:857
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Kunne ikke fjerne den primæren som %1 for denne køen"
@@ -1327,15 +1333,15 @@ msgstr "Kunne ikke fjerne den primæren som %1 for denne køen"
 msgid "Could not remove that principal as a %1 for this ticket"
 msgstr "Knne ikke fjære den primæren som %1 for denne saken"
 
-#: lib/RT/User_Overlay.pm:191
+#: lib/RT/User_Overlay.pm:192
 msgid "Could not set user info"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1009
+#: lib/RT/Group_Overlay.pm:1011
 msgid "Couldn't add member to group"
 msgstr "Kunne ikke legge til medlemmmer i gruppen"
 
-#: lib/RT/Record.pm:1708 lib/RT/Record.pm:1767
+#: lib/RT/Record.pm:1717 lib/RT/Record.pm:1776
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Kunne ikke opprette en transaksjon: %1"
@@ -1348,15 +1354,15 @@ msgstr "Kunne ikke tolke gpgs svar\\n"
 msgid "Couldn't find group\\n"
 msgstr "Kunne ikke finne gruppen\\n"
 
-#: lib/RT/Record.pm:937
+#: lib/RT/Record.pm:939
 msgid "Couldn't find row"
 msgstr "Kunne ikke finne raden"
 
-#: lib/RT/Group_Overlay.pm:983
+#: lib/RT/Group_Overlay.pm:985
 msgid "Couldn't find that principal"
 msgstr "Kunne ikke finne primæren"
 
-#: lib/RT/CustomField_Overlay.pm:398
+#: lib/RT/CustomField_Overlay.pm:399
 msgid "Couldn't find that value"
 msgstr "Kunne ikke finne verdien"
 
@@ -1368,7 +1374,7 @@ msgstr "Kunne ikke finne den overvåkern"
 msgid "Couldn't find user\\n"
 msgstr "Kunne ikke finne bruker\\n"
 
-#: lib/RT/CurrentUser.pm:145
+#: lib/RT/CurrentUser.pm:146
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Kunne ikke laste %1 fra brukerdatabasen.\\n"
@@ -1400,7 +1406,7 @@ msgstr "Kunne ikke laste Scripsene."
 msgid "Couldn't load group %1"
 msgstr "Kunne ikke laste gruppen %1"
 
-#: lib/RT/Link_Overlay.pm:202 lib/RT/Link_Overlay.pm:211 lib/RT/Link_Overlay.pm:238
+#: lib/RT/Link_Overlay.pm:203 lib/RT/Link_Overlay.pm:212 lib/RT/Link_Overlay.pm:239
 msgid "Couldn't load link"
 msgstr "Kunne ikke laste linken"
 
@@ -1436,7 +1442,7 @@ msgstr "Kunne ikke laste den brukeren (%1)"
 msgid "Couldn't load ticket '%1'"
 msgstr "Kunne ikke laste saken '%1'"
 
-#: html/Admin/Users/Modify.html.orig:173 html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
+#: html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
 msgid "Country"
 msgstr "Land"
 
@@ -1473,7 +1479,7 @@ msgstr "Opprett et globalt Scrip"
 msgid "Create a new global scrip"
 msgstr "Opprett et nytt globalt scrip"
 
-#: html/Admin/Groups/Modify.html:124 html/Admin/Groups/Modify.html:98
+#: html/Admin/Groups/Modify.html:125 html/Admin/Groups/Modify.html:99
 msgid "Create a new group"
 msgstr "Opprett en ny gruppe"
 
@@ -1497,7 +1503,7 @@ msgstr "Opprett en ny mal"
 msgid "Create a new ticket"
 msgstr "Opprett en ny sak"
 
-#: html/Admin/Users/Modify.html.orig:251 html/Admin/Users/Modify.html.orig:308 html/Admin/Users/Modify.html:251 html/Admin/Users/Modify.html:306
+#: html/Admin/Users/Modify.html:251 html/Admin/Users/Modify.html:306
 msgid "Create a new user"
 msgstr "Opprett en ny bruker"
 
@@ -1542,7 +1548,7 @@ msgstr "Opprett nye saker basert på dette scripets mal"
 msgid "Create ticket"
 msgstr "Opprett sak"
 
-#: lib/RT/Queue_Overlay.pm:109
+#: lib/RT/Queue_Overlay.pm:110
 msgid "Create tickets in this queue"
 msgstr "Opprett saker i denne køen"
 
@@ -1550,7 +1556,7 @@ msgstr "Opprett saker i denne køen"
 msgid "Create, delete and modify custom fields"
 msgstr "Opprett, slett og modifiser fleksifelt"
 
-#: lib/RT/Queue_Overlay.pm:92
+#: lib/RT/Queue_Overlay.pm:93
 msgid "Create, delete and modify queues"
 msgstr "Opprett, slett og endre køer"
 
@@ -1558,19 +1564,19 @@ msgstr "Opprett, slett og endre køer"
 msgid "Create, delete and modify the members of any user's personal groups"
 msgstr "Opprett, slett og modifiser medlemmene av en brukers personlige grupper"
 
-#: lib/RT/System.pm:80
+#: lib/RT/System.pm:81
 msgid "Create, delete and modify the members of personal groups"
 msgstr "Opprett, slett og modifiser medlemmene av personlige grupper"
 
-#: lib/RT/System.pm:81
+#: lib/RT/System.pm:82
 msgid "Create, delete and modify users"
 msgstr "Opprett, slett og modifiser brukere"
 
-#: lib/RT/System.pm:87
+#: lib/RT/System.pm:88
 msgid "CreateSavedSearch"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:109
+#: lib/RT/Queue_Overlay.pm:110
 msgid "CreateTicket"
 msgstr "OpprettSak"
 
@@ -1619,7 +1625,7 @@ msgstr "Eksisterende overvåkere"
 msgid "Custom Field #%1"
 msgstr "Fleksifeltet #%1"
 
-#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html.orig:208 html/Admin/Users/Modify.html:208 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:57
+#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:208 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:57
 msgid "Custom Fields"
 msgstr "Fleksifelt"
 
@@ -1654,7 +1660,7 @@ msgstr "Fleksifeltet %1 har en verdi."
 msgid "Custom field %1 has no value."
 msgstr "Fleksifeltet %1 har ingen verdi."
 
-#: lib/RT/Record.pm:1581
+#: lib/RT/Record.pm:1590
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Fleksifeltet %1 kunne ikke finnes"
@@ -1663,11 +1669,11 @@ msgstr "Fleksifeltet %1 kunne ikke finnes"
 msgid "Custom field deleted"
 msgstr "Fleksifeltet slettet"
 
-#: lib/RT/CustomField_Overlay.pm:289 lib/RT/Record.pm:1749
+#: lib/RT/CustomField_Overlay.pm:289 lib/RT/Record.pm:1758
 msgid "Custom field not found"
 msgstr "Fleksifeltet kunne ikke finnes"
 
-#: lib/RT/CustomField_Overlay.pm:1027
+#: lib/RT/CustomField_Overlay.pm:1030
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Verdien %1 for fleksifeltet %2 kunne ikke finnes"
@@ -1676,19 +1682,19 @@ msgstr "Verdien %1 for fleksifeltet %2 kunne ikke finnes"
 msgid "Custom field value changed from %1 to %2"
 msgstr "Fleksifeltets verdi endret fra %1 til %2"
 
-#: lib/RT/CustomField_Overlay.pm:408
+#: lib/RT/CustomField_Overlay.pm:409
 msgid "Custom field value could not be deleted"
 msgstr "Fleksifeltets verdi kunne ikke slettes"
 
-#: lib/RT/CustomField_Overlay.pm:1033
+#: lib/RT/CustomField_Overlay.pm:1036
 msgid "Custom field value could not be found"
 msgstr "Fleksifeltets verdi kunne ikke finnes"
 
-#: lib/RT/CustomField_Overlay.pm:1035 lib/RT/CustomField_Overlay.pm:406
+#: lib/RT/CustomField_Overlay.pm:1038 lib/RT/CustomField_Overlay.pm:407
 msgid "Custom field value deleted"
 msgstr "Fleksifeltverdi slettet"
 
-#: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51 lib/RT/Transaction_Overlay.pm.orig:625 lib/RT/Transaction_Overlay.pm:625
+#: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51 lib/RT/Transaction_Overlay.pm:626
 msgid "CustomField"
 msgstr "FleksiFelt"
 
@@ -1700,7 +1706,7 @@ msgstr "Datafeil"
 msgid "Dates"
 msgstr "Datoer"
 
-#: lib/RT/Date.pm:445
+#: lib/RT/Date.pm:448
 msgid "Dec."
 msgstr "Des."
 
@@ -1748,11 +1754,11 @@ msgstr "Standard: %1/%2 endret seg fra %3 til %4"
 msgid "Delegate rights"
 msgstr "Deleger rettigheter"
 
-#: lib/RT/System.pm:84
+#: lib/RT/System.pm:85
 msgid "Delegate specific rights which have been granted to you."
 msgstr "Deleger spesifikke rettigheter som har blitt gitt til deg."
 
-#: lib/RT/System.pm:84
+#: lib/RT/System.pm:85
 msgid "DelegateRights"
 msgstr "DelegerRettigheter"
 
@@ -1768,7 +1774,7 @@ msgstr "Slett"
 msgid "Delete Template"
 msgstr ""
 
-#: lib/RT/SavedSearch.pm:210
+#: lib/RT/SavedSearch.pm:211
 #. ($msg)
 msgid "Delete failed: %1"
 msgstr ""
@@ -1777,15 +1783,15 @@ msgstr ""
 msgid "Delete selected scrips"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:114
+#: lib/RT/Queue_Overlay.pm:115
 msgid "Delete tickets"
 msgstr "Slett saker"
 
-#: lib/RT/Queue_Overlay.pm:114
+#: lib/RT/Queue_Overlay.pm:115
 msgid "DeleteTicket"
 msgstr "SlettSak"
 
-#: lib/RT/SavedSearch.pm:208
+#: lib/RT/SavedSearch.pm:209
 msgid "Deleted search"
 msgstr ""
 
@@ -1793,11 +1799,11 @@ msgstr ""
 msgid "Deleting this object could break referential integrity"
 msgstr "Sletting av dette objektet kan føre til inkonsistens"
 
-#: lib/RT/Queue_Overlay.pm:378
+#: lib/RT/Queue_Overlay.pm:391
 msgid "Deleting this object would break referential integrity"
 msgstr "Sletting av dette objektet vil føre til inkonsistens"
 
-#: lib/RT/User_Overlay.pm:512
+#: lib/RT/User_Overlay.pm:513
 msgid "Deleting this object would violate referential integrity"
 msgstr "Sletting av dette objektet ville føre til inkonsistens"
 
@@ -1821,22 +1827,22 @@ msgstr "Avhengighet fra"
 msgid "Dependencies: \\n"
 msgstr "Avhengigheter: \\n"
 
-#: lib/RT/Transaction_Overlay.pm.orig:705 lib/RT/Transaction_Overlay.pm:705
+#: lib/RT/Transaction_Overlay.pm:706
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:745 lib/RT/Transaction_Overlay.pm:745
+#: lib/RT/Transaction_Overlay.pm:746
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:702 lib/RT/Transaction_Overlay.pm:702
+#: lib/RT/Transaction_Overlay.pm:703
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:742 lib/RT/Transaction_Overlay.pm:742
+#: lib/RT/Transaction_Overlay.pm:743
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr ""
@@ -1849,7 +1855,7 @@ msgstr "Avhengig av"
 msgid "DependsOn"
 msgstr "AvhengigAv"
 
-#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:78
+#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions.orig:78 html/Search/Elements/DisplayOptions:78
 msgid "Descending"
 msgstr "Synkende"
 
@@ -1869,19 +1875,19 @@ msgstr "Detaljer"
 msgid "Display"
 msgstr "Vis"
 
-#: lib/RT/Queue_Overlay.pm:93
+#: lib/RT/Queue_Overlay.pm:94
 msgid "Display Access Control List"
 msgstr "Vis Rettigheter"
 
-#: html/Search/Elements/DisplayOptions:46
+#: html/Search/Elements/DisplayOptions.orig:46 html/Search/Elements/DisplayOptions:46
 msgid "Display Columns"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:99
+#: lib/RT/Queue_Overlay.pm:100
 msgid "Display Scrip templates for this queue"
 msgstr "Vis Scrip-maler for denne køen"
 
-#: lib/RT/Queue_Overlay.pm:102
+#: lib/RT/Queue_Overlay.pm:103
 msgid "Display Scrips for this queue"
 msgstr "Vis Scrip-maler for denne køen"
 
@@ -1901,11 +1907,11 @@ msgstr "Vis saken #%1"
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr ""
 
-#: lib/RT/System.pm:75
+#: lib/RT/System.pm:76
 msgid "Do anything and everything"
 msgstr "Gjør hva som helst"
 
-#: html/Search/Build.html:92
+#: html/Search/Build.html:112
 msgid "Do the Search"
 msgstr ""
 
@@ -1960,10 +1966,6 @@ msgstr ""
 
 #: html/Admin/Global/CustomFields/Queue-Tickets.html:9 html/Admin/Global/CustomFields/Queue-Transactions.html:9
 msgid "Edit Custom Fields for tickets in all queues"
-msgstr ""
-
-#: html/Admin/Global/CustomFields/Queue-T2.html:9
-msgid "Edit Custom Fields for transactions on tickets in all queues"
 msgstr ""
 
 #: html/Search/Bulk.html:173 html/Ticket/ModifyLinks.html:57
@@ -2031,15 +2033,15 @@ msgstr "Redigerer medlemsskap for den personlige gruppen %1"
 msgid "Editing template %1"
 msgstr "Redigerer malen %1"
 
-#: lib/RT/Record.pm:1272 lib/RT/Record.pm:1349
+#: lib/RT/Record.pm:1281 lib/RT/Record.pm:1358
 msgid "Either base or target must be specified"
 msgstr "Enten base eller mål må oppgis"
 
-#: html/Admin/Users/Modify.html.orig:74 html/Admin/Users/Modify.html:74 html/Ticket/Elements/AddWatchers:77 html/User/Prefs.html:65
+#: html/Admin/Users/Modify.html:74 html/Ticket/Elements/AddWatchers:77 html/User/Prefs.html:65
 msgid "Email"
 msgstr "Epost"
 
-#: lib/RT/User_Overlay.pm:235
+#: lib/RT/User_Overlay.pm:236
 msgid "Email address in use"
 msgstr "Epostaddresse i bruk"
 
@@ -2071,7 +2073,7 @@ msgstr "Aktive Fleksifelt"
 msgid "Enabled Queues"
 msgstr "Aktive Køer"
 
-#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:149 html/Admin/Users/Modify.html.orig:349 html/Admin/Users/Modify.html:347 html/User/Groups/Modify.html:138
+#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:347 html/User/Groups/Modify.html:138
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Aktiv status %1"
@@ -2113,7 +2115,7 @@ msgstr "Feil"
 msgid "Error adding watcher"
 msgstr "Feilet ved opprettelse av Overvåker"
 
-#: lib/RT/Queue_Overlay.pm:656
+#: lib/RT/Queue_Overlay.pm:669
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Feil i parameterne til Queue->AddWatcher"
 
@@ -2121,7 +2123,7 @@ msgstr "Feil i parameterne til Queue->AddWatcher"
 msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Feil i parameterne til Queue->DelWatcher"
 
-#: lib/RT/Queue_Overlay.pm:817
+#: lib/RT/Queue_Overlay.pm:830
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr ""
 
@@ -2161,19 +2163,19 @@ msgstr "EksternAutId"
 msgid "ExternalContactInfoId"
 msgstr "EksternKontaktInfoId"
 
-#: html/Admin/Users/Modify.html.orig:99 html/Admin/Users/Modify.html:99
+#: html/Admin/Users/Modify.html:99
 msgid "Extra info"
 msgstr "Ekstra info"
 
-#: lib/RT/SavedSearch.pm:164
+#: lib/RT/SavedSearch.pm:165
 msgid "Failed to create search attribute"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:376
+#: lib/RT/User_Overlay.pm:377
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Kunne ikke finne pseudogruppen 'Privilgerte' brukere."
 
-#: lib/RT/User_Overlay.pm:383
+#: lib/RT/User_Overlay.pm:384
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Kunne ikke finne 'pseudogruppen 'Upriviligerte' brukere"
 
@@ -2182,12 +2184,12 @@ msgstr "Kunne ikke finne 'pseudogruppen 'Upriviligerte' brukere"
 msgid "Failed to load module %1. (%2)"
 msgstr "Kunne ikke laste modulen %1. (%2)"
 
-#: lib/RT/SavedSearch.pm:167
+#: lib/RT/SavedSearch.pm:168
 #. ($privacy)
 msgid "Failed to load object for %1"
 msgstr ""
 
-#: lib/RT/Date.pm:435
+#: lib/RT/Date.pm:438
 msgid "Feb."
 msgstr "Feb."
 
@@ -2227,7 +2229,7 @@ msgstr ""
 msgid "Fin"
 msgstr "End"
 
-#: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm:1568
+#: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm:1569
 msgid "Final Priority"
 msgstr "Endelig Prioritet"
 
@@ -2288,7 +2290,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket)"
 msgstr "Fant %quant(%1) sak(er)"
 
-#: lib/RT/Record.pm:939
+#: lib/RT/Record.pm:942
 msgid "Found Object"
 msgstr "Fant Objektet"
 
@@ -2304,7 +2306,7 @@ msgstr "FriformMultipel"
 msgid "FreeformSingle"
 msgstr "FriformSingel"
 
-#: lib/RT/Date.pm:415
+#: lib/RT/Date.pm:417
 msgid "Fri."
 msgstr "Fre."
 
@@ -2320,7 +2322,7 @@ msgstr ""
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "Henter brukerinfo fra pgp signatur\\n"
 
-#: lib/RT/Transaction_Overlay.pm.orig:671 lib/RT/Transaction_Overlay.pm:671
+#: lib/RT/Transaction_Overlay.pm:672
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "Gitt til %1"
@@ -2386,7 +2388,7 @@ msgstr "Gruppen %1 %2: %3"
 msgid "Group Rights"
 msgstr "Grupperettigheter"
 
-#: lib/RT/Group_Overlay.pm:989
+#: lib/RT/Group_Overlay.pm:991
 msgid "Group already has member"
 msgstr "Alt medlem av gruppen"
 
@@ -2394,20 +2396,20 @@ msgstr "Alt medlem av gruppen"
 msgid "Group could not be created."
 msgstr "Gruppen kunne ikke lastes."
 
-#: html/Admin/Groups/Modify.html:108
+#: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
 msgid "Group could not be created: %1"
 msgstr "Gruppen kunne ikke opprettes: %1"
 
-#: lib/RT/Group_Overlay.pm:528
+#: lib/RT/Group_Overlay.pm:529
 msgid "Group created"
 msgstr "Gruppen opprettet"
 
-#: lib/RT/Group_Overlay.pm:1161
+#: lib/RT/Group_Overlay.pm:1163
 msgid "Group has no such member"
 msgstr "Gruppen har ikke det medlemmet"
 
-#: lib/RT/Group_Overlay.pm:969 lib/RT/Queue_Overlay.pm:732 lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1391 lib/RT/Ticket_Overlay.pm:1471
+#: lib/RT/Group_Overlay.pm:971 lib/RT/Queue_Overlay.pm:745 lib/RT/Queue_Overlay.pm:805 lib/RT/Ticket_Overlay.pm:1391 lib/RT/Ticket_Overlay.pm:1471
 msgid "Group not found"
 msgstr "Fant ikke gruppen"
 
@@ -2419,11 +2421,11 @@ msgstr "Fant ikke gruppen.\\n"
 msgid "Group not specified.\\n"
 msgstr "Ikke spesifisert gruppe.\\n"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1074
+#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1077
 msgid "Groups"
 msgstr "Grupper"
 
-#: lib/RT/Group_Overlay.pm:995
+#: lib/RT/Group_Overlay.pm:997
 msgid "Groups can't be members of their members"
 msgstr "Grupper kan ikke være medlemmer av sine medlemmer"
 
@@ -2475,15 +2477,15 @@ msgstr "Jeg har %quant(%1, sementblandere)."
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "Jeg har [quant,_1,sementblandere]."
 
-#: html/Search/Build.html:697
+#: html/Search/Build.html:637
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1493
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1494
 msgid "Id"
 msgstr "Id"
 
-#: html/Admin/Users/Modify.html.orig:65 html/Admin/Users/Modify.html:65 html/User/Prefs.html:60
+#: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60
 msgid "Identity"
 msgstr "Identitet"
 
@@ -2507,11 +2509,11 @@ msgstr "Hvis dette verktøyet var setgid kunne en fiendtlig lokal bruker bruke d
 msgid "If you've updated anything above, be sure to"
 msgstr "Hvis du har oppdatert noe over, sørg for at"
 
-#: lib/RT/Record.pm:931
+#: lib/RT/Record.pm:933
 msgid "Illegal value for %1"
 msgstr "Ugyldig verdig for %1"
 
-#: lib/RT/Record.pm:934
+#: lib/RT/Record.pm:936
 msgid "Immutable field"
 msgstr "Låst felt"
 
@@ -2531,15 +2533,15 @@ msgstr "Inkluder deaktiverte køer i listen."
 msgid "Include disabled users in search."
 msgstr "Inkluder deaktiverte brukere i søket."
 
-#: html/Search/Build.html:723
+#: html/Search/Build.html:663
 msgid "Incomplete Query"
 msgstr ""
 
-#: html/Search/Build.html:720
+#: html/Search/Build.html:660
 msgid "Incomplete query"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm:1543
+#: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm:1544
 msgid "Initial Priority"
 msgstr "Startprioritet"
 
@@ -2547,7 +2549,7 @@ msgstr "Startprioritet"
 msgid "InitialPriority"
 msgstr "StartPrioritet"
 
-#: lib/RT/ScripAction_Overlay.pm:122
+#: lib/RT/ScripAction_Overlay.pm:125
 msgid "Input error"
 msgstr "Feil i inntasting"
 
@@ -2555,16 +2557,16 @@ msgstr "Feil i inntasting"
 msgid "Interest noted"
 msgstr "Interesse registrert"
 
-#: lib/RT/Ticket_Overlay.pm:3421
+#: lib/RT/Ticket_Overlay.pm:3426
 msgid "Internal Error"
 msgstr "Intern Feil"
 
-#: lib/RT/Record.pm:304
+#: lib/RT/Record.pm:305
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Intern Feil: %1"
 
-#: lib/RT/Group_Overlay.pm:675
+#: lib/RT/Group_Overlay.pm:676
 msgid "Invalid Group Type"
 msgstr "Ugyldig gruppetype"
 
@@ -2576,7 +2578,7 @@ msgstr "Ugyldige rettigheter"
 msgid "Invalid Type"
 msgstr "Ugyldig Type"
 
-#: lib/RT/Record.pm:936
+#: lib/RT/Record.pm:938
 msgid "Invalid data"
 msgstr "Ugyldig data"
 
@@ -2584,20 +2586,20 @@ msgstr "Ugyldig data"
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "Ugydlig eier. Setter til 'nobody'."
 
-#: lib/RT/Scrip_Overlay.pm:157 lib/RT/Template_Overlay.pm:276
+#: lib/RT/Scrip_Overlay.pm:158 lib/RT/Template_Overlay.pm:276
 msgid "Invalid queue"
 msgstr "Ugyldig kø"
 
-#: lib/RT/ACE_Overlay.pm:274 lib/RT/ACE_Overlay.pm:283 lib/RT/ACE_Overlay.pm:289 lib/RT/ACE_Overlay.pm:300 lib/RT/ACE_Overlay.pm:305
+#: lib/RT/ACE_Overlay.pm:275 lib/RT/ACE_Overlay.pm:284 lib/RT/ACE_Overlay.pm:290 lib/RT/ACE_Overlay.pm:301 lib/RT/ACE_Overlay.pm:306
 msgid "Invalid right"
 msgstr "Ugyldige rettigheter"
 
-#: lib/RT/Record.pm:279
+#: lib/RT/Record.pm:280
 #. ($key)
 msgid "Invalid value for %1"
 msgstr "Ugyldig verdi for %1"
 
-#: lib/RT/Record.pm:1600
+#: lib/RT/Record.pm:1609
 msgid "Invalid value for custom field"
 msgstr "Ugyldig verdi for fleksifeltet."
 
@@ -2625,7 +2627,7 @@ msgstr ""
 msgid "Items pending my approval"
 msgstr "Ting som venter på min godkjenning"
 
-#: lib/RT/Date.pm:434
+#: lib/RT/Date.pm:437
 msgid "Jan."
 msgstr "Jan."
 
@@ -2637,7 +2639,7 @@ msgstr "Januar"
 msgid "Join or leave this group"
 msgstr "Bli med i eller forlat denne gruppen"
 
-#: lib/RT/Date.pm:440
+#: lib/RT/Date.pm:443
 msgid "Jul."
 msgstr "Jul."
 
@@ -2649,7 +2651,7 @@ msgstr "Juli"
 msgid "Jumbo"
 msgstr "Total"
 
-#: lib/RT/Date.pm:439
+#: lib/RT/Date.pm:442
 msgid "Jun."
 msgstr "Jun."
 
@@ -2665,7 +2667,7 @@ msgstr "Nøkkelord"
 msgid "Lang"
 msgstr "Språk"
 
-#: html/Admin/Users/Modify.html.orig:94 html/Admin/Users/Modify.html:94 html/User/Prefs.html:76
+#: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76
 msgid "Language"
 msgstr ""
 
@@ -2705,11 +2707,11 @@ msgstr ""
 msgid "Left"
 msgstr "Igjen"
 
-#: html/Admin/Users/Modify.html.orig:109 html/Admin/Users/Modify.html:109
+#: html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
 msgstr "La denne brukeren få tilgang til RT"
 
-#: html/Admin/Users/Modify.html.orig:113 html/Admin/Users/Modify.html:113
+#: html/Admin/Users/Modify.html:113
 msgid "Let this user be granted rights"
 msgstr "La denne brukeren få rettigheter"
 
@@ -2725,25 +2727,25 @@ msgstr "Begrenser køen til %1 %2"
 msgid "Link"
 msgstr ""
 
-#: lib/RT/Record.pm:1283
+#: lib/RT/Record.pm:1292
 msgid "Link already exists"
 msgstr "Lenke finnes alt"
 
-#: lib/RT/Record.pm:1297
+#: lib/RT/Record.pm:1306
 msgid "Link could not be created"
 msgstr "Lenke kunne ikke opprettes"
 
-#: lib/RT/Record.pm:1303
+#: lib/RT/Record.pm:1312
 #. ($TransString)
 msgid "Link created (%1)"
 msgstr "Lenke opprettet (%1)"
 
-#: lib/RT/Record.pm:1364
+#: lib/RT/Record.pm:1373
 #. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "Lenke slettet (%1)"
 
-#: lib/RT/Record.pm:1370
+#: lib/RT/Record.pm:1379
 msgid "Link not found"
 msgstr "Lenke ble ikke funnet"
 
@@ -2768,7 +2770,7 @@ msgstr ""
 msgid "Load saved search:"
 msgstr ""
 
-#: lib/RT/System.pm:86
+#: lib/RT/System.pm:87
 msgid "LoadSavedSearch"
 msgstr ""
 
@@ -2776,12 +2778,12 @@ msgstr ""
 msgid "Loaded perl modules"
 msgstr ""
 
-#: lib/RT/SavedSearch.pm:111
+#: lib/RT/SavedSearch.pm:112
 #. ($self->Name)
 msgid "Loaded search %1"
 msgstr ""
 
-#: html/Admin/Users/Modify.html.orig:138 html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
+#: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"
 msgstr "Lokasjon"
 
@@ -2803,7 +2805,7 @@ msgstr "Innlogging"
 msgid "Logout"
 msgstr "Logg av"
 
-#: lib/RT/CustomField_Overlay.pm:852
+#: lib/RT/CustomField_Overlay.pm:855
 msgid "Lookup type mismatch"
 msgstr ""
 
@@ -2871,7 +2873,7 @@ msgstr "Rediger køer og kø-spesifike egenskaper"
 msgid "Manage users and passwords"
 msgstr "Rediger brukere og passord"
 
-#: lib/RT/Date.pm:436
+#: lib/RT/Date.pm:439
 msgid "Mar."
 msgstr "Mar."
 
@@ -2883,29 +2885,29 @@ msgstr "Mars"
 msgid "May"
 msgstr "Mai"
 
-#: lib/RT/Date.pm:438
+#: lib/RT/Date.pm:441
 msgid "May."
 msgstr "Mai."
 
-#: lib/RT/Transaction_Overlay.pm.orig:718 lib/RT/Transaction_Overlay.pm:718
+#: lib/RT/Transaction_Overlay.pm:719
 #. ($value)
 msgid "Member %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:758 lib/RT/Transaction_Overlay.pm:758
+#: lib/RT/Transaction_Overlay.pm:759
 #. ($value)
 msgid "Member %1 deleted"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1006
+#: lib/RT/Group_Overlay.pm:1008
 msgid "Member added"
 msgstr "Medlem lagt til"
 
-#: lib/RT/Group_Overlay.pm:1168
+#: lib/RT/Group_Overlay.pm:1170
 msgid "Member deleted"
 msgstr "Medlem slettet"
 
-#: lib/RT/Group_Overlay.pm:1172
+#: lib/RT/Group_Overlay.pm:1174
 msgid "Member not deleted"
 msgstr "Medlem ikke slettet"
 
@@ -2921,12 +2923,12 @@ msgstr "MedlemAv"
 msgid "Members"
 msgstr "Medlemmer"
 
-#: lib/RT/Transaction_Overlay.pm.orig:715 lib/RT/Transaction_Overlay.pm:715
+#: lib/RT/Transaction_Overlay.pm:716
 #. ($value)
 msgid "Membership in %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:755 lib/RT/Transaction_Overlay.pm:755
+#: lib/RT/Transaction_Overlay.pm:756
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr ""
@@ -2940,15 +2942,15 @@ msgstr ""
 msgid "Memberships of the user %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2816
+#: lib/RT/Ticket_Overlay.pm:2821
 msgid "Merge Successful"
 msgstr "Fletting vellykket"
 
-#: lib/RT/Ticket_Overlay.pm:2703
+#: lib/RT/Ticket_Overlay.pm:2708
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Fletting feilet. Kunne ikke sette EffektivId"
 
-#: lib/RT/Ticket_Overlay.pm:2711
+#: lib/RT/Ticket_Overlay.pm:2716
 msgid "Merge failed. Couldn't set Status"
 msgstr ""
 
@@ -2956,7 +2958,7 @@ msgstr ""
 msgid "Merge into"
 msgstr "Flett inn i"
 
-#: lib/RT/Transaction_Overlay.pm.orig:721 lib/RT/Transaction_Overlay.pm:721
+#: lib/RT/Transaction_Overlay.pm:722
 #. ($value)
 msgid "Merged into %1"
 msgstr ""
@@ -2965,11 +2967,11 @@ msgstr ""
 msgid "Message"
 msgstr "Melding"
 
-#: lib/RT/Ticket_Overlay.pm:2383
+#: lib/RT/Ticket_Overlay.pm:2388
 msgid "Message could not be recorded"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2386
+#: lib/RT/Ticket_Overlay.pm:2391
 msgid "Message recorded"
 msgstr ""
 
@@ -2977,15 +2979,15 @@ msgstr ""
 msgid "Messages about this ticket will not be sent to..."
 msgstr ""
 
-#: html/Search/Build.html:727
+#: html/Search/Build.html:667
 msgid "Mismatched parentheses"
 msgstr ""
 
-#: lib/RT/Record.pm:938
+#: lib/RT/Record.pm:940
 msgid "Missing a primary key?: %1"
 msgstr "Mangler en primærnøkkel?: %1"
 
-#: html/Admin/Users/Modify.html.orig:193 html/Admin/Users/Modify.html:193 html/User/Prefs.html:93
+#: html/Admin/Users/Modify.html:193 html/User/Prefs.html:93
 msgid "Mobile"
 msgstr "Mobil"
 
@@ -2993,7 +2995,7 @@ msgstr "Mobil"
 msgid "MobilePhone"
 msgstr "MobilTelefon"
 
-#: lib/RT/Queue_Overlay.pm:94
+#: lib/RT/Queue_Overlay.pm:95
 msgid "Modify Access Control List"
 msgstr "Endre Tilgangslister"
 
@@ -3027,11 +3029,11 @@ msgstr ""
 msgid "Modify Rights"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:97
+#: lib/RT/Queue_Overlay.pm:98
 msgid "Modify Scrip templates for this queue"
 msgstr "Endre Scripmaler for denne køen"
 
-#: lib/RT/Queue_Overlay.pm:100
+#: lib/RT/Queue_Overlay.pm:101
 msgid "Modify Scrips for this queue"
 msgstr "Endre Scrips for denne køen"
 
@@ -3139,7 +3141,7 @@ msgstr "Endre grupperettigheter %1 køen"
 msgid "Modify membership roster for this group"
 msgstr "Endre medlemsliste for denne gruppen"
 
-#: lib/RT/System.pm:82
+#: lib/RT/System.pm:83
 msgid "Modify one's own RT account"
 msgstr "Endre sin egen RT konto"
 
@@ -3173,16 +3175,16 @@ msgstr "Endre mal %1"
 msgid "Modify templates which apply to all queues"
 msgstr "Endre maler som gjelder for alle køer"
 
-#: html/Admin/Groups/Modify.html:118 html/User/Groups/Modify.html:107
+#: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
 #. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "Endre gruppen %1"
 
-#: lib/RT/Queue_Overlay.pm:95
+#: lib/RT/Queue_Overlay.pm:96
 msgid "Modify the queue watchers"
 msgstr "Endre overvåkere for køen"
 
-#: html/Admin/Users/Modify.html.orig:303 html/Admin/Users/Modify.html:301
+#: html/Admin/Users/Modify.html:301
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "Endre brukeren %1"
@@ -3197,7 +3199,7 @@ msgstr "Endre sak # %1"
 msgid "Modify ticket #%1"
 msgstr "Endre sak #%1"
 
-#: lib/RT/Queue_Overlay.pm:113
+#: lib/RT/Queue_Overlay.pm:114
 msgid "Modify tickets"
 msgstr "Endre saker"
 
@@ -3220,7 +3222,7 @@ msgstr "Endre brukerrettigheter for %1 køen"
 msgid "Modify watchers for queue '%1'"
 msgstr "Endre overvåkere for '%1' køen"
 
-#: lib/RT/Queue_Overlay.pm:94
+#: lib/RT/Queue_Overlay.pm:95
 msgid "ModifyACL"
 msgstr "EndreACL"
 
@@ -3232,27 +3234,27 @@ msgstr ""
 msgid "ModifyOwnMembership"
 msgstr "EndreEgetMedlemskap"
 
-#: lib/RT/Queue_Overlay.pm:95
+#: lib/RT/Queue_Overlay.pm:96
 msgid "ModifyQueueWatchers"
 msgstr "EndreKøOvervåkere"
 
-#: lib/RT/Queue_Overlay.pm:100
+#: lib/RT/Queue_Overlay.pm:101
 msgid "ModifyScrips"
 msgstr "EndreScrips"
 
-#: lib/RT/System.pm:82
+#: lib/RT/System.pm:83
 msgid "ModifySelf"
 msgstr "EndreSegSelv"
 
-#: lib/RT/Queue_Overlay.pm:97
+#: lib/RT/Queue_Overlay.pm:98
 msgid "ModifyTemplate"
 msgstr "EndreMal"
 
-#: lib/RT/Queue_Overlay.pm:113
+#: lib/RT/Queue_Overlay.pm:114
 msgid "ModifyTicket"
 msgstr "EndreSak"
 
-#: lib/RT/Date.pm:411
+#: lib/RT/Date.pm:413
 msgid "Mon."
 msgstr "Man."
 
@@ -3273,7 +3275,7 @@ msgstr "Flytt opp"
 msgid "Multiple"
 msgstr "Flere"
 
-#: lib/RT/User_Overlay.pm:226
+#: lib/RT/User_Overlay.pm:227
 msgid "Must specify 'Name' attribute"
 msgstr "Må spesifisere attributten 'Navn'"
 
@@ -3298,7 +3300,7 @@ msgstr ""
 msgid "Name"
 msgstr "Navn"
 
-#: lib/RT/User_Overlay.pm:233
+#: lib/RT/User_Overlay.pm:234
 msgid "Name in use"
 msgstr "Navnet er i bruk"
 
@@ -3318,7 +3320,7 @@ msgstr "Ny"
 msgid "New Links"
 msgstr "Nye forhold"
 
-#: html/Admin/Users/Modify.html.orig:119 html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
+#: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
 msgid "New Password"
 msgstr "Nytt Passord"
 
@@ -3346,7 +3348,7 @@ msgstr "Ny gruppe"
 msgid "New password"
 msgstr "Nytt passord"
 
-#: lib/RT/User_Overlay.pm:814
+#: lib/RT/User_Overlay.pm:815
 msgid "New password notification sent"
 msgstr "Melding om nytt passord sendt"
 
@@ -3378,7 +3380,7 @@ msgstr "Ny mal"
 msgid "New ticket"
 msgstr "Ny sak"
 
-#: lib/RT/Ticket_Overlay.pm:2680
+#: lib/RT/Ticket_Overlay.pm:2685
 msgid "New ticket doesn't exist"
 msgstr "Ny sak eksistere ikke"
 
@@ -3414,7 +3416,7 @@ msgstr "Neste side"
 msgid "NickName"
 msgstr "KalleNavn"
 
-#: html/Admin/Users/Modify.html.orig:84 html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
+#: html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
 msgid "Nickname"
 msgstr "Kallenavn"
 
@@ -3462,7 +3464,7 @@ msgstr "Ingen Sak oppgitt. Avbryter saksendring\\n\\n"
 msgid "No action"
 msgstr "Ingen handling"
 
-#: lib/RT/Record.pm:933
+#: lib/RT/Record.pm:935
 msgid "No column specified"
 msgstr "Ingen kolonne spesifisert"
 
@@ -3478,12 +3480,12 @@ msgstr "Ingen kommentar skrevet om denne brukeren"
 msgid "No correspondence attached"
 msgstr "Ingen korrespondanse vedlagt"
 
-#: lib/RT/Action/Generic.pm:178 lib/RT/Condition/Generic.pm:197 lib/RT/Search/ActiveTicketsInQueue.pm:77 lib/RT/Search/Generic.pm:134
+#: lib/RT/Action/Generic.pm:179 lib/RT/Condition/Generic.pm:198 lib/RT/Search/ActiveTicketsInQueue.pm:78 lib/RT/Search/Generic.pm:135
 #. (ref $self)
 msgid "No description for %1"
 msgstr "Ingen beskrivelse for %1"
 
-#: lib/RT/Users_Overlay.pm:184
+#: lib/RT/Users_Overlay.pm:185
 msgid "No group specified"
 msgstr "Ingen gruppe spesifisert"
 
@@ -3491,15 +3493,15 @@ msgstr "Ingen gruppe spesifisert"
 msgid "No groups matching search criteria found."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2344
+#: lib/RT/Ticket_Overlay.pm:2349
 msgid "No message attached"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1032
+#: lib/RT/User_Overlay.pm:1033
 msgid "No password set"
 msgstr "Passordet er ikke satt"
 
-#: lib/RT/Queue_Overlay.pm:345
+#: lib/RT/Queue_Overlay.pm:358
 msgid "No permission to create queues"
 msgstr "Ingen tilgang til å opprette køer"
 
@@ -3508,7 +3510,7 @@ msgstr "Ingen tilgang til å opprette køer"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ikke tilgang til å opprette saker for køen '%1'"
 
-#: lib/RT/User_Overlay.pm:186
+#: lib/RT/User_Overlay.pm:187
 msgid "No permission to create users"
 msgstr "Ikke tilgang til å opprette brukere"
 
@@ -3520,7 +3522,7 @@ msgstr "Ikke tilgang til å vise den saken"
 msgid "No permission to view update ticket"
 msgstr "Ingen tilgang til å se oppdatering av saken"
 
-#: lib/RT/Queue_Overlay.pm:779 lib/RT/Ticket_Overlay.pm:1450
+#: lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1450
 msgid "No principal specified"
 msgstr "Ingen primær spesifisert"
 
@@ -3540,7 +3542,7 @@ msgstr "Ingen rettigheter funnet"
 msgid "No rights granted."
 msgstr "Ingen rettigheter tildelt"
 
-#: lib/RT/SavedSearch.pm:186
+#: lib/RT/SavedSearch.pm:187
 msgid "No search loaded"
 msgstr ""
 
@@ -3556,7 +3558,7 @@ msgstr ""
 msgid "No ticket id specified"
 msgstr "Ingen saksid oppgitt"
 
-#: lib/RT/Transaction_Overlay.pm.orig:515 lib/RT/Transaction_Overlay.pm.orig:552 lib/RT/Transaction_Overlay.pm:515 lib/RT/Transaction_Overlay.pm:552
+#: lib/RT/Transaction_Overlay.pm:516 lib/RT/Transaction_Overlay.pm:553
 msgid "No transaction type specified"
 msgstr "Transaksjonstype ikke spesifisert"
 
@@ -3572,7 +3574,7 @@ msgstr "Fant ingen brukere som treffer søkekriteriene."
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "Fant ingen gyldig RT bruker. RT cvs handler avstengt. Kontakt din RT administrator.\\n"
 
-#: lib/RT/Record.pm:930
+#: lib/RT/Record.pm:932
 msgid "No value sent to _Set!\\n"
 msgstr "Ingen verdi sendt til _Set!\\n"
 
@@ -3580,7 +3582,7 @@ msgstr "Ingen verdi sendt til _Set!\\n"
 msgid "Nobody"
 msgstr "Ingen"
 
-#: lib/RT/Record.pm:935
+#: lib/RT/Record.pm:937
 msgid "Nonexistant field?"
 msgstr "Ukjent felt?"
 
@@ -3592,7 +3594,7 @@ msgstr "Ikke logget inn"
 msgid "Not logged in."
 msgstr "Ikke logget inn."
 
-#: lib/RT/Date.pm:392
+#: lib/RT/Date.pm:393
 msgid "Not set"
 msgstr "Ikke satt"
 
@@ -3608,7 +3610,7 @@ msgstr "Ikke implementert enda...."
 msgid "Notes"
 msgstr "Notater"
 
-#: lib/RT/User_Overlay.pm:817
+#: lib/RT/User_Overlay.pm:818
 msgid "Notification could not be sent"
 msgstr "Melding kunne ikke sendes"
 
@@ -3680,7 +3682,7 @@ msgstr "Rapporter til Kunder Cc og AdminCc"
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Rapporter til Kunder Cc og AdminCc som Kommentar"
 
-#: lib/RT/Date.pm:444
+#: lib/RT/Date.pm:447
 msgid "Nov."
 msgstr "Nov."
 
@@ -3692,19 +3694,19 @@ msgstr "November"
 msgid "OR"
 msgstr ""
 
-#: lib/RT/Record.pm:318
+#: lib/RT/Record.pm:319
 msgid "Object could not be created"
 msgstr "Objekter kunne ikke opprettes"
 
-#: lib/RT/Record.pm:123
+#: lib/RT/Record.pm:124
 msgid "Object could not be deleted"
 msgstr ""
 
-#: lib/RT/Record.pm:337
+#: lib/RT/Record.pm:338
 msgid "Object created"
 msgstr "Objektet ble opprettet"
 
-#: lib/RT/Record.pm:120
+#: lib/RT/Record.pm:121
 msgid "Object deleted"
 msgstr ""
 
@@ -3714,11 +3716,11 @@ msgstr ""
 msgid "Object of type %1 cannot take custom fields"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:887
+#: lib/RT/CustomField_Overlay.pm:890
 msgid "Object type mismatch"
 msgstr ""
 
-#: lib/RT/Date.pm:443
+#: lib/RT/Date.pm:446
 msgid "Oct."
 msgstr "Okt."
 
@@ -3816,7 +3818,7 @@ msgstr "Åpne saker (fra utlisting) it et annet vinud"
 msgid "Open tickets on correspondence"
 msgstr "Åpne saker ved korrespondanse"
 
-#: html/Search/Elements/DisplayOptions:56
+#: html/Search/Elements/DisplayOptions.orig:56 html/Search/Elements/DisplayOptions:56
 msgid "Order by"
 msgstr ""
 
@@ -3824,7 +3826,7 @@ msgstr ""
 msgid "Ordering and sorting"
 msgstr "Rekkefølge og sortering"
 
-#: html/Admin/Users/Modify.html.orig:141 html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
+#: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
 msgid "Organization"
 msgstr "Organisasjon"
 
@@ -3833,11 +3835,11 @@ msgstr "Organisasjon"
 msgid "Originating ticket: #%1"
 msgstr "Opprinnelig sak: #%1"
 
-#: lib/RT/Transaction_Overlay.pm.orig:609 lib/RT/Transaction_Overlay.pm:609
+#: lib/RT/Transaction_Overlay.pm:610
 msgid "Outgoing email about a comment recorded"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:613 lib/RT/Transaction_Overlay.pm:613
+#: lib/RT/Transaction_Overlay.pm:614
 msgid "Outgoing email recorded"
 msgstr ""
 
@@ -3845,15 +3847,15 @@ msgstr ""
 msgid "Over time, priority moves toward"
 msgstr "Over tid beveger prioriteten seg mot"
 
-#: lib/RT/Queue_Overlay.pm:112
+#: lib/RT/Queue_Overlay.pm:113
 msgid "Own tickets"
 msgstr "Eie saker"
 
-#: lib/RT/Queue_Overlay.pm:112
+#: lib/RT/Queue_Overlay.pm:113
 msgid "OwnTicket"
 msgstr "EieSak"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:1733
+#: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1734
 msgid "Owner"
 msgstr "Eier"
 
@@ -3865,7 +3867,7 @@ msgstr "Eier endret fra %1 til %2"
 msgid "Owner could not be set."
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:659 lib/RT/Transaction_Overlay.pm:659
+#: lib/RT/Transaction_Overlay.pm:660
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Eier ble tvunget til å endres fra %1 til %2"
@@ -3879,7 +3881,7 @@ msgstr "Eier er"
 msgid "Page %1 of %2"
 msgstr ""
 
-#: html/Admin/Users/Modify.html.orig:198 html/Admin/Users/Modify.html:198 html/User/Prefs.html:97
+#: html/Admin/Users/Modify.html:198 html/User/Prefs.html:97
 msgid "Pager"
 msgstr "Personsøker"
 
@@ -3903,11 +3905,11 @@ msgstr "Passord"
 msgid "Password Reminder"
 msgstr "Passordhint"
 
-#: lib/RT/Transaction_Overlay.pm.orig:768 lib/RT/Transaction_Overlay.pm:768 lib/RT/User_Overlay.pm:1041
+#: lib/RT/Transaction_Overlay.pm:769 lib/RT/User_Overlay.pm:1042
 msgid "Password changed"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1035 lib/RT/User_Overlay.pm:214
+#: lib/RT/User_Overlay.pm:1036 lib/RT/User_Overlay.pm:215
 #. ($RT::MinimumPasswordLength)
 msgid "Password needs to be at least %1 characters long"
 msgstr ""
@@ -3916,12 +3918,12 @@ msgstr ""
 msgid "Password too short"
 msgstr "For kort passord"
 
-#: html/Admin/Users/Modify.html.orig:357 html/Admin/Users/Modify.html:355 html/User/Prefs.html:232
+#: html/Admin/Users/Modify.html:355 html/User/Prefs.html:232
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "Passord: %1"
 
-#: html/Admin/Users/Modify.html.orig:359 html/Admin/Users/Modify.html:357
+#: html/Admin/Users/Modify.html:357
 msgid "Passwords do not match."
 msgstr "Passordene stemmer ikke overens."
 
@@ -3941,7 +3943,7 @@ msgstr "Kjør en brukerdefinert handling"
 msgid "Perl configuration"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:267 lib/RT/ACE_Overlay.pm:593 lib/RT/ACE_Overlay.pm:603 lib/RT/ACE_Overlay.pm:613 lib/RT/ACE_Overlay.pm:678 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:402 lib/RT/Attribute_Overlay.pm:411 lib/RT/Attribute_Overlay.pm:424 lib/RT/CurrentUser.pm:116 lib/RT/CurrentUser.pm:125 lib/RT/CustomField_Overlay.pm:1008 lib/RT/CustomField_Overlay.pm:162 lib/RT/CustomField_Overlay.pm:179 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:360 lib/RT/CustomField_Overlay.pm:392 lib/RT/CustomField_Overlay.pm:684 lib/RT/CustomField_Overlay.pm:856 lib/RT/CustomField_Overlay.pm:891 lib/RT/CustomField_Overlay.pm:936 lib/RT/Group_Overlay.pm:1123 lib/RT/Group_Overlay.pm:1127 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1246 lib/RT/Group_Overlay.pm:1250 lib/RT/Group_Overlay.pm:1256 lib/RT/Group_Overlay.pm:452 lib/RT/Group_Overlay.pm:549 lib/RT/Group_Overlay.pm:627 lib/RT/Group_Overlay.pm:635 lib/RT/Group_Overlay.pm:732 lib/RT/Group_Overlay.pm:736 lib/RT/Group_Overlay.pm:742 lib/RT/Group_Overlay.pm:928 lib/RT/Group_Overlay.pm:932 lib/RT/Group_Overlay.pm:945 lib/RT/Queue_Overlay.pm:1038 lib/RT/Queue_Overlay.pm:140 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:641 lib/RT/Queue_Overlay.pm:651 lib/RT/Queue_Overlay.pm:665 lib/RT/Queue_Overlay.pm:803 lib/RT/Queue_Overlay.pm:812 lib/RT/Queue_Overlay.pm:825 lib/RT/Scrip_Overlay.pm:149 lib/RT/Scrip_Overlay.pm:160 lib/RT/Scrip_Overlay.pm:225 lib/RT/Scrip_Overlay.pm:539 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1318 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1342 lib/RT/Ticket_Overlay.pm:1483 lib/RT/Ticket_Overlay.pm:1493 lib/RT/Ticket_Overlay.pm:1507 lib/RT/Ticket_Overlay.pm:1624 lib/RT/Ticket_Overlay.pm:1944 lib/RT/Ticket_Overlay.pm:2082 lib/RT/Ticket_Overlay.pm:2250 lib/RT/Ticket_Overlay.pm:2297 lib/RT/Ticket_Overlay.pm:2451 lib/RT/Ticket_Overlay.pm:2552 lib/RT/Ticket_Overlay.pm:2592 lib/RT/Ticket_Overlay.pm:2671 lib/RT/Ticket_Overlay.pm:2685 lib/RT/Ticket_Overlay.pm:2909 lib/RT/Ticket_Overlay.pm:2919 lib/RT/Ticket_Overlay.pm:2924 lib/RT/Ticket_Overlay.pm:3147 lib/RT/Ticket_Overlay.pm:3151 lib/RT/Ticket_Overlay.pm:3294 lib/RT/Ticket_Overlay.pm:3415 lib/RT/Transaction_Overlay.pm.orig:503 lib/RT/Transaction_Overlay.pm.orig:510 lib/RT/Transaction_Overlay.pm.orig:538 lib/RT/Transaction_Overlay.pm.orig:545 lib/RT/Transaction_Overlay.pm:503 lib/RT/Transaction_Overlay.pm:510 lib/RT/Transaction_Overlay.pm:538 lib/RT/Transaction_Overlay.pm:545 lib/RT/User_Overlay.pm:1028 lib/RT/User_Overlay.pm:1179 lib/RT/User_Overlay.pm:1720 lib/RT/User_Overlay.pm:369 lib/RT/User_Overlay.pm:733 lib/RT/User_Overlay.pm:772
+#: lib/RT/ACE_Overlay.pm:262 lib/RT/ACE_Overlay.pm:268 lib/RT/ACE_Overlay.pm:594 lib/RT/ACE_Overlay.pm:604 lib/RT/ACE_Overlay.pm:614 lib/RT/ACE_Overlay.pm:679 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:402 lib/RT/Attribute_Overlay.pm:411 lib/RT/Attribute_Overlay.pm:424 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1011 lib/RT/CustomField_Overlay.pm:162 lib/RT/CustomField_Overlay.pm:179 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:361 lib/RT/CustomField_Overlay.pm:393 lib/RT/CustomField_Overlay.pm:686 lib/RT/CustomField_Overlay.pm:859 lib/RT/CustomField_Overlay.pm:894 lib/RT/CustomField_Overlay.pm:939 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1138 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1252 lib/RT/Group_Overlay.pm:1258 lib/RT/Group_Overlay.pm:453 lib/RT/Group_Overlay.pm:550 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:636 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:738 lib/RT/Group_Overlay.pm:744 lib/RT/Group_Overlay.pm:930 lib/RT/Group_Overlay.pm:934 lib/RT/Group_Overlay.pm:947 lib/RT/Queue_Overlay.pm:1051 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:654 lib/RT/Queue_Overlay.pm:664 lib/RT/Queue_Overlay.pm:678 lib/RT/Queue_Overlay.pm:816 lib/RT/Queue_Overlay.pm:825 lib/RT/Queue_Overlay.pm:838 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1318 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1342 lib/RT/Ticket_Overlay.pm:1483 lib/RT/Ticket_Overlay.pm:1493 lib/RT/Ticket_Overlay.pm:1507 lib/RT/Ticket_Overlay.pm:1624 lib/RT/Ticket_Overlay.pm:1944 lib/RT/Ticket_Overlay.pm:2082 lib/RT/Ticket_Overlay.pm:2252 lib/RT/Ticket_Overlay.pm:2302 lib/RT/Ticket_Overlay.pm:2456 lib/RT/Ticket_Overlay.pm:2557 lib/RT/Ticket_Overlay.pm:2597 lib/RT/Ticket_Overlay.pm:2676 lib/RT/Ticket_Overlay.pm:2690 lib/RT/Ticket_Overlay.pm:2914 lib/RT/Ticket_Overlay.pm:2924 lib/RT/Ticket_Overlay.pm:2929 lib/RT/Ticket_Overlay.pm:3152 lib/RT/Ticket_Overlay.pm:3156 lib/RT/Ticket_Overlay.pm:3299 lib/RT/Ticket_Overlay.pm:3420 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:546 lib/RT/User_Overlay.pm:1029 lib/RT/User_Overlay.pm:1180 lib/RT/User_Overlay.pm:1721 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:734 lib/RT/User_Overlay.pm:773
 msgid "Permission Denied"
 msgstr "Ingen Tilgang"
 
@@ -3957,7 +3959,7 @@ msgstr "Personlige grupper"
 msgid "Personal groups:"
 msgstr "Personlige grupper:"
 
-#: html/Admin/Users/Modify.html.orig:180 html/Admin/Users/Modify.html:180 html/User/Prefs.html:82
+#: html/Admin/Users/Modify.html:180 html/User/Prefs.html:82
 msgid "Phone numbers"
 msgstr "Telefonnummer"
 
@@ -3969,7 +3971,7 @@ msgstr "Stedholder"
 msgid "Pref"
 msgstr "Pref"
 
-#: html/Elements/Header:87 html/Elements/Tabs:88 html/SelfService/Elements/Tabs:72 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
+#: html/Elements/Header:87 html/Elements/Tabs:88 html/SelfService/Elements/Tabs:75 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
 msgid "Preferences"
 msgstr "Instillinger"
 
@@ -3977,7 +3979,7 @@ msgstr "Instillinger"
 msgid "Prefs"
 msgstr "Pref"
 
-#: lib/RT/Action/Generic.pm:188
+#: lib/RT/Action/Generic.pm:189
 msgid "Prepare Stubbed"
 msgstr "Klargjør Forkortet"
 
@@ -3997,12 +3999,12 @@ msgstr "Forrige side"
 msgid "Pri"
 msgstr "Pri"
 
-#: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:238 lib/RT/ACE_Overlay.pm:582
+#: lib/RT/ACE_Overlay.pm:158 lib/RT/ACE_Overlay.pm:239 lib/RT/ACE_Overlay.pm:583
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
 msgstr "Primær %1 ikke funnet."
 
-#: html/Search/Elements/PickBasics:160 html/Ticket/Create.html:184 html/Ticket/Elements/EditBasics:74 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1517
+#: html/Search/Elements/PickBasics:160 html/Ticket/Create.html:184 html/Ticket/Elements/EditBasics:74 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1518
 msgid "Priority"
 msgstr "Prioritet"
 
@@ -4018,7 +4020,7 @@ msgstr ""
 msgid "Privileged"
 msgstr "Priviligert"
 
-#: html/Admin/Users/Modify.html.orig:337 html/Admin/Users/Modify.html:335 html/User/Prefs.html:223
+#: html/Admin/Users/Modify.html:335 html/User/Prefs.html:223
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "Priviligert status: %1"
@@ -4035,11 +4037,11 @@ msgstr "Pseduogruppe for intern bruk"
 msgid "Query"
 msgstr ""
 
-#: html/Search/Build.html:103 html/Ticket/Elements/Tabs:195
+#: html/Search/Build.html:124 html/Ticket/Elements/Tabs:195
 msgid "Query Builder"
 msgstr ""
 
-#: html/Elements/QuickCreate:55 html/Elements/Quicksearch:50 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:59 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1344
+#: html/Elements/QuickCreate:55 html/Elements/Quicksearch:50 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:59 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1345
 msgid "Queue"
 msgstr "Kø"
 
@@ -4065,11 +4067,11 @@ msgstr "Kønavn"
 msgid "Queue Scrips"
 msgstr "Køscrip"
 
-#: lib/RT/Queue_Overlay.pm:349
+#: lib/RT/Queue_Overlay.pm:362
 msgid "Queue already exists"
 msgstr "Køen eksisterer allerede"
 
-#: lib/RT/Queue_Overlay.pm:358 lib/RT/Queue_Overlay.pm:364
+#: lib/RT/Queue_Overlay.pm:371 lib/RT/Queue_Overlay.pm:377
 msgid "Queue could not be created"
 msgstr "Køen kunne ikke opprettes"
 
@@ -4077,7 +4079,7 @@ msgstr "Køen kunne ikke opprettes"
 msgid "Queue could not be loaded."
 msgstr "Køen kunne ikke lastes."
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:368 lib/RT/StyleGuide.pod:809
+#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:381 lib/RT/StyleGuide.pod:809
 msgid "Queue created"
 msgstr "Køen opprettet"
 
@@ -4147,7 +4149,7 @@ msgstr "RT Konfigurasjonsfeil"
 msgid "RT Critical error. Message not recorded!"
 msgstr "Kritisk RT feil. Meldingen ble ikke lagret!"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT Feil"
 
@@ -4191,7 +4193,7 @@ msgstr ""
 msgid "RT couldn't validate this PGP signature. \\n"
 msgstr "msgstr "RT kunne ikke validere denne PGP signaturen. \\n" "
 
-#: html/Elements/PageLayout:107
+#: html/Elements/PageLayout:108
 #. ($RT::rtname)
 msgid "RT for %1"
 msgstr "RT for %1"
@@ -4224,7 +4226,7 @@ msgstr "RT vil behandle denne meldingen som om den var usignert"
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
 msgstr "RT's epost kommandomodus krever PGP autentisering. Meldingen din var enten ikke signert, eller signaturen din kunne ikke bekreftes."
 
-#: html/Admin/Users/Modify.html.orig:79 html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
+#: html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
 msgid "Real Name"
 msgstr "Ekte Navn"
 
@@ -4232,22 +4234,22 @@ msgstr "Ekte Navn"
 msgid "RealName"
 msgstr "EkteNavn"
 
-#: lib/RT/Transaction_Overlay.pm.orig:712 lib/RT/Transaction_Overlay.pm:712
+#: lib/RT/Transaction_Overlay.pm:713
 #. ($value)
 msgid "Reference by %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:752 lib/RT/Transaction_Overlay.pm:752
+#: lib/RT/Transaction_Overlay.pm:753
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:709 lib/RT/Transaction_Overlay.pm:709
+#: lib/RT/Transaction_Overlay.pm:710
 #. ($value)
 msgid "Reference to %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:749 lib/RT/Transaction_Overlay.pm:749
+#: lib/RT/Transaction_Overlay.pm:750
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr ""
@@ -4301,15 +4303,15 @@ msgstr ""
 msgid "Reply to requestors"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:110
+#: lib/RT/Queue_Overlay.pm:111
 msgid "Reply to tickets"
 msgstr "Svar på sak"
 
-#: lib/RT/Queue_Overlay.pm:110
+#: lib/RT/Queue_Overlay.pm:111
 msgid "ReplyToTicket"
 msgstr "SvarPåSak"
 
-#: etc/initialdata:44 lib/RT/ACE_Overlay.pm:111
+#: etc/initialdata:44 lib/RT/ACE_Overlay.pm:112
 msgid "Requestor"
 msgstr "Kunde"
 
@@ -4342,7 +4344,7 @@ msgstr ""
 msgid "Reset"
 msgstr "Reset"
 
-#: html/Admin/Users/Modify.html.orig:183 html/Admin/Users/Modify.html:183 html/User/Prefs.html:85
+#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:85
 msgid "Residence"
 msgstr "Hjemme"
 
@@ -4350,7 +4352,7 @@ msgstr "Hjemme"
 msgid "Resolve"
 msgstr "Løs"
 
-#: html/Ticket/Update.html:151
+#: html/Ticket/Update.html:154
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Løs saknr #%1 (%2)"
@@ -4371,7 +4373,7 @@ msgstr "Resultater"
 msgid "Results per page"
 msgstr "Resultater per side"
 
-#: html/Admin/Users/Modify.html.orig:126 html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
+#: html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
 msgid "Retype Password"
 msgstr "Skriv Passord igjen"
 
@@ -4383,19 +4385,19 @@ msgstr ""
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "Rettighet %1 kunne ikke finnes for %2  %3 in scope %4 (%5)\\n"
 
-#: lib/RT/ACE_Overlay.pm:643
+#: lib/RT/ACE_Overlay.pm:644
 msgid "Right Delegated"
 msgstr "Rettighet Deligert"
 
-#: lib/RT/ACE_Overlay.pm:333
+#: lib/RT/ACE_Overlay.pm:334
 msgid "Right Granted"
 msgstr "Rettighet Tildelt"
 
-#: lib/RT/ACE_Overlay.pm:185
+#: lib/RT/ACE_Overlay.pm:186
 msgid "Right Loaded"
 msgstr "Rettighet lastet"
 
-#: lib/RT/ACE_Overlay.pm:708 lib/RT/ACE_Overlay.pm:729
+#: lib/RT/ACE_Overlay.pm:709 lib/RT/ACE_Overlay.pm:730
 msgid "Right could not be revoked"
 msgstr "Rettigheten kunne ikke trekkes tilbake"
 
@@ -4403,11 +4405,11 @@ msgstr "Rettigheten kunne ikke trekkes tilbake"
 msgid "Right not found"
 msgstr "Rettighet ikke funnet"
 
-#: lib/RT/ACE_Overlay.pm:573 lib/RT/ACE_Overlay.pm:668
+#: lib/RT/ACE_Overlay.pm:574 lib/RT/ACE_Overlay.pm:669
 msgid "Right not loaded."
 msgstr "Rettighet ikke lastet."
 
-#: lib/RT/ACE_Overlay.pm:725
+#: lib/RT/ACE_Overlay.pm:726
 msgid "Right revoked"
 msgstr "Rettighet fjernet"
 
@@ -4415,12 +4417,12 @@ msgstr "Rettighet fjernet"
 msgid "Rights"
 msgstr "Rettigheter"
 
-#: html/Admin/CustomFields/GroupRights.html:129 lib/RT/Interface/Web.pm:869
+#: html/Admin/CustomFields/GroupRights.html:129 lib/RT/Interface/Web.pm:896
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Rettigheter kunne ikke tildeles for %1"
 
-#: html/Admin/CustomFields/GroupRights.html:156 lib/RT/Interface/Web.pm:898
+#: html/Admin/CustomFields/GroupRights.html:156 lib/RT/Interface/Web.pm:925
 #. ($object_type)
 msgid "Rights could not be revoked for %1"
 msgstr "Rettigheter kunne ikke trekkes tilbake for %1"
@@ -4433,11 +4435,11 @@ msgstr "Roller"
 msgid "RootApproval"
 msgstr "RootGodkjenning"
 
-#: html/Search/Elements/DisplayOptions:83
+#: html/Search/Elements/DisplayOptions.orig:83 html/Search/Elements/DisplayOptions:83
 msgid "Rows per page"
 msgstr ""
 
-#: lib/RT/Date.pm:416
+#: lib/RT/Date.pm:418
 msgid "Sat."
 msgstr "Lør."
 
@@ -4445,7 +4447,7 @@ msgstr "Lør."
 msgid "Save"
 msgstr ""
 
-#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:87 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html.orig:238 html/Admin/Users/Modify.html:238 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
+#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:238 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
 msgid "Save Changes"
 msgstr "Lagre Endringer"
 
@@ -4457,7 +4459,7 @@ msgstr ""
 msgid "Save changes"
 msgstr "Lage endringer"
 
-#: lib/RT/SavedSearch.pm:161
+#: lib/RT/SavedSearch.pm:162
 #. ($name)
 msgid "Saved search %1"
 msgstr ""
@@ -4472,7 +4474,7 @@ msgstr ""
 msgid "Scrip #%1"
 msgstr "Scrip #%1"
 
-#: lib/RT/Scrip_Overlay.pm:204
+#: lib/RT/Scrip_Overlay.pm:205
 msgid "Scrip Created"
 msgstr "Scrip Opprettet"
 
@@ -4496,7 +4498,7 @@ msgstr "Scrip for %1\\n"
 msgid "Scrips which apply to all queues"
 msgstr "Scrip som gjelder for alle køer"
 
-#: html/Elements/SimpleSearch:48 html/Search/Build.html:92
+#: html/Elements/SimpleSearch:48 html/Search/Build.html:112
 msgid "Search"
 msgstr "Søk"
 
@@ -4504,7 +4506,7 @@ msgstr "Søk"
 msgid "Search Criteria"
 msgstr "Søkekriteria"
 
-#: lib/RT/SavedSearch.pm:115
+#: lib/RT/SavedSearch.pm:116
 msgid "Search attribute load failure"
 msgstr ""
 
@@ -4512,7 +4514,7 @@ msgstr ""
 msgid "Search for approvals"
 msgstr "Søk etter godkjenninger"
 
-#: lib/RT/SavedSearch.pm:193
+#: lib/RT/SavedSearch.pm:194
 #. ($msg)
 msgid "Search update: %1"
 msgstr ""
@@ -4525,15 +4527,15 @@ msgstr "Sikkerhet:"
 msgid "See custom fields"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:106
+#: lib/RT/Queue_Overlay.pm:107
 msgid "See exact outgoing email messages and their recipeients"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:104
+#: lib/RT/Queue_Overlay.pm:105
 msgid "See ticket private commentary"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:103
+#: lib/RT/Queue_Overlay.pm:104
 msgid "See ticket summaries"
 msgstr ""
 
@@ -4545,7 +4547,7 @@ msgstr ""
 msgid "SeeGroup"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:91
+#: lib/RT/Queue_Overlay.pm:92
 msgid "SeeQueue"
 msgstr "SeKø"
 
@@ -4685,7 +4687,7 @@ msgstr "Sender epost til de administrative Ccene som kommentar"
 msgid "Sends mail to the owner"
 msgstr "Sender epost til eieren"
 
-#: lib/RT/Date.pm:442
+#: lib/RT/Date.pm:445
 msgid "Sep."
 msgstr "Sep."
 
@@ -4741,15 +4743,15 @@ msgstr "Vis sakens private kommentarer"
 msgid "Show ticket summaries"
 msgstr "Vis sakssammendrag"
 
-#: lib/RT/Queue_Overlay.pm:93
+#: lib/RT/Queue_Overlay.pm:94
 msgid "ShowACL"
 msgstr "VisACL"
 
-#: lib/RT/System.pm:85
+#: lib/RT/System.pm:86
 msgid "ShowConfigTab"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:106
+#: lib/RT/Queue_Overlay.pm:107
 msgid "ShowOutgoingEmail"
 msgstr ""
 
@@ -4757,31 +4759,31 @@ msgstr ""
 msgid "ShowSavedSearches"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:102
+#: lib/RT/Queue_Overlay.pm:103
 msgid "ShowScrips"
 msgstr "VisScrip"
 
-#: lib/RT/Queue_Overlay.pm:99
+#: lib/RT/Queue_Overlay.pm:100
 msgid "ShowTemplate"
 msgstr "VisMal"
 
-#: lib/RT/Queue_Overlay.pm:103
+#: lib/RT/Queue_Overlay.pm:104
 msgid "ShowTicket"
 msgstr "VisSak"
 
-#: lib/RT/Queue_Overlay.pm:104
+#: lib/RT/Queue_Overlay.pm:105
 msgid "ShowTicketComments"
 msgstr "VisSaksKommentarer"
 
-#: lib/RT/Queue_Overlay.pm:107
+#: lib/RT/Queue_Overlay.pm:108
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
 msgstr "Meld deg på som saksforespørrer eller sak/kø Cc"
 
-#: lib/RT/Queue_Overlay.pm:108
+#: lib/RT/Queue_Overlay.pm:109
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "Meld deg på som sak/kø AdminCc"
 
-#: html/Admin/Users/Modify.html.orig:229 html/Admin/Users/Modify.html:229 html/User/Prefs.html:167
+#: html/Admin/Users/Modify.html:229 html/User/Prefs.html:167
 msgid "Signature"
 msgstr "Signatur"
 
@@ -4853,11 +4855,11 @@ msgstr "Starter Etter"
 msgid "Starts date '%1' could not be parsed"
 msgstr "Startdato '%1' kunne ikke tolkes"
 
-#: html/Admin/Users/Modify.html.orig:162 html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
+#: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
 msgid "State"
 msgstr "Stat"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:63 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1142 lib/RT/Tickets_Overlay.pm:1377
+#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:63 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1142 lib/RT/Tickets_Overlay.pm:1378
 msgid "Status"
 msgstr "Status"
 
@@ -4877,28 +4879,32 @@ msgstr "EndreStatus"
 msgid "Steal"
 msgstr "Stjel"
 
-#: lib/RT/Queue_Overlay.pm:117
+#: lib/RT/Queue_Overlay.pm:118
 msgid "Steal tickets"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:117
+#: lib/RT/Queue_Overlay.pm:118
 msgid "StealTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:665 lib/RT/Transaction_Overlay.pm:665
+#: lib/RT/Transaction_Overlay.pm:666
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "Stjålet fra %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Stolen from %1 "
+msgstr "Stjålet fra %1 "
 
 #: html/Search/Elements/EditFormat:81
 msgid "Style"
 msgstr ""
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:154 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:105 html/Ticket/Elements/EditBasics:48 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:80 lib/RT/Ticket_Overlay.pm:1138 lib/RT/Tickets_Overlay.pm:1459
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:154 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:105 html/Ticket/Elements/EditBasics:48 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:80 lib/RT/Ticket_Overlay.pm:1138 lib/RT/Tickets_Overlay.pm:1460
 msgid "Subject"
 msgstr "Emne"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm.orig:687 lib/RT/Transaction_Overlay.pm:687
+#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:688
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Endre emne til %1"
@@ -4911,15 +4917,15 @@ msgstr "Oppdater"
 msgid "Submit Workflow"
 msgstr "Send Arbeidsflyt"
 
-#: lib/RT/Group_Overlay.pm:780
+#: lib/RT/Group_Overlay.pm:782
 msgid "Succeeded"
 msgstr "Lykkes"
 
-#: lib/RT/Date.pm:417
+#: lib/RT/Date.pm:419
 msgid "Sun."
 msgstr "Søn."
 
-#: lib/RT/System.pm:75
+#: lib/RT/System.pm:76
 msgid "SuperUser"
 msgstr "SuperBruker"
 
@@ -4931,7 +4937,7 @@ msgstr "System"
 msgid "System Configuration"
 msgstr ""
 
-#: html/Admin/CustomFields/GroupRights.html:128 html/Admin/CustomFields/GroupRights.html:155 html/Admin/CustomFields/UserRights.html:128 html/Admin/CustomFields/UserRights.html:98 html/Admin/Elements/SelectRights:106 lib/RT/ACE_Overlay.pm:597 lib/RT/Interface/Web.pm:868 lib/RT/Interface/Web.pm:897
+#: html/Admin/CustomFields/GroupRights.html:128 html/Admin/CustomFields/GroupRights.html:155 html/Admin/CustomFields/UserRights.html:128 html/Admin/CustomFields/UserRights.html:98 html/Admin/Elements/SelectRights:106 lib/RT/ACE_Overlay.pm:598 lib/RT/Interface/Web.pm:895 lib/RT/Interface/Web.pm:924
 msgid "System Error"
 msgstr "Systemfeil"
 
@@ -4943,7 +4949,7 @@ msgstr "Systemfeil. Rettighet ikke tildelt."
 msgid "System Error. right not granted"
 msgstr "Systemfeil. rettigheter ikke tildelt"
 
-#: lib/RT/Transaction_Overlay.pm.orig:213 lib/RT/Transaction_Overlay.pm.orig:219 lib/RT/Transaction_Overlay.pm:213 lib/RT/Transaction_Overlay.pm:219
+#: lib/RT/Transaction_Overlay.pm:214 lib/RT/Transaction_Overlay.pm:220
 #. ($msg)
 msgid "System Error: %1"
 msgstr ""
@@ -4952,11 +4958,11 @@ msgstr ""
 msgid "System Tools"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:646
+#: lib/RT/ACE_Overlay.pm:647
 msgid "System error. Right not delegated."
 msgstr "Systemfeil. Rettighet ikke tildelt."
 
-#: lib/RT/ACE_Overlay.pm:170 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:336 lib/RT/ACE_Overlay.pm:933
+#: lib/RT/ACE_Overlay.pm:171 lib/RT/ACE_Overlay.pm:254 lib/RT/ACE_Overlay.pm:337 lib/RT/ACE_Overlay.pm:934
 msgid "System error. Right not granted."
 msgstr "Systemfeil. Rettighet ikke tildelt."
 
@@ -4972,7 +4978,7 @@ msgstr "Systemgrupper"
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRollegruppe for intern bruk"
 
-#: lib/RT/CurrentUser.pm:356
+#: lib/RT/CurrentUser.pm:358
 msgid "TEST_STRING"
 msgstr "TEST_STRENG"
 
@@ -4980,15 +4986,15 @@ msgstr "TEST_STRENG"
 msgid "Take"
 msgstr "Ta"
 
-#: lib/RT/Queue_Overlay.pm:115
+#: lib/RT/Queue_Overlay.pm:116
 msgid "Take tickets"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:115
+#: lib/RT/Queue_Overlay.pm:116
 msgid "TakeTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:650 lib/RT/Transaction_Overlay.pm:650
+#: lib/RT/Transaction_Overlay.pm:651
 msgid "Taken"
 msgstr "Tatt"
 
@@ -5005,7 +5011,7 @@ msgstr "Mal #%1"
 msgid "Template deleted"
 msgstr "Mal slettet"
 
-#: lib/RT/Scrip_Overlay.pm:180
+#: lib/RT/Scrip_Overlay.pm:181
 msgid "Template not found"
 msgstr "Kunne ikke finne mal"
 
@@ -5025,11 +5031,11 @@ msgstr "Maler"
 msgid "Templates for %1\\n"
 msgstr "Maler for %1\\n"
 
-#: lib/RT/CustomField_Overlay.pm:863 lib/RT/Record.pm:929
+#: lib/RT/CustomField_Overlay.pm:866 lib/RT/Record.pm:931
 msgid "That is already the current value"
 msgstr "Verdien er allerede satt"
 
-#: lib/RT/CustomField_Overlay.pm:401
+#: lib/RT/CustomField_Overlay.pm:402
 msgid "That is not a value for this custom field"
 msgstr "Det er ikke en verdi for dette fleksifeltet"
 
@@ -5037,11 +5043,11 @@ msgstr "Det er ikke en verdi for dette fleksifeltet"
 msgid "That is the same value"
 msgstr "Det er den samme verdien"
 
-#: lib/RT/ACE_Overlay.pm:318 lib/RT/ACE_Overlay.pm:627
+#: lib/RT/ACE_Overlay.pm:319 lib/RT/ACE_Overlay.pm:628
 msgid "That principal already has that right"
 msgstr "Den primæren har allerede den rettigheten"
 
-#: lib/RT/Queue_Overlay.pm:737
+#: lib/RT/Queue_Overlay.pm:750
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Den primæren er allerede en %1 for denne køen"
@@ -5051,7 +5057,7 @@ msgstr "Den primæren er allerede en %1 for denne køen"
 msgid "That principal is already a %1 for this ticket"
 msgstr "Den primæren er allerede en %1 for denne køen"
 
-#: lib/RT/Queue_Overlay.pm:836
+#: lib/RT/Queue_Overlay.pm:849
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Den primæren er ikke en %1 for denne køen"
@@ -5064,7 +5070,7 @@ msgstr "Den primæren er ikke en %1 for denne saken"
 msgid "That queue does not exist"
 msgstr "Den køen eksisterer ikke"
 
-#: lib/RT/Ticket_Overlay.pm:3156
+#: lib/RT/Ticket_Overlay.pm:3161
 msgid "That ticket has unresolved dependencies"
 msgstr "Denne saken har uløste avhengigheter"
 
@@ -5072,27 +5078,27 @@ msgstr "Denne saken har uløste avhengigheter"
 msgid "That user already has that right"
 msgstr "Den brukeren har allerede den rettigheten"
 
-#: lib/RT/Ticket_Overlay.pm:2960
+#: lib/RT/Ticket_Overlay.pm:2965
 msgid "That user already owns that ticket"
 msgstr "Den brukeren eier allerede den saken"
 
-#: lib/RT/Ticket_Overlay.pm:2932
+#: lib/RT/Ticket_Overlay.pm:2937
 msgid "That user does not exist"
 msgstr "Den brukeren finnes ikke"
 
-#: lib/RT/User_Overlay.pm:389
+#: lib/RT/User_Overlay.pm:390
 msgid "That user is already privileged"
 msgstr "Den brukeren er allerede priviligert"
 
-#: lib/RT/User_Overlay.pm:410
+#: lib/RT/User_Overlay.pm:411
 msgid "That user is already unprivileged"
 msgstr "Den brukeren er allerede upriviligert"
 
-#: lib/RT/User_Overlay.pm:402
+#: lib/RT/User_Overlay.pm:403
 msgid "That user is now privileged"
 msgstr "Denne brukeren er nå priviligert"
 
-#: lib/RT/User_Overlay.pm:423
+#: lib/RT/User_Overlay.pm:424
 msgid "That user is now unprivileged"
 msgstr "Dette brukeren er nå upriviligert"
 
@@ -5100,11 +5106,11 @@ msgstr "Dette brukeren er nå upriviligert"
 msgid "That user is now unprivilegedileged"
 msgstr "Den brukeren er allerede upriviligert"
 
-#: lib/RT/Ticket_Overlay.pm:2953
+#: lib/RT/Ticket_Overlay.pm:2958
 msgid "That user may not own tickets in that queue"
 msgstr "Den brukeren kan ikke eie saker i den køen"
 
-#: lib/RT/Link_Overlay.pm:233
+#: lib/RT/Link_Overlay.pm:234
 msgid "That's not a numerical id"
 msgstr "Dette er ikke en numerisk id"
 
@@ -5112,11 +5118,11 @@ msgstr "Dette er ikke en numerisk id"
 msgid "The Basics"
 msgstr "Detaljer"
 
-#: lib/RT/ACE_Overlay.pm:112
+#: lib/RT/ACE_Overlay.pm:113
 msgid "The CC of a ticket"
 msgstr "CCen til en sak"
 
-#: lib/RT/ACE_Overlay.pm:113
+#: lib/RT/ACE_Overlay.pm:114
 msgid "The administrative CC of a ticket"
 msgstr "Administrative CCer for en sak"
 
@@ -5132,15 +5138,15 @@ msgstr "De følgende kommandoene vil finne alle aktive saker i køen 'general' o
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "De følgende kommandoene ble ikke behandlet:\\n\\n"
 
-#: lib/RT/Record.pm:932
+#: lib/RT/Record.pm:934
 msgid "The new value has been set."
 msgstr "Den nye verdien har blitt satt."
 
-#: lib/RT/ACE_Overlay.pm:110
+#: lib/RT/ACE_Overlay.pm:111
 msgid "The owner of a ticket"
 msgstr "Eieren av en sak"
 
-#: lib/RT/ACE_Overlay.pm:111
+#: lib/RT/ACE_Overlay.pm:112
 msgid "The requestor of a ticket"
 msgstr "Forespørren av en sak"
 
@@ -5148,7 +5154,7 @@ msgstr "Forespørren av en sak"
 msgid "These comments aren't generally visible to the user"
 msgstr "Disse kommentarene er generelt ikke synlig for brukeren"
 
-#: lib/RT/CustomField_Overlay.pm:898
+#: lib/RT/CustomField_Overlay.pm:901
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -5168,7 +5174,7 @@ msgstr "Denne saken %1 %2 (%3)\\n"
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Dette verktøyet tillater brukeren  å kjøre perlmoduler fra inni RT."
 
-#: lib/RT/Transaction_Overlay.pm.orig:286 lib/RT/Transaction_Overlay.pm:286
+#: lib/RT/Transaction_Overlay.pm:287
 msgid "This transaction appears to have no content"
 msgstr "Denne transaksjonen ser ikke ut til å ha noe innhold"
 
@@ -5181,7 +5187,7 @@ msgstr "Denne brukerens %1 høyst prioriterte saker"
 msgid "This user's 25 highest priority tickets"
 msgstr "Denne brukerens 23 høys prioriterte saker"
 
-#: lib/RT/Date.pm:414
+#: lib/RT/Date.pm:416
 msgid "Thu."
 msgstr "Tor."
 
@@ -5207,7 +5213,7 @@ msgstr "Sak #%1 Jumbo oppdatering: %2"
 msgid "Ticket #%1: %2"
 msgstr "Sak #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1255 lib/RT/Action/CreateTickets.pm:1264 lib/RT/Action/CreateTickets.pm:593 lib/RT/Action/CreateTickets.pm:713 lib/RT/Action/CreateTickets.pm:726
+#: lib/RT/Action/CreateTickets.pm:1258 lib/RT/Action/CreateTickets.pm:1267 lib/RT/Action/CreateTickets.pm:595 lib/RT/Action/CreateTickets.pm:716 lib/RT/Action/CreateTickets.pm:729
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -5245,7 +5251,7 @@ msgstr "SaksId"
 msgid "Ticket Resolved"
 msgstr "Løst Sak"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1071
+#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1074
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -5253,11 +5259,11 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "Saks-vedlegg"
 
-#: lib/RT/Tickets_Overlay.pm:1647
+#: lib/RT/Tickets_Overlay.pm:1648
 msgid "Ticket content"
 msgstr "Saks-innhold"
 
-#: lib/RT/Tickets_Overlay.pm:1696
+#: lib/RT/Tickets_Overlay.pm:1697
 msgid "Ticket content type"
 msgstr "Sakens innholdstype"
 
@@ -5301,12 +5307,12 @@ msgstr "Saksstatus endret"
 msgid "Ticket watchers"
 msgstr "Saksovervåkere"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/FromSQL.pm:83
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr ""
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:68 lib/RT/CustomField_Overlay.pm:1070
+#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:68 lib/RT/CustomField_Overlay.pm:1073
 msgid "Tickets"
 msgstr "Saker"
 
@@ -5338,7 +5344,7 @@ msgstr "Tid Igjen"
 msgid "Time Worked"
 msgstr "Arbeidstid"
 
-#: lib/RT/Tickets_Overlay.pm:1618
+#: lib/RT/Tickets_Overlay.pm:1619
 msgid "Time left"
 msgstr "Tid igjen"
 
@@ -5346,7 +5352,7 @@ msgstr "Tid igjen"
 msgid "Time to display"
 msgstr "Tid å vise"
 
-#: lib/RT/Tickets_Overlay.pm:1593
+#: lib/RT/Tickets_Overlay.pm:1594
 msgid "Time worked"
 msgstr "Arbeidstid"
 
@@ -5387,12 +5393,12 @@ msgstr ""
 msgid "Transaction"
 msgstr "Transaksjon"
 
-#: lib/RT/Transaction_Overlay.pm.orig:792 lib/RT/Transaction_Overlay.pm:792
+#: lib/RT/Transaction_Overlay.pm:793
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Transaksjon %1 slettet"
 
-#: lib/RT/Transaction_Overlay.pm.orig:172 lib/RT/Transaction_Overlay.pm:172
+#: lib/RT/Transaction_Overlay.pm:173
 msgid "Transaction Created"
 msgstr "Transaksjon Opprettet"
 
@@ -5404,11 +5410,11 @@ msgstr ""
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
 msgstr "Transaction->Create kunne ikke, siden du ikke spesifiserte en saksid"
 
-#: lib/RT/Transaction_Overlay.pm.orig:123 lib/RT/Transaction_Overlay.pm:123
+#: lib/RT/Transaction_Overlay.pm:124
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:836 lib/RT/Transaction_Overlay.pm:836
+#: lib/RT/Transaction_Overlay.pm:837
 msgid "Transactions are immutable"
 msgstr "Transaksjoner er låst"
 
@@ -5416,19 +5422,19 @@ msgstr "Transaksjoner er låst"
 msgid "Trying to delete a right: %1"
 msgstr "Prøver å slette en rettighet: %1"
 
-#: lib/RT/Date.pm:412
+#: lib/RT/Date.pm:414
 msgid "Tue."
 msgstr "Tir."
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1144 lib/RT/Tickets_Overlay.pm:1431
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1144 lib/RT/Tickets_Overlay.pm:1432
 msgid "Type"
 msgstr "Type"
 
-#: lib/RT/ScripCondition_Overlay.pm:128
+#: lib/RT/ScripCondition_Overlay.pm:129
 msgid "Unimplemented"
 msgstr "Uimplementert"
 
-#: html/Admin/Users/Modify.html.orig:89 html/Admin/Users/Modify.html:89
+#: html/Admin/Users/Modify.html:89
 msgid "Unix login"
 msgstr "Unix login"
 
@@ -5436,13 +5442,13 @@ msgstr "Unix login"
 msgid "UnixUsername"
 msgstr "UnixBrukerNavn"
 
-#: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:846
+#: lib/RT/Attachment_Overlay.pm:290 lib/RT/Record.pm:847
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Ukjent InnholdsFormatering %1"
 
-#: html/Search/Build.html:692
+#: html/Search/Build.html:632
 msgid "Unknown field: $key"
 msgstr ""
 
@@ -5466,7 +5472,7 @@ msgstr ""
 msgid "Unselected objects"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm.orig:646 lib/RT/Transaction_Overlay.pm:646
+#: lib/RT/Transaction_Overlay.pm:647
 msgid "Untaken"
 msgstr "Ikke tatt"
 
@@ -5482,7 +5488,7 @@ msgstr ""
 msgid "Update ID"
 msgstr "Oppdater ID"
 
-#: html/Ticket/Update.html:130
+#: html/Ticket/Update.html:133
 msgid "Update Ticket"
 msgstr ""
 
@@ -5506,7 +5512,7 @@ msgstr ""
 msgid "Update name"
 msgstr "Oppdater navn"
 
-#: lib/RT/Action/CreateTickets.pm:734 lib/RT/Interface/Web.pm:492
+#: lib/RT/Action/CreateTickets.pm:737 lib/RT/Interface/Web.pm:519
 msgid "Update not recorded."
 msgstr "Oppdatering ikke lagret."
 
@@ -5531,12 +5537,12 @@ msgstr "Ooppdater sak # %1"
 msgid "Update ticket #%1"
 msgstr "Oppdater sak #%1"
 
-#: html/Ticket/Update.html:153
+#: html/Ticket/Update.html:156
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Oppdater sak #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:732 lib/RT/Interface/Web.pm:490
+#: lib/RT/Action/CreateTickets.pm:735 lib/RT/Interface/Web.pm:518
 msgid "Update type was neither correspondence nor comment."
 msgstr "Oppdateringstype var verken korrespondanse eller kommentar."
 
@@ -5621,17 +5627,17 @@ msgstr "BrukerId"
 msgid "User Rights"
 msgstr "Brukerrettigheter"
 
-#: lib/RT/Interface/Web.pm:1251
+#: lib/RT/Interface/Web.pm:1278
 #. ($cf->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
-#: html/Admin/Users/Modify.html.orig:292 html/Admin/Users/Modify.html.rej:14 html/Admin/Users/Modify.html.rej:4 html/Admin/Users/Modify.html:292
+#: html/Admin/Users/Modify.html.rej:14 html/Admin/Users/Modify.html.rej:4 html/Admin/Users/Modify.html:292
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "Bruker kunne ikke opprettes: %1"
 
-#: lib/RT/User_Overlay.pm:330
+#: lib/RT/User_Overlay.pm:331
 msgid "User created"
 msgstr "Bruker opprettet"
 
@@ -5639,7 +5645,7 @@ msgstr "Bruker opprettet"
 msgid "User defined groups"
 msgstr "Brukerdefinerte grupper"
 
-#: lib/RT/User_Overlay.pm:592 lib/RT/User_Overlay.pm:612
+#: lib/RT/User_Overlay.pm:593 lib/RT/User_Overlay.pm:613
 msgid "User loaded"
 msgstr ""
 
@@ -5655,11 +5661,11 @@ msgstr "Brukervisning"
 msgid "User-defined groups"
 msgstr ""
 
-#: html/Admin/Users/Modify.html.orig:69 html/Admin/Users/Modify.html:69 html/Elements/Login:73 html/Ticket/Elements/AddWatchers:56
+#: html/Admin/Users/Modify.html:69 html/Elements/Login:73 html/Ticket/Elements/AddWatchers:56
 msgid "Username"
 msgstr "Brukernavn"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1072
+#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1075
 msgid "Users"
 msgstr "Brukere"
 
@@ -5683,11 +5689,11 @@ msgstr "Verdier"
 msgid "VrijevormEnkele"
 msgstr "VrijevormEnkele"
 
-#: lib/RT/Queue_Overlay.pm:107
+#: lib/RT/Queue_Overlay.pm:108
 msgid "Watch"
 msgstr "Overvåk"
 
-#: lib/RT/Queue_Overlay.pm:108
+#: lib/RT/Queue_Overlay.pm:109
 msgid "WatchAsAdminCc"
 msgstr "OvervåkSomAdminCc"
 
@@ -5703,7 +5709,7 @@ msgstr "Overvåkere"
 msgid "WebEncoding"
 msgstr "WebFormatering"
 
-#: lib/RT/Date.pm:413
+#: lib/RT/Date.pm:415
 msgid "Wed."
 msgstr "Ons."
 
@@ -5759,7 +5765,7 @@ msgstr "Når kommentarer kommer inn"
 msgid "Whenever correspondence comes in"
 msgstr "Når korrespondanse kommer inn"
 
-#: html/Admin/Users/Modify.html.orig:188 html/Admin/Users/Modify.html:188 html/User/Prefs.html:89
+#: html/Admin/Users/Modify.html:188 html/User/Prefs.html:89
 msgid "Work"
 msgstr "Arbeid"
 
@@ -5775,7 +5781,7 @@ msgstr "ArbeidsTelefon"
 msgid "Worked"
 msgstr "Arbeidet"
 
-#: lib/RT/Ticket_Overlay.pm:3063
+#: lib/RT/Ticket_Overlay.pm:3068
 msgid "You already own this ticket"
 msgstr "Du eier allerede denne saken"
 
@@ -5783,7 +5789,7 @@ msgstr "Du eier allerede denne saken"
 msgid "You are not an authorized user"
 msgstr "Du er ikke en autorisert bruker"
 
-#: lib/RT/Ticket_Overlay.pm:2945
+#: lib/RT/Ticket_Overlay.pm:2950
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Du kan bare omfordele saker som du eier eller som ikke har en eier"
 
@@ -5840,7 +5846,7 @@ msgstr "Din forespørsel ble avvist"
 msgid "Your username or password is incorrect"
 msgstr "Ditt brukernavn/passord er ugyldig"
 
-#: html/Admin/Users/Modify.html.orig:168 html/Admin/Users/Modify.html:168 html/User/Prefs.html:149
+#: html/Admin/Users/Modify.html:168 html/User/Prefs.html:149
 msgid "Zip"
 msgstr "Zip"
 
@@ -5848,11 +5854,11 @@ msgstr "Zip"
 msgid "[no subject]"
 msgstr "[ikke noe emne]"
 
-#: lib/RT/System.pm:87
+#: lib/RT/System.pm:88
 msgid "allow creation of saved searches"
 msgstr ""
 
-#: lib/RT/System.pm:86
+#: lib/RT/System.pm:87
 msgid "allow loading of saved searches"
 msgstr ""
 
@@ -5889,7 +5895,7 @@ msgstr "korrespondanse (sansynligvis) ikke sendt"
 msgid "correspondence sent"
 msgstr "korrespondanse sendt"
 
-#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:341
+#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:342
 msgid "days"
 msgstr "dager"
 
@@ -5901,7 +5907,7 @@ msgstr "død"
 msgid "delete"
 msgstr "slett"
 
-#: lib/RT/Queue_Overlay.pm:87
+#: lib/RT/Queue_Overlay.pm:88
 msgid "deleted"
 msgstr "slettet"
 
@@ -5921,27 +5927,27 @@ msgstr "inneholder ikke"
 msgid "equal to"
 msgstr "lik som"
 
-#: html/Search/Build.html:371
+#: html/Search/Build.html:387
 msgid "error: can't move down"
 msgstr ""
 
-#: html/Search/Build.html:393
+#: html/Search/Build.html:409
 msgid "error: can't move left"
 msgstr ""
 
-#: html/Search/Build.html:352
+#: html/Search/Build.html:368
 msgid "error: can't move up"
 msgstr ""
 
-#: html/Search/Build.html:435
+#: html/Search/Build.html:451
 msgid "error: nothing to delete"
 msgstr ""
 
-#: html/Search/Build.html:357 html/Search/Build.html:376 html/Search/Build.html:398 html/Search/Build.html:427
+#: html/Search/Build.html:373 html/Search/Build.html:392 html/Search/Build.html:414 html/Search/Build.html:443
 msgid "error: nothing to move"
 msgstr ""
 
-#: html/Search/Build.html:453
+#: html/Search/Build.html:469
 msgid "error: nothing to toggle"
 msgstr ""
 
@@ -5962,7 +5968,7 @@ msgstr "større enn"
 msgid "group '%1'"
 msgstr "gruppe '%1'"
 
-#: lib/RT/Date.pm:337
+#: lib/RT/Date.pm:338
 msgid "hours"
 msgstr "timer"
 
@@ -5986,7 +5992,7 @@ msgstr "mindre enn"
 msgid "matches"
 msgstr "treffer"
 
-#: lib/RT/Date.pm:333
+#: lib/RT/Date.pm:334
 msgid "min"
 msgstr "min"
 
@@ -5998,11 +6004,11 @@ msgstr "minutter"
 msgid "modifications\\n\\n"
 msgstr "endringer\\n\\n"
 
-#: lib/RT/Date.pm:349
+#: lib/RT/Date.pm:350
 msgid "months"
 msgstr "måneder"
 
-#: lib/RT/Queue_Overlay.pm:82
+#: lib/RT/Queue_Overlay.pm:83
 msgid "new"
 msgstr "ny"
 
@@ -6026,7 +6032,7 @@ msgstr "ikke lik som"
 msgid "notlike"
 msgstr "ikkelik"
 
-#: html/SelfService/Elements/MyRequests:83 lib/RT/Queue_Overlay.pm:83
+#: html/SelfService/Elements/MyRequests:83 lib/RT/Queue_Overlay.pm:84
 msgid "open"
 msgstr "åpen"
 
@@ -6040,19 +6046,19 @@ msgstr "personlig gruppe '%1' for bruker '%2'"
 msgid "queue %1 %2"
 msgstr "kø %1 %2"
 
-#: lib/RT/Queue_Overlay.pm:86
+#: lib/RT/Queue_Overlay.pm:87
 msgid "rejected"
 msgstr "avvist"
 
-#: lib/RT/Queue_Overlay.pm:85
+#: lib/RT/Queue_Overlay.pm:86
 msgid "resolved"
 msgstr "løst"
 
-#: lib/RT/Date.pm:329
+#: lib/RT/Date.pm:330
 msgid "sec"
 msgstr "sek"
 
-#: lib/RT/System.pm:85
+#: lib/RT/System.pm:86
 msgid "show Configuration tab"
 msgstr ""
 
@@ -6060,7 +6066,7 @@ msgstr ""
 msgid "spreadsheet"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:84
+#: lib/RT/Queue_Overlay.pm:85
 msgid "stalled"
 msgstr "pauset"
 
@@ -6074,7 +6080,7 @@ msgstr "system %1"
 msgid "system group '%1'"
 msgstr "systemgruppe '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "den kallende komponenten oppga ikke hvorfor"
 
@@ -6101,7 +6107,7 @@ msgstr "ubeskrevet gruppe %1"
 msgid "user %1"
 msgstr "bruker %1"
 
-#: lib/RT/Date.pm:345
+#: lib/RT/Date.pm:346
 msgid "weeks"
 msgstr "uker"
 
@@ -6109,7 +6115,7 @@ msgstr "uker"
 msgid "with template %1"
 msgstr "med malen %1"
 
-#: lib/RT/Date.pm:353
+#: lib/RT/Date.pm:354
 msgid "years"
 msgstr "år"
 
