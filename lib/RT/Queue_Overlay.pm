@@ -246,7 +246,7 @@ sub IsValidStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( /^$value$/, $self->StatusArray );
+    my $retval = grep ( $_ eq $value, $self->StatusArray );
     return ($retval);
 
 }
@@ -272,7 +272,7 @@ sub IsActiveStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( /^$value$/, $self->ActiveStatusArray );
+    my $retval = grep ( $_ eq $value, $self->ActiveStatusArray );
     return ($retval);
 
 }
@@ -298,7 +298,7 @@ sub IsInactiveStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( /^$value$/, $self->InactiveStatusArray );
+    my $retval = grep ( $_ eq $value, $self->InactiveStatusArray );
     return ($retval);
 
 }
