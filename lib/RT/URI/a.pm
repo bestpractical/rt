@@ -25,11 +25,8 @@ package RT::URI::a;
 
 use RT::FM::Article;
 
-use RT::URI::base;
-
 use strict;
-use vars qw(@ISA);
-@ISA = qw/RT::URI::fsck_com_rtfm/;
+use base qw/RT::URI::fsck_com_rtfm/;
 
 my $scheme = "a";
 
@@ -71,6 +68,7 @@ sub ParseURI {
     # articles after stripping off the a: prefix.
 
     if ($uri =~ /^$scheme:(\d+)/) {
+        warn $1;
 	return $self->SUPER::ParseURI($1);
     } else {
 	$self->{'uri'} = $uri;

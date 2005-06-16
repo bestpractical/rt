@@ -212,4 +212,22 @@ sub HREF {
 }
 
 
+=head2 AsString
+
+Return "Article 23"
+
+=cut
+
+sub AsString {
+    my $self = shift;
+    if ($self->IsLocal && $self->Object) {
+    return $self->loc('Article [_1]', $self->Object->id);
+
+    } else {
+        return $self->SUPER::AsString(@_);
+    }
+
+}
+
+
 1;
