@@ -52,7 +52,7 @@ my $articles_content =
   RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 if ( $ARGS{'RTFM_Content'} ) {
-    $articles_content->LimitToCustomFieldValue( VALUE => $ARGS{'RTFM_Content'},
+    $articles_content->LimitCustomField( VALUE => $ARGS{'RTFM_Content'},
                                                 OPERATOR => 'LIKE' );
 
     $articles_basics->Limit( SUBCLAUSE       => 'all',
