@@ -355,11 +355,13 @@ sub LimitRefersTo {
     my $self = shift;
     my $uri  = shift;
 
+    my $uri_obj = RT::URI->new($self->CurrentUser);
+    $uri_obj->FromURI($uri);   
     my $links = $self->NewAlias('Links');
     $self->Limit(
         ALIAS => $links,
         FIELD => 'Target',
-        VALUE => $uri
+        VALUE => $uri_obj->URI
     );
 
     $self->Join(
@@ -385,11 +387,13 @@ sub LimitReferredToBy {
     my $self = shift;
     my $uri  = shift;
 
+    my $uri_obj = RT::URI->new($self->CurrentUser);
+    $uri_obj->FromURI($uri);    
     my $links = $self->NewAlias('Links');
     $self->Limit(
         ALIAS => $links,
         FIELD => 'Base',
-        VALUE => $uri
+        VALUE => $uri_obj->URI
     );
 
     $self->Join(
