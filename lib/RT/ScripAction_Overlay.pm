@@ -124,7 +124,7 @@ Loads an action by its Name.
 
 Returns: Id, Error Message
 
-=cut
+= cut
 
 sub Load  {
     my $self = shift;
