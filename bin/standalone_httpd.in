@@ -164,7 +164,7 @@ sub build_cgi_env {
                 $tag =~ s/^COOKIES$/COOKIE/;
                 my $val = $2;
                 $tag =~ s/-/_/g;
-                $tag = "HTTP_".$tag unless (grep /^$tag$/, qw(CONTENT_LENGTH CONTENT_TYPE COOKIE));
+                $tag = "HTTP_".$tag unless (grep $_ eq $tag, qw(CONTENT_LENGTH CONTENT_TYPE COOKIE));
                 if ($ENV{$tag}) {
                 $ENV{$tag} .= "; $val";
                 }

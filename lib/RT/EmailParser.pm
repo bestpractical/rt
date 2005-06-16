@@ -393,9 +393,9 @@ sub ParseCcAddressesFromHead {
         my $Address = $AddrObj->address;
         my $user = RT::User->new($RT::SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
-        next if ( $args{'CurrentUser'}->EmailAddress   =~ /^$Address$/i );
-        next if ( $args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i );
-        next if ( $args{'QueueObj'}->CommentAddress    =~ /^$Address$/i );
+        next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
+        next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
+        next if ( lc $args{'QueueObj'}->CommentAddress    eq lc $Address );
         next if ( IsRTAddress($Address) );
 
         push ( @Addresses, $Address );
