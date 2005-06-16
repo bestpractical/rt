@@ -36,7 +36,7 @@
 <option value="">in all topics</option>
 </select>
 % }
-<input type="submit" value="<&|/l&>Search</&>">&nbsp;
+<input type="submit" value="<&|/l&>Search RTFM</&>">&nbsp;
 </FORM>
 <%args>
 $topic => ""
