@@ -30,7 +30,7 @@
 <table width="100%">
 <FORM METHOD=POST ACTION="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id%>"/>
-<tr><td><&|/l&>Basics</&>
+<tr><td><h2><&|/l&>Basics</&></h2>
 </td><td></td></tr>
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
                         EditClass =>$EditClass,
@@ -39,7 +39,7 @@
                         id => $id
                         &>
 
-<tr><td><&|/l&>Content</&>
+<tr><td><h2><&|/l&>Content</&></h2>
 </td><td></td></tr>
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
@@ -48,16 +48,17 @@
                               id =>$id,
                               &>
 
-<tr><td><&|/l&>Links</&>
+<tr><td><h2><&|/l&>Links</&></h2>
 </td><td></td></tr>
 <& Elements/EditLinks, ArticleObj => $ArticleObj, 
                        %ARGS,
                         id => $id
                        &>
-<tr><td><&|/l&>Topics</&>
+<tr><td><h2><&|/l&>Topics</&></h2>
 </td><td></td></tr>
 <tr>
-<td class="label"><&|/l&>Topics</&></td>
+<td class="label"><&|/l&>Topics</&>
+</td>
 <td>
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
