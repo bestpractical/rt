@@ -26,11 +26,13 @@
 <input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>">
 <table width="100%" valign="top" border=0 cellspacing=0>
 
-<p><&|/l&>Use the dropdown menus to select which transactions you want to extract into a new RTFM article</&></p>
+<p><&|/l&>Use the dropdown menus to select which ticket updates you want to extract into a new article.</&>
+<&|/l&>You can insert ticket content into any freeform, text or wiki field.</&>
+</p>
 
 <tr>
-<th>Custom freeform, wikitext, or text field</th>
-<th>Ticket update</th>
+<th><&|/l&>Field</&></th>
+<th><&|/l&>Ticket update</&></th>
 </tr>
 % my $i;
 % while ( my $trans = $transactions->Next ) { 
