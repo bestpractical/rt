@@ -171,24 +171,28 @@ See C<man rt-mailgate> for more.
 
 =item C<--action>
 
-Specifies what action this would be.
-Basic actions: C<correspond>, C<comment>, C<take> and C<resolve>.
-Also you can use two or more actions with C<-> separated list,
-for example you can use C<take-comment> or C<correspond-resolve> actions.
+Specifies what happens to email sent to this alias.  The avaliable
+basic actions are: C<correspond>, C<comment>, C<take> and C<resolve>.
+You can execute two or more actions on a single message using a C<->
+separated list.  RT will execute the actions in the listed order.
+For example you can use C<take-comment>, C<correspond-resolve> or
+C<take-comment-resolve> as actions.
 
-Note that C<take> and C<resolve> actions ignore message text if use them
-alone, so use with C<comment> or C<correspond> actions if you want RT
-write message.
+Note that C<take> and C<resolve> actions ignore message text if used
+alone.  Include a  C<comment> or C<correspond> action if you want RT
+to record the incoming message.
 
-Default action is C<correspond>.
+The default action is C<correspond>.
 
 =item C<--queue>
 
-Reflects which queue this address handles.
+This flag determines which queue this alias should create a ticket in if no ticket identifier
+is found.
 
 =item C<--url>
 
-The location of the web server for your RT instance.
+This flag tells the mail gateway where it can find your RT server. You should 
+probably use the same URL that users use to log into RT.
 
 
 =item C<--extension> OPTIONAL
