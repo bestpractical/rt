@@ -48,7 +48,7 @@
 <form action="Scrips.html" method="post">
 <input type="hidden" name="id" value="<%$id%>">
 
-<P><&|/l&>Current Scrips</&>:</P>
+<h2><&|/l&>Current Scrips</&></h2>
 % if ($Scrips->Count == 0 ) {
 <P><i><&|/l&>(No scrips)</&></i></P>
 % } else {
