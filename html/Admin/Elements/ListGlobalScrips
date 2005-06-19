@@ -46,7 +46,7 @@
 
 % if ($Scrips->Count == 0) {
 
-<P><i><&|/l&>(No scrips)(</&></i></P>
+<P><i><&|/l&>(No scrips)</&></i></P>
 
 % } else {
 
@@ -54,7 +54,7 @@
 
 %   while (my $scrip = $Scrips->Next ) {
 <LI>
-<a href="../Global/Scrip.html?id=<%$scrip->Id%>&Queue=<%0%>"><% $scrip->Description || "<i>(".loc('Scrip').' #'.$scrip->Id.")</i>" |n %></a><br>
+<a href="<%$RT::WebPath%>/Admin/Global/Scrip.html?id=<%$scrip->Id%>&Queue=<%0%>"><% $scrip->Description || "<i>(".loc('Scrip #[_1]', $scrip->Id).")</i>" |n %></a><br>
 <small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
 </LI>
 %   }
