@@ -302,7 +302,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
-    $m->comp('/Elements/Footer');
+    $RT::Logger->crit("After display call; error is $@");
     $m->abort();
 }
 </%INIT>
