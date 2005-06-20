@@ -29,23 +29,24 @@
 % }
 <br />
 <h1><&|/l&>Browse by topic</&></h1>
-<ul>
 <%perl>
 if (defined $class) {
-        $m->print('<li><h2>'.'<a href="'.
-        $RT::WebPath."/RTFM/Topics.html?class=" . $currclass->Id
-        .'">'.$currclass->Name.'</a></h2></li>');
-    ProduceTree(\@Actions, $currclass, 0, $id);
+   $m->print('<h2>'.'<a href="'.
+   $RT::WebPath."/RTFM/Topics.html?class=" . $currclass->Id
+   .'">'.$currclass->Name."</a></h2>\n");
+   ProduceTree(\@Actions, $currclass, 0, $id);
 } else {
+    $m->print("<ul>\n");
     while (my $c = $Classes->Next) {
         $m->print('<li><h2>'.'<a href="'.
         $RT::WebPath."/RTFM/Topics.html?class=" . $c->Id
-        .'">'.$c->Name.'</a></h2></li>');
+        .'">'.$c->Name."</a></h2>\n");
 	ProduceTree(\@Actions, $c, 0, $id);
+        $m->print("\n</li>\n");
     }
+    $m->print("</ul>\n");
 }
 </%perl>
-</ul>
 
 % if ($id || $showall) {
 %# TODO: Eventually it would be nice to show all for classes too.  Thus
@@ -129,30 +130,31 @@ sub ProduceTree {
 	    }
 	    
 	    # List the topics.
+            my $indents = @showtopics;
 	    while (my $t = pop @showtopics) {
 		print "<ul>";
 		print &MakeLinks($t, $c, $t->Children->Count);
 		if ($t->Id == $restrictid) {
 		    &ProduceTree($Actions, $c, $restrictid, undef);
 		}
-	    print "</ul>";# x scalar(@showtopics);
 	    }
+            print "</ul>" x $indents;
 	}
     } else {
 	# No restriction in place.  Build the entire tree.
 	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
 	$topics->LimitToObject($c);
 	$topics->LimitToKids($parentid);
+        print "<ul>" if $topics->Count;
 	while (my $t = $topics->Next) {
-	    print "<ul>";
 	    if ($t->Children->Count) {
 		print &MakeLinks($t, $c, 1);
 		&ProduceTree($Actions, $c, $t->Id);
 	    } else {
 		print &MakeLinks($t, $c, 0);
 	    }
-	    print "</ul>\n";
 	}
+        print "</ul>\n" if $topics->Count;
     }
 }
 
