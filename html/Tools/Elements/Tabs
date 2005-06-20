@@ -60,6 +60,9 @@ my $tabs = {
         path  => 'Tools/Reports/index.html',
     },
 };
+
+$m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
 foreach my $tab ( sort keys %{$tabs} ) {
     if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
         $tabs->{$tab}->{"subtabs"}        = $subtabs;
