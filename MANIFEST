@@ -49,7 +49,6 @@ html/Callbacks/RTFM/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox
 html/NoAuth/webrtfm.css
-html/RTFM/Article/Create.html
 html/RTFM/Article/Delete.html
 html/RTFM/Article/Display.html
 html/RTFM/Article/Edit.html
@@ -57,6 +56,7 @@ html/RTFM/Article/Elements/EditBasics
 html/RTFM/Article/Elements/EditCustomFields
 html/RTFM/Article/Elements/EditLinks
 html/RTFM/Article/Elements/EditTopics
+html/RTFM/Article/Elements/LinkEntryInstructions
 html/RTFM/Article/Elements/Preformatted
 html/RTFM/Article/Elements/SearchByCustomField
 html/RTFM/Article/Elements/SelectSavedSearches
@@ -70,6 +70,7 @@ html/RTFM/Article/Elements/ShowTopics
 html/RTFM/Article/Elements/Tabs
 html/RTFM/Article/ExtractFromTicket.html
 html/RTFM/Article/ExtractIntoClass.html
+html/RTFM/Article/ExtractIntoTopic.html
 html/RTFM/Article/History.html
 html/RTFM/Article/index.html
 html/RTFM/Article/PreCreate.html
@@ -124,11 +125,13 @@ po/RTFM/fr.po
 po/RTFM/zh_tw.po
 README
 releng.cnf
+RTx-RTFM-2.1.10.tar.gz
 sbin/factory
 sbin/migrate-2.0-to-2.1
 t/00smoke.t
 t/01harness.t
 t/02regression.t
+t/04interface.t
 t/2basic_api.t
 t/3upload-customfields.t
 t/Article_Overlay.pm.t
