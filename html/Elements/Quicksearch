@@ -59,9 +59,9 @@ while (my $queue = $Queues->Next) {
 
   my $name = $m->interp->apply_escapes($queue->Name, "u");
   
-  my $new_q = "Queue = '".$queue->Name."' AND Status = 'new'";
-  my $open_q = "Queue = '".$queue->Name."' AND Status = 'open'";
-  my $all_q = "Queue = '".$queue->Name."' AND (Status = 'open' OR Status = 'new')";
+  my $new_q = "Queue = '$name' AND Status = 'new'";
+  my $open_q = "Queue = '$name' AND Status = 'open'";
+  my $all_q = "Queue = '$name' AND (Status = 'open' OR Status = 'new')";
 
   $Tickets->FromSQL($open_q);
   my $open = $Tickets->Count();
