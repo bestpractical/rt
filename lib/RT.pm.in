@@ -112,8 +112,16 @@ A fully featured request tracker package
 
 =head2 LoadConfig
 
-Load RT's config file. First, go after the core config file. 
-After that, go after the site config.
+Load RT's config file.  First, the site configuration file
+(C<RT_SiteConfig.pm>) is loaded, in order to establish overall site
+settings like hostname and name of RT instance.  Then, the core
+configuration file (C<RT_Config.pm>) is loaded to set fallback values
+for all settings; it bases some values on settings from the site
+configuration file.
+
+In order for the core configuration to not override the site's
+settings, the function C<Set> is used; it only sets values if they
+have not been set already.
 
 =cut
 
