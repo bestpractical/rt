@@ -61,10 +61,11 @@ my $rows = $RT::MyTicketsLength;
 
 my $Query = " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')";
 
-my $QueryString = '?' . $m->comp('/Elements/QueryString', 
-            Query => $Query,
-            Order => 'DESC',
-            OrderBy => 'Priority') if ($Query);
+my $QueryString = "";
+$QueryString = '?' . $m->comp('/Elements/QueryString', 
+                              Query => $Query,
+                              Order => 'DESC',
+                              OrderBy => 'Priority') if ($Query);
 
 </%init>
 
