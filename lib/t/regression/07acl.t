@@ -10,9 +10,9 @@ RT::Init();
 
 # Create a user with basically no rights, to start.
 my $user_obj = RT::User->new($RT::SystemUser);
-my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
+my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer-'.$$.'@example.com');
 ok($ret, 'ACL test user creation');
-$user_obj->SetName('customer');
+$user_obj->SetName('customer-'.$$);
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 ok($ret, "ACL test password set. $msg");
@@ -41,7 +41,7 @@ ok($agent->{form}->find_input('user'));
 
 ok($agent->{form}->find_input('pass'));
 ok ($agent->{'content'} =~ /username:/i);
-$agent->field( 'user' => 'customer' );
+$agent->field( 'user' => 'customer-'.$$ );
 $agent->field( 'pass' => 'customer' );
 # the field isn't named, so we have to click link 0
 $agent->click(0);
@@ -115,6 +115,6 @@ $group_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',
 $agent->reload();
 ok($agent->form_name('BuildQuery'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('ValueOfActor');
-ok(grep(/customer/, $input->value_names()), "Found self in the actor listing");
+ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
 1;
