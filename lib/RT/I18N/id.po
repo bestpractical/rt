@@ -22,7 +22,7 @@ msgstr "#%1: %2"
 #: lib/RT/Record.pm:926
 #. ($label)
 msgid "$prefix %1"
-msgstr ""
+msgstr "$Awalan %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:257
 #. ($self->ObjectType, $self->Object->Id)
@@ -71,12 +71,12 @@ msgstr "%1 %2 sudah dihapus"
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:49 html/Ticket/Elements/PreviewScrips:98
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
-msgstr "%1 %2 dengan template %3"
+msgstr "%1 %2 gunakan template %3"
 
 #: html/Ticket/Elements/ShowAttachments:72
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
-msgstr ""
+msgstr "%1 (%2) oleh %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:87 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
 #. (loc($DefaultStatus))
@@ -84,7 +84,7 @@ msgstr ""
 #. ($TicketObj->OwnerObj->Name())
 #. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
-msgstr ""
+msgstr "(Belum diubah)"
 
 #: bin/rt-crontool:194 bin/rt-crontool:201 bin/rt-crontool:207
 #. ("--search-argument", "--search")
@@ -153,7 +153,7 @@ msgstr "%1 sudah diganti dari %2 ke %3"
 #: html/Search/Build.html:212
 #. ($Description)
 msgid "%1 copy"
-msgstr ""
+msgstr "%1 ditiru"
 
 #: lib/RT/Record.pm:930
 msgid "%1 could not be set to %2."
@@ -186,7 +186,7 @@ msgstr "%1 Tiket dengan prioritas paling tinggi yang saya minta..."
 #: bin/rt-crontool:186
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
-msgstr "%1 adalah sebuah alat yang berfungsi pada Tiket dari alat penjadwalan eksternal, seperti Cron."
+msgstr "%1 adalah sebuah alat yang berfungsi pada tiket dari alat penjadwalan eksternal, seperti Cron."
 
 #: lib/RT/Queue_Overlay.pm:860
 #. ($principal->Object->Name, $args{'Type'})
@@ -227,7 +227,7 @@ msgstr "hak-hak %1"
 #: lib/RT/Action/ResolveMembers.pm:63
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 akan memecahkan semua anggota dari grup Tiket yang dipecahkan."
+msgstr "%1 akan memecahkan semua anggota dari grup tiket yang dipecahkan."
 
 #: lib/RT/CustomField_Overlay.pm:817
 msgid "%1's %2 objects"
@@ -287,7 +287,7 @@ msgstr "(Jika ditinggalkan kosong, default akan diatur menjadi %1"
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
 msgid "(If left blank, will default to %1)"
-msgstr ""
+msgstr "(Jika ditinggalkan kosong, default akan menjadi %1)"
 
 #: html/Admin/Elements/EditCustomFields:74 html/Admin/Elements/ListGlobalCustomFields:53
 msgid "(No custom fields)"
@@ -351,7 +351,7 @@ msgstr "(hanya satu Tiket)"
 
 #: html/Elements/RT__Ticket/ColumnMap:146
 msgid "(pending approval)"
-msgstr "(Izin ditunda)"
+msgstr "(izin ditunda)"
 
 #: html/Elements/RT__Ticket/ColumnMap:149
 msgid "(pending other Collection)"
@@ -396,15 +396,15 @@ msgstr "ACE tidak ditemukan"
 
 #: lib/RT/ACE_Overlay.pm:867
 msgid "ACEs can only be created and deleted."
-msgstr "ACEs hanya dapat dibuat dan dihapus."
+msgstr "ACE hanya dapat dibuat dan dihapus."
 
 #: html/Search/Elements/SelectAndOr:46
 msgid "AND"
-msgstr ""
+msgstr "DAN"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Dibatalkan untuk menghindari modifikasi Tiket yang tidak diharapkan.\\n"
+msgstr "Dibatalkan untuk menghindari modifikasi tiket yang tidak diharapkan.\\n"
 
 #: html/User/Elements/Tabs:53
 msgid "About me"
@@ -429,7 +429,7 @@ msgstr "Aksi dijalankan."
 
 #: bin/rt-crontool:148
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "Aksi dijalankan."
 
 #: bin/rt-crontool:144
 msgid "Action prepared..."
@@ -473,11 +473,11 @@ msgstr "Tambah scrip yang akan digunakan di semua antrian"
 
 #: html/Search/Build.html:85
 msgid "Add additional criteria"
-msgstr "Tambah kriteria additional"
+msgstr "Tambahkan kriteria tambahan"
 
 #: html/Search/Bulk.html:146
 msgid "Add comments or replies to selected tickets"
-msgstr "Tambah Komentar atau balas ke Tiket yang sudah dipilih"
+msgstr "Tambah Komentar atau balas ke tiket yang sudah dipilih"
 
 #: html/Admin/Groups/Members.html:63 html/User/Groups/Members.html:60
 msgid "Add members"
@@ -489,7 +489,7 @@ msgstr "Tambah Pengamat Baru"
 
 #: lib/RT/CustomField_Overlay.pm:103
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
+msgstr "Tambah, hapus dan ubah nilai kolom kustom untuk objek"
 
 #: lib/RT/Queue_Overlay.pm:760
 #. ($args{'Type'})
@@ -583,7 +583,7 @@ msgstr "Semua Antrian"
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "Dan/Atau"
 
 #: html/Admin/CustomFields/Modify.html:73 html/Admin/Elements/CustomFieldTabs:83
 msgid "Applies to"
@@ -681,11 +681,11 @@ msgstr "Lampiran-lampiran"
 
 #: lib/RT/Attributes_Overlay.pm:172
 msgid "Attribute Deleted"
-msgstr "Attribut sudah diihapus"
+msgstr "Attribut sudah dihapus"
 
 #: lib/RT/Date.pm:444
 msgid "Aug."
-msgstr "Aug."
+msgstr "Agst."
 
 #: NOT FOUND IN SOURCE
 msgid "AuthSystem"
@@ -725,7 +725,7 @@ msgstr "Sebelum"
 
 #: html/Elements/Header:80
 msgid "Best Practical Solutions, LLC corporate logo"
-msgstr ""
+msgstr "Pemecahan Praktis yang terbaik, Logo bisnis LLC"
 
 #: NOT FOUND IN SOURCE
 msgid "Binary"
@@ -737,7 +737,7 @@ msgstr "Kosong"
 
 #: html/Search/Elements/EditFormat:84
 msgid "Bold"
-msgstr ""
+msgstr "Diberi huruf tebal"
 
 #: html/Search/Results.html:81
 msgid "Bookmarkable link"
@@ -749,7 +749,7 @@ msgstr "Catatan Atas Singkat"
 
 #: html/Search/Bulk.html:46 html/Search/Bulk.html:47
 msgid "Bulk ticket update"
-msgstr "Memperbaharui tiket dengan jumlah banyak pada waktu yang sama" msgstr ""
+msgstr "Memperbaharui tiket dengan jumlah banyak pada waktu yang sama" 
 
 #: lib/RT/User_Overlay.pm:1718
 msgid "Can not modify system users"
@@ -766,7 +766,7 @@ msgstr "Tidak dapat menambah nilai kolom kustom tanpa nama"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "Tidak dapat menemukan kelas koleksi untuk '%'"
 
 #: html/Search/Build.html:761
 msgid "Can't find a saved search to work with"
@@ -815,7 +815,7 @@ msgstr "Klik kotak ini untuk menghilangkan hak-hak"
 
 #: html/Elements/EditLinks:146 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:214 html/Ticket/Elements/BulkLinks:64
 msgid "Children"
-msgstr "Anak-anak"
+msgstr "Anak"
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
@@ -923,30 +923,30 @@ msgstr "Korespondensi sudah ditambah"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru untuk Tiket."
+msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket."
 
 #: lib/RT/Record.pm:1705
 msgid "Could not add new custom field value. "
-msgstr ""
+msgstr "Tidak dapat menambah nilai kolom kustom baru"
 
 #: lib/RT/Record.pm:1658
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
-msgstr ""
+msgstr "Tidak dapat menambah nilai kolom kustom baru"
 
 #: lib/RT/Ticket_Overlay.pm:2976 lib/RT/Ticket_Overlay.pm:2984 lib/RT/Ticket_Overlay.pm:3001
 msgid "Could not change owner. "
-msgstr "Tidak dapat mengubah pemilik Tiket. "
+msgstr "Tidak dapat mengubah pemilik tiket. "
 
 #: html/Admin/CustomFields/Modify.html:119
 #. ($msg)
 msgid "Could not create CustomField"
-msgstr "Tidak dapat membuat KolomKustom"
+msgstr "Tidak dapat membuat Kolom Kustom"
 
 #: html/Admin/Elements/EditCustomField:113
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "Tidak dapat membuat Kolom Kustom:%1 "
 
 #: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:502 lib/RT/Group_Overlay.pm:509
 msgid "Could not create group"
@@ -959,7 +959,7 @@ msgstr "Tidak dapat membuat template: %1"
 
 #: lib/RT/Ticket_Overlay.pm:1051 lib/RT/Ticket_Overlay.pm:396
 msgid "Could not create ticket. Queue not set"
-msgstr "Tidak dapat membuat Tiket. Antrian tidak dapat diatur"
+msgstr "Tidak dapat membuat tiket. Antrian tidak dapat diatur"
 
 #: lib/RT/User_Overlay.pm:256 lib/RT/User_Overlay.pm:270 lib/RT/User_Overlay.pm:279 lib/RT/User_Overlay.pm:288 lib/RT/User_Overlay.pm:297 lib/RT/User_Overlay.pm:311 lib/RT/User_Overlay.pm:321 lib/RT/User_Overlay.pm:497
 msgid "Could not create user"
@@ -984,11 +984,11 @@ msgstr "Tidak dapat memanggil grup"
 #: lib/RT/SavedSearch.pm:120
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "Tidak dapat memanggil objek untuk %1"
 
 #: lib/RT/SavedSearch.pm:188
 msgid "Could not load search attribute"
-msgstr ""
+msgstr "Tidak dapat memanggil attribut pencarian"
 
 #: lib/RT/Queue_Overlay.pm:758
 #. ($args{'Type'})
@@ -1043,7 +1043,7 @@ msgstr "Tidak dapat memanggil Kelas %1"
 #: html/Admin/CustomFields/GroupRights.html:107
 #. ($id)
 msgid "Couldn't load CustomField %1"
-msgstr "Tidak dapat memanggil KolomKustom %1"
+msgstr "Tidak dapat memanggil Kolom Kustom %1"
 
 #: html/Admin/Groups/GroupRights.html:109 html/Admin/Groups/UserRights.html:96
 #. ($id)
@@ -1109,7 +1109,7 @@ msgstr "Buat grup pribadi baru"
 
 #: html/Ticket/Create.html:46 html/Ticket/Create.html:49 html/Ticket/Create.html:57
 msgid "Create a new ticket"
-msgstr "Buat Tiket baru"
+msgstr "Buat tiket baru"
 
 #: html/Admin/Users/Modify.html:251 html/Admin/Users/Modify.html:306
 msgid "Create a new user"
@@ -1142,7 +1142,7 @@ msgstr "Buat Tiket"
 
 #: lib/RT/Queue_Overlay.pm:110
 msgid "Create tickets in this queue"
-msgstr "Buat Tiket untuk antrian ini"
+msgstr "Buat tiket untuk antrian ini"
 
 #: lib/RT/CustomField_Overlay.pm:101
 msgid "Create, delete and modify custom fields"
@@ -1162,7 +1162,7 @@ msgstr "Buat, hapus dan ubah pengguna"
 
 #: lib/RT/System.pm:88
 msgid "CreateSavedSearch"
-msgstr ""
+msgstr "Buat Pencarian yang Disimpan"
 
 #: lib/RT/Queue_Overlay.pm:110
 msgid "CreateTicket"
@@ -1183,7 +1183,7 @@ msgstr "Pencipta"
 
 #: html/Elements/EditLinks:49
 msgid "Current Links"
-msgstr ""
+msgstr "Link yang sekarang"
 
 #: NOT FOUND IN SOURCE
 msgid "Current Relationships"
@@ -1228,55 +1228,55 @@ msgstr "Aksi kustom menyiapkan kode"
 
 #: html/Admin/Elements/EditScrip:107
 msgid "Custom condition"
-msgstr "kondisi Kustom"
+msgstr "Kondisi kustom"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field %1 %2 %3"
-msgstr "Kolom Kustom %1 %2 %3"
+msgstr "Kolom kustom %1 %2 %3"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field %1 does not apply to this object"
-msgstr "Kolom Kustom %1 tidak dapat digunakan untuk objek ini"
+msgstr "Kolom kustom %1 tidak dapat digunakan untuk objek ini"
 
 #: lib/RT/Tickets_Overlay.pm:2147
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
-msgstr "Kolom Kustom %1 memiliki nilai."
+msgstr "Kolom kustom %1 memiliki nilai."
 
 #: lib/RT/Tickets_Overlay.pm:2143
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
-msgstr "Kolom Kustom %1 tidak memiliki nilai."
+msgstr "Kolom kustom %1 tidak memiliki nilai."
 
 #: lib/RT/Record.pm:1590
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
-msgstr "Kolom Kustom %1 tidak ditemukan"
+msgstr "Kolom kustom %1 tidak ditemukan"
 
 #: lib/RT/CustomField_Overlay.pm:289 lib/RT/Record.pm:1758
 msgid "Custom field not found"
-msgstr "Kolom Kustom tidak ditemukan"
+msgstr "Kolom kustom tidak ditemukan"
 
 #: lib/RT/CustomField_Overlay.pm:1030
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr "Nilai Kolom Kustom %1 tidak dapat ditemukan untuk kolom kustom %2"
+msgstr "Nilai kolom kustom %1 tidak dapat ditemukan untuk kolom kustom %2"
 
 #: lib/RT/CustomField_Overlay.pm:409
 msgid "Custom field value could not be deleted"
-msgstr "Nilai Kolom Kustom tidak dapat dihapus"
+msgstr "Nilai kolom kustom tidak dapat dihapus"
 
 #: lib/RT/CustomField_Overlay.pm:1036
 msgid "Custom field value could not be found"
-msgstr "Nilai Kolom Kustom tidak dapat ditemukan"
+msgstr "Nilai kolom kustom tidak dapat ditemukan"
 
 #: lib/RT/CustomField_Overlay.pm:1038 lib/RT/CustomField_Overlay.pm:407
 msgid "Custom field value deleted"
-msgstr "Nilai Kolom Kustom sudah dihapus"
+msgstr "Nilai kolom kustom sudah dihapus"
 
 #: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51 lib/RT/Transaction_Overlay.pm:626
 msgid "CustomField"
-msgstr "Kolom Kustom"
+msgstr "Kolom kustom"
 
 #: html/SelfService/Display.html:61 html/Ticket/Create.html:191 html/Ticket/Elements/ShowSummary:76 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
@@ -1288,7 +1288,7 @@ msgstr "Des."
 
 #: etc/initialdata:222
 msgid "Default Autoresponse template"
-msgstr "Default template BalasOtomatis"
+msgstr "Default template Balas Otomatis"
 
 #: html/Tools/Offline.html:61
 msgid "Default Queue"
@@ -1344,12 +1344,12 @@ msgstr "Hapus Template"
 
 #: NOT FOUND IN SOURCE
 msgid "Delete article #%1"
-msgstr "Hapus artikel"
+msgstr "Hapus artikel #%1"
 
 #: lib/RT/SavedSearch.pm:211
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "Gagal dihapus: %1"
 
 #: html/Admin/Elements/EditScrips:74
 msgid "Delete selected scrips"
@@ -1357,15 +1357,15 @@ msgstr "Hapus scrip yang sudah dipilih"
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "Delete tickets"
-msgstr "Hapus Tiket"
+msgstr "Hapus tiket"
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "DeleteTicket"
-msgstr "Hapus Tiket"
+msgstr "Hapus tiket"
 
 #: lib/RT/SavedSearch.pm:209
 msgid "Deleted search"
-msgstr ""
+msgstr "Pencarian dihapus"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
@@ -1510,7 +1510,7 @@ msgstr "Ubah Kolom Kustom untuk tiket di dalam semua antrian"
 
 #: html/Search/Bulk.html:173 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
-msgstr ""
+msgstr "Ubah Link"
 
 #: html/Search/Edit.html:68
 msgid "Edit Query"
@@ -1629,7 +1629,7 @@ msgstr "Masukkan tiket atau URIs untuk menghubungkan Tiket tersebut. Pisahkan be
 
 #: NOT FOUND IN SOURCE
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
-msgstr "Masukkan Tiket atau URIs  untuk menghubungkan Tiket tersebut. Pisahkan beberapa input dengan spasi."
+msgstr "Masukkan tiket atau URIs  untuk menghubungkan Tiket tersebut. Pisahkan beberapa input dengan spasi."
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
@@ -1641,27 +1641,27 @@ msgstr "Kesalahan"
 
 #: lib/RT/Queue_Overlay.pm:669
 msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Kesalahan di dalam parameter ke Antrian->TambahPengamat"
+msgstr "Kesalahan di dalam parameter ke Antrian->Tambah Pengamat"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Queue->DelWatcher"
-msgstr "Kesalahan di dalam parameter Ke Antrian->HapusPengamat"
+msgstr "Kesalahan di dalam parameter Ke Antrian->Hapus Pengamat"
 
 #: lib/RT/Queue_Overlay.pm:830
 msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr ""
+msgstr "Kesalahan di dalam parameter ke Antrian->Hapus Pengamat"
 
 #: lib/RT/Ticket_Overlay.pm:1333
 msgid "Error in parameters to Ticket->AddWatcher"
-msgstr "Kesalahan di dalam parameter ke Tiket->TambahPengamat"
+msgstr "Kesalahan di dalam parameter ke Tiket->Tambah Pengamat"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "Kesalahan di dalam parameter ke Tiket->HapusPengamat"
+msgstr "Kesalahan di dalam parameter ke Tiket->Hapus Pengamat"
 
 #: lib/RT/Ticket_Overlay.pm:1499
 msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr ""
+msgstr "Kesalahan di dalam parameter ke Ticket->Hapus Pengamat"
 
 #: bin/rt-crontool:233
 msgid "Escalate tickets"
@@ -1697,7 +1697,7 @@ msgstr "Info Tambahan"
 
 #: lib/RT/SavedSearch.pm:165
 msgid "Failed to create search attribute"
-msgstr ""
+msgstr "Gagal untuk membuat atribut pencarian"
 
 #: lib/RT/User_Overlay.pm:377
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -1715,7 +1715,7 @@ msgstr "Gagal untuk memanggil modul %1. (%2)"
 #: lib/RT/SavedSearch.pm:168
 #. ($privacy)
 msgid "Failed to load object for %1"
-msgstr ""
+msgstr "Gagal memanggil objek untuk %1"
 
 #: lib/RT/Date.pm:438
 msgid "Feb."
@@ -1727,11 +1727,11 @@ msgstr "Nama File"
 
 #: lib/RT/CustomField_Overlay.pm:69
 msgid "Fill in multiple text areas"
-msgstr "Isilah di beberapa dalam area teks"
+msgstr "Isilah di dalam beberapa area teks"
 
 #: lib/RT/CustomField_Overlay.pm:74
 msgid "Fill in multiple wikitext areas"
-msgstr ""
+msgstr "Isilah di dalam beberapa area wikiteks"
 
 #: lib/RT/CustomField_Overlay.pm:70
 msgid "Fill in one text area"
@@ -1739,7 +1739,7 @@ msgstr "Isilah di dalam satu area teks"
 
 #: lib/RT/CustomField_Overlay.pm:75
 msgid "Fill in one wikitext area"
-msgstr ""
+msgstr "Isilah di dalam satu area wikiteks"
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
@@ -1747,7 +1747,7 @@ msgstr "Isilah sampai %1 area teks"
 
 #: lib/RT/CustomField_Overlay.pm:76
 msgid "Fill in up to %1 wikitext areas"
-msgstr ""
+msgstr "Isilah sampai %1 area wikiteks"
 
 #: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm:1569
 msgid "Final Priority"
@@ -1757,7 +1757,6 @@ msgstr "Prioritas Akhir"
 msgid "FinalPriority"
 msgstr "Prioritas Akhir"
 
- 
 #: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82 html/Ticket/Elements/EditPeople:55
 msgid "Find groups whose"
 msgstr "Cari grup yang"
@@ -1768,7 +1767,7 @@ msgstr "Cari orang yang"
 
 #: html/Search/Results.html:109
 msgid "Find tickets"
-msgstr "Cari Tiket"
+msgstr "Cari tiket"
 
 #: html/Ticket/Elements/Tabs:81
 msgid "First"
@@ -1784,7 +1783,7 @@ msgstr "Foo!"
 
 #: html/Search/Bulk.html:105
 msgid "Force change"
-msgstr "Force change"
+msgstr "Diubah dengan paksa"
 
 #: html/Search/Elements/EditFormat:52
 msgid "Format"
@@ -1834,7 +1833,7 @@ msgstr "Kolom Kustom Global"
 
 #: html/Admin/Global/CustomFields/index.html:59
 msgid "Global custom field configuration"
-msgstr ""
+msgstr "Konfigurasi kolom kustom global"
 
 #: html/Admin/Elements/SelectTemplate:59
 #. (loc($Template->Name))
@@ -1936,7 +1935,7 @@ msgstr "Saya memiliki %quant (%1,concrete mixer)."
 
 #: html/Search/Build.html:637
 msgid "I'm lost"
-msgstr ""
+msgstr "Saya tersesat"
 
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1494
 msgid "Id"
@@ -1992,11 +1991,11 @@ msgstr "Termasuk menon-aktifkan pengguna di dalam pencarian."
 
 #: html/Search/Build.html:663
 msgid "Incomplete Query"
-msgstr ""
+msgstr "Query tidak lengkap"
 
 #: html/Search/Build.html:660
 msgid "Incomplete query"
-msgstr ""
+msgstr "query tidak lengkap"
 
 #: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm:1544
 msgid "Initial Priority"
@@ -2025,7 +2024,7 @@ msgstr "Tipe Grup tidak valid"
 
 #: lib/RT/Principal_Overlay.pm:166
 msgid "Invalid Right"
-msgstr "Hak tidak valid"
+msgstr "Hak-hak tidak valid"
 
 #: lib/RT/Record.pm:938
 msgid "Invalid data"
@@ -2066,7 +2065,7 @@ msgstr "Hal ini memerlukan beberapa penjelasan:"
 
 #: html/Search/Elements/EditFormat:85
 msgid "Italic"
-msgstr ""
+msgstr "Diberi huruf miring"
 
 #: lib/RT/Date.pm:437
 msgid "Jan."
@@ -2098,7 +2097,7 @@ msgstr "Bahasa"
 
 #: html/Search/Elements/EditFormat:79
 msgid "Large"
-msgstr ""
+msgstr "Besar"
 
 #: html/Ticket/Elements/Tabs:96
 msgid "Last"
@@ -2138,7 +2137,7 @@ msgstr "Biarlah pengguna ini diberi hak-hak"
 
 #: html/Search/Elements/EditFormat:68
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #: lib/RT/Record.pm:1292
 msgid "Link already exists"
@@ -2181,7 +2180,7 @@ msgstr "Memanggil pencarian yang disimpan:"
 
 #: lib/RT/System.pm:87
 msgid "LoadSavedSearch"
-msgstr ""
+msgstr "Memanggil pencarian yang disimpan"
 
 #: html/Admin/Tools/Configuration.html:64
 msgid "Loaded perl modules"
@@ -2190,7 +2189,7 @@ msgstr "Memanggil modul perl"
 #: lib/RT/SavedSearch.pm:112
 #. ($self->Name)
 msgid "Loaded search %1"
-msgstr ""
+msgstr "Memanggil pencarian %1"
 
 #: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"
@@ -2260,7 +2259,7 @@ msgstr "Buat subjek"
 
 #: lib/RT/Group_Overlay.pm:177
 msgid "Make this group visible to user"
-msgstr ""
+msgstr "Buat agar grup ini terlihat pada sisi pengguna"
 
 #: html/Admin/index.html:78
 msgid "Manage custom fields and custom field values"
@@ -2349,7 +2348,7 @@ msgstr "Penggabungan gagal. Tidak dapat mengatur EffectiveId"
 
 #: lib/RT/Ticket_Overlay.pm:2716
 msgid "Merge failed. Couldn't set Status"
-msgstr ""
+msgstr "Penggabungan gagal. Tidak dapat mengatur Status"
 
 #: html/Elements/EditLinks:129 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
@@ -2378,7 +2377,7 @@ msgstr "Pesan mengenai Tiket ini tidak akan dikirim ke..."
 
 #: html/Search/Build.html:667
 msgid "Mismatched parentheses"
-msgstr ""
+msgstr "tanda kurung tidak sama"
 
 #: lib/RT/Record.pm:940
 msgid "Missing a primary key?: %1"
@@ -2399,7 +2398,7 @@ msgstr "Mengubah Daftar Kontrol Akses"
 #: html/Admin/Elements/ObjectCustomFields:96
 #. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr ""
+msgstr "Ubah Kolom Kustom yang digunakan untuk %1 untuk semua %2"
 
 #: html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($Types)))
@@ -2412,7 +2411,7 @@ msgstr "Mengatur Kolom Kustom yang dapat digunakan di seluruh antrian"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
 msgid "Modify Group Rights"
-msgstr "Ubah Hak-Hak Grup"
+msgstr "Ubah Hak Grup"
 
 #: html/Admin/Groups/Members.html:102 html/User/Groups/Members.html:101
 msgid "Modify Members"
@@ -2432,7 +2431,7 @@ msgstr "Mengubah Scrip untuk antrian ini"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
 msgid "Modify User Rights"
-msgstr "Ubah Hak-hak Pengguna"
+msgstr "Ubah Hak Pengguna"
 
 #: html/Admin/Queues/CustomField.html:66
 #. ($QueueObj->Name())
@@ -2465,23 +2464,23 @@ msgstr "Mengubah tanggal untuk tiket # %1"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:65 html/Admin/Global/index.html:72
 msgid "Modify global custom fields"
-msgstr ""
+msgstr "Mengubah kolom kustom global"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:70 html/Admin/Global/GroupRights.html:46 html/Admin/Global/GroupRights.html:49 html/Admin/Global/index.html:77
 msgid "Modify global group rights"
-msgstr "Mengubah hak-hak grup global"
+msgstr "Mengubah hak grup global"
 
 #: html/Admin/Global/GroupRights.html:54
 msgid "Modify global group rights."
-msgstr "Mengubah hak-hak grup global."
+msgstr "Mengubah hak grup global."
 
 #: html/Admin/Global/UserRights.html:46 html/Admin/Global/UserRights.html:49 html/Admin/Global/index.html:81
 msgid "Modify global user rights"
-msgstr "Mengubah hak-hak pengguna global"
+msgstr "Mengubah hak pengguna global"
 
 #: html/Admin/Global/UserRights.html:54
 msgid "Modify global user rights."
-msgstr "Mengubah hak-hak pengguna global."
+msgstr "Mengubah hak pengguna global."
 
 #: lib/RT/Group_Overlay.pm:171
 msgid "Modify group metadata or delete group"
@@ -2490,17 +2489,17 @@ msgstr "Mengubah grup metadata atau menghapus grup"
 #: html/Admin/CustomFields/GroupRights.html:164
 #. ($CustomFieldObj->Name)
 msgid "Modify group rights for custom field %1"
-msgstr "Mengubah hak-hak grup untuk kolom kustom %1"
+msgstr "Mengubah hak grup untuk kolom kustom %1"
 
 #: html/Admin/Groups/GroupRights.html:46 html/Admin/Groups/GroupRights.html:50 html/Admin/Groups/GroupRights.html:56
 #. ($GroupObj->Name)
 msgid "Modify group rights for group %1"
-msgstr "Mengubah hak-hak grup untuk grup %1"
+msgstr "Mengubah hak grup untuk grup %1"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
 #. ($QueueObj->Name)
 msgid "Modify group rights for queue %1"
-msgstr "Mengubah hak-hak grup untuk antrian %1"
+msgstr "Mengubah hak grup untuk antrian %1"
 
 #: lib/RT/Group_Overlay.pm:173
 msgid "Modify membership roster for this group"
@@ -2571,17 +2570,17 @@ msgstr "Mengubah tiket-tiket"
 #: html/Admin/CustomFields/UserRights.html:157
 #. ($CustomFieldObj->Name)
 msgid "Modify user rights for custom field %1"
-msgstr "Mengubah hak-hak pengguna untuk kolom kustom %1"
+msgstr "Mengubah hak pengguna untuk kolom kustom %1"
 
 #: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50 html/Admin/Groups/UserRights.html:56
 #. ($GroupObj->Name)
 msgid "Modify user rights for group %1"
-msgstr "Mengubah hak-hak pengguna untuk grup %1"
+msgstr "Mengubah hak pengguna untuk grup %1"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
 #. ($QueueObj->Name)
 msgid "Modify user rights for queue %1"
-msgstr "Mengubah hak-hak pengguna untuk antrian %1"
+msgstr "Mengubah hak pengguna untuk antrian %1"
 
 #: lib/RT/Queue_Overlay.pm:95
 msgid "ModifyACL"
@@ -2589,7 +2588,7 @@ msgstr "Mengubah ACL"
 
 #: lib/RT/CustomField_Overlay.pm:103
 msgid "ModifyCustomField"
-msgstr ""
+msgstr "Mengubah Kolom Kustom"
 
 #: lib/RT/Group_Overlay.pm:174
 msgid "ModifyOwnMembership"
@@ -2638,7 +2637,7 @@ msgstr "Pindah ke atas"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:48
 msgid "Multiple"
-msgstr "Banyak"
+msgstr "Beberapa"
 
 #: lib/RT/User_Overlay.pm:227
 msgid "Must specify 'Name' attribute"
@@ -2675,7 +2674,7 @@ msgstr "Baru"
 
 #: html/Elements/EditLinks:115
 msgid "New Links"
-msgstr ""
+msgstr "Link Baru"
 
 #: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
 msgid "New Password"
@@ -2841,7 +2840,7 @@ msgstr "Tidak ada izin untuk membuat antrian"
 #: lib/RT/Ticket_Overlay.pm:409
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
-msgstr ""
+msgstr "Tidak ada izin untuk membuat tiket ini di dalam antrian '%1'"
 
 #: lib/RT/User_Overlay.pm:187
 msgid "No permission to create users"
@@ -2877,7 +2876,7 @@ msgstr "Tidak ada hak-hak yang diberikan."
 
 #: lib/RT/SavedSearch.pm:187
 msgid "No search loaded"
-msgstr ""
+msgstr "Tidak ada pencarian yang dipanggil"
 
 #: html/Search/Bulk.html:194
 msgid "No search to operate on."
@@ -2941,11 +2940,11 @@ msgstr "Beritahu AdminCcs dengan komentar"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
 msgid "Notify Ccs"
-msgstr ""
+msgstr "Beritahu Ccs"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
 msgid "Notify Ccs as Comment"
-msgstr ""
+msgstr "Beritahu Ccs dengan komentar"
 
 #: etc/initialdata:128
 msgid "Notify Other Recipients"
@@ -3005,7 +3004,7 @@ msgstr "Nop."
 
 #: html/Search/Elements/SelectAndOr:47
 msgid "OR"
-msgstr ""
+msgstr "ATAU"
 
 #: lib/RT/Record.pm:319
 msgid "Object could not be created"
@@ -3013,7 +3012,7 @@ msgstr "Objek tidak dapat dibuat"
 
 #: lib/RT/Record.pm:124
 msgid "Object could not be deleted"
-msgstr ""
+msgstr "Objek tidak dapat dihapus"
 
 #: lib/RT/Record.pm:338
 msgid "Object created"
@@ -3021,7 +3020,7 @@ msgstr "Object sudah dibuat"
 
 #: lib/RT/Record.pm:121
 msgid "Object deleted"
-msgstr ""
+msgstr "Objek sudah dihapus"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($ObjectType)
@@ -3071,7 +3070,7 @@ msgstr "Pada Perubahan Pemilik"
 
 #: etc/initialdata:177 etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
-msgstr ""
+msgstr "Pada Perubahan Prioritas"
 
 #: etc/initialdata:192
 msgid "On Queue Change"
@@ -3158,7 +3157,7 @@ msgstr "Memiliki tiket-tiket"
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "OwnTicket"
-msgstr "Memiliki Tiket"
+msgstr "Memiliki tiket"
 
 #: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1734
 msgid "Owner"
@@ -3192,7 +3191,7 @@ msgstr "Pager"
 
 #: html/Elements/EditLinks:142 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:213 html/Ticket/Elements/BulkLinks:60
 msgid "Parents"
-msgstr "Orang tua "
+msgstr "Induk "
 
 #: html/Elements/Login:74 html/User/Prefs.html:105
 msgid "Password"
@@ -3204,12 +3203,12 @@ msgstr "Pengingat Sandi"
 
 #: lib/RT/Transaction_Overlay.pm:769 lib/RT/User_Overlay.pm:1042
 msgid "Password changed"
-msgstr ""
+msgstr "Sandi sudah diubah"
 
 #: lib/RT/User_Overlay.pm:1036 lib/RT/User_Overlay.pm:215
 #. ($RT::MinimumPasswordLength)
 msgid "Password needs to be at least %1 characters long"
-msgstr ""
+msgstr "Minimal sandi memerlukan paling sedikit %1 karakter"
 
 #: NOT FOUND IN SOURCE
 msgid "Password too short"
@@ -3250,7 +3249,7 @@ msgstr "Grup Pribadi"
 
 #: html/User/Groups/index.html:51 html/User/Groups/index.html:61
 msgid "Personal groups"
-msgstr ""
+msgstr "Grup pribadi"
 
 #: html/User/Elements/DelegateRights:58
 msgid "Personal groups:"
@@ -3400,7 +3399,7 @@ msgstr "Sekilas RT"
 
 #: html/Elements/SetupSessionCookie:90
 msgid "RT couldn't store your session."
-msgstr ""
+msgstr "RT tidak dapat menyimpan sesi anda"
 
 #: html/Elements/PageLayout:108
 #. ($RT::rtname)
@@ -3552,11 +3551,11 @@ msgstr "Hak-hak Utusan"
 
 #: lib/RT/ACE_Overlay.pm:334
 msgid "Right Granted"
-msgstr "Memberikan Hak-hakRight Granted"
+msgstr "Memberikan Hak-hak"
 
 #: lib/RT/ACE_Overlay.pm:186
 msgid "Right Loaded"
-msgstr "Memanggil Hak-Hak"
+msgstr "Memanggil Hak-hak"
 
 #: lib/RT/ACE_Overlay.pm:709 lib/RT/ACE_Overlay.pm:730
 msgid "Right could not be revoked"
@@ -3610,7 +3609,7 @@ msgstr "Simpan Perubahan"
 
 #: html/User/Prefs.html:179
 msgid "Save Preferences"
-msgstr ""
+msgstr "Simpan Pilihan"
 
 #: html/Ticket/Elements/PreviewScrips:124
 msgid "Save changes"
@@ -3619,7 +3618,7 @@ msgstr "Simpan perubahaan"
 #: lib/RT/SavedSearch.pm:162
 #. ($name)
 msgid "Saved search %1"
-msgstr ""
+msgstr "Simpan pencarian %1"
 
 #: html/Search/Elements/EditSearches:46
 msgid "Saved searches"
@@ -3637,7 +3636,7 @@ msgstr "Scrip sudah dibuat"
 
 #: html/Admin/Elements/EditScrip:52
 msgid "Scrip Fields"
-msgstr ""
+msgstr "Kolom Scrip"
 
 #: html/Admin/Elements/EditScrips:107
 msgid "Scrip deleted"
@@ -3657,7 +3656,7 @@ msgstr "Pencarian"
 
 #: lib/RT/SavedSearch.pm:116
 msgid "Search attribute load failure"
-msgstr ""
+msgstr "Gagal memanggil atribut pencarian"
 
 #: html/Approvals/Elements/PendingMyApproval:60
 msgid "Search for approvals"
@@ -3666,7 +3665,7 @@ msgstr "Pencarian untuk izin"
 #: lib/RT/SavedSearch.pm:194
 #. ($msg)
 msgid "Search update: %1"
-msgstr ""
+msgstr "Perbaharui Pencarian: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
@@ -3698,7 +3697,7 @@ msgstr "Lihat Kolom Kustom"
 
 #: lib/RT/Group_Overlay.pm:177
 msgid "SeeGroup"
-msgstr ""
+msgstr "Lihat Grup"
 
 #: lib/RT/Queue_Overlay.pm:92
 msgid "SeeQueue"
@@ -3718,11 +3717,11 @@ msgstr "Pilih grup"
 
 #: html/Admin/Queues/index.html:54
 msgid "Select a queue"
-msgstr "pilih antrian"
+msgstr "Pilih antrian"
 
 #: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "Pilih antrian untuk tiket baru anda"
 
 #: html/Admin/Users/index.html:46 html/Admin/Users/index.html:49 html/Admin/Users/index.html:52
 msgid "Select a user"
@@ -3734,19 +3733,19 @@ msgstr "Pilih kolom kustom"
 
 #: html/Admin/Global/CustomFields/index.html:70
 msgid "Select custom fields for all user groups"
-msgstr ""
+msgstr "Pilih kolom kustom untuk seluruh grup pengguna"
 
 #: html/Admin/Global/CustomFields/index.html:65
 msgid "Select custom fields for all users"
-msgstr ""
+msgstr "Pilih kolom kustom untuk seluruh pengguna"
 
 #: html/Admin/Global/CustomFields/index.html:76
 msgid "Select custom fields for tickets in all queues"
-msgstr ""
+msgstr "Pilih kolom kustom untuk tiket di seluruh antrian"
 
 #: html/Admin/Global/CustomFields/index.html:83
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr ""
+msgstr "Pilih kolom kustom untuk transaksi pada tiket di dalam seluruh antrian"
 
 #: html/Admin/Elements/GroupTabs:75 html/User/Elements/GroupTabs:71
 msgid "Select group"
@@ -3794,7 +3793,7 @@ msgstr "Kirim pesan ke seluruh pengamat"
 
 #: etc/initialdata:117
 msgid "Send mail to all watchers as a \"comment\""
-msgstr "Kirim pesan ke seluruh pengamat sebagai \"komentar\""
+msgstr "Kirim pesan ke seluruh pengamat dengan \"komentar\""
 
 #: etc/initialdata:112
 msgid "Send mail to requestors and Ccs"
@@ -3802,7 +3801,7 @@ msgstr "Kirim pesan ke pemohon dan Ccs"
 
 #: etc/initialdata:107
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr "Kirim pesan ke pemohon dan Ccs sebagai komentar"
+msgstr "Kirim pesan ke pemohon dan Ccs dengan komentar"
 
 #: etc/initialdata:78
 msgid "Sends a message to the requestors"
@@ -3814,11 +3813,11 @@ msgstr "Kirim pesan ke Ccs and Bccs yang terdaftar dengan jelas"
 
 #: etc/initialdata:94 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
-msgstr ""
+msgstr "Kirim pesan ke Ccs"
 
 #: etc/initialdata:90 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
-msgstr ""
+msgstr "Kirim pesan ke Ccs dengan komentar"
 
 #: etc/initialdata:102
 msgid "Sends mail to the administrative Ccs"
@@ -3826,7 +3825,7 @@ msgstr "Kirim pesan ke Ccs administrasi"
 
 #: etc/initialdata:98
 msgid "Sends mail to the administrative Ccs as a comment"
-msgstr "Kirim pesan ke Ccs administrasi sebagai komentar"
+msgstr "Kirim pesan ke Ccs administrasi dengan komentar"
 
 #: etc/initialdata:82 etc/initialdata:86
 msgid "Sends mail to the owner"
@@ -3842,7 +3841,7 @@ msgstr "Tampilkan"
 
 #: html/Approvals/index.html:52
 msgid "Show Approvals"
-msgstr ""
+msgstr "Tampilkan Izin"
 
 #: html/Search/Elements/EditFormat:56
 msgid "Show Columns"
@@ -3858,7 +3857,7 @@ msgstr "Tamplikan permintaan yang disetujui"
 
 #: html/Ticket/Create.html:174 html/Ticket/Create.html:55
 msgid "Show basics"
-msgstr "Tampilkan dasa-dasar"
+msgstr "Tampilkan dasar-dasar"
 
 #: html/Approvals/Elements/PendingMyApproval:66
 msgid "Show denied requests"
@@ -3882,7 +3881,7 @@ msgstr "Tampilkan ACL"
 
 #: lib/RT/System.pm:86
 msgid "ShowConfigTab"
-msgstr ""
+msgstr "Tampilkan Tab Config"
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "ShowOutgoingEmail"
@@ -3934,7 +3933,7 @@ msgstr "Lewati Menu"
 
 #: html/Search/Elements/EditFormat:78
 msgid "Small"
-msgstr ""
+msgstr "Kecil"
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
 msgid "Sort"
@@ -3987,7 +3986,7 @@ msgstr "Curi Tiket"
 #: lib/RT/Transaction_Overlay.pm:666
 #. ($Old->Name)
 msgid "Stolen from %1"
-msgstr ""
+msgstr "Dicuri dari %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
@@ -4037,7 +4036,7 @@ msgstr "Kesalahan Sistem"
 #: lib/RT/Transaction_Overlay.pm:214 lib/RT/Transaction_Overlay.pm:220
 #. ($msg)
 msgid "System Error: %1"
-msgstr ""
+msgstr "Kesalahan sistem: %1"
 
 #: html/Admin/Tools/index.html:47
 msgid "System Tools"
@@ -4323,7 +4322,7 @@ msgstr "Status tiket sudah diubah"
 #: lib/RT/Search/FromSQL.pm:83
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr ""
+msgstr "Pencarian modul Tiket SQL"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:68 lib/RT/CustomField_Overlay.pm:1073
 msgid "Tickets"
@@ -4451,7 +4450,7 @@ msgstr "Content Encoding tidak dikenali%1"
 
 #: html/Search/Build.html:632
 msgid "Unknown field: $key"
-msgstr ""
+msgstr "Kolom tidak dikenali: $key"
 
 #: html/Elements/SelectResultsPerPage:58
 msgid "Unlimited"
@@ -4487,7 +4486,7 @@ msgstr "Perbaharui"
 
 #: html/Search/Bulk.html:178
 msgid "Update All"
-msgstr ""
+msgstr "Perbahurui Semua"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ID"
@@ -4495,7 +4494,7 @@ msgstr "Perbaharui ID"
 
 #: html/Ticket/Update.html:133
 msgid "Update Ticket"
-msgstr ""
+msgstr "Perbaharui Tiket"
 
 #: html/Search/Bulk.html:148 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:70
 msgid "Update Type"
@@ -4527,11 +4526,11 @@ msgstr "Perbaharui tiket yang terpilih"
 
 #: NOT FOUND IN SOURCE
 msgid "Update signature"
-msgstr "Perbaharui Tanda Tangan"
+msgstr "Perbaharui tanda tangan"
 
 #: html/Ticket/ModifyAll.html:84
 msgid "Update ticket"
-msgstr "Perbaharui Tiket"
+msgstr "Perbaharui tiket"
 
 #: html/SelfService/Update.html:112 html/SelfService/Update.html:47
 #. ($Ticket->id)
@@ -4585,7 +4584,7 @@ msgstr "Upload perubahan anda"
 
 #: html/Admin/index.html:90
 msgid "Use other RT administrative tools"
-msgstr ""
+msgstr "Gunakan alat administrative RT yang lain"
 
 #: lib/RT/Ticket_Overlay.pm:496
 #. ($args{'Owner'})
@@ -4606,7 +4605,7 @@ msgstr "ID Pengguna"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
 msgid "User Rights"
-msgstr "Hak-hak Pengguna"
+msgstr "Hak Pengguna"
 
 #: lib/RT/Interface/Web.pm:1278
 #. ($cf->Name, $class, $Object->id)
@@ -4708,7 +4707,7 @@ msgstr "Setiap saat pemilik tiket dapat diubah"
 
 #: etc/initialdata:178 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
-msgstr ""
+msgstr "Setiap saat prioritas tiket dapat diubah"
 
 #: etc/initialdata:193
 msgid "Whenever a ticket's queue changes"
@@ -4801,11 +4800,11 @@ msgstr "Zip"
 
 #: lib/RT/System.pm:88
 msgid "allow creation of saved searches"
-msgstr ""
+msgstr "mengijinkan pembuatan pencarian yang disimpan"
 
 #: lib/RT/System.pm:87
 msgid "allow loading of saved searches"
-msgstr ""
+msgstr "mengijinkan memanggil pencarian yang disimpan"
 
 #: html/User/Elements/DelegateRights:80
 #. ($right->PrincipalObj->Object->SelfDescription)
@@ -4814,7 +4813,7 @@ msgstr "sudah diberikan ke %1"
 
 #: html/Search/Elements/PickBasics:127
 msgid "belongs to"
-msgstr ""
+msgstr "Milik"
 
 #: html/SelfService/Closed.html:49
 msgid "closed"
@@ -4834,7 +4833,7 @@ msgstr "sudah dihapus"
 
 #: html/Search/Elements/PickBasics:128
 msgid "does not belong to"
-msgstr ""
+msgstr "Bukan milik"
 
 #: html/Search/Elements/PickBasics:61
 msgid "does not match"
@@ -4854,27 +4853,27 @@ msgstr "sama dengan"
 
 #: html/Search/Build.html:387
 msgid "error: can't move down"
-msgstr ""
+msgstr "kesalahan: tidak dapat dipindahkan ke bawah"
 
 #: html/Search/Build.html:409
 msgid "error: can't move left"
-msgstr ""
+msgstr "kesalahan: tidak dapat dipindahkan ke kiri"
 
 #: html/Search/Build.html:368
 msgid "error: can't move up"
-msgstr ""
+msgstr "kesalahan: tidak dapat dipindahkan ke atas"
 
 #: html/Search/Build.html:451
 msgid "error: nothing to delete"
-msgstr ""
+msgstr "kesalahan: tidak ada apapun yang dapat dihapus"
 
 #: html/Search/Build.html:373 html/Search/Build.html:392 html/Search/Build.html:414 html/Search/Build.html:443
 msgid "error: nothing to move"
-msgstr ""
+msgstr "kesalahan: tidak ada apapun yang dapat dipindahkan"
 
 #: html/Search/Build.html:469
 msgid "error: nothing to toggle"
-msgstr ""
+msgstr "kesalahan: tidak ada apapun yang dapat dihubungkan"
 
 #: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectEqualityOperator:59
 msgid "greater than"
@@ -4891,7 +4890,7 @@ msgstr "jam"
 
 #: html/Search/Elements/PickBasics:48
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: html/Elements/SelectBoolean:53 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:57 html/Search/Elements/PickBasics:175 html/Search/Elements/PickBasics:74 html/Search/Elements/PickBasics:90 html/Search/Elements/PickCFs:53
 msgid "is"
@@ -4973,7 +4972,7 @@ msgstr "dtk"
 
 #: lib/RT/System.pm:86
 msgid "show Configuration tab"
-msgstr ""
+msgstr "tampilkan tab konfigurasi"
 
 #: html/Search/Results.html:82
 msgid "spreadsheet"
