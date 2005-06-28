@@ -58,6 +58,9 @@
 <& /Elements/TitleBoxEnd &>
 
 <BR>
+
+<& /Elements/Callback, _CallbackName => 'BeforeShowHistory', Ticket => $TicketObj, %ARGS &>
+
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
       Tickets => $Tickets, 
