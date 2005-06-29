@@ -12,16 +12,15 @@ my $request_args = $m->request_args();
 
 my $reminder_collection = $Ticket->Reminders->Collection;
 
-while (my $reminder = $reminder_collection->Next) {
-    # If they've just checked the box, make sure we resolve it
-   if ($reminder->Status ne 'resolved'   
-       && $request_args->{'Complete-Reminder-'.$reminder->id}) {
-        $reminder->SetStatus('resolved');
-   }
-   elsif ($reminder->Status eq 'resolved' && ! $request_args->{'Complete-Reminder-'.$reminder->id}) {
-           $reminder->SetStatus('open');
-              }
-
+if ($request_args->{'update-reminders'}) {
+    while (my $reminder = $reminder_collection->Next) {
+        if ($reminder->Status ne 'resolved'   
+            && $request_args->{'Complete-Reminder-'.$reminder->id}) {
+            $reminder->SetStatus('resolved');
+        } elsif ($reminder->Status eq 'resolved' && ! $request_args->{'Complete-Reminder-'.$reminder->id}) {
+            $reminder->SetStatus('open');
+        }
+    }
 }
 
 
@@ -55,10 +54,14 @@ if ( $request_args->{'NewReminder-Subject'} ) {
 
 $reminder_collection = $Ticket->Reminders->Collection; 
 </%init>
-<input type="hidden" name="id" value="<%$Ticket->id%>">
+<input type="hidden" name="id" value="<%$Ticket->id%>" />
+<input type="hidden" name="update-reminders" value="1" />
 % while (my $reminder = $reminder_collection->Next) {
-% next if ($reminder->Status eq 'resolved' && !$ShowCompleted);
+% if ($reminder->Status eq 'resolved' && !$ShowCompleted) {
+<input type="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" />
+% } else {
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
+% }
 % }
 <br />
 <br />
