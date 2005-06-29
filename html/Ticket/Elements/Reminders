@@ -82,7 +82,7 @@ $Ticket
 <& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj &>
 </div>
 <div class="horizontal">
-<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&>:</label> 
+<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</l> <&|/l&>(yyyy/mm/dd)</&>:</label> 
 <input type="text" size="10" name="NewReminder-Due">
 </div>
 </%method>
