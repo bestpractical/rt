@@ -78,7 +78,32 @@ sub Add {
                        Queue => $self->TicketObj->Queue,
                    
                    );
+    $self->Ticket->_NewTransaction(Type => 'AddReminder',
+                                    Field => 'RT::Ticket',
+                                   NewValue => $reminder->id);
 
+
+}
+
+
+sub Open {
+    my $self = shift;
+    my $reminder = shift; 
+
+    $reminder->SetStatus('open');
+    $self->Ticket->_NewTransaction(Type => 'OpenReminder',
+                                    Field => 'RT::Ticket',
+                                   NewValue => $reminder->id);
+}
+
+
+sub Resolve {
+    my $self = shift;
+    my $reminder = shift;
+    $reminder->SetStatus('resolved');
+    $self->Ticket->_NewTransaction(Type => 'ResolveReminder',
+                                    Field => 'RT::Ticket',
+                                   NewValue => $reminder->id);
 }
 
     eval "require RT::Reminders_Vendor";
