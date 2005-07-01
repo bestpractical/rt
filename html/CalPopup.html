@@ -21,7 +21,7 @@ function updateParent(strItem) {
 %     foreach my $day (@{$week}) {
     <td>
 %         if ($day) {
-%             my $datestr = join('-', $DisplayedYear, $DisplayedMonth+1, $day);
+%             my $datestr = sprintf('%04d-%02d-%02d', $DisplayedYear, $DisplayedMonth+1, $day);
       <dt><a href="javascript: updateParent('<%$datestr%>')"><%$day%></a></dt>
 %         }
     </td>
