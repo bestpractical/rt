@@ -53,18 +53,7 @@
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
-<script>
-function hideshow(num) {
-    idstring = "element-" + num;
-    chunk = document.getElementById(idstring);
-    if ( chunk.style.display == "none")  {
-    chunk.style.display = chunk.style.tag;
-    } else {
-        chunk.style.tag = chunk.style.display;
-        chunk.style.display = "none";
-    }
-}   
-</script>
+<script type="text/javascript" src="<%$RT::WebPath%>/rt.js"></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>"

@@ -115,7 +115,7 @@ sub handler {
         $r->filename( File::Spec::Unix->catfile( $r->filename, 'index.html' ) );
     }
     elsif (defined( $r->content_type )) {
-	$r->content_type =~ m!(^text/|\bxml\b)!i or return -1;
+	$r->content_type =~ m!(^text/|\bxml\b|\bjavascript\b)!i or return -1;
     }
 
     Module::Refresh->refresh if $RT::DevelMode;

@@ -43,7 +43,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<INPUT NAME="<%$Name%>" VALUE="<%$Default%>" size=<%$Size%>> 
+<input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>"> 
+<script language="javascript" type="text/javascript">
+<!--
+document.write('<a href="javascript:');
+document.write("openCalWindow('<% $Name %>');");
+document.write('">pick</a>');
+// -->
+</script>
 
 <%init>
 unless ((defined $Default) or 

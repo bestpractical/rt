@@ -208,9 +208,8 @@
 		 color => "#663366" &>
 
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due" value="<%
-$ARGS{Due}%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>

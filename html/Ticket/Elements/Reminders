@@ -14,7 +14,7 @@ my $reminder_collection = $Ticket->Reminders->Collection;
 if ( $request_args->{'update-reminders'} ) {
     while ( my $reminder = $reminder_collection->Next ) {
         if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-
+      
             $Ticket->Reminders->Resolve($reminder);
         }
         elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
@@ -53,7 +53,6 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
 %   }
 % }
-% }
 <br />
 <br />
 <&|/l&>New reminder:</&><br />
@@ -72,7 +71,7 @@ $Ticket
 </div>
 <div class="horizontal">
 <label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 
-<input type="text" size="10" name="NewReminder-Due">
+<& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &>
 </div>
 </%method>
 <%method ShowEntry>
