@@ -62,12 +62,12 @@
     </span>
   </p>
   
-  <p id="legal">
 % if (!$Menu) {
+  <p id="legal">
 <&|/l&>Distributed under version 2 <a href="http://www.gnu.org/copyleft/gpl.html"> of the GNU GPL.</a></&><br>
 <&|/l, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br>
-% }
   </p>
+% }
 </div>
 
 % if ($Debug >= 2 ) {
