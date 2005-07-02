@@ -1,0 +1,801 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+
+@import "common.css";
+
+div.frontmatter {
+	margin-left: 170px;
+	margin-top: 51px;    
+padding:0px;
+}
+
+div.logo {
+top: 0;
+left: 0;
+position: absolute;
+	  border-bottom: solid #999999 1px;
+	  z-index: 2;
+}
+
+
+div.login-information {
+background: #ffffff;
+float: left;
+position: absolute;
+width: 100%;
+right: 0;
+top: 0;
+height: 50px;
+	text-align: right; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	vertical-align: top;
+	border-right: 1em;
+	padding-right: .5em;
+	border-bottom: solid #999999 1px;
+	z-index: 1;
+}
+body>div.login-information {position: fixed;}
+div.bpscredits {
+color: #666666;
+right: 1em;
+bottom: 0;
+position: fixed;
+width: 85%;
+background: #ffffff;
+	margin-top: 1em;
+	text-align: right; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+}
+
+span.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 12px;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+.nav2 {	 font-size: 10px;
+	 white-space: normal;}
+.currentnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 100%;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;
+    }
+     .topnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 110%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+
+%# .topnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats.
+
+a.topnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 110%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 100%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+li.topnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+
+.currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 110%;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+
+%# .currenttopnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats
+
+a.currenttopnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 110%;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 100%;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+li.currenttopnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+
+}
+.subnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+.currentsubnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+.error {  background: #ff0000;
+	 background-position: left top;
+	 vertical-align: top;
+	 text-align: left;
+         }
+.actions {  
+     width: 100%;
+     background: #336699;
+     margin-right: .5em;
+     margin-bottom: 1em;
+     font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 85%;
+	 color: #FFFFFF;
+	 text-decoration: none;
+         text-align: right;
+}
+
+.overdue {
+	 color: red;
+}
+
+div.messagebody {
+    padding: 2em; 
+
+}
+
+
+div.downloadattachment {
+    font-size: 10px;
+    text-align: right;
+
+}
+
+
+td {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 background-position: left top;
+         }
+.black { background: #000000;
+	 background-position: left top;
+         }
+
+
+th {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 80%;
+     font-weight: bold;
+	 background-position: left top;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+         }
+
+div.rtname {  font-family: Verdana, Arial, Helvetica, sans-serif;
+     top: 0;
+     left: 230px;
+     color: #000000;
+     background-color: #ffffff;
+	 border-bottom: solid #999999 1px;
+	 font-size: 12px;
+    position: absolute;
+     text-align: left;
+     height: 50px;
+     width: 30%;
+	 font-weight: bold;
+     padding-left: .5em;
+     z-index: 3;
+}
+body>div.rtname {position: fixed;}
+.header {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 12px;
+	 font-weight: bold;
+	 color: #0066CC}
+.subheader { font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 font-weight: bold;
+	 color: #0066CC }
+.value {       font-weight: bold; }
+.entry {       font-weight: normal; }
+.label {       font-weight: normal;
+	       text-align: right; }
+.labeltop {       font-weight: normal;
+	       text-align: right;
+	       vertical-align: top }
+.productnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 11px;
+	 color: #000000;
+	 text-align: center;
+	 vertical-align: middle;
+	 text-decoration: none}
+
+.currenttab { margin: 0.2em; background: #336699; }
+.othertab { margin: 0.2em; background: #efefef; }
+.oddline { background-color : #ccccee; }
+
+UL.topnav LI :focus { text-decoration: underline; }
+
+div.dialog {
+             margin-left: auto;
+             margin-right: auto;
+             min-width: 200px;
+             width: 30%;
+             margin-top: 10%;
+}
+
+div.mainbody
+{
+  padding-left: 170px;
+  padding-right: 10px;
+  top: 80px;
+  margin: 0px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+td.boxcontainer + td.boxcontainer {
+	margin-left: 1em;
+	padding-left: 1em;
+	border-collapse: collapse;
+}
+
+th.ticketheader { font-size: 80%;
+     color: #336699;
+     background: #cccccc; 
+}
+
+/* TitleBox */
+
+div.titlebox {
+	border: 1px solid #cccccc;
+}
+
+div.titlebox div.titlebox-title {
+	background: #666699;
+	padding-left: 0.5em;
+	padding-bottom: 3px;
+	padding-top: 3px;
+	font-size: 14pt;
+	font-family: Arial ,sans serif;
+}
+
+/* END */
+
+/* Simple Search */
+
+div#SimpleSearchForm
+{
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div#SimpleSearchForm p
+{
+  margin-bottom: 3em;
+}
+
+/* End */
+
+table.box td {
+border: 0;
+margin: 0;
+padding: 0px; 
+	border-collapse: collapse; 
+}
+
+table.box th {
+	background: #666699;
+}
+
+
+table.titlebar {
+color: #ffffff;
+background: #afc7af;
+}
+th.titlebox {
+	text-align: left;
+	vertical-align: middle;
+}    
+
+th.titleboxright {
+	vertical-align: middle;
+	text-align: right;
+}    
+
+TD.titlebox {
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-top: 1em;
+        padding-bottom: 1em; 
+}
+
+
+
+span.message {
+	font-size: 100%;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+
+body {
+color: #000;
+background: #FFFFFF;
+padding: 0px;
+margin: 0px;
+}
+
+div#all
+{
+	min-width: 750px;
+	margin: 0px;
+	padding: 0px;
+}
+
+
+TR.oddline { 
+    background-color : #ffffff;
+}
+
+TR.evenline { 
+    background-color : #ccccee;
+}
+
+H1, H2, H3 { 
+  margin-top: 0.2em;
+  color: #336699;
+  font-family: "Helvetica", sans-serif;
+
+  clear: both;
+}
+
+
+DIV.endmatter { margin-left: -7% }
+
+
+A { font-weight: bold; color: #000000;
+            }
+
+.currenttab { color: #ffffff;}
+.othertab { color: #336699; }
+
+.inverse { color: #ffffff; }
+
+
+
+A:link IMG, A:visited IMG { border-style: none }
+a:focus {text-decoration: underline }
+A IMG { color: white } /* The only way to hide the border in NS 4.x */
+
+a:link {  text-decoration: none}
+a:visited {  text-decoration: none}  
+a:hover {  text-decoration: underline}
+/* a:focus { background: #ccccee } */
+
+.hide {
+  display: none;
+  color: white;
+}
+
+span.date { font-size: 0.8em }
+
+div.title {
+color: #333333;
+padding-left: 5px;
+	 font-size: 16pt;
+	 font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-weight: bold;
+	 z-index: 999;
+}
+
+span.productname { font-size: 2em;
+             color: #0066cc;}
+
+
+
+span.titleboxtitle, SPAN.titleboxclose {
+        font-size: 80%;
+        color: #ffffff;
+	 vertical-align: middle;
+	 text-align: left;
+        }
+
+span.titleboxclose a:hover {
+	color: red;
+}
+
+
+span.titleboxtitle a {
+        color: #ffffff;
+}
+span.titleboxtitle a:after {
+	content: "...";
+}
+
+span.titleboxright {
+        font-size: 0.8em;
+        color: #ffffff;
+	 vertical-align: middle;
+	 text-align: right;
+        }
+
+span.attribution {
+  font-weight: bold;
+}
+
+span.label { font-size: 0.8em; 
+}
+
+DIV.page-stats { font-size: 0.8em;
+                  color: #cccccc;
+                  text-align: right;
+              }
+
+
+BLOCKQUOTE {
+  font-style: italic;
+}
+div.menu {
+top: 51px;
+left: 0;
+position: absolute; 
+background: white;
+width: 160px;
+	font-size: 70%;
+	text-align: left;
+	padding-right: 1%;
+	z-index: 99;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 1em;
+}
+
+ul.topnav li
+{
+  background: #afc7af;
+  border: 1px solid #669966;
+  margin-top: 3px;
+  margin-bottom: 7px;
+  padding-left: 7px;
+}
+
+ul.topnav li a
+{
+  font-family: Verdana, Sans Serif;
+  font-size: 12pt;
+  width: 100%;
+}
+
+ul.topnav li a[name=focus]
+{
+  color: black;
+}
+
+
+table.ticket-overview {
+width: 100px;
+background: #336699;
+}
+
+
+ul.topnav {
+	list-style: none;
+	margin-left: 0;
+ 	margin-right: 0.25em;		
+	padding-left: 0.25em;
+	padding-bottom: 0;	
+	padding-top:0;
+	margin-top: 0;
+	margin-bottom:0;
+}
+
+.menu-major-separator {
+	border-bottom: solid white 1px;
+	padding-top: .25em;
+	padding-bottom: .5em;
+}
+
+.menu-minor-separator {
+        border-top: solid #999999 1px;
+	padding-top: .1em;
+	margin-top: .5em;
+}
+
+div.topactions {
+    top: 1.25em;
+    right: 0;
+    float: right;
+    position: absolute;
+    white-space: nowrap;
+    vertical-align: center;
+    width:  86%;
+    z-index: 4;
+}
+
+span.topaction {
+    text-align: right;
+    float: right;
+    padding-left: 1em;
+}
+
+
+
+TH.collection-as-table {  text-align: center;
+                          font-size: 0.8em; 
+                          padding-left: .5em;
+                          padding-right: .5em;
+                          color: #333333;
+                          background-color: #cccccc;
+                          white-space: nowrap;
+                  }
+
+TD.collection-as-table {  text-align: left;
+                          padding-left: .5em;
+                          padding-right: .5em;
+                        }
+
+textarea.signature {
+    width: 100%;
+}
+textarea.comments {
+    width: 100%;
+}
+
+textarea.messagebox {
+    width: 100%;
+}
+
+/* Home */
+
+div.quick-create, div.my-requests, div.my-tickets {
+	margin-bottom: 1em;
+}
+
+div.content {
+	margin-right: 220px;
+	width: auto;
+}
+
+div.widget {
+	width: 200px;
+	overflow: hidden;
+	float: right;
+}
+div.ticket-overview {
+	margin-bottom: 1em;
+}
+div.page-refresh {
+	text-align: right;
+}
+
+/* END */
+
+%# Provide a callback for adding/modifying the style sheet.
+%# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
+%#   "latter specified rule wins"
+<& /Elements/Callback &>
+<%flags>
+inherit => undef
+</%flags>
+<%init>
+$r->content_type('text/css');
+#$r->headers_out->{'Expires'} = '+30m';
+</%init>

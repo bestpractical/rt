@@ -85,7 +85,6 @@
 % }
 </div>
 </ul>
-
 <%INIT>
 my ($tab, $class, $count);
 
