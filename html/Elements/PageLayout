@@ -52,10 +52,7 @@
   </div>
 
   <div id="logo">
-    <a href="http://bestpractical.com">
-      <img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>"
-           width="230" height="50">
-    </a>
+    <a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a>
     <div class="rtname"><%$AppName%></div>
   </div>
 
