@@ -43,7 +43,71 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% $RT::WebPath %>/index.html">
-  <input size="12" name="q" autocomplete="off" accesskey="0" class="field">
-  <input type="submit" value="<&|/l&>Search</&>" class="button">
-</form>
+
+#header {
+    clear: both;
+    margin: 0 0.75em 0 0.75em;
+    /*padding-top: 3.5em;*/
+}
+
+/*html>body #header { padding-top: 7em; }*/
+
+.clear { clear: both; }
+
+#header h1 {
+    margin: 0;
+    padding: 0;
+    color: #930;
+    display: inline;
+    position: relative;
+    font-size: 2em;
+    font-weight: bold;
+    left: 1.3em;
+    top: 0.21em;
+}
+
+#header ul#page-menu {
+    margin: 0;
+    padding: 0;
+    color: #eee;
+    background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left;
+    float: left;
+    min-width: 75%;
+}
+
+#page-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
+#page-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#page-menu div div div {
+    background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
+    padding: 0.2em 1em 0.4em 1em;
+}
+
+#header ul#page-menu li {
+    display: inline;
+}
+
+#header :link,
+#header :visited
+{
+    color: white;
+    text-decoration: none;
+}
+
+#header :link.selected,
+#header :visited.selected,
+#header :link:hover,
+#header :visited:hover
+{
+    color: #fc6; /*#ff6;*/
+}
+
+#header :link.selected,
+#header :visited.selected
+{
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+<%init>
+    $r->content_type('text/css');
+</%init>

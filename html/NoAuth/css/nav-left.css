@@ -43,7 +43,44 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% $RT::WebPath %>/index.html">
-  <input size="12" name="q" autocomplete="off" accesskey="0" class="field">
-  <input type="submit" value="<&|/l&>Search</&>" class="button">
-</form>
+
+#logo {
+    float: right;
+    clear: right;
+}
+#nav ul { float: left; }
+#nav ul div { text-align: left; }
+
+#nav li ul {
+    right: 2em;
+    left: 0;
+}
+
+html>body #nav li ul {
+    left: 0;
+    right: 2em;
+}
+
+#nav ul,
+#nav ul.odd,
+#nav ul .first,
+#nav ul.odd .first
+{
+    background-image: none;
+}
+
+#nav ul { background: #069 url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
+#nav ul div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
+#nav ul.odd div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+
+#nav ul div {
+    display: block;
+    padding: 0.2em 1em 0.4em 0;
+}
+
+#nav ul { padding: 0; }
+
+<%init>
+    $r->content_type('text/css');
+</%init>

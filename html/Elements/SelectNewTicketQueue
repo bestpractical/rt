@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <label accesskey="9">
-<select NAME ="<%$Name%>">
+<select name="<%$Name%>" class="field">
 % foreach my $queue (@{$session{'create_in_queues'}}) {
-<option value="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ?'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></option>
+<option value="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ? 'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></option>
 % }
 </select>
 </label>

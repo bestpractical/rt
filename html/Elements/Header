@@ -47,30 +47,28 @@
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<title><%$Title%></title>
+  <head>
+    <title><%$Title%></title>
 % if ($Refresh > 0) {
-<meta http-equiv="refresh" content="<%$Refresh%>" />
+    <meta http-equiv="refresh" content="<%$Refresh%>" />
 % }
-
-<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-<link rel="stylesheet" title="RT Classic" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
-<link rel="stylesheet" title="OSSF" href="<%$RT::WebPath%>/NoAuth/ossf.css" type="text/css">
-<script>
-function hideshow(num) {
-    idstring = "element-" + num;
-    chunk = document.getElementById(idstring);
-    if ( chunk.style.display == "none")  {
-    chunk.style.display = chunk.style.tag;
-    } else {
-        chunk.style.tag = chunk.style.display;
-        chunk.style.display = "none";
-    }
-}   
-</script>
+    <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
+    <link type="text/css" rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/main.css" />
+    <script>
+        function hideshow(num) {
+            idstring = "element-" + num;
+            chunk = document.getElementById(idstring);
+            if ( chunk.style.display == "none")  {
+            chunk.style.display = chunk.style.tag;
+            } else {
+                chunk.style.tag = chunk.style.display;
+                chunk.style.display = "none";
+            }
+        }   
+    </script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
-</head>
-<body
+  </head>
+  <body
 % if ($Focus) {
 onload="
     var tmp = (document.getElementsByName('<% $Focus %>'));
@@ -78,23 +76,26 @@ onload="
 "
 % }
 >
-<div id="all">
-<div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a></div>
-<div class="login-information">
-<span style="display: none"><a href="#skipnav"><&|/l&>Skip Menu</&></a></span>
-%if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
-<a  href="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></a>
-% }
-<& /Elements/Callback, %ARGS &>
-<&|/l, "<strong>".$session{'CurrentUser'}->Name."</strong>" &>Logged in as [_1]</&>
-% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-| <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
-% } else {
-<&|/l&>Not logged in.</&>
-% }
-</div>
-<%INIT>
 
+<div id="quickbar">
+  <div id="quick-personal">
+    <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
+% if ($session{'CurrentUser'}->Name) {
+    <&|/l, "<span>".$session{'CurrentUser'}->Name."</span>" &>Logged in as [_1]</&>
+% } else {
+    <&|/l&>Not logged in.</&>
+% }
+%if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
+    | <a href="<%$RT::WebPath%><%$Prefs%>"><&|/l&>Preferences</&></a>
+% }
+  <& /Elements/Callback, %ARGS &>
+% unless (!$session{'CurrentUser'}->Name
+%         or ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth)) {
+    | <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
+% }
+  </div>
+
+<%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
 </%INIT>
@@ -106,8 +107,8 @@ $Title =>  'RT'
 $Code => undef
 $Refresh => 0
 $Why => undef
-$BgColor => '#ffffff'
-$ShowBar => 1
-$LoggedIn => 1
+#$BgColor => '#ffffff'
+#$ShowBar => 1
+#$LoggedIn => 1
 $URL => undef
 </%ARGS>

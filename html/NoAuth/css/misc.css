@@ -43,7 +43,83 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% $RT::WebPath %>/index.html">
-  <input size="12" name="q" autocomplete="off" accesskey="0" class="field">
-  <input type="submit" value="<&|/l&>Search</&>" class="button">
-</form>
+
+body {
+    font-family: Verdana, sans-serif;
+    font-size: 76%;
+    margin: 0;
+}
+
+#logo {
+    float: left;
+    clear: left;
+}
+
+#logo img { border: none; }
+#logo div.rtname {
+    text-align: center;
+    font-weight: bold;
+}
+
+#body {
+    clear: both;
+    margin: 0 0.75em 0 1em;
+    padding-top: 0.5em;
+}
+
+#quickbar #quick-personal {
+    display: inline;
+    color: #888;
+    padding: 0.5em 1em 0 0;
+    float: right;
+}
+
+#quickbar #quick-personal span {
+    font-weight: bold;
+}
+
+#quickbar #quick-personal :link,
+#quickbar #quick-personal :visited
+{
+    color: #888;
+    font-weight: bold;
+}
+
+#quickbar #quick-personal :link:hover,
+#quickbar #quick-personal :visited:hover
+{
+    color: black;
+}
+
+#quickbar #topactions {
+    font-size: 0.9em;
+    padding: 0.5em 0 0 2em;
+}
+
+#quickbar #topactions form {
+    display: inline;
+    margin-right: 2em;
+}
+
+#quickbar #topactions form .button {
+    border: 1px solid #069;
+    padding: 1px;
+    background: white;
+}
+
+html>body #quickbar #topactions form .button { padding: 2px; }
+
+#quickbar #topactions form .field {
+    border: 1px solid #069;
+    padding: 1px;
+}
+
+#quickbar #topactions form input.field {
+    padding: 3px;
+}
+
+.hide { display: none; }
+
+<%init>
+    $r->content_type('text/css');
+</%init>

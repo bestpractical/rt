@@ -43,7 +43,90 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% $RT::WebPath %>/index.html">
-  <input size="12" name="q" autocomplete="off" accesskey="0" class="field">
-  <input type="submit" value="<&|/l&>Search</&>" class="button">
-</form>
+
+#nav {
+    margin-top: 0.5em;
+}
+
+#nav #system-menu {
+    font-size: 1.1em;
+    min-width: 40em;
+}
+
+#nav ul {
+    font-weight: bold;
+    font-size: 1em;
+    color: #eee;
+    list-style: none;
+    margin: 0;
+    padding: 0.2em 2em 0.4em 0;
+    float: right;
+    position: relative;
+}
+
+#nav li ul {
+    position: absolute;
+    right: 0;
+    top: 2.21em;
+    font-size: 1em;
+}
+
+/* Hide from IE */
+html>body #nav li ul {
+    left: 2em;
+}
+
+#nav :link,
+#nav :visited
+{
+    color: #ececec;
+    text-decoration: none;
+}
+
+#nav :link.selected,
+#nav :visited.selected,
+#nav :link:hover,
+#nav :visited:hover
+{
+    color: #fc6; /*#ff6;*/
+}
+
+#nav :link.selected,
+#nav :visited.selected
+{
+    text-decoration: underline;
+}
+
+html>body #nav :link.selected,
+html>body #nav :visited.selected
+{
+    padding-bottom: 0.8em;
+    background: transparent url(<%$RT::WebImagesURL%>/css/dark-arrow.png) no-repeat bottom center;
+}
+
+html>body #nav .odd > div > li > :link.selected,
+html>body #nav .odd > div > li > :visited.selected
+{
+    padding-bottom: 0.8em;
+    background: transparent url(<%$RT::WebImagesURL%>/css/light-arrow.png) no-repeat bottom center;
+}
+
+#nav li {
+    display: inline;
+    margin-bottom: 1em;
+    padding: 0.2em 0 0.4em 0;
+}
+
+#nav li.first { padding-left: 1em; }
+
+#nav div { display: inline; }
+#nav ul div { display: block; }
+
+#nav ul { background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left; }
+#nav ul .first { background: transparent url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
+#nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ct-light.gif) no-repeat top left; }
+#nav ul.odd .first { background: transparent url(<%$RT::WebImagesURL%>/css/cb-light.gif) no-repeat bottom left; }
+
+<%init>
+    $r->content_type('text/css');
+</%init>

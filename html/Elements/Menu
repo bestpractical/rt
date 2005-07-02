@@ -43,44 +43,58 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<ul class="topnav" >
-% my $sep=0;
-% my $accesskey="1";
+<ul<% !$level ? ' id="system-menu"' : ''|n %><% $menu_class ? qq[ class="$menu_class"] : ''|n %>>
+<div>
+% my $sep         = 0;
+% my $accesskey   = 1;
+% 
+% $count = 0;
+% $class = {};
+% 
 % foreach $tab (sort keys %{$toptabs}) {
-% my $current = $current_toptab || "";
-% my $path = $toptabs->{$tab}->{'path'} || "";
-% $path =~ s#/index.html$##gi;
-% $current =~ s#/index.html$##gi;
-% if ( $path eq $current) {
-%     $class="currenttopnav"
-% } else {
-%     $class="topnav"
-% } 
-% my $style="";
-% if ($sep) {
-% $style="minor";
-% } elsif ($level == 0 ) {
-% $style="major";
-% }
-% if ($toptabs->{$tab}->{'separator'}) {
-% $sep=1;
-% } else {
-% $sep=0;
-% }
-<li class="<%$class%>-<%$level%>-<%$style%>"><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" class="<%$class%>-<%$level%>" 
-<%($class eq 'currenttopnav') ? "name='focus'" : ""|n %> 
-<% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
+%     $count++;
+%
+%     my $current = $current_toptab || "";
+%     my $path    = $toptabs->{$tab}->{'path'} || "";
+%     
+%     $path    =~ s#/index.html$##gi;
+%     $current =~ s#/index.html$##gi;
+%     
+%     $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+%
+%     $class->{a} = $path eq $current ? ' class="selected"' : undef;
+%
+%     my @li;
+%     push @li, 'first'
+%            if $count == 1;
+%
+%     push @li, 'separator'
+%            if $sep;
+%
+%     $class->{li} = join ' ', @li;
+%     
+%
+  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
 %# Second-level items
-% if ($toptabs->{$tab}->{'subtabs'}) {
-        <& /Elements/Menu, level => $level+1, 
-                current_toptab => $toptabs->{$tab}->{'current_subtab'},
-                toptabs => $toptabs->{$tab}->{'subtabs'} &></li>
+%     if ($toptabs->{$tab}->{'subtabs'}) {
+          <& /Elements/Menu, level => $level+1, 
+                             current_toptab => $toptabs->{$tab}->{'current_subtab'},
+                             toptabs => $toptabs->{$tab}->{'subtabs'} &>
+  </li>
+%     }
 % }
-% }
+</div>
 </ul>
-<%INIT>
-my ($tab, $subtab, $class);
 
+<%INIT>
+my ($tab, $class, $count);
+
+my @ul;
+#push @ul, 'last-menu'
+#    if $toptabs->{last_menu};
+push @ul, 'odd'
+    if $level % 2;
+my $menu_class = join ' ', @ul;
 </%INIT>
 
 <%ARGS>
