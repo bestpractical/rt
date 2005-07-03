@@ -82,8 +82,10 @@
 }
 
 #footer #legal {
+    float: none;
     color: #888;
-    padding-left: 2em;
+    padding: 1em 0 0 2em;
+    clear: both;
 }
 
 <%init>

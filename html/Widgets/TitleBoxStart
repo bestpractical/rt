@@ -44,29 +44,26 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="titlebox">
-  <div class="titlebox-title">
-      <span class="titleboxclose"><a href="#" onClick="hideshow('<%$id%>')">X</a></span>
-      <span class="titleboxtitle">
-        <strong><% $title_href && "<a $title_class href=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</a>" |n%></strong>
-      </span>
-   </div>
-   <div id="element-<%$id%>">
+  <div class="title">
+    <span><a href="#" onclick="return hideshow('<%$id%>');">^</a></span>
+    <% $title_href && qq[<a $title_class href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%>
+  </div>
+  <div class="content" id="element-<%$id%>">
 
 <%ARGS>
 $width => undef
-$class =>  undef
+$class => undef
 $bodyclass => undef
 $title_href => undef
 $title => undef
 $title_class => ''
-
 $titleright_href => undef
 $titleright => undef
 $contentbg => "#dddddd"
 $color => "#336699"
 </%ARGS>
+
 <%init>
 my $id = rand(2000);
-
-$title_class = "CLASS=\"$title_class\"" if $title_class;
+$title_class = qq[class="$title_class"] if $title_class;
 </%init>

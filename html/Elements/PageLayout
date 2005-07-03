@@ -46,7 +46,7 @@
   <div id="topactions">
 % foreach my $action (reverse sort keys %{$topactions}) {
     <span class="topaction">
-% $m->out($topactions->{"$action"}->{'html'}."&nbsp;" );
+% $m->out($topactions->{"$action"}->{'html'});
     </span>
 % }
   </div>
@@ -63,16 +63,16 @@
 <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 
-<div id="header" style="padding-top: <% 1.2 * $menu_depth %>em;">
+<div id="header" style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.5 * $menu_depth %>;">
   <div class="clear"></div>
   <h1><%$title%></h1>
 
 % my $count = 0;
 % my $class = {};
 % 
-% if ($page_tabs) {
-  <ul id="page-menu">
+  <ul id="page-menu"<% ($actions || $subactions) && q[ class="actions-present"] | n %>>
     <div><div><div>
+% if ($page_tabs) {
 %     foreach my $tab (sort keys %{$page_tabs}) {
 %         next if $tab =~ /^(?:current_toptab|this)$/;
 %         $count++;
@@ -99,11 +99,15 @@
 %
     <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
 %     }
+% } else {
+&nbsp;
+% }
     </div></div></div>
   </ul>
-% }
+
+% if ($actions or $subactions) {
   <ul id="actions-menu">
-    <div>
+    <div><div><div>
 % $count = 0;
 %
 % if ($actions) {
@@ -113,6 +117,8 @@
     <li<% $count == 1 ? q[ class="first"] : '' |n %>><% $count > 1 && "&#183; "|n%>
 %         if ($actions->{"$action"}->{'html'}) {
 <% $actions->{"$action"}->{'html'} | n %>
+%         } elsif ($actions->{$action}->{separator}) {
+&#183;
 %         } else {
 <a href="<%$RT::WebPath%>/<%$actions->{$action}->{'path'}%>"><%$actions->{$action}->{'title'}%></a>
 %         }
@@ -133,8 +139,9 @@
 <li<% $count == 1 ? q[ class="first"] : '' |n %>><% $count > 1 && !$sep && "&#183; "|n%><% $subactions->{"$action"}->{'html'} | n %></li>
 %     }
 % }
-    </div>
+    </div></div></div>
   </ul>
+% }
 </div>
 
 <div id="body">

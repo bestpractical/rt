@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($CheckAll or $ClearAll) {
-<script><!--
+<script type="text/javascript"><!--
 function set_checkbox (obj, val) {
     var i;
     var myfield = obj.form.getElementsByTagName('input');
@@ -56,41 +56,31 @@ function set_checkbox (obj, val) {
 }
 --></script>
 % }
-<table width="100%" bgcolor="<%$color%>" cellspacing="0" border="0" cellpadding="0" >
-<tr>
-<td>
+<div class="submit">
+  <div class="extra-buttons">
 % if ($CheckAll) {
-<input type="BUTTON" value="<%$CheckAllLabel%>" onclick="set_checkbox(this, true)">
+  <input type="button" value="<%$CheckAllLabel%>" onclick="set_checkbox(this, true);return false;" class="button" />
 % }
 % if ($ClearAll) {
-<input type="BUTTON" value="<%$ClearAllLabel%>" onclick="set_checkbox(this, false)">
+  <input type="button" value="<%$ClearAllLabel%>" onclick="set_checkbox(this, false);return false;" class="button" />
 % }
 % if ($Reset) {
-<input type="RESET" value="<%$ResetLabel%>">
-%}
-</td>
-<td>
-&nbsp;
-</td>
-<td align="RIGHT" valign="CENTER"><font color="#ffd800">
+  <input type="reset" value="<%$ResetLabel%>" class="button" />
+% }
+  </div>
+  <div class="buttons">
 % if ($AlternateLabel) {
-<strong><%$AlternateCaption%>
-<input type="SUBMIT"
-%if ($Name) {
-NAME="<%$Name%>"
-%}
-VALUE='<%$AlternateLabel%>'></strong>
+  <span class="caption"><%$AlternateCaption%></span>
+  <input type="submit"<% $Name && qq[ name="$Name"] | n %> value="<%$AlternateLabel%>" class="button" />
+% } else {
+  <span class="caption"><%$Caption%></span>
+  <input type="submit"<% $Name && qq[ name="$Name"] | n %> value="<%$Label%>" class="button" />
 % }
-<strong><%$Caption%> <input type="SUBMIT"
-%if ($Name) {
-NAME="<%$Name%>"
-% }
- VALUE='<%$Label%>'></strong></font>
-</td>
-</tr>
-</table>
+  </div>
+</div>
+
 <%ARGS>
-$color => "#336699"
+$color => undef
 $Caption => ''
 $AlternateCaption => undef
 $AlternateLabel => undef

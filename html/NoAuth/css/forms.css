@@ -43,14 +43,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-  </div>
-</div>
 
-% #Manually flush the content buffer after each titlebox is displayed
-% $m->flush_buffer();
+form .button {
+    border: 1px solid #069;
+    padding: 1px;
+    background: white;
+    font-weight: bold;
+}
 
-<%ARGS>
-$title => undef
-$content => undef
-</%ARGS>
+html>body form .button { padding: 2px; }
 
+form .button:hover {
+    border-color: #08c;
+}
+
+form .field, form select, form .entry input, form input {
+    border: 1px solid #069;
+    padding: 1px;
+}
+
+form input.field, form .entry input, form .value input {
+    padding: 3px;
+}
+
+form .label, form label {
+    font-weight: bold;
+}
+
+<%init>
+    $r->content_type('text/css');
+</%init>

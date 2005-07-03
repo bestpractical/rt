@@ -144,41 +144,46 @@ $current_tab = "Ticket/Display.html?id=" . $id;
 
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
-    $actions->{'A'} = { title => loc('Reply'),
+    $actions->{'F'} = { title => loc('Reply'),
                         path  => "Ticket/Update.html?Action=Respond&id=" . $id,
     };
 }
 
 if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
     if ( $Ticket->Status ne 'resolved' ) {
-        $actions->{'B'} = {
+        $actions->{'G'} = {
 
             path => "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {
-        $actions->{'C'} = { path => "Ticket/Display.html?Status=open&id=" . $id,
+        $actions->{'A'} = { path => "Ticket/Display.html?Status=open&id=" . $id,
                             title => loc('Open it') };
     }
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "Ticket/Display.html?Action=Take&id=" . $id,
+        $actions->{'B'} = { path => "Ticket/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "Ticket/Display.html?Action=Steal&id=" . $id,
+        $actions->{'C'} = {path => "Ticket/Display.html?Action=Steal&id=" . $id,
                            title => loc('Steal') };
     }
 }
 
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
-    $actions->{'F'} = { title => loc('Comment'),
+    $actions->{'E'} = { title => loc('Comment'),
                         path  => "Ticket/Update.html?Action=Comment&id=" . $id,
     };
 }
+}
+
+if (   defined $actions->{A} || defined $actions->{B} || defined $actions->{C}
+    && defined $actions->{E} || defined $actions->{F} || defined $actions->{G}) {
+    $actions->{D} = { separator => 1 };
 }
 
 my $args;

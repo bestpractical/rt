@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="<% $class %>">
-    <& TitleBoxStart, %ARGS&><%$m->content|n%><& TitleBoxEnd&>
+  <& TitleBoxStart, %ARGS &><% $m->content | n %><& TitleBoxEnd &>
 </div>
 <%ARGS>
-$class =>  undef
+$class => undef
 </%ARGS>
 

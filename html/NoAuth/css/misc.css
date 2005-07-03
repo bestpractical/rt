@@ -61,12 +61,6 @@ body {
     font-weight: bold;
 }
 
-#body {
-    clear: both;
-    margin: 0 0.75em 0 1em;
-    padding-top: 0.5em;
-}
-
 #quickbar #quick-personal {
     display: inline;
     color: #888;

@@ -43,14 +43,62 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-  </div>
-</div>
 
-% #Manually flush the content buffer after each titlebox is displayed
-% $m->flush_buffer();
+#body {
+    clear: both;
+    margin: 0 0.75em 0 1em;
+    padding-top: 0.5em;
+}
 
-<%ARGS>
-$title => undef
-$content => undef
-</%ARGS>
+.titlebox .content {
+    margin: 0 2em 0 2em;
+}
 
+.titlebox .title {
+    font-weight: bold;
+    color: #930;
+    font-size: 1.2em;
+    padding: 0.2em 0 0.2em 2em;
+    border-bottom: 1px solid #069;
+}
+
+.titlebox .title span a {
+    display: block;
+    letter-spacing: -9999em;
+    height: 1em;
+    width: 20px;
+    background: url(<%$RT::WebImagesURL%>/css/rollup-arrow.png) no-repeat bottom center;
+    position: relative;
+    left: -2em;
+    float: left;
+}
+
+.titlebox .title :link,
+.titlebox .title :visited
+{
+    color: #930;
+    text-decoration: none;
+}
+
+.titlebox .title :link:hover,
+.titlebox .title :visited:hover
+{
+    text-decoration: underline;
+}
+
+.submit {
+    font-weight: bold;
+    color: #a00;
+    font-size: 1.1em;
+    padding: 0.3em 1.5em 0 1.5em;
+    border-top: 1px solid #069;
+    margin: 1.5em 0 0 0;
+}
+
+.submit .buttons { float: right; }
+.submit .extra-buttons { float: left; }
+.submit .button { font-size: 0.9em; }
+
+<%init>
+    $r->content_type('text/css');
+</%init>

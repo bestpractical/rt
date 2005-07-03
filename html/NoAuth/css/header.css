@@ -64,26 +64,53 @@
     font-weight: bold;
     left: 1.3em;
     top: 0.21em;
+    z-index: 3;
 }
 
-#header ul#page-menu {
+#header ul {
     margin: 0;
     padding: 0;
     color: #eee;
-    background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left;
     float: left;
-    min-width: 75%;
+}
+
+#header #page-menu {
+    position: relative;
+    z-index: 2;
+    background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left;
+    min-width: 65%;
+}
+
+* html #header ul#page-menu {
+    width: 65%;
+    overflow: visible;
 }
 
 #page-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
+
 #page-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
 #page-menu div div div {
     background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
     padding: 0.2em 1em 0.4em 1em;
 }
 
-#header ul#page-menu li {
+#page-menu.actions-present div div { background: url(<%$RT::WebImagesURL%>/css/cbr-b2lb.gif) no-repeat bottom right; }
+#page-menu.actions-present div div div { background: url(<%$RT::WebImagesURL%>/css/ctr-b2lb.gif) no-repeat top right; }
+
+#header ul li {
     display: inline;
+}
+
+#header #actions-menu {
+    position: relative;
+    background: #08c;
+}
+
+/*#actions-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }*/
+#actions-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#actions-menu div div div {
+    background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
+    padding: 0.2em 1em 0.4em 1em;
 }
 
 #header :link,

@@ -45,6 +45,8 @@
 %# END BPS TAGGED BLOCK }}}
 
 @import "misc.css";
+@import "body.css";
+@import "forms.css";
 @import "nav.css";
 @import "nav-left.css";
 @import "header.css";

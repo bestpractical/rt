@@ -57,14 +57,15 @@
     <link type="text/css" rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/main.css" />
     <script>
         function hideshow(num) {
-            idstring = "element-" + num;
-            chunk = document.getElementById(idstring);
+            var idstring = "element-" + num;
+            var chunk = document.getElementById(idstring);
             if ( chunk.style.display == "none")  {
-            chunk.style.display = chunk.style.tag;
+                chunk.style.display = chunk.style.tag;
             } else {
                 chunk.style.tag = chunk.style.display;
                 chunk.style.display = "none";
             }
+            return false;
         }   
     </script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
@@ -78,6 +79,7 @@ onload="
 % }
 >
 
+% if ($ShowBar) {
 <div id="quickbar">
   <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
@@ -95,6 +97,7 @@ onload="
     | <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % }
   </div>
+% }
 
 <%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
@@ -103,13 +106,14 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 
 <%ARGS>
 $Prefs => '/User/Prefs.html'
-$Focus => 'focus'
+#$Focus => 'focus'
+$Focus => ''
 $Title =>  'RT'
 $Code => undef
 $Refresh => 0
 $Why => undef
 #$BgColor => '#ffffff'
-#$ShowBar => 1
+$ShowBar => 1
 #$LoggedIn => 1
 $URL => undef
 </%ARGS>
