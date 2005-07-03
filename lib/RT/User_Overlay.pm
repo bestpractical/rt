@@ -665,11 +665,11 @@ sub ValidateEmailAddress {
 
 
 
-=item CanonicalizeEmailAddress ADDRESS
+=head2 CanonicalizeEmailAddress ADDRESS
 
-# CanonicalizeEmailAddress converts email addresses into canonical form.
-# it takes one email address in and returns the proper canonical
-# form. You can dump whatever your proper local config is in here
+CanonicalizeEmailAddress converts email addresses into canonical form.
+it takes one email address in and returns the proper canonical
+form. You can dump whatever your proper local config is in here
 
 =cut
 
@@ -692,14 +692,14 @@ sub CanonicalizeEmailAddress {
 
 
 
-=item CanonicalizeUserInfo HASH of ARGS
+=head2 CanonicalizeUserInfo HASH of ARGS
 
-# CanonicalizeUserInfo can convert all User->Create options.
-# it takes a hashref of all the params sent to User->Create and
-# returns that same hash, by default nothing is done.
+CanonicalizeUserInfo can convert all User->Create options.
+it takes a hashref of all the params sent to User->Create and
+returns that same hash, by default nothing is done.
 
-# This function is intended to allow users to have their info looked up via
-# an outside source and modified upon creation.
+This function is intended to allow users to have their info looked up via
+an outside source and modified upon creation.
 
 =cut
 
