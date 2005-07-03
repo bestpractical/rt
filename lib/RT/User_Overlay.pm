@@ -669,7 +669,9 @@ sub ValidateEmailAddress {
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
 it takes one email address in and returns the proper canonical
-form. You can dump whatever your proper local config is in here
+form. You can dump whatever your proper local config is in here.  Note
+that it may be called as a static method; in this case, $self may be
+undef.
 
 =cut
 

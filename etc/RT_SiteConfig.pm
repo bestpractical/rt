@@ -12,7 +12,7 @@
 # going to run into trouble. To check your SiteConfig file, use
 # this comamnd:
 #
-#   perl -C /path/to/your/etc/RT_SiteConfig.pm
+#   perl -c /path/to/your/etc/RT_SiteConfig.pm
 
 Set( $rtname, 'example.com');
 Set( $DevelMode => 1);
