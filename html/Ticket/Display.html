@@ -148,17 +148,16 @@ if ($ARGS{'id'} eq 'new') {
 # This code does automatic redirection if any updates happen. 
 # It doesn't work for the client.
 
-if (0) {
 
 
-$RT::Logger->crit("About to check for actions");
+$RT::Logger->crit("About to check for actions to prepare for a redirect");
 if (@Actions) {
     $RT::Logger->crit("We have actions. time to redirect"); 
     # We've done something, so we need to clear the decks to avoid 
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
     $session{"Actions"} = \@Actions;
-    $m->redirect($RT::WebPath."/Ticket/Display.html?id=".$TicketObj->id);
+    $m->redirect($RT::WebURL."/Ticket/Display.html?id=".$TicketObj->id);
     $RT::Logger->crit("Set up the redirect");
     $m->abort();
     $RT::Logger->crit("Aborted. Should never be called");
@@ -170,7 +169,6 @@ if (@Actions) {
 
 $RT::Logger->crit("We're past the point where any redirect happens");
 
-}
 
 $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
 	 TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
