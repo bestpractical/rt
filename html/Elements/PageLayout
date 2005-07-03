@@ -93,7 +93,7 @@
 </tr>
 <TR valign="top">
 <TD valign="top" width="100%" height="100%" class="mainbody" >
-<& /Elements/Callback, __CallbackName => 'BeforeBody',  %ARGS &>
+<& /Elements/Callback, _CallbackName => 'BeforeBody',  %ARGS &>
 %$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 <%INIT>
 
