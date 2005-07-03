@@ -1806,13 +1806,21 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    my $cf = $self->LoadCustomFieldByIdentifier($field);
+    if ($field) {
+        my $cf = $self->LoadCustomFieldByIdentifier($field);
 
-    unless ( $cf->Id ) {
-        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
+        # we were asked to search on a custom field we couldn't fine
+        unless ( $cf->id ) {
+            return RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+        }
+        return ( $cf->ValuesForObject($self) );
     }
-    
-    return($cf->ValuesForObject($self));
+
+    # we're not limiting to a specific custom field;
+    my $ocfs = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+    $ocfs->LimitToObject($self);
+    return $ocfs;
+
 }
 
 =head2 CustomField IDENTIFER
