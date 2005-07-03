@@ -60,7 +60,7 @@ sub test_get {
         is ($agent->{'status'}, 200, "Loaded $file");
 #        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
         ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
-        ok( $agent->{'content'} !~ /System error/i, "Didn't get a Mason compilation error on $file");
+        ok( $agent->{'content'} !~ /raw error/i, "Didn't get a Mason compilation error on $file");
         
 }
 
