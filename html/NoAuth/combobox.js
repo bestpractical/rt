@@ -201,7 +201,9 @@ function ComboBox_HideList(e) {
 }
 function ComboBox_SetVisibility(theList,isVisible) {
     var isIE = ( typeof( theList.dataSrc ) != "undefined" ); // dataSrc is an IE-only property which is unlikely to be supported elsewhere
-    if ( isIE ) {
+    var ua = navigator.userAgent.toLowerCase(); 
+    var isSafari = (ua.indexOf('safari') != - 1);
+    if ( isIE || isSafari) {
         if ( isVisible ) {
             theList.style.visibility = "visible";
         } else {
