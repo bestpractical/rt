@@ -1496,29 +1496,30 @@ sub Transactions {
 
 sub CustomFields {
     my $self = shift;
-    my $cfs = RT::CustomFields->new( $self->CurrentUser );
-    $cfs->UnLimit;
+    my $cfs  = RT::CustomFields->new( $self->CurrentUser );
 
     # XXX handle multiple types properly
-	$cfs->LimitToLookupType($self->CustomFieldLookupType);
-	$cfs->LimitToGlobalOrObjectId($self->_LookupId($self->CustomFieldLookupType));
+    $cfs->LimitToLookupType( $self->CustomFieldLookupType );
+    $cfs->LimitToGlobalOrObjectId(
+        $self->_LookupId( $self->CustomFieldLookupType ) );
 
     return $cfs;
 }
 
-# TODO: This _only_ works for RT::Class classes. it doesn't work, for example, for RT::FM classes. 
+# TODO: This _only_ works for RT::Class classes. it doesn't work, for example, for RT::FM classes.
 
 sub _LookupId {
     my $self = shift;
     my $lookup = shift;
     my @classes = ($lookup =~ /RT::(\w+)-/g);
 
+    my $object = $self;
     foreach my $class (reverse @classes) {
 	my $method = "${class}Obj";
-	$self = $self->$method;
+	$object = $object->$method;
     }
 
-    return $self->Id;
+    return $object->Id;
 }
 
 
@@ -1553,7 +1554,7 @@ FIELD can be a CustomField object OR a CustomField ID.
 
 Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
 deletes the old value. 
-If VALUE isn't a valid value for the custom field, returns 
+If VALUE is not a valid value for the custom field, returns 
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
 
 =cut
@@ -1572,22 +1573,10 @@ sub _AddCustomFieldValue {
         @_
     );
 
-   # {{{ Get a custom field object from the 'Field' parameter.
-   #
-   # XXX TODO: RT should be looking for a custom field for this object 
-   # with this name, if it's a name, rather than just "Load"
-   #
-    my $cf = RT::CustomField->new( $self->CurrentUser );
-    if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
-        $cf->Load( $args{'Field'}->id );
-    }
-    else {
-        $cf->Load( $args{'Field'} );
-    }
+    my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
 
     unless ( $cf->Id ) {
-        return ( 0,
-            $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
+        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
 
     my $OCFs = $self->CustomFields;
@@ -1601,8 +1590,7 @@ sub _AddCustomFieldValue {
             )
         );
     }
-    # }}}
-# Load up a ObjectCustomFieldValues object for this custom field and this ticket
+    # Load up a ObjectCustomFieldValues object for this custom field and this ticket
     my $values = $cf->ValuesForObject($self);
 
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
@@ -1732,7 +1720,7 @@ Deletes VALUE as a value of CustomField FIELD.
 
 VALUE can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
 
-If VALUE isn't a valid value for the custom field, returns 
+If VALUE is not a valid value for the custom field, returns 
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
 
 =cut
@@ -1746,18 +1734,11 @@ sub DeleteCustomFieldValue {
         @_
     );
 
-    my $cf = RT::CustomField->new( $self->CurrentUser );
-    if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
-        $cf->LoadById( $args{'Field'}->id );
-    }
-    else {
-        $cf->LoadById( $args{'Field'} );
-    }
+    my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
 
     unless ( $cf->Id ) {
-        return ( 0, $self->loc("Custom field not found") );
+        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
-
     my ( $val, $msg ) = $cf->DeleteValueForObject(
         Object  => $self,
         Id      => $args{'ValueId'},
@@ -1815,7 +1796,7 @@ sub FirstCustomFieldValue {
 =item CustomFieldValues FIELD
 
 Return a ObjectCustomFieldValues object of all values of the CustomField whose 
-id or Name is FIELD for this ticket.  
+id or Name is FIELD for this record.
 
 Returns an RT::ObjectCustomFieldValues object
 
@@ -1825,40 +1806,44 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+    my $cf = $self->LoadCustomFieldByIdentifier($field);
 
-    # If we've been handed a value that contains at least one non-digit,
-    # it's a name.  Resolve it into an id.
-    #
-    if ( defined $field && $field =~ /\D+/ ) {
-
-        # Look up the field ID.
-        my $cfs = RT::CustomFields->new( $self->CurrentUser );
-        $cfs->LimitToGlobalOrObjectId( $self->Id() );
-        $cfs->LimitToLookupType($self->CustomFieldLookupType);
-        $cfs->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $field );
-
-        if ( $cfs->First ) {
-            $field = $cfs->First->id;
-        }
-        else {
-
-            #We didn't find a custom field, but they wanted one. let's
-            # return an empty
-            return ($cf_values);
-        }
+    unless ( $cf->Id ) {
+        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
-
-    # If we now have a custom field id, let's limit things down
-    # If we don't have a custom field ID, the $cf_values object will return
-    #  all values
-    $cf_values->LimitToCustomField($field) if ($field);
-    $cf_values->LimitToObject($self);
-    $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-
-
-    return ($cf_values);
+    
+    return($cf->ValuesForObject($self));
 }
+
+=head2 CustomField IDENTIFER
+
+Find the custom field has id or name IDENTIFIER for this object.
+
+If no valid field is found, returns an empty RT::CustomField object.
+
+=cut
+
+sub LoadCustomFieldByIdentifier {
+    my $self = shift;
+    my $field = shift;
+    
+    my $cf = RT::CustomField->new($self->CurrentUser);
+
+    if ( UNIVERSAL::isa( $field, "RT::CustomField" ) ) {
+        $cf->LoadById( $field->id );
+    }
+    elsif ($field =~ /^\d+$/) {
+        $cf = RT::CustomField->new($self->CurrentUser);
+        $cf->Load($field); 
+    } else {
+
+        my $cfs = $self->CustomFields($self->CurrentUser);
+        $cfs->Limit(FIELD => 'Name', VALUE => $field);
+        $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
+    }
+    return $cf;
+}
+
 
 # }}}
 
