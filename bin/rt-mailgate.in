@@ -172,11 +172,14 @@ See C<man rt-mailgate> for more.
 =item C<--action>
 
 Specifies what happens to email sent to this alias.  The avaliable
-basic actions are: C<correspond>, C<comment>, C<take> and C<resolve>.
-You can execute two or more actions on a single message using a C<->
-separated list.  RT will execute the actions in the listed order.
-For example you can use C<take-comment>, C<correspond-resolve> or
-C<take-comment-resolve> as actions.
+basic actions are: C<correspond>, C<comment>.
+
+
+If you've set the RT configuration variable B<$RT::UnsafeEmailCommands>,
+C<take> and C<resolve> are also available.  You can execute two or more
+actions on a single message using a C<-> separated list.  RT will execute
+the actions in the listed order.  For example you can use C<take-comment>,
+C<correspond-resolve> or C<take-comment-resolve> as actions.
 
 Note that C<take> and C<resolve> actions ignore message text if used
 alone.  Include a  C<comment> or C<correspond> action if you want RT

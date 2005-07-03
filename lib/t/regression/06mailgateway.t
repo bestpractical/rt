@@ -51,7 +51,7 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
-use Test::More tests => 77;
+use Test::More tests => 57;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -422,6 +422,10 @@ ok ($tick2->Transactions->First->Content =~ $unistring, "It appears to be unicod
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
+=for later
+
+TODO: {
+
 # {{{ Check take and resolve actions
 
 # create ticket that is owned by nobody
@@ -453,7 +457,9 @@ ok( $status, 'successfuly changed owner: '. ($msg||'') );
 is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action take-correspond"), "Opened the mailgate - $@");
+
+    local $TODO = "Advanced mailgate actions require an unsafe configuration";
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [example.com \#$id] correspondence
@@ -489,6 +495,10 @@ $tick->Load( $id );
 is( $tick->Id, $id, 'load correct ticket');
 is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
 is( $tick->Transactions->Count, 7, 'no superfluous transactions');
+
+};
+
+=cut
 
 # }}}
 

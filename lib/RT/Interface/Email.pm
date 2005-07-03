@@ -807,7 +807,7 @@ EOT
                 return ( 0, "Message not recorded", $Ticket );
             }
         }
-        elsif ( $action =~ /^take$/i ) {
+        elsif ($RT::UnsafeEmailCommands && $action =~ /^take$/i ) {
             my ( $status, $msg ) = $Ticket->SetOwner( $CurrentUser->id );
             unless ($status) {
     
@@ -821,7 +821,7 @@ EOT
                 return ( 0, "Ticket not taken", $Ticket );
             }
         }
-        elsif ( $action =~ /^resolve$/i ) {
+        elsif ( $RT::UnsafeEmailCommands && $action =~ /^resolve$/i ) {
             my ( $status, $msg ) = $Ticket->SetStatus( 'resolved' );
             unless ($status) {
                 #Warn the sender that we couldn't actually submit the comment.
