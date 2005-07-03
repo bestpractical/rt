@@ -3,7 +3,7 @@ use strict;
 use WWW::Mechanize;
 use HTTP::Cookies;
 
-use Test::More tests => 35;
+use Test::More tests => 34;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -31,22 +31,6 @@ $agent->cookie_jar($cookie_jar);
 no warnings 'once';
 # get the top page
 login($agent, $user_obj);
-
-is ($agent->{'status'}, 200, "Loaded a page - $RT::WebURL");
-# {{{ test a login
-
-# follow the link marked "Login"
-
-ok($agent->{form}->find_input('user'));
-
-ok($agent->{form}->find_input('pass'));
-ok ($agent->{'content'} =~ /username:/i);
-$agent->field( 'user' => 'customer-'.$$ );
-$agent->field( 'pass' => 'customer' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
-is($agent->{'status'}, 200, "Fetched the page ok");
-ok($agent->{'content'} =~ /Logout/i, "Found a logout link");
 
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => '/Admin/',
@@ -133,22 +117,25 @@ ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing"
 sub login {
     my $agent = shift;
 
-my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
-$agent->get($url);
-is ($agent->{'status'}, 200, "Loaded a page - http://localhost".$RT::WebPath);
-# {{{ test a login
+    my $url = "http://localhost:" . $RT::WebPort . $RT::WebPath . "/";
+    $agent->get($url);
+    is( $agent->{'status'}, 200,
+        "Loaded a page - http://localhost" . $RT::WebPath );
 
-# follow the link marked "Login"
+    # {{{ test a login
 
-ok($agent->{form}->find_input('user'));
+    # follow the link marked "Login"
 
-ok($agent->{form}->find_input('pass'));
-ok ($agent->{'content'} =~ /username:/i);
-$agent->field( 'user' => $user_obj->Name);
-$agent->field( 'pass' => 'customer' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
-is($agent->{'status'}, 200, "Fetched the page ok");
-ok($agent->{'content'} =~ /Logout/i, "Found a logout link");
+    ok( $agent->{form}->find_input('user') );
+
+    ok( $agent->{form}->find_input('pass') );
+    ok( $agent->{'content'} =~ /username:/i );
+    $agent->field( 'user' => $user_obj->Name );
+    $agent->field( 'pass' => 'customer' );
+
+    # the field isn't named, so we have to click link 0
+    $agent->click(0);
+    is( $agent->{'status'}, 200, "Fetched the page ok" );
+    ok( $agent->{'content'} =~ /Logout/i, "Found a logout link" );
 }
 1;
