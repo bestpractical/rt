@@ -2588,7 +2588,8 @@ sub _AddLink {
         $other_ticket_uri->FromURI( $args{'Base'} );
     }
 
-    if ( $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
+    if ( defined $other_ticket_uri->Resolver and 
+         $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
         my $object = $other_ticket_uri->Resolver->Object;
 
         if (   UNIVERSAL::isa( $object, 'RT::Ticket' )
