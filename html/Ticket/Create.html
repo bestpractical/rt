@@ -207,13 +207,12 @@
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
-<table border="0">
-<tr><td align="RIGHT"><&|/l&>Starts</&>:</td><td><input size="10" name="Starts" value="<% $ARGS{Starts} %>"></td></tr>
-<tr><td align="RIGHT"><&|/l&>Due</&>:</td><td><input size="10" name="Due" value="<%
-$ARGS{Due}%>"></td></tr>
+<table>
+<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></td></tr>
 </table>
 </&>
-<br/>
+<br />
 </td>
 
 <td valign="TOP">
