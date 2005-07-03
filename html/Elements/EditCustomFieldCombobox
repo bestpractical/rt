@@ -49,7 +49,7 @@
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
 <& /Widgets/ComboBox,
-    Name    => $NamePrefix . $CustomField->Id . "-Values",
+    Name    => $NamePrefix . $CustomField->Id . "-Value",
     Default => $Default,
     Rows    => $Rows,
     Values  => [map {$_->Name} @{$CustomField->Values->ItemsArrayRef}],
