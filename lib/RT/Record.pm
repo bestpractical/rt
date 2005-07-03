@@ -918,7 +918,7 @@ sub Update {
         next if ( $value eq $self->$attribute() );
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
-        my ($prefix) = ref($self) =~ /RT::(\w+)/;
+        my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
 
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
