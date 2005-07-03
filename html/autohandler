@@ -74,6 +74,9 @@ my @TimeUnitFields = grep { /-TimeUnits$/ } keys %ARGS;
 foreach my $field (@TimeUnitFields) { 
     next unless ($field =~ /^(.*?)-TimeUnits$/i);
     my $local = $1;
+    $ARGS{$local} =~ s|\b (\d* \s+) (\d+)/(\d+) \b
+                      |$1 + ($3 == 0 ? 0 : ($2 / $3))
+                      |xe;
     if ($ARGS{$field} =~ /hours/i) {
         $ARGS{$local} *= 60;
     }
