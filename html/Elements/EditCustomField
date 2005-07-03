@@ -51,6 +51,9 @@ if ($Object) {
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');
 }
 my $Type = $CustomField->Type;
+
+return unless ($Type); # if we can't see the type, all hell will break loose.
+
 my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 and $Object and $Values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
