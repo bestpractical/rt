@@ -722,9 +722,9 @@ sub SetReferencesHeaders {
     my $attachments = $self->TransactionObj->Message;
 
     if ( my $top = $attachments->First() ) {
-        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') );  
-        @references = split(/\s+/m, $top->GetHeader('References') );  
-        @msgid = split(/\s+/m,$top->GetHeader('Message-Id')); 
+        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') ||'');  
+        @references = split(/\s+/m, $top->GetHeader('References')||'' );  
+        @msgid = split(/\s+/m,$top->GetHeader('Message-Id') || ''); 
     }
     else {
         return (undef);
