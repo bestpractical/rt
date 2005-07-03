@@ -52,17 +52,30 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>
 </tr>
-% my $i;
+% my ($i,$total);
 % while (my $key = shift @keys) {
 % $i++;
+% my $value = shift @values;
+% $total += $value;
 <tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
 <td class="label collection-as-table">
 <%$key%>
 </td>
 <td class="value collection-as-table">
-<%shift @values%>
+<%$value%>
 </td>
 </tr>
 % }
+
+%$i++;
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
+<td class="label collection-as-table">
+<%loc('Total')%>
+</td>
+<td class="value collection-as-table">
+<%$total%>
+</td>
+</tr>
+
 </table>
 
