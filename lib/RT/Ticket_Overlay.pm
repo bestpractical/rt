@@ -2540,6 +2540,8 @@ ok ($id,$msg);
 ok ($id,$msg);
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
+($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => -1);
+ok(!$id,$msg);
 
 =end testing 
 
@@ -2588,8 +2590,15 @@ sub _AddLink {
         $other_ticket_uri->FromURI( $args{'Base'} );
     }
 
-    if ( defined $other_ticket_uri->Resolver and 
-         $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
+    unless ( $other_ticket_uri->Resolver && $other_ticket_uri->Scheme ) {
+	my $msg = $args{'Target'} ? $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'})
+          : $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
+        $RT::Logger->warning( "$self $msg\n" );
+
+        return( 0, $msg );
+    }
+
+    if ( $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
         my $object = $other_ticket_uri->Resolver->Object;
 
         if (   UNIVERSAL::isa( $object, 'RT::Ticket' )
