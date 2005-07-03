@@ -71,14 +71,13 @@
 </UL>
 % }
 
-<form action="/Admin/CustomFields/index.html" method="GET">
-Filter to fields that apply to: 
+<form action="<%$RT::WebPath%>/Admin/CustomFields/index.html" method="GET">
+<&|/l&>Only show custom fields for:</&>
 <select name="type">
 % for (@types) {
 <option value="<% $_->[1] %>"><% $_->[0] %></option>
 % }
-</select> 
-<input type="submit" value="Filter" />
+</select> <input type="submit" value="<%loc('Go')%>" />
 </form>
 
 <%args>
