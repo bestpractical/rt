@@ -792,6 +792,27 @@ sub BriefDescription {
         my $self = shift;
         return $self->loc("Transaction [_1] purged", $self->Data);
     },
+    AddReminder => sub {
+        my $self = shift;
+        my $ticket = RT::Ticket->new($self->CurrentUser);
+        $ticket->Load($self->NewValue);
+        return $self->loc("Reminder '[_1]' added", $ticket->Subject);
+    },
+    OpenReminder => sub {
+        my $self = shift;
+        my $ticket = RT::Ticket->new($self->CurrentUser);
+        $ticket->Load($self->NewValue);
+        return $self->loc("Reminder '[_1]' reopened", $ticket->Subject);
+    
+    },
+    ResolveReminder => sub {
+        my $self = shift;
+        my $ticket = RT::Ticket->new($self->CurrentUser);
+        $ticket->Load($self->NewValue);
+        return $self->loc("Reminder '[_1]' completed", $ticket->Subject);
+    
+    
+    }
 );
 
 # }}}

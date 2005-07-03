@@ -9,29 +9,19 @@ $Ticket = LoadTicket($id) if ($id);
 
 my $request_args = $m->request_args();
 
-
 my $reminder_collection = $Ticket->Reminders->Collection;
 
-if ($request_args->{'update-reminders'}) {
-    while (my $reminder = $reminder_collection->Next) {
-        if ($reminder->Status ne 'resolved'   
-            && $request_args->{'Complete-Reminder-'.$reminder->id}) {
-            $reminder->SetStatus('resolved');
-        } elsif ($reminder->Status eq 'resolved' && ! $request_args->{'Complete-Reminder-'.$reminder->id}) {
-            $reminder->SetStatus('open');
+if ( $request_args->{'update-reminders'} ) {
+    while ( my $reminder = $reminder_collection->Next ) {
+        if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
+
+            $Ticket->Reminders->Resolve($reminder);
+        }
+        elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
+            $Ticket->Reminders->Open($reminder);
         }
     }
 }
-
-
-foreach my $arg (keys %$request_args) {
-    if ($arg =~ /Complete-Reminder-(\d+)$/) {
-        my $reminder = LoadTicket($1);
-    }
-
-
-}
-
 
 if ( $request_args->{'NewReminder-Subject'} ) {
     my $due_obj = RT::Date->new( $session{'CurrentUser'} );
@@ -42,7 +32,7 @@ if ( $request_args->{'NewReminder-Subject'} ) {
         PREFER_FUTURE => 1
     );
     $due_obj->Set( Value => $date, Format => 'unix' );
-    my ( $id, $msg, $txnid ) = $Ticket->Reminders->Add(
+    my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
 
         Subject => $request_args->{'NewReminder-Subject'},
         Owner   => $request_args->{'NewReminder-Owner'},
@@ -52,27 +42,25 @@ if ( $request_args->{'NewReminder-Subject'} ) {
 
 # We've made changes, let's reload our search
 
-$reminder_collection = $Ticket->Reminders->Collection; 
+$reminder_collection = $Ticket->Reminders->Collection;
 </%init>
-<input type="hidden" name="id" value="<%$Ticket->id%>" />
+<input type="hidden" name="id" value="<% $Ticket->id %>" />
 <input type="hidden" name="update-reminders" value="1" />
 % while (my $reminder = $reminder_collection->Next) {
-% if ($reminder->Status eq 'resolved' && !$ShowCompleted) {
+%   if ($reminder->Status eq 'resolved' && !$ShowCompleted) {
 <input type="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" />
-% } else {
+%   } else {
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
-% }
+%   }
 % }
 <br />
 <br />
 <&|/l&>New reminder:</&><br />
 <& SELF:NewReminder, Ticket => $Ticket &>
-
 <%method NewReminder>
 <%args>
 $Ticket
 </%args>
-
 <div class="horizontal">
 <label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label> 
 <input type="text" size="15" name="NewReminder-Subject">
@@ -82,11 +70,10 @@ $Ticket
 <& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj &>
 </div>
 <div class="horizontal">
-<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</l> <&|/l&>(yyyy/mm/dd)</&>:</label> 
+<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 
 <input type="text" size="10" name="NewReminder-Due">
 </div>
 </%method>
-
 <%method ShowEntry>
 <%args>
 $Reminder
