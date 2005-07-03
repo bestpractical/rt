@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 use strict;
-#use warnings FATAL => 'all';
-use Test::More tests => 130;
+use warnings FATAL => 'all';
+use Test::More tests => 131;
 
 use RT;
 RT::LoadConfig();
@@ -18,7 +18,8 @@ while (my $ocf = $object_cfs->Next) {
 
 
 my $queue = RT::Queue->new( $RT::SystemUser );
-$queue->Create( Name => 'RecordCustomFields' );
+$queue->Create( Name => 'RecordCustomFields-'.$$ );
+ok ($queue->id, "Created the queue");
 
 my $ticket = RT::Ticket->new( $RT::SystemUser );
 $ticket->Create(
@@ -35,19 +36,18 @@ my $cfvs = $ticket->CustomFieldValues;
 is( $cfvs->Count, 0 );
 is( $ticket->FirstCustomFieldValue, undef );
 
-
 my $local_cf1 = RT::CustomField->new( $RT::SystemUser );
-$local_cf1->Create( Name => 'RecordCustomFields1', Type => 'SelectSingle', Queue => $queue->id );
+$local_cf1->Create( Name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 $local_cf1->AddValue( Name => 'RecordCustomFieldValues11' );
 $local_cf1->AddValue( Name => 'RecordCustomFieldValues12' );
 
 my $local_cf2 = RT::CustomField->new( $RT::SystemUser );
-$local_cf2->Create( Name => 'RecordCustomFields2', Type => 'SelectSingle', Queue => $queue->id );
+$local_cf2->Create( Name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues21' );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues22' );
 
 my $global_cf3 = RT::CustomField->new( $RT::SystemUser );
-$global_cf3->Create( Name => 'RecordCustomFields3', Type => 'SelectSingle', Queue => 0 );
+$global_cf3->Create( Name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues31' );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues32' );
 
@@ -113,7 +113,6 @@ SKIP: {
 	}
 	
 }
-
 # Add some values to our custom fields
 for (@custom_fields) {
 	# this should be tested elsewhere
@@ -130,15 +129,15 @@ my $test_add_delete_cycle = sub {
 	
 	# does it exist?
 	$cfvs = $ticket->CustomFieldValues;
-	is( $cfvs->Count, 3 );
+	is( $cfvs->Count, 3, "We found all three custom fields on our ticket" );
 	for (@custom_fields) {
 		$cfvs = $ticket->CustomFieldValues( $_->id );
-		is( $cfvs->Count, 1 );
+		is( $cfvs->Count, 1 , "we found one custom field when searching by id");
 	
 		$cfvs = $ticket->CustomFieldValues( $_->Name );
-		is( $cfvs->Count, 1 );
-		is( $ticket->FirstCustomFieldValue( $_->id ), 'Foo' );
-		is( $ticket->FirstCustomFieldValue( $_->Name ), 'Foo' );
+		is( $cfvs->Count, 1 , " We found one custom field when searching by name for " . $_->Name);
+		is( $ticket->FirstCustomFieldValue( $_->id ), 'Foo' , "first value by id is foo");
+		is( $ticket->FirstCustomFieldValue( $_->Name ), 'Foo' , "first value by name is foo");
 	}
 	# because our CFs are SingleValue then new value addition should override
 	for (@custom_fields) {
@@ -179,11 +178,11 @@ $test_add_delete_cycle->( sub { return $_[0]->id } );
 # lets test cycle via CF object reference
 $test_add_delete_cycle->( sub { return $_[0] } );
 
-SKIP: {
+#SKIP: {
 #	skip "TODO: should we add CF values to objects via CF Name?", 48;
 # names are not unique
 	# lets test cycle via CF Name
 #	$test_add_delete_cycle->( sub { return $_[0]->Name } );
-}
+#}
 
 
