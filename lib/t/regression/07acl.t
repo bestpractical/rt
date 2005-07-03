@@ -10,10 +10,9 @@ RT::Init();
 
 # Create a user with basically no rights, to start.
 my $user_obj = RT::User->new($RT::SystemUser);
-my ($ret, $msg) = $user_obj->LoadOrCreateByEmail($$.'-customer@example.com');
-ok($ret, 'ACL test user created'. $user_obj->Name);
+my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer-'.$$.'@example.com');
+ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer-'.$$);
-ok($user_obj->Name, "The user's name is ".$user_obj->Name);
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 ok($ret, "ACL test password set. $msg");
@@ -32,6 +31,22 @@ $agent->cookie_jar($cookie_jar);
 no warnings 'once';
 # get the top page
 login($agent, $user_obj);
+
+is ($agent->{'status'}, 200, "Loaded a page - $RT::WebURL");
+# {{{ test a login
+
+# follow the link marked "Login"
+
+ok($agent->{form}->find_input('user'));
+
+ok($agent->{form}->find_input('pass'));
+ok ($agent->{'content'} =~ /username:/i);
+$agent->field( 'user' => 'customer-'.$$ );
+$agent->field( 'pass' => 'customer' );
+# the field isn't named, so we have to click link 0
+$agent->click(0);
+is($agent->{'status'}, 200, "Fetched the page ok");
+ok($agent->{'content'} =~ /Logout/i, "Found a logout link");
 
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => '/Admin/',
@@ -113,7 +128,7 @@ ok ($grantid,$grantmsg);
 $agent->reload();
 ok($agent->form_name('BuildQuery'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('ValueOfActor');
-ok(grep(/customer/, $input->value_names()), "Found self in the actor listing");
+ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
 sub login {
     my $agent = shift;
