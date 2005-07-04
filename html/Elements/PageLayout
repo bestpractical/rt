@@ -72,7 +72,7 @@
 % my $count     = 0;
 % my $class     = { };
 % 
-  <ul id="page-menu"<% ($actions || $subactions) && q[ class="actions-present"] | n %>>
+  <ul id="page-menu"<% (($actions && %$actions) || ($subactions && %$subactions)) && q[ class="actions-present"] | n %>>
     <div><div><div>
 % if ($page_tabs) {
 %     foreach my $tab (sort keys %{$page_tabs}) {
@@ -115,7 +115,7 @@
     </div></div></div>
   </ul>
 
-% if ($actions or $subactions) {
+% if (($actions && %$actions) || ($subactions && %$subactions)) {
   <ul id="actions-menu">
     <div><div><div>
 % $sep       = 0;
@@ -125,7 +125,7 @@
 %
 % for my $type ($actions, $subactions) {
 %
-% if ($type) {
+% if ($type && %$type) {
 %     foreach my $action (sort keys %{$type}) {
 %         $count++;
 %
