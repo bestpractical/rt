@@ -53,8 +53,11 @@
 % if ($Refresh > 0) {
     <meta http-equiv="refresh" content="<%$Refresh%>" />
 % }
-<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
-<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/main.css" type="text/css">
+<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png" />
+<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/main.css" type="text/css" />
+% if ($RSSAutoDiscovery) {
+    <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
+% }
 <script type="text/javascript" src="<%$RT::WebPath%>/rt.js"></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
   </head>
@@ -104,4 +107,5 @@ $Why => undef
 $ShowBar => 1
 #$LoggedIn => 1
 $URL => undef
+$RSSAutoDiscovery => undef
 </%ARGS>

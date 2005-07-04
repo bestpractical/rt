@@ -47,7 +47,7 @@
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 $Tickets->FromSQL($ARGS{'Query'});
-$r->content_type('application/rdf+xml');
+$r->content_type('application/rss+xml');
 
 
 

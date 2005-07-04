@@ -43,7 +43,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'}, 
+    RSSAutoDiscovery => $RSSFeedURL &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Results.html".$QueryString, 
     Title => $title,
@@ -80,8 +81,8 @@
 <a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br/>
 <a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br/>
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
-<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br/>
+<a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
+<a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br/>
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
 % my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
 %while (my $var = shift (@vars)) {
@@ -150,7 +151,8 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                OrderBy => $OrderBy,
                                Order => $Order,
                                Page => $Page);
-
+my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
+my $RSSFeedURL = "$RT::WebPath/Search/Results.rdf$ShortQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
