@@ -46,6 +46,7 @@
 <ul<% !$level ? ' id="system-menu"' : ''|n %><% $menu_class ? qq[ class="$menu_class"] : ''|n %>>
 <div>
 % my $sep         = 0;
+% my $postsep     = 0;
 % my $accesskey   = 1;
 % 
 % $count = 0;
@@ -60,7 +61,7 @@
 %     $path    =~ s#/index.html$##gi;
 %     $current =~ s#/index.html$##gi;
 %     
-%     $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+%     $sep     = $toptabs->{$tab}->{'separator'} ? 1 : 0;
 %
 %     $class->{a} = $path eq $current ? ' class="selected"' : undef;
 %
@@ -68,20 +69,27 @@
 %     push @li, 'first'
 %            if $count == 1;
 %
-%     push @li, 'separator'
+%     push @li, 'pre-separator'
 %            if $sep;
+%
+%     push @li, 'post-separator'
+%            if $postsep;
 %
 %     $class->{li} = join ' ', @li;
 %     
-%
-  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
+  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
 %# Second-level items
 %     if ($toptabs->{$tab}->{'subtabs'}) {
           <& /Elements/Menu, level => $level+1, 
                              current_toptab => $toptabs->{$tab}->{'current_subtab'},
                              toptabs => $toptabs->{$tab}->{'subtabs'} &>
-  </li>
 %     }
+  </li>
+%     if ($sep) {
+  <li class="separator">&#183;&#183;&#183;</li>
+%     }
+%
+%     $postsep = $sep;
 % }
 </div>
 </ul>

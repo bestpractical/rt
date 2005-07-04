@@ -67,8 +67,10 @@
   <div class="clear"></div>
   <h1><%$title%></h1>
 
-% my $count = 0;
-% my $class = {};
+% my $sep       = 0;
+% my $postsep   = 0;
+% my $count     = 0;
+% my $class     = { };
 % 
   <ul id="page-menu"<% ($actions || $subactions) && q[ class="actions-present"] | n %>>
     <div><div><div>
@@ -83,7 +85,7 @@
 %         $path    =~ s#/index.html$##gi;
 %         $current =~ s#/index.html$##gi;
 %         
-%         my $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+%         $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
 %
 %         $class->{a} = $path eq $current ? ' class="selected"' : undef;
 %
@@ -91,13 +93,21 @@
 %         push @li, 'first'
 %                if $count == 1;
 %
-%         push @li, 'separator'
+%         push @li, 'pre-separator'
 %                if $sep;
+%
+%         push @li, 'post-separator'
+%                if $postsep;
 %
 %         $class->{li} = join ' ', @li;
 %     
 %
-    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
+    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
+%
+%         if ($sep) {
+    <li class="separator">&#183;&#183;&#183;</li>
+%         }
+%         $postsep = $sep;
 %     }
 % } else {
 &nbsp;
@@ -108,36 +118,44 @@
 % if ($actions or $subactions) {
   <ul id="actions-menu">
     <div><div><div>
-% $count = 0;
+% $sep       = 0;
+% $postsep   = 0;
+% $count     = 0;
+% $class     = { };
 %
-% if ($actions) {
-%     my @actions;
-%     foreach my $action (sort keys %{$actions}) {
+% for my $type ($actions, $subactions) {
+%
+% if ($type) {
+%     foreach my $action (sort keys %{$type}) {
 %         $count++;
-    <li<% $count == 1 ? q[ class="first"] : '' |n %>><% $count > 1 && "&#183; "|n%>
-%         if ($actions->{"$action"}->{'html'}) {
-<% $actions->{"$action"}->{'html'} | n %>
-%         } elsif ($actions->{$action}->{separator}) {
-&#183;
+%
+%         $sep = $type->{$action}->{'separator'} ? 1 : 0;
+%
+%         my @li;
+%         push @li, 'first'
+%                if $count == 1;
+%
+%         push @li, 'pre-separator'
+%                if $sep;
+%
+%         push @li, 'post-separator'
+%                if $postsep;
+%
+%         $class->{li} = join ' ', @li;
+%
+    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%>
+%         if ($type->{"$action"}->{'html'}) {
+      <% $type->{"$action"}->{'html'} | n %>
 %         } else {
-<a href="<%$RT::WebPath%>/<%$actions->{$action}->{'path'}%>"><%$actions->{$action}->{'title'}%></a>
+      <a href="<%$RT::WebPath%>/<%$type->{$action}->{'path'}%>"><%$type->{$action}->{'title'}%></a>
 %         }
-</li>
+    </li>
+%         if ($sep) {
+    <li class="separator">&#183;&#183;&#183;</li>
+%         }
+%         $postsep = $sep;
 %     }
 % }
-%
-% if ($subactions) {
-%     my $sep;
-%     if ($count) {
-%         $sep = 1;
-<li class="separator">&#183;&#183;&#183;</li>
-%     }
-%
-%     my @actions;
-%     foreach my $action (sort keys %{$subactions}) {
-%         $count++;
-<li<% $count == 1 ? q[ class="first"] : '' |n %>><% $count > 1 && !$sep && "&#183; "|n%><% $subactions->{"$action"}->{'html'} | n %></li>
-%     }
 % }
     </div></div></div>
   </ul>
@@ -177,7 +195,8 @@ if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {
 </%INIT>
 
 %# There's probably a better way to do this that involves three times as
-%# much work and redoing the whole menu/tab system...
+%# much work and redoing the whole menu/tab system... which would seem a
+%# bit out of scope.
 %#
 %# This function recurses through the menu and returns the second to
 %# last menu, that is, the menu holding the last reference to

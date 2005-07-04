@@ -183,7 +183,10 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 if (   defined $actions->{A} || defined $actions->{B} || defined $actions->{C}
     && defined $actions->{E} || defined $actions->{F} || defined $actions->{G}) {
-    $actions->{D} = { separator => 1 };
+    
+    if    (defined $actions->{C}) { $actions->{C}->{separator} = 1 }
+    elsif (defined $actions->{B}) { $actions->{B}->{separator} = 1 }
+    elsif (defined $actions->{A}) { $actions->{A}->{separator} = 1 }
 }
 
 my $args;
