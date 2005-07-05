@@ -1028,7 +1028,7 @@ sub SetPassword {
     my $password = shift;
 
     unless ( $self->CurrentUserCanModify('Password') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, $self->loc('Password: Permission Denied') );
     }
 
     if ( !$password ) {
@@ -1038,9 +1038,11 @@ sub SetPassword {
         return ( 0, $self->loc("Password needs to be at least [_1] characters long", $RT::MinimumPasswordLength) );
     }
     else {
+        my $new = !$self->HasPassword;
         $password = $self->_GeneratePassword($password);
         my ( $val, $msg ) = $self->SUPER::SetPassword($password);
         if ($val) {
+            return ( 1, $self->loc("Password set") ) if $new;
             return ( 1, $self->loc("Password changed") );
         }
         else {
