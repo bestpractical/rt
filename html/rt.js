@@ -9,6 +9,7 @@ function hideshow(num) {
         chunk.style.tag = chunk.style.display;
         chunk.style.display = "none";
     }
+    return false;
 }   
 
 function openCalWindow(field) {
