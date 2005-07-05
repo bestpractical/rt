@@ -88,8 +88,9 @@ use RT::Scrips;
 
 Create a new transaction.
 
-This routine should _never_ be called anything other Than RT::Ticket. It should not be called 
-from client code. Ever. Not ever.  If you do this, we will hunt you down. and break your kneecaps.
+This routine should _never_ be called by anything other than RT::Ticket. 
+It should not be called 
+from client code. Ever. Not ever.  If you do this, we will hunt you down and break your kneecaps.
 Then the unpleasant stuff will start.
 
 TODO: Document what gets passed to this
