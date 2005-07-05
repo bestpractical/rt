@@ -70,6 +70,19 @@ form .label, form label {
     font-weight: bold;
 }
 
+.submit {
+    font-weight: bold;
+    color: #a00;
+    font-size: 1.1em;
+    padding: 0.3em 1.5em 0 1.5em;
+    border-top: 1px solid #930;
+    margin: 1.5em 0 0 0;
+}
+
+.submit .buttons { float: right; }
+.submit .extra-buttons { float: left; }
+.submit .button { font-size: 0.9em; }
+
 <%init>
     $r->content_type('text/css');
 </%init>
