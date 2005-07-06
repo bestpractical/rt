@@ -236,8 +236,12 @@ sub DeleteAttribute {
 
 =head2 FirstAttribute NAME
 
-Returns the value of the first attribute with the matching name
-for this object, or C<undef> if no such attributes exist.
+Returns the first attribute with the matching name for this object (as an
+L<RT::Attribute> object), or C<undef> if no such attributes exist.
+
+Note that if there is more than one attribute with the matching name on the
+object, the choice of which one to return is basically arbitrary.  This may be
+made well-defined in the future.
 
 =cut
 
