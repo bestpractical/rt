@@ -147,7 +147,7 @@
 %         if ($type->{"$action"}->{'html'}) {
       <% $type->{"$action"}->{'html'} | n %>
 %         } else {
-      <a href="<%$RT::WebPath%>/<%$type->{$action}->{'path'}%>"><%$type->{$action}->{'title'}%></a>
+      <a href="<%$RT::WebPath%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
 %         }
     </li>
 %         if ($sep) {

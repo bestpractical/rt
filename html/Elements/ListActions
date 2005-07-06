@@ -43,19 +43,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($actions[0] ) {
+% if (@actions) {
 <&| /Widgets/TitleBox, title => loc('Results') &>
-<ul>
+  <ul class="action-results">
 % foreach my $action (@actions) {
-% next unless ($action);
-% my $skip = 0;
-% $m->comp('/Elements/Callback', _CallbackName => 'ModifyRow', row => \$action, skip => \$skip, %ARGS);
-% next if $skip;
-<li><%$action%></li>
+%     next unless $action;
+%     my $skip = 0;
+%     $m->comp('/Elements/Callback', _CallbackName => 'ModifyRow', row => \$action, skip => \$skip, %ARGS);
+%     next if $skip;
+    <li><%$action%></li>
 % }
-</ul>
+  </ul>
 </&>
-<br />
 % }
 <%init>
 @actions = grep (/./,@actions);

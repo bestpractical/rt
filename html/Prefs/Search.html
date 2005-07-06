@@ -52,15 +52,17 @@
 &>
 <& /Elements/ListActions, actions => \@actions &>
 % if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-<&|/l&>You can also edit the predefined search itself</&>:
-<a href="<% $RT::WebPath.'/Search/Build.html?'.
-	$m->comp('/Elements/QueryString',
-		 LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+<p>
+  <&|/l&>You can also edit the predefined search itself</&>:
+  <a href="<% $RT::WebPath.'/Search/Build.html?'.
+	  $m->comp('/Elements/QueryString',
+		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+</p>
 % }
-<br/>
-<form method="POST" action="Search.html" name="BuildQuery">
-<input type="hidden" name="name" value="<%$ARGS{name}%>">
-<input type="hidden" name="Format" value="<%$ARGS{Format}%>">
+
+<form method="post" action="Search.html" name="BuildQuery">
+<input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
+<input type="hidden" name="Format" value="<%$ARGS{Format}%>" class="hidden" />
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
