@@ -1006,6 +1006,7 @@ sub UpdateCustomFields {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
+	next if $arg =~ /-Magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};
         foreach
