@@ -61,14 +61,7 @@
     <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/util.js"></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
   </head>
-  <body
-% if ($Focus) {
-onload="
-    var tmp = (document.getElementsByName('<% $Focus %>'));
-    if (tmp.length > 0) tmp[tmp.length-1].focus();
-"
-% }
->
+  <body onload="<% $onload |n %><% $Focus && qq[ setFocus('$Focus');] |n %>">
 
 % if ($ShowBar) {
 <div id="quickbar">
@@ -108,4 +101,5 @@ $ShowBar => 1
 #$LoggedIn => 1
 $URL => undef
 $RSSAutoDiscovery => undef
+$onload => undef
 </%ARGS>

@@ -51,7 +51,7 @@
 }
 
 .titlebox .content {
-    margin: 0 2em 0 2em;
+    margin: 1em 2em 0 2em;
 }
 
 .titlebox .title {
@@ -67,23 +67,34 @@
     letter-spacing: -9999em;
     height: 1em;
     width: 20px;
-    background: url(<%$RT::WebImagesURL%>/css/rollup-arrow.png) no-repeat bottom center;
+    background: url(<%$RT::WebImagesURL%>/css/rollup-arrow.gif) no-repeat bottom center;
     position: relative;
     left: -2em;
     float: left;
 }
 
-.titlebox .title :link,
-.titlebox .title :visited
+.titlebox .title span a.rolled-up {
+    background-image: url(<%$RT::WebImagesURL%>/css/rolldown-arrow.gif);
+}
+
+#body .titlebox .title :link,
+#body .titlebox .title :visited
 {
     color: #930;
     text-decoration: none;
 }
 
-.titlebox .title :link:hover,
-.titlebox .title :visited:hover
+#body .titlebox .title :link:hover,
+#body .titlebox .title :visited:hover
 {
     text-decoration: underline;
+}
+
+.evenline { background-color: white; }
+.oddline { background-color: #ddd; }
+
+td {
+    padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
 <%init>

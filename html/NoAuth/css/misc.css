@@ -112,7 +112,7 @@ html>body #quickbar #topactions form .button { padding: 2px; }
     padding: 3px;
 }
 
-.hide, .hidden { display: none; }
+.hide, .hidden { display: none !important; }
 
 <%init>
     $r->content_type('text/css');
