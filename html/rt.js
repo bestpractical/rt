@@ -1,13 +1,15 @@
 % $r->content_type('application/x-javascript');
 
-function hideshow(num) {
-    idstring = "element-" + num;
-    chunk = document.getElementById(idstring);
-    if ( chunk.style.display == "none")  {
-    chunk.style.display = chunk.style.tag;
-    } else {
-        chunk.style.tag = chunk.style.display;
-        chunk.style.display = "none";
+function hideshow(id) {
+    e = document.getElementById(id);
+    
+    if (e.className.match(/\bhidden\b/))
+        e.className = e.className.replace(/\s?\bhidden\b/, '');
+    else {
+        if (e.className)
+            e.className += ' hidden';
+        else
+            e.className = 'hidden';
     }
     return false;
 }   

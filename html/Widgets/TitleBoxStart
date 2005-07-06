@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="titlebox">
   <div class="title">
-    <span><a href="#" onclick="return hideshow('<%$id%>');">^</a></span>
+    <span><a href="#" onclick="return hideshow('element-<%$id%>');">^</a></span>
     <% $title_href && qq[<a $title_class href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%>
   </div>
   <div class="content" id="element-<%$id%>">
