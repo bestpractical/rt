@@ -164,7 +164,7 @@ $self => undef
 
 <%method current>
 % for (@{$self->{Current}}) {
-<input type="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>">
+<input type="hidden" class="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>">
 % }
 <%INIT>
 </%INIT>
@@ -180,9 +180,9 @@ $self => undef
 onSubmit="list_<% $name %>.selectAll();"
 % }
 >
-<input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
+<input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
-<input type="hidden" name="fromjs" value="0">
+<input type="hidden" class="hidden" name="fromjs" value="0">
 <&|/l&>Available</&>:
 <br>
 <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">

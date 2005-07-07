@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="POST" action="Modify.html" enctype="multipart/form-data">
-<input type="HIDDEN" name="id" value="<%$TicketObj->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>">
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>

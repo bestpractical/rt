@@ -46,7 +46,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form METHOD=GET ACTION="Templates.html">
-<input TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+<input type="hidden" class="hidden" NAME="id" VALUE="<%$id%>">
 
 % if ($Templates->Count == 0 ) {
 <p><i><&|/l&>(No templates)</&></i></p>

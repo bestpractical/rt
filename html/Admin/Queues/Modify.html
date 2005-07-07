@@ -54,9 +54,9 @@
 
 <form action="<%$RT::WebPath%>/Admin/Queues/Modify.html" method="POST">
 %if ($Create ) { 
-<input type="HIDDEN" name="id" value="new">
+<input type="hidden" class="hidden" name="id" value="new">
 % } else {
-<input type="HIDDEN" name="id" value="<%$QueueObj->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>">
 % }
 
 <table>
@@ -101,7 +101,7 @@
 <tr>
 <td>
 </td>
-<td colspan="4"><input type="HIDDEN" name="SetEnabled" value="1">
+<td colspan="4"><input type="hidden" class="hidden" name="SetEnabled" value="1">
 <input type="CHECKBOX" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this queue)</&><br/>
 <& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
 </td>

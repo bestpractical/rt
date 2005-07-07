@@ -47,8 +47,8 @@
 
   
 <form METHOD=POST ACTION="Scrip.html">
-<input type="hidden" name="id" value="<%$id%>">
-<input type="hidden" name="Queue" value="<%$Queue%>">
+<input type="hidden" class="hidden" name="id" value="<%$id%>">
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>">
 <&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
 <table>
 <tr>

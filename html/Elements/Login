@@ -97,11 +97,11 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 %  if (($key ne 'user') and ($key ne 'pass')) {
 % 	if (ref($ARGS{$key}) =~ /ARRAY/) {
 % 		foreach $val (@{$ARGS{$key}}) {
-<input type="hidden" name="<%$key %>" value="<% $val %>">
+<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>">
 % 		}
 % 	}
 %	else {
-<input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
+<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
 % 	}
 %  }
 % }

@@ -54,9 +54,9 @@
 
 <form action="<%$RT::WebPath%>/Admin/Users/Modify.html" method="POST" enctype="multipart/form-data">
 %if ($Create) {
-<input type="HIDDEN" name="id" value="new">
+<input type="hidden" class="hidden" name="id" value="new">
 % } else {
-<input type="HIDDEN" name="id" value="<%$UserObj->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>">
 % }
 <table width="100%" border="0">
 <tr>
@@ -104,12 +104,12 @@
 </&>
 <br/>
 <&| /Widgets/TitleBox, title => loc('Access control') &>
-<input type="HIDDEN" name="SetEnabled" value="1">
+<input type="hidden" class="hidden" name="SetEnabled" value="1">
 <input type="CHECKBOX" name="Enabled" value="1" <%$EnabledChecked%>>
 <&|/l&>Let this user access RT</&><br/>
 
 
-<input type="HIDDEN" name="SetPrivileged" value="1">
+<input type="hidden" class="hidden" name="SetPrivileged" value="1">
 <input type="CHECKBOX" name="Privileged" value="1" <%$PrivilegedChecked%>> <&|/l&>Let this user be granted rights</&><br/>
 		    
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {

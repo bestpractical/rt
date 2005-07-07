@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
+<input type="hidden" class="hidden" NAME="CheckACL"  VALUE="<%$ACLDesc%>">
      <table BORDER=0>
 <tr>
 <td valign=top width="180" align="left"> 

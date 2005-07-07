@@ -51,7 +51,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="POST" action="GroupRights.html">
-    <input type="HIDDEN" name="id" value="<% $GroupObj->id %>">
+    <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>">
       
 <&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
       

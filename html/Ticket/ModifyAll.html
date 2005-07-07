@@ -52,7 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="POST" action="ModifyAll.html" enctype="multipart/form-data">
-<input type="HIDDEN" name="id" value="<%$Ticket->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>">
 
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>

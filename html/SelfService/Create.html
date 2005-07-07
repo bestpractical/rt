@@ -46,7 +46,7 @@
 <& Elements/Header, Title => loc("Create a ticket") &>
 
 <form action="Display.html" method="POST" enctype="multipart/form-data">
-<input type="HIDDEN" Name="id" value="new">
+<input type="hidden" class="hidden" Name="id" value="new">
 
 <table>
 <tr>
@@ -54,7 +54,7 @@
 <&|/l&>Queue</&>:
 </td>
 <td class="value">
-    <input type="hidden" name="Queue" value="<%$queue_obj->id%>">
+    <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id%>">
     <strong><%$queue_obj->Name%></strong> (<%$queue_obj->Description%>)
 </td>
 </tr>

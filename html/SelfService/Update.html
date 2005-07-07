@@ -49,8 +49,8 @@
 
 
 <form action="Display.html" method="POST" enctype="multipart/form-data">
-<input type="hidden" name="UpdateType" value="response">
-<input type="hidden" name="id" value="<%$Ticket->Id%>">
+<input type="hidden" class="hidden" name="UpdateType" value="response">
+<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>">
 <table>
     <tr>
         <td class="label">
@@ -88,7 +88,7 @@
     </td>
     <td class="value">
             <input name="Attach" type="file">
-            <input type="hidden" name="UpdateAttach" value="1">
+            <input type="hidden" class="hidden" name="UpdateAttach" value="1">
     </td>
   </tr>
 </table>

@@ -56,7 +56,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method="POST" action="<%$RT::WebPath%>/Search/Bulk.html" enctype="multipart/form-data">
 % foreach my $var qw(Query Format OrderBy Order Rows Page) {
-<input type="hidden" name="<%$var%>" value="<%$ARGS{$var}%>">
+<input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var}%>">
 %}
 <& /Elements/TicketList, Query => $Query,
     DisplayFormat => $Format,

@@ -51,7 +51,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%$RT::WebPath%>/User/Prefs.html" method="POST">
-<input type="HIDDEN" name="id" value="<%$UserObj->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>">
 
 <table width="100%" border="0">
 <tr>
@@ -59,7 +59,7 @@
 <td valign="TOP" class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity') &>
 
-<input type="hidden" name="Name" value="<%$UserObj->Name%>">
+<input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>">
 <table callspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Email</&>: </td>

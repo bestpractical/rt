@@ -47,8 +47,8 @@
 
 
 <form METHOD=POST ACTION="CustomField.html">
-<input TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
-<input TYPE=HIDDEN name="Queue" value="<%$Queue%>">
+<input type="hidden" class="hidden" NAME="CustomField" VALUE="<%$id %>">
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>">
 
 <table WIDTH="100%" BORDER="0">
 <tr><td ALIGN="RIGHT">
@@ -68,7 +68,7 @@
 </td></tr>
 <tr><td>
 </td><td>
-<input TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<input type="hidden" class="hidden" NAME="SetEnabled" VALUE="1">
 <input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 </table>

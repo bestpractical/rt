@@ -46,7 +46,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">
-<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" class="hidden" name="id" value="<%$id%>">
 
 <h2><&|/l&>Current Scrips</&></h2>
 % if ($Scrips->Count == 0 ) {

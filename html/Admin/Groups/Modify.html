@@ -56,9 +56,9 @@
 <form action="<%$RT::WebPath%>/Admin/Groups/Modify.html" method="POST" enctype="multipart/form-data">
 
 %unless ($Group->Id) {
-<input type="HIDDEN" name="id" value="new">
+<input type="hidden" class="hidden" name="id" value="new">
 % } else {
-<input type="HIDDEN" name="id" value="<%$Group->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>">
 % }
 <table>
 <tr><td align="RIGHT">
@@ -80,7 +80,7 @@
 % }
 <tr>
 <td colspan="2">
-<input type="HIDDEN" name="SetEnabled" value="1">
+<input type="hidden" class="hidden" name="SetEnabled" value="1">
 <input type="CHECKBOX" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
 </tr>
 <& /Elements/Callback, GroupObj => $Group, results => \@results, %ARGS &>

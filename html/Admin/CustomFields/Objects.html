@@ -53,8 +53,8 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Objects.html" method="POST">
-<input type="HIDDEN" name="id" value="<% $id %>">
-<input type="HIDDEN" name="UpdateObjs" value="1">
+<input type="hidden" class="hidden" name="id" value="<% $id %>">
+<input type="hidden" class="hidden" name="UpdateObjs" value="1">
 
 <h2><&|/l&>Selected objects</&></h2>
 <& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>

@@ -66,13 +66,13 @@
    &>
 <div align="right">
 <form method="get" action="<%$RT::WebPath%>/Search/Results.html">
-<input type="hidden" name="Query" value="<%$Query%>" />
-<input type="hidden" name="Format" value="<%$Format%>" />
-<input type="hidden" name="HideResults" value="<%$HideResults%>" />
-<input type="hidden" name="Rows" value="<%$Rows%>" />
-<input type="hidden" name="Page" value="<%$Page%>" />
-<input type="hidden" name="OrderBy" value="<%$OrderBy%>" />
-<input type="hidden" name="Order" value="<%$Order%>" />
+<input type="hidden" class="hidden" name="Query" value="<%$Query%>" />
+<input type="hidden" class="hidden" name="Format" value="<%$Format%>" />
+<input type="hidden" class="hidden" name="HideResults" value="<%$HideResults%>" />
+<input type="hidden" class="hidden" name="Rows" value="<%$Rows%>" />
+<input type="hidden" class="hidden" name="Page" value="<%$Page%>" />
+<input type="hidden" class="hidden" name="OrderBy" value="<%$OrderBy%>" />
+<input type="hidden" class="hidden" name="Order" value="<%$Order%>" />
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
 <input type="submit" value="<&|/l&>Go!</&>">
 </form>
@@ -86,7 +86,7 @@
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
 % my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
 %while (my $var = shift (@vars)) {
-<input type="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
 %}
 </%perl>
 <&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>

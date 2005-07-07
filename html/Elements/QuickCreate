@@ -46,7 +46,7 @@
 <div class="quick-create">
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
 <form method="post" action="<%$RT::WebPath%>/index.html">
-<input type="hidden" name="QuickCreate" value="1">
+<input type="hidden" class="hidden" name="QuickCreate" value="1">
 <table>
 <tr><td>
 <&|/l&>Subject</&>:<br><input size="15" name="Subject"/>

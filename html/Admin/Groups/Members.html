@@ -53,7 +53,7 @@
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Name) &>
 
 <form action="<%$RT::WebPath%>/Admin/Groups/Members.html" method="POST">
-<input type="HIDDEN" name="id" value="<%$Group->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>">
 <table width="100%">
 <tr>
 <td>

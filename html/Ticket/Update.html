@@ -50,9 +50,9 @@
 
 <form action="Update.html" name="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
-<input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
-<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
-<input type="hidden" name="Action" value="<% $ARGS{Action} %>">
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
+<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
+<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>">
 
 <table border="0">
 
@@ -68,7 +68,7 @@ $ARGS{UpdateTimeWorked}%>">
 % my $skip;
 <& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
 % if (!$skip) {
-<input type="HIDDEN" name="id" value="<%$TicketObj->Id%>"><br/>
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>"><br/>
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -114,7 +114,7 @@ value="<% $ARGS{UpdateCc} %>"><br/>
 %    } # end if while
 % } # end of if
 
-<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><input type="SUBMIT" name="AddMoreAttach" value="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
+<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><input type="SUBMIT" name="AddMoreAttach" value="<&|/l&>Add More Files</&>"><input type="hidden" class="hidden" name="UpdateAttach" value="1">
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', %ARGS &>
