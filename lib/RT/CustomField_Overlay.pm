@@ -135,9 +135,14 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
+  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
+
+  'LookupType' is generally the result of either 
+  RT::Ticket->CustomFieldLookupType or RT::Transaction->CustomFieldLookupType
 
 =cut
 

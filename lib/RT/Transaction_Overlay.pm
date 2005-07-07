@@ -1051,6 +1051,17 @@ sub CustomFieldValues {
 
 # }}}
 
+# {{{ sub CustomFieldLookupType
+
+=head2 CustomFieldLookupType
+
+Returns the RT::Transaction lookup type, which can 
+be passed to RT::CustomField->Create() via the 'LookupType' hash key.
+
+=cut
+
+# }}}
+
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
