@@ -63,7 +63,7 @@
 <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 
-<div id="header" style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.5 * $menu_depth %>;">
+<div id="header" style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;">
   <div class="clear"></div>
   <h1><%$title%></h1>
 

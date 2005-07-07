@@ -97,6 +97,7 @@ body {
 
 #quickbar #topactions form .button {
     padding: 0 2px 0 2px;
+    font-size: 1em;
 }
 
 #quickbar #topactions form .field {
@@ -106,6 +107,7 @@ body {
 
 #quickbar #topactions form input.field {
     padding: 3px;
+    font-size: 1em;
 }
 
 .hide, .hidden { display: none !important; }
