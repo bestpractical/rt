@@ -44,27 +44,37 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-form .button {
-    border: 1px solid #069;
-    padding: 1px;
+form input.button {
+    border: 3px double #069;
+    border-top-color: #08c;
+    border-left-color: #08c;
+    padding: 0.25em;
     background: white;
     font-weight: bold;
 }
 
-html>body form .button { padding: 2px; }
-
-form .button:hover {
-    border-color: #08c;
+form input.button:active {
+    border: 3px double #08c;
+    border-top-color: #069;
+    border-left-color: #069;
 }
 
-form .field, form select, form .entry input, form input {
+form select {
     border: 1px solid #069;
     padding: 1px;
 }
 
-form input.field, form .entry input, form .value input {
+form input.field, form input, form textarea {
+    border: 1px solid #069;
     padding: 3px;
 }
+
+form input.checkbox, form input.radio {
+    border: none;
+    padding: 0;
+}
+
+/* form .entry input, form .value input */
 
 form .label, form label {
     font-weight: bold;

@@ -73,7 +73,7 @@
 % }
 <&|/l&>Load saved search:</&><br>
 <& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
-<input value="<%loc('Load')%>" type="submit">
+<input value="<%loc('Load')%>" type="submit" class="button" />
 </&>
 
 <%init>

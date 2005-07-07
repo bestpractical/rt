@@ -96,12 +96,8 @@ body {
 }
 
 #quickbar #topactions form .button {
-    border: 1px solid #069;
-    padding: 1px;
-    background: white;
+    padding: 0 2px 0 2px;
 }
-
-html>body #quickbar #topactions form .button { padding: 2px; }
 
 #quickbar #topactions form .field {
     border: 1px solid #069;
