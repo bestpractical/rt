@@ -58,16 +58,16 @@
 <nobr>
 % if ($SearchId ne 'new') {
 % if ($Dirty) {
-<input type="submit" name="Revert" value="<%loc('Revert')%>">
+<input type="submit" class="button" name="Revert" value="<%loc('Revert')%>">
 % }
-<input type="submit" name="Delete" value="<%loc('Delete')%>">
-<input type="submit" name="CopySearch" value="<%loc('Copy')%>">
+<input type="submit" class="button" name="Delete" value="<%loc('Delete')%>">
+<input type="submit" class="button" name="CopySearch" value="<%loc('Copy')%>">
 </nobr>
 
 % }
 
 % if ($Dirty or $SearchId eq 'new') {
-<input type="submit" name="Save" value="<%loc('Save')%>">
+<input type="submit" class="button" name="Save" value="<%loc('Save')%>">
 % }
 <hr>
 % }

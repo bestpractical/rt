@@ -80,7 +80,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 </div>
 
 <div class="button-row">
-    <span class="input"><input type="submit" Value="<&|/l&>Login</&>"></span>
+    <span class="input"><input type="submit" class="button" Value="<&|/l&>Login</&>"></span>
 </div>
 
 %# Give callbacks a chance to add more control elements

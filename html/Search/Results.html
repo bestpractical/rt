@@ -74,7 +74,7 @@
 <input type="hidden" class="hidden" name="OrderBy" value="<%$OrderBy%>" />
 <input type="hidden" class="hidden" name="Order" value="<%$Order%>" />
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
-<input type="submit" value="<&|/l&>Go!</&>">
+<input type="submit" class="button" value="<&|/l&>Go!</&>">
 </form>
 </div>
 <div align="right">
@@ -92,7 +92,7 @@
 <&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
 
-<input type="submit" value="<%loc('Go')%>"/>
+<input type="submit" class="button" value="<%loc('Go')%>"/>
 </form>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>

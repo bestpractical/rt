@@ -43,4 +43,4 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<%$RT::WebPath%>/Ticket/Display.html"><input type="submit" value="<&|/l&>Goto ticket</&>">&nbsp;<input size="5" name="id" accesskey="0"></form>
+<form action="<%$RT::WebPath%>/Ticket/Display.html"><input type="submit" class="button" value="<&|/l&>Goto ticket</&>">&nbsp;<input size="5" name="id" accesskey="0"></form>

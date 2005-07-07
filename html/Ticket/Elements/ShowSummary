@@ -78,7 +78,7 @@
 		 color => "#666699" &>
             <form action="<%$RT::WebPath%>/Ticket/Display.html" method="post">
 	  <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
-        <div align="right"><input type="submit" value="Save" /></div>
+        <div align="right"><input type="submit" class="button" value="Save" /></div>
         </form>
 	  </&>
         <br />

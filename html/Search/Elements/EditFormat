@@ -86,7 +86,7 @@
 </select>
 </td>
 <td>
-<input type=submit name="AddCol" value="->">
+<input type="submit" class="button" name="AddCol" value="->">
 </td>
 <td valign=top>
 <select size=4 name="CurrentDisplayColumns">
@@ -98,9 +98,9 @@
 </select>
 <br>
 <center>
-<input type="submit" name="ColUp" value="^">
-<input type="submit" name="ColDown" value="v">
-<input type="submit" name="RemoveCol" value="<%loc('Delete')%>">
+<input type="submit" class="button" name="ColUp" value="^">
+<input type="submit" class="button" name="ColDown" value="v">
+<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>">
 </center>
 </td>
 <td colspan=3 align=center>

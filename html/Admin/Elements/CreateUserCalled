@@ -44,5 +44,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <form METHOD=get ACTION="<% $RT::WebPath %>/Admin/Users/Create.html">
-<&|/l&>New user called</&> <input NAME="Name" size=10><input type=submit value="<&|/l&>Create</&>">
+<&|/l&>New user called</&> <input NAME="Name" size=10><input type="submit" class="button" value="<&|/l&>Create</&>">
 </form>
