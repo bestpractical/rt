@@ -62,9 +62,9 @@
 % }
 <tr <%$class && "class=\"$class\""%>>
 <td valign=top>
-<input type="radio" name="Approval-<%$ticket->Id%>-Action" value="approve"><&|/l&>Approve</&><br>
-<input type="radio" name="Approval-<%$ticket->Id%>-Action" value="deny"><&|/l&>Deny</&><br>
-<input type="radio" name="Approval-<%$ticket->Id%>-Action" value="none" checked><&|/l&>No action</&>
+<input type="radio" class="radio" name="Approval-<%$ticket->Id%>-Action" value="approve"><&|/l&>Approve</&><br>
+<input type="radio" class="radio" name="Approval-<%$ticket->Id%>-Action" value="deny"><&|/l&>Deny</&><br>
+<input type="radio" class="radio" name="Approval-<%$ticket->Id%>-Action" value="none" checked><&|/l&>No action</&>
 </td>
 <td>
 <&|/l&>Notes</&><br>
