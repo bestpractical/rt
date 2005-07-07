@@ -51,6 +51,8 @@ form input.button {
     padding: 0.25em;
     background: white;
     font-weight: bold;
+    font-size: 0.8em;
+    margin: 0.5em;
 }
 
 form input.button:active {

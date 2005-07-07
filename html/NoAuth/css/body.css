@@ -63,14 +63,35 @@
 }
 
 .titlebox .title span a {
-    display: block;
-    letter-spacing: -9999em;
-    height: 1em;
-    width: 20px;
-    background: url(<%$RT::WebImagesURL%>/css/rollup-arrow.gif) no-repeat bottom center;
-    position: relative;
-    left: -2em;
-    float: left;
+  display: block;
+  padding-top: 1em;
+  width: 20px;
+
+  background: url(<%$RT::WebImagesURL%>/css/rollup-arrow.gif) no-repeat center center;
+  
+  margin: 0;
+  text-indent: -9999px;
+
+  position: relative;
+  left: -5em;
+  float: left;
+
+  /* WIN IE5 hack */
+  height: 7px;
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  height: 0;
+  overflow: hidden;
+}
+
+html>body .titlebox .title span a {
+    height: 0;
+    overflow: hidden;
+}
+
+* html .titlebox .title span a {
+    background-position: center 0.4em;
+    left: -1.5em;
 }
 
 .titlebox .title span a.rolled-up {

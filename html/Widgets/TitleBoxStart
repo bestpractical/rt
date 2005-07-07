@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="titlebox<% $class && " $class" %>"<% $id && qq[ id="$id"] |n %>>
   <div class="title<% $title_class && " $title_class" %>">
-    <span><a href="#" onclick="return rollup(this, 'element-<%$rid%>');">^</a></span>
+    <span><a href="#" onclick="return rollup(this, 'element-<%$rid%>');" onfocus="this.blur(); return false;">^</a></span>
     <% $title_href && qq[<a href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%>
   </div>
   <div class="content<% $bodyclass && " $bodyclass" %>" id="element-<%$rid%>">

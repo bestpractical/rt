@@ -81,13 +81,26 @@
     min-width: 65%;
 }
 
+%# This is an interesting bit of CSS.  expression() is an IE-only extension to
+%# it's CSS implementation.  Just in case other browsers might choke on it,
+%# the rule is enclosed in a selector only IE will (wrongly) match to an element.
+%# 
+%# The expression() function takes Javascript, and basically what it's doing here
+%# is checking to see if the width of the menu would be greater than 65% of the body
+%# width.  If it is, great, leave it alone to automatically resize.  If it's not, set
+%# it to 65% of the body width.  This amounts to emulating the min-width rule that
+%# compliant browsers understand above.
 * html #header ul#page-menu {
-    width: 65%;
+    width: expression(document.body.clientWidth*0.65 < document.getElementById('page-menu').clientWidth ? "auto" : "65%");
     overflow: visible;
 }
 
-#page-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
+#page-menu div {
+    position: relative;
+    z-index: 3;
+}
 
+#page-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
 #page-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
 #page-menu div div div {
     background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
@@ -104,6 +117,11 @@
 #header #actions-menu {
     position: relative;
     background: #08c;
+}
+
+#actions-menu div {
+    position: relative;
+    z-index: 2;
 }
 
 /*#actions-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }*/
