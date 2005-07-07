@@ -69,7 +69,7 @@
 <tr><td>
 </td><td>
 <input type="hidden" class="hidden" NAME="SetEnabled" VALUE="1">
-<input TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="checkbox" class="checkbox" NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 </table>
 

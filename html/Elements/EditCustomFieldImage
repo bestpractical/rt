@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><& ShowCustomFieldImage, Object => $value &>
+<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><& ShowCustomFieldImage, Object => $value &>
 <br>
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {

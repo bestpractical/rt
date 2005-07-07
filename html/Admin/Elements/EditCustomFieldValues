@@ -61,7 +61,7 @@
 % while (my $value = $values->Next) {
 <tr>
 <td>
-<input type="checkbox" name="Delete-CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>">
+<input type="checkbox" class="checkbox" name="Delete-CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>">
 </td>
 <td>
 <input size=3 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-SortOrder" value="<%$value->SortOrder%>">

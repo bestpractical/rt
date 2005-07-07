@@ -62,9 +62,9 @@
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})
         && "checked"%>> <&|/l&>Show pending requests</&><br>
-<input type=checkbox value="1" name="ShowResolved" <%$ARGS{'ShowResolved'} && "checked"%>> <&|/l&>Show approved requests</&><br>
-<input type=checkbox value="1" name="ShowRejected" <%$ARGS{'ShowRejected'} && "checked"%>> <&|/l&>Show denied requests</&><br>
-<input type=checkbox value="1" name="ShowDependent" <%$ARGS{'ShowDependent'} && "checked"%>> <&|/l&>Show requests awaiting other approvals</&><br>
+<input type="checkbox" class="checkbox" value="1" name="ShowResolved" <%$ARGS{'ShowResolved'} && "checked"%>> <&|/l&>Show approved requests</&><br>
+<input type="checkbox" class="checkbox" value="1" name="ShowRejected" <%$ARGS{'ShowRejected'} && "checked"%>> <&|/l&>Show denied requests</&><br>
+<input type="checkbox" class="checkbox" value="1" name="ShowDependent" <%$ARGS{'ShowDependent'} && "checked"%>> <&|/l&>Show requests awaiting other approvals</&><br>
 
 <&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
 

@@ -51,7 +51,7 @@
 <ul>
 % while (my $watcher=$Members->Next) {
 <li>
-<INPUT TYPE=CHECKBOX NAME="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" value="1"
+<input type="checkbox" class="checkbox" NAME="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" value="1"
         UNCHECKED>
 % if ($watcher->MemberObj->IsUser) { 
 <a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">

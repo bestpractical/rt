@@ -81,7 +81,7 @@
 <tr>
 <td colspan="2">
 <input type="hidden" class="hidden" name="SetEnabled" value="1">
-<input type="CHECKBOX" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
 </tr>
 <& /Elements/Callback, GroupObj => $Group, results => \@results, %ARGS &>
 </table>

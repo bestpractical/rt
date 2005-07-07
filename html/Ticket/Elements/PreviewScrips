@@ -101,7 +101,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 %my @addresses =  $scrip->ActionObj->Action->$type();
 <ul>
 %foreach my $addr (@addresses) {
-<li> <b><%loc($type)%></b>: <input type="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>"> <%$addr->address%>
+<li> <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>"> <%$addr->address%>
 % }
 </ul>
 % }
@@ -117,7 +117,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <br>
 <ul>
 % foreach my $recipient (@non_recipients) {
-<li><input type="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>">
+<li><input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>">
 <% $recipient->Content %>
 % }
 </ul>

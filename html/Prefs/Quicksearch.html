@@ -54,7 +54,7 @@
 <form method="POST" action="Quicksearch.html" name="Preferences">
 <ul>
 % for my $queue (@queues) {
-<li><input type="checkbox" name="Want-<%$queue->Name%>" value="1"
+<li><input type="checkbox" class="checkbox" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 CHECKED
 % }

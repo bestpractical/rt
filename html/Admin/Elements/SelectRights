@@ -56,7 +56,7 @@
 % while (my $right = $ACLObj->Next()) {
 % if ($right->RightName) {
 % $current_rights{$right->RightName} = 1;
-<input type=checkbox value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>"> <% loc($right->RightName) %><br>
+<input type="checkbox" class="checkbox" value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>"> <% loc($right->RightName) %><br>
 % }
 %  }
 % }
