@@ -67,7 +67,7 @@
 % }
 
 % if ($Dirty or $SearchId eq 'new') {
-<input type="submit" class="button" name="Save" value="<%loc('Save')%>">
+<input type="submit" name="Save" value="<%loc('Save')%>" class="button" />
 % }
 <hr>
 % }
