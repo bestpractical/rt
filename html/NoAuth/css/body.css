@@ -50,6 +50,8 @@
     padding-top: 0.5em;
 }
 
+.titlebox { position: relative; }
+
 .titlebox .content {
     margin: 1em 2em 0 2em;
 }
@@ -58,7 +60,7 @@
     font-weight: bold;
     color: #930;
     font-size: 1.2em;
-    padding: 0.2em 0 0.2em 2em;
+    padding: 0.2em 0 0.2em 4em;
     border-bottom: 1px solid #069;
 }
 
@@ -72,8 +74,9 @@
   margin: 0;
   text-indent: -9999px;
 
-  position: relative;
-  left: -5em;
+  position: absolute;
+  top: 0.5em;
+  left: 0.75em;
   float: left;
 
   /* WIN IE5 hack */
@@ -91,7 +94,6 @@ html>body .titlebox .title span a {
 
 * html .titlebox .title span a {
     background-position: center 0.4em;
-    left: -1.5em;
 }
 
 .titlebox .title span a.rolled-up {

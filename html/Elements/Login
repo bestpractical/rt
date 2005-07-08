@@ -56,15 +56,24 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
-<div class="dialog">
+  <div id="logo">
+    <a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a>
+    <div class="rtname"><%$RT::AppName%></div>
+  </div>
+
+%# End of div#quickbar from /Elements/Header
+</div>
+
+<div id="body">
+
 % if ($Error) {
 <&| "/Widgets/TitleBox" , title => loc('Error') &>
 <% $Error %>
 </&>
 % }
 
-<div id="loginform">
-<&| /Widgets/TitleBox ,title => loc('Login') &>
+<div id="login-box">
+<&| /Widgets/TitleBox, title => loc('Login') &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <form id="login" name="login" method="post" action="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>">
@@ -97,19 +106,18 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 %  if (($key ne 'user') and ($key ne 'pass')) {
 % 	if (ref($ARGS{$key}) =~ /ARRAY/) {
 % 		foreach $val (@{$ARGS{$key}}) {
-<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>">
+<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
 % 		}
 % 	}
 %	else {
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
+<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 % 	}
 %  }
 % }
 </form>
 % }
 </&>
-</div><!-- #loginform -->
-</div><!-- .dialog -->
+</div><!-- #login-box -->
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""

@@ -104,11 +104,46 @@ body {
 #quickbar #topactions form .field {
     border: 1px solid #069;
     padding: 1px;
+    font-size: 0.9em;
 }
 
 #quickbar #topactions form input.field {
     padding: 3px;
-    font-size: 1em;
+}
+
+#login-box {
+    width: 50%;
+    margin: 0 auto 4em auto;
+}
+
+* html #login-box {
+    text-align: center;
+}
+
+* html #login-box .titlebox {
+    text-align: left;
+}
+
+#login-box .input-row {
+    clear: both;
+    padding: 0.5em;
+}
+
+#login-box .input-row .label {
+    width: 8em;
+    float: left;
+    text-align: right;
+    padding: 0.2em 1em 0 0;
+}
+
+#login-box .input-row .input {
+    float: left;
+}
+
+#login-box .button-row {
+    clear: both;
+    padding: 0.5em;
+    float: right;
 }
 
 .hide, .hidden { display: none !important; }
