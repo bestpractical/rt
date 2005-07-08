@@ -1,21 +1,34 @@
 % $r->content_type('application/x-javascript');
 
-function rollup(link, id) {
-    var e = document.getElementById(id);
+function rollup(id) {
+    var e    = document.getElementById(id);
+    var link = document.getElementById(id+"-link");
     
     if (e.className.match(/\bhidden\b/)) {
-        show(e);
-        link.className = link.className.replace(/\s?\brolled-up\b/, '');
+        set_rollup_state(e,link,'shown');
+        createCookie(id,1,365);
     }
     else {
-        hide(e);
-        if (link.className)
-            link.className += ' rolled-up';
-        else
-            link.className = 'rolled-up';
+        set_rollup_state(e,link,'hidden');
+        createCookie(id,0,365);
     }
-    link.focus(0);
     return false;
+}
+
+function set_rollup_state(e,link,state) {
+    if (e && link) {
+        if (state == 'shown') {
+            show(e);
+            link.className = link.className.replace(/\s?\brolled-up\b/, '');
+        }
+        else if (state == 'hidden') {
+            hide(e);
+            if (link.className)
+                link.className += ' rolled-up';
+            else
+                link.className = 'rolled-up';
+        }
+    }
 }
 
 function hideshow(id) {

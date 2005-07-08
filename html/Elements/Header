@@ -59,9 +59,10 @@
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
     <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/util.js"></script>
+    <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/titlebox-state.js"></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
   </head>
-  <body onload="<% $onload |n %><% $Focus && qq[ setFocus('$Focus');] |n %>">
+  <body onload="<% "$onload;" |n %><% $Focus && qq[ setFocus('$Focus');] |n %>loadTitleBoxStates();">
 
 % if ($ShowBar) {
 <div id="quickbar">

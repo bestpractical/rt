@@ -45,10 +45,10 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="titlebox<% $class && " $class" %>"<% $id && qq[ id="$id"] |n %>>
   <div class="title<% $title_class && " $title_class" %>">
-    <span><a href="#" onclick="return rollup(this, 'element-<%$rid%>');" onfocus="this.blur(); return false;">^</a></span>
+    <span><a href="#" id="<%$tid%>-link" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;">^</a></span>
     <% $title_href && qq[<a href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%>
   </div>
-  <div class="content<% $bodyclass && " $bodyclass" %>" id="element-<%$rid%>">
+  <div class="content<% $bodyclass && " $bodyclass" %>" id="<%$tid%>">
 
 <%ARGS>
 $width => undef
@@ -63,7 +63,19 @@ $contentbg => "#dddddd"
 $color => "#336699"
 $id => undef
 </%ARGS>
-
+<%once>
+my $cache;
+</%once>
 <%init>
-my $rid = rand(2000);
+#
+# This should be pretty bulletproof
+#
+my $page = $m->request_comp->path;
+my $tid  = "TitleBox--$page--" .
+            join '--', ($class, $bodyclass, $title, $id);
+
+my $i = 0;
+$i++ while $cache->{"$tid-$i"};
+$cache->{"$tid-$i"}++;
+$tid = "$tid-$i";
 </%init>
