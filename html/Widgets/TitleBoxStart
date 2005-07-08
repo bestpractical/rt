@@ -63,9 +63,7 @@ $contentbg => "#dddddd"
 $color => "#336699"
 $id => undef
 </%ARGS>
-<%once>
-my $cache;
-</%once>
+
 <%init>
 #
 # This should be pretty bulletproof
@@ -75,7 +73,7 @@ my $tid  = "TitleBox--$page--" .
             join '--', ($class, $bodyclass, $title, $id);
 
 my $i = 0;
-$i++ while $cache->{"$tid-$i"};
-$cache->{"$tid-$i"}++;
+$i++ while $m->notes("$tid-$i");
+$m->notes("$tid-$i" => 1);
 $tid = "$tid-$i";
 </%init>
