@@ -98,6 +98,7 @@ body {
 #quickbar #topactions form .button {
     padding: 0 2px 0 2px;
     font-size: 1em;
+    margin: 0;
 }
 
 #quickbar #topactions form .field {
