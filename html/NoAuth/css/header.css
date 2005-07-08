@@ -153,6 +153,3 @@
     text-decoration: underline;
 }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

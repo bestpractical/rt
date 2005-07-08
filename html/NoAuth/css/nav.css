@@ -127,6 +127,3 @@ html>body #nav .odd > div > li > :visited.selected
 #nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ct-light.gif) no-repeat top left; }
 #nav ul.odd .first { background: transparent url(<%$RT::WebImagesURL%>/css/cb-light.gif) no-repeat bottom left; }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

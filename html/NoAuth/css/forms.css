@@ -95,6 +95,3 @@ form .label, form label {
 .submit .extra-buttons { float: left; }
 .submit .button { font-size: 0.9em; }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

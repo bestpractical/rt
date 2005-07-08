@@ -113,6 +113,3 @@ body {
 
 .hide, .hidden { display: none !important; }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

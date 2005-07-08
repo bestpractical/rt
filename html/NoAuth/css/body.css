@@ -118,6 +118,3 @@ td {
     padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

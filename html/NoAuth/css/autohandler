@@ -1,0 +1,5 @@
+<%init>
+$r->content_type('text/css');
+$m->call_next();
+return();
+</%init>

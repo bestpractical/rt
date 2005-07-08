@@ -1,5 +1,3 @@
-% $r->content_type('application/x-javascript');
-
 function rollup(id) {
     var e    = document.getElementById(id);
     var link = document.getElementById(id+"-link");
@@ -72,5 +70,3 @@ function openCalWindow(field) {
     var objWindow = window.open('<%$RT::WebPath%>/CalPopup.html?field='+field, 'Pick', 'height=400,width=400,scrollbars=1');
     objWindow.focus();
 }
-
-% $m->abort;

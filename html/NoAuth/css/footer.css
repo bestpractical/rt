@@ -88,6 +88,3 @@
     clear: both;
 }
 
-<%init>
-    $r->content_type('text/css');
-</%init>

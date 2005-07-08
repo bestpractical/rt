@@ -52,6 +52,3 @@
 @import "header.css";
 @import "footer.css";
 
-<%init>
-    $r->content_type('text/css');
-</%init>

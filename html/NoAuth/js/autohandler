@@ -1,0 +1,5 @@
+<%init>
+$r->content_type('application/x-javascript');
+$m->call_next();
+return();
+</%init>

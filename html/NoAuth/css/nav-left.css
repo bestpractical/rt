@@ -81,6 +81,3 @@ html>body #nav li ul {
 
 #nav ul { padding: 0; }
 
-<%init>
-    $r->content_type('text/css');
-</%init>
