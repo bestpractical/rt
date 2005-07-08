@@ -71,6 +71,8 @@
     color: #888;
 }
 
+.titlebox .title .right .selected { color: #930; }
+
 #body .titlebox .title .right :link,
 #body .titlebox .title .right :visited {
     color: #888;

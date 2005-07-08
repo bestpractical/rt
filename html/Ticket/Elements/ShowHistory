@@ -53,29 +53,26 @@ if ($ShowTitle) {
 else {
     $title = '&nbsp;';
 }
-$titleright = loc('Display mode') . ":";
+$titleright = q[<span style="color: black">] . loc('Display mode') . ':</span> ';
 if ($ShowHeaders) {
-    $titleright .= "[<a HREF=\"" . $URIFile . "?id="
-      . $Ticket->id . "\">"
-      . loc("Brief headers")
-      . "</a>] <b>["
-      . loc("Full headers") . "]</b>";
+    $titleright .= qq{<a href="$URIFile?id=} .
+                   $Ticket->id.qq{">} .
+                   loc("Brief headers") .
+                   qq{</a> &mdash; };
+    $titleright .= q[<span class="selected">] . loc("Full headers") . "</span>";
 }
 else {
-    $titleright .= "<b>["
-      . loc("Brief headers")
-      . "]</b> [<a HREF=\""
-      . $URIFile
-      . "?ShowHeaders=1"
-      . "&id="
-      . $Ticket->id . "\">"
-      . loc("Full headers") . "</a>]";
+    $titleright .= q[<span class="selected">] . loc("Brief headers") . "</span> &mdash; ";
+    $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
+                   $Ticket->id.qq{">} .
+                   loc("Full headers") .
+                   qq{</a>};
 }
 </%perl>
-<& /Widgets/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
+<& /Widgets/TitleBoxStart, title => $title, titleright => $titleright &>
 % }
 
-<table WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
 <%perl>
 my @attachments = @{$Attachments->ItemsArrayRef()};
 my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
