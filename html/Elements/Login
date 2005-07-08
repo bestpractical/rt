@@ -73,7 +73,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 % }
 
 <div id="login-box">
-<&| /Widgets/TitleBox, title => loc('Login') &>
+<&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <form id="login" name="login" method="post" action="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>">

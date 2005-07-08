@@ -50,13 +50,12 @@
     padding-top: 0.5em;
 }
 
-.titlebox { position: relative; }
-
 .titlebox .content {
     margin: 1em 2em 0 2em;
 }
 
 .titlebox .title {
+    position: relative;
     font-weight: bold;
     color: #930;
     font-size: 1.2em;
@@ -64,7 +63,25 @@
     border-bottom: 1px solid #069;
 }
 
-.titlebox .title span a {
+.titlebox .title .right {
+    position: absolute;
+    top: 0.5em;
+    right: 1.5em;
+    font-size: 0.9em;
+    color: #888;
+}
+
+#body .titlebox .title .right :link,
+#body .titlebox .title .right :visited {
+    color: #888;
+}
+
+#body .titlebox .title .right :link:hover,
+#body .titlebox .title .right :visited:hover {
+    color: #930;
+}
+
+.titlebox .title .widget a {
   display: block;
   padding-top: 1em;
   width: 20px;
@@ -87,16 +104,16 @@
   overflow: hidden;
 }
 
-html>body .titlebox .title span a {
+html>body .titlebox .title .widget a {
     height: 0;
     overflow: hidden;
 }
 
-* html .titlebox .title span a {
+* html .titlebox .title .widget a {
     background-position: center 0.4em;
 }
 
-.titlebox .title span a.rolled-up {
+.titlebox .title .widget a.rolled-up {
     background-image: url(<%$RT::WebImagesURL%>/css/rolldown-arrow.gif);
 }
 
