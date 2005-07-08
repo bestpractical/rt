@@ -58,8 +58,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 </%PERL>
 
 % unless ($requestor->Privileged) {
-<&| /Widgets/TitleBox, 
-	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id."\">".loc("More about [_1]", $name)."</a>" &>
+<&| /Widgets/TitleBox, title_href => "$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id, title=> loc("More about [_1]", $name) &>
 
 %# Additional information about this user.  Empty by default.
 <& /Elements/Callback, _CallbackName => 'AboutThisUser', requestor => $requestor, %ARGS &>
