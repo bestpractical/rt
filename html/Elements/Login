@@ -56,10 +56,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
-  <div id="logo">
-    <a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a>
-    <div class="rtname"><%$RT::AppName%></div>
-  </div>
+<& /Elements/Logo &>
 
 %# End of div#quickbar from /Elements/Header
 </div>
