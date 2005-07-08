@@ -116,10 +116,15 @@ body {
     margin: 0 auto 4em auto;
 }
 
+%# More rules only IE will recognize (but are still valid!) to correct for
+%# IE's incorrect handling of auto margins and the W3C defined behavior.
+%# text-align will affect a block element in IE, therefore centering it, like
+%# left and right auto margins *should*
 * html #login-box {
     text-align: center;
 }
 
+%# ... and align the text back the way it should be
 * html #login-box .titlebox {
     text-align: left;
 }

@@ -56,6 +56,8 @@
     left: 0;
 }
 
+%# Hide from IE... it can't handle relative positioning with both a
+%# left and right set
 html>body #nav li ul {
     left: 0;
     right: 2em;

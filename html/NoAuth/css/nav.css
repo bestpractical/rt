@@ -71,7 +71,8 @@
     font-size: 1em;
 }
 
-/* Hide from IE */
+%# Hide from IE... it can't handle relative positioning with both a
+%# left and right set
 html>body #nav li ul {
     left: 2em;
 }
