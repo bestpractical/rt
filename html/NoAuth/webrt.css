@@ -374,10 +374,12 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 font-weight: bold;
 	 color: #0066CC }
-.value {       font-weight: normal; }
+.value {       font-weight: normal; vertical-align: top; }
 .entry {       font-weight: normal; }
 .label {       font-weight: bold; 
-	       text-align: right; }
+	       text-align: right;
+               vertical-align: top; }
+.value input, .value select { vertical-align: top; }
 .labeltop {       font-weight: normal;
 	       text-align: right;
 	       vertical-align: top }
