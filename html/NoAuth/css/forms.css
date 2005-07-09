@@ -95,3 +95,9 @@ form .label, form label {
 .submit .extra-buttons { float: left; }
 .submit .button { font-size: 0.9em; }
 
+.input-row {
+    clear: both;
+    padding: 0.25em;
+}
+
+

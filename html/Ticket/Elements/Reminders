@@ -56,6 +56,7 @@ $reminder_collection = $Ticket->Reminders->Collection;
 </%init>
 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
 <input type="hidden" class="hidden" name="update-reminders" value="1" />
+<div>
 % while (my $reminder = $reminder_collection->Next) {
 %   if ($reminder->Status eq 'resolved' && !$ShowCompleted) {
 <input type="hidden" class="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" />
@@ -65,25 +66,26 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
 %   }
 % }
-<br />
-<br />
-<&|/l&>New reminder:</&><br />
+</div>
+<div>
+<h3><&|/l&>New reminder:</&></h3>
 <& SELF:NewReminder, Ticket => $Ticket &>
 <%method NewReminder>
 <%args>
 $Ticket
 </%args>
-<div class="horizontal">
+<div class="input-row">
 <label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label> 
 <input type="text" size="15" name="NewReminder-Subject">
 </div>
-<div class="horizontal">
+<div class="input-row">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
 <& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj, DefaultValue => 0 &>
 </div>
-<div class="horizontal">
+<div class="input-row">
 <label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 
 <& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &>
+</div>
 </div>
 </%method>
 <%method EditEntry>
