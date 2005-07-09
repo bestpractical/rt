@@ -44,12 +44,42 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-@import "misc.css";
-@import "body.css";
-@import "forms.css";
-@import "transactions.css";
-@import "nav.css";
-@import "nav-left.css";
-@import "header.css";
-@import "footer.css";
+.ticket-transaction .date { font-size: 0.9em; }
+.ticket-transaction .description { font-weight: bold; }
+.ticket-transaction .actions {
+    text-align: right;
+    font-weight: bold;
+}
 
+.ticket-transaction .type {
+    background: #ccc;
+    width: 1.5em;
+    color: white;
+    text-align: center;
+}
+
+#body .ticket-transaction .type :link,
+#body .ticket-transaction .type :visited
+{
+    color: white;
+}
+
+#body .ticket-transaction .type.other :link,
+#body .ticket-transaction .type.other :visited
+{
+    color: black;
+}
+
+.ticket-transaction .type.basics { background: #b32; }
+.ticket-summary .ticket-info-basics .content { border-left: 0.5em solid #b32; }
+
+.ticket-transaction .type.people { background: #48c; }
+.ticket-summary .ticket-info-people .content { border-left: 0.5em solid #48c; }
+
+.ticket-transaction .type.links { background: #ad8; }
+.ticket-summary .ticket-info-links .content  { border-left: 0.5em solid #ad8; }
+
+.ticket-transaction .type.dates { background: #d71; }
+.ticket-summary .ticket-info-dates .content  { border-left: 0.5em solid #d71; }
+
+.ticket-transaction .type.message { background: #069; }

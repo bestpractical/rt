@@ -43,57 +43,52 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-      <table WIDTH="100%" class="ticketsummary" >
+      <table width="100%" class="ticket-summary">
       <tr>
-	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
+	<td valign="top" width="50%" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse' &>
+		class => 'ticket-info-basics' &>
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  </&>
-          <br>
+
 % if ($Ticket->QueueObj->TicketCustomFields->First) {
 	  <&| /Widgets/TitleBox, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse'  &> 
+		class => 'ticket-info-basics'  &> 
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 	  </&>
-
-<br>
 % }
 	  <&| /Widgets/TitleBox, title => loc('People'), 
 		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
-		title_class=> 'inverse' &>
-	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+		class => 'ticket-info-people' &>
+            <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  </&>
-	<br/>
+
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
-        <br/>
+
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 	</td>
-	<td VALIGN=TOP WIDTH="50%" class="boxcontainer">
+	<td valign="top" width="50%" class="boxcontainer">
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
 		title_href =>"$RT::WebPath/Ticket/Reminders.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		 color => "#666699" &>
+		class => 'ticket-info-reminders' &>
             <form action="<%$RT::WebPath%>/Ticket/Display.html" method="post">
-	  <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
-        <div align="right"><input type="submit" class="button" value="Save" /></div>
-        </form>
+	      <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+              <div align="right"><input type="submit" class="button" value="Save" /></div>
+            </form>
 	  </&>
-        <br />
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
-		title_class=> 'inverse' &>
+		class => 'ticket-info-dates' &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  </&>
-	<br/>  
+
 	  <&| /Widgets/TitleBox, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		titleright => ''&>
+		class => 'ticket-info-links' &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
-	</&>
+          </&>
 
 	</td>
       </tr>

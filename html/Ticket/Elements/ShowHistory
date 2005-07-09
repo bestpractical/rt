@@ -77,10 +77,6 @@ else {
 my @attachments = @{$Attachments->ItemsArrayRef()};
 my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
 
-
-
-
-
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
     $m->comp( '/Elements/Callback',

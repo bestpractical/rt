@@ -67,6 +67,8 @@
     font-weight: bold;
 }
 
+.titlebox { margin-bottom: 1em; }
+
 .titlebox .content {
     margin: 1em 2em 0 2em;
 }

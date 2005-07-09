@@ -43,24 +43,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
-<td rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><a name="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</a><% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %></td>
-<td>&nbsp&nbsp;</td>
-<td><font size=-2><% $transdate|n %></font>&nbsp;</td>
+<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%> ticket-transaction" >
+  <td rowspan="2" valign="top" class="<% $type_class %> type">
+    <a name="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</a>
+    <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
+  </td>
+  <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;
 % $m->comp('/Elements/Callback', _CallbackName => 'ModifyDisplay', text => \$desc, Transaction => $Transaction, %ARGS);
-<td ALIGN="LEFT"><b><%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
-
-</b></td>
-<td><%$TimeTaken%>&nbsp;</td>
-<td ALIGN="RIGHT"><font size=-1><%$titlebar_commands|n%></font></td>
+  <td class="description">
+    <%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
+  </td>
+  <td class="time-taken"><%$TimeTaken%></td>
+  <td class="actions"><%$titlebar_commands|n%></td>
 </tr>
-<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%>"><td colspan=5>
+<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%> ticket-transaction">
+  <td colspan="5" class="content">
 % if ($Transaction->CustomFieldValues->Count) {
-<& /Elements/ShowCustomFields, Object => $Transaction &>
+    <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
-</td>
+  </td>
 </tr>
 
 <%ARGS>
@@ -81,37 +84,37 @@ $LastTransaction => 0
 
 <%INIT>
 
-my ( $TimeTaken, $TicketString, $bgcolor );
+my ( $TimeTaken, $TicketString, $type_class );
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
 if ( $Transaction->Type =~ /^(Create|Correspond|Comment$)/ ) {
     if ( $Transaction->IsInbound ) {
-        $bgcolor = "#336699";
+        $type_class = 'message';
     }
     else {
-        $bgcolor = "#339999";
+        $type_class = 'message';
     }
 }
 elsif (    ( $Transaction->Field =~ /^Owner$/ )
         or ( $Transaction->Type =~ /^(AddWatcher|DelWatcher)$/ ) ) {
-    $bgcolor = "#333399";
+    $type_class = 'people';
 
 }
 elsif ( $Transaction->Type =~ /^(AddLink|DeleteLink)$/ ) {
-    $bgcolor = "#336633";
+    $type_class = 'links';
 }
 elsif ( $Transaction->Type =~ /^(Status|Set|Told)$/ ) {
     if ( $Transaction->Field =~ /^(Told|Starts|Started|Due)$/ ) {
-        $bgcolor = "#663366";
+        $type_class = 'dates';
     }
     else {
-        $bgcolor = "#993333";
+        $type_class = 'basics';
     }
 }
 else {
-    $bgcolor = "#cccccc";
+    $type_class = 'other';
 }
 
 if ( $Ticket->Id != $Transaction->Ticket ) {
