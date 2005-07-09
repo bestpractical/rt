@@ -46,8 +46,25 @@
 
 #body {
     clear: both;
-    margin: 0 0.75em 0 1em;
+    margin: 0 0.75em 0 2em;
     padding-top: 0.5em;
+}
+
+#body h1 {
+    border-bottom: 1px dotted #069;
+    padding-left: 0.5em;
+}
+
+#body h1 { font-size: 1.5em; }
+#body h2 { font-size: 1.3em; }
+#body h3 { font-size: 1.1em; }
+#body h4 { font-size: 1em; }
+#body h5 { font-size: 0.9em; }
+#body h6 { font-size: 0.8em; }
+
+#body h1, #body h2, #body h3, #body h4, #body h5, #body h6 {
+    color: #930;
+    font-weight: bold;
 }
 
 .titlebox .content {
