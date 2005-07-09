@@ -111,7 +111,7 @@
   text-indent: -9999px;
 
   position: absolute;
-  top: 0.5em;
+  top: 0.4em;
   left: 0.75em;
   float: left;
 
@@ -137,7 +137,7 @@ html>body .titlebox .title .widget a {
 
 %# Compensates for IE's bad box model by hiding this rule from other browsers
 * html .titlebox .title .widget a {
-    background-position: center 0.4em;
+    background-position: center 0.3em;
 }
 
 .titlebox .title .widget a.rolled-up {
