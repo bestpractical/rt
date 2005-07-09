@@ -43,28 +43,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%> ticket-transaction" >
-  <td rowspan="2" valign="top" class="<% $type_class %> type">
-    <a name="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</a>
-    <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
-  </td>
-  <td class="date"><% $transdate|n %></td>
+<div class="ticket-transaction <% $type_class %>">
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td rowspan="2" valign="top" class="type">
+      <a name="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</a>
+      <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
+    </td>
+    <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;
 % $m->comp('/Elements/Callback', _CallbackName => 'ModifyDisplay', text => \$desc, Transaction => $Transaction, %ARGS);
-  <td class="description">
-    <%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
-  </td>
-  <td class="time-taken"><%$TimeTaken%></td>
-  <td class="actions"><%$titlebar_commands|n%></td>
-</tr>
-<tr class="<% $RowNum%2 ? 'oddline' : 'evenline'%> ticket-transaction">
-  <td colspan="5" class="content">
+    <td class="description">
+      <%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
+    </td>
+    <td class="time-taken"><%$TimeTaken%></td>
+    <td class="actions"><%$titlebar_commands|n%></td>
+  </tr>
+
+  <tr>
+    <td colspan="4" class="content">
 % if ($Transaction->CustomFieldValues->Count) {
-    <& /Elements/ShowCustomFields, Object => $Transaction &>
+      <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
-  </td>
-</tr>
+    </td>
+  </tr>
+</table>
+</div>
 
 <%ARGS>
 $Ticket => undef

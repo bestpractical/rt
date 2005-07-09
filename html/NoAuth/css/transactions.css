@@ -44,6 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
+.ticket-transaction {
+    margin: 1em 0 1em 0;
+    border: 1px solid #069;
+}
+
 .ticket-transaction .date { font-size: 0.9em; }
 .ticket-transaction .description { font-weight: bold; }
 .ticket-transaction .actions {
@@ -52,54 +57,57 @@
 }
 
 .ticket-transaction .type {
-    background: #ccc;
+    background: #888;
     width: 1.5em;
     color: white;
     text-align: center;
+    font-size: 1.1em;
 }
 
 #body .ticket-transaction .type :link,
 #body .ticket-transaction .type :visited
 {
     color: white;
+    font-weight: normal;
 }
 
-#body .ticket-transaction .type.other :link,
-#body .ticket-transaction .type.other :visited
-{
-    color: black;
-}
-
-.ticket-transaction .type.basics { background: #b32; }
+.ticket-transaction.basics { border-color: #b32; }
+.ticket-transaction.basics .type { background: #b32; }
 .ticket-summary .ticket-info-basics .content { border-left: 0.5em solid #b32; }
 
-.ticket-transaction .type.people { background: #48c; }
+.ticket-transaction.people { border-color: #48c; }
+.ticket-transaction.people .type { background: #48c; }
 .ticket-summary .ticket-info-people .content { border-left: 0.5em solid #48c; }
 
-.ticket-transaction .type.links { background: #ad8; }
+.ticket-transaction.links { border-color: #ad8; }
+.ticket-transaction.links .type { background: #ad8; }
 .ticket-summary .ticket-info-links .content  { border-left: 0.5em solid #ad8; }
 
-.ticket-transaction .type.dates { background: #d71; }
+.ticket-transaction.dates { border-color: #d71; }
+.ticket-transaction.dates .type { background: #d71; }
 .ticket-summary .ticket-info-dates .content  { border-left: 0.5em solid #d71; }
 
-.ticket-transaction .type.message { background: #069; }
+.ticket-transaction.message { border-color: #069; }
+.ticket-transaction.message .type { background: #069; }
 
-td .message-header-value {
+.ticket-transaction.other { border-color: #888; }
+
+.ticket-transaction td .message-header-value {
     padding: 0;
 }
 
-td .message-header-key {
+.ticket-transaction td .message-header-key {
     padding: 0 1em 0 1em;
     font-weight: bold;
 }
 
-.downloadattachment {
+.ticket-transaction .downloadattachment {
     float: right;
     font-size: 0.9em;
     text-align: right;
 }
 
-.messagebody {
+.ticket-transaction .messagebody {
     clear: both;
     padding-left: 0.5em;
 }
