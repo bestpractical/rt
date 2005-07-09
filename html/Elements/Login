@@ -77,7 +77,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 
 <div class="input-row">
     <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input name="user" value="<%$user%>" /></span>
+    <span class="input"><input name="user" value="<%$user%>" id="user" /></span>
 </div>
 
 <div class="input-row">

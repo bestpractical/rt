@@ -62,8 +62,8 @@ function switchVisibility(id1, id2) {
 }
 
 function setFocus(id) {
-    var tmp = (document.getElementsByName(id));
-    if (tmp.length > 0) tmp[tmp.length-1].focus();
+    var e = document.getElementById(id);
+    if (e) e.focus();
 }
 
 function openCalWindow(field) {
