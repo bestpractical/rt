@@ -49,7 +49,7 @@
 <& /Elements/Callback, %ARGS &>
 <div id="footer">
   <p id="time">
-    <span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span>
+    <span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%>s</span>
   </p>
 
   <p id="bpscredits">

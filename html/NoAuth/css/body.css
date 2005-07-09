@@ -147,3 +147,13 @@ td {
     padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
+#body :link { color: #069; }
+
+#body :link, #body :visited {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#body :link:hover, #body :visited:hover {
+    text-decoration: underline;
+}

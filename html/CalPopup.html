@@ -1,4 +1,7 @@
 <& /Elements/Header &>
+%# From /Elements/Header
+</div>
+<div id="body">
 <script>
 function updateParent(strItem) {
     window.opener.document.getElementById('<%$field%>').value = strItem;
@@ -31,7 +34,7 @@ function updateParent(strItem) {
   <tr>
   <td colspan="2"><a href="CalPopup.html?DisplayedMonth=<%$prev_month%>&DisplayedYear=<%$prev_year%>&field=<%$field%>">Previous</a></td>
     <td colspan="3">&nbsp;</td>
-    <td colspan="2"><a href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>">Next</a></td>
+    <td colspan="2" align="right"><a href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>">Next</a></td>
 </table>
 </div>
 </div>
