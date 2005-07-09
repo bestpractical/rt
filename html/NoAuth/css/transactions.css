@@ -83,3 +83,23 @@
 .ticket-summary .ticket-info-dates .content  { border-left: 0.5em solid #d71; }
 
 .ticket-transaction .type.message { background: #069; }
+
+td .message-header-value {
+    padding: 0;
+}
+
+td .message-header-key {
+    padding: 0 1em 0 1em;
+    font-weight: bold;
+}
+
+.downloadattachment {
+    float: right;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+.messagebody {
+    clear: both;
+    padding-left: 0.5em;
+}

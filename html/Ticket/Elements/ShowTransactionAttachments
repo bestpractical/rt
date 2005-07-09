@@ -79,10 +79,10 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
      }
         
 </%PERL> 
-<a HREF="<%$AttachPath%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename | u%>"><&|/l&>Download</&> <%$message->Filename || loc('(untitled)') %></a> 
-<div class="downloadcontenttype">
-<%$message->ContentType%> <% $size %> 
-</div> 
+<a href="<%$AttachPath%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename | u%>"><&|/l&>Download</&> <%$message->Filename || loc('(untitled)') %></a>
+<span class="downloadcontenttype">
+[<%$message->ContentType%> <% $size %>]
+</span> 
 </div>
 % }
 % # }}}
