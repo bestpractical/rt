@@ -95,42 +95,8 @@ if ($ARGS{'QuickCreate'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    my $query = $ARGS{'q'};
-
-   if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->comp("/Ticket/Display.html" , id=> $1);
-        return();
-    }
-
-    if ($m->comp('/Elements/Callback', _CallbackName => 'SearchPreFilter', 
-		 query => $query, %ARGS)) {
-	return();
-    }
-
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-
-    if ( $query =~ m/\@/ ) {
-        $m->comp("/Search/Results.html", Query => "Requestor = '$query'");
-
-        return();
-    }
-
-    #
-    # Any search on queue name or subject will be for new/open tickets
-    # only.
-    #
-
-    my $status = "Status = 'new' OR Status = 'open'";
-
-    my $queue = RT::Queue->new( $session{'CurrentUser'} );
-    if ( $queue->Load($query) && $queue->Id ) {
-        $m->comp("/Search/Results.html", Query => "Queue = '" . $queue->Id . "' AND ($status)");
-        return();
-    }
-
-    $m->comp("/Search/Results.html", Query => "Subject LIKE '$query' AND ($status)");
-    return();
-
+    $m->redirect($RT::WebURL."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
+    $m->abort;
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {
