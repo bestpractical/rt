@@ -60,9 +60,18 @@
 % }
     <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/util.js"></script>
     <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/titlebox-state.js"></script>
+    <script type="text/javascript"><!--
+        onLoadHook("loadTitleBoxStates()");
+% if ($Focus) {
+        onLoadHook("focusElementById('<% $Focus %>')");
+% }
+% if ($onload) {
+        onLoadHook("<% $onload |n %>");
+% }
+    --></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
   </head>
-  <body onload="<% "$onload;" |n %><% $Focus && qq[ setFocus('$Focus');] |n %>loadTitleBoxStates();">
+  <body>
 
 % if ($ShowBar) {
 <div id="quickbar">

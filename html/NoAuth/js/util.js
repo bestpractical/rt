@@ -61,7 +61,7 @@ function switchVisibility(id1, id2) {
     return false;
 }
 
-function setFocus(id) {
+function focusElementById(id) {
     var e = document.getElementById(id);
     if (e) e.focus();
 }
@@ -70,3 +70,41 @@ function openCalWindow(field) {
     var objWindow = window.open('<%$RT::WebPath%>/CalPopup.html?field='+field, 'Pick', 'height=400,width=400,scrollbars=1');
     objWindow.focus();
 }
+
+// onload handlers
+
+var onLoadStack     = new Array();
+var onLoadLastStack = new Array();
+var onLoadExecuted  = 0;
+
+function onLoadHook(commandStr) {
+    if(typeof(commandStr) == "string") {
+        onLoadStack[onLoadStack.length] = commandStr;
+        return true;
+    }
+    return false;
+}
+
+// some things *really* need to be done after everything else
+function onLoadLastHook(commandStr) {
+    if(typeof(commandStr) == "string"){
+        onLoadLastStack[onLoadLastStack.length] = commandStr;
+        return true;
+    }
+    return false;
+}
+
+function doOnLoadHooks() {
+    if(onLoadExecuted) return;
+    
+    for (var x=0; x < onLoadStack.length; x++) { 
+        eval(onLoadStack[x]);
+    }
+    for (var x=0; x < onLoadLastStack.length; x++) { 
+        eval(onLoadLastStack[x]); 
+    }
+    onLoadExecuted = 1;
+}
+
+window.onload = doOnLoadHooks;
+
