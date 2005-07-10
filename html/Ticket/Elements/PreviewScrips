@@ -92,6 +92,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br>
+% if ($Object) {
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
 <b><%$scrip->Description%></b><br>
@@ -110,6 +111,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
 </textarea>
 % }
+%}
 %}
 <br>
 <h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>

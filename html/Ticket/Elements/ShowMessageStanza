@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (ref($Message)) {
-<font color="<%$colors[$Depth]%>">
+<div class="message-stanza-depth-<% $Depth %>">
 <%perl>
 foreach my $stanza (@$Message) {
     if ( ref $stanza eq "ARRAY" ) {
@@ -60,21 +60,19 @@ foreach my $stanza (@$Message) {
                 $content =~ s/\n/<br>/gi if defined $content;
 
 </%perl>
-<%$content |n%><br>
+<%$content |n%>
 %       }
 % } # end foreach
-</font>
+</div>
 % } else {
 % my $content = $Message;
 %        RT::Interface::Web::EscapeUTF8(\$content);
 %        $m->comp('/Elements/Callback', content => \$content, %ARGS);
 %                $content =~ s/\n/<br>/gi;
-<%$content |n%><br>
+<%$content |n%>
 % }
 <%INIT>
 use URI::URL;
-my $server = 'fsck.com';
-my @colors = ('#000000', '#660000', '#006600', '#000066', '#cc0000', '#00cc00', '#0000cc', '#ff0000', '#00ff00', '#0000ff');
 </%INIT>
 <%ARGS>
 $Message => undef
