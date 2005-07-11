@@ -140,6 +140,7 @@ html>body .titlebox .title .widget a {
 %# Compensates for IE's bad box model by hiding this rule from other browsers
 * html .titlebox .title .widget a {
     background-position: center 0.3em;
+    left: -3.5em;
 }
 
 .titlebox .title .widget a.rolled-up {
