@@ -1,63 +1,61 @@
 <& /Elements/Header &>
-%# From /Elements/Header
+  %# From /Elements/Header
 </div>
 <div id="body">
-<script>
-function updateParent(strItem) {
-    window.opener.document.getElementById('<%$field%>').value = strItem;
-    window.close();
-}
-</script>
-<a href="javascript: window.close();">close window</a>
-<br><br>
-<div align="center">
-<div class="table-wrapper">
-<table>
-  <caption><%$months[$DisplayedMonth]%> <%$DisplayedYear%></caption>
-  <tr>
+
+<a href="#" onclick="window.close(); return false;"><&|/l&>Close Window</&></a>
+
+<div class="calendar">
+  <div class="calendar-nav">
+    <a class="prev" href="CalPopup.html?DisplayedMonth=<%$prev_month%>&DisplayedYear=<%$prev_year%>&field=<%$field%>"><&|/l&>Prev</&></a>
+    <a class="next" href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>"><&|/l&>Next</&></a>
+  </div>
+
+  <table>
+    <caption><% $months[$DisplayedMonth] %> <% $DisplayedYear %></caption>
+    <tr>
 % foreach my $wday (@weekdays) {
-    <th><%$wday%></th>
+      <th><%$wday%></th>
 % }
-  </tr>
+    </tr>
 % foreach my $week (@cal) {
-  <tr>
+    <tr>
 %     foreach my $day (@{$week}) {
-    <td>
+      <td>
 %         if ($day) {
 %             my $datestr = sprintf('%04d-%02d-%02d', $DisplayedYear, $DisplayedMonth+1, $day);
-      <dt><a href="javascript: updateParent('<%$datestr%>')"><%$day%></a></dt>
+        <a href="#" onclick="updateParentField('<% $field %>','<% $datestr %>'); return false;"><% $day %></a>
+%         } else {
+        &nbsp;
 %         }
-    </td>
+      </td>
 %     } #foreach $day
-  </tr>
+    </tr>
 % } # foreach $week
-  <tr>
-  <td colspan="2"><a href="CalPopup.html?DisplayedMonth=<%$prev_month%>&DisplayedYear=<%$prev_year%>&field=<%$field%>">Previous</a></td>
-    <td colspan="3">&nbsp;</td>
-    <td colspan="2" align="right"><a href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>">Next</a></td>
-</table>
-</div>
+  </table>
 </div>
 
 <%init>
 use Calendar::Simple;
 my @today = localtime(time());
 
-my @weekdays = (loc('Sun'), loc('Mon'), loc('Tue'), loc('Wed'), loc('Thu'), 
-		loc('Fri'), loc('Sat'));
-my @months = (loc('January'), loc('February'), loc('March'), loc('April'), 
-	      loc('May'), loc('June'), loc('July'), loc('August'), 
-	      loc('September'), loc('October'), loc('November'), 
-              loc('December'));
+my @weekdays;
+push @weekdays, loc($_)
+  for qw(Sun Mon Tue Wed Thu Fri Sat);
+
+my @months;
+push @months, loc($_)
+  for qw(January February March April May June July August
+         September October November December);
 
 unless ($DisplayedYear) {
-              $DisplayedMonth = $today[4];
-              $DisplayedYear = ($today[5] + 1900);
+    $DisplayedMonth = $today[4];
+    $DisplayedYear  = ($today[5] + 1900);
 }              
 
 my ($prev_year, $next_year, $prev_month, $next_month);
 $prev_month = $next_month = $DisplayedMonth;
-$prev_year = $next_year = $DisplayedYear;
+$prev_year  = $next_year  = $DisplayedYear;
 
 $next_month++;
 $prev_month--;
@@ -65,20 +63,15 @@ $prev_month--;
 if ($DisplayedMonth == 11) {
     $next_year++;
     $next_month = 0;
-    } 
+}
 elsif ($DisplayedMonth == 0) {
-        $prev_month = 11;
-        $prev_year--;
-
-
-    }
-
-
-
+    $prev_month = 11;
+    $prev_year--;
+}
 
 my @cal = calendar($DisplayedMonth, $DisplayedYear);
-
 </%init>
+
 <%args>
 $field => 'none'
 $DisplayedMonth => undef

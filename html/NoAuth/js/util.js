@@ -71,6 +71,13 @@ function openCalWindow(field) {
     objWindow.focus();
 }
 
+function updateParentField(field, value) {
+    if (window.opener) {
+        window.opener.document.getElementById(field).value = value;
+        window.close();
+    }
+}
+
 // onload handlers
 
 var onLoadStack     = new Array();
