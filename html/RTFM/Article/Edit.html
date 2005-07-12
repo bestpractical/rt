@@ -27,9 +27,10 @@
        Title => loc('Create a new article') &>
 % }
 <& /Elements/ListActions, actions => \@results &>
+
+<form method="post action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<%$id%>"/>
 <table width="100%">
-<FORM METHOD=POST ACTION="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id%>"/>
 <tr><td><h2><&|/l&>Basics</&></h2>
 </td><td></td></tr>
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
@@ -61,16 +62,17 @@
 </td>
 <td>
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
-                        ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
+                        Classes => [$ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj],
                         OnlyThisClass => 1,
                         %ARGS,
                         id => $id
                         &>
 </td>
 </tr>
+</table>
 <& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333" &>
 </form>
-</table>
+
 <%INIT>
 
 if ( exists $ARGS{'Topics'} ) {

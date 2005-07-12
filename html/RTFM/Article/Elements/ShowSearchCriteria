@@ -111,7 +111,7 @@ is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , Sho
 <h2><&|/l&>Topics</&></h2>
 </td></tr>
 <tr><td class="label"></td><td>
-<& /RTFM/Article/Elements/EditTopics, %ARGS &>
+<& /RTFM/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
 <br /><input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
 <&|/l&>Include subtopics</&> 
 </td></tr>
@@ -119,8 +119,18 @@ is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , Sho
 <&/Elements/TitleBoxEnd&>
 % }
 
-
+<%init>
+my @Classes =
+ ( ref $ARGS{'Class'} eq 'ARRAY' )
+      ? @{ $ARGS{'Class'} }
+      : ( $ARGS{'Class'} );
+for (@Classes) {
+  my $class = RT::FM::Class->new( $session{'CurrentUser'} );
+  $class->LoadById($_);
+  $_ = $class;
+}
 </%init>
+
 <%ARGS>
 $dates =>undef
 $RefersTo => undef

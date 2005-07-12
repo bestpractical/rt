@@ -17,6 +17,21 @@
 %# END LICENSE BLOCK
 
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
+
+% unless ($ARGS{'Class'}) {
+%   my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
+%   $Classes->UnLimit;
+
+<&|/l&>Select a class to search:</&>
+<ul>
+% while (my $class = $Classes->Next) {
+<li><a href="<%$RT::WebPath%>/RTFM/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><% $class->Name %></a></li>
+% }  
+</ul>
+
+%  return;
+% }
+
 <& /Elements/ListActions, actions => \@results &>
 <div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
 

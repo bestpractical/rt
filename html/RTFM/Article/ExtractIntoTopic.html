@@ -23,7 +23,7 @@
 <form action="ExtractFromTicket.html">
 <input type="hidden" name="Ticket" value="<% $Ticket %>" />
 <input type="hidden" name="Class"  value="<% $ClassObj->id %>" />
-<& Elements/EditTopics, ClassObj => $ClassObj,
+<& Elements/EditTopics, Classes => [$ClassObj],
                         OnlyThisClass => 1,
                         id => 'new',
                         &><br />

@@ -31,7 +31,7 @@
 <input type="hidden" name="Ticket" value="<% $Ticket %>" />
 <input type="hidden" name="Class"  value="<% $Class->id %>" />
 <&|/l &>Select topics for this article</&>:<br/>
-<& Elements/EditTopics, ClassObj => $Class,
+<& Elements/EditTopics, Classes => [$Class],
                         OnlyThisClass => 1,
                         id => 'new',
                         &><br />

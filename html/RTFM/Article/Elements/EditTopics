@@ -17,35 +17,35 @@
 %# END LICENSE BLOCK
 
 <input type="hidden" name="EditTopics" value="1" />
-<select multiple size="<% $rows > 10 ? 10 : $rows %>" name="Topics">
+<select multiple size="10" name="Topics">
 <%perl>
-if ($ClassObj->Id) {
-   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">")
-     unless $OnlyThisClass;
-   $inTree->traverse(sub {
-     my $tree = shift;
-     my $topic = $tree->getNodeValue;
-     $m->print("<option value=\"".$topic->Id."\""
-       .(exists $topics{$topic->Id} ? " selected" : "").">"
-       .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
-   });
- }
- unless ($OnlyThisClass) {
- my $class = $ClassObj->Id;
- $otherTree->traverse(sub {
-   my $tree = shift;
-   my $topic = $tree->getNodeValue;
-   if ($topic->ObjectId != $class) {
-     $class = $topic->ObjectId;
-     $m->print("</optgroup>\n");
-     my $c = new RT::FM::Class($session{'CurrentUser'});
-     $c->Load($topic->ObjectId);
-     $m->print("<optgroup label=\"".$c->Name."\">\n");
-   }
-   $m->print("<option value=\"".$topic->Id."\""
-     .(exists $topics{$topic->Id} ? " selected" : "").">"
-     .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
- });
+if (@Classes) {
+  $m->print("<optgroup label=\"Current classes (".join (' ',map {$_->Name} @Classes).")\">")
+    unless $OnlyThisClass;
+  $inTree->traverse(sub {
+    my $tree = shift;
+    my $topic = $tree->getNodeValue;
+    $m->print("<option value=\"".$topic->Id."\""
+      .(exists $topics{$topic->Id} ? " selected" : "").">"
+      .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+  });
+}
+unless ($OnlyThisClass) {
+  my $class = $Classes[-1]->Id;
+  $otherTree->traverse(sub {
+    my $tree = shift;
+    my $topic = $tree->getNodeValue;
+    unless ($topic->ObjectId == $class) {
+      $class = $topic->ObjectId;
+      $m->print("</optgroup>\n");
+      my $c = new RT::FM::Class($session{'CurrentUser'});
+      $c->Load($topic->ObjectId);
+      $m->print("<optgroup label=\"".$c->Name."\">\n");
+    }
+    $m->print("<option value=\"".$topic->Id."\""
+      .(exists $topics{$topic->Id} ? " selected" : "").">"
+      .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+  });
 </%perl>
 </optgroup>
 % }
@@ -55,14 +55,16 @@ if ($ClassObj->Id) {
 use Tree::Simple;
 
 my $inClass = new RT::FM::TopicCollection($session{'CurrentUser'});
-$inClass->LimitToObject($ClassObj);
+$inClass->LimitToObject($_) for @Classes;
 $inClass->OrderByCols({FIELD => 'Name'});
 my $inTree = buildTree($inClass);
 
 my $otherClass = new RT::FM::TopicCollection($session{'CurrentUser'});
-if ($ClassObj->Id) {
-    $otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
-    $otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $ClassObj->Id);
+if (@Classes) {
+  $otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+  for (@Classes) {
+    $otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $_->Id);
+  }
 } else {
     $otherClass->UnLimit;
 }
@@ -75,20 +77,6 @@ while (my $topicObj = $articleTopics->Next) {
     $topics{$topicObj->Topic} = 1;
 }
 $topics{$_} = 1 for @Topics;
-
-my $rows = 1;
-$inTree->traverse(sub {$rows++});
-unless ($OnlyThisClass) {
-  $rows++;
-  my $class = $ClassObj->Id;
-  $otherTree->traverse(sub {
-                         $rows++;
-                         if ($class != $_[0]->getNodeValue->ObjectId) {
-                           $rows++;
-                           $class = $_[0]->getNodeValue->ObjectId;
-                         }
-                       });
-}
 
 sub buildTree {
     my $query = shift;
@@ -122,7 +110,7 @@ sub buildTree {
 </%INIT>
 <%ARGS>
 $ArticleObj => new RT::FM::Article($session{'CurrentUser'})
-$ClassObj => new RT::FM::Class($session{'CurrentUser'})
+@Classes => ()
 @Topics => undef
 $OnlyThisClass => undef
 </%ARGS>
