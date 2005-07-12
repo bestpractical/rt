@@ -2374,6 +2374,24 @@ sub _RecordNote {
                                  ) )
       if defined $args{'BccMessageTo'};
 
+    # If this is from an external source, we need to come up with its
+    # internal Message-ID now, so all emails sent because of this
+    # message have a common Message-ID
+    unless ($args{'MIMEObj'}->head->get('Message-ID')
+            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>/) {
+        $args{'MIMEObj'}->head->set( 'RT-Message-ID',
+            "<rt-"
+            . $RT::VERSION . "-"
+            . $$ . "-"
+            . CORE::time() . "-"
+            . int(rand(2000)) . '.'
+            . $self->id . "-"
+            . "0" . "-"  # Scrip
+            . "0" . "@"  # Email sent
+            . $RT::Organization
+            . ">" );
+    }
+
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
              Type => $args{'NoteType'},

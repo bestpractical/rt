@@ -460,12 +460,15 @@ sub ProcessUpdateMessage {
             Body    => $args{ARGSRef}->{'UpdateContent'},
         );
 
-        $Message->head->add( 'Message-Id' => "<rt-"
+        $Message->head->add( 'Message-ID' => 
+              "<rt-"
               . $RT::VERSION . "-"
-              . $args{TicketObj}->id . "-"
               . $$ . "-"
-              . time() . "-"
-              . rand(2000) . '@'
+              . CORE::time() . "-"
+              . int(rand(2000)) . "."
+              . $args{'TicketObj'}->id . "-"
+              . "0" . "-"  # Scrip
+              . "0" . "@"  # Email sent
               . $RT::Organization
               . ">" );
         my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
@@ -477,11 +480,13 @@ sub ProcessUpdateMessage {
         }
 
         if ( $old_txn->Message && $old_txn->Message->First ) {
-            $Message->head->replace( 'In-Reply-To',
-                $old_txn->Message->First->GetHeader('Message-Id') );
-            $Message->head->replace( 'References',
-                    $old_txn->Message->First->GetHeader('References') . " "
-                  . $old_txn->Message->First->GetHeader('Message-Id') );
+            my @in_reply_to = split(/\s+/m, $old_txn->Message->First->GetHeader('In-Reply-To') || '');  
+            my @references = split(/\s+/m, $old_txn->Message->First->GetHeader('References') || '' );  
+            my @msgid = split(/\s+/m,$old_txn->Message->First->GetHeader('Message-ID') || ''); 
+            my @rtmsgid = split(/\s+/m,$old_txn->Message->First->GetHeader('RT-Message-ID') || ''); 
+
+            $Message->head->replace( 'In-Reply-To', join (' ', @rtmsgid ? @rtmsgid : @msgid));
+            $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
         }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
