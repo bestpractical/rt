@@ -43,15 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>"> 
-<script language="javascript" type="text/javascript">
-<!--
-document.write('<a href="javascript:');
-document.write("openCalWindow('<% $Name %>');");
-document.write('">pick</a>');
-// -->
-</script>
-
+<script type="text/javascript"><!--
+    onLoadHook('createCalendarLink("<% $Name %>");');
+--></script>
+<input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" />
 <%init>
 unless ((defined $Default) or 
 	($current <= 0)) {

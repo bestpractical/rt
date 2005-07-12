@@ -67,7 +67,7 @@ function focusElementById(id) {
 }
 
 function openCalWindow(field) {
-    var objWindow = window.open('<%$RT::WebPath%>/CalPopup.html?field='+field, 'Pick', 'height=400,width=400,scrollbars=1');
+    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, '<% loc("Choose a date") %>', 'height=400,width=400,scrollbars=1');
     objWindow.focus();
 }
 
@@ -76,6 +76,26 @@ function updateParentField(field, value) {
         window.opener.document.getElementById(field).value = value;
         window.close();
     }
+}
+
+function createCalendarLink(input) {
+    var e = document.getElementById(input);
+    if (e) {
+        var link = document.createElement('a');
+        link.setAttribute('href', '#');
+        link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
+        
+        var text = document.createTextNode('<% loc("Choose a date") %>');
+        link.appendChild(text);
+        
+        var space = document.createTextNode(' ');
+        
+        e.parentNode.insertBefore(link, e.nextSibling);
+        e.parentNode.insertBefore(space, e.nextSibling);
+        
+        return true;
+    }
+    return false;
 }
 
 // onload handlers
