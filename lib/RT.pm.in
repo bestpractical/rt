@@ -279,10 +279,12 @@ sub InitLogging {
 ## mechanism (see above).
 
 $SIG{__WARN__} = sub {
+    my $w = shift;
+    $w =~ s/(?:\r*\n)+$//;
     # The 'wide character' warnings has to be silenced for now, at least
     # until HTML::Mason offers a sane way to process both raw output and
     # unicode strings.
-    $RT::Logger->warning($_[0]) if index($_[0], 'Wide character in ') != 0;
+    $RT::Logger->warning($w) if index($w, 'Wide character in ') != 0;
 };
 
 #When we call die, trap it and log->crit with the value of the die.

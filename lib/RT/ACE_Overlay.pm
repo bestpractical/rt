@@ -244,14 +244,13 @@ sub Create {
 
 
     if ($args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'})) {
-        use Carp;
-        $RT::Logger->crit(Carp::cluck("ACE::Create called with an ObjectType or an ObjectId"));
+        $RT::Logger->crit("ACE::Create called with an ObjectType or an ObjectId");
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
 
-
-    
     unless ($args{'Object'} && UNIVERSAL::can($args{'Object'},'id')) {
-            return ( 0, $self->loc("System error. Right not granted.") );
+        $RT::Logger->crit("ACE::Create called with Object that has no id method");
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
     # {{{ Check the ACL
 
@@ -302,9 +301,6 @@ sub Create {
         }
     }
 
-    unless ( $args{'RightName'} ) {
-        return ( 0, $self->loc('Invalid right') );
-    }
     # }}}
 
     # Make sure the right doesn't already exist.
