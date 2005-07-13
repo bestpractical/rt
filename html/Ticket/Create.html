@@ -47,6 +47,7 @@
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket") &>
+<& /Elements/ListActions, actions => \@results &>
 <FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
@@ -248,7 +249,7 @@
 <%INIT>
 
 
-
+my @results;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->TicketCustomFields();
@@ -305,10 +306,19 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new') and $ValidCFs) { # new ticket?
-    $m->comp('Display.html', %ARGS);
-    $RT::Logger->crit("After display call; error is $@");
-    $m->abort();
+if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new')) { # new ticket?
+    if ($ValidCFs) {
+        $m->comp('Display.html', %ARGS);
+        $RT::Logger->crit("After display call; error is $@");
+        $m->abort();
+    }
+    else {
+        # Invalid CFs
+        while (my $CF = $CFs->Next) {
+            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+            push @results, $CF->Name . ': ' . $msg;
+        }
+    }
 }
 </%INIT>
 
