@@ -181,6 +181,7 @@ Scalar::Util
 Module::Versions::Report
 Cache::Simple::TimedExpiry
 XML::Simple
+Calendar::Simple
 .
 
 $deps{'MASON'} = [ _( << '.') ];
