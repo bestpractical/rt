@@ -223,40 +223,52 @@ sub LimitCustomField {
         @_
     );
 
+    my $value = $args{'VALUE'};
+    next unless $value;    #strip out total blank wildcards
+    my $ObjectValuesAlias = $self->Join(
+        TYPE   => 'left',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFieldValues',
+        FIELD2 => 'ObjectId'
+    );
 
-        my $value = $args{'VALUE'};
-        next unless $value;    #strip out total blank wildcards
-        my $ObjectValuesAlias = $self->Join(
-            TYPE   => 'left',
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'ObjectCustomFieldValues',
-            FIELD2 => 'ObjectId'
-        );
+    # Ignore disabled values
+    $self->Limit( ALIAS           => $ObjectValuesAlias,
+                  FIELD           => "Disabled",
+                  VALUE           => "0");
 
-        if ( $args{'FIELD'} ) {
+    if ( $args{'FIELD'} ) {
 
-            my $field_id;
+        my $field_id;
 
-            if (UNIVERSAL::isa($args{'FIELD'} ,'RT::CustomField')) {
-                    $field_id = $args{'FIELD'}->id;
-            } elsif($args{'FIELD'} =~ /^\d+$/) {
-                    $field_id = $args{'FIELD'};
-            }
-            if ($field_id) {
-            $self->Limit( LEFTJOIN           => $ObjectValuesAlias, FIELD           => 'CustomField', VALUE           => $args{'FIELD'}, ENTRYAGGREGATOR => 'OR');
+        if (UNIVERSAL::isa($args{'FIELD'} ,'RT::CustomField')) {
+            $field_id = $args{'FIELD'}->id;
+        } elsif($args{'FIELD'} =~ /^\d+$/) {
+            $field_id = $args{'FIELD'};
+        }
+        if ($field_id) {
+            $self->Limit( LEFTJOIN        => $ObjectValuesAlias,
+                          FIELD           => 'CustomField',
+                          VALUE           => $args{'FIELD'},
+                          ENTRYAGGREGATOR => 'OR');
             # Could convert the above to a non-left join and also enable the thing below
-            #$self->SUPER::Limit( ALIAS           => $ObjectValuesAlias, FIELD           => 'CustomField', OPERATOR        => 'IS', VALUE           => 'NULL', QUOTEVALUE      => 0, ENTRYAGGREGATOR => 'OR',);
+            # $self->SUPER::Limit( ALIAS           => $ObjectValuesAlias,
+            #                      FIELD           => 'CustomField',
+            #                      OPERATOR        => 'IS',
+            #                      VALUE           => 'NULL',
+            #                      QUOTEVALUE      => 0,
+            #                      ENTRYAGGREGATOR => 'OR',);
         } else {
             # Search for things by name if the cf was specced by name.
             my $fields = $self->NewAlias('CustomFields');
             $self->Join( TYPE => 'left',
-                        ALIAS1 => $ObjectValuesAlias , FIELD1 => 'CustomField',
-                          ALIAS2 => $fields, FIELD2=> 'id');
-            $self->Limit(ALIAS => $fields,
-                        FIELD => 'Name',
-                        VALUE => $args{'FIELD'},
-                        ENTRYAGGREGATOR  => 'OR');
+                         ALIAS1 => $ObjectValuesAlias , FIELD1 => 'CustomField',
+                         ALIAS2 => $fields, FIELD2=> 'id');
+            $self->Limit( ALIAS => $fields,
+                          FIELD => 'Name',
+                          VALUE => $args{'FIELD'},
+                          ENTRYAGGREGATOR  => 'OR');
             $self->Limit(
                 ALIAS => $fields,
                 FIELD => 'LookupType',
@@ -266,50 +278,51 @@ sub LimitCustomField {
 
         }
     }
-      #If we're trying to find articles where a custom field value doesn't match
-      # something, be sure to find  things where it's null
+    # If we're trying to find articles where a custom field value
+    # doesn't match something, be sure to find things where it's null
 
-#basically, we do a left join on the value being applicable to the article and then we turn around
-# and make sure that it's actually null in practise
+    # basically, we do a left join on the value being applicable to
+    # the article and then we turn around and make sure that it's
+    # actually null in practise
 
-        #TODO this should deal with starts with and ends with
+    # TODO this should deal with starts with and ends with
 
-        if ( $args{'OPERATOR'} eq '!=' || $args{'OPERATOR'} =~ /^not like$/i ) {
-            my $op;
-            if ( $args{'OPERATOR'} eq '!=' ) {
-                $op = "=";
-            }
-            elsif ( $args{'OPERATOR'} =~ /^not like$/i ) {
-                $op = 'LIKE';
-            }
-
-            $self->SUPER::Limit(
-                LEFTJOIN        => $ObjectValuesAlias,
-                FIELD           => 'Content',
-                OPERATOR        => $op,
-                VALUE           => $value,
-                QUOTEVALUE      => $args{'QUOTEVALUE'},
-                ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
-            );
-            $self->SUPER::Limit(
-                ALIAS        => $ObjectValuesAlias,
-                FIELD           => 'Content',
-                OPERATOR        => 'IS',
-                VALUE           => 'NULL',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'AND',
-            );
+    if ( $args{'OPERATOR'} eq '!=' || $args{'OPERATOR'} =~ /^not like$/i ) {
+        my $op;
+        if ( $args{'OPERATOR'} eq '!=' ) {
+            $op = "=";
         }
-        else {
-            $self->SUPER::Limit(
-                ALIAS           => $ObjectValuesAlias,
-                FIELD           => 'Content',
-                OPERATOR        => $args{'OPERATOR'},
-                VALUE           => $value,
-                QUOTEVALUE      => $args{'QUOTEVALUE'},
-                ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
-            );
+        elsif ( $args{'OPERATOR'} =~ /^not like$/i ) {
+            $op = 'LIKE';
         }
+
+        $self->SUPER::Limit(
+            LEFTJOIN        => $ObjectValuesAlias,
+            FIELD           => 'Content',
+            OPERATOR        => $op,
+            VALUE           => $value,
+            QUOTEVALUE      => $args{'QUOTEVALUE'},
+            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+        );
+        $self->SUPER::Limit(
+            ALIAS        => $ObjectValuesAlias,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
+    else {
+        $self->SUPER::Limit(
+            ALIAS           => $ObjectValuesAlias,
+            FIELD           => 'Content',
+            OPERATOR        => $args{'OPERATOR'},
+            VALUE           => $value,
+            QUOTEVALUE      => $args{'QUOTEVALUE'},
+            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+        );
+    }
 }
 
 # }}}
