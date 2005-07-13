@@ -125,7 +125,6 @@ po/RTFM/fr.po
 po/RTFM/zh_tw.po
 README
 releng.cnf
-RTx-RTFM-2.1.10.tar.gz
 sbin/factory
 sbin/migrate-2.0-to-2.1
 t/00smoke.t

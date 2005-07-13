@@ -73,8 +73,6 @@ sub Limit {
         }
     }
     else {
-        $RT::Logger->debug(
-            ref($self) . " Limit called :" . join( " ", %ARGS ) );
         $self->SUPER::Limit(%ARGS);
     }
 }
