@@ -175,6 +175,11 @@ sub MakeLinks {
 	$output .= ": " . $topic->Description() if $topic->Description();
 	$output .= "</a>";
 	
+        my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
+        $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+        $Articles->Limit(FIELD => 'Topic', VALUE => $topic->Id);
+        $output .= " (".loc("[quant,_1,article]", $Articles->Count).")" if $Articles->Count;
+
 	if ($haschild) {
         #  Commented out by Jesse, since it seems confusing
         #  
