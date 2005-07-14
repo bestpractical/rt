@@ -43,19 +43,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-% my ($i, $class);
+<script type="text/javascript"><!--
+    onLoadHook('createCalendarLink("CreatedBefore");');
+    onLoadHook('createCalendarLink("CreatedAfter");');
+--></script>
 % my %done;
 % foreach ($tickets, $group_tickets) {
 %   while (my $ticket = $_->Next() ) {
 %     next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies( Type => 'approval' );
 %     next if $done{$ticket->Id}++; # don't show duplicate tickets
-%     $i++; 
-%     $class = ($i%2) ?  "oddline" : "evenline";
-<& Approve, ticket => $ticket, class => $class &>
+<& Approve, ticket => $ticket &>
 %   }
 % }
-</table>
 
 <&| /Widgets/TitleBox, title => loc("Search for approvals") &>
 <input type="checkbox" class="checkbox" value="1" name="ShowPending"
@@ -66,9 +65,9 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <%$ARGS{'ShowRejected'} && "checked"%>> <&|/l&>Show denied requests</&><br>
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <%$ARGS{'ShowDependent'} && "checked"%>> <&|/l&>Show requests awaiting other approvals</&><br>
 
-<&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
+<&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
 
-<&|/l, "<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>"&>Only show approvals for requests created after [_1]</&>
+<&|/l, "<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter'>"&>Only show approvals for requests created after [_1]</&>
 </&>
 
 <%init>
