@@ -157,11 +157,6 @@ sub GrantRight {
                 @_);
 
 
-    #if we haven't specified any sort of right, we're talking about a global right
-    if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
-        $args{'Object'} = $RT::System;
-    }
-
     unless ($args{'Right'}) {
         return(0, $self->loc("Invalid Right"));
     }
