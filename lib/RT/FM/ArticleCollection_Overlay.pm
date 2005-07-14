@@ -228,13 +228,9 @@ sub LimitCustomField {
         ALIAS1 => 'main',
         FIELD1 => 'id',
         TABLE2 => 'ObjectCustomFieldValues',
-        FIELD2 => 'ObjectId'
+        FIELD2 => 'ObjectId',
+        EXPRESSION => 'main.id AND Disabled = 0'
     );
-
-    # Ignore disabled values
-    $self->Limit( ALIAS           => $ObjectValuesAlias,
-                  FIELD           => "Disabled",
-                  VALUE           => "0");
 
     if ( $args{'FIELD'} ) {
 
