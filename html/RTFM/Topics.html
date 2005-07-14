@@ -41,7 +41,6 @@ if (defined $class) {
         $m->print('<li><h2>'.'<a href="'.
         $RT::WebPath."/RTFM/Topics.html?class=" . $c->Id
         .'">'.$c->Name."</a></h2>\n");
-	ProduceTree(\@Actions, $c, 0, $id);
         $m->print("\n</li>\n");
     }
     $m->print("</ul>\n");
