@@ -32,32 +32,20 @@ function ComboBox_Load( comboId ) {
     combo.List = list;
     combo.Button = button;
     combo.Text = text;
-    combo.style.border = "2px inset ButtonFace";
-    combo.style.padding = "0px";
-    combo.style.margin = "0px";
     
     button.Container = combo;
     button.Toggle = ComboBox_ToggleList;
     button.onclick = button.Toggle;
     button.onmouseover = function(e) { this.Container.List.DisableBlur(e); };
     button.onmouseout = function(e) { this.Container.List.EnableBlur(e); };
-    button.style.padding = "0px";
-    button.style.margin = "0px";
-    button.style.background = "ButtonFace";
-    button.style.color = "ButtonText";
-    button.style.borderLeft = "1px outset ButtonFace";
-    button.style.cursor = "default";
-    button.style.fontSize = "8pt";
     button.innerHTML = "\u25BC";
     button.onselectstart = function(e){ return false; };
+    button.style.height = ( list.offsetHeight - 4 ) + "px";
     
     text.Container = combo;
     text.TypeDown = ComboBox_TextTypeDown;
     text.KeyAccess = ComboBox_TextKeyAccess;
     text.onkeyup = function(e) { this.KeyAccess(e); this.TypeDown(e); };
-    text.style.border = "none";
-    text.style.margin = "0px";
-    text.style.padding = "0px";
     text.style.width = ( list.offsetWidth ) + "px";
     
     list.Container = combo;
@@ -74,7 +62,6 @@ function ComboBox_Load( comboId ) {
     list.onkeyup = function(e) { this.KeyAccess(e); };
     list.EnableBlur(null);
     list.style.position = "absolute";
-    list.style.zIndex = 200;
     list.size = ComboBox_GetListSize( list );
     list.IsShowing = true;
     list.Hide();
@@ -187,7 +174,7 @@ function ComboBox_ShowList(e) {
     if ( !this.IsShowing && !this.disabled ) {
         this.style.width = ( this.Container.offsetWidth ) + "px";
         this.style.top = ( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
-        this.style.left = ( ComboBox_RecursiveOffsetLeft(this.Container,true) ) + "px";
+        this.style.left = ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
         ComboBox_SetVisibility(this,true);
         this.focus();
         this.IsShowing = true;
