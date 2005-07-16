@@ -252,7 +252,7 @@ my @current_values = grep { defined } @options[@clauses];
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
     if (
-        $arg =~ m/^ValueOf(\w+)$/
+        $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
         && ( ref $ARGS{$arg} eq "ARRAY"
             ? grep { $_ ne "" } @{ $ARGS{$arg} }
             : $ARGS{$arg} ne "" )
