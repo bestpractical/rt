@@ -48,9 +48,20 @@ form .label, form label {
     font-weight: bold;
 }
 
+.submit {
+    background: #069;
+%# These borders are needed so the container actually surrounds the floats inside it
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    color: #ffdb00;
+    font-weight: bold;
+}
+
 .submit .buttons { float: right; }
 .submit .extra-buttons { float: left; }
 .submit .button { font-size: 0.9em; }
+
+.submit .submit-clear { clear: right; }
 
 .input-row {
     clear: both;

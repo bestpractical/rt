@@ -94,6 +94,7 @@ form .label, form label {
 .submit .buttons { float: right; }
 .submit .extra-buttons { float: left; }
 .submit .button { font-size: 0.9em; }
+.submit .submit-clear { display: none; }
 
 .input-row {
     clear: both;

@@ -1,3 +1,9 @@
+#quickbar {
+    position: relative;
+    padding-bottom: -2em;
+    border-bottom: 2.5em solid #000084;
+}
+
 #logo {
     position: relative;
     width: 216px;
@@ -6,10 +12,15 @@
 }
 
 #logo img { border: none; }
+
 #logo div.rtname {
-    padding-left: 1em;
+    position: absolute;
+    left: 1em;
+    bottom: -1.5em;
     font-weight: bold;
     font-size: 1.3em;
+    background: #000084;
+    color: white;
 }
 
 #quickbar #quick-personal {
@@ -37,8 +48,10 @@
 }
 
 #quickbar #topactions {
+    color: white;
     font-size: 0.9em;
-    float: right;
-    clear: right;
-    margin: 1.5em 1em 0 0;
+    position: absolute;
+    right: 1em;
+    bottom: -2.3em;
+    background: #000084;
 }

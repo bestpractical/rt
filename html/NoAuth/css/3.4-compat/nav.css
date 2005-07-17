@@ -1,20 +1,19 @@
 #nav {
     clear: both;
     float: left;
-    width: 10em;
-    font-size: 1.3em;
+    width: 18%;
+    font-size: 1.4em;
     color: #eee;
-    margin: 8px 0.5em 0 0;
+    margin: 0;
     background: #4282b5 url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right;
 }
 
-#body { margin-left: 14em; }
+#body { margin-left: 20%; }
 
 #nav #system-menu {
-    padding: 0 0.5em 0.5em 0.5em;
+    padding: 0 0.2em 0.2em 0.2em;
     margin-top: 0;
 /*    background: transparent url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; */
-    font-weight: bold;
 }
 
 #nav ul {
@@ -34,7 +33,6 @@
 
 #nav li ul {
     font-size: 0.9em;
-    font-weight: normal;
 }
 
 #nav li ul li {
@@ -59,4 +57,5 @@
 #nav :visited.selected
 {
     text-decoration: underline;
+    font-weight: bold;
 }
