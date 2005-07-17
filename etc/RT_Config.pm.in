@@ -286,6 +286,20 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 # {{{ Web interface configuration
 
+# This determines the default stylesheet the RT web interface will use.
+# RT ships with two valid values by default:
+#
+#   3.5-default     The totally new, default layout for RT 3.5
+#   3.4-compat      A 3.4 compatibility stylesheet to make RT 3.5 look
+#                   (mostly) like 3.4
+#
+# This value actually specifies a directory in share/html/NoAuth/css/
+# from which RT will try to load the file main.css (which should
+# @import any other files the stylesheet needs).  This allows you to
+# easily and cleanly create your own stylesheets to apply to RT.
+
+Set($WebDefaultStylesheet, '3.5-default');
+
 # Define the directory name to be used for images in rt web
 # documents.
 
