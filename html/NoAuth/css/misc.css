@@ -50,106 +50,6 @@ body {
     margin: 0;
 }
 
-#logo {
-    float: left;
-    clear: left;
-}
-
-#logo img { border: none; }
-#logo div.rtname {
-    text-align: center;
-    font-weight: bold;
-}
-
-#quickbar #quick-personal {
-    display: inline;
-    color: #888;
-    padding: 0.5em 1em 0 0;
-    float: right;
-}
-
-#quickbar #quick-personal span {
-    font-weight: bold;
-}
-
-#quickbar #quick-personal :link,
-#quickbar #quick-personal :visited
-{
-    color: #888;
-    font-weight: bold;
-}
-
-#quickbar #quick-personal :link:hover,
-#quickbar #quick-personal :visited:hover
-{
-    color: black;
-}
-
-#quickbar #topactions {
-    font-size: 0.9em;
-    padding: 0.5em 0 0 2em;
-}
-
-#quickbar #topactions form {
-    display: inline;
-    margin-right: 2em;
-}
-
-#quickbar #topactions form .button {
-    padding: 0 2px 0 2px;
-    font-size: 1em;
-    margin: 0;
-}
-
-#quickbar #topactions form .field {
-    border: 1px solid #069;
-    padding: 1px;
-    font-size: 0.9em;
-}
-
-#quickbar #topactions form input.field {
-    padding: 3px;
-}
-
-#login-box {
-    width: 50%;
-    margin: 0 auto 4em auto;
-}
-
-%# More rules only IE will recognize (but are still valid!) to correct for
-%# IE's incorrect handling of auto margins and the W3C defined behavior.
-%# text-align will affect a block element in IE, therefore centering it, like
-%# left and right auto margins *should*
-* html #login-box {
-    text-align: center;
-}
-
-%# ... and align the text back the way it should be
-* html #login-box .titlebox {
-    text-align: left;
-}
-
-#login-box .input-row {
-    padding: 0.5em;
-}
-
-#login-box .input-row .label {
-    width: 8em;
-    float: left;
-    text-align: right;
-    padding: 0.2em 1em 0 0;
-}
-
-#login-box .input-row .input {
-    float: left;
-}
-
-#login-box .button-row {
-    clear: both;
-    padding: 0.5em;
-    float: right;
-}
-
 .hide, .hidden { display: none !important; }
 
 .calendar {
@@ -163,3 +63,12 @@ body {
     padding: 0 1em 0 1em;
     font-size: 1.5em;
 }
+
+.evenline { background-color: white; }
+.oddline { background-color: #ddd; }
+
+td {
+    padding: 0.1em 0.5em 0.1em 0.5em;
+}
+
+.clear { clear: both; }

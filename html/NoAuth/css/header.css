@@ -47,12 +47,7 @@
 #header {
     clear: both;
     margin: 0 0.75em 0 0.75em;
-    /*padding-top: 3.5em;*/
 }
-
-/*html>body #header { padding-top: 7em; }*/
-
-.clear { clear: both; }
 
 #header h1 {
     margin: 0;
