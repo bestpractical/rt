@@ -1,7 +1,7 @@
 <& /Elements/Header, ShowBar => 0 &>
 %# From /Elements/Header
 </div>
-<div id="body">
+<div id="body" class="calpopup">
 
 <a href="#" onclick="window.close(); return false;"><&|/l&>Close window</&></a>
 
@@ -33,6 +33,10 @@
 % } # foreach $week
   </table>
 </div>
+</div>
+</body>
+</html>
+% $m->abort();
 
 <%init>
 use Calendar::Simple;

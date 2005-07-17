@@ -52,9 +52,13 @@ body {
 
 .hide, .hidden { display: none !important; }
 
+#body.calpopup {
+    margin-left: 2em;
+}
+
 .calendar {
     text-align: center;
-    margin: 2em auto 0 auto;
+    margin: 2em 0 0 0;
 }
 
 .calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }

@@ -46,7 +46,7 @@
 <div class="titlebox<% $class && " $class" %>"<% $id && qq[ id="$id"] |n %>>
   <div class="title<% $title_class && " $title_class" %>">
 % if ($hideable) {
-    <span class="widget"><a href="#" id="<%$tid%>-link" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;">^</a></span>
+    <span class="widget"><a href="#" id="<%$tid%>-link" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;" title="Toggle visibility">X</a></span>
 % }
     <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%></span>
     <span class="right"><% $titleright_href && qq[<a href="$titleright_href">] | n %><% $titleright |n %><% $titleright_href && "</a>" |n%></span>

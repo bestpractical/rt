@@ -18,7 +18,6 @@ function set_rollup_state(e,link,state) {
         if (state == 'shown') {
             show(e);
             link.className = link.className.replace(/\s?\brolled-up\b/, '');
-            link.innerHTML = 'v';
         }
         else if (state == 'hidden') {
             hide(e);
@@ -26,8 +25,6 @@ function set_rollup_state(e,link,state) {
                 link.className += ' rolled-up';
             else
                 link.className = 'rolled-up';
-
-            link.innerHTML = '^';
         }
     }
 }
@@ -70,7 +67,7 @@ function focusElementById(id) {
 }
 
 function openCalWindow(field) {
-    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, '<% loc("Choose a date") %>', 'height=400,width=400,scrollbars=1');
+    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, '<% loc("Choose a date") %>', 'height=235,width=285,scrollbars=1');
     objWindow.focus();
 }
 
