@@ -1,3 +1,62 @@
 #nav {
     clear: both;
+    float: left;
+    width: 10em;
+    font-size: 1.3em;
+    color: #eee;
+    margin: 8px 0.5em 0 0;
+    background: #4282b5 url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right;
+}
+
+#body { margin-left: 14em; }
+
+#nav #system-menu {
+    padding: 0 0.5em 0.5em 0.5em;
+    margin-top: 0;
+/*    background: transparent url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; */
+    font-weight: bold;
+}
+
+#nav ul {
+    list-style: none;
+    padding-left: 0.5em;
+    margin-left: 0;
+}
+
+#nav ul .bullet, #nav ul .separator {
+    display: none;
+}
+
+#nav ul li {
+    padding: 0.4em 0 0.4em 0.2em;
+    border-bottom: 1px solid white;
+}
+
+#nav li ul {
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+#nav li ul li {
+    border-bottom: none;
+    padding: 0.2em 0 0 0;
+}
+
+#nav :link, #nav :visited {
+    text-decoration: none;
+    color: #eee;
+}
+
+#nav :link:hover,
+#nav :visited:hover,
+#nav :link.selected,
+#nav :visited.selected
+{
+    color: #ff6;
+}
+
+#nav :link.selected,
+#nav :visited.selected
+{
+    text-decoration: underline;
 }

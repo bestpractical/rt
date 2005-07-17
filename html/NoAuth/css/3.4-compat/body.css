@@ -1,0 +1,27 @@
+#body {
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+}
+
+#body h1 { font-size: 1.5em; }
+#body h2 { font-size: 1.3em; }
+#body h3 { font-size: 1.1em; }
+#body h4 { font-size: 1em; }
+#body h5 { font-size: 0.9em; }
+#body h6 { font-size: 0.8em; }
+
+#body h1, #body h2, #body h3, #body h4, #body h5, #body h6 {
+    font-weight: bold;
+}
+
+#body :link { color: black; }
+
+#body :link, #body :visited {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#body :link:hover, #body :visited:hover {
+    text-decoration: underline;
+}
+

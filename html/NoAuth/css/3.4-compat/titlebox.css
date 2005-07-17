@@ -1,0 +1,23 @@
+.titlebox .title {
+    background: #069;
+    padding: 0.2em 0.5em;
+    color: white;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    font-weight: bold;
+    position: relative;
+}
+
+.titlebox .title .right {
+    position: absolute;
+    right: 1.5em;
+    font-size: 0.9em;
+}
+
+#body .titlebox .title :link, #body .titlebox .title :visited {
+    color: white;
+}
+
+#body .titlebox .title .widget :link, #body .titlebox .title .widget :visited {
+    color: black;
+}

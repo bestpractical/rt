@@ -46,7 +46,6 @@
 
 %# Import the 3.5 styles we want to build off of...
 @import "../3.5-default/misc.css";
-@import "../3.5-default/forms.css";
 @import "../3.5-default/transactions.css";
 @import "../3.5-default/approvals.css";
 @import "../3.5-default/login.css";
@@ -55,3 +54,9 @@
 %# ...and then import the 3.4 compat styles afterwards so they can cascade
 @import "quickbar.css";
 @import "nav.css";
+@import "footer.css";
+@import "body.css";
+@import "titlebox.css";
+@import "header.css";
+@import "forms.css";
+@import "transactions.css";

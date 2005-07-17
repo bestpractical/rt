@@ -43,77 +43,42 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<ul<% !$level ? ' id="system-menu"' : ''|n %><% $menu_class ? qq[ class="$menu_class"] : ''|n %>>
-<div>
-% my $sep         = 0;
-% my $postsep     = 0;
-% my $accesskey   = 1;
-% 
-% $count = 0;
-% $class = {};
-% 
-% foreach $tab (sort keys %{$toptabs}) {
-%     $count++;
-%
-%     my $current = $current_toptab || "";
-%     my $path    = $toptabs->{$tab}->{'path'} || "";
-%     
-%     $path    =~ s#/index.html$##gi;
-%     $current =~ s#/index.html$##gi;
-%     
-%     $sep     = $toptabs->{$tab}->{'separator'} ? 1 : 0;
-%
-%     my @aclass;
-%     push @aclass, 'selected'
-%            if $path eq $current;
-%
-%     push @aclass, 'odd'
-%            if $level % 2;
-%
-%     $class->{a} = join ' ', @aclass;
-%
-%     my @li;
-%     push @li, 'first'
-%            if $count == 1;
-%
-%     push @li, 'pre-separator'
-%            if $sep;
-%
-%     push @li, 'post-separator'
-%            if $postsep;
-%
-%     $class->{li} = join ' ', @li;
-%     
-  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>"<% $class->{a} && qq[ class="$class->{a}"] |n%><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
-%# Second-level items
-%     if ($toptabs->{$tab}->{'subtabs'}) {
-          <& /Elements/Menu, level => $level+1, 
-                             current_toptab => $toptabs->{$tab}->{'current_subtab'},
-                             toptabs => $toptabs->{$tab}->{'subtabs'} &>
-%     }
-  </li>
-%     if ($sep) {
-  <li class="separator">&#183;&#183;&#183;</li>
-%     }
-%
-%     $postsep = $sep;
-% }
-</div>
-</ul>
+#header #page-menu {
+    display: none;
+}
 
-<%INIT>
-my ($tab, $class, $count);
+#header {
+    background: #4282b5;
+    margin-top: 8px;
+    padding-bottom: 0.2em;
+}
 
-my @ul;
-#push @ul, 'last-menu'
-#    if $toptabs->{last_menu};
-push @ul, 'odd'
-    if $level % 2;
-my $menu_class = join ' ', @ul;
-</%INIT>
+#header h1 {
+    background: #4282b5;
+    color: white;
+    font-size: 1.7em;
+    margin: 0;
+    padding: 0;
+}
 
-<%ARGS>
-$current_toptab => ""
-$toptabs => undef
-$level => 0
-</%ARGS>
+#header #actions-menu {
+    display: block;
+    margin: 0 1em 0 0;
+    padding: 0;
+    color: white;
+    text-align: right;
+    font-size: 1.2em;
+}
+
+#header #actions-menu li {
+    display: inline;
+}
+
+#header #actions-menu :link, #header #actions-menu :visited {
+    color: white;
+    text-decoration: none;
+}
+
+#header #actions-menu :link:hover, #header #actions-menu :visited:hover {
+    text-decoration: underline;
+}
