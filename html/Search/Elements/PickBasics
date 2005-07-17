@@ -53,7 +53,7 @@
 </td>
 </tr>
 
-<tr><td align=right>
+<tr><td>
 <& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "AttachmentOp", 
