@@ -18,6 +18,7 @@ function set_rollup_state(e,link,state) {
         if (state == 'shown') {
             show(e);
             link.className = link.className.replace(/\s?\brolled-up\b/, '');
+            link.innerHTML = 'v';
         }
         else if (state == 'hidden') {
             hide(e);
@@ -25,6 +26,8 @@ function set_rollup_state(e,link,state) {
                 link.className += ' rolled-up';
             else
                 link.className = 'rolled-up';
+
+            link.innerHTML = '^';
         }
     }
 }
