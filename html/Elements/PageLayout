@@ -60,7 +60,11 @@
 <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 
-<div id="header" style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;">
+<div id="header"
+% if ($RT::WebDefaultStylesheet eq '3.5-default') {
+     style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;"
+% }
+  >
   <div class="clear"></div>
   <h1><%$title%></h1>
 
@@ -175,19 +179,20 @@ if (! defined($AppName)) {
   $AppName = loc("RT for [_1]", $RT::rtname);
 }
 
-my ($menu_depth, $almost_last) = @{$m->comp('.menu_recurse', data => $toptabs)};
-my $page_tabs;
+my ($menu_depth, $almost_last, $page_tabs);
 
-if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {
-    $page_tabs = {
-        current_toptab => $almost_last->{current_subtab},
-        %{$almost_last->{subtabs}},
-    };
+if ($RT::WebDefaultStylesheet ne '3.4-compat') {
+    ($menu_depth, $almost_last) = @{$m->comp('.menu_recurse', data => $toptabs)};
 
-    delete $almost_last->{subtabs};
-    delete $almost_last->{current_subtab};
+    if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {
+        $page_tabs = {
+            current_toptab => $almost_last->{current_subtab},
+            %{$almost_last->{subtabs}},
+        };
 
-#    $almost_last->{last_menu} = 1;
+        delete $almost_last->{subtabs};
+        delete $almost_last->{current_subtab};
+    }
 }
 </%INIT>
 
