@@ -1,0 +1,50 @@
+.approval {
+    margin-bottom: 3em;
+    padding: 0 0 1em 0;
+    border: 1px solid #069;
+}
+
+.approval .name {
+    background: #069;
+    color: white;
+    font-size: 1.1em;
+    padding: 0.2em 0 0.4em 0.2em;
+}
+
+#body .approval .name :link, #body .approval .name :visited {
+    color: white;
+}
+
+.approval .originating-ticket {
+    margin: 0.5em;
+    border: 1px solid #aaa;
+}
+
+.approval .originating-ticket .link {
+    display: block;
+    background: #aaa;
+    padding: 0.2em 0 0.4em 0.2em;
+}
+
+.approval .originating-ticket .info {
+    padding: 0.5em;
+}
+
+#body .approval .originating-ticket .link :link,
+#body .approval .originating-ticket .link :visited {
+    color: black;
+}
+
+.approval .form {
+    margin: 1em 0.5em 0.5em 0.5em;
+}
+
+.approval .form .action, .approval .form .notes {
+    float: left;
+    margin-left: 1em;
+}
+
+.approval .form .action { padding-top: 1em; }
+
+.approval .form .action label { font-weight: normal; }
+.approval .form .notes label  { display: block; }

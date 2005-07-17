@@ -1,0 +1,39 @@
+#logo {
+    float: left;
+    clear: left;
+}
+
+#logo img { border: none; }
+#logo div.rtname {
+    text-align: center;
+    font-weight: bold;
+}
+
+#quickbar #quick-personal {
+    display: inline;
+    color: #888;
+    padding: 0.5em 1em 0 0;
+    float: right;
+}
+
+#quickbar #quick-personal span {
+    font-weight: bold;
+}
+
+#quickbar #quick-personal :link,
+#quickbar #quick-personal :visited
+{
+    color: #888;
+    font-weight: bold;
+}
+
+#quickbar #quick-personal :link:hover,
+#quickbar #quick-personal :visited:hover
+{
+    color: black;
+}
+
+#quickbar #topactions {
+    font-size: 0.9em;
+    padding: 0.5em 0 0 2em;
+}
