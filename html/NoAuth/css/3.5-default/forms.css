@@ -131,7 +131,7 @@ form .label, form label {
 
 #quickbar #topactions form {
     display: inline;
-    margin-right: 2em;
+    margin-left: 1em;
 }
 
 #quickbar #topactions form .button {
