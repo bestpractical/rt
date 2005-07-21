@@ -23,62 +23,50 @@
 <h2><&|/l&>Search results</&></h2>
 % if ($articles->Count){
 
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<TR>
-<TH ALIGN="left"><&|/l&>id</&></TH>
-<TH ALIGN="left"><&|/l&>Name</&></TH>
-<TH ALIGN="left"><&|/l&>Class</&></TH>
-<TH ALIGN="left"><&|/l&>Created</&></TH>
-<TH ALIGN="left"><&|/l&>Modified</&></TH>
-</TR>
-<TR>
-<TH ALIGN="left" class="ticketheader" COLSPAN="5">&nbsp;</TH>
-</TR>
-
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
+<tr class="collection-as-table">
+<th style="text-align: left" class="collection-as-table"><&|/l&>id</&></th>
+<th style="text-align: left" class="collection-as-table"><&|/l&>Name</&></th>
+<th style="text-align: left" class="collection-as-table"><&|/l&>Class</&></th>
+<th style="text-align: left" class="collection-as-table"><&|/l&>Created</&></th>
+<th style="text-align: left" class="collection-as-table"><&|/l&>Modified</&></th>
+</tr>
+<tr class="collection-as-table">
+<th class="collection-as-table"></th>
+<th style="text-align: left" class="collection-as-table"><&|/l&>Summary</&></th>
+<th style="text-align: left" class="collection-as-table" colspan="3"><&|/l&>Topics</&></th>
+</tr>
 
 % while (my $article = $articles->Next) {
 %$i++;
-<SPAN class="search">
-<TR
+<tr \
 % if ($i%2) {
-CLASS="oddline"
+class="oddline" \
 % } else {
-CLASS="evenline"
+class="evenline" \
 % }
 >
-<TD ROWSPAN="3">
-<B>
-<a href="Display.html?id=<%$article->Id%>">#<%$article->id%></a>
-</B></TD>
-<TD><B>
-<a href="Display.html?id=<%$article->Id%>"><%$article->Name%></a>
-</B></TD>
-<TD><%$article->ClassObj->Name%></TD>
-<TD><SMALL><%$article->CreatedObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$article->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
-</TR>
-<TR
+<td rowspan="2"><b><a href="Display.html?id=<%$article->Id%>">#<%$article->id%></a></b></td>
+<td>            <b><a href="Display.html?id=<%$article->Id%>"><%$article->Name%></a></b></td>
+<td>            <%$article->ClassObj->Name%></td>
+<td><small>     <%$article->CreatedObj->AgeAsString || '-'%></small></td>
+<td><small>     <%$article->LastUpdatedObj->AgeAsString || '-'%></small></td>
+</tr>
+<tr \
 % if ($i%2) {
-CLASS="oddline"
+class="oddline" \
 % } else {
-CLASS="evenline"
+class="evenline" \
 % }
-><TD COLSPAN="4"><small><%$article->Summary%></small></TD>
-</TR>
-<TR
-% if ($i%2) {
-CLASS="oddline"
-% } else {
-CLASS="evenline"
-% }
-><TD COLSPAN="4"><small>
+>
+<td><small>     <%$article->Summary%></small></td>
+<td colspan="3"><small>
 % my $Topics = $article->Topics;
 % while (my $t = $Topics->Next) {
 <& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &><br />
 % }
-</small></TD>
-</TR>
-</SPAN>
+</small></td>
+</tr>
 % }
 </table>
 % }
