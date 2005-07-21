@@ -95,6 +95,7 @@ if ( !$id ) {
         if ( $arg =~ /^Transaction-(\d+)$/ ) {
             my $trans = RT::Transaction->new( $session{'CurrentUser'} );
             $trans->Load($1);
+            $CFContent{ $ARGS{$arg} } .= "\n\n" if $CFContent{ $ARGS{$arg} };
             $CFContent{ $ARGS{$arg} } .= $trans->Content;
         }
     }
