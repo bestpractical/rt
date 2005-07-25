@@ -49,8 +49,20 @@
     border: 1px solid #069;
 }
 
-.ticket-transaction .date { font-size: 0.9em; }
-.ticket-transaction .description { font-weight: bold; }
+.ticket-transaction.even {
+    background: #eee;
+}
+
+.ticket-transaction .date {
+    font-size: 0.9em;
+    width: 15em;
+}
+
+.ticket-transaction .description {
+    font-weight: bold;
+    text-align: left;
+}
+
 .ticket-transaction .actions {
     text-align: right;
     font-weight: bold;
@@ -73,21 +85,21 @@
 
 .ticket-transaction.basics { border-color: #b32; }
 .ticket-transaction.basics .type { background: #b32; }
-.ticket-summary .ticket-info-basics .content { border-left: 0.5em solid #b32; }
+.ticket-summary .ticket-info-basics .titlebox-content { border-left: 0.5em solid #b32; }
 
 .ticket-transaction.people { border-color: #48c; }
 .ticket-transaction.people .type { background: #48c; }
-.ticket-summary .ticket-info-people .content { border-left: 0.5em solid #48c; }
+.ticket-summary .ticket-info-people .titlebox-content { border-left: 0.5em solid #48c; }
 
 %# light green - #ad8
 .ticket-transaction.links { border-color: #316531; }
 .ticket-transaction.links .type { background: #316531; }
-.ticket-summary .ticket-info-links .content  { border-left: 0.5em solid #316531; }
+.ticket-summary .ticket-info-links .titlebox-content  { border-left: 0.5em solid #316531; }
 
 %# orange - #d71
 .ticket-transaction.dates { border-color: #633063; }
 .ticket-transaction.dates .type { background: #633063; }
-.ticket-summary .ticket-info-dates .content  { border-left: 0.5em solid #633063; }
+.ticket-summary .ticket-info-dates .titlebox-content  { border-left: 0.5em solid #633063; }
 
 .ticket-transaction.message { border-color: #069; }
 .ticket-transaction.message .type { background: #069; }
@@ -99,7 +111,7 @@
 }
 
 .ticket-transaction td .message-header-key {
-    padding: 0 1em 0 1em;
+    padding: 0 1em 0 1.5em;
     font-weight: bold;
 }
 
@@ -111,7 +123,7 @@
 
 .ticket-transaction .messagebody {
     clear: both;
-    padding-left: 0.5em;
+    padding-left: 3em;
 }
 
 %# Message stanza colors

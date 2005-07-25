@@ -1,10 +1,36 @@
-.titlebox { margin-bottom: 1em; }
-
-.titlebox .content {
-    margin: 1em 2em 0 2em;
+.titlebox {
+    margin-bottom: 1em;
 }
 
-.titlebox .title {
+.titlebox .titlebox-content {
+    padding: 1em 2em 0.5em 2em;
+    margin: 0;
+    /*margin: 1em 2em 0.5em 2em;*/
+}
+
+%# TRS: I wish there was a more elegant way to do this... I essentially need to
+%# select all elements X that do NOT have element Y as a descendant... which I can
+%# fake with the child selector of CSS2, but IE is stupid and does not support that.
+
+% for (qw(index Search-Build User-Prefs Approvals Admin-Users-Modify)) {
+#comp-<%$_%> .titlebox .titlebox-content,
+% }
+.titlebox .titlebox .titlebox-content
+{
+    background: #eee;
+    margin-top: -1px;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-left: 0.5em solid #069;
+}
+
+#comp-index #login-box .titlebox .titlebox-content
+{
+    background: inherit;
+    border: none;
+}
+
+.titlebox .titlebox-title {
     position: relative;
     font-weight: bold;
     color: #930;
@@ -13,7 +39,7 @@
     border-bottom: 1px solid #069;
 }
 
-.titlebox .title .right {
+.titlebox .titlebox-title .right {
     position: absolute;
     top: 0.5em;
     right: 1.5em;
@@ -21,19 +47,19 @@
     color: #888;
 }
 
-.titlebox .title .right .selected { color: #930; }
+.titlebox .titlebox-title .right .selected { color: #930; }
 
-#body .titlebox .title .right :link,
-#body .titlebox .title .right :visited {
+#body .titlebox .titlebox-title .right :link,
+#body .titlebox .titlebox-title .right :visited {
     color: #888;
 }
 
-#body .titlebox .title .right :link:hover,
-#body .titlebox .title .right :visited:hover {
+#body .titlebox .titlebox-title .right :link:hover,
+#body .titlebox .titlebox-title .right :visited:hover {
     color: #930;
 }
 
-.titlebox .title .widget a {
+.titlebox .titlebox-title .widget a {
   display: block;
   padding-top: 1em;
   width: 20px;
@@ -63,30 +89,30 @@
 %# IE also doesn't support the child selector ">", so we can use it to set values
 %# that only other browsers will see (in this case, playing nice with Opera, which
 %# also suffers from the backslash hack above.)
-html>body .titlebox .title .widget a {
+html>body .titlebox .titlebox-title .widget a {
     height: 0;
     overflow: hidden;
 }
 
 %# Compensates for IE's bad box model by hiding this rule from other browsers
-* html .titlebox .title .widget a {
+* html .titlebox .titlebox-title .widget a {
     background-position: center 0.3em;
     left: -3.5em;
 }
 
-.titlebox .title .widget a.rolled-up {
+.titlebox.rolled-up .titlebox-title .widget a {
     background-image: url(<%$RT::WebImagesURL%>/css/rolldown-arrow.gif);
 }
 
-#body .titlebox .title :link,
-#body .titlebox .title :visited
+#body .titlebox .titlebox-title :link,
+#body .titlebox .titlebox-title :visited
 {
     color: #930;
     text-decoration: none;
 }
 
-#body .titlebox .title :link:hover,
-#body .titlebox .title :visited:hover
+#body .titlebox .titlebox-title :link:hover,
+#body .titlebox .titlebox-title :visited:hover
 {
     text-decoration: underline;
 }

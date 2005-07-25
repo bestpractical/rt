@@ -1,30 +1,30 @@
 function rollup(id) {
-    var e    = document.getElementById(id);
-    var link = document.getElementById(id+"-link");
+    var e   = document.getElementById(id);
+    var e2  = e.parentNode;
     
     if (e.className.match(/\bhidden\b/)) {
-        set_rollup_state(e,link,'shown');
+        set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
     else {
-        set_rollup_state(e,link,'hidden');
+        set_rollup_state(e,e2,'hidden');
         createCookie(id,0,365);
     }
     return false;
 }
 
-function set_rollup_state(e,link,state) {
-    if (e && link) {
+function set_rollup_state(e,e2,state) {
+    if (e && e2) {
         if (state == 'shown') {
             show(e);
-            link.className = link.className.replace(/\s?\brolled-up\b/, '');
+            e2.className = e2.className.replace(/\s?\brolled-up\b/, '');
         }
         else if (state == 'hidden') {
             hide(e);
-            if (link.className)
-                link.className += ' rolled-up';
+            if (e2.className)
+                e2.className += ' rolled-up';
             else
-                link.className = 'rolled-up';
+                e2.className = 'rolled-up';
         }
     }
 }
@@ -44,7 +44,7 @@ function show(e) {
     e.className = e.className.replace(/\s?\bhidden\b/, '');
 }
 
-function hide(e) {    
+function hide(e) { 
     if (e.className)
         e.className += ' hidden';
     else
