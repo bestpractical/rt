@@ -62,10 +62,9 @@
 
 <div id="header"
 % if ($RT::WebDefaultStylesheet eq '3.5-default') {
-     style="padding-top: <% 1.2 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;"
+     style="padding-top: <% 1.5 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;"
 % }
   >
-  <div class="clear"></div>
   <h1><%$title%></h1>
 
 % my $sep       = 0;
@@ -206,19 +205,22 @@ if ($RT::WebDefaultStylesheet ne '3.4-compat') {
 %# the last submenu (used for CSS calcs later (HACK)).
 <%def .menu_recurse>
   <%args>
-      $data  => { }
-      $pdata => { }
-      $level => 0
+      $data   => { }
+      $pdata  => { }
+      $ppdata => { }
+      $level  => 0
   </%args>
   <%init>
       for my $key (keys %$data) {
-          return $m->comp('.menu_recurse', data => $data->{$key}->{subtabs},
-                                           pdata => $data->{$key},
-                                           level => $level+1)
+          return $m->comp('.menu_recurse', data   => $data->{$key}->{subtabs},
+                                           pdata  => $data->{$key},
+                                           ppdata => $pdata,
+                                           level  => $level+1)
               if ref($data->{$key}) eq 'HASH'
                  and defined $data->{$key}->{subtabs}
                  and %{$data->{$key}->{subtabs}};
       }
+      $ppdata->{last_system_menu_level}++;
       return [$level, $pdata];
   </%init>
 </%def>

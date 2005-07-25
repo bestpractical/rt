@@ -89,7 +89,8 @@
 %     if ($toptabs->{$tab}->{'subtabs'}) {
           <& /Elements/Menu, level => $level+1, 
                              current_toptab => $toptabs->{$tab}->{'current_subtab'},
-                             toptabs => $toptabs->{$tab}->{'subtabs'} &>
+                             toptabs => $toptabs->{$tab}->{'subtabs'},
+                             last_level => $toptabs->{$tab}->{last_system_menu_level} &>
 %     }
   </li>
 %     if ($sep) {
@@ -105,8 +106,8 @@
 my ($tab, $class, $count);
 
 my @ul;
-#push @ul, 'last-menu'
-#    if $toptabs->{last_menu};
+push @ul, 'last-menu-level'
+    if $last_level;
 push @ul, 'odd'
     if $level % 2;
 my $menu_class = join ' ', @ul;
@@ -116,4 +117,5 @@ my $menu_class = join ' ', @ul;
 $current_toptab => ""
 $toptabs => undef
 $level => 0
+$last_level => 0
 </%ARGS>
