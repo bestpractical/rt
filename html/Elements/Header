@@ -72,7 +72,7 @@
     --></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
   </head>
-  <body>
+  <body<% $id && qq[ id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <div id="quickbar">
@@ -97,6 +97,14 @@
 <%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
+
+my $id = $m->request_comp->path;
+$id =~ s|^/||g;
+$id =~ s|/|-|g;
+$id =~ s|\.html$||g;
+$id =~ s|index$||g
+    if $id ne 'index';
+$id =~ s|-$||g;
 </%INIT>
 
 <%ARGS>
