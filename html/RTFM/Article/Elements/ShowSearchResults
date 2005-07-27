@@ -47,7 +47,7 @@ class="evenline" \
 % }
 >
 <td rowspan="2"><b><a href="Display.html?id=<%$article->Id%>">#<%$article->id%></a></b></td>
-<td>            <b><a href="Display.html?id=<%$article->Id%>"><%$article->Name%></a></b></td>
+<td>            <b><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%></a></b></td>
 <td>            <%$article->ClassObj->Name%></td>
 <td><small>     <%$article->CreatedObj->AgeAsString || '-'%></small></td>
 <td><small>     <%$article->LastUpdatedObj->AgeAsString || '-'%></small></td>

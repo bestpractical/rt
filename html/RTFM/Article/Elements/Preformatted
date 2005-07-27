@@ -16,8 +16,8 @@
 %# 
 %# END LICENSE BLOCK
 
-#<%$Article->Id%>: <%$Article->Name%>
-<%'-' x length("#".$Article->Id.": ".$Article->Name) %>
+#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
+<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
 
 <% $Article->Summary%> 
 
