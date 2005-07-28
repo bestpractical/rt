@@ -321,7 +321,7 @@ sub AddAttachments {
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
     );
-    $attachments->OrderBy('id');
+    $attachments->OrderBy( FIELD => 'id');
 
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
 
