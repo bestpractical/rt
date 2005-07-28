@@ -235,7 +235,7 @@ sub LimitCustomField {
     $self->Limit(
         LEFTJOIN => $ObjectValuesAlias,
         FIELD    => 'Disabled',
-        VALUE    => '='
+        VALUE    => '0'
     );
 
     if ( $args{'FIELD'} ) {
