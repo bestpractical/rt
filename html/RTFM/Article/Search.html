@@ -18,7 +18,7 @@
 
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
 
-% unless ($ARGS{'Class'} or $ARGS{'q'}) {
+% unless (%ARGS) {
 %   my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
 %   $Classes->UnLimit;
 <table width="100%" border="0">

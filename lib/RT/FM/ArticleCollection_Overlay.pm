@@ -229,7 +229,13 @@ sub LimitCustomField {
         FIELD1 => 'id',
         TABLE2 => 'ObjectCustomFieldValues',
         FIELD2 => 'ObjectId',
-        EXPRESSION => 'main.id AND Disabled = 0'
+        EXPRESSION => 'main.id'
+    );
+
+    $self->Limit(
+        LEFTJOIN => $ObjectValuesAlias,
+        FIELD    => 'Disabled',
+        VALUE    => '='
     );
 
     if ( $args{'FIELD'} ) {
