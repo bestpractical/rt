@@ -69,12 +69,15 @@ RT will look for anything else you enter in ticket bodies and attachments.</&></
 my $title = loc("Search for tickets");
 use RT::Search::Googleish;
 
-if ( $ARGS{"q"}) {
+if ($q) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my $search  = RT::Search::Googleish->new(Argument   => $ARGS{"q"},
-                                         TicketsObj => $tickets);
+    
+    $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'ModifyQuery', query => \$q);
+    
+    my $search  = RT::Search::Googleish->new(Argument   => $q,
+                                             TicketsObj => $tickets);
 
-    $m->comp( "Results.html", Query   => $search->QueryToSQL());
+    $m->comp( "Results.html", Query => $search->QueryToSQL() );
     $m->comp( "/Elements/Footer" );
     $m->abort();
 }
