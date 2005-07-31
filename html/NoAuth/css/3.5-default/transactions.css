@@ -127,13 +127,13 @@
 }
 
 %# Message stanza colors
-.message-stanza-depth-1 { color: #000; }
-.message-stanza-depth-2 { color: #600; }
-.message-stanza-depth-3 { color: #060; }
-.message-stanza-depth-4 { color: #006; }
-.message-stanza-depth-5 { color: #c00; }
-.message-stanza-depth-6 { color: #0c0; }
-.message-stanza-depth-7 { color: #00c; }
-.message-stanza-depth-8 { color: #f00; }
-.message-stanza-depth-9 { color: #0f0; }
-.message-stanza-depth-10 { color: #00f; }
+.message-stanza-depth-0 { color: #000; }
+.message-stanza-depth-1 { color: #600; }
+.message-stanza-depth-2 { color: #060; }
+.message-stanza-depth-3 { color: #006; }
+.message-stanza-depth-4 { color: #c00; }
+.message-stanza-depth-5 { color: #0c0; }
+.message-stanza-depth-6 { color: #00c; }
+.message-stanza-depth-7 { color: #f00; }
+.message-stanza-depth-8 { color: #0f0; }
+.message-stanza-depth-9 { color: #00f; }
