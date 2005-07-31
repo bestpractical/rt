@@ -44,26 +44,29 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($Lite) {
-% my $d = new RT::Queue($session{'CurrentUser'});
-% $d->Load($Default);
-<input name="<%$Name%>" size="25" default="<%$d->Name%>">
-% } else {
-<select NAME ="<%$Name%>">
-% if ($ShowNullOption) {
-<option value="">-</option>
+%     my $d = new RT::Queue($session{'CurrentUser'});
+%     $d->Load($Default);
+<input name="<%$Name%>" size="25" value="<%$d->Name%>" />
 % }
-% while (my $queue=$q->Next) {
-% if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
-<option value="<%($NamedValues ? $queue->Name : $queue->Id) %>" <%( $queue->Id eq $Default ? 'SELECTED' : '')%>><%$queue->Name%>
-%   if (($Verbose) and ($queue->Description) ){
-(<%$queue->Description%>)
-%  }
-</option>
-% }
-% }
+% else {
+<select name="<%$Name%>">
+%     if ($ShowNullOption) {
+  <option value="">-</option>
+%     }
+%     for my $queue (@{$cache{$cache_key}}) {
+  <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>" <% ($queue->{Id} eq $Default ? 'selected="selected"' : '') |n %>>
+    <%$queue->{Name}%>
+%             if ($Verbose and $queue->{Description}) {
+    (<%$queue->{Description}%>)
+%             }
+  </option>
+%     }
 </select>
 % }
-<%ARGS>
+<%once>
+my %cache;
+</%once>
+<%args>
 $CheckQueueRight => 'CreateTicket'
 $ShowNullOption => 1
 $ShowAllQueues => 1
@@ -72,11 +75,24 @@ $Verbose => undef
 $NamedValues => 0
 $Default => 0
 $Lite => 0
-</%ARGS>
+</%args>
+<%init>
+my $cache_key = "SelectQueue---"
+                . $session{'CurrentUser'}->Id
+                . "---$CheckQueueRight---$ShowAllQueues";
 
-<%INIT>
-
-my $q=new RT::Queues($session{'CurrentUser'});
-$q->UnLimit;
-
-</%INIT>
+if (not defined $cache{$cache_key} and not $Lite) {
+    my $q = new RT::Queues($session{'CurrentUser'});
+    $q->UnLimit;
+    
+    while (my $queue = $q->Next) {
+        if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
+            push @{$cache{$cache_key}}, {
+                Id          => $queue->Id,
+                Name        => $queue->Name,
+                Description => $queue->Description,
+            };
+        }
+    }
+}
+</%init>

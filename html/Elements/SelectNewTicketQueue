@@ -44,31 +44,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <label accesskey="9">
-<select name="<%$Name%>" class="field">
-% foreach my $queue (@{$session{'create_in_queues'}}) {
-<option value="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) ? 'SELECTED': ''%>><%$queue->{'Name'}%><%($Verbose && $queue->{'Description'} )? "(".$queue->{'Description'}.")": ''%></option>
-% }
-</select>
+  <& /Elements/SelectQueue, Name => 'Queue', %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
 </label>
-
-<%INIT>
-unless ($session{'create_in_queues'}) { 
-
-@{$session{'create_in_queues'}} = ();
-my $q=new RT::Queues($session{'CurrentUser'});
-$q->UnLimit;
-while (my $queue=$q->Next) {
-        if ($queue->CurrentUserHasRight('CreateTicket')) {
-                my $ds = { Name => $queue->Name, Description => $queue->Description, id => $queue->id };
-                push (@{$session{'create_in_queues'}}, $ds);
-        }        
-}
-}
-</%INIT>
-
-
-<%ARGS>
-$Name => 'Queue'
-$Verbose =>  0
-$Default => 0
-</%ARGS>
