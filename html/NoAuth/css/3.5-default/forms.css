@@ -78,8 +78,12 @@ form input.checkbox, form input.radio {
 
 /* form .entry input, form .value input */
 
-form .label, form label {
+form .label, form label, form .labeltop {
     font-weight: bold;
+}
+
+form .labeltop {
+    vertical-align: top;
 }
 
 .submit {
