@@ -411,7 +411,8 @@ Set($MaxInlineBody, 13456);
 Set($DefaultSummaryRows, 10);
 
 
-# $MaxInlineBody is an arrayref of allowed components customized homepage.
+# $HomepageComponents is an arrayref of allowed components on a user's
+# customized homepage ("RT at a glance").
 
 Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders  RefreshHomepage)]);
 
