@@ -73,9 +73,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <& /Elements/Tabs, 
     current_toptab => '', 
     Title=>loc("RT at a glance"),
-    actions => { A => { title => loc('Edit'),
-                        path => 'Prefs/MyRT.html'
-             } } 
+    actions => $actions,
     &>
 <& /Elements/ListActions, actions => \@results &>    
 <& /Elements/MyRT &>
@@ -101,6 +99,15 @@ if ( $ARGS{'q'} ) {
 
 if ($ARGS{'HomeRefreshInterval'}) {
 	$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+}
+
+my $actions;
+if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
+    $actions = {
+        A => { title => loc('Edit'),
+               path  => 'Prefs/MyRT.html',
+             },
+    };
 }
 
 </%init>
