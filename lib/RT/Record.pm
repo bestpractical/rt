@@ -377,10 +377,11 @@ sub LoadByCols {
                 $newhash{$key} = $hash{$key};
             }
             else {
-                my ($op, $val);
-                ($key, $op, $val) = $self->_Handle->_MakeClauseCaseInsensitive($key, '=', $hash{$key});
+                my ($op, $val, $func);
+                ($key, $op, $val, $func) = $self->_Handle->_MakeClauseCaseInsensitive($key, '=', $hash{$key});
                 $newhash{$key}->{operator} = $op;
                 $newhash{$key}->{value} = $val;
+                $newhash{$key}->{function} = $func;
             }
         }
 
