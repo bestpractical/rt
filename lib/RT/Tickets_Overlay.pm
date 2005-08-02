@@ -458,7 +458,8 @@ sub _DateLimit {
         UK            => $RT::DateDayBeforeMonth,
         PREFER_PAST   => $RT::AmbiguousDayInPast,
         PREFER_FUTURE => !($RT::AmbiguousDayInPast),
-        FUZZY         => 1
+        FUZZY         => 1,
+	GMT           => 1,
     );
 
     if ( $op eq "=" ) {
