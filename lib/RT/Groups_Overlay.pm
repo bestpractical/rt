@@ -52,7 +52,7 @@
 
   use RT::Groups;
   my $groups = $RT::Groups->new($CurrentUser);
-  $groups->LimitToReal();
+  $groups->UnLimit();
   while (my $group = $groups->Next()) {
      print $group->Id ." is a group id\n";
   }
