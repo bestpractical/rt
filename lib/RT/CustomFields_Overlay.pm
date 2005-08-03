@@ -89,7 +89,7 @@ sub _OCFAlias {
 
 # {{{ sub LimitToGlobalOrQueue 
 
-=item LimitToGlobalOrQueue QUEUEID
+=head2 LimitToGlobalOrQueue QUEUEID
 
 Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID 
 
@@ -154,9 +154,9 @@ sub LimitToGlobal  {
 
 =head2 _DoSearch
 
-  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled ro
-ws never get seen unless
-we're explicitly trying to see them.
+A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that 
+ _Disabled rows never get seen unless we're explicitly trying to see 
+them.
 
 =cut
 

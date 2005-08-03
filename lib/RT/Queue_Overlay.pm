@@ -232,13 +232,15 @@ sub StatusArray {
 
 =head2 IsValidStatus VALUE
 
-Returns true if VALUE is a valid status.  Otherwise, returns 0
+Returns true if VALUE is a valid status.  Otherwise, returns 0.
 
-=for testing
+=begin testing
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsValidStatus('new')== 1, 'New is a valid status');
 ok($q->IsValidStatus('f00')== 0, 'f00 is not a valid status');
+
+=end testing
 
 =cut
 
@@ -259,12 +261,14 @@ sub IsValidStatus {
 
 Returns true if VALUE is a Active status.  Otherwise, returns 0
 
-=for testing
+=begin testing
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsActiveStatus('new')== 1, 'New is a Active status');
 ok($q->IsActiveStatus('rejected')== 0, 'Rejected is an inactive status');
 ok($q->IsActiveStatus('f00')== 0, 'f00 is not a Active status');
+
+=end testing
 
 =cut
 
@@ -285,12 +289,14 @@ sub IsActiveStatus {
 
 Returns true if VALUE is a Inactive status.  Otherwise, returns 0
 
-=for testing
+=begin testing
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsInactiveStatus('new')== 0, 'New is a Active status');
 ok($q->IsInactiveStatus('rejected')== 1, 'rejeected is an Inactive status');
 ok($q->IsInactiveStatus('f00')== 0, 'f00 is not a Active status');
+
+=end testing
 
 =cut
 
@@ -334,9 +340,7 @@ ok($id, $val);
 ($id, $val) = $queue->Create( Name => '66');
 ok(!$id, $val);
 
-
 =end testing
-
 
 =cut
 
@@ -399,7 +403,7 @@ sub Delete {
 
 Takes a boolean.
 1 will cause this queue to no longer be avaialble for tickets.
-0 will re-enable this queue
+0 will re-enable this queue.
 
 =cut
 
@@ -490,7 +494,7 @@ sub Templates {
 
 # {{{  CustomField
 
-=item CustomField NAME
+=head2 CustomField NAME
 
 Load the queue-specific custom field named NAME
 
@@ -507,7 +511,7 @@ sub CustomField {
 
 # {{{ CustomFields
 
-=item CustomFields
+=head2 CustomFields
 
 Returns an RT::CustomFields object containing all global custom fields, as well as those tied to this queue
 
@@ -997,8 +1001,8 @@ sub IsWatcher {
 
 =head2 IsCc PRINCIPAL_ID
 
-  Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current queue.
+Takes an RT::Principal id.
+Returns true if the principal is a requestor of the current queue.
 
 
 =cut
@@ -1017,8 +1021,8 @@ sub IsCc {
 
 =head2 IsAdminCc PRINCIPAL_ID
 
-  Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current queue.
+Takes an RT::Principal id.
+Returns true if the principal is a requestor of the current queue.
 
 =cut
 

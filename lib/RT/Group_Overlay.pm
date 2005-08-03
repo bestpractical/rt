@@ -52,20 +52,12 @@
 
 =head1 SYNOPSIS
 
-  use RT::Group;
+use RT::Group;
 my $group = new RT::Group($CurrentUser);
 
 =head1 DESCRIPTION
 
 An RT group object.
-
-=head1 AUTHOR
-
-Jesse Vincent, jesse@bestpractical.com
-
-=head1 SEE ALSO
-
-RT
 
 =head1 METHODS
 
@@ -1179,7 +1171,7 @@ sub _DeleteMember {
 
 # {{{ sub _CleanupInvalidDelegations
 
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by members of this group which are
 inconsistent with their current delegation rights.  Does not perform
@@ -1289,7 +1281,7 @@ sub _Set {
 
 
 
-=item CurrentUserHasRight RIGHTNAME
+=head2 CurrentUserHasRight RIGHTNAME
 
 Returns true if the current user has the specified right for this group.
 
@@ -1378,4 +1370,12 @@ sub BasicColumns {
 }
 
 1;
+
+=head1 AUTHOR
+
+Jesse Vincent, jesse@bestpractical.com
+
+=head1 SEE ALSO
+
+RT
 
