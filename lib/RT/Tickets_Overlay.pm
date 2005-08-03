@@ -1171,8 +1171,7 @@ sub _CustomFieldLimit {
         $self->SUPER::Limit(
             LEFTJOIN => $TicketCFs,
             FIELD    => 'ObjectType',
-            VALUE    => ref( $self->NewItem )
-            ,    # we want a single item, not a collection
+            VALUE    => 'RT::Ticket',
             ENTRYAGGREGATOR => 'AND'
         );
         $self->SUPER::Limit(

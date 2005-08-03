@@ -536,13 +536,6 @@ SPAN.titleboxtitle a:after {
 	content: "...";
 }
 
-SPAN.attribution {
-  font-weight: bold;
-}
-
-SPAN.label { font-size: 0.8em; 
-}
-
 DIV.page-stats { font-size: 0.8em;
                   color: #cccccc;
                   text-align: right;
