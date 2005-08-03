@@ -1088,7 +1088,7 @@ sub _GeneratePasswordBase64 {
 # }}}
 
                                                                                 
-=head2 HasPassword()                                                            
+=head2 HasPassword
                                                                                 
 Returns true if the user has a valid password, otherwise returns false.         
                                                                                
@@ -1316,7 +1316,7 @@ sub OwnGroups {
 
 # {{{ sub Rights testing
 
-=head2 Rights testing
+=head1 Rights testing
 
 
 =begin testing
@@ -1558,7 +1558,7 @@ ok($rqv, "Revoked the right successfully - $rqm");
 
 # {{{ sub HasRight
 
-=head2 sub HasRight
+=head2 HasRight
 
 Shim around PrincipalObj->HasRight. See RT::Principal
 
@@ -1617,8 +1617,8 @@ sub CurrentUserCanModify {
 
 =head2 CurrentUserHasRight
   
-  Takes a single argument. returns 1 if $Self->CurrentUser
-  has the requested right. returns undef otherwise
+Takes a single argument. returns 1 if $Self->CurrentUser
+has the requested right. returns undef otherwise
 
 =cut
 
@@ -1633,7 +1633,7 @@ sub CurrentUserHasRight {
 
 # {{{ sub _CleanupInvalidDelegations
 
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this user which are inconsistent
 with their current delegation rights.  Does not perform permission
