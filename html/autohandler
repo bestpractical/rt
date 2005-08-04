@@ -224,28 +224,27 @@ if ( (defined $session{'CurrentUser'}) and
     $m->comp('/Elements/Callback', %ARGS);
 
     # If the user isn't privileged, they can only see SelfService
-    if (! $session{'CurrentUser'}->Privileged) {
+    if (not $session{'CurrentUser'}->Privileged) {
 
         # if the user is trying to access a ticket, redirect them
-        if ( ($m->request_comp->path =~ '^(/+)Ticket/Display.html') and
-             ($ARGS{'id'}) ) {
+        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html'
+                and $ARGS{'id'} )
+        {
             $m->comp("/SelfService/Display.html", %ARGS);
             $m->comp("/Elements/Footer", %ARGS);
             $m->abort();
         }
-
         # otherwise, drop the user at the SelfService default page
-	elsif ($m->base_comp->path !~ '^(/+)SelfService/') {
-	    $m->comp('/SelfService/index.html');
-	    $m->abort();
+    	elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
+            $m->comp('/SelfService/index.html');
+            $m->abort();
         }
-
         else {
-	    $m->call_next(%ARGS);
+            $m->call_next(%ARGS);
         }
     }
     else {
-	$m->call_next(%ARGS);
+        $m->call_next(%ARGS);
     }
 }
 
