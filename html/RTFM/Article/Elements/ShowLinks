@@ -17,13 +17,13 @@
 %# END LICENSE BLOCK
 
 
-<&|/l&>Refers to</&>:<BR>
-<UL>
+<span class="label"><&|/l&>Refers to</&></span>:<br />
+<ul class="value">
 % my $refersto = $article->RefersTo;
 
 % while (my $link = $refersto->Next) {
 % my $member = $link->TargetURI;
-<LI>
+<li>
 % if ($link->TargetURI->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 % if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -33,17 +33,18 @@
 % }
 </a>
 % } else {
-<A HREF="<%$member->Resolver->HREF%>"><%$link->Target%></A>
+<a href="<%$member->Resolver->HREF%>"><%$link->Target%></a>
 % }
-%}
-</UL>
+</li>
+% }
+</ul>
 
-<&|/l&>Referred to by</&>:<BR>
-<UL>
+<span class="label"><&|/l&>Referred to by</&></span>:<br />
+<ul class="value">
 % my $referredtoby = $article->ReferredToBy;
 % while (my $link = $referredtoby->Next) {
 % my $member = $link->BaseURI;
-<LI>
+<li>
 % if ($member->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 % if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -53,10 +54,11 @@
 % }
 </a>
 % } else {
-<A HREF="<%$member->Resolver->HREF%>"><%$link->Base%></A>
-%}
+<a href="<%$member->Resolver->HREF%>"><%$link->Base%></a>
 % }
-</UL>
+</li>
+% }
+</ul>
 <%args>
 $article => undef
 </%args>

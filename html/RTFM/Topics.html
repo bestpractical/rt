@@ -67,7 +67,7 @@ if ($id) {
 </%perl>
 
 % if ($Articles->Count) {
-<h2>Articles in this topic</h2>
+<h2><&|/l&>Articles in this topic</&></h2>
 <ul>
 % while (my $obj = $Articles->Next) {
 %   my $a = RT::FM::Article->new($session{'CurrentUser'});
