@@ -80,4 +80,8 @@ sub _ClassAccessible {
     }
 }
 
+sub WikiBase {
+  return $RT::WebPath. "/RTFM/Article/Display.html?id=";
+}
+
 1;
