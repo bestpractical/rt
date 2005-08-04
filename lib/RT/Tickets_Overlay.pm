@@ -95,50 +95,50 @@ use DBIx::SearchBuilder::Unique;
 
 # Configuration Tables:
 
-# FIELDS is a mapping of searchable Field name, to Type, and other
+# FIELD_METADATA is a mapping of searchable Field name, to Type, and other
 # metadata.
 
-my %FIELDS = (
-    Status          => ['ENUM'],
-    Queue           => [ 'ENUM' => 'Queue', ],
-    Type            => [ 'ENUM', ],
-    Creator         => [ 'ENUM' => 'User', ],
-    LastUpdatedBy   => [ 'ENUM' => 'User', ],
-    Owner           => [ 'ENUM' => 'User', ],
-    EffectiveId     => [ 'INT', ],
-    id              => [ 'INT', ],
-    InitialPriority => [ 'INT', ],
-    FinalPriority   => [ 'INT', ],
-    Priority        => [ 'INT', ],
-    TimeLeft        => [ 'INT', ],
-    TimeWorked      => [ 'INT', ],
-    MemberOf        => [ 'LINK' => To => 'MemberOf', ],
-    DependsOn       => [ 'LINK' => To => 'DependsOn', ],
-    RefersTo        => [ 'LINK' => To => 'RefersTo', ],
-    HasMember       => [ 'LINK' => From => 'MemberOf', ],
-    DependentOn     => [ 'LINK' => From => 'DependsOn', ],
-    DependedOnBy    => [ 'LINK' => From => 'DependsOn', ],
-    ReferredToBy    => [ 'LINK' => From => 'RefersTo', ],
-    Told	    => ['DATE' => 'Told',],
-    Starts	    => ['DATE' => 'Starts',],
-    Started	    => ['DATE' => 'Started',],
-    Due		    => ['DATE' => 'Due',],
-    Resolved	    => ['DATE' => 'Resolved',],
-    LastUpdated	    => ['DATE' => 'LastUpdated',],
-    Created	    => ['DATE' => 'Created',],
-    Subject	    => ['STRING',],
-    Content	    => ['TRANSFIELD',],
-    ContentType	    => ['TRANSFIELD',],
-    Filename        => ['TRANSFIELD',],
-    TransactionDate => ['TRANSDATE',],
-    Requestor       => ['WATCHERFIELD' => 'Requestor',],
-    Requestors       => ['WATCHERFIELD' => 'Requestor',],
-    Cc              => ['WATCHERFIELD' => 'Cc',],
-    AdminCc         => ['WATCHERFIELD' => 'AdminCc',],
-    Watcher	    => ['WATCHERFIELD'],
-    LinkedTo	    => ['LINKFIELD',],
-    CustomFieldValue =>['CUSTOMFIELD',],
-    CF              => ['CUSTOMFIELD',],
+my %FIELD_METADATA = (
+    Status           => [ 'ENUM', ],
+    Queue            => [ 'ENUM' => 'Queue', ],
+    Type             => [ 'ENUM', ],
+    Creator          => [ 'ENUM' => 'User', ],
+    LastUpdatedBy    => [ 'ENUM' => 'User', ],
+    Owner            => [ 'ENUM' => 'User', ],
+    EffectiveId      => [ 'INT', ],
+    id               => [ 'INT', ],
+    InitialPriority  => [ 'INT', ],
+    FinalPriority    => [ 'INT', ],
+    Priority         => [ 'INT', ],
+    TimeLeft         => [ 'INT', ],
+    TimeWorked       => [ 'INT', ],
+    MemberOf         => [ 'LINK' => To => 'MemberOf', ],
+    DependsOn        => [ 'LINK' => To => 'DependsOn', ],
+    RefersTo         => [ 'LINK' => To => 'RefersTo', ],
+    HasMember        => [ 'LINK' => From => 'MemberOf', ],
+    DependentOn      => [ 'LINK' => From => 'DependsOn', ],
+    DependedOnBy     => [ 'LINK' => From => 'DependsOn', ],
+    ReferredToBy     => [ 'LINK' => From => 'RefersTo', ],
+    Told             => [ 'DATE' => 'Told', ],
+    Starts           => [ 'DATE' => 'Starts', ],
+    Started          => [ 'DATE' => 'Started', ],
+    Due              => [ 'DATE' => 'Due', ],
+    Resolved         => [ 'DATE' => 'Resolved', ],
+    LastUpdated      => [ 'DATE' => 'LastUpdated', ],
+    Created          => [ 'DATE' => 'Created', ],
+    Subject          => [ 'STRING', ],
+    Content	     => [ 'TRANSFIELD', ],
+    ContentType      => [ 'TRANSFIELD', ],
+    Filename         => [ 'TRANSFIELD', ],
+    TransactionDate  => [ 'TRANSDATE', ],
+    Requestor        => [ 'WATCHERFIELD' => 'Requestor', ],
+    Requestors       => [ 'WATCHERFIELD' => 'Requestor', ],
+    Cc               => [ 'WATCHERFIELD' => 'Cc', ],
+    AdminCc          => [ 'WATCHERFIELD' => 'AdminCc', ],
+    Watcher	     => [ 'WATCHERFIELD', ],
+    LinkedTo	     => [ 'LINKFIELD', ],
+    CustomFieldValue => [ 'CUSTOMFIELD', ],
+    CF               => [ 'CUSTOMFIELD', ],
     Updated          => [ 'TRANSDATE', ],
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ],
@@ -201,7 +201,7 @@ my %DefaultEA = (
 
 # Helper functions for passing the above lexically scoped tables above
 # into Tickets_Overlay_SQL.
-sub FIELDS     { return \%FIELDS }
+sub FIELDS     { return \%FIELD_METADATA }
 sub dispatch   { return \%dispatch }
 sub can_bundle { return \%can_bundle }
 
@@ -271,7 +271,7 @@ sub _EnumLimit {
     die "Invalid Operation: $op for $field"
       unless $op eq "=" or $op eq "!=";
 
-    my $meta = $FIELDS{$field};
+    my $meta = $FIELD_METADATA{$field};
     if ( defined $meta->[1] ) {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
@@ -323,7 +323,7 @@ Meta Data:
 sub _LinkLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
-    my $meta = $FIELDS{$field};
+    my $meta = $FIELD_METADATA{$field};
     die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS)/io;
 
     die "Incorrect Metadata for $field"
@@ -446,7 +446,7 @@ sub _DateLimit {
     die "Invalid Date Op: $op"
       unless $op =~ /^(=|>|<|>=|<=)$/;
 
-    my $meta = $FIELDS{$field};
+    my $meta = $FIELD_METADATA{$field};
     die "Incorrect Meta Data for $field"
       unless ( defined $meta->[1] );
 
@@ -773,7 +773,7 @@ sub _WatcherLimit {
     else {
         $fieldname = $field;
     }
-    my $meta = $FIELDS{$fieldname};
+    my $meta = $FIELD_METADATA{$fieldname};
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
     my $users = $self->_WatcherJoin($type);
@@ -821,37 +821,31 @@ sub _WatcherJoin {
     my $self  = shift;
     my $type  = shift;
     my $key   = shift || "limit";
-    my $groups = $self->{ 'alias_' . $key . "_groups" } ||=
-      $self->NewAlias('Groups');
-    my $groupmembers =
-      $self->{ 'alias_' . $key . "_groupmembers" } ||=
-      $self->NewAlias('CachedGroupMembers');
-    my $users = $self->{ 'alias_' . $key . "_users" } ||=
-      $self->NewAlias('Users');
 
+    my $groups = $self->Join(
+        TYPE   => 'left',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Groups',
+        FIELD2 => 'Instance'
+    );
+    my $groupmembers = $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'GroupId'
+    );
+    my $users = $self->Join(
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        TABLE2 => 'Users',
+        FIELD2 => 'id'
+    );
     $self->SUPER::Limit(
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
         ENTRYAGGREGATOR => 'AND'
-    );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'Instance',
-        ALIAS2 => 'main',
-        FIELD2 => 'id'
-    );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $groupmembers,
-        FIELD2 => 'GroupId'
-    );
-    $self->Join(
-        ALIAS1 => $groupmembers,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
     );
     $self->SUPER::Limit(
         ALIAS           => $groups,
@@ -956,7 +950,7 @@ sub _WatcherMembershipLimit {
     # }}}
 
     # If we care about which sort of watcher
-    my $meta = $FIELDS{$field};
+    my $meta = $FIELD_METADATA{$field};
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
     if ($type) {
@@ -2503,9 +2497,9 @@ sub _RestrictionsToClauses {
         }
 
         die "I don't know about $field yet"
-          unless ( exists $FIELDS{$realfield} or $restriction->{CUSTOMFIELD} );
+          unless ( exists $FIELD_METADATA{$realfield} or $restriction->{CUSTOMFIELD} );
 
-        my $type = $FIELDS{$realfield}->[0];
+        my $type = $FIELD_METADATA{$realfield}->[0];
         my $op   = $restriction->{'OPERATOR'};
 
         my $value = (
