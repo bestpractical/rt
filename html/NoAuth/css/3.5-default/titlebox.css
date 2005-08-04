@@ -12,7 +12,15 @@
 %# select all elements X that do NOT have element Y as a descendant... which I can
 %# fake with the child selector of CSS2, but IE is stupid and does not support that.
 
-% for (qw(index Search-Build User-Prefs Approvals Admin-Users-Modify)) {
+% for (qw(index
+%         Search-Build
+%         User-Prefs
+%         Approvals
+%         Admin-Users-Modify
+%         SelfService
+%         SelfService-Closed
+%                           ))
+% {
 #comp-<%$_%> .titlebox .titlebox-content,
 % }
 .titlebox .titlebox .titlebox-content
