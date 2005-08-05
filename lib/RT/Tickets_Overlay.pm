@@ -449,18 +449,11 @@ sub _DateLimit {
     die "Incorrect Meta Data for $field"
       unless ( defined $meta->[1] );
 
-    require Time::ParseDate;
     use POSIX 'strftime';
-
-    # XXX TODO FIXME: Replace me with RT::Date( Type => 'unknown' ...)
-    my $time =  Time::ParseDate::parsedate(
-        $value,
-        UK            => $RT::DateDayBeforeMonth,
-        PREFER_PAST   => $RT::AmbiguousDayInPast,
-        PREFER_FUTURE => !($RT::AmbiguousDayInPast),
-        FUZZY         => 1,
-	GMT           => 1,
-    );
+    
+    my $date = RT::Date->new($sb->CurrentUser);
+    $date->Set(Format => 'unknown', Value => $value); 
+    my $time = $date->Unix;
 
     if ( $op eq "=" ) {
 
@@ -547,28 +540,67 @@ sub _TransDateLimit {
     # See the comments for TransLimit, they apply here too
 
     $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
-      unless defined $sb->{_sql_transalias};
+        unless defined $sb->{_sql_transalias};
     $sb->{_sql_trattachalias} = $sb->NewAlias('Attachments')
-      unless defined $sb->{_sql_trattachalias};
+        unless defined $sb->{_sql_trattachalias};
+
+    my $date = RT::Date->new( $sb->CurrentUser );
+    $date->Set( Format => 'unknown', Value => $value );
+    my $time = $date->Unix;
+
+    $sb->_OpenParen;
+    if ( $op eq "=" ) {
+
+        # if we're specifying =, that means we want everything on a
+        # particular single day.  in the database, we need to check for >
+        # and < the edges of that day.
+
+        my $daystart = strftime( "%Y-%m-%d %H:%M",
+            gmtime( $time - ( $time % 86400 ) ) );
+        my $dayend = strftime( "%Y-%m-%d %H:%M",
+            gmtime( $time + ( 86399 - $time % 86400 ) ) );
+
+        $sb->_SQLLimit(
+            ALIAS         => $sb->{_sql_transalias},
+            FIELD         => 'Created',
+            OPERATOR      => ">=",
+            VALUE         => $daystart,
+            CASESENSITIVE => 0,
+            @rest
+        );
+        $sb->_SQLLimit(
+            ALIAS           => $sb->{_sql_transalias},
+            FIELD           => 'Created',
+            OPERATOR        => "<=",
+            VALUE           => $dayend,
+            CASESENSITIVE   => 0,
+            @rest,
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+    }
+
+    # not searching for a single day
+    else {
+
+        #Search for the right field
+        $sb->_SQLLimit(
+            ALIAS         => $sb->{_sql_transalias},
+            FIELD         => 'Created',
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
+            @rest
+        );
+    }
 
     # Join Transactions To Attachments
-    $sb->_OpenParen;
-
-    #Search for the right field
-    $sb->_SQLLimit(
-        ALIAS         => $sb->{_sql_trattachalias},
-        FIELD         => 'Created',
-        OPERATOR      => $op,
-        VALUE         => $value,
-        CASESENSITIVE => 0,
-        @rest
-    );
 
     $sb->_SQLJoin(
         ALIAS1 => $sb->{_sql_trattachalias},
         FIELD1 => 'TransactionId',
-        ALIAS2 => $sb->{_transalias},
-        FIELD2 => 'id'
+        ALIAS2 => $sb->{_sql_transalias},
+        FIELD2 => 'id',
     );
 
     # Join Transactions to Tickets
@@ -584,10 +616,6 @@ sub _TransDateLimit {
         FIELD => 'ObjectType',
         VALUE => 'RT::Ticket'
     );
-
-    my $d = new RT::Date( $sb->CurrentUser );
-    $d->Set( Format => 'ISO', Value => $value );
-    $value = $d->ISO;
 
     $sb->_CloseParen;
 }
