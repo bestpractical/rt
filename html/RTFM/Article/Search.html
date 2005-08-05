@@ -334,13 +334,14 @@ foreach my $field ( keys %cfs ) {
 if ($ARGS{'Article~'}) {
     $articles->LimitCustomField( VALUE => $ARGS{'Article~'},
                                  ENTRYAGGREGATOR => 'OR',
-                                 OPERATOR => 'LIKE' );
-    $articles->Limit( SUBCLAUSE => "ObjectCustomFieldValues_1.Content",
+                                 OPERATOR => 'LIKE',
+                                 SUBCLAUSE => 'SearchAll' );
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Name",
                       VALUE => $ARGS{'Article~'},
                       ENTRYAGGREGATOR => 'OR',
                       OPERATOR => 'LIKE' );
-    $articles->Limit( SUBCLAUSE => "ObjectCustomFieldValues_1.Content",
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Summary",
                       VALUE => $ARGS{'Article~'},
                       ENTRYAGGREGATOR => 'OR',
@@ -349,13 +350,14 @@ if ($ARGS{'Article~'}) {
 
 if ($ARGS{'Article!~'}) {
     $articles->LimitCustomField( VALUE => $ARGS{'Article!~'},
-                                 OPERATOR => 'NOT LIKE' );
-    $articles->Limit( SUBCLAUSE => "ObjectCustomFieldValues_1.Content",
+                                 OPERATOR => 'NOT LIKE',
+                                 SUBCLAUSE => 'SearchAll' );
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Name",
                       VALUE => $ARGS{'Article!~'},
-                      ENTRYAGGREGATOR => 'ANT',
+                      ENTRYAGGREGATOR => 'AND',
                       OPERATOR => 'NOT LIKE' );
-    $articles->Limit( SUBCLAUSE => "ObjectCustomFieldValues_1.Content",
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Summary",
                       VALUE => $ARGS{'Article!~'},
                       ENTRYAGGREGATOR => 'AND',

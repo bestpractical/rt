@@ -206,7 +206,9 @@ HASH needs the following fields:
    ENTRYAGGREGATOR => (AND, OR)
    OPERATOR ('=', 'LIKE', '!=', 'NOT LIKE')
    VALUE ( a single scalar value or a list of possible values to be concatenated with ENTRYAGGREGATOR)
-   
+
+The subclause that the LIMIT statement(s) should be done in can also
+be passed in with a SUBCLAUSE parameter.
 
 =cut
 
@@ -218,6 +220,7 @@ sub LimitCustomField {
         OPERATOR        => '=',
         QUOTEVALUE      => 1,
         VALUE           => undef,
+        SUBCLAUSE       => undef,
         @_
     );
 
@@ -287,6 +290,8 @@ sub LimitCustomField {
 
     # TODO this should deal with starts with and ends with
 
+    my $clause = $args{'SUBCLAUSE'} || $ObjectValuesAlias;
+    
     if ( $args{'OPERATOR'} eq '!=' || $args{'OPERATOR'} =~ /^not like$/i ) {
         my $op;
         if ( $args{'OPERATOR'} eq '!=' ) {
@@ -303,14 +308,16 @@ sub LimitCustomField {
             VALUE           => $value,
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            SUBCLAUSE       => $clause,
         );
         $self->SUPER::Limit(
-            ALIAS        => $ObjectValuesAlias,
+            ALIAS           => $ObjectValuesAlias,
             FIELD           => 'Content',
             OPERATOR        => 'IS',
             VALUE           => 'NULL',
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE       => $clause,
         );
     }
     else {
@@ -321,6 +328,7 @@ sub LimitCustomField {
             VALUE           => $value,
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            SUBCLAUSE       => $clause,
         );
     }
 }
