@@ -146,6 +146,7 @@ elsif ( $id eq 'new' ) {
             $m->comp( "/RTFM/Elements/Error",
                 Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
         }
+        $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
         $id        = 'new';
         $EditClass = 0;
         $title     = loc('Create a new article');
