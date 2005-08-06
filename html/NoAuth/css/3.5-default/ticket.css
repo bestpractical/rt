@@ -1,0 +1,10 @@
+.ticket-info-cfs .label {
+    vertical-align: top;
+}
+
+.ticket-info-cfs ul {
+    margin: 0;
+    padding: 0;
+    margin-left: 0.5em;
+    list-style: none;
+}

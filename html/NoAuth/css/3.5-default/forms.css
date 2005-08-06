@@ -78,11 +78,11 @@ form input.checkbox, form input.radio {
 
 /* form .entry input, form .value input */
 
-form .label, form label, form .labeltop {
+.label, form label, .labeltop {
     font-weight: bold;
 }
 
-form .labeltop {
+.labeltop {
     vertical-align: top;
 }
 

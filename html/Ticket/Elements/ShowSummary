@@ -55,7 +55,7 @@
 % if ($Ticket->QueueObj->TicketCustomFields->First) {
 	  <&| /Widgets/TitleBox, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		class => 'ticket-info-basics'  &> 
+		class => 'ticket-info-cfs'  &> 
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 	  </&>
 % }
