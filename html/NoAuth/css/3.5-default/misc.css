@@ -76,3 +76,8 @@ td {
 }
 
 .clear { clear: both; }
+
+ul.action-results {
+    margin-top: 0;
+    margin-bottom: 0;
+}
