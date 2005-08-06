@@ -21,13 +21,15 @@ function loadTitleBoxStates() {
         
         if (c[0].match(/^TitleBox--/)) {
             var e   = document.getElementById(c[0]);
-            var e2  = e.parentNode;
-
-            if (c[1] != 0) {
-                set_rollup_state(e,e2,'shown');
-            }
-            else {
-                set_rollup_state(e,e2,'hidden');
+            if (e) {
+                var e2  = e.parentNode;
+    
+                if (c[1] != 0) {
+                    set_rollup_state(e,e2,'shown');
+                }
+                else {
+                    set_rollup_state(e,e2,'hidden');
+                }
             }
         }
     }
