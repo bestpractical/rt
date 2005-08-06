@@ -124,6 +124,7 @@
 .ticket-transaction .messagebody {
     clear: both;
     padding-left: 3em;
+    padding-bottom: 1em;
 }
 
 %# Message stanza colors
