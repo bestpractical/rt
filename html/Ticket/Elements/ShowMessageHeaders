@@ -43,14 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% use Data::Dumper;
 <table>
 % foreach my $header (@headers) {
-% next unless ($display_headers{'_all'} || $display_headers{lc($header->{'Tag'})});
-<tr>
-<td align="right" class="message-header-key"><%$header->{'Tag'}%>:</td>
-<td class="message-header-value"><%$header->{'Value'} | n%></td>
-</tr>
+%     next unless $display_headers{_all}
+%           or ($display_headers{ lc $header->{Tag} }
+%                 and length $header->{Value});
+  <tr>
+    <td align="right" class="message-header-key"><%$header->{'Tag'}%>:</td>
+    <td class="message-header-value"><%$header->{'Value'} | n%></td>
+  </tr>
 % }
 </table>
 <%INIT>
@@ -61,23 +62,24 @@ $m->comp('/Elements/Callback', content => \$content, %ARGS);
 # we'll display the value without escaping later (for MakeClicky et al.)
 $content = $m->interp->apply_escapes($content, 'h');
 
-my @lines = split (/\n/,$content);
+my @lines = split /\n/, $content;
 my $in_header = 0;
-my @headers =();
-foreach (@lines) {
-    if (/^(\S+):\s+(.*)$/) {
-        push (@headers, { Tag => $1, Value => $2} ); 
-    } elsif ($headers[-1]) {
-        $headers[-1]->{'Value'} .= $_;
-    } else {
+my @headers;
 
-        push (@headers, { Tag => $_, Value => ''} ); 
+for (@lines) {
+    if (/^(\S+):\s+(.*)$/) {
+        push @headers, { Tag => $1, Value => $2 };
+    }
+    elsif (/^\s+/) {
+        $headers[-1]->{'Value'} .= $_;
+    }
+    else {
+        s/:$//;
+        push @headers, { Tag => $_, Value => '' };
     }
 }
 
-my %display_headers;
-
-map { $display_headers{lc($_)} = 1 } @$DisplayHeaders;
+my %display_headers = map { lc($_) => 1 } @$DisplayHeaders;
 
 $m->comp('/Elements/Callback', _CallbackName => 'Headers', content => \$content, headers => \@headers, display_headers => \%display_headers, %ARGS);
 
