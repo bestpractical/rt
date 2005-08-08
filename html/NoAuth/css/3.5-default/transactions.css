@@ -46,7 +46,12 @@
 
 .ticket-transaction {
     margin: 1em 0 1em 0;
-    border: 1px solid #069;
+    border-bottom: 1px solid #ddd;
+    border-right: 3px solid #069;
+}
+
+#ticket-history .ticket-transaction {
+    border-bottom-color: #ccc;
 }
 
 .ticket-transaction.even {
