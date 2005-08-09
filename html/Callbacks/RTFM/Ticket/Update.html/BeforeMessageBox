@@ -19,7 +19,7 @@
 % my %uri;
 % $uri{$_}++ for split ' ', $ARGS{$ARGS{'id'}.'-RefersTo'};
 % my $TicketObj = LoadTicket($ARGS{'id'});
-% $uri{$_->TargetURI->Resolver->AsString}++ while $_ = $TicketObj->RefersTo->Next;
+% $uri{$_->TargetURI->Resolver->URI}++ while $_ = $TicketObj->RefersTo->Next;
 % foreach my $arg (keys %ARGS) {
 % if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
 % my $art = RT::FM::Article->new($session{'CurrentUser'});
