@@ -17,7 +17,7 @@
 %# END LICENSE BLOCK
 
 % for (@path) {
-<% $_->ParentObj->Id ? " > " : "" %><a href="<% $RT::WebPath %>/RTFM/Topics.html?class=<% $_->ObjectId %>&id=<% $_->Id %>"><% $_->Name %></a>
+<% $_->ParentObj->Id ? " > " : "" %><a href="<% $RT::WebPath %>/RTFM/Topics.html?class=<% $_->ObjectId %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
 % }
 
 <%args>

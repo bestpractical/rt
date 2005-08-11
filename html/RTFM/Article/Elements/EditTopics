@@ -27,7 +27,7 @@ if (@Classes) {
     my $topic = $tree->getNodeValue;
     $m->print("<option value=\"".$topic->Id."\""
       .(exists $topics{$topic->Id} ? " selected" : "").">"
-      .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
   });
 }
 unless ($OnlyThisClass) {
@@ -44,7 +44,7 @@ unless ($OnlyThisClass) {
     }
     $m->print("<option value=\"".$topic->Id."\""
       .(exists $topics{$topic->Id} ? " selected" : "").">"
-      .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
   });
 </%perl>
 </optgroup>

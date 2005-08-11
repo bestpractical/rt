@@ -55,7 +55,7 @@ unless ( $article->Id ) {
 unless ( $article->CurrentUserHasRight('ShowArticle') ) {
     $m->comp( "/RTFM/Elements/Error", Why => loc("Permission Denied") );
 }
-my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name );
+my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
 
 $id = $article->id;
 

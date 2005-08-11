@@ -72,7 +72,7 @@ if ($id) {
 % while (my $obj = $Articles->Next) {
 %   my $a = RT::FM::Article->new($session{'CurrentUser'});
 %   $a->Load($obj->ObjectId);
-<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name %></a></li>
+<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
 % }
 </ul>
 % } else {
@@ -170,7 +170,7 @@ sub MakeLinks {
 		"&showall=1";
 	}
 	
-	$output = "<li><a href=\"$query\">" . $topic->Name();
+	$output = "<li><a href=\"$query\">" . ($topic->Name() || loc("(no name)");
 	$output .= ": " . $topic->Description() if $topic->Description();
 	$output .= "</a>";
 	
