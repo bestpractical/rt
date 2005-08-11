@@ -170,7 +170,7 @@ sub MakeLinks {
 		"&showall=1";
 	}
 	
-	$output = "<li><a href=\"$query\">" . ($topic->Name() || loc("(no name)");
+	$output = "<li><a href=\"$query\">" . ($topic->Name() || loc("(no name)"));
 	$output .= ": " . $topic->Description() if $topic->Description();
 	$output .= "</a>";
 	
