@@ -380,6 +380,7 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	       text-align: right;
                vertical-align: top; }
 .value input, .value select { vertical-align: top; }
+.value ul { margin-top: 0; margin-bottom: 0; }
 .labeltop {       font-weight: normal;
 	       text-align: right;
 	       vertical-align: top }
