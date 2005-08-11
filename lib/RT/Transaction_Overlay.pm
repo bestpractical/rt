@@ -309,7 +309,8 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = "On " . $self->CreatedAsString() . ", " . $self->CreatorObj->Name() . " wrote:\n$content\n\n";
+        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString(), $self->CreatorObj->Name())
+          . "\n$content\n\n";
     }
 
     return ($content);
