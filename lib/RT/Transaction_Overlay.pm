@@ -308,11 +308,8 @@ sub Content {
             $content = $wrapper->wrap($content);
         }
 
-        $content = '['
-          . $self->CreatorObj->Name() . ' - '
-          . $self->CreatedAsString() . "]:\n\n" . $content . "\n\n";
         $content =~ s/^/> /gm;
-
+        $content = "On " . $self->CreatedAsString() . ", " . $self->CreatorObj->Name() . " wrote:\n$content\n\n";
     }
 
     return ($content);
