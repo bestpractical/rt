@@ -80,6 +80,8 @@ my $form_action = defined $goto             ? $goto
 </&>
 % }
 
+<& /Elements/Callback, %ARGS, _CallbackName => 'BeforeForm' &>
+
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
 
@@ -126,6 +128,7 @@ my $form_action = defined $goto             ? $goto
 % }
 </&>
 </div><!-- #login-box -->
+<& /Elements/Callback, %ARGS, _CallbackName => 'AfterForm' &>
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""
