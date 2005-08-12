@@ -51,6 +51,17 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
     $m->out("\n$Error\n") if $Error;
     $m->abort;
 }
+
+my $req_uri;
+
+if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/(.*)}) {
+    $req_uri = $1;
+}
+
+my $form_action = defined $goto             ? $goto
+                : defined $req_uri          ? $req_uri
+                :                             $RT::WebPath
+                ;
 </%INIT>
 
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
@@ -73,7 +84,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 <&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<form id="login" name="login" method="post" action="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>">
+<form id="login" name="login" method="post" action="<% $form_action %>">
 
 <div class="input-row">
     <span class="label"><&|/l&>Username</&>:</span>
