@@ -57,7 +57,7 @@ foreach my $stanza (@$Message) {
         my $content = $stanza->{raw};
         RT::Interface::Web::EscapeUTF8(\$content);
         $m->comp('/Elements/Callback', content => \$content, %ARGS);
-        $content =~ s{\z}{<br />}g
+        $content =~ s{$}{<br />}mg
             if defined $content;
 
 </%perl>
@@ -69,7 +69,7 @@ foreach my $stanza (@$Message) {
 %       my $content = $Message;
 %       RT::Interface::Web::EscapeUTF8(\$content);
 %       $m->comp('/Elements/Callback', content => \$content, %ARGS);
-%       $content =~ s{\z}{<br />}g;
+%       $content =~ s{$}{<br />}mg;
 <%$content |n%>
 % }
 <%INIT>
