@@ -64,7 +64,7 @@ if ($id or $showall) {
         }
     }
     @articles = map {$a = RT::FM::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
-} else {
+} elsif ($class) {
     my $Articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
     my $TopicsAlias = $Articles->Join(
         TYPE   => 'left',
@@ -85,6 +85,11 @@ if ($id or $showall) {
         VALUE      => 'NULL',
         QUOTEVALUE => 0,
     );
+    $Articles->Limit(
+        FIELD      => 'Class',
+        OPERATOR   => '=',
+        VALUE      => $class,
+    );
     @articles = @{$Articles->ItemsArrayRef};
 }
 </%perl>
@@ -92,7 +97,7 @@ if ($id or $showall) {
 % if (@articles) {
 % if ($id) {
 <h2><&|/l&>Articles in this topic</&></h2>
-% } else {
+% } elsif ($class) {
 <h2><&|/l&>Articles with no topics</&></h2>
 % }
 <ul>
