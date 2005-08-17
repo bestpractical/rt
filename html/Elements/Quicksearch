@@ -57,7 +57,8 @@ my $i;
 while (my $queue = $Queues->Next) {
   next unless ($queue->CurrentUserHasRight('ShowTicket'));
 
-  my $name = $m->interp->apply_escapes($queue->Name, "u");
+  my $name = $queue->Name;
+  $name =~ s|(['\\])|\\$1|g;
   
   my $new_q = "Queue = '$name' AND Status = 'new'";
   my $open_q = "Queue = '$name' AND Status = 'open'";
@@ -72,9 +73,9 @@ while (my $queue = $Queues->Next) {
   $i++;
 </%PERL>
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$new_q%>&Rows=50"><%$new%></a></TD>
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$open_q%>&Rows=50"><%$open%></a></TD>
+<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q |nuh%>&Rows=50" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$new_q |nuh%>&Rows=50"><%$new%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$open_q |nuh%>&Rows=50"><%$open%></a></TD>
 </TR>
 % }
 </TABLE>
