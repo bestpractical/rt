@@ -52,7 +52,7 @@
 
   use RT::Groups;
   my $groups = $RT::Groups->new($CurrentUser);
-  $groups->LimitToReal();
+  $groups->UnLimit();
   while (my $group = $groups->Next()) {
      print $group->Id ." is a group id\n";
   }
@@ -157,7 +157,7 @@ sub LimitToPersonalGroupsFor {
 
 # {{{ LimitToRolesForQueue
 
-=item LimitToRolesForQueue QUEUE_ID
+=head2 LimitToRolesForQueue QUEUE_ID
 
 Limits the set of groups found to role groups for queue QUEUE_ID
 
@@ -174,7 +174,7 @@ sub LimitToRolesForQueue {
 
 # {{{ LimitToRolesForTicket
 
-=item LimitToRolesForTicket Ticket_ID
+=head2 LimitToRolesForTicket Ticket_ID
 
 Limits the set of groups found to role groups for Ticket Ticket_ID
 
@@ -191,7 +191,7 @@ sub LimitToRolesForTicket {
 
 # {{{ LimitToRolesForSystem
 
-=item LimitToRolesForSystem System_ID
+=head2 LimitToRolesForSystem System_ID
 
 Limits the set of groups found to role groups for System System_ID
 

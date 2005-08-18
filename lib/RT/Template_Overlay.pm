@@ -324,7 +324,7 @@ sub MIMEObj {
 
 # {{{ sub Parse 
 
-=item Parse
+=head2 Parse
 
  This routine performs Text::Template parsing on the template and then
  imports the results into a MIME::Entity so we can really use it

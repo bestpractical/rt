@@ -104,7 +104,7 @@ sub Connect {
    
 }
 
-=item BuildDSN
+=head2 BuildDSN
 
 Build the DSN for the RT database. doesn't take any parameters, draws all that
 from the config file.

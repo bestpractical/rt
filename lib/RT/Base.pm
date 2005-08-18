@@ -52,9 +52,18 @@ use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);
 
+=head1 NAME
+
+RT::Base
+
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
 =head1 FUNCTIONS
 
-
+=cut
 
 # {{{ sub CurrentUser 
 
@@ -100,7 +109,7 @@ sub OriginalUser {
 }
 
 
-=item loc LOC_STRING
+=head2 loc LOC_STRING
 
 l is a method which takes a loc string
 to this object's CurrentUser->LanguageHandle for localization. 

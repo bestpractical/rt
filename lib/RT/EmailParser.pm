@@ -77,6 +77,7 @@ ok(require RT::EmailParser);
 
 =head2 new
 
+Returns a new RT::EmailParser object
 
 =cut
 
@@ -412,7 +413,7 @@ sub ParseAddressFromHeader {
 
 # {{{ IsRTAddress
 
-=item IsRTaddress ADDRESS
+=head2 IsRTaddress ADDRESS
 
 Takes a single parameter, an email address. 
 Returns true if that address matches the $RTAddressRegexp.  
@@ -446,7 +447,7 @@ sub IsRTAddress {
 
 # {{{ CullRTAddresses
 
-=item CullRTAddresses ARRAY
+=head2 CullRTAddresses ARRAY
 
 Takes a single argument, an array of email addresses.
 Returns the same array with any IsRTAddress()es weeded out.
@@ -491,7 +492,7 @@ sub CullRTAddresses {
 # template for the rejection message.
 
 
-=item LookupExternalUserInfo
+=head2 LookupExternalUserInfo
 
  LookupExternalUserInfo is a site-definable method for synchronizing
  incoming users with an external data source. 
@@ -504,12 +505,12 @@ sub CullRTAddresses {
 
  It returns (FoundInExternalDatabase, ParamHash);
 
-   FoundInExternalDatabase must  be set to 1 before return if the user was
-   found in the external database.
+   FoundInExternalDatabase must  be set to 1 before return if the user 
+   was found in the external database.
 
-   ParamHash is a Perl parameter hash which can contain at least the following
-   fields. These fields are used to populate RT's users database when the user 
-   is created
+   ParamHash is a Perl parameter hash which can contain at least the 
+   following fields. These fields are used to populate RT's users 
+   database when the user is created.
 
     EmailAddress is the email address that RT should use for this user.  
     Name is the 'Name' attribute RT should use for this user. 

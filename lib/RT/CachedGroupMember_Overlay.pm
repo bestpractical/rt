@@ -48,25 +48,39 @@ package RT::CachedGroupMember;
 use strict;
 no warnings qw(redefine);
 
-# {{{ Create
+=head1 NAME
 
-=item Create PARAMHASH
+  RT::CachedGroupMember
+
+=head1 SYNOPSIS
+
+  use RT::CachedGroupMember;
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=cut
+
+# {{ Create
+
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
-  'Group' is the "top level" group we're building the cache for. This is an 
-  RT::Principal object
+  'Group' is the "top level" group we're building the cache for. This 
+  is an RT::Principal object
 
-  'Member' is the RT::Principal  of the user or group we're adding
-  to the cache.
+  'Member' is the RT::Principal  of the user or group we're adding to 
+  the cache.
 
-  'ImmediateParent' is the RT::Principal of the group that this principal
-  belongs to to get here
+  'ImmediateParent' is the RT::Principal of the group that this 
+  principal belongs to to get here
 
   int(11) 'Via' is an internal reference to CachedGroupMembers->Id of
-  the "parent" record of this cached group member. It should be empty if this
-  member is a "direct" member of this group. (In that case, it will be set to this 
-  cached group member's id after creation)
+  the "parent" record of this cached group member. It should be empty if 
+  this member is a "direct" member of this group. (In that case, it will 
+  be set to this cached group member's id after creation)
 
   This routine should _only_ be called by GroupMember->Create
 
