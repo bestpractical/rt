@@ -1,9 +1,14 @@
+#:
 msgid ""
-msgstr ""Log directory %1 not found or couldn't be written.\n"
-" RT can't run."
-"
-"Le répertoire de journalisation %1 n'a pas été trouvé ou en lecture seule.\n"
-" RT ne peut démarrer."
+msgstr ""
+"Project-Id-Version: RT 3.2.0\n"
+"POT-Creation-Date: 2002-05-02 11:36+0800\n"
+"PO-Revision-Date: 2004-12-17 13:45-0500\n"
+"Last-Translator: S?~CÂ©bastien Person <sebastien.person@easter-eggs.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: NOT FOUND IN SOURCE
 msgid "#"
