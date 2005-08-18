@@ -3379,6 +3379,11 @@ sub TransactionBatch {
 sub DESTROY {
     my $self = shift;
 
+    # DESTROY methods need to localize $@, or it may unset it.  This
+    # causes $m->abort to not bubble all of the way up.  See perlbug
+    # http://rt.perl.org/rt3/Ticket/Display.html?id=17650
+    local $@;
+
     # The following line eliminates reentrancy.
     # It protects against the fact that perl doesn't deal gracefully
     # when an object's refcount is changed in its destructor.
