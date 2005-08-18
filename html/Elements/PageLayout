@@ -76,7 +76,7 @@
 % if ($actions->{"$action"}->{'html'}) {
 % push @actions, $actions->{"$action"}->{'html'}; 
 % } else {
-% push @actions,  "<A class='nav' HREF=\"".$RT::WebPath."/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</A>";
+% push @actions,  qq|<a class="nav" href="|.$RT::WebPath."/".$actions->{$action}->{'path'}.qq|">|.$actions->{$action}->{'title'}."</a>";
 % }
 %  }
 <% join(" | ", @actions) | n %>

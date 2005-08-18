@@ -328,6 +328,9 @@ sub MIMEObj {
 
  This routine performs Text::Template parsing on the template and then
  imports the results into a MIME::Entity so we can really use it
+
+ Takes a hash containing Argument, TicketObj, and TransactionObj.
+
  It returns a tuple of (val, message)
  If val is 0, the message contains an error message
 

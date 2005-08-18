@@ -175,13 +175,13 @@ sub LoadAction  {
  
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
-    $self->{'Action'}  = $type->new ( ScripActionObj => $self, 
-				      TicketObj => $args{'TicketObj'},
-				      ScripObj => $args{'ScripObj'},
-				      TransactionObj => $args{'TransactionObj'},
-				      TemplateObj => $self->TemplateObj,
-				      Argument => $self->Argument,
-                      CurrentUser => $self->CurrentUser
+    $self->{'Action'}  = $type->new ( Argument => $self->Argument,
+                                      CurrentUser => $self->CurrentUser,
+                                      ScripActionObj => $self, 
+                                      ScripObj => $args{'ScripObj'},
+                                      TemplateObj => $self->TemplateObj,
+                                      TicketObj => $args{'TicketObj'},
+                                      TransactionObj => $args{'TransactionObj'},
 				    );
 }
 # }}}
@@ -229,6 +229,7 @@ sub TemplateObj {
 
 sub Prepare  {
     my $self = shift;
+    $self->{_Message_ID} = 0;
     return ($self->Action->Prepare());
   
 }

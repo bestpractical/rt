@@ -51,6 +51,7 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
+use strict;
 use Test::More tests => 57;
 use RT;
 RT::LoadConfig();

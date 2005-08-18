@@ -88,8 +88,9 @@ use RT::Scrips;
 
 Create a new transaction.
 
-This routine should _never_ be called anything other Than RT::Ticket. It should not be called 
-from client code. Ever. Not ever.  If you do this, we will hunt you down. and break your kneecaps.
+This routine should _never_ be called by anything other than RT::Ticket. 
+It should not be called 
+from client code. Ever. Not ever.  If you do this, we will hunt you down and break your kneecaps.
 Then the unpleasant stuff will start.
 
 TODO: Document what gets passed to this
@@ -1026,6 +1027,7 @@ sub UpdateCustomFields {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
+	next if $arg =~ /-Magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};
         foreach
@@ -1067,6 +1069,17 @@ sub CustomFieldValues {
     }
     return $self->SUPER::CustomFieldValues($field);
 }
+
+# }}}
+
+# {{{ sub CustomFieldLookupType
+
+=head2 CustomFieldLookupType
+
+Returns the RT::Transaction lookup type, which can 
+be passed to RT::CustomField->Create() via the 'LookupType' hash key.
+
+=cut
 
 # }}}
 
