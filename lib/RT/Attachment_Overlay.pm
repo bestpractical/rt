@@ -157,8 +157,8 @@ sub Create {
     defined($Subject) or $Subject = '';
     chomp($Subject);
 
-    #Get the Message-id
-    my $MessageId = $Attachment->head->get( 'Message-Id', 0 );
+    #Get the Message-ID
+    my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
     $MessageId =~ s/^<(.*)>$/$1/go;

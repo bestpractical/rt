@@ -229,9 +229,11 @@ sub SendMessage {
     my $self    = shift;
     my $MIMEObj = shift;
 
-    my $msgid = $MIMEObj->head->get('Message-Id');
+    my $msgid = $MIMEObj->head->get('Message-ID');
     chomp $msgid;
 
+    $self->ScripActionObj->{_Message_ID}++;
+    
     $RT::Logger->info( $msgid . " #"
         . $self->TicketObj->id . "/"
         . $self->TransactionObj->id
@@ -398,12 +400,13 @@ sub RecordOutgoingMailTransaction {
         $type = 'EmailRecord';
     }
 
+    my $msgid = $MIMEObj->head->get('Message-ID');
+    chomp $msgid;
 
-      
     my ( $id, $msg ) = $transaction->Create(
         Ticket         => $self->TicketObj->Id,
         Type           => $type,
-        Data           => $MIMEObj->head->get('Message-Id'),
+        Data           => $msgid,
         MIMEObj        => $MIMEObj,
         ActivateScrips => 0
     );
@@ -433,20 +436,36 @@ sub SetRTSpecialHeaders {
     $self->SetReturnAddress();
     $self->SetReferencesHeaders();
 
+    unless ($self->TemplateObj->MIMEObj->head->get('Message-ID')) {
+      # Get Message-ID for this txn
+      my $msgid = "";
+      $msgid = $self->TransactionObj->Message->First->GetHeader("RT-Message-ID")
+        || $self->TransactionObj->Message->First->GetHeader("Message-ID")
+        if $self->TransactionObj->Message && $self->TransactionObj->Message->First;
 
-
-    # TODO We should always add References headers for all message-ids
-    # of previous messages related to this ticket.
-
-    $self->SetHeader( 'Message-ID',
-        "<rt-"
-        . $RT::VERSION . "-"
-        . $self->TicketObj->id() . "-"
-        . $self->TransactionObj->id() . "-"
-        . $self->ScripObj->Id . "."
-        . rand(20) . "\@"
-        . $RT::Organization . ">" )
-      unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
+      # If there is one, and we can parse it, then base our Message-ID on it
+      if ($msgid 
+          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>$/
+                         "<$1." . $self->TicketObj->id
+                          . "-" . $self->ScripObj->id
+                          . "-" . $self->ScripActionObj->{_Message_ID}
+                          . "@" . $RT::Organization . ">"/eg
+          and $2 == $self->TicketObj->id) {
+        $self->SetHeader( "Message-ID" => $msgid );
+      } else {
+        $self->SetHeader( 'Message-ID',
+            "<rt-"
+            . $RT::VERSION . "-"
+            . $$ . "-"
+            . CORE::time() . "-"
+            . int(rand(2000)) . '.'
+            . $self->TicketObj->id . "-"
+            . $self->ScripObj->id . "-"  # Scrip
+            . $self->ScripActionObj->{_Message_ID} . "@"  # Email sent
+            . $RT::Organization
+            . ">" );
+      }
+    }
 
     $self->SetHeader( 'Precedence', "bulk" )
       unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
@@ -722,73 +741,58 @@ sub SetReferencesHeaders {
     my $attachments = $self->TransactionObj->Message;
 
     if ( my $top = $attachments->First() ) {
-        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') ||'');  
-        @references = split(/\s+/m, $top->GetHeader('References')||'' );  
-        @msgid = split(/\s+/m,$top->GetHeader('Message-Id') || ''); 
+        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') || '');  
+        @references = split(/\s+/m, $top->GetHeader('References') || '' );  
+        @msgid = split(/\s+/m, $top->GetHeader('Message-ID') || ''); 
     }
     else {
         return (undef);
     }
 
-    #   RFC 2822 - Section 3.6.4
-    #
-    #   The "In-Reply-To:" field will contain the contents of the "Message-
-    #   ID:" field of the message to which this one is a reply (the "parent
-    #   message").  If there is more than one parent message, then the "In-
-    #   Reply-To:" field will contain the contents of all of the parents'
-    #   "Message-ID:" fields.  If there is no "Message-ID:" field in any of
-    #   the parent messages, then the new message will have no "In-Reply-To:"
-    #   field.
+    # There are two main cases -- this transaction was created with
+    # the RT Web UI, and hence we want to *not* append its Message-ID
+    # to the References and In-Reply-To.  OR it came from an outside
+    # source, and we should treat it as per the RFC
+    if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>/) {
 
-    # We interpret this section to mean that since this outgoing message is
-    # a child both of whatever the user was replying to and that user's reply,
-    # we want both headers.
+      # Make all references which are internal be to version which we
+      # have sent out
+      for (@references, @in_reply_to) {
+        s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>$/
+          "<$1." . $self->TicketObj->id .
+             "-" . $self->ScripObj->id .
+             "-" . $self->ScripActionObj->{_Message_ID} .
+             "@" . $RT::Organization . ">"/eg
+      }
 
-    # Scenario:
-    #   RT sends joe messageid "A".
-    #   Joe replies with message "B"
-    #   RT forwards that to the team as "C"
+      # In reply to whatever the internal message was in reply to
+      $self->SetHeader( 'In-Reply-To', join( " ",  ( @in_reply_to )));
 
-    # Message A has an unspecified reply-to
-    # Message B is in-reply-to A
-    # Message C is in-reply-to A. (should be A and B
-    # XXX FIXME TODO Sadly, MUAs hate can't cope with multiple in-reply-to)
+      # Default the references to whatever we're in reply to
+      @references = @in_reply_to unless @references;
 
-    my @source_msg;
-    if ( @in_reply_to) {
-        @source_msg = @in_reply_to;
+      # References are unchanged from internal
+    } else {
+      # In reply to that message
+      $self->SetHeader( 'In-Reply-To', join( " ",  ( @msgid )));
+
+      # Default the references to whatever we're in reply to
+      @references = @in_reply_to unless @references;
+
+      # Push that message onto the end of the references
+      push @references, @msgid;
     }
-    else {
-        @source_msg = @msgid;
-    }
-    $self->SetHeader( 'In-Reply-To', join( " ",  ( @source_msg ))); # , @msgid ) ) );
 
-    #   RFC 2822 - Section 3.6.4
-    #
-    #   The "References:" field will contain the contents of the parent's
-    #   "References:" field (if any) followed by the contents of the parent's
-    #   "Message-ID:" field (if any).  If the parent message does not contain
-    #   a "References:" field but does have an "In-Reply-To:" field
-    #   containing a single message identifier, then the "References:" field
-    #   will contain the contents of the parent's "In-Reply-To:" field
-    #   followed by the contents of the parent's "Message-ID:" field (if
-    #   any).  If the parent has none of the "References:", "In-Reply-To:",
-    #   or "Message-ID:" fields, then the new message will have no
-    #   "References:" field.
-
-    if ( !@references && scalar(@in_reply_to) ) {
-        @references = @in_reply_to;
-    }
-  
+    # Push pseudo-ref to the front
     my $pseudo_ref = $self->PseudoReference;
-    @references = ($pseudo_ref, grep { $_ ne $pseudo_ref } @references , @msgid);
+    @references = ($pseudo_ref, grep { $_ ne $pseudo_ref } @references);
 
-    # If there are more than 10 references headers, remove all but the first four and the last six
-    # (Gotta keep this from growing forever)
+    # If there are more than 10 references headers, remove all but the
+    # first four and the last six (Gotta keep this from growing
+    # forever)
     splice(@references, 4, -6) if ($#references >= 10);
 
-
-
+    # Add on the references
     $self->SetHeader( 'References', join( " ",   @references) );
     $self->TemplateObj->MIMEObj->head->fold_length( 'References', 80 );
 
@@ -798,7 +802,7 @@ sub SetReferencesHeaders {
 
 =head2 PseudoReference
 
-Returns a fake Message-Id: header for the ticket to allow a base level of threading
+Returns a fake Message-ID: header for the ticket to allow a base level of threading
 
 =cut
 

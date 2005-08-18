@@ -203,7 +203,7 @@ HTTP::Server::Simple::Mason 0.03
 GD
 GD::Graph
 GD::Text
-Text::WikiFormat
+Text::WikiFormat 0.76
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];

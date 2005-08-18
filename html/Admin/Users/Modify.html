@@ -251,44 +251,44 @@ else {
 
     $current_tab = 'Admin/Users/Modify.html?id='.$id;
     if ($id eq 'new') {
-    ( $val, $msg ) = $UserObj->Create(
-        Name                  => $Name,
-        EmailAddress          => $ARGS{'EmailAddress'},
-        Name                  => $ARGS{'Name'},
-        Comments              => $ARGS{'Comments'},
-        Signature             => $ARGS{'Signature'},
-        EmailAddress          => $ARGS{'EmailAddress'},
-        FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
-        Organization          => $ARGS{'Organization'},
-        RealName              => $ARGS{'RealName'},
-        NickName              => $ARGS{'NickName'},
-        Lang                  => $ARGS{'Lang'},
-        EmailEncoding         => $ARGS{'EmailEncoding'},
-        WebEncoding           => $ARGS{'WebEncoding'},
-        ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
-        ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
-        Gecos                 => $ARGS{'Gecos'},
-        ExternalAuthId        => $ARGS{'ExternalAuthId'},
-        AuthSystem            => $ARGS{'AuthSystem'},
-        HomePhone             => $ARGS{'HomePhone'},
-        WorkPhone             => $ARGS{'WorkPhone'},
-        MobilePhone           => $ARGS{'MobilePhone'},
-        PagerPhone            => $ARGS{'PagerPhone'},
-        Address1              => $ARGS{'Address1'},
-        Address2              => $ARGS{'Address2'},
-        City                  => $ARGS{'City'},
-        State                 => $ARGS{'State'},
-        Zip                   => $ARGS{'Zip'},
-        Country               => $ARGS{'Country'},
-        Privileged           => $ARGS{'Privileged'},
-        Disabled            => ($ARGS{'Enabled'} ? 0 : 1) 
-				       );
+	( $val, $msg ) = $UserObj->Create(
+	    Name                  => $Name,
+	    EmailAddress          => $ARGS{'EmailAddress'},
+	    Name                  => $ARGS{'Name'},
+	    Comments              => $ARGS{'Comments'},
+	    Signature             => $ARGS{'Signature'},
+	    EmailAddress          => $ARGS{'EmailAddress'},
+	    FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
+	    Organization          => $ARGS{'Organization'},
+	    RealName              => $ARGS{'RealName'},
+	    NickName              => $ARGS{'NickName'},
+	    Lang                  => $ARGS{'Lang'},
+	    EmailEncoding         => $ARGS{'EmailEncoding'},
+	    WebEncoding           => $ARGS{'WebEncoding'},
+	    ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
+	    ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
+	    Gecos                 => $ARGS{'Gecos'},
+	    ExternalAuthId        => $ARGS{'ExternalAuthId'},
+	    AuthSystem            => $ARGS{'AuthSystem'},
+	    HomePhone             => $ARGS{'HomePhone'},
+	    WorkPhone             => $ARGS{'WorkPhone'},
+	    MobilePhone           => $ARGS{'MobilePhone'},
+	    PagerPhone            => $ARGS{'PagerPhone'},
+	    Address1              => $ARGS{'Address1'},
+	    Address2              => $ARGS{'Address2'},
+	    City                  => $ARGS{'City'},
+	    State                 => $ARGS{'State'},
+	    Zip                   => $ARGS{'Zip'},
+	    Country               => $ARGS{'Country'},
+	    Privileged           => $ARGS{'Privileged'},
+	    Disabled            => ($ARGS{'Enabled'} ? 0 : 1)
+	);
+
 	if ($val) {
 		push @results, $msg;
 	} else {
 		push @results, loc('User could not be created: [_1]', $msg);
-	}	
-
+	}
     } else {
 	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
 	$val = $UserObj->Id();
@@ -296,14 +296,13 @@ else {
 
     if ($val) {
 	$title = loc("Modify the user [_1]", $UserObj->Name);
-    }	
+    }
 
     # If the create failed
     else {
 	$title = loc("Create a new user");
 	$Create = 1;
-    }    
-
+    }
 }
 
 
@@ -311,14 +310,14 @@ else {
 
 # If we have a user to modify, lets try. 
 if ($UserObj->Id && $id ne 'new') {
-    
+
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country 
+		    Address2 City State Zip Country 
 		   );
-    
+
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
@@ -326,35 +325,40 @@ if ($UserObj->Id && $id ne 'new') {
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
 
-# {{{ Deal with special fields: Privileged, Enabled and Password
-if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
-my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
-     push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
-}
+    # {{{ Deal with special fields: Privileged, Enabled
+    if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
+         my ($code, $msg) = $UserObj->SetPrivileged($Privileged);
+         push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+    }
 
-#we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1) {
-    $Disabled = 0;
-}	
-else {
-    $Disabled = 1;
-}
-if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
-    my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
-    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
-}
+    #we're asking about enabled on the web page but really care about disabled.
+    $Disabled = $Enabled ? 0 : 1;
+
+    if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
+        my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
+        push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+    }
 
 
-#TODO: make this report errors properly
-if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
-    my ($code, $msg);
-    ($code, $msg) = $UserObj->SetPassword($Pass1);
-    push @results, loc('Password: [_1]', loc_fuzzy($msg));
-} elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
-    push @results, loc("Passwords do not match.");
+    # }}}
 }
 
-# }}}
+if ( $UserObj->Id ) {
+    my $password_not_set;
+    # Deal with Password field
+    if ( !$Pass1 and !$Pass2 ) {
+	$password_not_set = 1;
+    } elsif ( $Pass1 ne $Pass2 ) {
+	$password_not_set = 1;
+        push @results, loc("Passwords do not match.");
+    } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
+        my ($code, $msg) = $UserObj->SetPassword($Pass1);
+        push @results, loc_fuzzy($msg);
+	$password_not_set = 1 unless $code;
+    }
+    if ($id eq 'new' and $password_not_set) {
+	push @results, loc("A password was not set, so user won't be able to login.");
+    } 
 }
 
 

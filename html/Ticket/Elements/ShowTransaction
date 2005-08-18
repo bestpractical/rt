@@ -47,7 +47,7 @@
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td rowspan="2" valign="top" class="type">
-      <a name="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</a>
+      <a name="txn-<%$Transaction->Id%>" href="<% $DisplayPath %>#txn-<%$Transaction->Id%>">#</a>
       <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
     </td>
     <td class="date"><% $transdate|n %></td>
@@ -78,6 +78,7 @@ $ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
+$DisplayPath => $RT::WebPath."/Ticket/Display.html?id=".$Ticket->id
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
 $UpdatePath => $RT::WebPath."/Ticket/Update.html"
 $EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"

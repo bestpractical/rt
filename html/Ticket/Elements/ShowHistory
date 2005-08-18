@@ -97,8 +97,8 @@ while ( my $Transaction = $Transactions->Next ) {
     $m->comp( 'ShowTransaction',
             %ARGS,
 
-	      AttachPath	  => $AttachPath,
-	      UpdatePath	   => $UpdatePath,
+              AttachPath           => $AttachPath,
+              UpdatePath           => $UpdatePath,
               Ticket               => $Ticket,
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
@@ -124,7 +124,7 @@ $m->flush_buffer();
 my $Transactions = new RT::Transactions($session{'CurrentUser'});
 if ($Tickets) {
     while (my $t = $Tickets->Next) {
-	$Transactions->LimitToTicket($t->id);
+        $Transactions->LimitToTicket($t->id);
     }
 } else {
     $Transactions = $Ticket->Transactions;
@@ -148,5 +148,4 @@ $ShowDisplayModes => 1
 $ShowTitleBarCommands => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
 $UpdatePath => $RT::WebPath."/Ticket/Update.html"
-
 </%ARGS>

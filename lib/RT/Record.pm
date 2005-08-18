@@ -262,7 +262,7 @@ sub _Handle {
 
 # {{{ sub Create 
 
-=item  Create PARAMHASH
+=head2  Create PARAMHASH
 
 Takes a PARAMHASH of Column -> Value pairs.
 If any Column has a Validate$PARAMNAME subroutine defined and the 
@@ -1550,7 +1550,7 @@ sub _LookupTypes {
 
 # {{{ AddCustomFieldValue
 
-=item AddCustomFieldValue { Field => FIELD, Value => VALUE }
+=head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
 VALUE should be a string.
 FIELD can be a CustomField object OR a CustomField ID.
@@ -1718,7 +1718,7 @@ sub _AddCustomFieldValue {
 
 # {{{ DeleteCustomFieldValue
 
-=item DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
+=head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
 
 Deletes VALUE as a value of CustomField FIELD. 
 
@@ -1774,7 +1774,7 @@ sub DeleteCustomFieldValue {
 
 # {{{ FirstCustomFieldValue
 
-=item FirstCustomFieldValue FIELD
+=head2 FirstCustomFieldValue FIELD
 
 Return the content of the first value of CustomField FIELD for this ticket
 Takes a field id or name
@@ -1797,7 +1797,7 @@ sub FirstCustomFieldValue {
 
 # {{{ CustomFieldValues
 
-=item CustomFieldValues FIELD
+=head2 CustomFieldValues FIELD
 
 Return a ObjectCustomFieldValues object of all values of the CustomField whose 
 id or Name is FIELD for this record.
