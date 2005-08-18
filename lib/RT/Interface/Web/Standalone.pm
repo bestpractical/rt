@@ -5,6 +5,7 @@ use base 'HTTP::Server::Simple::Mason';
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
 
+
 sub new_handler {
    my $m;
    $m=  RT::Interface::Web::Handler->new(@RT::MasonParameters,
@@ -21,7 +22,7 @@ sub new_handler {
             # Send headers if they have not been sent by us or by user.
             # We use instance here because if we store $request we get a
             # circular reference and a big memory leak.
-                unless ($r->http_header_sent) {
+                unless ($m->{'http_header_sent'}) {
                        $r->send_http_header();
                 }
             {
