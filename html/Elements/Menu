@@ -78,7 +78,8 @@
 % } else {
 % $sep=0;
 % }
-<li class="<%$class%>-<%$level%>-<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" class="<%$class%>-<%$level%>" 
+% my $url = $toptabs->{$tab}->{'path'} =~ /^https?:/i ? $toptabs->{$tab}->{'path'} : $RT::WebPath . "/" . $toptabs->{$tab}->{'path'};
+<li class="<%$class%>-<%$level%>-<%$style%>"><A HREF="<% $url %>" class="<%$class%>-<%$level%>" 
 <%($class eq 'currenttopnav') ? "name='focus'" : ""|n %> 
 <% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></A>
 %# Second-level items
