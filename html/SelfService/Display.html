@@ -93,6 +93,30 @@ my ( $field, @results );
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+
+# store the uploaded attachment in session
+if ( $ARGS{'Attach'} ) {    # attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+    my $subject = "$ARGS{'Attach'}";
+
+    # since CGI.pm deutf8izes the magic field, we need to add it back.
+    Encode::_utf8_on($subject);
+
+    # strip leading directories
+    $subject =~ s#^.*[\\/]##;
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => $subject,
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+
+    $session{'Attachments'} =
+    { %{ $session{'Attachments'} || {} },
+        $ARGS{'Attach'} => $attachment };
+}
+
 if ( $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
@@ -110,28 +134,6 @@ if ( $id[0] eq 'new' ) {
         $m->abort;
     }
 
-    # {{{ store the uploaded attachment in session
-    if ( $ARGS{'Attach'} ) {    # attachment?
-        $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-        my $subject = "$ARGS{'Attach'}";
-
-        # since CGI.pm deutf8izes the magic field, we need to add it back.
-        Encode::_utf8_on($subject);
-
-        # strip leading directories
-        $subject =~ s#^.*[\\/]##;
-
-        my $attachment = MakeMIMEEntity(
-            Subject             => $subject,
-            Body                => "",
-            AttachmentFieldName => 'Attach'
-        );
-
-        $session{'Attachments'} =
-          { %{ $session{'Attachments'} || {} },
-            $ARGS{'Attach'} => $attachment };
-    }
 
     ( $Ticket, @results ) =
     CreateTicket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
