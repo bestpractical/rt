@@ -166,6 +166,9 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 % my $rows = 5;
 % my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25);
 % my @del = (NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => $rows, Multiple => 1, Cols => 25);
+% my $rows = 5;
+% my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25);
+% my @del = (NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => $rows, Multiple => 1, Cols => 25);
 % if ($cf->Type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
 <td><& /Elements/EditCustomFieldSelect, @del &></td>

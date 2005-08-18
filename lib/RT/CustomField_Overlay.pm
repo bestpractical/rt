@@ -1139,10 +1139,16 @@ sub DeleteValueForObject {
     }
 
 
-    # check ot make sure we found it
+    # check to make sure we found it
     unless ($oldval->Id) {
         return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name));
     }
+
+    # for single-value fields, we need to validate that empty string is a valid value for it
+    if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
+        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+    }
+
     # delete it
 
     my $ret = $oldval->Delete();

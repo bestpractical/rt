@@ -6,7 +6,7 @@ while (my $CF = $CustomFields->Next) {
     my $field = $NamePrefix . $CF->Id . "-Value";
     my $value;
 
-    if ($ARGSRef->{"${field}s-Magic"}) {
+    if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
         $value = $ARGSRef->{"${field}s"};
 
         # We only validate Single Combos -- multis can never be user input
