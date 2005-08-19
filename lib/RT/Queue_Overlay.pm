@@ -402,7 +402,7 @@ sub Delete {
 =head2 SetDisabled
 
 Takes a boolean.
-1 will cause this queue to no longer be avaialble for tickets.
+1 will cause this queue to no longer be available for tickets.
 0 will re-enable this queue.
 
 =cut
