@@ -254,10 +254,8 @@ msgstr "%1k"
 #: lib/RT/Ticket_Overlay.pm:1118
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
-msgstr "msgstr "'%1"
+msgstr  "'%1' ist ein ung\303\274ltiger Wert f\303\274r Status"
 
-2000
-' ist ein ungültiger Wert für Status"
 #: html/Admin/Elements/EditCustomFieldValues:50 html/Admin/Elements/EditQueueWatchers:50 html/Admin/Elements/EditScrips:56 html/Admin/Elements/EditTemplates:57 html/Admin/Groups/Members.html:73 html/Elements/EditLinks:54 html/Ticket/Elements/EditPeople:67 html/User/Groups/Members.html:76
 msgid "(Check box to delete)"
 msgstr "(Auswahl wird gelöscht)"
@@ -506,10 +504,8 @@ msgstr "Admin Kommentar"
 
 #: etc/initialdata:274
 msgid "Admin Correspondence"
-msgstr "msgstr "Admin Korrespondenz"
+msgstr "Admin Korrespondenz"
 
-2000
-"
 #: html/Admin/Queues/index.html:46 html/Admin/Queues/index.html:49
 msgid "Admin queues"
 msgstr "Admin Bereiche"
@@ -824,10 +820,8 @@ msgstr "AnfrageKommentieren"
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:73
 msgid "Comments (Not sent to requestors)"
-msgstr "msgstr "Kommentar (wird nicht an Klienten ges"
+msgstr "Kommentare (werden nicht an Klienten geschickt)"
 
-2000
-chickt)"
 #: html/Search/Bulk.html:150
 msgid "Comments (not sent to requestors)"
 msgstr "Kommentare (werden nicht an Klienten geschickt)"
@@ -1109,10 +1103,6 @@ msgstr "Anfrage erzeugen"
 msgid "Create tickets in this queue"
 msgstr "Erstelle Anfragen in diesem Bereich"
 
-msg
-2000
-id "Create tickets in this queue"
-msgstr "Erstelle Anfragen in diesem Bereich"
 #: lib/RT/CustomField_Overlay.pm:101
 msgid "Create, delete and modify custom fields"
 msgstr "Erstellen, löschen und modifizieren von benutzerdefinierten Felder"
@@ -1369,8 +1359,6 @@ msgstr "absteigend"
 msgid "Describe the issue below"
 msgstr "Beschreiben Sie hier das Problem"
 
-2000
-s/Modify.html:71 html/Admin/Queues/Modify.html:69
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:56 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
 msgid "Description"
 msgstr "Beschreibung"
@@ -1664,8 +1652,7 @@ msgstr "EndPriorität"
 msgid "Find groups whose"
 msgstr "Finde Gruppen dessen"
 
-2000
-Find groups whose"
+msgid" Find groups whose"
 msgstr "Finde Gruppen dessen"
 #: html/Admin/Queues/People.html:78 html/Admin/Users/index.html:70 html/Ticket/Elements/EditPeople:51
 msgid "Find people whose"
@@ -1938,8 +1925,6 @@ msgstr "Ungültiger Bereich"
 msgid "Invalid right"
 msgstr "Ungültiges Recht"
 
-2000
-cord.pm:254
 #: lib/RT/Record.pm:280
 #. ($key)
 msgid "Invalid value for %1"
@@ -2275,9 +2260,6 @@ msgstr "Nachrichten über diese Anfrage werden nicht an diese Empfänger gesende
 msgid "Mismatched parentheses"
 msgstr "Unausgeglichene Klammerung"
 
-2000
- parentheses"
-msgstr "Unausgeglichene Klammerung"
 #: lib/RT/Record.pm:940
 msgid "Missing a primary key?: %1"
 msgstr "%1: Fehlt ein Primärschlüssel?"
@@ -2539,9 +2521,6 @@ msgstr "Meine %1 Anfragen"
 msgid "My approvals"
 msgstr "Meine Freigaben"
 
-2000
-ovals"
-msgstr "Meine Freigaben"
 #: html/Search/Elements/SearchPrivacy:50 html/Search/Elements/SelectSearchObject:53 html/Search/Elements/SelectSearchesForObjects:53
 msgid "My saved searches"
 msgstr "Meine gespeicherten Suchanfragen"
@@ -2838,8 +2817,6 @@ msgstr "Benachrichtige Besitzer als Kommentar"
 msgid "Notify Owner of their rejected ticket"
 msgstr "Besitzer über ihre abgewiesene Anfrage informieren"
 
-2000
-ata:365
 #: etc/initialdata:365
 msgid "Notify Owner of their ticket has been approved by all approvers"
 msgstr ""
@@ -3105,8 +3082,6 @@ msgstr "Führe eine benutzerdefinierte Aktion aus"
 msgid "Perl configuration"
 msgstr "Perl Konfiguration"
 
-2000
-lay.pm:140 lib/RT/Queue_Overlay.pm:158
 #: lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:258 lib/RT/ACE_Overlay.pm:581 lib/RT/ACE_Overlay.pm:591 lib/RT/ACE_Overlay.pm:601 lib/RT/ACE_Overlay.pm:666 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:402 lib/RT/Attribute_Overlay.pm:411 lib/RT/Attribute_Overlay.pm:424 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1022 lib/RT/CustomField_Overlay.pm:167 lib/RT/CustomField_Overlay.pm:184 lib/RT/CustomField_Overlay.pm:195 lib/RT/CustomField_Overlay.pm:366 lib/RT/CustomField_Overlay.pm:398 lib/RT/CustomField_Overlay.pm:697 lib/RT/CustomField_Overlay.pm:870 lib/RT/CustomField_Overlay.pm:905 lib/RT/CustomField_Overlay.pm:950 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1138 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1252 lib/RT/Group_Overlay.pm:1258 lib/RT/Group_Overlay.pm:453 lib/RT/Group_Overlay.pm:550 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:636 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:738 lib/RT/Group_Overlay.pm:744 lib/RT/Group_Overlay.pm:930 lib/RT/Group_Overlay.pm:934 lib/RT/Group_Overlay.pm:947 lib/RT/Queue_Overlay.pm:1051 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:654 lib/RT/Queue_Overlay.pm:664 lib/RT/Queue_Overlay.pm:678 lib/RT/Queue_Overlay.pm:816 lib/RT/Queue_Overlay.pm:825 lib/RT/Queue_Overlay.pm:838 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1318 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1342 lib/RT/Ticket_Overlay.pm:1483 lib/RT/Ticket_Overlay.pm:1493 lib/RT/Ticket_Overlay.pm:1507 lib/RT/Ticket_Overlay.pm:1624 lib/RT/Ticket_Overlay.pm:1944 lib/RT/Ticket_Overlay.pm:2082 lib/RT/Ticket_Overlay.pm:2252 lib/RT/Ticket_Overlay.pm:2302 lib/RT/Ticket_Overlay.pm:2474 lib/RT/Ticket_Overlay.pm:2577 lib/RT/Ticket_Overlay.pm:2625 lib/RT/Ticket_Overlay.pm:2704 lib/RT/Ticket_Overlay.pm:2718 lib/RT/Ticket_Overlay.pm:2942 lib/RT/Ticket_Overlay.pm:2952 lib/RT/Ticket_Overlay.pm:2957 lib/RT/Ticket_Overlay.pm:3180 lib/RT/Ticket_Overlay.pm:3184 lib/RT/Ticket_Overlay.pm:3327 lib/RT/Ticket_Overlay.pm:3448 lib/RT/Transaction_Overlay.pm:505 lib/RT/Transaction_Overlay.pm:512 lib/RT/Transaction_Overlay.pm:540 lib/RT/Transaction_Overlay.pm:547 lib/RT/User_Overlay.pm:1184 lib/RT/User_Overlay.pm:1725 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:736 lib/RT/User_Overlay.pm:775
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
@@ -3349,10 +3324,8 @@ msgstr "Klienten"
 
 #: html/Admin/Queues/Modify.html:96
 msgid "Requests should be due in"
-msgstr "msgstr "Anfragen sollten erlegt werden innerhalb"
+msgstr "Anfragen sollten erlegt werden innerhalb"
 
-2000
- von"
 #: lib/RT/Attribute_Overlay.pm:146
 #. ('Object')
 msgid "Required parameter '%1' not specified"
@@ -3654,9 +3627,6 @@ msgstr "Schickt eine Nachricht an die Klienten"
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Schickt eine Nachricht an die direkt angegebenen CCs und BCCs"
 
-2000
- Bccs"
-msgstr "Schickt eine Nachricht an die direkt angegebenen CCs und BCCs"
 #: etc/initialdata:94 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
 msgstr "Schickt eine Nachricht an alle CCs"
@@ -3953,9 +3923,6 @@ msgstr "Das ist bereits der aktuelle Wert"
 msgid "That is not a value for this custom field"
 msgstr "Dies ist kein gültiger Wert für dieses benutzerdefinierte Feld"
 
-2000
-ue for this custom field"
-msgstr "Dies ist kein gültiger Wert für dieses benutzerdefinierte Feld"
 #: lib/RT/Ticket_Overlay.pm:1955
 msgid "That is the same value"
 msgstr "Das ist der gleiche Wert"
@@ -4223,12 +4190,8 @@ msgstr "Benutzerdefinierte Felder bei Transaktionen"
 
 #: lib/RT/Transaction_Overlay.pm:125
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "
-"Transaction->Create fehlgeschlage"
+msgstr "Transaction->Create fehlgeschlagen, da Objekttyp und ID nicht angegeben wurden"
 
-2000
-n, da Objekttyp und ID nicht angegeben "
-"wurden"
 #: lib/RT/Transaction_Overlay.pm:838
 msgid "Transactions are immutable"
 msgstr "Transaktionen sind unveränderbar"
