@@ -56,10 +56,9 @@ BEGIN {
     use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
 
-    eval { require Apache2; require Apache::Request; 1 } or
-    eval { require Apache2; require Apache::compat; 1 } or die $@
+    die "RT does not support mod_perl 1.99. Please upgrade to mod_perl 2.0"
       if $ENV{'MOD_PERL'}
-      and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
+      and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:1\.9)};
 
 }
 
