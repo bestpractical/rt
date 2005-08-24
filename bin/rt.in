@@ -44,6 +44,10 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
+# Designed and implemented for Best Practical Solutions, LLC by
+# Abhijit Menon-Sen <ams@wiw.org>
+
 use strict;
 
 # This program is intentionally written to have as few non-core module
