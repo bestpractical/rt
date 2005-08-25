@@ -98,7 +98,7 @@ sub extract_strings_from_code {
 
     local $/;
     return if ( -d $_ );
-    return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local' );
+    return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
     return if ( /\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
