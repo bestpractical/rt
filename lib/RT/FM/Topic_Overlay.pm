@@ -44,10 +44,25 @@ Create takes a hash of values and creates a row in the database:
 
 sub Create {
     my $self = shift;
-    
-    unless ( $self->CurrentUserHasRight('AdminTopics') ) {
-        return ( 0, $self->loc("Permission Denied") );
+    my %args = (
+                Parent => '',
+                Name => '',
+                Description => '',
+                ObjectType => '',
+                ObjectId => '0',
+                @_);
+
+    my $obj = $RT::FM::System;
+    if ($args{ObjectId}) {
+        $obj = $args{ObjectType}->new($self->CurrentUser);
+        $obj->Load($args{ObjectId});
     }
+
+    return ( 0, $self->loc("Permission denied"))
+      unless ( $self->CurrentUser->HasRight(
+                                            Right  => "AdminTopics",
+                                            Object => $obj,
+                                           ) );
 
     $self->SUPER::Create(@_);
 }
@@ -140,9 +155,9 @@ Returns a TopicCollection object containing this topic's children.
 sub Children {
     my $self = shift;
     unless ($self->{'Children'}) {
-	$self->{'Children'} = RT::FM::TopicCollection->new($self->CurrentUser);
-	$self->{'Children'}->Limit('FIELD' => 'Parent',
-				   'VALUE' => $self->Id);
+        $self->{'Children'} = RT::FM::TopicCollection->new($self->CurrentUser);
+        $self->{'Children'}->Limit('FIELD' => 'Parent',
+                                   'VALUE' => $self->Id);
     }
     return $self->{'Children'};
 }

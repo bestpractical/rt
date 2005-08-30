@@ -28,8 +28,13 @@
 <LI> <i><&|/l&>No Classes matching search criteria found.</&></i>
 % }
 % foreach my $class ( @allowed_classes ) {
+% if ($session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class)) {
 <LI><A HREF="Modify.html?id=<%$class->id%>"><%$class->Name%></a></LI>
+% } else {
+<LI><A HREF="Topics.html?id=<%$class->id%>"><%$class->Name%></a></LI>
+% }
 %}
+
 
 </UL>
 </TD>
@@ -63,7 +68,8 @@ if ($FindDisabledClasses) {
 }
 # Limit to only those classes that the user may admin.
 while (my $class = $Classes->Next()) {
-    push(@allowed_classes, $class) if $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class);
+    push(@allowed_classes, $class) if $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class)
+      or $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminTopics', Object => $class);
 }
 
 </%INIT>
