@@ -530,7 +530,7 @@ sub Gateway {
 
     my $ErrorsTo = ParseErrorsToAddressFromHead($head);
 
-    my $MessageId = $head->get('Message-Id')
+    my $MessageId = $head->get('Message-ID')
       || "<no-message-id-" . time . rand(2000) . "\@.$RT::Organization>";
 
     #Pull apart the subject line

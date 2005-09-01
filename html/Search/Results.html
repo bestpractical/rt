@@ -80,8 +80,8 @@
 <a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br>
 <a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
-<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
+<a href="<%$RT::WebPath%>/Search/Results.rdf<%$ShortQueryString%>"><&|/l&>RSS</&></a> |
+<a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br>
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
 % my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
 %while (my $var = shift (@vars)) {
@@ -151,6 +151,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 
+my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};

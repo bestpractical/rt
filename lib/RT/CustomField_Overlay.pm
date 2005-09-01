@@ -135,9 +135,14 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
+  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
+
+  'LookupType' is generally the result of either 
+  RT::Ticket->CustomFieldLookupType or RT::Transaction->CustomFieldLookupType
 
 =cut
 
@@ -447,6 +452,8 @@ sub Values {
 Returns a RT::ObjectCustomFieldValues object of this Field's values for TICKET.
 TICKET is a ticket id.
 
+This is deprecated -- use ValuesForObject instead.
+
 
 =cut
 
@@ -469,6 +476,8 @@ sub ValuesForTicket {
 
 Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
 
+This is deprecated -- use AddValueForObject instead.
+
 =cut
 
 sub AddValueForTicket {
@@ -476,7 +485,7 @@ sub AddValueForTicket {
 	my %args = ( Ticket => undef,
                  Content => undef,
 		     @_ );
-    $RT::Logger->debug( ref($self) . " -> AddValueForTicket deprecated in favor of ValuesForObject"); 
+    $RT::Logger->debug( ref($self) . " -> AddValueForTicket deprecated in favor of AddValueForObject"); 
 
 
     my $ticket = RT::Ticket->new($self->CurrentUser);
@@ -494,6 +503,8 @@ sub AddValueForTicket {
 
 Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
 
+This is deprecated -- use DeleteValueForObject instead.
+
 =cut
 
 sub DeleteValueForTicket {
@@ -502,7 +513,7 @@ sub DeleteValueForTicket {
                  Content => undef,
 		     @_ );
 
-    $RT::Logger->debug( ref($self) . " -> DeleteValueForTicket deprecated in favor of ValuesForObject"); 
+    $RT::Logger->debug( ref($self) . " -> DeleteValueForTicket deprecated in favor of DeleteValueForObject"); 
 
 
     my $ticket = RT::Ticket->new($self->CurrentUser);

@@ -1255,7 +1255,7 @@ sub vsplit {
     my @values = ref $val eq 'ARRAY' ? @$val : $val;
 
     foreach my $line (map {split /\n/} @values) {
-        # XXX: This should become a real parser, à la Text::ParseWords.
+        # XXX: This should become a real parser, Ã  la Text::ParseWords.
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
         push @words, split /\s*,\s*/, $line;
@@ -1771,7 +1771,7 @@ Text:
 
     Examples:
 
-        rt comment -t 'Not worth fixing.' -a stddisclaimer.h 23
+        rt comment -m 'Not worth fixing.' -a stddisclaimer.h 23
 
 --
 

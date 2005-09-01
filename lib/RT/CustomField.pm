@@ -97,6 +97,9 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
 
+  'LookupType' is generally the result of either 
+  RT::Ticket->CustomFieldLookupType or RT::Transaction->CustomFieldLookupType
+
 =cut
 
 
