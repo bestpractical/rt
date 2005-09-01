@@ -311,7 +311,7 @@ sub Limit {
 
 # {{{ sub ItemsOrderBy
 
-=item ItemsOrderBy
+=head2 ItemsOrderBy
 
 If it has a SortOrder attribute, sort the array by SortOrder.
 Otherwise, if it has a "Name" attribute, sort alphabetically by Name
@@ -338,7 +338,7 @@ sub ItemsOrderBy {
 
 # {{{ sub ItemsArrayRef
 
-=item ItemsArrayRef
+=head2 ItemsArrayRef
 
 Return this object's ItemsArray, in the order that ItemsOrderBy sorts
 it.
