@@ -1164,6 +1164,14 @@ sub Import {
         }
     }
 
+    my $create_groups_ret = $self->_CreateTicketGroups();
+    unless ($create_groups_ret) {
+        $RT::Logger->crit(
+            "Couldn't create ticket groups for ticket " . $self->Id );
+    }
+
+    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
+
     my $watcher;
     foreach $watcher ( @{ $args{'Cc'} } ) {
         $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
