@@ -320,7 +320,7 @@ sub ParseCcAddressesFromHead {
         next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
         next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
         next if ( lc $args{'QueueObj'}->CommentAddress    eq lc $Address );
-        next if ( IsRTAddress($Address) );
+        next if ( $self->IsRTAddress($Address) );
 
         push ( @Addresses, $Address );
     }
@@ -468,7 +468,10 @@ sub CullRTAddresses {
     my @addrlist;
 
     foreach my $addr( @addresses ) {
-      push (@addrlist, $addr)    unless IsRTAddress("", $addr);
+                                 # We use the class instead of the instance
+                                 # because sloppy code calls this method
+                                 # without a $self
+      push (@addrlist, $addr)    unless RT::EmailParser->IsRTAddress($addr);
     }
     return (@addrlist);
 }
