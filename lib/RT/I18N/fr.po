@@ -16,6 +16,7 @@ msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "n°%1 : %2"
@@ -273,7 +274,7 @@ msgstr "(Si laissé à blanc, valeur par défaut : %1)"
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-msgid "(If left blank, will default to %1"
+msgid "(If left blank, will default to %1)"
 msgstr "(sera par défaut %1 si laissé vide)"
 
 #: html/Admin/Elements/EditCustomFields:74 html/Admin/Elements/ListGlobalCustomFields:53
@@ -577,7 +578,7 @@ msgstr "Après"
 msgid "Aggregator"
 msgstr "Aggrégateur"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:363
 msgid "All Approvals Passed"
 msgstr "Toutes les approbations obtenues"
 
@@ -622,7 +623,7 @@ msgstr "Approbation #%1: Notes non enregistrées à cause d'une erreur système"
 msgid "Approval #%1: Notes recorded"
 msgstr "Approbation #%1: Notes enregistrées"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:351
 msgid "Approval Passed"
 msgstr "Approbations obtenues"
 
@@ -727,7 +728,7 @@ msgstr "Avant"
 msgid "Best Practical Solutions, LLC corporate logo"
 msgstr "Logo d'entreprise de Best Practical Solutions, LLC"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:217
 msgid "Blank"
 msgstr "Vide"
 
@@ -3331,7 +3332,7 @@ msgid "Privileged"
 msgstr "Privilégié"
 
 #: html/Admin/Users/Modify.html:332 html/User/Prefs.html:223
-#. (loc_fuzzy($msg)
+#. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "Statut privilégiés : %1"
 
@@ -3343,7 +3344,7 @@ msgstr "Statuts privilégiés : ~[_1~]"
 msgid "Privileged users"
 msgstr "Utilisateurs privilégiés"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
 msgid "Pseudogroup for internal use"
 msgstr "Pseudo groupe pour usage interne"
 
@@ -4295,6 +4296,10 @@ msgid "The administrative CC of a ticket"
 msgstr "L'AdminCC d'un ticket"
 
 #: NOT FOUND IN SOURCE
+msgid "The comment has been recorded"
+msgstr "Commentaire enregistré"
+
+#: bin/rt-crontool:223
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "Cette commande trouve tous les tickets actifs de la file 'general' et positionne leur priorité à 99 s'ils n'ont pas été touchés depuis quatre heures:"
 
@@ -4331,6 +4336,10 @@ msgid "This message will be sent to..."
 msgstr "Ce message va être envoyé à..."
 
 #: NOT FOUND IN SOURCE
+msgid "This ticket [_1] [_2] ([_3])\\n"
+msgstr "Ce ticket [_1] [_2] ([_3])\\n "
+
+#: bin/rt-crontool:214
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Cet outil permet à l'utilisateur de lancer un module perl quelconque depuis RT"
 
@@ -4396,6 +4405,14 @@ msgid "Ticket History # %1 %2"
 msgstr "Historique du ticket n°%1 %2"
 
 #: NOT FOUND IN SOURCE
+msgid "Ticket History # ~[_1~] ~[_2~]"
+msgstr "Historique ticket n°~[_1~] ~[_2~]"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket Id"
+msgstr "N° ticket"
+
+#: etc/initialdata:324
 msgid "Ticket Resolved"
 msgstr "Ticket résolu"
 
@@ -4420,6 +4437,10 @@ msgid "Ticket metadata"
 msgstr "Méta-données du ticket"
 
 #: NOT FOUND IN SOURCE
+msgid "Ticket not found"
+msgstr "Ticket non trouvé"
+
+#: etc/initialdata:310
 msgid "Ticket status changed"
 msgstr "Statut de ticket modifié"
 
@@ -4671,7 +4692,7 @@ msgstr "Utiliser les autres outils d'administration de RT"
 msgid "User '%1' could not be found."
 msgstr "L'utilisateur %1 ne peut être trouvé"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:132 etc/initialdata:206
 msgid "User Defined"
 msgstr "Utilisateur défini"
 
@@ -4870,7 +4891,7 @@ msgstr "Votre demande a été approuvée par ~[_1~]. D'autres approbations sont 
 msgid "Your request has been approved."
 msgstr "Votre demande a été approuvée"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:445
 msgid "Your request was rejected."
 msgstr "Votre demande a été rejetée."
 
@@ -5146,7 +5167,7 @@ msgstr "système %1"
 msgid "system group '%1'"
 msgstr "groupe système '%1'"
 
-#: html/Elements/Error:66 html/SelfService/Error.html:63
+#: html/Elements/Error:64 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "le composant appelant n'a pas spécifié pourquoi"
 
