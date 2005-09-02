@@ -344,7 +344,7 @@ sub ParseCcAddressesFromHead {
  	next if ($args{'CurrentUser'}->EmailAddress =~ /^\Q$Address\E$/i);
 	next if ($args{'QueueObj'}->CorrespondAddress =~ /^\Q$Address\E$/i);
 	next if ($args{'QueueObj'}->CommentAddress =~ /^\Q$Address\E$/i);
-	next if (RT::EmailParser::IsRTAddress(undef, $Address));
+	next if (RT::EmailParser->IsRTAddress($Address));
 	
 	push (@Addresses, $Address);
     }
