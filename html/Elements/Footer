@@ -54,14 +54,7 @@
 
   <p id="bpscredits">
     <span>
-<&|/l,     '&#187;&#124;&#171;', 
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',
-&>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
-    </span>
-  </p>
-  
+<&|/l,     '&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&><br>
 % if (!$Menu) {
   <p id="legal">
 <&|/l&>Distributed under version 2 <a href="http://www.gnu.org/copyleft/gpl.html"> of the GNU GPL.</a></&><br>
