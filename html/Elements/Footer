@@ -54,15 +54,17 @@
 
   <p id="bpscredits">
     <span>
-<&|/l,     '&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&><br>
+<&|/l,     '&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
+</span>
+</p>
 % if (!$Menu) {
   <p id="legal">
 <&|/l&>Distributed under version 2 <a href="http://www.gnu.org/copyleft/gpl.html"> of the GNU GPL.</a></&><br>
 <&|/l, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br>
   </p>
 % }
-</div>
 
+</div>
 % if ($Debug >= 2 ) {
 % require Data::Dumper;
 % my $d = Data::Dumper->new([\%ARGS], [qw(%ARGS)]);

@@ -64,15 +64,12 @@
     BaseURL => $RT::WebPath."/Search/Results.html?"
 
    &>
+% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%$RT::WebPath%>/Search/Results.html">
-<input type="hidden" class="hidden" name="Query" value="<%$Query%>" />
-<input type="hidden" class="hidden" name="Format" value="<%$Format%>" />
-<input type="hidden" class="hidden" name="HideResults" value="<%$HideResults%>" />
-<input type="hidden" class="hidden" name="Rows" value="<%$Rows%>" />
-<input type="hidden" class="hidden" name="Page" value="<%$Page%>" />
-<input type="hidden" class="hidden" name="OrderBy" value="<%$OrderBy%>" />
-<input type="hidden" class="hidden" name="Order" value="<%$Order%>" />
+%while (my $var = shift (@vars)) {
+<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+%}
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
 <input type="submit" class="button" value="<&|/l&>Go!</&>">
 </form>
@@ -84,26 +81,13 @@
 <a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
 <a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br/>
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
-% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
+% @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
 %while (my $var = shift (@vars)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
 %}
-</%perl>
 <&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-
 <input type="submit" class="button" value="<%loc('Go')%>"/>
-</form>
-<form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
-% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
-%while (my $var = shift (@vars)) {
-<input type="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
-%}
-</%perl>
-<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
-<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-
-<input type="submit" value="<%loc('Go')%>"/>
 </form>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>

@@ -152,13 +152,6 @@ my $cfs = RT::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
-<&|/Elements/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
-<%perl>
-my $cfs = RT::CustomFields->new($session{'CurrentUser'});
-$cfs->LimitToGlobal();
-$cfs->LimitToQueue($_) for keys %$seen_queues;
-</%perl>
-
 <table>
 <tr>
 <th><&|/l&>Name</&></th>
@@ -197,7 +190,7 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 <& /Ticket/Elements/BulkLinks &>
 </&>
 
-<& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update') &>
 
 
 </form>
