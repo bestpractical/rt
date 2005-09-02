@@ -65,10 +65,7 @@
 </nobr>
 
 % }
-
-% if ($Dirty or $SearchId eq 'new') {
 <input type="submit" name="Save" value="<%loc('Save')%>">
-% }
 <hr>
 % }
 <&|/l&>Load saved search:</&><br>

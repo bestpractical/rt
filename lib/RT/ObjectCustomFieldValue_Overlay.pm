@@ -166,6 +166,13 @@ sub Content {
 }
 
 
+sub Object {
+    my $self  = shift;
+    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
+    $Object->Load($self->__Value('ObjectId'));
+    return($Object);
+}
+
 sub Delete {
     my $self = shift;
     $self->SetDisabled(1);

@@ -51,12 +51,12 @@ use warnings;
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
-my %FIELDS = %{FIELDS()};
+my %FIELD_METADATA = %{FIELDS()};
 my %dispatch = %{dispatch()};
 my %can_bundle = %{can_bundle()};
 
 # Lower Case version of FIELDS, for case insensitivity
-my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELDS);
+my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 
 sub _InitSQL {
   my $self = shift;
@@ -297,7 +297,7 @@ sub _parser {
       my $class;
       if (exists $lcfields{lc $key}) {
         $key = $lcfields{lc $key};
-        $class = $FIELDS{$key}->[0];
+        $class = $FIELD_METADATA{$key}->[0];
       }
    # no longer have a default, since CF's are now a real class, not fallthrough
    # fixme: "default class" is not Generic.
