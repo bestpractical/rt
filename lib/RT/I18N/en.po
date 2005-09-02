@@ -54,7 +54,7 @@ msgstr "Nov"
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs:159
+#: html/Ticket/Elements/Tabs:161
 msgid "Open it"
 msgstr "Open"
 

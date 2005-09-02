@@ -19,7 +19,11 @@ msgstr ""
 msgid "#%1: %2"
 msgstr ""
 
-#: lib/RT/Record.pm:926
+#: html/Elements/ShowSearch:86
+msgid "$1"
+msgstr ""
+
+#: lib/RT/Record.pm:930
 #. ($label)
 msgid "$prefix %1"
 msgstr ""
@@ -39,7 +43,7 @@ msgstr ""
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3.%2 %7 %4:%5:%6"
 
-#: lib/RT/Record.pm:1671 lib/RT/Transaction_Overlay.pm:636 lib/RT/Transaction_Overlay.pm:679
+#: lib/RT/Record.pm:1675 lib/RT/Transaction_Overlay.pm:635 lib/RT/Transaction_Overlay.pm:678
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -51,20 +55,20 @@ msgstr "%1 %2 lisätty"
 msgid "%1 %2 ago"
 msgstr "%1 %2 sitten"
 
-#: lib/RT/Record.pm:1678 lib/RT/Transaction_Overlay.pm:643
+#: lib/RT/Record.pm:1682 lib/RT/Transaction_Overlay.pm:642
 #. ($cf->Name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1: %2 muutettu arvoon %3"
 
-#: lib/RT/Record.pm:1675 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
+#: lib/RT/Record.pm:1679 lib/RT/Transaction_Overlay.pm:638 lib/RT/Transaction_Overlay.pm:684
 #. ($cf->Name, $old_value->Content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 poistettu"
 
-#: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:64 html/Ticket/Elements/PreviewScrips:98
+#: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:64 html/Ticket/Elements/PreviewScrips:99
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 pohjalla %3"
@@ -78,11 +82,11 @@ msgstr "%1 (%2) %3 tässä tapauksessa\\n"
 msgid "%1 (%2) by %3"
 msgstr ""
 
-#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:87 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
+#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:102 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
 #. (loc($DefaultStatus))
+#. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name())
-#. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
 msgstr ""
 
@@ -138,7 +142,7 @@ msgstr ""
      $RT::VERSION, 
      '2005', 
     '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#: html/Elements/Footer:58
+#: html/Elements/Footer:61
 #. ('&#187;&#124;&#171;', 
      $RT::VERSION, 
      '2005', 
@@ -151,7 +155,7 @@ msgstr ""
 msgid "%1 ScripAction loaded"
 msgstr "ScriptAction %1 ladattu"
 
-#: lib/RT/Record.pm:1708
+#: lib/RT/Record.pm:1712
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 lisätty arvoksi %2lle"
@@ -187,12 +191,12 @@ msgstr "%1 - %2"
 msgid "%1 changed from %2 to %3"
 msgstr "%1 muutettu arvosta %2 arvoon %3"
 
-#: html/Search/Build.html:212
+#: html/Search/Build.html:206
 #. ($Description)
 msgid "%1 copy"
 msgstr ""
 
-#: lib/RT/Record.pm:930
+#: lib/RT/Record.pm:934
 msgid "%1 could not be set to %2."
 msgstr "Arvoa %1 ei voitu asettaa arvoksi %2"
 
@@ -200,7 +204,7 @@ msgstr "Arvoa %1 ei voitu asettaa arvoksi %2"
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1 ei voinut suorittaa tapahtumaa (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm:2743
+#: lib/RT/Ticket_Overlay.pm:2726
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 ei voinut asettaa tilaa päätetyksi. RT:n tietokanta saattaa olla vioittunut."
@@ -215,8 +219,12 @@ msgstr ""
 msgid "%1 deleted"
 msgstr ""
 
-#: html/Elements/MyTickets:47
-#. ($rows)
+#: html/Search/Chart:71
+#. ($Query, $PrimaryGroupBy)
+msgid "%1 grouped by %2"
+msgstr ""
+
+#: etc/initialdata:593
 msgid "%1 highest priority tickets I own"
 msgstr ""
 
@@ -250,17 +258,14 @@ msgstr "%1 ei ole enää kentän %2 arvo"
 msgid "%1 isn't a valid Queue id."
 msgstr "%1 ei ole kelvollinen työjonon id"
 
-#: html/Ticket/Create.html:186 html/Ticket/Create.html:187 html/Ticket/Elements/ShowBasics:58 html/Ticket/Elements/ShowBasics:64 html/Ticket/Elements/ShowBasics:69
-#. ('<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">')
-#. ('<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">')
+#: html/Ticket/Elements/ShowBasics:58 html/Ticket/Elements/ShowBasics:64 html/Ticket/Elements/ShowBasics:69
 #. ($Ticket->TimeEstimated)
 #. ($Ticket->TimeWorked)
 #. ($Ticket->TimeLeft)
 msgid "%1 min"
 msgstr "%1 min"
 
-#: html/Elements/MyRequests:47
-#. ($rows)
+#: etc/initialdata:601
 msgid "%1 newest unowned tickets"
 msgstr ""
 
@@ -268,7 +273,7 @@ msgstr ""
 msgid "%1 not shown"
 msgstr "%1 ei näy"
 
-#: lib/RT/CustomField_Overlay.pm:827
+#: lib/RT/CustomField_Overlay.pm:881
 msgid "%1 objects"
 msgstr ""
 
@@ -298,11 +303,11 @@ msgstr "%1 päättää kaikki päätetyn ryhmän jäsentapaukset."
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "%1 jäädyttää [paikallisen] BASE jos se riippuu linkitetystä tapauksesta [tai on sen jäsen]."
 
-#: lib/RT/CustomField_Overlay.pm:828
+#: lib/RT/CustomField_Overlay.pm:882
 msgid "%1's %2 objects"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:829
+#: lib/RT/CustomField_Overlay.pm:883
 msgid "%1's %2's %3 objects"
 msgstr ""
 
@@ -327,7 +332,7 @@ msgstr ""
 msgid "%1k"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:1118
+#: lib/RT/Ticket_Overlay.pm:1119
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' ei kelpaa tilan arvoksi"
@@ -356,11 +361,11 @@ msgstr "(Rastita laatikko poistaaksesi)"
 msgid "(Check boxes to disable notifications to the listed recipients)"
 msgstr ""
 
-#: html/Ticket/Elements/PreviewScrips:116
+#: html/Ticket/Elements/PreviewScrips:118
 msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr ""
 
-#: html/Ticket/Create.html:209
+#: html/Ticket/Create.html:216
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Syötä tapausten numerot tai www-osoitteet, välilyönneillä erotettuina)"
 
@@ -394,7 +399,7 @@ msgstr "(Ei pohjia)"
 msgid "(None)"
 msgstr ""
 
-#: html/Ticket/Update.html:88
+#: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
 msgstr "(Lähettää piilokopion vain tästä päivityksestä pilkulla erotettuihin sähköpostiosoitteisiin. <b>Ei lisää</b> pysyviksi vastaanottajiksi.)"
 
@@ -402,11 +407,19 @@ msgstr "(Lähettää piilokopion vain tästä päivityksestä pilkulla erotettui
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "(Lähettää piilokopion vain tästä päivityksestä pilkulla erotettuihin sähköpostiosoitteisiin. <b>Ei lisää</b> pysyviksi vastaanottajiksi.)"
 
-#: html/Ticket/Create.html:100
+#: html/Ticket/Update.html:91
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Lähettää kopion tästä päivityksestä pilkulla erotettuihin hallinnollisiin sähköpostiosoitteisiin. <b>Lisää</b> pysyviksi vastaanottajiksi.)"
 
-#: html/Ticket/Update.html:84
+#: html/Ticket/Create.html:101
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
 msgstr "(Lähettää kopion vain tästä päivityksestä pilkulla erotettuihin sähköpostiosoitteisiin. <b>Ei lisää</b> pysyviksi vastaanottajiksi.)"
 
@@ -414,9 +427,17 @@ msgstr "(Lähettää kopion vain tästä päivityksestä pilkulla erotettuihin s
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "(Lähettää kopion vain tästä päivityksestä pilkulla erotettuihin sähköpostiosoitteisiin. <b>Ei lisää</b> pysyviksi vastaanottajiksi.)"
 
-#: html/Ticket/Create.html:90
+#: html/Ticket/Update.html:87
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Lähettää kopion tästä päivityksestä pilkulla erotettuihin sähköpostiosoitteisiin. <b>Lisää</b> pysyviksi vastaanottajiksi.)"
+
+#: html/Ticket/Create.html:91
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
+msgstr ""
 
 #: html/Admin/Elements/EditScrip:102
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -434,7 +455,7 @@ msgstr "(ei nimiä listattuna)"
 msgid "(no subject)"
 msgstr "(ei otsikkoa)"
 
-#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:60 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:65 lib/RT/Transaction_Overlay.pm:580
+#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:70 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:65 lib/RT/Transaction_Overlay.pm:579
 msgid "(no value)"
 msgstr "(ei arvoa)"
 
@@ -442,7 +463,7 @@ msgstr "(ei arvoa)"
 msgid "(no values)"
 msgstr ""
 
-#: html/Elements/EditLinks:130 html/Ticket/Elements/BulkLinks:49
+#: html/Elements/EditLinks:132 html/Ticket/Elements/BulkLinks:49
 msgid "(only one ticket)"
 msgstr "(vain yksi tapaus)"
 
@@ -465,6 +486,14 @@ msgstr "(pakollinen)"
 #: html/Ticket/Elements/ShowTransactionAttachments:82
 msgid "(untitled)"
 msgstr "(nimetön)"
+
+#: html/Ticket/Elements/Reminders:86
+msgid "(yyyy/mm/dd)"
+msgstr ""
+
+#: html/Elements/EditCustomFieldSelect:58
+msgid "-"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
@@ -490,7 +519,12 @@ msgstr ""
 msgid "<%$field%>"
 msgstr ""
 
-#: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:47 lib/RT/StyleGuide.pod:787
+#: html/Elements/CreateTicket:47
+#. ($m->scomp('/Elements/SelectNewTicketQueue'))
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr ""
+
+#: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Uusi tapaus\">&nbsp;%1"
@@ -548,11 +582,11 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: html/Search/Bulk.html:114
+#: html/Search/Bulk.html:92
 msgid "Add AdminCc"
 msgstr "Lisää kopio ylläpidolle"
 
-#: html/Search/Bulk.html:110
+#: html/Search/Bulk.html:88
 msgid "Add Cc"
 msgstr "Lisää kopio"
 
@@ -564,11 +598,11 @@ msgstr ""
 msgid "Add Criteria"
 msgstr ""
 
-#: html/Ticket/Create.html:144 html/Ticket/Update.html:114
+#: html/Ticket/Create.html:145 html/Ticket/Update.html:117
 msgid "Add More Files"
 msgstr "Lisää useampi tiedosto"
 
-#: html/Search/Bulk.html:106
+#: html/Search/Bulk.html:84
 msgid "Add Requestor"
 msgstr "Lisää tilaaja"
 
@@ -588,11 +622,11 @@ msgstr "Lisää toiminto tähän työjonoon"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Lisää kaikille työjonoille yhteinen toiminto"
 
-#: html/Search/Build.html:85
-msgid "Add additional criteria"
+#: html/Search/Build.html:109 html/Search/Build.html:94
+msgid "Add and Search"
 msgstr ""
 
-#: html/Search/Bulk.html:146
+#: html/Search/Bulk.html:124
 msgid "Add comments or replies to selected tickets"
 msgstr "Lisää kommentteja tai vastauksia valituille tapauksille"
 
@@ -604,7 +638,15 @@ msgstr "Lisää jäseniä"
 msgid "Add new watchers"
 msgstr "Lisää uusia tarkkailijoita"
 
-#: lib/RT/CustomField_Overlay.pm:103
+#: html/Search/Build.html:85
+msgid "Add these terms to your search"
+msgstr ""
+
+#: html/Search/Bulk.html:159
+msgid "Add values"
+msgstr ""
+
+#: lib/RT/CustomField_Overlay.pm:108
 msgid "Add, delete and modify custom field values for objects"
 msgstr ""
 
@@ -613,7 +655,7 @@ msgstr ""
 msgid "Added principal as a %1 for this queue"
 msgstr "Lisätty toimeksiantaja %1:ksi tähän työjonoon"
 
-#: lib/RT/Ticket_Overlay.pm:1416
+#: lib/RT/Ticket_Overlay.pm:1417
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Lisätty toimeksiantaja %1:ksi tälle tapaukselle"
@@ -626,7 +668,7 @@ msgstr "Osoite1"
 msgid "Address2"
 msgstr "Osoite2"
 
-#: html/Ticket/Create.html:95
+#: html/Ticket/Create.html:96
 msgid "Admin Cc"
 msgstr "Kopio ylläpidolle"
 
@@ -662,7 +704,7 @@ msgstr "Ylläpito/Työjono/Perustiedot"
 msgid "AdminCc"
 msgstr "Kopio ylläpidolle"
 
-#: lib/RT/CustomField_Overlay.pm:101
+#: lib/RT/CustomField_Overlay.pm:106
 msgid "AdminCustomField"
 msgstr ""
 
@@ -690,7 +732,7 @@ msgstr ""
 msgid "Administrative Cc"
 msgstr "Kopio ylläpidolle"
 
-#: html/Ticket/Elements/Tabs:197
+#: html/Ticket/Elements/Tabs:209
 msgid "Advanced"
 msgstr ""
 
@@ -738,11 +780,11 @@ msgstr ""
 msgid "Apply your changes"
 msgstr ""
 
-#: html/Elements/Tabs:74
+#: html/Elements/Tabs:77
 msgid "Approval"
 msgstr "Hyväksyntä"
 
-#: html/Approvals/Display.html:67 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
+#: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($ticket->id, $msg)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -799,15 +841,15 @@ msgstr ""
 msgid "AssignCustomFields"
 msgstr ""
 
-#: html/Search/Bulk.html:164 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:114
+#: html/Search/Bulk.html:142 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:117
 msgid "Attach"
 msgstr "Liitä"
 
-#: html/SelfService/Create.html:92 html/Ticket/Create.html:140
+#: html/SelfService/Create.html:92 html/Ticket/Create.html:141
 msgid "Attach file"
 msgstr "Liitä tiedosto"
 
-#: html/SelfService/Update.html:75 html/Ticket/Create.html:128 html/Ticket/Update.html:92
+#: html/SelfService/Update.html:75 html/Ticket/Create.html:129 html/Ticket/Update.html:95
 msgid "Attached file"
 msgstr "Liitä tiedosto"
 
@@ -820,7 +862,7 @@ msgstr "Liitteen '%1' lataaminen ei onnistunut"
 msgid "Attachment created"
 msgstr "Liitetiedosto luotu"
 
-#: lib/RT/Tickets_Overlay.pm:1673
+#: lib/RT/Tickets_Overlay.pm:1720
 msgid "Attachment filename"
 msgstr "Liitetiedoston nimi"
 
@@ -848,6 +890,10 @@ msgstr ""
 msgid "Autoreply To Requestors"
 msgstr "Automaattivastaus tilaajille"
 
+#: html/Widgets/SelectionBox:186
+msgid "Available"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Bad PGP Signature: %1\\n"
 msgstr "Virheellinen PGP allekirjoitus: %1\\n"
@@ -868,7 +914,7 @@ msgstr "Virheellinen tapahtuman numero liitetiedostolle. %1 pitäisi olla %2\\n"
 msgid "Basics"
 msgstr "Perustiedot"
 
-#: html/Ticket/Update.html:86
+#: html/Ticket/Update.html:89
 msgid "Bcc"
 msgstr "Piilokopio"
 
@@ -880,7 +926,7 @@ msgstr "Muista tallentaa muutokset"
 msgid "Before"
 msgstr "ennen"
 
-#: html/Elements/Header:80
+#: html/Elements/Logo:47
 msgid "Best Practical Solutions, LLC corporate logo"
 msgstr ""
 
@@ -896,19 +942,23 @@ msgstr ""
 msgid "Bookmarkable URL for this search"
 msgstr "Osoite tähän kyselyyn (selaimen kirjanmerkkeihin)"
 
-#: html/Search/Results.html:81
+#: html/Search/Results.html:82
 msgid "Bookmarkable link"
 msgstr ""
 
-#: html/Ticket/Elements/ShowHistory:60 html/Ticket/Elements/ShowHistory:66
+#: html/Ticket/Elements/ShowHistory:60 html/Ticket/Elements/ShowHistory:65
 msgid "Brief headers"
 msgstr "Lyhyet otsikot"
 
-#: html/Search/Bulk.html:46 html/Search/Bulk.html:47
+#: html/Ticket/Elements/Tabs:220
+msgid "Bulk Update"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Bulk ticket update"
 msgstr "Tapausten ryhmäpäivitys"
 
-#: lib/RT/User_Overlay.pm:1722
+#: lib/RT/User_Overlay.pm:1883
 msgid "Can not modify system users"
 msgstr "Järjestelmäkäyttäjien muokkaus ei ole sallittua"
 
@@ -916,7 +966,7 @@ msgstr "Järjestelmäkäyttäjien muokkaus ei ole sallittua"
 msgid "Can this principal see this queue"
 msgstr "Näkeekö toimeksiantaja tämän työjonon"
 
-#: lib/RT/CustomField_Overlay.pm:370
+#: lib/RT/CustomField_Overlay.pm:373
 msgid "Can't add a custom field value without a name"
 msgstr "Kentän lisääminen ilman nimeä ei onnistu"
 
@@ -925,7 +975,7 @@ msgstr "Kentän lisääminen ilman nimeä ei onnistu"
 msgid "Can't find a collection class for '%1'"
 msgstr ""
 
-#: html/Search/Build.html:761
+#: html/Search/Build.html:742
 msgid "Can't find a saved search to work with"
 msgstr ""
 
@@ -937,20 +987,24 @@ msgstr "Tapausta ei voi linkittää itseensä"
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "Et voi yhdistää jo yhdistettyyn tapaukseen. Sinun ei pitäisi saada tätä virhettä koskaan."
 
-#: html/Search/Build.html:766
+#: html/Search/Build.html:748
 msgid "Can't save this search"
 msgstr ""
 
-#: lib/RT/Record.pm:1266 lib/RT/Record.pm:1344
+#: lib/RT/Record.pm:1270 lib/RT/Record.pm:1348
 msgid "Can't specifiy both base and target"
 msgstr "Sekä juuren ja kohteen määritteleminen samalla ei ole mahdollista"
 
-#: html/autohandler:148
+#: html/autohandler:166
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "Käyttäjää ei voitu luoda: %1"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:85 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:81 lib/RT/ACE_Overlay.pm:113
+#: html/Admin/Elements/AddCustomFieldValue:62 html/Admin/Elements/EditCustomFieldValues:58
+msgid "Category"
+msgstr ""
+
+#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:86 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:84 lib/RT/ACE_Overlay.pm:113
 msgid "Cc"
 msgstr "Kopio"
 
@@ -958,11 +1012,11 @@ msgstr "Kopio"
 msgid "Change password"
 msgstr "Muuta salasana"
 
-#: html/Elements/Submit:100
+#: html/Elements/Submit:91
 msgid "Check All"
 msgstr ""
 
-#: html/SelfService/Update.html:78 html/Ticket/Create.html:131 html/Ticket/Update.html:95
+#: html/SelfService/Update.html:78 html/Ticket/Create.html:132 html/Ticket/Update.html:98
 msgid "Check box to delete"
 msgstr "Valitse laatikko poistaaksesi"
 
@@ -970,16 +1024,24 @@ msgstr "Valitse laatikko poistaaksesi"
 msgid "Check box to revoke right"
 msgstr "Valitse laatikko peruaksesi oikeuden"
 
-#: html/Elements/EditLinks:146 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:214 html/Ticket/Elements/BulkLinks:64
+#: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:64
 msgid "Children"
 msgstr "Lapset"
+
+#: html/NoAuth/js/util.js:70 html/NoAuth/js/util.js:88
+msgid "Choose a date"
+msgstr ""
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
 msgstr "Kaupunki"
 
-#: html/Elements/Submit:102
+#: html/Elements/Submit:93
 msgid "Clear All"
+msgstr ""
+
+#: html/Helpers/CalPopup.html:6
+msgid "Close window"
 msgstr ""
 
 #: html/Ticket/Elements/ShowDates:68
@@ -994,11 +1056,23 @@ msgstr "Suljetut tapaukset"
 msgid "Closed tickets"
 msgstr ""
 
+#: lib/RT/CustomField_Overlay.pm:89
+msgid "Combobox: Select or enter multiple values"
+msgstr ""
+
+#: lib/RT/CustomField_Overlay.pm:90
+msgid "Combobox: Select or enter one value"
+msgstr ""
+
+#: lib/RT/CustomField_Overlay.pm:91
+msgid "Combobox: Select or enter up to %1 values"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
 msgstr "Komentoa ei ymmärretty!\\n"
 
-#: html/Ticket/Elements/ShowTransaction:182 html/Ticket/Elements/Tabs:176
+#: html/Ticket/Elements/ShowTransaction:189 html/Ticket/Elements/Tabs:178
 msgid "Comment"
 msgstr "Kommentoi"
 
@@ -1022,11 +1096,11 @@ msgstr ""
 msgid "Comments"
 msgstr "Kommentit"
 
-#: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:73
+#: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:76
 msgid "Comments (Not sent to requestors)"
 msgstr "Kommentti (ei lähetetä tilaajille)"
 
-#: html/Search/Bulk.html:150
+#: html/Search/Bulk.html:128
 msgid "Comments (not sent to requestors)"
 msgstr "Kommentti (ei lähetetä tilaajille)"
 
@@ -1034,7 +1108,7 @@ msgstr "Kommentti (ei lähetetä tilaajille)"
 msgid "Comments about %1"
 msgstr "Kommentit kohteesta %1"
 
-#: html/Admin/Users/Modify.html:224 html/Ticket/Elements/ShowRequestor:67
+#: html/Admin/Users/Modify.html:224 html/Ticket/Elements/ShowRequestor:66
 msgid "Comments about this user"
 msgstr "Kommentit tästä käyttäjästä"
 
@@ -1062,7 +1136,7 @@ msgstr ""
 msgid "Condition not found"
 msgstr "Ehtoa ei löydetty"
 
-#: html/Elements/Tabs:81
+#: html/Elements/Tabs:84
 msgid "Configuration"
 msgstr "Ylläpito"
 
@@ -1114,20 +1188,20 @@ msgstr "Uuden tiedon lisääminen kenttään epäonnistui"
 msgid "Could not add new custom field value for ticket. %1 "
 msgstr "Uuden kentän lisäys tapaukselle epäonnistui. %1 "
 
-#: lib/RT/Record.pm:1693
+#: lib/RT/Record.pm:1697
 msgid "Could not add new custom field value. "
 msgstr ""
 
-#: lib/RT/Record.pm:1646
+#: lib/RT/Record.pm:1650
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:3004 lib/RT/Ticket_Overlay.pm:3012 lib/RT/Ticket_Overlay.pm:3029
+#: lib/RT/Ticket_Overlay.pm:2987 lib/RT/Ticket_Overlay.pm:2995 lib/RT/Ticket_Overlay.pm:3012
 msgid "Could not change owner. "
 msgstr "Omistajaa ei voitu vaihtaa."
 
-#: html/Admin/CustomFields/Modify.html:119
+#: html/Admin/CustomFields/Modify.html:135
 #. ($msg)
 msgid "Could not create CustomField"
 msgstr "Uuden kentän lisääminen epäonnistui"
@@ -1146,7 +1220,7 @@ msgstr "Ryhmän luominen epäonnistui"
 msgid "Could not create template: %1"
 msgstr "Pohjan luonti epäonnistui: %1"
 
-#: lib/RT/Ticket_Overlay.pm:1051 lib/RT/Ticket_Overlay.pm:396
+#: lib/RT/Ticket_Overlay.pm:1052 lib/RT/Ticket_Overlay.pm:397
 msgid "Could not create ticket. Queue not set"
 msgstr "Tapauksen luonti epäonnistui. Työjonoa ei ole asetettu"
 
@@ -1162,11 +1236,11 @@ msgstr "Tapausta numerolla %1 ei löytynyt."
 msgid "Could not find group %1."
 msgstr "Ryhmää %1 ei löytynyt."
 
-#: lib/RT/Queue_Overlay.pm:738 lib/RT/Ticket_Overlay.pm:1384
+#: lib/RT/Queue_Overlay.pm:738 lib/RT/Ticket_Overlay.pm:1385
 msgid "Could not find or create that user"
 msgstr "Käyttäjää ei löydetty eikä pystytty luomaan"
 
-#: lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1465
+#: lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1466
 msgid "Could not find that principal"
 msgstr "Tätä toimeksiantajaa ei löytynyt"
 
@@ -1196,7 +1270,7 @@ msgstr ""
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Ei voinut tehdä toimeksiantajaa %1:ksi tälle työjonolle"
 
-#: lib/RT/Ticket_Overlay.pm:1405
+#: lib/RT/Ticket_Overlay.pm:1406
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Ei voinut tehdä toimeksiantajaa tälle tapaukselle: %1"
@@ -1218,7 +1292,7 @@ msgstr ""
 msgid "Couldn't add member to group"
 msgstr "Jäsenen lisääminen ryhmään ei onnistunut"
 
-#: lib/RT/Record.pm:1705 lib/RT/Record.pm:1757
+#: lib/RT/Record.pm:1709 lib/RT/Record.pm:1761
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Tapahtuman luominen ei onnistunut: %1"
@@ -1231,7 +1305,7 @@ msgstr "Järjestelmä ei gpg:n vastauksesta ymmärtänyt mitä tehdä\\n"
 msgid "Couldn't find group\\n"
 msgstr "Ryhmää ei löytynyt\\n"
 
-#: lib/RT/Record.pm:939
+#: lib/RT/Record.pm:943
 msgid "Couldn't find row"
 msgstr "Riviä ei löytynyt"
 
@@ -1239,7 +1313,7 @@ msgstr "Riviä ei löytynyt"
 msgid "Couldn't find that principal"
 msgstr "Toimeksiantajaa ei löytynyt"
 
-#: lib/RT/CustomField_Overlay.pm:404
+#: lib/RT/CustomField_Overlay.pm:403
 msgid "Couldn't find that value"
 msgstr "Arvoa ei löytynyt"
 
@@ -1315,12 +1389,12 @@ msgstr "Tämän käyttäjän lataaminen ei onnistunut (%1)"
 msgid "Couldn't load ticket '%1'"
 msgstr "Tapauksen '%1' lataaminen ei onnistunut"
 
-#: lib/RT/Ticket_Overlay.pm:2612
+#: lib/RT/Ticket_Overlay.pm:2595
 #. ($args{'Base'})
 msgid "Couldn't resolve base '%1' into a URI."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2611
+#: lib/RT/Ticket_Overlay.pm:2594
 #. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr ""
@@ -1329,7 +1403,7 @@ msgstr ""
 msgid "Country"
 msgstr "Maa"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:68 html/Ticket/Create.html:165 html/Ticket/Create.html:226
+#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:166 html/Ticket/Create.html:233
 msgid "Create"
 msgstr "Luo"
 
@@ -1337,7 +1411,7 @@ msgstr "Luo"
 msgid "Create Tickets"
 msgstr "Luo tapauksia"
 
-#: html/Admin/CustomFields/Modify.html:109 html/Admin/Elements/EditCustomField:96
+#: html/Admin/CustomFields/Modify.html:124 html/Admin/Elements/EditCustomField:96
 msgid "Create a CustomField"
 msgstr "Luo kenttä"
 
@@ -1378,7 +1452,7 @@ msgstr "Luo uusi toiminto"
 msgid "Create a new template"
 msgstr "Luo uusi pohja"
 
-#: html/Ticket/Create.html:46 html/Ticket/Create.html:49 html/Ticket/Create.html:57
+#: html/Ticket/Create.html:47 html/Ticket/Create.html:51 html/Ticket/Create.html:58
 msgid "Create a new ticket"
 msgstr "Luo uusi tapaus"
 
@@ -1431,7 +1505,7 @@ msgstr "Luo tapaus"
 msgid "Create tickets in this queue"
 msgstr "Luo tapauksia tähän työjonoon"
 
-#: lib/RT/CustomField_Overlay.pm:101
+#: lib/RT/CustomField_Overlay.pm:106
 msgid "Create, delete and modify custom fields"
 msgstr "Luo, muokkaa ja poista kenttiä"
 
@@ -1459,18 +1533,26 @@ msgstr ""
 msgid "CreateTicket"
 msgstr ""
 
-#: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1145
+#: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1146
 msgid "Created"
 msgstr "Luotu"
 
-#: html/Admin/CustomFields/Modify.html:121 html/Admin/Elements/EditCustomField:117
+#: html/Admin/CustomFields/Modify.html:137 html/Admin/Elements/EditCustomField:117
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "Luotu kenttä %1"
 
+#: html/Tools/Reports/Elements/Tabs:63
+msgid "Created in a date range"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
 msgstr "Luotu pohja %1"
+
+#: html/Tools/Reports/CreatedByDates.html:7
+msgid "Created tickets in period, grouped by status"
+msgstr ""
 
 #: html/Search/Elements/PickBasics:102
 msgid "Creator"
@@ -1492,6 +1574,10 @@ msgstr "Tämänhetkiset jäsenet"
 msgid "Current rights"
 msgstr "Tämänhetkiset oikeudet"
 
+#: html/Search/Elements/EditQuery:47
+msgid "Current search"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Current search criteria"
 msgstr "Tämänhetkiset hakumääritteet"
@@ -1500,11 +1586,11 @@ msgstr "Tämänhetkiset hakumääritteet"
 msgid "Current watchers"
 msgstr "Tämänhetkiset tarkkailijat"
 
-#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:208 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:57
+#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:208 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:56
 msgid "Custom Fields"
 msgstr "Kentät"
 
-#: html/Admin/CustomFields/index.html:59
+#: html/Admin/CustomFields/index.html:60
 #. ($lookup)
 msgid "Custom Fields for %1"
 msgstr ""
@@ -1525,17 +1611,17 @@ msgstr ""
 msgid "Custom field %1 %2 %3"
 msgstr "Kenttä %1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:2147
+#: lib/RT/Tickets_Overlay.pm:2194
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Kentällä %1 on arvo"
 
-#: lib/RT/Tickets_Overlay.pm:2143
+#: lib/RT/Tickets_Overlay.pm:2190
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Kentällä %1 ei ole arvoa"
 
-#: lib/RT/Record.pm:1579 lib/RT/Record.pm:1740
+#: lib/RT/Record.pm:1583 lib/RT/Record.pm:1744
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Kenttää %1 ei löytynyt"
@@ -1548,7 +1634,7 @@ msgstr "Kenttä poistettu"
 msgid "Custom field not found"
 msgstr "Kenttää ei löytynyt"
 
-#: lib/RT/CustomField_Overlay.pm:1041
+#: lib/RT/CustomField_Overlay.pm:1144
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Kentän arvoa %1 ei löytynyt kentälle %2"
@@ -1557,15 +1643,15 @@ msgstr "Kentän arvoa %1 ei löytynyt kentälle %2"
 msgid "Custom field value changed from %1 to %2"
 msgstr "Kentän arvo muutettu arvosta %1 arvoon"
 
-#: lib/RT/CustomField_Overlay.pm:414
+#: lib/RT/CustomField_Overlay.pm:413
 msgid "Custom field value could not be deleted"
 msgstr "Kentän arvoa ei pystytty poistamaan"
 
-#: lib/RT/CustomField_Overlay.pm:1047
+#: lib/RT/CustomField_Overlay.pm:1150
 msgid "Custom field value could not be found"
 msgstr "Kentän arvoa ei löydetty"
 
-#: lib/RT/CustomField_Overlay.pm:1049 lib/RT/CustomField_Overlay.pm:412
+#: lib/RT/CustomField_Overlay.pm:1152 lib/RT/CustomField_Overlay.pm:411
 msgid "Custom field value deleted"
 msgstr "Kentän arvo poistettu"
 
@@ -1573,7 +1659,11 @@ msgstr "Kentän arvo poistettu"
 msgid "CustomField"
 msgstr ""
 
-#: html/SelfService/Display.html:61 html/Ticket/Create.html:191 html/Ticket/Elements/ShowSummary:76 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
+#: html/Prefs/MyRT.html:70 html/Prefs/Quicksearch.html:70 html/Prefs/Search.html:75
+msgid "Customize"
+msgstr ""
+
+#: html/SelfService/Display.html:61 html/Ticket/Create.html:201 html/Ticket/Elements/ShowSummary:81 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
 msgstr "Päivät"
 
@@ -1633,7 +1723,7 @@ msgstr ""
 msgid "Delegation"
 msgstr ""
 
-#: html/Admin/Elements/EditScrips:75 html/Search/Elements/EditFormat:103 html/Search/Elements/EditQuery:57 html/Search/Elements/EditSearches:63
+#: html/Admin/Elements/EditScrips:75 html/Search/Elements/EditFormat:103 html/Search/Elements/EditQuery:57 html/Search/Elements/EditSearches:63 html/Widgets/SelectionBox:205
 msgid "Delete"
 msgstr "Poista"
 
@@ -1653,6 +1743,10 @@ msgstr ""
 #: lib/RT/Queue_Overlay.pm:115
 msgid "Delete tickets"
 msgstr "Poista tapaukset"
+
+#: html/Search/Bulk.html:160
+msgid "Delete values"
+msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "DeleteTicket"
@@ -1674,11 +1768,11 @@ msgstr "Tämän objektin poistaminen rikkoo tietokannan viitteet"
 msgid "Deleting this object would violate referential integrity"
 msgstr "Tämän objektin poistaminen rikkoo tietokannan viitteet"
 
-#: html/Approvals/Elements/Approve:66
+#: html/Approvals/Elements/Approve:69
 msgid "Deny"
 msgstr ""
 
-#: html/Elements/EditLinks:138 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:212 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
+#: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:219 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
 msgid "Depended on by"
 msgstr "Tästä tapauksesta riippuu"
 
@@ -1706,7 +1800,7 @@ msgstr ""
 msgid "Dependency on %1 deleted"
 msgstr ""
 
-#: html/Elements/EditLinks:134 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:211 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
+#: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:218 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
 msgstr "Riippuu tapauksesta"
 
@@ -1714,7 +1808,7 @@ msgstr "Riippuu tapauksesta"
 msgid "Descending"
 msgstr "Laskeva"
 
-#: html/SelfService/Create.html:100 html/Ticket/Create.html:149
+#: html/SelfService/Create.html:100 html/Ticket/Create.html:150
 msgid "Describe the issue below"
 msgstr "Kuvaa tapausta"
 
@@ -1758,17 +1852,13 @@ msgstr ""
 msgid "Display ticket #%1"
 msgstr "Näytä tapaus #%1"
 
-#: html/Elements/Footer:60
+#: html/Elements/Footer:67
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr ""
 
 #: lib/RT/System.pm:76
 msgid "Do anything and everything"
 msgstr "Tee mitä tahansa ja kaikki"
-
-#: html/Search/Build.html:112
-msgid "Do the Search"
-msgstr ""
 
 #: html/Elements/Refresh:51
 msgid "Don't refresh this page."
@@ -1786,7 +1876,7 @@ msgstr "Lataa"
 msgid "Download as a tab-delimited file"
 msgstr ""
 
-#: html/Elements/SelectDateType:53 html/Ticket/Create.html:197 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1149
+#: html/Elements/SelectDateType:53 html/Ticket/Create.html:207 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:86 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
 msgid "Due"
 msgstr "Erääntyy"
 
@@ -1798,9 +1888,13 @@ msgstr "Erääntymispäivää '%1' ei onnistuttu tulkkaamaan järjestelmälle."
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "VIRHE: Tapauksen '%1' lataaminen ei onnistunut: %2.\\n"
 
-#: NOT FOUND IN SOURCE
+#: html/Elements/Quicksearch:48 html/Elements/ShowSearch:49 html/index.html:76
 msgid "Edit"
 msgstr "Muokkaa"
+
+#: html/Search/Bulk.html:149
+msgid "Edit Custom Fields"
+msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
 #. ($Object->Name)
@@ -1819,12 +1913,16 @@ msgstr ""
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr ""
 
-#: html/Search/Bulk.html:173 html/Ticket/ModifyLinks.html:57
+#: html/Search/Bulk.html:189 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
 msgstr "Muokkaa suhteita"
 
 #: html/Search/Edit.html:68
 msgid "Edit Query"
+msgstr ""
+
+#: html/Ticket/Elements/Tabs:207
+msgid "Edit Search"
 msgstr ""
 
 #: html/Admin/Queues/Templates.html:63
@@ -1865,7 +1963,7 @@ msgstr "Muokataan työjonon %1 asetuksia"
 msgid "Editing Configuration for user %1"
 msgstr "Muokataan käyttäjän %1 asetuksia"
 
-#: html/Admin/CustomFields/Modify.html:125 html/Admin/Elements/EditCustomField:120
+#: html/Admin/CustomFields/Modify.html:141 html/Admin/Elements/EditCustomField:120
 #. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
 msgstr "Muokataan kenttää %1"
@@ -1884,7 +1982,7 @@ msgstr "Muokataan henkilökohtaisen ryhmän %1 jäseniä"
 msgid "Editing template %1"
 msgstr "Muokataan pohjaa %1"
 
-#: lib/RT/Record.pm:1281 lib/RT/Record.pm:1358
+#: lib/RT/Record.pm:1285 lib/RT/Record.pm:1362
 msgid "Either base or target must be specified"
 msgstr "Joko juuri tai kohde täytyy olla määritelty"
 
@@ -1904,7 +2002,7 @@ msgstr "Sähköpostiosoite"
 msgid "EmailEncoding"
 msgstr "Sähköpostin koodaus"
 
-#: html/Admin/CustomFields/Modify.html:83 html/Admin/Elements/EditCustomField:72
+#: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "Aktiivinen (rastin poistaminen passivoi kentän)"
 
@@ -1925,7 +2023,7 @@ msgstr "Aktiiviset työjonot"
 msgid "Enabled status %1"
 msgstr "Aktivoitu tila %1"
 
-#: html/Admin/CustomFields/Modify.html:143 html/Admin/Queues/Modify.html:162
+#: html/Admin/CustomFields/Modify.html:159 html/Admin/Queues/Modify.html:162
 #. (loc_fuzzy($msg))
 msgid "Enabled status: %1"
 msgstr ""
@@ -1934,7 +2032,7 @@ msgstr ""
 msgid "Enter multiple values"
 msgstr "Anna useampi arvo"
 
-#: html/Elements/EditLinks:124
+#: html/Elements/EditLinks:126
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
 msgstr ""
 
@@ -1942,11 +2040,11 @@ msgstr ""
 msgid "Enter one value"
 msgstr "Anna yksi arvo"
 
-#: html/Elements/EditLinks:121
+#: html/Elements/EditLinks:123
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr ""
 
-#: html/Elements/EditLinks:117 html/Search/Bulk.html:174
+#: html/Elements/EditLinks:119 html/Search/Bulk.html:190
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Lisää tapausten numerot tai www-linkit. Erota useammat välilyönneillä."
 
@@ -1954,7 +2052,7 @@ msgstr "Lisää tapausten numerot tai www-linkit. Erota useammat välilyönneill
 msgid "Enter up to %1 values"
 msgstr ""
 
-#: html/Elements/Login:61 html/SelfService/Error.html:46 html/SelfService/Error.html:47
+#: html/Elements/Login:67 html/SelfService/Error.html:46 html/SelfService/Error.html:47
 msgid "Error"
 msgstr "Virhe"
 
@@ -1970,7 +2068,7 @@ msgstr "Virhe parametreissa: Queue->DelWatcher"
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:1333
+#: lib/RT/Ticket_Overlay.pm:1334
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Virhe parametreissa: Ticket->AddWatcher"
 
@@ -1978,7 +2076,7 @@ msgstr "Virhe parametreissa: Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Virhe parametreissa: Ticket->DelWatcher"
 
-#: lib/RT/Ticket_Overlay.pm:1499
+#: lib/RT/Ticket_Overlay.pm:1500
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr ""
 
@@ -2072,11 +2170,11 @@ msgstr ""
 msgid "Fin"
 msgstr "Fin"
 
-#: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm:1569
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:180 html/Ticket/Elements/EditBasics:92 lib/RT/Tickets_Overlay.pm:1616
 msgid "Final Priority"
 msgstr "Loppuprioriteetti"
 
-#: lib/RT/Ticket_Overlay.pm:1140
+#: lib/RT/Ticket_Overlay.pm:1141
 msgid "FinalPriority"
 msgstr ""
 
@@ -2096,7 +2194,7 @@ msgstr "Etsi uudet/avoimet tapaukset"
 msgid "Find people whose"
 msgstr "Etsi käyttäjät, joiden"
 
-#: html/Search/Results.html:109
+#: html/Search/Results.html:144
 msgid "Find tickets"
 msgstr "Hae tapauksia"
 
@@ -2116,7 +2214,7 @@ msgstr ""
 msgid "Foo!"
 msgstr ""
 
-#: html/Search/Bulk.html:105
+#: html/Search/Bulk.html:83
 msgid "Force change"
 msgstr "Pakota muutos"
 
@@ -2124,17 +2222,13 @@ msgstr "Pakota muutos"
 msgid "Format"
 msgstr ""
 
-#: html/Search/Results.html:107
+#: html/Search/Results.html:142
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
 msgstr ""
 
-#: lib/RT/Record.pm:942
+#: lib/RT/Record.pm:946
 msgid "Found Object"
-msgstr ""
-
-#: lib/RT/CustomField_Overlay.pm:59
-msgid "Freeform"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -2145,7 +2239,7 @@ msgstr "Vapaamuotoiset yhteystiedot"
 msgid "Fri."
 msgstr "Pe"
 
-#: html/Ticket/Elements/ShowHistory:62 html/Ticket/Elements/ShowHistory:72
+#: html/Ticket/Elements/ShowHistory:62 html/Ticket/Elements/ShowHistory:68
 msgid "Full headers"
 msgstr "Kokonaiset otsikot"
 
@@ -2179,11 +2273,11 @@ msgstr ""
 msgid "Global template: %1"
 msgstr "Yleinen pohja: %1"
 
-#: html/Tools/Offline.html:91
+#: html/Admin/CustomFields/index.html:80 html/Search/Results.html:95 html/Tools/Offline.html:91
 msgid "Go"
 msgstr ""
 
-#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Search/Results.html:76 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57 html/index.html:91
+#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Elements/RefreshHomepage:48 html/Search/Results.html:77 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
 msgid "Go!"
 msgstr "Ok!"
 
@@ -2232,7 +2326,7 @@ msgstr "Ryhmä luotu"
 msgid "Group has no such member"
 msgstr "Ryhmässä ei ole sellaista jäsentä"
 
-#: lib/RT/Group_Overlay.pm:971 lib/RT/Queue_Overlay.pm:745 lib/RT/Queue_Overlay.pm:805 lib/RT/Ticket_Overlay.pm:1391 lib/RT/Ticket_Overlay.pm:1471
+#: lib/RT/Group_Overlay.pm:971 lib/RT/Queue_Overlay.pm:745 lib/RT/Queue_Overlay.pm:805 lib/RT/Ticket_Overlay.pm:1392 lib/RT/Ticket_Overlay.pm:1472
 msgid "Group not found"
 msgstr "Ryhmää ei löydetty"
 
@@ -2244,7 +2338,7 @@ msgstr "Ryhmää ei löydetty.\\n"
 msgid "Group not specified.\\n"
 msgstr "Ryhmää ei määritelty.\\n"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1088
+#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1191
 msgid "Groups"
 msgstr "Ryhmät"
 
@@ -2256,7 +2350,7 @@ msgstr "Ryhmät eivät voi olla jäsentensä jäseniä"
 msgid "Groups matching search criteria"
 msgstr ""
 
-#: html/Ticket/Elements/ShowRequestor:77
+#: html/Ticket/Elements/ShowRequestor:76
 msgid "Groups this user belongs to"
 msgstr ""
 
@@ -2291,16 +2385,20 @@ msgstr "Kotipuhelin"
 msgid "Homepage"
 msgstr "Kotisivu"
 
+#: html/Elements/SelectTimeUnits:48
+msgid "Hours"
+msgstr ""
+
 #: lib/RT/Base.pm:110
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr ""
 
-#: html/Search/Build.html:637
+#: html/Search/Build.html:615
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1494
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1541
 msgid "Id"
 msgstr "Numero"
 
@@ -2328,11 +2426,11 @@ msgstr ""
 msgid "If you've updated anything above, be sure to"
 msgstr "Jos olet muuttanut tietoja, muista tallentaa"
 
-#: lib/RT/Record.pm:933
+#: lib/RT/Record.pm:937
 msgid "Illegal value for %1"
 msgstr "Kelpaamaton arvo %1"
 
-#: lib/RT/Record.pm:936
+#: lib/RT/Record.pm:940
 msgid "Immutable field"
 msgstr "Muuttumaton kenttä"
 
@@ -2352,19 +2450,19 @@ msgstr "Sisällytä listaukseen myös passiiviset työjonot."
 msgid "Include disabled users in search."
 msgstr "Sisällytä listaukseen myös passiiviset käyttäjät."
 
-#: html/Search/Build.html:663
+#: html/Search/Build.html:641
 msgid "Incomplete Query"
 msgstr ""
 
-#: html/Search/Build.html:660
+#: html/Search/Build.html:638
 msgid "Incomplete query"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm:1544
+#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1591
 msgid "Initial Priority"
 msgstr "Alkuprioriteetti"
 
-#: lib/RT/Ticket_Overlay.pm:1139 lib/RT/Ticket_Overlay.pm:1141
+#: lib/RT/Ticket_Overlay.pm:1140 lib/RT/Ticket_Overlay.pm:1142
 msgid "InitialPriority"
 msgstr ""
 
@@ -2372,11 +2470,17 @@ msgstr ""
 msgid "Input error"
 msgstr "Virhe syötteessä"
 
-#: lib/RT/Ticket_Overlay.pm:3454
+#: html/Elements/ValidateCustomFields:23 lib/RT/CustomField_Overlay.pm:1008
+#. ($self->FriendlyPattern)
+#. ($CF->FriendlyPattern)
+msgid "Input must match %1"
+msgstr ""
+
+#: lib/RT/Ticket_Overlay.pm:3437
 msgid "Internal Error"
 msgstr "Sisäinen virhe"
 
-#: lib/RT/Record.pm:305
+#: lib/RT/Record.pm:309
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Sisäinen virhe: %1"
@@ -2393,13 +2497,18 @@ msgstr "Kelpaamaton oikeus"
 msgid "Invalid Type"
 msgstr "Kelpaamaton tyyppi"
 
-#: lib/RT/Record.pm:938
+#: lib/RT/Record.pm:942
 msgid "Invalid data"
 msgstr "Kelpaamatonta dataa"
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "Omistaja ei kelpaa. Asetetaan oletusasetusten mukaan 'ei kukaan'"
+
+#: lib/RT/CustomField_Overlay.pm:202 lib/RT/CustomField_Overlay.pm:666
+#. ($msg)
+msgid "Invalid pattern: %1"
+msgstr ""
 
 #: lib/RT/Scrip_Overlay.pm:158 lib/RT/Template_Overlay.pm:276
 msgid "Invalid queue"
@@ -2409,16 +2518,16 @@ msgstr "Kelpaamaton työjono"
 msgid "Invalid right"
 msgstr "Kelpaamaton oikeus"
 
-#: lib/RT/Record.pm:280
+#: lib/RT/Record.pm:284
 #. ($key)
 msgid "Invalid value for %1"
 msgstr "Kelpaamaton arvo kohteelle %1"
 
-#: lib/RT/Record.pm:1597
+#: lib/RT/Record.pm:1601
 msgid "Invalid value for custom field"
 msgstr "Kelpaamaton arvo kentälle"
 
-#: lib/RT/Ticket_Overlay.pm:413
+#: lib/RT/Ticket_Overlay.pm:414
 msgid "Invalid value for status"
 msgstr "Kelpaamaton arvo tilalle"
 
@@ -2458,7 +2567,7 @@ msgstr "Heinä"
 msgid "July"
 msgstr "Heinäkuu"
 
-#: html/Ticket/Elements/Tabs:122
+#: html/Ticket/Elements/Tabs:124
 msgid "Jumbo"
 msgstr "Jätti"
 
@@ -2534,25 +2643,25 @@ msgstr "Rajoitetaan työjonoa %1 %2"
 msgid "Link"
 msgstr ""
 
-#: lib/RT/Record.pm:1292
+#: lib/RT/Record.pm:1296
 msgid "Link already exists"
 msgstr "Linkki on jo olemassa"
 
-#: lib/RT/Record.pm:1306
+#: lib/RT/Record.pm:1310
 msgid "Link could not be created"
 msgstr "Linkkiä ei voitu luoda"
 
-#: lib/RT/Record.pm:1312
+#: lib/RT/Record.pm:1316
 #. ($TransString)
 msgid "Link created (%1)"
 msgstr "Linkki luotu (%1)"
 
-#: lib/RT/Record.pm:1373
+#: lib/RT/Record.pm:1377
 #. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "Linkki poistettu (%1)"
 
-#: lib/RT/Record.pm:1379
+#: lib/RT/Record.pm:1383
 msgid "Link not found"
 msgstr "Linkkiä ei löydetty"
 
@@ -2565,7 +2674,7 @@ msgstr "Linkitä tapaus #%1"
 msgid "Link ticket %1"
 msgstr "Linkitä tapaus #%1"
 
-#: html/Ticket/Create.html:205 html/Ticket/Elements/ShowSummary:83 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
+#: html/Ticket/Create.html:214 html/Ticket/Elements/ShowSummary:87 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
 msgstr "Linkit"
 
@@ -2599,60 +2708,60 @@ msgstr "Sijainti"
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Lokihakemistoa %1 ei löytynyt tai kirjoittaminen ei onnistunut.\\n RT ei voi toimia."
 
-#: html/Elements/Header:94
-#. ("<b>".$session{'CurrentUser'}->Name."</b>")
+#: html/Elements/Header:82
+#. ("<span>".$session{'CurrentUser'}->Name."</span>")
 msgid "Logged in as %1"
 msgstr "Olet kirjautunut sisään tunnuksella %1"
 
-#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:57 html/Elements/Login:66 html/Elements/Login:76 lib/RT/StyleGuide.pod:797
+#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:57 html/Elements/Login:73 html/Elements/Login:89 lib/RT/StyleGuide.pod:797
 msgid "Login"
 msgstr "Kirjaudu sisään"
 
-#: html/Elements/Header:91
+#: html/Elements/Header:92
 msgid "Logout"
 msgstr "Kirjaudu ulos"
 
-#: lib/RT/CustomField_Overlay.pm:866
+#: lib/RT/CustomField_Overlay.pm:920
 msgid "Lookup type mismatch"
 msgstr ""
 
-#: html/Search/Bulk.html:104
+#: html/Search/Bulk.html:82
 msgid "Make Owner"
 msgstr "Aseta omistaja"
 
-#: html/Search/Bulk.html:128
+#: html/Search/Bulk.html:106
 msgid "Make Status"
 msgstr "Aseta tila"
 
-#: html/Search/Bulk.html:136
+#: html/Search/Bulk.html:114
 msgid "Make date Due"
 msgstr "Aseta erääntymisaika"
 
-#: html/Search/Bulk.html:138
+#: html/Search/Bulk.html:116
 msgid "Make date Resolved"
 msgstr "Aseta päätösaika"
 
-#: html/Search/Bulk.html:132
+#: html/Search/Bulk.html:110
 msgid "Make date Started"
 msgstr "Aseta aloitusaika"
 
-#: html/Search/Bulk.html:130
+#: html/Search/Bulk.html:108
 msgid "Make date Starts"
 msgstr "Aseta alkuaika"
 
-#: html/Search/Bulk.html:134
+#: html/Search/Bulk.html:112
 msgid "Make date Told"
 msgstr "Aseta oltu yhteydessä -aika"
 
-#: html/Search/Bulk.html:124
+#: html/Search/Bulk.html:102
 msgid "Make priority"
 msgstr "Aseta prioriteetti"
 
-#: html/Search/Bulk.html:126
+#: html/Search/Bulk.html:104
 msgid "Make queue"
 msgstr "Aseta työjono"
 
-#: html/Search/Bulk.html:122
+#: html/Search/Bulk.html:100
 msgid "Make subject"
 msgstr "Aseta otsikko"
 
@@ -2745,19 +2854,19 @@ msgstr ""
 msgid "Memberships of the user %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2849
+#: lib/RT/Ticket_Overlay.pm:2832
 msgid "Merge Successful"
 msgstr "Yhdistäminen onnistui"
 
-#: lib/RT/Ticket_Overlay.pm:2736
+#: lib/RT/Ticket_Overlay.pm:2719
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Yhdistäminen epäonnistui. EffectiveId:n arvoa ei pystytty asettamaan"
 
-#: lib/RT/Ticket_Overlay.pm:2744
+#: lib/RT/Ticket_Overlay.pm:2727
 msgid "Merge failed. Couldn't set Status"
 msgstr ""
 
-#: html/Elements/EditLinks:129 html/Ticket/Elements/BulkLinks:48
+#: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
 msgstr "Yhdistä"
 
@@ -2766,27 +2875,31 @@ msgstr "Yhdistä"
 msgid "Merged into %1"
 msgstr ""
 
-#: html/Search/Bulk.html:165 html/Ticket/Update.html:116
+#: html/Search/Bulk.html:143 html/Ticket/Update.html:119
 msgid "Message"
 msgstr "Viesti"
 
-#: lib/RT/Ticket_Overlay.pm:2406
+#: lib/RT/Ticket_Overlay.pm:2389
 msgid "Message could not be recorded"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2409
+#: lib/RT/Ticket_Overlay.pm:2392
 msgid "Message recorded"
 msgstr ""
 
-#: html/Ticket/Elements/PreviewScrips:115
+#: html/Ticket/Elements/PreviewScrips:117
 msgid "Messages about this ticket will not be sent to..."
 msgstr ""
 
-#: html/Search/Build.html:667
+#: html/Elements/SelectTimeUnits:47
+msgid "Minutes"
+msgstr ""
+
+#: html/Search/Build.html:645
 msgid "Mismatched parentheses"
 msgstr ""
 
-#: lib/RT/Record.pm:940
+#: lib/RT/Record.pm:944
 msgid "Missing a primary key?: %1"
 msgstr ""
 
@@ -3013,7 +3126,7 @@ msgstr "Muokkaa tapauksen %1 seuraajia"
 msgid "ModifyACL"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:103
+#: lib/RT/CustomField_Overlay.pm:108
 msgid "ModifyCustomField"
 msgstr ""
 
@@ -3045,7 +3158,7 @@ msgstr ""
 msgid "Mon."
 msgstr "Ma"
 
-#: html/Ticket/Elements/ShowRequestor:62
+#: html/Ticket/Elements/ShowRequestor:61
 #. ($name)
 msgid "More about %1"
 msgstr "Lisätietoa: %1"
@@ -3066,7 +3179,7 @@ msgstr "Monta"
 msgid "Must specify 'Name' attribute"
 msgstr "'Nimi' täytyy määritellä"
 
-#: html/SelfService/Elements/MyRequests:70
+#: html/SelfService/Elements/MyRequests:69
 #. ($friendly_status)
 msgid "My %1 tickets"
 msgstr ""
@@ -3083,7 +3196,7 @@ msgstr "Hyväksyntäni"
 msgid "My saved searches"
 msgstr ""
 
-#: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/User/Groups/Modify.html:65
+#: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:158 html/User/Groups/Modify.html:65
 msgid "Name"
 msgstr "Nimi"
 
@@ -3099,11 +3212,11 @@ msgstr "Tarvitsee järjestelmän ylläpitäjän hyväksynnän"
 msgid "Never"
 msgstr "Ei ikinä"
 
-#: html/Elements/Quicksearch:51
+#: NOT FOUND IN SOURCE
 msgid "New"
 msgstr "Uusi"
 
-#: html/Elements/EditLinks:115
+#: html/Elements/EditLinks:117
 msgid "New Links"
 msgstr "Uusi linkki"
 
@@ -3115,11 +3228,7 @@ msgstr "Uusi salasana"
 msgid "New Pending Approval"
 msgstr ""
 
-#: html/Ticket/Elements/Tabs:193
-msgid "New Query"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
+#: html/Ticket/Elements/Tabs:205
 msgid "New Search"
 msgstr "Uusi haku"
 
@@ -3142,6 +3251,10 @@ msgstr "Uusi salasana"
 #: html/Admin/Elements/QueueTabs:95
 msgid "New queue"
 msgstr "Uusi työjono"
+
+#: html/Ticket/Elements/Reminders:71
+msgid "New reminder:"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "New request"
@@ -3167,7 +3280,7 @@ msgstr "Uusi pohja"
 msgid "New ticket"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2713
+#: lib/RT/Ticket_Overlay.pm:2696
 msgid "New ticket doesn't exist"
 msgstr "Uutta tapausta ei löydy"
 
@@ -3187,7 +3300,7 @@ msgstr "Uusi tarkkailija"
 msgid "New window setting"
 msgstr "Uusi ikkunan asetus"
 
-#: html/Ticket/Elements/Tabs:92
+#: html/Helpers/CalPopup.html:13 html/Ticket/Elements/Tabs:92
 msgid "Next"
 msgstr "Seuraava"
 
@@ -3211,7 +3324,7 @@ msgstr "Lempinimi"
 msgid "No Class defined"
 msgstr ""
 
-#: html/Admin/CustomFields/Modify.html:124 html/Admin/Elements/EditCustomField:119
+#: html/Admin/CustomFields/Modify.html:140 html/Admin/Elements/EditCustomField:119
 msgid "No CustomField"
 msgstr "Ei kenttiä"
 
@@ -3223,7 +3336,7 @@ msgstr ""
 msgid "No Group defined"
 msgstr "Ryhmää ei ole määritelty"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:477
+#: lib/RT/Tickets_Overlay_SQL.pm:480
 msgid "No Query"
 msgstr ""
 
@@ -3247,11 +3360,11 @@ msgstr "Tapausta ei määritelty. Perutaan tapaus "
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
 msgstr "Tapausta ei määritelty. Poistutaan tapauksen muokkauksesta\\n\\n"
 
-#: html/Approvals/Elements/Approve:67
+#: html/Approvals/Elements/Approve:73
 msgid "No action"
 msgstr ""
 
-#: lib/RT/Record.pm:935
+#: lib/RT/Record.pm:939
 msgid "No column specified"
 msgstr ""
 
@@ -3259,7 +3372,7 @@ msgstr ""
 msgid "No command found\\n"
 msgstr "Komentoa ei löytynyt\\n"
 
-#: html/Ticket/Elements/ShowRequestor:68
+#: html/Ticket/Elements/ShowRequestor:67
 msgid "No comment entered about this user"
 msgstr "Käyttäjälle ei ole annettu kommentteja"
 
@@ -3267,7 +3380,7 @@ msgstr "Käyttäjälle ei ole annettu kommentteja"
 msgid "No correspondence attached"
 msgstr "Ei kirjeenvaihtoa liitettynä"
 
-#: lib/RT/Action/Generic.pm:186 lib/RT/Condition/Generic.pm:198 lib/RT/Search/ActiveTicketsInQueue.pm:78 lib/RT/Search/Generic.pm:135
+#: lib/RT/Action/Generic.pm:179 lib/RT/Condition/Generic.pm:198 lib/RT/Search/ActiveTicketsInQueue.pm:78 lib/RT/Search/Generic.pm:135 lib/RT/Search/Googleish.pm:78
 #. (ref $self)
 msgid "No description for %1"
 msgstr "Ei kuvausta kohteelle %1"
@@ -3280,7 +3393,7 @@ msgstr "Ryhmää ei ole määritelty"
 msgid "No groups matching search criteria found."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2349
+#: lib/RT/Ticket_Overlay.pm:2350
 msgid "No message attached"
 msgstr ""
 
@@ -3292,7 +3405,7 @@ msgstr "Salasanaa ei ole asetettu"
 msgid "No permission to create queues"
 msgstr "Ei oikeutta luoda työjonoja"
 
-#: lib/RT/Ticket_Overlay.pm:409
+#: lib/RT/Ticket_Overlay.pm:410
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ei oikeutta luoda tapauksia työjonoon '%1'"
@@ -3309,7 +3422,7 @@ msgstr "Ei oikeutta tarkastella tätä tapausta"
 msgid "No permission to view update ticket"
 msgstr "Ei oikeutta päivittää tätä tapausta"
 
-#: lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1450
+#: lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1451
 msgid "No principal specified"
 msgstr "Toimeksiantajaa ei ole määritelty"
 
@@ -3333,7 +3446,7 @@ msgstr "Ei myönnettyjä oikeuksia."
 msgid "No search loaded"
 msgstr ""
 
-#: html/Search/Bulk.html:194
+#: html/Search/Bulk.html:220
 msgid "No search to operate on."
 msgstr "Ei työstettävää hakua"
 
@@ -3361,15 +3474,15 @@ msgstr "Yhtään hakukriteerit täyttävää käyttäjää ei löytynyt."
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "Ei kelpaa RT-käyttäjäksi. RT:n cvs-käsittelijä irrottautuu. Ole hyvä ja ota yhteyttä RT:n ylläpitäjään.\\n"
 
-#: lib/RT/Record.pm:932
+#: lib/RT/Record.pm:936
 msgid "No value sent to _Set!\\n"
 msgstr ""
 
-#: html/Elements/QuickCreate:61
+#: html/Elements/QuickCreate:59
 msgid "Nobody"
 msgstr "Ei kukaan"
 
-#: lib/RT/Record.pm:937
+#: lib/RT/Record.pm:941
 msgid "Nonexistant field?"
 msgstr "Olematon kenttä?"
 
@@ -3377,7 +3490,7 @@ msgstr "Olematon kenttä?"
 msgid "Not logged in"
 msgstr "Sisäänkirjautumaton"
 
-#: html/Elements/Header:96
+#: html/Elements/Header:84
 msgid "Not logged in."
 msgstr "Et ole kirjautunut järjestelmään"
 
@@ -3393,7 +3506,7 @@ msgstr "Ei vielä toteutettu."
 msgid "Not yet implemented...."
 msgstr "Ei vielä toteutettu..."
 
-#: html/Approvals/Elements/Approve:70
+#: html/Approvals/Elements/Approve:77
 msgid "Notes"
 msgstr "Merkintöjä"
 
@@ -3481,7 +3594,7 @@ msgstr "marraskuu"
 msgid "OR"
 msgstr ""
 
-#: lib/RT/Record.pm:319
+#: lib/RT/Record.pm:323
 msgid "Object could not be created"
 msgstr ""
 
@@ -3489,15 +3602,7 @@ msgstr ""
 msgid "Object could not be deleted"
 msgstr ""
 
-#: lib/RT/Record.pm:338
-msgid "Object could not be created"
-msgstr ""
-
-#: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
-msgstr ""
-
-#: lib/RT/Record.pm:312
+#: lib/RT/Record.pm:342
 msgid "Object created"
 msgstr ""
 
@@ -3511,7 +3616,7 @@ msgstr ""
 msgid "Object of type %1 cannot take custom fields"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:901
+#: lib/RT/CustomField_Overlay.pm:955
 msgid "Object type mismatch"
 msgstr ""
 
@@ -3523,7 +3628,7 @@ msgstr "Loka"
 msgid "October"
 msgstr "lokakuu"
 
-#: html/Tools/Elements/Tabs:53
+#: html/Tools/Elements/Tabs:55
 msgid "Offline"
 msgstr ""
 
@@ -3575,21 +3680,25 @@ msgstr ""
 msgid "On Transaction"
 msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:71
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>")
+#: html/Approvals/Elements/PendingMyApproval:70
+#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter'>")
 msgid "Only show approvals for requests created after %1"
 msgstr "Näytä vain pyynnöt, jotka on luotu jälkeen %1"
 
-#: html/Approvals/Elements/PendingMyApproval:69
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>")
+#: html/Approvals/Elements/PendingMyApproval:68
+#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore'>")
 msgid "Only show approvals for requests created before %1"
 msgstr "Näytä vain pyynnöt, jotka on luotu ennen %1"
 
-#: html/Elements/Quicksearch:52
+#: html/Admin/CustomFields/index.html:75
+msgid "Only show custom fields for:"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Open"
 msgstr "Avoin"
 
-#: html/Ticket/Elements/Tabs:159
+#: html/Ticket/Elements/Tabs:161
 msgid "Open it"
 msgstr "Avaa"
 
@@ -3613,6 +3722,10 @@ msgstr "Avoimet tapaukset (listasta) toisessa ikkunassa"
 msgid "Open tickets on correspondence"
 msgstr "Avaa tapaukset, kun esiintyy kirjeenvaihtoa"
 
+#: html/Prefs/MyRT.html:62
+msgid "Options"
+msgstr ""
+
 #: html/Search/Elements/DisplayOptions:56
 msgid "Order by"
 msgstr ""
@@ -3625,7 +3738,7 @@ msgstr "Järjestäminen"
 msgid "Organization"
 msgstr "Laitos"
 
-#: html/Approvals/Elements/Approve:54
+#: html/Approvals/Elements/Approve:53
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Alkuperäinen tapaus: #%1"
@@ -3650,7 +3763,7 @@ msgstr "Omat tapaukset"
 msgid "OwnTicket"
 msgstr ""
 
-#: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1734
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:70 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:82 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1781
 msgid "Owner"
 msgstr "Omistaja"
 
@@ -3658,7 +3771,7 @@ msgstr "Omistaja"
 msgid "Owner changed from %1 to %2"
 msgstr "Omistaja vaihdettu tunnuksesta %1 tunnukseen %2"
 
-#: lib/RT/Ticket_Overlay.pm:495
+#: lib/RT/Ticket_Overlay.pm:496
 msgid "Owner could not be set."
 msgstr ""
 
@@ -3684,11 +3797,11 @@ msgstr "Hakulaite"
 msgid "PagerPhone"
 msgstr "Hakulaite-puhelin"
 
-#: html/Elements/EditLinks:142 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:213 html/Ticket/Elements/BulkLinks:60
+#: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:60
 msgid "Parents"
 msgstr "Isät"
 
-#: html/Elements/Login:74 html/User/Prefs.html:105
+#: html/Elements/Login:84 html/User/Prefs.html:105
 msgid "Password"
 msgstr "Salasana"
 
@@ -3696,7 +3809,7 @@ msgstr "Salasana"
 msgid "Password Reminder"
 msgstr "Salasanan muistutus"
 
-#: lib/RT/Transaction_Overlay.pm:770 lib/RT/User_Overlay.pm:1046
+#: lib/RT/Transaction_Overlay.pm:769 lib/RT/User_Overlay.pm:1044
 msgid "Password changed"
 msgstr ""
 
@@ -3730,7 +3843,7 @@ msgstr ""
 msgid "Passwords do not match. Your password has not been changed"
 msgstr ""
 
-#: html/Ticket/Elements/ShowSummary:66 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
+#: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
 msgid "People"
 msgstr "Käyttäjät"
 
@@ -3742,7 +3855,7 @@ msgstr ""
 msgid "Perl configuration"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:258 lib/RT/ACE_Overlay.pm:581 lib/RT/ACE_Overlay.pm:591 lib/RT/ACE_Overlay.pm:601 lib/RT/ACE_Overlay.pm:666 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:402 lib/RT/Attribute_Overlay.pm:411 lib/RT/Attribute_Overlay.pm:424 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1022 lib/RT/CustomField_Overlay.pm:167 lib/RT/CustomField_Overlay.pm:184 lib/RT/CustomField_Overlay.pm:195 lib/RT/CustomField_Overlay.pm:366 lib/RT/CustomField_Overlay.pm:398 lib/RT/CustomField_Overlay.pm:697 lib/RT/CustomField_Overlay.pm:870 lib/RT/CustomField_Overlay.pm:905 lib/RT/CustomField_Overlay.pm:950 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1138 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1252 lib/RT/Group_Overlay.pm:1258 lib/RT/Group_Overlay.pm:453 lib/RT/Group_Overlay.pm:550 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:636 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:738 lib/RT/Group_Overlay.pm:744 lib/RT/Group_Overlay.pm:930 lib/RT/Group_Overlay.pm:934 lib/RT/Group_Overlay.pm:947 lib/RT/Queue_Overlay.pm:1051 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:654 lib/RT/Queue_Overlay.pm:664 lib/RT/Queue_Overlay.pm:678 lib/RT/Queue_Overlay.pm:816 lib/RT/Queue_Overlay.pm:825 lib/RT/Queue_Overlay.pm:838 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1318 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1342 lib/RT/Ticket_Overlay.pm:1483 lib/RT/Ticket_Overlay.pm:1493 lib/RT/Ticket_Overlay.pm:1507 lib/RT/Ticket_Overlay.pm:1624 lib/RT/Ticket_Overlay.pm:1944 lib/RT/Ticket_Overlay.pm:2082 lib/RT/Ticket_Overlay.pm:2252 lib/RT/Ticket_Overlay.pm:2302 lib/RT/Ticket_Overlay.pm:2474 lib/RT/Ticket_Overlay.pm:2577 lib/RT/Ticket_Overlay.pm:2625 lib/RT/Ticket_Overlay.pm:2704 lib/RT/Ticket_Overlay.pm:2718 lib/RT/Ticket_Overlay.pm:2942 lib/RT/Ticket_Overlay.pm:2952 lib/RT/Ticket_Overlay.pm:2957 lib/RT/Ticket_Overlay.pm:3180 lib/RT/Ticket_Overlay.pm:3184 lib/RT/Ticket_Overlay.pm:3327 lib/RT/Ticket_Overlay.pm:3448 lib/RT/Transaction_Overlay.pm:505 lib/RT/Transaction_Overlay.pm:512 lib/RT/Transaction_Overlay.pm:540 lib/RT/Transaction_Overlay.pm:547 lib/RT/User_Overlay.pm:1184 lib/RT/User_Overlay.pm:1725 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:736 lib/RT/User_Overlay.pm:775
+#: lib/RT/ACE_Overlay.pm:262 lib/RT/ACE_Overlay.pm:268 lib/RT/ACE_Overlay.pm:594 lib/RT/ACE_Overlay.pm:604 lib/RT/ACE_Overlay.pm:614 lib/RT/ACE_Overlay.pm:679 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:405 lib/RT/Attribute_Overlay.pm:414 lib/RT/Attribute_Overlay.pm:427 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1004 lib/RT/CustomField_Overlay.pm:1125 lib/RT/CustomField_Overlay.pm:167 lib/RT/CustomField_Overlay.pm:184 lib/RT/CustomField_Overlay.pm:195 lib/RT/CustomField_Overlay.pm:369 lib/RT/CustomField_Overlay.pm:397 lib/RT/CustomField_Overlay.pm:751 lib/RT/CustomField_Overlay.pm:924 lib/RT/CustomField_Overlay.pm:959 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1138 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1252 lib/RT/Group_Overlay.pm:1258 lib/RT/Group_Overlay.pm:453 lib/RT/Group_Overlay.pm:550 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:636 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:738 lib/RT/Group_Overlay.pm:744 lib/RT/Group_Overlay.pm:930 lib/RT/Group_Overlay.pm:934 lib/RT/Group_Overlay.pm:947 lib/RT/Queue_Overlay.pm:1051 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:654 lib/RT/Queue_Overlay.pm:664 lib/RT/Queue_Overlay.pm:678 lib/RT/Queue_Overlay.pm:816 lib/RT/Queue_Overlay.pm:825 lib/RT/Queue_Overlay.pm:838 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1319 lib/RT/Ticket_Overlay.pm:1329 lib/RT/Ticket_Overlay.pm:1343 lib/RT/Ticket_Overlay.pm:1484 lib/RT/Ticket_Overlay.pm:1494 lib/RT/Ticket_Overlay.pm:1508 lib/RT/Ticket_Overlay.pm:1625 lib/RT/Ticket_Overlay.pm:1945 lib/RT/Ticket_Overlay.pm:2083 lib/RT/Ticket_Overlay.pm:2253 lib/RT/Ticket_Overlay.pm:2303 lib/RT/Ticket_Overlay.pm:2457 lib/RT/Ticket_Overlay.pm:2560 lib/RT/Ticket_Overlay.pm:2608 lib/RT/Ticket_Overlay.pm:2687 lib/RT/Ticket_Overlay.pm:2701 lib/RT/Ticket_Overlay.pm:2925 lib/RT/Ticket_Overlay.pm:2935 lib/RT/Ticket_Overlay.pm:2940 lib/RT/Ticket_Overlay.pm:3163 lib/RT/Ticket_Overlay.pm:3167 lib/RT/Ticket_Overlay.pm:3310 lib/RT/Ticket_Overlay.pm:3431 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:546 lib/RT/User_Overlay.pm:1031 lib/RT/User_Overlay.pm:1182 lib/RT/User_Overlay.pm:1886 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:736 lib/RT/User_Overlay.pm:775
 msgid "Permission Denied"
 msgstr "Pääsy kielletty"
 
@@ -3766,7 +3879,7 @@ msgstr "Puhelinnumerot"
 msgid "Placeholder"
 msgstr "Paikanpitäjä"
 
-#: html/Elements/Header:87 html/Elements/Tabs:88 html/SelfService/Elements/Tabs:75 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
+#: html/Elements/Header:87 html/Elements/Tabs:91 html/SelfService/Elements/Tabs:75 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
 msgid "Preferences"
 msgstr "Asetukset"
 
@@ -3778,7 +3891,7 @@ msgstr "Asetukset"
 msgid "Prepare Stubbed"
 msgstr "Valmistele tumppi"
 
-#: html/Ticket/Elements/Tabs:84
+#: html/Helpers/CalPopup.html:11 html/Ticket/Elements/Tabs:84
 msgid "Prev"
 msgstr "Edellinen"
 
@@ -3799,7 +3912,7 @@ msgstr "Pri"
 msgid "Principal %1 not found."
 msgstr "Toimeksiantajaa %1 ei löytynyt"
 
-#: html/Search/Elements/PickBasics:160 html/Ticket/Create.html:184 html/Ticket/Elements/EditBasics:74 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1518
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:179 html/Ticket/Elements/EditBasics:87 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1565
 msgid "Priority"
 msgstr "Prioriteetti"
 
@@ -3828,15 +3941,11 @@ msgstr "Erioikeutetut käyttäjät"
 msgid "Pseudogroup for internal use"
 msgstr "Valeryhmä sisäiseen käyttöön"
 
-#: html/Search/Elements/EditQuery:47
-msgid "Query"
-msgstr ""
-
-#: html/Search/Build.html:124 html/Ticket/Elements/Tabs:195
+#: html/Search/Build.html:121
 msgid "Query Builder"
 msgstr ""
 
-#: html/Elements/QuickCreate:55 html/Elements/Quicksearch:50 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:59 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1345
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:60 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:40 html/Tools/Reports/ResolvedByDates.html:41 html/Tools/Reports/ResolvedByOwner.html:21 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1392
 msgid "Queue"
 msgstr "Työjono"
 
@@ -3866,7 +3975,7 @@ msgstr "Työjono on jo olemassa"
 msgid "Queue could not be created"
 msgstr "Työjonoa ei voitu luoda"
 
-#: html/Ticket/Create.html:239 lib/t/regression/01ticket_link_searching.t:17
+#: html/Ticket/Create.html:242 lib/t/regression/01ticket_link_searching.t:17
 msgid "Queue could not be loaded."
 msgstr "Työjonoa ei voitu ladata."
 
@@ -3878,7 +3987,7 @@ msgstr "Työjono luotu"
 msgid "Queue is not specified."
 msgstr "Työjonoa ei määritelty"
 
-#: html/SelfService/Display.html:102 lib/RT/CustomField_Overlay.pm:192
+#: html/SelfService/Display.html:95 lib/RT/CustomField_Overlay.pm:192
 msgid "Queue not found"
 msgstr "Työjonoa ei löytynyt"
 
@@ -3886,21 +3995,24 @@ msgstr "Työjonoa ei löytynyt"
 msgid "Queues"
 msgstr "Työjonot"
 
-#: html/Elements/Quicksearch:46
+#: html/Elements/MyAdminQueues:46
+msgid "Queues I administer"
+msgstr ""
+
+#: html/Elements/MySupportQueues:46
+msgid "Queues I'm an AdminCc for"
+msgstr ""
+
+#: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58 html/Prefs/Quicksearch.html:70
 msgid "Quick search"
 msgstr ""
 
-#: html/Elements/QuickCreate:46
+#: html/Elements/QuickCreate:47
 msgid "Quick ticket creation"
 msgstr ""
 
-#: html/Search/Results.html:83
+#: html/Search/Results.html:84
 msgid "RSS"
-msgstr ""
-
-#: html/Elements/Login:66
-#. ($RT::VERSION)
-msgid "RT %1"
 msgstr ""
 
 #: docs/design_docs/string-extraction-guide.txt:70 lib/RT/StyleGuide.pod:796
@@ -3936,7 +4048,7 @@ msgstr "RT Konfiguraatiovirhe"
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT Kriittinen virhe. Viestiä ei tallennettu!"
 
-#: html/Elements/Error:65 html/SelfService/Error.html:62
+#: html/Elements/Error:63 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT Virhe"
 
@@ -3952,7 +4064,7 @@ msgstr "RT Itsepalvelu / Suljetut tapaukset"
 msgid "RT Variables"
 msgstr ""
 
-#: html/index.html:72 html/index.html:75
+#: html/Prefs/MyRT.html:58 html/Prefs/MyRT.html:70 html/User/Elements/Tabs:65 html/index.html:1 html/index.html:75
 msgid "RT at a glance"
 msgstr "RT yhdellä silmäyksellä"
 
@@ -3976,7 +4088,7 @@ msgstr ""
 msgid "RT couldn't validate this PGP signature. \\n"
 msgstr "RT ei pystynyt tarkistamaan tätä PGP allekirjoitusta.\\n"
 
-#: html/Elements/PageLayout:108
+#: html/Elements/Logo:49 html/Elements/PageLayout:179
 #. ($RT::rtname)
 msgid "RT for %1"
 msgstr "%1: RT"
@@ -3992,6 +4104,10 @@ msgstr "RT on tekijänoikeuslain alainen, &copy; 1996-%1 Jesse Vincent &lt;jesse
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
 msgstr "RT luulee että tämä viesti on palautus"
+
+#: html/Search/Simple.html:60
+msgid "RT will look for anything else you enter in ticket subjects."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -4029,11 +4145,11 @@ msgstr ""
 msgid "Reference to %1 deleted"
 msgstr ""
 
-#: html/Elements/EditLinks:103 html/Elements/EditLinks:154 html/Elements/ShowLinks:92 html/Ticket/Create.html:216 html/Ticket/Elements/BulkLinks:72
+#: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:223 html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
 msgstr "Viitattu jostakin"
 
-#: html/Elements/EditLinks:150 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:215 html/Ticket/Elements/BulkLinks:68
+#: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:68
 msgid "Refers to"
 msgstr "Viittaus johonkin"
 
@@ -4050,19 +4166,48 @@ msgstr "Päivitä haku"
 msgid "Refresh this page every %1 minutes."
 msgstr "Päivitä tämä sivu %1 minuutin välein"
 
-#: html/Search/Bulk.html:116
+#: lib/RT/Transaction_Overlay.pm:799
+#. ($ticket->Subject)
+msgid "Reminder '%1' added"
+msgstr ""
+
+#: lib/RT/Transaction_Overlay.pm:812
+#. ($ticket->Subject)
+msgid "Reminder '%1' completed"
+msgstr ""
+
+#: lib/RT/Transaction_Overlay.pm:805
+#. ($ticket->Subject)
+msgid "Reminder '%1' reopened"
+msgstr ""
+
+#: html/Ticket/Reminders.html:46
+#. ($Ticket->Id)
+msgid "Reminder ticket #%1"
+msgstr ""
+
+#: html/Elements/MyReminders:49 html/Ticket/Elements/ShowSummary:73 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
+msgid "Reminders"
+msgstr ""
+
+#: html/Ticket/Reminders.html:50
+#. ($Ticket->Id)
+msgid "Reminders for ticket #%1"
+msgstr ""
+
+#: html/Search/Bulk.html:94
 msgid "Remove AdminCc"
 msgstr "Poista kopio ylläpidolle"
 
-#: html/Search/Bulk.html:112
+#: html/Search/Bulk.html:90
 msgid "Remove Cc"
 msgstr "Poista kopio"
 
-#: html/Search/Bulk.html:108
+#: html/Search/Bulk.html:86
 msgid "Remove Requestor"
 msgstr "Poista tilaaja"
 
-#: html/Ticket/Elements/ShowTransaction:171 html/Ticket/Elements/Tabs:145
+#: html/Ticket/Elements/ShowTransaction:178 html/Ticket/Elements/Tabs:147
 msgid "Reply"
 msgstr "Vastaa"
 
@@ -4070,7 +4215,7 @@ msgstr "Vastaa"
 msgid "Reply Address"
 msgstr ""
 
-#: html/Search/Bulk.html:151 html/Ticket/ModifyAll.html:94 html/Ticket/Update.html:76
+#: html/Search/Bulk.html:129 html/Ticket/ModifyAll.html:94 html/Ticket/Update.html:79
 msgid "Reply to requestors"
 msgstr ""
 
@@ -4080,6 +4225,10 @@ msgstr "Vastaa tapauksiin"
 
 #: lib/RT/Queue_Overlay.pm:111
 msgid "ReplyToTicket"
+msgstr ""
+
+#: html/Tools/Elements/Tabs:59
+msgid "Reports"
 msgstr ""
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:112
@@ -4094,7 +4243,7 @@ msgstr "Tilaajan sähköpostiosoite"
 msgid "Requestor(s)"
 msgstr "Tilaajat"
 
-#: html/SelfService/Create.html:63 html/Ticket/Create.html:77 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
+#: html/SelfService/Create.html:63 html/Ticket/Create.html:78 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
 msgstr "Tilaajat"
 
@@ -4107,7 +4256,7 @@ msgstr "Tapaus tulisi suorittaa mennessä"
 msgid "Required parameter '%1' not specified"
 msgstr ""
 
-#: html/Elements/Submit:104
+#: html/Elements/Submit:95
 msgid "Reset"
 msgstr "Palauta"
 
@@ -4115,18 +4264,34 @@ msgstr "Palauta"
 msgid "Residence"
 msgstr "Koti"
 
-#: html/Ticket/Elements/Tabs:155
+#: html/Ticket/Elements/Tabs:157
 msgid "Resolve"
 msgstr "Päätä"
 
-#: html/Ticket/Update.html:154
+#: html/Ticket/Update.html:157
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Ratkaise tapaus #%1 (%2)"
 
-#: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1148
+#: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1149
 msgid "Resolved"
 msgstr "Päätetty"
+
+#: html/Tools/Reports/Elements/Tabs:55
+msgid "Resolved by owner"
+msgstr ""
+
+#: html/Tools/Reports/Elements/Tabs:59
+msgid "Resolved in date range"
+msgstr ""
+
+#: html/Tools/Reports/ResolvedByDates.html:7
+msgid "Resolved tickets in period, grouped by owner"
+msgstr ""
+
+#: html/Tools/Reports/ResolvedByOwner.html:5
+msgid "Resolved tickets, grouped by owner"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -4198,7 +4363,11 @@ msgstr "Oikeuksia ei voitu perua: %1"
 msgid "Roles"
 msgstr "Roolit"
 
-#: html/Search/Elements/DisplayOptions:83
+#: html/Prefs/MyRT.html:64
+msgid "Rows per box"
+msgstr ""
+
+#: html/Search/Elements/DisplayOptions:84
 msgid "Rows per page"
 msgstr ""
 
@@ -4206,11 +4375,11 @@ msgstr ""
 msgid "Sat."
 msgstr "La"
 
-#: html/Search/Elements/EditSearches:70
+#: html/Prefs/MyRT.html:64 html/Prefs/Quicksearch.html:64 html/Prefs/Search.html:69 html/Prefs/Search.html:69 html/Search/Elements/EditSearches:70 html/Widgets/SelectionBox:212
 msgid "Save"
 msgstr ""
 
-#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:238 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
+#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:238 html/Prefs/Quicksearch.html:64 html/Prefs/SearchOptions.html:63 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:59 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
 msgid "Save Changes"
 msgstr "Tallenna muutokset"
 
@@ -4218,7 +4387,7 @@ msgstr "Tallenna muutokset"
 msgid "Save Preferences"
 msgstr ""
 
-#: html/Ticket/Elements/PreviewScrips:124
+#: html/Ticket/Elements/PreviewScrips:126
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
@@ -4262,7 +4431,7 @@ msgstr "Toiminnot työjonolle %1\\n"
 msgid "Scrips which apply to all queues"
 msgstr "Toiminnot, joita sovelletaan kaikkiin työjonoihin"
 
-#: html/Elements/SimpleSearch:48 html/Search/Build.html:112
+#: html/Elements/SimpleSearch:48 html/Search/Simple.html:65
 msgid "Search"
 msgstr "Hae"
 
@@ -4270,12 +4439,35 @@ msgstr "Hae"
 msgid "Search Criteria"
 msgstr "Hakukriteerit"
 
+#: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
+msgid "Search Preferences"
+msgstr ""
+
 #: lib/RT/SavedSearch.pm:116
 msgid "Search attribute load failure"
 msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:60
+#: html/Approvals/Elements/PendingMyApproval:59
 msgid "Search for approvals"
+msgstr ""
+
+#: html/Search/Simple.html:69
+msgid "Search for tickets"
+msgstr ""
+
+#: html/Search/Simple.html:57
+msgid "Search for tickets. Enter <strong>id</strong> numbers,<strong>queues</strong> by name,
+Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
+RT will look for anything else you enter in ticket bodies and attachments."
+msgstr ""
+
+#: html/User/Elements/Tabs:62
+msgid "Search options"
+msgstr ""
+
+#: html/Search/Chart.html:7
+#. ($PrimaryGroupBy)
+msgid "Search results grouped by %1"
 msgstr ""
 
 #: lib/RT/SavedSearch.pm:194
@@ -4283,11 +4475,15 @@ msgstr ""
 msgid "Search update: %1"
 msgstr ""
 
+#: html/Search/Simple.html:59
+msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
+msgstr ""
+
 #: bin/rt-crontool:213
 msgid "Security:"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:100
+#: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
 msgstr ""
 
@@ -4303,7 +4499,7 @@ msgstr ""
 msgid "See ticket summaries"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:100
+#: lib/RT/CustomField_Overlay.pm:105
 msgid "SeeCustomField"
 msgstr ""
 
@@ -4371,6 +4567,10 @@ msgstr "Valitse yksi arvo"
 msgid "Select queue"
 msgstr "Valitse työjono"
 
+#: html/Prefs/Quicksearch.html:53
+msgid "Select queues to be displayed on the \"RT at a glance\" page"
+msgstr ""
+
 #: html/Admin/Global/Scrip.html:58 html/Admin/Global/Scrips.html:57 html/Admin/Queues/Scrip.html:61 html/Admin/Queues/Scrips.html:73
 msgid "Select scrip"
 msgstr "Valitse toiminto"
@@ -4393,6 +4593,10 @@ msgstr ""
 
 #: html/Admin/CustomFields/Objects.html:59
 msgid "Selected objects"
+msgstr ""
+
+#: html/Widgets/SelectionBox:210
+msgid "Selections modified. Please save your changes"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -4451,7 +4655,7 @@ msgstr "Syys"
 msgid "September"
 msgstr "syyskuu"
 
-#: html/Ticket/Elements/ShowTransaction:150
+#: html/Ticket/Elements/ShowTransaction:157
 msgid "Show"
 msgstr ""
 
@@ -4463,31 +4667,31 @@ msgstr ""
 msgid "Show Columns"
 msgstr ""
 
-#: html/Ticket/Elements/Tabs:201
+#: html/Ticket/Elements/Tabs:213
 msgid "Show Results"
 msgstr "Näytä tulokset"
 
-#: html/Approvals/Elements/PendingMyApproval:65
+#: html/Approvals/Elements/PendingMyApproval:64
 msgid "Show approved requests"
 msgstr ""
 
-#: html/Ticket/Create.html:174 html/Ticket/Create.html:55
+#: html/Ticket/Create.html:305
 msgid "Show basics"
 msgstr "Näytä perustiedot"
 
-#: html/Approvals/Elements/PendingMyApproval:66
+#: html/Approvals/Elements/PendingMyApproval:65
 msgid "Show denied requests"
 msgstr ""
 
-#: html/Ticket/Create.html:174 html/Ticket/Create.html:55
+#: html/Ticket/Create.html:308
 msgid "Show details"
 msgstr "Näytä yksityiskohdat"
 
-#: html/Approvals/Elements/PendingMyApproval:64
+#: html/Approvals/Elements/PendingMyApproval:63
 msgid "Show pending requests"
 msgstr ""
 
-#: html/Approvals/Elements/PendingMyApproval:67
+#: html/Approvals/Elements/PendingMyApproval:66
 msgid "Show requests awaiting other approvals"
 msgstr ""
 
@@ -4543,6 +4747,10 @@ msgstr ""
 msgid "Signature"
 msgstr "Allekirjoitus"
 
+#: html/Elements/Tabs:68
+msgid "Simple Search"
+msgstr ""
+
 #: html/Admin/Elements/SelectSingleOrMultiple:47
 msgid "Single"
 msgstr "Yksittäinen"
@@ -4551,7 +4759,7 @@ msgstr "Yksittäinen"
 msgid "Size"
 msgstr ""
 
-#: html/Elements/Header:85
+#: html/Elements/Header:80
 msgid "Skip Menu"
 msgstr ""
 
@@ -4595,7 +4803,7 @@ msgstr "Aloitettu"
 msgid "Started date '%1' could not be parsed"
 msgstr "Aloittamisaikaa '%1' ei pystytty tulkitsemaan"
 
-#: html/Elements/SelectDateType:52 html/Ticket/Create.html:196 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
+#: html/Elements/SelectDateType:52 html/Ticket/Create.html:206 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
 msgid "Starts"
 msgstr "Alkaa"
 
@@ -4611,7 +4819,7 @@ msgstr "Alkamisaikaa '%1' ei pystytty tulkitsemaan"
 msgid "State"
 msgstr "Tila"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:63 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1142 lib/RT/Tickets_Overlay.pm:1378
+#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:64 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1143 lib/RT/Tickets_Overlay.pm:1425
 msgid "Status"
 msgstr "Tila"
 
@@ -4623,7 +4831,7 @@ msgstr ""
 msgid "Status changed from %1 to %2"
 msgstr "Tila muutettu arvosta %1 arvoon %2"
 
-#: html/Ticket/Elements/Tabs:170
+#: html/Ticket/Elements/Tabs:172
 msgid "Steal"
 msgstr "Kaappaa"
 
@@ -4644,7 +4852,7 @@ msgstr "Kaapattu käyttäjältä %1"
 msgid "Style"
 msgstr ""
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:154 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:105 html/Ticket/Elements/EditBasics:48 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:80 lib/RT/Ticket_Overlay.pm:1138 lib/RT/Tickets_Overlay.pm:1460
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:106 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:78 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:83 lib/RT/Ticket_Overlay.pm:1139 lib/RT/Tickets_Overlay.pm:1507
 msgid "Subject"
 msgstr "Otsikko"
 
@@ -4653,7 +4861,7 @@ msgstr "Otsikko"
 msgid "Subject changed to %1"
 msgstr "Otsikko vaihdettu: %1"
 
-#: html/Elements/Submit:97
+#: html/Elements/Submit:88
 msgid "Submit"
 msgstr "Lähetä"
 
@@ -4710,7 +4918,7 @@ msgstr ""
 msgid "TEST_STRING"
 msgstr "TESTIMERKKIJONO"
 
-#: html/Elements/MyRequests:50 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:166
+#: etc/initialdata:603 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:168
 msgid "Take"
 msgstr "Ota itselle"
 
@@ -4759,15 +4967,15 @@ msgstr "Pohjat"
 msgid "Templates for %1\\n"
 msgstr "Pohjat työjonolle %1\\n"
 
-#: lib/RT/CustomField_Overlay.pm:877 lib/RT/Record.pm:931
+#: lib/RT/CustomField_Overlay.pm:931 lib/RT/Record.pm:935
 msgid "That is already the current value"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:407
+#: lib/RT/CustomField_Overlay.pm:406
 msgid "That is not a value for this custom field"
 msgstr "Ei ole arvo tälle kentälle"
 
-#: lib/RT/Ticket_Overlay.pm:1955
+#: lib/RT/Ticket_Overlay.pm:1956
 msgid "That is the same value"
 msgstr "Tämä on sama arvo"
 
@@ -4780,7 +4988,7 @@ msgstr ""
 msgid "That principal is already a %1 for this queue"
 msgstr "Toimeksiantaja on jo %1 tälle työjonolle"
 
-#: lib/RT/Ticket_Overlay.pm:1396
+#: lib/RT/Ticket_Overlay.pm:1397
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Toimeksiantaja on jo %1 tälle tapaukselle"
@@ -4794,11 +5002,11 @@ msgstr "Toimeksiantaja ei ole %1 tälle työjonolle"
 msgid "That principal is not a %1 for this ticket"
 msgstr "Toimeksiantaja ei ole %1 tälle tapaukselle"
 
-#: lib/RT/Ticket_Overlay.pm:1951
+#: lib/RT/Ticket_Overlay.pm:1952
 msgid "That queue does not exist"
 msgstr "Työjonoa ei ole olemassa"
 
-#: lib/RT/Ticket_Overlay.pm:3189
+#: lib/RT/Ticket_Overlay.pm:3172
 msgid "That ticket has unresolved dependencies"
 msgstr "Tapaus sisältää päättämättömiä riippuvuuksia"
 
@@ -4806,11 +5014,11 @@ msgstr "Tapaus sisältää päättämättömiä riippuvuuksia"
 msgid "That user already has that right"
 msgstr "Käyttäjällä on jo tuo oikeus"
 
-#: lib/RT/Ticket_Overlay.pm:2993
+#: lib/RT/Ticket_Overlay.pm:2976
 msgid "That user already owns that ticket"
 msgstr "Käyttäjä omistaa jo tämän tapauksen"
 
-#: lib/RT/Ticket_Overlay.pm:2965
+#: lib/RT/Ticket_Overlay.pm:2948
 msgid "That user does not exist"
 msgstr "Käyttäjää ei ole olemassa"
 
@@ -4830,7 +5038,7 @@ msgstr "Käyttäjä on nyt erioikeutettu"
 msgid "That user is now unprivileged"
 msgstr "Käyttäjä on nyt erioikeudeton"
 
-#: lib/RT/Ticket_Overlay.pm:2986
+#: lib/RT/Ticket_Overlay.pm:2969
 msgid "That user may not own tickets in that queue"
 msgstr "Käyttäjä ei voi omistaa tapauksia tuossa työjonossa"
 
@@ -4838,7 +5046,7 @@ msgstr "Käyttäjä ei voi omistaa tapauksia tuossa työjonossa"
 msgid "That's not a numerical id"
 msgstr "Ei ole numero"
 
-#: html/SelfService/Display.html:53 html/Ticket/Create.html:180 html/Ticket/Elements/ShowSummary:49
+#: html/SelfService/Display.html:53 html/Ticket/Create.html:175 html/Ticket/Elements/ShowSummary:49
 msgid "The Basics"
 msgstr "Perustiedot"
 
@@ -4862,7 +5070,7 @@ msgstr ""
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "Seuraavia komentoja ei suoritettu:\\n\\n"
 
-#: lib/RT/Record.pm:934
+#: lib/RT/Record.pm:938
 msgid "The new value has been set."
 msgstr "Uusi arvo asetettu."
 
@@ -4878,7 +5086,7 @@ msgstr "Tapauksen tilaaja"
 msgid "These comments aren't generally visible to the user"
 msgstr "Nämä kommentit eivät ole yleisesti näkyvillä käyttäjälle"
 
-#: lib/RT/CustomField_Overlay.pm:912
+#: lib/RT/CustomField_Overlay.pm:966
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -4902,7 +5110,7 @@ msgstr ""
 msgid "This transaction appears to have no content"
 msgstr "Tämä tapahtuma ei näytä sisältävän mitään"
 
-#: html/Ticket/Elements/ShowRequestor:70
+#: html/Ticket/Elements/ShowRequestor:69
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
 msgstr "Käyttäjän %1 tärkeintä tapausta"
@@ -4936,7 +5144,7 @@ msgstr "Tapaus #%1: %2"
 msgid "Ticket %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:731 lib/RT/Ticket_Overlay.pm:751
+#: lib/RT/Ticket_Overlay.pm:732 lib/RT/Ticket_Overlay.pm:752
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Tapaus %1 luotu työjonoon '%2'"
@@ -4945,8 +5153,8 @@ msgstr "Tapaus %1 luotu työjonoon '%2'"
 msgid "Ticket %1 loaded\\n"
 msgstr "Tapaus %1 ladattu\\n"
 
-#: html/Search/Bulk.html:269
-#. ($Ticket->Id,$_)
+#: html/Search/Bulk.html:365
+#. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
 msgstr "Tapaus %1: %2"
 
@@ -4967,7 +5175,7 @@ msgstr "Tapauksen numero"
 msgid "Ticket Resolved"
 msgstr ""
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1085
+#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1188
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -4975,15 +5183,15 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "Tapauksen liitteen"
 
-#: lib/RT/Tickets_Overlay.pm:1648
+#: lib/RT/Tickets_Overlay.pm:1695
 msgid "Ticket content"
 msgstr "Tapauksen sisältö"
 
-#: lib/RT/Tickets_Overlay.pm:1697
+#: lib/RT/Tickets_Overlay.pm:1744
 msgid "Ticket content type"
 msgstr "Tapauksen sisällön tyyppi"
 
-#: lib/RT/Ticket_Overlay.pm:593 lib/RT/Ticket_Overlay.pm:607 lib/RT/Ticket_Overlay.pm:618 lib/RT/Ticket_Overlay.pm:739
+#: lib/RT/Ticket_Overlay.pm:594 lib/RT/Ticket_Overlay.pm:608 lib/RT/Ticket_Overlay.pm:619 lib/RT/Ticket_Overlay.pm:740
 msgid "Ticket could not be created due to an internal error"
 msgstr "Tapausta ei voitu luoda sisäisestä virheestä johtuen"
 
@@ -5024,43 +5232,59 @@ msgstr "Tapauksen tarkkailijat"
 msgid "TicketSQL search module"
 msgstr ""
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:68 lib/RT/CustomField_Overlay.pm:1084
+#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:52 lib/RT/CustomField_Overlay.pm:1187
 msgid "Tickets"
 msgstr "Tapaukset"
+
+#: html/Tools/Reports/CreatedByDates.html:41
+msgid "Tickets created after"
+msgstr ""
+
+#: html/Tools/Reports/CreatedByDates.html:43
+msgid "Tickets created before"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets from %1"
 msgstr "Tapaukset %1"
 
+#: html/Tools/Reports/ResolvedByDates.html:42
+msgid "Tickets resolved after"
+msgstr ""
+
+#: html/Tools/Reports/ResolvedByDates.html:44
+msgid "Tickets resolved before"
+msgstr ""
+
 #: html/Approvals/Elements/ShowDependency:48
 msgid "Tickets which depend on this approval:"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:148 html/Ticket/Elements/EditBasics:61
+#: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:67
 msgid "Time Estimated"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:187 html/Ticket/Elements/EditBasics:69
+#: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:194 html/Ticket/Elements/EditBasics:80
 msgid "Time Left"
 msgstr "Aikaa jäljellä"
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:186 html/Ticket/Elements/EditBasics:65
+#: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:187 html/Ticket/Elements/EditBasics:73
 msgid "Time Worked"
 msgstr "Aikaa käytetty"
 
-#: lib/RT/Tickets_Overlay.pm:1619
+#: lib/RT/Tickets_Overlay.pm:1666
 msgid "Time left"
 msgstr "Aikaa jäljellä"
 
-#: html/Elements/Footer:71
+#: html/Elements/Footer:52
 msgid "Time to display"
 msgstr "Aika"
 
-#: lib/RT/Tickets_Overlay.pm:1594
+#: lib/RT/Tickets_Overlay.pm:1641
 msgid "Time worked"
 msgstr "Aikaa käytetty"
 
-#: lib/RT/Ticket_Overlay.pm:1143
+#: lib/RT/Ticket_Overlay.pm:1144
 msgid "TimeWorked"
 msgstr ""
 
@@ -5076,17 +5300,21 @@ msgstr "Luodaksesi diffin tästä käskystä:"
 msgid "To generate a diff of this commit:\\n"
 msgstr "To generate a diff of this commit:\\n"
 
-#: html/Elements/Footer:61
+#: html/Elements/Footer:68
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:1146
+#: lib/RT/Ticket_Overlay.pm:1147
 msgid "Told"
 msgstr "Oltu yhteydessä"
 
-#: html/Admin/Elements/Tabs:68 html/Admin/index.html:88 html/Elements/Tabs:71
+#: html/Admin/Elements/Tabs:68 html/Admin/index.html:88 html/Elements/Tabs:74 html/Tools/index.html:46 html/Tools/index.html:49
 msgid "Tools"
+msgstr ""
+
+#: html/Search/Elements/Chart:73
+msgid "Total"
 msgstr ""
 
 #: etc/initialdata:252
@@ -5110,7 +5338,7 @@ msgstr ""
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:838
+#: lib/RT/Transaction_Overlay.pm:858
 msgid "Transactions are immutable"
 msgstr "Tapahtumat ovat muuttumattomia"
 
@@ -5122,7 +5350,7 @@ msgstr "Yritetään poistaa oikeus: %1"
 msgid "Tue."
 msgstr "Ti"
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1144 lib/RT/Tickets_Overlay.pm:1432
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1145 lib/RT/Tickets_Overlay.pm:1479
 msgid "Type"
 msgstr "Tyyppi"
 
@@ -5138,13 +5366,13 @@ msgstr "Unix login"
 msgid "UnixUsername"
 msgstr "Käyttäjän Unix-tunnus"
 
-#: lib/RT/Attachment_Overlay.pm:290 lib/RT/Record.pm:847
+#: lib/RT/Attachment_Overlay.pm:290 lib/RT/Record.pm:851
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Tuntematon sisällön koodaus %1"
 
-#: html/Search/Build.html:632
+#: html/Search/Build.html:610
 msgid "Unknown field: $key"
 msgstr ""
 
@@ -5172,23 +5400,19 @@ msgstr ""
 msgid "Untaken"
 msgstr "Ottamaton"
 
-#: html/Search/Bulk.html:54
+#: html/Elements/RT__Ticket/ColumnMap:299 html/Search/Bulk.html:194 html/Search/Bulk.html:75
 msgid "Update"
 msgstr "Päivitä"
-
-#: html/Search/Bulk.html:178
-msgid "Update All"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Update ID"
 msgstr "Päivitä numero"
 
-#: html/Ticket/Update.html:133
+#: html/Ticket/Update.html:136
 msgid "Update Ticket"
 msgstr ""
 
-#: html/Search/Bulk.html:148 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:70
+#: html/Search/Bulk.html:126 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:73
 msgid "Update Type"
 msgstr "Päivitä tyyppi"
 
@@ -5200,7 +5424,7 @@ msgstr "Päivitä kaikki nämä tapaukset kerralla"
 msgid "Update email"
 msgstr "Päivitä sähköposti"
 
-#: html/Search/Results.html:80
+#: html/Search/Bulk.html:200 html/Search/Results.html:81
 msgid "Update multiple tickets"
 msgstr ""
 
@@ -5212,7 +5436,7 @@ msgstr "Päivitä nimi"
 msgid "Update not recorded."
 msgstr "Päivitystä ei tallennettu"
 
-#: html/Search/Bulk.html:99
+#: NOT FOUND IN SOURCE
 msgid "Update selected tickets"
 msgstr "Päivitä valitut tapaukset"
 
@@ -5233,7 +5457,7 @@ msgstr "Päivitä tapaus # %1"
 msgid "Update ticket #%1"
 msgstr "Päivitä tapaus #%1"
 
-#: html/Ticket/Update.html:156
+#: html/Ticket/Update.html:159
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Päivitä tapaus #%1 (%2)"
@@ -5242,7 +5466,7 @@ msgstr "Päivitä tapaus #%1 (%2)"
 msgid "Update type was neither correspondence nor comment."
 msgstr "Päivityksen tyyppi ei ollut kirjeenvaihto eikä kommentti."
 
-#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1147
+#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1148
 msgid "Updated"
 msgstr "Päivitetty"
 
@@ -5290,7 +5514,7 @@ msgstr "Käyttäjä %1 %2: %3\\n"
 msgid "User %1 Password: %2\\n"
 msgstr "Käyttäjä %1 Salasana: %2\\n"
 
-#: lib/RT/Ticket_Overlay.pm:496
+#: lib/RT/Ticket_Overlay.pm:497
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
 msgstr ""
@@ -5323,12 +5547,12 @@ msgstr "Käyttäjätunnus"
 msgid "User Rights"
 msgstr "Käyttäjän oikeudet"
 
-#: lib/RT/Interface/Web.pm:1283
-#. ($cf->Name, $class, $Object->id)
+#: lib/RT/Interface/Web.pm:1279
+#. ($CustomFieldObj->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:293
+#: html/Admin/Users/Modify.html:292
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "Käyttäjää ei voitu luoda: %1"
@@ -5357,11 +5581,11 @@ msgstr "Käyttäjän näkymä"
 msgid "User-defined groups"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:69 html/Elements/Login:73 html/Ticket/Elements/AddWatchers:56
+#: html/Admin/Users/Modify.html:69 html/Elements/Login:79 html/Ticket/Elements/AddWatchers:56
 msgid "Username"
 msgstr "Käyttäjätunnus"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1086
+#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1189
 msgid "Users"
 msgstr "Käyttäjät"
 
@@ -5369,15 +5593,19 @@ msgstr "Käyttäjät"
 msgid "Users matching search criteria"
 msgstr "Hakua vastaavat käyttäjät"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:523
+#: lib/RT/Tickets_Overlay_SQL.pm:526
 msgid "Valid Query"
+msgstr ""
+
+#: html/Admin/CustomFields/Modify.html:80
+msgid "Validation"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"
 msgstr "Tapauksen arvo"
 
-#: html/Admin/CustomFields/Modify.html:89 html/Admin/Elements/EditCustomField:78
+#: html/Admin/CustomFields/Modify.html:104 html/Admin/Elements/EditCustomField:78
 msgid "Values"
 msgstr "Arvot"
 
@@ -5457,7 +5685,7 @@ msgstr ""
 msgid "Work"
 msgstr "Työ"
 
-#: html/Search/Results.html:84
+#: html/Search/Results.html:85
 msgid "Work offline"
 msgstr ""
 
@@ -5469,15 +5697,19 @@ msgstr "Työpuhelin"
 msgid "Worked"
 msgstr "Tehty"
 
-#: lib/RT/Ticket_Overlay.pm:3096
+#: lib/RT/Ticket_Overlay.pm:3079
 msgid "You already own this ticket"
 msgstr "Omistat jo tämän tapauksen"
 
-#: html/autohandler:158 html/autohandler:166
+#: html/autohandler:176 html/autohandler:184
 msgid "You are not an authorized user"
 msgstr "Et ole valtuutettu käyttäjä"
 
-#: lib/RT/Ticket_Overlay.pm:2978
+#: html/Prefs/Search.html:56
+msgid "You can also edit the predefined search itself"
+msgstr ""
+
+#: lib/RT/Ticket_Overlay.pm:2961
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Voit palauttaa vain tapauksia, jotka omistat itse tai jotka ovat ilman omistajaa"
 
@@ -5498,7 +5730,7 @@ msgstr "Olet kirjautunut ulos RT:stä"
 msgid "You have no permission to create tickets in that queue."
 msgstr "Sinulla ei ole valtuuksia luoda tapauksia tähän työjonoon."
 
-#: lib/RT/Ticket_Overlay.pm:1964
+#: lib/RT/Ticket_Overlay.pm:1965
 msgid "You may not create requests in that queue."
 msgstr "Et voi luoda tapauksia tuohon työjonoon."
 
@@ -5526,7 +5758,7 @@ msgstr ""
 msgid "Your request was rejected."
 msgstr ""
 
-#: html/autohandler:193
+#: html/autohandler:211
 msgid "Your username or password is incorrect"
 msgstr "Käyttäjätunnuksesi tai salasanasi on väärä"
 
@@ -5547,8 +5779,8 @@ msgstr ""
 msgid "as granted to %1"
 msgstr "sallittu käyttäjälle %1"
 
-#: html/Search/Elements/PickBasics:127
-msgid "belongs to"
+#: html/Search/Results.html:86
+msgid "chart"
 msgstr ""
 
 #: html/SelfService/Closed.html:49
@@ -5587,10 +5819,6 @@ msgstr "poista"
 msgid "deleted"
 msgstr "poistettu"
 
-#: html/Search/Elements/PickBasics:128
-msgid "does not belong to"
-msgstr ""
-
 #: html/Search/Elements/PickBasics:61
 msgid "does not match"
 msgstr "ei sisällä"
@@ -5603,27 +5831,27 @@ msgstr "ei sisällä"
 msgid "equal to"
 msgstr "on yhtäsuuri"
 
-#: html/Search/Build.html:387
+#: html/Search/Build.html:365
 msgid "error: can't move down"
 msgstr ""
 
-#: html/Search/Build.html:409
+#: html/Search/Build.html:387
 msgid "error: can't move left"
 msgstr ""
 
-#: html/Search/Build.html:368
+#: html/Search/Build.html:346
 msgid "error: can't move up"
 msgstr ""
 
-#: html/Search/Build.html:451
+#: html/Search/Build.html:429
 msgid "error: nothing to delete"
 msgstr ""
 
-#: html/Search/Build.html:373 html/Search/Build.html:392 html/Search/Build.html:414 html/Search/Build.html:443
+#: html/Search/Build.html:351 html/Search/Build.html:370 html/Search/Build.html:392 html/Search/Build.html:421
 msgid "error: nothing to move"
 msgstr ""
 
-#: html/Search/Build.html:469
+#: html/Search/Build.html:447
 msgid "error: nothing to toggle"
 msgstr ""
 
@@ -5640,6 +5868,11 @@ msgstr "on suurempi kuin"
 msgid "group '%1'"
 msgstr "ryhmä %1"
 
+#: html/Search/Results.html:92
+#. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy'))
+msgid "grouped by %1"
+msgstr ""
+
 #: lib/RT/Date.pm:338
 msgid "hours"
 msgstr "tuntia"
@@ -5648,11 +5881,11 @@ msgstr "tuntia"
 msgid "id"
 msgstr "numero"
 
-#: html/Elements/SelectBoolean:53 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:57 html/Search/Elements/PickBasics:175 html/Search/Elements/PickBasics:74 html/Search/Elements/PickBasics:90 html/Search/Elements/PickCFs:53
+#: html/Elements/SelectBoolean:53 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:57 html/Search/Elements/PickBasics:162 html/Search/Elements/PickBasics:74 html/Search/Elements/PickBasics:90 html/Search/Elements/PickCFs:53
 msgid "is"
 msgstr "on"
 
-#: html/Elements/SelectBoolean:57 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:58 html/Search/Elements/PickBasics:176 html/Search/Elements/PickBasics:75 html/Search/Elements/PickBasics:91 html/Search/Elements/PickCFs:54
+#: html/Elements/SelectBoolean:57 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:58 html/Search/Elements/PickBasics:163 html/Search/Elements/PickBasics:75 html/Search/Elements/PickBasics:91 html/Search/Elements/PickCFs:54
 msgid "isn't"
 msgstr "ei ole"
 
@@ -5668,7 +5901,7 @@ msgstr "sisältää"
 msgid "min"
 msgstr "min"
 
-#: html/Ticket/Update.html:64
+#: NOT FOUND IN SOURCE
 msgid "minutes"
 msgstr "minuuttia"
 
@@ -5684,7 +5917,7 @@ msgstr "kuukausia"
 msgid "new"
 msgstr "uusi"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:63
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
 msgid "no name"
 msgstr ""
 
@@ -5700,7 +5933,7 @@ msgstr "ei mitään"
 msgid "not equal to"
 msgstr "on erisuuri kuin"
 
-#: html/SelfService/Elements/MyRequests:83 lib/RT/Queue_Overlay.pm:84
+#: html/SelfService/Elements/MyRequests:82 lib/RT/Queue_Overlay.pm:84
 msgid "open"
 msgstr "avoin"
 
@@ -5730,13 +5963,22 @@ msgstr "sec"
 msgid "show Configuration tab"
 msgstr ""
 
-#: html/Search/Results.html:82
+#: html/Search/Results.html:83
 msgid "spreadsheet"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "stalled"
 msgstr "jäädytetty"
+
+#: html/Search/Results.html:93
+#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
+msgid "style: %1"
+msgstr ""
+
+#: html/Prefs/MyRT.html:80
+msgid "summary rows"
+msgstr ""
 
 #: lib/RT/Group_Overlay.pm:230
 #. ($self->Type)
@@ -5748,7 +5990,7 @@ msgstr "järjestelmä %1"
 msgid "system group '%1'"
 msgstr "järjestelmäryhmä '%1'"
 
-#: html/Elements/Error:66 html/SelfService/Error.html:63
+#: html/Elements/Error:64 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "kutsuva komponentti ei eritellyt syytä"
 
