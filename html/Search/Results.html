@@ -94,6 +94,17 @@
 
 <input type="submit" class="button" value="<%loc('Go')%>"/>
 </form>
+<form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
+% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
+%while (my $var = shift (@vars)) {
+<input type="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+%}
+</%perl>
+<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
+<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
+
+<input type="submit" value="<%loc('Go')%>"/>
+</form>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>

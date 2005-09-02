@@ -139,6 +139,7 @@
 </td><td>
 <input Name="ValueOfTime" SIZE=5>
 <& /Elements/SelectTimeUnits, Name =>'ValueOfTime-TimeUnits' &>
+<& /Elements/SelectTimeUnits, Name =>'ValueOfTime-TimeUnits' &>
 </td>
 </tr>
 <tr>
