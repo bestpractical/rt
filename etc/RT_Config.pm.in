@@ -343,6 +343,12 @@ Set($MessageBoxWidth , 72);
 # Default wrapping: "HARD"  (choices "SOFT", "HARD")
 Set($MessageBoxWrap, "HARD");
 
+# Support implicit links in WikiText custom fields?  A true value
+# causes InterCapped or ALLCAPS words in WikiText fields to
+# automatically become links to searches for those words.  If used on
+# RTFM articles, it links to the RTFM article with that name.
+Set($WikiImplicitLinks, 0);
+
 # if TrustHTMLAttachments is not defined, we will display them
 # as text. This prevents malicious HTML and javascript from being
 # sent in a request (although there is probably more to it than that)

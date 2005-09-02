@@ -1867,6 +1867,10 @@ sub LoadCustomFieldByIdentifier {
 sub BasicColumns {
 }
 
+sub WikiBase {
+  return $RT::WebPath. "/index.html?q=";
+}
+
 eval "require RT::Record_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});
 eval "require RT::Record_Local";
