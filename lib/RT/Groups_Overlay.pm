@@ -254,7 +254,7 @@ sub WithMember {
 }
 
 
-=head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0 }
+=head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, EquivObjects => [ ] }
 
 
 Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
@@ -287,6 +287,57 @@ $groups->WithRight(Right => 'OwnTicket', Object => $q);
 ok ($id,$msg);
 is($groups->Count, 2);
 
+my $RTxGroup = RT::Group->new($RT::SystemUser);
+($id, $msg) = $RTxGroup->CreateUserDefinedGroup( Name => 'RTxGroup', Description => "RTx extension group");
+ok ($id,$msg);
+
+my $RTxSysObj = {};
+bless $RTxSysObj, 'RTx::System';
+*RTx::System::Id = sub { 1; };
+*RTx::System::id = *RTx::System::Id;
+my $ace = RT::Record->new($RT::SystemUser);
+$ace->Table('ACL');
+$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System', ObjectId  => 1);
+ok ($id, "ACL for RTxSysObj created");
+
+my $RTxObj = {};
+bless $RTxObj, 'RTx::System::Record';
+*RTx::System::Record::Id = sub { 4; };
+*RTx::System::Record::id = *RTx::System::Record::Id;
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxSysObj);
+is($groups->Count, 1, "RTxGroupRight found for RTxSysObj");
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj);
+is($groups->Count, 0, "RTxGroupRight not found for RTxObj");
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj, EquivObjects => [ $RTxSysObj ]);
+is($groups->Count, 1, "RTxGroupRight found for RTxObj using EquivObjects");
+
+$ace = RT::Record->new($RT::SystemUser);
+$ace->Table('ACL');
+$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System::Record', ObjectId  => 5 );
+ok ($id, "ACL for RTxObj created");
+
+my $RTxObj2 = {};
+bless $RTxObj2, 'RTx::System::Record';
+*RTx::System::Record::Id = sub { 5; };
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2);
+is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
+
+$groups = RT::Groups->new($RT::SystemUser);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2, EquivObjects => [ $RTxSysObj ]);
+is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
+
+
+
 =end testing
 
 
@@ -299,6 +350,7 @@ sub WithRight {
                  Object =>              => undef,
                  IncludeSystemRights    => 1,
                  IncludeSuperusers      => undef,
+                 EquivObjects           => [ ],
                  @_ );
 
     my $acl        = $self->NewAlias('ACL');
@@ -346,6 +398,10 @@ sub WithRight {
 	else {
 	    $which_object = '';
 	}
+        foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+             next unless ( UNIVERSAL::can( $obj, 'id' ) );
+             $which_object .= "($acl.ObjectType = '" . ref( $obj ) . "' AND $acl.ObjectId = " . $obj->id . ") OR ";
+         }
         $which_object .=
             " ($acl.ObjectType = '" . ref($args{'Object'}) . "'" .
             " AND $acl.ObjectId = " . $args{'Object'}->Id . ") ";
