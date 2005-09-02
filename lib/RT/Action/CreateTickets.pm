@@ -1070,8 +1070,13 @@ sub ParseLines {
     }
 
     foreach my $key ( keys(%args) ) {
-        $key =~ /^customfield(\d+)$/ or next;
+       if ( $key =~ /^customfield(\d+)$/ ) {
         $ticketargs{ "CustomField-" . $1 } = $args{$key};
+        } elsif ($key =~ /^(customfield|cf)(.*)$/) {
+            my $cf = RT::CustomField->new($self->CurrentUser);
+            $cf->LoadByName(Name => $args{$key} , Queue => $ticketargs{Queue});
+            $ticketargs{ "CustomField-".$cf->id } = $args{$key};
+        }
     }
 
     $self->GetDeferred( \%args, $template_id, $links, $postponed );
