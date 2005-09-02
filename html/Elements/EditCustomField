@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my $Values;
-if ($Object) {
+if ($Object and $Object->id) {
     $Values = $Object->CustomFieldValues($CustomField->id);
     $Values->Columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');

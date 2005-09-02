@@ -859,12 +859,14 @@ sub _WatcherJoin {
         FIELD2 => 'Instance'
     );
     my $groupmembers = $self->Join(
+        TYPE   => 'left',
         ALIAS1 => $groups,
         FIELD1 => 'id',
         TABLE2 => 'CachedGroupMembers',
         FIELD2 => 'GroupId'
     );
     my $users = $self->Join(
+        TYPE   => 'left',
         ALIAS1 => $groupmembers,
         FIELD1 => 'MemberId',
         TABLE2 => 'Users',
