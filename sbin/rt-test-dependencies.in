@@ -69,9 +69,6 @@ unless (keys %args) {
     help();
     exit(0);
 }
-if ($args{'with-MODPERL2'}) {
-    warn_modperl2();
-}
 
 # Set up defaults
 $args{'with-MASON'} = 1;
@@ -249,6 +246,7 @@ Apache::DBI 0.92
 $deps{'MODPERL2'} = [ _( << '.') ];
 CGI 2.92
 Apache::DBI
+HTML::Mason 1.31
 .
 
 $deps{'MYSQL'} = [ _( << '.') ];
@@ -380,14 +378,5 @@ sub check_users {
 }
 
 
-sub warn_modperl2 {
-    print <<'.';
-        NOTE: mod_perl 2.0 isn't quite ready for prime_time just yet;
-        Best Practical Solutions strongly recommends that sites use
-        Apache 1.3 or FastCGI. If you MUST use mod_perl 2.0 (or 1.99),
-        please read the mailing list archives before asking for help.
-.
-    sleep 5;
-}
 
 1;
