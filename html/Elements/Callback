@@ -53,14 +53,27 @@ my $CacheKey = "Callback--$Page--$_CallbackName";
 my $callbacks = $cache{$CacheKey} || $m->notes($CacheKey);
 
 if (!$callbacks) {
-    my $path = "/Callbacks/*$Page/$_CallbackName";
+    my $path  = "/Callbacks/*$Page/$_CallbackName";
 
-    $callbacks = [
-        # Skip backup files, and files without a leading package name
-        grep { !/^\.|~$/ and $_ ne "/Callbacks/$Page/$_CallbackName" }
-        $m->interp->resolver->glob_path($path)
-    ];
-
+    # Due to API changes after Mason 1.28, we have to check for which
+    # version we're running when getting the component roots
+    my @roots = map { $_->[1] }
+                    $HTML::Mason::VERSION <= 1.28
+                        ? $m->interp->resolver->comp_root_array
+                        : $m->interp->comp_root_array;
+    
+    my %seen;
+    
+    for my $root (@roots) {
+        push @$callbacks,
+            # Skip backup files, files without a leading package name,
+            # and files we've already seen
+            grep {     !/^\.|~$/
+                   and $_ ne "/Callbacks/$Page/$_CallbackName"
+                   and not $seen{$_}++ }
+                 $m->interp->resolver->glob_path($path, $root);
+    }
+    
     $m->notes($CacheKey => $callbacks);
     $cache{$Page,$_CallbackName} = $callbacks if !$RT::DevelMode;
 }
