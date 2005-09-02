@@ -87,19 +87,7 @@ sub new {
     my $class = shift;
     $class->InitSessionDir;
 
-    if ($MasonX::Apache2Handler::VERSION) {
-        goto &NewApache2Handler;
-    }
-    elsif ( $mod_perl::VERSION && $mod_perl::VERSION >= 2 ) {
-        no warnings 'redefine';
-        my $sub = *Apache::request{CODE};
-        *Apache::request = sub {
-            my $r;
-            eval { $r = $sub->('Apache'); };
-
-            # warn $@ if $@;
-            return $r;
-        };
+    if ( $mod_perl::VERSION && $mod_perl::VERSION >= 1.9908 ) {
         goto &NewApacheHandler;
     }
     elsif ($CGI::MOD_PERL) {

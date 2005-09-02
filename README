@@ -35,9 +35,6 @@ o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
         with mod_perl -- (http://perl.apache.org ) 
         or a webserver with FastCGI support (www.fastcgi.com)
 
-        mod_perl 2.0 isn't quite ready for prime_time just yet;
-        We _strongly_ recommend that you use Apache 1.3 or FastCGI.
-
         Compiling mod_perl on Apache 1.3.x as a DSO has been known 
         to have massive stability problems and is not recommended.
 
