@@ -49,7 +49,7 @@
     current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
     Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
 <form action="<%$RT::WebPath%>/Ticket/Reminders.html" method="post">
-<&|/Elements/TitleBox, title => loc("Reminders"),
+<&|/Widget/TitleBox, title => loc("Reminders"),
                        title_class=> 'inverse',
                        color => "#666699" &>
 
