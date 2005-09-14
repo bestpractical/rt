@@ -58,7 +58,7 @@ $Lite => 0
 my @Default = ref($Default) eq 'ARRAY' ? @$Default : ( $Default);
 
 my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
-$Classes->UnLimit;
+$Classes->LimitToEnabled();
 
 my $d = new RT::FM::Class($session{'CurrentUser'});
 $d->Load($Default[0]);

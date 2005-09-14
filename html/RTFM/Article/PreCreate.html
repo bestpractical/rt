@@ -20,7 +20,7 @@
 Title => loc('Create an article in class...') &>
 <ul>                                                                            
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
-% $Classes->UnLimit;                                                            
+% $Classes->LimitToEnabled();
 % while (my $Class = $Classes->Next) {                                          
 <li><a href="Edit.html?Class=<%$Class->Id%>"><&|/l, $Class->Name&>in class [_1]</&></a></li>
 % }                                                                             

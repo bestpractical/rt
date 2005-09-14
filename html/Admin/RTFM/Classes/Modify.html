@@ -89,7 +89,7 @@ my @attribs= qw(Description Name);
 }
 
 #we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1) {
+if ($Enabled == 1 or (not defined $Enabled and $Create)) {
     $Disabled = 0;
 }	
 else {

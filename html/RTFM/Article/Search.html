@@ -20,7 +20,7 @@
 
 % unless (%ARGS) {
 %   my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
-%   $Classes->UnLimit;
+%   $Classes->LimitToEnabled();
 <table width="100%" border="0">
 <tr><td valign="top" width="50%">
 <ul>

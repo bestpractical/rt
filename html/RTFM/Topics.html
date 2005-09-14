@@ -121,7 +121,7 @@ if ($class) {
     $currclass->Load($class);
 } else {
     $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
-    $Classes->UnLimit;
+    $Classes->LimitToEnabled(); 
 }
 
 if ($id) {
