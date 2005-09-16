@@ -75,7 +75,7 @@ $r->content_type('application/rdf+xml');
           link        => $RT::WebURL."/Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
           dc => {
-            subject  => $Ticket->Subject,
+            subject  => ($Ticket->Subject  || loc('No subject')),
             creator  => $Ticket->CreatorObj->RealName . "<".$Ticket->CreatorObj->EmailAddress.">",
           },
         );
