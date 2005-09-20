@@ -51,15 +51,13 @@
 % foreach my $Object (@Objects) {
 <tr>
 %   my $id = "Object-".$Object->id."-CF-".$id;
-%   my $id = "Object-".$Object->id."-CF-".$id;
 %   if (!$ReadOnly) {
-  <TD valign="TOP">
+  <td valign="TOP">
 <input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
 >
   </td>
 %   }
   <td valign="TOP">
-    <label for="<% $id %>">
     <label for="<% $id %>">
 % if ($Object->Name) {
     <b><%$Object->Name%></b><br>
@@ -68,10 +66,6 @@
 % }
     <%$Object->can('Description') && $Object->Description%>
     </label>
-  </TD>
-%#  <TD valign="TOP">
-%#    <i><% $CustomFieldObj->FriendlyTypeComposite %></i>
-%#  </td>
   </td>
 </tr>
 % }
