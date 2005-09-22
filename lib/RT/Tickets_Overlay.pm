@@ -1819,10 +1819,7 @@ sub LimitWatcher {
 sub LimitRequestor {
     my $self = shift;
     my %args = (@_);
-    my ( $package, $filename, $line ) = caller;
-    $RT::Logger->error(
-"Tickets->LimitRequestor is deprecated. please rewrite call at  $package - $filename: $line"
-    );
+    $RT::Logger->error("Tickets->LimitRequestor is deprecated  at (". join(":",caller).")");
     $self->LimitWatcher( TYPE => 'Requestor', @_ );
 
 }
