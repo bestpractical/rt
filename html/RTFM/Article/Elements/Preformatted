@@ -21,18 +21,11 @@
 
 <% $Article->Summary%> 
 
-%my $cfs = $Article->ClassObj->CustomFields;  
+%my $cfs = $Article->CustomFields;  
 % while (my $cf = $cfs->Next) {
-
-%   my $ccf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
-%   $ccf->LoadByCols(Class => $Article->ClassObj->Id, CustomField => $cf->Id);
 %   my $values = $Article->CustomFieldValues($cf->Id);
-%   my $display = $ccf->Display;
-%   if ($display eq "Hidden when empty") {
-%     $display = $values->Count ? "Visible" : "Hidden";
-%   }
-%   next if $display eq "Hidden";
-%   if ($cf->Type eq 'TextSingle') {
+
+%   if ($values->count == 1) {
 %     my $value = $values->First; 
 %     my $content = $value ? $value->Content : "";
 %     if ($content =~ /<(.{1,5})>/) {

@@ -41,7 +41,7 @@ my $CustomFields;
 my $NamePrefix;
 
 if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
-    $CustomFields = $ArticleObj->ClassObj->ArticleCustomFields();
+    $CustomFields = $ArticleObj->CustomFields();
     $NamePrefix = "Object-RT::FM::Article-".$ArticleObj->Id."-CustomField-";
 }
 else {

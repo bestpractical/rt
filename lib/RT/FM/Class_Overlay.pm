@@ -188,6 +188,8 @@ sub CurrentUserHasRight {
 sub ArticleCustomFields {
     my $self = shift;
 
+    $RT::Logger->error("RT::FM::Class->ArticleCustomFields is deprecated  at (". join(":",caller).")");
+
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeClass') ) {
         $cfs->LimitToGlobalOrObjectId( $self->Id );
