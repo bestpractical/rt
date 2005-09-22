@@ -56,12 +56,14 @@ sub Create {
     if ($args{ObjectId}) {
         $obj = $args{ObjectType}->new($self->CurrentUser);
         $obj->Load($args{ObjectId});
+        $obj = $RT::FM::System unless $obj->id;
     }
 
     return ( 0, $self->loc("Permission denied"))
       unless ( $self->CurrentUser->HasRight(
-                                            Right  => "AdminTopics",
-                                            Object => $obj,
+                                            Right        => "AdminTopics",
+                                            Object       => $obj,
+                                            EquivObjects => [ $RT::FM::System, $obj ],
                                            ) );
 
     $self->SUPER::Create(@_);
