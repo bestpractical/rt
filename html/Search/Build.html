@@ -144,6 +144,13 @@ if ( $NewQuery or $ARGS{'Delete'} ) {
 
 # }}}
 
+if (ref $OrderBy eq "ARRAY") {
+    $OrderBy = join("|", @$OrderBy);
+}
+if (ref $Order eq "ARRAY") {
+    $Order = join("|", @$Order);
+}
+
 # {{{ Attempt to load what we can from the session, set defaults
 
 # We don't read or write to the session again until the end

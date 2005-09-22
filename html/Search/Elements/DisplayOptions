@@ -51,15 +51,23 @@
 </td>
 <td valign=top>
 <table valign=top>
+
+% for my $o (0..3) {
 <tr>
 <td class=label>
+% if ($o == 0) {
 <&|/l&>Order by</&>:
-</td><td class=value>
+% }
+</td>
+<td class=value>
 <select name="OrderBy">
-% foreach my $field (keys %fields) {
+% if ($o > 0) {
+<option value="">[none]</option>
+% }
+% foreach my $field (sort keys %fields) {
 %    next unless $field;
 <option value=<%$field%>
-% if ($field =~ /^$OrderBy$/i) {
+% if ($field eq $OrderBy[$o]) {
 SELECTED
 % }
 ><&|/l&><%$field%></&></option>
@@ -67,18 +75,19 @@ SELECTED
 </select>
 <select name="Order">
 <option value="ASC"
-% if ($Order eq "ASC") {
+% if ($Order[$o] eq "ASC") {
 SELECTED
 % }
-><&|/l&>Ascending</&></option>
+><&|/l&>Asc</&></option>
 <option value="DESC"
-% if ($Order eq "DESC") {
+% if ($Order[$o] eq "DESC") {
 SELECTED
 % }
-><&|/l&>Descending</&></option>
+><&|/l&>Desc</&></option>
 </select>
 </td>
 </tr>
+% }
 <tr>
 <td class=label>
 <&|/l&>Rows per page</&>:
@@ -100,6 +109,23 @@ my %fields = %{$tickets->FIELDS};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};
 $fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
+
+# Add all available CustomFields to the list of sortable columns.
+my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
+$fields{$_}=1 for @cfs;
+
+# Add PAW sort
+$fields{'Custom.Ownership'} = 1;
+
+my @Order;
+my @OrderBy;
+if ($OrderBy =~ /\|/) {
+    @Order = split /\|/, $Order;
+    @OrderBy = split /\|/, $OrderBy;
+} else {
+    @Order = ( $Order );
+    @OrderBy = ( $OrderBy );
+}
 
 
 </%INIT>

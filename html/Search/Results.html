@@ -118,8 +118,17 @@ my ($title, $ticketcount);
 $session{'i'}++;
 $session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
 $session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 
+if ($OrderBy =~ /\|/) {
+    # Multiple Sorts
+    my @OrderBy = split /\|/,$OrderBy;
+    my @Order = split /\|/,$Order;
+    $session{'tickets'}->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
+        .. $#OrderBy ) );; 
+} else {
+    $session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+}
 
 $session{'CurrentSearchHash'} = {
     Format      => $Format,
@@ -129,7 +138,6 @@ $session{'CurrentSearchHash'} = {
     OrderBy     => $OrderBy,
     RowsPerPage => $Rows
     };
-
 
 
 if ( $session{'tickets'}->Query()) {
@@ -152,7 +160,6 @@ my $RSSFeedURL = "$RT::WebPath/Search/Results.rdf$ShortQueryString";
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
-
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();

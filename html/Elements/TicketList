@@ -140,8 +140,17 @@ foreach my $col (@Format) {
     }
 }
 
+if ($OrderBy =~ /\|/) {
+    # Multiple Sorts
+    my @OrderBy = split /\|/,$OrderBy;
+    my @Order = split /\|/,$Order;
+    $Collection->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
+        .. $#OrderBy ) );; 
+} else {
+    $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+}
 
-$Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 $Collection->RowsPerPage($Rows) if ($Rows);
 $Collection->GotoPage($Page-1); # SB uses page 0 as the first page
 my $TotalFound =  $Collection->CountAll();

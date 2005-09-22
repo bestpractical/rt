@@ -138,6 +138,7 @@ my %FIELD_METADATA = (
     Watcher	     => [ 'WATCHERFIELD', ],
     LinkedTo	     => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
+    CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
     Updated          => [ 'TRANSDATE', ],
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
@@ -1065,63 +1066,57 @@ sub _LinkFieldLimit {
     }
 }
 
-=head2 KeywordLimit
 
-Limit based on Keywords
+=head2 _CustomFieldDecipher
 
-Meta Data:
-  none
+Try and turn a CF descriptor into (cfid, cfname) object pair.
 
 =cut
 
-sub _CustomFieldLimit {
-    my ( $self, $_field, $op, $value, @rest ) = @_;
+sub _CustomFieldDecipher {
+  my ($self, $field) = @_;
 
-    my %rest  = @rest;
-    my $field = $rest{SUBKEY} || die "No field specified";
+  my $queue = 0;
 
-    # For our sanity, we can only limit on one queue at a time
-    my $queue = 0;
+  if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+    $queue = $1;
+    $field = $2;
+  }
+  $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
-    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-        $queue = $1;
-        $field = $2;
+  my $cfid;
+
+  if ($queue) {
+    my $q = RT::Queue->new( $self->CurrentUser );
+    $q->Load($queue) if ($queue);
+
+    my $cf;
+    if ( $q->id ) {
+      # $queue = $q->Name; # should we normalize the queue?
+      $cf = $q->CustomField($field);
     }
-    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
-
-
-# If we're trying to find custom fields that don't match something, we
-# want tickets where the custom field has no value at all.  Note that
-# we explicitly don't include the "IS NULL" case, since we would
-# otherwise end up with a redundant clause.
-
-    my $null_columns_ok;
-    if ( ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
-        $null_columns_ok = 1;
+    else {
+      $cf = RT::CustomField->new( $self->CurrentUser );
+      $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
     }
+    $cfid = $cf->id if $cf;
+  }
 
-    my $cfid = 0;
-    if ($queue) {
+  return ($queue, $field, $cfid);
 
-        my $q = RT::Queue->new( $self->CurrentUser );
-        $q->Load($queue) if ($queue);
+}
 
-        my $cf;
-        if ( $q->id ) {
-            $cf = $q->CustomField($field);
-        }
-        else {
-            $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
-        }
 
-        $cfid = $cf->id;
+=head2 _CustomFieldJoin
 
-    }
+Factor out the Join of custom fields so we can use it for sorting too
 
-    my $TicketCFs;
-    my $cfkey = $cfid ? $cfid : "$queue.$field";
+=cut
 
+sub _CustomFieldJoin {
+  my ($self, $cfkey, $cfid, $field) = @_;
+
+  my $TicketCFs;
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
         $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey};
@@ -1178,6 +1173,42 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'AND');
     }
 
+
+  return $TicketCFs;
+}
+
+=head2 _CustomFieldLimit
+
+Limit based on CustomFields
+
+Meta Data:
+  none
+
+=cut
+
+sub _CustomFieldLimit {
+    my ( $self, $_field, $op, $value, @rest ) = @_;
+
+    my %rest  = @rest;
+    my $field = $rest{SUBKEY} || die "No field specified";
+
+    # For our sanity, we can only limit on one queue at a time
+
+    my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
+
+# If we're trying to find custom fields that don't match something, we
+# want tickets where the custom field has no value at all.  Note that
+# we explicitly don't include the "IS NULL" case, since we would
+# otherwise end up with a redundant clause.
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
+    }
+
+    my $cfkey = $cfid ? $cfid : "$queue.$field";
+    my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+
     $self->_OpenParen if ($null_columns_ok);
 
     $self->_SQLLimit(
@@ -1230,11 +1261,64 @@ sub OrderByCols {
            push @res, $row;
            next;
        }
-       my ($field, $subkey) = split /\./, $row->{FIELD};
+       my ($field, $subkey) = split /\./, $row->{FIELD}, 2;
        my $meta = $self->FIELDS->{ $field };
        if( $meta->[0] eq 'WATCHERFIELD' ) {
            my $users = $self->_WatcherJoin( $meta->[1], "order".$order++ );
            push @res, { %$row, ALIAS => $users, FIELD => $subkey };
+       } elsif ( $meta->[0] eq 'CUSTOMFIELD' ) {
+           my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
+           my $cfkey = $cfid ? $cfid : "$queue.$field";
+           my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           unless ($cfid) {
+             # For those cases where we are doing a join against the
+             # CF name, and don't have a CFid, use Unique to make sure
+             # we don't show duplicate tickets.  NOTE: I'm pretty sure
+             # this will stay mixed in for the life of the
+             # class/package, and not just for the life of the object.
+             # Potential performance issue.
+             require DBIx::SearchBuilder::Unique;
+             DBIx::SearchBuilder::Unique->import;
+           }
+           my $CFvs = $self->Join(
+                TYPE   => 'left',
+                ALIAS1 => $TicketCFs,
+                FIELD1 => 'CustomField',
+                TABLE2 => 'CustomFieldValues',
+                FIELD2 => 'CustomField',
+            );
+           $self->SUPER::Limit(
+                LEFTJOIN => $CFvs,
+                FIELD => 'Name',
+                QUOTEVALUE => 0,
+                VALUE => $TicketCFs . ".Content",
+                ENTRYAGGREGATOR => 'AND'
+                              );
+
+          push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
+          push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
+       } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
+         # PAW logic is "reversed"
+         my $order = "ASC";
+         if (exists $row->{ORDER} ) {
+           my $o = $row->{ORDER};
+           delete $row->{ORDER};
+           $order = "DESC" if $o =~ /asc/i;
+         }
+
+         # Unowned
+         # Else
+
+         # Ticket.Owner  1 0 0
+         my $ownerId = $self->CurrentUser->Id;
+         push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
+
+         # Unowned Tickets 0 1 0
+         my $nobodyId = $RT::Nobody->Id;
+         push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+
+         push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
+
        } else {
            push @res, $row;
        }
@@ -2575,10 +2659,8 @@ sub _ProcessRestrictions {
     delete $self->{'raw_rows'};
     delete $self->{'rows'};
     delete $self->{'count_all'};
-
     my $sql = $self->Query;    # Violating the _SQL namespace
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
-
         #  "Restrictions to Clauses Branch\n";
         my $clauseRef = eval { $self->_RestrictionsToClauses; };
         if ($@) {
