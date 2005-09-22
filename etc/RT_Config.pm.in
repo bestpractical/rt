@@ -282,6 +282,11 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 @LogToSyslogConf = () unless (@LogToSyslogConf);
 
+# RT has rudimentary SQL statement logging support if you have
+# DBIx-SearchBuilder 1.31_1 or higher; simply set $StatementLog to be
+# the level that you wish SQL statements to be logged at.
+Set($StatementLog, undef);
+
 # }}}
 
 # {{{ Web interface configuration
