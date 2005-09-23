@@ -365,7 +365,7 @@ sub ContentObj {
         # which has some content.
 
         else {
-            my $all_parts = $Attachment->Children();
+            my $all_parts = $self->Attachments;
             while ( my $part = $all_parts->Next ) {
                 if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
                     return ($part);
