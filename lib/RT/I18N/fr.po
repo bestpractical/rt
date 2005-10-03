@@ -4,7 +4,7 @@
 # jfenal <jfenal@gmail.com>, 2005.
 msgid ""
 msgstr ""
-"Project-Id-Version: fr\n"
+"Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
 "PO-Revision-Date: 2005-08-31 01:19+0200\n"
 "Last-Translator: jfenal <jfenal@gmail.com>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10.2\n"
-"Language-Team:  <fr@li.org>\n"
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 
 #: html/Ticket/Elements/Tabs:104
 msgid "#"

@@ -4,12 +4,12 @@
 msgid ""
 msgstr ""
 "Last-Translator: Andrew Kornilov <andy@eva.dp.ua>\n"
-"PO-Revision-Date: 2005-03-11 15:38+0200\n"
-"Language-Team: Russian <ru@li.org>\n"
+"PO-Revision-Date: 2005-10-03 13:52-0400\n"
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
-"Project-Id-Version: ru\n"
+"Project-Id-Version: RT 3.5.x\n"
 "MIME-Version: 1.0\n"
 
 #: NOT FOUND IN SOURCE
