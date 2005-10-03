@@ -28,7 +28,7 @@ while (@requestors) {
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue'");
-    is($tix->Count, 30, "found twenty tickets");
+    is($tix->Count, 30, "found thirty tickets");
 }
 
 {
