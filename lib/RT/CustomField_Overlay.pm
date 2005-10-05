@@ -465,7 +465,7 @@ sub ValuesForTicket {
 	my $self = shift;
     my $ticket_id = shift;
     
-    $RT::Logger->debug( ref($self) . " -> ValuesForTicket deprecated in favor of ValuesForObject"); 
+    $RT::Logger->debug( ref($self) . " -> ValuesForTicket deprecated in favor of ValuesForObject at (". join(":",caller).")"); 
     my $ticket = RT::Ticket->new($self->CurrentUser);
     $ticket->Load($ticket_id);
 
@@ -489,7 +489,7 @@ sub AddValueForTicket {
 	my %args = ( Ticket => undef,
                  Content => undef,
 		     @_ );
-    $RT::Logger->debug( ref($self) . " -> AddValueForTicket deprecated in favor of AddValueForObject"); 
+    $RT::Logger->debug( ref($self) . " -> AddValueForTicket deprecated in favor of AddValueForObject at (". join(":",caller).")");
 
 
     my $ticket = RT::Ticket->new($self->CurrentUser);
@@ -517,7 +517,7 @@ sub DeleteValueForTicket {
                  Content => undef,
 		     @_ );
 
-    $RT::Logger->debug( ref($self) . " -> DeleteValueForTicket deprecated in favor of DeleteValueForObject"); 
+    $RT::Logger->debug( ref($self) . " -> DeleteValueForTicket deprecated in favor of DeleteValueForObject at (". join(":",caller).")"); 
 
 
     my $ticket = RT::Ticket->new($self->CurrentUser);
@@ -635,7 +635,7 @@ sub ValidateType {
     my $type = shift;
 
     if ($type =~ s/(?:Single|Multiple)$//) {
-	$RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead");
+	$RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
     }
 
     if( $FieldTypes{$type}) {
@@ -651,7 +651,7 @@ sub SetType {
     my $self = shift;
     my $type = shift;
     if ($type =~ s/(?:(Single)|Multiple)$//) {
-	warn "'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead";
+	$RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
 	$self->SetMaxValues($1 ? 1 : 0);
     }
     $self->SUPER::SetType($type);
@@ -803,19 +803,19 @@ Takes a boolean.
 # }}}
 
 sub Queue {
-    $RT::Logger->debug( ref($_[0]) . " -> Queue deprecated");
+    $RT::Logger->debug( ref($_[0]) . " -> Queue deprecated at (". join(":",caller).")");
     
     return 0;
 }
 
 sub SetQueue {
-    $RT::Logger->debug( ref($_[0]) . " -> SetQueue deprecated");
+    $RT::Logger->debug( ref($_[0]) . " -> SetQueue deprecated at (". join(":",caller).")");
 
     return 0;
 }
 
 sub QueueObj {
-    $RT::Logger->debug( ref($_[0]) . " -> QueueObj deprecated");
+    $RT::Logger->debug( ref($_[0]) . " -> QueueObj deprecated at (". join(":",caller).")");
 
     return undef;
 }

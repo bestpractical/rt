@@ -64,7 +64,7 @@ my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLe
             if ($@) {die "Failed to find $attr - ". $@}; 
 	}
 
-        my $cfs = $Ticket->QueueObj->CustomFields();
+        my $cfs = $Ticket->QueueObj->TicketCustomFields();
         while (my $cf = $cfs->Next) {
                 my @content;
                my $values = $Ticket->CustomFieldValues($cf->Id);

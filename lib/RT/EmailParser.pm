@@ -277,7 +277,7 @@ sub _PostProcessNewEntity {
 
 sub ParseTicketId {
     my $self = shift;
-    $RT::Logger->warnings("RT::EmailParser->ParseTicketId deprecated. You should be using RT::Interface::Email");
+    $RT::Logger->warnings("RT::EmailParser->ParseTicketId deprecated. You should be using RT::Interface::Email at (". join(":",caller).")");
 
     require RT::Interface::Email;
     RT::Interface::Email::ParseTicketId(@_);

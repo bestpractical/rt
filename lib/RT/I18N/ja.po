@@ -1,10 +1,9 @@
-# Japanese translation by Interactive Artists LLC 
-# 0.1 2002 08 15
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 2.1.x\n"
+"Project-Id-Version: RT 3.4.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2002-05-13 02:00+0800\n"
+"PO-Revision-Date: 2005-10-03 13:49-0400\n"
 "Last-Translator: Jesse Vincent <jesse@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "MIME-Version: 1.0\n"
