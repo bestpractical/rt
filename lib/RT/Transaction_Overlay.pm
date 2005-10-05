@@ -328,7 +328,6 @@ Returns the RT::Attachment object which contains the content for this Transactio
 =cut
 
 
-
 sub ContentObj {
 
     my $self = shift;
@@ -359,11 +358,12 @@ sub ContentObj {
             return ( $plain_parts->First );
         }
 
+
         # If that fails, return the  first text/plain or message/ part
         # which has some content.
 
         else {
-            my $all_parts = $Attachment->Children();
+            my $all_parts = $self->Attachments();
             while ( my $part = $all_parts->Next ) {
                 if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
                     return ($part);
