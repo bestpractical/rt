@@ -49,6 +49,11 @@
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
 
+if ($RT::StatementLog) {
+    $RT::Handle->ClearSQLStatementLog;
+    $RT::Handle->LogSQLStatements(1);
+}
+
 local *session unless $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 # Disable AutoFlush using an attribute
@@ -253,6 +258,25 @@ else {
     $m->comp('/Elements/Login', %ARGS);
     $m->abort();
 }
+
+if ($RT::StatementLog) {
+    my @log = $RT::Handle->SQLStatementLog;
+    $RT::Handle->ClearSQLStatementLog;
+    for my $stmt (@log) {
+        my ($time, $sql, $bind, $duration) = @{$stmt};
+        my @bind;
+        if (ref $bind) {
+            @bind = @{$bind};
+        } else {
+            # Older DBIx-SB
+            $duration = $bind;
+        }
+        $RT::Logger->log( level => $RT::StatementLog,
+                          message => "SQL(".sprintf("%.2f",$duration)."s): $sql;" . (@bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "")
+                        );
+    }
+}
+
 </%INIT>
 <& /Elements/Footer, %ARGS &>
 <%ARGS>
