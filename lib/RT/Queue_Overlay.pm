@@ -521,7 +521,7 @@ Returns an RT::CustomFields object containing all global custom fields, as well 
 
 sub CustomFields {
     my $self = shift;
-    warn "Queue->CustomFields is deprecated, use Queue->TicketCustomFields instead";
+    warn "Queue->CustomFields is deprecated, use Queue->TicketCustomFields instead at (". join(":",caller).")";
     return $self->TicketCustomFields(@_);
 }
 

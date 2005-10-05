@@ -80,7 +80,7 @@ sub LimitToTicket {
     my $ticket = shift;
 
 
-    $RT::Logger->warning(ref($self) . " -> LimitToTicket deprecated in favor of LimitToObject");
+    $RT::Logger->warning(ref($self) . " -> LimitToTicket deprecated in favor of LimitToObject at (". join(":",caller).")");
 
     $self->Limit( FIELD => 'ObjectType',
 		  VALUE => 'RT::Ticket',

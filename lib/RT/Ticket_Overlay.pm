@@ -3240,7 +3240,7 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Kill {
     my $self = shift;
-    $RT::Logger->crit("'Kill' is deprecated. use 'Delete' instead.");
+    $RT::Logger->crit("'Kill' is deprecated. use 'Delete' instead at (". join(":",caller).").");
     return $self->Delete;
 }
 

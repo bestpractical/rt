@@ -1549,8 +1549,7 @@ sub CustomFieldLookupType {
 #TODO Deprecated API. Destroy in 3.6
 sub _LookupTypes { 
     my  $self = shift;
-    $RT::Logger->warning("_LookupTypes call is deprecated. Replace with CustomFieldLookupType");
-    $RT::Logger->warning("Besides, it was a private API. Were you doing using it?");
+    $RT::Logger->warning("_LookupTypes call is deprecated at (". join(":",caller)."). Replace with CustomFieldLookupType");
 
     return($self->CustomFieldLookupType);
 

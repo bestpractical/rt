@@ -253,9 +253,9 @@ sub SendMessage {
 
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
-            open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
-            print MAIL $MIMEObj->as_string;
-            close(MAIL);
+            open( my $mail, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
+            $MIMEObj->print($mail);
+            close($mail);
         };
         if ($@) {
             $RT::Logger->crit( $msgid . "Could not send mail. -" . $@ );

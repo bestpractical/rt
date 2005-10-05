@@ -121,11 +121,7 @@ foreach my $id (keys %cfqueues) {
 $CustomFields->LimitToGlobal;
 
 while ( my $CustomField = $CustomFields->Next ) {
-    my $queuestr;
-    if ($CustomField->QueueObj && $CustomField->QueueObj->Id != 0) {
-	$queuestr = $CustomField->QueueObj->Name . ".";
-    }
-    push @fields, "CustomField." . $queuestr . "{" . $CustomField->Name . "}";
+    push @fields, "CustomField.{" . $CustomField->Name . "}";
 }
 
 my ( @seen);
