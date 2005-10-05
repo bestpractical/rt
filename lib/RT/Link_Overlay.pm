@@ -315,7 +315,7 @@ Returns true if the base of this link is a local ticket
 
 sub BaseIsLocal {
   my $self = shift;
-  $RT::Logger->crit("Link::BaseIsLocal is deprecated in favor of Link->BaseURI->IsLocal");
+  $RT::Logger->crit("Link::BaseIsLocal is deprecated in favor of Link->BaseURI->IsLocal at (". join(":",caller).")");
   return $self->BaseURI->IsLocal;
 }
 
@@ -331,7 +331,7 @@ Returns true if the target of this link is a local ticket
 
 sub TargetIsLocal {
   my $self = shift;
-  $RT::Logger->crit("Link::BaseIsLocal is deprecated in favor of Link->BaseURI->IsLocal");
+  $RT::Logger->crit("Link::BaseIsLocal is deprecated in favor of Link->BaseURI->IsLocal at (". join(":",caller).")");
   return $self->TargetURI->IsLocal;
 }
 
@@ -348,7 +348,7 @@ Returns an HTTP url to access the base of this link
 
 sub BaseAsHREF {
   my $self = shift;
-  $RT::Logger->crit("Link::BaseAsHREF deprecated in favor of ->BaseURI->AsHREF");
+  $RT::Logger->crit("Link::BaseAsHREF deprecated in favor of ->BaseURI->AsHREF at (". join(":",caller).")");
   return $self->BaseURI->HREF;
 }
 # }}}
@@ -363,7 +363,7 @@ return an HTTP url to access the target of this link
 
 sub TargetAsHREF {
   my $self = shift;
-  $RT::Logger->crit("Link::TargetAsHREF deprecated in favor of ->TargetURI->AsHREF");
+  $RT::Logger->crit("Link::TargetAsHREF deprecated in favor of ->TargetURI->AsHREF at (". join(":",caller).")");
   return $self->TargetURI->HREF;
 }
 # }}}
