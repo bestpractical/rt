@@ -240,8 +240,199 @@ if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSaved
 # }}}
 
 # {{{ Parse the query
+use Regexp::Common qw /delimited/;
+
+# States
+use constant VALUE   => 1;
+use constant AGGREG  => 2;
+use constant OP      => 4;
+use constant PAREN   => 8;
+use constant KEYWORD => 16;
+
+my $_match = sub {
+
+    # Case insensitive equality
+    my ( $y, $x ) = @_;
+    return 1 if $x =~ /^$y$/i;
+
+    #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
+    return 0;
+};
+
+my $ParseQuery = sub {
+    my $string  = shift;
+    my $tree    = shift;
+    my @actions = shift;
+    my $want    = KEYWORD | PAREN;
+    my $last    = undef;
+
+    my $depth = 1;
+
+    # make a tree root
+    $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
+    my $lastnode   = $root;
+    my $parentnode = $root;
+
+    # get the FIELDS from Tickets_Overlay
+    my $tickets = new RT::Tickets( $session{'CurrentUser'} );
+    my %FIELDS  = %{ $tickets->FIELDS };
+
+    # Lower Case version of FIELDS, for case insensitivity
+    my %lcfields = map { ( lc($_) => $_ ) } ( keys %FIELDS );
+
+    my @tokens     = qw[VALUE AGGREG OP PAREN KEYWORD];
+    my $re_aggreg  = qr[(?i:AND|OR)];
+    my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
+    my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
+    my $re_op      =
+      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
+      ;    # long to short
+    my $re_paren = qr'\(|\)';
+
+    # assume that $ea is AND if it is not set
+    my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
+
+    # order of matches in the RE is important.. op should come early,
+    # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
+    # as a keyword or value.
+
+    while (
+        $string =~ /(
+                      $re_aggreg
+                      |$re_op
+                      |$re_keyword
+                      |$re_value
+                      |$re_paren
+                     )/igx
+      )
+    {
+        my $val     = $1;
+        my $current = 0;
+
+        # Highest priority is last
+        $current = OP    if $_match->( $re_op,    $val );
+        $current = VALUE if $_match->( $re_value, $val );
+        $current = KEYWORD
+          if $_match->( $re_keyword, $val ) && ( $want & KEYWORD );
+        $current = AGGREG if $_match->( $re_aggreg, $val );
+        $current = PAREN  if $_match->( $re_paren,  $val );
+
+        unless ( $current && $want & $current ) {
+
+            # Error
+            # FIXME: I will only print out the highest $want value
+            my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
+            push @actions,
+              [
+                loc(
+"current: $current, want $want, Error near ->$val<- expecting a "
+                      . $token
+                      . " in '$string'\n"
+                ),
+                -1
+              ];
+        }
+
+        # State Machine:
+        my $parentdepth = $depth;
+
+        # Parens are highest priority
+        if ( $current & PAREN ) {
+            if ( $val eq "(" ) {
+                $depth++;
+
+                # make a new node that the clauses can be children of
+                $parentnode = RT::Interface::Web::QueryBuilder::Tree->new( $ea, $parentnode );
+            }
+            else {
+                $depth--;
+                $parentnode = $parentnode->getParent();
+                $lastnode   = $parentnode;
+            }
+
+            $want = KEYWORD | PAREN | AGGREG;
+        }
+        elsif ( $current & AGGREG ) {
+            $ea   = $val;
+            $want = KEYWORD | PAREN;
+        }
+        elsif ( $current & KEYWORD ) {
+            $key  = $val;
+            $want = OP;
+        }
+        elsif ( $current & OP ) {
+            $op   = $val;
+            $want = VALUE;
+        }
+        elsif ( $current & VALUE ) {
+            $value = $val;
+
+            # Remove surrounding quotes from $key, $val
+            # (in future, simplify as for($key,$val) { action on $_ })
+            if ( $key =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
+                substr( $key, 0,  1 ) = "";
+                substr( $key, -1, 1 ) = "";
+            }
+            if ( $val =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
+                substr( $val, 0,  1 ) = "";
+                substr( $val, -1, 1 ) = "";
+            }
+
+            # Unescape escaped characters
+            $key =~ s!\\(.)!$1!g;
+            $val =~ s!\\(.)!$1!g;
+
+            my $class;
+            if ( exists $lcfields{ lc $key } ) {
+                $key   = $lcfields{ lc $key };
+                $class = $FIELDS{$key}->[0];
+            }
+            if ( $class ne 'INT' ) {
+                $val = "'$val'";
+            }
+
+            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
+
+            $want = PAREN | AGGREG;
+        }
+        else {
+            push @actions, [ loc("I'm lost"), -1 ];
+        }
+
+        if ( $current & VALUE ) {
+            if ( $key =~ /^CF./ ) {
+                $key = "'" . $key . "'";
+            }
+            my $clause = {
+                Key   => $key,
+                Op    => $op,
+                Value => $val
+            };
+
+            # explicity add a child to it
+            $lastnode = RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
+            $lastnode->getParent()->setNodeValue($ea);
+
+            ( $ea, $key, $op, $value ) = ( "", "", "", "" );
+        }
+
+        $last = $current;
+    }    # while
+
+    push @actions, [ loc("Incomplete query"), -1 ]
+      unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
+
+    push @actions, [ loc("Incomplete Query"), -1 ]
+      unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
+
+    # This will never happen, because the parser will complain
+    push @actions, [ loc("Mismatched parentheses"), -1 ]
+      unless $depth == 1;
+};
+
 my $tree;
-ParseQuery( $Query, \$tree, \@actions );
+$ParseQuery->( $Query, \$tree, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -471,202 +662,6 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
 
 
 
-
-use Regexp::Common qw /delimited/;
-
-# States
-use constant VALUE   => 1;
-use constant AGGREG  => 2;
-use constant OP      => 4;
-use constant PAREN   => 8;
-use constant KEYWORD => 16;
-
-sub ParseQuery {
-    my $string  = shift;
-    my $tree    = shift;
-    my @actions = shift;
-    my $want    = KEYWORD | PAREN;
-    my $last    = undef;
-
-    my $depth = 1;
-
-    # make a tree root
-    $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
-    my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
-    my $lastnode   = $root;
-    my $parentnode = $root;
-
-    # get the FIELDS from Tickets_Overlay
-    my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my %FIELDS  = %{ $tickets->FIELDS };
-
-    # Lower Case version of FIELDS, for case insensitivity
-    my %lcfields = map { ( lc($_) => $_ ) } ( keys %FIELDS );
-
-    my @tokens     = qw[VALUE AGGREG OP PAREN KEYWORD];
-    my $re_aggreg  = qr[(?i:AND|OR)];
-    my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-    my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      =
-      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
-      ;    # long to short
-    my $re_paren = qr'\(|\)';
-
-    # assume that $ea is AND if it is not set
-    my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
-
-    # order of matches in the RE is important.. op should come early,
-    # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
-    # as a keyword or value.
-
-    while (
-        $string =~ /(
-                      $re_aggreg
-                      |$re_op
-                      |$re_keyword
-                      |$re_value
-                      |$re_paren
-                     )/igx
-      )
-    {
-        my $val     = $1;
-        my $current = 0;
-
-        # Highest priority is last
-        $current = OP    if _match( $re_op,    $val );
-        $current = VALUE if _match( $re_value, $val );
-        $current = KEYWORD
-          if _match( $re_keyword, $val ) && ( $want & KEYWORD );
-        $current = AGGREG if _match( $re_aggreg, $val );
-        $current = PAREN  if _match( $re_paren,  $val );
-
-        unless ( $current && $want & $current ) {
-
-            # Error
-            # FIXME: I will only print out the highest $want value
-            my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions,
-              [
-                loc(
-"current: $current, want $want, Error near ->$val<- expecting a "
-                      . $token
-                      . " in '$string'\n"
-                ),
-                -1
-              ];
-        }
-
-        # State Machine:
-        my $parentdepth = $depth;
-
-        # Parens are highest priority
-        if ( $current & PAREN ) {
-            if ( $val eq "(" ) {
-                $depth++;
-
-                # make a new node that the clauses can be children of
-                $parentnode = RT::Interface::Web::QueryBuilder::Tree->new( $ea, $parentnode );
-            }
-            else {
-                $depth--;
-                $parentnode = $parentnode->getParent();
-                $lastnode   = $parentnode;
-            }
-
-            $want = KEYWORD | PAREN | AGGREG;
-        }
-        elsif ( $current & AGGREG ) {
-            $ea   = $val;
-            $want = KEYWORD | PAREN;
-        }
-        elsif ( $current & KEYWORD ) {
-            $key  = $val;
-            $want = OP;
-        }
-        elsif ( $current & OP ) {
-            $op   = $val;
-            $want = VALUE;
-        }
-        elsif ( $current & VALUE ) {
-            $value = $val;
-
-            # Remove surrounding quotes from $key, $val
-            # (in future, simplify as for($key,$val) { action on $_ })
-            if ( $key =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $key, 0,  1 ) = "";
-                substr( $key, -1, 1 ) = "";
-            }
-            if ( $val =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $val, 0,  1 ) = "";
-                substr( $val, -1, 1 ) = "";
-            }
-
-            # Unescape escaped characters
-            $key =~ s!\\(.)!$1!g;
-            $val =~ s!\\(.)!$1!g;
-
-            my $class;
-            if ( exists $lcfields{ lc $key } ) {
-                $key   = $lcfields{ lc $key };
-                $class = $FIELDS{$key}->[0];
-            }
-            if ( $class ne 'INT' ) {
-                $val = "'$val'";
-            }
-
-            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
-
-            $want = PAREN | AGGREG;
-        }
-        else {
-            push @actions, [ loc("I'm lost"), -1 ];
-        }
-
-        if ( $current & VALUE ) {
-            if ( $key =~ /^CF./ ) {
-                $key = "'" . $key . "'";
-            }
-            my $clause = {
-                Key   => $key,
-                Op    => $op,
-                Value => $val
-            };
-
-            # explicity add a child to it
-            $lastnode = RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
-            $lastnode->getParent()->setNodeValue($ea);
-
-            ( $ea, $key, $op, $value ) = ( "", "", "", "" );
-        }
-
-        $last = $current;
-    }    # while
-
-    push @actions, [ loc("Incomplete query"), -1 ]
-      unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
-
-    push @actions, [ loc("Incomplete Query"), -1 ]
-      unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
-
-    # This will never happen, because the parser will complain
-    push @actions, [ loc("Mismatched parentheses"), -1 ]
-      unless $depth == 1;
-}
-
-sub _match {
-
-    # Case insensitive equality
-    my ( $y, $x ) = @_;
-    return 1 if $x =~ /^$y$/i;
-
-    #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
-    return 0;
-}
-
-sub debug {
-    my $message = shift;
-    $m->print( $message . "<br/>" );
-}
 
 # }}}
 
