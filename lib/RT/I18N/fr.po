@@ -1,11 +1,13 @@
-#
+# translation of fr.po to
+# Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
+# valid as of 3.5-TESTING r3738
+# jfenal <jfenal@gmail.com>, 2005.
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.4.x\n"
+"Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2005-10-03 13:45-0400\n"
-"Last-Translator: jfenal <jfenal@free.fr>\n"
-"Language-Team: rt-devel <rt-devel@lists.fsck.com\n"
+"PO-Revision-Date: 2005-08-31 01:19+0200\n"
+"Last-Translator: jfenal <jfenal@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
