@@ -814,7 +814,7 @@ sub Object {
     else {
         $RT::Logger->warning( "$self -> Object called for an object "
                               . "of an unknown type:"
-                              . $self->ObjectType );
+                              . $self->__Value('ObjectType') );
         return (undef);
     }
 }
