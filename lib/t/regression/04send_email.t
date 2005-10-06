@@ -1,10 +1,12 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 137;
+use Test::More tests => 136;
+
 use RT;
 RT::LoadConfig();
 RT::Init;
+
 use RT::EmailParser;
 use RT::Tickets;
 use RT::Action::SendEmail;
@@ -20,17 +22,29 @@ $everyone->PrincipalObj->GrantRight(Right =>'SuperUser');
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
 
-
 {
-no warnings qw/redefine/;
-sub RT::Action::SendEmail::SendMessage {
+    no warnings qw/redefine/;
+    sub RT::Action::SendEmail::SendMessage {
         my $self = shift;
         my $MIME = shift;
 
         main::_fired_scrip($self->ScripObj);
         main::ok(ref($MIME) eq 'MIME::Entity', "hey, look. it's a mime entity");
+    }
 }
 
+# some utils
+sub first_txn    { return $_[0]->Transactions->First }
+sub first_attach { return first_txn($_[0])->Attachments->First }
+
+sub count_txns { return $_[0]->Transactions->Count }
+sub count_attachs { return first_txn($_[0])->Attachments->Count }
+
+sub file_content
+{
+    open my $fh, "<:raw", $_[0] or die "couldn't open file '$_[0]': $!";
+    local $/;
+    return scalar <$fh>;
 }
 
 # instrument SendEmail to pass us what it's about to send.
@@ -40,7 +54,7 @@ my $parser = RT::EmailParser->new();
 
 
 # Let's test to make sure a multipart/report is processed correctly
-my $content =  `cat $RT::BasePath/lib/t/data/multipart-report` || die "couldn't find new content";
+my $content =  file_content("$RT::BasePath/lib/t/data/multipart-report");
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
@@ -53,7 +67,7 @@ my $tick= $tickets->First();
 isa_ok($tick, "RT::Ticket", "got a ticket object");
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /The original message was received/, "It's the bounce");
+ok (first_txn($tick)->Content =~ /The original message was received/, "It's the bounce");
 
 
 # make sure it fires scrips.
@@ -96,7 +110,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
-$content =  `cat $RT::BasePath/lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+$content =  file_content("$RT::BasePath/lib/t/data/new-ticket-from-iso-8859-1");
 
 
 
@@ -114,7 +128,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+ok (first_txn($tick)->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
 
 
 # make sure it fires scrips.
@@ -144,7 +158,7 @@ $RT::EmailOutputEncoding = 'iso-8859-1';
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
- $content =  `cat $RT::BasePath/lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/new-ticket-from-iso-8859-1");
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
@@ -156,7 +170,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+ok (first_txn($tick)->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
 
 
 # make sure it fires scrips.
@@ -238,7 +252,7 @@ sub iso8859_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a text-html part with an umlaut
 
- $content =  `cat $RT::BasePath/lib/t/data/multipart-alternative-with-umlaut` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/multipart-alternative-with-umlaut");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -246,16 +260,17 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &umlauts_redef_sendmessage;
 
- %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+%args = (message => $content, queue => 1, action => 'correspond');
+RT::Interface::Email::Gateway(\%args);
+$tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
+$tick = $tickets->First();
+
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /causes Error/, "We recorded the content right as text-plain");
-is ($tick->Transactions->First->Attachments->Count , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
+ok (first_txn($tick)->Content =~ /causes Error/, "We recorded the content right as text-plain");
+is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
 
 sub umlauts_redef_sendmessage {
     no warnings qw/redefine/;
@@ -266,7 +281,7 @@ sub umlauts_redef_sendmessage {
 
 # {{{ test a text-html message with an umlaut
 
- $content =  `cat $RT::BasePath/lib/t/data/text-html-with-umlaut` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/text-html-with-umlaut");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -282,29 +297,28 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Attachments->First->Content =~ /causes Error/, "We recorded the content as containing 'causes error'");
-ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/html/, "We recorded the content as text/html");
-ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
+ok (first_attach($tick)->Content =~ /causes Error/, "We recorded the content as containing 'causes error'") or diag( first_attach($tick)->Content );
+ok (first_attach($tick)->ContentType =~ /text\/html/, "We recorded the content as text/html");
+is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 sub text_html_umlauts_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::Action::SendEmail::SendMessage { 
-                my $self = shift; 
-                my $MIME = shift; 
-                use Data::Dumper;
+                my $self = shift;
+                my $MIME = shift;
                 return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
+                is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
                 is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
-                 }';
+         }';
 }
 
 # }}}
 
 # {{{ test a text-html message with russian characters
 
- $content =  `cat $RT::BasePath/lib/t/data/text-html-in-russian` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/text-html-in-russian");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -320,8 +334,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/html/, "We recorded the content right as text-html");
-ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
+ok (first_attach($tick)->ContentType =~ /text\/html/, "We recorded the content right as text-html");
+ok (count_attachs($tick) ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 sub text_html_russian_redef_sendmessage {
     no warnings qw/redefine/;
@@ -347,7 +361,7 @@ sub text_html_russian_redef_sendmessage {
 
 unshift (@RT::EmailInputEncodings, 'koi8-r');
 $RT::EmailOutputEncoding = 'koi8-r';
-$content =  `cat $RT::BasePath/lib/t/data/russian-subject-no-content-type` || die "couldn't find new content";
+$content =  file_content("$RT::BasePath/lib/t/data/russian-subject-no-content-type");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -362,8 +376,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/plain/, "We recorded the content type right");
-ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-plain");
+ok (first_attach($tick)->ContentType =~ /text\/plain/, "We recorded the content type right");
+ok (count_attachs($tick) ==1 , "Has one attachment, presumably a text-plain");
 is ($tick->Subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
 sub text_plain_russian_redef_sendmessage {
     no warnings qw/redefine/;
@@ -375,7 +389,7 @@ sub text_plain_russian_redef_sendmessage {
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
                 #is( $subject ,      /^=\?KOI8-R\?B\?W2V4YW1wbGUuY39tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
-		};
+                };
                  ';
 }
 
@@ -386,7 +400,7 @@ $RT::EmailOutputEncoding = 'utf-8';
 
 # {{{ test a message containing a nested RFC 822 message
 
- $content =  `cat $RT::BasePath/lib/t/data/nested-rfc-822` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/nested-rfc-822");
 ok ($content, "Loaded nested-rfc-822 to test");
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -402,8 +416,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 is ($tick->Subject, "[Jonas Liljegren] Re: [Para] Niv\x{e5}er?");
-ok ($tick->Transactions->First->Attachments->First->ContentType =~ /multipart\/mixed/, "We recorded the content type right");
-is ($tick->Transactions->First->Attachments->Count , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
+ok (first_attach($tick)->ContentType =~ /multipart\/mixed/, "We recorded the content type right");
+is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::Action::SendEmail::SendMessage { 
@@ -414,9 +428,9 @@ sub text_plain_nested_redef_sendmessage {
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);
                 chomp($subject);
-		# TODO, why does this test fail
+                # TODO, why does this test fail
                 #ok($subject =~ qr{Niv\x{e5}er}, "The subject matches the word - $subject");
-		1;
+                1;
                  }';
 }
 
@@ -425,7 +439,7 @@ sub text_plain_nested_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a uuencoded mesage generated by lotus notes
 
- $content =  `cat $RT::BasePath/lib/t/data/notes-uuencoded` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/notes-uuencoded");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -441,8 +455,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /from Lotus Notes/, "We recorded the content right");
-is ($tick->Transactions->First->Attachments->Count , 3 , "Has three attachments");
+ok (first_txn($tick)->Content =~ /from Lotus Notes/, "We recorded the content right");
+is (count_attachs($tick) , 3 , "Has three attachments");
 
 sub notes_redef_sendmessage {
     no warnings qw/redefine/;
@@ -453,7 +467,7 @@ sub notes_redef_sendmessage {
 
 # {{{ test a multipart that crashes the file-based mime-parser works
 
- $content =  `cat $RT::BasePath/lib/t/data/crashes-file-based-parser` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/crashes-file-based-parser");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -469,8 +483,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /FYI/, "We recorded the content right");
-is ($tick->Transactions->First->Attachments->Count , 5 , "Has three attachments");
+ok (first_txn($tick)->Content =~ /FYI/, "We recorded the content right");
+is (count_attachs($tick) , 5 , "Has three attachments");
 
 sub crashes_redef_sendmessage {
     no warnings qw/redefine/;
@@ -483,7 +497,7 @@ sub crashes_redef_sendmessage {
 
 # {{{ test a multi-line RT-Send-CC header
 
- $content =  `cat $RT::BasePath/lib/t/data/rt-send-cc` || die "couldn't find new content";
+ $content =  file_content("$RT::BasePath/lib/t/data/rt-send-cc");
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -497,7 +511,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-my $cc = $tick->Transactions->First->Attachments->First->GetHeader('RT-Send-Cc');
+my $cc = first_attach($tick)->GetHeader('RT-Send-Cc');
 ok ($cc =~ /test1/, "Found test 1");
 ok ($cc =~ /test2/, "Found test 2");
 ok ($cc =~ /test3/, "Found test 3");
