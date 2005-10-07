@@ -284,13 +284,12 @@ sub SendMessage {
         }
     }
 
-    my $success =
-      ( $msgid
-      . " sent To: "
-      . $MIMEObj->head->get('To') . " Cc: "
-      . $MIMEObj->head->get('Cc') . " Bcc: "
-      . $MIMEObj->head->get('Bcc') );
-    $success =~ s/\n//gi;
+    my $success = $msgid . " sent ";
+    foreach( qw(To Cc Bcc) ) {
+        my $recipients = $MIMEObj->head->get($_);
+        $success .= " $_: ". $recipients if $recipients;
+    }
+    $success =~ s/\n//g;
 
     $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
