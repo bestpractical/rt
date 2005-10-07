@@ -3705,6 +3705,10 @@ sub CustomFieldValues {
             $cf->LoadByNameAndQueue( Name => $field, Queue => '0' );
         }
         $field = $cf->id;
+        unless ( $field =~ /^\d+$/ ) {
+          # If we didn't find a valid cfid, give up.
+          return RT::CustomFieldValues->new($self->CurrentUser);
+        }
     }
     return $self->SUPER::CustomFieldValues($field);
 }
