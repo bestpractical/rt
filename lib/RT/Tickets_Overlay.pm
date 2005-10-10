@@ -103,7 +103,7 @@ my %FIELDS = (
     Type            => [ 'ENUM', ],
     Creator         => [ 'ENUM' => 'User', ],
     LastUpdatedBy   => [ 'ENUM' => 'User', ],
-    Owner           => [ 'ENUM' => 'User', ],
+    Owner           => [ 'WATCHERFIELD' => 'Owner', ],
     EffectiveId     => [ 'INT', ],
     id              => [ 'INT', ],
     InitialPriority => [ 'INT', ],
@@ -159,7 +159,7 @@ my %dispatch = (
     LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
-my %can_bundle = ( WATCHERFIELD => "yeps", );
+my %can_bundle = ( WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
@@ -791,7 +791,6 @@ sub _WatcherLimit {
     my $value = shift;
     my %rest  = (@_);
 
-    $self->_OpenParen;
 
     # Find out what sort of watcher we're looking for
     my $fieldname;
@@ -800,76 +799,113 @@ sub _WatcherLimit {
     }
     else {
         $fieldname = $field;
+        $field = [[$field, $op, $value, %rest]]; # gross hack
     }
     my $meta = $FIELDS{$fieldname};
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
-# We only want _one_ clause for all of requestors, cc, admincc
-# It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
-    my $groups = $self->{ 'watcherlimit_' . ('global') . "_groups" } ||=
-      $self->NewAlias('Groups');
-    my $groupmembers =
-      $self->{ 'watcherlimit_' . ('global') . "_groupmembers" } ||=
-      $self->NewAlias('CachedGroupMembers');
-    my $users = $self->{ 'watcherlimit_' . ('global') . "_users" } ||=
-      $self->NewAlias('Users');
+    # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
+    # search by id and Name at the same time, this is workaround
+    # to preserve backward compatibility
+    if( $fieldname eq 'Owner' ) {
+        my $flag = 0;
+        for my $chunk (splice @$field) {
+            my ( $f, $op, $value, %rest ) = @$chunk;
+            if( !$rest{SUBKEY} && $op =~ /^!?=$/ ) {
+                $self->_OpenParen unless $flag++;
+                my $o = RT::User->new( $self->CurrentUser );
+                $o->Load($value);
+                $value = $o->Id;
+                $self->_SQLLimit(
+                    FIELD    => 'Owner',
+                    OPERATOR => $op,
+                    VALUE    => $value,
+                    %rest,
+                );
+            } else {
+                push @$field, $chunk;
+            }
+        }
+        $self->_CloseParen if $flag;
+        return unless @$field;
+    }
 
-# Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
+    my $users = $self->_WatcherJoin($type);
+
+    # If we're looking for multiple watchers of a given type,
+    # TicketSQL will be handing it to us as an array of clauses in
+    # $field
+    $self->_OpenParen;
+    for my $chunk (@$field) {
+        ( $field, $op, $value, %rest ) = @$chunk;
+        $rest{SUBKEY} ||= 'EmailAddress';
+        
+        my $re_negative_op = qr[!=|NOT LIKE];
+        $self->_OpenParen if $op =~ /$re_negative_op/;
+
+        $self->_SQLLimit(
+            ALIAS         => $users,
+            FIELD         => $rest{SUBKEY},
+            VALUE         => $value,
+            OPERATOR      => $op,
+            CASESENSITIVE => 0,
+            %rest
+        );
+
+        if( $op =~ /$re_negative_op/ ) {
+            $self->_SQLLimit(
+                ALIAS           => $users,
+                FIELD           => $rest{SUBKEY},
+                OPERATOR        => 'IS',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'OR',
+            );
+            $self->_CloseParen;
+        }
+    }
+    $self->_CloseParen;
+}
+
+=head2 _WatcherJoin
+
+Helper function which provides joins to a watchers table both for limits
+and for ordering.
+
+=cut
+
+sub _WatcherJoin {
+    my $self  = shift;
+    my $type  = shift;
+
+    # we cache joins chain per watcher type
+    # if we limit by requestor then we shouldn't join requestors again
+    # for sort or limit on other requestors
+    if( $self->{'_watcher_join_users_alias'}{$type||'any'} ) {
+        return $self->{'_watcher_join_users_alias'}{$type||'any'};
+    }
+
+    # we always have watcher groups for ticket
+    # this join should be NORMAL
+    # XXX: if we change this from Join to NewAlias+Limit
+    # then Pg will complain because SB build wrong query.
+    # Query looks like "FROM (Tickets LEFT JOIN CGM ON(Groups.id = CGM.GroupId)), Groups"
+    # Pg doesn't like that fact that it doesn't know about Groups table yet when
+    # join CGM table into Tickets. Problem is in Join method which doesn't use
+    # ALIAS1 argument when build braces.
+    my $groups = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Groups',
+        FIELD2 => 'Instance',
+        ENTRYAGGREGATOR => 'AND'
+    );
     $self->SUPER::Limit(
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
         ENTRYAGGREGATOR => 'AND'
     );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'Instance',
-        ALIAS2 => 'main',
-        FIELD2 => 'id'
-    );
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $groupmembers,
-        FIELD2 => 'GroupId'
-    );
-    $self->Join(
-        ALIAS1 => $groupmembers,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
-    );
-
-    # If we're looking for multiple watchers of a given type,
-    # TicketSQL will be handing it to us as an array of clauses in
-    # $field
-    if ( ref $field ) {    # gross hack
-        $self->_OpenParen;
-        for my $chunk (@$field) {
-            ( $field, $op, $value, %rest ) = @$chunk;
-            $self->_SQLLimit(
-                ALIAS         => $users,
-                FIELD         => $rest{SUBKEY} || 'EmailAddress',
-                VALUE         => $value,
-                OPERATOR      => $op,
-                CASESENSITIVE => 0,
-                %rest
-            );
-        }
-        $self->_CloseParen;
-    }
-    else {
-        $self->_SQLLimit(
-            ALIAS         => $users,
-            FIELD         => $rest{SUBKEY} || 'EmailAddress',
-            VALUE         => $value,
-            OPERATOR      => $op,
-            CASESENSITIVE => 0,
-            %rest
-        );
-    }
-
-    $self->_SQLLimit(
+    $self->SUPER::Limit(
         ALIAS           => $groups,
         FIELD           => 'Type',
         VALUE           => $type,
@@ -877,7 +913,35 @@ sub _WatcherLimit {
       )
       if ($type);
 
-    $self->_CloseParen;
+    my $groupmembers = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'GroupId'
+    );
+    # XXX: work around, we must hide groups that
+    # are members of the role group we search in,
+    # otherwise them result in wrong NULLs in Users
+    # table and break ordering. Now, we know that
+    # RT doesn't allow to add groups as members of the
+    # ticket roles, so we just hide entries in CGM table
+    # with MemberId == GroupId from results
+    my $groupmembers = $self->SUPER::Limit(
+        LEFTJOIN => $groupmembers,
+        FIELD => 'GroupId',
+        OPERATOR => '!=',
+        VALUE => "$groupmembers.MemberId",
+        QUOTEVALUE => 0,
+    );
+    my $users = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        TABLE2 => 'Users',
+        FIELD2 => 'id'
+    );
+    return $self->{'_watcher_join_users_alias'}{$type||'any'} = $users;
 }
 
 =head2 _WatcherMembershipLimit
@@ -1265,11 +1329,13 @@ sub Limit {
 
 # If we're looking at the effective id, we don't want to append the other clause
 # which limits us to tickets where id = effective id
-    if ( $args{'FIELD'} eq 'EffectiveId' ) {
+    if ( $args{'FIELD'} eq 'EffectiveId' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_effective_id'} = 1;
     }
 
-    if ( $args{'FIELD'} eq 'Type' ) {
+    if ( $args{'FIELD'} eq 'Type' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_type'} = 1;
     }
 

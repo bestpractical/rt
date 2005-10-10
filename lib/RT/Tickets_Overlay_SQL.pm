@@ -85,11 +85,13 @@ sub _InitSQL {
 sub _SQLLimit {
   my $self = shift;
     my %args = (@_);
-    if ($args{'FIELD'} eq 'EffectiveId') {
+    if ($args{'FIELD'} eq 'EffectiveId' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_effective_id'} = 1;
     }      
     
-    if ($args{'FIELD'} eq 'Type') {
+    if ($args{'FIELD'} eq 'Type' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_type'} = 1;
     }
 
@@ -288,7 +290,7 @@ sub _parser {
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
 
 
-   my $subkey;
+   my $subkey = '';
    if ($key =~ /^(.+?)\.(.+)$/) {
      $key = $1;
      $subkey = $2;
