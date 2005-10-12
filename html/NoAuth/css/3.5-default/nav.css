@@ -20,6 +20,17 @@
     margin-top: 0.75em;
 }
 
+/*
+%# We need the extra padding above for browsers where we display the arrows
+%# but those don't work in IE so we don't want as much spacing
+%# 
+%# IE wrongly matches the selector below even though there isn't an element
+%# above <html> in the doc tree
+*/
+* html #nav li ul {
+    margin-top: 0.25em;
+}
+
 #nav li {
     display: inline;
     margin-bottom: 1em;
