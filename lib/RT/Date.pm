@@ -76,8 +76,8 @@ use Time::Local;
 use RT::Base;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw/RT::Base/;
+use warnings;
+use base qw/RT::Base/;
 
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
@@ -88,25 +88,56 @@ $WEEK   = 7 * $DAY;
 $MONTH  = 4 * $WEEK;
 $YEAR   = 365 * $DAY;
 
-# {{{ sub new 
+our @MONTHS = qw(
+    Jan
+    Feb
+    Mar
+    Apr
+    May
+    Jun
+    Jul
+    Aug
+    Sep
+    Oct
+    Nov
+    Dec
+);
 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->CurrentUser(@_);
-  $self->Unix(0);
-  return $self;
+our @DAYS_OF_WEEK = qw(
+    Sun
+    Mon
+    Tue
+    Wed
+    Thu
+    Fri
+    Sat
+);
+
+# {{{ sub new
+
+=head2 new
+
+Object constructor takes one argument C<RT::CurrentUser> object.
+
+=cut
+
+sub new {
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    bless ($self, $class);
+    $self->CurrentUser(@_);
+    $self->Unix(0);
+    return $self;
 }
 
 # }}}
 
 # {{{ sub Set
 
-=head2 sub Set
+=head2 Set
 
-takes a param hash with the fields 'Format' and 'Value'
+Takes a param hash with the fields 'Format' and 'Value'
 
 if $args->{'Format'} is 'unix', takes the number of seconds since the epoch 
 
@@ -146,7 +177,7 @@ sub Set {
     }
 
     elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
-	$args{'Value'} =~ s!/!-!g;
+        $args{'Value'} =~ s!/!-!g;
 
         if (( $args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
             || ( $args{'Value'} =~
@@ -201,10 +232,10 @@ sub Set {
 
         #Convert it to an ISO format string
 
-	my $date = Time::ParseDate::parsedate($args{'Value'},
-			UK => $RT::DateDayBeforeMonth,
-			PREFER_PAST => $RT::AmbiguousDayInPast,
-			PREFER_FUTURE => !($RT::AmbiguousDayInPast));
+        my $date = Time::ParseDate::parsedate($args{'Value'},
+                        UK => $RT::DateDayBeforeMonth,
+                        PREFER_PAST => $RT::AmbiguousDayInPast,
+                        PREFER_FUTURE => !($RT::AmbiguousDayInPast));
 
         #This date has now been set to a date in the _local_ timezone.
         #since ISO dates are known to be in GMT (for RT's purposes);
@@ -236,13 +267,10 @@ Returns the unixtime at midnight.
 sub SetToMidnight {
     my $self = shift;
     
-    use Time::Local;
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday) = gmtime($self->Unix);
     $self->Unix(timegm (0,0,0,$mday,$mon,$year,$wday,$yday));
     
     return ($self->Unix);
-    
-    
 }
 
 
@@ -250,8 +278,8 @@ sub SetToMidnight {
 
 # {{{ sub SetToNow
 sub SetToNow {
-	my $self = shift;
-	return($self->Set(Format => 'unix', Value => time))
+        my $self = shift;
+        return($self->Set(Format => 'unix', Value => time))
 }
 # }}}
 
@@ -269,8 +297,8 @@ sub Diff {
     my $self = shift;
     my $other = shift;
 
-    if (ref($other) eq 'RT::Date') {
-	$other=$other->Unix;
+    if (UNIVERSAL::isa($other => 'RT::Date')) {
+        $other=$other->Unix;
     }
     return ($self->Unix - $other);
 }
@@ -278,7 +306,7 @@ sub Diff {
 
 # {{{ sub DiffAsString
 
-=head2 sub DiffAsString
+=head2 DiffAsString
 
 Takes either an RT::Date object or the date in unixtime format as a string
 
@@ -293,10 +321,10 @@ sub DiffAsString {
 
 
     if ($other < 1) {
-	return ("");
+        return ("");
     }
     if ($self->Unix < 1) {
-	return("");
+        return("");
     }
     my $diff = $self->Diff($other);
 
@@ -366,7 +394,7 @@ sub DurationAsString {
 
 # {{{ sub AgeAsString
 
-=head2 sub AgeAsString
+=head2 AgeAsString
 
 Takes nothing
 
@@ -377,25 +405,30 @@ Returns a string that's the differnce between the time in the object and now
 sub AgeAsString {
     my $self = shift;
     return ($self->DiffAsString(time));
-    }
+}
 # }}}
 
 # {{{ sub AsString
 
-=head2 sub AsString
+=head2 AsString
 
-Returns the object\'s time as a string with the current timezone.
+Returns the object's time as a string with the current timezone.
 
 =cut
 
 sub AsString {
     my $self = shift;
+
     return ($self->loc("Not set")) if ($self->Unix <= 0);
 
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($self->Unix);
+    my %args = (@_);
+    my $format = $RT::DateTimeFormat || 'DefaultFormat';
+    $format = { Format => $format } unless ref $format;
+    %args = (%$format, %args);
 
-    return $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900));
+    return $self->Get( Timezone => 'user', %args );
 }
+
 # }}}
 
 # {{{ GetWeekday
@@ -410,13 +443,8 @@ sub GetWeekday {
     my $self = shift;
     my $dow = shift;
     
-    return $self->loc('Mon.') if ($dow == 1);
-    return $self->loc('Tue.') if ($dow == 2);
-    return $self->loc('Wed.') if ($dow == 3);
-    return $self->loc('Thu.') if ($dow == 4);
-    return $self->loc('Fri.') if ($dow == 5);
-    return $self->loc('Sat.') if ($dow == 6);
-    return $self->loc('Sun.') if ($dow == 0);
+    return $self->loc("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
+    return '';
 }
 
 # }}}
@@ -431,28 +459,17 @@ Takes an integer month and returns a localized string for that month
 
 sub GetMonth {
     my $self = shift;
-   my $mon = shift;
+    my $mon = shift;
 
-    # We do this rather than an array so that we don't call localize 12x what we need to
-    return $self->loc('Jan.') if ($mon == 0);
-    return $self->loc('Feb.') if ($mon == 1);
-    return $self->loc('Mar.') if ($mon == 2);
-    return $self->loc('Apr.') if ($mon == 3);
-    return $self->loc('May.') if ($mon == 4);
-    return $self->loc('Jun.') if ($mon == 5);
-    return $self->loc('Jul.') if ($mon == 6);
-    return $self->loc('Aug.') if ($mon == 7);
-    return $self->loc('Sep.') if ($mon == 8);
-    return $self->loc('Oct.') if ($mon == 9);
-    return $self->loc('Nov.') if ($mon == 10);
-    return $self->loc('Dec.') if ($mon == 11);
+    return $self->loc("$MONTHS[$mon].") if $MONTHS[$mon];
+    return '';
 }
 
 # }}}
 
 # {{{ sub AddSeconds
 
-=head2 sub AddSeconds
+=head2 AddSeconds
 
 Takes a number of seconds as a string
 
@@ -508,7 +525,7 @@ sub AddDay {
 
 # {{{ sub Unix
 
-=head2 sub Unix [unixtime]
+=head2 Unix [unixtime]
 
 Optionally takes a date in unix seconds since the epoch format.
 Returns the number of seconds since the epoch
@@ -518,58 +535,35 @@ Returns the number of seconds since the epoch
 sub Unix {
     my $self = shift;
     
-    $self->{'time'} = shift if (@_);
+    $self->{'time'} = (shift || 0) if (@_);
     
     return ($self->{'time'});
 }
 # }}}
 
-# {{{ sub ISO
-
-=head2 ISO
-
-Takes nothing
-
-Returns the object's date in ISO format
+=head2 DateTime
 
 =cut
 
-sub ISO {
-    my $self=shift;
-    my    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst, $date) ;
-    
-    return ('1970-01-01 00:00:00') if ($self->Unix == -1);
-
-    #  0    1    2     3     4    5     6     7     8
-    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($self->Unix);
-    #make the year YYYY
-    $year+=1900;
-
-    #the month needs incrementing, as gmtime returns 0-11
-    $mon++;
-        
-    $date = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year,$mon,$mday, $hour,$min,$sec);
-    
-    return ($date);
+sub DateTime {
+    my $self = shift;
+    return $self->Get( @_, Date => 1, Time => 1 );
 }
-
-# }}}
 
 # {{{ sub Date
 
 =head2 Date
 
-Takes nothing
+Takes Format argument which allows you choose date formatter.
+Pass throught other arguments to the formatter method.
 
-Returns the object's date in yyyy-mm-dd format; this is the same as
-the ISO format without the time
+Returns the object's formatted date. Default formatter is ISO.
 
 =cut
 
 sub Date {
     my $self = shift;
-    my ($date, $time) = split ' ', $self->ISO;
-    return $date;
+    return $self->Get( @_, Date => 1, Time => 0 );
 }
 
 # }}}}
@@ -587,47 +581,227 @@ the ISO format without the date
 
 sub Time {
     my $self = shift;
-    my ($date, $time) = split ' ', $self->ISO;
-    return $time;
+    return $self->Get( @_, Date => 0, Time => 1 );
 }
 
 # }}}}
 
-# {{{ sub W3CDTF
+sub Get
+{
+    my $self = shift;
+    my %args = (@_);
+    my $formatter = delete($args{'Format'}) || 'ISO';
+    $formatter = 'ISO' unless $self->can($formatter);
+    no strict 'refs';
+    return $self->$formatter( %args );
+}
 
-=head2 W3CDTF
+=head2 Output formatters
 
-Takes nothing
+Fomatter is a method that returns date and time in different configurable
+format.
+Each method takes several arguments:
 
-Returns the object's date in W3C DTF format
+=over 1
+
+=item Date
+
+=item Time
+
+=item Timezone - Timezone context C<server>, C<user> or C<UTC>
+
+=back
+
+Formatters may also add own arguments to the list, for example
+in RFC2822 format day of time in output is optional so it
+understand argument C<DayOfTime>.
+
+=head3 DefaultFormat
+
+=cut
+
+sub DefaultFormat
+{
+    my $self = shift;
+    my %args = ( Date => 1,
+                 Time => 1,
+                 Timezone => '',
+                 @_,
+               );
+    
+       #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
+    $wday = $self->GetWeekday($wday);
+    $mon = $self->GetMonth($mon);
+    ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
+
+    if(!$args{'Date'} && !$args{'Time'}) {
+        return '';
+    } elsif($args{'Date'} && $args{'Time'}) {
+        return $self->loc('[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]',
+                          $wday,$mon,$mday,$hour,$min,$sec,$year);
+    } elsif($args{'Date'}) {
+        return $self->loc('[_1] [_2] [_3] [_4]',
+                          $wday,$mon,$mday,$year);
+    } else {
+        return $self->loc('[_1]:[_2]:[_3]',
+                          $hour,$min,$sec);
+    }
+}
+
+=head3 ISO
+
+Returns the object's date in ISO format
+Takes additional argument C<Seconds>.
+ISO format has no locale dependant elements so method
+ignore argument C<Localize>.
+
+=cut
+
+sub ISO {
+    my $self = shift;
+    my %args = ( Date => 1,
+                 Time => 1,
+                 Timezone => '',
+                 Seconds => 1,
+                 @_,
+               );
+       #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
+
+    #the month needs incrementing, as gmtime returns 0-11
+    $mon++;
+    
+    my $res = '';
+    $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
+    $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
+    $res .= sprintf(':%02d', $sec, $min) if $args{'Time'} && $args{'Seconds'};
+    $res =~ s/^\s+//;
+    
+    return $res;
+}
+
+=head3 W3CDTF
+
+Returns the object's date and time in W3C DTF format
 
 =cut
 
 sub W3CDTF {
     my $self = shift;
-    my $date = $self->ISO . 'Z';
+    my %args = ( Time => 1,
+                 @_,
+               );
+    my $date = $self->ISO(%args);
+    $date .= 'Z' if $args{'Time'};
     $date =~ s/ /T/;
     return $date;
 };
 
-# }}}
 
-# {{{ sub LocalTimezone 
+=head3 RFC2822
 
-=head2 LocalTimezone
-
-  Returns the current timezone. For now, draws off a system timezone, RT::Timezone. Eventually, this may
-pull from a 'Timezone' attribute of the CurrentUser
+Returns the object's date and time in RFC2822 format
 
 =cut
 
-sub LocalTimezone {
+sub RFC2822 {
     my $self = shift;
+    my %args = ( Date => 1,
+                 Time => 1,
+                 Timezone => '',
+                 DayOfWeek => 1,
+                 Seconds => 1,
+                 @_,
+               );
 
-    return $self->CurrentUser->Timezone
-	if $self->CurrentUser and $self->CurrentUser->can('Timezone');
+    # XXX: Don't know how to get timezone shift by timezone name
+       #  0    1    2     3     4    5     6     7      8     9
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
 
-    return ($RT::Timezone);
+    my ($date, $time) = ('','');
+    $date .= "$DAYS_OF_WEEK[$wday], " if $args{'DayOfWeek'} && $args{'Date'};
+    $date .= "$mday $MONTHS[$mon] $year" if $args{'Date'};
+    
+    $time .= sprintf("%02d:%02d", $hour, $min) if $args{'Time'};
+    $time .= sprintf(":%02d", $sec) if $args{'Time'} && $args{'Seconds'};
+    if( $args{'Time'} ) {
+        my $sign = $offset<0? '-': '+';
+        $offset = abs $offset;
+        $offset = int($offset/60);
+        my $offset_mins = $offset % 60;
+        my $offset_hours = int($offset/60);
+        $time .= sprintf(" $sign%02d%02d", $offset_hours, $offset_mins);
+    }
+    
+    return join ' ', grep $_, ($date, $time);
+}
+
+=head2 Timezones handling
+
+=head3 Localtime
+
+Takes one argument C<$context>, see Timezone method.
+
+Returns object's date and time in format perl builtin function C<localtime>
+returns with two exceptions:
+
+1) year is always in full specification, it is not offset against 1900.
+
+2) returns additional element C<offset> which represent timezone offset
+against C<UTC> in seconds.
+
+=cut
+
+sub Localtime
+{
+    my $self = shift;
+    my $tz = $self->Timezone(shift);
+
+    my $unix = $self->Unix;
+    $unix = 0 if $unix < 0;
+    
+    local $ENV{'TZ'} = $tz;
+    my @local = localtime($unix);
+    $local[5] += 1900; # change year to 4+ digits format
+    my $offset = Time::Local::timegm_nocheck(@local) - $unix;
+    return @local, $offset;
+}
+
+
+# }}}
+
+# {{{ sub Timezone
+
+=head3 Timezone
+
+Returns the timezone name.
+
+Takes C<$context> argument which could be either C<user>, C<server> or C<UTC>.
+Default value is C<user> that mean it returns current user's Timezone value.
+If context is C<server> it returns value of the <$Timezone> RT config option.
+If both server's and user's timezone names are undefined returns 'UTC'.
+
+=cut
+
+sub Timezone {
+    my $self = shift;
+    my $context = lc(shift || 'utc');
+    $context = 'utc' unless $context =~ /^(?:utc|server|user)$/;
+
+    my $tz;
+    if( $context eq 'user' ) {
+        $tz = $self->CurrentUser->UserObj->Timezone;
+    } elsif( $context eq 'server') {
+        $tz = $RT::Timezone;
+    } else {
+        $tz = 'UTC';
+    }
+
+    return ($tz || $RT::Timezone || 'UTC');
 }
 
 # }}}

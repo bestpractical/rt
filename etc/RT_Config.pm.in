@@ -469,8 +469,18 @@ Set($EmailOutputEncoding , 'utf-8');
 
 # }}}
 
-# {{{ RT Date Handling Options (for Time::ParseDate)
+# {{{ RT Date Handling Options
 
+# You can choose date and time format.
+# See "Output formatters" section in perldoc lib/RT/Date.pm
+# for more options.
+# Some examples:
+#Set($DateTimeFormat, { Fromat => 'ISO', Seconds => 0 });
+#Set($DateTimeFormat, 'RFC2822');
+#Set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });
+Set($DateTimeFormat, 'DefaultFormat');
+
+# Next two options are for Time::ParseDate
 # Set this to 1 if your local date convention looks like "dd/mm/yy"
 # instead of "mm/dd/yy".
 
