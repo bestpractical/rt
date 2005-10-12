@@ -75,6 +75,8 @@
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
+<& /Elements/Logo &>
+
 <div id="quickbar">
   <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>

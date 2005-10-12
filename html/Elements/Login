@@ -67,8 +67,6 @@ my $form_action = defined $goto             ? $goto
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
-<& /Elements/Logo &>
-
 %# End of div#quickbar from /Elements/Header
 </div>
 

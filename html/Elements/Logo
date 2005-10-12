@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
   <div id="logo">
-    <a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="216" height="50"></a>
+    <a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="177" height="33"></a>
 % if ($show_name) {
     <div class="rtname"><% loc("RT for [_1]", $RT::rtname) %></div>
 % }

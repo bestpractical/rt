@@ -133,23 +133,3 @@ form input.checkbox, form input.radio {
     z-index: 200;
 }
 
-#quickbar #topactions form {
-    display: inline;
-    margin-left: 1em;
-}
-
-#quickbar #topactions form .button {
-    padding: 0 2px 0 2px;
-    font-size: 1em;
-    margin: 0;
-}
-
-#quickbar #topactions form .field {
-    border: 1px solid #069;
-    padding: 1px;
-    font-size: 0.9em;
-}
-
-#quickbar #topactions form input.field {
-    padding: 3px;
-}

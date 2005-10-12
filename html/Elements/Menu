@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <ul<% !$level ? ' id="system-menu"' : ''|n %><% $menu_class ? qq[ class="$menu_class"] : ''|n %>>
-<div>
+<div<% $menu_class ? qq[ class="$menu_class"] : ''|n %>><div class="wrapper">
 % my $sep         = 0;
 % my $postsep     = 0;
 % my $accesskey   = 1;
@@ -101,7 +101,7 @@
 %
 %     $postsep = $sep;
 % }
-</div>
+</div></div>
 </ul>
 
 <%INIT>

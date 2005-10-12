@@ -51,8 +51,6 @@
 % }
   </div>
 
-<& /Elements/Logo &>
-
 %# End of div#quickbar from /Elements/Header
 </div>
 
@@ -60,11 +58,7 @@
 <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 
-<div id="header"
-% if ($RT::WebDefaultStylesheet eq '3.5-default') {
-     style="padding-top: <% 1.5 * $menu_depth %>em; _padding-top: <% 0.55 * $menu_depth %>em;"
-% }
-  >
+<div id="header">
   <h1><%$title%></h1>
 
 % my $sep       = 0;
