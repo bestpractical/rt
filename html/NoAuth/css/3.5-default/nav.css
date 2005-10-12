@@ -51,6 +51,7 @@
 #nav #system-menu {
     font-size: 1.1em;
     min-width: 47em;
+    width: 70%;
 }
 
 #nav ul {
@@ -59,14 +60,14 @@
     color: #eee;
     list-style: none;
     margin: 0;
-    padding: 0.2em 2em 0.4em 0;
-    float: right;
+    padding: 0;
+    float: left;
     position: relative;
 }
 
 #nav li ul {
     position: absolute;
-    right: 0;
+    left: 0;
     top: 2.21em;
     font-size: 1em;
 }
@@ -74,7 +75,7 @@
 %# Hide from IE... it can't handle relative positioning with both a
 %# left and right set
 html>body #nav li ul {
-    left: 2em;
+    right: 2em;
 }
 
 #nav :link,
@@ -121,10 +122,20 @@ html>body #nav :visited.selected.odd
 #nav li.first { padding-left: 1em; }
 
 #nav div { display: inline; }
-#nav ul div { display: block; }
+#nav ul div {
+    display: block;
+    text-align: left;
+    padding: 0.2em 1em 0.4em 0;
+}
 
+#nav ul { background: #069 url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
+#nav ul div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
+#nav ul.odd div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+
+/*
 #nav ul { background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left; }
 #nav ul .first { background: transparent url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
 #nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ct-light.gif) no-repeat top left; }
 #nav ul.odd .first { background: transparent url(<%$RT::WebImagesURL%>/css/cb-light.gif) no-repeat bottom left; }
-
+*/

@@ -1,6 +1,6 @@
 #logo {
-    float: left;
-    clear: left;
+    float: right;
+    clear: right;
 }
 
 #logo img { border: none; }
