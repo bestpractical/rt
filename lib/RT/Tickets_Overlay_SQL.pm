@@ -379,11 +379,11 @@ sub ClausesToSQL {
     my $first = 1;
 
     # Build SQL from the data hash
-     for my $data ( @{ $clauses->{$f} } ) {
-      $sql .= $data->[0] unless $first; $first=0;
-      $sql .= " '". $data->[2] . "' ";
-      $sql .= $data->[3] . " ";
-      $sql .= "'". $data->[4] . "' ";
+    for my $data ( @{ $clauses->{$f} } ) {
+      $sql .= $data->[0] unless $first; $first=0; # ENTRYAGGREGATOR
+      $sql .= " '". $data->[2] . "' ";            # FIELD
+      $sql .= $data->[3] . " ";                   # OPERATOR
+      $sql .= "'". $data->[4] . "' ";             # VALUE
     }
 
     push @sql, " ( " . $sql . " ) ";
