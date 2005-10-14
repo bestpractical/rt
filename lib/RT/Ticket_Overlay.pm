@@ -3483,7 +3483,7 @@ sub _Set {
     
         #If we can't actually set the field to the value, don't record
         # a transaction. instead, get out of here.
-        if ( $ret == 0 ) { return ( 0, $msg ); }
+        return ( 0, $msg ) unless $ret;
     }
 
     if ( $args{'RecordTransaction'} == 1 ) {
@@ -3726,6 +3726,10 @@ sub CustomFieldValues {
             $cf->LoadByNameAndQueue( Name => $field, Queue => '0' );
         }
         $field = $cf->id;
+        unless ( $field =~ /^\d+$/ ) {
+          # If we didn't find a valid cfid, give up.
+          return RT::CustomFieldValues->new($self->CurrentUser);
+        }
     }
     return $self->SUPER::CustomFieldValues($field);
 }

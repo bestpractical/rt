@@ -85,11 +85,13 @@ sub _InitSQL {
 sub _SQLLimit {
   my $self = shift;
     my %args = (@_);
-    if ($args{'FIELD'} eq 'EffectiveId') {
+    if ($args{'FIELD'} eq 'EffectiveId' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_effective_id'} = 1;
     }      
     
-    if ($args{'FIELD'} eq 'Type') {
+    if ($args{'FIELD'} eq 'Type' &&
+         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_type'} = 1;
     }
 
@@ -288,7 +290,7 @@ sub _parser {
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
 
 
-   my $subkey;
+   my $subkey = '';
    if ($key =~ /^(.+?)\.(.+)$/) {
      $key = $1;
      $subkey = $2;
@@ -377,11 +379,11 @@ sub ClausesToSQL {
     my $first = 1;
 
     # Build SQL from the data hash
-     for my $data ( @{ $clauses->{$f} } ) {
-      $sql .= $data->[0] unless $first; $first=0;
-      $sql .= " '". $data->[2] . "' ";
-      $sql .= $data->[3] . " ";
-      $sql .= "'". $data->[4] . "' ";
+    for my $data ( @{ $clauses->{$f} } ) {
+      $sql .= $data->[0] unless $first; $first=0; # ENTRYAGGREGATOR
+      $sql .= " '". $data->[2] . "' ";            # FIELD
+      $sql .= $data->[3] . " ";                   # OPERATOR
+      $sql .= "'". $data->[4] . "' ";             # VALUE
     }
 
     push @sql, " ( " . $sql . " ) ";
