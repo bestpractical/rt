@@ -2594,7 +2594,7 @@ sub _RestrictionsToClauses {
         }
 
         die "I don't know about $field yet"
-            unless ( exists $FIELDS{$realfield}
+            unless ( exists $FIELD_METADATA{$realfield}
             or $restriction->{CUSTOMFIELD} );
 
         my $type = $FIELD_METADATA{$realfield}->[0];
