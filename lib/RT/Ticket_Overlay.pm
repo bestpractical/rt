@@ -3719,7 +3719,7 @@ See L<RT::Record>
 sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
-    unless ( $field =~ /^\d+$/ ) {
+    if ( $field and $field !~ /^\d+$/ ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->LoadByNameAndQueue( Name => $field, Queue => $self->QueueObj->Id );
         unless ( $cf->id ) {
