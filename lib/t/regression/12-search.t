@@ -163,14 +163,9 @@ $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search'");
 is($tix->Count, 6, "LIKE requestor");
 
-TODO: {
-    
-    local $TODO = "Can't search for 'no requestor"; 
-    $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
-    is($tix->Count, 1, "Search for no requestor");
-
-};
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
+is($tix->Count, 1, "Search for no requestor");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = 'SearchTest1'");
