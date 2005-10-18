@@ -1,6 +1,7 @@
 #body {
-    margin-top: 0.5em;
-    margin-right: 0.5em;
+    margin: 0.5em 0.5em 0 0.5em;
+    float: left;
+    width: 80%;
 }
 
 #body h1 { font-size: 1.5em; }

@@ -59,23 +59,23 @@
 
 .ticket-transaction.basics { border-color: #9c3031; }
 .ticket-transaction.basics .type { background: #9c3031; }
-.ticket-summary .ticket-info-basics .content { border-left: none; }
-.ticket-summary .ticket-info-basics .title { background: #9c3031; }
+.ticket-summary .ticket-info-basics .titlebox-content { border-left: none; }
+.ticket-summary .ticket-info-basics .titlebox-title { background: #9c3031; }
 
 .ticket-transaction.people { border-color: #31309c; }
 .ticket-transaction.people .type { background: #31309c; }
-.ticket-summary .ticket-info-people .content { border-left: none; }
-.ticket-summary .ticket-info-people .title { background: #31309c; }
+.ticket-summary .ticket-info-people .titlebox-content { border-left: none; }
+.ticket-summary .ticket-info-people .titlebox-title { background: #31309c; }
 
 .ticket-transaction.links { border-color: #316531; }
 .ticket-transaction.links .type { background: #316531; }
-.ticket-summary .ticket-info-links .content  { border-left: none; }
-.ticket-summary .ticket-info-links .title  { background: #316531; }
+.ticket-summary .ticket-info-links .titlebox-content  { border-left: none; }
+.ticket-summary .ticket-info-links .titlebox-title  { background: #316531; }
 
 .ticket-transaction.dates { border-color: #633063; }
 .ticket-transaction.dates .type { background: #633063; }
-.ticket-summary .ticket-info-dates .content  { border-left: none; }
-.ticket-summary .ticket-info-dates .title  { background: #633063; }
+.ticket-summary .ticket-info-dates .titlebox-content  { border-left: none; }
+.ticket-summary .ticket-info-dates .titlebox-title  { background: #633063; }
 
 .ticket-transaction.message { border-color: #069; }
 .ticket-transaction.message .type { background: #069; }

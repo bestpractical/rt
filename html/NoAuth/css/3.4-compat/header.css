@@ -51,6 +51,8 @@
     background: #4282b5;
     margin-top: 0;
     padding-bottom: 0.2em;
+    float: left;
+    width: 82%;
 }
 
 #header h1 {

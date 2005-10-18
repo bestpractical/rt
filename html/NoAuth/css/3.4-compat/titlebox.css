@@ -1,4 +1,8 @@
-.titlebox .title {
+.titlebox {
+    margin: 0.5em 0;
+}
+
+.titlebox .titlebox-title {
     background: #069;
     padding: 0.2em 0.5em;
     color: white;
@@ -8,16 +12,16 @@
     position: relative;
 }
 
-.titlebox .title .right {
+.titlebox .titlebox-title .right {
     position: absolute;
     right: 1.5em;
     font-size: 0.9em;
 }
 
-#body .titlebox .title :link, #body .titlebox .title :visited {
+#body .titlebox .titlebox-title :link, #body .titlebox .titlebox-title :visited {
     color: white;
 }
 
-#body .titlebox .title .widget :link, #body .titlebox .title .widget :visited {
+#body .titlebox .titlebox-title .widget :link, #body .titlebox .titlebox-title .widget :visited {
     color: black;
 }
