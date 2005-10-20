@@ -411,6 +411,11 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 13456);
 
+# By default, RT shows newest transactions at the bottom of the ticket
+# history page, if you want see them at the top set this to '0'.
+
+Set($OldestTransactionsFirst, '1');
+
 # $DefaultSummaryRows is default number of rows displayed in for search
 # results on the frontpage.
 
