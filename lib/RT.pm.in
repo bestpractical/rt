@@ -126,13 +126,38 @@ have not been set already.
 =cut
 
 sub LoadConfig {
-     local *Set = sub { $_[0] = $_[1] unless defined $_[0] }; 
-    if ( -f "$SITE_CONFIG_FILE" ) {
-        require $SITE_CONFIG_FILE
-          || die ("Couldn't load RT config file  '$SITE_CONFIG_FILE'\n$@");
+
+    # get list of the core config files
+    my @configs = ();
+    foreach my $path( $RT::LocalEtcPath, $RT::EtcPath ) {
+        my $mask = File::Spec->catfile($path, "*_Config.pm");
+        my @files = glob $mask;
+        @files = grep { $_ !~ /^RT_Config\.pm$/ }
+                 grep { $_ && /^\w+_Config\.pm$/ }
+                 map { s/^.*[\\\/]//; $_ } @files;
+        push @configs, @files;
     }
-    require $CORE_CONFIG_FILE
-      || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
+    @configs = sort @configs;
+    unshift(@configs, 'RT_Config.pm');
+
+    foreach my $file( @configs ) {
+        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
+        local *Set = sub { $_[0] = $_[1] unless defined $_[0] };
+
+        # load site config
+        my $site_file = $file;
+        $site_file =~ s/(?=Config\.pm$)/Site/;
+        eval { require $site_file };
+        if( $@ && $@ !~ qr{^Can't locate \Q$site_file} ) {
+            die "Couldn't load site config file '$site_file': $@";
+        }
+
+        # load core config
+        eval { require $file };
+        if( $@ ) {
+            die "Couldn't load core config file '$file': $@";
+        }
+    }
     RT::I18N->Init;
 }
 
