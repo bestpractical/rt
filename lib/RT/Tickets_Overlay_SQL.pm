@@ -442,7 +442,6 @@ ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 sub FromSQL {
   my ($self,$query) = @_;
 
-  $self->CleanSlate;
   {
     # preserve first_row and show_rows across the CleanSlate
     local($self->{'first_row'}, $self->{'show_rows'});
