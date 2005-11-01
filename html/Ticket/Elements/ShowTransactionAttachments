@@ -161,7 +161,7 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
     elsif ( $message->ContentLength > 0 ) {
         $m->out(
             loc( 'Message body not shown because it is too large or is not plain text.' )
-       );
+        );
     }
 }
 
