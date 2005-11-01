@@ -95,7 +95,7 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
 
     # If it's text
     if (   $message->ContentType =~ m{^(text|message)}i
-        && $size <= $RT::MaxInlineBody )
+        && $message->ContentLength <= $RT::MaxInlineBody )
     {
 
         if (
@@ -157,6 +157,11 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
               . $Transaction->Id . '/'
               . $message->Id
               . '/">' );
+    }
+    elsif ( $message->ContentLength > 0 ) {
+        $m->out(
+            loc( 'Message body not shown because it is too large or is not plain text.' )
+       );
     }
 }
 
