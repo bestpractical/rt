@@ -87,6 +87,24 @@ if ($@) {
     }
 }
 
+if ( int( $RT::AutoLogoff || 0 ) ) {
+    my $last_update = new RT::Date( RT::SystemUser );
+    if( $session_class eq 'Apache::Session::File' ) {
+        require File::Spec;
+        my $file = File::Spec->cat($RT::MasonSessionDir, $session{'_session_id'});
+        $last_update->Set( Format => 'unix', Value => (stat $file)[9] );
+    } else {
+        my $sth = $RT::Handle->SimpleQuery("SELECT LastUpdated FROM sessions WHERE id = ?", $session{'_session_id'});
+        if( $sth ) {
+            $last_update->Set( Format => 'ISO', Value => ($sth->fetchrow_array)[0] );
+        }
+    }
+
+    if ( -$last_update->Diff( time ) > $RT::AutoLogoff * 60 ) {
+        %session = ();
+    }
+}
+
 if ( !$cookies{$cookiename} ) {
     my $cookie = new CGI::Cookie(
         -name  => $cookiename,
