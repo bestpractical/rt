@@ -395,6 +395,13 @@ Set($WebExternalAuto , undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
+# By default, RT hold session unless user close browser application, with
+# $AutoLogoff option you can setup session lifetime in minutes. User
+# would be logged out if he doesn't send any requests to RT for the
+# defined time.
+
+Set($AutoLogoff, 0);
+
 # By default, RT clears its database cache after every page view.
 # This ensures that you've always got the most current information 
 # when working in a multi-process (mod_perl or FastCGI) Environment

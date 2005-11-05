@@ -96,13 +96,19 @@ if ( int( $RT::AutoLogoff || 0 ) ) {
     } else {
         my $sth = $RT::Handle->SimpleQuery("SELECT LastUpdated FROM sessions WHERE id = ?", $session{'_session_id'});
         if( $sth ) {
-            $last_update->Set( Format => 'ISO', Value => ($sth->fetchrow_array)[0] );
+            # XXX: use datemanip format to force server's timezone because LastUpdated
+            # column is TIMESTAMP and mysql use local timezone for its values
+            # it should be changed when $date->Set would be able to handle timezones
+            $last_update->Set( Format => 'datemanip', Value => ($sth->fetchrow_array)[0] );
         }
     }
 
     if ( -$last_update->Diff( time ) > $RT::AutoLogoff * 60 ) {
         %session = ();
     }
+
+    # save session on each request when AutoLogoff is turned on
+    $session{'i'}++;
 }
 
 if ( !$cookies{$cookiename} ) {
@@ -112,7 +118,7 @@ if ( !$cookies{$cookiename} ) {
         -path  => '/',
     );
     $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
-} 
+}
 
 return();
 </%INIT>
