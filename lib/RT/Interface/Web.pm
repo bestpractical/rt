@@ -1400,24 +1400,24 @@ sub ProcessTicketDates {
 
     #Run through each field in this list. update the value if apropriate
     foreach my $field (@date_fields) {
+        next unless exists $ARGSRef->{ $field . '_Date' };
+        next if $ARGSRef->{ $field . '_Date' } eq '';
+    
         my ( $code, $msg );
 
         my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+        $DateObj->Set(
+            Format => 'unknown',
+            Value  => $ARGSRef->{ $field . '_Date' }
+        );
 
-        #If it's something other than just whitespace
-        if ( $ARGSRef->{ $field . '_Date' } ne '' ) {
-            $DateObj->Set(
-                Format => 'unknown',
-                Value  => $ARGSRef->{ $field . '_Date' }
-            );
-            my $obj = $field . "Obj";
-            if ( ( defined $DateObj->Unix )
-                and ( $DateObj->Unix ne $Ticket->$obj()->Unix() ) )
-            {
-                my $method = "Set$field";
-                my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
-                push @results, "$msg";
-            }
+        my $obj = $field . "Obj";
+        if ( ( defined $DateObj->Unix )
+            and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
+        {
+            my $method = "Set$field";
+            my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
+            push @results, "$msg";
         }
     }
 
