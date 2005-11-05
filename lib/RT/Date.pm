@@ -166,8 +166,8 @@ sub Set {
     my %args = ( Format => 'unix',
                  Value  => time,
                  @_ );
-    if ( !$args{'Value'}
-         || ( ( $args{'Value'} =~ /^\d*$/ ) and ( $args{'Value'} == 0 ) ) ) {
+
+    unless( $args{'Value'} ) {
         $self->Unix(-1);
         return ( $self->Unix() );
     }
@@ -175,7 +175,6 @@ sub Set {
     if ( $args{'Format'} =~ /^unix$/i ) {
         $self->Unix( $args{'Value'} );
     }
-
     elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
         $args{'Value'} =~ s!/!-!g;
 
@@ -199,28 +198,24 @@ sub Set {
 
             #now that we've parsed it, deal with the case where everything
             #was 0
-            if ( $mon == -1 ) {
-                $self->Unix(-1);
+            return ($self->Unix(-1)) if $mon < 0 || $mon > 11;
+
+            #Dateamnip strings aren't in GMT.
+            if ( $args{'Format'} =~ /^datemanip$/i ) {
+                $self->Unix(
+                      timelocal( $sec, $min, $hours, $mday, $mon, $year ) );
             }
+
+            #ISO and SQL dates are in GMT
             else {
-
-                #Dateamnip strings aren't in GMT.
-                if ( $args{'Format'} =~ /^datemanip$/i ) {
-                    $self->Unix(
-                          timelocal( $sec, $min, $hours, $mday, $mon, $year ) );
-                }
-
-                #ISO and SQL dates are in GMT
-                else {
-                    $self->Unix(
-                             timegm( $sec, $min, $hours, $mday, $mon, $year ) );
-                }
-
-                $self->Unix(-1) unless $self->Unix;
+                $self->Unix(
+                         timegm( $sec, $min, $hours, $mday, $mon, $year ) );
             }
+
+            $self->Unix(-1) unless $self->Unix;
         }
         else {
-            use Carp;
+            require Carp;
             Carp::cluck;
             $RT::Logger->debug(
                      "Couldn't parse date $args{'Value'} as a $args{'Format'}");
@@ -235,7 +230,7 @@ sub Set {
         my $date = Time::ParseDate::parsedate($args{'Value'},
                         UK => $RT::DateDayBeforeMonth,
                         PREFER_PAST => $RT::AmbiguousDayInPast,
-                        PREFER_FUTURE => !($RT::AmbiguousDayInPast));
+                        PREFER_FUTURE => !$RT::AmbiguousDayInPast );
 
         #This date has now been set to a date in the _local_ timezone.
         #since ISO dates are known to be in GMT (for RT's purposes);
@@ -297,7 +292,7 @@ sub Diff {
     my $self = shift;
     my $other = shift;
 
-    if (UNIVERSAL::isa($other => 'RT::Date')) {
+    if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
         $other=$other->Unix;
     }
     return ($self->Unix - $other);
@@ -318,7 +313,6 @@ as string fit for human consumption
 sub DiffAsString {
     my $self = shift;
     my $other = shift;
-
 
     if ($other < 1) {
         return ("");
