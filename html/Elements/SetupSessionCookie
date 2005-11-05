@@ -43,72 +43,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%init>
-return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
-
-my %cookies = CGI::Cookie->fetch();
-my $cookiename = "RT_SID_".$RT::rtname.".".$ENV{'SERVER_PORT'};
+<%ONCE>
 my %backends = (
     mysql	=> 'Apache::Session::MySQL',
     Pg		=> 'Apache::Session::Postgres',
 #    Oracle	=> 'Apache::Session::Oracle',
-) unless $RT::WebSessionClass;
+);
+</%ONCE>
+<%INIT>
+return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
+
+my %cookies = CGI::Cookie->fetch();
+my $cookiename = "RT_SID_".$RT::rtname.".".$ENV{'SERVER_PORT'};
+$SessionCookie ||= ( $cookies{$cookiename} ? $cookies{$cookiename}->value() : undef ),
+
 my $session_class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
-    # morning bug avoidance attempt -- pdh 20030815
-    unless ($RT::Handle->dbh && $RT::Handle->dbh->ping) {
-        $RT::Handle->Connect();
+my $session_attrs = $backends{$RT::DatabaseType} ? {
+    Handle     => $RT::Handle->dbh,
+    LockHandle => $RT::Handle->dbh,
+} : {
+    Directory     => $RT::MasonSessionDir,
+    LockDirectory => $RT::MasonSessionDir,
+};
+
+eval {
+    tie %session, $session_class, $SessionCookie, $session_attrs;
+};
+if ($@) {
+
+    # If the session is invalid, create a new session.
+    if ( $@ =~ /Object does not/i ) {
+        tie %session, $session_class, undef, $session_attrs;
+        undef $cookies{$cookiename};
     }
-    eval {
-        tie %session, $session_class,
-          $SessionCookie || ( $cookies{$cookiename} ? $cookies{$cookiename}->value() : undef ),
-          $backends{$RT::DatabaseType} ? {
-            Handle     => $RT::Handle->dbh,
-            LockHandle => $RT::Handle->dbh,
-          } : {
-            Directory     => $RT::MasonSessionDir,
-            LockDirectory => $RT::MasonSessionDir,
-          };
-    };
-    if ($@) {
-
-        # If the session is invalid, create a new session.
-        if ( $@ =~ /Object does not/i ) {
-            tie %session, $session_class, undef, $backends{$RT::DatabaseType}
-              ? {
-                Handle     => $RT::Handle->dbh,
-                LockHandle => $RT::Handle->dbh,
-              }
-              : {
-                Directory     => $RT::MasonSessionDir,
-                LockDirectory => $RT::MasonSessionDir,
-              };
-            undef $cookies{$cookiename};
-        }
-        else {
-            die loc("RT couldn't store your session.") . "\n"
-              . loc(
-"This may mean that that the directory '[_1]' isn't writable or a database table is missing or corrupt.",
-                $RT::MasonSessionDir
-              )
-              . "\n\n"
-              . $@;
-        }
+    else {
+        die loc("RT couldn't store your session.") . "\n"
+          . loc("This may mean that that the directory '[_1]' isn't writable or a database table is missing or corrupt.",
+            $RT::MasonSessionDir)
+          . "\n\n"
+          . $@;
     }
+}
 
-    if ( !$cookies{$cookiename} ) {
-        my $cookie = new CGI::Cookie(
-            -name  => $cookiename,
-            -value => $session{_session_id},
-            -path  => '/',
-        );
-        $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+if ( !$cookies{$cookiename} ) {
+    my $cookie = new CGI::Cookie(
+        -name  => $cookiename,
+        -value => $session{_session_id},
+        -path  => '/',
+    );
+    $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+} 
 
-    } 
-
-    return();
-</%init>
-<%args>
+return();
+</%INIT>
+<%ARGS>
 $SessionCookie => ''
-</%args>
+</%ARGS>
