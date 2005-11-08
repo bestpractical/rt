@@ -1,0 +1,233 @@
+#!@PERL@
+
+=head1 NAME
+
+rt-clean-sessions - clean old and duplicate RT sessions
+
+=head1 USAGE
+
+    rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
+
+    rt-clean sessions
+    rt-clean sessions --debug
+    rt-clean sessions --older 10D
+    rt-clean sessions --debug --older 1M
+
+=head1 DESCRIPTION
+
+Script cleans RT sessions from DB or dir with sessions data.
+Leaves in DB only one session per RT user and sessions that aren't older
+than specified(see options).
+
+Script is safe because data in the sessions is only temporary and can be deleted.
+
+=head1 OPTIONS
+
+=head2 older
+
+Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
+H(our), M(onth) and Y(ear) are also supported.
+
+For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
+older than 1 month.
+
+=head2 debug
+
+Turn on debug output.
+
+=cut
+
+use strict;
+use warnings;
+use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+
+use Getopt::Long;
+my %opt;
+GetOptions( \%opt, "older=s", "debug" );
+
+if( $opt{'older'} ) {
+    unless( $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
+        print STDERR "wrong format of the 'older' argumnet\n";
+        exit(1);
+    }
+    my ($num,$unit) = ($1, uc($2 ||'D'));
+    my %factor = ( H => 60*60 );
+    $factor{'D'} = $factor{'H'}*24;
+    $factor{'M'} = $factor{'D'}*31;
+    $factor{'Y'} = $factor{'D'}*365;
+    $opt{'older'} = $num * $factor{ $unit };
+}
+
+require RT;
+RT::LoadConfig();
+
+if( $opt{'debug'} ) {
+    $RT::LogToScreen = 'debug';
+} else {
+    $RT::LogToScreen = undef;
+}
+
+RT::ConnectToDatabase();
+RT::InitLogging();
+
+if( int($RT::AutoLogoff) || $opt{'older'} ) {
+    my $min;
+    foreach ($RT::AutoLogoff*60, $opt{'older'}) {
+        next unless $_;
+        $min = $_ unless $min;
+        $min = $_ if $_ < $min;
+    }
+
+    clear( $min );
+}
+
+clear_by_user();
+
+exit(0);
+
+my %backends = (
+    mysql	=> 'Apache::Session::MySQL',
+    Pg		=> 'Apache::Session::Postgres',
+);
+
+sub session_attributes
+{
+    return $backends{$RT::DatabaseType} ? {
+            Handle     => $RT::Handle->dbh,
+            LockHandle => $RT::Handle->dbh,
+        } : {
+            Directory     => $RT::MasonSessionDir,
+            LockDirectory => $RT::MasonSessionDir,
+        };
+}
+
+sub session_class
+{
+    no warnings 'once';
+    my $class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
+    eval "require $class";
+    die $@ if $@;
+    return $class;
+}
+
+sub session_ids
+{
+    my $attributes = session_attributes();
+    if( $attributes->{Directory} ) {
+        return _ids_dir( $attributes->{Directory} );
+    } else {
+        return _ids_db( $RT::Handle->dbh );
+    }
+}
+
+sub _ids_dir
+{
+    my $dir = shift;
+    require File::Find;
+    my %file;
+    File::Find::find(
+        sub { return unless /^[a-zA-Z0-9]+$/;
+              $file{$_} = (stat($_))[9];
+            },
+        $dir,
+    );
+
+    return [ sort { $file{$a} <=> $file{$b} } keys %file ];
+}
+
+sub _ids_db
+{
+    my $dbh = shift;
+    my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions ORDER BY LastUpdated DESC");
+    die "couldn't get ids: ". $dbh->errstr if $dbh->errstr;
+    return $ids;
+}
+
+sub clear
+{
+    my $attributes = session_attributes();
+    if( $attributes->{Directory} ) {
+        return _clear_dir( $attributes->{Directory}, @_ );
+    } else {
+        return _clear_db( $RT::Handle->dbh, @_ );
+    }
+}
+
+sub _clear_db
+{
+    my ($dbh, $older_than) = (shift, shift);
+    my $rows;
+    unless( int $older_than ) {
+        $rows = $dbh->do("DELETE FROM sessions");
+        die "couldn't delete sessions: ". $dbh->errstr unless defined $rows;
+    } else {
+        require POSIX;
+        my $date = POSIX::strftime("%Y-%m-%d %H:%M", localtime( time - int $older_than ) );
+
+        my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdate < ?");
+        die "couldn't prepare query: ". $dbh->errstr unless $sth;
+        $rows = $sth->execute( $date );
+        die "couldn't execute query: ". $dbh->errstr unless defined $rows;
+    }
+
+    $RT::Logger->info("successfuly deleted $rows sessions");
+    return;
+}
+
+sub _clear_dir
+{
+    my ($dir, $older_than) = @_;
+
+    require File::Spec if int $older_than;
+    
+    my $now = time;
+    my $class = session_class();
+    my $attrs = session_attributes();
+
+    foreach my $id( @{ session_ids() } ) {
+        if( int $older_than ) {
+            my $ctime = (stat(File::Spec->catfile($dir,$id)))[9];
+            if( $ctime > $now - $older_than ) {
+                $RT::Logger->debug("skipped session '$id', isn't old");
+                next;
+            }
+        }
+
+        my %session;
+        local $@;
+        eval { tie %session, $class, $id, $attrs };
+        if( $@ ) {
+            $RT::Logger->debug("skipped session '$id', couldn't load: $@");
+            next;
+        }
+        tied(%session)->delete;
+        $RT::Logger->info("successfuly deleted session '$id'");
+    }
+    return;
+}
+
+sub clear_by_user
+{
+    my $class = session_class();
+    my $attrs = session_attributes();
+
+    my %seen = ();
+    foreach my $id( @{ session_ids() } ) {
+        my %session;
+        local $@;
+        eval { tie %session, $class, $id, $attrs };
+        if( $@ ) {
+            $RT::Logger->debug("skipped session '$id', couldn't load: $@");
+            next;
+        }
+        if( $session{'CurrentUser'} && $session{'CurrentUser'}->id ) {
+            unless( $seen{ $session{'CurrentUser'}->id }++ ) {
+                $RT::Logger->debug("skipped session '$id', first user's session");
+                next;
+            }
+        }
+        tied(%session)->delete;
+        $RT::Logger->info("successfuly deleted session '$id'");
+    }
+}
+

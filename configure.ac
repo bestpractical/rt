@@ -279,6 +279,7 @@ AC_CONFIG_FILES([
 		 sbin/rt-dump-database
 		 sbin/rt-setup-database
 		 sbin/rt-test-dependencies
+         sbin/rt-clean-sessions
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
