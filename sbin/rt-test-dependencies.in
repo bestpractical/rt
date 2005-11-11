@@ -153,7 +153,7 @@ Digest::MD5 2.27
 DBI 1.37
 Test::Inline
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.26
+DBIx::SearchBuilder 1.35
 Text::Template
 File::Spec 0.8
 HTML::Entities 
