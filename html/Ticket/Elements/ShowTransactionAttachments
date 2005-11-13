@@ -89,7 +89,7 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
 <div class="messagebody">
 <%perl>
 # {{{   if it has a content-disposition: attachment, don't show inline
-unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
+unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 
     my $content;
 
