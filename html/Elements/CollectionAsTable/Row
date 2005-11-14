@@ -71,6 +71,7 @@ foreach my $column (@Format) {
     $item++;
     $m->out('<td class="collection-as-table" ');
     $m->out( 'align="' . $column->{align} . '"' ) if ( $column->{align} );
+    $m->out( 'style="' . $column->{style} . '"' ) if ( $column->{style} );
     $m->out('>');
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
