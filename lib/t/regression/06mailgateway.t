@@ -62,7 +62,7 @@ use RT::I18N;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://this.test.for.non-connection.is.expected.to.generate.an.error"), "Opened the mailgate - The error below is expected - $@");
 print MAIL <<EOF;
 From: root\@localhost
-To: rt\@example.com
+To: rt\@$RT::rtname
 Subject: This is a test of new ticket creation
 
 Foob!
@@ -78,7 +78,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
-To: rt\@example.com
+To: rt\@$RT::rtname
 Subject: This is a test of new ticket creation
 
 Blah!
@@ -105,8 +105,8 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist\@example.com
-To: rt\@example.com
+From: doesnotexist\@$RT::rtname
+To: rt\@$RT::rtname
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -123,7 +123,7 @@ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist@example.com');
+$u->Load("doesnotexist\@$RT::rtname");
 ok( $u->Id == 0, " user does not exist and was not created by failed ticket submission");
 
 
@@ -141,8 +141,8 @@ ok ($val, "Granted everybody the right to create tickets - $msg");
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist\@example.com
-To: rt\@example.com
+From: doesnotexist\@$RT::rtname
+To: rt\@$RT::rtname
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -160,7 +160,7 @@ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
  $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist@example.com');
+$u->Load("doesnotexist\@$RT::rtname");
 ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 
 # }}}
@@ -174,9 +174,9 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist-2\@example.com
-To: rt\@example.com
-Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
+From: doesnotexist-2\@$RT::rtname
+To: rt\@$RT::rtname
+Subject: [$RT::rtname #@{[$tick->Id]}] This is a test of a reply as an unknown user
 
 Blah!  (Should not work.)
 Foob!
@@ -186,7 +186,7 @@ close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-2@example.com');
+$u->Load('doesnotexist-2@$RT::rtname');
 ok( $u->Id == 0, " user does not exist and was not created by ticket correspondence submission");
 # }}}
 
@@ -199,9 +199,9 @@ ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist-2\@example.com
-To: rt\@example.com
-Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
+From: doesnotexist-2\@$RT::rtname
+To: rt\@$RT::rtname
+Subject: [$RT::rtname #@{[$tick->Id]}] This is a test of a reply as an unknown user
 
 Blah!
 Foob!
@@ -212,7 +212,7 @@ is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 
 $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-2@example.com');
+$u->Load("doesnotexist-2\@$RT::rtname");
 ok( $u->Id != 0, " user exists and was created by ticket correspondence submission");
 
 # }}}
@@ -225,9 +225,9 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist-3\@example.com
-To: rt\@example.com
-Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
+From: doesnotexist-3\@$RT::rtname
+To: rt\@$RT::rtname
+Subject: [$RT::rtname #@{[$tick->Id]}] This is a test of a comment as an unknown user
 
 Blah!  (Should not work.)
 Foob!
@@ -238,7 +238,7 @@ close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-3@example.com');
+$u->Load("doesnotexist-3\@$RT::rtname");
 ok( $u->Id == 0, " user does not exist and was not created by ticket comment submission");
 
 # }}}
@@ -250,9 +250,9 @@ ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist-3\@example.com
-To: rt\@example.com
-Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
+From: doesnotexist-3\@$RT::rtname
+To: rt\@$RT::rtname
+Subject: [$RT::rtname #@{[$tick->Id]}] This is a test of a comment as an unknown user
 
 Blah!
 Foob!
@@ -263,7 +263,7 @@ close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-3@example.com');
+$u->Load("doesnotexist-3\@$RT::rtname");
 ok( $u->Id != 0, " user exists and was created by ticket comment submission");
 
 # }}}
@@ -351,7 +351,7 @@ ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --act
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
-To: rtemail\@example.com
+To: rtemail\@$RT::rtname
 Subject: This is a test of I18N ticket creation
 Content-Type: text/plain; charset="utf-8"
 
@@ -385,7 +385,7 @@ ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --act
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
-To: rtemail\@example.com
+To: rtemail\@$RT::rtname
 Subject: This is a test of I18N ticket creation
 Content-Type: text/plain; charset="utf-8"
 
@@ -436,7 +436,7 @@ is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action take"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [example.com \#$id] test
+Subject: [$RT::rtname \#$id] test
 
 EOF
 close (MAIL);
@@ -461,7 +461,7 @@ is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [example.com \#$id] correspondence
+Subject: [$RT::rtname \#$id] correspondence
 
 test
 EOF
@@ -474,14 +474,14 @@ is( $tick->Id, $id, 'load correct ticket');
 is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
 my $txns = $tick->Transactions;
 $txns->Limit( FIELD => 'Type', VALUE => 'Correspond');
-is( $txns->Last->Subject, "[example.com \#$id] correspondence", 'successfuly add correspond within take via email' );
+is( $txns->Last->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 # +1 because of auto open
 is( $tick->Transactions->Count, 6, 'no superfluous transactions');
 
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action resolve"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [example.com \#$id] test
+Subject: [$RT::rtname \#$id] test
 
 EOF
 close (MAIL);
