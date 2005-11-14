@@ -45,8 +45,12 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 my @params;
-while ( (my $key, my $value) = each %ARGS ){
+while ( my ($key, $value) = each %ARGS ){
+    if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
+	push @params, map $key."=".$m->interp->apply_escapes($_,'u'), @$value;
+    } else {
 	push @params, $key."=".$m->interp->apply_escapes($value,'u');
+    }
 }
 return(join('&',@params));
 </%init>
