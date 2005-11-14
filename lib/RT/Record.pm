@@ -1297,7 +1297,7 @@ sub _AddLink {
                              Target => $args{'Target'} );
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
-        return ( $old_link->id, $self->loc("Link already exists"), 0 );
+        return ( $old_link->id, $self->loc("Link already exists") );
     }
 
     # }}}
