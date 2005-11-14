@@ -45,7 +45,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-use Test::More tests => 14;
+use Test::More tests => 26;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -108,3 +108,33 @@ is( $ticket->Owner, $user_id, "set correct owner" );
 
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $ticket ), "user is owner and can reply to ticket" );
 
+# Testing of EquivObjects
+$group = RT::Group->new( $RT::SystemUser );
+ok( $group->LoadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
+$ace = RT::ACE->new( $RT::SystemUser );
+my ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ModifyTicket', Object => $queue );
+ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
+ok( $group->PrincipalObj->HasRight( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
+ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket ), "user is not AdminCc and can't modify ticket" );
+($status, $msg) = $ticket->AddWatcher(Type => 'AdminCc', PrincipalId => $user->PrincipalId);
+ok( $status, "successfuly added user as AdminCc");
+ok( $user->HasRight( Right => 'ModifyTicket', Object => $ticket ), "user is AdminCc and can modify ticket" );
+
+my $ticket2 = RT::Ticket->new($RT::SystemUser);
+my ($ticket2_id) = $ticket2->Create( Queue => $queue_id, Subject => 'test2');
+ok( $ticket2_id, 'new ticket created' );
+ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket2 ), "user is not AdminCc and can't modify ticket2" );
+
+# now we can finally test EquivObjects
+my $equiv = [ $ticket ];
+ok( $user->HasRight( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv ), 
+    "user is not AdminCc but can modify ticket2 because of EquivObjects" );
+
+# the first a third test below are the same, so they should both pass
+my $equiv2 = [];
+ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv2 ), 
+    "user is not AdminCc and can't modify ticket2" );
+ok( $user->HasRight( Right => 'ModifyTicket', Object => $ticket, EquivObjects => $equiv2 ), 
+    "user is AdminCc and can modify ticket" );
+ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv2 ), 
+    "user is not AdminCc and can't modify ticket2 (same question different answer)" );
