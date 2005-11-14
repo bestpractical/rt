@@ -3,6 +3,7 @@
 }
 
 .titlebox .titlebox-content {
+    margin-top: -1px;
     padding: 1em 2em 0.5em 2em;
     margin: 0;
     /*margin: 1em 2em 0.5em 2em;*/
@@ -26,7 +27,6 @@
 .titlebox .titlebox .titlebox-content
 {
     background: #eee;
-    margin-top: -1px;
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
     border-left: 0.5em solid #069;
