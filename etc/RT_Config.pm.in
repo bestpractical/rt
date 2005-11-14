@@ -210,6 +210,11 @@ Set($MailCommand , 'sendmailpipe');
 # These options are good for most sendmail wrappers and workalikes
 Set($SendmailArguments , "-oi -t");
 
+# $SendmailBounceArguments defines what flags to pass to $Sendmail
+# assuming RT needs to send an error (ie. bounce).
+
+Set($SendmailBounceArguments , '-f "<>"');
+
 # These arguments are good for sendmail brand sendmail 8 and newer
 #Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");
 
