@@ -448,7 +448,7 @@ sub ParseTicketId {
     my $Subject = shift;
     my $id;
 
-    my $test_name = $RT::EmailSubjectTagRegex || qr/\Q$RT::rtname\E/;
+    my $test_name = $RT::EmailSubjectTagRegex || qr/\Q$RT::rtname\E/i;
 
     if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
         my $id = $1;

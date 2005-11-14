@@ -35,16 +35,16 @@ Set($rtname , "example.com");
 # token matching and that you should use only "non-capturing" parenthesis
 # grouping. For example:
 #
-# 	Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/ );
+# 	Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );
 #
 # and NOT
 # 
-# 	Set($EmailSubjectTagRegex, qr/(example.com|example.org)/ );
+# 	Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );
 #
 # This setting would make RT behave exactly as it does without the 
 # setting enabled.
 #
-# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/ );
+# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
 
 
 
