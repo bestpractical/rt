@@ -43,6 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<%doc>
+#   This is (ab)used in Admin/(Users|Groups)/History.html and should probably
+#   be generalized at some point.
+</%doc>
 <%perl>
 if ($ShowDisplayModes or $ShowTitle) {
     my $title = $ShowTitle
