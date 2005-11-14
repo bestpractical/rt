@@ -9,7 +9,7 @@ CREATE TABLE Attachments (
   Filename varchar(255) NULL  ,
   ContentType varchar(80) NULL  ,
   ContentEncoding varchar(80) NULL  ,
-  Content LONGTEXT NULL  ,
+  Content LONGBLOB NULL  ,
   Headers LONGTEXT NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -46,8 +46,8 @@ CREATE INDEX Queues2 ON Queues (Disabled) ;
 
 CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Base varchar(240) NULL  ,
-  Target varchar(240) NULL  ,
+  Base varchar(240) CHARACTER SET latin1 NULL  ,
+  Target varchar(240) CHARACTER SET latin1 NULL  ,
   Type varchar(20) NOT NULL  ,
   LocalTarget integer NOT NULL DEFAULT 0  ,
   LocalBase integer NOT NULL DEFAULT 0  ,
@@ -433,7 +433,7 @@ CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
-  Content text,
+  Content BLOB,
   ContentType varchar(16),
   ObjectType varchar(64),
   ObjectId integer, # foreign key to anything
@@ -455,8 +455,8 @@ CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 # We should have a reaper script somewhere.
 
 CREATE TABLE sessions (
-    id char(32) NOT NULL,
-    a_session LONGTEXT,
+    id char(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+    a_session LONGBLOB,
     LastUpdated TIMESTAMP,
     PRIMARY KEY (id)
 );
