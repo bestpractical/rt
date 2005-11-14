@@ -139,6 +139,12 @@ The following switches will tell the tool to check for specific dependencies
 
 You can also specify -v or --verbose to list the status of all dependencies,
 rather than just the missing ones.
+
+The "RT_FIX_DEPS_CMD" environment variable, if set, will be used
+instead of the standard CPAN shell by --install to install any
+required modules.  It will be called with the module name, or, if
+"RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
+module name ebcore calling the program.
 .
 }
 
@@ -312,7 +318,20 @@ sub test_dep {
 
 sub resolve_dep {
     my $module = shift;
-    system( qq[@PERL@ -MCPAN -e'install("$module")'] );
+    print "\tInstall module $module\n";
+    my $ext = $ENV{'RT_FIX_DEPS_CMD'};
+    unless( $ext ) {
+	require CPAN;
+	return CPAN::Shell->install($module);
+    }
+
+    if( $ext =~ /\%s/) {
+	$ext =~ s/\%s/$module/g; # sprintf( $ext, $module );
+    } else {
+	$ext .= " $module";
+    }
+    print "\t\tcommand: '$ext'\n";
+    return scalar `$ext 1>&2`;
 }
 
 sub download_mods {
