@@ -233,20 +233,6 @@ while ( my $ticket = $Tickets->Next ) {
     }
 }
 
-my $do_comment_reply = 0;
-
-# Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp( $ARGS{'UpdateContent'} );
-
-if (   $ARGS{'UpdateContent'}
-    && $ARGS{'UpdateContent'} ne ''
-    && $ARGS{'UpdateContent'} ne "-- \n"
-    . $session{'CurrentUser'}->UserObj->Signature )
-{
-    $do_comment_reply = 1;
-}
-
 #Iterate through each ticket we've been handed
 my @linkresults;
 my %queues;
@@ -268,13 +254,10 @@ while ( my $Ticket = $Tickets->Next ) {
     $ARGS{'id'} = $Ticket->id;
     $queues{ $Ticket->QueueObj->Id }++;
 
-    my @updateresults;
-    if ($do_comment_reply) {
-        push @updateresults, ProcessUpdateMessage(
+    my @updateresults, ProcessUpdateMessage(
             TicketObj => $Ticket,
             ARGSRef   => \%ARGS,
         );
-    }
 
     #Update the basics.
     my @basicresults =

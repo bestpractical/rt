@@ -181,17 +181,10 @@ if ( $id[0] eq 'new' ) {
 
     # }}}
 
-    if (
-        $session{'Attachments'}
-        || (   $ARGS{'UpdateContent'} ne ''
-            && $ARGS{'UpdateContent'} ne "-- \n"
-            . $session{'CurrentUser'}->UserObj->Signature )
-      )
-    {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-    }
+    # XXX: review attachment processing because all this had done in the different ways
+    # in the different places.
     push @results, ProcessUpdateMessage(
-        ARGSRef   => \%ARGS,
+        ARGSRef   => { %ARGS, UpdateAttachments => $session{'Attachments'} },
         TicketObj => $Ticket,
     );
 

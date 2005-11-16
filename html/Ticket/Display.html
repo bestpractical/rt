@@ -67,23 +67,21 @@
       ShowHeaders => $ARGS{'ShowHeaders'},
       Attachments => $attachments,
       AttachmentContent => $attachment_content
-      
-      &> 
+&> 
 
 
 <%ARGS>
 $id => undef
-$Create => undef
+$TicketObj => undef
 $ShowHeaders => 0
 $Collapsed => undef
-$TicketObj => undef
 </%ARGS>
 
 <%INIT>
 
 $m->comp('/Elements/Callback', _CallbackName => 'Initial', TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
-my ($linkid, $message, $tid, @Actions, $Tickets);  
+my (@Actions, $Tickets);  
 
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
@@ -91,57 +89,45 @@ unless ($id || $TicketObj) {
 
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
-    
-    my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'Queue'})) {
-	Abort('Queue not found');
+
+    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    $Queue->Load($ARGS{'Queue'});
+    unless ( $Queue->id ) {
+        Abort('Queue not found');
     }
-    
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort('You have no permission to create tickets in that queue.');
     }
-    ($TicketObj, @Actions) =
-	CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-    delete $session{'Attachments'};
-    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-	Abort("No permission to view newly created ticket #".$TicketObj->id.".");
-	}
+
+    ($TicketObj, @Actions) = CreateTicket(
+        Attachments => delete $session{'Attachments'},
+        %ARGS,
+    );
+    unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
+        Abort("No permission to view newly created ticket #".$TicketObj->id.".");
+    }
     # }}}
 } else { 
-    if (!$TicketObj) {
-
-	$TicketObj = RT::Ticket->new($session{'CurrentUser'});
-
-	$TicketObj = LoadTicket($ARGS{'id'});
-	unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-	    Abort("No permission to view ticket");
-	}
+    $TicketObj ||= LoadTicket($ARGS{'id'});
+    if ( defined $ARGS{'Action'} ) {
+        if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+            my $action = $1;
+            my ($res, $msg) = $TicketObj->$action();
+            push(@Actions, $msg);
+        }
     }
 
-    if (defined $ARGS{'Action'}) {
-	if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-	    my $action = $1;
-	    my ($res, $msg)=$TicketObj->$action();
-	    push(@Actions, $msg);
-	}
-    }
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+    push @Actions, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
 
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    if ( $ARGS{'UpdateTimeWorked'} ||
-	 $session{'Attachments'} || 
-	 (   defined $ARGS{'UpdateContent'}
-             && $ARGS{'UpdateContent'} ne ''
-	     && $ARGS{'UpdateContent'} ne "-- \n"
-	     . $session{'CurrentUser'}->UserObj->Signature )) {
-	$ARGS{UpdateAttachments} = $session{'Attachments'};
-	push @Actions, ProcessUpdateMessage( ARGSRef   => \%ARGS, TicketObj => $TicketObj );
-	delete $session{'Attachments'};
+    # XXX: we shouldn't block actions here if user has no right to see the ticket,
+    # but we should allow him to see actions he has done
+    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+        Abort("No permission to view ticket");
     }
-    #Process status updates
-    my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
-    my @results = ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%ARGS);
-
-    push (@Actions, @BasicActions, @results);
 }
 
 # This code does automatic redirection if any updates happen. 
@@ -161,7 +147,7 @@ if (@Actions) {
 }
 
 $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
-	 TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
+         TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
 
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);

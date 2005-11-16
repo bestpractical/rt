@@ -165,17 +165,12 @@ unless ($OnlySearchForPeople) {
            Body                => "",
            AttachmentFieldName => 'UpdateAttachment'
         );
-	delete $ARGS{'UpdateAttachment'};
-	$ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
+        delete $ARGS{'UpdateAttachment'};
+        $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
     }
 
-    $ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
-
-    if ($ARGS{'UpdateAttachments'} || ( $ARGS{'UpdateContent'} && $ARGS{'UpdateContent'} ne  "-- \n" .
-				$session{'CurrentUser'}->UserObj->Signature)) {
-   	    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
-	}
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
+    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
 }
 push @results, @wresults;
 push @results, @dresults;

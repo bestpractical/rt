@@ -433,20 +433,50 @@ sub LoadTicket {
 
 # {{{ sub ProcessUpdateMessage
 
+=head2 ProcessUpdateMessage
+
+Takes paramhash with fields ARGSRef, TicketObj and SkipSignatureOnly.
+
+Don't write message if it only contains current user's signature and
+SkipSignatureOnly argument is true. Function anyway adds attachments
+and updates time worked field even if skips message. The default value
+is true.
+
+=cut
+
 sub ProcessUpdateMessage {
 
     #TODO document what else this takes.
     my %args = (
         ARGSRef   => undef,
         TicketObj => undef,
+        SkipSignatureOnly => 1,
         @_
     );
+
     my @results;
 
     #Make the update content have no 'weird' newlines in it
     return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
-                     || $args{ARGSRef}->{'UpdateContent'}
-                     || $args{ARGSRef}->{'UpdateAttachments'};
+                     || $args{ARGSRef}->{'UpdateAttachments'}
+                     || $args{ARGSRef}->{'UpdateContent'};
+
+    $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g if $args{ARGSRef}->{'UpdateContent'};
+
+    # skip updates if the content contains only user's signature
+    # and we don't update other fields
+    if( $args{'SkipSignatureOnly'} ) {
+        my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
+        $sig =~ s/^\s*|\s*$//g;
+        if( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
+            return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
+                             $args{ARGSRef}->{'UpdateAttachments'};
+
+            # we have to create transaction, but we don't create attachment
+            # XXX: this couldn't work as expected
+            $args{ARGSRef}->{'UpdateContent'} = '';
+        }
+    }
 
     if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
@@ -476,11 +506,12 @@ sub ProcessUpdateMessage {
         $old_txn = $args{TicketObj}->Transactions->First();
     }
 
-    if ( $old_txn->Message && $old_txn->Message->First ) {
-        my @in_reply_to = split(/\s+/m, $old_txn->Message->First->GetHeader('In-Reply-To') || '');  
-        my @references = split(/\s+/m, $old_txn->Message->First->GetHeader('References') || '' );  
-        my @msgid = split(/\s+/m,$old_txn->Message->First->GetHeader('Message-ID') || ''); 
-        my @rtmsgid = split(/\s+/m,$old_txn->Message->First->GetHeader('RT-Message-ID') || ''); 
+    if ( $old_txn->Message and my $msg = $old_txn->Message->First ) {
+        my @in_reply_to = split(/\s+/m, $msg->GetHeader('In-Reply-To') || '');  
+        my @references = split(/\s+/m, $msg->GetHeader('References') || '' );  
+        my @msgid = split(/\s+/m, $msg->GetHeader('Message-ID') || '');
+        #XXX: custom header should begin with X- otherwise is violation of the standard
+        my @rtmsgid = split(/\s+/m, $msg->GetHeader('RT-Message-ID') || ''); 
 
         $Message->head->replace( 'In-Reply-To', join(' ', @rtmsgid ? @rtmsgid : @msgid));
         $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
