@@ -438,61 +438,58 @@ sub ProcessUpdateMessage {
     #TODO document what else this takes.
     my %args = (
         ARGSRef   => undef,
-        Actions   => undef,
         TicketObj => undef,
         @_
     );
+    my @results;
 
     #Make the update content have no 'weird' newlines in it
-    if (   $args{ARGSRef}->{'UpdateTimeWorked'}
-        || $args{ARGSRef}->{'UpdateContent'}
-        || $args{ARGSRef}->{'UpdateAttachments'} )
-    {
+    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
+                     || $args{ARGSRef}->{'UpdateContent'}
+                     || $args{ARGSRef}->{'UpdateAttachments'};
 
-        if (
-            $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject() )
-        {
-            $args{ARGSRef}->{'UpdateSubject'} = undef;
-        }
+    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
+        $args{ARGSRef}->{'UpdateSubject'} = undef;
+    }
 
-        my $Message = MakeMIMEEntity(
-            Subject => $args{ARGSRef}->{'UpdateSubject'},
-            Body    => $args{ARGSRef}->{'UpdateContent'},
-        );
+    my $Message = MakeMIMEEntity(
+        Subject => $args{ARGSRef}->{'UpdateSubject'},
+        Body    => $args{ARGSRef}->{'UpdateContent'},
+    );
 
-        $Message->head->add( 'Message-ID' => 
-              "<rt-"
-              . $RT::VERSION . "-"
-              . $$ . "-"
-              . CORE::time() . "-"
-              . int(rand(2000)) . "."
-              . $args{'TicketObj'}->id . "-"
-              . "0" . "-"  # Scrip
-              . "0" . "@"  # Email sent
-              . $RT::Organization
-              . ">" );
-        my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
-        if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
-            $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
-        }
-        else {
-            $old_txn = $args{TicketObj}->Transactions->First();
-        }
+    $Message->head->add( 'Message-ID' => 
+          "<rt-"
+          . $RT::VERSION . "-"
+          . $$ . "-"
+          . CORE::time() . "-"
+          . int(rand(2000)) . "."
+          . $args{'TicketObj'}->id . "-"
+          . "0" . "-"  # Scrip
+          . "0" . "@"  # Email sent
+          . $RT::Organization
+          . ">" );
+    my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
+    if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
+        $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
+    }
+    else {
+        $old_txn = $args{TicketObj}->Transactions->First();
+    }
 
-        if ( $old_txn->Message && $old_txn->Message->First ) {
-            my @in_reply_to = split(/\s+/m, $old_txn->Message->First->GetHeader('In-Reply-To') || '');  
-            my @references = split(/\s+/m, $old_txn->Message->First->GetHeader('References') || '' );  
-            my @msgid = split(/\s+/m,$old_txn->Message->First->GetHeader('Message-ID') || ''); 
-            my @rtmsgid = split(/\s+/m,$old_txn->Message->First->GetHeader('RT-Message-ID') || ''); 
+    if ( $old_txn->Message && $old_txn->Message->First ) {
+        my @in_reply_to = split(/\s+/m, $old_txn->Message->First->GetHeader('In-Reply-To') || '');  
+        my @references = split(/\s+/m, $old_txn->Message->First->GetHeader('References') || '' );  
+        my @msgid = split(/\s+/m,$old_txn->Message->First->GetHeader('Message-ID') || ''); 
+        my @rtmsgid = split(/\s+/m,$old_txn->Message->First->GetHeader('RT-Message-ID') || ''); 
 
-            $Message->head->replace( 'In-Reply-To', join (' ', @rtmsgid ? @rtmsgid : @msgid));
-            $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
-        }
+        $Message->head->replace( 'In-Reply-To', join(' ', @rtmsgid ? @rtmsgid : @msgid));
+        $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
+    }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
         $Message->make_multipart;
         $Message->add_part($_)
-          foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+           foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     ## TODO: Implement public comments
@@ -503,7 +500,7 @@ sub ProcessUpdateMessage {
             MIMEObj      => $Message,
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
         );
-        push( @{ $args{Actions} }, $Description );
+        push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
@@ -514,17 +511,17 @@ sub ProcessUpdateMessage {
             MIMEObj      => $Message,
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
           );
-        push( @{ $args{Actions} }, $Description );
+        push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     else {
         push(
-            @{ $args{'Actions'} },
+            @results,
             loc("Update type was neither correspondence nor comment.") . " "
               . loc("Update not recorded.")
         );
     }
-}
+    return @results;
 }
 
 # }}}
@@ -759,7 +756,7 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit Subject
     if ( $args{ARGS}->{'ValueOfSubject'} ne '' ) {
-            my $val = $args{ARGS}->{'ValueOfSubject'};
+        my $val = $args{ARGS}->{'ValueOfSubject'};
         if ($args{ARGS}->{'SubjectOp'} =~ /like/) {
             $val = "%".$val."%";
         }
@@ -777,14 +774,15 @@ sub ProcessSearchQuery {
 
         if ( $args{ARGS}->{'DateType'} eq 'Updated' ) {
             $session{'tickets'}->LimitTransactionDate(
-                                            VALUE    => $date,
-                                            OPERATOR => $args{ARGS}->{'DateOp'},
+                VALUE    => $date,
+                OPERATOR => $args{ARGS}->{'DateOp'},
             );
         }
         else {
-            $session{'tickets'}->LimitDate( FIELD => $args{ARGS}->{'DateType'},
-                                            VALUE => $date,
-                                            OPERATOR => $args{ARGS}->{'DateOp'},
+            $session{'tickets'}->LimitDate(
+                FIELD => $args{ARGS}->{'DateType'},
+                VALUE => $date,
+                OPERATOR => $args{ARGS}->{'DateOp'},
             );
         }
     }
@@ -808,17 +806,12 @@ sub ProcessSearchQuery {
  # {{{ Limit CustomFields
 
     foreach my $arg ( keys %{ $args{ARGS} } ) {
-        my $id;
-        if ( $arg =~ /^CustomField(\d+)$/ ) {
-            $id = $1;
-        }
-        else {
-            next;
-        }
         next unless ( $args{ARGS}->{$arg} );
+        next unless $arg =~ /^CustomField(\d+)$/;
+        my $id = $1;
 
-        my $form = $args{ARGS}->{$arg};
-        my $oper = $args{ARGS}->{ "CustomFieldOp" . $id };
+        my $form = $args{ARGS}->{ $arg };
+        my $oper = $args{ARGS}->{ "CustomFieldOp" . $id } || '';
         foreach my $value ( ref($form) ? @{$form} : ($form) ) {
             my $quote = 1;
             if ($oper =~ /like/i) {
@@ -830,18 +823,19 @@ sub ProcessSearchQuery {
                 $quote = 0;
 
                 # Convert the operator to something apropriate for nulls
-                $oper = 'IS'     if ( $oper eq '=' );
-                $oper = 'IS NOT' if ( $oper eq '!=' );
+                $oper = 'IS'     if $oper eq '=';
+                $oper = 'IS NOT' if $oper eq '!=';
             }
-            $session{'tickets'}->LimitCustomField( CUSTOMFIELD => $id,
-                                                   OPERATOR    => $oper,
-                                                   QUOTEVALUE  => $quote,
-                                                   VALUE       => $value );
+            $session{'tickets'}->LimitCustomField(
+                CUSTOMFIELD => $id,
+                OPERATOR    => $oper,
+                QUOTEVALUE  => $quote,
+                VALUE       => $value,
+            );
         }
     }
 
     # }}}
-
 
 }
 
@@ -874,72 +868,59 @@ sub ParseDateToISO {
 sub ProcessACLChanges {
     my $ARGSref = shift;
 
-    my %ARGS     = %$ARGSref;
+    #XXX: why don't we get ARGSref like in other Process* subs?
 
-    my ( $ACL, @results );
+    my @results;
 
+    foreach my $arg (keys %$ARGSref) {
+        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)(?:-(.+))?$/ );
 
-    foreach my $arg (keys %ARGS) {
-        if ($arg =~ /GrantRight-(\d+)-(.*?)-(\d+)$/) {
-            my $principal_id = $1;
-            my $object_type = $2;
-            my $object_id = $3;
-            my $rights = $ARGS{$arg};
+        my ($method, $principal_id, $object_type, $object_id) = ($1, $2, $3, $4);
 
-            my $principal = RT::Principal->new($session{'CurrentUser'});
-            $principal->Load($principal_id);
-
-            my $obj;
-
-             if ($object_type eq 'RT::System') {
-                $obj = $RT::System;
-	    } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
-                $obj = $object_type->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-            } else {
-                push (@results, loc("System Error"). ': '.
-                                loc("Rights could not be granted for [_1]", $object_type));
-                next;
-            }
-
-            my @rights = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
-            foreach my $right (@rights) {
-                next unless ($right);
-                my ($val, $msg) = $principal->GrantRight(Object => $obj, Right => $right);
-                push (@results, $msg);
-            }
+        # format with $5 is deprecated, pass rights as value of the hash
+        my @rights;
+        if ( $5 ) {
+            $RT::Logger->warning("use hash entry value for rights, this format is deprecated.");
+            @rights = $5;
+        } elsif ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
+            @rights = @{$ARGSref->{$arg}}
+        } else {
+            @rights = $ARGSref->{$arg};
         }
-       elsif ($arg =~ /RevokeRight-(\d+)-(.*?)-(\d+)-(.*?)$/) {
-            my $principal_id = $1;
-            my $object_type = $2;
-            my $object_id = $3;
-            my $right = $4;
+        @rights = grep $_, @rights;
+        unless( @rights ) {
+            $RT::Logger->error("empty rights argument");
+            next;
+        }
 
-            my $principal = RT::Principal->new($session{'CurrentUser'});
-            $principal->Load($principal_id);
-            next unless ($right);
-            my $obj;
+        my $principal = RT::Principal->new( $session{'CurrentUser'} );
+        $principal->Load( $principal_id );
 
-             if ($object_type eq 'RT::System') {
-                $obj = $RT::System;
-	    } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
-                $obj = $object_type->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-            } else {
-                push (@results, loc("System Error"). ': '.
-                                loc("Rights could not be revoked for [_1]", $object_type));
+        my $obj;
+        if ($object_type eq 'RT::System') {
+            $obj = $RT::System;
+        } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
+            $obj = $object_type->new($session{'CurrentUser'});
+            $obj->Load($object_id);
+            unless( $obj->id ) {
+                $RT::Logger->error("couldn't load $object_type #$object_id");
                 next;
             }
-            my ($val, $msg) = $principal->RevokeRight(Object => $obj, Right => $right);
+        } else {
+            $RT::Logger->error("object type '$object_type' is incorrect");
+            push (@results, loc("System Error"). ': '.
+                            loc("Rights could not be granted for [_1]", $object_type));
+            next;
+        }
+
+        foreach my $right (@rights) {
+            my ($val, $msg) = $principal->$method(Object => $obj, Right => $right);
             push (@results, $msg);
         }
-
-
     }
 
     return (@results);
-
-    }
+}
 
 # }}}
 
@@ -963,10 +944,11 @@ sub UpdateRecordObject {
     );
 
     my $Object = $args{'Object'};
-    my @results = $Object->Update(AttributesRef => $args{'AttributesRef'},
-				  ARGSRef       => $args{'ARGSRef'},
-                  AttributePrefix => $args{'AttributePrefix'}
-				  );
+    my @results = $Object->Update(
+        AttributesRef   => $args{'AttributesRef'},
+        ARGSRef         => $args{'ARGSRef'},
+        AttributePrefix => $args{'AttributePrefix'},
+    );
 
     return (@results);
 }
@@ -985,32 +967,28 @@ sub ProcessCustomFieldUpdates {
     my $Object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my @attribs = qw( Name Type Description Queue SortOrder);
+    my @attribs = qw(Name Type Description Queue SortOrder);
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $Object,
         ARGSRef       => $ARGSRef
     );
 
-    if ( $ARGSRef->{ "CustomField-" . $Object->Id . "-AddValue-Name" } ) {
-
+    my $prefix = "CustomField-" . $Object->Id;
+    if ( $ARGSRef->{ "$prefix-AddValue-Name" } ) {
         my ( $addval, $addmsg ) = $Object->AddValue(
-            Name =>
-              $ARGSRef->{ "CustomField-" . $Object->Id . "-AddValue-Name" },
-            Description => $ARGSRef->{ "CustomField-"
-                  . $Object->Id
-                  . "-AddValue-Description" },
-            SortOrder => $ARGSRef->{ "CustomField-"
-                  . $Object->Id
-                  . "-AddValue-SortOrder" },
+            Name        => $ARGSRef->{ "$prefix-AddValue-Name" },
+            Description => $ARGSRef->{ "$prefix-AddValue-Description" },
+            SortOrder   => $ARGSRef->{ "$prefix-AddValue-SortOrder" },
         );
         push ( @results, $addmsg );
     }
+
     my @delete_values = (
-        ref $ARGSRef->{ 'CustomField-' . $Object->Id . '-DeleteValue' } eq
-          'ARRAY' )
-      ? @{ $ARGSRef->{ 'CustomField-' . $Object->Id . '-DeleteValue' } }
-      : ( $ARGSRef->{ 'CustomField-' . $Object->Id . '-DeleteValue' } );
+        ref $ARGSRef->{ "$prefix-DeleteValue" } eq 'ARRAY' )
+      ? @{ $ARGSRef->{ "$prefix-DeleteValue" } }
+      : ( $ARGSRef->{ "$prefix-DeleteValue" } );
+
     foreach my $id (@delete_values) {
         next unless defined $id;
         my ( $err, $msg ) = $Object->DeleteValue($id);
@@ -1019,7 +997,7 @@ sub ProcessCustomFieldUpdates {
 
     my $vals = $Object->Values();
     while (my $cfv = $vals->Next()) {
-        if (my $so = $ARGSRef->{ 'CustomField-' . $Object->Id . '-SortOrder' . $cfv->Id }) {
+        if (my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->Id }) {
             if ($cfv->SortOrder != $so) {
                 my ( $err, $msg ) = $cfv->SetSortOrder($so);
                 push ( @results, $msg );
@@ -1069,19 +1047,19 @@ sub ProcessTicketBasics {
         my $tempqueue = RT::Queue->new($RT::SystemUser);
         $tempqueue->Load( $ARGSRef->{'Queue'} );
         if ( $tempqueue->id ) {
-            $ARGSRef->{'Queue'} = $tempqueue->Id();
+            $ARGSRef->{'Queue'} = $tempqueue->id;
         }
     }
 
 
-   # Status isn't a field that can be set to a null value.
-   # RT core complains if you try
-    delete $ARGSRef->{'Status'} unless ($ARGSRef->{'Status'});
+    # Status isn't a field that can be set to a null value.
+    # RT core complains if you try
+    delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
     
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $TicketObj,
-        ARGSRef       => $ARGSRef
+        ARGSRef       => $ARGSRef,
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
@@ -1095,7 +1073,7 @@ sub ProcessTicketBasics {
         }
 
         my ( $val, $msg ) =
-          $TicketObj->SetOwner( $ARGSRef->{'Owner'}, $ChownType );
+            $TicketObj->SetOwner( $ARGSRef->{'Owner'}, $ChownType );
         push ( @results, $msg );
     }
 
@@ -1114,12 +1092,12 @@ sub ProcessTicketCustomFieldUpdates {
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Ticket-(\d+-.*)/) {
-	    $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
-	}
+        if ( $arg =~ /^Ticket-(\d+-.*)*/) {
+            $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
+        }
         elsif ( $arg =~ /^CustomField-(\d+-.*)/) {
-	    $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
-	}
+            $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
+        }
     }
 
     return ProcessObjectCustomFieldUpdates(%args, ARGSRef => $ARGSRef);
@@ -1144,9 +1122,9 @@ sub ProcessObjectCustomFieldUpdates {
 	foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
 	    my $Object = $args{'Object'};
 	    if (!$Object or ref($Object) ne $class or $Object->id != $id) {
-		$Object = $class->new( $session{'CurrentUser'} );
-		$Object->Load($id);
-	}
+            $Object = $class->new( $session{'CurrentUser'} );
+            $Object->Load($id);
+        }
 
 	    # For each custom field  
 	    foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
@@ -1444,8 +1422,8 @@ sub ProcessTicketLinks {
     my $ARGSRef = $args{'ARGSRef'};
 
 
-    my (@results) = ProcessRecordLinks(RecordObj => $Ticket,
-				       ARGSRef => $ARGSRef);
+    my (@results) = ProcessRecordLinks( RecordObj => $Ticket,
+                                        ARGSRef => $ARGSRef );
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {

@@ -134,9 +134,7 @@ if ($ARGS{'id'} eq 'new') {
 	     && $ARGS{'UpdateContent'} ne "-- \n"
 	     . $session{'CurrentUser'}->UserObj->Signature )) {
 	$ARGS{UpdateAttachments} = $session{'Attachments'};
-	ProcessUpdateMessage( ARGSRef   => \%ARGS,
-			      Actions   => \@Actions,
-			      TicketObj => $TicketObj );
+	push @Actions, ProcessUpdateMessage( ARGSRef   => \%ARGS, TicketObj => $TicketObj );
 	delete $session{'Attachments'};
     }
     #Process status updates

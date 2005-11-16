@@ -190,10 +190,9 @@ if ( $id[0] eq 'new' ) {
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
     }
-    ProcessUpdateMessage(
+    push @results, ProcessUpdateMessage(
         ARGSRef   => \%ARGS,
-        Actions   => \@results,
-        TicketObj => $Ticket
+        TicketObj => $Ticket,
     );
 
     # delete temporary storage entry to make WebUI clean

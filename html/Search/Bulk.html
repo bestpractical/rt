@@ -270,10 +270,9 @@ while ( my $Ticket = $Tickets->Next ) {
 
     my @updateresults;
     if ($do_comment_reply) {
-        ProcessUpdateMessage(
+        push @updateresults, ProcessUpdateMessage(
             TicketObj => $Ticket,
             ARGSRef   => \%ARGS,
-            Actions   => \@updateresults
         );
     }
 
