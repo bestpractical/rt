@@ -68,10 +68,8 @@ $Why => loc("the calling component did not specify why")
 my $error = "WebRT: $Why ($Details)";
 
 # TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
-if ($] >= 5.007001) {
-    require Encode;
-    Encode::_utf8_off($error);
-}
+use Encode ();
+Encode::_utf8_off($error);
 
 $RT::Logger->error($error);
 
