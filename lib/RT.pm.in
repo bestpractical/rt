@@ -195,10 +195,8 @@ Get a database connection
 
 sub ConnectToDatabase {
     require RT::Handle;
-    unless ($Handle && $Handle->dbh && $Handle->dbh->ping) {
-        $Handle = RT::Handle->new();
-    } 
-    $Handle->Connect();
+    $Handle = new RT::Handle unless $Handle;
+    $Handle->Connect;
 }
     
 =head2 InitLogging
