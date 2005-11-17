@@ -73,13 +73,15 @@ package RT::Attachment;
 use strict;
 no warnings qw(redefine);
 
+use RT::Transaction;
+
 use MIME::Base64;
 use MIME::QuotedPrint;
 
 
 # {{{ sub _OverlayAccessible 
 sub _OverlayAccessible {
-    {
+  {
     TransactionId   => { 'read'=>1, 'public'=>1, 'write' => 0 },
     MessageId       => { 'read'=>1, 'write' => 0 },
     Parent          => { 'read'=>1, 'write' => 0 },
@@ -104,14 +106,17 @@ Returns the transaction object asscoiated with this attachment.
 =cut
 
 sub TransactionObj {
-    require RT::Transaction;
-    my $self=shift;
-    unless (exists $self->{_TransactionObj}) {
-	$self->{_TransactionObj}=RT::Transaction->new($self->CurrentUser);
-	$self->{_TransactionObj}->Load($self->TransactionId);
+    my $self = shift;
+
+    unless ( $self->{_TransactionObj} ) {
+        $self->{_TransactionObj} = RT::Transaction->new( $self->CurrentUser );
+        $self->{_TransactionObj}->Load( $self->TransactionId );
     }
+
     unless ($self->{_TransactionObj}->Id) {
-        $RT::Logger->crit("Attachment ".$self->id." can't find transaction ".$self->TransactionId." which it is ostensibly part of. That's bad");
+        $RT::Logger->crit(  "Attachment ". $self->id
+                           ." can't find transaction ". $self->TransactionId
+                           ." which it is ostensibly part of. That's bad");
     }
     return $self->{_TransactionObj};
 }
@@ -132,27 +137,25 @@ Create a new attachment. Takes a paramhash:
 
 sub Create {
     my $self = shift;
-    my ($id);
     my %args = ( id            => 0,
                  TransactionId => 0,
                  Parent        => 0,
                  Attachment    => undef,
                  @_ );
 
-    #For ease of reference
+    # For ease of reference
     my $Attachment = $args{'Attachment'};
 
-	    #if we didn't specify a ticket, we need to bail
-	    if ( $args{'TransactionId'} == 0 ) {
+    # if we didn't specify a ticket, we need to bail
+    unless ( $args{'TransactionId'} ) {
         $RT::Logger->crit( "RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
         return (0);
-
     }
 
-    #If we possibly can, collapse it to a singlepart
+    # If we possibly can, collapse it to a singlepart
     $Attachment->make_singlepart;
 
-    #Get the subject
+    # Get the subject
     my $Subject = $Attachment->head->get( 'subject', 0 );
     defined($Subject) or $Subject = '';
     chomp($Subject);
@@ -161,30 +164,26 @@ sub Create {
     my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
-    $MessageId =~ s/^<(.*)>$/$1/go;
-
+    $MessageId =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename || eval {
-	${ $Attachment->head->{mail_hdr_hash}{'Content-Disposition'}[0] }
-	    =~ /^.*\bfilename="(.*)"$/ ? $1 : ''
-    };
+    my $Filename = $Attachment->head->recommended_filename;
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
     unless ( defined $Attachment->bodyhandle ) {
-
-        $id = $self->SUPER::Create(
+        my $id = $self->SUPER::Create(
             TransactionId => $args{'TransactionId'},
+            # XXX: possible bug, we force parent here, that's bad
             Parent        => 0,
             ContentType   => $Attachment->mime_type,
-            Headers => $Attachment->head->as_string,
-            MessageId => $MessageId,
-            Subject => $Subject);
-        
-        unless ($id) {
-            $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
+            Headers       => $Attachment->head->as_string,
+            MessageId     => $MessageId,
+            Subject       => $Subject
+        );
 
+        unless ($id) {
+            $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
         }
 
         foreach my $part ( $Attachment->parts ) {
@@ -193,8 +192,6 @@ sub Create {
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,
                 Attachment    => $part,
-                ContentType   => $Attachment->mime_type,
-
             );
         }
         return ($id);
@@ -203,23 +200,24 @@ sub Create {
     #If it's not multipart
     else {
 
-	my ($ContentEncoding, $Body) = $self->_EncodeLOB($Attachment->bodyhandle->as_string, $Attachment->mime_type);
-        my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
-                                       ContentType   => $Attachment->mime_type,
-                                       ContentEncoding => $ContentEncoding,
-                                       Parent          => $args{'Parent'},
-                                                  Headers       =>  $Attachment->head->as_string,
-                                       Subject       =>  $Subject,
-                                       Content         => $Body,
-                                       Filename => $Filename, 
-                                        MessageId => $MessageId
-                                    );
+        my ($ContentEncoding, $Body) = $self->_EncodeLOB($Attachment->bodyhandle->as_string, $Attachment->mime_type);
+        my $id = $self->SUPER::Create(
+            TransactionId   => $args{'TransactionId'},
+            ContentType     => $Attachment->mime_type,
+            ContentEncoding => $ContentEncoding,
+            Parent          => $args{'Parent'},
+            Headers         => $Attachment->head->as_string,
+            Subject         => $Subject,
+            Content         => $Body,
+            Filename        => $Filename,
+            MessageId       => $MessageId,
+        );
+
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
         }
-
-        return ($id);
     }
+    return ($id)
 }
 
 # }}}
@@ -231,17 +229,14 @@ Create an attachment exactly as specified in the named parameters.
 
 =cut
 
-
 sub Import {
     my $self = shift;
-    my %args = ( ContentEncoding => 'none',
+    my %args = ( ContentEncoding => 'none', @_ );
 
-		 @_ );
+    ( $args{'ContentEncoding'}, $args{'Content'} ) =
+        $self->_EncodeLOB( $args{'Content'}, $args{'MimeType'} );
 
-
- ($args{'ContentEncoding'}, $args{'Content'}) = $self->_EncodeLOB($args{'Content'}, $args{'MimeType'});
-
-    return($self->SUPER::Create(%args));
+    return ( $self->SUPER::Create(%args) );
 }
 
 # {{{ sub Content
@@ -254,10 +249,12 @@ before returning it.
 =cut
 
 sub Content {
-  my $self = shift;
-   $self->_DecodeLOB($self->ContentType, $self->ContentEncoding, $self->_Value('Content', decode_utf8 => 0));
+    my $self = shift;
+    return $self->_DecodeLOB( $self->ContentType,
+                              $self->ContentEncoding,
+                              $self->_Value('Content', decode_utf8 => 0),
+                            );
 }
-
 
 # }}}
 
@@ -273,34 +270,33 @@ original encoding.
 =cut
 
 sub OriginalContent {
-  my $self = shift;
+    my $self = shift;
 
-  return $self->Content unless (
-     $self->ContentType =~ qr{^(text/plain|message/rfc822)$}i) ;
-  my $enc = $self->OriginalEncoding;
+    return $self->Content unless ($self->ContentType =~ qr{^(text/plain|message/rfc822)$}i);
+    my $enc = $self->OriginalEncoding;
 
-  my $content;
-  if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
-      $content = $self->_Value('Content', decode_utf8 => 0);
-  } elsif ( $self->ContentEncoding eq 'base64' ) {
-      $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
-  } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-      return MIME::QuotedPrint::decode($self->_Value('Content', decode_utf8 => 0));
-  } else {
-      return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
-  }
+    my $content;
+    if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
+        $content = $self->_Value('Content', decode_utf8 => 0);
+    } elsif ( $self->ContentEncoding eq 'base64' ) {
+        $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
+    } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
+        return MIME::QuotedPrint::decode($self->_Value('Content', decode_utf8 => 0));
+    } else {
+        return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
+    }
 
-  # Encode::_utf8_on($content);
-  if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
-    # If we somehow fail to do the decode, at least push out the raw bits
-    eval {return( Encode::decode_utf8($content))} || return ($content);
-  }
-  
-  eval { Encode::from_to($content, 'utf8' => $enc);};
-  if ($@) {
-	$RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
-  }
-  return $content;
+    # Encode::_utf8_on($content);
+    if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
+        # If we somehow fail to do the decode, at least push out the raw bits
+        eval { return( Encode::decode_utf8($content)) } || return ($content);
+    }
+
+    eval { Encode::from_to( $content, 'utf8' => $enc ) };
+    if ($@) {
+        $RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
+    }
+    return $content;
 }
 
 # }}}
@@ -315,8 +311,8 @@ Returns the attachment's original encoding.
 =cut
 
 sub OriginalEncoding {
-  my $self = shift;
-  return $self->GetHeader('X-RT-Original-Encoding');
+    my $self = shift;
+    return $self->GetHeader('X-RT-Original-Encoding');
 }
 
 # }}}
@@ -325,7 +321,7 @@ sub OriginalEncoding {
 
 =head2 Children
 
-  Returns an RT::Attachments object which is preloaded with all Attachments objects with this Attachment\'s Id as their 'Parent'
+Returns an RT::Attachments object which is preloaded with all Attachments objects with this Attachment\'s Id as their 'Parent'
 
 =cut
 
@@ -333,7 +329,7 @@ sub Children {
     my $self = shift;
     
     my $kids = new RT::Attachments($self->CurrentUser);
-    $kids->ChildrenOf($self->Id);
+    $kids->ChildrenOf( $self->Id );
     return($kids);
 }
 
@@ -582,22 +578,18 @@ sub _SplitHeaders {
 sub ContentLength {
     my $self = shift;
 
-    unless ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
-	     ($self->TransactionObj->Type eq 'Comment') )  or
-	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
-	return undef;
-    }
+    my $trx = $self->TransactionObj;
+    return undef unless ( $trx->Type eq 'Comment'
+                          && $trx->CurrentUserHasRight('ShowTicketComments')
+                        ) || $trx->CurrentUserHasRight('ShowTicket');
 
-    if (my $len = $self->GetHeader('Content-Length')) {
-	return $len;
+    my $len = $self->GetHeader('Content-Length')) {
+    unless ( $len ) {
+        use bytes;
+        $len = length($self->Content);
+        $self->SetHeader('Content-Length' => $len);
     }
-
-    {
-	use bytes;
-	my $len = length($self->Content);
-	$self->SetHeader('Content-Length' => $len);
-	return $len;
-    }
+    return $len;
 }
 
 # }}}
@@ -605,9 +597,9 @@ sub ContentLength {
 # Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
 sub _CacheConfig {
     {
-        'cache_p'         => 1,
-          'fast_update_p' => 1,
-          'cache_for_sec' => 180,
+        'cache_p'       => 1,
+        'fast_update_p' => 1,
+        'cache_for_sec' => 180,
     }
 }
 
