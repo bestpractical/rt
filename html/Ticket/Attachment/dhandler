@@ -44,15 +44,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%perl>
-     my ($ticket, $trans,$attach, $filename);
-     my $arg = $m->dhandler_arg;                # get rest of path
-     if ($arg =~ '^(\d+)/(\d+)') {
+    my ($ticket, $trans,$attach, $filename);
+    my $arg = $m->dhandler_arg;                # get rest of path
+    if ($arg =~ '^(\d+)/(\d+)') {
         $trans = $1;
         $attach = $2;
-     }
+    }
     else {
         Abort("Corrupted attachment URL.");
-        }
+    }
      my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
      $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
 

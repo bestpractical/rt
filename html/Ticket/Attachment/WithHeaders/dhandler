@@ -1,0 +1,25 @@
+<%perl>
+    # we don't need transaction id
+    my ($id) = $m->dhandler_arg =~ /^(\d+)/;
+    unless ( $id ) {
+        # wrong url format
+        Abort("Corrupted attachment URL");
+    }
+
+    my $AttachmentObj = new RT::Attachment( $session{'CurrentUser'} );
+    $AttachmentObj->Load( $id );
+    unless ( $AttachmentObj->id ) {
+        Abort("Couldn't load attachment #$id");
+    }
+
+    # XXX: should we check handle html here and integrate headers into html?
+    $r->content_type( 'text/plain' );
+    $m->clear_buffer;
+    $m->out( $AttachmentObj->Headers );
+    $m->out( "\n\n" );
+    $m->out( $AttachmentObj->OriginalContent );
+    $m->abort;
+</%perl>
+<%attr>
+AutoFlush => 0
+</%attr>
