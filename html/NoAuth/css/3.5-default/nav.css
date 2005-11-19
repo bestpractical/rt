@@ -3,6 +3,24 @@
     font-size: 1.1em;
 }
 
+#nav #system-menu {
+    min-width: 85%;
+}
+
+%# This is an interesting bit of CSS.  expression() is an IE-only extension to
+%# it's CSS implementation.  Just in case other browsers might choke on it,
+%# the rule is enclosed in a selector only IE will (wrongly) match to an element.
+%# 
+%# The expression() function takes Javascript, and basically what it's doing here
+%# is checking to see if the width of the menu would be greater than 85% of the body
+%# width.  If it is, great, leave it alone to automatically resize.  If it is not, set
+%# it to 85% of the body width.  This amounts to emulating the min-width rule that
+%# compliant browsers understand above.
+* html #nav #system-menu {
+    width: expression(document.body.clientWidth*0.85 < document.getElementById('page-menu').clientWidth ? "auto" : "85%");
+    overflow: visible;
+}
+
 #nav ul {
     float: left;
     clear: left;
