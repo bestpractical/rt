@@ -2253,7 +2253,7 @@ sub LimitCustomField {
     my $q = "";
     if ( $CF->Queue ) {
         my $qo = new RT::Queue( $self->CurrentUser );
-        $qo->load( $CF->Queue );
+        $qo->Load( $CF->Queue );
         $q = $qo->Name;
     }
 
