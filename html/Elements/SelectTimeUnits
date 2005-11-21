@@ -43,10 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<SELECT NAME="<%$Name%>">
-<OPTION VALUE="minutes" SELECTED><%loc('Minutes')%></OPTION>
-<OPTION VALUE="hours" ><%loc('Hours')%></OPTION>
-</SELECT>
+<select name="<% $Name %>">
+<option value="minutes" selected><% loc('Minutes') %></option>
+<option value="hours"><% loc('Hours') %></option>
+</select>
+<%INIT>
+$Name .= '-TimeUnits' unless $Name =~ /-TimeUnits$/io;
+</%INIT>
 <%ARGS>
-$Name => undef
+$Name => ''
 </%ARGS>
