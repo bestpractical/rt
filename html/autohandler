@@ -48,12 +48,11 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
-
 local *session unless $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 # Disable AutoFlush using an attribute
-if ($m->request_comp->attr_exists('AutoFlush')) {
-    $m->autoflush($m->request_comp->attr('AutoFlush'));
+if ( $m->request_comp->attr_exists('AutoFlush') ) {
+    $m->autoflush( $m->request_comp->attr('AutoFlush') );
 }
 
 %ARGS = map {
@@ -70,24 +69,20 @@ if ($m->request_comp->attr_exists('AutoFlush')) {
 
 
 # This code canonicalizes time inputs in hours into minutes
-my @TimeUnitFields = grep { /-TimeUnits$/ } keys %ARGS;
-foreach my $field (@TimeUnitFields) { 
-    next unless ($field =~ /^(.*?)-TimeUnits$/i);
+foreach my $field ( keys %ARGS ) {
+    next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{ $1 };
     my $local = $1;
-    $ARGS{$local} =~ s|\b (\d* \s+) (\d+)/(\d+) \b
-                      |$1 + ($3 == 0 ? 0 : ($2 / $3))
+    $ARGS{$local} =~ s|\b (?: (\d+) \s+ )? (\d+)/(\d+) \b
+                      |$1 + $3 ? $2 / $3 : 0
                       |xe;
-    if ($ARGS{$field} =~ /hours/i) {
+    if ($ARGS{$field} && $ARGS{$field} =~ /hours/i) {
         $ARGS{$local} *= 60;
     }
     delete $ARGS{$field};
 }
 
+$m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 
-
-
-$m->{'rt_base_time'} = [Time::HiRes::gettimeofday()];
-        
 $m->comp('/Elements/SetupSessionCookie', %ARGS);
 
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
@@ -98,10 +93,9 @@ unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 $r->content_type("text/html; charset=utf-8");
 
 # If it's a noauth file, don't ask for auth.
-if ($m->base_comp->path =~ $RT::WebNoAuthRegex )
-{
-    $m->call_next(%ARGS);
-    $m->abort();
+if ( $m->base_comp->path =~ $RT::WebNoAuthRegex ) {
+    $m->call_next( %ARGS );
+    $m->abort;
 }
 
 # If RT is configured for external auth, let's go through and get REMOTE_USER
@@ -191,70 +185,56 @@ elsif ( $RT::WebExternalAuth ) {
 }
 
 delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} and defined $session{'CurrentUser'}->Id;
+    unless $session{'CurrentUser'} and $session{'CurrentUser'}->Id;
 
 
 # Process per-page authentication callbacks
 $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'Auth');
 
 # If the user is logging in, let's authenticate
-if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){
+if (!$session{'CurrentUser'} && defined $user && defined $pass ) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
-    $session{'CurrentUser'}->Load($user);
+    $session{'CurrentUser'}->Load( $user );
 
-    if (!$session{'CurrentUser'}->id() ||
-        !$session{'CurrentUser'}->IsPassword($pass))
-    {
+    unless ( $session{'CurrentUser'}->id &&
+             $session{'CurrentUser'}->IsPassword( $pass ) ) {
         delete $session{'CurrentUser'};
 	$RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
         $m->comp('/Elements/Login', %ARGS,
                  Error => loc('Your username or password is incorrect'));
-        $m->abort();
+        $m->abort;
     }
-    else {
-	$RT::Logger->info("Successful login for $user from $ENV{'REMOTE_ADDR'}");
-    }
+
+    $RT::Logger->info("Successful login for $user from $ENV{'REMOTE_ADDR'}");
 }
-  
-# If we've got credentials, let's serve the file up.
-if ( (defined $session{'CurrentUser'}) and 
-     ( $session{'CurrentUser'}->Id) ) {
-    
-    # Process per-page global callbacks
-    $m->comp('/Elements/Callback', %ARGS);
 
-    # If the user isn't privileged, they can only see SelfService
-    if (not $session{'CurrentUser'}->Privileged) {
+# we've got credentials, let's serve the file up.
+# Process per-page global callbacks
+$m->comp('/Elements/Callback', %ARGS);
 
-        # if the user is trying to access a ticket, redirect them
-        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html'
-                and $ARGS{'id'} )
-        {
-            $m->comp("/SelfService/Display.html", %ARGS);
-            $m->comp("/Elements/Footer", %ARGS);
-            $m->abort();
-        }
-        # otherwise, drop the user at the SelfService default page
-    	elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
-            $m->comp('/SelfService/index.html');
-            $m->abort();
-        }
-        else {
-            $m->call_next(%ARGS);
-        }
+# If the user isn't privileged, they can only see SelfService
+unless ( $session{'CurrentUser'}->Privileged ) {
+
+    # if the user is trying to access a ticket, redirect them
+    if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS{'id'} ) {
+        $m->comp("/SelfService/Display.html", %ARGS);
     }
+    # otherwise, drop the user at the SelfService default page
+    elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
+        $m->comp('/SelfService/index.html');
+    }
+    # if user is in SelfService dir let him do anything
     else {
         $m->call_next(%ARGS);
     }
 }
-
-# If we have no credentials
 else {
-    $m->comp('/Elements/Login', %ARGS);
-    $m->abort();
+    $m->call_next(%ARGS);
 }
+
+$m->comp( '/Elements/Footer', %ARGS );
+
 </%INIT>
-<& /Elements/Footer, %ARGS &>
 <%ARGS>
 $user => undef
 $pass => undef
