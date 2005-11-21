@@ -5,7 +5,7 @@ function $() {
   for (var i = 0; i < arguments.length; i++) {
     var element = arguments[i];
     if (typeof element == 'string')
-      element = $(element);
+      element = document.getElementById(element);
 
     if (arguments.length == 1)
       return element;
