@@ -1,3 +1,7 @@
+function e(id) {
+    return document.getElementById(id);
+}
+
 function rollup(id) {
     var e   = document.getElementById(id);
     var e2  = e.parentNode;
