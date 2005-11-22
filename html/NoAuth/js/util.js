@@ -1,5 +1,23 @@
+// Stolen from Prototype
+function $() {
+  var elements = new Array();
+
+  for (var i = 0; i < arguments.length; i++) {
+    var element = arguments[i];
+    if (typeof element == 'string')
+      element = document.getElementById(element);
+
+    if (arguments.length == 1)
+      return element;
+
+    elements.push(element);
+  }
+
+  return elements;
+}
+
 function rollup(id) {
-    var e   = document.getElementById(id);
+    var e   = $(id);
     var e2  = e.parentNode;
     
     if (e.className.match(/\bhidden\b/)) {
@@ -30,7 +48,7 @@ function set_rollup_state(e,e2,state) {
 }
 
 function hideshow(id) {
-    var e = document.getElementById(id);
+    var e = $(id);
     
     if (e.className.match(/\bhidden\b/))
         show(e);
@@ -53,46 +71,63 @@ function hide(e) {
 
 function switchVisibility(id1, id2) {
     // Show both and then hide the one we want
-    show(document.getElementById(id1));
-    show(document.getElementById(id2));
+    show($(id1));
+    show($(id2));
     
-    hide(document.getElementById(id2));
+    hide($(id2));
     
     return false;
 }
 
 function focusElementById(id) {
-    var e = document.getElementById(id);
+    var e = $(id);
     if (e) e.focus();
 }
 
 function openCalWindow(field) {
-    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, '<% loc("Choose a date") %>', 'height=235,width=285,scrollbars=1');
+    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, 
+                                'RT_Calendar', 
+                                'height=235,width=285,scrollbars=1');
     objWindow.focus();
 }
 
 function updateParentField(field, value) {
     if (window.opener) {
-        window.opener.document.getElementById(field).value = value;
+        window.opener.$(field).value = value;
         window.close();
     }
 }
 
+function addEvent(obj, sType, fn){
+    if (obj.addEventListener){
+        obj.addEventListener(sType, fn, false);
+    } else if (obj.attachEvent) {
+        var r = obj.attachEvent("on"+sType, fn);
+    } else {
+	return false;
+    }
+    return true;
+}
+
 function createCalendarLink(input) {
-    var e = document.getElementById(input);
+    var e = $(input);
     if (e) {
         var link = document.createElement('a');
         link.setAttribute('href', '#');
-        link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
+
+        clickevent = function clickevent(e) { openCalWindow(input); return false; };
+        if (! addEvent(link, "click", clickevent)) {
+            return false;
+        }
         
         var text = document.createTextNode('<% loc("Choose a date") %>');
         link.appendChild(text);
-        
+
         var space = document.createTextNode(' ');
         
         e.parentNode.insertBefore(link, e.nextSibling);
         e.parentNode.insertBefore(space, e.nextSibling);
-        
+
         return true;
     }
     return false;

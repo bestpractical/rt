@@ -286,6 +286,7 @@ sub OriginalContent {
         return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
     }
 
+    # please, comment this code //ruz
     # Encode::_utf8_on($content);
     if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
         # If we somehow fail to do the decode, at least push out the raw bits

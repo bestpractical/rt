@@ -58,9 +58,7 @@ ok($id, $msg);
 $runid_attr = $user->FirstAttribute($runid);
 ok($runid_attr, "got some sort of attribute");
 isa_ok($runid_attr, 'RT::Attribute');
-TODO: { local $TODO = "which attribute is returned by FirstAttribute is undefined";
-    is($runid_attr->Content, 'First', "got the first content back still");
-}
+is($runid_attr->Content, 'First', "got the first content back still");
 
 is ($attr->Count,3, " Three attrs after adding a secondvalue to $runid");
 ($id, $msg) = $attr->DeleteEntry(Name => $runid, Content => "First");

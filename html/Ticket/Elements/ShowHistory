@@ -43,31 +43,36 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<%doc>
+#   This is (ab)used in Admin/(Users|Groups)/History.html and should probably
+#   be generalized at some point.
+</%doc>
 <%perl>
- if ($ShowDisplayModes or $ShowTitle) {
-my $title;
-my $titleright;
-if ($ShowTitle) {
-    $title = loc('History');
-}
-else {
-    $title = '&nbsp;';
-}
-$titleright = q[<span style="color: black">] . loc('Display mode') . ':</span> ';
-if ($ShowHeaders) {
-    $titleright .= qq{<a href="$URIFile?id=} .
-                   $Ticket->id.qq{">} .
-                   loc("Brief headers") .
-                   qq{</a> &mdash; };
-    $titleright .= q[<span class="selected">] . loc("Full headers") . "</span>";
-}
-else {
-    $titleright .= q[<span class="selected">] . loc("Brief headers") . "</span> &mdash; ";
-    $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
-                   $Ticket->id.qq{">} .
-                   loc("Full headers") .
-                   qq{</a>};
-}
+if ($ShowDisplayModes or $ShowTitle) {
+    my $title = $ShowTitle
+                    ? loc('History')
+                    : '&nbsp;';
+
+    my $titleright;
+
+    if ($ShowDisplayModes) {
+        $titleright = q[<span style="color: black">] . loc('Display mode') . ':</span> ';
+        
+        if ($ShowHeaders) {
+            $titleright .= qq{<a href="$URIFile?id=} .
+                           $Ticket->id.qq{">} .
+                           loc("Brief headers") .
+                           qq{</a> &mdash; };
+            $titleright .= q[<span class="selected">] . loc("Full headers") . "</span>";
+        }
+        else {
+            $titleright .= q[<span class="selected">] . loc("Brief headers") . "</span> &mdash; ";
+            $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
+                           $Ticket->id.qq{">} .
+                           loc("Full headers") .
+                           qq{</a>};
+        }
+    }
 </%perl>
 <& /Widgets/TitleBoxStart, title => $title, titleright => $titleright &>
 % }

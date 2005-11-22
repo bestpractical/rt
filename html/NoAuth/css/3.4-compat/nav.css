@@ -1,5 +1,5 @@
 #nav {
-    clear: both;
+    clear: left;
     float: left;
     width: 18%;
     font-size: 1.4em;
@@ -7,8 +7,6 @@
     margin: 0;
     background: #4282b5 url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right;
 }
-
-#body { margin-left: 20%; }
 
 #nav #system-menu {
     padding: 0 0.2em 0.2em 0.2em;

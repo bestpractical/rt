@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
-"Project-Id-Version: RT 3.4.x\n"
+"Project-Id-Version: RT 3.5.x\n"
 "MIME-Version: 1.0\n"
 
 #: NOT FOUND IN SOURCE

@@ -1,14 +1,3 @@
-#logo {
-    float: left;
-    clear: left;
-}
-
-#logo img { border: none; }
-#logo div.rtname {
-    text-align: center;
-    font-weight: bold;
-}
-
 #quickbar #quick-personal {
     display: inline;
     color: #888;
@@ -34,6 +23,29 @@
 }
 
 #quickbar #topactions {
+    float: right;
+    clear: right;
+
     font-size: 0.9em;
-    padding: 0.5em 0 0 1em;
+    padding: 1em;
+}
+
+#quickbar #topactions form {
+    display: inline;
+    margin-left: 1em;
+}
+
+#quickbar #topactions form .button {
+    padding: 0 2px 0 2px;
+    font-size: 1em;
+    margin: 0;
+}
+
+#quickbar #topactions form .field {
+    padding: 1px;
+    font-size: 0.9em;
+}
+
+#quickbar #topactions form input.field {
+    padding: 3px;
 }

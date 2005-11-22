@@ -1,4 +1,12 @@
-.titlebox .title {
+.titlebox {
+    margin: 0.5em 0;
+}
+
+.titlebox .titlebox-content {
+    padding: 0.05em;
+}
+
+.titlebox .titlebox-title {
     background: #069;
     padding: 0.2em 0.5em;
     color: white;
@@ -8,16 +16,41 @@
     position: relative;
 }
 
-.titlebox .title .right {
+.titlebox .titlebox-title .right {
     position: absolute;
     right: 1.5em;
     font-size: 0.9em;
 }
 
-#body .titlebox .title :link, #body .titlebox .title :visited {
+#body .titlebox .titlebox-title :link, #body .titlebox .titlebox-title :visited {
     color: white;
 }
 
-#body .titlebox .title .widget :link, #body .titlebox .title .widget :visited {
+#body .titlebox .titlebox-title .widget :link, #body .titlebox .titlebox-title .widget :visited {
     color: black;
+}
+
+.titlebox .titlebox-content hr.clear {
+    visibility: hidden;
+}
+
+%# TRS: I wish there was a more elegant way to do this... I essentially need to
+%# select all elements X that do NOT have element Y as a descendant... which I can
+%# fake with the child selector of CSS2, but IE is stupid and does not support that.
+
+% for (qw(index
+%         Search-Build
+%         User-Prefs
+%         Approvals
+%         Admin-Users-Modify
+%         SelfService
+%         SelfService-Closed
+%         Ticket-ModifyAll
+%                           ))
+% {
+#comp-<%$_%> .titlebox .titlebox-content,
+% }
+.titlebox .titlebox .titlebox-content
+{
+    background: #cecfce;
 }

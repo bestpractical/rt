@@ -284,13 +284,12 @@ sub SendMessage {
         }
     }
 
-    my $success =
-      ( $msgid
-      . " sent To: "
-      . $MIMEObj->head->get('To') . " Cc: "
-      . $MIMEObj->head->get('Cc') . " Bcc: "
-      . $MIMEObj->head->get('Bcc') );
-    $success =~ s/\n//gi;
+    my $success = $msgid . " sent ";
+    foreach( qw(To Cc Bcc) ) {
+        my $recipients = $MIMEObj->head->get($_);
+        $success .= " $_: ". $recipients if $recipients;
+    }
+    $success =~ s/\n//g;
 
     $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
@@ -445,7 +444,7 @@ sub SetRTSpecialHeaders {
 
       # If there is one, and we can parse it, then base our Message-ID on it
       if ($msgid 
-          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>$/
+          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\Q$RT::Organization\E>$/
                          "<$1." . $self->TicketObj->id
                           . "-" . $self->ScripObj->id
                           . "-" . $self->ScripActionObj->{_Message_ID}

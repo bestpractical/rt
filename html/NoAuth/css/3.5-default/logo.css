@@ -1,0 +1,13 @@
+#logo {
+    float: left;
+    clear: left;
+
+    margin: 0.5em 0 0.5em 10px;
+}
+
+#logo img { border: none; }
+#logo div.rtname {
+    text-align: center;
+    font-weight: bold;
+}
+

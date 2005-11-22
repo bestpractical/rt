@@ -46,6 +46,7 @@
 
 @import "misc.css";
 @import "login.css";
+@import "logo.css";
 @import "quickbar.css";
 @import "body.css";
 @import "approvals.css";
@@ -54,7 +55,6 @@
 @import "ticket.css";
 @import "transactions.css";
 @import "nav.css";
-@import "nav-left.css";
 @import "header.css";
 @import "footer.css";
 
