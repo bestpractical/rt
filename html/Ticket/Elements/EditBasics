@@ -66,20 +66,20 @@
   <tr>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
       <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeEstimated-TimeUnits' &>
+    <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
 </td>
     </tr>
   <tr>
       <td class="label"><&|/l&>Time Worked</&>:</td>
       <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeWorked-TimeUnits' &>
+    <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
 </td>
 
     </tr>
   <tr>
       <td class="label"><&|/l&>Time Left</&>:</td>
       <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeLeft-TimeUnits' &>
+    <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
     </td>
     </tr>
 
