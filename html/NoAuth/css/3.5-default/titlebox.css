@@ -124,3 +124,7 @@ html>body .titlebox .titlebox-title .widget a {
 {
     text-decoration: underline;
 }
+
+.titlebox .titlebox-content hr.clear {
+    visibility: hidden;
+}

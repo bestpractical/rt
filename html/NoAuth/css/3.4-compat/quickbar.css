@@ -1,3 +1,7 @@
+#quickbar {
+    border: 1px solid transparent;
+}
+
 #quickbar #quick-personal {
     display: inline;
     color: #888;

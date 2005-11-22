@@ -45,9 +45,9 @@
 %# END BPS TAGGED BLOCK }}}
 <table border="0" cellspacing="0" cellpadding="1" width="100%">
 <tr>
-       <th class="collection-as-table" align="left"><&|/l&>Queue</&></th>
+       <th class="collection-as-table"><&|/l&>Queue</&></th>
 % for my $condition (@$conditions) {
-       <th class="collection-as-table" align="right"><% $condition->{name} %></th>
+       <th class="collection-as-table"><% $condition->{name} %></th>
 % }
 </tr>
 % my $i;

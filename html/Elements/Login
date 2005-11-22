@@ -70,7 +70,7 @@ my $form_action = defined $goto             ? $goto
 %# End of div#quickbar from /Elements/Header
 </div>
 
-<div id="body">
+<div id="body" class="login-body">
 
 % if ($Error) {
 <&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0  &>
