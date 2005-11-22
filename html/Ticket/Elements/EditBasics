@@ -58,29 +58,32 @@
       <td class="value"><%$SelectQueue|n%></td>
     </tr>
   <tr>
-      <td class="label"><&|/l&>Owner</&>:</td>
-      <td class="value">
-<& /Elements/SelectOwner, Name => 'Owner', QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $TicketObj->OwnerObj->Id, DefaultValue => 0&></td>
-    </tr>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td class="value">
+<& /Elements/SelectOwner, Name => 'Owner', QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $TicketObj->OwnerObj->Id, DefaultValue => 0&>
+    </td>
+  </tr>
 
   <tr>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
-      <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
-</td>
+      <td class="value">
+        <input name="TimeEstimated" value="<% $TicketObj->TimeEstimated |h%>" size="5">
+        <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
+      </td>
     </tr>
   <tr>
-      <td class="label"><&|/l&>Time Worked</&>:</td>
-      <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
-</td>
-
-    </tr>
-  <tr>
-      <td class="label"><&|/l&>Time Left</&>:</td>
-      <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5">
-    <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value">
+      <input name="TimeWorked" value="<% $TicketObj->TimeWorked |h%>" size="5">
+      <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
     </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Time Left</&>:</td>
+    <td class="value">
+        <input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5">
+        <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+      </td>
     </tr>
 
   <tr>

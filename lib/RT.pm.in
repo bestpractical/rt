@@ -186,7 +186,7 @@ sub Init {
     InitLogging(); 
 }
 
-  
+
 =head2 ConnectToDatabase
 
 Get a database connection
@@ -198,7 +198,7 @@ sub ConnectToDatabase {
     $Handle = new RT::Handle unless $Handle;
     $Handle->Connect;
 }
-    
+
 =head2 InitLogging
 
 Create the RT::Logger object. 

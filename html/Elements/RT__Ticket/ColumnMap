@@ -95,16 +95,17 @@ sub LinkCallback {
 
     my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
     my $type            = $RT::Ticket::LINKTYPEMAP{$method}{Type};
-    my $mode_uri        = $mode.'URI';
-    my $local_type      = 'Local'.$mode;
+    my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
+    my $mode_uri        = $other_mode.'URI';
+    my $local_type      = 'Local'.$other_mode;
 
     return sub {
         map {
             \'<a href="',
             $_->$mode_uri->Resolver->HREF,
             \'">',
-            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
-            \'</a><br/>',
+            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$other_mode ),
+            \'</a><br />',
         } @{ $_[0]->Links($mode,$type)->ItemsArrayRef }
     }
 }

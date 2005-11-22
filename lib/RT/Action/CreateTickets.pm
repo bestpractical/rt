@@ -1071,10 +1071,10 @@ sub ParseLines {
 
     foreach my $key ( keys(%args) ) {
        if ( $key =~ /^customfield(\d+)$/ ) {
-        $ticketargs{ "CustomField-" . $1 } = $args{$key};
-        } elsif ($key =~ /^(customfield|cf)(.*)$/) {
+            $ticketargs{ "CustomField-" . $1 } = $args{$key};
+        } elsif ($key =~ /^(?:customfield|cf)(.*)$/) {
             my $cf = RT::CustomField->new($self->CurrentUser);
-            $cf->LoadByName(Name => $args{$key} , Queue => $ticketargs{Queue});
+            $cf->LoadByName(Name => $1, Queue => $ticketargs{Queue});
             $ticketargs{ "CustomField-".$cf->id } = $args{$key};
         }
     }

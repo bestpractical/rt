@@ -1916,10 +1916,7 @@ sub LimitWatcher {
 sub LimitRequestor {
     my $self = shift;
     my %args = (@_);
-    my ( $package, $filename, $line ) = caller;
-    $RT::Logger->error(
-"Tickets->LimitRequestor is deprecated. please rewrite call at  $package - $filename: $line"
-    );
+    $RT::Logger->error("Tickets->LimitRequestor is deprecated  at (". join(":",caller).")");
     $self->LimitWatcher( TYPE => 'Requestor', @_ );
 
 }
@@ -2669,7 +2666,7 @@ sub _ProcessRestrictions {
         }
         else {
             $sql = $self->ClausesToSQL($clauseRef);
-            $self->FromSQL($sql);
+            $self->FromSQL($sql) if $sql;
         }
     }
 
@@ -2761,6 +2758,15 @@ $tickets->{'flagname'} = 1;
 BUG: There should be an API for this
 
 =cut
+
+=begin testing
+
+# We assume that we've got some tickets hanging around from before.
+ok( my $unlimittickets = RT::Tickets->new( $RT::SystemUser ) );
+ok( $unlimittickets->UnLimit );
+ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
+
+=end testing
 
 1;
 

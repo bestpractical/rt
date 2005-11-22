@@ -48,6 +48,11 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
+if ($RT::StatementLog) {
+    $RT::Handle->ClearSQLStatementLog;
+    $RT::Handle->LogSQLStatements(1);
+}
+
 local *session unless $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 # Disable AutoFlush using an attribute
@@ -66,7 +71,6 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
 	($type eq 'HASH')
 	? { map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } %$_ } : $_
     } %ARGS;
-
 
 # This code canonicalizes time inputs in hours into minutes
 foreach my $field ( keys %ARGS ) {
@@ -97,7 +101,6 @@ if ( $m->base_comp->path =~ $RT::WebNoAuthRegex ) {
     $m->call_next( %ARGS );
     $m->abort;
 }
-
 # If RT is configured for external auth, let's go through and get REMOTE_USER
 elsif ( $RT::WebExternalAuth ) {
 
@@ -197,9 +200,10 @@ if (!$session{'CurrentUser'} && defined $user && defined $pass ) {
     $session{'CurrentUser'}->Load( $user );
 
     unless ( $session{'CurrentUser'}->id &&
-             $session{'CurrentUser'}->IsPassword( $pass ) ) {
+             $session{'CurrentUser'}->IsPassword( $pass ) )
+    {
         delete $session{'CurrentUser'};
-	$RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
+        $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
         $m->comp('/Elements/Login', %ARGS,
                  Error => loc('Your username or password is incorrect'));
         $m->abort;
@@ -233,6 +237,24 @@ else {
 }
 
 $m->comp( '/Elements/Footer', %ARGS );
+
+if ($RT::StatementLog) {
+    my @log = $RT::Handle->SQLStatementLog;
+    $RT::Handle->ClearSQLStatementLog;
+    for my $stmt (@log) {
+        my ($time, $sql, $bind, $duration) = @{$stmt};
+        my @bind;
+        if (ref $bind) {
+            @bind = @{$bind};
+        } else {
+            # Older DBIx-SB
+            $duration = $bind;
+        }
+        $RT::Logger->log( level => $RT::StatementLog,
+                          message => "SQL(".sprintf("%.2f",$duration)."s): $sql;" . (@bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "")
+                        );
+    }
+}
 
 </%INIT>
 <%ARGS>
