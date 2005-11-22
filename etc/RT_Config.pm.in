@@ -433,6 +433,7 @@ Set($OldestTransactionsFirst, '1');
 
 Set($DefaultSummaryRows, 10);
 
+
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").
 
