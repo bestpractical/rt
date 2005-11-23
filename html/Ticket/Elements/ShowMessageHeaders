@@ -45,46 +45,44 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % foreach my $header (@headers) {
-%     next unless $display_headers{_all}
-%           or ($display_headers{ lc $header->{Tag} }
-%                 and length $header->{Value});
   <tr>
-    <td align="right" class="message-header-key"><%$header->{'Tag'}%>:</td>
-    <td class="message-header-value"><%$header->{'Value'} | n%></td>
+    <td align="right" class="message-header-key"><% $header->{'Tag'} %>:</td>
+    <td class="message-header-value"><% $header->{'Value'} | n %></td>
   </tr>
 % }
 </table>
 <%INIT>
-my $content = $Headers;
-$m->comp('/Elements/Callback', content => \$content, %ARGS);
+my @headers;
+foreach my $field( $Message->SplitHeaders ) {
+    my ($tag, $value) = split /:/, $field, 2;
+    next unless $tag && $value;
+    push @headers, { Tag => $tag, Value => $value };
+}
 
 # apply html escaping on the original content
 # we'll display the value without escaping later (for MakeClicky et al.)
-$content = $m->interp->apply_escapes($content, 'h');
-
-my @lines = split /\n/, $content;
-my $in_header = 0;
-my @headers;
-
-for (@lines) {
-    if (/^(\S+):\s+(.*)$/) {
-        push @headers, { Tag => $1, Value => $2 };
-    }
-    elsif (/^\s+/) {
-        $headers[-1]->{'Value'} .= $_;
-    }
-    else {
-        s/:$//;
-        push @headers, { Tag => $_, Value => '' };
-    }
+foreach ( @headers ) {
+    $_->{'Value'} = $m->interp->apply_escapes( $_->{Value}, 'h' );
 }
 
-my %display_headers = map { lc($_) => 1 } @$DisplayHeaders;
+my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
 
-$m->comp('/Elements/Callback', _CallbackName => 'Headers', content => \$content, headers => \@headers, display_headers => \%display_headers, %ARGS);
+$m->comp( '/Elements/Callback',
+          message         => $Message,
+          headers         => \@headers,
+          display_headers => \%display_headers,
+        );
 
+unless ( $display_headers{'_all'} ) {
+    @headers = grep $display_headers{ lc $_->{'Tag'} },
+               @headers;
+}
+if ( $Localize ) {
+    $_->{'Tag'} = loc($_->{'Tag'}) foreach @headers;
+}
 </%INIT>
 <%ARGS>
-$Headers => undef
-$DisplayHeaders => undef
+$Message => undef
+$Localize => 1
+@DisplayHeaders => ('_all')
 </%ARGS>

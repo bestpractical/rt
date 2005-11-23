@@ -428,11 +428,7 @@ an abstraction barrier that makes it impossible to pass this data directly
 =cut
 
 sub Headers {
-    my $self = shift;
-    my $hdrs="";
-    my @headers =  grep { !/^RT-Send-Bcc/i } $self->_SplitHeaders;
-    return join("\n",@headers);
-
+    return join("\n", $_[0]->SplitHeaders);
 }
 
 
@@ -451,9 +447,10 @@ sub GetHeader {
     my $self = shift;
     my $tag = shift;
     foreach my $line ($self->_SplitHeaders) {
-        if ($line =~ /^\Q$tag\E:\s+(.*)$/si) { #if we find the header, return its value
-            return ($1);
-        }
+        next unless $line =~ /^\Q$tag\E:\s+(.*)$/si;
+
+        #if we find the header, return its value
+        return ($1);
     }
     
     # we found no header. return an empty string
@@ -527,6 +524,20 @@ sub _Value {
 }
 
 # }}}
+
+=head2 SplitHeaders
+
+Returns an array of this attachment object's headers, with one header 
+per array entry. Multiple lines are folded.
+
+B<Never> returns C<RT-Send-Bcc> field.
+
+=cut
+
+sub SplitHeaders {
+    my $self = shift;
+    return (grep !/^RT-Send-Bcc/i, $self->_SplitHeaders(@_) );
+}
 
 =head2 _SplitHeaders
 

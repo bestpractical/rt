@@ -424,7 +424,7 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 # $MaxInlineBody is the maximum attachment size that we want to see
 # inline when viewing a transaction. 13456 is a random sane-sounding
-# default.
+# default. RT inline any text if value is undefined or 0.
 
 Set($MaxInlineBody, 13456);
 
