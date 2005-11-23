@@ -65,11 +65,11 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
     # passed just one, a scalar whatever they are, mark them as utf8
     my $type = ref($_);
     (!$type)
-	? Encode::is_utf8($_) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) :
-	($type eq 'ARRAY')
-	? [ map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } @$_ ] :
-	($type eq 'HASH')
-	? { map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } %$_ } : $_
+        ? Encode::is_utf8($_) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) :
+        ($type eq 'ARRAY')
+        ? [ map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } @$_ ] :
+        ($type eq 'HASH')
+        ? { map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } %$_ } : $_
     } %ARGS;
 
 # This code canonicalizes time inputs in hours into minutes
@@ -107,83 +107,85 @@ elsif ( $RT::WebExternalAuth ) {
     # do we actually have a REMOTE_USER equivlent?
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
 
-	my $orig_user = $user;
-	
-	$user = RT::Interface::Web::WebCanonicalizeInfo();
-	$session{'CurrentUser'} = RT::CurrentUser->new();
-	my $load_method = $RT::WebExternalGecos ? 'LoadByGecos' : 'Load';
-	
-	if ($^O eq 'MSWin32' and $RT::WebExternalGecos) {
-	    my $NodeName = Win32::NodeName();
-	    $user =~ s/^\Q$NodeName\E\\//i;
-	}
-	
-	$session{'CurrentUser'}->$load_method($user);
-	
-	if ($RT::WebExternalAuto and !$session{'CurrentUser'}->Id() ) {
-	    # Create users on-the-fly
-	    
-	    my $UserObj = RT::User->new(RT::CurrentUser->new('RT_System'));
-	    
-	    my ($val, $msg) = $UserObj->Create(
-					       %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
-					       Name   => $user,
-					       Gecos  => $user,
-					       );
-	    
-	    if ($val) {
-		
-		# now get user specific information, to better create our user.
-		my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
-		
-		# set the attributes that have been defined.
-		# FIXME: this is a horrible kludge. I'm sure there's something cleaner
-		foreach my $attribute ('Name', 'Comments', 'Signature', 'EmailAddress',
-				       'PagerEmailAddress', 'FreeformContactInfo',
-				       'Organization', 'Disabled', 'Privileged',
-				       'RealName', 'NickName', 'Lang', 'EmailEncoding',
-				       'WebEncoding', 'ExternalContactInfoId',
-				       'ContactInfoSystem', 'ExternalAuthId', 'Gecos',
-				       'HomePhone', 'WorkPhone', 'MobilePhone',
-				       'PagerPhone', 'Address1', 'Address2', 'City',
-				       'State', 'Zip', 'Country') {
+        my $orig_user = $user;
+        
+        $user = RT::Interface::Web::WebCanonicalizeInfo();
+        $session{'CurrentUser'} = RT::CurrentUser->new();
+        my $load_method = $RT::WebExternalGecos ? 'LoadByGecos' : 'Load';
+        
+        if ($^O eq 'MSWin32' and $RT::WebExternalGecos) {
+            my $NodeName = Win32::NodeName();
+            $user =~ s/^\Q$NodeName\E\\//i;
+        }
+        
+        $session{'CurrentUser'}->$load_method($user);
+        
+        if ($RT::WebExternalAuto and !$session{'CurrentUser'}->Id() ) {
+            # Create users on-the-fly
+            
+            my $UserObj = RT::User->new(RT::CurrentUser->new('RT_System'));
+            
+            my ($val, $msg) = $UserObj->Create(
+                                               %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
+                                               Name   => $user,
+                                               Gecos  => $user,
+                                               );
+            
+            if ($val) {
+                
+                # now get user specific information, to better create our user.
+                my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
+                
+                # set the attributes that have been defined.
+                # FIXME: this is a horrible kludge. I'm sure there's something cleaner
+                foreach my $attribute ('Name', 'Comments', 'Signature', 'EmailAddress',
+                                       'PagerEmailAddress', 'FreeformContactInfo',
+                                       'Organization', 'Disabled', 'Privileged',
+                                       'RealName', 'NickName', 'Lang', 'EmailEncoding',
+                                       'WebEncoding', 'ExternalContactInfoId',
+                                       'ContactInfoSystem', 'ExternalAuthId', 'Gecos',
+                                       'HomePhone', 'WorkPhone', 'MobilePhone',
+                                       'PagerPhone', 'Address1', 'Address2', 'City',
+                                       'State', 'Zip', 'Country') {
                $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'NewUser');
-		    
-		    my $method = "Set$attribute";
-		    $UserObj->$method($new_user_info->{$attribute}) 
-			if( defined $new_user_info->{$attribute} );
-		}	    
-		$session{'CurrentUser'}->Load($user);
-	    }
-	    else {
-		# we failed to successfully create the user. abort abort abort.
-		delete $session{'CurrentUser'};
-		$m->abort() unless $RT::WebFallbackToInternalAuth;
-		$m->comp('/Elements/Login', %ARGS, 
-			 Error=> loc('Cannot create user: [_1]', $msg));
-	    }
-	}
-	
-	unless ( $session{'CurrentUser'}->Id() ) {
-	    delete $session{'CurrentUser'};
-	    $user = $orig_user;
-	    
-	    if ( $RT::WebExternalOnly ) {	        
-		$m->comp('/Elements/Login', %ARGS, 
-			 Error=> loc('You are not an authorized user'));
-		$m->abort();
-	    }
-	}
-    }
-    elsif ($RT::WebFallbackToInternalAuth) {
-  	unless (defined($session{'CurrentUser'})) {
-	        $m->comp('/Elements/Login', %ARGS,
+                    
+                    my $method = "Set$attribute";
+                    $UserObj->$method($new_user_info->{$attribute}) 
+                        if( defined $new_user_info->{$attribute} );
+                }            
+                $session{'CurrentUser'}->Load($user);
+            }
+            else {
+                # we failed to successfully create the user. abort abort abort.
+                delete $session{'CurrentUser'};
+                $m->abort() unless $RT::WebFallbackToInternalAuth;
+                $m->comp('/Elements/Login', %ARGS, 
+                         Error=> loc('Cannot create user: [_1]', $msg));
+            }
+        }
+        
+        unless ( $session{'CurrentUser'}->Id() ) {
+            delete $session{'CurrentUser'};
+            $user = $orig_user;
+            
+            if ( $RT::WebExternalOnly ) {                
+                $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('You are not an authorized user'));
                 $m->abort();
-	}
+            }
+        }
+    }
+    elsif ($RT::WebFallbackToInternalAuth) {
+          unless (defined($session{'CurrentUser'})) {
+                $m->comp('/Elements/Login', %ARGS,
+                         Error=> loc('You are not an authorized user'));
+                $m->abort();
+        }
     } else {
-	# WebExternalAuth is set, but we don't have a REMOTE_USER. abort
-	delete $session{'CurrentUser'} if defined $session{'CurrentUser'};
+        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
+        # XXX: we must return AUTH_REQUIRED status or we fallback to
+        # internal auth here too.
+        delete $session{'CurrentUser'} if defined $session{'CurrentUser'};
     }
 }
 
