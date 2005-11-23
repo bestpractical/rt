@@ -49,7 +49,6 @@ while (@requestors) {
     while (my $t = $tix->Next) { push @mails, $t->RequestorAddresses; }
     is(@mails, 5, "found five tickets");
     is_deeply( \@mails, [ sort @mails ], "Addresses are sorted");
-    print STDERR "Emails are ", join(" ", map {defined $_ ? $_ : "undef"} @mails);
 }
 
 {
@@ -60,7 +59,6 @@ while (@requestors) {
     while (my $t = $tix->Next) { push @mails, $t->RequestorAddresses; }
     is(@mails, 6, "found six tickets");
     is_deeply( \@mails, [ sort @mails ], "Addresses are sorted");
-    print STDERR "Emails are ", join(" ", map {defined $_ ? $_ : "undef"} @mails);
 }
 
 # vim:ft=perl:

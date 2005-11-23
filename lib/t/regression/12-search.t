@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 35;
+use Test::More tests => 39;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
@@ -36,6 +36,24 @@ my $cf3 = RT::CustomField->new($RT::SystemUser);
 $cf3->Create(Name => 'SearchTest3', Type => 'Freeform', MaxValues => 0, Queue => $q->id);
 ok($cf3->id, "Created the SearchTest3 CF");
 my $cflabel3 = "CustomField-".$cf3->id;
+
+
+# There was a bug involving a missing join to ObjectCustomFields that
+# caused spurious results on negative searches if another custom field
+# with the same name existed on a different queue.  Hence, we make
+# duplicate CFs on a different queue here
+my $dup = RT::Queue->new($RT::SystemUser);
+$dup->Create(Name => $queue . "-Copy");
+ok ($dup->id, "Created the duplicate queue");
+my $dupcf = RT::CustomField->new($RT::SystemUser);
+$dupcf->Create(Name => 'SearchTest', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+ok($dupcf->id, "Created the duplicate SearchTest CF");
+$dupcf = RT::CustomField->new($RT::SystemUser);
+$dupcf->Create(Name => 'SearchTest2', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+ok($dupcf->id, "Created the SearchTest2 CF");
+$dupcf = RT::CustomField->new($RT::SystemUser);
+$dupcf->Create(Name => 'SearchTest3', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+ok($dupcf->id, "Created the SearchTest3 CF");
 
 
 # setup some tickets
@@ -148,8 +166,7 @@ is($tix->Count, 5, "matched LIKE subject");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL");
-    
-    is($tix->Count, 2, "IS null CF");
+is($tix->Count, 2, "IS null CF");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search1'");
@@ -218,13 +235,11 @@ is($tix->Count, 4, "like cf and like subject");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("CF.SearchTest IS NULL AND CF.SearchTest2 = 'bar2'");
-    
-    is($tix->Count, 1, "null cf and is cf");
+is($tix->Count, 1, "null cf and is cf");
 
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
-
-        is($tix->Count, 1, "null cf and null cf"); 
+is($tix->Count, 1, "null cf and null cf"); 
 
 

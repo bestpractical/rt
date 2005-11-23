@@ -135,7 +135,7 @@ my %FIELD_METADATA = (
     Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
-    Watcher          => ['WATCHERFIELD'],
+    Watcher          => [ 'WATCHERFIELD', ],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -1207,6 +1207,7 @@ sub _CustomFieldLimit {
     }
 
     my $TicketCFs;
+    my $CFs;
     my $cfkey = $cfid ? $cfid : "$queue.$field";
 
     # Perform one Join per CustomField
@@ -1230,16 +1231,23 @@ sub _CustomFieldLimit {
             );
         }
         else {
-            my $cfalias = $self->Join(
+            my $ocfalias = $self->Join(
                 TYPE       => 'left',
-                EXPRESSION => "'$field'",
+                FIELD1     => 'Queue',
+                TABLE2     => 'ObjectCustomFields',
+                FIELD2     => 'ObjectId',
+            );
+            $CFs = $self->Join(
+                TYPE       => 'left',
+                ALIAS1     => $ocfalias,
+                FIELD1     => 'CustomField',
                 TABLE2     => 'CustomFields',
-                FIELD2     => 'Name',
+                FIELD2     => 'id',
             );
 
             $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
                 TYPE   => 'left',
-                ALIAS1 => $cfalias,
+                ALIAS1 => $CFs,
                 FIELD1 => 'id',
                 TABLE2 => 'ObjectCustomFieldValues',
                 FIELD2 => 'CustomField',
@@ -1267,8 +1275,16 @@ sub _CustomFieldLimit {
         );
     }
 
-    $self->_OpenParen if ($null_columns_ok);
+    $self->_OpenParen;
 
+    $self->SUPER::Limit(
+        ALIAS           => $CFs,
+        FIELD           => 'name',
+        VALUE           => $field,
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    $self->_OpenParen if $null_columns_ok;
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',
@@ -1288,7 +1304,9 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'OR',
         );
     }
-    $self->_CloseParen if ($null_columns_ok);
+    $self->_CloseParen if $null_columns_ok;
+
+    $self->_CloseParen;
 
 }
 
