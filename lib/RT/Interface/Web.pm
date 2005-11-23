@@ -124,13 +124,7 @@ just downcase $ENV{'REMOTE_USER'}
 =cut
 
 sub WebCanonicalizeInfo {
-    my $user;
-
-    if ( defined $ENV{'REMOTE_USER'} ) {
-	$user = lc ( $ENV{'REMOTE_USER'} ) if( length($ENV{'REMOTE_USER'}) );
-    }
-
-    return $user;
+    return $ENV{'REMOTE_USER'}? lc $ENV{'REMOTE_USER'}: $ENV{'REMOTE_USER'};
 }
 
 # }}}
