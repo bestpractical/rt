@@ -216,8 +216,8 @@ sub Create {
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
         }
+        return ($id)
     }
-    return ($id)
 }
 
 # }}}
@@ -584,7 +584,7 @@ sub ContentLength {
                           && $trx->CurrentUserHasRight('ShowTicketComments')
                         ) || $trx->CurrentUserHasRight('ShowTicket');
 
-    my $len = $self->GetHeader('Content-Length')) {
+    my $len = $self->GetHeader('Content-Length');
     unless ( $len ) {
         use bytes;
         $len = length($self->Content);
