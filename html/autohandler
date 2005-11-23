@@ -90,7 +90,7 @@ $m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 $m->comp('/Elements/SetupSessionCookie', %ARGS);
 
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
-    $session{'CurrentUser'} = RT::CurrentUser->new();
+    $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 
 # Set the proper encoding for the current language handle
@@ -108,31 +108,30 @@ elsif ( $RT::WebExternalAuth ) {
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
 
         my $orig_user = $user;
-        
+
         $user = RT::Interface::Web::WebCanonicalizeInfo();
-        $session{'CurrentUser'} = RT::CurrentUser->new();
         my $load_method = $RT::WebExternalGecos ? 'LoadByGecos' : 'Load';
-        
+
         if ($^O eq 'MSWin32' and $RT::WebExternalGecos) {
             my $NodeName = Win32::NodeName();
             $user =~ s/^\Q$NodeName\E\\//i;
         }
-        
+
+        $session{'CurrentUser'} = RT::CurrentUser->new();
         $session{'CurrentUser'}->$load_method($user);
         
-        if ($RT::WebExternalAuto and !$session{'CurrentUser'}->Id() ) {
+        if ( $RT::WebExternalAuto && !$session{'CurrentUser'}->Id ) {
             # Create users on-the-fly
-            
-            my $UserObj = RT::User->new(RT::CurrentUser->new('RT_System'));
-            
+
+            my $UserObj = RT::User->new( $RT::SystemUser );
             my ($val, $msg) = $UserObj->Create(
-                                               %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
-                                               Name   => $user,
-                                               Gecos  => $user,
-                                               );
-            
+                                  %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
+                                  Name   => $user,
+                                  Gecos  => $user,
+                              );
+
             if ($val) {
-                
+
                 # now get user specific information, to better create our user.
                 my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
                 
@@ -147,8 +146,9 @@ elsif ( $RT::WebExternalAuth ) {
                                        'HomePhone', 'WorkPhone', 'MobilePhone',
                                        'PagerPhone', 'Address1', 'Address2', 'City',
                                        'State', 'Zip', 'Country') {
-               $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'NewUser');
-                    
+                    # XXX: should it be here? May be we need to move it out of the block?
+                    $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'NewUser');
+
                     my $method = "Set$attribute";
                     $UserObj->$method($new_user_info->{$attribute}) 
                         if( defined $new_user_info->{$attribute} );
@@ -158,17 +158,16 @@ elsif ( $RT::WebExternalAuth ) {
             else {
                 # we failed to successfully create the user. abort abort abort.
                 delete $session{'CurrentUser'};
-                $m->abort() unless $RT::WebFallbackToInternalAuth;
+                $m->abort unless $RT::WebFallbackToInternalAuth;
                 $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('Cannot create user: [_1]', $msg));
             }
         }
         
-        unless ( $session{'CurrentUser'}->Id() ) {
+        unless ( $session{'CurrentUser'}->Id ) {
             delete $session{'CurrentUser'};
             $user = $orig_user;
-            
-            if ( $RT::WebExternalOnly ) {                
+            if ( $RT::WebExternalOnly ) {
                 $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('You are not an authorized user'));
                 $m->abort();
