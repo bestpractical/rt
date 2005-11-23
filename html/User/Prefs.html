@@ -98,6 +98,7 @@
   </tr>
 </table>
 </&>
+<& /Elements/Callback, _CallbackName => 'FormLeftColumn', UserObj => $UserObj, %ARGS &>
 </td>
 <td valign="TOP" class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
@@ -154,6 +155,7 @@
   </tr>
 </table>
 </&>
+<& /Elements/Callback, _CallbackName => 'FormRightColumn', UserObj => $UserObj, %ARGS &>
 </td>
 </tr>
 <tr>
@@ -204,6 +206,12 @@ if ($UserObj->Id) {
 		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
 		Address2 City State Zip Country Lang
 		   );
+
+    $m->comp('/Elements/Callback', _CallbackName => 'UpdateLogic',
+                                    fields        => \@fields,
+                                    results       => \@results,
+                                    UserObj       => $UserObj,
+                                    ARGSRef       => \%ARGS);
     
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,
