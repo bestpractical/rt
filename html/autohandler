@@ -189,28 +189,35 @@ elsif ( $RT::WebExternalAuth ) {
 }
 
 delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} and $session{'CurrentUser'}->Id;
-
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
 # Process per-page authentication callbacks
 $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'Auth');
 
-# If the user is logging in, let's authenticate
-if (!$session{'CurrentUser'} && defined $user && defined $pass ) {
-    $session{'CurrentUser'} = RT::CurrentUser->new();
-    $session{'CurrentUser'}->Load( $user );
+delete $session{'CurrentUser'}
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
-    unless ( $session{'CurrentUser'}->id &&
-             $session{'CurrentUser'}->IsPassword( $pass ) )
-    {
-        delete $session{'CurrentUser'};
-        $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
-        $m->comp('/Elements/Login', %ARGS,
-                 Error => loc('Your username or password is incorrect'));
+unless( $session{'CurrentUser'} ) {
+    # If the user is logging in, let's authenticate
+    if( defined $user && defined $pass ) {
+        my $user_obj = RT::CurrentUser->new;
+        $user_obj->Load( $user );
+
+        unless ( $user_obj->id && $user_obj->IsPassword( $pass ) ) {
+            $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
+            $m->comp( '/Elements/Login', %ARGS,
+                      Error => loc('Your username or password is incorrect'),
+                    );
+            $m->abort;
+        }
+        $session{'CurrentUser'} = $user_obj;
+        $RT::Logger->info("Successful login for $user from $ENV{'REMOTE_ADDR'}");
+    }
+    # if no credentials then show him login page
+    else {
+        $m->comp( '/Elements/Login', %ARGS );
         $m->abort;
     }
-
-    $RT::Logger->info("Successful login for $user from $ENV{'REMOTE_ADDR'}");
 }
 
 # we've got credentials, let's serve the file up.
