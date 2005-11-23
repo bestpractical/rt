@@ -120,10 +120,10 @@ my $ticket_page_tabs = {
     _E => { title => loc('Links'),
             path  => "Ticket/ModifyLinks.html?id=" . $id, },
     _F => { title => loc('Reminders'),
-            path  => "Ticket/Reminders.html?id=" . $id, },
+            path  => "Ticket/Reminders.html?id=" . $id,
+            separator => 1, },
     _X => { title => loc('Jumbo'),
-            path  => "Ticket/ModifyAll.html?id=" . $id,
-            separator => 1
+            path  => "Ticket/ModifyAll.html?id=" . $id, 
  },
 
 };
