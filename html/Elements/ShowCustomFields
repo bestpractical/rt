@@ -71,6 +71,9 @@
 </table>
 <%INIT>
 my $CustomFields = $Object->CustomFields;
+ $m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
+                                CustomFields => $CustomFields);
+
 </%INIT>
 <%ARGS>
 $Object => undef
