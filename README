@@ -147,6 +147,13 @@ want to read a more comprehensive installation guide at:
        /opt/rt3/sbin/rt-setup-database --action insert \
             --datadir etc/upgrade/<version>
 
+     Clear mason cache dir:
+
+       rm -fr /opt/rt3/var/mason_data/obj
+
+     Stop and start web-server.
+
+
 8  If you're upgrading from RT 2.0:
 
     Please upgrade from RT 2.0 to RT 3.2 and then follow the instructions
