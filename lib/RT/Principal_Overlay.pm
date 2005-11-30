@@ -301,6 +301,8 @@ sub HasRight {
         return (undef);
     }
 
+    $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
+
     if ( $self->Disabled ) {
         $RT::Logger->error( "Disabled User:  "
               . $self->id
