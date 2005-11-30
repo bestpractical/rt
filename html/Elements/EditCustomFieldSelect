@@ -53,7 +53,8 @@
 % if ($Values) {
             <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
 % } elsif ($Default) {
-            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
+            <% (ref $Default ? (grep {$_ eq $value->Name} @{$Default}) : ($Default eq $value->Name))
+                && ($selected = 1) && 'SELECTED' %>
 % }
             ><% $value->Name%></option>
 % }
