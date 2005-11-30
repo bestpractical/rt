@@ -62,7 +62,7 @@ $scrubber->default(
 
 $scrubber->deny(qw[*]);
 $scrubber->allow(
-    qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD]);
+    qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD PRE]);
 $scrubber->comment(0);
 return ( $scrubber->scrub($Content) );
 </%init>
