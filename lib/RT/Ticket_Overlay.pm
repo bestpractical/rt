@@ -750,7 +750,7 @@ sub Create {
         $RT::Handle->Commit();
         $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
-        return ( $self->Id, $0, $ErrStr );
+        return ( $self->Id, 0, $ErrStr );
 
     }
 }

@@ -435,7 +435,7 @@ sub IsRTAddress {
     # Example: the following rule would tell RT not to Cc 
     #   "tickets@noc.example.com"
     if ( defined($RT::RTAddressRegexp) &&
-                       $address =~ /$RT::RTAddressRegexp/ ) {
+                       $address =~ /$RT::RTAddressRegexp/i ) {
         return(1);
     } else {
         return (undef);
