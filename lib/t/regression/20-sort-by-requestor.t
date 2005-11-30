@@ -58,7 +58,7 @@ while (@requestors) {
     my @mails;
     while (my $t = $tix->Next) { push @mails, $t->RequestorAddresses; }
     is(@mails, 6, "found six tickets");
-    is_deeply( \@mails, [ sort @mails ], "Addresses are sorted");
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Addresses are sorted (exclude nulls, which are db-dependant)");
 }
 
 # vim:ft=perl:
