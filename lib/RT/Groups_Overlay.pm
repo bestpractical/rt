@@ -87,6 +87,24 @@ use RT::Users;
 
 # {{{ sub _Init
 
+=begin testing
+
+# next had bugs
+# Groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => xx );
+my $g = RT::Group->new($RT::SystemUser);
+my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'GroupsNotEqualTest');
+ok ($id, "created group #". $g->id) or diag("error: $msg");
+
+my $groups = RT::Groups->new($RT::SystemUser);
+$groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $g->id );
+$groups->LimitToUserDefinedGroups();
+my $bug = grep $_->id == $g->id, @{$groups->ItemsArrayRef};
+ok (!$bug, "didn't find group");
+
+=end testing
+
+=cut
+
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Groups";
@@ -98,13 +116,13 @@ sub _Init {
 		  FIELD => 'Name',
 		  ORDER => 'ASC');
 
-  $self->{'princalias'} = $self->NewAlias('Principals');
-
   # XXX: this code should be generalized
-  $self->Join( ALIAS1 => 'main',
-               FIELD1 => 'id',
-               ALIAS2 => $self->{'princalias'},
-               FIELD2 => 'id' );
+  $self->{'princalias'} = $self->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'id',
+    TABLE2 => 'Principals',
+    FIELD2 => 'id'
+  );
 
   # even if this condition is useless and ids in the Groups table
   # only match principals with type 'Group' this could speed up
@@ -253,7 +271,7 @@ my $u = RT::User->new($RT::SystemUser);
 $u->Create(Name => 'Membertests');
 my $g = RT::Group->new($RT::SystemUser);
 my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
-ok ($id,$msg);
+ok ($id, $msg);
 
 my ($aid, $amsg) =$g->AddMember($u->id);
 ok ($aid, $amsg);
@@ -264,9 +282,6 @@ $groups->LimitToUserDefinedGroups();
 $groups->WithMember(PrincipalId => $u->id);
 ok ($groups->Count == 1,"found the 1 group - " . $groups->Count);
 ok ($groups->First->Id == $g->Id, "it's the right one");
-
-
-
 
 =end testing
 
