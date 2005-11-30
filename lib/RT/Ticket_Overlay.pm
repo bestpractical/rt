@@ -2502,8 +2502,11 @@ sub DeleteLink {
         $direction='Base';
     }
 
-    if ( $val ) {
-	my $remote_uri = RT::URI->new( $RT::SystemUser );
+    if ( $args{'Silent'} ) {
+        return ( $val, $Msg );
+    }
+    else {
+	my $remote_uri = RT::URI->new( $self->CurrentUser );
     	$remote_uri->FromURI( $remote_link );
 
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
@@ -2512,6 +2515,17 @@ sub DeleteLink {
 	    OldValue =>  $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
+
+        if ( $remote_uri->IsLocal ) {
+
+            my $OtherObj = $remote_uri->Object;
+            my ( $val, $Msg ) = $OtherObj->_NewTransaction(Type  => 'DeleteLink',
+                                                           Field => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
+                                                                                           : $LINKDIRMAP{$args{'Type'}}->{Target},
+                                                           OldValue => $self->URI,
+                                                           ActivateScrips => ! $RT::LinkTransactionsRun1Scrip,
+                                                           TimeTaken => 0 );
+        }
 
         return ( $Trans, $Msg );
     }
@@ -2524,52 +2538,6 @@ sub DeleteLink {
 =head2 AddLink
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
-
-=begin testing 
-
-my $q1 = RT::Queue->new($RT::SystemUser);
-my ($id,$msg) = $q1->Create(Name => 'LinkTest1');
-ok ($id,$msg);
-my $q2 = RT::Queue->new($RT::SystemUser);
-($id,$msg) = $q2->Create(Name => 'LinkTest2');
-ok ($id,$msg);
-
-my $u1 = RT::User->new($RT::SystemUser);
-($id,$msg) =$u1->Create(Name => 'LinkTestUser');
-
-ok ($id,$msg);
-
-($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'CreateTicket');
-ok ($id,$msg);
-($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
-ok ($id,$msg);
-
-my $tid;
-
-my $creator = RT::CurrentUser->new($u1->id);
-
-my $ticket = RT::Ticket->new( $creator);
-ok($ticket->isa('RT::Ticket'));
-($id,$tid, $msg) = $ticket->Create(Subject => 'Link test 1', Queue => $q1->id);
-ok ($id,$msg);
-
-
-my $ticket2 = RT::Ticket->new($RT::SystemUser);
-($id, $tid, $msg) = $ticket2->Create(Subject => 'Link test 2', Queue => $q2->id);
-ok ($id, $msg);
-
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
-ok(!$id,$msg);
-($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'CreateTicket');
-ok ($id,$msg);
-($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
-ok ($id,$msg);
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
-ok($id,$msg);
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => -1);
-ok(!$id,$msg);
-
-=end testing 
 
 =cut
 
@@ -2658,7 +2626,7 @@ sub _AddLink {
         return ( $val, $Msg );
     }
     else {
-	my $remote_uri = RT::URI->new( $RT::SystemUser );
+	my $remote_uri = RT::URI->new( $self->CurrentUser );
     	$remote_uri->FromURI( $remote_link );
 
         #Write the transaction
@@ -2667,6 +2635,17 @@ sub _AddLink {
 				   Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
 				   NewValue =>  $remote_uri->URI || $remote_link,
 				   TimeTaken => 0 );
+
+        if ( $remote_uri->IsLocal ) {
+
+            my $OtherObj = $remote_uri->Object;
+            my ( $val, $Msg ) = $OtherObj->_NewTransaction(Type  => 'AddLink',
+                                                           Field => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base} 
+                                                                                           : $LINKDIRMAP{$args{'Type'}}->{Target},
+                                                           NewValue => $self->URI,
+                                                           ActivateScrips => ! $RT::LinkTransactionsRun1Scrip,
+                                                           TimeTaken => 0 );
+        }
         return ( $val, $Msg );
     }
 
