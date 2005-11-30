@@ -47,7 +47,7 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%></TITLE>
-% if ($Refresh > 0) {
+% if ($Refresh && $Refresh > 0) {
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
 
