@@ -49,99 +49,92 @@
     Title => $title,
     Searches => \@sys_searches
 &>
+<& /Elements/ListActions, actions => \@results &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
-
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
-<br />
+% foreach my $box( @boxes ) {
+<&|/Widgets/TitleBox,
+    title => loc('RT at a glance') .': '. loc( $box->{Name} ),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
+</&>
 % }
+
 <&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "" &>
 <form method="POST" action="MyRT.html">
-    <&|/l&>Rows per box</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" /> <input type="submit" class="button" value="<%loc('Save')%>" />
+<&|/l&>Rows per box</&>:
+<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
+<input type="submit" class="button" name="UpdateSummaryRows" value="<% loc('Save') %>" />
 </form>
 </&>
-<%INIT>
-my @actions;
 
+<%INIT>
+my @results;
 my $title = loc("Customize").' '.loc("RT at a glance");
 my $user = $session{'CurrentUser'}->UserObj;
+
+if ( $ARGS{'UpdateSummaryRows'} ) {
+    unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
+        push @results, loc ("Illegal '[_1]' preference value.", loc('summary rows'));
+        $ARGS{SummaryRows} = 0;
+    }
+    else {
+        $user->SetPreferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        push @results, loc ('Preferences saved for [_1].', loc('summary rows'));
+    }
+}
+$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
 }
-
-if ($ARGS{SummaryRows}) {
-    $user->SetPreferences('SummaryRows', $ARGS{SummaryRows});
-    push @actions, loc ('Preferences saved for [_1].', loc('summary rows'));
-}
-else {
-    $ARGS{SummaryRows} = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
-}
-
-
 my $portlets = $session{'my_rt_portlets'};
 
-my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
-my @items;
-
-push @items, map {["component-$_", $_]} sort keys %allowed_components;
-
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
-
-if ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-				       Object=> $RT::System )) {
-    my $groups = RT::Groups->new($session{'CurrentUser'});
-    $groups->LimitToUserDefinedGroups;
-    $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-			Recursively => 1);
-    push @objs, ($user, @{$groups->ItemsArrayRef()});
-}
+my %seen;
+my @items = map ["component-$_", $_], grep !$seen{$_}++, @$RT::HomepageComponents;
 
 my @sys_searches;
-for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-	my ($desc, $search) = @$_;
-	if ($object eq $sys) {
-	    push @items, ["system-$desc", $desc];
-	    push @sys_searches, [$desc, $search];
-	}
-	else {
-	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-	    push @items, ["saved-$oid", "Saved Search: $desc"];
-	}
+my @searches = $m->comp( "/Search/Elements/UserSearches" );
+foreach my $s( @searches ) {
+    #XXX: get rid of this exception
+    if ( $s->{'Type'} eq 'system' ) {
+        push @items, ["system-".$s->{'Description'}, $s->{'Description'} ];
+        push @sys_searches, [ $s->{'Description'}, $s->{'Search'} ];
+    }
+    else {
+        my $oid = join '-', ref $s->{'Object'},
+                            $s->{'Object'}->Id,
+                            'SavedSearch',
+                            $s->{'Search'};
+        push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
     }
 }
 
-my %item_map = map {$_->[0] => $_->[1]} @items;
-my @panes;
-for my $pane ('body', 'summary') {
-    push @panes,
-	$m->comp ('/Widgets/SelectionBox:new',
-		  Action => 'MyRT.html',
-		  Name => $pane,
-                  Available => \@items,
-                  AutoSave => 1,
-		  OnSubmit =>
-		  sub { my $sel = shift;
-			$portlets->{$pane} =
-			    [map { m/(\w+)-(.*)$}/;
-				   { type => $1,
-				     name => $2,
-				 }} @{$sel->{Current}}];
-			$user->SetPreferences('HomepageSettings', $portlets);
-			push @actions, loc ('Preferences saved for [_1].', $pane);
-			delete $session{'my_rt_portlets'};
-
-		  },
-		  Selected => [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}]);
+my @boxes;
+foreach my $pane ( sort keys %$portlets ) {
+    push @boxes,
+        $m->comp(
+            '/Widgets/SelectionBox:new',
+            Action    => 'MyRT.html',
+            Name      => $pane,
+            Available => \@items,
+            AutoSave  => 1,
+            OnSubmit  => sub {
+                my $self = shift;
+                $portlets->{$pane} = [
+                    map { m/(\w+)-(.*)$}/; { type => $1, name => $2, }}
+                    @{$self->{Current}}
+                ];
+                $user->SetPreferences('HomepageSettings', $portlets);
+                push @results, loc ('Preferences saved for [_1].', $pane);
+                delete $session{'my_rt_portlets'};
+            },
+            Selected  => [ map { join '-', @{$_}{qw/type name/} } @{ $portlets->{$pane} } ]
+        );
 }
 
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @panes;
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @boxes;
 
 </%INIT>
