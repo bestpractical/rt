@@ -43,58 +43,57 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
 <table border="0" width="100%">
 <tr valign="TOP">
-<td width="70%" class="boxcontainer">
 
-% for my $portlet (@{$portlets->{body}}) {
-<% _show($portlet) %>
-<br/>
-% }
-
-%#GAH!
+<td class="boxcontainer" <% $two_columns ? 'width="70%"':'' %>>
+% $show_cb->($_) foreach @{$Portlets->{body}};
 </td>
+
+% if( $two_columns ) {
 <td class="boxcontainer">
-
-% for my $portlet (@{$portlets->{summary}}) {
-<% _show($portlet) %>
-<br/>
+% $show_cb->($_) foreach @{$Portlets->{summary}};
+</td>
 % }
 
-</td>
-</tr>
-</table>
-
+</tr></table>
 <%INIT>
 
+# XXX: we don't use this, but should.
 my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
 
-unless (exists $session{'my_rt_portlets'}) {
+$Portlets ||= $session{'my_rt_portlets'};
+unless ( $Portlets ) {
     my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    my $user = $session{'CurrentUser'}->UserObj;
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
+    $Portlets = $session{'my_rt_portlets'} =
+                $session{'CurrentUser'}->UserObj->Preferences( 
+                    'HomepageSettings',
+                    $d_portlets->Content,
+                );
 }
 
-my $portlets = $session{'my_rt_portlets'};
+my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
 
-sub _show {
+my $show_cb = sub {
     my $entry = shift;
     my $type = $entry->{type};
+    my $name = $entry->{'name'};
     if ($type eq 'component') {
-	my $name = $entry->{name};
-	# security check etc.
-	$m->comp ($name);
+	# XXX: security check etc.
+	$m->comp( $name );
     }
     elsif ($type eq 'system') {
-	$m->comp ('/Elements/ShowSearch', Name => $entry->{name});
+	$m->comp( '/Elements/ShowSearch', Name => $name );
     }
     elsif ($type eq 'saved') {
-	$m->comp ('/Elements/ShowSearch', SavedSearch => $entry->{name});
+	$m->comp( '/Elements/ShowSearch', SavedSearch => $name );
     }
     else {
-	$RT::Logger->error ("unknown portlet type $type");
+	$RT::Logger->error ("unknown portlet type '$type'");
     }
-}
+};
 
 </%INIT>
+<%ARGS>
+$Portlets => undef
+</%ARGS>
