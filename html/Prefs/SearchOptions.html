@@ -1,4 +1,3 @@
-
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
@@ -62,7 +61,6 @@
 
 <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
 </form>
-
 <%INIT>
 
 # {{{ If we're saving search preferences, do that now
@@ -86,8 +84,7 @@ if ($ARGS{'SavePreferences'}) {
 
 
 # Read from user preferences
-my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
-;
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
 
 $Format      ||= $prefs->{'Format'};
 $Order       ||= $prefs->{'Order'} || 'ASC';
