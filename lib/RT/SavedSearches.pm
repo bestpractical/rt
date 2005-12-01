@@ -72,12 +72,10 @@ use_ok(RT::SavedSearches);
 
 package RT::SavedSearches;
 
-use RT::Base;
 use RT::SavedSearch;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw/RT::Base/;
+use base 'RT::Base';
 
 sub new  {
     my $proto = shift;
