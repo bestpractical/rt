@@ -440,88 +440,6 @@ my @options = $tree->GetDisplayedNodes;
 
 my @current_values = grep { defined } @options[@clauses];
 
-# {{{ Try to find if we're adding a clause
-foreach my $arg ( keys %ARGS ) {
-    if (
-        $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
-        && ( ref $ARGS{$arg} eq "ARRAY"
-            ? grep { $_ ne "" } @{ $ARGS{$arg} }
-            : $ARGS{$arg} ne "" )
-      )
-    {
-
-        # We're adding a $1 clause
-        my $field = $1;
-        my ( $keyword, $op, $value );
-
-        #figure out if it's a grouping
-        if ( $ARGS{ $field . "Field" } ) {
-            $keyword = $ARGS{ $field . "Field" };
-        }
-        else {
-            $keyword = $field;
-        }
-
-        my ( @ops, @values );
-        if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
-
-            # we have many keys/values to iterate over, because there is
-            # more than one CF with the same name.
-            @ops    = @{ $ARGS{ $field . 'Op' } };
-            @values = @{ $ARGS{ 'ValueOf' . $field } };
-        }
-        else {
-            @ops    = ( $ARGS{ $field . 'Op' } );
-            @values = ( $ARGS{ 'ValueOf' . $field } );
-        }
-        $RT::Logger->error("Bad Parameters passed into Query Builder")
-          unless @ops == @values;
-
-        for my $i ( 0 .. @ops - 1 ) {
-            my ( $op, $value ) = ( $ops[$i], $values[$i] );
-            next if $value eq "";
-
-            if ( $value eq 'NULL' && $op =~ /=/ ) {
-                if ( $op eq '=' ) {
-                    $op = "IS";
-                }
-                elsif ( $op eq '!=' ) {
-                    $op = "IS NOT";
-                }
-
-                # This isn't "right", but...
-                # It has to be this way until #5182 is fixed
-                $value = "'NULL'";
-            }
-            else {
-                $value = "'$value'";
-            }
-
-            my $clause = {
-                Key   => $keyword,
-                Op    => $op,
-                Value => $value
-            };
-
-            my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
-            if (@current_values) {
-                foreach my $value (@current_values) {
-                    my $newindex = $value->getIndex() + 1;
-                    $value->insertSibling( $newindex, $newnode );
-                    $value = $newnode;
-                }
-            }
-            else {
-                $tree->getChild(0)->addChild($newnode);
-                @current_values = $newnode;
-            }
-            $newnode->getParent()->setNodeValue( $ARGS{'AndOr'} );
-        }
-    }
-}
-
-# }}}
-
 # {{{ Move things around
 if ( $ARGS{"Up"} ) {
     if (@current_values) {
@@ -615,6 +533,7 @@ elsif ( $ARGS{"Right"} ) {
 elsif ( $ARGS{"DeleteClause"} ) {
     if (@current_values) {
         $_->getParent()->removeChild($_) for @current_values;
+		@current_values = ();
     }
     else {
         push( @actions, [ loc("error: nothing to delete"), -1 ] );
@@ -638,6 +557,88 @@ elsif ( $ARGS{"Toggle"} ) {
         push( @actions, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
+
+# {{{ Try to find if we're adding a clause
+foreach my $arg ( keys %ARGS ) {
+    if (
+            $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
+        && ( ref $ARGS{$arg} eq "ARRAY"
+            ? grep { $_ ne "" } @{ $ARGS{$arg} }
+            : $ARGS{$arg} ne "" )
+      )
+    {
+
+        # We're adding a $1 clause
+        my $field = $1;
+        my ( $keyword, $op, $value );
+
+        #figure out if it's a grouping
+        if ( $ARGS{ $field . "Field" } ) {
+            $keyword = $ARGS{ $field . "Field" };
+        }
+        else {
+            $keyword = $field;
+        }
+
+        my ( @ops, @values );
+        if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+
+            # we have many keys/values to iterate over, because there is
+            # more than one CF with the same name.
+            @ops    = @{ $ARGS{ $field . 'Op' } };
+            @values = @{ $ARGS{ 'ValueOf' . $field } };
+        }
+        else {
+            @ops    = ( $ARGS{ $field . 'Op' } );
+            @values = ( $ARGS{ 'ValueOf' . $field } );
+        }
+        $RT::Logger->error("Bad Parameters passed into Query Builder")
+          unless @ops == @values;
+
+        for my $i ( 0 .. @ops - 1 ) {
+            my ( $op, $value ) = ( $ops[$i], $values[$i] );
+            next if $value eq "";
+
+            if ( $value eq 'NULL' && $op =~ /=/ ) {
+                if ( $op eq '=' ) {
+                    $op = "IS";
+                }
+                elsif ( $op eq '!=' ) {
+                    $op = "IS NOT";
+                }
+
+                # This isn't "right", but...
+                # It has to be this way until #5182 is fixed
+                $value = "'NULL'";
+            }
+            else {
+                $value = "'$value'";
+            }
+
+            my $clause = {
+                Key   => $keyword,
+                Op    => $op,
+                Value => $value
+            };
+
+            my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
+            if (@current_values) {
+                foreach my $value (@current_values) {
+                    my $newindex = $value->getIndex() + 1;
+                    $value->insertSibling( $newindex, $newnode );
+                    $value = $newnode;
+                }
+            }
+            else {
+                $tree->getChild(0)->addChild($newnode);
+                @current_values = $newnode;
+            }
+            $newnode->getParent()->setNodeValue( $ARGS{'AndOr'} );
+        }
+    }
+}
+
+# }}}
 
 $tree->PruneChildlessAggregators;
 
