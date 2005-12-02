@@ -1206,7 +1206,7 @@ sub _CustomFieldJoin {
   my ($self, $cfkey, $cfid, $field) = @_;
  
   my $TicketCFs;
-
+  my $CFs;
     # Perform one Join per CustomField
 
     if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
@@ -1273,7 +1273,7 @@ sub _CustomFieldJoin {
         );
     }
 
-  return $TicketCFs;
+  return ($TicketCFs, $CFs);
 }
 
 =head2 _CustomFieldLimit
@@ -1306,9 +1306,18 @@ sub _CustomFieldLimit {
     }
 
     my $cfkey = $cfid ? $cfid : "$queue.$field";
-    my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+    my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-     $self->_OpenParen if ($null_columns_ok);
+     $self->_OpenParen;
+
+     $self->SUPER::Limit(
+         ALIAS           => $CFs,
+         FIELD           => 'name',
+         VALUE           => $field,
+         ENTRYAGGREGATOR => 'AND',
+     );
+
+     $self->_OpenParen if $null_columns_ok;
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
@@ -1370,7 +1379,7 @@ sub OrderByCols {
        } elsif ( $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
-           my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
            unless ($cfid) {
              # For those cases where we are doing a join against the
              # CF name, and don't have a CFid, use Unique to make sure
