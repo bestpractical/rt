@@ -2870,7 +2870,7 @@ msgstr "Aucun utilisateur ne correspond aux critères de recherche."
 
 #: lib/RT/Record.pm:944
 msgid "No value sent to _Set!\\n"
-msgstr "Pas de valeur à positionner !\\n"
+msgstr "Pas de valeur à positionner  \\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -4578,11 +4578,11 @@ msgstr "L'utilisateur %1 ne peut être trouvé."
 
 #: etc/initialdata:132 etc/initialdata:206
 msgid "User Defined"
-msgstr "Utilisateur défini"
+msgstr "Défini par l'utilisateur"
 
 #: html/Admin/Elements/EditScrip:98
 msgid "User Defined conditions and actions"
-msgstr "Conditions et actions définies par l'usager"
+msgstr "Conditions et actions définies par l'utilisateur"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
 msgid "User Rights"

@@ -135,7 +135,7 @@ my %FIELD_METADATA = (
     Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
-    Watcher          => ['WATCHERFIELD'],
+    Watcher          => [ 'WATCHERFIELD', ],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -1229,16 +1229,23 @@ sub _CustomFieldJoin {
             );
         }
         else {
-            my $cfalias = $self->Join(
+            my $ocfalias = $self->Join(
                 TYPE       => 'left',
-                EXPRESSION => "'$field'",
+                FIELD1     => 'Queue',
+                TABLE2     => 'ObjectCustomFields',
+                FIELD2     => 'ObjectId',
+            );
+            $CFs = $self->Join(
+                TYPE       => 'left',
+                ALIAS1     => $ocfalias,
+                FIELD1     => 'CustomField',
                 TABLE2     => 'CustomFields',
-                FIELD2     => 'Name',
+                FIELD2     => 'id',
             );
 
             $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
                 TYPE   => 'left',
-                ALIAS1 => $cfalias,
+                ALIAS1 => $CFs,
                 FIELD1 => 'id',
                 TABLE2 => 'ObjectCustomFieldValues',
                 FIELD2 => 'CustomField',
@@ -1322,7 +1329,9 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'OR',
         );
     }
-    $self->_CloseParen if ($null_columns_ok);
+    $self->_CloseParen if $null_columns_ok;
+
+    $self->_CloseParen;
 
 }
 
@@ -2377,7 +2386,7 @@ sub LimitCustomField {
     my $q = "";
     if ( $CF->Queue ) {
         my $qo = new RT::Queue( $self->CurrentUser );
-        $qo->load( $CF->Queue );
+        $qo->Load( $CF->Queue );
         $q = $qo->Name;
     }
 

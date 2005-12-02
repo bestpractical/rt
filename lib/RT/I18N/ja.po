@@ -1,10 +1,9 @@
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2005-10-03 13:49-0400\n"
-"Last-Translator: Jesse Vincent <jesse@bestpractical.com>\n"
+"PO-Revision-Date: 2005-10-20 02:00+0800\n"
+"Last-Translator: Daisuke Maki <daisuke@wafu.ne.jp>\n"
 "Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -181,7 +180,7 @@ msgstr ""
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
-msgstr "%2による%1"
+msgstr "%1 (%2)"
 
 #: lib/RT/Transaction_Overlay.pm:777 lib/RT/Transaction_Overlay.pm:786 lib/RT/Transaction_Overlay.pm:789
 #. ($self->Field , $q1->Name , $q2->Name)
@@ -201,12 +200,12 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "%1 couldn't init a transaction (%2)\\n"
-msgstr "%1はトランザクションをはじめることができませんでした(%2)\\n"
+msgstr "%1はトランザクションを開始することができませんでした(%2)\\n"
 
 #: lib/RT/Ticket_Overlay.pm:2726
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1は分解するステータスを設定できませんでした。RTのデータベースに一貫性がない可能性があります。"
+msgstr "%1を解決状態に設定できませんでした。RTのデータベースに一貫性がない可能性があります。"
 
 #: lib/RT/Transaction_Overlay.pm:560
 #. ($obj_type)
@@ -225,7 +224,7 @@ msgstr ""
 
 #: etc/initialdata:593
 msgid "%1 highest priority tickets I own"
-msgstr ""
+msgstr "優先度の高いチケット%1件"
 
 #: bin/rt-crontool:186
 #. ($0)
@@ -258,7 +257,7 @@ msgstr "%1分"
 
 #: etc/initialdata:601
 msgid "%1 newest unowned tickets"
-msgstr ""
+msgstr "担当されていないチケット%1件"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 not shown"
@@ -288,7 +287,7 @@ msgstr "%1タイプは%2では不明です"
 #: lib/RT/Action/ResolveMembers.pm:63
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1は分解されたグループチケットのすべてのメンバーを分解します。"
+msgstr "%1はグループチケットのすべてのメンバーを解決状態にします。"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
@@ -311,7 +310,7 @@ msgstr ""
 #: lib/RT/Transaction_Overlay.pm:470
 #. ($self)
 msgid "%1: no attachment specified"
-msgstr "%1:アタッチメントが特定できません"
+msgstr "%1:アタッチメントが指定されていません"
 
 #: html/Ticket/Elements/ShowTransactionAttachments:78
 #. ($size)
@@ -440,7 +439,7 @@ msgstr ""
 
 #: html/Admin/Users/Modify.html:71
 msgid "(required)"
-msgstr "（必要です）"
+msgstr "（必須項目です）"
 
 #: html/Ticket/Elements/ShowTransactionAttachments:82
 msgid "(untitled)"
@@ -486,7 +485,7 @@ msgstr ""
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"新しいチケット\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"新規作成\">&nbsp;%1"
 
 #: etc/initialdata:218
 msgid "A blank template"
@@ -563,7 +562,7 @@ msgstr ""
 
 #: html/Search/Bulk.html:84
 msgid "Add Requestor"
-msgstr "リクエストする人をを追加する"
+msgstr "作成者をを追加する"
 
 #: html/Admin/Elements/AddCustomFieldValue:46
 msgid "Add Value"
@@ -701,7 +700,7 @@ msgstr "絞込み検索"
 
 #: html/Elements/SelectDateRelation:57
 msgid "After"
-msgstr "後"
+msgstr "が以下より後である"
 
 #: html/Search/Elements/PickCriteria:52
 msgid "Aggregator"
@@ -770,7 +769,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:440
 msgid "Apr."
-msgstr "四月"
+msgstr "4月"
 
 #: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:73
 msgid "Ascending"
@@ -819,7 +818,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:444
 msgid "Aug."
-msgstr "八月"
+msgstr "8月"
 
 #: NOT FOUND IN SOURCE
 msgid "AuthSystem"
@@ -867,7 +866,7 @@ msgstr "本当に変更を保存してもよろしいですか"
 
 #: html/Elements/SelectDateRelation:55 lib/RT/CurrentUser.pm:360
 msgid "Before"
-msgstr "前"
+msgstr "が以下より前である"
 
 #: html/Elements/Logo:47
 msgid "Best Practical Solutions, LLC corporate logo"
@@ -936,7 +935,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:1270 lib/RT/Record.pm:1348
 msgid "Can't specifiy both base and target"
-msgstr "ベースとターゲットを特定できません"
+msgstr "ベースとターゲット両方を指定する事はできません"
 
 #: html/autohandler:166
 #. ($msg)
@@ -968,8 +967,9 @@ msgid "Check box to revoke right"
 msgstr "権利を無効にするチェックボックス"
 
 #: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:64
+# XXX - I can't come up with a good translation yet. leave as is in English
 msgid "Children"
-msgstr "子供"
+msgstr ""
 
 #: html/NoAuth/js/util.js:70 html/NoAuth/js/util.js:88
 msgid "Choose a date"
@@ -989,7 +989,7 @@ msgstr ""
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
-msgstr ""
+msgstr "解決日時"
 
 #: NOT FOUND IN SOURCE
 msgid "Closed requests"
@@ -1138,7 +1138,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2987 lib/RT/Ticket_Overlay.pm:2995 lib/RT/Ticket_Overlay.pm:3012
 msgid "Could not change owner. "
-msgstr "オーナー変更ができませんでした"
+msgstr "担当者変更ができませんでした"
 
 #: html/Admin/CustomFields/Modify.html:135
 #. ($msg)
@@ -1450,7 +1450,7 @@ msgstr ""
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1146
 msgid "Created"
-msgstr "作成しました"
+msgstr "作成日時"
 
 #: html/Admin/CustomFields/Modify.html:137 html/Admin/Elements/EditCustomField:117
 #. ($CustomFieldObj->Name())
@@ -1576,7 +1576,7 @@ msgstr "日付"
 
 #: lib/RT/Date.pm:448
 msgid "Dec."
-msgstr "十二月"
+msgstr "12月"
 
 #: etc/initialdata:222
 msgid "Default Autoresponse template"
@@ -1673,7 +1673,7 @@ msgstr ""
 
 #: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:219 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
 msgid "Depended on by"
-msgstr "次のもの次第である"
+msgstr "依存されているチケット"
 
 #: NOT FOUND IN SOURCE
 msgid "Dependencies: \\n"
@@ -1701,15 +1701,15 @@ msgstr ""
 
 #: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:218 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
-msgstr "による"
+msgstr "依存しているチケット"
 
 #: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:78
 msgid "Descending"
-msgstr "降順する"
+msgstr "降順"
 
 #: html/SelfService/Create.html:100 html/Ticket/Create.html:150
 msgid "Describe the issue below"
-msgstr "下の問題点を表す"
+msgstr "チケットの本文を以下に書き込んでください"
 
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:56 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
 msgid "Description"
@@ -1761,7 +1761,7 @@ msgstr ""
 
 #: html/Elements/Refresh:51
 msgid "Don't refresh this page."
-msgstr "このページを更新しないでください"
+msgstr "ページを定期的に更新しない"
 
 #: html/Ticket/Elements/ShowTransactionAttachments:82
 msgid "Download"
@@ -1773,7 +1773,7 @@ msgstr ""
 
 #: html/Elements/SelectDateType:53 html/Ticket/Create.html:207 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:86 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
 msgid "Due"
-msgstr "期限切れ"
+msgstr "終了予定日時"
 
 #: NOT FOUND IN SOURCE
 msgid "Due date '%1' could not be parsed"
@@ -1875,7 +1875,7 @@ msgstr "テンプレート%1を編集する"
 
 #: lib/RT/Record.pm:1285 lib/RT/Record.pm:1362
 msgid "Either base or target must be specified"
-msgstr "ベースもしくはターゲットを特定しなければなりません"
+msgstr "ベースもしくはターゲットを指定しなければなりません"
 
 #: html/Admin/Users/Modify.html:74 html/Ticket/Elements/AddWatchers:77 html/User/Prefs.html:65
 msgid "Email"
@@ -2023,7 +2023,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:438
 msgid "Feb."
-msgstr "二月"
+msgstr "2月"
 
 #: html/Elements/SelectAttachmentField:50
 msgid "Filename"
@@ -2219,7 +2219,7 @@ msgstr "グループが見つかりません。\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Group not specified.\\n"
-msgstr "グループが特定できません。\\n"
+msgstr "グループが指定されていません。\\n"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1191
 msgid "Groups"
@@ -2244,11 +2244,11 @@ msgstr "こんにちは！"
 #: docs/design_docs/string-extraction-guide.txt:40 lib/RT/StyleGuide.pod:773
 #. ($name)
 msgid "Hello, %1"
-msgstr "こんにちは、%1"
+msgstr "こんにちは、%1さん"
 
 #: html/Admin/Elements/GroupTabs:70 html/Admin/Elements/UserTabs:64 html/Ticket/Elements/ShowHistory:51 html/Ticket/Elements/Tabs:111
 msgid "History"
-msgstr "ヒストリー"
+msgstr "更新履歴"
 
 #: html/Admin/Groups/History.html:62
 #. ($GroupObj->Name)
@@ -2262,11 +2262,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "HomePhone"
-msgstr "自宅の電話"
+msgstr "電話（自宅）"
 
 #: html/Elements/Tabs:65
 msgid "Homepage"
-msgstr "ホームページ"
+msgstr "ホーム"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
@@ -2291,7 +2291,7 @@ msgstr "ID"
 
 #: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60
 msgid "Identity"
-msgstr "身分証明書"
+msgstr "基本情報"
 
 #: etc/initialdata:429
 msgid "If an approval is rejected, reject the original and delete pending approvals"
@@ -2311,7 +2311,7 @@ msgstr ""
 
 #: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:59
 msgid "If you've updated anything above, be sure to"
-msgstr "上の何かをアップデートしたなら、次のことを確認してください"
+msgstr "変更を反映するにはボタンを推してください"
 
 #: lib/RT/Record.pm:937
 msgid "Illegal value for %1"
@@ -2382,7 +2382,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid owner. Defaulting to 'nobody'."
-msgstr "無効なオーナーです。 '誰でもない'に初期設定します."
+msgstr "無効な担当者です。 '誰でもない'に初期設定します."
 
 #: lib/RT/CustomField_Overlay.pm:202 lib/RT/CustomField_Overlay.pm:666
 #. ($msg)
@@ -2428,7 +2428,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:437
 msgid "Jan."
-msgstr "一月"
+msgstr "1月"
 
 #: lib/RT/Group_Overlay.pm:174
 msgid "Join or leave this group"
@@ -2436,15 +2436,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:443
 msgid "Jul."
-msgstr "七月"
+msgstr "7月"
 
 #: html/Ticket/Elements/Tabs:124
 msgid "Jumbo"
-msgstr "大きい"
+msgstr "総合"
 
 #: lib/RT/Date.pm:442
 msgid "Jun."
-msgstr "六月"
+msgstr "6月"
 
 #: NOT FOUND IN SOURCE
 msgid "Keyword"
@@ -2468,7 +2468,7 @@ msgstr "最後の"
 
 #: html/Ticket/Elements/EditDates:59 html/Ticket/Elements/ShowDates:60
 msgid "Last Contact"
-msgstr "最後のコンタクト"
+msgstr "最終更新日時"
 
 #: html/Elements/SelectDateType:50
 msgid "Last Contacted"
@@ -2476,7 +2476,7 @@ msgstr "最後にコンタクトした"
 
 #: html/Elements/SelectDateType:51
 msgid "Last Updated"
-msgstr "最後にアップデートした"
+msgstr "最終更新日時"
 
 #: html/Search/Elements/PickBasics:103
 msgid "LastUpdatedBy"
@@ -2484,7 +2484,7 @@ msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:68
 msgid "Left"
-msgstr "残った"
+msgstr "残り時間"
 
 #: html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
@@ -2496,7 +2496,7 @@ msgstr "このユーザーの権利を認めます"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
-msgstr "オーナーを%1 %2に制限します"
+msgstr "担当者を%1 %2に制限します"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting queue to %1 %2"
@@ -2560,7 +2560,7 @@ msgstr ""
 
 #: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"
-msgstr "場所"
+msgstr "住所"
 
 #: lib/RT.pm:212
 #. ($RT::LogDir)
@@ -2570,7 +2570,7 @@ msgstr "ログディレクトリー%1が見つからない、または書き出�
 #: html/Elements/Header:82
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
 msgid "Logged in as %1"
-msgstr "%1としてサインする"
+msgstr "\"%1\"でログインしています"
 
 #: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:57 html/Elements/Login:73 html/Elements/Login:89 lib/RT/StyleGuide.pod:797
 msgid "Login"
@@ -2586,7 +2586,7 @@ msgstr ""
 
 #: html/Search/Bulk.html:82
 msgid "Make Owner"
-msgstr "オーナーを決める"
+msgstr "担当者を決める"
 
 #: html/Search/Bulk.html:106
 msgid "Make Status"
@@ -2650,11 +2650,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:439
 msgid "Mar."
-msgstr "三月"
+msgstr "3月"
 
 #: lib/RT/Date.pm:441
 msgid "May."
-msgstr "五月"
+msgstr "5月"
 
 #: lib/RT/Transaction_Overlay.pm:720
 #. ($value)
@@ -3016,7 +3016,7 @@ msgstr "多くの"
 
 #: lib/RT/User_Overlay.pm:227
 msgid "Must specify 'Name' attribute"
-msgstr "'名前'の属性を特定してください"
+msgstr "'名前'の属性を指定してください"
 
 #: html/SelfService/Elements/MyRequests:69
 #. ($friendly_status)
@@ -3181,11 +3181,11 @@ msgstr "テンプレートがありません"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "チケットが特定できません。チケットを終了します"
+msgstr "チケットが指定されていません。"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "チケットが特定できません。チケットの修正を終了します\\n\\n"
+msgstr "チケットが指定されていません。チケットの修正を終了します\\n\\n"
 
 #: html/Approvals/Elements/Approve:73
 msgid "No action"
@@ -3214,7 +3214,7 @@ msgstr "%1記述はありません"
 
 #: lib/RT/Users_Overlay.pm:185
 msgid "No group specified"
-msgstr "グループが特定できません"
+msgstr "グループが指定されていません"
 
 #: html/Admin/Groups/index.html:52
 msgid "No groups matching search criteria found."
@@ -3251,7 +3251,7 @@ msgstr "アップデートチケットを見る許可がさありません"
 
 #: lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1451
 msgid "No principal specified"
-msgstr "責任者が特定できません"
+msgstr "責任者が指定されていません"
 
 #: html/Admin/Queues/People.html:175 html/Admin/Queues/People.html:185
 msgid "No principals selected."
@@ -3283,11 +3283,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "No ticket id specified"
-msgstr "チケットIDが特定できません"
+msgstr "チケットIDが指定されていません"
 
 #: lib/RT/Transaction_Overlay.pm:517 lib/RT/Transaction_Overlay.pm:554
 msgid "No transaction type specified"
-msgstr "トランザクションタイプが特定できません"
+msgstr "トランザクションタイプが指定されていません"
 
 #: html/Admin/Users/index.html:55
 msgid "No users matching search criteria found."
@@ -3311,19 +3311,19 @@ msgstr ""
 
 #: html/Elements/Header:84
 msgid "Not logged in."
-msgstr "ログインできません"
+msgstr "ログインしていません"
 
 #: lib/RT/Date.pm:393
 msgid "Not set"
-msgstr "セットできません"
+msgstr "未指定"
 
 #: html/NoAuth/Reminder.html:48
 msgid "Not yet implemented."
-msgstr "まだ実行できません"
+msgstr "未実装"
 
 #: NOT FOUND IN SOURCE
 msgid "Not yet implemented...."
-msgstr "まだ実行できません。。。"
+msgstr "未実装..."
 
 #: html/Approvals/Elements/Approve:77
 msgid "Notes"
@@ -3437,7 +3437,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:446
 msgid "Oct."
-msgstr "十月"
+msgstr "10月"
 
 #: html/Tools/Elements/Tabs:55
 msgid "Offline"
@@ -3453,7 +3453,7 @@ msgstr ""
 
 #: html/Elements/SelectDateRelation:56
 msgid "On"
-msgstr "に"
+msgstr "が以下である"
 
 #: etc/initialdata:163
 msgid "On Comment"
@@ -3507,7 +3507,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Open"
-msgstr "開く"
+msgstr "着手済み" 
 
 #: html/Ticket/Elements/Tabs:161
 msgid "Open it"
@@ -3576,7 +3576,7 @@ msgstr ""
 
 #: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:70 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:82 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1781
 msgid "Owner"
-msgstr "オーナー"
+msgstr "担当者"
 
 #: lib/RT/Ticket_Overlay.pm:496
 msgid "Owner could not be set."
@@ -3585,11 +3585,11 @@ msgstr ""
 #: lib/RT/Transaction_Overlay.pm:661
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
-msgstr "オーナーは強制的に%1から%2を変更しました"
+msgstr "担当者は強制的に%1から%2を変更しました"
 
 #: NOT FOUND IN SOURCE
 msgid "Owner is"
-msgstr "オーナーは"
+msgstr "担当者は"
 
 #: html/Elements/TicketList:78
 #. ($Page, int($TotalFound/$Rows)+$oddRows)
@@ -3605,8 +3605,9 @@ msgid "PagerPhone"
 msgstr "ポケットベル電話"
 
 #: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:60
+# XXX - I can't come up with a good translation yet. leave as is in English
 msgid "Parents"
-msgstr "両親"
+msgstr ""
 
 #: html/Elements/Login:84 html/User/Prefs.html:105
 msgid "Password"
@@ -3651,8 +3652,10 @@ msgid "Passwords do not match. Your password has not been changed"
 msgstr ""
 
 #: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
+# XXX - this is not really a good translation... but much better than
+# "人々" (daisuke)
 msgid "People"
-msgstr "人々"
+msgstr "担当者等"
 
 #: etc/initialdata:133
 msgid "Perform a user-defined action"
@@ -3712,7 +3715,7 @@ msgstr "前のページ"
 
 #: NOT FOUND IN SOURCE
 msgid "Pri"
-msgstr "優先権"
+msgstr "優先度"
 
 #: lib/RT/ACE_Overlay.pm:158 lib/RT/ACE_Overlay.pm:240 lib/RT/ACE_Overlay.pm:570
 #. ($args{'PrincipalId'})
@@ -3721,7 +3724,7 @@ msgstr ""
 
 #: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:179 html/Ticket/Elements/EditBasics:87 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1565
 msgid "Priority"
-msgstr "優先権"
+msgstr "優先度"
 
 #: html/Admin/Queues/Modify.html:86
 msgid "Priority starts at"
@@ -3808,11 +3811,11 @@ msgstr ""
 
 #: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58 html/Prefs/Quicksearch.html:70
 msgid "Quick search"
-msgstr ""
+msgstr "簡易検索"
 
 #: html/Elements/QuickCreate:47
 msgid "Quick ticket creation"
-msgstr ""
+msgstr "チケット新規作成"
 
 #: html/Search/Results.html:84
 msgid "RSS"
@@ -3877,7 +3880,7 @@ msgstr "RTでは、ただいまお使いの方の認証ができませんでし�
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't find requestor via its external database lookup"
-msgstr "RTは外部のデータベースルックアップを使ってリクエストする人を見つけることができませんでした"
+msgstr "RTは外部のデータベースルックアップを使って作成者を見つけることができませんでした"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't find the queue: %1"
@@ -3950,11 +3953,11 @@ msgstr ""
 
 #: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:223 html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
-msgstr "次のものによって参照した"
+msgstr "参照されているチケット"
 
 #: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:68
 msgid "Refers to"
-msgstr "参照する"
+msgstr "参照しているチケット"
 
 #: NOT FOUND IN SOURCE
 msgid "Refine"
@@ -3967,7 +3970,7 @@ msgstr "絞込み検索"
 #: html/Elements/Refresh:57
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "このページを%1分おきに更新してください"
+msgstr "ページを%1分おきに更新する"
 
 #: lib/RT/Transaction_Overlay.pm:799
 #. ($ticket->Subject)
@@ -4008,7 +4011,7 @@ msgstr "Ccを削除する"
 
 #: html/Search/Bulk.html:86
 msgid "Remove Requestor"
-msgstr "リクエストする人を削除する"
+msgstr "作成者を削除する"
 
 #: html/Ticket/Elements/ShowTransaction:178 html/Ticket/Elements/Tabs:147
 msgid "Reply"
@@ -4016,7 +4019,7 @@ msgstr "返信"
 
 #: html/Admin/Queues/Modify.html:72
 msgid "Reply Address"
-msgstr ""
+msgstr "返信アドレス"
 
 #: html/Search/Bulk.html:129 html/Ticket/ModifyAll.html:94 html/Ticket/Update.html:79
 msgid "Reply to requestors"
@@ -4036,15 +4039,15 @@ msgstr ""
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:112
 msgid "Requestor"
-msgstr "リクエストする人"
+msgstr "作成者"
 
 #: NOT FOUND IN SOURCE
 msgid "Requestor email address"
-msgstr "リクエストする人のEメールアドレス"
+msgstr "作成者のEメールアドレス"
 
 #: html/SelfService/Create.html:63 html/Ticket/Create.html:78 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
-msgstr "リクエストする人"
+msgstr "作成者"
 
 #: html/Admin/Queues/Modify.html:96
 msgid "Requests should be due in"
@@ -4065,7 +4068,7 @@ msgstr "住所"
 
 #: html/Ticket/Elements/Tabs:157
 msgid "Resolve"
-msgstr "分解する"
+msgstr "解決済みにする"
 
 #: html/Ticket/Update.html:157
 #. ($TicketObj->id, $TicketObj->Subject)
@@ -4074,7 +4077,7 @@ msgstr ""
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1149
 msgid "Resolved"
-msgstr "分解した"
+msgstr "解決済み"
 
 #: html/Tools/Reports/Elements/Tabs:55
 msgid "Resolved by owner"
@@ -4094,7 +4097,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
-msgstr "リクエストする人に返答する"
+msgstr "作成者に返答する"
 
 #: html/Elements/ListActions:47 html/Search/Elements/NewListActions:47
 msgid "Results"
@@ -4184,7 +4187,7 @@ msgstr "変更を保存する"
 
 #: html/User/Prefs.html:179
 msgid "Save Preferences"
-msgstr ""
+msgstr "変更を保存する"
 
 #: html/Ticket/Elements/PreviewScrips:126
 msgid "Save changes"
@@ -4448,7 +4451,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:445
 msgid "Sep."
-msgstr "九月"
+msgstr "9月"
 
 #: html/Ticket/Elements/ShowTransaction:157
 msgid "Show"
@@ -4592,7 +4595,7 @@ msgstr "開始日'%1'は見つかりませんでした"
 
 #: html/Elements/SelectDateType:52 html/Ticket/Create.html:206 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
 msgid "Starts"
-msgstr "開始する"
+msgstr "開始予定日時"
 
 #: NOT FOUND IN SOURCE
 msgid "Starts By"
@@ -4604,11 +4607,11 @@ msgstr "開始日'%1'を解析できませんでした"
 
 #: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
 msgid "State"
-msgstr "状態"
+msgstr "都道府県"
 
 #: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:64 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1143 lib/RT/Tickets_Overlay.pm:1425
 msgid "Status"
-msgstr "ステータス"
+msgstr "状態"
 
 #: etc/initialdata:309
 msgid "Status Change"
@@ -4620,7 +4623,7 @@ msgstr "ステータスが%1から%2に変更されました"
 
 #: html/Ticket/Elements/Tabs:172
 msgid "Steal"
-msgstr "盗用する"
+msgstr "担当者変更"
 
 #: lib/RT/Queue_Overlay.pm:118
 msgid "Steal tickets"
@@ -4633,7 +4636,7 @@ msgstr ""
 #: lib/RT/Transaction_Overlay.pm:667
 #. ($Old->Name)
 msgid "Stolen from %1"
-msgstr "%1から盗用した"
+msgstr "%1から担当者を変更しました"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
@@ -4645,7 +4648,7 @@ msgstr ""
 
 #: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:106 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:78 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:83 lib/RT/Ticket_Overlay.pm:1139 lib/RT/Tickets_Overlay.pm:1507
 msgid "Subject"
-msgstr "サブジェクト"
+msgstr "件名"
 
 #: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:689
 #. ($self->Data)
@@ -4710,8 +4713,9 @@ msgid "TEST_STRING"
 msgstr "テスト＿ストリング"
 
 #: etc/initialdata:603 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:168
+# XXX - what the...
 msgid "Take"
-msgstr "とる"
+msgstr "担当する"
 
 #: lib/RT/Queue_Overlay.pm:116
 msgid "Take tickets"
@@ -4799,7 +4803,7 @@ msgstr "そのキューはありません"
 
 #: lib/RT/Ticket_Overlay.pm:3172
 msgid "That ticket has unresolved dependencies"
-msgstr "そのチケットは従属物をすでに分解しました"
+msgstr "未解決の依存関係が存在します"
 
 #: NOT FOUND IN SOURCE
 msgid "That user already has that right"
@@ -4921,7 +4925,7 @@ msgstr "チケット# %1  %2"
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "チケット　#%1　大きいアップデート: %2"
+msgstr "チケット　#%1　更新（総合ビュー）: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -5000,7 +5004,7 @@ msgstr "チケットが削除されました"
 
 #: html/Ticket/Display.html:55
 msgid "Ticket metadata"
-msgstr ""
+msgstr "チケット情報"
 
 #: etc/initialdata:310
 msgid "Ticket status changed"
@@ -5049,15 +5053,15 @@ msgstr ""
 
 #: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:194 html/Ticket/Elements/EditBasics:80
 msgid "Time Left"
-msgstr "時間が残っています"
+msgstr "残り時間"
 
 #: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:187 html/Ticket/Elements/EditBasics:73
 msgid "Time Worked"
-msgstr "使った時間"
+msgstr "作業時間"
 
 #: lib/RT/Tickets_Overlay.pm:1666
 msgid "Time left"
-msgstr "残っている時間"
+msgstr "残り時間"
 
 #: html/Elements/Footer:52
 msgid "Time to display"
@@ -5251,7 +5255,7 @@ msgstr "アップデートタイプは通知でもコメントでもありませ
 
 #: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1148
 msgid "Updated"
-msgstr "アップデートしました"
+msgstr "最終更新日時"
 
 #: html/Tools/Offline.html:95
 msgid "Upload"
@@ -5474,19 +5478,19 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "WorkPhone"
-msgstr "仕事先の電話"
+msgstr "電話(仕事）"
 
 #: html/Ticket/Elements/ShowBasics:63 html/Ticket/Update.html:64
 msgid "Worked"
-msgstr "Worked"
+msgstr "累積作業時間"
 
 #: lib/RT/Ticket_Overlay.pm:3079
 msgid "You already own this ticket"
-msgstr "あなたはすでにこのチケットを所有しています"
+msgstr "すでにこのチケットを担当しています"
 
 #: html/autohandler:176 html/autohandler:184
 msgid "You are not an authorized user"
-msgstr "あなたは認証されたユーザーではありません"
+msgstr "認証されていません。"
 
 #: html/Prefs/Search.html:56
 msgid "You can also edit the predefined search itself"
@@ -5494,7 +5498,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2961
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "あなたは所有、または所有されていないチケットのみを止めることができます"
+msgstr "自分が担当しているチケットか、担当者のいないチケットしか変更する事ができません。"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -5503,23 +5507,23 @@ msgstr "あなたはそのチケットを見る許可がありません。\\n"
 #: docs/design_docs/string-extraction-guide.txt:47 lib/RT/StyleGuide.pod:780
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
-msgstr "あなたは%2でチケット%1を見つけました"
+msgstr "キュー%2で%1件のチケットがヒットしました"
 
 #: html/NoAuth/Logout.html:52
 msgid "You have been logged out of RT."
-msgstr "あなたはRTからログアウトしたままです"
+msgstr "RTからログアウトしました"
 
 #: html/SelfService/Display.html:109
 msgid "You have no permission to create tickets in that queue."
-msgstr "あなたはこのキューでチケット作成の許可がありません"
+msgstr "指定ののキューでチケット作成の許可がありません"
 
 #: lib/RT/Ticket_Overlay.pm:1965
 msgid "You may not create requests in that queue."
-msgstr "あなたはこのキューでリクエストの作成ができるでしょう"
+msgstr "指定のキューでリクエストの作成ができません"
 
 #: html/NoAuth/Logout.html:56
 msgid "You're welcome to login again"
-msgstr "ぜひまたログインしてください"
+msgstr "トップページ"
 
 #: NOT FOUND IN SOURCE
 msgid "Your %1 requests"
@@ -5572,7 +5576,7 @@ msgstr ""
 
 #: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:55
 msgid "contains"
-msgstr "含む"
+msgstr "が以下を含む"
 
 #: NOT FOUND IN SOURCE
 msgid "correspondence (probably) not sent"
@@ -5592,7 +5596,7 @@ msgstr "削除"
 
 #: lib/RT/Queue_Overlay.pm:88
 msgid "deleted"
-msgstr "削除された"
+msgstr "削除"
 
 #: html/Search/Elements/PickBasics:61
 msgid "does not match"
@@ -5600,7 +5604,7 @@ msgstr "あいません"
 
 #: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:56
 msgid "doesn't contain"
-msgstr "含みません"
+msgstr "が以下を含まない"
 
 #: html/Elements/SelectEqualityOperator:59
 msgid "equal to"
@@ -5654,15 +5658,15 @@ msgstr "ID"
 
 #: html/Elements/SelectBoolean:53 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:57 html/Search/Elements/PickBasics:162 html/Search/Elements/PickBasics:74 html/Search/Elements/PickBasics:90 html/Search/Elements/PickCFs:53
 msgid "is"
-msgstr "です"
+msgstr "が以下である"
 
 #: html/Elements/SelectBoolean:57 html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:58 html/Search/Elements/PickBasics:163 html/Search/Elements/PickBasics:75 html/Search/Elements/PickBasics:91 html/Search/Elements/PickCFs:54
 msgid "isn't"
-msgstr "でない"
+msgstr "が以下ではない"
 
 #: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectEqualityOperator:59
 msgid "less than"
-msgstr "より少ない"
+msgstr "より小さい"
 
 #: html/Search/Elements/PickBasics:60
 msgid "matches"
@@ -5670,7 +5674,7 @@ msgstr "合う"
 
 #: lib/RT/Date.pm:334
 msgid "min"
-msgstr "最低"
+msgstr "分"
 
 #: NOT FOUND IN SOURCE
 msgid "minutes"
@@ -5686,7 +5690,7 @@ msgstr "月"
 
 #: lib/RT/Queue_Overlay.pm:83
 msgid "new"
-msgstr "新しい"
+msgstr "新規"
 
 #: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
 msgid "no name"
@@ -5706,7 +5710,7 @@ msgstr "等しくない"
 
 #: html/SelfService/Elements/MyRequests:82 lib/RT/Queue_Overlay.pm:84
 msgid "open"
-msgstr "開く"
+msgstr "着手"
 
 #: lib/RT/Group_Overlay.pm:227
 #. ($self->Name, $user->Name)
@@ -5720,11 +5724,11 @@ msgstr "キュー　%1 %2"
 
 #: lib/RT/Queue_Overlay.pm:87
 msgid "rejected"
-msgstr "拒否されました"
+msgstr "拒否"
 
 #: lib/RT/Queue_Overlay.pm:86
 msgid "resolved"
-msgstr "分解されました"
+msgstr "解決済み"
 
 #: lib/RT/Date.pm:330
 msgid "sec"
@@ -5740,7 +5744,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "stalled"
-msgstr "止まりました"
+msgstr "保留"
 
 #: html/Search/Results.html:93
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
@@ -5795,4 +5799,8 @@ msgstr "テンプレート　%1と"
 #: lib/RT/Date.pm:354
 msgid "years"
 msgstr "年"
+
+#: share/html/Elements/Quicksearch, et al
+msgid "New"
+msgstr "新規"
 

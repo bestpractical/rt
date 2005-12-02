@@ -88,10 +88,15 @@ sub _Init {
 
     $self->{'princalias'} = $self->NewAlias('Principals');
 
+    # XXX: should be generalized
     $self->Join( ALIAS1 => 'main',
                  FIELD1 => 'id',
                  ALIAS2 => $self->{'princalias'},
                  FIELD2 => 'id' );
+    $self->Limit( ALIAS => $self->{'princalias'},
+                  FIELD => 'PrincipalType',
+                  VALUE => 'User',
+                );
 
     return (@result);
 }
@@ -102,9 +107,9 @@ sub _Init {
 
 Returns the string that represents this Users object's primary "Principals" alias.
 
-
 =cut
 
+# XXX: should be generalized
 sub PrincipalsAlias {
     my $self = shift;
     return($self->{'princalias'});
@@ -141,10 +146,11 @@ Only find items that haven\'t been disabled
 
 =cut
 
+# XXX: should be generalized
 sub LimitToEnabled {
     my $self = shift;
 
-    $self->Limit( ALIAS    => $self->{'princalias'},
+    $self->Limit( ALIAS    => $self->PrincipalsAlias,
                   FIELD    => 'Disabled',
                   VALUE    => '0',
                   OPERATOR => '=' );
@@ -187,7 +193,7 @@ sub MemberOfGroup {
     my $groupalias = $self->NewAlias('CachedGroupMembers');
 
     # Join the principal to the groups table
-    $self->Join( ALIAS1 => $self->{'princalias'},
+    $self->Join( ALIAS1 => $self->PrincipalsAlias,
                  FIELD1 => 'id',
                  ALIAS2 => $groupalias,
                  FIELD2 => 'MemberId' );
@@ -288,17 +294,128 @@ is($users->Count, 1, "RTxUserRight found for RTxObj2");
 
 =end testing
 
-
 find all users who the right Right for this group, either individually
 or as members of groups
 
-
 If passed a queue object, with no id, it will find users who have that right for _any_ queue
-
-
 
 =cut
 
+# XXX: should be generalized
+sub _JoinGroupMembers
+{
+    my $self = shift;
+    my %args = (
+        IncludeSubgroupMembers => 1,
+        @_
+    );
+
+    my $principals = $self->PrincipalsAlias;
+
+    # The cachedgroupmembers table is used for unrolling group memberships
+    # to allow fast lookups. if we bind to CachedGroupMembers, we'll find
+    # all members of groups recursively. if we don't we'll find only 'direct'
+    # members of the group in question
+    my $group_members;
+    if ( $args{'IncludeSubgroupMembers'} ) {
+        $group_members = $self->NewAlias('CachedGroupMembers');
+    }
+    else {
+        $group_members = $self->NewAlias('GroupMembers');
+    }
+
+    $self->Join(
+        ALIAS1 => $group_members,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $principals,
+        FIELD2 => 'id'
+    );
+
+    return $group_members;
+}
+
+# XXX: should be generalized
+sub _JoinGroups
+{
+    my $self = shift;
+    my %args = (@_);
+
+    my $group_members = $self->_JoinGroupMembers( %args );
+    my $groups = $self->NewAlias('Groups');
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        ALIAS2 => $group_members,
+        FIELD2 => 'GroupId'
+    );
+
+    return $groups;
+}
+
+# XXX: should be generalized
+sub _JoinACL
+{
+    my $self = shift;
+    my %args = (
+        Right                  => undef,
+        IncludeSuperusers      => undef,
+        @_,
+    );
+
+    my $acl = $self->NewAlias('ACL');
+    $self->Limit(
+        ALIAS    => $acl,
+        FIELD    => 'RightName',
+        OPERATOR => ( $args{Right} ? '=' : 'IS NOT' ),
+        VALUE => $args{Right} || 'NULL',
+        ENTRYAGGREGATOR => 'OR'
+    );
+    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
+        $self->Limit(
+            ALIAS           => $acl,
+            FIELD           => 'RightName',
+            OPERATOR        => '=',
+            VALUE           => 'SuperUser',
+            ENTRYAGGREGATOR => 'OR'
+        );
+    }
+    return $acl;
+}
+
+# XXX: should be generalized
+sub _GetEquivObjects
+{
+    my $self = shift;
+    my %args = (
+        Object                 => undef,
+        IncludeSystemRights    => undef,
+        EquivObjects           => [ ],
+        @_
+    );
+    return () unless $args{'Object'};
+
+    my @objects = ($args{'Object'});
+    if ( UNIVERSAL::isa( $args{'Object'}, 'RT::Ticket' ) ) {
+        # If we're looking at ticket rights, we also want to look at the associated queue rights.
+        # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
+        # we load the queue object and ask all the rest of our questions about the queue.
+
+        # XXX: This should be abstracted into object itself
+        if( $args{'Object'}->id ) {
+            push @objects, $args{'Object'}->QueueObj;
+        } else {
+            push @objects, 'RT::Queue';
+        }
+    }
+
+    if( $args{'IncludeSystemRights'} ) {
+        push @objects, 'RT::System';
+    }
+    push @objects, @{ $args{'EquivObjects'} };
+    return grep $_, @objects;
+}
+
+# XXX: should be generalized
 sub WhoHaveRight {
     my $self = shift;
     my %args = (
@@ -312,153 +429,190 @@ sub WhoHaveRight {
     );
 
     if ( defined $args{'ObjectType'} || defined $args{'ObjectId'} ) {
-        $RT::Logger->crit( "$self WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
+        $RT::Logger->crit( "WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
         return (undef);
     }
-    
 
-    # Find only members of groups that have the right.
+    my $from_role = $self->Clone;
+    $from_role->WhoHaveRoleRight( %args );
 
-    my $acl       = $self->NewAlias('ACL');
-    my $groups    = $self->NewAlias('Groups');
-    my $userprinc = $self->{'princalias'};
+    my $from_group = $self->Clone;
+    $from_group->WhoHaveGroupRight( %args );
 
-# The cachedgroupmembers table is used for unrolling group memberships to allow fast lookups
-# if we bind to CachedGroupMembers, we'll find all members of groups recursively.
-# if we don't we'll find only 'direct' members of the group in question
-    my $cgm;
+    #XXX: DIRTY HACK
+    use DBIx::SearchBuilder::Union;
+    my $union = new DBIx::SearchBuilder::Union;
+    $union->add($from_role);
+    $union->add($from_group);
+    %$self = %$union;
+    bless $self, ref($union);
 
-    if ( $args{'IncludeSubgroupMembers'} ) {
-        $cgm = $self->NewAlias('CachedGroupMembers');
-    }
-    else {
-        $cgm = $self->NewAlias('GroupMembers');
-    }
-
-#Tie the users we're returning ($userprinc) to the groups that have rights granted to them ($groupprinc)
-    $self->Join(
-        ALIAS1 => $cgm,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $userprinc,
-        FIELD2 => 'id'
-    );
-
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $cgm,
-        FIELD2 => 'GroupId'
-    );
-
-# {{{ Find only rows where the right granted is the one we're looking up or _possibly_ superuser
-    $self->Limit(
-        ALIAS    => $acl,
-        FIELD    => 'RightName',
-        OPERATOR => ( $args{Right} ? '=' : 'IS NOT' ),
-        VALUE => $args{Right} || 'NULL',
-        ENTRYAGGREGATOR => 'OR'
-    );
-
-    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
-        $self->Limit(
-            ALIAS           => $acl,
-            FIELD           => 'RightName',
-            OPERATOR        => '=',
-            VALUE           => 'SuperUser',
-            ENTRYAGGREGATOR => 'OR'
-        );
-    }
-
-    # }}}
-
-    my ( $or_check_ticket_roles, $or_check_roles );
-    my $which_object = "$acl.ObjectType = 'RT::System'";
-
-    if ( defined $args{'Object'} ) {
-        if ( ref( $args{'Object'} ) eq 'RT::Ticket' ) {
-            $or_check_ticket_roles = " OR ( $groups.Domain = 'RT::Ticket-Role' AND $groups.Instance = " . $args{'Object'}->Id . ") ";
-
-# If we're looking at ticket rights, we also want to look at the associated queue rights.
-# this is a little bit hacky, but basically, now that we've done the ticket roles magic,
-# we load the queue object and ask all the rest of our questions about the queue.
-            $args{'Object'} = $args{'Object'}->QueueObj;
-        }
-
-        # TODO XXX This really wants some refactoring
-        if ( ref( $args{'Object'} ) eq 'RT::Queue' ) {
-            $or_check_roles = " OR ( ( ($groups.Domain = 'RT::Queue-Role' ";
-            $or_check_roles .= "AND $groups.Instance = " . $args{'Object'}->id if ( $args{'Object'}->id );
-            $or_check_roles .= ") $or_check_ticket_roles ) " . " AND $groups.Type = $acl.PrincipalType) ";
-        }
-        if ( $args{'IncludeSystemRights'} ) {
-            $which_object .= ' OR ';
-        }
-        else {
-            $which_object = '';
-        }
-        foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-            $which_object .= "($acl.ObjectType = '" . ref( $obj ) . "' AND $acl.ObjectId = " . $obj->id . ") OR ";
-        }
-        $which_object .= " ($acl.ObjectType = '" . ref( $args{'Object'} ) . "'";
-        if ( $args{'Object'}->id ) {
-            $which_object .= " AND $acl.ObjectId = " . $args{'Object'}->id;
-        }
-
-        $which_object .=  ") ";
-    }
-    $self->_AddSubClause( "WhichObject", "($which_object)" );
-    $self->_AddSubClause(
-        "WhichGroup",
-            qq{ ( (    $acl.PrincipalId = $groups.id AND $acl.PrincipalType = 'Group' 
-                AND (   $groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) 
-                $or_check_roles) }
-    );
-    # only include regular RT users
-    $self->LimitToEnabled;
-
-    # no system user
-    $self->Limit( ALIAS => $userprinc, FIELD => 'id', OPERATOR => '!=', VALUE => $RT::SystemUser->id);
-
+    return;
 }
 # }}}
 
-# {{{ WhoBelongToGroups 
+# XXX: should be generalized
+sub WhoHaveRoleRight
+{
+    my $self = shift;
+    my %args = (
+        Right                  => undef,
+        Object                 => undef,
+        IncludeSystemRights    => undef,
+        IncludeSuperusers      => undef,
+        IncludeSubgroupMembers => 1,
+        EquivObjects           => [ ],
+        @_
+    );
+
+    my $groups = $self->_JoinGroups( %args );
+    my $acl = $self->_JoinACL( %args );
+
+    my ($check_roles, $check_objects) = ('','');
+    
+    my @objects = $self->_GetEquivObjects( %args );
+    if ( @objects ) {
+        my @role_clauses;
+        my @object_clauses;
+        foreach my $obj ( @objects ) {
+            my $type = ref($obj)? ref($obj): $obj;
+            my $id;
+            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+
+            my $role_clause = "$groups.Domain = '$type-Role'";
+            # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+            # if we want mysql 4.0 use indexes here. we MUST convert that
+            # field to integer and drop this quotes.
+            $role_clause   .= " AND $groups.Instance = '$id'" if $id;
+            push @role_clauses, "($role_clause)";
+
+            my $object_clause = "$acl.ObjectType = '$type'";
+            $object_clause   .= " AND $acl.ObjectId = $id" if $id;
+            push @object_clauses, "($object_clause)";
+        }
+
+        $check_roles .= join ' OR ', @role_clauses;
+        $check_objects = join ' OR ', @object_clauses;
+    } else {
+        if( !$args{'IncludeSystemRights'} ) {
+            $check_objects = "($acl.ObjectType != 'RT::System')";
+        }
+    }
+
+    $self->_AddSubClause( "WhichObject", "($check_objects)" );
+    $self->_AddSubClause( "WhichRole", "($check_roles)" );
+
+    $self->Limit( ALIAS => $acl,
+                  FIELD => 'PrincipalType',
+                  VALUE => "$groups.Type",
+                  QUOTEVALUE => 0,
+                );
+
+    # no system user
+    $self->Limit( ALIAS => $self->PrincipalsAlias,
+                  FIELD => 'id',
+                  OPERATOR => '!=',
+                  VALUE => $RT::SystemUser->id
+                );
+    return;
+}
+
+# XXX: should be generalized
+sub _JoinGroupMembersForGroupRights
+{
+    my $self = shift;
+    my %args = (@_);
+    my $group_members = $self->_JoinGroupMembers( %args );
+    $self->Limit( ALIAS => $args{'ACLAlias'},
+                  FIELD => 'PrincipalId',
+                  VALUE => "$group_members.GroupId",
+                  QUOTEVALUE => 0,
+                );
+}
+
+# XXX: should be generalized
+sub WhoHaveGroupRight
+{
+    my $self = shift;
+    my %args = (
+        Right                  => undef,
+        Object                 => undef,
+        IncludeSystemRights    => undef,
+        IncludeSuperusers      => undef,
+        IncludeSubgroupMembers => 1,
+        EquivObjects           => [ ],
+        @_
+    );
+
+    # Find only rows where the right granted is
+    # the one we're looking up or _possibly_ superuser
+    my $acl = $self->_JoinACL( %args );
+
+    my ($check_objects) = ('');
+    my @objects = $self->_GetEquivObjects( %args );
+
+    if ( @objects ) {
+        my @object_clauses;
+        foreach my $obj ( @objects ) {
+            my $type = ref($obj)? ref($obj): $obj;
+            my $id;
+            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+
+            my $object_clause = "$acl.ObjectType = '$type'";
+            $object_clause   .= " AND $acl.ObjectId   = $id" if $id;
+            push @object_clauses, "($object_clause)";
+        }
+
+        $check_objects = join ' OR ', @object_clauses;
+    } else {
+        if( !$args{'IncludeSystemRights'} ) {
+            $check_objects = "($acl.ObjectType != 'RT::System')";
+        }
+    }
+    $self->_AddSubClause( "WhichObject", "($check_objects)" );
+    
+    $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
+    # Find only members of groups that have the right.
+    $self->Limit( ALIAS => $acl,
+                  FIELD => 'PrincipalType',
+                  VALUE => 'Group',
+                );
+    
+    # no system user
+    $self->Limit( ALIAS => $self->PrincipalsAlias,
+                  FIELD => 'id',
+                  OPERATOR => '!=',
+                  VALUE => $RT::SystemUser->id
+                );
+    return;
+}
+
+# {{{ WhoBelongToGroups
 
 =head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
 
 =cut
 
+# XXX: should be generalized
 sub WhoBelongToGroups {
     my $self = shift;
     my %args = ( Groups                 => undef,
                  IncludeSubgroupMembers => 1,
                  @_ );
 
-    # Unprivileged users can't be granted real system rights. 
+    # Unprivileged users can't be granted real system rights.
     # is this really the right thing to be saying?
     $self->LimitToPrivileged();
 
-    my $userprinc  = $self->{'princalias'};
-    my $cgm;
-
-    # The cachedgroupmembers table is used for unrolling group memberships to allow fast lookups 
-    # if we bind to CachedGroupMembers, we'll find all members of groups recursively.
-    # if we don't we'll find only 'direct' members of the group in question
-
-    if ( $args{'IncludeSubgroupMembers'} ) {
-        $cgm = $self->NewAlias('CachedGroupMembers');
-    }
-    else {
-        $cgm = $self->NewAlias('GroupMembers');
-    }
-
-    #Tie the users we're returning ($userprinc) to the groups that have rights granted to them ($groupprinc)
-    $self->Join( ALIAS1 => $cgm, FIELD1 => 'MemberId',
-                 ALIAS2 => $userprinc, FIELD2 => 'id' );
+    my $group_members = $self->_JoinGroupMembers( %args );
 
     foreach my $groupid (@{$args{'Groups'}}) {
-        $self->Limit(ALIAS => $cgm, FIELD => 'GroupId', VALUE => $groupid, QUOTEVALUE => 0, ENTRYAGGREGATOR=> 'OR')
-
+        $self->Limit( ALIAS           => $group_members,
+                      FIELD           => 'GroupId',
+                      VALUE           => $groupid,
+                      QUOTEVALUE      => 0,
+                      ENTRYAGGREGATOR => 'OR',
+                    );
     }
 }
 # }}}

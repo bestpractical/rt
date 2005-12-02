@@ -68,14 +68,14 @@ if (!$callbacks) {
         push @$callbacks,
             # Skip backup files, files without a leading package name,
             # and files we've already seen
-            grep {     !/^\.|~$/
+            grep {     !/\/\.|~$/
                    and $_ ne "/Callbacks/$Page/$_CallbackName"
                    and not $seen{$_}++ }
                  $m->interp->resolver->glob_path($path, $root);
     }
     
     $m->notes($CacheKey => $callbacks);
-    $cache{$Page,$_CallbackName} = $callbacks if !$RT::DevelMode;
+    $cache{$CacheKey} = $callbacks if !$RT::DevelMode;
 }
 
 my @rv;

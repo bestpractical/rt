@@ -2,7 +2,7 @@
 
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 131;
+use Test::More tests => 133;
 
 use RT;
 RT::LoadConfig();
@@ -20,6 +20,9 @@ while (my $ocf = $object_cfs->Next) {
 my $queue = RT::Queue->new( $RT::SystemUser );
 $queue->Create( Name => 'RecordCustomFields-'.$$ );
 ok ($queue->id, "Created the queue");
+
+my $queue2 = RT::Queue->new( $RT::SystemUser );
+$queue2->Create( Name => 'RecordCustomFields2' );
 
 my $ticket = RT::Ticket->new( $RT::SystemUser );
 $ticket->Create(
@@ -50,6 +53,11 @@ my $global_cf3 = RT::CustomField->new( $RT::SystemUser );
 $global_cf3->Create( Name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues31' );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues32' );
+
+my $local_cf4 = RT::CustomField->new( $RT::SystemUser );
+$local_cf4->Create( Name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
+$local_cf4->AddValue( Name => 'RecordCustomFieldValues41' );
+$local_cf4->AddValue( Name => 'RecordCustomFieldValues42' );
 
 
 my @custom_fields = ($local_cf1, $local_cf2, $global_cf3);
@@ -177,6 +185,14 @@ my $test_add_delete_cycle = sub {
 $test_add_delete_cycle->( sub { return $_[0]->id } );
 # lets test cycle via CF object reference
 $test_add_delete_cycle->( sub { return $_[0] } );
+
+$ticket->AddCustomFieldValue( Field => $local_cf2->id , Value => 'Baz' );
+$ticket->AddCustomFieldValue( Field => $global_cf3->id , Value => 'Baz' );
+# now if we ask for cf values on RecordCustomFields4 we should not get any
+$cfvs = $ticket->CustomFieldValues( 'RecordCustomFields4' );
+is( $cfvs->Count, 0, "No custom field values for non-Queue cf" );
+is( $ticket->FirstCustomFieldValue( 'RecordCustomFields4' ), undef, "No first custom field value for non-Queue cf" );
+
 
 #SKIP: {
 #	skip "TODO: should we add CF values to objects via CF Name?", 48;

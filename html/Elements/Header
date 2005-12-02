@@ -50,7 +50,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <title><%$Title%></title>
-% if ($Refresh > 0) {
+% if ($Refresh && $Refresh > 0) {
     <meta http-equiv="refresh" content="<%$Refresh%>" />
 % }
     <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png" />

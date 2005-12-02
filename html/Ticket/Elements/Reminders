@@ -80,7 +80,7 @@ $Ticket
 </div>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
-<& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj, DefaultValue => 0 &>
+<& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, DefaultValue => 0 &>
 </div>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 

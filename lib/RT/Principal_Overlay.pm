@@ -280,8 +280,6 @@ This takes the params:
     Object => an RT style object (->id will get its id)
 
 
-
-
 Returns 1 if a matching ACE was found.
 
 Returns undef if no ACE was found.
@@ -295,38 +293,41 @@ sub HasRight {
         Right        => undef,
         Object       => undef,
         EquivObjects => undef,
-        @_
+        @_,
     );
 
+    unless ( $args{'Right'} ) {
+        $RT::Logger->crit("HasRight called without a right");
+        return (undef);
+    }
+
+    $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
+
     if ( $self->Disabled ) {
-        $RT::Logger->err( "Disabled User:  "
+        $RT::Logger->error( "Disabled User:  "
               . $self->id
               . " failed access check for "
               . $args{'Right'} );
         return (undef);
     }
 
-    if ( !defined $args{'Right'} ) {
-        $RT::Logger->crit("HasRight called without a right");
-        return (undef);
-    }
-
     if (   defined( $args{'Object'} )
         && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id )
-    {
+        && $args{'Object'}->id ) {
+
         push( @{ $args{'EquivObjects'} }, $args{Object} );
     }
     else {
-        $RT::Logger->crit("$self HasRight called with no valid object");
+        $RT::Logger->crit("HasRight called with no valid object");
         return (undef);
     }
 
     # If this object is a ticket, we care about ticket roles and queue roles
-    if ( ( ref( $args{'Object'} ) eq 'RT::Ticket' ) && $args{'Object'}->Id ) {
+    if ( UNIVERSAL::isa( $args{'Object'} => 'RT::Ticket' ) ) {
 
-# this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
-# and ask all the rest of our questions about the queue.
+        # this is a little bit hacky, but basically, now that we've done
+        # the ticket roles magic, we load the queue object
+        # and ask all the rest of our questions about the queue.
         push( @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj );
 
     }
@@ -354,161 +355,119 @@ sub HasRight {
 
     # }}}
 
-    # {{{ if we've cached a positive result for this query, return 1
-
-    my $cached_answer = $_ACL_CACHE->fetch($hashkey);
-
     # Returns undef on cache miss
+    my $cached_answer = $_ACL_CACHE->fetch($hashkey);
     if ( defined $cached_answer ) {
         if ( $cached_answer == 1 ) {
             return (1);
         }
         elsif ( $cached_answer == -1 ) {
-            return (0);
+            return (undef);
         }
     }
 
-    my ( $or_look_at_object_rights, $or_check_roles );
-    my $right = $args{'Right'};
+    my $hitcount = $self->_HasRight( %args );
 
-    # {{{ Construct Right Match
+    $_ACL_CACHE->set( $hashkey => $hitcount? 1:-1 );
+    return ($hitcount);
+}
+
+=head2 _HasRight
+
+Low level HasRight implementation, use HasRight method instead.
+
+=cut
+
+sub _HasRight
+{
+    my $self = shift;
+    my %args = (
+        Right        => undef,
+        Object       => undef,
+        EquivObjects => [],
+        @_
+    );
+
+    my $right = $args{'Right'};
+    my @objects = @{ $args{'EquivObjects'} };
 
     # If an object is defined, we want to look at rights for that object
 
-    my @look_at_objects;
-    push( @look_at_objects, "ACL.ObjectType = 'RT::System'" )
+    push( @objects, 'RT::System' )
       unless $self->can('_IsOverrideGlobalACL')
-      and $self->_IsOverrideGlobalACL( $args{Object} );
+             && $self->_IsOverrideGlobalACL( $args{Object} );
 
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        next unless ( UNIVERSAL::can( $obj, 'id' ) );
-        my $type = ref($obj);
-        my $id   = $obj->id;
+    my ($check_roles, $check_objects) = ('','');
+    if( @objects ) {
+        my @role_clauses;
+        my @object_clauses;
+        foreach my $obj ( @objects ) {
+            my $type = ref($obj)? ref($obj): $obj;
+            my $id;
+            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-        unless ($id) {
-            use Carp;
-            Carp::cluck(
-                "Trying to check $type rights for an unspecified $type");
-            $RT::Logger->crit(
-                "Trying to check $type rights for an unspecified $type");
+            my $role_clause = "Groups.Domain = '$type-Role'";
+            # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+            # if we want mysql 4.0 use indexes here. we MUST convert that
+            # field to integer and drop this quotes.
+            $role_clause   .= " AND Groups.Instance = '$id'" if $id;
+            push @role_clauses, "($role_clause)";
+
+            my $object_clause = "ACL.ObjectType = '$type'";
+            $object_clause   .= " AND ACL.ObjectId = $id" if $id;
+            push @object_clauses, "($object_clause)";
         }
-        push @look_at_objects,
-          "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')";
+
+        $check_roles .= join ' OR ', @role_clauses;
+        $check_objects = join ' OR ', @object_clauses;
     }
-
-    # }}}
-
-    # {{{ Build that honkin-big SQL query
 
     my $query_base =
       "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
 
       # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') " .
+      "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') "
 
       # Never find disabled groups.
-      "AND Principals.Disabled = 0 "
-      . "AND CachedGroupMembers.Disabled = 0  "
+      . "AND Principals.Disabled = 0 "
+      . "AND CachedGroupMembers.Disabled = 0 "
+
+      # We always grant rights to Groups
       . "AND Principals.id = Groups.id "
-      .    # We always grant rights to Groups
+      . "AND Principals.PrincipalType = 'Group' "
 
-# See if the principal is a member of the group recursively or _is the rightholder_
-# never find recursively disabled group members
-# also, check to see if the right is being granted _directly_ to this principal,
-#  as is the case when we want to look up group rights
-"AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '"
-      . $self->Id . "' "
-      .
+      # See if the principal is a member of the group recursively or _is the rightholder_
+      # never find recursively disabled group members
+      # also, check to see if the right is being granted _directly_ to this principal,
+      #  as is the case when we want to look up group rights
+      . "AND Principals.id = CachedGroupMembers.GroupId "
+      . "AND CachedGroupMembers.MemberId = ". $self->Id ." "
 
-  # Make sure the rights apply to the entire system or to the object in question
-      "AND ( " . join( ' OR ', @look_at_objects ) . ") ";
+      # Make sure the rights apply to the entire system or to the object in question
+      . "AND ($check_objects) ";
 
-# The groups query does the query based on group membership and individual user rights
+    # The groups query does the query based on group membership and individual user rights
+    my $groups_query = $query_base
+      # limit the result set to groups of types ACLEquivalence (user),
+      # UserDefined, SystemInternal and Personal. All this we do
+      # via (ACL.PrincipalType = 'Group') condition
+      . "AND ACL.PrincipalId = Principals.id "
+      . "AND ACL.PrincipalType = 'Group' ";
 
-    my $groups_query = $query_base .
-
-# limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
-"AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND "
-      . "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))"
-      .
-
-      " ) ";
-    $self->_Handle->ApplyLimits( \$groups_query, 1 );    #only return one result
-
-    my @roles;
-    foreach my $object ( @{ $args{'EquivObjects'} } ) {
-        push( @roles, $self->_RolesForObject( ref($object), $object->id ) );
-    }
+    $self->_Handle->ApplyLimits( \$groups_query, 1 ); #only return one result
+    my $hitcount = $self->_Handle->FetchResult($groups_query);
+    return 1 if $hitcount; # get out of here if success
 
     # The roles query does the query based on roles
-    my $roles_query;
-    if (@roles) {
-        $roles_query =
-            $query_base . "AND " . " ( ("
-          . join( ' OR ', @roles ) . " ) "
-          . " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
-        $self->_Handle->ApplyLimits( \$roles_query, 1 ); #only return one result
+    my $roles_query = $query_base
+      . "AND ACL.PrincipalType = Groups.Type "
+      . "AND ($check_roles) ";
+    $self->_Handle->ApplyLimits( \$roles_query, 1 ); #only return one result
 
-    }
-
-    # }}}
-
-    # {{{ Actually check the ACL by performing an SQL query
-    #   $RT::Logger->debug("Now Trying $groups_query");
-    my $hitcount = $self->_Handle->FetchResult($groups_query);
-
-    # }}}
-
-    # {{{ if there's a match, the right is granted
-    if ($hitcount) {
-        $_ACL_CACHE->set( $hashkey => 1 );
-        return (1);
-    }
-
-    # Now check the roles query
     $hitcount = $self->_Handle->FetchResult($roles_query);
+    return 1 if $hitcount; # get out of here if success
 
-    if ($hitcount) {
-        $_ACL_CACHE->set( $hashkey => 1 );
-        return (1);
-    }
-
-    # We failed to find an acl hit
-    $_ACL_CACHE->set( $hashkey => -1 );
-    return (undef);
-}
-
-# }}}
-
-# {{{ _RolesForObject
-
-
-
-=head2 _RolesForObject( $object_type, $object_id)
-
-Returns an SQL clause finding role groups for Objects
-
-=cut
-
-
-sub _RolesForObject {
-    my $self = shift;
-    my $type = shift;
-    my $id = shift;
-
-    unless ($id) {
-	$id = '0';
-   }
-
-   # This should never be true.
-   unless ($id =~ /^\d+$/) {
-	$RT::Logger->crit("RT::Prinicipal::_RolesForObject called with type $type and a non-integer id: '$id'");
-	$id = "'$id'";
-   }
-
-    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = $id) ";
-
-    return($clause);
+    return 0;
 }
 
 # }}}
@@ -577,6 +536,8 @@ sub _ReferenceId {
 
     # just return the value for non-objects
     return $scalar unless UNIVERSAL::can($scalar, 'id');
+
+    return ref($scalar) unless $scalar->id;
 
     # an object -- return the class and id
     return(ref($scalar)."-". $scalar->id);
