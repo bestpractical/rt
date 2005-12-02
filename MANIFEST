@@ -130,7 +130,6 @@ META.yml
 po/RTFM/fr.po
 po/RTFM/zh_tw.po
 README
-releng.cnf
 sbin/factory
 sbin/migrate-2.0-to-2.1
 t/00smoke.t

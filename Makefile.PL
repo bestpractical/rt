@@ -1,5 +1,7 @@
 use inc::Module::Install;
 RTx('RT-FM');
+name('RTFM');
+version_from('lib/RT/FM.pm');
 license('GPL version 2');
 requires(perl  => 5.008);
 requires('Text::WikiFormat');
