@@ -1,5 +1,4 @@
 bin/notify
-bin/populate-database
 docs/adding_ticketing
 docs/developers_guide
 docs/schema.html
@@ -128,6 +127,7 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 po/RTFM/fr.po
+po/RTFM/ru.po
 po/RTFM/zh_tw.po
 README
 sbin/factory

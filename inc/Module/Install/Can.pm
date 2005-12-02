@@ -1,4 +1,4 @@
-#line 1 "inc/Module/Install/Can.pm - /usr/local/share/perl/5.8.4/Module/Install/Can.pm"
+#line 1 "inc/Module/Install/Can.pm - /usr/local/share/perl/5.8.7/Module/Install/Can.pm"
 package Module::Install::Can;
 use Module::Install::Base; @ISA = qw(Module::Install::Base);
 $VERSION = '0.01';
