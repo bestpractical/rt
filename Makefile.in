@@ -418,11 +418,13 @@ sbin-install:
 	chmod +x \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
-		sbin/rt-test-dependencies
+		sbin/rt-test-dependencies \
+		sbin/rt-clean-sessions
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
+		sbin/rt-clean-sessions \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}
