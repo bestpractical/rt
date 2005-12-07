@@ -43,13 +43,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-  <div id="topactions">
+<div id="topactions">
 % foreach my $action (reverse sort keys %{$topactions}) {
-    <span class="topaction">
-% $m->out($topactions->{"$action"}->{'html'});
-    </span>
+<span class="topaction"><% $topactions->{"$action"}->{'html'} |n %></span>
 % }
-  </div>
+</div>
 
 %# End of div#quickbar from /Elements/Header
 </div>
@@ -59,7 +57,7 @@
 </div>
 
 <div id="header">
-  <h1><%$title%></h1>
+<h1><%$title%></h1>
 
 % my $sep       = 0;
 % my $postsep   = 0;
@@ -161,12 +159,14 @@
 %$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>
-  foreach my $tab (sort keys %{$toptabs}) {
-    if ($current_toptab && $toptabs->{$tab}->{'path'} eq $current_toptab) {
-      $toptabs->{$tab}->{"subtabs"} = $tabs;
-      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
+if ( defined $current_toptab ) {
+    foreach my $tab ( values %{$toptabs} ) {
+        if ( $tab->{'path'} eq $current_toptab ) {
+            $tab->{'subtabs'} = $tabs;
+            $tab->{'current_subtab'} = $current_tab;
+        }
     }
-  }
+}
 
 if (! defined($AppName)) {
   $AppName = loc("RT for [_1]", $RT::rtname);
