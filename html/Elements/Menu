@@ -55,7 +55,7 @@
 % foreach $tab (sort keys %{$toptabs}) {
 %     $count++;
 %
-%     my $current = $current_toptab || "";
+%     my $current = $current_toptab;
 %     my $path    = $toptabs->{$tab}->{'path'} || "";
 %     
 %     $path    =~ s#/index.html$##gi;
@@ -116,8 +116,8 @@ my $menu_class = join ' ', @ul;
 </%INIT>
 
 <%ARGS>
-$current_toptab => ""
-$toptabs => undef
+$toptabs => {}
+$current_toptab => ''
 $level => 0
 $last_level => 0
 </%ARGS>
