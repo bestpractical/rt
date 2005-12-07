@@ -102,7 +102,28 @@ my $next = $m->comp(
 % }
 % }
 <%INIT>
-my $maxitems = 0;
+unless ($Collection) {
+        $Collection = RT::Tickets->new($session{'CurrentUser'});
+        $Collection->FromSQL($Query);
+}
+
+my $TotalFound =  $Collection->CountAll();
+return '' if !$TotalFound && !$ShowEmpty;
+
+if ($OrderBy =~ /\|/) {
+    # Multiple Sorts
+    my @OrderBy = split /\|/,$OrderBy;
+    my @Order = split /\|/,$Order;
+    $Collection->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+        ( 0 .. $#OrderBy )
+    );
+} else {
+    $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+}
+
+$Collection->RowsPerPage($Rows) if ($Rows);
+$Collection->GotoPage($Page-1); # SB uses page 0 as the first page
 
 $Format ||= $RT::DefaultSearchResultFormat;
 
@@ -110,23 +131,16 @@ $Format ||= $RT::DefaultSearchResultFormat;
 # still using our original format for next/prev page links.
 # bulk update uses this feature to add checkboxes
 
-
 $DisplayFormat ||= $Format;
 
 # Scrub the html of the format string to remove any potential nasties.
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
 
-
-unless ($Collection) {
-        $Collection = RT::Tickets->new($session{'CurrentUser'});
-        $Collection->FromSQL($Query);
-}
-
 my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
 # Find the maximum number of items in any row, so we can pad the table.
-my $item = 0;
+my ($maxitems, $item) = (0, 0);
 foreach my $col (@Format) {
     $item++;
     if ( $col->{title} eq 'NEWLINE' ) {
@@ -136,21 +150,6 @@ foreach my $col (@Format) {
         $maxitems = $item if $item > $maxitems;
     }
 }
-
-if ($OrderBy =~ /\|/) {
-    # Multiple Sorts
-    my @OrderBy = split /\|/,$OrderBy;
-    my @Order = split /\|/,$Order;
-    $Collection->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
-        .. $#OrderBy ) );; 
-} else {
-    $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
-}
-
-$Collection->RowsPerPage($Rows) if ($Rows);
-$Collection->GotoPage($Page-1); # SB uses page 0 as the first page
-my $TotalFound =  $Collection->CountAll();
 
 </%INIT>
 <%ARGS>
@@ -167,4 +166,5 @@ $Format => $RT::DefaultSearchResultFormat
 $DisplayFormat => undef
 $ShowNavigation => 1
 $ShowHeader => 1
+$ShowEmpty => 0
 </%ARGS>
