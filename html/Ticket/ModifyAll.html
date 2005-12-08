@@ -148,6 +148,13 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
+    # There might be two owners. 
+    if ( ref ($ARGS{'Owner'} )) { 
+        foreach my $owner(@{$ARGS{'Owner'}}) {
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+        }
+    }
+
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
  @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
