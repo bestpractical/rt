@@ -149,10 +149,13 @@ my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
     # There might be two owners. 
-    if ( ref ($ARGS{'Owner'} )) { 
-        foreach my $owner(@{$ARGS{'Owner'}}) {
+    if ( ref ($ARGS{'Owner'} )) {
+        my @owners =@{$ARGS{'Owner'}};
+        delete $ARGS{'Owner'};
+        foreach my $owner(@owners){
             $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
         }
+
     }
 
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
