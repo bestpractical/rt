@@ -222,8 +222,6 @@ sub Create {
     #TODO Specify some sensible defaults.
 
     unless ( $args{'Name'} ) {
-	use Data::Dumper;
-	$RT::Logger->crit(Dumper \%args);
         return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
