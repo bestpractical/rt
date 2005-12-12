@@ -53,6 +53,7 @@
 <table valign=top>
 
 % for my $o (0..3) {
+% $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <tr>
 <td class=label>
 % if ($o == 0) {
@@ -117,15 +118,8 @@ $fields{$_}=1 for @cfs;
 # Add PAW sort
 $fields{'Custom.Ownership'} = 1;
 
-my @Order;
-my @OrderBy;
-if ($OrderBy =~ /\|/) {
-    @Order = split /\|/, $Order;
-    @OrderBy = split /\|/, $OrderBy;
-} else {
-    @Order = ( $Order );
-    @OrderBy = ( $OrderBy );
-}
+my @Order = split /\|/, $Order;
+my @OrderBy = split /\|/, $OrderBy;
 
 
 </%INIT>

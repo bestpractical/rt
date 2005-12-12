@@ -115,6 +115,7 @@ AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPer
 <%INIT>
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
+use RT::SQL;
 
 my $search_hash = {};
 my $search;
@@ -180,18 +181,17 @@ unless ( defined $RowsPerPage ) {
     }
 }
 
-  $search ||= $search_hash->{'Object'};
+$search ||= $search_hash->{'Object'};
 
 # }}}
 
 my @actions = ();
 
 # Clean unwanted junk from the format
-$Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
+$Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if $Format;
 
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
-
     # We set $SearchId to 'new' above already, so peek into the %ARGS
     my ($container_object, $search_id) = _parse_saved_search ($ARGS{'SearchId'});
     if ($container_object && $container_object->id) {
@@ -239,329 +239,150 @@ if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSaved
 
 # }}}
 
-# {{{ Parse the query
-use Regexp::Common qw /delimited/;
-
-# States
-use constant VALUE   => 1;
-use constant AGGREG  => 2;
-use constant OP      => 4;
-use constant PAREN   => 8;
-use constant KEYWORD => 16;
-
-my $_match = sub {
-
-    # Case insensitive equality
-    my ( $y, $x ) = @_;
-    return 1 if $x =~ /^$y$/i;
-
-    #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
-    return 0;
-};
-
 my $ParseQuery = sub {
-    my $string  = shift;
-    my $tree    = shift;
-    my @actions = shift;
-    my $want    = KEYWORD | PAREN;
-    my $last    = undef;
+    my ($string, $results) = shift;
 
-    my $depth = 1;
+    my %field = %{ RT::Tickets->new( $session{'CurrentUser'} )->FIELDS };
+    my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
-    # make a tree root
-    $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
-    my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
-    my $lastnode   = $root;
-    my $parentnode = $root;
+    my ($tree, $node);
+    $node = $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 
-    # get the FIELDS from Tickets_Overlay
-    my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my %FIELDS  = %{ $tickets->FIELDS };
+    my %callback;
+    $callback{'OpenParen'} = sub {
+        $node = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $node );
+    };
+    $callback{'CloseParen'} = sub { $node = $node->getParent };
+    $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
+    $callback{'Condition'} = sub {
+        my ($key, $op, $value) = @_;
 
-    # Lower Case version of FIELDS, for case insensitivity
-    my %lcfields = map { ( lc($_) => $_ ) } ( keys %FIELDS );
-
-    my @tokens     = qw[VALUE AGGREG OP PAREN KEYWORD];
-    my $re_aggreg  = qr[(?i:AND|OR)];
-    my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-    my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      =
-      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
-      ;    # long to short
-    my $re_paren = qr'\(|\)';
-
-    # assume that $ea is AND if it is not set
-    my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
-
-    # order of matches in the RE is important.. op should come early,
-    # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
-    # as a keyword or value.
-
-    while (
-        $string =~ /(
-                      $re_aggreg
-                      |$re_op
-                      |$re_keyword
-                      |$re_value
-                      |$re_paren
-                     )/igx
-      )
-    {
-        my $val     = $1;
-        my $current = 0;
-
-        # Highest priority is last
-        $current = OP    if $_match->( $re_op,    $val );
-        $current = VALUE if $_match->( $re_value, $val );
-        $current = KEYWORD
-          if $_match->( $re_keyword, $val ) && ( $want & KEYWORD );
-        $current = AGGREG if $_match->( $re_aggreg, $val );
-        $current = PAREN  if $_match->( $re_paren,  $val );
-
-        unless ( $current && $want & $current ) {
-
-            # Error
-            # FIXME: I will only print out the highest $want value
-            my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions,
-              [
-                loc(
-"current: $current, want $want, Error near ->$val<- expecting a "
-                      . $token
-                      . " in '$string'\n"
-                ),
-                -1
-              ];
+        my $class;
+        if ( exists $lcfield{ lc $key } ) {
+            $key   = $lcfield{ lc $key };
+            $class = $field{$key}->[0];
+        }
+        unless( $class ) {
+            push @$results, [ loc("Unknown field: $key"), -1 ]
         }
 
-        # State Machine:
-        my $parentdepth = $depth;
+        $value = "'$value'" if $value =~ /[^0-9]/;
+        $key = "'$key'" if $key =~ /^CF./;
 
-        # Parens are highest priority
-        if ( $current & PAREN ) {
-            if ( $val eq "(" ) {
-                $depth++;
+        my $clause = { Key => $key, Op => $op, Value => $value };
+        $node->addChild( RT::Interface::Web::QueryBuilder::Tree->new( $clause ) );
+    };
 
-                # make a new node that the clauses can be children of
-                $parentnode = RT::Interface::Web::QueryBuilder::Tree->new( $ea, $parentnode );
-            }
-            else {
-                $depth--;
-                $parentnode = $parentnode->getParent();
-                $lastnode   = $parentnode;
-            }
-
-            $want = KEYWORD | PAREN | AGGREG;
-        }
-        elsif ( $current & AGGREG ) {
-            $ea   = $val;
-            $want = KEYWORD | PAREN;
-        }
-        elsif ( $current & KEYWORD ) {
-            $key  = $val;
-            $want = OP;
-        }
-        elsif ( $current & OP ) {
-            $op   = $val;
-            $want = VALUE;
-        }
-        elsif ( $current & VALUE ) {
-            $value = $val;
-
-            # Remove surrounding quotes from $key, $val
-            # (in future, simplify as for($key,$val) { action on $_ })
-            if ( $key =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $key, 0,  1 ) = "";
-                substr( $key, -1, 1 ) = "";
-            }
-            if ( $val =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $val, 0,  1 ) = "";
-                substr( $val, -1, 1 ) = "";
-            }
-
-            # Unescape escaped characters
-            $key =~ s!\\(.)!$1!g;
-            $val =~ s!\\(.)!$1!g;
-
-            my $class;
-            if ( exists $lcfields{ lc $key } ) {
-                $key   = $lcfields{ lc $key };
-                $class = $FIELDS{$key}->[0];
-            }
-            if ( $class ne 'INT' ) {
-                $val = "'$val'";
-            }
-
-            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
-
-            $want = PAREN | AGGREG;
-        }
-        else {
-            push @actions, [ loc("I'm lost"), -1 ];
-        }
-
-        if ( $current & VALUE ) {
-            if ( $key =~ /^CF./ ) {
-                $key = "'" . $key . "'";
-            }
-            my $clause = {
-                Key   => $key,
-                Op    => $op,
-                Value => $val
-            };
-
-            # explicity add a child to it
-            $lastnode = RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
-            $lastnode->getParent()->setNodeValue($ea);
-
-            ( $ea, $key, $op, $value ) = ( "", "", "", "" );
-        }
-
-        $last = $current;
-    }    # while
-
-    push @actions, [ loc("Incomplete query"), -1 ]
-      unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
-
-    push @actions, [ loc("Incomplete Query"), -1 ]
-      unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
-
-    # This will never happen, because the parser will complain
-    push @actions, [ loc("Mismatched parentheses"), -1 ]
-      unless $depth == 1;
+    RT::SQL::Parse($string, \%callback);
+    return $tree;
 };
 
-my $tree;
-$ParseQuery->( $Query, \$tree, \@actions );
+my $tree = $ParseQuery->( $Query, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
     $m->comp( "Edit.html", Query => $Query, actions => \@actions );
     $m->comp('/Elements/Footer');
-    $m->abort();
+    $m->abort;
 }
 
-$Query  = "";
+$Query = '';
 
 my @options = $tree->GetDisplayedNodes;
-
-my @current_values = grep { defined } @options[@clauses];
+my @current_values = grep defined, @options[@clauses];
+my @new_values = ();
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if (
-        $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
-        && ( ref $ARGS{$arg} eq "ARRAY"
-            ? grep { $_ ne "" } @{ $ARGS{$arg} }
-            : $ARGS{$arg} ne "" )
-      )
-    {
+    next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
+                && ( ref $ARGS{$arg} eq "ARRAY"
+                     ? grep $_ ne '', @{ $ARGS{$arg} }
+                     : $ARGS{$arg} ne '' );
 
-        # We're adding a $1 clause
-        my $field = $1;
-        my ( $keyword, $op, $value );
+    # We're adding a $1 clause
+    my $field = $1;
 
-        #figure out if it's a grouping
-        if ( $ARGS{ $field . "Field" } ) {
-            $keyword = $ARGS{ $field . "Field" };
+    my ($op, $value);
+
+    #figure out if it's a grouping
+    my $keyword = $ARGS{ $field . "Field" } || $field;
+
+    my ( @ops, @values );
+    if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+        # we have many keys/values to iterate over, because there is
+        # more than one CF with the same name.
+        @ops    = @{ $ARGS{ $field . 'Op' } };
+        @values = @{ $ARGS{ 'ValueOf' . $field } };
+    }
+    else {
+        @ops    = ( $ARGS{ $field . 'Op' } );
+        @values = ( $ARGS{ 'ValueOf' . $field } );
+    }
+    $RT::Logger->error("Bad Parameters passed into Query Builder")
+        unless @ops == @values;
+
+    for ( my $i = 0; $i < @ops; $i++ ) {
+        my ( $op, $value ) = ( $ops[$i], $values[$i] );
+        next if !defined $value || $value eq '';
+
+        if ( $value eq 'NULL' && $op =~ /=/ ) {
+            if ( $op eq '=' ) {
+                $op = "IS";
+            }
+            elsif ( $op eq '!=' ) {
+                $op = "IS NOT";
+            }
+
+            # This isn't "right", but...
+            # It has to be this way until #5182 is fixed
+            $value = "'NULL'";
         }
         else {
-            $keyword = $field;
+            $value = "'$value'";
         }
 
-        my ( @ops, @values );
-        if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+        my $clause = {
+            Key   => $keyword,
+            Op    => $op,
+            Value => $value
+        };
 
-            # we have many keys/values to iterate over, because there is
-            # more than one CF with the same name.
-            @ops    = @{ $ARGS{ $field . 'Op' } };
-            @values = @{ $ARGS{ 'ValueOf' . $field } };
+        my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
+        if (@current_values) {
+            foreach my $value (@current_values) {
+                my $newindex = $value->getIndex + 1;
+                $value->insertSibling( $newindex, $newnode );
+                $value = $newnode;
+                push @new_values, $newnode;
+            }
         }
         else {
-            @ops    = ( $ARGS{ $field . 'Op' } );
-            @values = ( $ARGS{ 'ValueOf' . $field } );
+            $tree->addChild($newnode);
+            push @new_values, $newnode;
         }
-        $RT::Logger->error("Bad Parameters passed into Query Builder")
-          unless @ops == @values;
-
-        for my $i ( 0 .. @ops - 1 ) {
-            my ( $op, $value ) = ( $ops[$i], $values[$i] );
-            next if $value eq "";
-
-            if ( $value eq 'NULL' && $op =~ /=/ ) {
-                if ( $op eq '=' ) {
-                    $op = "IS";
-                }
-                elsif ( $op eq '!=' ) {
-                    $op = "IS NOT";
-                }
-
-                # This isn't "right", but...
-                # It has to be this way until #5182 is fixed
-                $value = "'NULL'";
-            }
-            else {
-                $value = "'$value'";
-            }
-
-            my $clause = {
-                Key   => $keyword,
-                Op    => $op,
-                Value => $value
-            };
-
-            my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
-            if (@current_values) {
-                foreach my $value (@current_values) {
-                    my $newindex = $value->getIndex() + 1;
-                    $value->insertSibling( $newindex, $newnode );
-                    $value = $newnode;
-                }
-            }
-            else {
-                $tree->getChild(0)->addChild($newnode);
-                @current_values = $newnode;
-            }
-            $newnode->getParent()->setNodeValue( $ARGS{'AndOr'} );
-        }
+        $newnode->getParent->setNodeValue( $ARGS{'AndOr'} );
     }
 }
 
 # }}}
 
 # {{{ Move things around
-if ( $ARGS{"Up"} ) {
+if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $index = $value->getIndex();
-            if ( $value->getIndex() > 0 ) {
-                my $parent = $value->getParent();
-                $parent->removeChild($index);
-                $parent->insertChild( $index - 1, $value );
-                $value = $parent->getChild( $index - 1 );
+            my $parent = $value->getParent;
+            my $index = $value->getIndex;
+            my $newindex = $index;
+            $newindex++ if $ARGS{'Down'};
+            $newindex-- if $ARGS{'Up'};
+            if ( $newindex < 0 || $newindex >= $parent->getChildCount ) {
+                push( @actions, [ loc("error: can't move up"), -1 ] ) if $ARGS{'Up'};
+                push( @actions, [ loc("error: can't move down"), -1 ] ) if $ARGS{'Down'};
+                next;
             }
-            else {
-                push( @actions, [ loc("error: can't move up"), -1 ] );
-            }
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to move"), -1 ] );
-    }
-}
-elsif ( $ARGS{"Down"} ) {
-    if (@current_values) {
-        foreach my $value (@current_values) {
-            my $index  = $value->getIndex();
-            my $parent = $value->getParent();
-            if ( $value->getIndex() < ( $parent->getChildCount - 1 ) ) {
-                $parent->removeChild($index);
-                $parent->insertChild( $index + 1, $value );
-                $value = $parent->getChild( $index + 1 );
-            }
-            else {
-                push( @actions, [ loc("error: can't move down"), -1 ] );
-            }
+
+            $parent->removeChild( $index );
+            $parent->insertChild( $newindex, $value );
         }
     }
     else {
@@ -571,18 +392,23 @@ elsif ( $ARGS{"Down"} ) {
 elsif ( $ARGS{"Left"} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $parent      = $value->getParent();
-            my $grandparent = $parent->getParent();
-            if ( !$grandparent->isRoot ) {
-                my $index = $parent->getIndex();
-                $parent->removeChild($value);
-                $grandparent->insertChild( $index, $value );
-                if ( $parent->isLeaf() ) {
-                    $grandparent->removeChild($parent);
-                }
-            }
-            else {
+            my $parent = $value->getParent;
+            if( $value->isRoot || $parent->isRoot ) {
                 push( @actions, [ loc("error: can't move left"), -1 ] );
+                next;
+            }
+
+            my $grandparent = $parent->getParent;
+            if( $grandparent->isRoot ) {
+                push( @actions, [ loc("error: can't move left"), -1 ] );
+                next;
+            }
+            
+            my $index = $parent->getIndex;
+            $parent->removeChild($value);
+            $grandparent->insertChild( $index, $value );
+            if ( $parent->isLeaf ) {
+                $grandparent->removeChild($parent);
             }
         }
     }
@@ -593,26 +419,18 @@ elsif ( $ARGS{"Left"} ) {
 elsif ( $ARGS{"Right"} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $parent = $value->getParent();
-            my $index  = $value->getIndex();
+            my $parent = $value->getParent;
+            my $index  = $value->getIndex;
+
             my $newparent;
             if ( $index > 0 ) {
                 my $sibling = $parent->getChild( $index - 1 );
-                if ( ref( $sibling->getNodeValue ) ) {
-                    $parent->removeChild($value);
-                    my $newtree = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $parent );
-                    $newtree->addChild($value);
-                }
-                else {
-                    $parent->removeChild($index);
-                    $sibling->addChild($value);
-                }
+                $newparent = $sibling unless $sibling->isLeaf;
             }
-            else {
-                $parent->removeChild($value);
-                $newparent = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $parent );
-                $newparent->addChild($value);
-            }
+            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
+
+            $parent->removeChild($value);
+            $newparent->addChild($value);
         }
     }
     else {
@@ -621,17 +439,19 @@ elsif ( $ARGS{"Right"} ) {
 }
 elsif ( $ARGS{"DeleteClause"} ) {
     if (@current_values) {
-        $_->getParent()->removeChild($_) for @current_values;
+        while( my $node = shift @current_values ) {
+            $node->getParent->removeChild($node);
+            $node->DESTROY;
+        }
     }
     else {
         push( @actions, [ loc("error: nothing to delete"), -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
-    my $ea;
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $parent = $value->getParent();
+            my $parent = $value->getParent;
 
             if ( $parent->getNodeValue eq 'AND' ) {
                 $parent->setNodeValue('OR');
@@ -651,11 +471,12 @@ $tree->PruneChildlessAggregators;
 # }}}
 
 # {{{ Rebuild $Query based on the additions / movements
-$Query      = "";
+push @current_values, @new_values;
+$Query = '';
 my $optionlist_arrayref;
 
 ($Query, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
-  
+
 my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
@@ -798,21 +619,19 @@ if ( $ARGS{"DoSearch"}) {
 
 # {{{ Build a querystring for the tabs
 
-my $QueryString;
+my $QueryString = '';
 if ($NewQuery) {
     $QueryString = '?NewQuery=1';
 }
-else {
-    $QueryString = '?'
-      . $m->comp(
+elsif ( $Query ) {
+    $QueryString = '?'. $m->comp(
         '/Elements/QueryString',
         Query   => $Query,
         Format  => $Format,
         Order   => $Order,
         OrderBy => $OrderBy,
-        Rows    => $RowsPerPage
-      )
-      if ($Query);
+        Rows    => $RowsPerPage,
+    );
 }
 
 # }}}
@@ -831,4 +650,3 @@ $RowsPerPage => undef
 $HideResults => 0
 @clauses => ()
 </%ARGS>
-

@@ -75,13 +75,15 @@ on the root node passed to it.)
 sub TraversePrePost {
    my ($self, $prefunc, $postfunc) = @_;
 
-   $prefunc->($self);
-   
+   # XXX: if pre or post action changes siblings (delete or adds)
+   # we could have problems
+   $prefunc->($self) if $prefunc;
+
    foreach my $child ($self->getAllChildren()) { 
            $child->TraversePrePost($prefunc, $postfunc);
    }
    
-   $postfunc->($self);
+   $postfunc->($self) if $postfunc;
 }
 
 =head2 GetReferencedQueues
@@ -101,10 +103,11 @@ sub GetReferencedQueues {
             my $node = shift;
 
             return if $node->isRoot;
+            return unless $node->isLeaf;
 
             my $clause = $node->getNodeValue();
-         
-            if ( ref($clause) and $clause->{Key} eq 'Queue' ) {
+
+            if ( $clause->{Key} eq 'Queue' ) {
                 $queues->{ $clause->{Value} } = 1;
             };
         }
@@ -131,55 +134,13 @@ sub GetQueryAndOptionList {
     my $self           = shift;
     my $selected_nodes = shift;
 
-    my $optionlist = [];
+    my $list = $self->__LinearizeTree;
+    foreach my $e( @$list ) {
+        $e->{'DEPTH'}    = $e->{'NODE'}->getDepth;
+        $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? 'selected' : '';
+    }
 
-    my $i = 0;
-
-    $self->TraversePrePost(
-        sub { # This is called before recursing to the node's children.
-            my $node = shift;
-
-            return if $node->isRoot or $node->getParent->isRoot;
-
-            my $clause = $node->getNodeValue();
-            my $str = ' ';
-            my $aggregator_context = $node->getParent()->getNodeValue();
-            $str = $aggregator_context . " " if $node->getIndex() > 0;
-
-            if ( ref($clause) ) { # ie, it's a leaf              
-                $str .=
-                  $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
-            }
-
-            unless ($node->getParent->getParent->isRoot) {
-        #        used to check !ref( $parent->getNodeValue() ) )
-                if ( $node->getIndex() == 0 ) {
-                    $str = '( ' . $str;
-                }
-            }
-
-            push @$optionlist, {
-                TEXT     => $str,
-                INDEX    => $i,
-                SELECTED => (grep { $_ == $node } @$selected_nodes) ? 'SELECTED' : '',
-                DEPTH    => $node->getDepth() - 1,
-            };
-
-            $i++;
-        }, sub {
-            # This is called after recursing to the node's children.
-            my $node = shift;
-
-            return if $node->isRoot or $node->getParent->isRoot or $node->getParent->getParent->isRoot;
-
-            # Only do this for the rightmost child.
-            return unless $node->getIndex == $node->getParent->getChildCount - 1;
-
-            $optionlist->[-1]{TEXT} .= ' )';
-        }
-    );
-
-    return (join ' ', map { $_->{TEXT} } @$optionlist), $optionlist;
+    return (join ' ', map $_->{'TEXT'}, @$list), $list;
 }
 
 =head2 PruneChildLessAggregators
@@ -193,23 +154,18 @@ sub PruneChildlessAggregators {
     my $self = shift;
 
     $self->TraversePrePost(
-        sub {
-        },
+        undef,
         sub {
             my $node = shift;
+            return unless $node->isLeaf;
 
-            return if $node->isRoot or $node->getParent->isRoot;
-            
             # We're only looking for aggregators (AND/OR)
             return if ref $node->getNodeValue;
-            
-            return if $node->getChildCount != 0;
-            
+
+            return if $node->isRoot;
+
             # OK, this is a childless aggregator.  Remove self.
-            
             $node->getParent->removeChild($node);
-            
-            # Deal with circular refs
             $node->DESTROY;
         }
     );
@@ -224,18 +180,52 @@ In fact, it's all of them but the root and its child.
 =cut
 
 sub GetDisplayedNodes {
-    my $self = shift;
-    my @lines;
-
-    $self->traverse(sub {
-        my $node = shift;
-
-        push @lines, $node unless $node->isRoot or $node->getParent->isRoot;
-    });
-
-    return @lines;
+    return map $_->{NODE}, @{ (shift)->__LinearizeTree };
 }
 
+
+sub __LinearizeTree {
+    my $self = shift;
+
+    my ($list, $i) = ([], 0);
+
+    $self->TraversePrePost( sub {
+        my $node = shift;
+        return if $node->isRoot;
+
+        my $str = '';
+        if( $node->getIndex > 0 ) {
+            $str .= " ". $node->getParent->getNodeValue ." ";
+        }
+
+        unless( $node->isLeaf ) {
+            $str .= '( ';
+        } else {
+
+            my $clause = $node->getNodeValue;
+            $str .= $clause->{Key};
+            $str .= " ". $clause->{Op};
+            $str .= " ". $clause->{Value};
+
+        }
+        $str =~ s/^\s+|\s+$//;
+
+        push @$list, {
+            NODE     => $node,
+            TEXT     => $str,
+            INDEX    => $i,
+        };
+
+        $i++;
+    }, sub {
+        my $node = shift;
+        return if $node->isRoot;
+        return if $node->isLeaf;
+        $list->[-1]->{'TEXT'} .= ' )';
+    });
+
+    return $list;
+}
 
 eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm});
