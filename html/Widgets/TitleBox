@@ -47,6 +47,6 @@
   <& TitleBoxStart, %ARGS &><% $m->content | n %><& TitleBoxEnd &>
 </div>
 <%ARGS>
-$class => undef
+$class => ''
 </%ARGS>
 

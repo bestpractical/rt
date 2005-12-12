@@ -55,16 +55,16 @@
 
 <%ARGS>
 $width => undef
-$class => undef
-$bodyclass => undef
-$title_href => undef
-$title => undef
+$class => ''
+$bodyclass => ''
+$title_href => ''
+$title => ''
 $title_class => ''
-$titleright_href => undef
-$titleright => undef
+$titleright_href => ''
+$titleright => ''
 $contentbg => "#dddddd"
 $color => "#336699"
-$id => undef
+$id => ''
 $hideable => 1
 </%ARGS>
 

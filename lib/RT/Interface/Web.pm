@@ -1577,15 +1577,9 @@ container object and the search id.
 =cut
 
 sub _parse_saved_search {
-    my $spec = shift;
-    if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-	return;
-    }
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    return (_load_container_object ($obj_type, $obj_id), $search_id);
+    my $spec = shift || '';
+    return unless $spec =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/;
+    return (_load_container_object ($1, $2), $3);
 }
 
 eval "require RT::Interface::Web_Vendor";
