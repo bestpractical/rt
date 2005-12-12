@@ -48,6 +48,8 @@ package RT::Tickets;
 use strict;
 use warnings;
 
+use RT::SQL;
+
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
@@ -79,7 +81,6 @@ sub _InitSQL {
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
   $self->{'_sql_columns_to_display'} = [];
-
 }
 
 sub _SQLLimit {
@@ -145,225 +146,101 @@ just handed off the SearchBuilder)
 
 =cut
 
-use Regexp::Common qw /delimited/;
+sub _close_bundle {
+    my ($self, @bundle) = @_;
+    return unless @bundle;
 
-# States
-use constant VALUE => 1;
-use constant AGGREG => 2;
-use constant OP => 4;
-use constant OPEN_PAREN => 8;
-use constant CLOSE_PAREN => 16;
-use constant KEYWORD => 32;
-my @tokens = qw[VALUE AGGREG OP OPEN_PAREN CLOSE_PAREN KEYWORD];
-
-my $re_aggreg = qr[(?i:AND|OR)];
-my $re_delim  = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-my $re_value  = qr[$re_delim|\d+|NULL];
-my $re_keyword = qr[$re_delim|(?:\{|\}|\w|\.)+];
-my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
-my $re_open_paren  = qr'\(';
-my $re_close_paren  = qr'\)';
-
-sub _close_bundle
-{
-  my ($self, @bundle) = @_;
-  return unless @bundle;
-  if (@bundle == 1) {
-    $bundle[0]->{dispatch}->(
-                         $self,
-                         $bundle[0]->{key},
-                         $bundle[0]->{op},
-                         $bundle[0]->{val},
-                         SUBCLAUSE =>  "",
-                         ENTRYAGGREGATOR => $bundle[0]->{ea},
-                         SUBKEY => $bundle[0]->{subkey},
-                        );
-  } else {
-    my @args;
-    for my $chunk (@bundle) {
-      push @args, [
-          $chunk->{key},
-          $chunk->{op},
-          $chunk->{val},
-          SUBCLAUSE =>  "",
-          ENTRYAGGREGATOR => $chunk->{ea},
-          SUBKEY => $chunk->{subkey},
-      ];
+    if ( @bundle == 1 ) {
+        $bundle[0]->{'dispatch'}->(
+            $self,
+            $bundle[0]->{'key'},
+            $bundle[0]->{'op'},
+            $bundle[0]->{'val'},
+            SUBCLAUSE       => '',
+            ENTRYAGGREGATOR => $bundle[0]->{ea},
+            SUBKEY          => $bundle[0]->{subkey},
+        );
     }
-    $bundle[0]->{dispatch}->(
-        $self, \@args,
-    );
-  }
+    else {
+        my @args;
+        foreach my $chunk (@bundle) {
+            push @args, [
+                $chunk->{key},
+                $chunk->{op},
+                $chunk->{val},
+                SUBCLAUSE       => '',
+                ENTRYAGGREGATOR => $chunk->{ea},
+                SUBKEY          => $chunk->{subkey},
+            ];
+        }
+        $bundle[0]->{dispatch}->( $self, \@args );
+    }
 }
 
 sub _parser {
-  my ($self,$string) = @_;
-  my $want = KEYWORD | OPEN_PAREN;
-  my $last = undef;
+    my ($self,$string) = @_;
+    my @bundle;
+    my $ea = '';
 
-  my $depth = 0;
-  my @bundle;
+    my %callback;
+    $callback{'OpenParen'} = sub { $self->_OpenParen };
+    $callback{'CloseParen'} = sub { $self->_CloseParen };
+    $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
+    $callback{'Condition'} = sub {
+        my ($key, $op, $value) = @_;
 
-  my ($ea,$key,$op,$value) = ("","","","");
+        # key has dot then it's compound variant and we have subkey
+        my $subkey = '';
+        ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
 
-  # order of matches in the RE is important.. op should come early,
-  # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
-  # as a keyword or value.
+        # normalize key and get class (type)
+        my $class;
+        if (exists $lcfields{lc $key}) {
+            $key = $lcfields{lc $key};
+            $class = $FIELD_METADATA{$key}->[0];
+        }
+        die "Unknown field '$key' in '$string'" unless $class;
 
+        $self->{_sql_localdepth} = 0;
 
+        unless( $dispatch{ $class } ) {
+            die "No dispatch method for class '$class'"
+        }
+        my $sub = $dispatch{ $class };
 
-
-
-  while ($string =~ /(
-                      $re_aggreg
-                      |$re_op
-                      |$re_keyword
-                      |$re_value
-                      |$re_open_paren
-                      |$re_close_paren
-                     )/iogx ) {
-    my $val = $1;
-    my $current = 0;
-
-    # Highest priority is last
-    $current = OP          if ($want & OP)          && $val =~ /^$re_op$/io;
-    $current = VALUE       if ($want & VALUE)       && $val =~ /^$re_value$/io;
-    $current = KEYWORD     if ($want & KEYWORD)     && $val =~ /^$re_keyword$/io;
-    $current = AGGREG      if ($want & AGGREG)      && $val =~ /^$re_aggreg$/io;
-    $current = OPEN_PAREN  if ($want & OPEN_PAREN)  && $val =~ /^$re_open_paren$/io;
-    $current = CLOSE_PAREN if ($want & CLOSE_PAREN) && $val =~ /^$re_close_paren$/io;
-
-
-    unless ($current && $want & $current) {
-      # Error
-      # FIXME: I will only print out the highest $want value
-      die "Error near ->$val<- expecting a ", $tokens[((log $want)/(log 2))], " in $string\n";
-    }
-
-    # State Machine:
-
-    #$RT::Logger->debug("We've just found a '$current' called '$val'");
-
-    # Parens are highest priority
-    if ($current & OPEN_PAREN) {
-      $self->_close_bundle(@bundle);  @bundle = ();
-      $depth++;
-      $self->_OpenParen;
-
-      $want = KEYWORD | OPEN_PAREN;
-    }
-    elsif ( $current & CLOSE_PAREN ) {
-      $self->_close_bundle(@bundle);  @bundle = ();
-      $depth--;
-      $self->_CloseParen;
-
-      $want = CLOSE_PAREN | AGGREG;
-    }
-    elsif ( $current & AGGREG ) {
-      $ea = $val;
-      $want = KEYWORD | OPEN_PAREN;
-    }
-    elsif ( $current & KEYWORD ) {
-      $key = $val;
-      $want = OP;
-    }
-    elsif ( $current & OP ) {
-      $op = $val;
-      $want = VALUE;
-    }
-    elsif ( $current & VALUE ) {
-      $value = $val;
-
-      # Remove surrounding quotes from $key, $val
-      # (in future, simplify as for($key,$val) { action on $_ })
-      if ($key =~ /$re_delim/o) {
-        substr($key,0,1) = "";
-        substr($key,-1,1) = "";
-      }
-      if ($val =~ /$re_delim/o) {
-        substr($val,0,1) = "";
-        substr($val,-1,1) = "";
-      }
-      # Unescape escaped characters
-      $key =~ s!\\(.)!$1!g;
-      $val =~ s!\\(.)!$1!g;
-      #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
-
-
-   my $subkey = '';
-   if ($key =~ /^(.+?)\.(.+)$/) {
-     $key = $1;
-     $subkey = $2;
-   }
-
-      my $class;
-      if (exists $lcfields{lc $key}) {
-        $key = $lcfields{lc $key};
-        $class = $FIELD_METADATA{$key}->[0];
-      }
-   # no longer have a default, since CF's are now a real class, not fallthrough
-   # fixme: "default class" is not Generic.
-
- 
-   die "Unknown field: $key" unless $class;
-
-      $self->{_sql_localdepth} = 0;
-      die "No such dispatch method: $class"
-        unless exists $dispatch{$class};
-      my $sub = $dispatch{$class} || die;;
-      if ($can_bundle{$class} &&
-          (!@bundle ||
-            ($bundle[-1]->{dispatch} == $sub &&
-             $bundle[-1]->{key} eq $key &&
-             $bundle[-1]->{subkey} eq $subkey)))
-      {
-          push @bundle, {
-              dispatch => $sub,
-              key      => $key,
-              op       => $op,
-              val      => $val,
-              ea       => $ea || "",
-              subkey   => $subkey,
-          };
-      } else {
-        $self->_close_bundle(@bundle);  @bundle = ();
-        $sub->(
-               $self,
-               $key,
-               $op,
-               $val,
-               SUBCLAUSE =>  "",  # don't need anymore
-               ENTRYAGGREGATOR => $ea || "",
-               SUBKEY => $subkey,
-              );
-      }
-
-      $self->{_sql_looking_at}{lc $key} = 1;
-  
-      ($ea,$key,$op,$value) = ("","","","");
-  
-      $want = CLOSE_PAREN | AGGREG;
-    } else {
-      die "I'm lost";
-    }
-
-    $last = $current;
-  } # while
-
-  $self->_close_bundle(@bundle);  @bundle = ();
-
-  die "Incomplete query"
-    unless (($want | CLOSE_PAREN) || ($want | KEYWORD));
-
-  die "Incomplete Query"
-    unless ($last && ($last | CLOSE_PAREN) || ($last || VALUE));
-
-  # This will never happen, because the parser will complain
-  die "Mismatched parentheses"
-    unless $depth == 0;
-
+        if ( $can_bundle{ $class }
+             && ( !@bundle
+                  || ( $bundle[-1]->{dispatch}  == $sub
+                       && $bundle[-1]->{key}    eq $key
+                       && $bundle[-1]->{subkey} eq $subkey
+                     )
+                )
+           )
+        {
+            push @bundle, {
+                dispatch => $sub,
+                key      => $key,
+                op       => $op,
+                val      => $value,
+                ea       => $ea,
+                subkey   => $subkey,
+            };
+        }
+        else {
+            $self->_close_bundle(@bundle);
+            @bundle = ();
+            $sub->( $self, $key, $op, $value,
+                    SUBCLAUSE       => '',  # don't need anymore
+                    ENTRYAGGREGATOR => $ea,
+                    SUBKEY          => $subkey,
+                  );
+        }
+        $self->{_sql_looking_at}{lc $key} = 1;
+        $ea = '';
+    };
+    RT::SQL::Parse($string, \%callback);
+    $self->_close_bundle(@bundle);  @bundle = ();
 }
-
 
 =head2 ClausesToSQL
 
@@ -470,63 +347,63 @@ ok (eq_array(\@ids, \@expectedids), "returned expected tickets". join(",",@ids) 
 =cut
 
 sub FromSQL {
-  my ($self,$query) = @_;
+    my ($self,$query) = @_;
 
-  {
-    # preserve first_row and show_rows across the CleanSlate
-    local($self->{'first_row'}, $self->{'show_rows'});
-    $self->CleanSlate;
-  }
-  $self->_InitSQL();
-
-  return (1,$self->loc("No Query")) unless $query;
-
-  $self->{_sql_query} = $query;
-  eval { $self->_parser( $query ); };
-    if ($@) {
-        $RT::Logger->error( "Query error in <<$query>>:\n$@" );
-        return(0,$@);
+    {
+        # preserve first_row and show_rows across the CleanSlate
+        local ($self->{'first_row'}, $self->{'show_rows'});
+        $self->CleanSlate;
     }
-  # We only want to look at EffectiveId's (mostly) for these searches.
-  unless (exists $self->{_sql_looking_at}{'effectiveid'}) {
-  $self->SUPER::Limit( FIELD           => 'EffectiveId',
-                     ENTRYAGGREGATOR => 'AND',
-                     OPERATOR        => '=',
-                     QUOTEVALUE      => 0,
-                     VALUE           => 'main.id'
-    );    #TODO, we shouldn't be hard #coding the tablename to main.
+    $self->_InitSQL();
+
+    return (1, $self->loc("No Query")) unless $query;
+
+    $self->{_sql_query} = $query;
+    eval { $self->_parser( $query ); };
+    if ( $@ ) {
+        $RT::Logger->error( $@ );
+        return (0, $@);
     }
-  # FIXME: Need to bring this logic back in
 
-  #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
-  #         $self->SUPER::Limit( FIELD => 'EffectiveId',
-  #               OPERATOR => '=',
-  #               QUOTEVALUE => 0,
-  #               VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
-  #       }
-  # --- This is hardcoded above.  This comment block can probably go.
-  # Or, we need to reimplement the looking_at_effective_id toggle.
+    # We only want to look at EffectiveId's (mostly) for these searches.
+    unless ( exists $self->{_sql_looking_at}{'effectiveid'} ) {
+        #TODO, we shouldn't be hard #coding the tablename to main.
+        $self->SUPER::Limit( FIELD           => 'EffectiveId',
+                             VALUE           => 'main.id',
+                             ENTRYAGGREGATOR => 'AND',
+                             QUOTEVALUE      => 0,
+                           );
+    }
+    # FIXME: Need to bring this logic back in
 
-  # Unless we've explicitly asked to look at a specific Type, we need
-  # to limit to it.
-  unless ($self->{looking_at_type}) {
-    $self->SUPER::Limit( FIELD => 'Type', OPERATOR => '=', VALUE => 'ticket');
-  }
+    #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
+    #         $self->SUPER::Limit( FIELD => 'EffectiveId',
+    #               OPERATOR => '=',
+    #               QUOTEVALUE => 0,
+    #               VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
+    #       }
+    # --- This is hardcoded above.  This comment block can probably go.
+    # Or, we need to reimplement the looking_at_effective_id toggle.
 
-  # We don't want deleted tickets unless 'allow_deleted_search' is set
-  unless( $self->{'allow_deleted_search'} ) {
-    $self->SUPER::Limit(FIELD => 'Status',
-                        OPERATOR => '!=',
-                        VALUE => 'deleted');
-  }
+    # Unless we've explicitly asked to look at a specific Type, we need
+    # to limit to it.
+    unless ( $self->{looking_at_type} ) {
+        $self->SUPER::Limit( FIELD => 'Type', VALUE => 'ticket' );
+    }
 
+    # We don't want deleted tickets unless 'allow_deleted_search' is set
+    unless( $self->{'allow_deleted_search'} ) {
+        $self->SUPER::Limit( FIELD    => 'Status',
+                             OPERATOR => '!=',
+                             VALUE => 'deleted',
+                           );
+    }
 
-  # set SB's dirty flag
-  $self->{'must_redo_search'} = 1;
-  $self->{'RecalcTicketLimits'} = 0;                                           
+    # set SB's dirty flag
+    $self->{'must_redo_search'} = 1;
+    $self->{'RecalcTicketLimits'} = 0;                                           
 
-  return (1,$self->loc("Valid Query"));
-
+    return (1, $self->loc("Valid Query"));
 }
 
 =head2 Query
@@ -536,8 +413,7 @@ Returns the query that this object was initialized with
 =cut
 
 sub Query {
-    my $self = shift;
-    return ($self->{_sql_query}); 
+    return ($_[0]->{_sql_query});
 }
 
 
