@@ -43,14 +43,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name="<% $Name %>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
-<option value="<%$value%>"
+<option value="<% $value %>"
 % if ($Default eq $value) {
-SELECTED
+selected
 % }
-><%$option%></option>
+><% $option %></option>
 % }
 </select>
 
@@ -58,5 +58,5 @@ SELECTED
 $Name => undef
 @Options => ( loc('contains'), loc("doesn't contain"), loc('is'), loc("isn't"), loc('less than'), loc('greater than'))
 @Values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
-$Default => undef
+$Default => ''
 </%ARGS>
