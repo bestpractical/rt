@@ -542,8 +542,6 @@ sub _TransDateLimit {
 
     $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
         unless defined $sb->{_sql_transalias};
-    $sb->{_sql_trattachalias} = $sb->NewAlias('Attachments')
-        unless defined $sb->{_sql_trattachalias};
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -594,15 +592,6 @@ sub _TransDateLimit {
             @rest
         );
     }
-
-    # Join Transactions To Attachments
-
-    $sb->_SQLJoin(
-        ALIAS1 => $sb->{_sql_trattachalias},
-        FIELD1 => 'TransactionId',
-        ALIAS2 => $sb->{_sql_transalias},
-        FIELD2 => 'id',
-    );
 
     # Join Transactions to Tickets
     $sb->_SQLJoin(
