@@ -223,7 +223,7 @@ sub SetMIMEEntityToEncoding {
 
 	# {{{ Convert the body
 	eval {
-	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". $head->get('subject'));
+	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
 
 	    # NOTE:: see the comments at the end of the sub.
 	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
