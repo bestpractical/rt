@@ -49,11 +49,10 @@
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "idOp" &>
 </td><td>
-<input Name="ValueOfid" SIZE=5>
-</td>
-</tr>
+<input name="ValueOfid" size="5">
+</td></tr>
 
-<tr><td>
+<tr><td class="label">
 <& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "AttachmentOp", 
@@ -63,11 +62,10 @@
 			    FalseVal => 'NOT LIKE' 
 &> 
 </td><td>
-<input Name="ValueOfAttachment" Size=20>
-</td>
-</tr>
-<tr>
-<td class="label">
+<input name="ValueOfAttachment" size="20">
+</td></tr>
+
+<tr><td class="label">
 <&|/l&>Queue</&>
 </td><td>
 <& /Elements/SelectBoolean,  Name => "QueueOp" , 
@@ -80,10 +78,9 @@
     Name => "ValueOfQueue", 
     NamedValues => 1, 
     CheckQueueRight => 'ShowTicket' &>
-</td>
-</tr>
-<tr>
-<td class="label">
+</td></tr>
+
+<tr><td class="label">
 <&|/l&>Status</&>
 </td><td>
 <& /Elements/SelectBoolean, Name => "StatusOp", 
@@ -94,68 +91,65 @@
 &>  
 </td><td>
 <& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
-</td>
-</tr>
+</td></tr>
+
 <tr><td class="label">
-<select NAME="ActorField">
-<option VALUE="Owner"><&|/l&>Owner</&></option>
-<option VALUE="Creator"><&|/l&>Creator</&></option>
-<option VALUE="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></option>
+<select name="ActorField">
+<option value="Owner"><&|/l&>Owner</&></option>
+<option value="Creator"><&|/l&>Creator</&></option>
+<option value="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></option>
 </select>
 </td><td>
-<& /Elements/SelectBoolean, Name => "ActorOp", 
-					  TrueVal=> '=', 
-					  FalseVal => '!=' 
+<& /Elements/SelectBoolean, Name => "ActorOp",
+					  TrueVal=> '=',
+					  FalseVal => '!=',
 &> 
 </td><td>
 <& /Elements/SelectOwner, Name => "ValueOfActor", ValueAttribute => 'Name' &>
-</td>
-</tr>
-<tr>
-<td class="label">
+</td></tr>
+
+<tr><td class="label">
 <& SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
-<input Name="ValueOfWatcher" Size=20>
-</tr>
-<tr>
-<td class="label">
+<input name="ValueOfWatcher" size="20">
+</td></tr>
+
+<tr><td class="label">
 <& /Elements/SelectDateType, Name=>"DateField" &>
 </td><td>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
 </td><td>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 </td></tr>
-<tr>
-<td class="label">
-<select NAME="TimeField">
-<option VALUE="TimeWorked"><&|/l&>Time Worked</&></option>
-<option VALUE="TimeEstimated"><&|/l&>Time Estimated</&></option>
-<option VALUE="TimeLeft"><&|/l&>Time Left</&></option>
+
+<tr><td class="label">
+<select name="TimeField">
+<option value="TimeWorked"><&|/l&>Time Worked</&></option>
+<option value="TimeEstimated"><&|/l&>Time Estimated</&></option>
+<option value="TimeLeft"><&|/l&>Time Left</&></option>
 </select>
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
 </td><td>
-<input Name="ValueOfTime" SIZE=5>
+<input name="ValueOfTime" size="5">
 <& /Elements/SelectTimeUnits, Name =>'ValueOfTime' &>
-</td>
-</tr>
-<tr>
-<td class="label">
-<select NAME="PriorityField">
-<option VALUE="Priority"><&|/l&>Priority</&></option>
-<option VALUE="InitialPriority"><&|/l&>Initial Priority</&></option>
-<option VALUE="FinalPriority"><&|/l&>Final Priority</&></option>
+</td></tr>
+
+<tr><td class="label">
+<select name="PriorityField">
+<option value="Priority"><&|/l&>Priority</&></option>
+<option value="InitialPriority"><&|/l&>Initial Priority</&></option>
+<option value="FinalPriority"><&|/l&>Final Priority</&></option>
 </select>
 </td><td>
 <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 </td><td>
-<input Name="ValueOfPriority" SIZE=5>
-</td>
-</tr>
-<tr>
-<td class="label">
+<input name="ValueOfPriority" size="5">
+</td></tr>
+
+<tr><td class="label">
 <& SelectLinks, Name=>"LinksField" &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "LinksOp", 
@@ -164,8 +158,9 @@
 			    TrueVal=> '=', 
 			    FalseVal => '!=' &>  
 </td><td>
-<input Name="ValueOfLinks" value="" SIZE=5>
+<input name="ValueOfLinks" value="" size="5">
 </td></tr>
+
 <%INIT>
 my @people = ('Actor',
 	      'Watcher',
