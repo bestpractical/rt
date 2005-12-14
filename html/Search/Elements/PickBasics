@@ -162,8 +162,4 @@
 </td></tr>
 
 <%INIT>
-my @people = ('Actor',
-	      'Watcher',
-	      'WatcherGroup',
-	      );
 </%INIT>
