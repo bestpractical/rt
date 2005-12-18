@@ -37,8 +37,8 @@ $m->get ( BaseURL."Search/Build.html");
 $m->form_name ('BuildQuery');
 
 $m->field ( "ValueOfAttachment" => 'stupid');
-$m->field ( "Description" => 'stupid tickets');
-$m->click_button (name => 'Save');
+$m->field ( "SavedSearchDescription" => 'stupid tickets');
+$m->click_button (name => 'SavedSearchSave');
 
 $m->get ( BaseURL.'Prefs/MyRT.html' );
 $m->content_like (qr/stupid tickets/, 'saved search listed in rt at a glance items');
