@@ -65,51 +65,49 @@
 %#
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Build.html".$QueryString, 
+    current_tab => "Search/Build.html?".$QueryString, 
     Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Order => $Order,
-    OrderBy => $OrderBy,
-    Rows => $RowsPerPage
+    %query,
 &>
 
 <form method="POST" action="Build.html" name="BuildQuery">
-<input type="hidden" class="hidden" name="SearchId" value="<%$SearchId%>">
-<input type="hidden" class="hidden" name="Query" value="<%$Query%>">
-<input type="hidden" class="hidden" name="Format" value="<%$Format%>">
-<table width="100%" border="0" cellpadding="5">
-<tr valign="top">
-<td class="boxcontainer" rowspan="2" width="65%">
-<& Elements/PickCriteria, query => $Query, cfqueues => $queues &>
-<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
-</td>
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>">
+<input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>">
+<input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>">
 
-<td>
+<table width="100%" border="0" cellpadding="5">
+<tr valign="top"><td class="boxcontainer" rowspan="2" width="65%">
+
+<& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
+<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
+
+</td><td>
+
 <& Elements/EditQuery,
     %ARGS,
     actions => \@actions,
     optionlist => $optionlist,
-    Description => $Description &>
+    Description => $saved_search{'Description'},
+&>
 <& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
-</td>
-</tr>
 
-<tr valign="top">
-<td>
-<& Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
-</td>
-</tr>
+</td></tr>
+<tr valign="top"><td>
 
-<tr>
-<td colspan="2" class="boxcontainer">
+<& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
 
-<& Elements/DisplayOptions, %ARGS, Format=> $Format,
-AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
+</td></tr>
+<tr><td colspan="2" class="boxcontainer">
+
+<& Elements/DisplayOptions,
+    %ARGS, %query,
+    AvailableColumns => $AvailableColumns,
+    CurrentFormat    => $CurrentFormat,
+&>
+
 <& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
-</td>
-</tr>
-</table>
+
+</td></tr></table>
 </form>
 
 <%INIT>
@@ -117,127 +115,49 @@ use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
 use RT::SQL;
 
-my $search_hash = {};
-my $search;
 my $title = loc("Query Builder");
 
-# {{{ Clear out unwanted data
-if ( $NewQuery or $ARGS{'Delete'} ) {
+my (%query, %saved_search);
+my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search);
+
+if ( $NewQuery ) {
 
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
-    $Query       = '';
-    $Format      = '';
-    $Description = '';
-    $SearchId    = '';
-    $Order       = '';
-    $OrderBy     = '';
-    $RowsPerPage = '';
-
-    # ($search hasn't been set yet; no need to clear)
+    %query = ();
+    %saved_search = ( Id => 'new' );
 
     # ..then wipe the session out..
-    undef $session{'CurrentSearchHash'};
+    delete $session{'CurrentSearchHash'};
 
     # ..and the search results.
-    $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
+    $session{'tickets'}->CleanSlate if defined $session{'tickets'};
 }
 
-# }}}
+{ # Attempt to load what we can from the session and preferences, set defaults
 
-if (ref $OrderBy eq "ARRAY") {
-    $OrderBy = join("|", @$OrderBy);
-}
-if (ref $Order eq "ARRAY") {
-    $Order = join("|", @$Order);
-}
+    my $current = $session{'CurrentSearchHash'};
+    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $default = { Query => '', Format => '', OrderBy => 'id', Order => 'ASC', RowsPerPage => 50 };
 
-# {{{ Attempt to load what we can from the session, set defaults
-
-# We don't read or write to the session again until the end
-$search_hash = $session{'CurrentSearchHash'};
-
-# Read from user preferences
-my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
-
-# These variables are what define a search_hash; this is also
-# where we give sane defaults.
-$Query       ||= $search_hash->{'Query'};
-$Format      ||= $search_hash->{'Format'} || $prefs->{'Format'};
-$Description ||= $search_hash->{'Description'};
-$SearchId    ||= $search_hash->{'SearchId'} || 'new';
-$Order       ||= $search_hash->{'Order'} || $prefs->{'Order'} || 'ASC';
-$OrderBy     ||= $search_hash->{'OrderBy'} || $prefs->{'OrderBy'} || 'id';
-
-unless ( defined $RowsPerPage ) {
-    if ( defined $search_hash->{'RowsPerPage'} ) {
-        $RowsPerPage = $search_hash->{'RowsPerPage'};
+    for( qw(Query Format OrderBy Order RowsPerPage) ) {
+        $query{$_} = $ARGS{$_};
+        $query{$_} = $current->{$_} unless defined $query{$_};
+        $query{$_} = $prefs->{$_} unless defined $query{$_};
+        $query{$_} = $default->{$_} unless defined $query{$_};
     }
-    elsif ( defined $prefs->{'RowsPerPage'} ) {
-        $RowsPerPage = $prefs->{'RowsPerPage'};
+
+    for( qw(Order OrderBy) ) {
+        if (ref $query{$_} eq "ARRAY") {
+            $query{$_} = join( '|', @{ $ARGS{$_} } );
+        }
     }
-    else {
-        $RowsPerPage = 50;
+    if ( $query{'Format'} ) {
+        # Clean unwanted junk from the format
+        $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
     }
 }
 
-$search ||= $search_hash->{'Object'};
-
-# }}}
-
-my @actions = ();
-
-# Clean unwanted junk from the format
-$Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if $Format;
-
-# {{{ If we're asked to delete the current search, make it go away and reset the search parameters
-if ( $ARGS{'Delete'} ) {
-    # We set $SearchId to 'new' above already, so peek into the %ARGS
-    my ($container_object, $search_id) = _parse_saved_search ($ARGS{'SearchId'});
-    if ($container_object && $container_object->id) {
-	# We have the object the entry is an attribute on; delete the
-	# entry..
-	$container_object->Attributes->DeleteEntry(
-            Name => 'SavedSearch',
-	    id   => $search_id
-            );
-    }
-}
-
-# }}}
-
-# {{{ If the user wants to copy a search, uncouple from the one that this was based on, but don't erase the $Query or $Format
-if ( $ARGS{'CopySearch'} ) {
-    $SearchId    = 'new';
-    $search      = undef;
-    $Description = loc( "[_1] copy", $Description );
-}
-
-# }}}
-
-# {{{ if we're asked to revert the current search, we just want to load it
-if ( $ARGS{'Revert'} ) {
-    $ARGS{'LoadSavedSearch'} = $SearchId;
-}
-
-# }}}
-
-# {{{ if we're asked to load a search, load it.
-
-if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSavedSearch'})) {
-    $search = $container_object->Attributes->WithId($search_id);
-
-    # We have a $search and now; import the others
-    $SearchId    = $ARGS{'LoadSavedSearch'};
-    $Description = $search->Description;
-    $Format      = $search->SubValue('Format');
-    $Query       = $search->SubValue('Query');
-    $Order       = $search->SubValue('Order');
-    $OrderBy     = $search->SubValue('OrderBy');
-    $RowsPerPage = $search->SubValue('RowsPerPage');
-}
-
-# }}}
 
 my $ParseQuery = sub {
     my ($string, $results) = shift;
@@ -277,16 +197,14 @@ my $ParseQuery = sub {
     return $tree;
 };
 
-my $tree = $ParseQuery->( $Query, \@actions );
+my $tree = $ParseQuery->( $query{'Query'}, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
-    $m->comp( "Edit.html", Query => $Query, actions => \@actions );
+    $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
     $m->comp('/Elements/Footer');
     $m->abort;
 }
-
-$Query = '';
 
 my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
@@ -366,127 +284,22 @@ foreach my $arg ( keys %ARGS ) {
 
 # }}}
 
-# {{{ Move things around
-if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
-    if (@current_values) {
-        foreach my $value (@current_values) {
-            my $parent = $value->getParent;
-            my $index = $value->getIndex;
-            my $newindex = $index;
-            $newindex++ if $ARGS{'Down'};
-            $newindex-- if $ARGS{'Up'};
-            if ( $newindex < 0 || $newindex >= $parent->getChildCount ) {
-                push( @actions, [ loc("error: can't move up"), -1 ] ) if $ARGS{'Up'};
-                push( @actions, [ loc("error: can't move down"), -1 ] ) if $ARGS{'Down'};
-                next;
-            }
+push @actions, $m->comp('Elements/EditQuery:Process',
+    %ARGS,
+    Tree => $tree,
+    Selected => \@current_values,
+);
 
-            $parent->removeChild( $index );
-            $parent->insertChild( $newindex, $value );
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to move"), -1 ] );
-    }
-}
-elsif ( $ARGS{"Left"} ) {
-    if (@current_values) {
-        foreach my $value (@current_values) {
-            my $parent = $value->getParent;
-            if( $value->isRoot || $parent->isRoot ) {
-                push( @actions, [ loc("error: can't move left"), -1 ] );
-                next;
-            }
-
-            my $grandparent = $parent->getParent;
-            if( $grandparent->isRoot ) {
-                push( @actions, [ loc("error: can't move left"), -1 ] );
-                next;
-            }
-            
-            my $index = $parent->getIndex;
-            $parent->removeChild($value);
-            $grandparent->insertChild( $index, $value );
-            if ( $parent->isLeaf ) {
-                $grandparent->removeChild($parent);
-            }
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to move"), -1 ] );
-    }
-}
-elsif ( $ARGS{"Right"} ) {
-    if (@current_values) {
-        foreach my $value (@current_values) {
-            my $parent = $value->getParent;
-            my $index  = $value->getIndex;
-
-            my $newparent;
-            if ( $index > 0 ) {
-                my $sibling = $parent->getChild( $index - 1 );
-                $newparent = $sibling unless $sibling->isLeaf;
-            }
-            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
-
-            $parent->removeChild($value);
-            $newparent->addChild($value);
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to move"), -1 ] );
-    }
-}
-elsif ( $ARGS{"DeleteClause"} ) {
-    if (@current_values) {
-        while( my $node = shift @current_values ) {
-            my $parent = $node->getParent;
-            next unless $parent;
-            $parent->removeChild($node);
-            $node->DESTROY;
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to delete"), -1 ] );
-    }
-}
-elsif ( $ARGS{"Toggle"} ) {
-    if (@current_values) {
-        foreach my $value (@current_values) {
-            my $parent = $value->getParent;
-
-            if ( $parent->getNodeValue eq 'AND' ) {
-                $parent->setNodeValue('OR');
-            }
-            else {
-                $parent->setNodeValue('AND');
-            }
-        }
-    }
-    else {
-        push( @actions, [ loc("error: nothing to toggle"), -1 ] );
-    }
-}
-
-$tree->PruneChildlessAggregators;
-
-# }}}
+push @current_values, @new_values;
 
 # {{{ Rebuild $Query based on the additions / movements
-push @current_values, @new_values;
-$Query = '';
-my $optionlist_arrayref;
 
-($Query, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
+my $optionlist_arrayref;
+($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
 
 my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
-
-
-
-
-# }}}
 
 # }}}
 
@@ -494,127 +307,35 @@ my $queues = $tree->GetReferencedQueues;
 
 # {{{ Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
-( $Format, $AvailableColumns, $CurrentFormat ) = $m->comp(
+( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
+    %ARGS,
     cfqueues => $queues,
-    %ARGS, Format => $Format
+    Format => $query{'Format'},
 );
 
 # }}}
 
-# {{{ if we're asked to save the current search, save it
-if ( $ARGS{'Save'} ) {
-    if ( $search && $search->id ) {
-	# permission check
-	if ($search->Object->isa('RT::System')) {
-	    unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-		Abort("No permission to save system-wide searches");
-	    }
-	}
-
-        # This search is based on a previously loaded search -- so
-        # just update the current search object with new values
-        $search->SetSubValues(
-            Format      => $Format,
-            Query       => $Query,
-            Order       => $Order,
-            OrderBy     => $OrderBy,
-            RowsPerPage => $RowsPerPage,
-        );
-        $search->SetDescription($Description);
-
-    }
-    elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-        # We're saving a new search
-        my $obj_type = $1;
-        my $obj_id   = $2;
-
-        # Find out if we're saving on the user, or a group
-        my $container_object = _load_container_object ($obj_type, $obj_id);
-
-        if ( $container_object->id ) {
-	    # permission check
-	    if ($container_object->isa('RT::System')) {
-		unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-		    Abort("No permission to save system-wide searches");
-		}
-	    }
-
-	    my $name = $obj_type eq 'RT::System' ? "Search - $Description" : 'SavedSearch';
-            # If we got one or the other, add the saerch
-            my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-                Name        => $name,
-                Description => $Description,
-                Content     => {
-                    Format      => $Format,
-                    Query       => $Query,
-                    Order       => $Order,
-                    OrderBy     => $OrderBy,
-                    RowsPerPage => $RowsPerPage,
-                }
-            );
-	    if ( $search_id ) {
-		$search =
-		    $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-		# Build new SearchId
-		$SearchId =
-		    ref( $session{'CurrentUser'}->UserObj ) . '-'
-			. $session{'CurrentUser'}->UserObj->Id
-			. '-SavedSearch-'
-			. $search->Id;
-	    }
-	    else {
-		push @actions, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
-	    }
-
-	}
-    }
-    else {
-        push @actions, [ loc("Can't save this search"), 0 ];
-    }
-
-}
-
-# }}}
-
-# {{{ If we're modifying an old query, check if it has changed
-my $dirty = 0;
-$dirty = 1
-  if defined $search
-  and ($search->SubValue('Format') ne $Format
-    or $search->SubValue('Query')       ne $Query
-    or $search->SubValue('Order')       ne $Order
-    or $search->SubValue('OrderBy')     ne $OrderBy
-    or $search->SubValue('RowsPerPage') ne $RowsPerPage );
-
-# }}}
+# if we're asked to save the current search, save it
+push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
 # {{{ Push the updates into the session so we don't loose 'em
-$search_hash->{'SearchId'}    = $SearchId;
-$search_hash->{'Format'}      = $Format;
-$search_hash->{'Query'}       = $Query;
-$search_hash->{'Description'} = $Description;
-$search_hash->{'Object'}      = $search;
-$search_hash->{'Order'}       = $Order;
-$search_hash->{'OrderBy'}     = $OrderBy;
-$search_hash->{'RowsPerPage'} = $RowsPerPage;
 
-$session{'CurrentSearchHash'} = $search_hash;
+$session{'CurrentSearchHash'} = {
+    %query,
+    SearchId    => $saved_search{'Id'},
+    Object      => $saved_search{'Object'},
+    Description => $saved_search{'Description'},
+};
 
 # }}}
 
 # {{{ Show the results, if we were asked.
-if ( $ARGS{"DoSearch"}) {
-    $m->comp(
-        "Results.html",
-        Query   => $Query,
-        Format  => $Format,
-        Order   => $Order,
-        OrderBy => $OrderBy,
-        Rows    => $RowsPerPage
-    );
-    $m->comp('/Elements/Footer');
-    $m->abort();
+
+if ( $ARGS{'DoSearch'} ) {
+    $m->comp( 'Results.html', %query );
+    $m->comp( '/Elements/Footer' );
+    $m->abort;
 }
 
 # }}}
@@ -623,17 +344,10 @@ if ( $ARGS{"DoSearch"}) {
 
 my $QueryString = '';
 if ($NewQuery) {
-    $QueryString = '?NewQuery=1';
+    $QueryString = 'NewQuery=1';
 }
-elsif ( $Query ) {
-    $QueryString = '?'. $m->comp(
-        '/Elements/QueryString',
-        Query   => $Query,
-        Format  => $Format,
-        Order   => $Order,
-        OrderBy => $OrderBy,
-        Rows    => $RowsPerPage,
-    );
+elsif ( $query{'Query'} ) {
+    $QueryString = $m->comp('/Elements/QueryString', %query );
 }
 
 # }}}
@@ -642,13 +356,5 @@ elsif ( $Query ) {
 
 <%ARGS>
 $NewQuery => 0
-$SearchId => undef
-$Query => undef
-$Format => undef 
-$Description => undef
-$Order => undef
-$OrderBy => undef
-$RowsPerPage => undef
-$HideResults => 0
 @clauses => ()
 </%ARGS>

@@ -45,9 +45,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
 <&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
+
 <select size="10" name="clauses" style="width: 100%" multiple>
 % $m->out($optionlist);
 </select>
+
 <p align="center">
 <input type="submit" class="button" name="Up" value="^">
 <input type="submit" class="button" name="Down" value="v">
@@ -57,9 +59,124 @@
 <input type="submit" class="button" name="DeleteClause" value="<&|/l&>Delete</&>">
 %#<input type="submit" class="button" name="EditQuery" value="Advanced">
 </p>
+
 </&>
 <%ARGS>
-$Description
-$optionlist
-$actions
+$Description => ''
+$optionlist => ''
+$actions => []
 </%ARGS>
+
+<%METHOD Process>
+<%ARGS>
+$Tree => undef,
+$Selected => [],
+</%ARGS>
+<%INIT>
+my @results;
+if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
+    if (@$Selected) {
+        foreach my $value (@$Selected) {
+            my $parent = $value->getParent;
+            my $index = $value->getIndex;
+            my $newindex = $index;
+            $newindex++ if $ARGS{'Down'};
+            $newindex-- if $ARGS{'Up'};
+            if ( $newindex < 0 || $newindex >= $parent->getChildCount ) {
+                push( @results, [ loc("error: can't move up"), -1 ] ) if $ARGS{'Up'};
+                push( @results, [ loc("error: can't move down"), -1 ] ) if $ARGS{'Down'};
+                next;
+            }
+
+            $parent->removeChild( $index );
+            $parent->insertChild( $newindex, $value );
+        }
+    }
+    else {
+        push( @results, [ loc("error: nothing to move"), -1 ] );
+    }
+}
+elsif ( $ARGS{"Left"} ) {
+    if (@$Selected) {
+        foreach my $value (@$Selected) {
+            my $parent = $value->getParent;
+            if( $value->isRoot || $parent->isRoot ) {
+                push( @results, [ loc("error: can't move left"), -1 ] );
+                next;
+            }
+
+            my $grandparent = $parent->getParent;
+            if( $grandparent->isRoot ) {
+                push( @results, [ loc("error: can't move left"), -1 ] );
+                next;
+            }
+            
+            my $index = $parent->getIndex;
+            $parent->removeChild($value);
+            $grandparent->insertChild( $index, $value );
+            if ( $parent->isLeaf ) {
+                $grandparent->removeChild($parent);
+            }
+        }
+    }
+    else {
+        push( @results, [ loc("error: nothing to move"), -1 ] );
+    }
+}
+elsif ( $ARGS{"Right"} ) {
+    if (@$Selected) {
+        foreach my $value (@$Selected) {
+            my $parent = $value->getParent;
+            my $index  = $value->getIndex;
+
+            my $newparent;
+            if ( $index > 0 ) {
+                my $sibling = $parent->getChild( $index - 1 );
+                $newparent = $sibling unless $sibling->isLeaf;
+            }
+            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
+
+            $parent->removeChild($value);
+            $newparent->addChild($value);
+        }
+    }
+    else {
+        push( @results, [ loc("error: nothing to move"), -1 ] );
+    }
+}
+elsif ( $ARGS{"DeleteClause"} ) {
+    if (@$Selected) {
+        while( my $node = shift @$Selected ) {
+            my $parent = $node->getParent;
+            next unless $parent;
+            $parent->removeChild($node);
+            $node->DESTROY;
+        }
+    }
+    else {
+        push( @results, [ loc("error: nothing to delete"), -1 ] );
+    }
+}
+elsif ( $ARGS{"Toggle"} ) {
+    if (@$Selected) {
+        foreach my $value (@$Selected) {
+            my $parent = $value->getParent;
+
+            if ( $parent->getNodeValue eq 'AND' ) {
+                $parent->setNodeValue('OR');
+            }
+            else {
+                $parent->setNodeValue('AND');
+            }
+        }
+    }
+    else {
+        push( @results, [ loc("error: nothing to toggle"), -1 ] );
+    }
+}
+
+$Tree->PruneChildlessAggregators;
+
+return @results;
+</%INIT>
+</%METHOD>

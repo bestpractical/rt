@@ -44,62 +44,211 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Saved searches') &>
+
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
-%                                       Object=> $RT::System )) {
+%                                        Object=> $RT::System )) {
 <&|/l&>Privacy:</&>
-% if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
-<& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
+% if ( $Object && $Object->id ) {
+<& SearchPrivacy, Object => $Object->Object &>
 % } else {
-<& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
+<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects &>
 % }
-<&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="<% $CurrentSearch->{'Description'} || '' %>"></font>
+<br />
+<&|/l&>Description</&>:
+<input size="25" name="SavedSearchDescription" value="<% $Description %>">
+
 <nobr>
-% if ($SearchId ne 'new') {
+% if ($Id ne 'new') {
 % if ($Dirty) {
-<input type="submit" class="button" name="Revert" value="<%loc('Revert')%>">
+<input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button" name="Delete" value="<%loc('Delete')%>">
-<input type="submit" class="button" name="CopySearch" value="<%loc('Copy')%>">
+<input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
 </nobr>
 
 % }
-<input type="submit" name="Save" value="<%loc('Save')%>" class="button" />
-<hr>
+<input type="submit" name="SavedSearchSave" value="<%loc('Save')%>" class="button" />
 % }
-<&|/l&>Load saved search:</&><br>
-<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
-<input value="<%loc('Load')%>" type="submit" class="button" />
+<br />
+
+<&|/l&>Load saved search:</&>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects&>
+<input type="submit" value="<% loc('Load') %>" class="button" />
+
 </&>
 
-<%init>
+<%INIT>
 
-unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-                                          Object=> $RT::System )) {
-    return;
-}
+return unless $session{'CurrentUser'}->HasRight(
+    Right => 'LoadSavedSearch',
+    Object=> $RT::System,
+);
+
+# If we're modifying an old query, check if it has changed
+my $Dirty = $m->comp(
+    'EditSearches:IsDirty',
+    Query => $CurrentSearch,
+    SavedSearch => { Id => $Id, Object => $Object, Description => $Description }
+);
+
 my @Objects;
-
 push @Objects,  $session{CurrentUser}->UserObj;
 
-my $groups = RT::Groups->new($session{'CurrentUser'});
-
+my $groups = RT::Groups->new( $session{'CurrentUser'} );
 $groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
+$groups->WithMember(
+    PrincipalId => $session{'CurrentUser'}->Id,
+    Recursively => 1,
+);
 
-push (@Objects, @{$groups->ItemsArrayRef()});
-push @Objects, RT::System->new($session{'CurrentUser'})
+push @Objects, @{ $groups->ItemsArrayRef };
+push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
+					                      Right => 'SuperUser' );
 </%INIT>
 
 <%ARGS>
-$SearchId => undef
+$Id => 'new'
+$Object => undef
+$Description => ''
 $CurrentSearch => {}
-# XXX: next argument is not used! instead used description
-# field from CurrentSearch hash
-$Description => undef
-$Dirty => 0
 </%ARGS>
+
+<%METHOD Init>
+<%ARGS>
+$Query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+my @FIELDS = qw(Query Format OrderBy Order RowsPerPage);
+
+$SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
+$SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
+
+if ( $ARGS{'SavedSearchRevert'} ) {
+    $ARGS{'SavedSearchLoad'} = $SavedSearch->{'Id'};
+}
+
+if ( $ARGS{'SavedSearchLoad'} ) {
+    my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
+    my $search = $container->Attributes->WithId( $id );
+
+    $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
+    $SavedSearch->{'Object'}      = $search;
+    $SavedSearch->{'Description'} = $search->Description;
+
+    $Query->{$_} = $search->SubValue($_) foreach @FIELDS;
+}
+elsif ( $ARGS{'SavedSearchDelete'} ) {
+    # We set $SearchId to 'new' above already, so peek into the %ARGS
+    my ($container, $id) = _parse_saved_search( $ARGS{'SearchId'} );
+    if ( $container && $container->id ) {
+        # We have the object the entry is an attribute on; delete the entry...
+        $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+    }
+    $SavedSearch->{'Id'}          = 'new';
+    $SavedSearch->{'Object'}      = undef;
+}
+elsif ( $ARGS{'SavedSearchCopy'} ) {
+    $SavedSearch->{'Id'}          = 'new';
+    $SavedSearch->{'Object'}      = undef;
+    $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Description'} );
+}
+
+</%INIT>
+</%METHOD>
+
+<%METHOD Save>
+<%ARGS>
+$Query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+return unless $ARGS{'SavedSearchSave'};
+
+my @results;
+my $obj  = $SavedSearch->{'Object'};
+my $id   = $SavedSearch->{'Id'};
+my $desc = $SavedSearch->{'Description'};
+
+if ( $obj && $obj->id ) {
+    # permission check
+    if ($obj->Object->isa('RT::System')) {
+        unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+            push @results, [ loc("No permission to save system-wide searches"), 0 ];
+            return @results;
+        }
+    }
+
+    $obj->SetSubValues( %$Query );
+    $obj->SetDescription( $desc );
+}
+elsif ( $id eq 'new' && $ARGS{'SavedSearchOwner'} =~ /^(.*?)-(\d+)$/ ) {
+    # We're saving a new search
+    my $obj_type = $1;
+    my $obj_id   = $2;
+
+    # Find out if we're saving on the user, or a group
+    my $container_object = _load_container_object ($obj_type, $obj_id);
+
+    if ( $container_object->id ) {
+        # permission check
+        if ( $container_object->isa('RT::System') ) {
+            unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+                push @results, [ loc("No permission to save system-wide searches"), 0 ];
+                return @results;
+            }
+        }
+
+        my $name = $obj_type eq 'RT::System' ? "Search - $desc" : 'SavedSearch';
+        # If we got one or the other, add the saerch
+        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
+            Name        => $name,
+            Description => $desc,
+            Content     => $Query,
+        );
+        unless ( $search_id ) {
+            push @results, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
+            return @results;
+        }
+
+        $SavedSearch->{'Object'} =
+            $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        # Build new SearchId
+        $SavedSearch->{'Id'} =
+            ref( $session{'CurrentUser'}->UserObj ) . '-'
+                . $session{'CurrentUser'}->UserObj->Id
+                . '-SavedSearch-'
+                . $SavedSearch->{'Object'}->Id;
+    }
+}
+else {
+    push @results, [ loc("Can't save this search"), 0 ];
+}
+
+return @results;
+
+</%INIT>
+</%METHOD>
+
+<%METHOD IsDirty>
+<%ARGS>
+$Query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+my $obj  = $SavedSearch->{'Object'};
+return 0 unless $obj && $obj->id;
+
+foreach( qw(Query Format OrderBy Order RowsPerPage) ) {
+    return 1 if $obj->SubValue( $_ ) ne $Query->{$_};
+}
+
+return 0;
+
+</%INIT>
+</%METHOD>
