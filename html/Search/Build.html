@@ -440,7 +440,9 @@ elsif ( $ARGS{"Right"} ) {
 elsif ( $ARGS{"DeleteClause"} ) {
     if (@current_values) {
         while( my $node = shift @current_values ) {
-            $node->getParent->removeChild($node);
+            my $parent = $node->getParent;
+            next unless $parent;
+            $parent->removeChild($node);
             $node->DESTROY;
         }
     }
