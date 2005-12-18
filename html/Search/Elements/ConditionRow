@@ -1,0 +1,50 @@
+<tr>
+<td class="label"><% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %></td>
+<td class="operator"><% $handle_block->( $Condition->{'Op'}, $Condition->{'Name'} .'Op') |n %></td>
+<td class="value"><% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'Name'} ) |n %></td>
+</tr>
+<%INIT>
+return unless $Condition && $Condition->{'Name'};
+
+$m->comp('/Elements/Callback', Condition => \$Condition);
+return unless $Condition;
+
+my $handle_block;
+$handle_block = sub {
+    my $box = shift;
+    return $box unless ref $box;
+
+    my $name = shift;
+    if ( UNIVERSAL::isa($box, 'ARRAY') ) {
+        my $res = '';
+        $res .= $handle_block->( $_, $name ) foreach @$box;
+        return $res;
+    }
+
+    return undef unless UNIVERSAL::isa($box, 'HASH');
+    if ( $box->{'Type'} eq 'component' ) {
+        $box->{'Arguments'} ||= {},
+        return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, Name => $name );
+    }
+    if ( $box->{'Type'} eq 'text' ) {
+        my $default = $box->{'Default'} || '';
+        my $size = $box->{'Size'}? qq{size="$box->{'Size'}"} : '';
+        return qq{<input name="$name" value="$default" $size />};
+    }
+    if ( $box->{'Type'} eq 'select' ) {
+        my $res = '';
+        $res .= qq{<select name="$name">};
+        my @options = @{ $box->{'Options'} };
+        while( my $k = shift @options ) {
+            my $v = shift @options;
+            $res .= qq{<option value="$k">$v</option>};
+        }
+        $res .= qq{</select>};
+        return $res;
+    }
+};
+
+</%INIT>
+<%ARGS>
+$Condition => {}
+</%ARGS>
