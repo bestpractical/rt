@@ -80,15 +80,17 @@ if ($ARGS{'q'} =~ /^(\d+)$/) {
     return;
 } elsif ($ARGS{'q'}) {
     $articles->Limit( FIELD => 'Name',
-		      SUBCLAUSE => 'NameOrSummary',
-		      OPERATOR => 'LIKE',
-		      ENTRYAGGREGATOR => 'OR',
-		      VALUE => $ARGS{'q'} );
+                      SUBCLAUSE => 'NameOrSummary',
+                      OPERATOR => 'LIKE',
+                      ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
+                      VALUE => $ARGS{'q'} );
     $articles->Limit( FIELD => 'Summary',
-		      SUBCLAUSE => 'NameOrSummary',
-		      OPERATOR => 'LIKE',
-		      ENTRYAGGREGATOR => 'OR',
-		      VALUE => $ARGS{'q'} );
+                      SUBCLAUSE => 'NameOrSummary',
+                      OPERATOR => 'LIKE',
+                      ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
+                      VALUE => $ARGS{'q'} );
 }
 
 # }}}
@@ -309,6 +311,7 @@ foreach my $field ( keys %cfs ) {
         }
         $articles->LimitCustomField( FIELD           => $cfs{$field},
                                      VALUE           => $value,
+                                     CASESENSITIVE   => 0,
                                      ENTRYAGGREGATOR => 'OR',
                                      OPERATOR        => $op );
     }
@@ -324,6 +327,7 @@ foreach my $field ( keys %cfs ) {
         }
         $articles->LimitCustomField( FIELD           => $cfs{$field},
                                      VALUE           => $value,
+                                     CASESENSITIVE   => 0,
                                      ENTRYAGGREGATOR => 'OR',
                                      OPERATOR        => $op );
     }
@@ -335,32 +339,38 @@ if ($ARGS{'Article~'}) {
     $articles->LimitCustomField( VALUE => $ARGS{'Article~'},
                                  ENTRYAGGREGATOR => 'OR',
                                  OPERATOR => 'LIKE',
+                                 CASESENSITIVE => 0,
                                  SUBCLAUSE => 'SearchAll' );
     $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Name",
                       VALUE => $ARGS{'Article~'},
                       ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
                       OPERATOR => 'LIKE' );
     $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Summary",
                       VALUE => $ARGS{'Article~'},
                       ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
                       OPERATOR => 'LIKE' );
 }
 
 if ($ARGS{'Article!~'}) {
     $articles->LimitCustomField( VALUE => $ARGS{'Article!~'},
                                  OPERATOR => 'NOT LIKE',
+                                 CASESENSITIVE => 0,
                                  SUBCLAUSE => 'SearchAll' );
     $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Name",
                       VALUE => $ARGS{'Article!~'},
                       ENTRYAGGREGATOR => 'AND',
+                      CASESENSITIVE => 0,
                       OPERATOR => 'NOT LIKE' );
     $articles->Limit( SUBCLAUSE => 'SearchAll',
                       FIELD => "Summary",
                       VALUE => $ARGS{'Article!~'},
                       ENTRYAGGREGATOR => 'AND',
+                      CASESENSITIVE => 0,
                       OPERATOR => 'NOT LIKE' );
 }
 
@@ -405,7 +415,8 @@ foreach my $field qw(Name Summary Class) {
         $articles->Limit( SUBCLAUSE       => $field . 'Match',
                           FIELD           => $field,
                           OPERATOR        => $op,
-                          VALUE            => $value,
+                          CASESENSITIVE   => 0,
+                          VALUE           => $value,
                           ENTRYAGGREGATOR => 'OR' );
 
     }
@@ -430,7 +441,8 @@ foreach my $field qw(Name Summary Class) {
 
         $articles->Limit( SUBCLAUSE       => $field . 'NoMatch',
                           OPERATOR        => $op,
-                          VALUE            => $value,
+                          VALUE           => $value,
+                          CASESENSITIVE   => 0,
                           FIELD           => $field,
                           ENTRYAGGREGATOR => 'AND' );
 
