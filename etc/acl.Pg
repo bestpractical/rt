@@ -7,18 +7,8 @@ sub acl {
     my @tables = qw (
 FM_Classes_id_seq
 FM_Classes 
-FM_ClassCustomFields_id_seq 
-FM_ClassCustomFields 
-FM_CustomFields_id_seq 
-FM_CustomFields 
 FM_Articles_id_seq 
 FM_Articles 
-FM_CustomFieldValues_id_seq 
-FM_CustomFieldValues 
-FM_ArticleCFValues_id_seq 
-FM_ArticleCFValues 
-FM_Transactions_id_seq 
-FM_Transactions 
 FM_Topics_id_seq
 FM_Topics
 FM_ObjectTopics_id_seq
