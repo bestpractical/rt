@@ -25,7 +25,7 @@
 % while (my $cf = $cfs->Next) {
 %   my $values = $Article->CustomFieldValues($cf->Id);
 
-%   if ($values->count == 1) {
+%   if ($values->Count == 1) {
 %     my $value = $values->First; 
 %     my $content = $value ? $value->Content : "";
 %     if ($content =~ /<(.{1,5})>/) {
