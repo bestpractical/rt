@@ -74,6 +74,7 @@
 <form action="<%$RT::WebPath%>/Admin/CustomFields/index.html" method="GET">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
+<option value="" <% !$Type && 'selected'%> ><% loc('(any)') %></option>
 % for (@types) {
 <option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected'%> ><% $_->[0] %></option>
 % }
