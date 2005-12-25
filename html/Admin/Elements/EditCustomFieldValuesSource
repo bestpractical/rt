@@ -1,0 +1,35 @@
+<div id="values-source-class-block">
+Select source:
+<select name="ValuesClass">
+% foreach my $source( @sources ) {
+<option value="<% $source->{'Class'} %>" <% $source->{'Class'} eq $CustomField->ValuesClass && 'selected' %>><% $source->{'Description'} %></option>
+% }
+</select>
+</div>
+
+<%INIT>
+return unless $CustomField->IsSelectionType;
+
+my @sources;
+foreach my $class( 'RT::CustomFieldValues', @RT::CustomFieldValuesSources ) {
+    next unless $class;
+
+    local $@;
+    eval "require $class";
+    if( $@ ) {
+        $RT::Logger->crit("Couldn't load class '$class': $@");
+        next;
+    }
+
+    my %res = ( Class => $class );
+    $res{'Description'} = $class->SourceDescription if $class->can('SourceDescription');
+    $res{'Description'} ||= $class;
+    push @sources, \%res;
+}
+
+return unless grep $_->{'Class'} ne 'RT::CustomFieldValues', @sources;
+
+</%INIT>
+<%ARGS>
+$CustomField => undef
+</%ARGS>
