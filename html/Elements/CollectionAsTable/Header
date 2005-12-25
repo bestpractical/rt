@@ -61,7 +61,6 @@ my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format
 
 my $item = 0;
 foreach my $col (@Format) {
-    $item++;
     if ( $col->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
@@ -70,54 +69,74 @@ foreach my $col (@Format) {
 
         $item = 0;
         $m->out(qq{</tr>\n<tr class="collection-as-table">});
+        next;
+    }
+
+    $item++;
+
+    $m->out('<th class="collection-as-table">');
+    my $title = $col->{title};
+    $title =~ s/^__(.*)__$/$1/o;
+
+    my $tmp = $m->comp(
+        '/Elements/RT__Ticket/ColumnMap',
+        Name => $title,
+        Attr => 'title',
+    );
+
+    unless( $tmp ) {
+        $title = $m->interp->apply_escapes( loc($title), 'h' );
+    } else {
+        if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
+            my @tmp = $tmp->( $title );
+            $title = @tmp > 1? \@tmp: shift @tmp || '';
+        } else {
+            $title = $tmp;
+        }
+        if( UNIVERSAL::isa( $title, 'ARRAY' ) ) {
+            $title = join '', map { ref $_? $$_: $m->interp->apply_escapes( $_, 'h' ) } @$title;
+        } elsif( UNIVERSAL::isa( $title, 'SCALAR' ) ) {
+            $title = $$title;
+        } else {
+            $title = $m->interp->apply_escapes( $title, 'h' );
+        }
+    }
+
+    if (
+           $AllowSorting
+        && $col->{'attribute'}
+        && $m->comp(
+            '/Elements/RT__Ticket/ColumnMap',
+            Name => $col->{'attribute'},
+            Attr => 'attribute'
+        )
+      )
+    {
+
+        $m->out(
+            '<a href="' . $BaseURL
+              . $m->comp(
+                '/Elements/QueryString',
+                %generic_query_args,
+                OrderBy => (
+                    $m->comp(
+                        '/Elements/RT__Ticket/ColumnMap',
+                        Name => $col->{'attribute'},
+                        Attr => 'attribute'
+                      )
+                      || $col->{'attribute'}
+                ),
+                Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
+              )
+              . '">'
+              . $title
+              . '</a>'
+        );
     }
     else {
-        $m->out('<th class="collection-as-table">');
-        my $title = $col->{title};
-        $title =~ s/^__(.*)__$/$1/o;
-        $title = (
-            $m->comp(
-                '/Elements/RT__Ticket/ColumnMap',
-                Name => $title,
-                Attr => 'title'
-              )
-              || $title
-        );
-        if (
-               $AllowSorting
-            && $col->{'attribute'}
-            && $m->comp(
-                '/Elements/RT__Ticket/ColumnMap',
-                Name => $col->{'attribute'},
-                Attr => 'attribute'
-            )
-          )
-        {
-
-            $m->out(
-                '<a href="' . $BaseURL
-                  . $m->comp(
-                    '/Elements/QueryString',
-                    %generic_query_args,
-                    OrderBy => (
-                        $m->comp(
-                            '/Elements/RT__Ticket/ColumnMap',
-                            Name => $col->{'attribute'},
-                            Attr => 'attribute'
-                          )
-                          || $col->{'attribute'}
-                    ),
-                    Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
-                  )
-                  . '">'
-                  . loc($title) . '</a>'
-            );
-        }
-        else {
-            $m->out( loc($title) );
-        }
-        $m->out('</th>');
+        $m->out( $title );
     }
+    $m->out('</th>');
 }
 </%perl>
 </tr>

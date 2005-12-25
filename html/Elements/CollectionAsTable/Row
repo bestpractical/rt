@@ -68,10 +68,13 @@ foreach my $column (@Format) {
               . '" >' );
         next;
     }
+
     $item++;
+
     $m->out('<td class="collection-as-table" ');
-    $m->out( 'align="' . $column->{align} . '"' ) if ( $column->{align} );
+    $m->out( 'align="' . $column->{align} . '"' ) if $column->{align};
     $m->out('>');
+
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
             my $col   = $1;
@@ -98,7 +101,7 @@ foreach my $column (@Format) {
                 # Simple value; just escape it.
                 @out = $m->interp->apply_escapes( $value => 'h' );
             }
-            s/\n/<br>/gs for @out;
+            s/\n/<br \/>/gs for @out;
             $m->out( @out );
         }
         else {
