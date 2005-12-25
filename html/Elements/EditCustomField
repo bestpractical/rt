@@ -44,18 +44,23 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+
+my $Type = $CustomField->Type;
+unless ( $Type ) {
+    # if we can't see the type, all hell will break loose.
+    $RT::Logger->warning( "Custom field #". $CustomField->id ." has empty type" );
+    return;
+}
+
 my $Values;
 if ($Object and $Object->id) {
     $Values = $Object->CustomFieldValues($CustomField->id);
     $Values->Columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');
 }
-my $Type = $CustomField->Type;
-
-return unless ($Type); # if we can't see the type, all hell will break loose.
 
 my $MaxValues = $CustomField->MaxValues;
-if ($MaxValues == 1 and $Object and $Values) {
+if ($MaxValues == 1 && $Values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
     # transaction extraction into articles.
     $Default = ($Values->First ? $Values->First->Content : '') unless $Default;
