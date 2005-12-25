@@ -53,23 +53,23 @@ sub Create {
     my %args = ( 
                 CustomField => '0',
                 ObjectId => '0',
-		SortOrder => undef,
-		  @_);
+                SortOrder => undef,
+                  @_);
 
     if (!defined $args{SortOrder}) {
-	my $CF = $self->CustomFieldObj($args{'CustomField'});
-	my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
-	$ObjectCFs->LimitToObjectId($args{'ObjectId'});
-	$ObjectCFs->LimitToLookupType($CF->LookupType);
+        my $CF = $self->CustomFieldObj($args{'CustomField'});
+        my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
+        $ObjectCFs->LimitToObjectId($args{'ObjectId'});
+        $ObjectCFs->LimitToLookupType($CF->LookupType);
 
-	$args{SortOrder} = $ObjectCFs->Count + 1;
+        $args{SortOrder} = $ObjectCFs->Count + 1;
     }
 
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
                          ObjectId => $args{'ObjectId'},
                          SortOrder => $args{'SortOrder'},
-		     );
+                     );
 }
 
 sub Delete {
@@ -82,9 +82,9 @@ sub Delete {
     # Move everything below us up
     my $sort_order = $self->SortOrder;
     while (my $OCF = $ObjectCFs->Next) {
-	my $this_order = $OCF->SortOrder;
-	next if $this_order <= $sort_order; 
-	$OCF->SetSortOrder($this_order - 1);
+        my $this_order = $OCF->SortOrder;
+        next if $this_order <= $sort_order; 
+        $OCF->SetSortOrder($this_order - 1);
     }
 
     $self->SUPER::Delete;
