@@ -48,7 +48,7 @@
 % while (my $CustomField = $CustomFields->Next()) {
 % my $Values = $Object->CustomFieldValues($CustomField->Id);
   <tr>
-    <td class="label"><%$CustomField->Name%>:</td>
+    <td class="label"><% $CustomField->Name %>:</td>
     <td class="value">
 <ul>
 % while (my $Value = $Values->Next()) {

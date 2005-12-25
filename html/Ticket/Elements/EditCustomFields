@@ -63,15 +63,16 @@
 % $i++;
   <tr>
     <td class="labeltop">
-      <b><%$CustomField->Name%></b><br>
+      <b><%$CustomField->Name%></b><br />
       <i><%$CustomField->FriendlyType%></i>
     </td>
-    <td class="entry"><& /Elements/EditCustomField, 
-        Object => $TicketObj, 
-        CustomField => $CustomField, 
-        NamePrefix => $NamePrefix ,
-        Default => $m->notes('Field-' . $CustomField->Id),
-        &>
+    <td class="entry">
+      <& /Elements/EditCustomField, 
+          Object => $TicketObj,
+          CustomField => $CustomField,
+          NamePrefix => $NamePrefix,
+          Default => $m->notes('Field-' . $CustomField->Id),
+      &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br>
         <em style="color: red"><% $msg %></em></td>

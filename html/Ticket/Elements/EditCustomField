@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%init>
+<%INIT>
 
 # RT 3.2 API compatibility glue
 
@@ -52,4 +52,4 @@ $RT::Logger->debug("Ticket/Elements/EditCustomField is deprecated in RT 3.4 and 
 $ARGS{'NamePrefix'} =~ s/^Ticket-/Object-RT::Ticket-/;
 $ARGS{'NamePrefix'} =~ s/^CustomField-/Object-RT::Ticket--CustomField-/;
 $m->comp('/Elements/EditCustomField', %ARGS, Object=> $ARGS{'TicketObj'});
-</%init>
+</%INIT>
