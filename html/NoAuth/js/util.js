@@ -1,20 +1,69 @@
+
 // Stolen from Prototype
 function $() {
-  var elements = new Array();
+    var elements = new Array();
 
-  for (var i = 0; i < arguments.length; i++) {
-    var element = arguments[i];
-    if (typeof element == 'string')
-      element = document.getElementById(element);
+    for (var i = 0; i < arguments.length; i++) {
+        var element = arguments[i];
+        if (typeof element == 'string')
+            element = document.getElementById(element);
 
-    if (arguments.length == 1)
-      return element;
+        if (arguments.length == 1)
+            return element;
 
-    elements.push(element);
-  }
+        elements.push(element);
+    }
 
-  return elements;
+    return elements;
 }
+
+/* Visibility */
+
+function show(id) { delClass( id, 'hidden' ) }
+function hide(id) { addClass( id, 'hidden' ) }
+function hideshow(id) { toggleVisibility( id ) }
+
+function toggleVisibility(id) {
+    var e = $(id);
+
+    if ( e.className.match( /\bhidden\b/ ) )
+        show(e);
+    else
+        hide(e);
+
+    return false;
+}
+
+function setVisibility(id, visibility) {
+    if ( visibility ) show(id);
+    else hide(id);
+}
+
+function switchVisibility(id1, id2) {
+    // Show both and then hide the one we want
+    show(id1);
+    show(id2);
+    hide(id2);
+    return false;
+}
+
+/* Classes */
+
+function addClass(id, value) {
+    var e = $(id);
+    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
+        return;
+    if ( e.className )
+        e.className += ' ';
+    e.className += value;
+}
+
+function delClass(id, value) {
+    var e = $(id);
+    e.className = e.className.replace( new RegExp('\s?\b'+ value +'\b', 'g'), '' );
+}
+
+/* Rollups */
 
 function rollup(id) {
     var e   = $(id);
@@ -47,66 +96,52 @@ function set_rollup_state(e,e2,state) {
     }
 }
 
-function hideshow(id) {
-    var e = $(id);
-    
-    if (e.className.match(/\bhidden\b/))
-        show(e);
-    else
-        hide(e);
 
+/* onload handlers */
+
+var onLoadStack     = new Array();
+var onLoadLastStack = new Array();
+var onLoadExecuted  = 0;
+
+function onLoadHook(commandStr) {
+    if(typeof(commandStr) == "string") {
+        onLoadStack[onLoadStack.length] = commandStr;
+        return true;
+    }
     return false;
 }
 
-function show(e) {
-    e.className = e.className.replace(/\s?\bhidden\b/, '');
-}
-
-function hide(e) { 
-    if (e.className)
-        e.className += ' hidden';
-    else
-        e.className = 'hidden';
-}
-
-function switchVisibility(id1, id2) {
-    // Show both and then hide the one we want
-    show($(id1));
-    show($(id2));
-    
-    hide($(id2));
-    
+// some things *really* need to be done after everything else
+function onLoadLastHook(commandStr) {
+    if(typeof(commandStr) == "string"){
+        onLoadLastStack[onLoadLastStack.length] = commandStr;
+        return true;
+    }
     return false;
 }
 
-function focusElementById(id) {
-    var e = $(id);
-    if (e) e.focus();
+function doOnLoadHooks() {
+    if(onLoadExecuted) return;
+
+    var i;
+    for ( i in onLoadStack ) { 
+        eval( onLoadStack[i] );
+    }
+    for ( i in onLoadLastStack ) { 
+        eval( onLoadLastStack[i] );
+    }
+    onLoadExecuted = 1;
 }
+
+window.onload = doOnLoadHooks;
+
+/* calendar functions */
 
 function openCalWindow(field) {
     var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, 
                                 'RT_Calendar', 
                                 'height=235,width=285,scrollbars=1');
     objWindow.focus();
-}
-
-function updateParentField(field, value) {
-    if (window.opener) {
-        window.opener.$(field).value = value;
-        window.close();
-    }
-}
-
-function addEvent(obj, sType, fn){
-    if (obj.addEventListener){
-        obj.addEventListener(sType, fn, false);
-    } else if (obj.attachEvent) {
-        var r = obj.attachEvent("on"+sType, fn);
-    } else {
-	return false;
-    }
-    return true;
 }
 
 function createCalendarLink(input) {
@@ -133,40 +168,38 @@ function createCalendarLink(input) {
     return false;
 }
 
-// onload handlers
+/* other utils */
 
-var onLoadStack     = new Array();
-var onLoadLastStack = new Array();
-var onLoadExecuted  = 0;
-
-function onLoadHook(commandStr) {
-    if(typeof(commandStr) == "string") {
-        onLoadStack[onLoadStack.length] = commandStr;
-        return true;
-    }
-    return false;
+function focusElementById(id) {
+    var e = $(id);
+    if (e) e.focus();
 }
 
-// some things *really* need to be done after everything else
-function onLoadLastHook(commandStr) {
-    if(typeof(commandStr) == "string"){
-        onLoadLastStack[onLoadLastStack.length] = commandStr;
-        return true;
+function updateParentField(field, value) {
+    if (window.opener) {
+        window.opener.$(field).value = value;
+        window.close();
     }
-    return false;
 }
 
-function doOnLoadHooks() {
-    if(onLoadExecuted) return;
-    
-    for (var x=0; x < onLoadStack.length; x++) { 
-        eval(onLoadStack[x]);
+function addEvent(obj, sType, fn){
+    if (obj.addEventListener) {
+        obj.addEventListener(sType, fn, false);
+    } else if (obj.attachEvent) {
+        var r = obj.attachEvent("on"+sType, fn);
+    } else {
+        return false;
     }
-    for (var x=0; x < onLoadLastStack.length; x++) { 
-        eval(onLoadLastStack[x]); 
-    }
-    onLoadExecuted = 1;
+    return true;
 }
 
-window.onload = doOnLoadHooks;
+function setCheckbox (form, name, val) {
+    var myfield = form.getElementsByTagName('input');
+    for ( var i = 0; i < myfield.length; i++ ) {
+        if ( name && myfield[i].name != name ) continue;
+        if ( myfield[i].type != 'checkbox' ) continue;
+
+        myfield[i].checked = val;
+    }
+}
 
