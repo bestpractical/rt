@@ -50,8 +50,8 @@
 
 % my @types;
 % my $prev_lookup = '';
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-%    $CustomFieldObj->CurrentUserHasRight('AdminCustomField') or next;
+% while (my $CustomFieldObj = $CustomFields->Next) {
+%    next unless $CustomFieldObj->CurrentUserHasRight('AdminCustomField');
 %    my $lookup = $CustomFieldObj->FriendlyLookupType;
 %    if ($lookup ne $prev_lookup) {
 %        if ($prev_lookup) {
@@ -64,7 +64,7 @@
 %    }
 %    
 <li>
-<a href="Modify.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a>
+<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->Name %>: <% $CustomFieldObj->Description %></a>
 </li>
 % }
 % if ($prev_lookup) {
@@ -73,19 +73,27 @@
 
 <form action="<%$RT::WebPath%>/Admin/CustomFields/index.html" method="GET">
 <&|/l&>Only show custom fields for:</&>
-<select name="type">
+<select name="Type">
 % for (@types) {
-<option value="<% $_->[1] %>"><% $_->[0] %></option>
+<option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected'%> ><% $_->[0] %></option>
 % }
-</select> <input type="submit" value="<%loc('Go')%>" />
+</select>
+<br />
+<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked' %> />
+<&|/l&>Include disabled custom fields in listing.</&>
+<br />
+
+<input type="submit" value="<% loc('Go') %>" />
 </form>
 
 <%args>
-$type => undef
+$Type => ''
+$ShowDisabled => 0
 </%args>
 <%INIT>
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
-$CustomFields->UnLimit();
-$CustomFields->LimitToLookupType($type) if defined $type;
+$CustomFields->UnLimit;
+$CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
+$CustomFields->LimitToLookupType( $Type ) if $Type;
 $CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
 </%INIT>
