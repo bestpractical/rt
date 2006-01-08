@@ -3,7 +3,9 @@
     font-size: 1.1em;
 }
 
-#nav #system-menu {
+#nav #system-menu,
+#nav ul
+{
     min-width: 85%;
 }
 
