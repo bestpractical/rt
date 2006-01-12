@@ -46,7 +46,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$id%>">
+<input type="hidden" class="hidden" name="id" value="<%$id%>" />
 
 <h2><&|/l&>Current Scrips</&></h2>
 % if ($Scrips->Count == 0 ) {
@@ -58,10 +58,10 @@
 %   while (my $scrip = $Scrips->Next ) {
 <tr>
 <td>
-<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->Id%>" value="1">
+<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->Id%>" value="1" />
 </td>
 <td>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br>
+<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
 <small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
 </td>
 </tr>

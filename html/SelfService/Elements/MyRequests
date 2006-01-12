@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
-<table BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
+<table border="0" cellspacing="1" cellpadding="1" bgcolor="#eeeeee" width="100%">
 <tr>
 <th><&|/l&>Subject</&></th>
 <th><&|/l&>Status</&></th>

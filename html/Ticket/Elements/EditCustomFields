@@ -74,7 +74,7 @@
           Default => $m->notes('Field-' . $CustomField->Id),
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <br>
+        <br />
         <em style="color: red"><% $msg %></em></td>
 %  }
   </tr>

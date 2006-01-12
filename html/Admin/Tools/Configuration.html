@@ -65,7 +65,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <pre>
 % my $report =  Module::Versions::Report::report();
 % my @report = grep { /v\d/ } split("\n",$report);
-<%join('<br/>', @report)|n%>
+<%join('<br />', @report)|n%>
 
 
 </pre>

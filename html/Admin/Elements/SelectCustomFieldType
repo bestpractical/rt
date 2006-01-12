@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
 %for my $option ($cf->TypeComposites) {
-<option VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></option>
+<option value="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></option>
 %}
 </select>
 <%INIT>

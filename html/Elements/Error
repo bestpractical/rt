@@ -48,7 +48,7 @@
 <& /Elements/Tabs, Title => $Title &>
 <div class="error">
 <%$Why%>
-<br>
+<br />
 <%$Details%>
 </div>
 

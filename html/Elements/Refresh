@@ -46,13 +46,13 @@
 <select name="<%$Name%>">
 <option value="-1"
 %unless ($Default) {
- SELECTED
+ selected
 %}
 ><&|/l&>Don't refresh this page.</&></option>
 %foreach my $value (@refreshevery) {
 <option value="<%$value%>"
 % if  ( $Default && ($value == $Default)) {
-SELECTED 
+selected 
 % }
 ><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></option>
 %}

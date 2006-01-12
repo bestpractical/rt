@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table border="0" width="100%">
-<tr valign="TOP">
+<tr valign="top">
 
 <td class="boxcontainer" <% $two_columns ? 'width="70%"':'' %>>
 % $show_cb->($_) foreach @{$Portlets->{body}};

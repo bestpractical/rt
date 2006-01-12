@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %while ( $Group = $Groups->Next) {
-<a HREF="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><br/>
+<a href="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><br />
 %}
 <%INIT>
 my ($Group);

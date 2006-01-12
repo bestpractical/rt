@@ -132,7 +132,7 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
               . $AttachPath . '/'
               . $Transaction->Id . '/'
               . $message->Id
-              . '/">' );
+              . '/" />' );
     }
 }
 

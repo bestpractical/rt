@@ -44,19 +44,19 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($actions[0] ) {
-<b><%loc('Results')%></b><br>
+<b><%loc('Results')%></b><br />
 % foreach my $action (@actions) {
 % next unless ($action);
 % my @item = @$action;
 % if ($item[1] < 0) {
-<font color=red> 
+<font color="red"> 
 % }
-&nbsp;<%$item[0]%><br/>
+&nbsp;<%$item[0]%><br />
 % if ($item[1] < 0) {
 </font>
 % }
 % }
-<br/>
+<br />
 % }
 <%init>
 @actions = grep (/./,@actions);

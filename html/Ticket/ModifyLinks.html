@@ -52,7 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Edit Links') &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>

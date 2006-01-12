@@ -46,23 +46,23 @@
 <div class="quick-create">
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
 <form method="post" action="<%$RT::WebPath%>/index.html">
-<input type="hidden" class="hidden" name="QuickCreate" value="1">
+<input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <table>
 <tr><td>
-<&|/l&>Subject</&>:<br><input size="15" name="Subject"/>
+<&|/l&>Subject</&>:<br /><input size="15" name="Subject" />
 </td><td>
-<&|/l&>Queue</&>:<br><& /Elements/SelectQueue, Name => 'Queue', ShowNullOption => 0 &>
+<&|/l&>Queue</&>:<br /><& /Elements/SelectQueue, Name => 'Queue', ShowNullOption => 0 &>
 </td><td>
-<&|/l&>Owner</&>:<br/>
+<&|/l&>Owner</&>:<br />
 <select type="select" name="Owner">  
-<option value="<%$session{'CurrentUser'}->id%>" SELECTED><%$session{'CurrentUser'}->Name %></option>
+<option value="<%$session{'CurrentUser'}->id%>" selected><%$session{'CurrentUser'}->Name %></option>
 <option value="<%$RT::Nobody->id%>"><%loc('Nobody')%></option>
 </select>
 </td>
 </tr>
 %#<tr><td colspan="3"><textarea cols="50" rows="3"></textarea></td></tr>
 </table>
-<div align="right"><input type="submit" class="button" value="<%loc('Create')%>"></div>
+<div align="right"><input type="submit" class="button" value="<%loc('Create')%>" /></div>
 </form>
 </&>
 </div>

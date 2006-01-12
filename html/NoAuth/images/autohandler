@@ -17,7 +17,7 @@ $r->content_type($type);
 open (FILE, "<$file") || die;
 {
     local $/ = \16384;
-    $m->out($_) while (<FILE>);
+    $m->out($_) while (<file>);
     close(FILE);
 }
 $m->abort;

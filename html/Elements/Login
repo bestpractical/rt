@@ -98,7 +98,7 @@ my $form_action = defined $goto             ? $goto
 </div>
 
 <div class="button-row">
-    <span class="input"><input type="submit" class="button" Value="<&|/l&>Login</&>"></span>
+    <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
 </div>
 
 %# Give callbacks a chance to add more control elements

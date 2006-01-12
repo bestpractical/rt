@@ -68,26 +68,26 @@
 <div align="right">
 <form method="get" action="<%$RT::WebPath%>/Search/Results.html">
 %while (my $var = shift (@vars)) {
-<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>" />
 %}
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
-<input type="submit" class="button" value="<&|/l&>Go!</&>">
+<input type="submit" class="button" value="<&|/l&>Go!</&>" />
 </form>
 </div>
 <div align="right">
-<a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br/>
-<a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br/>
+<a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br />
+<a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br />
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
-<a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br/>
+<a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
 % @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
 %while (my $var = shift (@vars)) {
-<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>"/>
+<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>" />
 %}
 <&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-<input type="submit" class="button" value="<%loc('Go')%>"/>
+<input type="submit" class="button" value="<%loc('Go')%>" />
 </form>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>

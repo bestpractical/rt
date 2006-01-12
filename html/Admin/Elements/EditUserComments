@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => "Comments about $name" &>
-<&|/l&>These comments aren't generally visible to the user</&>:<br>
-<input type="hidden" class="hidden" name="id" value="<%$id%>">
-<textarea COLS=60 ROWS=15 WRAP=SOFT NAME="Comments"><% $UserObj->Comments %></textarea>
+<&|/l&>These comments aren't generally visible to the user</&>:<br />
+<input type="hidden" class="hidden" name="id" value="<%$id%>" />
+<textarea cols="60" rows="15" wrap="SOFT" name="Comments"><% $UserObj->Comments %></textarea>
 </form>
 
 <%ARGS>

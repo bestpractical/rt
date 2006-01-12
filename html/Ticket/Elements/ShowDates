@@ -72,7 +72,7 @@
     <td class="label"><&|/l&>Updated</&>:</td>
 % my $UpdatedString = $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never");
 % if ($UpdatedLink) {
-    <td class="value"><a HREF="#lasttrans"><% $UpdatedString | h %></a></td>
+    <td class="value"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {
     <td class="value"><% $UpdatedString | h %></td>
 % }

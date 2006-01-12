@@ -46,35 +46,35 @@
 % if (@CustomFields == 0) {
 <p><i><&|/l&>(None)</&></i></p>
 % } else {
-<table cellspacing=0 cellpadding=2>
+<table cellspacing="0" cellpadding="2">
 % my $count;
 % foreach my $CustomFieldObj (@CustomFields) {
 <tr>
 %   if (!$ReadOnly) {
-  <td valign="TOP">
+  <td valign="top">
 <input type="checkbox" class="checkbox" name="Object-<%$id%>-CF-<%$CustomFieldObj->Id%>" value="1" <% $Checked ? 'CHECKED' : '' %>
->
+/>
   </td>
 %   }
-  <td valign="TOP">
-    <a HREF="<%$RT::WebPath%>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
+  <td valign="top">
+    <a href="<%$RT::WebPath%>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
 % if ($CustomFieldObj->Name) {
 <b><%$CustomFieldObj->Name%></b>
 % } else {
 <i>(<&|/l&>no name</&>)</i>
 % }
-</a><br>
+</a><br />
     <%$CustomFieldObj->Description%>
   </td>
-  <td valign="TOP">
+  <td valign="top">
     <i><% $CustomFieldObj->FriendlyTypeComposite %></i>
   </td>
 %  # show 'move up' unless it's the first item
 %  if ($count++ and $Checked) {
-  <td valign="TOP">
+  <td valign="top">
     [<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
 %  } else {
-  <td valign="TOP" ALIGN=RIGHT>
+  <td valign="top" align="right">
 %  }
 
 %  # show 'move down' unless it's the last item

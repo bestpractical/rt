@@ -53,25 +53,25 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form action="<%$RT::WebPath%>/User/Groups/Modify.html" method="POST">
+<form action="<%$RT::WebPath%>/User/Groups/Modify.html" method="post">
 
 %unless ($Group->Id) {
-<input type="hidden" class="hidden" name="id" value="new">
+<input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 % }
 <table>
-<tr><td align="RIGHT">
+<tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name%>"></td>
+<td><input name="Name" value="<%$Group->Name%>" /></td>
 </tr><tr>
-<td align="RIGHT">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60"></td>
+<td align="right">
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
 </tr><tr>
 <td colspan="2">
-<input type="hidden" class="hidden" name="SetEnabled" value="1">
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
 </tr>
 </table>
 <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>

@@ -45,11 +45,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<form ACTION="<%$RT::WebPath%><% $m->request_comp->path |n %>" METHOD="POST" NAME="EditCustomFields">
-<input type="hidden" class="hidden" NAME="id" VALUE="<% $Object->Id %>"/>
-<input type="hidden" class="hidden" NAME="ObjectType" VALUE="<% $ObjectType %>"/>
-<input type="hidden" class="hidden" NAME="SubType" VALUE="<% $SubType %>"/>
-<input type="hidden" class="hidden" NAME="UpdateCFs" VALUE="1"/>
+<form action="<%$RT::WebPath%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
+<input type="hidden" class="hidden" name="id" value="<% $Object->Id %>" />
+<input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
+<input type="hidden" class="hidden" name="SubType" value="<% $SubType %>" />
+<input type="hidden" class="hidden" name="UpdateCFs" value="1" />
 
 % if ($Object->Id) {
 <h2><&|/l&>Global Custom Fields</&></h2>

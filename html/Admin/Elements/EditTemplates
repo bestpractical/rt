@@ -45,8 +45,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@actions &>
 
-<form METHOD=GET ACTION="Templates.html">
-<input type="hidden" class="hidden" NAME="id" VALUE="<%$id%>">
+<form method="get" action="Templates.html">
+<input type="hidden" class="hidden" name="id" value="<%$id%>" />
 
 % if ($Templates->Count == 0 ) {
 <p><i><&|/l&>(No templates)</&></i></p>
@@ -63,12 +63,12 @@
 % while (my $TemplateObj = $Templates->Next) { 
 <tr>
 <td>
-<input type="checkbox" class="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>" value="1">
+<input type="checkbox" class="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>" value="1" />
 </td>
 <td>
 <a href="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">
 <strong><% loc($TemplateObj->Name) %></strong></a>
-<br><% loc($TemplateObj->Description) %>
+<br /><% loc($TemplateObj->Description) %>
 </td>
 </tr>
 

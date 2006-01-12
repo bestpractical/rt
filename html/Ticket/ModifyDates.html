@@ -51,8 +51,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="POST" action="ModifyDates.html">
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>">
+<form method="post" action="ModifyDates.html">
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>

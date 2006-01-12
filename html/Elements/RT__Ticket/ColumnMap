@@ -83,7 +83,7 @@ sub ColumnMap {
                             ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
                             : $_->Content
                     ),
-                    \'<br>',
+                    \'<br />',
                 } @{ $values->ItemsArrayRef }
 	    };
         }
@@ -299,7 +299,7 @@ $COLUMN_MAP = {
         attribute => 'checkbox',
         title => loc('Update'),
         align     => 'right',
-        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" CHECKED>') }
+        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
     },
 
 };

@@ -52,12 +52,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
  
-<form method="POST" action="People.html">
-<input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>">
+<form method="post" action="People.html">
+<input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>" />
 
 <table width="100%">
 <tr>
-<td valign="TOP" >
+<td valign="top" >
 
 <h3><&|/l&>Current watchers</&></h3>
 
@@ -72,23 +72,23 @@
 
 
 </td>
-<td valign="TOP">
+<td valign="top">
 <h3><&|/l&>New watchers</&></h3>
 
-<&|/l&>Find people whose</&><br/>
+<&|/l&>Find people whose</&><br />
 <& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
-<br/>
-<&|/l&>Find groups whose</&><br/>
+<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<br />
+<&|/l&>Find groups whose</&><br />
 <& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
+<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
 
 <p>
-<&|/l&>Add new watchers</&>:<br/>
+<&|/l&>Add new watchers</&>:<br />
 <p>
 <strong><&|/l&>Users</&></strong>
 % if ($user_msg) {
-<br/>
+<br />
 <em><%$user_msg%></em>
 % } elsif ($Users) {
 <ul>
@@ -104,7 +104,7 @@
 <strong><&|/l&>Groups</&></strong>
 
 % if ($group_msg) {
-<br/>
+<br />
 <em><%$group_msg%></em>
 % } elsif ($Groups) {
 <ul>

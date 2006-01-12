@@ -50,8 +50,8 @@
     Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="POST" action="UserRights.html">
-    <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>">
+  <form method="post" action="UserRights.html">
+    <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
 <&| /Widgets/TitleBox, title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
       
@@ -59,8 +59,8 @@
         
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
-  <tr align="RIGHT"> 
-	<td valign="TOP">
+  <tr align="right"> 
+	<td valign="top">
 	    <% $UserObj->Name %>
 		  </td>
 	  <td>

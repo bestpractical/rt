@@ -55,7 +55,7 @@ my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
 % }
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
 <tr>
-        <th width=15%><&|/l&>Personal groups:</&></th>
+        <th width="15%"><&|/l&>Personal groups:</&></th>
 % while (my $pg = $personalgroups->Next) {
 <th><%$pg->Name%></th>
 % }
@@ -76,14 +76,14 @@ while ( my $delegation = $delegations->Next) {
 %
 <tr class="<%($i%2) && 'oddline'%>">
 <td>
-<% loc($right->RightName) %><br>
-<div align=right><font size="-2" color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font></div>
+<% loc($right->RightName) %><br />
+<div align="right"><font size="-2" color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font></div>
        </td>
 % while (my $pg = $personalgroups->Next) {
-<td align=center>
-        <input name="Delegate-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>" type=checkbox value="1" <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %>>
+<td align="center">
+        <input name="Delegate-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>" type="checkbox" value="1" <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %> />
 % if ( $del_hash->{$pg->PrincipalId}) {
-<input type="hidden" class="hidden" name="Delegate-Existing-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>-as-<%$del_hash->{$pg->PrincipalId}->Id%>">
+<input type="hidden" class="hidden" name="Delegate-Existing-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>-as-<%$del_hash->{$pg->PrincipalId}->Id%>" />
 % }
 </td>
 % }

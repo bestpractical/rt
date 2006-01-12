@@ -49,27 +49,27 @@
 <td>
 <& EditFormat, %ARGS &>
 </td>
-<td valign=top>
-<table valign=top>
+<td valign="top">
+<table valign="top">
 
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <tr>
-<td class=label>
+<td class="label">
 % if ($o == 0) {
 <&|/l&>Order by</&>:
 % }
 </td>
-<td class=value>
+<td class="value">
 <select name="OrderBy">
 % if ($o > 0) {
 <option value="">[none]</option>
 % }
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
-<option value=<%$field%>
+<option value="<%$field%>"
 % if ($field eq $OrderBy[$o]) {
-SELECTED
+selected
 % }
 ><&|/l&><%$field%></&></option>
 % }
@@ -77,12 +77,12 @@ SELECTED
 <select name="Order">
 <option value="ASC"
 % if ($Order[$o] eq "ASC") {
-SELECTED
+selected
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
 % if ($Order[$o] eq "DESC") {
-SELECTED
+selected
 % }
 ><&|/l&>Desc</&></option>
 </select>
@@ -90,7 +90,7 @@ SELECTED
 </tr>
 % }
 <tr>
-<td class=label>
+<td class="label">
 <&|/l&>Rows per page</&>:
 </td><td class="value">
 <& /Elements/SelectResultsPerPage, 

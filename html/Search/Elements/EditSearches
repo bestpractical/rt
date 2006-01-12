@@ -56,7 +56,7 @@
 % }
 <br />
 <&|/l&>Description</&>:
-<input size="25" name="SavedSearchDescription" value="<% $Description %>">
+<input size="25" name="SavedSearchDescription" value="<% $Description %>" />
 
 <nobr>
 % if ($Id ne 'new') {

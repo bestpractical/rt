@@ -76,7 +76,7 @@ $Ticket
 </%args>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label> 
-<input type="text" size="15" name="NewReminder-Subject">
+<input type="text" size="15" name="NewReminder-Subject" />
 </div>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
@@ -98,10 +98,10 @@ $Ticket
     name="Complete-Reminder-<%$Reminder->id%>" 
     <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
 /> 
-    <input type="text" size="15" name="Reminder-Subject-<% $Reminder->id %>" value="<%$Reminder->Subject%>"> &bull; 
+    <input type="text" size="15" name="Reminder-Subject-<% $Reminder->id %>" value="<%$Reminder->Subject%>" /> &bull; 
     <& /Elements/SelectOwner, Name => 'Reminder-Owner-'.$Reminder->id, Queue => $Ticket->QueueObj, Default => $Reminder->Owner, DefaultValue => 0  &>
     <& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id, Default => $Reminder->DueObj->Date &>
-    (<%$Reminder->DueObj->Unix>0  ? $Reminder->DueObj->AgeAsString : '' %>)<br/>
+    (<%$Reminder->DueObj->Unix>0  ? $Reminder->DueObj->AgeAsString : '' %>)<br />
 </%method>
 <%method ShowEntry>
 <%args>
@@ -115,5 +115,5 @@ $Ticket
 /> 
     <%$Reminder->Subject%> &bull; 
     <%$Reminder->OwnerObj->Name%>
-    <%$Reminder->DueObj->Unix>0  ? "&bull; ". $Reminder->DueObj->AgeAsString : '' |n%><br/>
+    <%$Reminder->DueObj->Unix>0  ? "&bull; ". $Reminder->DueObj->AgeAsString : '' |n%><br />
 </%method>
