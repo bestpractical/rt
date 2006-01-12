@@ -1017,112 +1017,106 @@ Parses a tab or comma delimited template. Should only ever be called by Parse
 sub _ParseXSVTemplate {
     my $self = shift;
     my %args = (@_);
-        $RT::Logger->debug("Line: id");
-        use Regexp::Common qw(delimited);
-        my $first
-            = substr( $args{'Content'}, 0, index( $args{'Content'}, "\n" ) );
-        $first =~ s/\r$//;
 
-        my $delimiter;
-        if ( $first =~ /\t/ ) {
-            $delimiter = "\t";
-        } else {
-            $delimiter = ',';
-        }
-        my @fields = split( /$delimiter/, $first );
+    use Regexp::Common qw(delimited);
+    my $first
+      = substr( $args{'Content'}, 0, index( $args{'Content'}, "\n" ) );
+    $first =~ s/\r$//;
 
-        my $delimiter_re = qr[$delimiter];
+    my $delimiter;
+    if ( $first =~ /\t/ ) {
+        $delimiter = "\t";
+    } else {
+        $delimiter = ',';
+    }
+    my @fields = split( /$delimiter/, $first );
 
-        my $delimited  = qr[[^$delimiter]+];
-        my $empty      = qr[^[$delimiter](?=[$delimiter])];
-        my $justquoted = qr[$RE{quoted}];
+    my $delimiter_re = qr[$delimiter];
+    my $justquoted = qr[$RE{quoted}];
 
-        $args{'Content'}
-            = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
-        $RT::Logger->debug("First: $first");
+    $args{'Content'}
+      = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
 
-        foreach my $line ( split( /\n/, $args{'Content'} ) ) {
-            next unless $line;
-            $RT::Logger->debug("Line: $line");
+  LINE:
+    while ($args{'Content'}) {
+        $args{'Content'} =~ s/^(\s*\r?\n)+//;
 
-            my $queue;
-            my $requestor;
-            # first item is $template_id
-            my $i = 0;
-            my $template_id;
-            while ($line
-                && $line =~ s/^($justquoted|.*?)(?:$delimiter_re|$)//ix )
-            {
-                
-                
-                # If it's the first field, it must be a ticket id. 
-                if ( $i == 0 ) {
-                    $queue     = 0;
-                    $requestor = 0;
-                    my $tid = $1;
-                    $tid =~ s/^\s*(.*?)\s*$/$1/;
-                    next unless $tid;
+        my $queue;
+        my $requestor;
+        # first item is $template_id
+        my $i = 0;
+        my $template_id;
 
-                    if ( $tid =~ /^\d+$/ ) {
-                        $template_id = 'update-' . $tid;
-                        push @{ $self->{'update_tickets'} }, $template_id;
+      COLUMN:
+        while ($args{'Content'} =~ s/^($justquoted|.+?)($delimiter_re|$)//smix) {
+            my $EOL = not $2;
+            # If it's the first field, it must be a ticket id. 
+            if ( $i == 0 ) {
+                $queue     = 0;
+                $requestor = 0;
+                my $tid = $1;
+                $tid =~ s/^\s*(.*?)\s*$/$1/;
+                next COLUMN unless $tid;
 
-                    } elsif ( $tid =~ /^#base-(\d+)$/ ) {
-
-                        $template_id = 'base-' . $1;
-                        push @{ $self->{'base_tickets'} }, $template_id;
-
-                    } else {
-                        $template_id = 'create-' . $tid;
-                        push @{ $self->{'create_tickets'} }, $template_id;
-                    }
-                    $RT::Logger->debug("template_id: $tid");
+                if ( $tid =~ /^\d+$/ ) {
+                    $template_id = 'update-' . $tid;
+                    push @{ $self->{'update_tickets'} }, $template_id;
+                } elsif ( $tid =~ /^#base-(\d+)$/ ) {
+                    $template_id = 'base-' . $1;
+                    push @{ $self->{'base_tickets'} }, $template_id;
                 } else {
-                    my $value = $1;
-                    $value = '' if ( $value =~ /^$delimiter$/ );
-                    if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
-                        substr( $value, 0,  1 ) = "";
-                        substr( $value, -1, 1 ) = "";
-                    }
-                    my $field = $fields[$i];
-                    next unless $field;
-                    $field =~ s/^\s//;
-                    $field =~ s/\s$//;
-                    if (   $field =~ /Body/i
-                        || $field =~ /Data/i
-                        || $field =~ /Message/i )
-                    {
-                        $field = 'Content';
-                    }
-                    if ( $field =~ /Summary/i ) {
-                        $field = 'Subject';
-                    }
-                    if ( $field =~ /Queue/i ) {
-                        $queue = 1;
-                        $value ||= $args{'Queue'};
-                    }
-                    if ( $field =~ /Requestor/i ) {
-                        $requestor = 1;
-                        $value ||= $args{'Requestor'};
-                    }
-                    $self->{'templates'}->{$template_id} .= $field . ": ";
-                    $self->{'templates'}->{$template_id} .= $value || "";
-                    $self->{'templates'}->{$template_id} .= "\n";
-                    $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
-                        if $field =~ /content/i;
+                    $template_id = 'create-' . $tid;
+                    push @{ $self->{'create_tickets'} }, $template_id;
                 }
-                $i++;
+            } else {
+                my $value = $1;
+                $value = '' if ( $value =~ /^$delimiter$/ );
+                if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
+                    substr( $value, 0,  1 ) = "";
+                    substr( $value, -1, 1 ) = "";
+                }
+                my $field = $fields[$i];
+                
+                next COLUMN unless $field;
+                $field =~ s/^\s//;
+                $field =~ s/\s$//;
+                if (   $field =~ /^Body$/i
+                    || $field =~ /^Data$/i
+                    || $field =~ /^Message$/i )
+                  {
+                      $field = 'Content';
+                  }
+                if ( $field =~ /^Summary$/i ) {
+                    $field = 'Subject';
+                }
+                if ( $field =~ /^Queue$/i ) {
+                    $queue = 1;
+                    $value ||= $args{'Queue'};
+                }
+                if ( $field =~ /^Requestor$/i ) {
+                    $requestor = 1;
+                    $value ||= $args{'Requestor'};
+                }
+                $self->{'templates'}->{$template_id} .= $field . ": ";
+                $self->{'templates'}->{$template_id} .= $value || "";
+                $self->{'templates'}->{$template_id} .= "\n";
+                $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
+                  if $field =~ /^Content$/i;
             }
-            if ( !$queue && $args{'Queue'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Queue: $args{'Queue'}\n";
-            }
-            if ( !$requestor && $args{'Requestor'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Requestor: $args{'Requestor'}\n";
-            }
+            $i++;
+            next LINE if $EOL;
         }
+        if ( !$queue && $args{'Queue'} ) {
+            $self->{'templates'}->{$template_id}
+              .= "Queue: $args{'Queue'}\n";
+        }
+        if ( !$requestor && $args{'Requestor'} ) {
+            $self->{'templates'}->{$template_id}
+              .= "Requestor: $args{'Requestor'}\n";
+        }
+    }
 }
+
 sub GetDeferred {
     my $self      = shift;
     my $args      = shift;
