@@ -1,5 +1,9 @@
 
-// Stolen from Prototype
+/* $(...)
+    Returns DOM node or array of nodes (if more then one argument passed).
+    If argument is node object allready then do nothing.
+    // Stolen from Prototype
+*/
 function $() {
     var elements = new Array();
 
@@ -21,8 +25,8 @@ function $() {
 
 function show(id) { delClass( id, 'hidden' ) }
 function hide(id) { addClass( id, 'hidden' ) }
-function hideshow(id) { toggleVisibility( id ) }
 
+function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = $(id);
 
@@ -53,14 +57,12 @@ function addClass(id, value) {
     var e = $(id);
     if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
         return;
-    if ( e.className )
-        e.className += ' ';
-    e.className += value;
+    e.className += e.className? ' '+value : value;
 }
 
 function delClass(id, value) {
     var e = $(id);
-    e.className = e.className.replace( new RegExp('\s?\b'+ value +'\b', 'g'), '' );
+    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
 }
 
 /* Rollups */
@@ -84,14 +86,11 @@ function set_rollup_state(e,e2,state) {
     if (e && e2) {
         if (state == 'shown') {
             show(e);
-            e2.className = e2.className.replace(/\s?\brolled-up\b/, '');
+            delClass( e2, 'rolled-up' );
         }
         else if (state == 'hidden') {
             hide(e);
-            if (e2.className)
-                e2.className += ' rolled-up';
-            else
-                e2.className = 'rolled-up';
+            addClass( e2, 'rolled-up' );
         }
     }
 }
@@ -105,7 +104,7 @@ var onLoadExecuted  = 0;
 
 function onLoadHook(commandStr) {
     if(typeof(commandStr) == "string") {
-        onLoadStack[onLoadStack.length] = commandStr;
+        onLoadStack[ onLoadStack.length ] = commandStr;
         return true;
     }
     return false;
@@ -182,7 +181,7 @@ function updateParentField(field, value) {
     }
 }
 
-function addEvent(obj, sType, fn){
+function addEvent(obj, sType, fn) {
     if (obj.addEventListener) {
         obj.addEventListener(sType, fn, false);
     } else if (obj.attachEvent) {
@@ -193,7 +192,7 @@ function addEvent(obj, sType, fn){
     return true;
 }
 
-function setCheckbox (form, name, val) {
+function setCheckbox(form, name, val) {
     var myfield = form.getElementsByTagName('input');
     for ( var i = 0; i < myfield.length; i++ ) {
         if ( name && myfield[i].name != name ) continue;
