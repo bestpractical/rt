@@ -45,8 +45,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& Elements/Header, Title => loc("Create a ticket") &>
 
-<form action="Display.html" method="POST" enctype="multipart/form-data">
-<input type="hidden" class="hidden" Name="id" value="new">
+<form action="Display.html" method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="id" value="new" />
 
 <table>
 <tr>
@@ -54,7 +54,7 @@
 <&|/l&>Queue</&>:
 </td>
 <td class="value">
-    <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id%>">
+    <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id%>" />
     <strong><%$queue_obj->Name%></strong> (<%$queue_obj->Description%>)
 </td>
 </tr>
@@ -63,7 +63,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<input name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" size="20">
+<input name="Requestors" value="<%$session{CurrentUser}->EmailAddress%>" size="20" />
 </td>
 </tr>
 <tr>
@@ -71,7 +71,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
- <input name="Cc" size="20">
+ <input name="Cc" size="20" />
 </td>
 </tr>
 <tr>
@@ -79,7 +79,7 @@
 <&|/l&>Subject</&>:
 </td>
 <td class="value">
-<input name="Subject" size="60" maxsize="100" value="">
+<input name="Subject" size="60" maxsize="100" value="" />
 </td>
 </tr>
 <tr>
@@ -92,12 +92,12 @@
 <&|/l&>Attach file</&>:
 </td>
 <td class="value">
-<input name="Attach" type="file">
+<input name="Attach" type="file" />
 </td>
 </tr>
 <tr>
 <td colspan="2">
-<&|/l&>Describe the issue below</&>:<br/>
+<&|/l&>Describe the issue below</&>:<br />
 <& /Elements/MessageBox &>
 </td>
 </tr>

@@ -43,9 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME="<%$Name%>">
+<select name="<%$Name%>">
 % foreach (@fields) {
-<option VALUE="<%$_%>"><&|/l&><%$_%></&></option>
+<option value="<%$_%>"><&|/l&><%$_%></&></option>
 % }
 </select>
 <%ARGS>

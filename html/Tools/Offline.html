@@ -54,7 +54,7 @@
     Queue => \$qname, %ARGS &>
 
 <form action="Offline.html" name="TicketUpdate" 
-	METHOD=POST enctype="multipart/form-data">
+	method="post" enctype="multipart/form-data">
 <table>
 <tr>
 <td class="label">
@@ -70,7 +70,7 @@
 <&|/l&>Default Requestor</&>:
 </td>
 <td>
-<input name="requestoraddress" value=<%$requestoraddress%>>
+<input name="requestoraddress" value="<%$requestoraddress%>" />
 <em><&|/l&>If no Requestor is specified, create tickets with this requestor.</&></em>
 </td>
 </tr>
@@ -87,8 +87,8 @@
 <&|/l&>Get template from file</&>:
 </td>
 <td>
-<input name="Template" type="file" value="foo">
-<input type="SUBMIT" class="button" name="Parse" value="<&|/l&>Go</&>">
+<input name="Template" type="file" value="foo" />
+<input type="submit" class="button" name="Parse" value="<&|/l&>Go</&>" />
 </td>
 </tr>
 </table>

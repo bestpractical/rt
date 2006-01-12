@@ -43,12 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME="<%$Name%>">
+<select name="<%$Name%>">
 % if ($AllowNull) {
-<option VALUE="">-</option>
+<option value="">-</option>
 % }
 %while (my $group = $groups->Next) {
-<option VALUE="<%$group->id%>" <%$group->id eq $Default && "SELECTED"%>><%$group->Name%></option>
+<option value="<%$group->id%>" <%$group->id eq $Default && "SELECTED"%>><%$group->Name%></option>
 %}
 </select>
 

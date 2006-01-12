@@ -56,7 +56,7 @@
 <&|/l&>Show Columns</&>:
 </td>
 <tr>
-<td valign=top>
+<td valign="top">
 <select size="6" name="SelectDisplayColumns" multiple>
 % foreach my $field ( @$AvailableColumns) {
 <option value="<%$field%>"><% loc( $field) %></option>
@@ -71,14 +71,14 @@
 <option value="Display"><&|/l&>Display</&></option>
 <option value="Take"><&|/l&>Take</&></option>
 </select>
-<br><&|/l&>Title</&>: <input name="Title" size=10>
-<br><&|/l&>Size</&>:
+<br /><&|/l&>Title</&>: <input name="Title" size="10" />
+<br /><&|/l&>Size</&>:
 <select name="Size">
 <option value="">-</option>
 <option value="Small"><&|/l&>Small</&></option>
 <option value="Large"><&|/l&>Large</&></option>
 </select>
-<br><&|/l&>Style</&>:
+<br /><&|/l&>Style</&>:
 <select name="Face">
 <option value="">-</option>
 <option value="Bold"><&|/l&>Bold</&></option>
@@ -86,24 +86,24 @@
 </select>
 </td>
 <td>
-<input type="submit" class="button" name="AddCol" value="->">
+<input type="submit" class="button" name="AddCol" value="->" />
 </td>
-<td valign=top>
-<select size=4 name="CurrentDisplayColumns">
+<td valign="top">
+<select size="4" name="CurrentDisplayColumns">
 % my $i=0;
 % foreach my $field (@$CurrentFormat) {
 <option value="<%$i++%>><%$field->{Column}%>">
 <%loc( $field->{Column}) %></option>
 % }
 </select>
-<br>
+<br />
 <center>
-<input type="submit" class="button" name="ColUp" value="^">
-<input type="submit" class="button" name="ColDown" value="v">
-<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>">
+<input type="submit" class="button" name="ColUp" value="^" />
+<input type="submit" class="button" name="ColDown" value="v" />
+<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
 </center>
 </td>
-<td colspan=3 align=center>
+<td colspan="3" align="center">
 </td>
 </tr>
 </table>

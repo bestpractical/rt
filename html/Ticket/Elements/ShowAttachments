@@ -50,7 +50,7 @@
 
 % foreach my $key (keys %documents) {
 
-<%$key%><br>
+<%$key%><br />
 <ul>
 % foreach my $rev (@{$documents{$key}}) {
 
@@ -68,7 +68,7 @@ if ($size) {
 </%PERL>
 
 <li><font size="-2">
-<a HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
+<a href="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
 <&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
 </a>
 </font></li>
@@ -79,7 +79,7 @@ if ($size) {
 % }
 </&>
 
-<br/>
+<br />
 % }
 
 <%INIT>

@@ -45,27 +45,27 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 <tr>
-<td ALIGN=RIGHT>
+<td align="right">
 <&|/l&>Name</&>:
 </td>
 <td>
-<input name="Name" VALUE="<%$Name%>" SIZE=20><br/>
+<input name="Name" value="<%$Name%>" size="20" /><br />
 </td>
 </tr>
 <tr>
-<td ALIGN=RIGHT>
+<td align="right">
 <&|/l&>Description</&>: 
 </td>
 <td>
-<input name="Description" VALUE="<%$Description%>" SIZE=80><br/>
+<input name="Description" value="<%$Description%>" size="80" /><br />
 </td>
 </tr>
 <tr>
-<td ALIGN=RIGHT VALIGN=TOP>
-<&|/l&>Content</&>:<br/>
+<td align="right" valign="top">
+<&|/l&>Content</&>:<br />
 </td>
 <td>
-<textarea NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
+<textarea name="Content" rows="25" cols="80" wrap="soft">
 <%$Content%></textarea>
 </td>
 </tr>

@@ -44,8 +44,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next and $Multiple) {
-<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><% $value->Content %>
-<br>
+<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>" /><% $value->Content %>
+<br />
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
 <& /Widgets/ComboBox,

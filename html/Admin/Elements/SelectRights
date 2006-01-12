@@ -43,33 +43,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="hidden" class="hidden" NAME="CheckACL"  VALUE="<%$ACLDesc%>">
-     <table BORDER=0>
+<input type="hidden" class="hidden" name="CheckACL"  value="<%$ACLDesc%>" />
+     <table border="0">
 <tr>
-<td valign=top width="180" align="left"> 
+<td valign="top" width="180" align="left"> 
 %  my %current_rights;
 <h3><&|/l&>Current rights</&></h3>
 % if ($ACLObj->Count() == 0) {
-<i><&|/l&>No rights granted.</&></i> <br/>    
+<i><&|/l&>No rights granted.</&></i> <br />    
 % } else {
-<i>(<&|/l&>Check box to revoke right</&>)</i> <br/>
+<i>(<&|/l&>Check box to revoke right</&>)</i> <br />
 % while (my $right = $ACLObj->Next()) {
 % if ($right->RightName) {
 % $current_rights{$right->RightName} = 1;
-<input type="checkbox" class="checkbox" value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>"> <% loc($right->RightName) %><br>
+<input type="checkbox" class="checkbox" value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>" /> <% loc($right->RightName) %><br />
 % }
 %  }
 % }
 </td>
-<td valign=top>
+<td valign="top">
 <h3><&|/l&>New rights</&></h3> 
-<select SIZE=5  MULTIPLE  NAME="GrantRight-<%$ACLDesc%>">
+<select size="5"  multiple  name="GrantRight-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
 % next if $current_rights{$right};
-      <option VALUE="<%$right%>"  
+      <option value="<%$right%>"  
 	><% loc($right) %></option>
 % }
-<option VALUE="" SELECTED><&|/l&>(no value)</&></option>
+<option value="" selected><&|/l&>(no value)</&></option>
 </select>
 </td>
 </tr>

@@ -50,8 +50,8 @@
     Title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="POST" action="GroupRights.html">
-    <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>">
+  <form method="post" action="GroupRights.html">
+    <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
 <&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
       
@@ -60,8 +60,8 @@
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->Next()) {
-  <tr align="RIGHT"> 
-	<td valign="TOP">
+  <tr align="right"> 
+	<td valign="top">
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
@@ -77,8 +77,8 @@
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->Next()) {
-  <tr align="RIGHT"> 
-	<td valign="TOP">
+  <tr align="right"> 
+	<td valign="top">
 	    <% $Group->Name %>
 		  </td>
 	  <td>

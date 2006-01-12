@@ -48,7 +48,7 @@
 % my $value = shift @Values;
 <option value="<%$value%>"
 % if ($Default eq $value) {
-SELECTED
+selected
 % }
 ><%$option%></option>
 % }

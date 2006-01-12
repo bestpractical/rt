@@ -63,17 +63,17 @@ $tickets->OrderBy(FIELD => 'Priority',
 %# Additional information about this user.  Empty by default.
 <& /Elements/Callback, _CallbackName => 'AboutThisUser', requestor => $requestor, %ARGS &>
 
-<&|/l&>Comments about this user</&>:<br/>
-<b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br/>
+<&|/l&>Comments about this user</&>:<br />
+<b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
 
-<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br/>
+<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->Next) {
 <li><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </ul>
 
-<&|/l&>Groups this user belongs to</&>:<br/>
+<&|/l&>Groups this user belongs to</&>:<br />
 
 <& /Elements/ShowMemberships, UserObj => $requestor &>
 

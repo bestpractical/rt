@@ -164,7 +164,7 @@ $self => undef
 
 <%method current>
 % for (@{$self->{Current}}) {
-<input type="hidden" class="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>">
+<input type="hidden" class="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>" />
 % }
 <%INIT>
 </%INIT>
@@ -177,20 +177,20 @@ $self => undef
 <%method show>
 <form method="post" action="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
 % unless ($nojs) {
-onSubmit="list_<% $name %>.selectAll();"
+onsubmit="list_<% $name %>.selectAll();"
 % }
 >
-<input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1">
+<input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1" />
 <& SelectionBox:current, self => $self &>
-<input type="hidden" class="hidden" name="fromjs" value="0">
+<input type="hidden" class="hidden" name="fromjs" value="0" />
 <&|/l&>Available</&>:
-<br>
+<br />
 <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Available}}) {
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
-<input name="add" type="submit" class="button" value="->"/>
+<input name="add" type="submit" class="button" value="->" />
 <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
@@ -200,9 +200,9 @@ selected="selected"
 ><% $self->{_item_map}{$_} %></option>
 % }
 </select>
- <input name="moveup" type="submit" class="button" value="^"/>
- <input name="movedown" type="submit" class="button" value="v"/>
- <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>"/>
+ <input name="moveup" type="submit" class="button" value="^" />
+ <input name="movedown" type="submit" class="button" value="v" />
+ <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 
 % my $caption = "";
 % unless ($self->{'AutoSave'}) {

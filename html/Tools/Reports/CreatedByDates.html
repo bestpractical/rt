@@ -37,11 +37,11 @@ $q->LoadByCols(Name => $Queue);
 
 <hr>
 
-<br/><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
-<br/><&|/l&>Tickets created after</&>: 
-<input size=20 name="CreatedAfter" value="<%$CreatedAfter%>"/>
-<br/><&|/l&>Tickets created before</&>: 
-<input size=20 name="CreatedBefore" value="<%$CreatedBefore%>"/>
+<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
+<br /><&|/l&>Tickets created after</&>: 
+<input size="20" name="CreatedAfter" value="<%$CreatedAfter%>" />
+<br /><&|/l&>Tickets created before</&>: 
+<input size="20" name="CreatedBefore" value="<%$CreatedBefore%>" />
 
 <& /Elements/Submit&>
 </form>

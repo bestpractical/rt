@@ -53,26 +53,26 @@
 
 
 
-<form action="<%$RT::WebPath%>/Admin/Groups/Modify.html" method="POST" enctype="multipart/form-data">
+<form action="<%$RT::WebPath%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
 
 %unless ($Group->Id) {
-<input type="hidden" class="hidden" name="id" value="new">
+<input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 % }
 <table>
-<tr><td align="RIGHT">
+<tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name%>"></td>
+<td><input name="Name" value="<%$Group->Name%>" /></td>
 </tr>
 <tr>
-<td align="RIGHT">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60"></td>
+<td align="right">
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
 </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
-<tr valign="TOP"><td align="RIGHT">
+<tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
@@ -80,8 +80,8 @@
 % }
 <tr>
 <td colspan="2">
-<input type="hidden" class="hidden" name="SetEnabled" value="1">
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><br/>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
 </tr>
 <& /Elements/Callback, GroupObj => $Group, results => \@results, %ARGS &>
 </table>

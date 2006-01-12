@@ -46,23 +46,23 @@
 % if (@Objects == 0) {
 <p><i><&|/l&>(None)</&></i></p>
 % } else {
-<table cellspacing=0 cellpadding=2>
+<table cellspacing="0" cellpadding="2">
 % my $count;
 % foreach my $Object (@Objects) {
 <tr>
 %   my $id = "Object-".$Object->id."-CF-".$id;
 %   if (!$ReadOnly) {
-  <td valign="TOP">
+  <td valign="top">
 <input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
->
+/>
   </td>
 %   }
-  <td valign="TOP">
+  <td valign="top">
     <label for="<% $id %>">
 % if ($Object->Name) {
-    <b><%$Object->Name%></b><br>
+    <b><%$Object->Name%></b><br />
 % } else {
-    <i>(<%loc("no name")%>)</i><br>
+    <i>(<%loc("no name")%>)</i><br />
 % }
     <%$Object->can('Description') && $Object->Description%>
     </label>

@@ -50,10 +50,10 @@
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <&| /Widgets/TitleBox, title => loc('Change password')  &>
-<&|/l&>New password</&>: <input type="password" name="NewPass1" size="16">
-<&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16">
+<&|/l&>New password</&>: <input type="password" name="NewPass1" size="16" />
+<&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16" />
 </&>
-<br/>
+<br />
 % }
 <& /Elements/Submit, Label => loc('Save Changes') &>
 	  </form>

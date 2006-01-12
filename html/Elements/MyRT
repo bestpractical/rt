@@ -45,12 +45,12 @@
 %# END BPS TAGGED BLOCK }}}
 
 <table border="0" width="100%">
-<tr valign="TOP">
+<tr valign="top">
 <td width="70%" class="boxcontainer">
 
 % for my $portlet (@{$portlets->{body}}) {
 <% _show($portlet) %>
-<br/>
+<br />
 % }
 
 %#GAH!
@@ -59,7 +59,7 @@
 
 % for my $portlet (@{$portlets->{summary}}) {
 <% _show($portlet) %>
-<br/>
+<br />
 % }
 
 </td>

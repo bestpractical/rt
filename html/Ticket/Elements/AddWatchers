@@ -43,10 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<br/>
-<%$msg%><br>
+<br />
+<%$msg%><br />
 
-<&|/l&>Add new watchers</&>:<br>
+<&|/l&>Add new watchers</&>:<br />
 
 <table>
 % if ($Users and $Users->Count) {
@@ -79,17 +79,17 @@
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
 </td><td>
-<input name="WatcherAddressEmail1" size=15>
+<input name="WatcherAddressEmail1" size="15" />
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &> 
 </td><td>
-<input name="WatcherAddressEmail2" size=15>
+<input name="WatcherAddressEmail2" size="15" />
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &>
 </td><td>
-<input name="WatcherAddressEmail3" size=15>
+<input name="WatcherAddressEmail3" size="15" />
 </td></tr>
 </table>
 

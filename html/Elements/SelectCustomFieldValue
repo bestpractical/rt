@@ -47,7 +47,7 @@
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">
-<option value="" SELECTED>-</option>
+<option value="" selected>-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
 <option value="<%$value->Name%>"><%$value->Name%></option>
@@ -55,7 +55,7 @@
 </select>
 % }
 % else {
-<input name="<%$Name%>" size="20">
+<input name="<%$Name%>" size="20" />
 % }
 <%args>
 $Name => undef

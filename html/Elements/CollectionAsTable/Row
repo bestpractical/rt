@@ -99,7 +99,7 @@ foreach my $column (@Format) {
                 # Simple value; just escape it.
                 @out = $m->interp->apply_escapes( $value => 'h' );
             }
-            s/\n/<br>/gs for @out;
+            s/\n/<br \/>/gs for @out;
             $m->out( @out );
         }
         else {

@@ -156,7 +156,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
               . $AttachPath . '/'
               . $Transaction->Id . '/'
               . $message->Id
-              . '/">' );
+              . '/" />' );
     }
     elsif ( $message->ContentLength > 0 ) {
         $m->out(

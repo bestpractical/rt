@@ -44,11 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Add Criteria')&>
-<table width=100% cellspacing=0 cellpadding=0 border=0>
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
     <td>
-      <table cellspacing=0 border=0>
-        <tr><td class=label>
+      <table cellspacing="0" border="0">
+        <tr><td class="label">
         <&|/l&>Aggregator</&>:
         </td>
         <td><& SelectAndOr, Name => "AndOr" &>
@@ -61,8 +61,8 @@
     </td>
   </tr>
   <tr>
-    <td valign=top>
-      <table cellspacing=0 border=0>
+    <td valign="top">
+      <table cellspacing="0" border="0">
       <& PickBasics &>
     <& PickCFs, cfqueues => \%cfqueues &>
     </table>

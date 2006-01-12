@@ -49,10 +49,10 @@
     Title=> $title &>
 
 <form action="Update.html" name="TicketUpdate" 
-	METHOD=POST enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
-<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
-<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>">
+	method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>" />
+<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
+<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>" />
 
 <table border="0">
 
@@ -61,13 +61,13 @@
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
-<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>"> 
+<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
 <& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
 % if (!$skip) {
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>"><br/>
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -79,13 +79,13 @@
 % }
 </select> 
 </td></tr>
-<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>"></td></tr>
+<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>" /></td></tr>
 <tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size="60"
-value="<% $ARGS{UpdateCc} %>"><br/>
+value="<% $ARGS{UpdateCc} %>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>"><br/>
+<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
 </td></tr>
@@ -94,9 +94,9 @@ value="<% $ARGS{UpdateCc} %>"><br/>
 <&|/l&>Attached file</&>:
 </td>
 <td colspan="5">
-<&|/l&>Check box to delete</&><br/>
+<&|/l&>Check box to delete</&><br />
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1"><%$attach_name%><br />
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
 % } # end of foreach
 </td>
 </tr>
@@ -106,14 +106,14 @@ value="<% $ARGS{UpdateCc} %>"><br/>
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
 <tr>
-<td align="RIGHT"><% $CF->Name %>:</td>
+<td align="right"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
     "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </tr>
 %    } # end if while
 % } # end of if
 
-<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><input type="SUBMIT" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>"><input type="hidden" class="hidden" name="UpdateAttach" value="1">
+<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', %ARGS &>

@@ -47,12 +47,12 @@
 
 % my $UserMembers = $Group->UserMembersObj;
 % while (my $member = $UserMembers->Next()) {
-<& ShowUserEntry, User => $member &><br>
+<& ShowUserEntry, User => $member &><br />
 % }
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->Next()) {
-<&|/l&>Group</&>: <%$member->MemberObj->Object->Name%><br>
+<&|/l&>Group</&>: <%$member->MemberObj->Object->Name%><br />
 % }
 
 <%ARGS>

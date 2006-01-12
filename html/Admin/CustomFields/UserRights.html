@@ -49,8 +49,8 @@ current_tab => "Admin/CustomFields/UserRights.html?id=".$id,
 Title => $title, &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="POST" action="UserRights.html">
-    <input type="hidden" class="hidden" name="id" value="<% $CustomFieldObj->id %>">
+  <form method="post" action="UserRights.html">
+    <input type="hidden" class="hidden" name="id" value="<% $CustomFieldObj->id %>" />
       
       
 <table>
@@ -59,8 +59,8 @@ Title => $title, &>
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <tr align="RIGHT"> 
-	<td valign="TOP">
+  <tr align="right"> 
+	<td valign="top">
 	    <% $UserObj->Name %>
 		  </td>
 	  <td>

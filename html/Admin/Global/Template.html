@@ -52,15 +52,15 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="POST" action="Template.html">
+<form method="post" action="Template.html">
 %if ($Create ) {
-<input type="hidden" class="hidden" name="Template" value="new">
+<input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>">
+<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
 % }
 
 %# hang onto the queue id
-<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>">
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 
 <& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
 

@@ -45,26 +45,26 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 <tr>
-<td VALIGN=TOP>
+<td valign="top">
 
 <h3><&|/l&>New watchers</&></h3>
-<&|/l&>Find people whose</&><br/>
+<&|/l&>Find people whose</&><br />
 <& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
-<br/>
-<&|/l&>Find groups whose</&><br/>
+<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<br />
+<&|/l&>Find groups whose</&><br />
 <& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
+<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
 	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
-</td><td VALIGN=TOP>
+</td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
-<&|/l&>(Check box to delete)</&><br>
+<&|/l&>(Check box to delete)</&><br />
 
 <&|/l&>Requestors</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>

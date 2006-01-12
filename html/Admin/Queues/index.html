@@ -60,10 +60,10 @@
 <li><a href="Modify.html?id=<%$queue->id%>"><%$queue->Name%></a></li>
 %}
 </ul>
-<br/>
-<form method="POST" action="<% $RT::WebPath %>/Admin/Queues/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1"> <&|/l&>Include disabled queues in listing.</&>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>"></div> 
+<br />
+<form method="post" action="<% $RT::WebPath %>/Admin/Queues/index.html">
+<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" /> <&|/l&>Include disabled queues in listing.</&>
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
 <%INIT>

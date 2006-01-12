@@ -51,15 +51,15 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="POST" action="Modify.html" name="ModifyCustomField">
-<input type="hidden" class="hidden" name="id" value="<%$id %>">
+<form method="post" action="Modify.html" name="ModifyCustomField">
+<input type="hidden" class="hidden" name="id" value="<%$id %>" />
 <table>
 <tr>
 <td class="label"><&|/l&>Name</&></td>
-<td><input name="Name" value="<%$CustomFieldObj->Name%>" size="20"></td></tr>
+<td><input name="Name" value="<%$CustomFieldObj->Name%>" size="20" /></td></tr>
 <tr>
 <td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<%$CustomFieldObj->Description%>" size="80"></td>
+<td><input name="Description" value="<%$CustomFieldObj->Description%>" size="80" /></td>
 </tr>
 
 <tr>
@@ -94,12 +94,12 @@
 <tr>
 <td class="label">&nbsp;</td>
 <td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1">
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td>
 </tr>
 </table>
-<br/>
+<br />
 % if ($CustomFieldObj->Id && $CustomFieldObj->IsSelectionType) {
 <h2><&|/l&>Values</&></h2>
 <div>
