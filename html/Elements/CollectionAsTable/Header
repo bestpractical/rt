@@ -62,7 +62,7 @@ my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format
 my $item = 0;
 foreach my $col (@Format) {
     $item++;
-    if ( $col->{title} eq 'NEWLINE' ) {
+    if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
             $item++;
@@ -73,7 +73,7 @@ foreach my $col (@Format) {
     }
     else {
         $m->out('<th class="collection-as-table">');
-        my $title = $col->{title};
+        my $title = $col->{title} || '';
         $title =~ s/^__(.*)__$/$1/o;
         $title = (
             $m->comp(

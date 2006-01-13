@@ -36,3 +36,4 @@ sub _accessor {
     return $self->{'_attributes'}->{$key};
 }
 
+1;

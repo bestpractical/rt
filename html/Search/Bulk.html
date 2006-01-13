@@ -236,15 +236,15 @@ while ( my $ticket = $Tickets->Next ) {
 my $do_comment_reply = 0;
 
 # Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp( $ARGS{'UpdateContent'} );
+if ($ARGS{'UpdateContent'}) {
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp( $ARGS{'UpdateContent'} );
 
-if (   $ARGS{'UpdateContent'}
-    && $ARGS{'UpdateContent'} ne ''
-    && $ARGS{'UpdateContent'} ne "-- \n"
-    . $session{'CurrentUser'}->UserObj->Signature )
-{
-    $do_comment_reply = 1;
+    if ($ARGS{'UpdateContent'} ne ''
+        && $ARGS{'UpdateContent'} ne "-- \n"
+        . $session{'CurrentUser'}->UserObj->Signature ) {
+        $do_comment_reply = 1;
+    }
 }
 
 #Iterate through each ticket we've been handed

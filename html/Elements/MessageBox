@@ -46,7 +46,7 @@
 <textarea class="messagebox" cols="<%$Width%>" rows="<%$Height%>" wrap="<%$Wrap%>" name="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></textarea>
 <%INIT>
 
-my ($message);
+my $message = '';
 
 if ($QuoteTransaction) {
     my $transaction=RT::Transaction->new($session{'CurrentUser'});

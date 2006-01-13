@@ -169,7 +169,7 @@ unless ($OnlySearchForPeople) {
 	$ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
     }
 
-    $ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
+    $ARGS{'UpdateContent'} =~ s/\r+\n/\n/g if $ARGS{'UpdateContent'};
 
     if ($ARGS{'UpdateAttachments'} || ( $ARGS{'UpdateContent'} && $ARGS{'UpdateContent'} ne  "-- \n" . 
 				$session{'CurrentUser'}->UserObj->Signature)) {

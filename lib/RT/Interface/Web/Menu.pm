@@ -17,3 +17,5 @@ sub root {
     my $self = shift;
     return $self->{'root_node'};
 }
+
+1;
