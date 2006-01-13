@@ -186,23 +186,8 @@ function ComboBox_HideList(e) {
         this.IsShowing = false;
     }
 }
-function ComboBox_SetVisibility(theList,isVisible) {
-    var isIE = ( typeof( theList.dataSrc ) != "undefined" ); // dataSrc is an IE-only property which is unlikely to be supported elsewhere
-    var ua = navigator.userAgent.toLowerCase(); 
-    var isSafari = (ua.indexOf('safari') != - 1);
-    if ( isIE || isSafari) {
-        if ( isVisible ) {
-            theList.style.visibility = "visible";
-        } else {
-            theList.style.visibility = "hidden";
-        }
-    } else { 
-        if ( isVisible ) {
-            theList.style.display = "block";
-        } else {
-            theList.style.display = "none";
-        }
-    }
+function ComboBox_SetVisibility(theList, isVisible) {
+    setVisibility(theList, isVisible);
 }
 function ComboBox_RecursiveOffsetTop(thisObject,isFirst) {
     if(thisObject.offsetParent) {

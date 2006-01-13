@@ -43,26 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($CheckAll or $ClearAll) {
-<script type="text/javascript"><!--
-function set_checkbox (obj, val) {
-    var i;
-    var myfield = obj.form.getElementsByTagName('input');
-    for (i = 0; i < myfield.length; i++) {
-	if (myfield[i].type == 'checkbox') {
-	    myfield[i].checked = val;
-	}
-    }
-}
---></script>
-% }
 <div class="submit">
   <div class="extra-buttons">
 % if ($CheckAll) {
-  <input type="button" value="<%$CheckAllLabel%>" onclick="set_checkbox(this, true);return false;" class="button" />
+  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', true);return false;" class="button" />
 % }
 % if ($ClearAll) {
-  <input type="button" value="<%$ClearAllLabel%>" onclick="set_checkbox(this, false);return false;" class="button" />
+  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', false);return false;" class="button" />
 % }
 % if ($Reset) {
   <input type="reset" class="button" value="<%$ResetLabel%>" class="button" />
@@ -91,6 +78,7 @@ $CheckAll => undef
 $CheckAllLabel => loc('Check All')
 $ClearAll => undef
 $ClearAllLabel => loc('Clear All')
+$CheckboxName => ''
 $Reset => undef
 $ResetLabel => loc('Reset')
 </%ARGS>
