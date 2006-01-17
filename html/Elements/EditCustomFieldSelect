@@ -87,7 +87,7 @@ $Rows => undef
 % while ($CFVs and my $value = $CFVs->Next ) {
 %     my $category = $value->Category;
 %     if (1) { # length $category) {
-%         my $level = (split(/:/, $category))[0];
+%         my $level = (split(/:/, $category || ''))[0];
 %         while (@levels) {
 %             if ($levels[-1] eq $level) {
 %                 undef $level;
@@ -99,7 +99,7 @@ $Rows => undef
 %                 last;
 %             }
 %         }
-%         if (length $level) {
+%         if ($level) {
 %             push @$CategoryRef, [0+@levels, $level];
         <optgroup style="padding-left: <% @levels/2 %>em" label="<%$category%>">
 %             push @levels, $level;
