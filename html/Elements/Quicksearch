@@ -57,12 +57,10 @@ my $i;
 while (my $queue = $Queues->Next) {
   next unless ($queue->CurrentUserHasRight('ShowTicket'));
 
-  my $name = $queue->Name;
-  $name =~ s|(['\\])|\\$1|g;
-  
-  my $new_q = "Queue = '$name' AND Status = 'new'";
-  my $open_q = "Queue = '$name' AND Status = 'open'";
-  my $all_q = "Queue = '$name' AND (Status = 'open' OR Status = 'new')";
+  my $qid = $queue->Id;
+  my $new_q = "Queue = '$qid' AND Status = 'new'";
+  my $open_q = "Queue = '$qid' AND Status = 'open'";
+  my $all_q = "Queue = '$qid' AND (Status = 'open' OR Status = 'new')";
 
   $Tickets->FromSQL($open_q);
   my $open = $Tickets->Count();
