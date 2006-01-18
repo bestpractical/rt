@@ -932,6 +932,9 @@ sub ParseLines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
+                if (($tag =~ /^(requestor|cc|admincc)$/i or grep {lc $_ eq $tag} keys %LINKTYPEMAP) and $args{$tag} =~ /,/) {
+                    $args{$tag} = [ split /,\s*/, $args{$tag} ];
+                }
             }
         }
     }
@@ -1275,8 +1278,8 @@ sub UpdateWatchers {
         next unless defined $args->{$type};
         my $newaddr = $args->{$type};
 
-        my @old = split( ', ', $oldaddr );
-        my @new = split( ', ', $newaddr );
+        my @old = split( /,\s*/, $oldaddr );
+        my @new = split( /,\s*/, $newaddr );
         my %oldhash = map { $_ => 1 } @old;
         my %newhash = map { $_ => 1 } @new;
 
