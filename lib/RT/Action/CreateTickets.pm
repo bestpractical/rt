@@ -1048,7 +1048,7 @@ sub _ParseXSVTemplate {
         my $template_id;
 
       COLUMN:
-        while ($args{'Content'} =~ s/^($justquoted|.+?)($delimiter_re|$)//smix) {
+        while (length $args{'Content'} and $args{'Content'} =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
             my $EOL = not $2;
             # If it's the first field, it must be a ticket id. 
             if ( $i == 0 ) {
@@ -1070,7 +1070,6 @@ sub _ParseXSVTemplate {
                 }
             } else {
                 my $value = $1;
-                $value = '' if ( $value =~ /^$delimiter$/ );
                 if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
                     substr( $value, 0,  1 ) = "";
                     substr( $value, -1, 1 ) = "";
