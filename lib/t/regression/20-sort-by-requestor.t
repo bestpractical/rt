@@ -11,9 +11,10 @@ my $q = RT::Queue->new($RT::SystemUser);
 my $queue = 'SearchTests-'.rand(200);
 $q->Create(Name => $queue);
 
-my @requestors = ( ('bravo@example.com') x 5, ('alpha@example.com') x 5,
-                   ('delta@example.com') x 5, ('charlie@example.com') x 5);
-my @subjects = ("first test", "second test", "third test", "fourth test") x 5;
+my @requestors = ( ('bravo@example.com') x 6, ('alpha@example.com') x 6,
+                   ('delta@example.com') x 6, ('charlie@example.com') x 6,
+                   (undef) x 6);
+my @subjects = ("first test", "second test", "third test", "fourth test", "fifth test") x 6;
 while (@requestors) {
     my $t = RT::Ticket->new($RT::SystemUser);
     my ( $id, undef $msg ) = $t->Create(
@@ -27,7 +28,7 @@ while (@requestors) {
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue'");
-    is($tix->Count, 20, "found twenty tickets");
+    is($tix->Count, 30, "found thirty tickets");
 }
 
 {
@@ -36,7 +37,7 @@ while (@requestors) {
     $tix->OrderByCols({ FIELD => "Subject" });
     my @subjects;
     while (my $t = $tix->Next) { push @subjects, $t->Subject; }
-    is(@subjects, 5, "found five tickets");
+    is(@subjects, 6, "found six tickets");
     is_deeply( \@subjects, [ sort @subjects ], "Subjects are sorted");
 }
 
@@ -45,7 +46,7 @@ sub check_emails_order
     my ($tix,$count,$order) = (@_);
     my @mails;
     while (my $t = $tix->Next) { push @mails, $t->RequestorAddresses; }
-    is(@mails, $count, "found $count tickets");
+    is(@mails, $count, "found $count tickets for ". $tix->Query);
     my @required_order;
     if( $order =~ /asc/i ) {
         @required_order = sort { $a? ($b? ($a cmp $b) : -1) : 1} @mails;
@@ -72,22 +73,11 @@ sub check_emails_order
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Subject = 'first test'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
-    check_emails_order($tix, 5, 'ASC');
+    check_emails_order($tix, 6, 'ASC');
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress", ORDER => 'DESC' });
-    check_emails_order($tix, 5, 'DESC');
+    check_emails_order($tix, 6, 'DESC');
 }
 
-
-{
-    # create ticket with empty requestor list
-    my $t = RT::Ticket->new($RT::SystemUser);
-    my ( $id, $msg ) = $t->Create(
-        Queue      => $q->id,
-        Subject    => "first test",
-    );
-    ok( $id, "ticket created" ) or diag( "error: $msg" );
-    is( $t->RequestorAddresses, '', "requestor address is empty" );
-}
 
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
