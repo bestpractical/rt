@@ -209,7 +209,12 @@ A complete list of acceptable fields for this beastie:
                           as content until we hit a line containing only 
                           ENDOFCONTENT
        ContentType     => the content-type of the Content field
+       UpdateType      => 'correspond' or 'comment'; used in conjunction with
+                          'content' if this is an update.
+
        CustomField-<id#> => custom field value
+       CF-name           => custom field value
+       CustomField-name  => custom field value
 
 Fields marked with an * are required.
 
@@ -703,8 +708,8 @@ sub UpdateByTemplate {
         push @results,
             $self->UpdateWatchers( $T::Tickets{$template_id}, $ticketargs );
 
-        next unless exists $ticketargs->{'UpdateType'};
-        if ( $ticketargs->{'UpdateType'} =~ /^(private|public)$/ ) {
+        next unless $ticketargs->{'MIMEObj'};
+        if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Comment(
                 CcMessageTo  => $ticketargs->{'Cc'},
@@ -717,7 +722,7 @@ sub UpdateByTemplate {
                     ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
-        } elsif ( $ticketargs->{'UpdateType'} eq 'response' ) {
+        } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Correspond(
                 CcMessageTo  => $ticketargs->{'Cc'},
@@ -1002,7 +1007,6 @@ sub ParseLines {
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
         }
-        warn "We have a cf! yay "
     }
 
     $self->GetDeferred( \%args, $template_id, $links, $postponed );
@@ -1049,10 +1053,11 @@ sub _ParseXSVTemplate {
         # first item is $template_id
         my $i = 0;
         my $template_id;
+        my $EOL = 0;
 
       COLUMN:
-        while (length $args{'Content'} and $args{'Content'} =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
-            my $EOL = not $2;
+        while (not $EOL and length $args{'Content'} and $args{'Content'} =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
+            $EOL = not $2;
             # If it's the first field, it must be a ticket id. 
             if ( $i == 0 ) {
                 $queue     = 0;
@@ -1106,7 +1111,6 @@ sub _ParseXSVTemplate {
                   if $field =~ /^Content$/i;
             }
             $i++;
-            next LINE if $EOL;
         }
         if ( !$queue && $args{'Queue'} ) {
             $self->{'templates'}->{$template_id}
@@ -1154,7 +1158,7 @@ sub GetUpdateTemplate {
     $string .= "Queue: " . $t->QueueObj->Name . "\n";
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
-    $string .= "UpdateType: response\n";
+    $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
     $string .= "Due: " . $t->DueObj->AsString . "\n";
