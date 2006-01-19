@@ -1,6 +1,6 @@
 #use Test::More tests => 26;
 use Test::More qw/no_plan/;
-
+$ENV{'TZ'} = 'GMT';
 use RT;
 RT::LoadConfig();
 RT::Init();
