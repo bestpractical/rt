@@ -273,7 +273,7 @@ sub _EnumLimit {
         or $op     eq "!=";
 
     my $meta = $FIELD_METADATA{$field};
-    if ( defined $meta->[1] ) {
+    if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
@@ -543,8 +543,6 @@ sub _TransDateLimit {
 
     $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
         unless defined $sb->{_sql_transalias};
-    $sb->{_sql_trattachalias} = $sb->NewAlias('Attachments')
-        unless defined $sb->{_sql_trattachalias};
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -595,15 +593,6 @@ sub _TransDateLimit {
             @rest
         );
     }
-
-    # Join Transactions To Attachments
-
-    $sb->_SQLJoin(
-        ALIAS1 => $sb->{_sql_trattachalias},
-        FIELD1 => 'TransactionId',
-        ALIAS2 => $sb->{_sql_transalias},
-        FIELD2 => 'id',
-    );
 
     # Join Transactions to Tickets
     $sb->_SQLJoin(
@@ -1566,12 +1555,11 @@ sub LimitQueue {
         @_
     );
 
-    #TODO  VALUE should also take queue names and queue objects
-    #TODO FIXME why are we canonicalizing to name, not id, robrt?
-    if ( $args{VALUE} =~ /^\d+$/ ) {
+    #TODO  VALUE should also take queue objects
+    if ( defined $args{'VALUE'} && $args{'VALUE'} !~ /^\d+$/ ) {
         my $queue = new RT::Queue( $self->CurrentUser );
         $queue->Load( $args{'VALUE'} );
-        $args{VALUE} = $queue->Name;
+        $args{'VALUE'} = $queue->Id;
     }
 
     # What if they pass in an Id?  Check for isNum() and convert to
@@ -1581,10 +1569,10 @@ sub LimitQueue {
 
     $self->Limit(
         FIELD       => 'Queue',
-        VALUE       => $args{VALUE},
+        VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join(
-            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{VALUE},
+            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{'VALUE'},
         ),
     );
 

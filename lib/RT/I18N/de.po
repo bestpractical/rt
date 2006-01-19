@@ -4017,15 +4017,15 @@ msgstr "Status von %1 auf %2 geändert"
 
 #: html/Ticket/Elements/Tabs:172
 msgid "Steal"
-msgstr "Übernehmen"
+msgstr "Stehlen"
 
 #: lib/RT/Queue_Overlay.pm:118
 msgid "Steal tickets"
-msgstr "Anfragen übernehmen"
+msgstr "Anfragen stehlen"
 
 #: lib/RT/Queue_Overlay.pm:118
 msgid "StealTicket"
-msgstr "AnfrageÜbernehmen"
+msgstr "AnfrageStehlen"
 
 #: lib/RT/Transaction_Overlay.pm:667
 #. ($Old->Name)

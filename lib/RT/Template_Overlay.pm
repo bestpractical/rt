@@ -103,23 +103,11 @@ sub _Accessible {
 
 sub _Set {
     my $self = shift;
-
-    # use super::value or we get acl blocked
-    if ( ( defined $self->SUPER::_Value('Queue') )
-        && ( $self->SUPER::_Value('Queue') == 0 ) )
-    {
-        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ModifyTemplate') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
+    
+    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
-    else {
-
-        unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
-    }
-    return ( $self->SUPER::_Set(@_) );
-
+    return $self->SUPER::_Set( @_ );
 }
 
 # }}}
@@ -147,26 +135,12 @@ ok($t2->QueueObj->id, "Got the template's queue objet");
 =cut
 
 sub _Value {
-
     my $self  = shift;
-    my $field = shift;
 
-   
-    #If the current user doesn't have ACLs, don't let em at it.  
-    #use super::value or we get acl blocked
-    if ( ( !defined $self->__Value('Queue') )
-        || ( $self->__Value('Queue') == 0 ) )
-    {
-        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ShowTemplate') ) {
-            return (undef);
-        }
+    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+        return undef;
     }
-    else {
-        unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
-            return (undef);
-        }
-    }
-    return ( $self->__Value($field) );
+    return $self->__Value( @_ );
 
 }
 
@@ -183,18 +157,12 @@ Load a template, either by number or by name
 sub Load {
     my $self       = shift;
     my $identifier = shift;
+    return undef unless $identifier;
 
-    if ( !$identifier ) {
-        return (undef);
+    if ( $identifier =~ /\D/ ) {
+        return $self->LoadByCol( 'Name', $identifier );
     }
-
-    if ( $identifier !~ /\D/ ) {
-        $self->SUPER::LoadById($identifier);
-    }
-    else {
-        $self->LoadByCol( 'Name', $identifier );
-
-    }
+    return $self->LoadById( $identifier );
 }
 
 # }}}
@@ -260,32 +228,32 @@ sub Create {
         Content     => undef,
         Queue       => 0,
         Description => '[no description]',
-        Type => 'Action',    #By default, template are 'Action' templates
-        Name => undef,
+        Type        => 'Action', #By default, template are 'Action' templates
+        Name        => undef,
         @_
     );
 
-    if ( !$args{'Queue'}  ) {
+    unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
-            return (undef);
+            return ( undef, $self->loc('Permission denied') );
         }
         $args{'Queue'} = 0;
     }
     else {
         my $QueueObj = new RT::Queue( $self->CurrentUser );
-        $QueueObj->Load( $args{'Queue'} ) || return ( 0, $self->loc('Invalid queue') );
+        $QueueObj->Load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
     
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
-            return (undef);
+            return ( undef, $self->loc('Permission denied') );
         }
         $args{'Queue'} = $QueueObj->Id;
     }
 
     my $result = $self->SUPER::Create(
-        Content => $args{'Content'},
-        Queue   =>  $args{'Queue'},
+        Content     => $args{'Content'},
+        Queue       => $args{'Queue'},
         Description => $args{'Description'},
-        Name        => $args{'Name'}
+        Name        => $args{'Name'},
     );
 
     return ($result);
@@ -340,15 +308,16 @@ sub Parse {
     my $self = shift;
 
     #We're passing in whatever we were passed. it's destined for _ParseContent
-    my $content = $self->_ParseContent(@_);
+    my ($content, $msg) = $self->_ParseContent(@_);
+    return ( 0, $msg ) unless defined $content;
 
     #Lets build our mime Entity
 
     my $parser = MIME::Parser->new();
 
-        # On some situations TMPDIR is non-writable. sad but true.
-        $parser->output_to_core(1);
-        $parser->tmp_to_core(1);
+    # On some situations TMPDIR is non-writable. sad but true.
+    $parser->output_to_core(1);
+    $parser->tmp_to_core(1);
 
     #If someone includes a message, don't extract it
     $parser->extract_nested_messages(1);
@@ -363,15 +332,13 @@ sub Parse {
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
     $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
-    my $error = ( $@ || $parser->last_error );
-
-    if ($error) {
-        $RT::Logger->error("$error");
+    if ( my $error = $@ || $parser->last_error ) {
+        $RT::Logger->error( "$error" );
         return ( 0, $error );
     }
 
     # Unfold all headers
-    $self->{'MIMEObj'}->head->unfold();
+    $self->{'MIMEObj'}->head->unfold;
 
     return ( 1, $self->loc("Template parsed") );
 
@@ -400,9 +367,13 @@ sub _ParseContent {
     $T::rtname      = $RT::rtname;
     *T::loc         = sub { $T::Ticket->loc(@_) };
 
+    my $content = $self->Content;
+    unless ( defined $content ) {
+        return ( undef, $self->loc("Permissions denied") );
+    }
+
     # We need to untaint the content of the template, since we'll be working
     # with it
-    my $content = $self->Content();
     $content =~ s/^(.*)$/$1/;
     my $template = Text::Template->new(
         TYPE   => 'STRING',
@@ -413,11 +384,11 @@ sub _ParseContent {
     my $retval = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
         my (%args) = @_;
         $RT::Logger->error("Template parsing error: $args{error}")
-	    unless $args{error} =~ /^Died at /; # ignore intentional die()
+            unless $args{error} =~ /^Died at /; # ignore intentional die()
         $is_broken++;
-	return undef;
+        return undef;
     } );
-    return undef if $is_broken;
+    return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
     # MIME::Parser has problems dealing with high-bit utf8 data.
     Encode::_utf8_off($retval);

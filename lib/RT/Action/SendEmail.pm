@@ -253,12 +253,28 @@ sub SendMessage {
 
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
-            open( my $mail, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
+            # don't ignore CHLD signal to get proper exit code
+            local $SIG{'CHLD'} = 'DEFAULT';
+
+            my $mail;
+            unless( open $mail, "|$RT::SendmailPath $RT::SendmailArguments" ) {
+                die "Couldn't run $RT::SendmailPath: $!";
+            }
+
+            # if something wrong with $mail->print we will get PIPE signal, handle it
+            local $SIG{'PIPE'} = sub { die "$RT::SendmailPath closed pipe" };
             $MIMEObj->print($mail);
-            close($mail);
+
+            unless ( close $mail ) {
+                die "Close failed: $!" if $!; # system error
+                # sendmail exit statuses mostly errors with data not software
+                # TODO: status parsing: core dump, exit on signal or EX_*
+                $RT::Logger->warning( "$RT::SendmailPath exitted with status $?" );
+            }
         };
         if ($@) {
-            $RT::Logger->crit( $msgid . "Could not send mail. -" . $@ );
+            $RT::Logger->crit( $msgid . "Could not send mail: " . $@ );
+            return 0;
         }
     }
     else {

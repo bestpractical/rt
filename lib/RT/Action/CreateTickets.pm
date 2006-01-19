@@ -189,6 +189,8 @@ A complete list of acceptable fields for this beastie:
        Resolved        => 
        Owner           => Username or id of an RT user who can and should own 
                           this ticket
+       ForceOwner      => Same as Owner, but sets the owner even if the owner
+                          is already set
    +   Requestor       => Email address
    +   Cc              => Email address 
    +   AdminCc         => Email address 
@@ -209,7 +211,12 @@ A complete list of acceptable fields for this beastie:
                           as content until we hit a line containing only 
                           ENDOFCONTENT
        ContentType     => the content-type of the Content field
+       UpdateType      => 'correspond' or 'comment'; used in conjunction with
+                          'content' if this is an update.
+
        CustomField-<id#> => custom field value
+       CF-name           => custom field value
+       CustomField-name  => custom field value
 
 Fields marked with an * are required.
 
@@ -700,11 +707,16 @@ sub UpdateByTemplate {
             ARGSRef       => $ticketargs
         );
 
+        if ( $ticketargs->{'ForceOwner'} ) {
+            ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'ForceOwner'}, "Force");
+            push @results, $msg;
+        }
+
         push @results,
             $self->UpdateWatchers( $T::Tickets{$template_id}, $ticketargs );
 
-        next unless exists $ticketargs->{'UpdateType'};
-        if ( $ticketargs->{'UpdateType'} =~ /^(private|public)$/ ) {
+        next unless $ticketargs->{'MIMEObj'};
+        if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Comment(
                 CcMessageTo  => $ticketargs->{'Cc'},
@@ -717,7 +729,7 @@ sub UpdateByTemplate {
                     ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
-        } elsif ( $ticketargs->{'UpdateType'} eq 'response' ) {
+        } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Correspond(
                 CcMessageTo  => $ticketargs->{'Cc'},
@@ -932,6 +944,9 @@ sub ParseLines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
+                if (($tag =~ /^(requestor|cc|admincc)$/i or grep {lc $_ eq $tag} keys %LINKTYPEMAP) and $args{$tag} =~ /,/) {
+                    $args{$tag} = [ split /,\s*/, $args{$tag} ];
+                }
             }
         }
     }
@@ -960,7 +975,8 @@ sub ParseLines {
         Starts          => $args{'starts'},
         Started         => $args{'started'},
         Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
+        Owner           => $args{'forceowner'} || $args{'owner'},
+        ForceOwner      => $args{'forceowner'},
         Requestor       => $args{'requestor'},
         Cc              => $args{'cc'},
         AdminCc         => $args{'admincc'},
@@ -988,7 +1004,6 @@ sub ParseLines {
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
-            warn $orig_tag;
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByName( Name => $1, Queue => $ticketargs{Queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
@@ -999,7 +1014,6 @@ sub ParseLines {
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
         }
-        warn "We have a cf! yay "
     }
 
     $self->GetDeferred( \%args, $template_id, $links, $postponed );
@@ -1017,112 +1031,105 @@ Parses a tab or comma delimited template. Should only ever be called by Parse
 sub _ParseXSVTemplate {
     my $self = shift;
     my %args = (@_);
-        $RT::Logger->debug("Line: id");
-        use Regexp::Common qw(delimited);
-        my $first
-            = substr( $args{'Content'}, 0, index( $args{'Content'}, "\n" ) );
-        $first =~ s/\r$//;
 
-        my $delimiter;
-        if ( $first =~ /\t/ ) {
-            $delimiter = "\t";
-        } else {
-            $delimiter = ',';
-        }
-        my @fields = split( /$delimiter/, $first );
+    use Regexp::Common qw(delimited);
+    my $first
+      = substr( $args{'Content'}, 0, index( $args{'Content'}, "\n" ) );
+    $first =~ s/\r$//;
 
-        my $delimiter_re = qr[$delimiter];
+    my $delimiter;
+    if ( $first =~ /\t/ ) {
+        $delimiter = "\t";
+    } else {
+        $delimiter = ',';
+    }
+    my @fields = split( /$delimiter/, $first );
 
-        my $delimited  = qr[[^$delimiter]+];
-        my $empty      = qr[^[$delimiter](?=[$delimiter])];
-        my $justquoted = qr[$RE{quoted}];
+    my $delimiter_re = qr[$delimiter];
+    my $justquoted = qr[$RE{quoted}];
 
-        $args{'Content'}
-            = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
-        $RT::Logger->debug("First: $first");
+    $args{'Content'}
+      = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
 
-        foreach my $line ( split( /\n/, $args{'Content'} ) ) {
-            next unless $line;
-            $RT::Logger->debug("Line: $line");
+  LINE:
+    while ($args{'Content'}) {
+        $args{'Content'} =~ s/^(\s*\r?\n)+//;
 
-            my $queue;
-            my $requestor;
-            # first item is $template_id
-            my $i = 0;
-            my $template_id;
-            while ($line
-                && $line =~ s/^($justquoted|.*?)(?:$delimiter_re|$)//ix )
-            {
-                
-                
-                # If it's the first field, it must be a ticket id. 
-                if ( $i == 0 ) {
-                    $queue     = 0;
-                    $requestor = 0;
-                    my $tid = $1;
-                    $tid =~ s/^\s*(.*?)\s*$/$1/;
-                    next unless $tid;
+        my $queue;
+        my $requestor;
+        # first item is $template_id
+        my $i = 0;
+        my $template_id;
+        my $EOL = 0;
 
-                    if ( $tid =~ /^\d+$/ ) {
-                        $template_id = 'update-' . $tid;
-                        push @{ $self->{'update_tickets'} }, $template_id;
+      COLUMN:
+        while (not $EOL and length $args{'Content'} and $args{'Content'} =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
+            $EOL = not $2;
+            # If it's the first field, it must be a ticket id. 
+            if ( $i == 0 ) {
+                $queue     = 0;
+                $requestor = 0;
+                my $tid = $1;
+                $tid =~ s/^\s*(.*?)\s*$/$1/;
+                next COLUMN unless $tid;
 
-                    } elsif ( $tid =~ /^#base-(\d+)$/ ) {
-
-                        $template_id = 'base-' . $1;
-                        push @{ $self->{'base_tickets'} }, $template_id;
-
-                    } else {
-                        $template_id = 'create-' . $tid;
-                        push @{ $self->{'create_tickets'} }, $template_id;
-                    }
-                    $RT::Logger->debug("template_id: $tid");
+                if ( $tid =~ /^\d+$/ ) {
+                    $template_id = 'update-' . $tid;
+                    push @{ $self->{'update_tickets'} }, $template_id;
+                } elsif ( $tid =~ /^#base-(\d+)$/ ) {
+                    $template_id = 'base-' . $1;
+                    push @{ $self->{'base_tickets'} }, $template_id;
                 } else {
-                    my $value = $1;
-                    $value = '' if ( $value =~ /^$delimiter$/ );
-                    if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
-                        substr( $value, 0,  1 ) = "";
-                        substr( $value, -1, 1 ) = "";
-                    }
-                    my $field = $fields[$i];
-                    next unless $field;
-                    $field =~ s/^\s//;
-                    $field =~ s/\s$//;
-                    if (   $field =~ /Body/i
-                        || $field =~ /Data/i
-                        || $field =~ /Message/i )
-                    {
-                        $field = 'Content';
-                    }
-                    if ( $field =~ /Summary/i ) {
-                        $field = 'Subject';
-                    }
-                    if ( $field =~ /Queue/i ) {
-                        $queue = 1;
-                        $value ||= $args{'Queue'};
-                    }
-                    if ( $field =~ /Requestor/i ) {
-                        $requestor = 1;
-                        $value ||= $args{'Requestor'};
-                    }
-                    $self->{'templates'}->{$template_id} .= $field . ": ";
-                    $self->{'templates'}->{$template_id} .= $value || "";
-                    $self->{'templates'}->{$template_id} .= "\n";
-                    $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
-                        if $field =~ /content/i;
+                    $template_id = 'create-' . $tid;
+                    push @{ $self->{'create_tickets'} }, $template_id;
                 }
-                $i++;
+            } else {
+                my $value = $1;
+                if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
+                    substr( $value, 0,  1 ) = "";
+                    substr( $value, -1, 1 ) = "";
+                }
+                my $field = $fields[$i];
+                
+                next COLUMN unless $field;
+                $field =~ s/^\s//;
+                $field =~ s/\s$//;
+                if (   $field =~ /^Body$/i
+                    || $field =~ /^Data$/i
+                    || $field =~ /^Message$/i )
+                  {
+                      $field = 'Content';
+                  }
+                if ( $field =~ /^Summary$/i ) {
+                    $field = 'Subject';
+                }
+                if ( $field =~ /^Queue$/i ) {
+                    $queue = 1;
+                    $value ||= $args{'Queue'};
+                }
+                if ( $field =~ /^Requestor$/i ) {
+                    $requestor = 1;
+                    $value ||= $args{'Requestor'};
+                }
+                $self->{'templates'}->{$template_id} .= $field . ": ";
+                $self->{'templates'}->{$template_id} .= $value || "";
+                $self->{'templates'}->{$template_id} .= "\n";
+                $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
+                  if $field =~ /^Content$/i;
             }
-            if ( !$queue && $args{'Queue'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Queue: $args{'Queue'}\n";
-            }
-            if ( !$requestor && $args{'Requestor'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Requestor: $args{'Requestor'}\n";
-            }
+            $i++;
         }
+        if ( !$queue && $args{'Queue'} ) {
+            $self->{'templates'}->{$template_id}
+              .= "Queue: $args{'Queue'}\n";
+        }
+        if ( !$requestor && $args{'Requestor'} ) {
+            $self->{'templates'}->{$template_id}
+              .= "Requestor: $args{'Requestor'}\n";
+        }
+    }
 }
+
 sub GetDeferred {
     my $self      = shift;
     my $args      = shift;
@@ -1158,7 +1165,7 @@ sub GetUpdateTemplate {
     $string .= "Queue: " . $t->QueueObj->Name . "\n";
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
-    $string .= "UpdateType: response\n";
+    $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
     $string .= "Due: " . $t->DueObj->AsString . "\n";
@@ -1282,8 +1289,8 @@ sub UpdateWatchers {
         next unless defined $args->{$type};
         my $newaddr = $args->{$type};
 
-        my @old = split( ', ', $oldaddr );
-        my @new = split( ', ', $newaddr );
+        my @old = split( /,\s*/, $oldaddr );
+        my @new = split( /,\s*/, $newaddr );
         my %oldhash = map { $_ => 1 } @old;
         my %newhash = map { $_ => 1 } @new;
 

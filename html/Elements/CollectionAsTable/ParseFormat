@@ -48,7 +48,7 @@ $Format
 </%ARGS>
 
 <%init>
-use Regexp::Common;
+use Regexp::Common qw/delimited/;
 my @Columns;
 
 while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
