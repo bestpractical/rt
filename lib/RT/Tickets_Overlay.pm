@@ -273,7 +273,7 @@ sub _EnumLimit {
         or $op     eq "!=";
 
     my $meta = $FIELD_METADATA{$field};
-    if ( defined $meta->[1] ) {
+    if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
@@ -1467,12 +1467,11 @@ sub LimitQueue {
         @_
     );
 
-    #TODO  VALUE should also take queue names and queue objects
-    #TODO FIXME why are we canonicalizing to name, not id, robrt?
-    if ( $args{VALUE} =~ /^\d+$/ ) {
+    #TODO  VALUE should also take queue objects
+    if ( defined $args{'VALUE'} && $args{'VALUE'} !~ /^\d+$/ ) {
         my $queue = new RT::Queue( $self->CurrentUser );
         $queue->Load( $args{'VALUE'} );
-        $args{VALUE} = $queue->Name;
+        $args{'VALUE'} = $queue->Id;
     }
 
     # What if they pass in an Id?  Check for isNum() and convert to
@@ -1482,10 +1481,10 @@ sub LimitQueue {
 
     $self->Limit(
         FIELD       => 'Queue',
-        VALUE       => $args{VALUE},
+        VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join(
-            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{VALUE},
+            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{'VALUE'},
         ),
     );
 
