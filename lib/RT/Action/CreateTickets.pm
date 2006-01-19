@@ -708,7 +708,6 @@ sub UpdateByTemplate {
         );
 
         if ( $ticketargs->{'ForceOwner'} ) {
-            warn "Force user";
             ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'ForceOwner'}, "Force");
             push @results, $msg;
         }
@@ -1005,7 +1004,6 @@ sub ParseLines {
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
-            warn $orig_tag;
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByName( Name => $1, Queue => $ticketargs{Queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
