@@ -58,7 +58,6 @@ CREATE TABLE Links (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
 CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
 CREATE INDEX Links4 ON Links (Type,LocalBase);
