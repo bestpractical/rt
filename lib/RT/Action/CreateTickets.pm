@@ -189,6 +189,8 @@ A complete list of acceptable fields for this beastie:
        Resolved        => 
        Owner           => Username or id of an RT user who can and should own 
                           this ticket
+       ForceOwner      => Same as Owner, but sets the owner even if the owner
+                          is already set
    +   Requestor       => Email address
    +   Cc              => Email address 
    +   AdminCc         => Email address 
@@ -705,6 +707,12 @@ sub UpdateByTemplate {
             ARGSRef       => $ticketargs
         );
 
+        if ( $ticketargs->{'ForceOwner'} ) {
+            warn "Force user";
+            ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'ForceOwner'}, "Force");
+            push @results, $msg;
+        }
+
         push @results,
             $self->UpdateWatchers( $T::Tickets{$template_id}, $ticketargs );
 
@@ -968,7 +976,8 @@ sub ParseLines {
         Starts          => $args{'starts'},
         Started         => $args{'started'},
         Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
+        Owner           => $args{'forceowner'} || $args{'owner'},
+        ForceOwner      => $args{'forceowner'},
         Requestor       => $args{'requestor'},
         Cc              => $args{'cc'},
         AdminCc         => $args{'admincc'},
