@@ -239,9 +239,10 @@ sub Load {
     #TODO modify this routine to look at EffectiveId and do the recursive load
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
-
+    # FIXME: there is no TicketBaseURI option in config
+    my $base_uri = RT->Config->Get('TicketBaseURI');
     #If it's a local URI, turn it into a ticket id
-    if ( $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
+    if ( $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
     }
 
@@ -291,12 +292,14 @@ sub LoadByURI {
     my $self = shift;
     my $uri  = shift;
 
-    if ( $uri =~ /^$RT::TicketBaseURI(\d+)$/ ) {
+    # FIXME: there is no TicketBaseURI option in config
+    my $base_uri = RT->Config->Get('TicketBaseURI');
+    if ( $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
-        return ( $self->Load($id) );
+        return $self->Load($id);
     }
     else {
-        return (undef);
+        return undef;
     }
 }
 
@@ -3377,7 +3380,7 @@ sub _SetTold {
   Returns an array reference of all transactions created on this ticket during
   this ticket object's lifetime, or undef if there were none.
 
-  Only works when the $RT::UseTransactionBatch config variable is set to true.
+  Only works when the C<UseTransactionBatch> config option is set to true.
 
 =cut
 
