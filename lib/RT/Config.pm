@@ -97,7 +97,7 @@ Then, the core configuration file is loaded to set fallback values
 for all settings; it bases some values on settings from the site
 configuration file.
 
-B<Note> that core config file skips options if site config
+B<Note> that core config file don't change options if site config
 has set them so to add value to some option instead of
 overriding you have to copy original value from core config file.
 
@@ -107,7 +107,6 @@ sub LoadConfig
 {
     my $self = shift;
     my %args = (File => '', @_);
-    my $config = $args{'File'};
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
     $self->_LoadConfig( %args );
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
@@ -120,23 +119,23 @@ sub _LoadConfig
     my $self = shift;
     my %args = (File => '', @_);
 
-    my ($is_site,$is_ext) = (0, 1);
-    $is_ext = 0 if $args{'File'} =~ /^RT_(?:Site)?Config$/;
-    $is_site = 1 if $args{'File'} =~ /SiteConfig/;
+    my $is_ext = $args{'File'} !~ /^RT_(?:Site)?Config/? 1: 0;
+    my $is_site = $args{'File'} =~ /SiteConfig/? 1: 0;
 
     eval {
         package RT;
         local *Set = sub(\[$@%]@) {
             my ($opt_ref, @args) = @_;
             my ($pack, $file, $line) = caller;
-            return $self->SetFromConfig( Option => $opt_ref,
-                                         Value => [@args],
-                                         Package => $pack,
-                                         File => $file,
-                                         Line => $line,
-                                         SiteConfig => $is_site,
-                                         Extension => $is_ext,
-                                       );
+            return $self->SetFromConfig(
+                Option     => $opt_ref,
+                Value      => [@args],
+                Package    => $pack,
+                File       => $file,
+                Line       => $line,
+                SiteConfig => $is_site,
+                Extension  => $is_ext,
+            );
         };
         local @INC = ($LocalEtcPath, $EtcPath);
         require $args{'File'};
