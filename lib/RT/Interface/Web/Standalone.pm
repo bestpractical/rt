@@ -17,7 +17,7 @@ sub setup_escapes {
 } 
 
 sub default_mason_config {
-    return @RT::MasonParameters;
+    return RT->Config->Get('MasonParameters');
 } 
 
 sub handle_request {
@@ -25,7 +25,7 @@ sub handle_request {
     my $self = shift;
     my $cgi = shift;
 
-    Module::Refresh->refresh if $RT::DevelMode;
+    Module::Refresh->refresh if RT->Config->Get('DevelMode');
 
     RT::ConnectToDatabase();
 

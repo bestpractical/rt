@@ -28,7 +28,7 @@ Returns name of the class that is used as sessions storage.
 
 sub Class {
     no warnings 'once';
-    my $class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
+    my $class = RT->Config->Get('WebSessionClass') || $backends{RT->Config->Get('DatabaseType')} || 'Apache::Session::File';
     eval "require $class";
     die $@ if $@;
     return $class;
@@ -57,7 +57,7 @@ new session objects.
 
 sub Attributes {
 
-    return $_[0]->Backends->{$RT::DatabaseType} ? {
+    return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
             Handle     => $RT::Handle->dbh,
             LockHandle => $RT::Handle->dbh,
         } : {
