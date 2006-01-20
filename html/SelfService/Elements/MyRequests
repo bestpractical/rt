@@ -54,7 +54,7 @@
 % while (my $Ticket = $MyTickets->Next) {
 <tr>
 <td>
-<a href="<%$RT::WebPath%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
+<a href="<%RT->Config->Get('WebPath')%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
 </td>
 <td>
 <%loc($Ticket->Status)%>

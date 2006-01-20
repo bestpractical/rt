@@ -138,11 +138,11 @@ sub SetRecipients {
         push ( @Bcc, $self->TicketObj->QueueObj->AdminCc->MemberEmailAddresses  );
     }
 
-    if ($RT::UseFriendlyToLine) {
+    if (RT->Config->Get('UseFriendlyToLine')) {
         unless (@To) {
             push (
 		@PseudoTo,
-		sprintf($RT::FriendlyToLineFormat, $arg, $self->TicketObj->id),
+		sprintf(RT->Config->Get('FriendlyToLineFormat'), $arg, $self->TicketObj->id),
 	    );
         }
     }
@@ -152,7 +152,7 @@ sub SetRecipients {
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
     # unless a flag is set 
-    if ($RT::NotifyActor) {
+    if (RT->Config->Get('NotifyActor')) {
         @{ $self->{'To'} }  = @To;
         @{ $self->{'Cc'} }  = @Cc;
         @{ $self->{'Bcc'} } = @Bcc;

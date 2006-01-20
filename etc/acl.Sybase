@@ -1,6 +1,10 @@
+
 sub acl {
-return (
-"SP_ADDLOGIN ${RT::DatabaseUser}, ${RT::DatabasePassword}, ${RT::DatabaseName} ",
-);
+    my $db_name = RT->Config->Get('DatabaseName');
+    my $db_user = RT->Config->Get('DatabaseUser');
+    my $db_pass = RT->Config->Get('DatabasePassword');
+
+    return ("SP_ADDLOGIN $db_user, $db_pass, $db_name");
 }
+
 1;

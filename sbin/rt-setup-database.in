@@ -84,7 +84,7 @@ GetOptions(
 $| = 1;    #unbuffer that output.
 
 require RT::Handle;
-my $Handle = RT::Handle->new($RT::DatabaseType);
+my $Handle = RT::Handle->new(RT->Config->Get('DatabaseType'));
 $Handle->BuildDSN;
 my $dbh;
 
@@ -101,14 +101,14 @@ if ( $args{'action'} eq 'init' ) {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
       || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
     print "Now creating a database for RT.\n";
-    if ($RT::DatabaseType ne 'Oracle' ||
-        $args{'dba'} ne $RT::DatabaseUser) {
-    create_db();
+    if (RT->Config->Get('DatabaseType') ne 'Oracle' ||
+        $args{'dba'} ne RT->Config->Get('DatabaseUser')) {
+        create_db();
     } else {
-        print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
+        print "...skipped as ".$args{'dba'} ." is not " . RT->Config->Get('DatabaseUser') . " or we're working with Oracle.\n";
     }
 
-    if ($RT::DatabaseType eq "mysql") {
+    if (RT->Config->Get('DatabaseType') eq "mysql") {
         # Check which version we're running
         my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
         print "*** Warning: RT is unsupported on MySQL versions before 4.0.x\n" if $version < 4;
@@ -127,7 +127,7 @@ if ( $args{'action'} eq 'init' ) {
     }
     
     # SQLite can't deal with the disconnect/reconnect
-    unless ($RT::DatabaseType eq 'SQLite') {
+    unless (RT->Config->Get('DatabaseType') eq 'SQLite') {
 
         $dbh->disconnect;
         $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
@@ -135,7 +135,7 @@ if ( $args{'action'} eq 'init' ) {
     print "Now populating database schema.\n";
     insert_schema();
     print "Now inserting database ACLs\n";
-    insert_acl() unless ($RT::DatabaseType eq 'Oracle');
+    insert_acl() unless (RT->Config->Get('DatabaseType') eq 'Oracle');
     print "Now inserting RT core system objects\n";
     insert_initial_data();
     print "Now inserting RT data\n";
@@ -176,11 +176,11 @@ sub insert_schema {
     my (@schema);
     print "Creating database schema.\n";
 
-    if ( -f $base_path . "/schema." . $RT::DatabaseType ) {
+    if ( -f $base_path . "/schema." . RT->Config->Get('DatabaseType') ) {
 	no warnings 'unopened';
 
-        open( SCHEMA, "<" . $base_path . "/schema." . $RT::DatabaseType );
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
+        open( SCHEMA, "<" . $base_path . "/schema." . RT->Config->Get('DatabaseType') );
+        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . RT->Config->Get('DatabaseType') );
 
         my $statement = "";
         foreach my $line (<SCHEMA>, ($_ = ';;'), <SCHEMA_LOCAL>) {
@@ -209,7 +209,7 @@ sub insert_schema {
 
     }
     else {
-        die "Couldn't find schema file for " . $RT::DatabaseType . "\n";
+        die "Couldn't find schema file for " . RT->Config->Get('DatabaseType') . "\n";
     }
     print "Done setting up database schema.\n";
 
@@ -219,7 +219,7 @@ sub insert_schema {
 
 # {{{ sub drop_db
 sub drop_db {
-    if ( $RT::DatabaseType eq 'Oracle' ) {
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
         print <<END;
 
 To delete the tables and sequences of the RT Oracle database by running 
@@ -232,46 +232,46 @@ END
     unless ( $args{'force'} ) {
         print <<END;
 
-About to drop $RT::DatabaseType database $RT::DatabaseName on $RT::DatabaseHost.
-WARNING: This will erase all data in $RT::DatabaseName.
+About to drop ${\RT->Config->Get('DatabaseType')} database RT->Config->Get('DatabaseName') on RT->Config->Get('DatabaseHost').
+WARNING: This will erase all data in RT->Config->Get('DatabaseName').
 
 END
         exit unless _yesno();
 
     }
 
-    print "Dropping $RT::DatabaseType database $RT::DatabaseName.\n";
+    print "Dropping ". RT->Config->Get('DatabaseType') ." database ". RT->Config->Get('DatabaseName') .".\n";
 
-    if ( $RT::DatabaseType eq 'SQLite' ) {
-	unlink $RT::DatabaseName or warn $!;
+    if ( RT->Config->Get('DatabaseType') eq 'SQLite' ) {
+	unlink RT->Config->Get('DatabaseName') or warn $!;
 	return;
     }
-    $dbh->do("Drop DATABASE $RT::DatabaseName") or warn $DBI::errstr;
+    $dbh->do("Drop DATABASE ". RT->Config->Get('DatabaseName')) or warn $DBI::errstr;
 }
 
 # }}}
 
 # {{{ sub create_db
 sub create_db {
-    print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
-    if ( $RT::DatabaseType eq 'SQLite' ) {
+    print "Creating ". RT->Config->Get('DatabaseType') ." database ". RT->Config->Get('DatabaseName') .".\n";
+    if ( RT->Config->Get('DatabaseType') eq 'SQLite' ) {
         return;
     }
-    elsif ( $RT::DatabaseType eq 'Pg' ) {
-        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'");
+    elsif ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+        $dbh->do("CREATE DATABASE ". RT->Config->Get('DatabaseName') ." WITH ENCODING='UNICODE'");
         if ($DBI::errstr) {
-            $dbh->do("CREATE DATABASE $RT::DatabaseName") || die $DBI::errstr;
+            $dbh->do("CREATE DATABASE ". RT->Config->Get('DatabaseName')) || die $DBI::errstr;
         }
     }
-    elsif ($RT::DatabaseType eq 'Oracle') {
+    elsif (RT->Config->Get('DatabaseType') eq 'Oracle') {
         insert_acl();
     }
-    elsif ( $RT::DatabaseType eq 'Informix' ) {
-	$ENV{DB_LOCALE} = 'en_us.utf8';
-        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
+    elsif ( RT->Config->Get('DatabaseType') eq 'Informix' ) {
+        $ENV{DB_LOCALE} = 'en_us.utf8';
+        $dbh->do("CREATE DATABASE ". RT->Config->Get('DatabaseName') ." WITH BUFFERED LOG");
     }
     else {
-        $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
+        $dbh->do("CREATE DATABASE ". RT->Config->Get('DatabaseName')) or die $DBI::errstr;
     }
 }
 
@@ -280,9 +280,9 @@ sub create_db {
 sub get_dba_password {
     print "In order to create or update your RT database,";
     print "this script needs to connect to your "
-      . $RT::DatabaseType
+      . RT->Config->Get('DatabaseType')
       . " instance on "
-      . $RT::DatabaseHost . " as "
+      . RT->Config->Get('DatabaseHost') . " as "
       . $args{'dba'} . ".\n";
     print "Please specify that user's database password below. If the user has no database\n";
     print "password, just press return.\n\n";
@@ -306,28 +306,29 @@ sub _yesno {
 # {{{ insert_acls
 sub insert_acl {
 
-        my $base_path = (shift || $RT::EtcPath);
+    my $base_path = (shift || $RT::EtcPath);
+    my $db_type = RT->Config->Get('DatabaseType');
 
-    if ( $RT::DatabaseType =~ /^oracle$/i ) {
+    if ( $db_type =~ /^oracle$/i ) {
         do $base_path . "/acl.Oracle"
           || die "Couldn't find ACLS for Oracle\n" . $@;
     }
-    elsif ( $RT::DatabaseType =~ /^pg$/i ) {
+    elsif ( $db_type =~ /^pg$/i ) {
         do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
     }
-    elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
+    elsif ( $db_type =~ /^mysql$/i ) {
         do $base_path . "/acl.mysql"
           || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
     }
-    elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
+    elsif ( $db_type =~ /^Sybase$/i ) {
         do $base_path . "/acl.Sybase"
           || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
     }
-    elsif ( $RT::DatabaseType =~ /^informix$/i ) {
+    elsif ( $db_type =~ /^informix$/i ) {
         do $base_path . "/acl.Informix"
           || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
     }
-    elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
+    elsif ( $db_type =~ /^SQLite$/i ) {
         return;
     }
     else {
@@ -357,19 +358,19 @@ and user creates and drops
 sub get_system_dsn {
 
     my $dsn = $Handle->DSN;
+    my $db_name = RT->Config->Get('DatabaseName');
 
     #with mysql, you want to connect sans database to funge things
-    if ( $RT::DatabaseType eq 'mysql' ) {
-        $dsn =~ s/dbname=$RT::DatabaseName//;
-
+    if ( RT->Config->Get('DatabaseType') eq 'mysql' ) {
+        $dsn =~ s/dbname=\Q$db_name//;
+    }
+    elsif ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
         # with postgres, you want to connect to database1
+        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
     }
-    elsif ( $RT::DatabaseType eq 'Pg' ) {
-        $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
-    }
-    elsif ( $RT::DatabaseType eq 'Informix' ) {
-	# with Informix, you want to connect sans database:
-	$dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
+    elsif ( RT->Config->Get('DatabaseType') eq 'Informix' ) {
+        # with Informix, you want to connect sans database:
+        $dsn =~ s/Informix:\Q$db_name/Informix:/;
     }
     return $dsn;
 }
@@ -415,7 +416,7 @@ sub insert_initial_data {
         exit(1);
     }
     print "done.\n";
-    $RT::Handle->Disconnect() unless ($RT::DatabaseType eq 'SQLite');
+    $RT::Handle->Disconnect() unless (RT->Config->Get('DatabaseType') eq 'SQLite');
 
 }
 
@@ -632,7 +633,7 @@ sub insert_data {
         }
         print "done.\n";
     }
-    $RT::Handle->Disconnect() unless ($RT::DatabaseType eq 'SQLite');
+    $RT::Handle->Disconnect() unless (RT->Config->Get('DatabaseType') eq 'SQLite');
     print "Done setting up database content.\n";
 }
 

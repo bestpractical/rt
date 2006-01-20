@@ -47,7 +47,7 @@ my $uristr = "t:1";
 $uri->ParseURI($uristr);
 is(ref($uri->Object), "RT::Ticket", "Object loaded is a ticket");
 is($uri->Object->Id, 1, "Object loaded has correct ID");
-is($uri->URI, 'fsck.com-rt://'.$RT::Organization.'/ticket/1',
+is($uri->URI, 'fsck.com-rt://'.RT->Config->Get('Organization').'/ticket/1',
    "URI object has correct URI string");
 
 =end testing

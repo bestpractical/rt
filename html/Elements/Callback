@@ -75,7 +75,7 @@ if (!$callbacks) {
     }
     
     $m->notes($CacheKey => $callbacks);
-    $cache{$Page,$_CallbackName} = $callbacks if !$RT::DevelMode;
+    $cache{$Page,$_CallbackName} = $callbacks if !RT->Config->Get('DevelMode');
 }
 
 my @rv;

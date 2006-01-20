@@ -112,7 +112,7 @@
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
 <input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked%> /> <&|/l&>Let this user be granted rights</&><br />
 		    
-% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
+% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <table>
 <tr>
 <td align="right">

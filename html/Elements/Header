@@ -53,14 +53,14 @@
 % if ($Refresh > 0) {
     <meta http-equiv="refresh" content="<%$Refresh%>" />
 % }
-    <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png" />
-    <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/<% $RT::WebDefaultStylesheet %>/main.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/print.css" type="text/css" media="print" />
+    <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
+    <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get('WebDefaultStylesheet') %>/main.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 % if ($RSSAutoDiscovery) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
-    <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/util.js"></script>
-    <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/titlebox-state.js"></script>
+    <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
+    <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
     <script type="text/javascript"><!--
         onLoadHook("loadTitleBoxStates()");
 % if ($Focus) {
@@ -86,12 +86,12 @@
     <&|/l&>Not logged in.</&>
 % }
 %if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
-    | <a href="<%$RT::WebPath%><%$Prefs%>"><&|/l&>Preferences</&></a>
+    | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 % }
   <& /Elements/Callback, %ARGS &>
 % unless (!$session{'CurrentUser'}->Name
-%         or ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth)) {
-    | <a  href="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
+%         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
+    | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % }
   </div>
 % }

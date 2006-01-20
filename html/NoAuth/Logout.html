@@ -68,5 +68,5 @@ $m->comp('/Elements/Callback', _CallbackName => 'AfterSessionDelete', %ARGS);
 </%INIT>
 
 <%ARGS>
-$URL => $RT::WebPath."/"
+$URL => RT->Config->Get('WebPath')."/"
 </%ARGS>

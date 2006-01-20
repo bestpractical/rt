@@ -294,7 +294,7 @@ sub ParseTicketId {
 Takes a hashref object containing QueueObj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc 
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
-email address  and anything that the $RTAddressRegexp matches.
+email address and anything that the RT->Config->Get('RTAddressRegexp') matches.
 
 =cut
 
@@ -416,7 +416,7 @@ sub ParseAddressFromHeader {
 =head2 IsRTaddress ADDRESS
 
 Takes a single parameter, an email address. 
-Returns true if that address matches the $RTAddressRegexp.  
+Returns true if that address matches the RT->Config->Get('RTAddressRegexp').  
 Returns false, otherwise.
 
 =begin testing
@@ -434,8 +434,8 @@ sub IsRTAddress {
 
     # Example: the following rule would tell RT not to Cc 
     #   "tickets@noc.example.com"
-    if ( defined($RT::RTAddressRegexp) &&
-                       $address =~ /$RT::RTAddressRegexp/ ) {
+    my $address_re = RT->Config->Get('RTAddressRegexp');
+    if ( defined $address_re && $address =~ /$address_re/ ) {
         return(1);
     } else {
         return (undef);

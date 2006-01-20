@@ -789,11 +789,11 @@ should become		<&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="
 
 
 
-The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   $RT::rtname", title => 'Login' &>
+The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->Config->Get('rtname')", title => 'Login' &>
 
 should become 	<& /Elements/TitleBoxStart, 
 			width=> "40%",
-			titleright => loc("RT [_1] for [_2]",$RT::VERSION, $RT::rtname),
+			titleright => loc("RT [_1] for [_2]",$RT::VERSION, RT->Config->Get('rtname')),
 			title => loc('Login'),
 	      	&>
 	

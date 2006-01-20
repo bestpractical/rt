@@ -154,7 +154,7 @@ ok ($id, $msg);
 
 # we need to swap out SendMessage to test the new things we care about;
 &iso8859_redef_sendmessage;
-$RT::EmailOutputEncoding = 'iso-8859-1';
+RT->Config->Set(EmailOutputEncoding => 'iso-8859-1');
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
@@ -393,8 +393,10 @@ sub text_plain_russian_redef_sendmessage {
                  ';
 }
 
-shift @RT::EmailInputEncodings;
-$RT::EmailOutputEncoding = 'utf-8';
+my @input_encodings = RT->Config->Get(' EmailInputEncodings' );
+shift @input_encodings;
+RT->Config->Set(EmailInputEncodings => @input_encodings );
+RT->Config->Set(EmailOutputEncoding => 'utf-8');
 # }}}
 
 

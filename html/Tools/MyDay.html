@@ -54,7 +54,7 @@
 %  $class = 'class="oddline"';
 % }
 <tr <%$class|n%>><td colspan="2"><h2><a
-href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
+href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
 <tr <%$class|n%>><td><span class="label">Worked:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" /> minutes
 </td>

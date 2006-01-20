@@ -53,7 +53,7 @@
 % $i++;
 % if ($reminder->RefersTo->First) {
 % my $ticket= $reminder->RefersTo->First->TargetObj;
-<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
+<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
 <%$reminder->OwnerObj->Name %>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>

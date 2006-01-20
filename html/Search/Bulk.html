@@ -67,7 +67,7 @@
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    BaseURL => $RT::WebPath."/Search/Bulk.html?"
+    BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?"
    &>
 
 <hr>
@@ -206,7 +206,7 @@ my (@results);
 
 $Page ||= 1;
 
-$Format ||= $RT::DefaultSearchResultFormat;
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
 # inject _CHECKBOX to the first field.
 $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;

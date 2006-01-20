@@ -78,10 +78,10 @@ $ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
-$DisplayPath => $RT::WebPath."/Ticket/Display.html?id=".$Ticket->id
-$AttachPath => $RT::WebPath."/Ticket/Attachment"
-$UpdatePath => $RT::WebPath."/Ticket/Update.html"
-$EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
+$DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
+$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
+$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1

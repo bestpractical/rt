@@ -9,8 +9,8 @@ BEGIN {
 }
 use Test::WWW::Mechanize;
 
-$RT::WebPath ||= ''; # Shut up a warning
-use constant BaseURL => "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+RT->Config->Get('WebPath') ||= ''; # Shut up a warning
+use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
 
 
 my $user_obj = RT::User->new($RT::SystemUser);

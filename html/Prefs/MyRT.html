@@ -84,7 +84,7 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
         push @results, loc ('Preferences saved for [_1].', loc('summary rows'));
     }
 }
-$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
+$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
@@ -93,7 +93,7 @@ unless (exists $session{'my_rt_portlets'}) {
 my $portlets = $session{'my_rt_portlets'};
 
 my %seen;
-my @items = map ["component-$_", $_], grep !$seen{$_}++, @$RT::HomepageComponents;
+my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
 my @sys_searches;
 my @searches = $m->comp( "/Search/Elements/UserSearches" );

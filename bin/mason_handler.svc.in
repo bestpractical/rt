@@ -110,7 +110,7 @@ BEGIN {
 	$Win32::TieRegistry::Registry->{
 	    'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\\'.
 	    'W3SVC\Parameters\Virtual Roots\\'
-	}->{$RT::WebPath || '/'} = "$path,,205";
+	}->{RT->Config->Get('WebPath') || '/'} = "$path,,205";
 	    
 	$Win32::TieRegistry::Registry->{
 	    'HKEY_LOCAL_MACHINE\Software\FASTCGI\.html\\'
@@ -230,7 +230,8 @@ while( my $cgi = CGI::Fast->new ) {
     my $comp = $ENV{'PATH_INFO'};
 
     $comp = $1 if ($comp =~ /^(.*)$/);
-    $comp =~ s|^$RT::WebPath\b||i;
+    my $web_path = RT->Config->Get('WebPath');
+    $comp =~ s|^\Q$web_path\E\b||i;
     $comp .= "index.html" if ($comp =~ /\/$/);
     $comp =~ s/.pl$/.html/g;
     

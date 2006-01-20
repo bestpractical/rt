@@ -45,12 +45,12 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="approval">
   <div class="name">
-    <a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font>
+    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font>
   </div>
 % if ($ShowApproving) {
 %     foreach my $approving ( $ticket->AllDependedOnBy( Type => 'ticket' ) ) {
   <div class="originating-ticket">
-    <span class="link"><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a></span>
+    <span class="link"><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a></span>
     <div class="info">
       <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
       <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>

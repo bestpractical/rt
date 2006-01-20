@@ -231,11 +231,11 @@ creation of a trouble ticket regarding:
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$rtname} #{$Ticket->id()}].
+assigned an ID of [{RT->Config->Get(\'rtname\')} #{$Ticket->id()}].
 
 Please include the string:
 
-         [{$rtname} #{$Ticket->id}]
+         [{RT->Config->Get(\'rtname\')} #{$Ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -261,7 +261,7 @@ Transaction: {$Transaction->Description}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
- Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
+ Ticket <URL: {RT->Config->Get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
 
 
 {$Transaction->Content()}
@@ -276,7 +276,7 @@ Transaction: {$Transaction->Description}
       Content     => 'RT-Attach-Message: yes
 
 
-<URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
+<URL: {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
 
 {$Transaction->Content()}
 '
@@ -298,7 +298,7 @@ Transaction: {$Transaction->Description}
 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
-{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
+{RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Content()}
@@ -311,7 +311,7 @@ This is a comment.  It is not sent to the Requestor(s):
        Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
 
 
-{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
+{RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
 
 {$Transaction->Content()}
 '
@@ -339,8 +339,8 @@ Greetings,
 There is a new item pending your approval: "{$Ticket->Subject()}", 
 a summary of which appears below.
 
-Please visit {$RT::WebURL}Approvals/Display.html?id={$Ticket->id}
-to approve or reject this ticket, or {$RT::WebURL}Approvals/ to
+Please visit {RT->Config->Get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}
+to approve or reject this ticket, or {RT->Config->Get(\'WebURL\')}Approvals/ to
 batch-process all your pending approvals.
 
 -------------------------------------------------------------------------
@@ -547,6 +547,7 @@ while (my $link = $links->Next) {
 	$obj->SetStatus( Status => 'open', Force => 1 );
     }
     elsif ($RT::UseCodeTickets and $obj->Type eq 'code') {
+        #XXX: $RT::UseCodeTickets used only once here!!!
 	my $code = $obj->Transactions->First->Content;
 	my $rv;
 
@@ -592,19 +593,26 @@ return 0; # ignore $passed;
     { Name => 'Search - My Tickets',
       Description => '[_1] highest priority tickets I own', # loc
       Content     =>
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
+      { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                 . q{Priority, QueueName, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Priority',
-        Order   => 'DESC' },
+        Order   => 'DESC'
+      },
     },
     { Name => 'Search - Unowned Tickets',
       Description => '[_1] newest unowned tickets', # loc
       Content     =>
 # 'Take' #loc
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
+      { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                 . q{QueueName, ExtendedStatus, CreatedRelative, }
+                 . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">__loc(Take)__</a>/TITLE:&nbsp;'},
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Created',
-        Order   => 'DESC' },
+        Order   => 'DESC'
+      },
     },
     { Name => 'HomepageSettings',
       Description => 'HomepageSettings',

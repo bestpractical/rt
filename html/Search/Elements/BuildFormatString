@@ -60,7 +60,7 @@ $CurrentDisplayColumns => undef
 <%init>
 
 unless ($Format) {         
-    $Format = $RT::DefaultSearchResultFormat;
+    $Format = RT->Config->Get('DefaultSearchResultFormat');
 }   
    
 
@@ -184,11 +184,11 @@ elsif ( $AddCol ) {
     }
     if ( $Link eq "Display" ) {
         $column{Prefix} .=
-          "<a HREF=\"" . $RT::WebPath . "/Ticket/Display.html?id=__id__\">";
+          "<a HREF=\"" . RT->Config->Get('WebPath') . "/Ticket/Display.html?id=__id__\">";
         $column{Suffix} .= "</a>";
     }
     elsif ( $Link eq "Take" ) {
-        $column{Prefix} .= "<a HREF=\"" . $RT::WebPath
+        $column{Prefix} .= "<a HREF=\"" . RT->Config->Get('WebPath')
           . "/Ticket/Display.html?Action=Take&id=__id__\">";
         $column{Suffix} .= "</a>";
     }

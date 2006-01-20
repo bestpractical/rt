@@ -47,20 +47,20 @@
       <tr>
 	<td valign="top" width="50%" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
-		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
+		title_href =>"RT->Config->Get('WebPath')/Ticket/Modify.html?id=".$Ticket->Id, 
 		class => 'ticket-info-basics' &>
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  </&>
 
 % if ($Ticket->QueueObj->TicketCustomFields->First) {
 	  <&| /Widgets/TitleBox, title => loc('Custom Fields'), 
-		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
+		title_href =>"RT->Config->Get('WebPath')/Ticket/Modify.html?id=".$Ticket->Id, 
 		class => 'ticket-info-cfs'  &> 
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 	  </&>
 % }
 	  <&| /Widgets/TitleBox, title => loc('People'), 
-		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
+		title_href =>"RT->Config->Get('WebPath')/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
 		class => 'ticket-info-people' &>
             <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  </&>
@@ -71,21 +71,21 @@
 	</td>
 	<td valign="top" width="50%" class="boxcontainer">
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
-		title_href =>"$RT::WebPath/Ticket/Reminders.html?id=".$Ticket->Id, 
+		title_href =>"RT->Config->Get('WebPath')/Ticket/Reminders.html?id=".$Ticket->Id, 
 		class => 'ticket-info-reminders' &>
-            <form action="<%$RT::WebPath%>/Ticket/Display.html" method="post">
+            <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
 	      <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
               <div align="right"><input type="submit" class="button" value="Save" /></div>
             </form>
 	  </&>
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
-		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
+		title_href =>"RT->Config->Get('WebPath')/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		class => 'ticket-info-dates' &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  </&>
 
 	  <&| /Widgets/TitleBox, title => loc('Links'), 
-		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
+		title_href => "RT->Config->Get('WebPath')/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		class => 'ticket-info-links' &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
           </&>

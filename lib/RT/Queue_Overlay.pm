@@ -183,8 +183,8 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    if (@RT::ActiveStatus) {
-    	return (@RT::ActiveStatus)
+    if (RT->Config->Get('ActiveStatus')) {
+    	return (RT->Config->Get('ActiveStatus'))
     } else {
         $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_ACTIVE_STATUS);
@@ -203,8 +203,8 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    if (@RT::InactiveStatus) {
-    	return (@RT::InactiveStatus)
+    if (RT->Config->Get('InactiveStatus')) {
+    	return (RT->Config->Get('InactiveStatus'))
     } else {
         $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_INACTIVE_STATUS);

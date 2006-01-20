@@ -66,7 +66,7 @@ if ($SavedSearch) {
 	$m->out ("Saved Search $SavedSearch not found");
 	return;
     }
-    $customize = $RT::WebPath.'/Search/Build.html?'.
+    $customize = RT->Config->Get('WebPath').'/Search/Build.html?'.
 	$m->comp('/Elements/QueryString',
 		 LoadSavedSearch => $SavedSearch);
 }
@@ -77,12 +77,12 @@ else {
 	return;
     }
     $SearchArg = $user->Preferences($search, $search->Content);
-    $customize = $RT::WebPath.'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search).'-'.$search->Id)
+    $customize = RT->Config->Get('WebPath').'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search).'-'.$search->Id)
 }
 
-my $rows = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
+my $rows = $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 $SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
-$SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
+$SearchArg->{'Format'} =~ s/__WebPath__/RT->Config->Get('WebPath')/g;
 $SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 my $QueryString = '?' . $m->comp('/Elements/QueryString',
                                   %$SearchArg);

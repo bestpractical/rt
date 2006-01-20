@@ -151,7 +151,7 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 
 </%INIT>
 <%ARGS>
-$URIFile => $RT::WebPath."/Ticket/Display.html"
+$URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
 $Tickets => undef
 $Attachments => undef
@@ -161,6 +161,6 @@ $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
 $ShowTitleBarCommands => 1
-$AttachPath => $RT::WebPath."/Ticket/Attachment"
-$UpdatePath => $RT::WebPath."/Ticket/Update.html"
+$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
 </%ARGS>

@@ -490,7 +490,7 @@ sub ProcessUpdateMessage {
           . $args{'TicketObj'}->id . "-"
           . "0" . "-"  # Scrip
           . "0" . "@"  # Email sent
-          . $RT::Organization
+              . RT->Config->Get('Organization')
           . ">" );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {

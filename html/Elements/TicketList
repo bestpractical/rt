@@ -125,7 +125,7 @@ if ($OrderBy =~ /\|/) {
 $Collection->RowsPerPage($Rows) if ($Rows);
 $Collection->GotoPage($Page-1); # SB uses page 0 as the first page
 
-$Format ||= $RT::DefaultSearchResultFormat;
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
@@ -162,7 +162,7 @@ $AllowSorting => undef
 $Order => undef
 $OrderBy => undef
 $BaseURL => undef
-$Format => $RT::DefaultSearchResultFormat
+$Format => RT->Config->Get('DefaultSearchResultFormat')
 $DisplayFormat => undef
 $ShowNavigation => 1
 $ShowHeader => 1

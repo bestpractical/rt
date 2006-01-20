@@ -49,9 +49,7 @@ use RT::I18N;
 use RT::CurrentUser;
 use RT::System;
 
-use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
-        $CORE_CONFIG_FILE
-        $SITE_CONFIG_FILE
+use vars qw($VERSION $Config $System $SystemUser $Nobody $Handle $Logger
         $BasePath
         $EtcPath
         $VarPath
@@ -67,8 +65,6 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
 );
 
 $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
-$CORE_CONFIG_FILE = "@CONFIG_FILE_PATH@/RT_Config.pm";
-$SITE_CONFIG_FILE = "@CONFIG_FILE_PATH@/RT_SiteConfig.pm";
 
 @DATABASE_ENV_PREF@
 
@@ -283,7 +279,7 @@ sub InitLogging {
         require Log::Dispatch::File;
         $RT::Logger->add(Log::Dispatch::File->new
                        ( name=>'rtlog',
-                         min_level=> $RT::LogToFile,
+			 min_level=> RT->Config->Get('LogToFile'),
                          filename=> $filename,
                          mode=>'append',
                          callbacks => $simple_cb,
@@ -308,7 +304,7 @@ sub InitLogging {
                        min_level => $RT::LogToSyslog,
                        callbacks => $syslog_cb,
                        stderr => 1,
-                       @RT::LogToSyslogConf
+               RT->Config->Get('LogToSyslogConf')
                      ));
     }
 

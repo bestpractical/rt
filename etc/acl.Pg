@@ -1,67 +1,67 @@
+
 sub acl {
     my $dbh = shift;
 
     my @acls;
 
     my @tables = qw (
-
-      attachments_id_seq
-      Attachments
-      Attributes
-      attributes_id_seq
-      queues_id_seq
- Queues 
-      links_id_seq
- Links 
-      principals_id_seq
- Principals 
-      groups_id_seq
- Groups 
-      scripconditions_id_seq
- ScripConditions 
-      transactions_id_seq
- Transactions 
-      scrips_id_seq
- Scrips 
-      acl_id_seq
- ACL 
-      groupmembers_id_seq
- GroupMembers 
-      cachedgroupmembers_id_seq
- CachedGroupMembers 
-      users_id_seq
- Users 
-      tickets_id_seq
- Tickets 
-      scripactions_id_seq
- ScripActions 
-      templates_id_seq
- Templates 
- objectcustomfieldvalues_id_s
- ObjectCustomFieldValues 
-      customfields_id_seq
- CustomFields 
- objectcustomfields_id_s
- ObjectCustomFields 
-      customfieldvalues_id_seq
-      CustomFieldValues
-      sessions
+        attachments_id_seq
+        Attachments
+        Attributes
+        attributes_id_seq
+        queues_id_seq
+        Queues 
+        links_id_seq
+        Links 
+        principals_id_seq
+        Principals 
+        groups_id_seq
+        Groups 
+        scripconditions_id_seq
+        ScripConditions 
+        transactions_id_seq
+        Transactions 
+        scrips_id_seq
+        Scrips 
+        acl_id_seq
+        ACL 
+        groupmembers_id_seq
+        GroupMembers 
+        cachedgroupmembers_id_seq
+        CachedGroupMembers 
+        users_id_seq
+        Users 
+        tickets_id_seq
+        Tickets 
+        scripactions_id_seq
+        ScripActions 
+        templates_id_seq
+        Templates 
+        objectcustomfieldvalues_id_s
+        ObjectCustomFieldValues 
+        customfields_id_seq
+        CustomFields 
+        objectcustomfields_id_s
+        ObjectCustomFields 
+        customfieldvalues_id_seq
+        CustomFieldValues
+        sessions
     );
 
+    my $db_user = RT->Config->Get('DatabaseUser');
+    my $db_pass = RT->Config->Get('DatabasePassword');
+
     # if there's already an rt_user, drop it.
-    my @row =
-      $dbh->selectrow_array( "select usename from pg_user where usename = '" . $RT::DatabaseUser."'" );
+    my @row = $dbh->selectrow_array( "select usename from pg_user where usename = '$db_user'" );
     if ( $row[0] ) {
-        push @acls, "drop user ${RT::DatabaseUser};",;
+        push @acls, "drop user $db_user;";
     }
 
-    push @acls, "create user ${RT::DatabaseUser} with password '${RT::DatabasePassword}' NOCREATEDB NOCREATEUSER;";
+    push @acls, "create user $db_user with password '$db_pass' NOCREATEDB NOCREATEUSER;";
     foreach my $table (@tables) {
-        push @acls,
-          "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "
-          . $RT::DatabaseUser . ";";
-
+        push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to $db_user;"
     }
     return (@acls);
 }
+
 1;

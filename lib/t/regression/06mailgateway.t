@@ -58,7 +58,7 @@ RT::LoadConfig();
 RT::Init();
 use RT::I18N;
 no warnings 'once';
-my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+my $url = "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
 
 # Make sure that when we call the mailgate wrong, it tempfails
 
@@ -458,9 +458,8 @@ ok( $status, 'successfuly changed owner: '. ($msg||'') );
 is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 
 
-
-    local $TODO = "Advanced mailgate actions require an unsafe configuration";
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue general --action take-correspond"), "Opened the mailgate - $@");
+local $TODO = "Advanced mailgate actions require an unsafe configuration";
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [example.com \#$id] correspondence

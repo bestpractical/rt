@@ -88,10 +88,10 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
             # or it's of our prefered alterative type
             || (
                 (
-                    $RT::PreferRichText
+                    RT->Config->Get('PreferRichText')
                     && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
                 )
-                || ( !$RT::PreferRichText
+                || ( !RT->Config->Get('PreferRichText')
                     && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
                 )
             )
@@ -154,9 +154,9 @@ $ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
-$AttachPath => $RT::WebPath."/Ticket/Attachment"
-$UpdatePath => $RT::WebPath."/Ticket/Update.html"
-$EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
+$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
+$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => {}
 $ShowBody => 1

@@ -27,7 +27,7 @@
 #header #page-menu {
     position: relative;
     z-index: 2;
-    background: #069 url(<%$RT::WebImagesURL%>/css/ct.gif) no-repeat top left;
+    background: #069 url(<%RT->Config->Get('WebImagesURL')%>/css/ct.gif) no-repeat top left;
     min-width: 65%;
 }
 
@@ -50,15 +50,15 @@
     z-index: 3;
 }
 
-#page-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }
-#page-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#page-menu div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/cb.gif) no-repeat bottom left; }
+#page-menu div div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
 #page-menu div div div {
-    background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
+    background: url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right;
     padding: 0.2em 1em 0.4em 1em;
 }
 
-#page-menu.actions-present div div { background: url(<%$RT::WebImagesURL%>/css/cbr-b2lb.gif) no-repeat bottom right; }
-#page-menu.actions-present div div div { background: url(<%$RT::WebImagesURL%>/css/ctr-b2lb.gif) no-repeat top right; }
+#page-menu.actions-present div div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/cbr-b2lb.gif) no-repeat bottom right; }
+#page-menu.actions-present div div div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/ctr-b2lb.gif) no-repeat top right; }
 
 #header ul li {
     display: inline;
@@ -74,10 +74,10 @@
     z-index: 2;
 }
 
-/*#actions-menu div { background: url(<%$RT::WebImagesURL%>/css/cb.gif) no-repeat bottom left; }*/
-#actions-menu div div { background: url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+/*#actions-menu div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/cb.gif) no-repeat bottom left; }*/
+#actions-menu div div { background: url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
 #actions-menu div div div {
-    background: url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right;
+    background: url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right;
     padding: 0.2em 1em 0.4em 1em;
 }
 

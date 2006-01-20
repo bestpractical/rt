@@ -61,12 +61,12 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
-    BaseURL => $RT::WebPath."/Search/Results.html?"
+    BaseURL => RT->Config->Get('WebPath')."/Search/Results.html?"
 
    &>
 % my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
-<form method="get" action="<%$RT::WebPath%>/Search/Results.html">
+<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 %while (my $var = shift (@vars)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>" />
 %}
@@ -155,7 +155,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
-my $RSSFeedURL = "$RT::WebPath/Search/Results.rdf$ShortQueryString";
+my $RSSFeedURL = "RT->Config->Get('WebPath')/Search/Results.rdf$ShortQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};

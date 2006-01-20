@@ -1,5 +1,5 @@
 function createCookie(name,value,days) {
-    var path = "<%$RT::WebPath%>" ? "<%$RT::WebPath%>" : "/";
+    var path = "<%RT->Config->Get('WebPath')%>" ? "<%RT->Config->Get('WebPath')%>" : "/";
 
     if (days) {
         var date = new Date();

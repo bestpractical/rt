@@ -64,9 +64,9 @@ if ($IncludeSignature && $session{'CurrentUser'}->UserObj->Signature) {
 $QuoteTransaction => undef
 $Name => 'Content'
 $Default => ''
-$Width => $RT::MessageBoxWidth || 72
+$Width => RT->Config->Get('MessageBoxWidth') || 72
 $Height => $RT::MessageBoxHeight || 15
-$Wrap => $RT::MessageBoxWrap || 'HARD'
+$Wrap => RT->Config->Get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>
 

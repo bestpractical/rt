@@ -174,7 +174,7 @@ elsif ( $RT::WebExternalAuth ) {
             }
         }
     }
-    elsif ($RT::WebFallbackToInternalAuth) {
+    elsif (RT->Config->Get('WebFallbackToInternalAuth')) {
           unless (defined($session{'CurrentUser'})) {
                 $m->comp('/Elements/Login', %ARGS,
                          Error=> loc('You are not an authorized user'));

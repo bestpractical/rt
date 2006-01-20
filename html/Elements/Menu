@@ -84,7 +84,7 @@
 %
 %     $class->{li} = join ' ', @li;
 %     
-  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%><a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>"<% $class->{a} && qq[ class="$class->{a}"] |n%><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
+  <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%><a href="<%RT->Config->Get('WebPath')%>/<%$toptabs->{$tab}->{'path'}%>"<% $class->{a} && qq[ class="$class->{a}"] |n%><% !$level && " accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></a>
 %# Second-level items
 %     if ($toptabs->{$tab}->{'subtabs'}
 %         and keys %{$toptabs->{$tab}->{'subtabs'}})

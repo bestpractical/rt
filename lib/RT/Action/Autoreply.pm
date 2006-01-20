@@ -100,21 +100,21 @@ sub SetReturnAddress {
     my $replyto;
     if ($args{'is_comment'}) { 
 	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
-		     $RT::CommentAddress;
+		     RT->Config->Get('CommentAddress');
     }
     else {
 	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
-		     $RT::CorrespondAddress;
+		     RT->Config->Get('CorrespondAddress');
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-	if ($RT::UseFriendlyFromLine) {
+	if (RT->Config->Get('UseFriendlyFromLine')) {
 	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
 		    $self->TicketObj->QueueObj->Name;
 	    $friendly_name =~ s/"/\\"/g;
 	    $self->SetHeader( 'From',
-		        sprintf($RT::FriendlyFromLineFormat, 
-                $self->MIMEEncodeString( $friendly_name, $RT::EmailOutputEncoding ), $replyto),
+		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 
+                $self->MIMEEncodeString( $friendly_name, RT->Config->Get('EmailOutputEncoding') ), $replyto),
 	    );
 	}
 	else {

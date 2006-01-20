@@ -55,8 +55,8 @@ $r->content_type('application/rss+xml');
         use XML::RSS;
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
-          title        => "$RT::rtname: Syndicated Search",
-          link         => $RT::WebURL,
+          title        => "RT->Config->Get('rtname'): Syndicated Search",
+          link         => RT->Config->Get('WebURL'),
           description  => "",
           dc => {
           },
@@ -72,7 +72,7 @@ $r->content_type('application/rss+xml');
        my $row;
         $rss->add_item(
           title       =>  $Ticket->Subject,
-          link        => $RT::WebURL."/Ticket/Display.html?id=".$Ticket->id,
+          link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
           dc => {
             subject  => ($Ticket->Subject  || loc('No subject')),

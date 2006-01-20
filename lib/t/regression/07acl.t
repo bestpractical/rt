@@ -117,10 +117,10 @@ ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing"
 sub login {
     my $agent = shift;
 
-    my $url = "http://localhost:" . $RT::WebPort . $RT::WebPath . "/";
+    my $url = "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
     $agent->get($url);
     is( $agent->{'status'}, 200,
-        "Loaded a page - http://localhost" . $RT::WebPath );
+        "Loaded a page - http://localhost" . RT->Config->Get('WebPath') );
 
     # {{{ test a login
 

@@ -1,9 +1,19 @@
+
 sub acl {
-return () if !$RT::DatabaseUser or $RT::DatabaseUser eq 'root';
-return  (
-"USE mysql;",
-"DELETE FROM user WHERE user = '${RT::DatabaseUser}';",
-"DELETE FROM db where db = '${RT::DatabaseName}';",
-"GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON ${RT::DatabaseName}.* TO ${RT::DatabaseUser}\@'${RT::DatabaseRTHost}' IDENTIFIED BY '${RT::DatabasePassword}';");
+    my $db_name = RT->Config->Get('DatabaseName');
+    my $db_rthost = RT->Config->Get('DatabaseRTHost');
+    my $db_user = RT->Config->Get('DatabaseUser');
+    my $db_pass = RT->Config->Get('DatabasePassword');
+    return () if !$db_user || $db_user eq 'root';
+    return  (
+        "USE mysql;",
+        "DELETE FROM user WHERE user = '$db_user';",
+        "DELETE FROM db where db = '$db_name';",
+        "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
+               ON $db_name.*
+               TO $db_name\@'$db_rthost'
+               IDENTIFIED BY '$db_pass';",
+    );
 }
+
 1;

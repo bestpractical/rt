@@ -69,8 +69,8 @@ sub DefaultHandlerArgs  { (
     data_dir             => "$RT::MasonDataDir",
     allow_globals        => [qw(%session)],
     # Turn off static source if we're in developer mode.
-    static_source        => ($RT::DevelMode ? '0' : '1'), 
-    use_object_files     => ($RT::DevelMode ? '0' : '1'), 
+    static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
+    use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     autoflush            => 0
 ) };
 
@@ -102,7 +102,7 @@ sub InitSessionDir {
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( $RT::DatabaseType =~ /(?:mysql|Pg)/ ) {
+    unless ( RT->Config->Get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
 
         # Clean up our umask to protect session files
         umask(0077);
@@ -200,7 +200,7 @@ sub CleanupRequest {
     # Consistency is imprived, too.
     RT::Principal->InvalidateACLCache();
     DBIx::SearchBuilder::Record::Cachable->FlushCache
-      if ( $RT::WebFlushDbCacheEveryRequest
+      if ( RT->Config->Get('WebFlushDbCacheEveryRequest')
         and UNIVERSAL::can(
             'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache' ) );
 

@@ -60,7 +60,7 @@
 <%INIT>
 
 # XXX: we don't use this, but should.
-my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
+my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
 $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {

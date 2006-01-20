@@ -75,7 +75,7 @@ ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rt), "It's an RT::URI::fsck_com_rt");
 ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
 ok ($uri->isa('RT::Base'), "It's an RT::Base");
 
-is ($uri->LocalURIPrefix , 'fsck.com-rt://'.$RT::Organization);
+is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 
 =end testing
 
@@ -86,7 +86,7 @@ is ($uri->LocalURIPrefix , 'fsck.com-rt://'.$RT::Organization);
 sub LocalURIPrefix {
     my $self = shift;
     
-    my $prefix = $self->Scheme. "://$RT::Organization";
+    my $prefix = $self->Scheme. "://". RT->Config->Get('Organization');
 
     return ($prefix);
 }
@@ -238,7 +238,7 @@ Otherwise, return its URI
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object && ($self->ObjectType eq 'ticket')) {
-        return ( $RT::WebURL . "Ticket/Display.html?id=".$self->Object->Id);
+        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->Id);
     }   
     else {
         return ($self->URI);

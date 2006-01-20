@@ -111,7 +111,7 @@ sub Init {
         } 
     }
 
-    my @lang = @RT::LexiconLanguages;
+    my @lang = RT->Config->Get('LexiconLanguages');
     @lang = ('*') unless @lang;
 
     # Acquire all .po files and iterate them into lexicons
@@ -387,8 +387,8 @@ sub _GuessCharset {
     my $fallback = 'iso-8859-1';
     my $charset;
 
-    if ( @RT::EmailInputEncodings and eval { require Encode::Guess; 1 } ) {
-	Encode::Guess->set_suspects(@RT::EmailInputEncodings);
+    if ( RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
+	Encode::Guess->set_suspects(RT->Config->Get('EmailInputEncodings'));
 	my $decoder = Encode::Guess->guess( $_[0] );
 
 	if ( ref $decoder ) {
@@ -400,7 +400,7 @@ sub _GuessCharset {
 	    my %matched = map { $_ => 1 } split(/ or /, $1);
 	    return 'utf-8' if $matched{'utf8'}; # one and only normalization
 
-	    foreach my $suspect (@RT::EmailInputEncodings) {
+	    foreach my $suspect (RT->Config->Get('EmailInputEncodings')) {
 		next unless $matched{$suspect};
 		$RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
 		$charset = $suspect;

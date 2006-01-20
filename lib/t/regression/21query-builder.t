@@ -19,7 +19,7 @@ use RT;
 RT::LoadConfig;
 
 # get the top page
-my $url = $RT::WebURL;
+my $url = RT->Config->Get('WebURL');
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page");

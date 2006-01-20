@@ -54,9 +54,9 @@
 <input type="checkbox" class="checkbox" name="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" value="1"
         unchecked />
 % if ($watcher->MemberObj->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
+<a href="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
 % } else {
-<a href="<%$RT::WebPath%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
+<a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
 % }
 <%$watcher->MemberObj->Object->Name%></a>
 % }

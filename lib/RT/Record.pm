@@ -785,7 +785,7 @@ sub _EncodeLOB {
         my $ContentEncoding = 'none';
 
         #get the max attachment length from RT
-        my $MaxSize = $RT::MaxAttachmentSize;
+        my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
         #if the current attachment contains nulls and the
         #database doesn't support embedded nulls
@@ -810,7 +810,7 @@ sub _EncodeLOB {
         if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
 
             # if we're supposed to truncate large attachments
-            if ($RT::TruncateLongAttachments) {
+            if (RT->Config->Get('TruncateLongAttachments')) {
 
                 # truncate the attachment to that length.
                 $Body = substr( $Body, 0, $MaxSize );
@@ -818,7 +818,7 @@ sub _EncodeLOB {
             }
 
             # elsif we're supposed to drop large attachments on the floor,
-            elsif ($RT::DropLongAttachments) {
+            elsif (RT->Config->Get('DropLongAttachments')) {
 
                 # drop the attachment on the floor
                 $RT::Logger->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
@@ -1874,7 +1874,7 @@ sub BasicColumns {
 }
 
 sub WikiBase {
-  return $RT::WebPath. "/index.html?q=";
+  return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
 eval "require RT::Record_Vendor";

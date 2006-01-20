@@ -61,7 +61,7 @@ unless ($OCFV->id) {
 
 my $content_type = $OCFV->ContentType || 'text/plain';
     
-unless ($RT::TrustHTMLAttachments) {
+unless (RT->Config->Get('TrustHTMLAttachments')) {
     $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
 }
 

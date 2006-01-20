@@ -94,7 +94,7 @@
 %         $class->{li} = join ' ', @li;
 %     
 %
-    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%$RT::WebPath%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
+    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%RT->Config->Get('WebPath')%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
 %
 %         if ($sep) {
     <li class="separator">&#183;&#183;&#183;</li>
@@ -139,7 +139,7 @@
 %         if ($type->{"$action"}->{'html'}) {
       <% $type->{"$action"}->{'html'} | n %>
 %         } else {
-      <a href="<%$RT::WebPath%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
+      <a href="<%RT->Config->Get('WebPath')%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
 %         }
     </li>
 %         if ($sep) {
@@ -169,12 +169,12 @@ if ( defined $current_toptab ) {
 }
 
 if (! defined($AppName)) {
-  $AppName = loc("RT for [_1]", $RT::rtname);
+  $AppName = loc("RT for [_1]", RT->Config->Get('rtname'));
 }
 
 my ($menu_depth, $almost_last, $page_tabs);
 
-if ($RT::WebDefaultStylesheet ne '3.4-compat') {
+if (RT->Config->Get('WebDefaultStylesheet') ne '3.4-compat') {
     ($menu_depth, $almost_last) = @{$m->comp('.menu_recurse', data => $toptabs)};
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {

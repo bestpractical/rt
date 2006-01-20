@@ -52,12 +52,12 @@ BEGIN {
     use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
     use RT;
     RT::LoadConfig();
-    if ($RT::DevelMode) { require Module::Refresh; }
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 }
 
 RT::Init();
 
-my $port = shift @ARGV || $RT::WebPort || '8080';
+my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
 use RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
 $server->port($port);

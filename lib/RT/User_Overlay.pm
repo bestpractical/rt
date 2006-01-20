@@ -211,8 +211,8 @@ sub Create {
     elsif ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
     }
-    elsif ( length( $args{'Password'} ) < $RT::MinimumPasswordLength ) {
-        return ( 0, $self->loc("Password needs to be at least [_1] characters long",$RT::MinimumPasswordLength) );
+    elsif ( length( $args{'Password'} ) < RT->Config->Get('MinimumPasswordLength') ) {
+        return ( 0, $self->loc("Password needs to be at least [_1] characters long",RT->Config->Get('MinimumPasswordLength')) );
     }
 
     else {
@@ -735,8 +735,8 @@ sub SetRandomPassword {
     }
 
 
-    my $min = ( $RT::MinimumPasswordLength > 6 ?  $RT::MinimumPasswordLength : 6);
-    my $max = ( $RT::MinimumPasswordLength > 8 ?  $RT::MinimumPasswordLength : 8);
+    my $min = ( RT->Config->Get('MinimumPasswordLength') > 6 ?  RT->Config->Get('MinimumPasswordLength') : 6);
+    my $max = ( RT->Config->Get('MinimumPasswordLength') > 8 ?  RT->Config->Get('MinimumPasswordLength') : 8);
 
     my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
@@ -1032,8 +1032,8 @@ sub SetPassword {
     if ( !$password ) {
         return ( 0, $self->loc("No password set") );
     }
-    elsif ( length($password) < $RT::MinimumPasswordLength ) {
-        return ( 0, $self->loc("Password needs to be at least [_1] characters long", $RT::MinimumPasswordLength) );
+    elsif ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
+        return ( 0, $self->loc("Password needs to be at least [_1] characters long", RT->Config->Get('MinimumPasswordLength')) );
     }
     else {
         my $new = !$self->HasPassword;

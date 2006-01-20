@@ -238,7 +238,7 @@ Set($UseFriendlyToLine , 0);
 
 # sprintf() format of the friendly 'From:' header; its arguments
 # are WatcherType and TicketId.
-Set($FriendlyToLineFormat, "\"%s of $RT::rtname Ticket #%s\":;");
+Set($FriendlyToLineFormat, "\"%s of $Config->Get('rtname') Ticket #%s\":;");
 
 # By default, RT doesn't notify the person who performs an update, as they
 # already know what they've done. If you'd like to change this behaviour,
@@ -246,7 +246,8 @@ Set($FriendlyToLineFormat, "\"%s of $RT::rtname Ticket #%s\":;");
 
 Set($NotifyActor, 0);
 
-# By default, RT records each message it sends out to its own internal database.# To change this behaviour, set $RecordOutgoingEmail to 0 
+# By default, RT records each message it sends out to its own internal database.
+# To change this behaviour, set $RecordOutgoingEmail to 0 
 
 Set($RecordOutgoingEmail, 1);
 
@@ -285,7 +286,7 @@ Set($LogStackTraces , 0);
 # Log::Dispatch::Syslog documentation for more information.)  (Maybe
 # ident too, if you have multiple RT installations.)
 
-@LogToSyslogConf = () unless (@LogToSyslogConf);
+Set(@LogToSyslogConf, ());
 
 # RT has rudimentary SQL statement logging support if you have
 # DBIx-SearchBuilder 1.31_1 or higher; simply set $StatementLog to be
@@ -327,17 +328,17 @@ Set($WebPort , 80);# + ($< * 7274) % 32766 + ($< && 1024));
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-Set($WebBaseURL , "http://localhost:$WebPort");
+Set($WebBaseURL , "http://localhost:". $Config->Get('WebPort'));
 
-Set($WebURL , $WebBaseURL . $WebPath . "/");
+Set($WebURL , $Config->Get('WebBaseURL') . $Config->Get('WebPath') . "/");
 
 # $WebImagesURL points to the base URL where RT can find its images.
 
-Set($WebImagesURL , $WebPath . "/NoAuth/images/");
+Set($WebImagesURL , $Config->Get('WebPath') . "/NoAuth/images/");
 
 # $LogoURL points to the URL of the RT logo displayed in the web UI
 
-Set($LogoURL , $WebImagesURL . "bplogo.gif");
+Set($LogoURL , $Config->Get('WebImagesURL') . "bplogo.gif");
 
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication.
@@ -450,12 +451,12 @@ Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueu
 #     use MasonX::Profiler; # available on CPAN
 #     @MasonParameters = (preamble => 'my $p = MasonX::Profiler->new($m, $r);');
 
-@MasonParameters = () unless (@MasonParameters);
+Set(@MasonParameters, ());
 
 # $DefaultSearchResultFormat is the default format for RT search results
 Set ($DefaultSearchResultFormat, qq{
-   '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    QueueName, 
    OwnerName, 
@@ -477,13 +478,13 @@ Set ($DefaultSearchResultFormat, qq{
 # interface.  Defaults to all *.po lexicons; setting it to qw(en ja) will make
 # RT bilingual instead of multilingual, but will save some memory.
 
-@LexiconLanguages = qw(*) unless (@LexiconLanguages);
+Set(@LexiconLanguages, qw(*));
 
 # An array that contains default encodings used to guess which charset
 # an attachment uses if not specified.  Must be recognized by
 # Encode::Guess.
 
-@EmailInputEncodings = qw(utf-8 iso-8859-1 us-ascii) unless (@EmailInputEncodings);
+Set(@EmailInputEncodings, qw(utf-8 iso-8859-1 us-ascii));
 
 # The charset for localized email.  Must be recognized by Encode.
 
@@ -521,8 +522,8 @@ Set($AmbiguousDayInPast , 1);
 # WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
 # will break horribly.
 
-@ActiveStatus = qw(new open stalled) unless @ActiveStatus;
-@InactiveStatus = qw(resolved rejected deleted) unless @InactiveStatus;
+Set(@ActiveStatus, qw(new open stalled));
+Set(@InactiveStatus, qw(resolved rejected deleted));
 
 # }}}
 

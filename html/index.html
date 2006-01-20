@@ -93,7 +93,7 @@ if ($ARGS{'QuickCreate'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    $m->redirect($RT::WebURL."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
+    $m->redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
     $m->abort;
 }
 

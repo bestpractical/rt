@@ -397,7 +397,7 @@ sub _ParseContent {
     $T::Transaction = $args{'TransactionObj'};
     $T::Argument    = $args{'Argument'};
     $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
-    $T::rtname      = $RT::rtname;
+    $T::rtname      = RT->Config->Get('rtname');
     *T::loc         = sub { $T::Ticket->loc(@_) };
 
     # We need to untaint the content of the template, since we'll be working

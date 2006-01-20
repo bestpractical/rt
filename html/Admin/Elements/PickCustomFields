@@ -80,7 +80,7 @@
 %  # show 'move down' unless it's the last item
 %  if ($count != @CustomFields and $Checked) {
 %  $m->print(' | ') if $count > 1;
-    [<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
+    [<a href="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
 %  }
   </td>
 </tr>

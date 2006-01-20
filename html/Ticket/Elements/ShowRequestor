@@ -58,7 +58,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 </%PERL>
 
 % unless ($requestor->Privileged) {
-<&| /Widgets/TitleBox, title_href => "$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id, title=> loc("More about [_1]", $name) &>
+<&| /Widgets/TitleBox, title_href => "RT->Config->Get('WebPath')/Admin/Users/Modify.html?id=".$requestor->id, title=> loc("More about [_1]", $name) &>
 
 %# Additional information about this user.  Empty by default.
 <& /Elements/Callback, _CallbackName => 'AboutThisUser', requestor => $requestor, %ARGS &>
@@ -69,7 +69,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 <&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->Next) {
-<li><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
+<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </ul>
 
