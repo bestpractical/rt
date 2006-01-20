@@ -69,18 +69,18 @@ use RT::Date;
 use RT::User;
 use RT::Attributes;
 use RT::Base;
-use DBIx::SearchBuilder::Record::Cachable;
 
 use strict;
 use vars qw/@ISA $_TABLE_ATTR/;
 
 @ISA = qw(RT::Base);
 
-if ($RT::DontCacheSearchBuilderRecords ) {
-    push (@ISA, 'DBIx::SearchBuilder::Record');
+if ( RT->Config->Get('DontCacheSearchBuilderRecords') ) {
+    require DBIx::SearchBuilder::Record;
+    push @ISA, 'DBIx::SearchBuilder::Record';
 } else {
-    push (@ISA, 'DBIx::SearchBuilder::Record::Cachable');
-
+    require DBIx::SearchBuilder::Record::Cachable;
+    push @ISA, 'DBIx::SearchBuilder::Record::Cachable';
 }
 
 # {{{ sub _Init 
@@ -790,7 +790,7 @@ sub _EncodeLOB {
         #if the current attachment contains nulls and the
         #database doesn't support embedded nulls
 
-        if ( $RT::AlwaysUseBase64 or
+        if ( RT->Config->Get('AlwaysUseBase64') or
              ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
             # set a flag telling us to mimencode the attachment
@@ -1466,7 +1466,7 @@ sub _NewTransaction {
     if ( defined $args{'TimeTaken'} ) {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
-    if ( $RT::UseTransactionBatch and $transaction ) {
+    if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
 	    push @{$self->{_TransactionBatch}}, $trans;
     }
     return ( $transaction, $msg, $trans );
