@@ -679,8 +679,10 @@ sub CanonicalizeEmailAddress {
     # Example: the following rule would treat all email
     # coming from a subdomain as coming from second level domain
     # foo.com
-    if ($RT::CanonicalizeEmailAddressMatch && $RT::CanonicalizeEmailAddressReplace ) {
-        $email =~ s/$RT::CanonicalizeEmailAddressMatch/$RT::CanonicalizeEmailAddressReplace/gi;
+    if ( my $match   = RT->Config->Get('CanonicalizeEmailAddressMatch') and
+         my $replace = RT->Config->Get('CanonicalizeEmailAddressReplace') )
+    {
+        $email =~ s/$match/$replace/gi;
     }
     return ($email);
 }
