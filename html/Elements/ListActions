@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (@actions) {
 <&| /Widgets/TitleBox, title => loc('Results') &>
   <ul class="action-results">
 % foreach my $action (@actions) {
@@ -55,9 +54,9 @@
 % }
   </ul>
 </&>
-% }
 <%init>
-@actions = grep (/./,@actions);
+@actions = grep $_, @actions;
+return unless @actions;
 </%init>
 <%ARGS>
 @actions => undef
