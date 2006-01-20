@@ -125,14 +125,13 @@ sub TransactionObj {
 Create a new attachment. Takes a paramhash:
     
     'Attachment' Should be a single MIME body with optional subparts
-    'Parent' is an optional Parent RT::Attachment object
-    'TransactionId' is the mandatory id of the Transaction this attachment is associated with.;
+    'Parent' is an optional id of the parent attachment
+    'TransactionId' is the mandatory id of the transaction this attachment is associated with.;
 
 =cut
 
 sub Create {
     my $self = shift;
-    my ($id);
     my %args = ( id            => 0,
                  TransactionId => 0,
                  Parent        => 0,
@@ -142,8 +141,8 @@ sub Create {
     #For ease of reference
     my $Attachment = $args{'Attachment'};
 
-	    #if we didn't specify a ticket, we need to bail
-	    if ( $args{'TransactionId'} == 0 ) {
+    #if we didn't specify a ticket, we need to bail
+    if ( $args{'TransactionId'} == 0 ) {
         $RT::Logger->crit( "RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
         return (0);
 
@@ -165,37 +164,35 @@ sub Create {
 
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename || eval {
-	${ $Attachment->head->{mail_hdr_hash}{'Content-Disposition'}[0] }
-	    =~ /^.*\bfilename="(.*)"$/ ? $1 : ''
-    };
+    my $Filename = $Attachment->head->recommended_filename;
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
     unless ( defined $Attachment->bodyhandle ) {
 
-        $id = $self->SUPER::Create(
+        my $id = $self->SUPER::Create(
             TransactionId => $args{'TransactionId'},
             Parent        => 0,
             ContentType   => $Attachment->mime_type,
-            Headers => $Attachment->head->as_string,
-            MessageId => $MessageId,
-            Subject => $Subject);
+            Headers       => $Attachment->head->as_string,
+            MessageId     => $MessageId,
+            Subject       => $Subject
+        );
         
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
-
         }
 
         foreach my $part ( $Attachment->parts ) {
             my $SubAttachment = new RT::Attachment( $self->CurrentUser );
-            $SubAttachment->Create(
+            my ($id) = $SubAttachment->Create(
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,
                 Attachment    => $part,
-                ContentType   => $Attachment->mime_type,
-
             );
+            unless ($id) {
+                $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
+            }
         }
         return ($id);
     }
@@ -203,17 +200,20 @@ sub Create {
     #If it's not multipart
     else {
 
-	my ($ContentEncoding, $Body) = $self->_EncodeLOB($Attachment->bodyhandle->as_string, $Attachment->mime_type);
-        my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
-                                       ContentType   => $Attachment->mime_type,
-                                       ContentEncoding => $ContentEncoding,
-                                       Parent          => $args{'Parent'},
-                                                  Headers       =>  $Attachment->head->as_string,
-                                       Subject       =>  $Subject,
-                                       Content         => $Body,
-                                       Filename => $Filename, 
-                                        MessageId => $MessageId
-                                    );
+        my ($ContentEncoding, $Body) = $self->_EncodeLOB( $Attachment->bodyhandle->as_string,
+                                                          $Attachment->mime_type 
+                                                        );
+        my $id = $self->SUPER::Create(
+            TransactionId   => $args{'TransactionId'},
+            ContentType     => $Attachment->mime_type,
+            ContentEncoding => $ContentEncoding,
+            Parent          => $args{'Parent'},
+            Headers         => $Attachment->head->as_string,
+            Subject         => $Subject,
+            Content         => $Body,
+            Filename        => $Filename,
+            MessageId       => $MessageId,
+        );
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
         }
