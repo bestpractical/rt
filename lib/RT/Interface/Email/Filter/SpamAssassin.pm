@@ -75,7 +75,8 @@ RT::Interface::Email::Filter::SpamAssassin - Spam filter for RT
 
 =head1 SYNOPSIS
 
-    @RT::MailPlugins = ("Filter::SpamAssassin", ...);
+    # in RT config
+    Set(@MailPlugins, 'Filter::SpamAssassin', ...other filters...);
 
 =head1 DESCRIPTION
 

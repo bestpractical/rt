@@ -228,9 +228,9 @@ sub Set {
         #Convert it to an ISO format string
 
         my $date = Time::ParseDate::parsedate($args{'Value'},
-                        UK => $RT::DateDayBeforeMonth,
-                        PREFER_PAST => $RT::AmbiguousDayInPast,
-                        PREFER_FUTURE => !$RT::AmbiguousDayInPast );
+                        UK => RT->Config->Get('DateDayBeforeMonth'),
+                        PREFER_PAST => RT->Config->Get('AmbiguousDayInPast'),
+                        PREFER_FUTURE => !RT->Config->Get('AmbiguousDayInPast') );
 
         #This date has now been set to a date in the _local_ timezone.
         #since ISO dates are known to be in GMT (for RT's purposes);
@@ -416,7 +416,7 @@ sub AsString {
     return ($self->loc("Not set")) if ($self->Unix <= 0);
 
     my %args = (@_);
-    my $format = $RT::DateTimeFormat || 'DefaultFormat';
+    my $format = RT->Config->Get('DateTimeFormat') || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
     %args = (%$format, %args);
 
@@ -790,12 +790,12 @@ sub Timezone {
     if( $context eq 'user' ) {
         $tz = $self->CurrentUser->UserObj->Timezone;
     } elsif( $context eq 'server') {
-        $tz = $RT::Timezone;
+        $tz = RT->Config->Get('Timezone');
     } else {
         $tz = 'UTC';
     }
 
-    return ($tz || $RT::Timezone || 'UTC');
+    return ($tz || RT->Config->Get('Timezone') || 'UTC');
 }
 
 # }}}

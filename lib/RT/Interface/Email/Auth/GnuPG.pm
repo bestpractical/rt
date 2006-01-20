@@ -54,14 +54,10 @@ To use the gnupg-secured mail gateway, you need to do the following:
 Set up a gnupgp key directory with a pubring containing only the keys
 you care about and specify the following in your SiteConfig.pm
 
-Set($RT::GPGKeyDir, "/path/to/keyring-directory");
-@RT::MailPlugins = qw(Auth::MailFrom Auth::GnuPG Filter::TakeAction);
-
-
+Set($GPGKeyDir, "/path/to/keyring-directory");
+Set(@MailPlugins, 'Auth::GnuPG', ...other filter...);
 
 =cut
-
-
 
 sub GetCurrentUser {
     my %args = (
@@ -81,7 +77,7 @@ sub GetCurrentUser {
 
         my $parser = RT::EmailParser->new();
         $parser->SmartParseMIMEEntityFromScalar(Message => ${$args{'RawMessageRef'}}, Decode => 0);
-        $gpg = Mail::GnuPG->new( keydir => $RT::GPGKeyDir );
+        $gpg = Mail::GnuPG->new( keydir => RT->Config->Get('GPGKeyDir') );
         my $entity = $parser->Entity;
         ( $val, $key, $address ) = $gpg->verify( $parser->Entity);
           $RT::Logger->crit("Got $val - $key - $address");

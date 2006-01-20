@@ -147,16 +147,15 @@ sub Prepare {
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
 
-    # try to convert message body from utf-8 to $RT::EmailOutputEncoding
+    # try to convert message body from utf-8 to RT->Config->Get('EmailOutputEncoding')
     $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
 
     # fsck.com #5959: Since RT sends 8bit mail, we should say so.
     $self->SetHeader( 'Content-Transfer-Encoding','8bit');
 
-
-    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding,
-        'mime_words_ok' );
-    $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
+    my $output_enc = RT->Config->Get('EmailOutputEncoding');
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $output_enc, 'mime_words_ok' );
+    $self->SetHeader( 'Content-Type', 'text/plain; charset="'. $output_enc .'"' );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments() if ( $MIMEObj->head->get('RT-Attach-Message') );
@@ -251,9 +250,11 @@ sub SendMessage {
     }
 
 
-    if ( $RT::MailCommand eq 'sendmailpipe' ) {
+    if ( RT->Config->Get('MailCommand') eq 'sendmailpipe' ) {
+        my $path = RT->Config->Get('SendmailPath');
+        my $args = RT->Config->Get('SendmailArguments');
         eval {
-            open( my $mail, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
+            open( my $mail, "|$path $args" ) || die $!;
             $MIMEObj->print($mail);
             close($mail);
         };
@@ -262,20 +263,20 @@ sub SendMessage {
         }
     }
     else {
-        my @mailer_args = ($RT::MailCommand);
+        my @mailer_args = (RT->Config->Get('MailCommand'));
 
         local $ENV{MAILADDRESS};
 
-        if ( $RT::MailCommand eq 'sendmail' ) {
-            push @mailer_args, split(/\s+/, $RT::SendmailArguments);
+        if ( RT->Config->Get('MailCommand') eq 'sendmail' ) {
+            push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
         }
-        elsif ( $RT::MailCommand eq 'smtp' ) {
-            $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
-            push @mailer_args, ( Server => $RT::SMTPServer );
-            push @mailer_args, ( Debug  => $RT::SMTPDebug );
+        elsif ( RT->Config->Get('MailCommand') eq 'smtp' ) {
+            $ENV{MAILADDRESS} = RT->Config->Get('SMTPFrom') || $MIMEObj->head->get('From');
+            push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
+            push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
         }
         else {
-            push @mailer_args, $RT::MailParams;
+            push @mailer_args, RT->Config->Get('MailParams');
         }
 
         unless ( $MIMEObj->send(@mailer_args) ) {
@@ -291,7 +292,7 @@ sub SendMessage {
     }
     $success =~ s/\n//g;
 
-    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
+    $self->RecordOutgoingMailTransaction($MIMEObj) if RT->Config->Get('RecordOutgoingEmail');
 
     $RT::Logger->info($success);
 
@@ -343,7 +344,7 @@ sub AddAttachments {
             Charset  => $attach->OriginalEncoding,
             Data     => $attach->OriginalContent,
             Filename => $self->MIMEEncodeString( $attach->Filename,
-                $RT::EmailOutputEncoding ),
+                RT->Config->Get('EmailOutputEncoding') ),
             'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
             Encoding => '-SUGGEST'
         );
@@ -430,8 +431,8 @@ sub SetRTSpecialHeaders {
 
     $self->SetSubject();
     $self->SetSubjectToken();
-    $self->SetHeaderAsEncoding( 'Subject', $RT::EmailOutputEncoding )
-      if ($RT::EmailOutputEncoding);
+    $self->SetHeaderAsEncoding( 'Subject', RT->Config->Get('EmailOutputEncoding') )
+      if (RT->Config->Get('EmailOutputEncoding'));
     $self->SetReturnAddress();
     $self->SetReferencesHeaders();
 
@@ -444,11 +445,11 @@ sub SetRTSpecialHeaders {
 
       # If there is one, and we can parse it, then base our Message-ID on it
       if ($msgid 
-          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\Q$RT::Organization\E>$/
+          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->Config->Get('Organization')\E>$/
                          "<$1." . $self->TicketObj->id
                           . "-" . $self->ScripObj->id
                           . "-" . $self->ScripActionObj->{_Message_ID}
-                          . "@" . $RT::Organization . ">"/eg
+                          . "@" . RT->Config->Get('Organization') . ">"/eg
           and $2 == $self->TicketObj->id) {
         $self->SetHeader( "Message-ID" => $msgid );
       } else {
@@ -461,7 +462,7 @@ sub SetRTSpecialHeaders {
             . $self->TicketObj->id . "-"
             . $self->ScripObj->id . "-"  # Scrip
             . $self->ScripActionObj->{_Message_ID} . "@"  # Email sent
-            . $RT::Organization
+            . RT->Config->Get('Organization')
             . ">" );
       }
     }
@@ -469,9 +470,9 @@ sub SetRTSpecialHeaders {
     $self->SetHeader( 'Precedence', "bulk" )
       unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
 
-    $self->SetHeader( 'X-RT-Loop-Prevention', $RT::rtname );
+    $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
     $self->SetHeader( 'RT-Ticket',
-        $RT::rtname . " #" . $self->TicketObj->id() );
+        RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
     $self->SetHeader( 'Managed-by',
         "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
@@ -520,7 +521,7 @@ sub RemoveInappropriateRecipients {
             # caused by one of the watcher addresses being broken.
             # Default ("true") is to redistribute, for historical reasons.
 
-            if ( !$RT::RedistributeAutoGeneratedMessages ) {
+            if ( !RT->Config->Get('RedistributeAutoGeneratedMessages') ) {
 
                 # Don't send to any watchers.
                 @{ $self->{'To'} }  = ();
@@ -528,7 +529,7 @@ sub RemoveInappropriateRecipients {
                 @{ $self->{'Bcc'} } = ();
 
             }
-            elsif ( $RT::RedistributeAutoGeneratedMessages eq 'privileged' ) {
+            elsif ( RT->Config->Get('RedistributeAutoGeneratedMessages') eq 'privileged' ) {
 
                 # Only send to "privileged" watchers.
                 #
@@ -599,15 +600,15 @@ sub SetReturnAddress {
 
     if ( $args{'is_comment'} ) {
         $replyto = $self->TicketObj->QueueObj->CommentAddress
-          || $RT::CommentAddress;
+          || RT->Config->Get('CommentAddress');
     }
     else {
         $replyto = $self->TicketObj->QueueObj->CorrespondAddress
-          || $RT::CorrespondAddress;
+          || RT->Config->Get('CorrespondAddress');
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        if ($RT::UseFriendlyFromLine) {
+        if (RT->Config->Get('UseFriendlyFromLine')) {
             my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
@@ -617,9 +618,9 @@ sub SetReturnAddress {
             $self->SetHeader(
                 'From',
                 sprintf(
-                    $RT::FriendlyFromLineFormat,
+                    RT->Config->Get('FriendlyFromLineFormat'),
                     $self->MIMEEncodeString( $friendly_name,
-                        $RT::EmailOutputEncoding ),
+                        RT->Config->Get('EmailOutputEncoding') ),
                     $replyto
                 ),
             );
@@ -715,7 +716,7 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 
 sub SetSubjectToken {
     my $self = shift;
-    my $tag  = "[$RT::rtname #" . $self->TicketObj->id . "]";
+    my $tag  = "[". RT->Config->Get('rtname') ." #". $self->TicketObj->id ."]";
     my $sub  = $self->TemplateObj->MIMEObj->head->get('Subject');
     unless ( $sub =~ /\Q$tag\E/ ) {
         $sub =~ s/(\r\n|\n|\s)/ /gi;
@@ -752,16 +753,17 @@ sub SetReferencesHeaders {
     # the RT Web UI, and hence we want to *not* append its Message-ID
     # to the References and In-Reply-To.  OR it came from an outside
     # source, and we should treat it as per the RFC
-    if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>/) {
+    my $org = RT->Config->Get('Organization');
+    if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+)-0-0\@\Q$org\E>/) {
 
       # Make all references which are internal be to version which we
       # have sent out
       for (@references, @in_reply_to) {
-        s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>$/
+        s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->TicketObj->id .
              "-" . $self->ScripObj->id .
              "-" . $self->ScripActionObj->{_Message_ID} .
-             "@" . $RT::Organization . ">"/eg
+             "@" . RT->Config->Get('Organization') . ">"/eg
       }
 
       # In reply to whatever the internal message was in reply to
@@ -808,7 +810,7 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 sub PseudoReference {
 
     my $self = shift;
-    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.$RT::Organization .'>';
+    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.RT->Config->Get('Organization') .'>';
     return $pseudo_ref;
 }
 
@@ -825,8 +827,8 @@ sub SetHeaderAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
-    if ($field eq 'From' and $RT::SMTPFrom) {
-        $self->TemplateObj->MIMEObj->head->replace( $field, $RT::SMTPFrom );
+    if ($field eq 'From' and RT->Config->Get('SMTPFrom')) {
+        $self->TemplateObj->MIMEObj->head->replace( $field, RT->Config->Get('SMTPFrom') );
 	return;
     }
 
