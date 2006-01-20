@@ -64,11 +64,11 @@
     BaseURL => $RT::WebPath."/Search/Results.html?"
 
    &>
-% my @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%$RT::WebPath%>/Search/Results.html">
-%while (my $var = shift (@vars)) {
-<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>" />
+%foreach my $key (keys(%hiddens)) {
+<input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>"/>
 %}
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
 <input type="submit" class="button" value="<&|/l&>Go!</&>" />
@@ -81,9 +81,9 @@
 <a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
 <a href="<%$RT::WebPath%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
 <form method="get" action="<%$RT::WebPath%>/Search/Chart.html"><&|/l&>chart</&>
-% @vars = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
-%while (my $var = shift (@vars)) {
-<input type="hidden" class="hidden" name="<%$var%>" value="<%shift(@vars)%>" />
+% %hiddens = (Query => $Query, Format => $Format,  Rows => $Rows, OrderBy => $OrderBy,  Order => $Order);
+%foreach my $key (keys(%hiddens)) {
+<input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>"/>
 %}
 <&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
