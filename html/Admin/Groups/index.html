@@ -58,17 +58,17 @@
 %}
 </ul>
 %if (my $ids = join(',', @ids)) {
-<em>(<a href="<%$RT::WebPath%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
+<em>(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
 %}
 <br /><br />
-<form method="post" action="<% $RT::WebPath %>/Admin/Groups/index.html">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
 <input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" /> <&|/l&>Include disabled groups in listing.</&>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
 <br /><br />
-<form method="post" action="<% $RT::WebPath %>/Admin/Groups/index.html">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>

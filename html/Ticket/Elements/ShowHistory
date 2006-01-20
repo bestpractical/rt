@@ -136,7 +136,7 @@ if ($Tickets) {
 }
 
 
-my $OldestFirst = $RT::OldestTransactionsFirst? 1: 0;
+my $OldestFirst = RT->Config->Get('OldestTransactionsFirst')? 1: 0;
 $OldestFirst = $session{'CurrentUser'}->UserObj->Preferences( OldestTransactionsFirst => $OldestFirst );
 $OldestFirst = $OldestFirst? 'ASC': 'DESC';
 $Transactions->OrderByCols( { FIELD => 'Created',

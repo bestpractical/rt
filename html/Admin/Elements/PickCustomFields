@@ -57,7 +57,7 @@
   </td>
 %   }
   <td valign="top">
-    <a href="<%$RT::WebPath%>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
+    <a href="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
 % if ($CustomFieldObj->Name) {
 <b><%$CustomFieldObj->Name%></b>
 % } else {
@@ -72,7 +72,7 @@
 %  # show 'move up' unless it's the first item
 %  if ($count++ and $Checked) {
   <td valign="top">
-    [<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
+    [<a href="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
 %  } else {
   <td valign="top" align="right">
 %  }

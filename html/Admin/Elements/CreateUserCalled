@@ -43,6 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form method="get" action="<% $RT::WebPath %>/Admin/Users/Create.html">
+<form method="get" action="<% RT->Config->Get('WebPath') %>/Admin/Users/Create.html">
 <&|/l&>New user called</&> <input name="Name" size="10" /><input type="submit" class="button" value="<&|/l&>Create</&>" />
 </form>

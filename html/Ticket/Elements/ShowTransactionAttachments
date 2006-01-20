@@ -74,7 +74,7 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
 
     # If it's text
     if (   $message->ContentType =~ m{^(text|message)}i
-        && (!$RT::MaxInlineBody || $size <= $RT::MaxInlineBody) )
+        && (!RT->Config->Get('MaxInlineBody') || $size <= RT->Config->Get('MaxInlineBody')) )
     {
 
         if (

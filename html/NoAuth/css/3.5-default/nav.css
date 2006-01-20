@@ -100,15 +100,15 @@ html>body #nav :visited.selected.odd
 }
 
 /*
-#nav ul { background: #069 url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
-#nav ul div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
-#nav ul.odd { background: #08c url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
-#nav ul.odd div { background: transparent url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul { background: #069 url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul div { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul.odd { background: #08c url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul.odd div { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
 */
 
 
-#nav ul div.wrapper { background: transparent url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
-#nav ul div { background: #069 url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
-#nav ul.odd div.wrapper { background: transparent url(<%$RT::WebImagesURL%>/css/ctr.gif) no-repeat top right; }
-#nav ul div.odd { background: #08c url(<%$RT::WebImagesURL%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul div.wrapper { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul div { background: #069 url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul.odd div.wrapper { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul div.odd { background: #08c url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
 

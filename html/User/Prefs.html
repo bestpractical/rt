@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/User/Prefs.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/User/Prefs.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
 
 <table width="100%" border="0">
@@ -101,7 +101,7 @@
 </&>
 </td>
 <td valign="top" class="boxcontainer">
-% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
+% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <&| /Widgets/TitleBox, title => loc('Password') &>
 <table>
 <tr>

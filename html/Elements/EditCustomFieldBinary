@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
 %# XXX - let user download the file(s) here?
-<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>" /><a href="<%$RT::WebPath%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br />
+<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>" /><a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br />
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
 <input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload" />

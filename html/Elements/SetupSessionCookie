@@ -49,18 +49,18 @@ return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 use RT::Interface::Web::Session;
 
 my %cookies = CGI::Cookie->fetch;
-my $cookiename = "RT_SID_".$RT::rtname;
+my $cookiename = "RT_SID_".RT->Config->Get('rtname');
 $cookiename .= ".".$ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
 $SessionCookie ||= ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef ),
 
 tie %session, 'RT::Interface::Web::Session', $SessionCookie;
 undef $cookies{$cookiename} unless $session{'_session_id'} eq $SessionCookie;
 
-if ( int $RT::AutoLogoff ) {
+if ( int RT->Config->Get('AutoLogoff') ) {
     my $now = int(time/60);
     my $last_update = $session{'_session_last_update'} || 0;
 
-    if ( $last_update && ($now - $last_update - $RT::AutoLogoff) > 0 ) {
+    if ( $last_update && ($now - $last_update - RT->Config->Get('AutoLogoff')) > 0 ) {
         # clean up sessions, but we should leave the session id
         %session = (_session_id => $session{'_session_id'});
     }

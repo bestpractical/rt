@@ -78,7 +78,7 @@
 	$content_type .= ";charset=$enc";
      }
 
-     # unless ($RT::TrustMIMEAttachments) {
+     # unless (RT->Config->Get('TrustMIMEAttachments')) {
      #     $content_type = 'application/octet-stream';
      # }
 

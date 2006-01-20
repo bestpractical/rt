@@ -2,7 +2,7 @@
     { Name => 'Search - My Tickets',
       Description => '[_1] highest priority tickets I own',
       Content     =>
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
+      { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Priority',
         Order   => 'DESC' },

@@ -48,7 +48,7 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
-if ($RT::StatementLog) {
+if (RT->Config->Get('StatementLog')) {
     $RT::Handle->ClearSQLStatementLog;
     $RT::Handle->LogSQLStatements(1);
 }
@@ -97,12 +97,12 @@ unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 $r->content_type("text/html; charset=utf-8");
 
 # If it's a noauth file, don't ask for auth.
-if ( $m->base_comp->path =~ $RT::WebNoAuthRegex ) {
+if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     $m->call_next( %ARGS );
     $m->abort;
 }
 # If RT is configured for external auth, let's go through and get REMOTE_USER
-elsif ( $RT::WebExternalAuth ) {
+elsif ( RT->Config->Get('WebExternalAuth') ) {
 
     # do we actually have a REMOTE_USER equivlent?
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
@@ -110,9 +110,9 @@ elsif ( $RT::WebExternalAuth ) {
         my $orig_user = $user;
 
         $user = RT::Interface::Web::WebCanonicalizeInfo();
-        my $load_method = $RT::WebExternalGecos ? 'LoadByGecos' : 'Load';
+        my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
-        if ($^O eq 'MSWin32' and $RT::WebExternalGecos) {
+        if ($^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos')) {
             my $NodeName = Win32::NodeName();
             $user =~ s/^\Q$NodeName\E\\//i;
         }
@@ -120,12 +120,12 @@ elsif ( $RT::WebExternalAuth ) {
         $session{'CurrentUser'} = RT::CurrentUser->new();
         $session{'CurrentUser'}->$load_method($user);
         
-        if ( $RT::WebExternalAuto && !$session{'CurrentUser'}->Id ) {
+        if ( RT->Config->Get('WebExternalAuto') && !$session{'CurrentUser'}->Id ) {
             # Create users on-the-fly
 
             my $UserObj = RT::User->new( $RT::SystemUser );
             my ($val, $msg) = $UserObj->Create(
-                                  %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
+                                  %{ref(RT->Config->Get('AutoCreate')) ? RT->Config->Get('AutoCreate') : {}},
                                   Name   => $user,
                                   Gecos  => $user,
                               );
@@ -158,7 +158,7 @@ elsif ( $RT::WebExternalAuth ) {
             else {
                 # we failed to successfully create the user. abort abort abort.
                 delete $session{'CurrentUser'};
-                $m->abort unless $RT::WebFallbackToInternalAuth;
+                $m->abort unless RT->Config->Get('WebFallbackToInternalAuth');
                 $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('Cannot create user: [_1]', $msg));
             }
@@ -167,7 +167,7 @@ elsif ( $RT::WebExternalAuth ) {
         unless ( $session{'CurrentUser'}->Id ) {
             delete $session{'CurrentUser'};
             $user = $orig_user;
-            if ( $RT::WebExternalOnly ) {
+            if ( RT->Config->Get('WebExternalOnly') ) {
                 $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('You are not an authorized user'));
                 $m->abort();
@@ -246,7 +246,7 @@ else {
 
 $m->comp( '/Elements/Footer', %ARGS );
 
-if ($RT::StatementLog) {
+if (RT->Config->Get('StatementLog')) {
     my @log = $RT::Handle->SQLStatementLog;
     $RT::Handle->ClearSQLStatementLog;
     for my $stmt (@log) {
@@ -258,7 +258,7 @@ if ($RT::StatementLog) {
             # Older DBIx-SB
             $duration = $bind;
         }
-        $RT::Logger->log( level => $RT::StatementLog,
+        $RT::Logger->log( level => RT->Config->Get('StatementLog'),
                           message => "SQL(".sprintf("%.2f",$duration)."s): $sql;" . (@bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "")
                         );
     }

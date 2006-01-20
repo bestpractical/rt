@@ -52,7 +52,7 @@
 
 
 
-<form action="<%$RT::WebPath%>/User/Groups/Members.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/User/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 <table width="100%">
 <tr>

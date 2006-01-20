@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form action="<%$RT::WebPath%>/User/Groups/Modify.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/User/Groups/Modify.html" method="post">
 
 %unless ($Group->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />

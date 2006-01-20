@@ -137,7 +137,7 @@ window.onload = doOnLoadHooks;
 /* calendar functions */
 
 function openCalWindow(field) {
-    var objWindow = window.open('<%$RT::WebPath%>/Helpers/CalPopup.html?field='+field, 
+    var objWindow = window.open('<%RT->Config->Get('WebPath')%>/Helpers/CalPopup.html?field='+field, 
                                 'RT_Calendar', 
                                 'height=235,width=285,scrollbars=1');
     objWindow.focus();

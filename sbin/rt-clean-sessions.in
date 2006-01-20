@@ -62,9 +62,9 @@ require RT;
 RT::LoadConfig();
 
 if( $opt{'debug'} ) {
-    $RT::LogToScreen = 'debug';
+    RT->Config->Set( LogToScreen => 'debug' );
 } else {
-    $RT::LogToScreen = undef;
+    RT->Config->Set( LogToScreen => undef );
 }
 
 RT::ConnectToDatabase();
@@ -72,9 +72,9 @@ RT::InitLogging();
 
 require RT::Interface::Web::Session;
 
-if( int($RT::AutoLogoff) || $opt{'older'} ) {
+if( $opt{'older'} or my $alogoff = int RT->Config->Get('AutoLogoff') ) {
     my $min;
-    foreach ($RT::AutoLogoff*60, $opt{'older'}) {
+    foreach ($alogoff*60, $opt{'older'}) {
         next unless $_;
         $min = $_ unless $min;
         $min = $_ if $_ < $min;

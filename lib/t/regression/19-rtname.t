@@ -11,27 +11,27 @@ RT::Init();
 use RT::Interface::Email;
 
 # normal use case, regexp set to rtname
-RT->Config->Get(rtname => "site");
-$RT::EmailSubjectTagRegex = qr/RT->Config->Get('rtname')/ ;
-RT->Config->Get(rtname => undef);
+RT->Config->Set( rtname => "site" );
+RT->Config->Set( EmailSubjectTagRegex => qr/site/ );
+RT->Config->Set( rtname => undef );
 is(RT::Interface::Email::ParseTicketId("[site #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[othersite #123] test"), undef);
 
 # oops usecase, where the regexp is scragged
-RT->Config->Get(rtname => "site");
-$RT::EmailSubjectTagRegex = undef;
+RT->Config->Set( rtname => "site" );
+RT->Config->Set( EmailSubjectTagRegex => undef );
 is(RT::Interface::Email::ParseTicketId("[site #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[othersite #123] test"), undef);
 
 # set to a simple regexp. NOTE: we no longer match "site"
-RT->Config->Get(rtname => "site");
-$RT::EmailSubjectTagRegex = qr/newsite/;
+RT->Config->Set( rtname => "site");
+RT->Config->Set( EmailSubjectTagRegex => qr/newsite/);
 is(RT::Interface::Email::ParseTicketId("[site #123] test"), undef);
 is(RT::Interface::Email::ParseTicketId("[newsite #123] test"), 123);
 
 # set to a more complex regexp
-RT->Config->Get(rtname => "site");
-$RT::EmailSubjectTagRegex = qr/newsite||site/;
+RT->Config->Set( rtname => "site" );
+RT->Config->Set( EmailSubjectTagRegex => qr/newsite|site/ );
 is(RT::Interface::Email::ParseTicketId("[site #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[newsite #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[othersite #123] test"), undef);

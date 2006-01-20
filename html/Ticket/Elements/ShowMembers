@@ -47,7 +47,7 @@
 <ul>
 % while (my $link = $members->Next) {
 % my $member= $link->BaseObj;
-<li><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%loc($member->Status)%>]<br />
+<li><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%loc($member->Status)%>]<br />
 % if ($depth < 8) {
 <&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
 % }

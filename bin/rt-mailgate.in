@@ -175,7 +175,7 @@ Specifies what happens to email sent to this alias.  The avaliable
 basic actions are: C<correspond>, C<comment>.
 
 
-If you've set the RT configuration variable B<$RT::UnsafeEmailCommands>,
+If you've set the RT configuration variable B<< C<UnsafeEmailCommands> >>,
 C<take> and C<resolve> are also available.  You can execute two or more
 actions on a single message using a C<-> separated list.  RT will execute
 the actions in the listed order.  For example you can use C<take-comment>,
@@ -256,13 +256,13 @@ there are situations in which you will want to authenticate users
 before allowing them to communicate with the system. You can do this
 via a plug-in mechanism in the RT configuration.
 
-You can set the array C<@RT::MailPlugins> to be a list of plugins. The
+You can set the array C<@MailPlugins> to be a list of plugins. The
 default plugin, if this is not given, is C<Auth::MailFrom> - that is,
 authentication of the person is done based on the C<From> header of the
 email. If you have additional filters or authentication mechanisms, you
 can list them here and they will be called in order:
 
-    @RT::MailPlugins = (
+    Set( @MailPlugins =>
         "Filter::SpamAssassin",
         "Auth::LDAP",
         # ...
@@ -270,12 +270,12 @@ can list them here and they will be called in order:
 
 See the documentation for any additional plugins you have.
 
-You may also put Perl subroutines into the C<@RT::MailPlugins> array, if
+You may also put Perl subroutines into the C<@MailPlugins> array, if
 they behave as described below.
 
 =head1 WRITING PLUGINS
 
-What's actually going on in the above is that C<@RT::MailPlugins> is a
+What's actually going on in the above is that C<@MailPlugins> is a
 list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
 to form a package name, and then C<use>'s this module. The module is
 expected to provide a C<GetCurrentUser> subroutine, which takes a hash of

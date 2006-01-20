@@ -61,11 +61,11 @@
 %}
 </ul>
 %if (my $ids = join(',', @ids)) {
-<em>(<a href="<%$RT::WebPath%>/Download/Tabular/User/<% $ids %>/Users.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
+<em>(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
 %}
 
 <br /><br />
-<form method="post" action="<% $RT::WebPath %>/Admin/Users/index.html">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
 
 <&|/l&>Find people whose</&> <& /Elements/SelectUsers &><br />
 <input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" /> <&|/l&>Include disabled users in search.</&>

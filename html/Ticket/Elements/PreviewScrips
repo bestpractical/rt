@@ -106,7 +106,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 % }
 </ul>
 % }
-% if ($RT::PreviewScripMessages) {
+% if (RT->Config->Get('PreviewScripMessages')) {
 <textarea cols="80" rows="5">
 <%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
 </textarea>

@@ -546,8 +546,8 @@ while (my $link = $links->Next) {
     elsif ($obj->Type eq 'approval') {
 	$obj->SetStatus( Status => 'open', Force => 1 );
     }
-    elsif ($RT::UseCodeTickets and $obj->Type eq 'code') {
-        #XXX: $RT::UseCodeTickets used only once here!!!
+    elsif (RT->Config->Get('UseCodeTickets') and $obj->Type eq 'code') {
+        #XXX: RT->Config->Get('UseCodeTickets') used only once here!!!
 	my $code = $obj->Transactions->First->Content;
 	my $rv;
 

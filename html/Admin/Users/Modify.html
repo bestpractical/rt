@@ -52,7 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
 %if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {

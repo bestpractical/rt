@@ -105,7 +105,7 @@ Set($DatabaseRequireSSL , undef);
 Set($OwnerEmail , 'root');
 
 # If $LoopsToRTOwner is defined, RT will send mail that it believes
-# might be a loop to $RT::OwnerEmail
+# might be a loop to $OwnerEmail
 
 Set($LoopsToRTOwner , 1);
 

@@ -11,7 +11,7 @@ sub acl {
     foreach my $table (@tables) {
         push @acls,
           "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "
-          . $RT::DatabaseUser . ";";
+          . RT->Config->Get('DatabaseUser') . ";";
 
     }
     return (@acls);

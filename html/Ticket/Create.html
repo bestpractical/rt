@@ -50,7 +50,7 @@
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket"),
     actions => $actions &>
-<form action="<%$RT::WebPath%>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 
 <div id="Ticket-Create-basics">

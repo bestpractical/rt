@@ -53,7 +53,7 @@
 
 
 
-<form action="<%$RT::WebPath%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
 
 %unless ($Group->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />

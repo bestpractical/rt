@@ -65,7 +65,7 @@ $QuoteTransaction => undef
 $Name => 'Content'
 $Default => ''
 $Width => RT->Config->Get('MessageBoxWidth') || 72
-$Height => $RT::MessageBoxHeight || 15
+$Height => RT->Config->Get('MessageBoxHeight') || 15
 $Wrap => RT->Config->Get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>

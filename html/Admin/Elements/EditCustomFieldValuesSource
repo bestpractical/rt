@@ -11,7 +11,7 @@ Select source:
 return unless $CustomField->IsSelectionType;
 
 my @sources;
-foreach my $class( 'RT::CustomFieldValues', @RT::CustomFieldValuesSources ) {
+foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSources') ) {
     next unless $class;
 
     local $@;

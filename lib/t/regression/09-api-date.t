@@ -20,7 +20,7 @@ use_ok('RT::Date', "loaded RT::Date");
     # set timezone in all places to UTC
     $RT::SystemUser->UserObj->__Set(Field => 'Timezone', Value => 'UTC')
                                 if $RT::SystemUser->UserObj->Timezone;
-    $RT::Timezone = 'UTC';
+    RT->Config->Set( Timezone => 'UTC' );
 }
 
 {
@@ -48,7 +48,7 @@ use_ok('RT::Date', "loaded RT::Date");
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
     is($date->Timezone('server'), 'UTC', "wasn't changed");
 
-    $RT::Timezone = 'Africa/Ouagadougou';
+    RT->Config->Set( Timezone => 'Africa/Ouagadougou' );
     is($date->Timezone('server'),
        'Africa/Ouagadougou',
        "timezone of the RT server was changed");
@@ -66,7 +66,7 @@ use_ok('RT::Date', "loaded RT::Date");
        "in user context returns timezone of the server if user's one is not defined");
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
 
-    $RT::Timezone = '';
+    RT->Config->Set( Timezone => '' );
     is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'),
        'UTC',
@@ -75,7 +75,7 @@ use_ok('RT::Date', "loaded RT::Date");
        'UTC',
        "timezone of the server is not defined so UTC");
 
-    $RT::Timezone = 'UTC';
+    RT->Config->Set( Timezone => 'UTC' );
 }
 
 {
@@ -268,17 +268,17 @@ use_ok('RT::Date', "loaded RT::Date");
     my $date = RT::Date->new($current_user);
     is($date->AsString, "Not set", "AsString returns 'Not set'");
 
-    $RT::DateTimeFormat = '';
+    RT->Config->Set( DateTimeFormat => '');
     $date->Unix(1);
     is($date->AsString, 'Thu Jan 01 00:00:01 1970', "correct string");
     is($date->AsString(Date => 0), '00:00:01', "correct string");
     is($date->AsString(Time => 0), 'Thu Jan 01 1970', "correct string");
     
-    $RT::DateTimeFormat = 'RFC2822';
+    RT->Config->Set( DateTimeFormat => 'RFC2822' );
     $date->Unix(1);
     is($date->AsString, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
 
-    $RT::DateTimeFormat = { Format => 'RFC2822', Seconds => 0 };
+    RT->Config->Set( DateTimeFormat => { Format => 'RFC2822', Seconds => 0 } );
     $date->Unix(1);
     is($date->AsString, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
     is($date->AsString(Seconds => 1), 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");

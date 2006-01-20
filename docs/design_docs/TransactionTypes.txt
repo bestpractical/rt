@@ -28,8 +28,8 @@ generalized methods for
 when new transaction types are needed.
 
 
-$RT::TransactionTypes  ...and...
-%RT::TransactionTypes
+RT->Config->Get('TransactionTypes')  ...and...
+RT->Config->Get('TransactionTypes')
    - global object which contains all TransactionTypes
    - used by all UIs to create menues of possible (user) actions (one TransactionType is a user action)
 
@@ -37,7 +37,7 @@ The UIs should call sth like
 $Ticket->AddTransaction($TransactionName), which should be equivalent
 with i.e.  $Ticket->Correspond when $TransactionName is 'Correspond'
 (AUTOLOAD should call the do-sub if exists
-$RT::TransactionTypes{$TransactionName})
+RT->Config->Get('TransactionTypes')->{$TransactionName})
 
 The RT::Ticket::AddTransaction will create a new transaction of the
 right TransactionClass (maybe via a sub

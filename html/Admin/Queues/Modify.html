@@ -52,7 +52,7 @@
 
 
 
-<form action="<%$RT::WebPath%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
 %if ($Create ) { 
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
@@ -72,13 +72,13 @@
 <&|/l&>Reply Address</&>:
 </td><td>
 <input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
-<br /><span><em><&|/l , $RT::CorrespondAddress&>(If left blank, will default to [_1])</&></em></span>
+<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span>
 </td>
 <td align="right">
 
 <&|/l&>Comment Address</&>: </td><td>
 <input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>" />
-<br /><span><em><&|/l , $RT::CommentAddress&>(If left blank, will default to [_1])</&></em></span>
+<br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
 </td>
 </tr><tr>
 

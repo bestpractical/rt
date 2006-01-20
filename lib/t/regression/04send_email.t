@@ -154,7 +154,7 @@ ok ($id, $msg);
 
 # we need to swap out SendMessage to test the new things we care about;
 &iso8859_redef_sendmessage;
-RT->Config->Set(EmailOutputEncoding => 'iso-8859-1');
+RT->Config->Set( EmailOutputEncoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
@@ -359,8 +359,8 @@ sub text_html_russian_redef_sendmessage {
 
 # {{{ test a message containing a russian subject and NO content type
 
-unshift (@RT::EmailInputEncodings, 'koi8-r');
-$RT::EmailOutputEncoding = 'koi8-r';
+RT->Config->Set( EmailInputEncodings => 'koi8-r', RT->Config->Get('EmailInputEncodings') );
+RT->Config->Set( EmailOutputEncoding => 'koi8-r' );
 $content =  file_content("$RT::BasePath/lib/t/data/russian-subject-no-content-type");
 
 $parser->ParseMIMEEntityFromScalar($content);
