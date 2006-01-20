@@ -74,12 +74,13 @@
 <br />
 <br />
 <&|/l&>Users</&>
-% my $UserMembers = $Group->MembersObj;
-% $UserMembers->LimitToUsers();
+% my $Users = $Group->UserMembersObj;
+% $Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
 <ul>
-% while (my $member = $UserMembers->Next()) {
-<li><input type="checkbox" class="checkbox" name="DeleteMember-<%$member->MemberId%>" value="1" />
-<%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
+% while (my $user = $Users->Next()) {
+% $UsersSeen{$user->id} = 1 if $SkipSeenUsers;
+<li><input type="checkbox" class="checkbox" name="DeleteMember-<%$user->PrincipalObj->Id%>" value="1" />
+<%$user->Name%> (<%$user->RealName%>)
 % }
 </ul>
 <&|/l&>Groups</&>
@@ -87,6 +88,7 @@
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->Next()) {
+% $GroupsSeen{$member->MemberId} = 1 if $SkipSeenGroups;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<%$member->MemberId%>" value="1" />
 <%$member->MemberObj->Object->Name%>
 % }
@@ -94,7 +96,8 @@
 </ul>
 </td>
 <td valign="top">
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group &>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
+    SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
 </td>
 </tr>
 </table>
@@ -146,6 +149,9 @@ foreach my $member (@AddMembers) {
     push (@results, $msg);
 }
 
+my %UsersSeen;
+my %GroupsSeen;
+$GroupsSeen{$Group->id} = 1; # can't be a member of ourself
 
 </%INIT>
 
@@ -153,4 +159,8 @@ foreach my $member (@AddMembers) {
 $AddMembersUsers  => undef
 $AddMembersGroups => undef
 $id => undef
+$UserOrderBy => 'Name'
+$UserOrder => 'ASC'
+$SkipSeenUsers => 1
+$SkipSeenGroups => 1
 </%ARGS>
