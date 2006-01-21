@@ -44,55 +44,42 @@
 # 
 # END BPS TAGGED BLOCK }}}
 package RT;
+
 use strict;
-use RT::I18N;
-use RT::CurrentUser;
-use RT::System;
+use warnings;
 
-use vars qw($VERSION $Config $System $SystemUser $Nobody $Handle $Logger
-        $BasePath
-        $EtcPath
-        $VarPath
-        $LocalPath
-        $LocalEtcPath
-        $LocalLexiconPath
-        $LogDir
-        $BinPath
-        $MasonComponentRoot
-        $MasonLocalComponentRoot
-        $MasonDataDir
-        $MasonSessionDir
-);
+use File::Spec ();
 
-$VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
+use vars qw($VERSION $Config $System $SystemUser $Nobody $Handle $Logger);
+
+our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
 
 @DATABASE_ENV_PREF@
 
-$BasePath = '@RT_PATH@';
-
-$EtcPath = '@RT_ETC_PATH@';
-$BinPath = '@RT_BIN_PATH@';
-$VarPath = '@RT_VAR_PATH@';
-$LocalPath = '@RT_LOCAL_PATH@';
-$LocalEtcPath = '@LOCAL_ETC_PATH@';
-$LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
+our $BasePath = '@RT_PATH@';
+our $EtcPath = '@RT_ETC_PATH@';
+our $BinPath = '@RT_BIN_PATH@';
+our $VarPath = '@RT_VAR_PATH@';
+our $LocalPath = '@RT_LOCAL_PATH@';
+our $LocalEtcPath = '@LOCAL_ETC_PATH@';
+our $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-$MasonComponentRoot = '@MASON_HTML_PATH@';
+our $MasonComponentRoot = '@MASON_HTML_PATH@';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 
-$MasonLocalComponentRoot = '@MASON_LOCAL_HTML_PATH@';
+our $MasonLocalComponentRoot = '@MASON_LOCAL_HTML_PATH@';
 
 # $MasonDataDir Where mason keeps its datafiles
 
-$MasonDataDir = '@MASON_DATA_PATH@';
+our $MasonDataDir = '@MASON_DATA_PATH@';
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-$MasonSessionDir = '@MASON_SESSION_PATH@';
+our $MasonSessionDir = '@MASON_SESSION_PATH@';
 
 
 
@@ -122,40 +109,17 @@ have not been set already.
 =cut
 
 sub LoadConfig {
-
-    # get list of the core config files
-    my @configs = ();
-    foreach my $path( $RT::LocalEtcPath, $RT::EtcPath ) {
-        my $mask = File::Spec->catfile($path, "*_Config.pm");
-        my @files = glob $mask;
-        @files = grep { $_ !~ /^RT_Config\.pm$/ }
-                 grep { $_ && /^\w+_Config\.pm$/ }
-                 map { s/^.*[\\\/]//; $_ } @files;
-        push @configs, @files;
-    }
-    @configs = sort @configs;
-    unshift(@configs, 'RT_Config.pm');
-
-    foreach my $file( @configs ) {
-        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
-        local *Set = sub { $_[0] = $_[1] unless defined $_[0] };
-
-        # load site config
-        my $site_file = $file;
-        $site_file =~ s/(?=Config\.pm$)/Site/;
-        eval { require $site_file };
-        if( $@ && $@ !~ qr{^Can't locate \Q$site_file} ) {
-            die "Couldn't load site config file '$site_file': $@";
-        }
-
-        # load core config
-        eval { require $file };
-        if( $@ ) {
-            die "Couldn't load core config file '$file': $@";
-        }
-    }
+    require RT::Config;
+    $Config = new RT::Config;
+    $Config->LoadConfigs;
+    require RT::I18N;
     RT::I18N->Init;
 }
+
+sub Config {
+    return $Config;
+}
+
 
 =head2 Init
 
@@ -169,13 +133,15 @@ sub Init {
     ConnectToDatabase();
 
     #RT's system user is a genuine database user. its id lives here
+    require RT::CurrentUser;
     $SystemUser = new RT::CurrentUser();
     $SystemUser->LoadByName('RT_System');
     
     #RT's "nobody user" is a genuine database user. its ID lives here.
     $Nobody = new RT::CurrentUser();
     $Nobody->LoadByName('Nobody');
-  
+
+    require RT::System;
     $System = RT::System->new();
 
     InitClasses();
@@ -206,107 +172,102 @@ sub InitLogging {
     # We have to set the record separator ($, man perlvar)
     # or Log::Dispatch starts getting
     # really pissy, as some other module we use unsets it.
-
     $, = '';
     use Log::Dispatch 1.6;
 
     unless ($RT::Logger) {
 
-    $RT::Logger = Log::Dispatch->new();
+        $RT::Logger = Log::Dispatch->new;
+        my $simple_cb = sub {
+            # if this code throw any warning we can get segfault
+            no warnings;
 
-    my $simple_cb = sub {
-        # if this code throw any warning we can get segfault
-        no warnings;
+            my %p = @_;
 
-        my %p = @_;
+            my $frame = 0; # stack frame index
+            # skip Log::* stack frames
+            $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
 
-        my $frame = 0; # stack frame index
-        # skip Log::* stack frames
-        $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
+            my ($package, $filename, $line) = caller($frame);
+            $p{message} =~ s/(?:\r*\n)+$//;
+            my $str = "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n";
 
-        my ($package, $filename, $line) = caller($frame);
-        $p{message} =~ s/(?:\r*\n)+$//;
-        my $str = "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n";
-
-        if( $RT::LogStackTraces ) {
-            $str .= "\nStack trace:\n";
-            # skip calling of the Log::* subroutins
-            $frame++ while( caller($frame) && (caller($frame))[3] =~ /^Log::/ );
-            while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
-                $str .= "\t". $sub ."() called at $filename:$line\n";
+            if( $Config->Get('LogStackTraces') ) {
+                $str .= "\nStack trace:\n";
+                # skip calling of the Log::* subroutins
+                $frame++ while( caller($frame) && (caller($frame))[3] =~ /^Log::/ );
+                while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
+                    $str .= "\t". $sub ."() called at $filename:$line\n";
+                }
             }
+            return $str;
+        };
+
+        my $syslog_cb = sub {
+            my %p = @_;
+
+            my $frame = 0; # stack frame index
+            # skip Log::* stack frames
+            $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
+            my ($package, $filename, $line) = caller($frame);
+
+            # syswrite() cannot take utf8; turn it off here.
+            Encode::_utf8_off($p{message});
+
+            $p{message} =~ s/(?:\r*\n)+$//;
+            if ($p{level} eq 'debug') {
+                return "$p{message}\n"
+            } else {
+                return "$p{message} ($filename:$line)\n"
+            }
+        };
+        
+        if ( $Config->Get('LogToFile') ) {
+            my ($filename, $logdir) = (
+                $Config->Get('LogToFileNamed') || 'rt.log',
+                $Config->Get('LogDir') || File::Spec->catdir( $VarPath, 'log' ),
+            );
+            if ( $filename =~ m![/\\]! ) { # looks like an absolute path.
+                ($logdir) = $filename =~ m{^(.*[/\\])};
+            }
+            else {
+                $filename = File::Spec->catfile( $logdir, $filename );
+            }
+
+            unless ( -d $logdir && ( ( -f $filename && -w $filename ) || -w $logdir ) ) {
+                # localizing here would be hard when we don't have a current user yet
+                die "Log file '$filename' couldn't be written or created.\n RT can't run.";
+            }
+
+            require Log::Dispatch::File;
+            $RT::Logger->add( Log::Dispatch::File->new
+                           ( name=>'file',
+                             min_level=> $Config->Get('LogToFile'),
+                             filename=> $filename,
+                             mode=>'append',
+                             callbacks => $simple_cb,
+                           ));
         }
-        return $str;
-    };
-
-    my $syslog_cb = sub {
-        my %p = @_;
-
-        my $frame = 0; # stack frame index
-        # skip Log::* stack frames
-        $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
-        my ($package, $filename, $line) = caller($frame);
-
-        # syswrite() cannot take utf8; turn it off here.
-        Encode::_utf8_off($p{message});
-
-        $p{message} =~ s/(?:\r*\n)+$//;
-        if ($p{level} eq 'debug') {
-            return "$p{message}\n"
-        } else {
-            return "$p{message} ($filename:$line)\n"
+        if ( $Config->Get('LogToScreen') ) {
+            require Log::Dispatch::Screen;
+            $RT::Logger->add( Log::Dispatch::Screen->new
+                         ( name => 'screen',
+                           min_level => $Config->Get('LogToScreen'),
+                           callbacks => $simple_cb,
+                           stderr => 1,
+                         ));
         }
-    };
-    
-    if ($RT::LogToFile) {
-        my ($filename, $logdir);
-        if ($RT::LogToFileNamed =~ m![/\\]!) {
-            # looks like an absolute path.
-            $filename = $RT::LogToFileNamed;
-            ($logdir) = $RT::LogToFileNamed =~ m!^(.*[/\\])!;
+        if ( $Config->Get('LogToSyslog') ) {
+            require Log::Dispatch::Syslog;
+            $RT::Logger->add(Log::Dispatch::Syslog->new
+                         ( name => 'syslog',
+                           ident => 'RT',
+                           min_level => $Config->Get('LogToSyslog'),
+                           callbacks => $syslog_cb,
+                           stderr => 1,
+                           $Config->Get('LogToSyslogConf'),
+                         ));
         }
-        else {
-            $filename = "$RT::LogDir/$RT::LogToFileNamed";
-            $logdir = $RT::LogDir;
-        }
-
-        unless ( -d $logdir && ( ( -f $filename && -w $filename ) || -w $logdir ) ) {
-            # localizing here would be hard when we don't have a current user yet
-            die "Log file $filename couldn't be written or created.\n RT can't run.";
-        }
-
-        package Log::Dispatch::File;
-        require Log::Dispatch::File;
-        $RT::Logger->add(Log::Dispatch::File->new
-                       ( name=>'rtlog',
-			 min_level=> RT->Config->Get('LogToFile'),
-                         filename=> $filename,
-                         mode=>'append',
-                         callbacks => $simple_cb,
-                       ));
-    }
-    if ($RT::LogToScreen) {
-        package Log::Dispatch::Screen;
-        require Log::Dispatch::Screen;
-        $RT::Logger->add(Log::Dispatch::Screen->new
-                     ( name => 'screen',
-                       min_level => $RT::LogToScreen,
-                       callbacks => $simple_cb,
-                       stderr => 1,
-                     ));
-    }
-    if ($RT::LogToSyslog) {
-        package Log::Dispatch::Syslog;
-        require Log::Dispatch::Syslog;
-        $RT::Logger->add(Log::Dispatch::Syslog->new
-                     ( name => 'syslog',
-                       ident => 'RT',
-                       min_level => $RT::LogToSyslog,
-                       callbacks => $syslog_cb,
-                       stderr => 1,
-               RT->Config->Get('LogToSyslogConf')
-                     ));
-    }
 
     }
 
@@ -373,7 +334,7 @@ sub InitClasses {
 
 sub SystemUser {
     return($SystemUser);
-}	
+}
 
 sub Nobody {
     return ($Nobody);

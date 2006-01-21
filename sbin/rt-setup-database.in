@@ -54,21 +54,13 @@ use lib "@RT_LIB_PATH@";
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its
 # inheritance
-use RT;
+BEGIN {
+    use RT;
+    RT::LoadConfig();
+    RT::InitClasses();
+}
 use Carp;
-use RT::User;
-use RT::CurrentUser;
-use RT::Template;
-use RT::ScripAction;
-use RT::ACE;
-use RT::Group;
-use RT::User;
-use RT::Queue;
-use RT::ScripCondition;
-use RT::CustomField;
-use RT::Scrip;
 
-RT::LoadConfig();
 use Term::ReadKey;
 use Getopt::Long;
 

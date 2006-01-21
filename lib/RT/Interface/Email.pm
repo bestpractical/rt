@@ -250,7 +250,8 @@ sub MailError {
     }
 
     if (RT->Config->Get('MailCommand') eq 'sendmailpipe') {
-        open (MAIL, "|RT->Config->Get('SendmailPath') RT->Config->Get('SendmailArguments')") || return(0);
+        my $cmd = RT->Config->Get('SendmailPath') ." ". RT->Config->Get('SendmailArguments');
+        open (MAIL, "|$cmd") || return(0);
         print MAIL $entity->as_string;
         close(MAIL);
     }
@@ -570,7 +571,7 @@ sub Gateway {
 
     # Since this needs loading, no matter what
 
-    foreach ( @mail_plugins ) {
+    foreach ( grep $_, @mail_plugins ) {
         my $Code;
         my $NewAuthStat;
         if ( ref($_) eq "CODE" ) {

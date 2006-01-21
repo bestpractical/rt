@@ -3,6 +3,8 @@ package RT::Config;
 use strict;
 use warnings;
 
+use File::Spec ();
+
 =head1 NAME
 
     RT::Config - RT's config
@@ -74,9 +76,9 @@ sub _Init
 
 =head2 LoadConfigs
 
-Load all configs. First of all load RT's config then load config files
-of the extensions in alphabetic order.
-Takes nothing.
+Load all configs. First of all load RT's config then load
+extensions' config files in alphabetical order.
+Takes no arguments.
 
 =cut
 
@@ -137,7 +139,7 @@ sub _LoadConfig
                 Extension  => $is_ext,
             );
         };
-        local @INC = ($LocalEtcPath, $EtcPath);
+        local @INC = ($RT::LocalEtcPath, $RT::EtcPath);
         require $args{'File'};
     };
     if( $@ ) {
@@ -161,9 +163,9 @@ sub Configs
     foreach my $path( $RT::LocalEtcPath, $RT::EtcPath ) {
         my $mask = File::Spec->catfile($path, "*_Config.pm");
         my @files = glob $mask;
-        @files = grep { $_ !~ /^RT_Config\.pm$/ }
-                 grep { $_ && /^\w+_Config\.pm$/ }
-             map { s/^.*[\\\/]//; $_ } @files;
+        @files = grep !/^RT_Config\.pm$/,
+                 grep $_ && /^\w+_Config\.pm$/,
+                 map { s/^.*[\\\/]//; $_ } @files;
         push @configs, @files;
     }
 
@@ -184,6 +186,8 @@ sub Get
     my $self = shift;
     my $name = shift;
     my $type = $META{$name}->{'Type'} || 'SCALAR';
+    return $OPTIONS{$name} unless wantarray;
+
     if( $type eq 'ARRAY' ) {
         return @{ $OPTIONS{$name} };
     } elsif( $type eq 'HASH' ) {

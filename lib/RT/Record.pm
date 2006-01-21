@@ -71,17 +71,15 @@ use RT::Attributes;
 use RT::Base;
 
 use strict;
-use vars qw/@ISA $_TABLE_ATTR/;
 
-@ISA = qw(RT::Base);
-
-if ( RT->Config->Get('DontCacheSearchBuilderRecords') ) {
-    require DBIx::SearchBuilder::Record;
-    push @ISA, 'DBIx::SearchBuilder::Record';
-} else {
-    require DBIx::SearchBuilder::Record::Cachable;
-    push @ISA, 'DBIx::SearchBuilder::Record::Cachable';
+our $_TABLE_ATTR;
+our @ISA = qw(RT::Base);
+my $base = 'DBIx::SearchBuilder::Record::Cachable';
+if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
+    $base = 'DBIx::SearchBuilder::Record';
 }
+eval "require $base" or die $@;
+push @ISA, $base;
 
 # {{{ sub _Init 
 

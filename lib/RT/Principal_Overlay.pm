@@ -50,12 +50,10 @@ package RT::Principal;
 use strict;
 use warnings;
 
-no warnings qw(redefine);
-
 use Cache::Simple::TimedExpiry;
 
 
-
+use RT;
 use RT::Group;
 use RT::User;
 
@@ -74,12 +72,10 @@ Returns undef, otherwise
 
 sub IsGroup {
     my $self = shift;
-    if ($self->PrincipalType eq 'Group') {
-        return(1);
+    if ( $self->PrincipalType eq 'Group' ) {
+        return 1;
     }
-    else {
-        return undef;
-    }
+    return undef;
 }
 
 # }}}
@@ -116,18 +112,18 @@ Returns the user or group associated with this principal
 sub Object {
     my $self = shift;
 
-    unless ($self->{'object'}) {
-    if ($self->IsUser) {
-       $self->{'object'} = RT::User->new($self->CurrentUser);
-    }
-    elsif ($self->IsGroup) {
-        $self->{'object'}  = RT::Group->new($self->CurrentUser);
-    }
-    else { 
-        $RT::Logger->crit("Found a principal (".$self->Id.") that was neither a user nor a group");
-        return(undef);
-    }
-    $self->{'object'}->Load($self->ObjectId());
+    unless ( $self->{'object'} ) {
+        if ( $self->IsUser ) {
+           $self->{'object'} = RT::User->new($self->CurrentUser);
+        }
+        elsif ( $self->IsGroup ) {
+            $self->{'object'}  = RT::Group->new($self->CurrentUser);
+        }
+        else { 
+            $RT::Logger->crit("Found a principal (".$self->Id.") that was neither a user nor a group");
+            return(undef);
+        }
+        $self->{'object'}->Load( $self->ObjectId() );
     }
     return ($self->{'object'});
 
@@ -494,11 +490,7 @@ Returns an SQL clause finding role groups for Objects
 sub _RolesForObject {
     my $self = shift;
     my $type = shift;
-    my $id = shift;
-
-    unless ($id) {
-	$id = '0';
-   }
+    my $id = shift || 0;
 
    # This should never be true.
    unless ($id =~ /^\d+$/) {
@@ -528,8 +520,9 @@ Cleans out and reinitializes the user rights cache
 
 sub InvalidateACLCache {
     $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
-    $_ACL_CACHE->expire_after(RT->Config->Get('ACLCacheLifetime')||60);
-
+    my $lifetime;
+    $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
+    $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
 # }}}
