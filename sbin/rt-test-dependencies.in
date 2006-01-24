@@ -255,7 +255,7 @@ DBD::Pg 1.41
 .
 
 $deps{'SQLITE'} = [ _( << '.') ];
-DBD::SQLite
+DBD::SQLite 1.00
 .
 
 if ($args{'download'}) {
