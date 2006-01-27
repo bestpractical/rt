@@ -1,8 +1,8 @@
-%# {{{ BEGIN BPS TAGGED BLOCK
+%# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -42,43 +42,45 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# }}} END BPS TAGGED BLOCK
+%# END BPS TAGGED BLOCK }}}
 <%once>
-my (%cache, $check);
+my %cache;
 </%once>
 <%init>
-# checks for inode change time for each callback directory
-my $new_check = join(
-    $;, map { $_->[1] => (stat("$_->[1]/Callbacks"))[10] } $m->interp->resolver->comp_root_array
-) or return;
-
 $Page = $m->callers(1)->path unless ($Page);
 
-my $callbacks;
-if ($new_check eq $check) {
-    $callbacks = $cache{$Page,$_CallbackName};
-}
-else {
-    $check = $new_check;
-}
+my $CacheKey = "Callback--$Page--$_CallbackName";
+my $callbacks = $cache{$CacheKey} || $m->notes($CacheKey);
 
 if (!$callbacks) {
-    my $path = "/Callbacks/*$Page/$_CallbackName";
-    $callbacks = [ $m->interp->resolver->glob_path($path) ];
-    @$callbacks = grep !/^\.|~$/, @$callbacks; #skip backup files
+    my $path  = "/Callbacks/*$Page/$_CallbackName";
 
-    #skip files without a package
-    my $invalid_base = "/Callbacks/$Page/$_CallbackName";
-    @$callbacks = grep !/^$invalid_base$/, @$callbacks;
-
-
-
-    $cache{$Page,$_CallbackName} = $callbacks;
+    # Due to API changes after Mason 1.28, we have to check for which
+    # version we're running when getting the component roots
+    my @roots = map { $_->[1] }
+                    $HTML::Mason::VERSION <= 1.28
+                        ? $m->interp->resolver->comp_root_array
+                        : $m->interp->comp_root_array;
+    
+    my %seen;
+    
+    for my $root (@roots) {
+        push @$callbacks,
+            # Skip backup files, files without a leading package name,
+            # and files we've already seen
+            grep {     !/\/\.|~$/
+                   and $_ ne "/Callbacks/$Page/$_CallbackName"
+                   and not $seen{$_}++ }
+                 $m->interp->resolver->glob_path($path, $root);
+    }
+    
+    $m->notes($CacheKey => $callbacks);
+    $cache{$CacheKey} = $callbacks if !$RT::DevelMode;
 }
 
 my @rv;
 foreach my $comp (sort @$callbacks) {
-        push @rv, $m->comp($comp, %ARGS) if $m->comp_exists($comp);
+    push @rv, $m->comp($comp, %ARGS);
 }
 return @rv;
 </%init>
