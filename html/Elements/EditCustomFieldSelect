@@ -54,7 +54,7 @@
 %       if (@category) {
 <script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
-      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<%$id%>-Category"
+      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<%$id%>-Category">
         <option value="" <% !$selected && 'SELECTED' %>><&|/l&>-</&></option>
 %           foreach my $cat (@category) {
 %               my ($depth, $name) = @$cat;
