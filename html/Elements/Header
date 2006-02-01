@@ -56,6 +56,7 @@
 <link media="print" rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/printrt.css" type="text/css" />
 
 <script type="text/javascript" src="<%$RT::WebPath%>/rt.js"></script>
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/ahah.js"></script>
 <& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>"

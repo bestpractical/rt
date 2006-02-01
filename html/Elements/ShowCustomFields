@@ -53,12 +53,33 @@
 <ul>
 % while (my $Value = $Values->Next()) {
 <li>
+% if ($CustomField->LinkValueTo) {
+<a href="<%$Value->LinkValueTo|n%>">
+% }
 % my $comp = "ShowCustomField".$CustomField->Type;
 % if ($m->comp_exists($comp)) {
 <& $comp, Object => $Value &>
 %   } else {
 <%$Value->Content%>
 %   }
+% if ($CustomField->LinkValueTo) {
+</a>
+% }
+
+%# This section automatically populates a div with the "IncludeContentForValue" for this custom
+%# field if it's been defined
+% if ($CustomField->IncludeContentForValue) {
+<div
+    class="object_cf_value_include" 
+    id="object_cf_value_<%$Value->id%>" 
+    >
+<&|/l, '<a href="'.$Value->IncludeContentForValue.'">' . $Value->IncludeContentForValue."</a>"&>See also: [_1]</&>
+</div>
+
+<script><!--
+            ahah('<%$Value->IncludeContentForValue%>', 'object_cf_value_<%$Value->id%>');
+        --></script>
+% }
 </li>
 % }
 % unless ($Values->Count()) {

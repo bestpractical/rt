@@ -166,6 +166,12 @@ sub Content {
 }
 
 
+=head2 Object
+
+Returns the object this value applies to
+
+=cut
+
 sub Object {
     my $self  = shift;
     my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
@@ -173,9 +179,82 @@ sub Object {
     return($Object);
 }
 
+
+=head2 Delete
+
+Disable this value. Used to remove "current" values from records while leaving them in the history.
+
+=cut
+
+
 sub Delete {
     my $self = shift;
     $self->SetDisabled(1);
 }
+
+=head2 _FillInTemplateURL URL
+
+Takes a URL containing placeholders and returns the URL as filled in for this 
+ObjectCustomFieldValue.
+
+Available placeholders:
+
+=over
+
+=item __id__
+
+The id of the object in question.
+
+=item __CustomField__
+
+The value of this custom field for the object in question.
+
+=back
+
+=cut
+
+sub _FillInTemplateURL {
+
+    my $self = shift;
+
+    my $url = shift;
+
+    $url =~ s/__id__/@{[$self->ObjectId]}/g;
+    $url =~ s/__CustomField_/@{[$self->Content]}/g;
+
+    return $url;
+}
+
+
+=head2 ValueLinkURL
+
+Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
+constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
+a LinkValueTo
+
+=cut
+
+sub LinkValueTo {
+    my $self = shift;
+    return $self->_FillInTemplateURL($self->CustomFieldObj->LinkValueTo);
+}
+
+
+
+=head2 ValueIncludeURL
+
+Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
+constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
+a IncludeContentForValue
+
+=cut
+
+sub IncludeContentForValue {
+    my $self = shift;
+    return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
+}
+
+
+
 
 1;
