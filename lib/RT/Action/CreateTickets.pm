@@ -673,13 +673,11 @@ sub UpdateByTemplate {
 
         my $id = $template_id;
         $id =~ s/update-(\d+).*/$1/;
-        $T::Tickets{$template_id}->Load($id);
+        my ($loaded, $msg) = $T::Tickets{$template_id}->LoadById($id);
 
-        my $msg;
-        if ( !$T::Tickets{$template_id}->Id ) {
-            $msg = "Couldn't update ticket $template_id " . $msg;
-
-            $RT::Logger->error($msg);
+        unless ( $loaded ) {
+            $RT::Logger->error("Couldn't update ticket $template_id: " . $msg);
+            push @results, $self->loc( "Couldn't load ticket '[_1]'", $id );
             next;
         }
 
@@ -714,6 +712,9 @@ sub UpdateByTemplate {
 
         push @results,
             $self->UpdateWatchers( $T::Tickets{$template_id}, $ticketargs );
+
+        push @results,
+            $self->UpdateCustomFields( $T::Tickets{$template_id}, $ticketargs );
 
         next unless $ticketargs->{'MIMEObj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
@@ -1311,6 +1312,47 @@ sub UpdateWatchers {
             );
             push @results,
                 $ticket->loc( "Ticket [_1]", $ticket->Id ) . ': ' . $msg;
+        }
+    }
+    return @results;
+}
+
+sub UpdateCustomFields {
+    my $self   = shift;
+    my $ticket = shift;
+    my $args   = shift;
+
+    my @results;
+    foreach my $arg (keys %{$args}) {
+        warn "Looking at arg $arg";
+        next unless $arg =~ /^CustomField-(\d+)$/;
+        my $cf = $1;
+
+        my $CustomFieldObj = RT::CustomField->new($self->CurrentUser);
+        $CustomFieldObj->LoadById($cf);
+
+        my @values;
+        if ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
+            @values = ($args->{$arg});
+        } else {
+            @values = split /\n/, $args->{$arg};
+        }
+        
+        if ( ($CustomFieldObj->Type eq 'Freeform' 
+              && ! $CustomFieldObj->SingleValue) ||
+              $CustomFieldObj->Type =~ /text/i) {
+            foreach my $val (@values) {
+                $val =~ s/\r//g;
+            }
+        }
+
+        foreach my $value (@values) {
+            next unless length($value);
+            my ( $val, $msg ) = $ticket->AddCustomFieldValue(
+                Field => $cf,
+                Value => $value
+            );
+            push ( @results, $msg );
         }
     }
     return @results;
