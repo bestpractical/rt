@@ -188,9 +188,7 @@ A complete list of acceptable fields for this beastie:
        Started         => 
        Resolved        => 
        Owner           => Username or id of an RT user who can and should own 
-                          this ticket
-       ForceOwner      => Same as Owner, but sets the owner even if the owner
-                          is already set
+                          this ticket; forces the owner if necessary
    +   Requestor       => Email address
    +   Cc              => Email address 
    +   AdminCc         => Email address 
@@ -210,9 +208,11 @@ A complete list of acceptable fields for this beastie:
                           within a template after a Content: header is treated
                           as content until we hit a line containing only 
                           ENDOFCONTENT
-       ContentType     => the content-type of the Content field
+       ContentType     => the content-type of the Content field.  Defaults to
+                          'text/plain'
        UpdateType      => 'correspond' or 'comment'; used in conjunction with
-                          'content' if this is an update.
+                          'content' if this is an update.  Defaults to
+                          'correspond'
 
        CustomField-<id#> => custom field value
        CF-name           => custom field value
@@ -707,9 +707,9 @@ sub UpdateByTemplate {
             ARGSRef       => $ticketargs
         );
 
-        if ( $ticketargs->{'ForceOwner'} ) {
-            ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'ForceOwner'}, "Force");
-            push @results, $msg;
+        if ( $ticketargs->{'Owner'} ) {
+            ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'Owner'}, "Force");
+            push @results, $msg unless $msg eq $self->loc("That user already owns that ticket");
         }
 
         push @results,
@@ -719,7 +719,6 @@ sub UpdateByTemplate {
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Comment(
-                CcMessageTo  => $ticketargs->{'Cc'},
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
                 TimeTaken    => $ticketargs->{'TimeWorked'}
@@ -732,7 +731,6 @@ sub UpdateByTemplate {
         } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->Correspond(
-                CcMessageTo  => $ticketargs->{'Cc'},
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
                 TimeTaken    => $ticketargs->{'TimeWorked'}
@@ -975,8 +973,7 @@ sub ParseLines {
         Starts          => $args{'starts'},
         Started         => $args{'started'},
         Resolved        => $args{'resolved'},
-        Owner           => $args{'forceowner'} || $args{'owner'},
-        ForceOwner      => $args{'forceowner'},
+        Owner           => $args{'owner'},
         Requestor       => $args{'requestor'},
         Cc              => $args{'cc'},
         AdminCc         => $args{'admincc'},
@@ -991,11 +988,11 @@ sub ParseLines {
     if ( $args{content} ) {
         my $mimeobj = MIME::Entity->new();
         $mimeobj->build(
-            Type => $args{'contenttype'},
+            Type => $args{'contenttype'} || 'text/plain',
             Data => $args{'content'}
         );
         $ticketargs{MIMEObj} = $mimeobj;
-        $ticketargs{UpdateType} = $args{'updatetype'} if $args{'updatetype'};
+        $ticketargs{UpdateType} = $args{'updatetype'} || 'correspond';
     }
 
     foreach my $tag ( keys(%args) ) {
@@ -1290,7 +1287,7 @@ sub UpdateWatchers {
         my $newaddr = $args->{$type};
 
         my @old = split( /,\s*/, $oldaddr );
-        my @new = split( /,\s*/, $newaddr );
+        my @new = ref $newaddr ? @{$newaddr} : split( /,\s*/, $newaddr );
         my %oldhash = map { $_ => 1 } @old;
         my %newhash = map { $_ => 1 } @new;
 
