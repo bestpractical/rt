@@ -111,7 +111,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
-    DependedOnBy     => ['LINK' => From => 'DependsOn',],
+    DependedOnBy    => ['LINK' => From => 'DependsOn',],
     ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
@@ -128,13 +128,14 @@ my %FIELDS =
     Filename        => ['TRANSFIELD',],
     TransactionDate => ['TRANSDATE',],
     Requestor       => ['WATCHERFIELD' => 'Requestor',],
-    Requestors       => ['WATCHERFIELD' => 'Requestor',],
+    Requestors      => ['WATCHERFIELD' => 'Requestor',],
     Cc              => ['WATCHERFIELD' => 'Cc',],
     AdminCc         => ['WATCHERFIELD' => 'AdminCc',],
     Watcher	    => ['WATCHERFIELD'],
     LinkedTo	    => ['LINKFIELD',],
     CustomFieldValue =>['CUSTOMFIELD',],
     CF              => ['CUSTOMFIELD',],
+    Updated         => [ 'TRANSDATE', ],
   );
 
 # Mapping of Field Type to Function
@@ -478,27 +479,73 @@ Meta Data:
 
 =cut
 
+# This routine should really be factored into translimit.
 sub _TransDateLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  # See the comments for TransLimit, they apply here too
-  $sb->_SetupTransactionJoins();
+    # See the comments for TransLimit, they apply here too
 
-  $sb->_OpenParen;
-  my $d = new RT::Date( $sb->CurrentUser );
-  $d->Set( Format => 'ISO', Value => $value);
-   $value = $d->ISO;
+    $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
+        unless defined $sb->{_sql_transalias};
 
-  #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
-		 FIELD =>    'Created',
-		 OPERATOR => $op,
-		 VALUE =>    $value,
-		 CASESENSITIVE => 0,
-		 @rest
-		);
+    my $date = RT::Date->new( $sb->CurrentUser );
+    $date->Set( Format => 'unknown', Value => $value );
+    my $time = $date->Unix;
 
-  $sb->_CloseParen;
+    $sb->_OpenParen;
+    if ( $op eq "=" ) {
+
+        # if we're specifying =, that means we want everything on a
+        # particular single day.  in the database, we need to check for >
+        # and < the edges of that day.
+
+        my $daystart = strftime( "%Y-%m-%d %H:%M",
+            gmtime( $time - ( $time % 86400 ) ) );
+        my $dayend = strftime( "%Y-%m-%d %H:%M",
+            gmtime( $time + ( 86399 - $time % 86400 ) ) );
+
+        $sb->_SQLLimit(
+            ALIAS         => $sb->{_sql_transalias},
+            FIELD         => 'Created',
+            OPERATOR      => ">=",
+            VALUE         => $daystart,
+            CASESENSITIVE => 0,
+            @rest
+        );
+        $sb->_SQLLimit(
+            ALIAS         => $sb->{_sql_transalias},
+            FIELD         => 'Created',
+            OPERATOR      => "<=",
+            VALUE         => $dayend,
+            CASESENSITIVE => 0,
+            @rest,
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+    }
+
+    # not searching for a single day
+    else {
+
+        #Search for the right field
+        $sb->_SQLLimit(
+            ALIAS         => $sb->{_sql_transalias},
+            FIELD         => 'Created',
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
+            @rest
+        );
+    }
+
+    $sb->_SQLJoin(
+        ALIAS1 => 'main',
+        FIELD1 => $sb->{'primary_key'},
+        ALIAS2 => $sb->{_sql_transalias},
+        FIELD2 => 'Ticket'
+    );
+
+    $sb->_CloseParen;
 }
 
 =head2 _TransLimit
@@ -543,23 +590,40 @@ sub _TransLimit {
   # them all into the same subclause when you have (A op B op C) - the
   # way they get parsed in the tree they're in different subclauses.
 
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $self, $field, $op, $value, @rest ) = @_;
 
-    $sb->_SetupTransactionJoins();
+    $self->{_sql_transalias} = $self->NewAlias('Transactions')
+        unless defined $self->{_sql_transalias};
+    $self->{_sql_trattachalias} = $self->NewAlias('Attachments')
+        unless defined $self->{_sql_trattachalias};
 
-  $sb->_OpenParen;
+    $self->_OpenParen;
 
-  #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
-		 FIELD =>    $field,
-		 OPERATOR => $op,
-		 VALUE =>    $value,
-		 CASESENSITIVE => 0,
-		 @rest
-		);
+    #Search for the right field
+    $self->_SQLLimit(
+        ALIAS => $self->{_sql_trattachalias},
+        FIELD =>    $field,
+        OPERATOR => $op,
+        VALUE =>    $value,
+        CASESENSITIVE => 0,
+        @rest
+    );
 
+    $self->_SQLJoin(
+        ALIAS1 => $self->{_sql_trattachalias},
+        FIELD1 => 'TransactionId',
+        ALIAS2 => $self->{_sql_transalias},
+        FIELD2 => 'id'
+    );
 
-  $sb->_CloseParen;
+    $self->_SQLJoin(
+        ALIAS1 => 'main',
+        FIELD1 => $self->{'primary_key'},
+        ALIAS2 => $self->{_sql_transalias},
+        FIELD2 => 'Ticket'
+    );
+
+    $self->_CloseParen;
 
 }
 
@@ -862,29 +926,6 @@ sub _CustomFieldLimit {
   $self->_CloseParen;
 
 }
-
-sub _SetupTransactionJoins {
-    my $self = shift;
-    # Join Transactions to Tickets
-    $self->{_sql_transalias} ||= $self->Join(
-        TYPE => 'LEFT',
-        ALIAS1 => 'main',
-        FIELD1 => $self->{'primary_key'},    # UGH!
-        TABLE2 => 'Transactions',
-        FIELD2 => 'Ticket'
-    );
-
-    # Join Transactions To Attachments
-    $self->{_sql_trattachalias} ||= $self->Join(
-        TYPE => 'LEFT',
-        TABLE2 => 'Attachments',
-        FIELD2 => 'TransactionId',
-        ALIAS1 => $self->{_sql_transalias},
-        FIELD1 => 'id'
-    );
-
-}
-
 
 # End Helper Functions
 
