@@ -4,10 +4,16 @@ function filter_cascade (id, val) {
     var i;
     var children = select.childNodes;
     for (i in children) {
-        if ( val == '' || children[i].label.substr(0, val.length) == val) {
-            show(children[i]);
+        var style = children[i].style;
+        if (!style) { continue };
+        if (val == '') {
+            style.display = 'block';
             continue;
         }
-        hide(children[i]);
+        if (children[i].label.substr(0, val.length) == val) {
+            style.display = 'block';
+            continue;
+        }
+        style.display = 'none';
     }
 }
