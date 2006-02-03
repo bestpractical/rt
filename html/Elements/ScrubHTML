@@ -52,8 +52,9 @@ $scrubber->default(
         '*'    => 0,
         id     => 1,
         class  => 1,
-        href   => qr{^(?:http:|ftp:|https:|/)}i, 
         # Match http, ftp and relative urls
+        # XXX: we also scrub format strings with this module then allow simple config options
+        href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
         face   => 1,
         size   => 1,
         target => 1
