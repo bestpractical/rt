@@ -316,8 +316,8 @@ sub _IntLimit {
 Handle fields which deal with links between tickets.  (MemberOf, DependsOn)
 
 Meta Data:
-  1: Direction (From,To)
-  2: Link Type (MemberOf, DependsOn,RefersTo)
+  1: Direction (From, To)
+  2: Link Type (MemberOf, DependsOn, RefersTo)
 
 =cut
 
@@ -325,17 +325,15 @@ sub _LinkLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     my $meta = $FIELD_METADATA{$field};
-    die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS)/io;
-
     die "Incorrect Metadata for $field"
-        unless ( defined $meta->[1] and defined $meta->[2] );
+        unless defined $meta->[1] && defined $meta->[2];
+
+    die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS|IS NOT)$/io;
 
     my $direction = $meta->[1];
 
     my $matchfield;
     my $linkfield;
-    my $is_local = 1;
-    my $is_null  = 0;
     if ( $direction eq 'To' ) {
         $matchfield = "Target";
         $linkfield  = "Base";
@@ -350,86 +348,83 @@ sub _LinkLimit {
         die "Invalid link direction '$meta->[1]' for $field\n";
     }
 
-    if ( $op eq '=' || $op =~ /^is/oi ) {
-        if ( $value eq '' || $value =~ /^null$/io ) {
-            $is_null = 1;
-        }
-        elsif ( $value =~ /\D/o ) {
-            $is_local = 0;
-        }
-        else {
-            $is_local = 1;
-        }
+    my ($is_local, $is_null) = (1, 0);
+    if ( !$value || $value =~ /^null$/io ) {
+        $is_null = 1;
+        $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
+    }
+    elsif ( $value =~ /\D/o ) {
+        $is_local = 0;
+    }
+    $matchfield = "Local$matchfield" if $is_local;
+
+    my $is_negative = 0;
+    if ( $op eq '!=' ) {
+        $is_negative = 1;
+        $op = '=';
     }
 
 #For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
 #    SELECT main.* FROM Tickets main
 #        LEFT JOIN Links Links_1 ON (     (Links_1.Type = 'MemberOf')
 #                                      AND(main.id = Links_1.LocalTarget))
-#        WHERE   ((main.EffectiveId = main.id))
-#            AND ((main.Status != 'deleted'))
-#            AND (Links_1.LocalBase IS NULL);
+#        WHERE Links_1.LocalBase IS NULL;
 
+    my $linkalias = $sb->Join(
+        TYPE   => ($is_null || $is_negative)? 'LEFT': 'NORMAL',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Links',
+        FIELD2 => 'Local' . $linkfield
+    );
+    $sb->_OpenParen();
+    $sb->SUPER::Limit(
+        @rest,
+        ($is_null || $is_negative)? (LEFTJOIN => $linkalias): (),
+        FIELD    => 'Type',
+        OPERATOR => '=',
+        VALUE    => $meta->[2],
+    );
     if ($is_null) {
-        my $linkalias = $sb->Join(
-            TYPE   => 'left',
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Links',
-            FIELD2 => 'Local' . $linkfield
-        );
-
-        $sb->SUPER::Limit(
-            LEFTJOIN => $linkalias,
-            FIELD    => 'Type',
-            OPERATOR => '=',
-            VALUE    => $meta->[2],
-            @rest,
-        );
 
         $sb->_SQLLimit(
             ALIAS           => $linkalias,
             ENTRYAGGREGATOR => 'AND',
-            FIELD      => ( $is_local ? "Local$matchfield" : $matchfield ),
-            OPERATOR   => 'IS',
-            VALUE      => 'NULL',
-            QUOTEVALUE => '0',
+            FIELD           => $matchfield,
+            OPERATOR        => $op,
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
         );
-
+    }
+    elsif ( $is_negative ) {
+        $sb->SUPER::Limit(
+            LEFTJOIN => $linkalias,
+            FIELD    => $matchfield,
+            OPERATOR => $op,
+            VALUE    => $value,
+        );
+        $sb->_SQLLimit(
+            ALIAS           => $linkalias,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => $matchfield,
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+        );
     }
     else {
 
-        $sb->{_sql_linkalias} = $sb->NewAlias('Links')
-            unless defined $sb->{_sql_linkalias};
-
-        $sb->_OpenParen();
 
         $sb->_SQLLimit(
-            ALIAS    => $sb->{_sql_linkalias},
-            FIELD    => 'Type',
-            OPERATOR => '=',
-            VALUE    => $meta->[2],
-            @rest,
-        );
-
-        $sb->_SQLLimit(
-            ALIAS           => $sb->{_sql_linkalias},
+            ALIAS           => $linkalias,
             ENTRYAGGREGATOR => 'AND',
-            FIELD    => ( $is_local ? "Local$matchfield" : $matchfield ),
-            OPERATOR => '=',
+            FIELD    => $matchfield,
+            OPERATOR => $op,
             VALUE    => $value,
         );
 
-        #If we're searching on target, join the base to ticket.id
-        $sb->_SQLJoin(
-            ALIAS1 => 'main',
-            FIELD1 => $sb->{'primary_key'},
-            ALIAS2 => $sb->{_sql_linkalias},
-            FIELD2 => 'Local' . $linkfield
-        );
-
-        $sb->_CloseParen();
     }
+    $sb->_CloseParen();
 }
 
 =head2 _DateLimit
@@ -2046,9 +2041,10 @@ TARGET is the id or URI of the TARGET of the link
 sub LimitLinkedTo {
     my $self = shift;
     my %args = (
-        TICKET => undef,
-        TARGET => undef,
-        TYPE   => undef,
+        TICKET   => undef,
+        TARGET   => undef,
+        TYPE     => undef,
+        OPERATOR => '=',
         @_
     );
 
@@ -2062,6 +2058,7 @@ sub LimitLinkedTo {
             $self->loc( $args{'TYPE'} ),
             ( $args{'TARGET'} || $args{'TICKET'} )
         ),
+        OPERATOR    => $args{'OPERATOR'},
     );
 }
 
@@ -2084,9 +2081,10 @@ BASE is the id or URI of the BASE of the link
 sub LimitLinkedFrom {
     my $self = shift;
     my %args = (
-        BASE   => undef,
-        TICKET => undef,
-        TYPE   => undef,
+        BASE     => undef,
+        TICKET   => undef,
+        TYPE     => undef,
+        OPERATOR => '=',
         @_
     );
 
@@ -2108,6 +2106,7 @@ sub LimitLinkedFrom {
             $self->loc( $args{'TYPE'} ),
             ( $args{'BASE'} || $args{'TICKET'} )
         ),
+        OPERATOR    => $args{'OPERATOR'},
     );
 }
 
@@ -2117,11 +2116,11 @@ sub LimitLinkedFrom {
 sub LimitMemberOf {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo(
-        TARGET => "$ticket_id",
+    return $self->LimitLinkedTo(
+        @_,
+        TARGET => $ticket_id,
         TYPE   => 'MemberOf',
     );
-
 }
 
 # }}}
@@ -2130,7 +2129,8 @@ sub LimitMemberOf {
 sub LimitHasMember {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom(
+    return $self->LimitLinkedFrom(
+        @_,
         BASE => "$ticket_id",
         TYPE => 'HasMember',
     );
@@ -2144,8 +2144,9 @@ sub LimitHasMember {
 sub LimitDependsOn {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo(
-        TARGET => "$ticket_id",
+    return $self->LimitLinkedTo(
+        @_,
+        TARGET => $ticket_id,
         TYPE   => 'DependsOn',
     );
 
@@ -2158,8 +2159,9 @@ sub LimitDependsOn {
 sub LimitDependedOnBy {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom(
-        BASE => "$ticket_id",
+    return $self->LimitLinkedFrom(
+        @_,
+        BASE => $ticket_id,
         TYPE => 'DependentOn',
     );
 
@@ -2172,8 +2174,9 @@ sub LimitDependedOnBy {
 sub LimitRefersTo {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo(
-        TARGET => "$ticket_id",
+    return $self->LimitLinkedTo(
+        @_,
+        TARGET => $ticket_id,
         TYPE   => 'RefersTo',
     );
 
@@ -2186,11 +2189,11 @@ sub LimitRefersTo {
 sub LimitReferredToBy {
     my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom(
-        BASE => "$ticket_id",
+    return $self->LimitLinkedFrom(
+        @_,
+        BASE => $ticket_id,
         TYPE => 'ReferredToBy',
     );
-
 }
 
 # }}}
