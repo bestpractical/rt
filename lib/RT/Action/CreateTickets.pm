@@ -1031,9 +1031,7 @@ sub _ParseXSVTemplate {
     my %args = (@_);
 
     use Regexp::Common qw(delimited);
-    my $first
-      = substr( $args{'Content'}, 0, index( $args{'Content'}, "\n" ) );
-    $first =~ s/\r$//;
+    my($first, $content) = split(/\r?\n/, $args{'Content'}, 2);
 
     my $delimiter;
     if ( $first =~ /\t/ ) {
@@ -1046,85 +1044,108 @@ sub _ParseXSVTemplate {
     my $delimiter_re = qr[$delimiter];
     my $justquoted = qr[$RE{quoted}];
 
-    $args{'Content'}
-      = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
+    # Used to generate automatic template ids
+    my $autoid = 1;
 
   LINE:
-    while ($args{'Content'}) {
-        $args{'Content'} =~ s/^(\s*\r?\n)+//;
+    while ($content) {
+        $content =~ s/^(\s*\r?\n)+//;
 
+        # Keep track of Queue and Requestor, so we can provide defaults
         my $queue;
         my $requestor;
-        # first item is $template_id
+
+        # The template for this line
+        my $template;
+
+        # What column we're on
         my $i = 0;
-        my $template_id;
+
+        # If the last iteration was the end of the line
         my $EOL = 0;
 
-      COLUMN:
-        while (not $EOL and length $args{'Content'} and $args{'Content'} =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
-            $EOL = not $2;
-            # If it's the first field, it must be a ticket id. 
-            if ( $i == 0 ) {
-                $queue     = 0;
-                $requestor = 0;
-                my $tid = $1;
-                $tid =~ s/^\s*(.*?)\s*$/$1/;
-                next COLUMN unless $tid;
+        # The template id
+        my $template_id;
 
-                if ( $tid =~ /^\d+$/ ) {
-                    $template_id = 'update-' . $tid;
+      COLUMN:
+        while (not $EOL and length $content and $content =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
+            $EOL = not $2;
+
+            # Strip off quotes, if they exist
+            my $value = $1;
+            if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
+                substr( $value, 0,  1 ) = "";
+                substr( $value, -1, 1 ) = "";
+            }
+
+            # What column is this?
+            my $field = $fields[$i++];
+            next COLUMN unless $field =~ /\S/;
+            $field =~ s/^\s//;
+            $field =~ s/\s$//;
+
+            if ( $field =~ /^id$/i ) {
+                # Special case if this is the ID column
+                if ( $value =~ /^\d+$/ ) {
+                    $template_id = 'update-' . $value;
                     push @{ $self->{'update_tickets'} }, $template_id;
-                } elsif ( $tid =~ /^#base-(\d+)$/ ) {
+                } elsif ( $value =~ /^#base-(\d+)$/ ) {
                     $template_id = 'base-' . $1;
                     push @{ $self->{'base_tickets'} }, $template_id;
-                } else {
-                    $template_id = 'create-' . $tid;
+                } elsif ( $value =~ /\S/ ) {
+                    $template_id = 'create-' . $value;
                     push @{ $self->{'create_tickets'} }, $template_id;
                 }
             } else {
-                my $value = $1;
-                if ( $value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/ ) {
-                    substr( $value, 0,  1 ) = "";
-                    substr( $value, -1, 1 ) = "";
-                }
-                my $field = $fields[$i];
-                
-                next COLUMN unless $field;
-                $field =~ s/^\s//;
-                $field =~ s/\s$//;
+                # Some translations
                 if (   $field =~ /^Body$/i
                     || $field =~ /^Data$/i
                     || $field =~ /^Message$/i )
                   {
-                      $field = 'Content';
-                  }
-                if ( $field =~ /^Summary$/i ) {
+                  $field = 'Content';
+                } elsif ( $field =~ /^Summary$/i ) {
                     $field = 'Subject';
-                }
-                if ( $field =~ /^Queue$/i ) {
+                } elsif ( $field =~ /^Queue$/i ) {
+                    # Note that we found a queue
                     $queue = 1;
                     $value ||= $args{'Queue'};
-                }
-                if ( $field =~ /^Requestor$/i ) {
+                } elsif ( $field =~ /^Requestor$/i ) {
+                    # Note that we found a requestor
                     $requestor = 1;
                     $value ||= $args{'Requestor'};
                 }
-                $self->{'templates'}->{$template_id} .= $field . ": ";
-                $self->{'templates'}->{$template_id} .= $value || "";
-                $self->{'templates'}->{$template_id} .= "\n";
-                $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
+
+                # Tack onto the end of the template
+                $template .= $field . ": ";
+                $template .= $value || "";
+                $template .= "\n";
+                $template .= "ENDOFCONTENT\n"
                   if $field =~ /^Content$/i;
             }
-            $i++;
         }
+
+        # Ignore blank lines
+        next unless $template;
+        
+        # If we didn't find a queue of requestor, tack on the defaults
         if ( !$queue && $args{'Queue'} ) {
-            $self->{'templates'}->{$template_id}
-              .= "Queue: $args{'Queue'}\n";
+            $template .= "Queue: $args{'Queue'}\n";
         }
         if ( !$requestor && $args{'Requestor'} ) {
-            $self->{'templates'}->{$template_id}
-              .= "Requestor: $args{'Requestor'}\n";
+            $template .= "Requestor: $args{'Requestor'}\n";
         }
+
+        # If we never found an ID, come up with one
+        unless ($template_id) {
+            $autoid++ while exists $self->{'templates'}->{"create-auto-$autoid"};
+            $template_id = "create-auto-$autoid";
+            # Also, it's a ticket to create
+            push @{ $self->{'create_tickets'} }, $template_id;
+        }
+        
+        # Save the template we generated
+        $self->{'templates'}->{$template_id} = $template;
+
     }
 }
 
@@ -1324,7 +1345,6 @@ sub UpdateCustomFields {
 
     my @results;
     foreach my $arg (keys %{$args}) {
-        warn "Looking at arg $arg";
         next unless $arg =~ /^CustomField-(\d+)$/;
         my $cf = $1;
 
