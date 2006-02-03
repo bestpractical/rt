@@ -59,10 +59,7 @@ $CurrentDisplayColumns => undef
 </%args>
 <%init>
 
-unless ($Format) {         
-    $Format = RT->Config->Get('DefaultSearchResultFormat');
-}   
-   
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
 # All the things we can display in the format string by default
 my @fields = qw(
@@ -183,13 +180,11 @@ elsif ( $AddCol ) {
         $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
     }
     if ( $Link eq "Display" ) {
-        $column{Prefix} .=
-          "<a HREF=\"" . RT->Config->Get('WebPath') . "/Ticket/Display.html?id=__id__\">";
+        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
         $column{Suffix} .= "</a>";
     }
     elsif ( $Link eq "Take" ) {
-        $column{Prefix} .= "<a HREF=\"" . RT->Config->Get('WebPath')
-          . "/Ticket/Display.html?Action=Take&id=__id__\">";
+        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
         $column{Suffix} .= "</a>";
     }
 
@@ -239,4 +234,3 @@ $Format = join(",\n", @format_string);
 return($Format, \@fields, \@seen);
 
 </%init>
-
