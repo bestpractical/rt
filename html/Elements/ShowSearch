@@ -82,7 +82,7 @@ else {
 
 my $rows = $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 $SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
-$SearchArg->{'Format'} =~ s/__WebPath__/RT->Config->Get('WebPath')/g;
+$SearchArg->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/RT->Config->Get($1)/ge;
 $SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 my $QueryString = '?' . $m->comp('/Elements/QueryString',
                                   %$SearchArg);
