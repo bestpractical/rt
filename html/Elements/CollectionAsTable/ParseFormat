@@ -73,10 +73,10 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     if ( $col =~ s!/ALIGN:([^\/]+)!!io ) {
         $colref->{'align'} = $1;
     }
-    if ( $col =~ /__(.*?)__/gio ) {
+    if ( $col =~ /__(.*?)__/io ) {
         my @subcols;
         while ( $col =~ s/^(.*?)__(.*?)__//o ) {
-            push ( @subcols, $1 ) if ($1);
+            push ( @subcols, $1 ) if $1;
             push ( @subcols, "__$2__" );
             $colref->{'attribute'} = $2;
         }
@@ -94,7 +94,6 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'title'}     = $1;
         $colref->{'attribute'} = $1;
     }
-
 
     push @Columns, $colref;
 }

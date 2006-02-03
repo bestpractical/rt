@@ -387,14 +387,14 @@ sub LanguageHandle {
 
 sub loc {
     my $self = shift;
-    return '' if $_[0] eq '';
+    return '' if !defined $_[0] || $_[0] eq '';
 
     my $handle = $self->LanguageHandle;
 
     if (@_ == 1) {
 	# pre-scan the lexicon hashes to return _AUTO keys verbatim,
 	# to keep locstrings containing '[' and '~' from tripping over Maketext
-	return $_[0] unless grep { exists $_->{$_[0]} } @{ $handle->_lex_refs };
+	return $_[0] unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
     }
 
     return $handle->maketext(@_);

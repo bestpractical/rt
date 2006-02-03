@@ -55,7 +55,7 @@
 % foreach $tab (sort keys %{$toptabs}) {
 %     $count++;
 %
-%     my $current = $current_toptab;
+%     my $current = $current_toptab || '';
 %     my $path    = $toptabs->{$tab}->{'path'} || "";
 %     
 %     $path    =~ s#/index.html$##gi;

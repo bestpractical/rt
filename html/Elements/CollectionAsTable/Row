@@ -56,7 +56,7 @@ $Warning => undef
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column (@Format) {
-    if ( $column->{title} eq 'NEWLINE' ) {
+    if ( $column->{title} && $column->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
             $item++;
@@ -93,8 +93,7 @@ foreach my $column (@Format) {
                 @out =
                     map {
                         ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' )
-                      } &{$value}( $record, $i )
-                ;
+                      } &{$value}( $record, $i );
             }
             else {
 

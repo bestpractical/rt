@@ -103,8 +103,8 @@ my $next = $m->comp(
 % }
 <%INIT>
 unless ($Collection) {
-        $Collection = RT::Tickets->new($session{'CurrentUser'});
-        $Collection->FromSQL($Query);
+        $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+        $Collection->FromSQL( $Query );
 }
 
 my $TotalFound =  $Collection->CountAll();
@@ -122,10 +122,8 @@ if ($OrderBy =~ /\|/) {
     $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 }
 
-$Collection->RowsPerPage($Rows) if ($Rows);
-$Collection->GotoPage($Page-1); # SB uses page 0 as the first page
-
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+$Collection->RowsPerPage( $Rows ) if $Rows;
+$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
@@ -137,7 +135,7 @@ $DisplayFormat ||= $Format;
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
 
-my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
 # Find the maximum number of items in any row, so we can pad the table.
 my ($maxitems, $item) = (0, 0);
@@ -153,17 +151,19 @@ foreach my $col (@Format) {
 
 </%INIT>
 <%ARGS>
-$Query => undef
-$Rows => 50
-$Page => 1
-$Title => 'Ticket Search'
 $Collection => undef
-$AllowSorting => undef
-$Order => undef
-$OrderBy => undef
-$BaseURL => undef
+
+$Query => undef
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 $DisplayFormat => undef
+$Order => undef
+$OrderBy => undef
+$Rows => 50
+
+$Page => 1
+$Title => 'Ticket Search'
+$BaseURL => undef
+$AllowSorting => undef
 $ShowNavigation => 1
 $ShowHeader => 1
 $ShowEmpty => 0
