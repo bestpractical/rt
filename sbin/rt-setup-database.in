@@ -78,15 +78,15 @@ unless ( $args{'action'} ) {
     exit(1);
 }
 
-if ( $args{'prompt-for-dba-password'} ) {
-    $args{'dba-password'} = get_dba_password();
-    chomp( $args{'dba-password'} );
-}
-
 my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
 my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
+
+if ( $args{'prompt-for-dba-password'} ) {
+    $args{'dba-password'} = get_dba_password();
+    chomp( $args{'dba-password'} );
+}
 
 require RT::Handle;
 my $Handle = RT::Handle->new($db_type);
