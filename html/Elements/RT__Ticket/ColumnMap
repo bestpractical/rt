@@ -73,7 +73,7 @@ sub ColumnMap {
             return ( $field );
         }
         elsif ( $attr eq 'value' ) {
-	    # Display custom field contents, separated by newlines.
+            # Display custom field contents, separated by newlines.
             # For Image custom fields we also show a thumbnail here.
             return sub {
                 my $values = $_[0]->CustomFieldValues($field);
@@ -85,7 +85,13 @@ sub ColumnMap {
                     ),
                     \'<br />',
                 } @{ $values->ItemsArrayRef }
-	    };
+            };
+        }
+    }
+    elsif ( $name =~ /^(WebPath|WebBaseURL|WebURL)$/ ) {
+        if ( $attr eq 'value' ) {
+            my $value = RT->Config->Get($1);
+            return sub { return \$value };
         }
     }
 }
@@ -234,13 +240,13 @@ $COLUMN_MAP = {
         title     => 'Due',
         attribute => 'Due',
         value     => sub { 
-	    my $date = $_[0]->DueObj;
-	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
-		return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
-	    } else {
-		return $date->AgeAsString;
-	    }
-	}
+            my $date = $_[0]->DueObj;
+            if ($date && $date->Unix > 0 && $date->Unix < time()) {
+                return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
+            } else {
+                return $date->AgeAsString;
+            }
+        }
     },
     ResolvedRelative => {
         title     => 'Resolved',
