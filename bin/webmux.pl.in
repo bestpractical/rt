@@ -95,7 +95,8 @@ if ($ENV{'MOD_PERL'} && !$RT::DevelMode) {
     
     use File::Path qw( rmtree );
     use File::Glob qw( bsd_glob );
-    rmtree([ bsd_glob("$RT::MasonDataDir/obj/*") ], 0, 1);
+    my @files = bsd_glob("$RT::MasonDataDir/obj/*");
+    rmtree([ @files ], 0, 1) if @files;
 }
 
 sub handler {
