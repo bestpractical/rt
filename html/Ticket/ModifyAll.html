@@ -52,6 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST ACTION="ModifyAll.html" ENCTYPE="multipart/form-data">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 
 
@@ -145,6 +146,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
+$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {

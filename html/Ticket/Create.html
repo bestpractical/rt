@@ -49,6 +49,7 @@
     Title => loc("Create a new ticket") &>
 <& /Elements/ListActions, actions => \@results &>
 <FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
 	

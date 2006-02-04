@@ -52,6 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST ACTION="ModifyDates.html">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 <& /Elements/TitleBoxStart, title => loc('Modify dates for ticket # [_1]', $TicketObj->Id),  width => "100%", color => "#663366"  &>
 
@@ -64,6 +65,7 @@
 <%INIT>
 
 my $TicketObj = LoadTicket($id);
+$m->comp('/Elements/Callback', TicketObj => $TicketObj, ARGSRef => \%ARGS);
 my @results = ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
 </%INIT>

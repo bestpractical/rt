@@ -52,6 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 
 <& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
@@ -66,6 +67,7 @@
 <%INIT>
   
 my $Ticket = LoadTicket($id);
+$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
     
 </%INIT>
