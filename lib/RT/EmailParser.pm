@@ -416,7 +416,7 @@ sub ParseAddressFromHeader {
 =head2 IsRTaddress ADDRESS
 
 Takes a single parameter, an email address. 
-Returns true if that address matches the RT->Config->Get('RTAddressRegexp').  
+Returns true if that address matches the C<RTAddressRegexp> config option.
 Returns false, otherwise.
 
 =begin testing
@@ -435,11 +435,10 @@ sub IsRTAddress {
     # Example: the following rule would tell RT not to Cc 
     #   "tickets@noc.example.com"
     my $address_re = RT->Config->Get('RTAddressRegexp');
-    if ( defined $address_re && $address =~ /$address_re/ ) {
-        return(1);
-    } else {
-        return (undef);
+    if ( defined $address_re && $address =~ /$address_re/i ) {
+        return 1;
     }
+    return undef;
 }
 
 # }}}

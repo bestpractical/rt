@@ -196,7 +196,7 @@ if (RT->Config->Get('WebDefaultStylesheet') ne '3.4-compat') {
 %# This function recurses through the menu and returns the second to
 %# last menu, that is, the menu holding the last reference to
 %# and submenu.  It also returns the number of menu levels minus
-%# the last submenu (used for CSS calcs later (HACK)).
+%# the last submenu.
 <%def .menu_recurse>
   <%args>
       $data   => { }

@@ -65,7 +65,7 @@
 <&|/l&>Content</&>:<br />
 </td>
 <td>
-<textarea name="Content" rows="25" cols="80" wrap="SOFT">
+<textarea name="Content" rows="25" cols="80" wrap="soft">
 <%$Content%></textarea>
 </td>
 </tr>

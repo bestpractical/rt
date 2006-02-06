@@ -88,6 +88,20 @@ $ObjectCFs->UnLimit;
 $ObjectCFs->LimitToObjectId($id);
 $ObjectCFs->LimitToLookupType($lookup);
 
+# Check sanity of SortOrders
+my %SortOrders;
+$SortOrders{ $_->SortOrder }++
+  while ($_ = $ObjectCFs->Next);
+
+# If there are duplicates, run though and squash them
+if (grep $_ > 1, values %SortOrders) {
+    my $i = 1;
+    while ( my $ObjectCF = $ObjectCFs->Next ) {
+        $ObjectCF->SetSortOrder( $i++ );
+    }
+    $ObjectCFs->GotoFirstItem;
+}
+
 # {{{ deal with moving sortorder of custom fields
 if ($CustomField and $Move) {
     my $SourceObj = RT::ObjectCustomField->new($session{'CurrentUser'});

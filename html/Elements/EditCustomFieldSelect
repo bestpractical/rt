@@ -83,7 +83,6 @@ $Rows => undef
 <%METHOD options>
 % my $selected;
 % my $CFVs = $CustomField->Values;
-% use Data::Dumper; # $CFVs->First; $RT::Logger->crit( Dumper( $CFVs ) );
 % my @levels;
 % while ( my $value = $CFVs->Next ) {
 %       my $name = $value->Name;
@@ -106,7 +105,7 @@ $Rows => undef
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
-%       if ( ( $Default eq $name ) || ( $Values && $Values->HasEntry( $name ) ) ) {
+%       if ( grep( $_ eq $name, @Default ) || ( $Values && $Values->HasEntry( $name ) ) ) {
 %           $$SelectedRef = 1;
             selected
 %       }
@@ -117,7 +116,7 @@ $Rows => undef
 % }
 <%ARGS>
 $CustomField => undef
-$Default => ''
+@Default => ()
 $Values => undef
 $SelectedRef => undef
 $CategoryRef => undef

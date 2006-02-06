@@ -126,7 +126,14 @@ if ( $args{'action'} eq 'init' ) {
     unless ($db_type eq 'SQLite') {
 
         $dbh->disconnect;
+
+	if ($RT::DatabaseType eq "Oracle") {
+        $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
+        $dbh = DBI->connect( $Handle->DSN, ${RT::DatabaseUser}, ${RT::DatabasePassword} ) || die $DBI::errstr;
+	} else {
+	
         $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
+	}
     }
     print "Now populating database schema.\n";
     insert_schema();

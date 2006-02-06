@@ -157,7 +157,9 @@ sub Next {
 
 =head2 Apply
 
-Run through the relevant scrips. 
+Run through the relevant scrips.  Scrips will run in order based on 
+description.  (Most common use case is to prepend a number to the description,
+forcing the scrips to run in ascending alphanumerical order.)
 
 =cut
 
@@ -304,7 +306,10 @@ sub _SetupSourceObjects {
 
 =head2 _FindScrips
 
-Find only the apropriate scrips for whatever we're doing now
+Find only the apropriate scrips for whatever we're doing now.  Order them 
+by their description.  (Most common use case is to prepend a number to the
+description, forcing the scrips to display and run in ascending alphanumerical 
+order.)
 
 =cut
 
@@ -352,6 +357,9 @@ sub _FindScrips {
         VALUE           => "Any",
         ENTRYAGGREGATOR => 'OR',
     );
+
+    # Promise some kind of ordering
+    $self->OrderBy( FIELD => 'description' );
 
     $RT::Logger->debug("Found ".$self->Count. " scrips");
 }

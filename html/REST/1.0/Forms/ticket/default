@@ -127,6 +127,18 @@ else {
             if (exists $create{lc $k}) {
                 $v{$create{lc $k}} = delete $data{$k};
             }
+            # Set custom field
+            elsif ($k =~ /^CF-/i) {
+                my $cf = RT::CustomField->new( $RT::SystemUser );
+                my $cfk = $k;
+                $cfk =~ s/^CF-//i;
+                unless($cf->LoadByName( Name => $cfk )) {
+                    push @comments, "# Invalid custom field name ($cfk)";
+                    delete $data{$k};
+                    next;
+                }
+                $v{"CustomField-".$cf->Id()} = delete $data{$k};
+            }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
             }
@@ -188,6 +200,17 @@ if (%data == 0) {
         $val = $ticket->$key || 0;
         $val = $time->DurationAsString($val*60) if $val;
         push @data, [ $key => $val ];
+    }
+
+    # Display custom fields
+    my $CustomFields = $ticket->QueueObj->CustomFields();
+    while (my $cf = $CustomFields->Next()) {
+        my $vals = $ticket->CustomFieldValues($cf->Id());
+        my @out = ();
+        while (my $v = $vals->Next()) {
+            push @out, $v->Content;
+        }
+        push @data, [ 'CF-' . $cf->Name => join ',', @out ];
     }
 
     my %k = map {@$_} @data;
@@ -269,6 +292,20 @@ else {
                 $n = 0;
                 $s = join "\n", map {"# ".$_->[1]} @msgs;
                 $s =~ s/^# //;
+            }
+        }
+        # Set custom field
+        elsif ($key =~ /^CF-/i) {
+            my $cf = RT::CustomField->new( $RT::SystemUser );
+            $key =~ s/^CF-//i;
+            if (not $cf->LoadByName( Name => $key )) {
+                $n = 0;
+                $s = "Unknown custom field.";
+            }
+            else {
+                ($n, $s) = $ticket->AddCustomFieldValue(
+                             Field => $cf, Value => $val );
+                $s =~ s/^# // if defined $s;
             }
         }
         elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator') {

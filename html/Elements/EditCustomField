@@ -57,6 +57,10 @@ if ($Object and $Object->id) {
     $Values = $Object->CustomFieldValues($CustomField->id);
     $Values->Columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');
+} elsif (not $Default) {
+    my %TOP = $m->request_args;
+    $Default = $TOP{ $NamePrefix .$CustomField->Id . '-Values' }
+            || $TOP{ $NamePrefix .$CustomField->Id . '-Value' };
 }
 
 my $MaxValues = $CustomField->MaxValues;

@@ -43,12 +43,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-  <div id="logo">
-    <a href="http://bestpractical.com"><img src="<%RT->Config->Get('WebImagesURL')%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="177" height="33" /></a>
-% if ($show_name) {
-    <div class="rtname"><% loc("RT for [_1]", RT->Config->Get('rtname')) %></div>
+<div id="logo">
+<a href="http://bestpractical.com"><img
+    src="<%RT->Config->Get('WebImagesURL')%>/bplogo.gif"
+    alt="<% loc("Best Practical Solutions, LLC corporate logo") %>"
+    width="177" height="33" /></a>
+% if ( $show_name ) {
+    <span class="rtname"><% loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
 % }
-  </div>
-<%args>
-  $show_name => 1
-</%args>
+</div>
+<%ARGS>
+$show_name => 1
+</%ARGS>

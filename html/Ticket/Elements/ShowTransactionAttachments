@@ -68,7 +68,7 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
 <div class="messagebody">
 <%PERL>
 # {{{ if it has a content-disposition: attachment, don't show inline
-unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
+unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 
     my $content;
 
@@ -133,6 +133,11 @@ unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
               . $Transaction->Id . '/'
               . $message->Id
               . '/" />' );
+    }
+    elsif ( $message->ContentLength > 0 ) {
+        $m->out(
+            loc( 'Message body not shown because it is too large or is not plain text.' )
+        );
     }
 }
 

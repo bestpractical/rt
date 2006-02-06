@@ -219,12 +219,12 @@
 <tr>
 <td colspan="2">
 <&| /Widgets/TitleBox, title => loc('Comments about this user') &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="VIRTUAL"><%$UserObj->Comments%></textarea>
+<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments%></textarea>
 </&>
 %if ($UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="HARD"><%$UserObj->Signature%></textarea>
+<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature%></textarea>
 </&>
 % }
 

@@ -141,7 +141,7 @@ my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Disp
 my ($maxitems, $item) = (0, 0);
 foreach my $col (@Format) {
     $item++;
-    if ( $col->{title} eq 'NEWLINE' ) {
+    if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
         $item = 0;
     }
     else {

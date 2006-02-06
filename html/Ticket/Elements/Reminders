@@ -15,19 +15,21 @@ my $reminder_collection = $Ticket->Reminders->Collection;
 if ( $request_args->{'update-reminders'} ) {
     while ( my $reminder = $reminder_collection->Next ) {
         if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-      
             $Ticket->Reminders->Resolve($reminder);
         }
         elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
             $Ticket->Reminders->Open($reminder);
         }
-        elsif ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } ) {
+
+        if ( exists( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } )) {
             $reminder->SetSubject( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) ;
         }
-        elsif ( $reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } ) {
+
+        if ( exists( $request_args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } )) {
             $reminder->SetOwner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
         }
-        elsif ( $reminder->DueObj->Date ne $request_args->{ 'Reminder-Due-' . $reminder->id } ) {
+
+        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->DueObj->Date ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
             $reminder->SetDue( $request_args->{ 'Reminder-Due-' . $reminder->id } ) ;
         }
     }
@@ -80,7 +82,7 @@ $Ticket
 </div>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
-<& /Elements/SelectOwner, Name => 'NewReminder-Owner', Queue => $Ticket->QueueObj, DefaultValue => 0 &>
+<& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, DefaultValue => 0 &>
 </div>
 <div class="input-row">
 <label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 

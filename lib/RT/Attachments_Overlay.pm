@@ -81,6 +81,8 @@ sub _Init   {
  
   $self->{'table'} = "Attachments";
   $self->{'primary_key'} = "id";
+  $self->OrderBy ( FIELD => 'id',
+                   ORDER => 'ASC');
   return ( $self->SUPER::_Init(@_));
 }
 # }}}

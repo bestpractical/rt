@@ -78,7 +78,6 @@
   </tr>
 </table>
 </&>
-<br />
 <&| /Widgets/TitleBox, title => loc('Phone numbers') &>
 <table cellspacing="0" cellpadding="0">
   <tr>
@@ -99,6 +98,7 @@
   </tr>
 </table>
 </&>
+<& /Elements/Callback, _CallbackName => 'FormLeftColumn', UserObj => $UserObj, %ARGS &>
 </td>
 <td valign="top" class="boxcontainer">
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
@@ -155,6 +155,7 @@
   </tr>
 </table>
 </&>
+<& /Elements/Callback, _CallbackName => 'FormRightColumn', UserObj => $UserObj, %ARGS &>
 </td>
 </tr>
 <tr>
@@ -165,7 +166,7 @@
 %if ($UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea cols="80" rows="5" name="Signature" class="signature" wrap="HARD">
+<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
 <%$UserObj->Signature%></textarea>
 </&>
 % }
@@ -205,6 +206,12 @@ if ($UserObj->Id) {
 		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
 		Address2 City State Zip Country Lang
 		   );
+
+    $m->comp('/Elements/Callback', _CallbackName => 'UpdateLogic',
+                                    fields        => \@fields,
+                                    results       => \@results,
+                                    UserObj       => $UserObj,
+                                    ARGSRef       => \%ARGS);
     
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,

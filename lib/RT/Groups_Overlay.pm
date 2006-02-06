@@ -77,22 +77,78 @@ package RT::Groups;
 use strict;
 no warnings qw(redefine);
 
+use RT::Users;
+
+# XXX: below some code is marked as subject to generalize in Groups, Users classes.
+# RUZ suggest name Principals::Generic or Principals::Base as abstract class, but
+# Jesse wants something that doesn't imply it's a Principals.pm subclass.
+# See comments below for candidats.
+
 
 # {{{ sub _Init
+
+=begin testing
+
+# next had bugs
+# Groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => xx );
+my $g = RT::Group->new($RT::SystemUser);
+my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'GroupsNotEqualTest');
+ok ($id, "created group #". $g->id) or diag("error: $msg");
+
+my $groups = RT::Groups->new($RT::SystemUser);
+$groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $g->id );
+$groups->LimitToUserDefinedGroups();
+my $bug = grep $_->id == $g->id, @{$groups->ItemsArrayRef};
+ok (!$bug, "didn't find group");
+
+=end testing
+
+=cut
 
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Groups";
   $self->{'primary_key'} = "id";
 
+  my @result = $self->SUPER::_Init(@_);
+
   $self->OrderBy( ALIAS => 'main',
 		  FIELD => 'Name',
 		  ORDER => 'ASC');
 
+  # XXX: this code should be generalized
+  $self->{'princalias'} = $self->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'id',
+    TABLE2 => 'Principals',
+    FIELD2 => 'id'
+  );
 
-  return ( $self->SUPER::_Init(@_));
+  # even if this condition is useless and ids in the Groups table
+  # only match principals with type 'Group' this could speed up
+  # searches in some DBs.
+  $self->Limit( ALIAS => $self->{'princalias'},
+                FIELD => 'PrincipalType',
+                VALUE => 'Group',
+              );
+
+  return (@result);
 }
 # }}}
+
+=head2 PrincipalsAlias
+
+Returns the string that represents this Users object's primary "Principals" alias.
+
+=cut
+
+# XXX: should be generalized, code duplication
+sub PrincipalsAlias {
+    my $self = shift;
+    return($self->{'princalias'});
+
+}
+
 
 # {{{ LimiToSystemInternalGroups
 
@@ -215,7 +271,7 @@ my $u = RT::User->new($RT::SystemUser);
 $u->Create(Name => 'Membertests');
 my $g = RT::Group->new($RT::SystemUser);
 my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
-ok ($id,$msg);
+ok ($id, $msg);
 
 my ($aid, $amsg) =$g->AddMember($u->id);
 ok ($aid, $amsg);
@@ -226,9 +282,6 @@ $groups->LimitToUserDefinedGroups();
 $groups->WithMember(PrincipalId => $u->id);
 ok ($groups->Count == 1,"found the 1 group - " . $groups->Count);
 ok ($groups->First->Id == $g->Id, "it's the right one");
-
-
-
 
 =end testing
 
@@ -285,7 +338,7 @@ ok ($testuser->HasRight(Object => $q, Right => 'OwnTicket') , "The test user doe
 $groups = RT::Groups->new($RT::SystemUser);
 $groups->WithRight(Right => 'OwnTicket', Object => $q);
 ok ($id,$msg);
-is($groups->Count, 2);
+is($groups->Count, 3);
 
 my $RTxGroup = RT::Group->new($RT::SystemUser);
 ($id, $msg) = $RTxGroup->CreateUserDefinedGroup( Name => 'RTxGroup', Description => "RTx extension group");
@@ -343,83 +396,65 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 
 =cut
 
-
+#XXX: should be generilized
 sub WithRight {
     my $self = shift;
     my %args = ( Right                  => undef,
                  Object =>              => undef,
                  IncludeSystemRights    => 1,
                  IncludeSuperusers      => undef,
+                 IncludeSubgroupMembers => 0,
                  EquivObjects           => [ ],
                  @_ );
 
-    my $acl        = $self->NewAlias('ACL');
+    my $from_role = $self->Clone;
+    $from_role->WithRoleRight( %args );
 
-    # {{{ Find only rows where the right granted is the one we're looking up or _possibly_ superuser 
-    $self->Limit( ALIAS           => $acl,
-                  FIELD           => 'RightName',
-                  OPERATOR        => ($args{Right} ? '=' : 'IS NOT'),
-                  VALUE           => $args{Right} || 'NULL',
-                  ENTRYAGGREGATOR => 'OR' );
+    my $from_group = $self->Clone;
+    $from_group->WithGroupRight( %args );
 
-    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
-        $self->Limit( ALIAS           => $acl,
-                      FIELD           => 'RightName',
-                      OPERATOR        => '=',
-                      VALUE           => 'SuperUser',
-                      ENTRYAGGREGATOR => 'OR' );
-    }
-    # }}}
+    #XXX: DIRTY HACK
+    use DBIx::SearchBuilder::Union;
+    my $union = new DBIx::SearchBuilder::Union;
+    $union->add($from_role);
+    $union->add($from_group);
+    %$self = %$union;
+    bless $self, ref($union);
 
-    my ($or_check_ticket_roles, $or_check_roles);
-    my $which_object = "$acl.ObjectType = 'RT::System'";
-
-    if ( defined $args{'Object'} ) {
-        if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
-            $or_check_ticket_roles =
-                " OR ( main.Domain = 'RT::Ticket-Role' AND main.Instance = " . $args{'Object'}->Id . ") ";
-
-            # If we're looking at ticket rights, we also want to look at the associated queue rights.
-            # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
-            # we load the queue object and ask all the rest of our questions about the queue.
-            $args{'Object'}   = $args{'Object'}->QueueObj;
-        }
-        # TODO XXX This really wants some refactoring
-        if ( ref($args{'Object'}) eq 'RT::Queue' ) {
-            $or_check_roles =
-                " OR ( ( (main.Domain = 'RT::Queue-Role' AND main.Instance = " .
-                $args{'Object'}->Id . ") $or_check_ticket_roles ) " .
-                " AND main.Type = $acl.PrincipalType) ";
-        }
-
-	if ( $args{'IncludeSystemRights'} ) {
-	    $which_object .= ' OR ';
-	}
-	else {
-	    $which_object = '';
-	}
-        foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-             next unless ( UNIVERSAL::can( $obj, 'id' ) );
-             $which_object .= "($acl.ObjectType = '" . ref( $obj ) . "' AND $acl.ObjectId = " . $obj->id . ") OR ";
-         }
-        $which_object .=
-            " ($acl.ObjectType = '" . ref($args{'Object'}) . "'" .
-            " AND $acl.ObjectId = " . $args{'Object'}->Id . ") ";
-    }
-
-    $self->_AddSubClause( "WhichObject", "($which_object)" );
-
-    $self->_AddSubClause( "WhichGroup",
-        qq{
-          ( (    $acl.PrincipalId = main.id
-             AND $acl.PrincipalType = 'Group'
-             AND (   main.Domain = 'SystemInternal'
-                  OR main.Domain = 'UserDefined'
-                  OR main.Domain = 'ACLEquivalence'))
-           $or_check_roles)
-        }
-    );
+    return;
 }
+
+#XXX: methods are active aliases to Users class to prevent code duplication
+# should be generalized
+sub _JoinGroups {
+    my $self = shift;
+    my %args = (@_);
+    return 'main' unless $args{'IncludeSubgroupMembers'};
+    return $self->RT::Users::_JoinGroups( %args );
+}
+sub _JoinGroupMembers {
+    my $self = shift;
+    my %args = (@_);
+    return 'main' unless $args{'IncludeSubgroupMembers'};
+    return $self->RT::Users::_JoinGroupMembers( %args );
+}
+sub _JoinGroupMembersForGroupRights {
+    my $self = shift;
+    my %args = (@_);
+    my $group_members = $self->_JoinGroupMembers( %args );
+    unless( $group_members eq 'main' ) {
+        return $self->RT::Users::_JoinGroupMembersForGroupRights( %args );
+    }
+    $self->Limit( ALIAS => $args{'ACLAlias'},
+                  FIELD => 'PrincipalId',
+                  VALUE => "main.id",
+                  QUOTEVALUE => 0,
+                );
+}
+sub _JoinACL          { return (shift)->RT::Users::_JoinACL( @_ ) }
+sub _GetEquivObjects  { return (shift)->RT::Users::_GetEquivObjects( @_ ) }
+sub WithGroupRight    { return (shift)->RT::Users::WhoHaveGroupRight( @_ ) }
+sub WithRoleRight     { return (shift)->RT::Users::WhoHaveRoleRight( @_ ) }
 
 # {{{ sub LimitToEnabled
 
@@ -432,18 +467,11 @@ Only find items that haven\'t been disabled
 sub LimitToEnabled {
     my $self = shift;
     
-    my $alias = $self->Join(
-	TYPE   => 'left',
-	ALIAS1 => 'main',
-	FIELD1 => 'id',
-	TABLE2 => 'Principals',
-	FIELD2 => 'id'
-    );
-
-    $self->Limit( ALIAS => $alias,
-		  FIELD => 'Disabled',
-		  VALUE => '0',
-		  OPERATOR => '=' );
+    $self->Limit( ALIAS => $self->PrincipalsAlias,
+		          FIELD => 'Disabled',
+		          VALUE => '0',
+		          OPERATOR => '=',
+                );
 }
 # }}}
 
@@ -458,20 +486,12 @@ Only find items that have been deleted.
 sub LimitToDeleted {
     my $self = shift;
     
-    my $alias = $self->Join(
-	TYPE   => 'left',
-	ALIAS1 => 'main',
-	FIELD1 => 'id',
-	TABLE2 => 'Principals',
-	FIELD2 => 'id'
-    );
-
     $self->{'find_disabled_rows'} = 1;
-    $self->Limit( ALIAS => $alias,
-		  FIELD => 'Disabled',
-		  OPERATOR => '=',
-		  VALUE => '1'
-		);
+    $self->Limit( ALIAS => $self->PrincipalsAlias,
+                  FIELD => 'Disabled',
+                  OPERATOR => '=',
+                  VALUE => 1,
+                );
 }
 # }}}
 

@@ -135,7 +135,7 @@ my %FIELD_METADATA = (
     Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
-    Watcher          => ['WATCHERFIELD'],
+    Watcher          => [ 'WATCHERFIELD', ],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -273,7 +273,7 @@ sub _EnumLimit {
         or $op     eq "!=";
 
     my $meta = $FIELD_METADATA{$field};
-    if ( defined $meta->[1] ) {
+    if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
@@ -538,8 +538,6 @@ sub _TransDateLimit {
 
     $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
         unless defined $sb->{_sql_transalias};
-    $sb->{_sql_trattachalias} = $sb->NewAlias('Attachments')
-        unless defined $sb->{_sql_trattachalias};
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -590,15 +588,6 @@ sub _TransDateLimit {
             @rest
         );
     }
-
-    # Join Transactions To Attachments
-
-    $sb->_SQLJoin(
-        ALIAS1 => $sb->{_sql_trattachalias},
-        FIELD1 => 'TransactionId',
-        ALIAS2 => $sb->{_sql_transalias},
-        FIELD2 => 'id',
-    );
 
     # Join Transactions to Tickets
     $sb->_SQLJoin(
@@ -1201,7 +1190,7 @@ sub _CustomFieldJoin {
   my ($self, $cfkey, $cfid, $field) = @_;
  
   my $TicketCFs;
-
+  my $CFs;
     # Perform one Join per CustomField
 
     if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
@@ -1224,16 +1213,23 @@ sub _CustomFieldJoin {
             );
         }
         else {
-            my $cfalias = $self->Join(
+            my $ocfalias = $self->Join(
                 TYPE       => 'left',
-                EXPRESSION => "'$field'",
+                FIELD1     => 'Queue',
+                TABLE2     => 'ObjectCustomFields',
+                FIELD2     => 'ObjectId',
+            );
+            $CFs = $self->Join(
+                TYPE       => 'left',
+                ALIAS1     => $ocfalias,
+                FIELD1     => 'CustomField',
                 TABLE2     => 'CustomFields',
-                FIELD2     => 'Name',
+                FIELD2     => 'id',
             );
 
             $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
                 TYPE   => 'left',
-                ALIAS1 => $cfalias,
+                ALIAS1 => $CFs,
                 FIELD1 => 'id',
                 TABLE2 => 'ObjectCustomFieldValues',
                 FIELD2 => 'CustomField',
@@ -1261,7 +1257,7 @@ sub _CustomFieldJoin {
         );
     }
 
-  return $TicketCFs;
+  return ($TicketCFs, $CFs);
 }
 
 =head2 _CustomFieldLimit
@@ -1294,9 +1290,18 @@ sub _CustomFieldLimit {
     }
 
     my $cfkey = $cfid ? $cfid : "$queue.$field";
-    my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+    my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-     $self->_OpenParen if ($null_columns_ok);
+     $self->_OpenParen;
+
+     $self->SUPER::Limit(
+         ALIAS           => $CFs,
+         FIELD           => 'name',
+         VALUE           => $field,
+         ENTRYAGGREGATOR => 'AND',
+     );
+
+     $self->_OpenParen if $null_columns_ok;
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
@@ -1317,7 +1322,9 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'OR',
         );
     }
-    $self->_CloseParen if ($null_columns_ok);
+    $self->_CloseParen if $null_columns_ok;
+
+    $self->_CloseParen;
 
 }
 
@@ -1356,7 +1363,7 @@ sub OrderByCols {
        } elsif ( $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
-           my $TicketCFs = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
            unless ($cfid) {
              # For those cases where we are doing a join against the
              # CF name, and don't have a CFid, use Unique to make sure
@@ -1543,12 +1550,11 @@ sub LimitQueue {
         @_
     );
 
-    #TODO  VALUE should also take queue names and queue objects
-    #TODO FIXME why are we canonicalizing to name, not id, robrt?
-    if ( $args{VALUE} =~ /^\d+$/ ) {
+    #TODO  VALUE should also take queue objects
+    if ( defined $args{'VALUE'} && $args{'VALUE'} !~ /^\d+$/ ) {
         my $queue = new RT::Queue( $self->CurrentUser );
         $queue->Load( $args{'VALUE'} );
-        $args{VALUE} = $queue->Name;
+        $args{'VALUE'} = $queue->Id;
     }
 
     # What if they pass in an Id?  Check for isNum() and convert to
@@ -1558,10 +1564,10 @@ sub LimitQueue {
 
     $self->Limit(
         FIELD       => 'Queue',
-        VALUE       => $args{VALUE},
+        VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join(
-            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{VALUE},
+            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{'VALUE'},
         ),
     );
 
@@ -2380,7 +2386,7 @@ sub LimitCustomField {
     my $q = "";
     if ( $CF->Queue ) {
         my $qo = new RT::Queue( $self->CurrentUser );
-        $qo->load( $CF->Queue );
+        $qo->Load( $CF->Queue );
         $q = $qo->Name;
     }
 

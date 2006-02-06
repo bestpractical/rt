@@ -67,7 +67,7 @@ unless ($Name) {
 $ShowTime => undef
 $menu_prefix=>''
 $current=>time
-$Default => undef
+$Default => ''
 $Name => undef
 $Size => 16
 </%args>
