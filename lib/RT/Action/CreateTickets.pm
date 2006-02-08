@@ -956,7 +956,12 @@ sub ParseLines {
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
         } else {
-            $dateobj->Set( Format => 'unknown', Value => $args{$date} );
+            eval {
+                $dateobj->Set( Format => 'iso', Value => $args{$date} );
+            };
+            if ($@ or $dateobj->Unix <= 0) {
+                $dateobj->Set( Format => 'unknown', Value => $args{$date} );
+            }
         }
         $args{$date} = $dateobj->ISO;
     }
@@ -969,7 +974,7 @@ sub ParseLines {
     my %ticketargs = (
         Queue           => $args{'queue'},
         Subject         => $args{'subject'},
-        Status          => 'new',
+        Status          => $args{'status'} || 'new',
         Due             => $args{'due'},
         Starts          => $args{'starts'},
         Started         => $args{'started'},
@@ -1117,7 +1122,7 @@ sub _ParseXSVTemplate {
 
                 # Tack onto the end of the template
                 $template .= $field . ": ";
-                $template .= $value || "";
+                $template .= (defined $value ? $value : "");
                 $template .= "\n";
                 $template .= "ENDOFCONTENT\n"
                   if $field =~ /^Content$/i;
@@ -1309,7 +1314,25 @@ sub UpdateWatchers {
         my $newaddr = $args->{$type};
 
         my @old = split( /,\s*/, $oldaddr );
-        my @new = ref $newaddr ? @{$newaddr} : split( /,\s*/, $newaddr );
+        my @new;
+        for (ref $newaddr ? @{$newaddr} : split( /,\s*/, $newaddr )) {
+            # Sometimes these are email addresses, sometimes they're
+            # users.  Try to guess which is which, as we want to deal
+            # with email addresses if at all possible.
+            if (/^\S+@\S+$/) {
+                push @new, $_;
+            } else {
+                # It doesn't look like an email address.  Try to load it.
+                my $user = RT::User->new($self->CurrentUser);
+                $user->Load($_);
+                if ($user->Id) {
+                    push @new, $user->EmailAddress;
+                } else {
+                    push @new, $_;
+                }
+            }
+        }
+
         my %oldhash = map { $_ => 1 } @old;
         my %newhash = map { $_ => 1 } @new;
 
