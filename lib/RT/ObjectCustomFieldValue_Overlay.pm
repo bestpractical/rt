@@ -220,7 +220,7 @@ sub _FillInTemplateURL {
     my $url = shift;
 
     $url =~ s/__id__/@{[$self->ObjectId]}/g;
-    $url =~ s/__CustomField_/@{[$self->Content]}/g;
+    $url =~ s/__CustomField__/@{[$self->Content]}/g;
 
     return $url;
 }
