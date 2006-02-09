@@ -54,7 +54,7 @@
 % while (my $Value = $Values->Next()) {
 <li>
 % if ($CustomField->LinkValueTo) {
-<a href="<%$Value->LinkValueTo|n%>">
+<a href="<%$Value->LinkValueTo|n%>" target="_new">
 % }
 % my $comp = "ShowCustomField".$CustomField->Type;
 % if ($m->comp_exists($comp)) {
