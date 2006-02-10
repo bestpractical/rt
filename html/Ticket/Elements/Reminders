@@ -21,13 +21,13 @@ if ( $request_args->{'update-reminders'} ) {
         elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
             $Ticket->Reminders->Open($reminder);
         }
-        elsif ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } ) {
+        if (  $request_args->{ 'Reminder-Subject-' . $reminder->id } && ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } )) {
             $reminder->SetSubject( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) ;
         }
-        elsif ( $reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } ) {
+        if ($request_args->{ 'Reminder-Owner-' . $reminder->id }   && ($reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } )) {
             $reminder->SetOwner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
         }
-        elsif ( $reminder->DueObj->Date ne $request_args->{ 'Reminder-Due-' . $reminder->id } ) {
+        if ($request_args->{ 'Reminder-Due-' . $reminder->id } && ( $reminder->DueObj->Date ne $request_args->{ 'Reminder-Due-' . $reminder->id }) ) {
             $reminder->SetDue( $request_args->{ 'Reminder-Due-' . $reminder->id } ) ;
         }
     }
