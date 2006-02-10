@@ -1,4 +1,6 @@
+/*
 % $r->content_type('application/x-javascript');
+*/
 
 function hideshow(num) {
     idstring = "element-" + num;
