@@ -1,5 +1,7 @@
+/*
 % $r->content_type('application/x-javascript');
-// Fetching http://www.opendarwin.org/~drernie/src/ahah.js
+*/
+// Fetched from http://www.opendarwin.org/~drernie/src/ahah.js
 function ahah(url, target, delay) {
   document.getElementById(target).innerHTML = 'Loading <a href="'+url+'">'+url +'</a>...';
   if (window.XMLHttpRequest) {
