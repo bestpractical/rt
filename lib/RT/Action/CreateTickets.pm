@@ -848,7 +848,7 @@ sub _ParseMultilineTemplate {
                         $line  = "Queue: $value";
                     }
                 }
-                if ( $line =~ /^Requestor:(.*)/i ) {
+                if ( $line =~ /^Requestors?:(.*)/i ) {
                     $requestor = 1;
                     my $value = $1;
                     $value =~ s/^\s//;
@@ -916,6 +916,7 @@ sub ParseLines {
             my $original_tag = $1;
             my $tag   = lc($original_tag);
             $tag =~ s/-//g;
+            $tag =~ s/^(requestor|cc|admincc)s?$/$1/i;
 
             $original_tags{$tag} = $original_tag;
 
@@ -937,7 +938,6 @@ sub ParseLines {
                     push @{ $args{'content'} }, $l . "\n";
                 }
             } else {
-
                 # if it's not content, strip leading and trailing spaces
                 if ( $args{$tag} ) {
                     $args{$tag} =~ s/^\s+//g;
@@ -1114,7 +1114,8 @@ sub _ParseXSVTemplate {
                     # Note that we found a queue
                     $queue = 1;
                     $value ||= $args{'Queue'};
-                } elsif ( $field =~ /^Requestor$/i ) {
+                } elsif ( $field =~ /^Requestors?$/i ) {
+                    $field = 'Requestor'; # Remove plural
                     # Note that we found a requestor
                     $requestor = 1;
                     $value ||= $args{'Requestor'};
