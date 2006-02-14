@@ -370,33 +370,43 @@ sub _LinkLimit {
 #                                      AND(main.id = Links_1.LocalTarget))
 #        WHERE Links_1.LocalBase IS NULL;
 
-    my $linkalias = $sb->Join(
-        TYPE   => ($is_null || $is_negative)? 'LEFT': 'NORMAL',
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'Links',
-        FIELD2 => 'Local' . $linkfield
-    );
-    $sb->_OpenParen();
-    $sb->SUPER::Limit(
-        @rest,
-        ($is_null || $is_negative)? (LEFTJOIN => $linkalias): (),
-        FIELD    => 'Type',
-        OPERATOR => '=',
-        VALUE    => $meta->[2],
-    );
     if ($is_null) {
-
+        my $linkalias = $sb->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Links',
+            FIELD2 => 'Local' . $linkfield
+        );
+        $sb->SUPER::Limit(
+            LEFTJOIN => $linkalias,
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => $meta->[2],
+        );
         $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => $op,
-            VALUE           => 'NULL',
-            QUOTEVALUE      => 0,
+            @rest,
+            ALIAS      => $linkalias,
+            FIELD      => $matchfield,
+            OPERATOR   => $op,
+            VALUE      => 'NULL',
+            QUOTEVALUE => 0,
         );
     }
     elsif ( $is_negative ) {
+        my $linkalias = $sb->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Links',
+            FIELD2 => 'Local' . $linkfield
+        );
+        $sb->SUPER::Limit(
+            LEFTJOIN => $linkalias,
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => $meta->[2],
+        );
         $sb->SUPER::Limit(
             LEFTJOIN => $linkalias,
             FIELD    => $matchfield,
@@ -404,27 +414,41 @@ sub _LinkLimit {
             VALUE    => $value,
         );
         $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-            QUOTEVALUE      => 0,
+            @rest,
+            ALIAS      => $linkalias,
+            FIELD      => $matchfield,
+            OPERATOR   => 'IS',
+            VALUE      => 'NULL',
+            QUOTEVALUE => 0,
         );
     }
     else {
-
-
+        my $linkalias = $sb->NewAlias('Links');
+        $sb->_OpenParen();
+        $sb->_SQLLimit(
+            @rest,
+            ALIAS    => $linkalias,
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => $meta->[2],
+        );
         $sb->_SQLLimit(
             ALIAS           => $linkalias,
+            FIELD           => 'Local' . $linkfield,
+            OPERATOR        => '=',
+            VALUE           => 'main.id',
+            QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
-            FIELD    => $matchfield,
-            OPERATOR => $op,
-            VALUE    => $value,
         );
-
+        $sb->_SQLLimit(
+            ALIAS           => $linkalias,
+            FIELD           => $matchfield,
+            OPERATOR        => $op,
+            VALUE           => $value,
+            ENTRYAGGREGATOR => 'AND',
+        );
+        $sb->_CloseParen();
     }
-    $sb->_CloseParen();
 }
 
 =head2 _DateLimit

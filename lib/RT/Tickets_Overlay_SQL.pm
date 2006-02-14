@@ -280,66 +280,66 @@ failure.
 =begin testing
 
 use RT::Tickets;
-
-
+use strict;
 
 my $tix = RT::Tickets->new($RT::SystemUser);
+{
+    my $query = "Status = 'open'";
+    my ($status, $msg)  = $tix->FromSQL($query);
+    ok ($status, "correct query") or diag("error: $msg");
+}
 
-my $query = "Status = 'open'";
-my ($id, $msg)  = $tix->FromSQL($query);
 
-ok ($id, $msg);
-
-
-my (@ids, @expectedids);
-
-my $t = RT::Ticket->new($RT::SystemUser);
-
+my (@created,%created);
 my $string = 'subject/content SQL test';
-ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
-
-push @ids, $t->Id;
-
-my $Message = MIME::Entity->build(
-			     Subject     => 'this is my subject',
-			     From        => 'jesse@example.com',
-			     Data        => [ $string ],
-        );
-
-ok( $t->Create(Queue => 'General', Subject => 'another ticket', MIMEObj => $Message, MemberOf => $ids[0]), "Ticket Created");
-
-push @ids, $t->Id;
-
-$query = ("Subject LIKE '$string' OR Content LIKE '$string'");
-
-my ($id, $msg) = $tix->FromSQL($query);
-
-
-ok ($id, $msg);
-
-is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
-while (my $tick = $tix->Next) {
-    push @expectedids, $tick->Id;
-}
-ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
-#
-$query = ("id = $ids[0] OR MemberOf = $ids[0]");
-
-my ($id, $msg) = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
-
-my ($id, $msg) = $tix->FromSQL($query);
-@expectedids = ();
-
-
-while (my $tick = $tix->Next) {
-    push @expectedids, $tick->Id;
+{
+    my $t = RT::Ticket->new($RT::SystemUser);
+    ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
+    $created{ $t->Id }++; push @created, $t->Id;
 }
 
-ok (eq_array(\@ids, \@expectedids), "returned expected tickets". join(",",@ids) . "==".join(",",@expectedids));
+{
+    my $Message = MIME::Entity->build(
+                     Subject     => 'this is my subject',
+                     From        => 'jesse@example.com',
+                     Data        => [ $string ],
+            );
+
+    my $t = RT::Ticket->new($RT::SystemUser);
+    ok( $t->Create( Queue => 'General',
+                    Subject => 'another ticket',
+                    MIMEObj => $Message,
+                    MemberOf => $created[0]
+                  ),
+        "Ticket Created"
+    );
+    $created{ $t->Id }++; push @created, $t->Id;
+}
+
+{
+    my $query = ("Subject LIKE '$string' OR Content LIKE '$string'");
+    my ($status, $msg) = $tix->FromSQL($query);
+    ok ($status, "correct query") or diag("error: $msg");
+
+    my $count = 0;
+    while (my $tick = $tix->Next) {
+        $count++ if $created{ $tick->id };
+    }
+    is ($count, scalar @created, "number of returned tickets same as entered");
+}
+
+{
+    my $query = "id = $created[0] OR MemberOf = $created[0]";
+    my ($status, $msg) = $tix->FromSQL($query);
+    ok ($status, "correct query") or diag("error: $msg");
+
+    my $count = 0;
+    while (my $tick = $tix->Next) {
+        $count++ if $created{ $tick->id };
+    }
+    is ($count, scalar @created, "number of returned tickets same as entered");
+}
+
 
 =end testing
 
