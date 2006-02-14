@@ -140,14 +140,11 @@ sub CheckForSuspiciousSender {
 
     my ($From, $junk) = ParseSenderAddressFromHead($head);
     
-    if (($From =~ /^mailer-daemon\@/i) or
-	($From =~ /^postmaster\@/i)){
-	return (1);
-	
+    if ( $From =~ /^(?:mailer-daemon|postmaster)\@/i ) {
+        return 1;
     }
-    
-    return (undef);
 
+    return undef;
 }
 
 # }}}
@@ -277,16 +274,17 @@ sub MailError {
 
 sub CreateUser {
     my ($Username, $Address, $Name, $ErrorsTo, $entity) = @_;
-    my $NewUser = RT::User->new($RT::SystemUser);
 
-    my ($Val, $Message) = 
-      $NewUser->Create(Name => ($Username || $Address),
-                       EmailAddress => $Address,
-                       RealName => $Name,
-                       Password => undef,
-                       Privileged => 0,
-                       Comments => 'Autocreated on ticket submission'
-                      );
+    my $NewUser = RT::User->new( $RT::SystemUser );
+
+    my ($Val, $Message) = $NewUser->Create(
+        Name         => ($Username || $Address),
+        EmailAddress => $Address,
+        RealName     => $Name,
+        Password     => undef,
+        Privileged   => 0,
+        Comments     => 'Autocreated on ticket submission',
+    );
     
     unless ($Val) {
         
@@ -296,7 +294,7 @@ sub CreateUser {
             $NewUser->LoadByName($Username);
         }
         
-        unless ($NewUser->Id) {
+        unless ( $NewUser->Id ) {
             $NewUser->LoadByEmail($Address);
         }
         
@@ -305,14 +303,14 @@ sub CreateUser {
                        Subject => "User could not be created",
                        Explanation => "User creation failed in mailgateway: $Message",
                        MIMEObj => $entity,
-                       LogLevel => 'crit'
+                       LogLevel => 'crit',
                      );
         }
     }
 
     #Load the new user object
-    my $CurrentUser = RT::CurrentUser->new();
-    $CurrentUser->LoadByEmail($Address);
+    my $CurrentUser = new RT::CurrentUser;
+    $CurrentUser->LoadByEmail( $Address );
 
     unless ($CurrentUser->id) {
             $RT::Logger->warning("Couldn't load user '$Address'.".  "giving up");
@@ -378,9 +376,9 @@ of the From (evaluated in order of Reply-To:, From:, Sender)
 sub ParseSenderAddressFromHead {
     my $head = shift;
     #Figure out who's sending this message.
-    my $From = $head->get('Reply-To') || 
-      $head->get('From') || 
-	$head->get('Sender');
+    my $From = $head->get('Reply-To')
+        || $head->get('From')
+        || $head->get('Sender');
     return (ParseAddressFromHeader($From));
 }
 # }}}
@@ -508,7 +506,7 @@ sub Gateway {
 
     # Set some reasonable defaults
     $args{'action'} ||= 'correspond';
-    $args{'queue'}  ||= '1';
+    $args{'queue'}  ||= 1;
 
     # Validate the action
     my ($status, @actions) = IsCorrectAction( $args{'action'} );
@@ -543,7 +541,7 @@ sub Gateway {
     # Initalize AuthStat so comparisons work correctly
     $AuthStat = -9999999;
 
-    my $ErrorsTo = ParseErrorsToAddressFromHead($head);
+    my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
 
     my $MessageId = $head->get('Message-ID')
       || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
@@ -552,19 +550,19 @@ sub Gateway {
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
 
-    $args{'ticket'} ||= ParseTicketId($Subject);
+    $args{'ticket'} ||= ParseTicketId( $Subject );
 
     my $SystemTicket;
     my $Right = 'CreateTicket';
     if ( $args{'ticket'} ) {
-        $SystemTicket = RT::Ticket->new($RT::SystemUser);
+        $SystemTicket = RT::Ticket->new( $RT::SystemUser );
         $SystemTicket->Load( $args{'ticket'} );
-	# if there's an existing ticket, this must be a reply
-	$Right = 'ReplyToTicket';
+        # if there's an existing ticket, this must be a reply
+        $Right = 'ReplyToTicket';
     }
 
     #Set up a queue object
-    my $SystemQueueObj = RT::Queue->new($RT::SystemUser);
+    my $SystemQueueObj = RT::Queue->new( $RT::SystemUser );
     $SystemQueueObj->Load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
@@ -578,24 +576,25 @@ sub Gateway {
     # 1 - Normal user
     # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
 
-    my @mail_plugins = RT->Config->Get('MailPlugins');
+    my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
+
 
     # Since this needs loading, no matter what
 
-    foreach ( grep $_, @mail_plugins ) {
+    foreach ( @mail_plugins ) {
         my $Code;
-        my $NewAuthStat;
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         }
         else {
             $_ = "RT::Interface::Email::".$_ unless $_ =~ /^RTx?::Interface::Email::/;
             eval "require $_;";
-            if ($@) {
+            if ( $@ ) {
                 $RT::Logger->crit("Couldn't load module '$_': $@");
                 next;
             }
+
             no strict 'refs';
             if ( !defined( $Code = *{ $_ . "::GetCurrentUser" }{CODE} ) ) {
                 $RT::Logger->crit("No GetCurrentUser code found in $_ module");
@@ -603,7 +602,8 @@ sub Gateway {
             }
         }
 
-	foreach my $action ( @actions ) {
+        my $NewAuthStat;
+        foreach my $action ( @actions ) {
 
             ( $CurrentUser, $NewAuthStat ) = $Code->(
                 Message     => $Message,
@@ -623,7 +623,7 @@ sub Gateway {
             $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
 
             last if $AuthStat == -1;
-	}
+        }
 
         last if $AuthStat == -1;
     }
@@ -703,7 +703,7 @@ EOT
     # {{{ Warn someone  if it's a loop
 
     # Warn someone if it's a loop, before we drop it on the ground
-    if ($IsALoop) {
+    if ( $IsALoop ) {
         $RT::Logger->crit("RT Recieved mail ($MessageId) from itself.");
 
         #Should we mail it to RTOwner?
@@ -782,9 +782,9 @@ EOT
             $RT::Logger->error("Create failed: $id / $Transaction / $ErrStr ");
             return ( 0, "Ticket creation failed", $Ticket );
         }
-	# strip comments&corresponds from the actions we don't need record twice
-	@actions = grep !/^(comment|correspond)$/, @actions;
-	$args{'ticket'} = $id;
+        # strip comments&corresponds from the actions we don't need record twice
+        @actions = grep !/^(comment|correspond)$/, @actions;
+        $args{'ticket'} = $id;
 
         # }}}
     }
@@ -883,12 +883,12 @@ EOT
 
 sub IsCorrectAction
 {
-	my $action = shift;
-	my @actions = split /-/, $action;
-	foreach ( @actions ) {
-		return (0, $_) unless /^(?:comment|correspond|take|resolve)$/;
-	}
-	return (1, @actions);
+    my $action = shift;
+    my @actions = split /-/, $action;
+    foreach ( @actions ) {
+        return (0, $_) unless /^(?:comment|correspond|take|resolve)$/;
+    }
+    return (1, @actions);
 }
 
 
