@@ -185,9 +185,10 @@ sub Get
 {
     my $self = shift;
     my $name = shift;
-    my $type = $META{$name}->{'Type'} || 'SCALAR';
+    return unless exists $OPTIONS{$name};
     return $OPTIONS{$name} unless wantarray;
 
+    my $type = $META{$name}->{'Type'} || 'SCALAR';
     if( $type eq 'ARRAY' ) {
         return @{ $OPTIONS{$name} };
     } elsif( $type eq 'HASH' ) {
