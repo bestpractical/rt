@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 136;
+use Test::More tests => 137;
 
 use RT;
 RT::LoadConfig();
-RT::Init;
+RT::Init();
 
 use RT::EmailParser;
 use RT::Tickets;
@@ -17,7 +17,7 @@ my @scrips_fired;
 #We're not testing acls here.
 my $everyone = RT::Group->new($RT::SystemUser);
 $everyone->LoadSystemInternalGroup('Everyone');
-$everyone->PrincipalObj->GrantRight(Right =>'SuperUser');
+$everyone->PrincipalObj->GrantRight( Right =>'SuperUser' );
 
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
@@ -57,16 +57,15 @@ my $parser = RT::EmailParser->new();
 my $content =  file_content("$RT::BasePath/lib/t/data/multipart-report");
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
-                                  
 my %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+my ($status, $msg) = RT::Interface::Email::Gateway(\%args);
+ok($status, "successfuly used Email::Gateway interface") or diag("error: $msg");
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick= $tickets->First();
 isa_ok($tick, "RT::Ticket", "got a ticket object");
 ok ($tick->Id, "found ticket ".$tick->Id);
-
 ok (first_txn($tick)->Content =~ /The original message was received/, "It's the bounce");
 
 

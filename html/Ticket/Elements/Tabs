@@ -196,7 +196,7 @@ $args= "?" . $m->comp(
     Format  => $ARGS{'Format'}  || $session{'CurrentSearchHash'}->{'Format'},
     OrderBy => $ARGS{'OrderBy'} || $session{'CurrentSearchHash'}->{'OrderBy'},
     Order   => $ARGS{'Order'}   || $session{'CurrentSearchHash'}->{'Order'},
-    Page   => $ARGS{'Page'}   || $session{'CurrentSearchHash'}->{'Page'},
+    Page    => $ARGS{'Page'}    || $session{'CurrentSearchHash'}->{'Page'},
     Rows    => $ARGS{'Rows'},
   ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
 $args ||= '';
