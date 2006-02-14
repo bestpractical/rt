@@ -938,7 +938,7 @@ sub _WatcherJoin {
     # RT doesn't allow to add groups as members of the
     # ticket roles, so we just hide entries in CGM table
     # with MemberId == GroupId from results
-    my $groupmembers = $self->SUPER::Limit(
+    $self->SUPER::Limit(
         LEFTJOIN   => $groupmembers,
         FIELD      => 'GroupId',
         OPERATOR   => '!=',
@@ -1171,32 +1171,30 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 =cut
 
 sub _CustomFieldDecipher {
-  my ($self, $field) = @_;
+    my ($self, $field) = @_;
  
-  my $queue = 0;
-  if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-    $queue = $1;
-    $field = $2;
- }
-  $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
- 
-  my $cfid;
- 
-  if ($queue) {
-    my $q = RT::Queue->new( $self->CurrentUser );
-    $q->Load($queue) if ($queue);
- 
-    my $cf;
-    if ( $q->id ) {
-      # $queue = $q->Name; # should we normalize the queue?
-      $cf = $q->CustomField($field);
+    my $queue = 0;
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+        ($queue, $field) = ($1, $2);
     }
-    else {
-      $cf = RT::CustomField->new( $self->CurrentUser );
-      $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
-     }
-    $cfid = $cf->id if $cf;
-  }
+    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+
+    my $cfid;
+    if ( $queue ) {
+        my $q = RT::Queue->new( $self->CurrentUser );
+        $q->Load( $queue ) if $queue;
+
+        my $cf;
+        if ( $q->id ) {
+            # $queue = $q->Name; # should we normalize the queue?
+            $cf = $q->CustomField( $field );
+        }
+        else {
+            $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByNameAndQueue( Queue => 0, Name => $field );
+        }
+        $cfid = $cf->id if $cf;
+    }
  
   return ($queue, $field, $cfid);
  
@@ -1301,7 +1299,8 @@ sub _CustomFieldLimit {
 
     # For our sanity, we can only limit on one queue at a time
 
-    my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
+    my ($queue, $cfid);
+    ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that

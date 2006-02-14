@@ -275,20 +275,19 @@ sub LoadByName {
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
-        my $QueueObj = RT::Queue->new($self->CurrentUser);
-        $QueueObj->Load($args{'Queue'});
+        my $QueueObj = RT::Queue->new( $self->CurrentUser );
+        $QueueObj->Load( $args{'Queue'} );
         $args{'Queue'} = $QueueObj->Id;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
-    my $CFs = RT::CustomFields->new($self->CurrentUser);
-
+    my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'} );
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
-    if (defined $args{'Queue'}) {
-	$CFs->LimitToQueue( $args{'Queue'} );
+    if ( defined $args{'Queue'} ) {
+        $CFs->LimitToQueue( $args{'Queue'} );
     }
 
     # When loading by name, it's ok if they're disabled. That's not a big deal.
@@ -296,11 +295,10 @@ sub LoadByName {
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
-    unless ($CFs->First) {
-        return(0);
+    unless ( $CFs->First ) {
+        return 0;
     }
     return($self->Load($CFs->First->id));
-
 }
 
 # }}}
@@ -870,7 +868,6 @@ Takes an object
 sub AddToObject {
     my $self  = shift;
     my $object = shift;
-    my $id = $object->Id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
     	return ( 0, $self->loc('Lookup type mismatch') );
@@ -880,14 +877,15 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    my $oid = $object->Id || 0;
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $oid, CustomField => $self->Id );
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
+
     my ( $id, $msg ) =
-      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
+      $ObjectCF->Create( ObjectId => $oid, CustomField => $self->Id );
 
     return ( $id, $msg );
 }
@@ -905,7 +903,6 @@ Takes an object
 sub RemoveFromObject {
     my $self = shift;
     my $object = shift;
-    my $id = $object->Id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
         return ( 0, $self->loc('Object type mismatch') );
@@ -915,9 +912,9 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    my $oid = $object->Id || 0;
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $oid, CustomField => $self->Id );
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
