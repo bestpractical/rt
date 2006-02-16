@@ -1,5 +1,7 @@
 /*
+<%init>
 % $r->content_type('application/x-javascript');
+</%init>
 */
 
 function hideshow(num) {
