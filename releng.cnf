@@ -1,5 +1,5 @@
 PRODUCT			        = rt
-TAG			            = 3.4.CH6
+TAG			            = 3.4.CH7
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rt/
 TAGS		            = tags/
 TRUNK	                = branches/CHALDEA-EXPERIMENTAL
