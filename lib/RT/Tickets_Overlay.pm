@@ -1243,6 +1243,16 @@ sub _CustomFieldJoin {
                 TABLE2     => 'ObjectCustomFields',
                 FIELD2     => 'ObjectId',
             );
+
+            $self->SUPER::Limit(
+                    LEFTJOIN => $ocfalias,
+                    ENTRYAGGREGATOR => 'OR',
+                    FIELD => 'ObjectId',
+                    VALUE => '0',
+
+                    );
+
+
             $CFs = $self->Join(
                 TYPE       => 'left',
                 ALIAS1     => $ocfalias,
