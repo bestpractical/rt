@@ -1355,9 +1355,10 @@ Text:
 
     For more information:
 
-        - rt help actions       (a list of possible actions)
-        - rt help objects       (how to specify objects)
         - rt help usage         (syntax information)
+        - rt help objects       (how to specify objects)
+        - rt help actions       (a list of possible actions)
+        - rt help types         (a list of object types)
 
         - rt help config        (configuration details)
         - rt help examples      (a few useful examples)
@@ -1372,6 +1373,8 @@ Text:
     Syntax:
 
         rt <action> [options] [arguments]
+      or
+        rt shell
 
     Each invocation of this program must specify an action (e.g. "edit",
     "create"), options to modify behaviour, and other arguments required
@@ -1381,6 +1384,10 @@ Text:
     The details of the syntax and arguments for each action are given by
     "rt help <action>". Some actions may be referred to by more than one
     name ("create" is the same as "new", for example).  
+
+    You may also call "rt shell", which will give you an 'rt>' prompt at
+    which you can issue commands of the form "<action> [options] 
+    [arguments]".  See "rt help shell" for details.
 
     Objects are identified by a type and an ID (which can be a name or a
     number, depending on the type). For some actions, the object type is
@@ -1396,6 +1403,7 @@ Text:
         - rt help objects       (how to specify objects)
         - rt help actions       (a list of actions)
         - rt help types         (a list of object types)
+        - rt help shell         (how to use the shell)
 
 --
 
@@ -1894,3 +1902,35 @@ Text:
     For the moment, please consult examples provided with each action.
 
 --
+
+Title: shell
+Text:
+
+    Use "rt shell" to open an interactive shell, at which you can issue 
+    commands of the form "<action> [options] [arguments]".
+
+    To exit the shell, type "quit" or "exit".
+
+    Commands can be given at the shell in the same form as they would 
+    be given at the command line without the leading 'rt' invocation.
+
+    Example:
+        $ rt shell
+        rt> create -t ticket set subject='new' add cc=foo@example.com
+        # Ticket 8 created.
+        rt> quit
+        $
+
+--
+
+Title: quit
+Title: exit
+Text:
+
+    Use "quit" or "exit" to leave the shell.  Only valid within shell 
+    mode.
+
+    Example:
+        $ rt shell
+        rt> quit
+        $
