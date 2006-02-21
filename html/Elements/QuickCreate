@@ -52,7 +52,7 @@
 <font size="-2"><&|/l&>Subject</&>:<br><input size="15" name="Subject"></font>
 </td>
 <td>
-<font size="-2"><&|/l&>Queue</&>:<br><& /Elements/SelectQueue, Name => 'Queue', ShowNullOption => 0 &></font>
+<font size="-2"><&|/l&>Queue</&>:<br><& /Elements/SelectNewTicketQueue, Name => 'Queue' &></font>
 </td>
 <td>
 <font size="-2"><&|/l&>Owner</&>:<br>
