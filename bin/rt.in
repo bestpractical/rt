@@ -1740,7 +1740,7 @@ Text:
         rt ls -t tickets -i 'Priority > 5' | rt edit - set status=resolved
         rt edit ticket/4 set priority=3 owner=bar@example.com \
                          add cc=foo@example.com bcc=quux@example.net
-        rt create -t ticket subject='new ticket' priority=10 \
+        rt create -t ticket set subject='new ticket' priority=10 \
                             add cc=foo@example.com
 
 --
