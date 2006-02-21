@@ -113,6 +113,7 @@ my %handlers = (
     link        => ["link", "ln"],
     merge       => ["merge"],
     grant       => ["grant", "revoke"],
+    quit        => ["quit", "exit"],
 );
 
 my %actions;
@@ -161,6 +162,11 @@ sub version {
 
 sub logout {
     submit("$REST/logout") if defined $session->cookie;
+}
+
+sub quit {
+    logout();
+    exit;
 }
 
 my %help;
