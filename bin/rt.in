@@ -1673,13 +1673,15 @@ Text:
         -t type         Specifies object type.
         -f a,b,c        Restrict the display to the specified fields.
         -S var=val      Submits the specified variable with the request.
-
+        -v              Verbose display
     Examples:
 
         rt show -t ticket -f id,subject,status 1-3
         rt show ticket/3/attachments/29
         rt show ticket/3/attachments/29/content
         rt show ticket/1-3/links
+        rt show ticket/3/history
+        rt show -v ticket/3/history
         rt show -t user 2
 
 --
