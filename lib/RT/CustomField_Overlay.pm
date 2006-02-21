@@ -1219,6 +1219,77 @@ sub _ForObjectType {
 
 }
 
-# }}}
 
+=head2 IncludeContentForValue [VALUE] (and SetIncludeContentForValue)
+
+Gets or sets the  C<IncludeContentForValue> for this custom field. RT
+uses this field to automatically include content into the user's browser
+as they display records with custom fields in RT.
+
+=cut
+
+sub SetIncludeContentForValue {
+    shift->IncludeContentForValue(@_);
+}
+sub IncludeContentForValue{
+    my $self = shift;
+    $self->_URLTemplate('IncludeContentForValue', @_);
+}
+
+
+
+=head2 LinkValueTo [VALUE] (and SetLinkValueTo)
+
+Gets or sets the  C<LinkValueTo> for this custom field. RT
+uses this field to make custom field values into hyperlinks in the user's
+browser as they display records with custom fields in RT.
+
+=cut
+
+
+sub SetLinkValueTo {
+    shift->LinkValueTo(@_);
+}
+
+sub LinkValueTo {
+    my $self = shift;
+    $self->_URLTemplate('LinkValueTo', @_);
+
+}
+
+
+=head2 _URLTemplate  NAME [VALUE]
+
+With one argument, returns the _URLTemplate named C<NAME>, but only if
+the current user has the right to see this custom field.
+
+With two arguments, attemptes to set the relevant template value.
+
+=cut
+
+
+
+sub _URLTemplate {
+    my $self          = shift;
+    my $template_name = shift;
+    if (@_) {
+
+        my $value = shift;
+        unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+        $self->SetAttribute( Name => $template_name, Content => $value );
+        return ( 1, $self->loc('Updated') );
+    } else {
+        unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
+            return (undef);
+        }
+
+        my @attr = $self->Attributes->Named($template_name);
+        my $attr = shift @attr;
+
+        if ($attr) { return $attr->Content }
+
+    }
+}
 1;

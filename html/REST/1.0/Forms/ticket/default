@@ -95,7 +95,7 @@ else {
         $starts->SetToNow;
 
         return [
-            "# Required: Queue, Requestor, Subject",
+            "# Required: id, Queue",
             [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
                  InitialPriority FinalPriority TimeEstimated Starts Due Text) ],
             {
