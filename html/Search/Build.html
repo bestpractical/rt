@@ -149,7 +149,7 @@ if ( $NewQuery ) {
 
     for( qw(Order OrderBy) ) {
         if (ref $query{$_} eq "ARRAY") {
-            $query{$_} = join( '|', @{ $ARGS{$_} } );
+            $query{$_} = join( '|', @{ $query{$_} } );
         }
     }
     if ( $query{'Format'} ) {
