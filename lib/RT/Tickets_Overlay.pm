@@ -1162,11 +1162,9 @@ sub _LinkFieldLimit {
 }
 
 
-
 =head2 _CustomFieldDecipher
- 
+
 Try and turn a CF descriptor into (cfid, cfname) object pair.
- 
 
 =cut
 
@@ -1201,22 +1199,23 @@ sub _CustomFieldDecipher {
 }
  
 
- 
+
 =head2 _CustomFieldJoin
- 
+
 Factor out the Join of custom fields so we can use it for sorting too
 
 =cut
 
 sub _CustomFieldJoin {
-  my ($self, $cfkey, $cfid, $field) = @_;
+    my ($self, $cfkey, $cfid, $field) = @_;
  
-  my $TicketCFs;
-  my $CFs;
+    my $TicketCFs;
+    my $CFs;
     # Perform one Join per CustomField
 
     if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
         $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey};
+        $CFs = $self->{_sql_cf_alias}{$cfkey};
     }
     else {
         if ($cfid) {
@@ -1241,7 +1240,7 @@ sub _CustomFieldJoin {
                 TABLE2     => 'ObjectCustomFields',
                 FIELD2     => 'ObjectId',
             );
-            $CFs = $self->Join(
+            $CFs = $self->{_sql_cf_alias}{$cfkey} = $self->Join(
                 TYPE       => 'left',
                 ALIAS1     => $ocfalias,
                 FIELD1     => 'CustomField',
@@ -1279,7 +1278,7 @@ sub _CustomFieldJoin {
         );
     }
 
-  return ($TicketCFs, $CFs);
+    return ($TicketCFs, $CFs);
 }
 
 =head2 _CustomFieldLimit
@@ -1315,17 +1314,19 @@ sub _CustomFieldLimit {
     my $cfkey = $cfid ? $cfid : "$queue.$field";
     my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-     $self->_OpenParen;
+    $self->_OpenParen;
 
-     $self->SUPER::Limit(
-         ALIAS           => $CFs,
-         FIELD           => 'name',
-         VALUE           => $field,
-         ENTRYAGGREGATOR => 'AND',
-     );
-
-     $self->_OpenParen if $null_columns_ok;
-
+    unless ($cfid) {
+        $self->SUPER::Limit(
+            ALIAS           => $CFs,
+            FIELD           => 'name',
+            VALUE           => $field,
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
+    
+    $self->_OpenParen if $null_columns_ok;
+    
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',
@@ -1344,8 +1345,8 @@ sub _CustomFieldLimit {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'OR',
         );
+        $self->_CloseParen;
     }
-    $self->_CloseParen if $null_columns_ok;
 
     $self->_CloseParen;
 
@@ -1388,57 +1389,57 @@ sub OrderByCols {
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
            unless ($cfid) {
-             # For those cases where we are doing a join against the
-             # CF name, and don't have a CFid, use Unique to make sure
-             # we don't show duplicate tickets.  NOTE: I'm pretty sure
-             # this will stay mixed in for the life of the
-             # class/package, and not just for the life of the object.
-             # Potential performance issue.
-             require DBIx::SearchBuilder::Unique;
-             DBIx::SearchBuilder::Unique->import;
+               # For those cases where we are doing a join against the
+               # CF name, and don't have a CFid, use Unique to make sure
+               # we don't show duplicate tickets.  NOTE: I'm pretty sure
+               # this will stay mixed in for the life of the
+               # class/package, and not just for the life of the object.
+               # Potential performance issue.
+               require DBIx::SearchBuilder::Unique;
+               DBIx::SearchBuilder::Unique->import;
            }
            my $CFvs = $self->Join(
-                TYPE   => 'left',
-                ALIAS1 => $TicketCFs,
-                FIELD1 => 'CustomField',
-                TABLE2 => 'CustomFieldValues',
-                FIELD2 => 'CustomField',
-            );
+               TYPE   => 'left',
+               ALIAS1 => $TicketCFs,
+               FIELD1 => 'CustomField',
+               TABLE2 => 'CustomFieldValues',
+               FIELD2 => 'CustomField',
+           );
            $self->SUPER::Limit(
-                LEFTJOIN => $CFvs,
-                FIELD => 'Name',
-                QUOTEVALUE => 0,
-                VALUE => $TicketCFs . ".Content",
-                ENTRYAGGREGATOR => 'AND'
-                              );
+               LEFTJOIN => $CFvs,
+               FIELD => 'Name',
+               QUOTEVALUE => 0,
+               VALUE => $TicketCFs . ".Content",
+               ENTRYAGGREGATOR => 'AND'
+           );
 
-          push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
-          push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
+           push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
+           push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
        } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
-         # PAW logic is "reversed"
-         my $order = "ASC";
-         if (exists $row->{ORDER} ) {
-           my $o = $row->{ORDER};
-           delete $row->{ORDER};
-           $order = "DESC" if $o =~ /asc/i;
-         }
+           # PAW logic is "reversed"
+           my $order = "ASC";
+           if (exists $row->{ORDER} ) {
+               my $o = $row->{ORDER};
+               delete $row->{ORDER};
+               $order = "DESC" if $o =~ /asc/i;
+           }
 
-         # Unowned
-         # Else
+           # Unowned
+           # Else
 
-         # Ticket.Owner  1 0 0
-         my $ownerId = $self->CurrentUser->Id;
-         push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
+           # Ticket.Owner  1 0 0
+           my $ownerId = $self->CurrentUser->Id;
+           push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
 
-         # Unowned Tickets 0 1 0
-         my $nobodyId = $RT::Nobody->Id;
-         push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+           # Unowned Tickets 0 1 0
+           my $nobodyId = $RT::Nobody->Id;
+           push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
 
-         push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
-	}
-        else {
-            push @res, $row;
-        }
+           push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
+       }
+       else {
+           push @res, $row;
+       }
     }
     return $self->SUPER::OrderByCols(@res);
 }
