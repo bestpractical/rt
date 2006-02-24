@@ -127,13 +127,13 @@ if ( $args{'action'} eq 'init' ) {
 
         $dbh->disconnect;
 
-	if ($RT::DatabaseType eq "Oracle") {
+        if ($RT::DatabaseType eq "Oracle") {
         $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
         $dbh = DBI->connect( $Handle->DSN, ${RT::DatabaseUser}, ${RT::DatabasePassword} ) || die $DBI::errstr;
-	} else {
-	
+        } else {
+        
         $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
-	}
+        }
     }
     print "Now populating database schema.\n";
     insert_schema();
@@ -180,7 +180,7 @@ sub insert_schema {
     print "Creating database schema.\n";
 
     if ( -f $base_path . "/schema." . $db_type ) {
-	no warnings 'unopened';
+        no warnings 'unopened';
 
         open( SCHEMA, "<" . $base_path . "/schema." . $db_type );
         open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $db_type );
@@ -197,11 +197,11 @@ sub insert_schema {
             }
         }
 
-	local $SIG{__WARN__} = sub {};
-	my $is_local = 0; # local/etc/schema needs to be nonfatal. 
+        local $SIG{__WARN__} = sub {};
+        my $is_local = 0; # local/etc/schema needs to be nonfatal. 
         $dbh->begin_work or die $dbh->errstr;
         foreach my $statement (@schema) {
-	    if ($statement =~ /^\s*;$/) { $is_local = 1; next; }
+            if ($statement =~ /^\s*;$/) { $is_local = 1; next; }
             print STDERR "SQL: $statement\n" if defined $args{'debug'};
             my $sth = $dbh->prepare($statement) or die $dbh->errstr;
             unless ( $sth->execute or $is_local ) {
@@ -484,57 +484,6 @@ sub insert_data {
         }
         print "done.\n";
     }
-    if (@ACL) {
-        print "Creating ACL...";
-        for my $item (@ACL) {
-
-	    my ($princ, $object);
-
-	    # Global rights or Queue rights?
-	    if ($item->{'Queue'}) {
-                $object = RT::Queue->new($CurrentUser);
-                $object->Load( $item->{'Queue'} );
-	    } else {
-		$object = $RT::System;
-	    }
-
-	    # Group rights or user rights?
-	    if ($item->{'GroupDomain'}) {
-                $princ = RT::Group->new($CurrentUser);
-	        if ($item->{'GroupDomain'} eq 'UserDefined') {
-                  $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
-	        } elsif ($item->{'GroupDomain'} eq 'SystemInternal') {
-                  $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
-	        } elsif ($item->{'GroupDomain'} eq 'RT::System-Role') {
-                  $princ->LoadSystemRoleGroup( $item->{'GroupType'} );
-	        } elsif ($item->{'GroupDomain'} eq 'RT::Queue-Role' &&
-			 $item->{'Queue'}) {
-                  $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
-					      Queue => $object->id);
-	        } else {
-                  $princ->Load( $item->{'GroupId'} );
-	        }
-	    } else {
-		$princ = RT::User->new($CurrentUser);
-		$princ->Load( $item->{'UserId'} );
-	    }
-
-	    # Grant it
-	    my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                                                     Right => $item->{'Right'},
-                                                     Object => $object );
-
-            if ($return) {
-                print $return. ".";
-            }
-            else {
-                print $msg . ".";
-
-            }
-
-        }
-        print "done.\n";
-    }
     if (@CustomFields) {
         print "Creating custom fields...";
         for $item (@CustomFields) {
@@ -566,6 +515,60 @@ sub insert_data {
             print $return. ".";
         }
 
+        print "done.\n";
+    }
+    if (@ACL) {
+        print "Creating ACL...";
+        for my $item (@ACL) {
+
+            my ($princ, $object);
+
+            # Global rights or Queue rights?
+            if ($item->{'CF'}) {
+                $object = RT::CustomField->new($CurrentUser);
+                $object->LoadByName( Name => $item->{'CF'}, Queue => $item->{'Queue'} );
+            } elsif ($item->{'Queue'}) {
+                $object = RT::Queue->new($CurrentUser);
+                $object->Load( $item->{'Queue'} );
+            } else {
+                $object = $RT::System;
+            }
+
+            # Group rights or user rights?
+            if ($item->{'GroupDomain'}) {
+                $princ = RT::Group->new($CurrentUser);
+                if ($item->{'GroupDomain'} eq 'UserDefined') {
+                  $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
+                } elsif ($item->{'GroupDomain'} eq 'SystemInternal') {
+                  $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
+                } elsif ($item->{'GroupDomain'} eq 'RT::System-Role') {
+                  $princ->LoadSystemRoleGroup( $item->{'GroupType'} );
+                } elsif ($item->{'GroupDomain'} eq 'RT::Queue-Role' &&
+                         $item->{'Queue'}) {
+                  $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
+                                              Queue => $object->id);
+                } else {
+                  $princ->Load( $item->{'GroupId'} );
+                }
+            } else {
+                $princ = RT::User->new($CurrentUser);
+                $princ->Load( $item->{'UserId'} );
+            }
+
+            # Grant it
+            my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                                                     Right => $item->{'Right'},
+                                                     Object => $object );
+
+            if ($return) {
+                print $return. ".";
+            }
+            else {
+                print $msg . ".";
+
+            }
+
+        }
         print "done.\n";
     }
 
@@ -620,12 +623,12 @@ sub insert_data {
     }
     if (@Attributes) {
         print "Creating predefined searches...";
-	my $sys = RT::System->new($CurrentUser);
+        my $sys = RT::System->new($CurrentUser);
 
         for $item (@Attributes) {
-	    my $obj = delete $item->{Object}; # XXX: make this something loadable
-	    $obj ||= $sys;
-	    my ( $return, $msg ) = $obj->AddAttribute (%$item);
+            my $obj = delete $item->{Object}; # XXX: make this something loadable
+            $obj ||= $sys;
+            my ( $return, $msg ) = $obj->AddAttribute (%$item);
             if ($return) {
                 print $return. ".";
             }
