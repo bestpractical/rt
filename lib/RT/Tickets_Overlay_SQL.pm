@@ -63,24 +63,14 @@ my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 sub _InitSQL {
   my $self = shift;
 
-  # How many of these do we actually still use?
-
-  # Private Member Variales (which should get cleaned)
-  $self->{'_sql_linksc'}        = 0;
-  $self->{'_sql_watchersc'}     = 0;
-  $self->{'_sql_keywordsc'}     = 0;
-  $self->{'_sql_subclause'}     = "a";
-  $self->{'_sql_first'}         = 0;
-  $self->{'_sql_opstack'}       = [''];
-  $self->{'_sql_linkalias'}    = undef;
+  # Private Member Variables (which should get cleaned)
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
+  $self->{'_sql_cf_alias'}  = undef;
   $self->{'_sql_object_cf_alias'}  = undef;
-  $self->{'_sql_depth'}         = 0;
-  $self->{'_sql_localdepth'}    = 0;
+  $self->{'_sql_watcher_join_users_alias'} = undef;
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
-  $self->{'_sql_columns_to_display'} = [];
 }
 
 sub _SQLLimit {
@@ -201,7 +191,6 @@ sub _parser {
         }
         die "Unknown field '$key' in '$string'" unless $class;
 
-        $self->{_sql_localdepth} = 0;
 
         unless( $dispatch{ $class } ) {
             die "No dispatch method for class '$class'"

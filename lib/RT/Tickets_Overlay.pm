@@ -890,8 +890,8 @@ sub _WatcherJoin {
     # we cache joins chain per watcher type
     # if we limit by requestor then we shouldn't join requestors again
     # for sort or limit on other requestors
-    if ( $self->{'_watcher_join_users_alias'}{ $type || 'any' } ) {
-        return $self->{'_watcher_join_users_alias'}{ $type || 'any' };
+    if ( $self->{'_sql_watcher_join_users_alias'}{ $type || 'any' } ) {
+        return $self->{'_sql_watcher_join_users_alias'}{ $type || 'any' };
     }
 
 # we always have watcher groups for ticket
@@ -952,7 +952,7 @@ sub _WatcherJoin {
         TABLE2 => 'Users',
         FIELD2 => 'id'
     );
-    return $self->{'_watcher_join_users_alias'}{ $type || 'any' } = $users;
+    return $self->{'_sql_watcher_join_users_alias'}{ $type || 'any' } = $users;
 }
 
 =head2 _WatcherMembershipLimit
