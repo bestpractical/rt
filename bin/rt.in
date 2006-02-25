@@ -113,6 +113,7 @@ my %handlers = (
     link        => ["link", "ln"],
     merge       => ["merge"],
     grant       => ["grant", "revoke"],
+    quit        => ["quit", "exit"],
 );
 
 my %actions;
@@ -161,6 +162,11 @@ sub version {
 
 sub logout {
     submit("$REST/logout") if defined $session->cookie;
+}
+
+sub quit {
+    logout();
+    exit;
 }
 
 my %help;
@@ -1349,9 +1355,10 @@ Text:
 
     For more information:
 
-        - rt help actions       (a list of possible actions)
-        - rt help objects       (how to specify objects)
         - rt help usage         (syntax information)
+        - rt help objects       (how to specify objects)
+        - rt help actions       (a list of possible actions)
+        - rt help types         (a list of object types)
 
         - rt help config        (configuration details)
         - rt help examples      (a few useful examples)
@@ -1366,6 +1373,8 @@ Text:
     Syntax:
 
         rt <action> [options] [arguments]
+      or
+        rt shell
 
     Each invocation of this program must specify an action (e.g. "edit",
     "create"), options to modify behaviour, and other arguments required
@@ -1375,6 +1384,10 @@ Text:
     The details of the syntax and arguments for each action are given by
     "rt help <action>". Some actions may be referred to by more than one
     name ("create" is the same as "new", for example).  
+
+    You may also call "rt shell", which will give you an 'rt>' prompt at
+    which you can issue commands of the form "<action> [options] 
+    [arguments]".  See "rt help shell" for details.
 
     Objects are identified by a type and an ID (which can be a name or a
     number, depending on the type). For some actions, the object type is
@@ -1390,6 +1403,7 @@ Text:
         - rt help objects       (how to specify objects)
         - rt help actions       (a list of actions)
         - rt help types         (a list of object types)
+        - rt help shell         (how to use the shell)
 
 --
 
@@ -1673,13 +1687,15 @@ Text:
         -t type         Specifies object type.
         -f a,b,c        Restrict the display to the specified fields.
         -S var=val      Submits the specified variable with the request.
-
+        -v              Verbose display
     Examples:
 
         rt show -t ticket -f id,subject,status 1-3
         rt show ticket/3/attachments/29
         rt show ticket/3/attachments/29/content
         rt show ticket/1-3/links
+        rt show ticket/3/history
+        rt show -v ticket/3/history
         rt show -t user 2
 
 --
@@ -1740,7 +1756,7 @@ Text:
         rt ls -t tickets -i 'Priority > 5' | rt edit - set status=resolved
         rt edit ticket/4 set priority=3 owner=bar@example.com \
                          add cc=foo@example.com bcc=quux@example.net
-        rt create -t ticket subject='new ticket' priority=10 \
+        rt create -t ticket set subject='new ticket' priority=10 \
                             add cc=foo@example.com
 
 --
@@ -1888,3 +1904,35 @@ Text:
     For the moment, please consult examples provided with each action.
 
 --
+
+Title: shell
+Text:
+
+    Use "rt shell" to open an interactive shell, at which you can issue 
+    commands of the form "<action> [options] [arguments]".
+
+    To exit the shell, type "quit" or "exit".
+
+    Commands can be given at the shell in the same form as they would 
+    be given at the command line without the leading 'rt' invocation.
+
+    Example:
+        $ rt shell
+        rt> create -t ticket set subject='new' add cc=foo@example.com
+        # Ticket 8 created.
+        rt> quit
+        $
+
+--
+
+Title: quit
+Title: exit
+Text:
+
+    Use "quit" or "exit" to leave the shell.  Only valid within shell 
+    mode.
+
+    Example:
+        $ rt shell
+        rt> quit
+        $

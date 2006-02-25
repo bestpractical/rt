@@ -145,14 +145,14 @@ sub WebExternalAutoInfo {
     $user_info{'Privileged'} = 1;
 
     if ($^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/) {
-	# Populate fields with information from Unix /etc/passwd
+        # Populate fields with information from Unix /etc/passwd
 
-	my ($comments, $realname) = (getpwnam($user))[5, 6];
-	$user_info{'Comments'} = $comments if defined $comments;
-	$user_info{'RealName'} = $realname if defined $realname;
+        my ($comments, $realname) = (getpwnam($user))[5, 6];
+        $user_info{'Comments'} = $comments if defined $comments;
+        $user_info{'RealName'} = $realname if defined $realname;
     }
     elsif ($^O eq 'MSWin32' and eval 'use Net::AdminMisc; 1') {
-	# Populate fields with information from NT domain controller
+        # Populate fields with information from NT domain controller
     }
 
     # and return the wad of stuff
@@ -188,8 +188,8 @@ sub loc {
         return ($u->loc(@_));
     }
     else {
-	# pathetic case -- SystemUser is gone.
-	return $_[0];
+        # pathetic case -- SystemUser is gone.
+        return $_[0];
     }
 }
 
@@ -343,35 +343,35 @@ sub CreateTicket {
     my (@dependson, @dependedonby, @parents, @children, @refersto, @referredtoby);
 
     foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
-	$luri =~ s/\s*$//;    # Strip trailing whitespace
-	push @dependson, $luri;
+        $luri =~ s/\s*$//;    # Strip trailing whitespace
+        push @dependson, $luri;
     }
     $create_args{'DependsOn'} = \@dependson;
 
     foreach my $luri ( split ( / /, $ARGS{"DependsOn-new"} ) ) {
-	push @dependedonby, $luri;
+        push @dependedonby, $luri;
     }
     $create_args{'DependedOnBy'} = \@dependedonby;
 
     foreach my $luri ( split ( / /, $ARGS{"new-MemberOf"} ) ) {
-	$luri =~ s/\s*$//;    # Strip trailing whitespace
-	push @parents, $luri;
+        $luri =~ s/\s*$//;    # Strip trailing whitespace
+        push @parents, $luri;
     }
     $create_args{'Parents'} = \@parents;
 
     foreach my $luri ( split ( / /, $ARGS{"MemberOf-new"} ) ) {
-	push @children, $luri;
+        push @children, $luri;
     }
     $create_args{'Children'} = \@children;
 
     foreach my $luri ( split ( / /, $ARGS{"new-RefersTo"} ) ) {
-	$luri =~ s/\s*$//;    # Strip trailing whitespace
-	push @refersto, $luri;
+        $luri =~ s/\s*$//;    # Strip trailing whitespace
+        push @refersto, $luri;
     }
     $create_args{'RefersTo'} = \@refersto;
 
     foreach my $luri ( split ( / /, $ARGS{"RefersTo-new"} ) ) {
-	push @referredtoby, $luri;
+        push @referredtoby, $luri;
     }
     $create_args{'ReferredToBy'} = \@referredtoby;
     # }}}
@@ -1151,145 +1151,145 @@ sub ProcessObjectCustomFieldUpdates {
             $Object->Load($id);
         }
 
-	    # For each custom field  
-	    foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
-	    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-	    $CustomFieldObj->LoadById($cf);
+            # For each custom field  
+            foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
+                my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+                $CustomFieldObj->LoadById($cf);
 
-		foreach my $arg ( keys %{$ARGSRef} ) {
-		    # Only interested in args for the current CF:
-		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
+                foreach my $arg ( keys %{$ARGSRef} ) {
+                    # Only interested in args for the current CF:
+                    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
 
-		    # since http won't pass in a form element with a null value, we need
-		    # to fake it
-		    if ($arg =~ /^(.*?)-Values-Magic$/ ) {
-			# We don't care about the magic, if there's really a values element;
-			next if ($ARGSRef->{$1.'-Value'} || $ARGSRef->{$1.'-Values'}) ;
+                    # since http won't pass in a form element with a null value, we need
+                    # to fake it
+                    if ($arg =~ /^(.*?)-Values-Magic$/ ) {
+                        # We don't care about the magic, if there's really a values element;
+                        next if ($ARGSRef->{$1.'-Value'} || $ARGSRef->{$1.'-Values'}) ;
 
                         # "Empty" values does not mean anything for Image and Binary fields
                         next if $CustomFieldObj->Type =~ /^(?:Image|Binary)$/;
 
-			$arg = $1."-Values";
-			$ARGSRef->{$1."-Values"} = undef;
-		    
-		    }
-		    my @values = ();
-		    if (ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) {
-			@values = @{ $ARGSRef->{$arg} };
-		    } elsif ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
-			@values = ($ARGSRef->{$arg});
-		    } else {
-			@values = split /\n/, $ARGSRef->{$arg};
-		    }
-		    
-		    if ( ($CustomFieldObj->Type eq 'Freeform' 
-			  && ! $CustomFieldObj->SingleValue) ||
-			  $CustomFieldObj->Type =~ /text/i) {
-			foreach my $val (@values) {
-			    $val =~ s/\r//g;
-			}
-		    }
+                        $arg = $1."-Values";
+                        $ARGSRef->{$1."-Values"} = undef;
+                    
+                    }
+                    my @values = ();
+                    if (ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) {
+                        @values = @{ $ARGSRef->{$arg} };
+                    } elsif ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
+                        @values = ($ARGSRef->{$arg});
+                    } else {
+                        @values = split /\n/, $ARGSRef->{$arg};
+                    }
+                    
+                    if ( ($CustomFieldObj->Type eq 'Freeform' 
+                          && ! $CustomFieldObj->SingleValue) ||
+                          $CustomFieldObj->Type =~ /text/i) {
+                        foreach my $val (@values) {
+                            $val =~ s/\r//g;
+                        }
+                    }
 
-		    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
-			foreach my $value (@values) {
-			    next unless length($value);
-			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
-				Field => $cf,
-				Value => $value
-			    );
-			    push ( @results, $msg );
-			}
-		    }
-		    elsif ( $arg =~ /-Upload$/ ) {
+                    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
+                        foreach my $value (@values) {
+                            next unless length($value);
+                            my ( $val, $msg ) = $Object->AddCustomFieldValue(
+                                Field => $cf,
+                                Value => $value
+                            );
+                            push ( @results, $msg );
+                        }
+                    }
+                    elsif ( $arg =~ /-Upload$/ ) {
                         my $value_hash = _UploadedFile($arg) or next;
 
-			my ( $val, $msg ) = $Object->AddCustomFieldValue(
+                        my ( $val, $msg ) = $Object->AddCustomFieldValue(
                             %$value_hash,
                             Field => $cf,
-			);
-			push ( @results, $msg );
-		    }
-		    elsif ( $arg =~ /-DeleteValues$/ ) {
-			foreach my $value (@values) {
-			    next unless length($value);
-			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
-				Field => $cf,
-				Value => $value
-			    );
-			    push ( @results, $msg );
-			}
-		    }
-		    elsif ( $arg =~ /-DeleteValueIds$/ ) {
-			foreach my $value (@values) {
-			    next unless length($value);
-			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
-				Field => $cf,
-				ValueId => $value,
-			    );
-			    push ( @results, $msg );
-			}
-		    }
-		    elsif ( $arg =~ /-Values$/ and !$CustomFieldObj->Repeated) {
-			my $cf_values = $Object->CustomFieldValues($cf);
+                        );
+                        push ( @results, $msg );
+                    }
+                    elsif ( $arg =~ /-DeleteValues$/ ) {
+                        foreach my $value (@values) {
+                            next unless length($value);
+                            my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+                                Field => $cf,
+                                Value => $value
+                            );
+                            push ( @results, $msg );
+                        }
+                    }
+                    elsif ( $arg =~ /-DeleteValueIds$/ ) {
+                        foreach my $value (@values) {
+                            next unless length($value);
+                            my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+                                Field => $cf,
+                                ValueId => $value,
+                            );
+                            push ( @results, $msg );
+                        }
+                    }
+                    elsif ( $arg =~ /-Values$/ and !$CustomFieldObj->Repeated) {
+                        my $cf_values = $Object->CustomFieldValues($cf);
 
-			my %values_hash;
-			foreach my $value (@values) {
-			    next unless length($value);
+                        my %values_hash;
+                        foreach my $value (@values) {
+                            next unless length($value);
 
-			    # build up a hash of values that the new set has
-			    $values_hash{$value} = 1;
+                            # build up a hash of values that the new set has
+                            $values_hash{$value} = 1;
 
-			    unless ( $cf_values->HasEntry($value) ) {
-				my ( $val, $msg ) = $Object->AddCustomFieldValue(
-				    Field => $cf,
-				    Value => $value
-				);
-				push ( @results, $msg );
-			    }
+                            unless ( $cf_values->HasEntry($value) ) {
+                                my ( $val, $msg ) = $Object->AddCustomFieldValue(
+                                    Field => $cf,
+                                    Value => $value
+                                );
+                                push ( @results, $msg );
+                            }
 
-			}
-			while ( my $cf_value = $cf_values->Next ) {
-			    unless ( $values_hash{ $cf_value->Content } == 1 ) {
-				my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
-				    Field => $cf,
-				    Value => $cf_value->Content
-				);
-				push ( @results, $msg);
+                        }
+                        while ( my $cf_value = $cf_values->Next ) {
+                            unless ( $values_hash{ $cf_value->Content } == 1 ) {
+                                my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+                                    Field => $cf,
+                                    Value => $cf_value->Content
+                                );
+                                push ( @results, $msg);
 
-			    }
-			}
-		    }
-		    elsif ( $arg =~ /-Values$/ ) {
-			my $cf_values = $Object->CustomFieldValues($cf);
+                            }
+                        }
+                    }
+                    elsif ( $arg =~ /-Values$/ ) {
+                        my $cf_values = $Object->CustomFieldValues($cf);
 
-		    # keep everything up to the point of difference, delete the rest
-		    my $delete_flag;
-		    foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
-			if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
-			    shift @values;
-			    next;
-			}
+                        # keep everything up to the point of difference, delete the rest
+                        my $delete_flag;
+                        foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
+                            if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
+                                shift @values;
+                                next;
+                            }
 
-			$delete_flag ||= 1;
-			$old_cf->Delete;
-		    }
+                            $delete_flag ||= 1;
+                            $old_cf->Delete;
+                        }
 
-		    # now add/replace extra things, if any
-		    foreach my $value (@values) {
-			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
-			    Field => $cf,
-			    Value => $value
-			);
-			push ( @results, $msg );
-		    }
-		}
-		    else {
-			push ( @results, loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]", $CustomFieldObj->Name, $class, $Object->id ) );
-		    }
-		}
-	    }
-	    return (@results);
-	}
+                        # now add/replace extra things, if any
+                        foreach my $value (@values) {
+                            my ( $val, $msg ) = $Object->AddCustomFieldValue(
+                                Field => $cf,
+                                Value => $value
+                            );
+                            push ( @results, $msg );
+                        }
+                    }
+                    else {
+                        push ( @results, loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]", $CustomFieldObj->Name, $class, $Object->id ) );
+                    }
+                }
+            }
+            return (@results);
+        }
     }
 }
 
@@ -1325,7 +1325,7 @@ sub ProcessTicketWatchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {	    
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {        
             my ( $code, $msg ) = $Ticket->DeleteWatcher( Email => $ARGSRef->{$key}, Type => $1 );
             push @results, $msg;
         }
@@ -1447,8 +1447,7 @@ sub ProcessTicketLinks {
     my $ARGSRef = $args{'ARGSRef'};
 
 
-    my (@results) = ProcessRecordLinks( RecordObj => $Ticket,
-                                        ARGSRef => $ARGSRef );
+    my (@results) = ProcessRecordLinks(RecordObj => $Ticket, ARGSRef => $ARGSRef);
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
@@ -1554,16 +1553,16 @@ Instantiate container object for saving searches.
 sub _load_container_object {
     my ($obj_type, $obj_id) = @_;
     if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-	return $session{'CurrentUser'}->UserObj;
+        return $session{'CurrentUser'}->UserObj;
     }
     elsif ($obj_type eq 'RT::Group') {
-	my $group = RT::Group->new($session{'CurrentUser'});
-	$group->Load($obj_id);
-	return $group;
+        my $group = RT::Group->new($session{'CurrentUser'});
+        $group->Load($obj_id);
+        return $group;
     }
     elsif ($obj_type eq 'RT::System') {
-	# XXX: check hasright
-	return RT::System->new($session{'CurrentUser'});
+        # XXX: check hasright
+        return RT::System->new($session{'CurrentUser'});
     }
     else {
     }
@@ -1577,9 +1576,15 @@ container object and the search id.
 =cut
 
 sub _parse_saved_search {
-    my $spec = shift || '';
-    return unless $spec =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/;
-    return (_load_container_object ($1, $2), $3);
+    my $spec = shift;
+    if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        return;
+    }
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    return (_load_container_object ($obj_type, $obj_id), $search_id);
 }
 
 eval "require RT::Interface::Web_Vendor";

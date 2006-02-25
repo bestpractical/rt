@@ -48,6 +48,7 @@ body {
     font-family: Verdana, sans-serif;
     font-size: 76%;
     margin: 0;
+    background-color: white;
 }
 
 .hide, .hidden { display: none !important; }

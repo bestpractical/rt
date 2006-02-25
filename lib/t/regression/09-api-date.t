@@ -81,7 +81,7 @@ use_ok('RT::Date', "loaded RT::Date");
 {
     my $date = RT::Date->new($RT::SystemUser);
     is($date->Unix, 0, "new date returns 0 in Unix format");
-    is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
+    is($date->Get, '1970-01-01 00:00:00', "default is ISO format"); 
     is($date->Get(Format =>'SomeBadFormat'),
        '1970-01-01 00:00:00',
        "don't know format, return ISO format");

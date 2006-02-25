@@ -262,11 +262,11 @@ $deps{'ORACLE'} = [ _( << '.') ];
 DBD::Oracle
 .
 $deps{'POSTGRESQL'} = [ _( << '.') ];
-DBD::Pg 1.41
+DBD::Pg 1.43
 .
 
 $deps{'SQLITE'} = [ _( << '.') ];
-DBD::SQLite
+DBD::SQLite 1.00
 .
 
 if ($args{'download'}) {

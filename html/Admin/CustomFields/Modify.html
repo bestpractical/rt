@@ -98,6 +98,32 @@
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td>
 </tr>
+<tr>
+<td class="label"><&|/l&>Link values to</&></td>
+</td>
+<td><input size="60" name="LinkValueTo"  value="<%$CustomFieldObj->LinkValueTo%>" />
+<div class="hints">
+<&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
+<&|/l&>Fill in this field with a URL.</&>
+<&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
+</div>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Include page</&></td>
+</td>
+<td><input size="60" name="IncludeContentForValue"  value="<%$CustomFieldObj->IncludeContentForValue%>" />
+<div class="hints">
+<&|/l&>RT can include content from another web service when showing this custom field.</&>
+<&|/l&>Fill in this field with a URL.</&>
+<&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
+<i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
+</div>
+</td>
+</tr>
+
+
+
 </table>
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
@@ -145,7 +171,7 @@ else {
         #we're asking about enabled on the web page but really care about disabled.
         $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
 
-        my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description);
+        my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
         push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                            Object        => $CustomFieldObj,
                                            ARGSRef       => \%ARGS );

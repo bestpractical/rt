@@ -51,7 +51,7 @@
 <tr><td>
 <&|/l&>Subject</&>:<br /><input size="15" name="Subject" />
 </td><td>
-<&|/l&>Queue</&>:<br /><& /Elements/SelectQueue, Name => 'Queue', ShowNullOption => 0 &>
+<&|/l&>Queue</&>:<br /><& /Elements/SelectNewTicketQueue, Name => 'Queue', ShowNullOption => 0 &>
 </td><td>
 <&|/l&>Owner</&>:<br />
 <select type="select" name="Owner">  

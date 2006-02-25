@@ -228,6 +228,7 @@ sub Set {
         #Convert it to an ISO format string
 
         my $date = Time::ParseDate::parsedate($args{'Value'},
+                        GMT => 0,
                         UK => RT->Config->Get('DateDayBeforeMonth'),
                         PREFER_PAST => RT->Config->Get('AmbiguousDayInPast'),
                         PREFER_FUTURE => !RT->Config->Get('AmbiguousDayInPast') );
@@ -239,7 +240,7 @@ sub Set {
                             . $args{'Value'}
                             . " $date\n" );
 
-        return ( $self->Set( Format => 'unix', Value => "$date" ) );
+        return ( $self->Set( Format => 'unix', Value => $date) );
     }
     else {
         die "Unknown Date format: " . $args{'Format'} . "\n";
@@ -583,10 +584,10 @@ sub Time {
 sub Get
 {
     my $self = shift;
-    my %args = (@_);
-    my $formatter = delete($args{'Format'}) || 'ISO';
+    my %args = (Format => 'ISO',
+                @_);
+    my $formatter =$args{'Format'};
     $formatter = 'ISO' unless $self->can($formatter);
-    no strict 'refs';
     return $self->$formatter( %args );
 }
 
@@ -657,13 +658,12 @@ sub ISO {
     my $self = shift;
     my %args = ( Date => 1,
                  Time => 1,
-                 Timezone => '',
+                 Timezone => 'GMT',
                  Seconds => 1,
                  @_,
                );
        #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->Localtime($args{'Timezone'});
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = $self->Localtime($args{'Timezone'});
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
@@ -736,17 +736,16 @@ sub RFC2822 {
 
 =head2 Timezones handling
 
-=head3 Localtime
+=head3 Localtime $context
 
-Takes one argument C<$context>, see Timezone method.
+Takes one argument C<$context>, which determines whether we want "user local", "system" or "UTC" time.
 
-Returns object's date and time in format perl builtin function C<localtime>
-returns with two exceptions:
+Returns object's date and time in the format provided by perl's builtin function C<localtime>
+with two exceptions:
 
-1) year is always in full specification, it is not offset against 1900.
+1) "Year" is a four-digit year, rather than "years since 1900"
 
-2) returns additional element C<offset> which represent timezone offset
-against C<UTC> in seconds.
+2) The last element of the array returned is C<offset>, which represents timezone offset against C<UTC> in seconds.
 
 =cut
 
@@ -759,7 +758,12 @@ sub Localtime
     $unix = 0 if $unix < 0;
     
     local $ENV{'TZ'} = $tz;
-    my @local = localtime($unix);
+    my @local;
+    if ($tz eq 'GMT' or $tz eq 'UTC') {
+        @local = gmtime($unix);
+    } else {
+        @local = localtime($unix);
+    }
     $local[5] += 1900; # change year to 4+ digits format
     my $offset = Time::Local::timegm_nocheck(@local) - $unix;
     return @local, $offset;
@@ -770,23 +774,39 @@ sub Localtime
 
 # {{{ sub Timezone
 
-=head3 Timezone
+=head3 Timezone $context
 
 Returns the timezone name.
 
-Takes C<$context> argument which could be either C<user>, C<server> or C<UTC>.
+Takes one argument, C<$context> argument which could be C<user>, C<server> or C<utc>.
+
+=over 
+
+=item user
+
 Default value is C<user> that mean it returns current user's Timezone value.
+
+=item server
+
 If context is C<server> it returns value of the <$Timezone> RT config option.
+
+=item  utc
+
 If both server's and user's timezone names are undefined returns 'UTC'.
+
+=back
+
 
 =cut
 
 sub Timezone {
     my $self = shift;
-    my $context = lc(shift || 'utc');
+    my $context = lc(shift);
+
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/;
 
     my $tz;
+
     if( $context eq 'user' ) {
         $tz = $self->CurrentUser->UserObj->Timezone;
     } elsif( $context eq 'server') {

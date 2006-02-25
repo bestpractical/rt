@@ -50,8 +50,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
-
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>
@@ -65,7 +65,7 @@ my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->QueueObj->TicketCustomFields();
 
 # Now let callbacks have a chance at editing %ARGS
-$m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, %ARGS);
+$m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 my @cf_results = ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
