@@ -15,18 +15,21 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
 %foreach my $arg (keys %ARGS) {
 %
 % if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
-%    my    $art = RT::FM::Article->new($session{'CurrentUser'});       
-%        $art->Load($1);
-<& /RTFM/Article/Elements/Preformatted, Article => $art &>
+%    my $art = RT::FM::Article->new($session{'CurrentUser'});
+%    $art->Load($1);
+<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
 % }
-% if ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg}) {
-%    my    $art = RT::FM::Article->new($session{'CurrentUser'});       
-%        $art->LoadByCols(Name => $ARGS{$arg});
-<& /RTFM/Article/Elements/Preformatted, Article => $art &>
+% if ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg} =~ /\D/) {
+%    my $art = RT::FM::Article->new($session{'CurrentUser'});
+%    $art->LoadByCols(Name => $ARGS{$arg});
+<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
+% } elsif ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg}) {
+%    my $art = RT::FM::Article->new($session{'CurrentUser'});     
+%    $art->LoadByCols(id => $ARGS{$arg});
+<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
 % }
 % }
 % return(1);

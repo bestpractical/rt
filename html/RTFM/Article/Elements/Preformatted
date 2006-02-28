@@ -15,14 +15,15 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
+% if ($include{Name}) {
 #<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
 <%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
-
-<% $Article->Summary%> 
-
-%my $cfs = $Article->CustomFields;  
+% }
+% if ($Article->Summary =~ /\S/ and $include{Summary}) {
+<% $Article->Summary%>
+% }
 % while (my $cf = $cfs->Next) {
+%   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
 %   my $values = $Article->CustomFieldValues($cf->Id);
 
 %   if ($values->Count == 1) {
@@ -31,27 +32,46 @@
 %     if ($content =~ /<(.{1,5})>/) {
 %       $content = de_htmlify($content);
 %     }
-<%    $cf->Name%>:
-<%    '-' x length($cf->Name) %>
-<%    $content%>
+%     if ($include{"CF-Title-".$cf->Id}) {
+<%      $cf->Name%>:
+<%      '-' x length($cf->Name) %>
+%     }
+%     if ($include{"CF-Value-".$cf->Id}) {
+<%      $content%>
+%     }
 %   } else {
 %     my $val = $values->Next;
 %     my $content = $val ? $val->Content : "";
 %     if ($content =~ /<(.{1,5})>/) {
 %       $content = de_htmlify($content);
 %     }
-<%    $cf->Name%>: <%$val && $content%>
+%     if ($include{"CF-Title-".$cf->Id}) {
+<%      $cf->Name%>: \
+%     }
+%     if ($include{"CF-Value-".$cf->Id}) {
+<%      $val && $content%>
+%     }
 %     while ($val = $values->Next) { 
 %       my $content = $val->Content;
 %       if ($content =~ /<(.{1,5})>/) {
 %         $content = de_htmlify($content);
 %       }
-<%      ' ' x length($cf->Name)%>  <%$content%>
+%       if ($include{"CF-Title-".$cf->Id}) {
+<%        ' ' x length($cf->Name)%>  \
+%       }
+%       if ($include{"CF-Title-".$cf->Id}) {
+<%        $content%>
+%       }
 %     } 
 %   }
 % }
-
 <%init>
+my $class = $Article->ClassObj;
+my %include = (Name => 1, Summary => 1);
+my $cfs = $class->ArticleCustomFields;
+$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
+$include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
+
 sub de_htmlify {
     my $content = shift;
     require HTML::TreeBuilder;
@@ -65,7 +85,6 @@ sub de_htmlify {
     return $content;
 }
 </%init>
-
 <%args>
 $Article
 </%args>

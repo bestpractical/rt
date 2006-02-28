@@ -47,12 +47,25 @@ $current_subtab, Title => $title &>
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this Class)</&><BR>
 </TD>
 </TR>
-
 </TABLE>
+
+
+<h3>When inserting articles in this class into emails:</h3>
+<ul>
+<li><input type="checkbox" name="Include-Name" value="1" <% $include{Name} %>> Include article name</li>
+<li><input type="checkbox" name="Include-Summary" value="1" <% $include{Summary} %>> Include article summary</li>
+% while (my $cf = $cfs->Next) {
+<li>Include custom field '<% $cf->Name %>'
+  <ul>
+    <li><input type="checkbox" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %>>Title</li>
+    <li><input type="checkbox" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %>>Value</li>
+  </ul>
+</li>
+% }
+</ul>
+
 <& /Elements/Submit &>
 </form>
-
-
 
 <%INIT>
 
@@ -113,6 +126,22 @@ if ($Create == 1) {
 
 }
 
+my %include = (Name => 1, Summary => 1);
+my $cfs = $ClassObj->ArticleCustomFields;
+$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
+
+if ($SetEnabled) {
+    for (keys %include) {
+        if ($ARGS{"Include-$_"}) {
+            $ClassObj->DeleteAttribute("Skip-$_");
+        } else {
+            $ClassObj->SetAttribute(Name => "Skip-$_", Content => 1);
+        }
+    }
+}
+
+$include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;
+$include{$_} = $include{$_} ? " CHECKED" : "" for keys %include;
 </%INIT>
 
 
