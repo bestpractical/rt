@@ -20,35 +20,29 @@
 $current_subtab, Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-
-
-
-
-<FORM ACTION="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" METHOD=POST>
+<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" method="POST">
+<input type="hidden" name="Submitted" value="1">
 %if ($Create ) {
-<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+<input type="hidden" name="id" value="new" />
 % } else {
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$ClassObj->Id%>">
+<input type="hidden" name="id" value="<%$ClassObj->Id%>" />
 % }
 
-<TABLE>
-<TR><TD ALIGN=RIGHT>
-<&|/l&>Class Name</&>: 
-</TD>
-<TD><INPUT name="Name" value="<% $Create ? "" : $ClassObj->Name %>"></TD>
-</TR><TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<% $Create ? "" : $ClassObj->Description %>" size=60></TD></TR>
-<TR>
-<TR>
-<TD>
-</TD>
-<TD COLSPAN=4><INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this Class)</&><BR>
-</TD>
-</TR>
-</TABLE>
-
+<table>
+<tr>
+<td align="right"><&|/l&>Class Name</&>: </td>
+<td><input name="Name" value="<% $Create ? "" : $ClassObj->Name %>" /></td>
+</tr><tr>
+<td align="right"><&|/l&>Description</&>:</TD>
+<td><input name="Description" value="<% $Create ? "" : $ClassObj->Description %>" size=60></td>
+</tr><tr>
+<td>&nbsp;</td>
+<td><input type="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this Class)</&></td>
+</tr><tr>
+<td>&nbsp;</td>
+<td><input type="checkbox" name="HotList" value="1" <%$HotListChecked%>> <&|/l&>All articles in this topic are on dropdown on ticket reply page</&></td>
+</tr>
+</table>
 
 <h3>When inserting articles in this class into emails:</h3>
 <ul>
@@ -70,67 +64,47 @@ $current_subtab, Title => $title &>
 <%INIT>
 
 my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
-my  ($title, @results, $Disabled, $EnabledChecked);
+my  ($title, @results, $Disabled);
 
 if ($Create) {
     $title = loc("Create a Class");
-}
-
-else {
+} else {
     if ($id eq 'new') {
-       my ($val, $msg) =  $ClassObj->Create(Name => $Name);
-       if ($val == 0 ) {
-           $m->comp("/RTFM/Elements/Error", Why => "$msg");
-	}
-	else {
-		push @results, $msg;
-	}    
-     }
-     else {
+        my ($val, $msg) =  $ClassObj->Create(Name => $Name);
+        if ($val == 0 ) {
+            $m->comp("/RTFM/Elements/Error", Why => "$msg");
+        } else {
+            push @results, $msg;
+        }    
+    } else {
         $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$Name'");
     }
-        $title = loc('Editing Configuration for Class [_1]', $ClassObj->Name);
-    
+    $title = loc('Editing Configuration for Class [_1]', $ClassObj->Name);
 }
+
 if ($ClassObj->Id()) {
-my @attribs= qw(Description Name);
-
-  @results = UpdateRecordObject( AttributesRef => \@attribs, 
-				    Object => $ClassObj, 
-				    ARGSRef => \%ARGS);
-
+    $ARGS{HotList} ||= 0 if $Submitted;
+    my @attribs= qw(Description Name HotList);
+    @results = UpdateRecordObject( AttributesRef => \@attribs, 
+                                   Object => $ClassObj, 
+                                   ARGSRef => \%ARGS);
 }
 
 #we're asking about enabled on the web page but really care about disabled.
 if ($Enabled == 1 or (not defined $Enabled and $Create)) {
     $Disabled = 0;
-}	
-else {
+} else {
     $Disabled = 1;
-}
-if  ( ($SetEnabled) and ( $Disabled != $ClassObj->Disabled) ) { 
-    my  ($code, $msg) = $ClassObj->SetDisabled($Disabled);
-    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
-}
-
-unless ($Create ? $Disabled : $ClassObj->Disabled()) {
-    $EnabledChecked ="CHECKED";
-}
-
-my $current_subtab;
-if ($Create == 1) {
-    $current_subtab = "Admin/RTFM/Classes/Modify.html?Create=1";
-
-} else { 
-    $current_subtab = "Admin/RTFM/Classes/Modify.html?id=$id";
-
 }
 
 my %include = (Name => 1, Summary => 1);
 my $cfs = $ClassObj->ArticleCustomFields;
 $include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
 
-if ($SetEnabled) {
+if  ( ($Submitted) and ( $Disabled != $ClassObj->Disabled) ) { 
+    my  ($code, $msg) = $ClassObj->SetDisabled($Disabled);
+    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+
     for (keys %include) {
         if ($ARGS{"Include-$_"}) {
             $ClassObj->DeleteAttribute("Skip-$_");
@@ -142,6 +116,16 @@ if ($SetEnabled) {
 
 $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;
 $include{$_} = $include{$_} ? " CHECKED" : "" for keys %include;
+
+my $EnabledChecked = ($Create ? $Disabled : $ClassObj->Disabled()) ? "" : "CHECKED";
+my $HotListChecked = $ClassObj->HotList ? "CHECKED" : "";
+
+my $current_subtab;
+if ($Create == 1) {
+    $current_subtab = "Admin/RTFM/Classes/Modify.html?Create=1";
+} else { 
+    $current_subtab = "Admin/RTFM/Classes/Modify.html?id=$id";
+}
 </%INIT>
 
 
@@ -151,6 +135,6 @@ $result => undef
 $Name => undef
 $Create => undef
 $Description => undef
-$SetEnabled => undef
+$Submitted => undef
 $Enabled => undef
 </%ARGS>

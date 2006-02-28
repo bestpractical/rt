@@ -4,11 +4,12 @@ id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
 Description varchar(255) NOT NULL DEFAULT '',
 SortOrder integer NOT NULL DEFAULT 0,
-Disabled smallint not null default '0',
+Disabled smallint NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
+HotList smallint NOT NULL DEFAULT 0,
 PRIMARY KEY (id)
 );
 

@@ -46,6 +46,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   int(2) 'Disabled'.
+  int(2) 'HotList'.
 
 =cut
 
@@ -59,6 +60,7 @@ sub Create {
                 Description => '',
                 SortOrder => '0',
                 Disabled => '0',
+                HotList => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -66,6 +68,7 @@ sub Create {
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
                          Disabled => $args{'Disabled'},
+                         HotList => $args{'HotList'},
 );
 
 }
@@ -153,6 +156,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item HotList
+
+Returns the current value of HotList. 
+(In the database, HotList is stored as int(2).)
+
+
+
+=item SetHotList VALUE
+
+
+Set HotList to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, HotList will be stored as a int(2).)
+
+
+=cut
+
+
 =item Creator
 
 Returns the current value of Creator. 
@@ -202,6 +223,8 @@ sub _CoreAccessible {
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Disabled => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        HotList => 
 		{read => 1, write => 1, type => 'int(2)', default => '0'},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
