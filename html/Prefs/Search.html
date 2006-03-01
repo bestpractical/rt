@@ -85,6 +85,8 @@ $search->LoadById ($id);
 $title .= loc ($search->Description, loc ('"N"'));
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg = $user->Preferences($search, $search->Content);
+$ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
+$ARGS{OrderBy}     = (ref $ARGS{OrderBy} ? join('|',grep {/\S/} @{$ARGS{OrderBy}}) : $ARGS{OrderBy});
 for (@fields) {
     $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
 }
