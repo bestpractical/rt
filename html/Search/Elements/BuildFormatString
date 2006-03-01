@@ -108,10 +108,15 @@ my @fields = qw(
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {
-    # What does this _do_? What are the keys to cfqueues
-    $id =~ s/^.'*(.*).'*$/$1/;
-    # Gotta load up the $queue object, since queues get stored by name now.
+    # Gotta load up the $queue object, since queues get stored by name now. my $id
     my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    unless ($queue->id) {
+        # XXX TODO: This ancient code dates from a former developer
+        # we have no idea what it means or why cfqueues are so encoded.
+        $id =~ s/^.'*(.*).'*$/$1/;
+        $queue->Load($id);
+    }
     $queue->Load($id);
     $CustomFields->LimitToQueue($queue->Id);
 }
