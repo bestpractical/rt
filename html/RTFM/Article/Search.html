@@ -52,7 +52,7 @@
 <br />
 <br />
 <br />
-<a name="criteria" />
+<a name="criteria"></a>
 <form action="Search.html" method="GET">
 <& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
 <br />
@@ -458,8 +458,6 @@ delete $filtered{$_} for grep {$filtered{$_} !~ /\S/} keys %filtered;
 my $QueryString = "?".$m->comp('/Elements/QueryString', %filtered);
 </%init>
 
-
-</%init>
 <%ARGS>
 $CreatedBefore => ''
 $CreatedAfter => ''
