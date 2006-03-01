@@ -75,20 +75,15 @@
 </form>
 </div>
 <div align="right">
-<a href="<%RT->Config->Get('WebPath')%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
-<a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
-% %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
-% foreach my $key (keys(%hiddens)) {
-<input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
-% }
-<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
-<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-<input type="submit" class="button" value="<%loc('Go')%>" />
-</form>
+<& Elements/ResultViews,
+QueryString => $QueryString,
+Query => $Query,
+Format => $Format,
+Rows => $Rows,
+OrderBy => $OrderBy,
+Order => $Order,
+RSSFeedURL => $RSSFeedURL,
+ShortQueryString => $ShortQueryString &>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>
