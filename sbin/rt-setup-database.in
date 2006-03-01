@@ -82,6 +82,7 @@ my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
 my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
+my $db_pass = RT->Config->Get('DatabasePassword') || '';
 
 if ( $args{'prompt-for-dba-password'} ) {
     $args{'dba-password'} = get_dba_password();
@@ -127,12 +128,11 @@ if ( $args{'action'} eq 'init' ) {
 
         $dbh->disconnect;
 
-        if ($RT::DatabaseType eq "Oracle") {
-        $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
-        $dbh = DBI->connect( $Handle->DSN, ${RT::DatabaseUser}, ${RT::DatabasePassword} ) || die $DBI::errstr;
-        } else {
-        
-        $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
+        if ($db_type eq "Oracle") {
+            $dbh = DBI->connect( $Handle->DSN, $db_user, $db_pass ) || die $DBI::errstr;
+        }
+        else {
+            $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
         }
     }
     print "Now populating database schema.\n";

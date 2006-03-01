@@ -174,7 +174,7 @@ if (! defined($AppName)) {
 
 my ($menu_depth, $almost_last, $page_tabs);
 
-if (RT->Config->Get('WebDefaultStylesheet') ne '3.4-compat') {
+if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-compat') {
     ($menu_depth, $almost_last) = @{$m->comp('.menu_recurse', data => $toptabs)};
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {

@@ -1,0 +1,25 @@
+<div id="form-box-<% lc $Name %>">
+<span class="description"><% $Description %></span>:
+<input type="checkbox" name="Boolean-<% $Name %>" <% $CurrentValue && 'checked' %>" />
+</div>
+<%INIT>
+</%INIT>
+<%ARGS>
+$Name         => undef,
+$Description  => undef,
+
+$CurrentValue => 0,
+</%ARGS>
+
+<%METHOD Process>
+<%ARGS>
+$Arguments    => {},
+
+$Name         => undef,
+$CurrentValue => 0,
+</%ARGS>
+<%INIT>
+return $Arguments->{ "Boolean-$Name" }? 1: 0;
+</%INIT>
+</%METHOD>
+

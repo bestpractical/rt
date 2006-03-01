@@ -73,8 +73,6 @@ package RT::Date;
 
 use Time::Local;
 
-use RT::Base;
-
 use strict;
 use warnings;
 use base qw/RT::Base/;
@@ -413,11 +411,10 @@ Returns the object's time as a string with the current timezone.
 
 sub AsString {
     my $self = shift;
-
-    return ($self->loc("Not set")) if ($self->Unix <= 0);
+    return $self->loc("Not set") if $self->Unix <= 0;
 
     my %args = (@_);
-    my $format = RT->Config->Get('DateTimeFormat') || 'DefaultFormat';
+    my $format = RT->Config->Get( 'DateTimeFormat', $self->CurrentUser ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
     %args = (%$format, %args);
 
@@ -658,12 +655,13 @@ sub ISO {
     my $self = shift;
     my %args = ( Date => 1,
                  Time => 1,
-                 Timezone => 'GMT',
+                 Timezone => '',
                  Seconds => 1,
                  @_,
                );
        #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = $self->Localtime($args{'Timezone'});
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
@@ -757,11 +755,11 @@ sub Localtime
     my $unix = $self->Unix;
     $unix = 0 if $unix < 0;
     
-    local $ENV{'TZ'} = $tz;
     my @local;
     if ($tz eq 'GMT' or $tz eq 'UTC') {
         @local = gmtime($unix);
     } else {
+        local $ENV{'TZ'} = $tz;
         @local = localtime($unix);
     }
     $local[5] += 1900; # change year to 4+ digits format
@@ -801,12 +799,11 @@ If both server's and user's timezone names are undefined returns 'UTC'.
 
 sub Timezone {
     my $self = shift;
-    my $context = lc(shift);
+    my $context = lc(shift || 'utc');
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/;
 
     my $tz;
-
     if( $context eq 'user' ) {
         $tz = $self->CurrentUser->UserObj->Timezone;
     } elsif( $context eq 'server') {

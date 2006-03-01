@@ -76,14 +76,15 @@
 </div>
 <div align="right">
 <& Elements/ResultViews,
-QueryString => $QueryString,
-Query => $Query,
-Format => $Format,
-Rows => $Rows,
-OrderBy => $OrderBy,
-Order => $Order,
-RSSFeedURL => $RSSFeedURL,
-ShortQueryString => $ShortQueryString &>
+    QueryString => $QueryString,
+    Query => $Query,
+    Format => $Format,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    RSSFeedURL => $RSSFeedURL,
+    ShortQueryString => $ShortQueryString,
+&>
 <& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>

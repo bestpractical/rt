@@ -349,11 +349,12 @@ Set($LogoURL, $Config->Get('WebImagesURL') . "bplogo.gif");
 # authentication.
 Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
-# For message boxes, set the entry box width and what type of wrapping
+# For message boxes, set the entry box width, height and what type of wrapping
 # to use.
 #
-# Default width: 72
-Set($MessageBoxWidth , 72);
+# Default width: 72, height: 15
+Set($MessageBoxWidth, 72);
+Set($MessageBoxHeight, 15);
 
 # Default wrapping: "HARD"  (choices "SOFT", "HARD")
 Set($MessageBoxWrap, "HARD");

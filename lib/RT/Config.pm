@@ -49,7 +49,66 @@ recommended.
 
 =cut
 
-my %META = ();
+our %META = (
+    WebDefaultStylesheet => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Interface style',
+            Values      => [qw(3.5-default 3.4-compat)],
+            Mutiple     => 0,
+            Alternative => 0,
+        },
+    },
+    MessageBoxWidth => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Message boxes width',
+        },
+    },
+    MessageBoxHeight => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Message boxes height',
+        },
+    },
+    MaxInlineBody => {
+        Section         => 'Tickets view',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Max size of message(bytes) that would be inlined into history',
+        },
+    },
+    OldestTransactionsFirst => {
+        Section         => 'Tickets view',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show oldest transactions first',
+        },
+    },
+    DateTimeFormat      => {
+        Section         => 'Date and time',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Date and time output format',
+            Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
+            ValuesLabel => {
+                DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)',
+                RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)',
+                ISO           => 'ISO (1995-11-25 21:59:12)',
+                W3CDTF        => 'W3C (1995-11-25T21:59:12Z)',
+            },
+        },
+    },
+);
 my %OPTIONS = ();
 
 =head1 METHODS
@@ -74,6 +133,18 @@ sub _Init
     return;
 }
 
+=head2 InitConfig
+
+=cut
+
+sub InitConfig
+{
+    my $self = shift;
+    my %args = (File => '', @_);
+    $args{'File'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
+    return 1;
+}
+
 =head2 LoadConfigs
 
 Load all configs. First of all load RT's config then load
@@ -86,6 +157,7 @@ sub LoadConfigs
 {
     my $self = shift;
     my @configs = $self->Configs;
+    $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
     return;
 }
@@ -139,7 +211,7 @@ sub _LoadConfig
                 Extension  => $is_ext,
             );
         };
-        local @INC = ($RT::LocalEtcPath, $RT::EtcPath);
+        local @INC = ($RT::LocalEtcPath, $RT::EtcPath, @INC);
         require $args{'File'};
     };
     if( $@ ) {
@@ -185,16 +257,25 @@ sub Get
 {
     my $self = shift;
     my $name = shift;
-    return unless exists $OPTIONS{$name};
-    return $OPTIONS{$name} unless wantarray;
+    my $user = shift;
+    return unless exists $OPTIONS{ $name };
 
-    my $type = $META{$name}->{'Type'} || 'SCALAR';
-    if( $type eq 'ARRAY' ) {
-        return @{ $OPTIONS{$name} };
-    } elsif( $type eq 'HASH' ) {
-        return %{ $OPTIONS{$name} };
+    my $res;
+    if ( $user && $META{ $name }->{'Overridable'} ) {
+        $user = $user->UserObj if $user->isa('RT::CurrentUser');
+        my $prefs = $user->Preferences( $RT::System );
+        $res = $prefs->{ $name } if $prefs;
     }
-    return $OPTIONS{$name};
+    $res = $OPTIONS{ $name } unless defined $res;
+    return $res unless wantarray;
+
+    my $type = $META{ $name }->{'Type'} || 'SCALAR';
+    if( $type eq 'ARRAY' ) {
+        return @{ $res };
+    } elsif( $type eq 'HASH' ) {
+        return %{ $res };
+    }
+    return $res;
 }
 
 =head2 Set
@@ -236,26 +317,30 @@ sub SetFromConfig
         @_
     );
 
-    unless( $args{'File'} ) {
-        ($args{'Package'},$args{'File'},$args{'Line'}) = caller(1);
+    unless ( $args{'File'} ) {
+        ($args{'Package'}, $args{'File'}, $args{'Line'}) = caller(1);
     }
 
     my $opt = $args{'Option'};
+
     my $type;
     my $name = $self->__GetNameByRef( $opt );
     if( $name ) {
         $type = ref $opt;
         $name =~ s/.*:://;
     } else {
-        $type = $META{$name}->{'Type'} || 'SCALAR';
         $name = $$opt;
+        $type = $META{ $name }->{'Type'} || 'SCALAR';
     }
 
-    return 1 if exists $OPTIONS{$name} && !$args{'SiteConfig'};
+    return 1 if exists $OPTIONS{ $name } && !$args{'SiteConfig'};
 
-    $META{$name}->{'Type'} = $type;
+    $META{ $name }->{'Type'} = $type;
+    foreach ( qw(Package File Line SiteConfig Extension) ) {
+        $META{ $name }->{'Source'}->{$_} = $args{$_};
+    }
     $self->Set( $name, @{ $args{'Value'} } );
-    
+
     return 1;
 }
 
@@ -301,5 +386,49 @@ sub __GetNameByRef
     }
     return '';
 }
+
+=head2 Metadata
+
+
+=head2 Meta
+
+=cut
+
+sub Meta {
+    return $META{$_[1]};
+}
+
+sub Sections {
+    my $self = shift;
+    my %seen;
+    return sort
+           grep !$seen{$_}++,
+           map $_->{'Section'} || 'General',
+           values %META;
+}
+
+sub Options {
+    my $self = shift;
+    my %args = ( Section => undef, Overridable => 1, @_ );
+    my @res = sort keys %META;
+    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'}, @res ) if defined $args{'Section'};
+    if ( defined $args{'Overridable'} ) {
+        @res = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'}, @res );
+    }
+    return @res;
+}
+
+=head3 Type
+
+=cut
+
+sub Type {
+    my $self = shift;
+    my $name = shift;
+}
+
+=head3 IsOverridable
+
+=cut
 
 1;

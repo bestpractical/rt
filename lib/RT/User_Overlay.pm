@@ -1632,7 +1632,7 @@ sub CurrentUserHasRight {
 sub _PrefName {
     my $name = shift;
     if (ref $name) {
-	$name = ref ($name).'-'.$name->Id;
+        $name = ref($name).'-'.$name->Id;
     }
 
     return 'Pref-'.$name;
@@ -1653,24 +1653,23 @@ sub Preferences {
     my $name = _PrefName (shift);
     my $default = shift;
 
-    my $attr = RT::Attribute->new ($self->CurrentUser);
-    $attr->LoadByNameAndObject (Object => $self, Name => $name);
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    $attr->LoadByNameAndObject( Object => $self, Name => $name );
 
     my $content = $attr->Id ? $attr->Content : undef;
-    if (ref ($content) eq 'HASH') {
-	if (ref ($default) eq 'HASH') {
-	    for (keys %$default) {
-		exists $content->{$_} or $content->{$_} = $default->{$_};
-	    }
-	}
-	elsif (defined $default) {
-	    $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
-	}
-	return $content;
+    unless ( ref $content eq 'HASH' ) {
+        return defined $content ? $content : $default;
     }
-    else {
-	return defined $content ? $content : $default;
+
+    if (ref $default eq 'HASH') {
+        for (keys %$default) {
+            exists $content->{$_} or $content->{$_} = $default->{$_};
+        }
     }
+    elsif (defined $default) {
+        $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
+    }
+    return $content;
 }
 
 # }}}
@@ -1684,16 +1683,16 @@ sub Preferences {
 =cut
 
 sub SetPreferences {
-    my $self  = shift;
-    my $name = _PrefName (shift);
+    my $self = shift;
+    my $name = _PrefName( shift );
     my $value = shift;
-    my $attr = RT::Attribute->new ($self->CurrentUser);
-    $attr->LoadByNameAndObject (Object => $self, Name => $name);
-    if ($attr->Id) {
-	return $attr->SetContent ($value);
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    $attr->LoadByNameAndObject( Object => $self, Name => $name );
+    if ( $attr->Id ) {
+        return $attr->SetContent( $value );
     }
     else {
-	return $self->AddAttribute ( Name => $name, Content => $value );
+        return $self->AddAttribute( Name => $name, Content => $value );
     }
 }
 

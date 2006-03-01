@@ -269,17 +269,17 @@ sub _SerializeContent {
 sub SetContent {
     my $self = shift;
     my $content = shift;
-    
+
     # Call __Value to avoid ACL check.
-    if ($self->__Value('ContentType') eq 'storable') {
-    # We eval the serialization because it will lose on a coderef.
-    eval  {$content = $self->_SerializeContent($content); };
-    if ($@) {
-        $RT::Logger->error("For some reason, content couldn't be frozen");
-        return(0, $@);
+    if ( $self->__Value('ContentType') eq 'storable' ) {
+        # We eval the serialization because it will lose on a coderef.
+        $content = eval { $self->_SerializeContent($content) };
+        if ($@) {
+            $RT::Logger->error("Content couldn't be frozen: $@");
+            return(0, "Content couldn't be frozen");
+        }
     }
-    }
-    return ($self->SUPER::SetContent($content));
+    return $self->SUPER::SetContent( $content );
 }
 
 =head2 SubValue KEY

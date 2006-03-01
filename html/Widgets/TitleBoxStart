@@ -51,7 +51,7 @@
     <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title |n %><% $title_href && "</a>" |n%></span>
     <span class="right"><% $titleright_href && qq[<a href="$titleright_href">] | n %><% $titleright |n %><% $titleright_href && "</a>" |n%></span>
   </div>
-  <div class="titlebox-content <% $bodyclass %>" id="<%$tid%>">
+  <div class="titlebox-content <% $bodyclass %>" id="<% $tid %>">
 
 <%ARGS>
 $width => undef

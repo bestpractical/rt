@@ -1,0 +1,56 @@
+<& /Elements/Header, Title => $title &>
+<& /User/Elements/Tabs, 
+    current_tab => 'Prefs/Other.html',
+    Title => $title,
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Other.html">
+% foreach my $section( RT->Config->Sections ) {
+<&|/Widgets/TitleBox, title => loc( $section ) &>
+% foreach my $option( RT->Config->Options( Section => $section ) ) {
+% my $meta = RT->Config->Meta( $option );
+<& $meta->{'Widget'},
+    Empty        => 1,
+    %{ $meta->{'WidgetArguments'} },
+    Name         => $option,
+    EmptyValue   => scalar RT->Config->Get( $option ),
+    CurrentValue => $preferences->{ $option },
+&>
+% }
+</&>
+% }
+
+<& /Elements/Submit, Name => 'Update', Value => loc('Save changes') &>
+</form>
+<%INIT>
+my @results;
+my $title = loc("Other preferences");
+
+my $UserObj = $session{'CurrentUser'}->UserObj;
+my $preferences = $UserObj->Preferences( $RT::System );
+
+if ( $Update ) {
+    foreach my $option( RT->Config->Options ) {
+        my $meta = RT->Config->Meta( $option );
+        my $value = $m->comp('/Widgets/'. $meta->{'Widget'} .":Process",
+            Arguments    => \%ARGS,
+            Empty        => 1,
+            %{ $meta->{'WidgetArguments'} },
+            Name         => $option,
+            EmptyValue   => scalar RT->Config->Get( $option ),
+            CurrentValue => $preferences->{ $option },
+        );
+        if ( defined $value ) {
+            $preferences->{ $option } = $value;
+        } else {
+            delete $preferences->{ $option };
+        }
+    }
+    $UserObj->SetPreferences( $RT::System, $preferences );
+}
+</%INIT>
+<%ARGS>
+$Update => 0,
+$User   => undef,
+</%ARGS>

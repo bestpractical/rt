@@ -1,0 +1,37 @@
+<div id="form-box-<% lc $Name %>">
+<span class="description"><% $Description %></span>:
+<input type="text" name="Integer-<% $Name %>" value="<% $CurrentValue || '' %>" />
+% if ( $Empty ) {
+<span class="comment"><% $EmptyLabel %></span>
+% }
+</div>
+<%INIT>
+</%INIT>
+<%ARGS>
+$Name         => undef,
+$Description  => undef,
+
+$CurrentValue => '',
+
+$Empty        => 0,
+$EmptyValue   => 0,
+$EmptyLabel   => loc( 'Leave value empty to enable default value which is [_1]', $EmptyValue ),
+</%ARGS>
+
+<%METHOD Process>
+<%ARGS>
+$Arguments    => {},
+
+$Name         => undef,
+$CurrentValue => '',
+$Empty        => 0,
+</%ARGS>
+<%INIT>
+my $value = $Arguments->{ "Integer-$Name" };
+if ( !defined $value || $value eq '' ) {
+    return $CurrentValue unless $Empty;
+    return undef;
+}
+return $value;
+</%INIT>
+</%METHOD>

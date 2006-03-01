@@ -50,8 +50,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">
-<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
+<& /Elements/Callback, _CallbackName => 'FormStart', ARGSRef => \%ARGS &>
+<input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>

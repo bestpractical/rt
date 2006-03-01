@@ -52,8 +52,9 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
+<& /Elements/Callback, _CallbackName => 'FormStart', ARGSRef => \%ARGS &>
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
+
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
 <& Elements/EditBasics, TicketObj => $Ticket &>

@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<%$Width%>" rows="<%$Height%>" wrap="<%$Wrap%>" name="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></textarea>
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>"><& /Elements/Callback, %ARGS &><% $Default %><% $message %><% $signature %></textarea>
 <%INIT>
 
 my $message = '';
@@ -55,18 +55,18 @@ if ($QuoteTransaction) {
 }
 
 my $signature = '';
-if ($IncludeSignature && $session{'CurrentUser'}->UserObj->Signature) {
-	$signature = "-- \n".$session{'CurrentUser'}->UserObj->Signature;
+if ($IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature) {
+	$signature = "-- \n". $text;
 }
 
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
-$Name => 'Content'
-$Default => ''
-$Width => RT->Config->Get('MessageBoxWidth') || 72
-$Height => RT->Config->Get('MessageBoxHeight') || 15
-$Wrap => RT->Config->Get('MessageBoxWrap') || 'HARD'
+$Name             => 'Content'
+$Default          => ''
+$Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} ) || 72
+$Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
+$Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>
 

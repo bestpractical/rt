@@ -70,8 +70,8 @@ ok (require RT::CurrentUser);
 
 package RT::CurrentUser;
 
-use RT::Record;
 use RT::I18N;
+use RT::User;
 
 use strict;
 use base qw/RT::Record/;
@@ -88,7 +88,7 @@ sub _Init {
 
     $self->{'table'} = "Users";
 
-    if ( defined($User) ) {
+    if ( defined $User ) {
 
         if (   UNIVERSAL::isa( $User, 'RT::User' )
             || UNIVERSAL::isa( $User, 'RT::CurrentUser' ) )
@@ -96,16 +96,16 @@ sub _Init {
             $self->Load( $User->id );
 
         }
-        elsif ( ref($User) ) {
+        elsif ( ref $User ) {
             $RT::Logger->crit(
                 "RT::CurrentUser->new() called with a bogus argument: $User");
         }
         else {
-            $self->Load($User);
+            $self->Load( $User );
         }
     }
 
-    $self->_BuildTableAttributes();
+    $self->_BuildTableAttributes;
 
 }
 # }}}
@@ -132,20 +132,19 @@ sub Delete {
 
 =head2 UserObj
 
-  Returns the RT::User object associated with this CurrentUser object.
+Returns the RT::User object associated with this CurrentUser object.
 
 =cut
 
 sub UserObj {
     my $self = shift;
-    
-	use RT::User;
-	my $user = RT::User->new($self);
 
-	unless ($user->Load($self->Id)) {
-	    $RT::Logger->err($self->loc("Couldn't load [_1] from the users database.\n", $self->Id));
-	}
-    return ($user);
+    my $user = RT::User->new( $self );
+
+    unless ( $user->Load( $self->Id ) ) {
+        $RT::Logger->err($self->loc("Couldn't load [_1] from the users database.\n", $self->Id));
+    }
+    return $user;
 }
 # }}}
 
@@ -153,8 +152,8 @@ sub UserObj {
 
 =head2 PrincipalObj
 
-    Returns this user's principal object.  this is just a helper routine for
-    $self->UserObj->PrincipalObj
+Returns this user's principal object.  this is just a helper routine for
+$self->UserObj->PrincipalObj
 
 =cut
 
@@ -171,8 +170,8 @@ sub PrincipalObj {
 
 =head2 PrincipalId
 
-    Returns this user's principal Id.  this is just a helper routine for
-    $self->UserObj->PrincipalId
+Returns this user's principal Id.  this is just a helper routine for
+$self->UserObj->PrincipalId
 
 =cut
 
@@ -181,14 +180,11 @@ sub PrincipalId {
     return($self->UserObj->PrincipalId);
 }
 
-
 # }}}
-
 
 # {{{ sub _Accessible 
 
-
- sub _CoreAccessible  {
+sub _CoreAccessible  {
      {
          Name           => { 'read' => 1 },
            Gecos        => { 'read' => 1 },
@@ -214,10 +210,9 @@ sub LoadByEmail  {
     my $self = shift;
     my $identifier = shift;
 
-    $identifier = RT::User::CanonicalizeEmailAddress(undef, $identifier);
-        
-    $self->LoadByCol("EmailAddress",$identifier);
-    
+    $identifier = RT::User::CanonicalizeEmailAddress( undef, $identifier );
+
+    return $self->LoadByCol( "EmailAddress", $identifier );
 }
 # }}}
 
@@ -232,10 +227,7 @@ Takes a unix username as its only argument.
 
 sub LoadByGecos  {
     my $self = shift;
-    my $identifier = shift;
-        
-    $self->LoadByCol("Gecos",$identifier);
-    
+    return $self->LoadByCol( "Gecos", shift );
 }
 # }}}
 
@@ -250,9 +242,7 @@ Takes a Name.
 
 sub LoadByName {
     my $self = shift;
-    my $identifier = shift;
-    $self->LoadByCol("Name",$identifier);
-    
+    return $self->LoadByCol( "Name", shift );
 }
 # }}}
 
@@ -267,24 +257,23 @@ Formerly, this routine also took email addresses.
 
 =cut
 
-sub Load  {
-  my $self = shift;
-  my $identifier = shift;
-
-  #if it's an int, load by id. otherwise, load by name.
-  if ($identifier !~ /\D/) {
-    $self->SUPER::LoadById($identifier);
-  }
-
-  elsif (UNIVERSAL::isa($identifier,"RT::User")) {
-         # DWIM if they pass a user in
-         $self->SUPER::LoadById($identifier->Id);
-  } 
-  else {
-      # This is a bit dangerous, we might get false authen if somebody
-      # uses ambigous userids or real names:
-      $self->LoadByCol("Name",$identifier);
-  }
+sub Load {
+    my $self = shift;
+    my $identifier = shift;
+  
+    #if it's an int, load by id. otherwise, load by name.
+    if ( $identifier !~ /\D/ ) {
+        return $self->SUPER::LoadById( $identifier );
+    }
+    elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
+        # DWIM if they pass a user in
+        return $self->SUPER::LoadById( $identifier->Id );
+    } 
+    else {
+        # This is a bit dangerous, we might get false authen if somebody
+        # uses ambigous userids or real names:
+        return $self->LoadByCol( "Name", $identifier );
+    }
 }
 
 # }}}
@@ -302,10 +291,8 @@ Otherwise, returns undef.
 =cut
 
 sub IsPassword { 
-  my $self = shift;
-  my $value = shift;
-  
-  return ($self->UserObj->IsPassword($value)); 
+    my $self = shift;
+    return $self->UserObj->IsPassword( shift );
 }
 
 # }}}
@@ -321,7 +308,7 @@ a member of groups.
 
 sub Privileged {
     my $self = shift;
-    return ($self->UserObj->Privileged());
+    return $self->UserObj->Privileged;
 }
 
 # }}}
@@ -336,8 +323,8 @@ calls $self->UserObj->HasRight with the arguments passed in
 =cut
 
 sub HasRight {
-  my $self = shift;
-  return ($self->UserObj->HasRight(@_));
+    my $self = shift;
+    return ($self->UserObj->HasRight(@_));
 }
 
 # }}}
@@ -365,24 +352,25 @@ is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
 
 sub LanguageHandle {
     my $self = shift;
-    if (   ( !defined $self->{'LangHandle'} )
-        || ( !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' ) )
-        || (@_) ) {
-        if ( !$RT::SystemUser or ($self->id || 0) == $RT::SystemUser->id() ) {
+    if (   !defined $self->{'LangHandle'}
+        || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
+        || @_ )
+    {
+        if ( !$RT::SystemUser or ($self->id || 0) == $RT::SystemUser->id ) {
             @_ = qw(en-US);
         }
 
-        elsif ( $self->Lang ) {
-            push @_, $self->Lang;
+        elsif ( my $lang = $self->Lang ) {
+            push @_, $lang;
         }
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
     }
 
     # Fall back to english.
     unless ( $self->{'LangHandle'} ) {
-        die "We couldn't get a dictionary. Nye mogu naidti slovar. No puedo encontrar dictionario.";
+        die "We couldn't get a dictionary. Ne mogu naidti slovar. No puedo encontrar dictionario.";
     }
-    return ( $self->{'LangHandle'} );
+    return $self->{'LangHandle'};
 }
 
 sub loc {
@@ -392,9 +380,9 @@ sub loc {
     my $handle = $self->LanguageHandle;
 
     if (@_ == 1) {
-	# pre-scan the lexicon hashes to return _AUTO keys verbatim,
-	# to keep locstrings containing '[' and '~' from tripping over Maketext
-	return $_[0] unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
+        # pre-scan the lexicon hashes to return _AUTO keys verbatim,
+        # to keep locstrings containing '[' and '~' from tripping over Maketext
+        return $_[0] unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
     }
 
     return $handle->maketext(@_);
@@ -402,13 +390,12 @@ sub loc {
 
 sub loc_fuzzy {
     my $self = shift;
-    return '' if (!$_[0] ||  $_[0] eq '');
+    return '' if !defined $_[0] || $_[0] eq '';
 
     # XXX: work around perl's deficiency when matching utf8 data
     return $_[0] if Encode::is_utf8($_[0]);
-    my $result = $self->LanguageHandle->maketext_fuzzy(@_);
 
-    return($result);
+    return $self->LanguageHandle->maketext_fuzzy( @_ );
 }
 # }}}
 
@@ -433,9 +420,9 @@ representing whether the authentication succeeded.
 If both $nonce and $created are specified, validate $password against:
 
     encode_base64(sha1(
-	$nonce .
-	$created .
-	sha1_hex( "$username:$realm:$server_pass" )
+        $nonce .
+        $created .
+        sha1_hex( "$username:$realm:$server_pass" )
     ))
 
 where $server_pass is the md5_hex(password) digest stored in the
@@ -454,9 +441,9 @@ sub Authenticate {
     my $username = $self->UserObj->Name or return;
     my $server_pass = $self->UserObj->__Value('Password') or return;
     my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
-	$nonce .
-	$created .
-	Digest::MD5::md5_hex("$username:$realm:$server_pass")
+        $nonce .
+        $created .
+        Digest::MD5::md5_hex("$username:$realm:$server_pass")
     ));
 
     chomp($password);
@@ -474,4 +461,3 @@ eval "require RT::CurrentUser_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Local.pm});
 
 1;
- 
