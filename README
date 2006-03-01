@@ -171,11 +171,19 @@ want to read a more comprehensive installation guide at:
     optional step.
 
 
+
+
 SETTING UP THE WEB INTERFACE
 ----------------------------
 
 RT's web interface is based around HTML::Mason, which works well with
-the mod_perl perl interpreter within Apache httpd and FastCGI
+the mod_perl perl interpreter within Apache httpd and FastCGI.
+
+Once you've set up the web interface, consider setting up automatic 
+logout for inactive sessions. For more information about how to do that,
+run 
+    perldoc /path/to/rt/sbin/rt-clean-sessions
+
 
 mod_perl
 --------
