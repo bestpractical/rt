@@ -198,11 +198,6 @@ sub _parser {
         }
         my $sub = $dispatch{ $class };
 
-        unless( $dispatch{ $class } ) {
-            die "No dispatch method for class '$class'"
-        }
-        my $sub = $dispatch{ $class };
-
         if ( $can_bundle{ $class }
              && ( !@bundle
                   || ( $bundle[-1]->{dispatch}  == $sub

@@ -88,8 +88,8 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
-my  ($id,  undef, $msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
-ok ($id,$msg);
+my  ($id,  undef, $create_msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
+ok ($id,$create_msg);
 $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
