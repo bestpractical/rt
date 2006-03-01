@@ -1,5 +1,4 @@
 <div id="values-source-class-block">
-Select source:
 <select name="ValuesClass">
 % foreach my $source( @sources ) {
 <option value="<% $source->{'Class'} %>" <% $source->{'Class'} eq $CustomField->ValuesClass && 'selected' %>><% $source->{'Description'} %></option>

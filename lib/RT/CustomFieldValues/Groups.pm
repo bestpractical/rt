@@ -19,12 +19,12 @@ sub ExternalValues {
     $groups->OrderByCols( { FIELD => 'Name' } );
     while( my $group = $groups->Next ) {
         push @res, {
-            name => $group->Name,
-            sortorder => $i++,
+            name        => $group->Name,
+            description => $group->Description,
+            sortorder   => $i++,
         };
     }
     return \@res;
 }
-
 
 1;

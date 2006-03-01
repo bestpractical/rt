@@ -62,15 +62,19 @@
 <td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td>
 </tr>
 
-<tr>
-<td class="label"><&|/l&>Type</&></td>
+<tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
         Name => "TypeComposite", 
         Default => $CustomFieldObj->TypeComposite, &>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Applies to</&></td>
+</td></tr>
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
+<tr><td class="label"><&|/l&>Field values source:</&></td><td>
+<& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
+</td></tr>
+% }
+
+<tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         Name => "LookupType", 
         Default => $CustomFieldObj->LookupType, &>
@@ -126,10 +130,7 @@
 
 </table>
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
-<& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
-% if ( $CustomFieldObj->IsExternalValues ) {
-
-% } else {
+% unless ( $CustomFieldObj->IsExternalValues ) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>

@@ -48,13 +48,13 @@
 my $Type = $CustomField->Type;
 unless ( $Type ) {
     # if we can't see the type, all hell will break loose.
-    $RT::Logger->warning( "Custom field #". $CustomField->id ." has empty type" );
+    $RT::Logger->error( "Custom field #". $CustomField->id ." has empty type" );
     return;
 }
 
 my $Values;
-if ($Object and $Object->id) {
-    $Values = $Object->CustomFieldValues($CustomField->id);
+if ( $Object && $Object->id ) {
+    $Values = $Object->CustomFieldValues( $CustomField->id );
     $Values->Columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
     $NamePrefix ||= join('-', 'Object', ref($Object), $Object->Id, 'CustomField', '');
 } elsif (not $Default) {
@@ -89,10 +89,10 @@ return $m->comp(
 );
 </%INIT>
 <%ARGS>
-$Object => undef
+$Object      => undef
 $CustomField => undef
-$NamePrefix => undef
-$Rows => 5
-$Cols => 15
-$Default => undef
+$NamePrefix  => undef
+$Rows        => 5
+$Cols        => 15
+$Default     => undef
 </%ARGS>

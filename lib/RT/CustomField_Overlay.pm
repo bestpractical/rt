@@ -90,6 +90,11 @@ use RT::ObjectCustomFieldValues;
         'Combobox: Select or enter one value',		# loc
         'Combobox: Select or enter up to [_1] values',	# loc
     ],
+    Autocomplete => [
+        'Enter multiple values with autocompletion',	# loc
+        'Enter one value with autocompletion',	        # loc
+        'Enter up to [_1] values with autocompletion',	# loc
+    ],
 );
 
 
@@ -489,7 +494,7 @@ sub IsSelectionType {
     my $type = @_? shift : $self->Type;
     return undef unless $type;
 
-    $type =~ /(?:Select|Combobox)/;
+    $type =~ /(?:Select|Combobox|Autocomplete)/;
 }
 
 # }}}

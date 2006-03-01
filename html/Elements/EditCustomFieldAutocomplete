@@ -1,0 +1,75 @@
+<style>
+    div.autocomplete {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #888;
+      margin: 0px;
+      padding: 0px;
+    }
+    div.autocomplete ul {
+      list-style-type: none;
+      margin: 0px;
+      padding: 0px;
+    }
+    div.autocomplete ul li.selected { background-color: #0088cc; color: #eee; }
+    div.autocomplete ul li {
+      list-style-type: none;
+      display: block;
+      margin: 0;
+      padding: 2px;
+    }
+</style>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/prototype.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/effects.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/controls.js"></script>
+<input type="text" id="<% $name %>-Values" name="<% $name %>-Values" /><div id="<% $name %>-Choices" class="autocomplete"></div>
+<script type="text/javascript">
+new Ajax.Autocompleter(
+    "<% $name %>-Values",
+    "<% $name %>-Choices",
+    "/Elements/EditCustomFieldAutocomplete",
+    {paramName: "GetChoices-<% $name %>"}
+);
+</script>
+<%INIT>
+while( my($k, $v) = each %ARGS ) {
+    next unless $k =~ /^GetChoices-Object-.*?-\d*-CustomField-(\d+)$/;
+    return $m->comp("SELF:Choices", Value => $v, CustomField => $1 );
+}
+my $name = $NamePrefix . $CustomField->Id;
+</%INIT>
+<%ARGS>
+$Object      => undef
+$CustomField => undef
+$NamePrefix  => undef
+$Default     => undef
+$Values      => undef
+$MaxValues   => undef
+</%ARGS>
+
+<%METHOD Choices>
+<%ARGS>
+$CustomField => undef
+$Value       => undef
+</%ARGS>
+<ul>
+% while( my $value = $values->Next ) {
+% my $desc = $value->Description || '';
+% $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
+<li><% $value->Name %><% $desc |n %></li>
+% }
+</ul>
+% $m->abort;
+<%INIT>
+my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+$CustomFieldObj->Load( $CustomField );
+my $values = $CustomFieldObj->Values;
+$values->Limit( FIELD => 'Name', OPERATOR => 'LIKE', VALUE => $Value );
+$values->Limit(
+    ENTRYAGGREGATOR => 'OR',
+    FIELD           => 'Description',
+    OPERATOR        => 'LIKE',
+    VALUE           => $Value,
+);
+</%INIT>
+</%METHOD>
