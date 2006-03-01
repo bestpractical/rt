@@ -428,10 +428,10 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 
 # $MaxInlineBody is the maximum attachment size that we want to see
-# inline when viewing a transaction. 13456 is a random sane-sounding
-# default. RT inline any text if value is undefined or 0.
+# inline when viewing a transaction. 
+# RT will inline any text if value is undefined or 0.
 
-Set($MaxInlineBody, 13456);
+Set($MaxInlineBody, 12000);
 
 # By default, RT shows newest transactions at the bottom of the ticket
 # history page, if you want see them at the top set this to '0'.
