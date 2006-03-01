@@ -1,49 +1,21 @@
 #!@PERL@
 
-=head1 NAME
-
-rt-clean-sessions - clean old and duplicate RT sessions
-
-=head1 USAGE
-
-    rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
-
-    rt-clean sessions
-    rt-clean sessions --debug
-    rt-clean sessions --older 10D
-    rt-clean sessions --debug --older 1M
-
-=head1 DESCRIPTION
-
-Script cleans RT sessions from DB or dir with sessions data.
-Leaves in DB only one session per RT user and sessions that aren't older
-than specified(see options).
-
-Script is safe because data in the sessions is temporary and can be deleted.
-
-=head1 OPTIONS
-
-=head2 older
-
-Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
-H(our), M(onth) and Y(ear) are also supported.
-
-For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
-older than 1 month.
-
-=head2 debug
-
-Turn on debug output.
-
-=cut
-
 use strict;
 use warnings;
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "older=s", "debug" );
+GetOptions( \%opt, "older=s", "debug", "help");
+
+
+if ( $opt{help} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage("RT Session cleanup tool\n");
+    exit 1;    
+}
+
 
 if( $opt{'older'} ) {
     unless( $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
@@ -86,3 +58,41 @@ if( $opt{'older'} or my $alogoff = int RT->Config->Get('AutoLogoff') ) {
 RT::Interface::Web::Session->ClearByUser;
 
 exit(0);
+
+=head1 NAME
+
+rt-clean-sessions - clean old and duplicate RT sessions
+
+=head1 USAGE
+
+    rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
+
+    rt-clean sessions
+    rt-clean sessions --debug
+    rt-clean sessions --older 10D
+    rt-clean sessions --debug --older 1M
+
+=head1 DESCRIPTION
+
+Script cleans RT sessions from DB or dir with sessions data.
+Leaves in DB only one session per RT user and sessions that aren't older
+than specified(see options).
+
+Script is safe because data in the sessions is temporary and can be deleted.
+
+=head1 OPTIONS
+
+=head2 older
+
+Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
+H(our), M(onth) and Y(ear) are also supported.
+
+For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
+older than 1 month.
+
+=head2 debug
+
+Turn on debug output.
+
+=cut
+

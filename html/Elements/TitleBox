@@ -1,0 +1,4 @@
+<%init>
+# For compatibility with 3.4
+$m->comp('/Widgets/TitleBox', %ARGS );
+</%init>
