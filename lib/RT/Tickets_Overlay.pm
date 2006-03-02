@@ -1163,7 +1163,7 @@ sub _LinkFieldLimit {
 
 
 =head2 _CustomFieldDecipher
- 
+
 Try and turn a CF descriptor into (cfid, cfname) object pair.
 
 =cut
@@ -1322,7 +1322,7 @@ sub _CustomFieldLimit {
     my $cfkey = $cfid ? $cfid : "$queue.$field";
     my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-     $self->_OpenParen;
+    $self->_OpenParen;
 
     unless ($cfid) {
         $self->SUPER::Limit(
@@ -1333,7 +1333,7 @@ sub _CustomFieldLimit {
         );
     }
     
-     $self->_OpenParen if $null_columns_ok;
+    $self->_OpenParen if $null_columns_ok;
     
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,

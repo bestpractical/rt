@@ -193,7 +193,6 @@ sub _parser {
         }
         die "Unknown field '$key' in '$string'" unless $class;
 
-        $self->{_sql_localdepth} = 0;
 
         unless( $dispatch{ $class } ) {
             die "No dispatch method for class '$class'"

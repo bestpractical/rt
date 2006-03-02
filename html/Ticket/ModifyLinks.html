@@ -55,6 +55,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 <& /Elements/Callback, _CallbackName => 'FormStart', ARGSRef => \%ARGS &>
 <&| /Widgets/TitleBox, title => loc('Edit Links') &>
+
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes') &>
