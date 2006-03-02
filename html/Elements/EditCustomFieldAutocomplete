@@ -1,24 +1,3 @@
-<style>
-    div.autocomplete {
-      position: absolute;
-      background-color: white;
-      border: 1px solid #888;
-      margin: 0px;
-      padding: 0px;
-    }
-    div.autocomplete ul {
-      list-style-type: none;
-      margin: 0px;
-      padding: 0px;
-    }
-    div.autocomplete ul li.selected { background-color: #0088cc; color: #eee; }
-    div.autocomplete ul li {
-      list-style-type: none;
-      display: block;
-      margin: 0;
-      padding: 2px;
-    }
-</style>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/prototype.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/effects.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/controls.js"></script>
