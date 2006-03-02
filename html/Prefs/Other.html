@@ -33,7 +33,7 @@ my $preferences = $UserObj->Preferences( $RT::System );
 if ( $Update ) {
     foreach my $option( RT->Config->Options ) {
         my $meta = RT->Config->Meta( $option );
-        my $value = $m->comp('/Widgets/'. $meta->{'Widget'} .":Process",
+        my $value = $m->comp($meta->{'Widget'} .":Process",
             Arguments    => \%ARGS,
             Empty        => 1,
             %{ $meta->{'WidgetArguments'} },
