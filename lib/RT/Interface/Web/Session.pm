@@ -1,4 +1,6 @@
 package RT::Interface::Web::Session;
+use warnings;
+use strict;
 
 =head1 NAME
 
@@ -27,8 +29,11 @@ Returns name of the class that is used as sessions storage.
 =cut
 
 sub Class {
-    no warnings 'once';
-    my $class = RT->Config->Get('WebSessionClass') || $backends{RT->Config->Get('DatabaseType')} || 'Apache::Session::File';
+    my $self = shift;
+
+    my $class = RT->Config->Get('WebSessionClass')
+             || $self->Backends->{RT->Config->Get('DatabaseType')}
+             || 'Apache::Session::File';
     eval "require $class";
     die $@ if $@;
     return $class;
@@ -72,19 +77,17 @@ Returns array ref with list of the session IDs.
 
 =cut
 
-sub Ids
-{
+sub Ids {
     my $self = shift || __PACKAGE__;
     my $attributes = $self->Attributes;
     if( $attributes->{Directory} ) {
-        return _IdsDir( $attributes->{Directory} );
+        return $self->_IdsDir( $attributes->{Directory} );
     } else {
-        return _IdsDB( $RT::Handle->dbh );
+        return $self->_IdsDB( $RT::Handle->dbh );
     }
 }
 
-sub _IdsDir
-{
+sub _IdsDir {
     my ($self, $dir) = @_;
     require File::Find;
     my %file;
@@ -98,8 +101,7 @@ sub _IdsDir
     return [ sort { $file{$a} <=> $file{$b} } keys %file ];
 }
 
-sub _IdsDB
-{
+sub _IdsDB {
     my ($self, $dbh) = @_;
     my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions ORDER BY LastUpdated DESC");
     die "couldn't get ids: ". $dbh->errstr if $dbh->errstr;
@@ -122,9 +124,7 @@ sub ClearOld {
     }
 }
 
-sub _ClearOldDB
-{
-    
+sub _ClearOldDB {
     my ($self, $dbh, $older_than) = @_;
     my $rows;
     unless( int $older_than ) {
@@ -134,7 +134,7 @@ sub _ClearOldDB
         require POSIX;
         my $date = POSIX::strftime("%Y-%m-%d %H:%M", localtime( time - int $older_than ) );
 
-        my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdate < ?");
+        my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdated < ?");
         die "couldn't prepare query: ". $dbh->errstr unless $sth;
         $rows = $sth->execute( $date );
         die "couldn't execute query: ". $dbh->errstr unless defined $rows;
@@ -144,8 +144,7 @@ sub _ClearOldDB
     return;
 }
 
-sub _ClearOldDir
-{
+sub _ClearOldDir {
     my ($self, $dir, $older_than) = @_;
 
     require File::Spec if int $older_than;

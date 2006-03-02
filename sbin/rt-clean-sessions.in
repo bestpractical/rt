@@ -12,7 +12,7 @@ GetOptions( \%opt, "older=s", "debug", "help");
 if ( $opt{help} ) {
     require Pod::Usage;
     import Pod::Usage;
-    pod2usage("RT Session cleanup tool\n");
+    pod2usage({ -message => "RT Session cleanup tool\n", verbose => 1 });
     exit 1;    
 }
 
@@ -59,11 +59,13 @@ RT::Interface::Web::Session->ClearByUser;
 
 exit(0);
 
+__END__
+
 =head1 NAME
 
 rt-clean-sessions - clean old and duplicate RT sessions
 
-=head1 USAGE
+=head1 SYNOPSIS
 
     rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
 
@@ -95,4 +97,3 @@ older than 1 month.
 Turn on debug output.
 
 =cut
-
