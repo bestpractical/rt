@@ -655,12 +655,13 @@ sub ISO {
     my $self = shift;
     my %args = ( Date => 1,
                  Time => 1,
-                 Timezone => 'GMT',
+                 Timezone => '',
                  Seconds => 1,
                  @_,
                );
        #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = $self->Localtime($args{'Timezone'});
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
@@ -798,15 +799,11 @@ If both server's and user's timezone names are undefined returns 'UTC'.
 
 sub Timezone {
     my $self = shift;
-    my $context = lc(shift);
-
-
-
+    my $context = lc(shift || 'utc');
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/;
 
     my $tz;
-
     if( $context eq 'user' ) {
         $tz = $self->CurrentUser->UserObj->Timezone;
     } elsif( $context eq 'server') {

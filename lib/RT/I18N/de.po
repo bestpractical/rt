@@ -33,6 +33,7 @@ msgstr ""
 #: lib/RT/Record.pm:930
 #: lib/RT/Record.pm:930
 #: lib/RT/Record.pm:930
+#: lib/RT/Record.pm:930
 msgid "$prefix %1"
 msgstr "$prefix %1"
 
@@ -151,6 +152,7 @@ msgstr "ScripAction %1 geladen"
 #: lib/RT/Record.pm:1712
 #: lib/RT/Record.pm:1712
 #: lib/RT/Record.pm:1712
+#: lib/RT/Record.pm:1712
 msgid "%1 added as a value for %2"
 msgstr "%1 als Wert fr %2 hinzugefgt"
 
@@ -184,6 +186,7 @@ msgstr "%1 von %2 in %3 ge�dert"
 #: html/Search/Build.html:206
 #: html/Search/Build.html:206
 #: html/Search/Build.html:206
+#: html/Search/Build.html:206
 msgid "%1 copy"
 msgstr "%1 kopieren"
 
@@ -192,6 +195,7 @@ msgid "%1 could not be set to %2."
 msgstr "%1 konnte nicht auf %2 gesetzt werden."
 
 #. ($self)
+#: lib/RT/Ticket_Overlay.pm:2726
 #: lib/RT/Ticket_Overlay.pm:2726
 #: lib/RT/Ticket_Overlay.pm:2726
 #: lib/RT/Ticket_Overlay.pm:2726
@@ -575,6 +579,7 @@ msgstr "Rolle wurde als %1 fr diesen Bereich hinzugefgt"
 #: lib/RT/Ticket_Overlay.pm:1417
 #: lib/RT/Ticket_Overlay.pm:1417
 #: lib/RT/Ticket_Overlay.pm:1417
+#: lib/RT/Ticket_Overlay.pm:1417
 msgid "Added principal as a %1 for this ticket"
 msgstr "Rolle wurde als %1 fr diese Anfrage hinzugefgt"
 
@@ -893,6 +898,7 @@ msgstr "Sie k�nen Basis und Ziel nicht gleichzeitig angeben"
 #: html/autohandler:166
 #: html/autohandler:166
 #: html/autohandler:166
+#: html/autohandler:166
 msgid "Cannot create user: %1"
 msgstr "Kann Benutzer nicht anlegen: %1"
 
@@ -1069,6 +1075,7 @@ msgstr "Konnte keinen neuen benutzerdefinierten Wert hinzufgen"
 #: lib/RT/Record.pm:1650
 #: lib/RT/Record.pm:1650
 #: lib/RT/Record.pm:1650
+#: lib/RT/Record.pm:1650
 msgid "Could not add new custom field value. %1 "
 msgstr "Konnte kein neuen benutzerdefinierten Wert hinzufgen. %1 "
 
@@ -1079,6 +1086,7 @@ msgid "Could not change owner. "
 msgstr "Konnte den Besitzer nicht �dern. "
 
 #. ($msg)
+#: html/Admin/CustomFields/Modify.html:135
 #: html/Admin/CustomFields/Modify.html:135
 #: html/Admin/CustomFields/Modify.html:135
 #: html/Admin/CustomFields/Modify.html:135
@@ -1156,6 +1164,7 @@ msgid "Could not make that principal a %1 for this queue"
 msgstr "Konnte diese Rolle nicht zu einen %1 dieses Bereichs machen"
 
 #. ($self->loc($args{'Type'}))
+#: lib/RT/Ticket_Overlay.pm:1406
 #: lib/RT/Ticket_Overlay.pm:1406
 #: lib/RT/Ticket_Overlay.pm:1406
 #: lib/RT/Ticket_Overlay.pm:1406
@@ -1253,10 +1262,12 @@ msgstr "Konnte das Anfrage '%1' nicht laden"
 #: lib/RT/Ticket_Overlay.pm:2595
 #: lib/RT/Ticket_Overlay.pm:2595
 #: lib/RT/Ticket_Overlay.pm:2595
+#: lib/RT/Ticket_Overlay.pm:2595
 msgid "Couldn't resolve base '%1' into a URI."
 msgstr "Basis '%1' kann nicht zu einer URI aufgel�t werden."
 
 #. ($args{'Target'})
+#: lib/RT/Ticket_Overlay.pm:2594
 #: lib/RT/Ticket_Overlay.pm:2594
 #: lib/RT/Ticket_Overlay.pm:2594
 #: lib/RT/Ticket_Overlay.pm:2594
@@ -1437,6 +1448,7 @@ msgstr "Benutzerdefinierte Felder"
 #: html/Admin/CustomFields/index.html:60
 #: html/Admin/CustomFields/index.html:60
 #: html/Admin/CustomFields/index.html:60
+#: html/Admin/CustomFields/index.html:60
 msgid "Custom Fields for %1"
 msgstr "Benutzerdefinierte Felder fr %1"
 
@@ -1459,10 +1471,12 @@ msgstr "Benutzerdefinierte Bedingung"
 #: lib/RT/Tickets_Overlay.pm:2194
 #: lib/RT/Tickets_Overlay.pm:2194
 #: lib/RT/Tickets_Overlay.pm:2194
+#: lib/RT/Tickets_Overlay.pm:2194
 msgid "Custom field %1 has a value."
 msgstr "Benutzerdefiniertes Feld %1 hat einen Wert."
 
 #. ($CF->Name)
+#: lib/RT/Tickets_Overlay.pm:2190
 #: lib/RT/Tickets_Overlay.pm:2190
 #: lib/RT/Tickets_Overlay.pm:2190
 #: lib/RT/Tickets_Overlay.pm:2190
@@ -1483,6 +1497,7 @@ msgid "Custom field not found"
 msgstr "Benutzerdefiniertes Feld nicht gefunden"
 
 #. ($args{'Content'}, $self->Name)
+#: lib/RT/CustomField_Overlay.pm:1144
 #: lib/RT/CustomField_Overlay.pm:1144
 #: lib/RT/CustomField_Overlay.pm:1144
 #: lib/RT/CustomField_Overlay.pm:1144
@@ -2066,6 +2081,7 @@ msgstr "Format"
 #: html/Search/Results.html:142
 #: html/Search/Results.html:142
 #: html/Search/Results.html:142
+#: html/Search/Results.html:142
 msgid "Found %quant(%1,ticket)"
 msgstr "%1 Anfrage(n) gefunden"
 
@@ -2342,6 +2358,7 @@ msgstr "Interner Fehler"
 #: lib/RT/Record.pm:309
 #: lib/RT/Record.pm:309
 #: lib/RT/Record.pm:309
+#: lib/RT/Record.pm:309
 msgid "Internal Error: %1"
 msgstr "Interner Fehler: %1"
 
@@ -2376,6 +2393,7 @@ msgid "Invalid right"
 msgstr "Ungltiges Recht"
 
 #. ($key)
+#: lib/RT/Record.pm:284
 #: lib/RT/Record.pm:284
 #: lib/RT/Record.pm:284
 #: lib/RT/Record.pm:284
@@ -2490,10 +2508,12 @@ msgstr "Beziehung konnte nicht erstellt werden"
 #: lib/RT/Record.pm:1316
 #: lib/RT/Record.pm:1316
 #: lib/RT/Record.pm:1316
+#: lib/RT/Record.pm:1316
 msgid "Link created (%1)"
 msgstr "Beziehung erstellt (%1)"
 
 #. ($TransString)
+#: lib/RT/Record.pm:1377
 #: lib/RT/Record.pm:1377
 #: lib/RT/Record.pm:1377
 #: lib/RT/Record.pm:1377
@@ -3013,6 +3033,7 @@ msgstr "Mo."
 #: html/Ticket/Elements/ShowRequestor:61
 #: html/Ticket/Elements/ShowRequestor:61
 #: html/Ticket/Elements/ShowRequestor:61
+#: html/Ticket/Elements/ShowRequestor:61
 msgid "More about %1"
 msgstr "Mehr ber %1"
 
@@ -3033,6 +3054,7 @@ msgid "Must specify 'Name' attribute"
 msgstr "Sie mssen eine Angabe bei 'Name' machen"
 
 #. ($friendly_status)
+#: html/SelfService/Elements/MyRequests:69
 #: html/SelfService/Elements/MyRequests:69
 #: html/SelfService/Elements/MyRequests:69
 #: html/SelfService/Elements/MyRequests:69
@@ -3254,6 +3276,7 @@ msgid "No permission to create queues"
 msgstr "Keine Erlaubnis Bereiche anzulegen"
 
 #. ($QueueObj->Name)
+#: lib/RT/Ticket_Overlay.pm:410
 #: lib/RT/Ticket_Overlay.pm:410
 #: lib/RT/Ticket_Overlay.pm:410
 #: lib/RT/Ticket_Overlay.pm:410
@@ -3556,6 +3579,7 @@ msgid "Organization"
 msgstr "Organisation"
 
 #. ($approving->Id, $approving->Subject)
+#: html/Approvals/Elements/Approve:53
 #: html/Approvals/Elements/Approve:53
 #: html/Approvals/Elements/Approve:53
 #: html/Approvals/Elements/Approve:53
@@ -4155,6 +4179,7 @@ msgstr "Erledigen"
 #: html/Ticket/Update.html:157
 #: html/Ticket/Update.html:157
 #: html/Ticket/Update.html:157
+#: html/Ticket/Update.html:157
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Erledige Anfrage #%1 (%2)"
 
@@ -4261,6 +4286,7 @@ msgstr "Sa."
 #: html/Prefs/Quicksearch.html:64
 #: html/Prefs/Search.html:69
 #: html/Search/Elements/EditSearches:70
+#: html/Widgets/SelectionBox:212
 #: html/Widgets/SelectionBox:212
 #: html/Widgets/SelectionBox:212
 #: html/Widgets/SelectionBox:212
@@ -4916,6 +4942,7 @@ msgstr "Diese Rolle ist bereits ein %1 dieses Bereichs"
 #: lib/RT/Ticket_Overlay.pm:1397
 #: lib/RT/Ticket_Overlay.pm:1397
 #: lib/RT/Ticket_Overlay.pm:1397
+#: lib/RT/Ticket_Overlay.pm:1397
 msgid "That principal is already a %1 for this ticket"
 msgstr "Diese Rolle ist bereits ein %1 dieser Anfrage"
 
@@ -5019,6 +5046,7 @@ msgid "This transaction appears to have no content"
 msgstr "Diese Transaktion scheint keinen Inhalt zu haben"
 
 #. ($rows)
+#: html/Ticket/Elements/ShowRequestor:69
 #: html/Ticket/Elements/ShowRequestor:69
 #: html/Ticket/Elements/ShowRequestor:69
 #: html/Ticket/Elements/ShowRequestor:69
@@ -5186,6 +5214,7 @@ msgstr "Titel"
 #: html/Elements/Footer:68
 #: html/Elements/Footer:68
 #: html/Elements/Footer:68
+#: html/Elements/Footer:68
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr "Fri Hilfe, Schulung, angepasste Entwicklungen oder Lizensierung, kontaktiere bitte %1."
 
@@ -5338,6 +5367,7 @@ msgstr "Aktualisiere Anfrage #%1"
 #: html/Ticket/Update.html:159
 #: html/Ticket/Update.html:159
 #: html/Ticket/Update.html:159
+#: html/Ticket/Update.html:159
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualisiere Anfrage #%1 (%2)"
 
@@ -5395,6 +5425,7 @@ msgstr "Benutze andere administrative RT Tools"
 #: lib/RT/Ticket_Overlay.pm:497
 #: lib/RT/Ticket_Overlay.pm:497
 #: lib/RT/Ticket_Overlay.pm:497
+#: lib/RT/Ticket_Overlay.pm:497
 msgid "User '%1' could not be found."
 msgstr "Benutzer '%1' konnte nicht gefunden werden"
 
@@ -5421,6 +5452,7 @@ msgid "User asked for an unknown update type for custom field %1 for %2 object #
 msgstr "Benutzer hat einen unbekannten Aktualisierungstyp fr das benutzerdefinierte Feld %1 bei %2-Objekt #%3 verlangt"
 
 #. ($msg)
+#: html/Admin/Users/Modify.html:292
 #: html/Admin/Users/Modify.html:292
 #: html/Admin/Users/Modify.html:292
 #: html/Admin/Users/Modify.html:292
