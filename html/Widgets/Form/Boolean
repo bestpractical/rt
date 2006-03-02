@@ -1,15 +1,14 @@
 <div id="form-box-<% lc $Name %>">
 <span class="description"><% $Description %></span>:
-<input type="checkbox" name="Boolean-<% $Name %>" <% $value && 'checked' %>" />
+<input type="checkbox" name="Boolean-<% $Name %>" <% $CurrentValue && 'checked' %>" />
 </div>
 <%INIT>
-my $value = defined $CurrentValue ? $CurrentValue : $EmptyValue;
 </%INIT>
 <%ARGS>
 $Name         => undef,
 $Description  => undef,
-$EmptyValue   => 0,
-$CurrentValue => undef,
+
+$CurrentValue => 0,
 </%ARGS>
 
 <%METHOD Process>
