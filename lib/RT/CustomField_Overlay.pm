@@ -443,7 +443,6 @@ sub DeleteValue {
 
 # }}}
 
-# }}}
 
 =head2 ValidateQueue Queue
 
