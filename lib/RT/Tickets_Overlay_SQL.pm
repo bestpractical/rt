@@ -103,9 +103,11 @@ sub _SQLJoin {
 
 # Helpers
 sub _OpenParen {
+    warn "In the openparen helper.";
   $_[0]->SUPER::_OpenParen( 'ticketsql' );
 }
 sub _CloseParen {
+    warn "in the lcose paren helper";
   $_[0]->SUPER::_CloseParen( 'ticketsql' );
 }
 
@@ -173,8 +175,8 @@ sub _parser {
     my $ea = '';
 
     my %callback;
-    $callback{'OpenParen'} = sub { $self->_OpenParen };
-    $callback{'CloseParen'} = sub { $self->_CloseParen };
+    $callback{'OpenParen'} = sub {warn "opening paren"; $self->_OpenParen };
+    $callback{'CloseParen'} = sub {warn "closing paren"; $self->_CloseParen };
     $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;

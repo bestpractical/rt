@@ -160,7 +160,7 @@ my %dispatch = (
     LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
-my %can_bundle = ( WATCHERFIELD => "yes", );
+my %can_bundle = ();# WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
