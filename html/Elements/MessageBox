@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<%$Wrap%>" name="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></textarea>
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>"><& /Elements/Callback, %ARGS &><% $Default %><% $message %><% $signature %></textarea>
 <%INIT>
 
 my $message = '';
