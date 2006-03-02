@@ -6,15 +6,11 @@
 new Ajax.Autocompleter(
     "<% $name %>-Values",
     "<% $name %>-Choices",
-    "/Elements/EditCustomFieldAutocomplete",
-    {paramName: "GetChoices-<% $name %>"}
+    "/Helpers/Autocomplete/CustomFieldValues",
+    {}
 );
 </script>
 <%INIT>
-while( my($k, $v) = each %ARGS ) {
-    next unless $k =~ /^GetChoices-Object-.*?-\d*-CustomField-(\d+)$/;
-    return $m->comp("SELF:Choices", Value => $v, CustomField => $1 );
-}
 my $name = $NamePrefix . $CustomField->Id;
 </%INIT>
 <%ARGS>
@@ -25,30 +21,3 @@ $Default     => undef
 $Values      => undef
 $MaxValues   => undef
 </%ARGS>
-
-<%METHOD Choices>
-<%ARGS>
-$CustomField => undef
-$Value       => undef
-</%ARGS>
-<ul>
-% while( my $value = $values->Next ) {
-% my $desc = $value->Description || '';
-% $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
-<li><% $value->Name %><% $desc |n %></li>
-% }
-</ul>
-% $m->abort;
-<%INIT>
-my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
-my $values = $CustomFieldObj->Values;
-$values->Limit( FIELD => 'Name', OPERATOR => 'LIKE', VALUE => $Value );
-$values->Limit(
-    ENTRYAGGREGATOR => 'OR',
-    FIELD           => 'Description',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-);
-</%INIT>
-</%METHOD>
