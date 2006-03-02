@@ -79,14 +79,16 @@ END
 sub __BuildAggregatorsCheck {
     my $self = shift;
 
-    my %h = ( OR => '||', AND => '&&' );
+    my %h = ( OR => ' || ', AND => ' && ' );
     
     my $code = '';
     for( my $i = 0; $i < @{ $self->{'__external_cf_limits'} }; $i++ ) {
         next unless $self->{'__external_cf_limits'}->[$i]->{'CALLBACK'};
-        $code .= ' '. $h{ uc($self->{'__external_cf_limits'}->[$i]->{'ENTRYAGGREGATOR'} || 'OR') } .' ' if $code;
+        $code .= $h{ uc($self->{'__external_cf_limits'}->[$i]->{'ENTRYAGGREGATOR'} || 'OR') } if $code;
         $code .= '$sb->{\'__external_cf_limits\'}->['. $i .']->{\'CALLBACK\'}->($record)';
     }
+    return unless $code;
+
     $code = "sub { my (\$sb,\$record) = (\@_); return $code }";
     my $cb = eval "$code";
     $RT::Logger->error( "Couldn't build callback '$code': $@" ) if $@;
@@ -116,7 +118,7 @@ sub _DoSearch {
     foreach( @{ $self->ExternalValues } ) {
         my $value = $self->NewItem;
         $value->LoadFromHash( { %defaults, %$_ } );
-        next unless $check->( $self, $value );
+        next if $check && !$check->( $self, $value );
         $self->AddRecord( $value );
     }
     $self->{'must_redo_search'} = 0;
