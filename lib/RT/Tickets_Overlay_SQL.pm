@@ -175,8 +175,14 @@ sub _parser {
     my $ea = '';
 
     my %callback;
-    $callback{'OpenParen'} = sub {warn "opening paren"; $self->_OpenParen };
-    $callback{'CloseParen'} = sub {warn "closing paren"; $self->_CloseParen };
+    $callback{'OpenParen'} = sub {
+      $self->_close_bundle(@bundle); @bundle = ();
+      $self->_OpenParen
+    };
+    $callback{'CloseParen'} = sub {
+      $self->_close_bundle(@bundle); @bundle = ();
+      $self->_CloseParen;
+    };
     $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
