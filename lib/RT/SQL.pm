@@ -22,6 +22,8 @@ my $re_open_paren  = qr[\(];
 my $re_close_paren = qr[\)];
 
 sub ParseToArray {
+    my ($string) = shift;
+
     my ($tree, $node, @pnodes);
     $node = $tree = [];
 
@@ -31,7 +33,7 @@ sub ParseToArray {
     $callback{'EntryAggregator'} = sub { push @$node, $_[0] };
     $callback{'Condition'} = sub { push @$node, { key => $_[0], op => $_[1], value => $_[2] } };
 
-    Parse(shift, \%callback);
+    Parse($string, \%callback);
     return $tree;
 }
 
