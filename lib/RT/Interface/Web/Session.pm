@@ -2,6 +2,8 @@ package RT::Interface::Web::Session;
 use warnings;
 use strict;
 
+use RT::CurrentUser;
+
 =head1 NAME
 
 RT::Interface::Web::Session - RT web session class

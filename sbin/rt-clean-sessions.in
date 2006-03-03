@@ -96,4 +96,14 @@ older than 1 month.
 
 Turn on debug output.
 
+=head1 NOTES
+
+Functionality similar to this is implemented in
+html/Elements/SetupSessionCookie ; however, that does not guarantee
+that a session will be removed from disk and database soon after the
+timeout expires.  This script, if run from a cron job, will ensure
+that the timed out sessions are actually removed from disk; the Mason
+component just ensures that the old sessions are not reusable before
+the cron job gets to them.
+
 =cut
