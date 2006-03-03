@@ -224,8 +224,7 @@ sub _parser {
             };
         }
         else {
-            $self->_close_bundle(@bundle);
-            @bundle = ();
+            $self->_close_bundle(@bundle); @bundle = ();
             $sub->( $self, $key, $op, $value,
                     SUBCLAUSE       => '',  # don't need anymore
                     ENTRYAGGREGATOR => $ea,
@@ -236,7 +235,7 @@ sub _parser {
         $ea = '';
     };
     RT::SQL::Parse($string, \%callback);
-    $self->_close_bundle(@bundle);  @bundle = ();
+    $self->_close_bundle(@bundle); @bundle = ();
 }
 
 =head2 ClausesToSQL
