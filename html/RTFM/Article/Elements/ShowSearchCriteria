@@ -16,7 +16,7 @@
 %# 
 %# END LICENSE BLOCK
 
-% if ($ARGS{'HideOptions') {
+% if ($ARGS{'HideOptions'}) {
 <& /Elements/TitleBoxStart, title => loc('Advanced search'), class => "rolled-up", bodyclass => "hidden" &>
 % } else {
 <& /Elements/TitleBoxStart, title => loc('Advanced search') &>

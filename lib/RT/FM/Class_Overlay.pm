@@ -106,6 +106,7 @@ sub Create {
         Name        => '',
         Description => '',
         SortOrder   => '0',
+        HotList     => 0,
         @_
     );
 
@@ -123,6 +124,7 @@ sub Create {
         Name        => $args{'Name'},
         Description => $args{'Description'},
         SortOrder   => $args{'SortOrder'},
+        HotList     => $args{'HotList'},
     );
 
 }
