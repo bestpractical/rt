@@ -156,7 +156,7 @@ if (@Actions) {
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
     $session{"Actions"} = \@Actions;
-    $m->redirect($RT::WebURL."/Ticket/Display.html?id=".$TicketObj->id);
+    $m->redirect($RT::WebURL."Ticket/Display.html?id=".$TicketObj->id);
 } else {
     @Actions = @{$session{"Actions"} || [] };
     delete $session{"Actions"};
