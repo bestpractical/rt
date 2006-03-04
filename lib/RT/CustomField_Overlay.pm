@@ -749,24 +749,6 @@ Takes a boolean.
 
 # }}}
 
-sub Queue {
-    $RT::Logger->debug( ref($_[0]) . " -> Queue deprecated at (". join(":",caller).")");
-    
-    return 0;
-}
-
-sub SetQueue {
-    $RT::Logger->debug( ref($_[0]) . " -> SetQueue deprecated at (". join(":",caller).")");
-
-    return 0;
-}
-
-sub QueueObj {
-    $RT::Logger->debug( ref($_[0]) . " -> QueueObj deprecated at (". join(":",caller).")");
-
-    return undef;
-}
-
 =head2 SetTypeComposite
 
 Set this custom field's type and maximum values as a composite value

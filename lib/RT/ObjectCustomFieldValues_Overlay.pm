@@ -67,32 +67,13 @@ sub LimitToCustomField {
 
 # }}}
 
-# {{{ sub LimitToTicket
+# {{{ sub LimitToObject
 
-=head2 LimitToTicket TICKETID
+=head2 LimitToObject OBJECT
 
-Limits the returned set to values for the ticket with Id TICKETID
+Limits the returned set to values for the given OBJECT
 
 =cut
-  
-sub LimitToTicket {
-    my $self = shift;
-    my $ticket = shift;
-
-
-    $RT::Logger->warning(ref($self) . " -> LimitToTicket deprecated in favor of LimitToObject at (". join(":",caller).")");
-
-    $self->Limit( FIELD => 'ObjectType',
-		  VALUE => 'RT::Ticket',
-		  OPERATOR => '=');
-    return ($self->Limit( FIELD => 'ObjectId',
-			  VALUE => $ticket,
-			  OPERATOR => '='));
-
-}
-
-# }}}
-
 
 sub LimitToObject {
     my $self = shift;
@@ -105,6 +86,8 @@ sub LimitToObject {
 			  OPERATOR => '='));
 
 }
+
+# }}}
 
 =sub HasEntry VALUE
 

@@ -898,16 +898,12 @@ sub ProcessACLChanges {
     my @results;
 
     foreach my $arg (keys %$ARGSref) {
-        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)(?:-(.+))?$/ );
+        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ );
 
         my ($method, $principal_id, $object_type, $object_id) = ($1, $2, $3, $4);
 
-        # format with $5 is deprecated, pass rights as value of the hash
         my @rights;
-        if ( $5 ) {
-            $RT::Logger->warning("use hash entry value for rights, this format is deprecated.");
-            @rights = $5;
-        } elsif ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
+        if ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
             @rights = @{$ARGSref->{$arg}}
         } else {
             @rights = $ARGSref->{$arg};

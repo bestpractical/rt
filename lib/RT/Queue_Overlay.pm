@@ -509,21 +509,14 @@ sub CustomField {
 }
 
 
-# {{{ CustomFields
+# {{{ TicketCustomFields
 
-=head2 CustomFields
+=head2 TicketCustomFields
 
-Returns an RT::CustomFields object containing all global custom fields, as well as those tied to this queue
+Returns an L<RT::CustomFields> object containing all global and
+queue-specific B<ticket> custom fields.
 
 =cut
-
-# XXX TODO - this should become TicketCustomFields
-
-sub CustomFields {
-    my $self = shift;
-    warn "Queue->CustomFields is deprecated, use Queue->TicketCustomFields instead at (". join(":",caller).")";
-    return $self->TicketCustomFields(@_);
-}
 
 sub TicketCustomFields {
     my $self = shift;
@@ -535,6 +528,17 @@ sub TicketCustomFields {
     }
     return ($cfs);
 }
+
+# }}}
+
+# {{{ TicketTransactionCustomFields
+
+=head2 TicketTransactionCustomFields
+
+Returns an L<RT::CustomFields> object containing all global and
+queue-specific B<transaction> custom fields.
+
+=cut
 
 sub TicketTransactionCustomFields {
     my $self = shift;

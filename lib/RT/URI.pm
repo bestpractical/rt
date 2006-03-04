@@ -135,7 +135,7 @@ sub FromURI {
     }
     else {
         $RT::Logger->warning("$self Could not determine a URI scheme for $uri");
-		return (undef);
+        return (undef);
     }
      
     # load up a resolver object for this scheme  
@@ -147,7 +147,7 @@ sub FromURI {
     	return (undef);
     }
 
-return(1);
+    return(1);
 
 }
 
@@ -170,16 +170,16 @@ sub _GetResolver {
     my $resolver;
 
     
-       eval " 
-            require RT::URI::$scheme;
-            \$resolver = RT::URI::$scheme->new(\$self->CurrentUser);
-       ";
+    eval " 
+        require RT::URI::$scheme;
+        \$resolver = RT::URI::$scheme->new(\$self->CurrentUser);
+    ";
      
-        if ($resolver) {
+    if ($resolver) {
         $self->{'resolver'} = $resolver;
-        } else {
+    } else {
         $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
-        }
+    }
 
 }
 
@@ -189,8 +189,8 @@ sub _GetResolver {
 
 =head2 Scheme
 
-Returns a local object id for this content.  You are expected to know what sort of object this is the Id 
-of 
+Returns a local object id for this content.  You are expected to know
+what sort of object this is the Id of
 
 =cut
 
@@ -259,8 +259,8 @@ sub IsLocal {
 sub AsHREF {
     my $self = shift;
     return $self->Resolver->HREF;
-
 }
+
 =head Resolver
 
 Returns this URI's URI resolver object

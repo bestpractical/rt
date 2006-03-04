@@ -1547,15 +1547,6 @@ sub CustomFieldLookupType {
     return ref($self);
 }
 
-#TODO Deprecated API. Destroy in 3.6
-sub _LookupTypes { 
-    my  $self = shift;
-    $RT::Logger->warning("_LookupTypes call is deprecated at (". join(":",caller)."). Replace with CustomFieldLookupType");
-
-    return($self->CustomFieldLookupType);
-
-}
-
 # {{{ AddCustomFieldValue
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }

@@ -2044,16 +2044,6 @@ sub LimitWatcher {
     );
 }
 
-sub LimitRequestor {
-    my $self = shift;
-    my %args = (@_);
-    $RT::Logger->error( "Tickets->LimitRequestor is deprecated  at ("
-            . join( ":", caller )
-            . ")" );
-    $self->LimitWatcher( TYPE => 'Requestor', @_ );
-
-}
-
 # }}}
 
 # }}}
@@ -2072,14 +2062,12 @@ TYPE limits the sort of link we want to search on
 TYPE = { RefersTo, MemberOf, DependsOn }
 
 TARGET is the id or URI of the TARGET of the link
-(TARGET used to be 'TICKET'.  'TICKET' is deprecated, but will be treated as TARGET
 
 =cut
 
 sub LimitLinkedTo {
     my $self = shift;
     my %args = (
-        TICKET   => undef,
         TARGET   => undef,
         TYPE     => undef,
         OPERATOR => '=',
@@ -2089,12 +2077,12 @@ sub LimitLinkedTo {
     $self->Limit(
         FIELD       => 'LinkedTo',
         BASE        => undef,
-        TARGET      => ( $args{'TARGET'} || $args{'TICKET'} ),
+        TARGET      => $args{'TARGET'},
         TYPE        => $args{'TYPE'},
         DESCRIPTION => $self->loc(
             "Tickets [_1] by [_2]",
             $self->loc( $args{'TYPE'} ),
-            ( $args{'TARGET'} || $args{'TICKET'} )
+            $args{'TARGET'}
         ),
         OPERATOR    => $args{'OPERATOR'},
     );
@@ -2111,8 +2099,6 @@ TYPE limits the sort of link we want to search on
 
 
 BASE is the id or URI of the BASE of the link
-(BASE used to be 'TICKET'.  'TICKET' is deprecated, but will be treated as BASE
-
 
 =cut
 
@@ -2120,7 +2106,6 @@ sub LimitLinkedFrom {
     my $self = shift;
     my %args = (
         BASE     => undef,
-        TICKET   => undef,
         TYPE     => undef,
         OPERATOR => '=',
         @_
@@ -2137,12 +2122,12 @@ sub LimitLinkedFrom {
     $self->Limit(
         FIELD       => 'LinkedTo',
         TARGET      => undef,
-        BASE        => ( $args{'BASE'} || $args{'TICKET'} ),
+        BASE        => $args{'BASE'},
         TYPE        => $type,
         DESCRIPTION => $self->loc(
             "Tickets [_1] [_2]",
             $self->loc( $args{'TYPE'} ),
-            ( $args{'BASE'} || $args{'TICKET'} )
+            $args{'BASE'},
         ),
         OPERATOR    => $args{'OPERATOR'},
     );
