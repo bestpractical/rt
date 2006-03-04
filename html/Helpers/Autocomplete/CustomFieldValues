@@ -14,15 +14,21 @@ while( my($k, $v) = each %ARGS ) {
     last;
 }
 $m->abort unless $CustomField;
-
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 $CustomFieldObj->Load( $CustomField );
 my $values = $CustomFieldObj->Values;
-$values->Limit( FIELD => 'Name', OPERATOR => 'LIKE', VALUE => $Value );
+$values->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => 'LIKE',
+    VALUE           => $Value,
+    SUBCLAUSE       => 'autcomplete',
+);
 $values->Limit(
     ENTRYAGGREGATOR => 'OR',
     FIELD           => 'Description',
     OPERATOR        => 'LIKE',
     VALUE           => $Value,
+    SUBCLAUSE       => 'autcomplete',
 );
+
 </%INIT>
