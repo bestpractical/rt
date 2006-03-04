@@ -89,16 +89,15 @@ my $CustomFields;
 my $NamePrefix;
 
 if ($TicketObj) {
- $CustomFields = $TicketObj->CustomFields();
-  $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
-
+    $CustomFields = $TicketObj->CustomFields();
+    $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
- $CustomFields = $QueueObj->TicketCustomFields();
-  $NamePrefix = "Object-RT::Ticket--CustomField-";
+    $CustomFields = $QueueObj->TicketCustomFields();
+    $NamePrefix = "Object-RT::Ticket--CustomField-";
 }
 
-  $m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',  
-                                CustomFields => $CustomFields);
+$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',  
+                               CustomFields => $CustomFields);
 
 </%INIT>
 <%ARGS>
