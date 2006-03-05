@@ -175,7 +175,7 @@ if (! defined($AppName)) {
 my ($menu_depth, $almost_last, $page_tabs);
 
 if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-compat') {
-    ($menu_depth, $almost_last) = @{$m->comp('.menu_recurse', data => $toptabs)};
+    ($menu_depth, $almost_last) = @{ $m->comp('.menu_recurse', data => $toptabs, current => $current_toptab ) };
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {
         $page_tabs = {
@@ -199,20 +199,25 @@ if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-c
 %# the last submenu.
 <%def .menu_recurse>
   <%args>
-      $data   => { }
-      $pdata  => { }
-      $ppdata => { }
-      $level  => 0
+      $data    => { }
+      $current => ''
+      $pdata   => { }
+      $ppdata  => { }
+      $level   => 0
   </%args>
   <%init>
       for my $key (keys %$data) {
-          return $m->comp('.menu_recurse', data   => $data->{$key}->{subtabs},
-                                           pdata  => $data->{$key},
-                                           ppdata => $pdata,
-                                           level  => $level+1)
-              if ref($data->{$key}) eq 'HASH'
-                 and defined $data->{$key}->{subtabs}
-                 and %{$data->{$key}->{subtabs}};
+          next if $data->{$key}->{'path'} ne $current;
+          next unless    ref( $data->{$key} ) eq 'HASH'
+                      && ref( $data->{$key}->{'subtabs'} ) eq 'HASH'
+                      && keys %{ $data->{$key}->{'subtabs'} };
+          return $m->comp('.menu_recurse',
+              data    => $data->{$key}->{'subtabs'},
+              current => $data->{$key}->{'current_subtab'} || '',
+              pdata   => $data->{$key},
+              ppdata  => $pdata,
+              level   => $level + 1,
+          );
       }
       $ppdata->{last_system_menu_level}++;
       return [$level, $pdata];
