@@ -51,11 +51,11 @@ recommended.
 
 our %META = (
     WebDefaultStylesheet => {
-        Section         => 'General',
+        Section         => 'General', #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Interface style',
+            Description => 'Interface style', #loc
             Values      => [qw(3.5-default 3.4-compat)],
             Mutiple     => 0,
             Alternative => 0,
@@ -66,7 +66,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message boxes width',
+            Description => 'Message boxes width', #loc
         },
     },
     MessageBoxHeight => {
@@ -74,15 +74,15 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message boxes height',
+            Description => 'Message boxes height', #loc
         },
     },
     MaxInlineBody => {
-        Section         => 'Tickets view',
+        Section         => 'Tickets view', #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Max size of message(bytes) that would be inlined into history',
+            Description => 'Max size of message(bytes) that would be inlined into history', #loc
         },
     },
     OldestTransactionsFirst => {
@@ -90,21 +90,21 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Show oldest transactions first',
+            Description => 'Show oldest transactions first', #loc
         },
     },
     DateTimeFormat      => {
-        Section         => 'Date and time',
+        Section         => 'Date and time', #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Date and time output format',
+            Description => 'Date and time output format', #loc
             Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
             ValuesLabel => {
-                DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)',
-                RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)',
-                ISO           => 'ISO (1995-11-25 21:59:12)',
-                W3CDTF        => 'W3C (1995-11-25T21:59:12Z)',
+                DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)', #loc
+                RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)', #loc
+                ISO           => 'ISO (1995-11-25 21:59:12)', #loc
+                W3CDTF        => 'W3C (1995-11-25T21:59:12Z)', #loc
             },
         },
     },
