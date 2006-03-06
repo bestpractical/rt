@@ -1,15 +1,14 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Test::Expect;
 use Test::More qw/no_plan/;
-#use Test::Env;
-#use Test::Expect;
 
 use RT;
 RT::LoadConfig();
 RT::Init;
 
-ok(1);
+my $rt_tool_path = "$RT::BinPath/rt";
 
 # {{{  test configuration options
 
@@ -28,11 +27,16 @@ ok(1);
 #    values defined in configuration files:
 #
 #    - RTUSER
+$ENV{'RTUSER'} = 'root';
 #    - RTPASSWD
+$ENV{'RTPASSWD'} = 'password';
 #    - RTSERVER
+$ENV{'RTSERVER'} = 'http://localhost:80/';
 #    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
+$ENV{'RTDEBUG'} = '3';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the
 #                    configuration file.
+#
 #    - RTQUERY       Default RT Query for rt list
 #    - RTORDERBY     Default order for rt list
 
@@ -41,12 +45,39 @@ ok(1);
 
 # {{{ test ticket manipulation
 
-# connect to server (?)
 # create a ticket
+expect_run(
+    command => "$rt_tool_path shell",
+    prompt => 'rt> ',
+    quit => 'quit',
+);
+expect_send(q{create -t ticket set subject='new ticket' add cc=foo@example.com}, "Creating a ticket...");
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
+expect_handle->before() =~ /Ticket (\d+) created/;
+my $ticket_id = $1;
+ok($ticket_id, "Got ticket id=$ticket_id");
+
 # add a comment to ticket
-# add correspondance to ticket (?)
-# add attachments to a ticket
+TODO: {
+    todo_skip "Adding comments/correspondence is broken right now", 6;
+    expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
+    expect_like(qr/Comment added/, "Added the comment");
+    ### should test to make sure it actually got added
+    # add correspondance to ticket (?)
+    expect_send("correspond -m 'correspond-$$' $ticket_id", "Adding correspondence...");
+    expect_like(qr/Correspondence added/, "Added the correspondence");
+    ### should test to make sure it actually got added
+    # add attachments to a ticket
+    expect_send("comment -m 'attach file' $rt_tool_path $ticket_id", "Adding an attachment");
+    expect_like(qr/Comment added/, "Added the attachment");
+    ### should test to make sure it actually got added
+}
+
 # change a ticket's owner
+expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed owner');
+expect_send("show ticket/$ticket_id -f owner", 'Verifying change...');
+expect_like(qr/Owner: root/, 'Verified change');
 # change a ticket's watchers
 # change a ticket's priority
 # change a ticket's ...[other properties]...
