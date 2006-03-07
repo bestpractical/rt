@@ -59,7 +59,9 @@ ok($ticket_id, "Got ticket id=$ticket_id");
 
 # add a comment to ticket
 TODO: {
-    todo_skip "Adding comments/correspondence is broken right now", 6;
+    todo_skip "Adding comments/correspondence is broken right now", 8;
+    expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
+    expect_like(qr/Ticket \d+ created/, "Created the ticket");
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
     expect_like(qr/Comment added/, "Added the comment");
     ### should test to make sure it actually got added
@@ -73,17 +75,54 @@ TODO: {
     ### should test to make sure it actually got added
 }
 
-# change a ticket's owner
+# change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed owner');
 expect_send("show ticket/$ticket_id -f owner", 'Verifying change...');
 expect_like(qr/Owner: root/, 'Verified change');
-# change a ticket's watchers
+# change a ticket's Requestor
+expect_send("edit ticket/$ticket_id set requestors=foo\@example.com", 'Changing Requestor...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed Requestor');
+expect_send("show ticket/$ticket_id -f requestors", 'Verifying change...');
+expect_like(qr/Requestors: foo\@example.com/, 'Verified change');
+# change a ticket's Cc
+expect_send("edit ticket/$ticket_id set cc=bar\@example.com", 'Changing Cc...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed Cc');
+expect_send("show ticket/$ticket_id -f cc", 'Verifying change...');
+expect_like(qr/Cc: bar\@example.com/, 'Verified change');
 # change a ticket's priority
-# change a ticket's ...[other properties]...
+expect_send("edit ticket/$ticket_id set priority=10", 'Changing priority...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed priority');
+expect_send("show ticket/$ticket_id -f priority", 'Verifying change...');
+expect_like(qr/Priority: 10/, 'Verified change');
 # move a ticket to a different queue
+expect_send("edit ticket/$ticket_id set queue=Foo", 'Changing queue...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed queue');
+expect_send("show ticket/$ticket_id -f queue", 'Verifying change...');
+expect_like(qr/Queue: Foo/, 'Verified change');
+# cannot move ticket to a nonexistent queue
+expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to nonexistent queue...');
+expect_like(qr/queue does not exist/i, 'Errored out');
+expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
+expect_like(qr/Queue: Foo/, 'Verified lack of change');
+# ...
+# change a ticket's ...[other properties]...
+# ...
 # stall a ticket
+expect_send("edit ticket/$ticket_id set status=stalled", 'Changing status to "stalled"...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed status');
+expect_send("show ticket/$ticket_id -f status", 'Verifying change...');
+expect_like(qr/Status: stalled/, 'Verified change');
 # resolve a ticket
+expect_send("edit ticket/$ticket_id set status=resolved", 'Changing status to "resolved"...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed status');
+expect_send("show ticket/$ticket_id -f status", 'Verifying change...');
+expect_like(qr/Status: resolved/, 'Verified change');
+# try to set status to an illegal value
+expect_send("edit ticket/$ticket_id set status=quux", 'Changing status to an illegal value...');
+expect_like(qr/illegal value/i, 'Errored out');
+expect_send("show ticket/$ticket_id -f status", 'Verifying lack of change...');
+expect_like(qr/Status: resolved/, 'Verified change');
 
 # }}}
 
