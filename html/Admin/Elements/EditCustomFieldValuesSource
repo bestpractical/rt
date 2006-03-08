@@ -23,6 +23,7 @@ foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSo
     my %res = ( Class => $class );
     $res{'Description'} = $class->SourceDescription if $class->can('SourceDescription');
     $res{'Description'} ||= $class;
+    $res{'Description'} = 'Provide list of values below' if $class eq 'RT::CustomFieldValues';
     push @sources, \%res;
 }
 
