@@ -55,6 +55,7 @@ use vars qw/@ISA/;
 use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
+use RT::Interface::Email;
 use Mail::Address;
 
 =head1 NAME
@@ -249,57 +250,7 @@ sub SendMessage {
         return (1);
     }
 
-
-    if ( RT->Config->Get('MailCommand') eq 'sendmailpipe' ) {
-        my $path = RT->Config->Get('SendmailPath');
-        my $args = RT->Config->Get('SendmailArguments');
-        eval {
-            # don't ignore CHLD signal to get proper exit code
-            local $SIG{'CHLD'} = 'DEFAULT';
-
-            my $mail;
-            unless( open $mail, "|$path $args" ) {
-                die "Couldn't run $path: $!";
-            }
-
-            # if something wrong with $mail->print we will get PIPE signal, handle it
-            local $SIG{'PIPE'} = sub { die "$path closed pipe" };
-            $MIMEObj->print($mail);
-
-            unless ( close $mail ) {
-                die "Close failed: $!" if $!; # system error
-                # sendmail exit statuses mostly errors with data not software
-                # TODO: status parsing: core dump, exit on signal or EX_*
-                $RT::Logger->warning( "$path exitted with status $?" );
-            }
-        };
-        if ($@) {
-            $RT::Logger->crit( $msgid ."Could not send mail: " . $@ );
-            return 0;
-        }
-    }
-    else {
-        my @mailer_args = (RT->Config->Get('MailCommand'));
-
-        local $ENV{MAILADDRESS};
-
-        if ( RT->Config->Get('MailCommand') eq 'sendmail' ) {
-            push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
-        }
-        elsif ( RT->Config->Get('MailCommand') eq 'smtp' ) {
-            $ENV{MAILADDRESS} = RT->Config->Get('SMTPFrom') || $MIMEObj->head->get('From');
-            push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
-            push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
-        }
-        else {
-            push @mailer_args, RT->Config->Get('MailParams');
-        }
-
-        unless ( $MIMEObj->send(@mailer_args) ) {
-            $RT::Logger->crit( $msgid . "Could not send mail." );
-            return (0);
-        }
-    }
+    return(0) unless RT::Interface::Email::SendEmail( entity => $MIMEObj );
 
     my $success = $msgid . " sent ";
     foreach( qw(To Cc Bcc) ) {

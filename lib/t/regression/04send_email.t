@@ -392,7 +392,7 @@ sub text_plain_russian_redef_sendmessage {
                  ';
 }
 
-my @input_encodings = RT->Config->Get(' EmailInputEncodings' );
+my @input_encodings = RT->Config->Get( 'EmailInputEncodings' );
 shift @input_encodings;
 RT->Config->Set(EmailInputEncodings => @input_encodings );
 RT->Config->Set(EmailOutputEncoding => 'utf-8');

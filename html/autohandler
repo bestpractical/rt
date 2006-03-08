@@ -167,7 +167,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
         unless ( $session{'CurrentUser'}->Id ) {
             delete $session{'CurrentUser'};
             $user = $orig_user;
-            if ( RT->Config->Get('WebExternalOnly') ) {
+            unless ( RT->Config->Get('WebFallbackToInternalAuth') ) {
                 $m->comp('/Elements/Login', %ARGS, 
                          Error=> loc('You are not an authorized user'));
                 $m->abort();
