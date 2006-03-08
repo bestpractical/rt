@@ -5,6 +5,35 @@ use warnings;
 
 use base qw(RT::CustomFieldValues);
 
+=head1 NAME
+
+RT::CustomFieldValues::External - Pull possible values for a custom
+field from an arbitrary external data source.
+
+=head1 SYNOPSIS
+
+Custom field value lists can be produced by creating a class that
+inherits from C<RT::CustomFieldValues::External>, and overloading
+C<SourceDescription> and C<ExternalValues>.  See
+L<RT::CustomFieldValues::Groups> for a simple example.
+
+=head1 DESCRIPTION
+
+Subclasses should implement the following methods:
+
+=head2 SourceDescription
+
+This method should return a string describing the data source; this is
+the identifier by which the user will see the dropdown.
+
+=head2 ExternalValues
+
+This method should return an array reference of hash references.  The
+hash references should contain keys for C<name>, C<description>, and
+C<sortorder>.
+
+=cut
+
 sub _Init {
     my $self = shift;
     $self->Table( '' );
