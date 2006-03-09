@@ -52,8 +52,8 @@ my @rows;
 my %known_cfs;
 
 my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
-                Requestors->MemberEmailAddressesAsString DueObj->ISO ToldObj->ISO
-                CreatedObj->ISO ResolvedObj->ISO );
+                Requestors->MemberEmailAddressesAsString Cc->MemberEmailAddressesAsString AdminCc->MemberEmailAddressesAsString
+                DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO );
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->Next()) {
