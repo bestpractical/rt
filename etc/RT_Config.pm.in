@@ -223,7 +223,7 @@ Set($SendmailPath , "/usr/sbin/sendmail");
 # These options only take effect if $MailCommand is 'smtp'
 
 # $SMTPServer should be set to the hostname of the SMTP server to use
-Set($SMTPServer, undef)
+Set($SMTPServer, undef);
 # $SMTPFrom should be set to the 'From' address to use, if not the
 # email's 'From'
 Set($SMTPFrom, undef);
