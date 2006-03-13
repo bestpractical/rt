@@ -129,10 +129,33 @@ expect_like(qr/Status: resolved/, 'Verified change');
 # {{{ display
 
 # show ticket list
+expect_send("ls -s -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets...');
+expect_like(qr/$ticket_id: new ticket/, 'Found our ticket');
 # show ticket list verbosely
+expect_send("ls -l -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets verbosely...');
+expect_like(qr/id: ticket\/$ticket_id/, 'Found our ticket');
+# show ticket
+expect_send("show -t ticket $ticket_id", 'Showing our ticket...');
+expect_like(qr/id: ticket\/$ticket_id/, 'Got our ticket');
 # show ticket history
-# show ticket history verbosely
+expect_send("show ticket/$ticket_id/history", 'Showing our ticket\'s history...');
+expect_like(qr/Ticket created by root/, 'Got our history');
+TODO: {
+    todo_skip "Cannot show verbose ticket history right now", 2;
+    # show ticket history verbosely
+    expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
+    expect_like(qr/Ticket created by root/, 'Got our history');
+}
 # get attachments from a ticket
+expect_send("show ticket/$ticket_id/attachments", 'Showing ticket attachments...');
+expect_like(qr/id: ticket\/$ticket_id\/attachments/, 'Got our ticket\'s attachments');
+expect_like(qr/Attachments: \d+:\s*\(\S+ \/ \d+\w+\)/, 'Our ticket has an attachment');
+expect_handle->before() =~ /Attachments: (\d+):\s*\((\S+)/;
+my $attachment_id = $1;
+my $attachment_type = $2;
+ok($attachment_id, "Got attachment id=$attachment_id $attachment_type");
+expect_send("show ticket/$ticket_id/attachments/$attachment_id", "Showing attachment $attachment_id...");
+expect_like(qr/ContentType: $attachment_type/, 'Got the attachment');
 
 # }}}
 
