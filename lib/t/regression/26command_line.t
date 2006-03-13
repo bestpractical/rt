@@ -162,7 +162,69 @@ expect_like(qr/ContentType: $attachment_type/, 'Got the attachment');
 # {{{ test user manipulation
 
 # creating users
+expect_send("create -t user set Name='NewUser$$' EmailAddress='fbar$$\@example.com'", 'Creating a user...');
+expect_like(qr/User \d+ created/, 'Created the user');
+expect_handle->before() =~ /User (\d+) created/;
+my $user_id = $1;
+ok($user_id, "Got user id=$user_id");
 # updating users
+expect_send("edit user/$user_id set Name='EditedUser$$'", 'Editing the user');
+expect_like(qr/User $user_id updated/, 'Edited the user');
+expect_send("show user/$user_id", 'Showing the user...');
+expect_like(qr/id: user\/$user_id/, 'Saw the user');
+expect_like(qr/Name: EditedUser$$/, 'Saw the modification');
+TODO: { 
+    todo_skip "Listing non-ticket items doesn't work", 2;
+    expect_send("list -t user 'id > 0'", 'Listing the users...');
+    expect_like(qr/$user_id: EditedUser$$/, 'Found the user');
+}
+
+# }}}
+
+# {{{ test group manipulation
+
+TODO: {
+todo_skip "Group manipulation doesn't work right now", 8;
+# creating groups
+expect_send("create -t group set Name='NewGroup$$'", 'Creating a group...');
+expect_like(qr/Group \d+ created/, 'Created the group');
+expect_handle->before() =~ /Group (\d+) created/;
+my $group_id = $1;
+ok($group_id, "Got group id=$group_id");
+# updating groups
+expect_send("edit group/$group_id set Name='EditedGroup$$'", 'Editing the group');
+expect_like(qr/Group $group_id updated/, 'Edited the group');
+expect_send("show group/$group_id", 'Showing the group...');
+expect_like(qr/id: group\/$group_id/, 'Saw the group');
+expect_like(qr/Name: EditedGroup$$/, 'Saw the modification');
+TODO: { 
+    todo_skip "Listing non-ticket items doesn't work", 2;
+    expect_send("list -t group 'id > 0'", 'Listing the groups...');
+    expect_like(qr/$user_id: EditedGroup$$/, 'Found the group');
+}
+}
+
+# }}}
+
+# {{{ test queue manipulation
+
+# creating queues
+expect_send("create -t queue set Name='NewQueue$$'", 'Creating a queue...');
+expect_like(qr/Queue \d+ created/, 'Created the queue');
+expect_handle->before() =~ /Queue (\d+) created/;
+my $queue_id = $1;
+ok($queue_id, "Got queue id=$queue_id");
+# updating users
+expect_send("edit queue/$queue_id set Name='EditedQueue$$'", 'Editing the queue');
+expect_like(qr/Queue $queue_id updated/, 'Edited the queue');
+expect_send("show queue/$queue_id", 'Showing the queue...');
+expect_like(qr/id: queue\/$queue_id/, 'Saw the queue');
+expect_like(qr/Name: EditedQueue$$/, 'Saw the modification');
+TODO: { 
+    todo_skip "Listing non-ticket items doesn't work", 2;
+    expect_send("list -t queue 'id > 0'", 'Listing the queues...');
+    expect_like(qr/$user_id: EditedQueue$$/, 'Found the queue');
+}
 
 # }}}
 
