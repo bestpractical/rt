@@ -61,6 +61,14 @@ our %META = (
             Alternative => 0,
         },
     },
+    DefaultSummaryRows => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Number of rows displayed in search results on the frontpage', #loc
+        },
+    },
     MessageBoxWidth => {
         Section         => 'General',
         Overridable     => 1,
