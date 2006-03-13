@@ -200,7 +200,7 @@ expect_like(qr/Name: EditedGroup$$/, 'Saw the modification');
 TODO: { 
     todo_skip "Listing non-ticket items doesn't work", 2;
     expect_send("list -t group 'id > 0'", 'Listing the groups...');
-    expect_like(qr/$user_id: EditedGroup$$/, 'Found the group');
+    expect_like(qr/$group_id: EditedGroup$$/, 'Found the group');
 }
 }
 
@@ -223,15 +223,33 @@ expect_like(qr/Name: EditedQueue$$/, 'Saw the modification');
 TODO: { 
     todo_skip "Listing non-ticket items doesn't work", 2;
     expect_send("list -t queue 'id > 0'", 'Listing the queues...');
-    expect_like(qr/$user_id: EditedQueue$$/, 'Found the queue');
+    expect_like(qr/$queue_id: EditedQueue$$/, 'Found the queue');
 }
 
 # }}}
 
-# {{{ custom field manipulation
+TODO: {
+todo_skip "Custom field manipulation not yet implemented", 8;
+# {{{ test custom field manipulation
 
-# creating custom fields (TODO)
-# updating custom field values
+# creating custom fields
+expect_send("create -t custom_field set Name='NewCF$$'", 'Creating a custom field...');
+expect_like(qr/Custom Field \d+ created/, 'Created the custom field');
+expect_handle->before() =~ /Custom Field (\d+) created/;
+my $cf_id = $1;
+ok($cf_id, "Got custom field id=$cf_id");
+# updating custom fields
+expect_send("edit cf/$cf_id set Name='EditedCF$$'", 'Editing the custom field');
+expect_like(qr/Custom field $cf_id updated/, 'Edited the custom field');
+expect_send("show cf/$cf_id", 'Showing the queue...');
+expect_like(qr/id: custom_field\/$cf_id/, 'Saw the custom field');
+expect_like(qr/Name: EditedCF$$/, 'Saw the modification');
+TODO: { 
+    todo_skip "Listing non-ticket items doesn't work", 2;
+    expect_send("list -t custom_field 'id > 0'", 'Listing the CFs...');
+    expect_like(qr/$cf_id: EditedCF$$/, 'Found the custom field');
+}
+}
 
 # }}}
 
