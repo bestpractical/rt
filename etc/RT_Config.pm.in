@@ -508,9 +508,9 @@ Set($AmbiguousDayInPast , 1);
 @InactiveStatus = qw(resolved rejected deleted) unless @InactiveStatus;
 
 # Backward compatability setting. Add/Delete Link used to record one
-# transaction and run one scrip. Set this value to 0 if you want
-# both link transactions to have a scrip run.
-Set($LinkTransactionsRun1Scrip , 1);
+# transaction and run one scrip. Set this value to 1 if you want
+# only one of the link transactions to have scrips run.
+Set($LinkTransactionsRun1Scrip , 0);
 
 # }}}
 
