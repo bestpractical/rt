@@ -32,7 +32,7 @@ $ENV{'RTUSER'} = 'root';
 #    - RTPASSWD
 $ENV{'RTPASSWD'} = 'password';
 #    - RTSERVER
-$ENV{'RTSERVER'} = 'http://localhost:80/';
+$ENV{'RTSERVER'} = "$RT::WebBaseURL";
 #    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
 $ENV{'RTDEBUG'} = '3';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the
