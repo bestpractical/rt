@@ -18,7 +18,7 @@ use RT;
 RT::LoadConfig();
 
 # get the top page
-my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+my $url = $RT::WebURL;
 diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 

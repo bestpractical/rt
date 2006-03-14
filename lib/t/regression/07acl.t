@@ -33,9 +33,9 @@ no warnings 'once';
 login($agent, $user_obj);
 
 # Test for absence of Configure and Preferences tabs.
-ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
+ok(!$agent->find_link( url => $RT::WebPath . "/Admin/",
 		       text => 'Configuration'), "No config tab" );
-ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
+ok(!$agent->find_link( url => $RT::WebPath . "/User/Prefs.html",
 		       text => 'Preferences'), "No prefs pane" );
 
 # Now test for their presence, one at a time.  Sleep for a bit after
@@ -47,7 +47,7 @@ ok($grantid,$grantmsg);
 $agent->reload;
 
 ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
-ok($agent->find_link( url => "$RT::WebPath/Admin/",
+ok($agent->find_link( url => $RT::WebPath . "/Admin/",
 		       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
@@ -55,12 +55,12 @@ ok ($revokeid,$revokemsg);
 ok ($grantid,$grantmsg);
 $agent->reload();
 ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
-ok($agent->find_link( url => "$RT::WebPath/User/Prefs.html",
+ok($agent->find_link( url => $RT::WebPath . "/User/Prefs.html",
 		       text => 'Preferences'), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
 ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
-$agent->follow_link( url => "$RT::WebPath/Search/Build.html",
+$agent->follow_link( url => $RT::WebPath . "/Search/Build.html",
 		     text => 'Tickets');
 is($agent->{'status'}, 200, "Fetched search builder page");
 ok($agent->{'content'} !~ /Load saved search/i, "No search loading box");
@@ -114,10 +114,10 @@ ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing"
 sub login {
     my $agent = shift;
 
-    my $url = "http://localhost:" . $RT::WebPort . $RT::WebPath . "/";
+    my $url = $RT::WebURL;
     $agent->get($url);
     is( $agent->{'status'}, 200,
-        "Loaded a page - http://localhost" . $RT::WebPath );
+        "Loaded a page - $url" );
 
     # {{{ test a login
 

@@ -18,7 +18,7 @@ $agent->cookie_jar($cookie_jar);
 use RT;
 RT::LoadConfig();
 # get the top page
-my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+my $url = $RT::WebURL;
 diag $url;
 $agent->get($url);
 
