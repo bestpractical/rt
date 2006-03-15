@@ -22,5 +22,5 @@ my $uristr = "a:" . $article->Id;
 $uri->ParseURI($uristr);
 is(ref($uri->Object), "RT::FM::Article", "Object loaded is an article");
 is($uri->Object->Id, $article->Id, "Object loaded has correct ID");
-is($uri->URI, 'fsck.com-rtfm://example.com/article/'.$article->Id, 
+is($article->URI, 'fsck.com-rtfm://example.com/article/'.$article->Id, 
    "URI object has correct URI string");

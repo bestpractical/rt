@@ -229,8 +229,8 @@ sub Delete {
     }
 
     $RT::Handle->BeginTransaction();
-    my $linksto   = $self->_Links( Field => 'Target' );
-    my $linksfrom = $self->_Links( Field => 'Base' );
+    my $linksto   = $self->_Links(  'Target' );
+    my $linksfrom = $self->_Links(  'Base' );
     my $cfvalues = $self->CustomFieldValues;
     my $txns     = $self->Transactions;
     my $topics   = $self->Topics;
