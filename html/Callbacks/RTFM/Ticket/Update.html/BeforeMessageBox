@@ -38,6 +38,7 @@
 </tr>
 % if ($hotlist->Count) {
 <tr><td>&nbsp;</td><td><select name="RTFM-Include-Article-Named-Hotlist">
+<option value="" selected><&|/l&>Select an article</&></option>
 % while (my $article = $hotlist->Next) {
 <option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
 % }
