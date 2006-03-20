@@ -1,4 +1,7 @@
-use Test::More tests => '39';
+use Test::More tests => '59';
+use strict;
+use warnings;
+
 use_ok('RT');
 use_ok('RT::Ticket');
 use_ok('RT::ScripConditions');
@@ -81,6 +84,12 @@ my $u1 = RT::User->new($RT::SystemUser);
 
 ok ($id,$msg);
 
+# grant ShowTicket right to allow count transactions
+($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ShowTicket');
+ok ($id,$msg);
+($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ShowTicket');
+ok ($id,$msg);
+
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'CreateTicket');
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
@@ -107,10 +116,10 @@ is(link_count($filename), 0, "scrips ok");
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => -1);
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => -1);
 ok(!$id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
@@ -120,7 +129,7 @@ is( $transactions->Count, 1, "Transaction found in other ticket" );
 ok( $transactions->First->Field eq 'ReferredToBy');
 ok( $transactions->First->NewValue eq $ticket->URI );
 
-($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) = $ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->Transactions;
@@ -130,12 +139,65 @@ ok( $transactions->First->Field eq 'ReferredToBy');
 ok( $transactions->First->OldValue eq $ticket->URI );
 
 RT->Config->Set( LinkTransactionsRun1Scrip => 0 );
+
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 2, "scrips ok");
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
+
+# tests for silent behaviour
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, Silent => 1);
+ok($id,$msg);
+is(link_count($filename), 0, "scrips ok");
+{
+    my $transactions = $ticket->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 5, "Still five txns on the base" );
+
+    $transactions = $ticket2->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 2, "Still two txns on the target" );
+
+}
+($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id, Silent => 1);
+ok($id,$msg);
+is(link_count($filename), 0, "scrips ok");
+
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, SilentBase => 1);
+ok($id,$msg);
+is(link_count($filename), 1, "scrips ok");
+{
+    my $transactions = $ticket->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 5, "still five txn on the base" );
+
+    $transactions = $ticket2->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 3, "+1 txn on the target" );
+
+}
+($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id, SilentBase => 1);
+ok($id,$msg);
+is(link_count($filename), 0, "scrips ok");
+
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
+ok($id,$msg);
+is(link_count($filename), 1, "scrips ok");
+{
+    my $transactions = $ticket->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 6, "+1 txn on the base" );
+
+    $transactions = $ticket2->Transactions;
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    is( $transactions->Count, 3, "three txns on the target" );
+}
+($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
+ok($id,$msg);
+is(link_count($filename), 0, "scrips ok");
+
 
 # restore
 RT->Config->Set( LinkTransactionsRun1Scrip => $link_scrips_orig );
