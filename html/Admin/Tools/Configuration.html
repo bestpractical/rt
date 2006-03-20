@@ -70,14 +70,39 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
 </pre>
 
+<h2><&|/l&>RT Config</&></h2>
+<table>
+% foreach my $key ( RT->Config->Options( Overridable => undef ) ) {
+% my $val = RT->Config->Get( $key );
+% next unless defined $val;
+<tr><td><% $key %></td>
+<td>
+% if ( $key =~ /Password(?!Length)/i ) { 
+<em>Password not printed</em>
+% } else {
+% unless ( ref $val ) {
+<% $val %>
+% } elsif ( ref $val eq 'ARRAY' ) {
+<% join ', ', @$val %>
+% } elsif ( ref $val eq 'HASH' ) {
+<% join ', ', %$val %>
+% } else {
+<% ref $val %>
+% }
+% }
+</td>
+</tr>
+% }
+</table>
+
 <h2><&|/l&>RT Variables</&></h2>
 <table>
 %{
 %no strict qw/refs/;
 
 %foreach my $key (sort keys %{*RT::}) {
-% next unless (${'RT::'.$key} );
-% next if (ref ${'RT::'.$key} );
+% next unless ${'RT::'.$key};
+% next if ref ${'RT::'.$key};
 <tr><td>RT::<%$key%></td>
 <td>
 % if ($key =~ /Password(?!Length)/i) { 
