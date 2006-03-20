@@ -45,7 +45,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 use strict;
-use lib "@RT_LIB_PATH@";
+use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 use RT;
 use XML::Simple;
 
