@@ -55,6 +55,7 @@
 <& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
+<& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
