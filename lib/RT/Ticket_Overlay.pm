@@ -681,7 +681,9 @@ sub Create {
             my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => 1
+                Silent                        => !$args{'_RecordTransaction'},
+                'Silent'. ( $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
+                                              => 1,
             );
 
             push @non_fatal_errors, $wmsg unless ($wval);
