@@ -1,4 +1,4 @@
-use Test::More  tests => '39';
+use Test::More tests => '39';
 use_ok('RT');
 use_ok('RT::Ticket');
 use_ok('RT::ScripConditions');
@@ -11,8 +11,8 @@ RT::Init();
 
 use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
-my $link_scrips_orig = $RT::LinkTransactionsRun1Scrip;
-$RT::LinkTransactionsRun1Scrip = 1;
+my $link_scrips_orig = RT->Config->Get( 'LinkTransactionsRun1Scrip' );
+RT->Config->Set( 'LinkTransactionsRun1Scrip', 1 );
 
 my $condition = RT::ScripCondition->new( $RT::SystemUser );
 $condition->Load('User Defined');
@@ -32,18 +32,27 @@ my $q2 = RT::Queue->new($RT::SystemUser);
 ok ($id,$msg);
 
 my $commit_code = <<END;
-open(FILE, "<$filename");
-my \$data = <FILE>;
+open my \$file, "<$filename" or die "couldn't open $filename";
+my \$data = <\$file>;
 chomp \$data;
-close FILE;
-open(FILE, ">$filename");
+\$data += 0;
+close \$file;
+\$RT::Logger->debug("Data is \$data");
+
+open \$file, ">$filename" or die "couldn't open $filename";
 if (\$self->TransactionObj->Type eq 'AddLink') {
-    print FILE \$data+1, "\n";
+    \$RT::Logger->debug("AddLink");
+    print \$file \$data+1, "\n";
+}
+elsif (\$self->TransactionObj->Type eq 'DeleteLink') {
+    \$RT::Logger->debug("DeleteLink");
+    print \$file \$data-1, "\n";
 }
 else {
-    print FILE \$data-1, "\n";
+    \$RT::Logger->error("THIS SHOULDN'T HAPPEN");
+    print \$file "666\n";
 }
-close FILE;
+close \$file;
 1;
 END
 
@@ -93,51 +102,49 @@ ok ($id, $msg);
 
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok(!$id,$msg);
-ok(link_count($filename) == 0, "scrips ok");
+is(link_count($filename), 0, "scrips ok");
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'CreateTicket');
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-ok(link_count($filename) == 1, "scrips ok");
+is(link_count($filename), 1, "scrips ok");
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => -1);
 ok(!$id,$msg);
-ok(link_count($filename) == 1, "scrips ok");
+is(link_count($filename), 1, "scrips ok");
 
 my $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
-ok( $transactions->Count == 1, "Transaction found in other ticket" );
+is( $transactions->Count, 1, "Transaction found in other ticket" );
 ok( $transactions->First->Field eq 'ReferredToBy');
 ok( $transactions->First->NewValue eq $ticket->URI );
 
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-ok(link_count($filename) == 0, "scrips ok");
+is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'DeleteLink' );
-ok( $transactions->Count == 1, "Transaction found in other ticket" );
+is( $transactions->Count, 1, "Transaction found in other ticket" );
 ok( $transactions->First->Field eq 'ReferredToBy');
 ok( $transactions->First->OldValue eq $ticket->URI );
 
-$RT::LinkTransactionsRun1Scrip = 0;
+RT->Config->Set( LinkTransactionsRun1Scrip => 0 );
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-ok(link_count($filename) == 2, "scrips ok");
+is(link_count($filename), 2, "scrips ok");
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-ok(link_count($filename) == 0, "scrips ok");
+is(link_count($filename), 0, "scrips ok");
 
 # restore
-$RT::LinkTransactionsRun1Scrip = $link_scrips_orig;
+RT->Config->Set( LinkTransactionsRun1Scrip => $link_scrips_orig );
 
 sub link_count {
-
     my $file = shift;
-    open(FILE, "<$file");
-    my $data = <FILE>;
+    open my $fh, "<$file" or die "couldn't open $file";
+    my $data = <$fh>;
     chomp $data;
     return $data + 0;
-    close FILE;
-
+    close $fh;
 }
