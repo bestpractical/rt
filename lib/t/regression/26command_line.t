@@ -58,12 +58,12 @@ expect_like(qr/Ticket \d+ created/, "Created the ticket");
 expect_handle->before() =~ /Ticket (\d+) created/;
 my $ticket_id = $1;
 ok($ticket_id, "Got ticket id=$ticket_id");
+expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # add a comment to ticket
 TODO: {
     local $TODO = "Adding comments/correspondence is broken right now";
-    expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
-    expect_like(qr/Ticket \d+ created/, "Created the ticket");
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
     expect_like(qr/Comment added/, "Added the comment");
     ### should test to make sure it actually got added

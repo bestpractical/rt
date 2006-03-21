@@ -447,13 +447,17 @@ sub edit {
     # We need a form to make changes to. We usually ask the server for
     # one, but we can avoid that if we are fed one on STDIN, or if the
     # user doesn't want to edit the form by hand, and the command line
-    # specifies only simple variable assignments.
+    # specifies only simple variable assignments.  We *should* get a
+    # form if we're creating a new ticket, so that the default values
+    # get filled in properly.
+
+    my @new_objects = grep /\/new$/, @objects;
 
     if ($input) {
         local $/ = undef;
         $text = <STDIN>;
     }
-    elsif ($edit || %add || %del || !$cl) {
+    elsif ($edit || %add || %del || !$cl || @new_objects) {
         my $r = submit("$REST/show", { id => \@objects, format => 'l' });
         $text = $r->content;
     }
