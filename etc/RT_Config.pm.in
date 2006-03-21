@@ -564,10 +564,10 @@ Set($AmbiguousDayInPast , 1);
 Set(@ActiveStatus, qw(new open stalled));
 Set(@InactiveStatus, qw(resolved rejected deleted));
 
-# Backward compatability setting. Add/Delete Link used to record one
-# transaction and run one scrip. Set this value to 0 if you want
-# both link transactions to have a scrip run.
-Set($LinkTransactionsRun1Scrip , 1);
+# RT-3.4 backward compatability setting. Add/Delete Link used to record one
+# transaction and run one scrip. Set this value to 1 if you want
+# only one link transactions to have a scrip run.
+Set($LinkTransactionsRun1Scrip , 0);
 
 # Set $PreviewScripMessages to 1 if the scrips preview on the ticket
 # reply page should include the content of the messages to be sent.
