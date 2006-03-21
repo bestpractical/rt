@@ -32,7 +32,8 @@ $ENV{'RTUSER'} = 'root';
 #    - RTPASSWD
 $ENV{'RTPASSWD'} = 'password';
 #    - RTSERVER
-$ENV{'RTSERVER'} = "$RT::WebBaseURL";
+$RT::Logger->debug("Connecting to server at $RT::WebBaseURL...");
+$ENV{'RTSERVER'} = $RT::WebBaseURL;
 #    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
 $ENV{'RTDEBUG'} = '3';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the
@@ -60,7 +61,7 @@ ok($ticket_id, "Got ticket id=$ticket_id");
 
 # add a comment to ticket
 TODO: {
-    todo_skip "Adding comments/correspondence is broken right now", 8;
+    local $TODO = "Adding comments/correspondence is broken right now";
     expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
     expect_like(qr/Ticket \d+ created/, "Created the ticket");
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
@@ -142,7 +143,7 @@ expect_like(qr/id: ticket\/$ticket_id/, 'Got our ticket');
 expect_send("show ticket/$ticket_id/history", 'Showing our ticket\'s history...');
 expect_like(qr/Ticket created by root/, 'Got our history');
 TODO: {
-    todo_skip "Cannot show verbose ticket history right now", 2;
+    local $TODO = "Cannot show verbose ticket history right now";
     # show ticket history verbosely
     expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
     expect_like(qr/Ticket created by root/, 'Got our history');
@@ -199,7 +200,7 @@ expect_send("show group/$group_id", 'Showing the group...');
 expect_like(qr/id: group\/$group_id/, 'Saw the group');
 expect_like(qr/Name: EditedGroup$$/, 'Saw the modification');
 TODO: { 
-    todo_skip "Listing non-ticket items doesn't work", 2;
+    local $TODO = "Listing non-ticket items doesn't work";
     expect_send("list -t group 'id > 0'", 'Listing the groups...');
     expect_like(qr/$group_id: EditedGroup$$/, 'Found the group');
 }

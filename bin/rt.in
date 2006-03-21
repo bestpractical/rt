@@ -275,7 +275,8 @@ sub list {
         whine "No $item specified.";
         $bad = 1;
     }
-    return help("list", $type) if $bad;
+    #return help("list", $type) if $bad;
+    return suggest_help("list", $type) if $bad;
 
     my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
@@ -332,7 +333,8 @@ sub show {
         whine "No objects specified.";
         $bad = 1;
     }
-    return help("show", $type) if $bad;
+    #return help("show", $type) if $bad;
+    return suggest_help("show", $type) if $bad;
 
     my $r = submit("$REST/show", { id => \@objects, %data });
     print $r->content;
@@ -439,7 +441,8 @@ sub edit {
         }
         @objects = ("$type/new");
     }
-    return help($action, $type) if $bad;
+    #return help($action, $type) if $bad;
+    return suggest_help($action, $type) if $bad;
 
     # We need a form to make changes to. We usually ask the server for
     # one, but we can avoid that if we are fed one on STDIN, or if the
@@ -606,7 +609,8 @@ sub comment {
         whine "No object specified.";
         $bad = 1;
     }
-    return help($action, "ticket") if $bad;
+    #return help($action, "ticket") if $bad;
+    return suggest_help($action, "ticket") if $bad;
 
     my $form = [
         "",
@@ -686,7 +690,8 @@ sub merge {
         whine "Too $evil arguments specified.";
         $bad = 1;
     }
-    return help("merge", "ticket") if $bad;
+    #return help("merge", "ticket") if $bad;
+    return suggest_help("merge", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/merge/$id[0]", {into => $id[1]});
     print $r->content;
@@ -729,7 +734,8 @@ sub link {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    return help("link", "ticket") if $bad;
+    #return help("link", "ticket") if $bad;
+    return suggest_help("link", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/link", \%data);
     print $r->content;
@@ -1333,6 +1339,13 @@ sub is_object_spec {
     $spec =~ s|^(?:$type/)?|$type/| if defined $type;
     return $spec if ($spec =~ m{^$name/(?:$idlist|$labels)(?:/.*)?$}o);
     return;
+}
+
+sub suggest_help {
+    my ($action, $type) = @_;
+
+    print STDERR "rt: For help, run 'rt help $action'.\n" if defined $action;
+    print STDERR "rt: For help, run 'rt help $type'.\n" if defined $type;
 }
 
 __DATA__
