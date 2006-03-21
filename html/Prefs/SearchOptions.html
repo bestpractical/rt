@@ -66,14 +66,16 @@
 <%INIT>
 
 # {{{ If we're saving search preferences, do that now
+$Order = join '|', grep defined && /\S/, (ref $Order)? @{$Order}: $Order;
+$OrderBy = join '|', grep defined && /\S/, (ref $OrderBy)? @{$OrderBy}: $OrderBy;
 
 if ($ARGS{'SavePreferences'}) {
     $session{'CurrentUser'}->UserObj->SetPreferences("SearchDisplay",
     {
-       Format      => $ARGS{'Format'},
-       Order       => $ARGS{'Order'},
-       OrderBy     => $ARGS{'OrderBy'},
-       RowsPerPage => $ARGS{'RowsPerPage'}
+       Format      => $Format,
+       Order       => $Order,
+       OrderBy     => $OrderBy,
+       RowsPerPage => $RowsPerPage,
     });
 }
 
@@ -86,13 +88,12 @@ if ($ARGS{'SavePreferences'}) {
 
 
 # Read from user preferences
-my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
-;
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
 
 $Format      ||= $prefs->{'Format'};
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
-($RowsPerPage =  defined( $prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'}  : 50) unless defined ($RowsPerPage);
+($RowsPerPage =  defined( $prefs->{'RowsPerPage'} ) ? $prefs->{'RowsPerPage'}  : 50) unless defined ($RowsPerPage);
 
 my ( $AvailableColumns, $CurrentFormat );
 ( $Format, $AvailableColumns, $CurrentFormat ) = $m->comp(

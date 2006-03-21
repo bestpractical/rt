@@ -75,7 +75,7 @@ my @actions;
 my $title = loc("Customize").' ';
 
 my @fields = qw(Format Order OrderBy RowsPerPage);
-my ($class, $id) = $ARGS{name} =~ m/^(.*)-(\d+)$/;
+my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
 Abort('No search specified')
     unless $class eq 'RT::Attribute';
@@ -88,6 +88,9 @@ my $SearchArg = $user->Preferences($search, $search->Content);
 for (@fields) {
     $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
 }
+$ARGS{'Order'} = join '|', grep defined && /\S/, (ref $ARGS{'Order'})? @{$ARGS{'Order'}}: $ARGS{'Order'};
+$ARGS{'OrderBy'} = join '|', grep defined && /\S/, (ref $ARGS{'OrderBy'})? @{$ARGS{'OrderBy'}}: $ARGS{'OrderBy'};
+
 my ( $AvailableColumns, $CurrentFormat );
 ( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     '/Search/Elements/BuildFormatString',
