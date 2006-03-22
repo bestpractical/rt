@@ -909,10 +909,7 @@ sub ProcessACLChanges {
             @rights = $ARGSref->{$arg};
         }
         @rights = grep $_, @rights;
-        unless( @rights ) {
-            $RT::Logger->error("empty rights argument");
-            next;
-        }
+        next unless @rights;
 
         my $principal = RT::Principal->new( $session{'CurrentUser'} );
         $principal->Load( $principal_id );
