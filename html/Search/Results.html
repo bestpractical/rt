@@ -93,7 +93,7 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$Format      ||= $prefs->{'Format'};
+$Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
 
