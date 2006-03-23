@@ -54,8 +54,8 @@ Set($rtname , "example.com");
 
 Set($Organization , "example.com");
 
-# $user_passwd_min defines the minimum length for user passwords. Setting
-# it to 0 disables this check
+# $MinimumPasswordLength defines the minimum length for user
+# passwords. Setting it to 0 disables this check
 Set($MinimumPasswordLength , "5");
 
 # $Timezone is used to convert times entered by users into GMT and back again
@@ -66,8 +66,8 @@ Set($Timezone , 'US/Eastern');
 
 # {{{ Database Configuration
 
-# Database driver beeing used. Case matters
-# Valid types are "mysql", "Oracle" and "Pg"
+# Database driver being used; case matters.  Valid types are "mysql",
+# "Oracle" and "Pg"
 
 Set($DatabaseType , '@DB_TYPE@');
 
@@ -219,7 +219,7 @@ Set($SendmailPath , "/usr/sbin/sendmail");
 
 # }}}
 
-# {{{ SMTP configutation
+# {{{ SMTP configuration
 # These options only take effect if $MailCommand is 'smtp'
 
 # $SMTPServer should be set to the hostname of the SMTP server to use
@@ -278,7 +278,7 @@ Set($FriendlyToLineFormat, "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\"
 Set($NotifyActor, 0);
 
 # By default, RT records each message it sends out to its own internal database.
-# To change this behaviour, set $RecordOutgoingEmail to 0 
+# To change this behavior, set $RecordOutgoingEmail to 0 
 
 Set($RecordOutgoingEmail, 1);
 
@@ -291,30 +291,32 @@ Set($RecordOutgoingEmail, 1);
 # information about how to get things by syslog, mail or anything
 # else, get debugging info in the log, etc.
 
-#  It might generally make
-# sense to send error and higher by email to some administrator.
-# If you do this, be careful that this email isn't sent to this RT instance.
+# It might generally make sense to send error and higher by email to
+# some administrator.  If you do this, be careful that this email
+# isn't sent to this RT instance.  Mail loops will generate a critical
+# log message.
 
-# the minimum level error that will be logged to the specific device.
-# levels from lowest to highest:
+# The minimum level error that will be logged to the specific device.
+# From lowest to highest priority, the levels are:
 #  debug info notice warning error critical alert emergency
-
-#  Mail loops will generate a critical log message.
 Set($LogToSyslog    , 'debug');
 Set($LogToScreen    , 'error');
 
-# Logging to standalone file is also possible, but NOTE that the file
-# should exist and be writable by all direct users of the RT API, this
-# is web server, rt-crontool and other, but not rt-mailgate or RT CLI
-# which use web server. If you expect to have multiple users of the
-# direct API, Best Practical recommends syslog instead of direct file logging.
+# Logging to a standalone file is also possible, but note that the
+# file should needs to both exist and be writable by all direct users
+# of the RT API.  This generally include the web server, whoever
+# rt-crontool runs as.  Note that as rt-mailgate and the RT CLI go
+# through the webserver, so their users do not need to have write
+# permissions to this file. If you expect to have multiple users of
+# the direct API, Best Practical recommends using syslog instead of
+# direct file logging.
 
 Set($LogToFile      , undef);
 Set($LogDir, '@RT_LOG_PATH@');
 Set($LogToFileNamed , "rt.log");    #log to rt.log
 
-# If true generates stack traces to the log file or screen, but
-# never generates traces to the syslog
+# If set to true, any file and screen logging will include stack
+# traces; syslog never includes stack traces.
 
 Set($LogStackTraces , 0);
 
@@ -544,7 +546,7 @@ Set($EmailOutputEncoding , 'utf-8');
 # section in perldoc lib/RT/Date.pm for more options.  This option can
 # be overridden by users in their preferences.
 # Some examples:
-#Set($DateTimeFormat, { Fromat => 'ISO', Seconds => 0 });
+#Set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });
 #Set($DateTimeFormat, 'RFC2822');
 #Set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });
 Set($DateTimeFormat, 'DefaultFormat');
@@ -571,7 +573,7 @@ Set($AmbiguousDayInPast , 1);
 Set(@ActiveStatus, qw(new open stalled));
 Set(@InactiveStatus, qw(resolved rejected deleted));
 
-# RT-3.4 backward compatability setting. Add/Delete Link used to record one
+# RT-3.4 backward compatibility setting. Add/Delete Link used to record one
 # transaction and run one scrip. Set this value to 1 if you want
 # only one link transactions to have a scrip run.
 Set($LinkTransactionsRun1Scrip , 0);
@@ -582,7 +584,7 @@ Set($LinkTransactionsRun1Scrip , 0);
 # Set $UseTransactionBatch to 1 to execute transactions in batches,
 # such that a resolve and comment (for example) would happen
 # simultaneously, instead of as two transactions, unaware of each
-# others' existance.
+# others' existence.
 
 # Set @CustomFieldValuesSources to a list of class names which extend
 # RT::CustomFieldValues::External.  This can be used to pull lists of
