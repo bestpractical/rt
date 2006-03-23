@@ -1,17 +1,8 @@
-name: RTFM
-version: 2.2.0_2
 abstract: RT FM Extension
-license: GPL version 2
 distribution_type: module
-requires:
-  perl: 5.8.0
-  Text::WikiFormat: 0
-  RT: 3.4.2
-  Tree::Simple: 0
-  HTML::TreeBuilder: 0
-  Time::ParseDate: 0
-  HTML::FormatText: 0
-  YAML: 0
+generated_by: Module::Install version 0.56
+license: GPL version 2
+name: RTFM
 no_index:
   directory:
     - bin
@@ -20,4 +11,14 @@ no_index:
     - po
     - sbin
     - inc
-generated_by: Module::Install version 0.37
+    - t
+requires:
+  HTML::FormatText: 0
+  HTML::TreeBuilder: 0
+  RT: 3.4.2
+  Text::WikiFormat: 0
+  Time::ParseDate: 0
+  Tree::Simple: 0
+  YAML: 0
+  perl: 5.8.0
+version: 2.2.0RC3
