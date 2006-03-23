@@ -302,12 +302,19 @@ Set($RecordOutgoingEmail, 1);
 #  Mail loops will generate a critical log message.
 Set($LogToSyslog    , 'debug');
 Set($LogToScreen    , 'error');
+
+# Logging to standalone file is also possible, but NOTE that the file
+# should exist and be writable by all direct users of the RT API, this
+# is web server, rt-crontool and other, but not rt-mailgate or RT CLI
+# which use web server. If you expect to have multiple users of the
+# direct API, Best Practical recommends syslog instead of direct file logging.
+
 Set($LogToFile      , undef);
 Set($LogDir, '@RT_LOG_PATH@');
 Set($LogToFileNamed , "rt.log");    #log to rt.log
 
-# If true generates stack traces to file log or screen
-# never generates traces to syslog
+# If true generates stack traces to the log file or screen, but
+# never generates traces to the syslog
 
 Set($LogStackTraces , 0);
 
