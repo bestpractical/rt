@@ -154,7 +154,6 @@ sub _ {
 }
 
 $deps{'CORE'} = [ _( << '.') ];
-Calendar::Simple
 Digest::base
 Digest::MD5 2.27
 DBI 1.37
