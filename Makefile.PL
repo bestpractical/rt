@@ -13,4 +13,5 @@ requires(
     HTML::FormatText  => 0,
     YAML              => 0,
 );
+auto_install();
 &WriteAll;

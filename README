@@ -1,21 +1,17 @@
 RTFM (The RT FAQ Manager) is a tool for maintaining an organizational
 knowledgebase. Out of the box, it integrates with RT 3.4.2 or later
-(Also available from bestpractical.com) 
+(Also available from bestpractical.com)
 
-Best Practical sells support and customization for RT
-and RTFM.  Feel free to contact us at sales@bestpractical.com if you have
-any questions about our service offerings.
+Best Practical sells support and customization for RT and RTFM.  Feel
+free to contact us at sales@bestpractical.com if you have any
+questions about our service offerings.
 
-RTFM requires a few modules in addition to RT's standartd dependencies.
-You can install them by executing the command, also you would be noted
-later while running Makefile.PL:
-
-    perl -MCPAN -e'install "Text::WikiFormat"'
-    perl -MCPAN -e'install "Tree::Simple"'
-    perl -MCPAN -e'install "HTML::TreeBuilder"'
-    perl -MCPAN -e'install "HTML::FormatText"'
-    perl -MCPAN -e'install "Time::ParseDate"'
-    perl -MCPAN -e'install "YAML"'
+RTFM requires a few modules in addition to RT's standard dependencies.
+The 'perl Makefile.PL' command will check that you have all of the
+required modules installed; if not, they will either be auto-installed
+during the 'make' step, or you can opt to install them by hand using
+the CPAN shell or with any system-specific package management software
+you may have.
 
 Installation instructions:
 --------------------------

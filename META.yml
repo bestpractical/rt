@@ -1,6 +1,6 @@
 abstract: RT FM Extension
 distribution_type: module
-generated_by: Module::Install version 0.56
+generated_by: Module::Install version 0.560
 license: GPL version 2
 name: RTFM
 no_index:
