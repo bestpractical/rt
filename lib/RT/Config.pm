@@ -90,7 +90,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Max size of message(bytes) that would be inlined into history', #loc
+            Description => 'Max size of message(bytes) that would be inlined into history, put 0(zero) to inline any size', #loc
         },
     },
     OldestTransactionsFirst => {
