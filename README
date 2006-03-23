@@ -10,12 +10,12 @@ RTFM requires a few modules in addition to RT's standartd dependencies.
 You can install them by executing the command, also you would be noted
 later while running Makefile.PL:
 
-    perl -MCPAN -e'install Text::WikiFormat'
-    perl -MCPAN -e'install Tree::Simple'
-    perl -MCPAN -e'install HTML::TreeBuilder'
-    perl -MCPAN -e'install HTML::FormatText'
-    perl -MCPAN -e'install Time::ParseDate'
-    perl -MCPAN -e'install YAML'
+    perl -MCPAN -e'install "Text::WikiFormat"'
+    perl -MCPAN -e'install "Tree::Simple"'
+    perl -MCPAN -e'install "HTML::TreeBuilder"'
+    perl -MCPAN -e'install "HTML::FormatText"'
+    perl -MCPAN -e'install "Time::ParseDate"'
+    perl -MCPAN -e'install "YAML"'
 
 Installation instructions:
 --------------------------
