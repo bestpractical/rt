@@ -301,12 +301,16 @@ sub Set
     my $type = $META{$name}->{'Type'} || 'SCALAR';
     if( $type eq 'ARRAY' ) {
         $OPTIONS{$name} = [ @_ ];
+        { no strict 'refs';  @{"RT::$name"} = (@_); }
     } elsif( $type eq 'HASH' ) {
         $OPTIONS{$name} = { @_ };
+        { no strict 'refs';  %{"RT::$name"} = (@_); }
     } else {
         $OPTIONS{$name} = shift;
+        { no strict 'refs';  ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
+
 
     return 1;
 }

@@ -47,7 +47,7 @@
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
-  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes);
+  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes @Final);
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
@@ -637,6 +637,14 @@ sub insert_data {
             }
         }
         print "done.\n";
+    }
+
+    if (@Final) {
+        print "Running final actions...\n";
+        for (@Final) {
+            eval { $_->(); };
+            print "(Error: $@)\n" if $@;
+        }
     }
     $RT::Handle->Disconnect() unless ($db_type eq 'SQLite');
     print "Done setting up database content.\n";
