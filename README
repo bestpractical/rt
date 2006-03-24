@@ -73,7 +73,9 @@ want to read a more comprehensive installation guide at:
 
     RT defaults to installing in /opt/rt3 with MySQL as its database. It
     tries to guess which of www-data, www, apache or nobody your webserver
-    will run as, but you can override that behavior.
+    will run as, but you can override that behavior.  Note that the
+    default install directory in /opt/rt3 does not work under SELinux's
+    default configuration.
 
 3   Make sure that RT has everything it needs to run.
 
