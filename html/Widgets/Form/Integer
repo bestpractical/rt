@@ -15,7 +15,7 @@ $CurrentValue => '',
 
 $Empty        => 0,
 $EmptyValue   => 0,
-$EmptyLabel   => loc( 'Leave value empty to enable default value which is [_1]', $EmptyValue ),
+$EmptyLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $EmptyValue ),
 </%ARGS>
 
 <%METHOD Process>

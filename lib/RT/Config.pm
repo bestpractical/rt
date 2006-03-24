@@ -57,8 +57,6 @@ our %META = (
         WidgetArguments => {
             Description => 'Interface style', #loc
             Values      => [qw(3.5-default 3.4-compat)],
-            Mutiple     => 0,
-            Alternative => 0,
         },
     },
     DefaultSummaryRows => {
@@ -74,7 +72,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message boxes width', #loc
+            Description => 'Message box width', #loc
         },
     },
     MessageBoxHeight => {
@@ -82,19 +80,19 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message boxes height', #loc
+            Description => 'Message box height', #loc
         },
     },
     MaxInlineBody => {
-        Section         => 'Tickets view', #loc
+        Section         => 'Ticket display', #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Max size of message(bytes) that would be inlined into history, put 0(zero) to inline any size', #loc
+            Description => 'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline', #loc
         },
     },
     OldestTransactionsFirst => {
-        Section         => 'Tickets view',
+        Section         => 'Ticket display',
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {

@@ -38,7 +38,7 @@ $Description      => undef,
 
 $Empty            => 1,
 @EmptyValue       => (),
-$EmptyLabel       => loc('use default ([_1])', join ', ', @EmptyValue),
+$EmptyLabel       => loc('Use system default ([_1])', join ', ', @EmptyValue),
 
 $Alternative      => 0,
 $AlternativeLabel => loc('other...'),
