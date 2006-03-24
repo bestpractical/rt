@@ -81,4 +81,18 @@ my $classes = $hotlist->Join(
     FIELD2 => 'id',
 );
 $hotlist->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
+
+# By default, order by name
+$hotlist->OrderByCols( {
+            ALIAS => 'main',
+            FIELD => 'Name',
+            ORDER => 'ASC'
+    },
+        {   ALIAS => 'main',
+            FIELD => 'SortOrder',
+            ORDER => 'ASC'
+        },
+
+    );
+
 </%init>
