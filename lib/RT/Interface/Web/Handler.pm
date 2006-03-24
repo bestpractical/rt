@@ -117,7 +117,7 @@ sub InitSessionDir {
         # Clean up our umask to protect session files
         umask(0077);
 
-        if ($CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 )) {
+        if ($CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
 
             chown( Apache->server->uid, Apache->server->gid,
                 $RT::MasonSessionDir )
