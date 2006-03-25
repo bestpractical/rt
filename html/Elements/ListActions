@@ -46,17 +46,27 @@
 <&| /Widgets/TitleBox, title => loc('Results') &>
   <ul class="action-results">
 % foreach my $action (@actions) {
-%     next unless $action;
-%     my $skip = 0;
-%     $m->comp('/Elements/Callback', _CallbackName => 'ModifyRow', row => \$action, skip => \$skip, %ARGS);
-%     next if $skip;
     <li><%$action%></li>
 % }
   </ul>
 </&>
 <%init>
-@actions = grep $_, @actions;
+@actions =
+    grep $_,
+    grep {
+        my $skip;
+        $m->comp('/Elements/Callback',
+            _CallbackName => 'ModifyRow',
+            row => \$_,
+            skip => \$skip,
+            %ARGS
+        );
+        !$skip;
+    }
+    grep $_, @actions;
+
 return unless @actions;
+
 </%init>
 <%ARGS>
 @actions => undef
