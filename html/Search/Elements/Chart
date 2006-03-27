@@ -40,11 +40,10 @@ while ( my $entry = $tix->Next ) {
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
-<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" />
-<br />
-<%$Query%>
+<% loc('Query:') %>&nbsp;<% $Query %><br />
 
-<br />
+<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
+
 <table class="collection-as-table">
 <tr>
 <th class="collection-as-table"><%loc($PrimaryGroupBy)%>
