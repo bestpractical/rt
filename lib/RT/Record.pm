@@ -1459,7 +1459,7 @@ sub _NewTransaction {
 
     $self->_SetLastUpdated;
 
-    if ( defined $args{'TimeTaken'} ) {
+    if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken')) {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( $RT::UseTransactionBatch and $transaction ) {
