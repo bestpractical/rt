@@ -143,10 +143,10 @@ sub Create {
 
         @_ );
 
-    if ( !$args{'Queue'} ) {
+    unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
-                                               Right  => 'ModifyScrips' )
-          ) {
+                                               Right  => 'ModifyScrips' ) )
+        {
             return ( 0, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = 0;    # avoid undef sneaking in
@@ -154,13 +154,13 @@ sub Create {
     else {
         my $QueueObj = new RT::Queue( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} );
-        unless ( $QueueObj->id() ) {
+        unless ( $QueueObj->id ) {
             return ( 0, $self->loc('Invalid queue') );
         }
         unless ( $QueueObj->CurrentUserHasRight('ModifyScrips') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-        $args{'Queue'} = $QueueObj->id();
+        $args{'Queue'} = $QueueObj->id;
     }
 
     #TODO +++ validate input
@@ -170,15 +170,16 @@ sub Create {
     if ( $args{'ScripAction'} ) {
         $action->Load( $args{'ScripAction'} );
     }
-    return ( 0, $self->loc( "Action [_1] not found", $args{'ScripAction'} ) )
-      unless $action->Id;
+    return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
+        unless $action->Id;
 
     require RT::Template;
     my $template = new RT::Template( $self->CurrentUser );
     if ( $args{'Template'} ) {
         $template->Load( $args{'Template'} );
     }
-    return ( 0, $self->loc('Template not found') ) unless $template->Id;
+    return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
+        unless $template->Id;
 
     require RT::ScripCondition;
     my $condition = new RT::ScripCondition( $self->CurrentUser );
@@ -186,7 +187,7 @@ sub Create {
         $condition->Load( $args{'ScripCondition'} );
     }
     unless ( $condition->Id ) {
-        return ( 0, $self->loc('Condition not found') );
+        return ( 0, $self->loc( "Condition '[_1]' not found", $args{'ScripCondition'} ) );
     }
 
     my ( $id, $msg ) = $self->SUPER::Create(
