@@ -3109,6 +3109,25 @@ sub Steal {
 
 # }}}
 
+# {{{ sub TakeOrSteal
+
+=head2 TakeOrSteal
+
+A convenience method which does nothing if the current user owns the ticket,
+takes it if it's unowned, and steals it if it's owned.
+
+=cut
+
+sub TakeOrSteal {
+    my $self = shift;
+
+    return 1 if $self->Owner == $self->CurrentUser->id;
+    return $self->Take if $self->Owner == $RT::Nobody->id;
+    return $self->Steal;
+}
+
+# }}}
+
 # }}}
 
 # {{{ Routines dealing with status
