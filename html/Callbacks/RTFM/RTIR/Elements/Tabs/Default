@@ -1,0 +1,10 @@
+<%ARGS>
+$toptabs => {}
+</%ARGS>
+<%INIT>
+$toptabs->{'AA'} = {
+    title => loc('RTFM'),
+    path  => 'RTFM/index.html',
+};
+</%INIT>
+        
