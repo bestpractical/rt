@@ -624,12 +624,18 @@ sub insert_data {
 
         for $item (@Scrips) {
             my $new_entry = new RT::Scrip($CurrentUser);
-            my ( $return, $msg ) = $new_entry->Create(%$item);
-            if ($return) {
-                print $return. ".";
-            }
-            else {
-                print "(Error: $msg)\n";
+
+            my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
+            push @queues, 0 unless @queues; # add global queue at least
+
+            foreach my $q ( @queues ) {
+                my ( $return, $msg ) = $new_entry->Create( %$item, Queue => $q );
+                if ($return) {
+                    print $return. ".";
+                }
+                else {
+                    print "(Error: $msg)\n";
+                }
             }
         }
         print "done.\n";
