@@ -490,29 +490,38 @@ sub insert_data {
             my $new_entry = new RT::CustomField($CurrentUser);
             my $values    = $item->{'Values'};
             delete $item->{'Values'};
-            my $q     = $item->{'Queue'};
-            my $q_obj = RT::Queue->new($CurrentUser);
-            $q_obj->Load($q);
-            if ( $q_obj->Id ) {
-                $item->{'Queue'} = $q_obj->Id;
+
+            my @queues;
+            if ($item->{'Queue'}) {
+                my $queue_ref = delete $item->{'Queue'};
+                @queues = ref $queue_ref ? @{$queue_ref} : ($queue_ref);
+                $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
             }
-            elsif ( $q == 0 ) {
-                $item->{'Queue'} = 0;
-            }
-            else {
-                print "(Error: Could not find queue " . $q . ")\n"
-                  unless ( $q_obj->Id );
-                next;
-            }
+
             my ( $return, $msg ) = $new_entry->Create(%$item);
+            print "(Error: $msg)\n" and next unless ($return);
 
             foreach my $value ( @{$values} ) {
-                my ( $eval, $emsg ) = $new_entry->AddValue(%$value);
-                print "(Error: $emsg)\n" unless ($eval);
+                ( $return, $msg ) = $new_entry->AddValue(%$value);
+                print "(Error: $msg)\n" unless ($return);
             }
 
-            print "(Error: $msg)\n" unless ($return);
-            print $return. ".";
+            for my $q (@queues) {
+                my $q_obj = RT::Queue->new($CurrentUser);
+                $q_obj->Load($q);
+                unless ( $q_obj->Id ) {
+                    print "(Error: Could not find queue " . $q . ")\n";
+                    next;
+                }
+                my $OCF = RT::ObjectCustomField->new($CurrentUser);
+                ( $return, $msg ) = $OCF->Create(
+                    CustomField => $new_entry->Id,
+                    ObjectId => $q_obj->Id,
+                );
+                print "(Error: $msg)\n" unless ($return) and $OCF->Id;
+            }
+
+            print $new_entry->Id. ".";
         }
 
         print "done.\n";
@@ -526,13 +535,17 @@ sub insert_data {
             # Global rights or Queue rights?
             if ($item->{'CF'}) {
                 $object = RT::CustomField->new($CurrentUser);
-                $object->LoadByName( Name => $item->{'CF'}, Queue => $item->{'Queue'} );
+                my @columns = ( Name => $item->{'CF'} );
+                push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
+                $object->LoadByName( @columns );
             } elsif ($item->{'Queue'}) {
                 $object = RT::Queue->new($CurrentUser);
                 $object->Load( $item->{'Queue'} );
             } else {
                 $object = $RT::System;
             }
+
+            print "Couldn't load object" and next unless $object and $object->Id;
 
             # Group rights or user rights?
             if ($item->{'GroupDomain'}) {
