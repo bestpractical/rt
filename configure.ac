@@ -48,7 +48,7 @@ AC_ARG_WITH(speedycgi,
 	    		   [path to your speedycgi binary, if it exists]),
             SPEEDY_BIN=$withval,
             SPEEDY_BIN=/usr/local/bin/speedy) 
-if test "$WEB_HANDLER" = 'speedycgi' -a "$SPEEDY_BIN" = 'not found'; then
+if test "$WEB_HANDLER" = 'speedycgi' -a ! -x "$SPEEDY_BIN"; then
 	AC_MSG_ERROR([cannot find speedycgi binary])
 fi
 AC_SUBST(SPEEDY_BIN)
