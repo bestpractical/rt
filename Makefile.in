@@ -150,6 +150,12 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 
 # }}}
 
+# {{{ Web frontend
+
+WEB_HANDLER		=	@WEB_HANDLER@
+
+# }}}
+
 # {{{ Database setup
 
 #
@@ -254,12 +260,12 @@ upgrade-noclobber: config-install libs-install html-install bin-install local-in
 
 # {{{ dependencies
 testdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE) --with-$(WEB_HANDLER)
 
 depends: fixdeps
 
 fixdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE) --with-$(WEB_HANDLER)
 
 #}}}
 
@@ -350,7 +356,7 @@ regression-install: config-install
 regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms apachectl run-regression
 
 run-regression:
-	prove -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
+	prove -I$(LOCAL_LIB_PATH) -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
 
 
 regression-noapache: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms start-httpd  run-regression

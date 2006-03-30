@@ -31,14 +31,27 @@ if test "$PERL" = 'not found'; then
 fi
 
 
+dnl WEB_HANDLER
+AC_ARG_WITH(web-handler,
+	    AC_HELP_STRING([--with-web-handler=TYPE],
+	    		   [web web-handler RT will use (default: modperl1) (modperl1, modperl2, fastcgi and speedycgi are valid)]),
+            WEB_HANDLER=$withval,
+            WEB_HANDLER=modperl1)
+if test "$WEB_HANDLER" != 'modperl1' -a "$WEB_HANDLER" != 'modperl2' -a "$WEB_HANDLER" != 'fastcgi' -a "$WEB_HANDLER" != 'speedycgi'; then
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi and speedycgi are valid web-handlers])
+fi
+AC_SUBST(WEB_HANDLER)
+
 dnl SPEED_BIN
 AC_ARG_WITH(speedycgi,
 	    AC_HELP_STRING([--with-speedycgi=/path/to/speedy],
 	    		   [path to your speedycgi binary, if it exists]),
             SPEEDY_BIN=$withval,
             SPEEDY_BIN=/usr/local/bin/speedy) 
+if test "$WEB_HANDLER" = 'speedycgi' -a "$SPEEDY_BIN" = 'not found'; then
+	AC_MSG_ERROR([cannot find speedycgi binary])
+fi
 AC_SUBST(SPEEDY_BIN)
-
 
 dnl Defaults paths for installation
 AC_PREFIX_DEFAULT([/opt/rt3])
