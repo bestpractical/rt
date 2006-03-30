@@ -205,8 +205,13 @@ it knows where to find RT:
 
 <VirtualHost your.ip.address>
     ServerName your.rt.server.hostname
+
     DocumentRoot /opt/rt3/share/html
     AddDefaultCharset UTF-8
+
+    # optional apache logs for RT
+    # ErrorLog /opt/rt3/var/log/apache.error
+    # TransferLog /opt/rt3/var/log/apache.access
 
     PerlModule Apache::DBI
     PerlRequire /opt/rt3/bin/webmux.pl
@@ -215,8 +220,8 @@ it knows where to find RT:
         SetHandler default
     </Location>
     <Location />
-     SetHandler perl-script
-     PerlHandler RT::Mason
+        SetHandler perl-script
+        PerlHandler RT::Mason
     </Location>
 </VirtualHost>
 
@@ -231,12 +236,12 @@ it knows where to find RT:
 <VirtualHost your.ip.address>
     ServerName your.rt.server.hostname
 
+    DocumentRoot /opt/rt3/share/html
+    AddDefaultCharset UTF-8
+
     # optional apache logs for RT
     # ErrorLog /opt/rt3/var/log/apache2.error
     # TransferLog /opt/rt3/var/log/apache2.access
-
-    AddDefaultCharset UTF-8
-    DocumentRoot /opt/rt3/share/html
 
     PerlRequire "/opt/rt3/bin/webmux.pl"
 
@@ -264,11 +269,12 @@ mentioned above.
 To install RT with FastCGI, you'll need to add a few lines to your 
 Apache configuration file telling it about RT:
 
-<VirtualHost rt.example.com>
+<VirtualHost your.ip.address>
+   ServerName your.rt.server.hostname
 
    # Pass through requests to display images
    Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
-   
+
    # Tell FastCGI to put its temporary files somewhere sane.
    FastCgiIpcDir /tmp
 
@@ -276,7 +282,6 @@ Apache configuration file telling it about RT:
 
    AddHandler fastcgi-script fcgi
    ScriptAlias / /opt/rt3/bin/mason_handler.fcgi/
-   
 </VirtualHost>
 
 
