@@ -56,6 +56,7 @@ foreach my $stanza (@$Message) {
     elsif ( ref $stanza eq "HASH" ) {
         my $content = $stanza->{raw};
         RT::Interface::Web::EscapeUTF8(\$content);
+        $m->comp('/Elements/MakeClicky', content => \$content, ticket => $ticket, %ARGS);
         $m->comp('/Elements/Callback', content => \$content, %ARGS);
         $content =~ s{$}{<br />}mg
             if defined $content;
@@ -68,12 +69,13 @@ foreach my $stanza (@$Message) {
 % } else {
 %       my $content = $Message;
 %       RT::Interface::Web::EscapeUTF8(\$content);
+%       $m->comp('/Elements/MakeClicky', content => \$content, ticket => $ticket, %ARGS);
 %       $m->comp('/Elements/Callback', content => \$content, %ARGS);
 %       $content =~ s{$}{<br />}mg;
 <%$content |n%>
 % }
 <%INIT>
-use URI::URL;
+my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 </%INIT>
 <%ARGS>
 $Message => undef

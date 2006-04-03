@@ -1,0 +1,66 @@
+<%ONCE>
+use Regexp::Common qw(URI);
+
+my %actions = (
+    default => sub {
+        my %args = @_;
+        return $args{value};
+    },
+    url => sub {
+        my %args = @_;
+        my $result = qq{[<a target="new" href="$args{value}">}. loc('open URL') .qq{</a>]};
+        return $args{value} . qq{ <span class="clickylink">$result</span>};
+    },
+);
+
+my @types = (
+    {
+        name   => "httpurl",
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}/,
+        action => "url",
+    },
+);
+
+my $handle = sub {
+    my %args = @_;
+    for my $rec( @types ) {
+        return $rec->{action}->( %args ) if $args{value} =~ $rec->{regex};
+    }
+};
+
+# Hook to add more Clicky types
+# XXX Have to have Page argument, as Mason gets caller wrong in Callback?
+$m->comp("/Elements/Callback", Page => "/Elements/MakeClicky",
+    types => \@types,
+    actions => \%actions,
+    handle => \$handle
+);
+
+# Filter
+my %active;
+$active{$_}++ for RT->Config->Get('Active_MakeClicky');
+@types = grep {$active{$_->{name}}} @types;
+
+# Build up the whole match
+my $regexp = join "|",
+             map '\b'. $_->{regex} .'\b',
+             @types;
+
+# Make sure we have a default
+$actions{default} ||= sub {};
+
+# Anchor the regexes and look up the actions
+foreach my $type ( @types ) {
+    $type->{regex}  = qr/^$type->{regex}$/;
+    $type->{action} = $actions{$type->{action}} || $actions{default};
+}
+
+</%ONCE>
+<%ARGS>
+$content => undef
+</%ARGS>
+<%INIT>
+
+$$content =~ s/($regexp)/$handle->( %ARGS, value => ($1 || '') )/gsieo;
+
+</%INIT>

@@ -67,6 +67,12 @@ foreach ( @headers ) {
 
 my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
 
+my $ticket = $Message->TransactionObj->TicketObj;
+foreach my $f (@headers) {
+    next unless $display_headers{'_all'} || $display_headers{ lc $f->{'Tag'} };
+    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
+}
+
 $m->comp( '/Elements/Callback',
           message         => $Message,
           headers         => \@headers,
