@@ -46,6 +46,7 @@
 <%init>
 my @params;
 while ( my ($key, $value) = each %ARGS ){
+    next unless defined $value;
     if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
 	push @params, map $key."=".$m->interp->apply_escapes($_,'u'), @$value;
     } else {
