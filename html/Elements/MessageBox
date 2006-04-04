@@ -43,19 +43,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>"><& /Elements/Callback, %ARGS &><% $Default %><% $message %><% $signature %></textarea>
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>"><& /Elements/Callback, %ARGS &><% $Default || '' %><% $message %><% $signature %></textarea>
 <%INIT>
 
 my $message = '';
 
-if ($QuoteTransaction) {
-    my $transaction=RT::Transaction->new($session{'CurrentUser'});
-    $transaction->Load($QuoteTransaction);
-    $message=$transaction->Content(Quote => 1);
+if ( $QuoteTransaction ) {
+    my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
+    $transaction->Load( $QuoteTransaction );
+    $message = $transaction->Content( Quote => 1 );
 }
 
 my $signature = '';
-if ($IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature) {
+if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
 	$signature = "-- \n". $text;
 }
 

@@ -54,7 +54,7 @@ $cookiename .= ".".$ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
 $SessionCookie ||= ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef ),
 
 tie %session, 'RT::Interface::Web::Session', $SessionCookie;
-undef $cookies{$cookiename} unless $session{'_session_id'} eq $SessionCookie;
+undef $cookies{$cookiename} unless $SessionCookie && $session{'_session_id'} eq $SessionCookie;
 
 if ( int RT->Config->Get('AutoLogoff') ) {
     my $now = int(time/60);
