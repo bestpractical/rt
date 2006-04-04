@@ -47,7 +47,7 @@
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
-  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes @Final);
+  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes @Initial @Final);
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
@@ -453,6 +453,12 @@ sub insert_data {
 
     require $datafile
       || die "Couldn't find initial data for import\n" . $@;
+
+    if (@Initial) {
+        print "Running initial actions...\n";
+        # Don't trap errors here, as they *should* be fatal
+        $_->() for @Initial;
+    }
 
     if (@Groups) {
         print "Creating groups...";
