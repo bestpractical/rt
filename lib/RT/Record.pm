@@ -1572,6 +1572,8 @@ sub _AddCustomFieldValue {
     my %args = (
         Field             => undef,
         Value             => undef,
+        LargeContent      => undef,
+        ContentType       => undef,
         RecordTransaction => 1,
         @_
     );
@@ -1630,12 +1632,14 @@ sub _AddCustomFieldValue {
                       );
                 }
             }
+            $values->RedoSearch if $i; # redo search if have deleted at least one value
         }
 
         my ( $old_value, $old_content );
-        if ( $old_value = $cf->ValuesForObject($self)->First ) {
-            $old_content = $old_value->Content();
-            return (1) if( $old_content eq $args{'Value'} && $old_value->LargeContent eq $args{'LargeContent'});;
+        if ( $old_value = $values->First ) {
+            $old_content = $old_value->Content;
+            return (1) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
+                          ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '');
         }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
