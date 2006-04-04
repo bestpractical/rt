@@ -1674,15 +1674,16 @@ sub _AddCustomFieldValue {
               );
         }
 
-        if ( $old_value eq '' ) {
-            return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_value->Content ));
+        my $new_content = $new_value->Content;
+        if ( $old_value && ( !defined $old_content || $old_content eq '' ) ) {
+            return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
-        elsif ( $new_value->Content eq '' ) {
+        elsif ( !defined $new_content || $new_content eq '' ) {
             return ( 1,
-                $self->loc( "[_1] [_2] deleted", $cf->Name, $old_value->Content ) );
+                $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
         }
         else {
-            return ( 1, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content,                $new_value->Content));
+            return ( 1, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
         }
 
     }
