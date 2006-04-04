@@ -89,6 +89,9 @@ want to read a more comprehensive installation guide at:
 
      make fixdeps
 
+    Some modules require user input or environment variables to install correctly
+    and may be it would be necessarily to install them manually.
+
 5   Check to make sure everything was installed properly.
      
        make testdeps
