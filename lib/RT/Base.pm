@@ -130,7 +130,7 @@ sub loc {
         return $user->loc(@_);
     }
     else {
-        use Carp;
+        require Carp;
         Carp::confess("No currentuser");
         return ("Critical error:$self has no CurrentUser", $self);
     }
