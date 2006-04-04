@@ -238,7 +238,7 @@ sub Load {
     # FIXME: there is no TicketBaseURI option in config
     my $base_uri = RT->Config->Get('TicketBaseURI');
     #If it's a local URI, turn it into a ticket id
-    if ( $id =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
     }
 
