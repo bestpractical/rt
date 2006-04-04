@@ -1675,7 +1675,7 @@ sub _AddCustomFieldValue {
         }
 
         my $new_content = $new_value->Content;
-        if ( $old_value && ( !defined $old_content || $old_content eq '' ) ) {
+        if ( !defined $old_content || $old_content eq '' ) {
             return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
         elsif ( !defined $new_content || $new_content eq '' ) {

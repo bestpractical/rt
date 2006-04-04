@@ -63,7 +63,7 @@
       </select><br />
 %       }
       <select name="<%$id%>-Values" id="<%$id%>-Values"
-%       if ($Multiple or !@category) {
+%       if ( $Rows && ( $Multiple || !@category ) ) {
         size="<% $Rows %>"
 %       }
         <% $Multiple && 'multiple' %> >
@@ -105,7 +105,9 @@ $Rows => undef
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
-%       if ( grep( $_ eq $name, @Default ) || ( $Values && $Values->HasEntry( $name ) ) ) {
+%       if ( grep( ( $_ || '') eq ( $name || '') , @Default )
+%            || ( $Values && $Values->HasEntry( $name ) ) )
+%       {
 %           $$SelectedRef = 1;
             selected
 %       }

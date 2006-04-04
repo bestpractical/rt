@@ -272,9 +272,9 @@ sub CreateTicket {
     my $starts = new RT::Date( $session{'CurrentUser'} );
     $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
 
-    my @Requestors = split ( /\s*,\s*/, $ARGS{'Requestors'} );
-    my @Cc         = split ( /\s*,\s*/, $ARGS{'Cc'} );
-    my @AdminCc    = split ( /\s*,\s*/, $ARGS{'AdminCc'} );
+    my @Requestors = split /\s*,\s*/, ( $ARGS{'Requestors'} || '' );
+    my @Cc         = split /\s*,\s*/, ( $ARGS{'Cc'}         || '' );
+    my @AdminCc    = split /\s*,\s*/, ( $ARGS{'AdminCc'}    || '' );
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
