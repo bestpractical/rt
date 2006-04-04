@@ -103,11 +103,9 @@ sub _SQLJoin {
 
 # Helpers
 sub _OpenParen {
-    warn "In the openparen helper.";
   $_[0]->SUPER::_OpenParen( 'ticketsql' );
 }
 sub _CloseParen {
-    warn "in the lcose paren helper";
   $_[0]->SUPER::_CloseParen( 'ticketsql' );
 }
 
