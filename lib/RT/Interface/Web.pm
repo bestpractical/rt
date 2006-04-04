@@ -106,9 +106,10 @@ Escapes URI component according to RFC2396
 use Encode qw();
 sub EscapeURI {
     my $ref = shift;
-    $$ref = Encode::encode_utf8( $$ref );
+    return unless defined $$ref;
+
+    use bytes;
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
-    Encode::_utf8_on( $$ref );
 }
 
 # }}}
@@ -340,40 +341,19 @@ sub CreateTicket {
     # XXX TODO This code should be about six lines. and badly needs refactoring.
  
     # {{{ turn new link lists into arrays, and pass in the proper arguments
-    my (@dependson, @dependedonby, @parents, @children, @refersto, @referredtoby);
-
-    foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
-        $luri =~ s/\s*$//;    # Strip trailing whitespace
-        push @dependson, $luri;
+    my %map = (
+        'new-DependsOn' => 'DependsOn',
+        'DependsOn-new' => 'DependedOnBy',
+        'new-MemberOf'  => 'Parents',
+        'MemberOf-new'  => 'Children',
+        'new-RefersTo'  => 'RefersTo',
+        'RefersTo-new'  => 'ReferredToBy',
+    );
+    foreach my $key ( keys %map ) {
+        next unless $ARGS{ $key };
+        $create_args{ $map{ $key } } = [ grep $_, split ' ', $ARGS{ $key } ];
+        
     }
-    $create_args{'DependsOn'} = \@dependson;
-
-    foreach my $luri ( split ( / /, $ARGS{"DependsOn-new"} ) ) {
-        push @dependedonby, $luri;
-    }
-    $create_args{'DependedOnBy'} = \@dependedonby;
-
-    foreach my $luri ( split ( / /, $ARGS{"new-MemberOf"} ) ) {
-        $luri =~ s/\s*$//;    # Strip trailing whitespace
-        push @parents, $luri;
-    }
-    $create_args{'Parents'} = \@parents;
-
-    foreach my $luri ( split ( / /, $ARGS{"MemberOf-new"} ) ) {
-        push @children, $luri;
-    }
-    $create_args{'Children'} = \@children;
-
-    foreach my $luri ( split ( / /, $ARGS{"new-RefersTo"} ) ) {
-        $luri =~ s/\s*$//;    # Strip trailing whitespace
-        push @refersto, $luri;
-    }
-    $create_args{'RefersTo'} = \@refersto;
-
-    foreach my $luri ( split ( / /, $ARGS{"RefersTo-new"} ) ) {
-        push @referredtoby, $luri;
-    }
-    $create_args{'ReferredToBy'} = \@referredtoby;
     # }}}
   
  
