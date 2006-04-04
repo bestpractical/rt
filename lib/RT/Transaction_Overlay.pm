@@ -1057,9 +1057,11 @@ sub CustomFieldValues {
 
     if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
 
-        unless ( $field =~ /^\d+$/o ) {
+        # XXX: $field could be undef when we want fetch values for all CFs
+        #      do we want to cover this situation somehow here?
+        if ( $field && $field !~ /^\d+$/o ) {
             my $CFs = RT::CustomFields->new( $self->CurrentUser );
-             $CFs->Limit( FIELD => 'Name', VALUE => $field);
+            $CFs->Limit( FIELD => 'Name', VALUE => $field );
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
             $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
             $field = $CFs->First->id if $CFs->First;
