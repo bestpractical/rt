@@ -115,7 +115,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
             elsif ( $message->ContentType =~ m{^(text|message)}i ) {
 
                 eval { $content = Text::Quoted::extract($content); };
-                if ($@) { 1; }
+                if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
 
                 $m->comp(
                     'ShowMessageStanza',
