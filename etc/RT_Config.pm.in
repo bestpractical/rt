@@ -517,6 +517,16 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+# RT provides a tool called MakeClicky that can detect various formats
+# of data in headers and email messages, and extend them with various
+# supporting links.  By default, RT only provides one format,
+# 'httpurl', which detects http:// and https:// URLs.  It is disabled
+# by default; to enable it, add 'httpurl' to the line below.  Other
+# products, such as RTIR, may add additional kinds of MakeClicky
+# types.  See html/Elements/MakeClicky for documentation on how to add
+# your own.
+Set(@Active_MakeClicky, qw());
+
 
 # }}}
 

@@ -64,3 +64,29 @@ $content => undef
 $$content =~ s/($regexp)/$handle->( %ARGS, value => ($1 || '') )/gsieo;
 
 </%INIT>
+<%doc>
+
+MakeClicky detects various formats of data in headers and email
+messages, and extends them with supporting links.  By default, RT only
+provides one format, 'httpurl', which detects http:// and https://
+URLs.  To extend this with your own types od data, use the callback.
+It will be provided with:
+
+ * 'types': An array reference of hash references.  Modify this array
+    reference to add your own types; the first matching type will be
+    used.  Each hashref should contain:
+   - 'name': The name of the data format; this is used in the
+      configuration file to enable the format.
+   - 'regex': A regular expression to match against
+   - 'action': The name of the action to run (see "actions", below)
+
+ * 'actions': A hash reference of 'actions'.  Modify this hash
+    reference to change or add action types.  Values are subroutine
+    references which will get called when needed.  They should return
+    the modified string.
+
+ * 'handler': A reference to a subroutine reference; modify it if you
+    have to.  This can be used to add pre- or post-processing around
+    all actions.
+
+</%doc>
