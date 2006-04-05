@@ -117,7 +117,12 @@ use RT::SQL;
 
 my $title = loc("Query Builder");
 
-my (%query, %saved_search);
+my %query;
+for( qw(Query Format OrderBy Order RowsPerPage) ) {
+    $query{$_} = $ARGS{$_};
+}
+
+my %saved_search;
 my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
 if ( $NewQuery ) {
@@ -141,7 +146,6 @@ if ( $NewQuery ) {
     my $default = { Query => '', Format => '', OrderBy => 'id', Order => 'ASC', RowsPerPage => 50 };
 
     for( qw(Query Format OrderBy Order RowsPerPage) ) {
-        $query{$_} = $ARGS{$_};
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
@@ -201,9 +205,7 @@ my $tree = $ParseQuery->( $query{'Query'}, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
-    $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
-    $m->comp('/Elements/Footer');
-    $m->abort;
+    return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
 }
 
 my @options = $tree->GetDisplayedNodes;
