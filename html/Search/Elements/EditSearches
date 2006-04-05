@@ -161,6 +161,7 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
     $SavedSearch->{'Object'} = $container->Attributes->WithId( $id );
+    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
 }
 
 </%INIT>
