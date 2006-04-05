@@ -81,8 +81,8 @@
 <%INIT>
 
 return unless $session{'CurrentUser'}->HasRight(
-    Right => 'LoadSavedSearch',
-    Object=> $RT::System,
+    Right  => 'LoadSavedSearch',
+    Object => $RT::System,
 );
 
 # If we're modifying an old query, check if it has changed
@@ -138,12 +138,11 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'Object'}      = $search;
     $SavedSearch->{'Description'} = $search->Description;
-
     $Query->{$_} = $search->SubValue($_) foreach @FIELDS;
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
-    my ($container, $id) = _parse_saved_search( $ARGS{'SearchId'} );
+    my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
         $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
@@ -155,6 +154,13 @@ elsif ( $ARGS{'SavedSearchCopy'} ) {
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
     $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Description'} );
+}
+
+if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
+     && !$SavedSearch->{'Object'} )
+{
+    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
+    $SavedSearch->{'Object'} = $container->Attributes->WithId( $id );
 }
 
 </%INIT>
