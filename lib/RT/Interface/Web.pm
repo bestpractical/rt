@@ -1117,12 +1117,12 @@ sub ProcessObjectCustomFieldUpdates {
 
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
-	foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
-	    my $Object = $args{'Object'};
-	    if (!$Object or ref($Object) ne $class or $Object->id != $id) {
-            $Object = $class->new( $session{'CurrentUser'} );
-            $Object->Load($id);
-        }
+        foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
+            my $Object = $args{'Object'};
+            if (!$Object or ref($Object) ne $class or $Object->id != $id) {
+                $Object = $class->new( $session{'CurrentUser'} );
+                $Object->Load($id);
+            }
 
             # For each custom field  
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
