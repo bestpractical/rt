@@ -512,14 +512,15 @@ sub _Value {
         return ( $self->__Value( $field, @_ ) );
     }
 
-    #If it's a comment, we need to be extra special careful
-    elsif ( $self->TransactionObj->Type =~ /^Comment/ ) {
-        if ( $self->TransactionObj->CurrentUserHasRight('ShowTicketComments') )
+    my $txn = $self->TransactionObj;
+    # If it's a comment, we need to be extra special careful
+    if ( $txn->__Value('Type') =~ /^Comment/ ) {
+        if ( $txn->CurrentUserHasRight('ShowTicketComments') )
         {
             return ( $self->__Value( $field, @_ ) );
         }
     }
-    elsif ( $self->TransactionObj->CurrentUserHasRight('ShowTicket') ) {
+    elsif ( $txn->CurrentUserHasRight('ShowTicket') ) {
         return ( $self->__Value( $field, @_ ) );
     }
 
