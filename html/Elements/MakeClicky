@@ -60,6 +60,8 @@ foreach my $type ( @types ) {
 $content => undef
 </%ARGS>
 <%INIT>
+return unless $regexp;
+return unless defined $$content;
 
 $$content =~ s/($regexp)/$handle->( %ARGS, value => ($1 || '') )/gsieo;
 
