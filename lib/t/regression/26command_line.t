@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 100;
+use Test::More tests => 102;
 
 use RT;
 RT::LoadConfig();
@@ -59,6 +59,10 @@ expect_handle->before() =~ /Ticket (\d+) created/;
 my $ticket_id = $1;
 ok($ticket_id, "Got ticket id=$ticket_id");
 expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
+
+# make sure we can request things as 'rt foo'
+expect_send(q{rt create -t ticket set subject='rt ticket'}, "Creating a ticket with 'rt create'...");
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # add a comment to ticket

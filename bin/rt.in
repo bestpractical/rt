@@ -133,10 +133,17 @@ foreach my $fn (keys %handlers) {
 sub handler {
     my $action;
 
+    if ($ARGV[0] eq 'rt') {
+        shift @ARGV;  # ignore a leading 'rt'
+    }
     if (@ARGV && exists $actions{$ARGV[0]}) {
         $action = shift @ARGV;
+        $actions{$action}->($action);
     }
-    $actions{$action || "help"}->($action || ());
+    else {
+        print STDERR "rt: Unknown command '@ARGV'.\n";
+        print STDERR "rt: For help, run 'rt help'.\n";
+    }
 }
 
 handler();
