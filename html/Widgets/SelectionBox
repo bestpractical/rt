@@ -190,7 +190,7 @@ onsubmit="list_<% $name %>.selectAll();"
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
-<input name="add" type="submit" class="button" value="->" />
+<input name="add" type="submit" class="button" value="&rarr;" />
 <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
@@ -200,8 +200,8 @@ selected="selected"
 ><% $self->{_item_map}{$_} %></option>
 % }
 </select>
- <input name="moveup" type="submit" class="button" value="^" />
- <input name="movedown" type="submit" class="button" value="v" />
+ <input name="moveup" type="submit" class="button" value="&uarr;" />
+ <input name="movedown" type="submit" class="button" value="&darr;" />
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 
 % my $caption = "";

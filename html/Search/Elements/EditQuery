@@ -49,10 +49,10 @@
 % $m->out($optionlist);
 </select>
 <p align="center">
-<input type="submit" class="button" name="Up" value="^" />
-<input type="submit" class="button" name="Down" value="v" />
-<input type="submit" class="button" name="Left" value="<" />
-<input type="submit" class="button" name="Right" value=">" />
+<input type="submit" class="button" name="Up" value="&uarr;" />
+<input type="submit" class="button" name="Down" value="&darr;" />
+<input type="submit" class="button" name="Left" value="&larr;" />
+<input type="submit" class="button" name="Right" value="&rarr;" />
 <input type="submit" class="button" name="Toggle" value="<&|/l&>And/Or</&>" />
 <input type="submit" class="button" name="DeleteClause" value="<&|/l&>Delete</&>" />
 %#<input type="submit" class="button" name="EditQuery" value="Advanced" />
