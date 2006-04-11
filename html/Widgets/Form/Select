@@ -1,6 +1,8 @@
 <div id="form-box-<% lc $Name %>">
+% if ( $Description ) {
 <% $Description %>:
-<select name="Select-<% $Name %>">
+% }
+<select name="<% $NamePrefix %><% $Name %>">
 
 % if ( $Empty ) {
 % my $selected = '';
@@ -22,13 +24,14 @@
 
 </select>
 % if ( $Alternative ) {
-<input type="text" class="alternative" name="Select-Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
+<input type="text" class="alternative" name="<% $NamePrefix %>Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
 % }
 </div>
 <%INIT>
 my %CurrentValue = map {$_ => 1} grep defined, @CurrentValue;
 </%INIT>
 <%ARGS>
+$NamePrefix       => 'Select-',
 $Name             => '',
 $Description      => undef,
 
@@ -50,6 +53,7 @@ $Multiple         => 0,
 <%ARGS>
 $Arguments        => {},
 
+$NamePrefix       => 'Select-',
 $Name             => undef,
 
 @Values           => (),
@@ -61,7 +65,7 @@ $Alternative      => 0,
 $Multiple         => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ "Select-$Name" };
+my $value = $Arguments->{ $NamePrefix . $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
     return [ @CurrentValue ] unless $Empty;
     return undef;
@@ -69,7 +73,7 @@ if( !defined $value || $value eq '__empty_value__' ) {
 $value = [$value] unless ref $value;
 
 if ( $Alternative ) {
-    my $alt = $Arguments->{ "Select-Alternative-$Name" };
+    my $alt = $Arguments->{ $NamePrefix ."Alternative-". $Name };
     if( $Multiple ) {
         push @$value, split /\s*,\s*/, $alt;
     } else {
