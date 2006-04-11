@@ -292,6 +292,7 @@ foreach $object (@objects) {
         if ($e) {
             $status = "409 Syntax Error" if @$o;
             push @output, [ $c, $o, $k ];
+            #die("handler=$handler, id=$id, args=$args, format=$format, changes=$k");
         }
         else {
             push @comments, $c;

@@ -60,7 +60,7 @@ my $status = "200 Ok";
 my $output;
 my $action;
 
-# http://.../REST/1.0/ticket/comment/1
+# http://.../REST/1.0/ticket/1/comment
 my ($c, $o, $k, $e) = @{ form_parse($content)->[0] };
 if ($e || !$o) {
     if (!$o) {
