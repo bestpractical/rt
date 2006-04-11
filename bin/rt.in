@@ -674,7 +674,7 @@ sub comment {
     }
     $data{content} = $text;
 
-    my $r = submit("$REST/ticket/comment/$id", \%data);
+    my $r = submit("$REST/ticket/$id/comment", \%data);
     print $r->content;
 }
 
