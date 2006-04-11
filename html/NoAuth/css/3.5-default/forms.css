@@ -82,6 +82,11 @@ form input.checkbox, form input.radio {
     font-weight: bold;
 }
 
+.label-comment {
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
 .labeltop {
     vertical-align: top;
 }
