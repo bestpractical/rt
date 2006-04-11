@@ -72,7 +72,7 @@ my %config = (
         debug   => 0,
         user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd  => undef,
-        server  => 'http://localhost/rt/',
+        server  => 'http://localhost/',
         query   => undef,
         orderby => undef,
     ),
@@ -133,9 +133,8 @@ foreach my $fn (keys %handlers) {
 sub handler {
     my $action;
 
-    if ($ARGV[0] eq 'rt') {
-        shift @ARGV;  # ignore a leading 'rt'
-    }
+    push @ARGV, 'shell' if (!@ARGV);    # default to shell mode
+    shift @ARGV if ($ARGV[0] eq 'rt');    # ignore a leading 'rt'
     if (@ARGV && exists $actions{$ARGV[0]}) {
         $action = shift @ARGV;
         $actions{$action}->($action);

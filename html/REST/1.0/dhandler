@@ -72,6 +72,7 @@ my $labels = "(?:$label,)*$label";
 #    http://.../REST/1.0/ticket/edit
 # 4. http://.../REST/1.0/ticket/nn (all possibly with a single form).
 #    http://.../REST/1.0/ticket/nn/history
+#    http://.../REST/1.0/ticket/nn/comment
 #    http://.../REST/1.0/ticket/nn/attachment/1
 #
 # Objects are specified by their type, and either a unique numeric ID,
