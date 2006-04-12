@@ -53,7 +53,7 @@
 %     if ($ShowNullOption) {
   <option value="">-</option>
 %     }
-%     for my $queue (@{$cache{$cache_key}}) {
+%     for my $queue (@{$session{$cache_key}}) {
   <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>" <% ($queue->{Id} eq $Default ? 'selected="selected"' : '') |n %>>
     <%$queue->{Name}%>
 %             if ($Verbose and $queue->{Description}) {
@@ -63,9 +63,6 @@
 %     }
 </select>
 % }
-<%once>
-my %cache;
-</%once>
 <%args>
 $CheckQueueRight => 'CreateTicket'
 $ShowNullOption => 1
@@ -81,13 +78,13 @@ my $cache_key = "SelectQueue---"
                 . $session{'CurrentUser'}->Id
                 . "---$CheckQueueRight---$ShowAllQueues";
 
-if (not defined $cache{$cache_key} and not $Lite) {
+if (not defined $session{$cache_key} and not $Lite) {
     my $q = new RT::Queues($session{'CurrentUser'});
     $q->UnLimit;
     
     while (my $queue = $q->Next) {
         if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
-            push @{$cache{$cache_key}}, {
+            push @{$session{$cache_key}}, {
                 Id          => $queue->Id,
                 Name        => $queue->Name,
                 Description => $queue->Description,
