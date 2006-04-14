@@ -41,6 +41,12 @@ my $handle = sub {
     }
 };
 
+my $escaper = sub {
+    my $content = shift;
+    RT::Interface::Web::EscapeUTF8( \$content );
+    return $content;
+};
+
 # Hook to add more Clicky types
 # XXX Have to have Page argument, as Mason gets caller wrong in Callback?
 $m->comp("/Elements/Callback", Page => "/Elements/MakeClicky",
@@ -48,6 +54,7 @@ $m->comp("/Elements/Callback", Page => "/Elements/MakeClicky",
     actions => \%actions,
     handle => \$handle
 );
+
 
 # Filter
 my %active;
@@ -81,24 +88,20 @@ unless ( $regexp ) {
 
 my $pos = 0;
 while ( $$content =~ /($regexp)/gsio ) {
-    my $match_start = pos($$content) - length($1);
-    if ( $match_start != $pos ) {
-        my $plain = substr( $$content, $pos, $match_start );
-        RT::Interface::Web::EscapeUTF8( \$plain );
-        substr( $$content, $pos, $match_start ) = $plain;
-        $match_start = $pos + length($plain);
+    my $match = $1;
+    my $skipped_len = pos($$content) - $pos - length($match);
+    if ( $skipped_len > 0 ) {
+        my $plain = $escaper->( substr( $$content, $pos, $skipped_len ) );
+        substr( $$content, $pos, $skipped_len ) = $plain;
+        $pos += ( $skipped_len = length($plain) );
     }
     {
-        my $plain = $handle->( %ARGS, value => ($1 || '') );
-        substr( $$content, $match_start, length($1) ) = $plain;
-        pos($$content) = $pos = $match_start + length($plain);
+        my $plain = $handle->( %ARGS, value => $match );
+        substr( $$content, $pos, length($match) ) = $plain;
+        pos($$content) = ( $pos += length($plain) );
     }
 }
-{
-    my $plain = substr( $$content, $pos );
-    RT::Interface::Web::EscapeUTF8( \$plain );
-    substr( $$content, $pos ) = $plain;
-}
+substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless $pos == length $$content;
 
 </%INIT>
 <%doc>
