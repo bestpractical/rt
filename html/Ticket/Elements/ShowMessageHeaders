@@ -59,19 +59,7 @@ foreach my $field( $Message->SplitHeaders ) {
     push @headers, { Tag => $tag, Value => $value };
 }
 
-# apply html escaping on the original content
-# we'll display the value without escaping later (for MakeClicky et al.)
-foreach ( @headers ) {
-    $_->{'Value'} = $m->interp->apply_escapes( $_->{Value}, 'h' );
-}
-
 my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
-
-my $ticket = $Message->TransactionObj->TicketObj;
-foreach my $f (@headers) {
-    next unless $display_headers{'_all'} || $display_headers{ lc $f->{'Tag'} };
-    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
-}
 
 $m->comp( '/Elements/Callback',
           message         => $Message,
@@ -80,9 +68,14 @@ $m->comp( '/Elements/Callback',
         );
 
 unless ( $display_headers{'_all'} ) {
-    @headers = grep $display_headers{ lc $_->{'Tag'} },
-               @headers;
+    @headers = grep $display_headers{ lc $_->{'Tag'} }, @headers;
 }
+
+my $ticket = $Message->TransactionObj->TicketObj;
+foreach my $f (@headers) {
+    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
+}
+
 if ( $Localize ) {
     $_->{'Tag'} = loc($_->{'Tag'}) foreach @headers;
 }

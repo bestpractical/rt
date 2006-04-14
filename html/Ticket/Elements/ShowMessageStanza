@@ -55,27 +55,24 @@ foreach my $stanza (@$Message) {
     }
     elsif ( ref $stanza eq "HASH" ) {
         my $content = $stanza->{raw};
-        RT::Interface::Web::EscapeUTF8(\$content);
-        $m->comp('/Elements/MakeClicky', content => \$content, ticket => $ticket, %ARGS);
-        $m->comp('/Elements/Callback', content => \$content, %ARGS);
-        $content =~ s{$}{<br />}mg
-            if defined $content;
-
+        $print_content->( \$content );
+    }
+}
 </%perl>
-<%$content |n%>
-%   }
-% } # end foreach
 </div>
 % } else {
-%       my $content = $Message;
-%       RT::Interface::Web::EscapeUTF8(\$content);
-%       $m->comp('/Elements/MakeClicky', content => \$content, ticket => $ticket, %ARGS);
-%       $m->comp('/Elements/Callback', content => \$content, %ARGS);
-%       $content =~ s{$}{<br />}mg;
-<%$content |n%>
+%       $print_content->( \$Message );
 % }
 <%INIT>
 my $ticket = $Transaction ? $Transaction->TicketObj : undef;
+
+my $print_content = sub {
+    my $ref = shift;
+    $m->comp('/Elements/Callback', content => $ref, %ARGS);
+    $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
+    $$ref =~ s{$}{<br />}mg if defined $$ref;
+    $m->out( $$ref );
+};
 </%INIT>
 <%ARGS>
 $Message => undef
