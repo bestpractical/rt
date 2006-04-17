@@ -76,21 +76,16 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 =cut
 
 sub EscapeUTF8  {
-        my  $ref = shift;
-        return unless defined $$ref;
-        my $val = $$ref;
-        use bytes;
-        $val =~ s/&/&#38;/g;
-        $val =~ s/</&lt;/g; 
-        $val =~ s/>/&gt;/g;
-        $val =~ s/\(/&#40;/g;
-        $val =~ s/\)/&#41;/g;
-        $val =~ s/"/&#34;/g;
-        $val =~ s/'/&#39;/g;
-        $$ref = $val;
-        Encode::_utf8_on($$ref);
+    my $ref = shift;
+    return unless defined $$ref;
 
-
+    $$ref =~ s/&/&#38;/g;
+    $$ref =~ s/</&lt;/g; 
+    $$ref =~ s/>/&gt;/g;
+    $$ref =~ s/\(/&#40;/g;
+    $$ref =~ s/\)/&#41;/g;
+    $$ref =~ s/"/&#34;/g;
+    $$ref =~ s/'/&#39;/g;
 }
 
 # }}}
@@ -1158,14 +1153,13 @@ sub ProcessObjectCustomFieldUpdates {
                     if ( ($CustomFieldObj->Type eq 'Freeform' 
                           && ! $CustomFieldObj->SingleValue) ||
                           $CustomFieldObj->Type =~ /text/i) {
-                        foreach my $val (@values) {
+                        foreach my $val (grep defined, @values) {
                             $val =~ s/\r//g;
                         }
                     }
 
-                    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
-                        foreach my $value (@values) {
-                            next unless length($value);
+                    if ( $arg =~ /-(Add|)Value$/ ) {
+                        foreach my $value (grep defined && length, @values) {
                             my ( $val, $msg ) = $Object->AddCustomFieldValue(
                                 Field => $cf,
                                 Value => $value
@@ -1182,22 +1176,11 @@ sub ProcessObjectCustomFieldUpdates {
                         );
                         push ( @results, $msg );
                     }
-                    elsif ( $arg =~ /-DeleteValues$/ ) {
-                        foreach my $value (@values) {
-                            next unless length($value);
+                    elsif ( $arg =~ /-DeleteValue(Id|)s$/ ) {
+                        foreach my $value (grep defined && length, @values) {
                             my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
                                 Field => $cf,
                                 Value => $value
-                            );
-                            push ( @results, $msg );
-                        }
-                    }
-                    elsif ( $arg =~ /-DeleteValueIds$/ ) {
-                        foreach my $value (@values) {
-                            next unless length($value);
-                            my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
-                                Field => $cf,
-                                ValueId => $value,
                             );
                             push ( @results, $msg );
                         }
@@ -1206,8 +1189,7 @@ sub ProcessObjectCustomFieldUpdates {
                         my $cf_values = $Object->CustomFieldValues($cf);
 
                         my %values_hash;
-                        foreach my $value (@values) {
-                            next unless length($value);
+                        foreach my $value (grep defined && length, @values) {
 
                             # build up a hash of values that the new set has
                             $values_hash{$value} = 1;
