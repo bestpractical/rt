@@ -56,7 +56,7 @@ $MaxValues = 1;
 <%ARGS>
 $Object => undef
 $CustomField => undef
-$NamePrefix => undef
+$NamePrefix => ''
 $Default => undef
 $Values => undef
 $MaxValues => undef
