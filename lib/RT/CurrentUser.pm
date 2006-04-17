@@ -343,8 +343,12 @@ ok (my $lh = $cu->LanguageHandle('en-us'));
 ok ($lh != undef);
 ok ($lh->isa('Locale::Maketext'));
 is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
-ok ($lh = $cu->LanguageHandle('fr'));
-is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
+SKIP: {
+    skip "French localization is not enabled", 2
+        unless grep $_ && $_ =~ /^(\*|fr)$/, RT->Config->Get('LexiconLanguages');
+    ok ($lh = $cu->LanguageHandle('fr'));
+    is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into French");
+}
 
 =end testing
 
