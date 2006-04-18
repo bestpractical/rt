@@ -86,15 +86,19 @@ my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
     TimeTaken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
+unless ( $Transaction ) {
+    $RT::Logger->error("Coulfn't fire '$action' action: $Description");
+}
 
 
 my @non_recipients = $TicketObj->SquelchMailTo;
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
+% if ( $Object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br>
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
-<b><%$scrip->Description%></b><br>
+<b><% $scrip->Description %></b><br>
 <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
 <br>
 %foreach my $type qw(To Cc Bcc) {
@@ -110,8 +114,10 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
 </textarea>
 % }
-%}
-<br>
+% }
+% }
+<br />
+
 <h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
 <i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
 <br>
