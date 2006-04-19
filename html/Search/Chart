@@ -7,18 +7,17 @@ $ChartStyle => 'bars'
 <%init>
 my @keys;
 my @values;
-my $chart_class; 
+my $chart_class;
 use GD;
 use GD::Text;
 
 if ($ChartStyle eq 'pie') {
     require GD::Graph::pie;
-    $chart_class= "GD::Graph::pie";
+    $chart_class = "GD::Graph::pie";
 } else {
     require GD::Graph::bars;
-    $chart_class= "GD::Graph::bars";
+    $chart_class = "GD::Graph::bars";
 }
-use RT::Report::Tickets;
 
 my $chart = $chart_class->new( 600 => 400 );
 if ($chart_class eq "GD::Graph::bars") {
@@ -27,56 +26,47 @@ if ($chart_class eq "GD::Graph::bars") {
         x_labels_vertical => 1,
         y_label => 'Tickets',
         show_values => 1
-      );
+    );
     $chart->set_legend_font( ['verdana', 'arial', gdMediumBoldFont], 12);
-
 }
-my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-$tix->GroupBy($PrimaryGroupBy);
-$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->Column( FIELD => $PrimaryGroupBy );
+use RT::Report::Tickets;
+my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+$tix->FromSQL( $Query );
+my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->GroupBy( $PrimaryGroupBy );
+my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
-$tix->FromSQL($Query);
-$tix->_DoSearch();
+my %class = (
+    Queue => 'RT::Queue',
+    Owner => 'RT::User',
+);
+my $class = $class{ $PrimaryGroupBy };
+
 while ( my $entry = $tix->Next ) {
-    my $class;
-    if ( $PrimaryGroupBy eq 'Queue' ) {
-         $class = "RT::Queue";
-        }
-        elsif ( $PrimaryGroupBy eq 'Owner' ) {
-             $class = "RT::User";
-        }
-        if ($class) {
-            my $q = $class->new( $session{'CurrentUser'} );
-            $q->Load( $entry->__Value($PrimaryGroupBy) );
-            if ($chart_class eq 'GD::Graph::pie') { 
-                 push @keys, $q->Name() . " - ".$entry->id;
-            }
-            else {
-                 push @keys, $q->Name();
-            }
-        }
-        else {
-            if ($chart_class eq 'GD::Graph::pie') { 
-                push @keys, $entry->__Value($PrimaryGroupBy). "- ".$entry->id;
-            }   
-            else {
-                push @keys, $entry->__Value($PrimaryGroupBy);
-                }
-        }
-        push @values, $entry->id;
+    if ( $class ) {
+        my $q = $class->new( $session{'CurrentUser'} );
+        $q->Load( $entry->__Value( $value_name ) );
+        push @keys, $q->Name;
+    }
+    else {
+        push @keys, $entry->__Value($value_name);
     }
 
-    #$chart->set( title   => loc("[_1] grouped by [_2]",$Query, $PrimaryGroupBy) ) or die $chart->error;
-
-    unless (@keys && @values) {
-        @keys = ('');
-        @values = (0);
+    $keys[-1] ||= loc('(no value)');
+    if ($chart_class eq 'GD::Graph::pie') {
+        $keys[-1] .= " - ". $entry->__Value( $count_name );
     }
+    push @values, $entry->__Value($count_name);
+}
 
-    my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
-    $r->content_type('image/png');
-    $m->out( $plot->png );
-    $m->abort();
+unless (@keys && @values) {
+    @keys = ('');
+    @values = (0);
+}
+
+my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
+$r->content_type('image/png');
+$m->out( $plot->png );
+$m->abort;
 </%init>

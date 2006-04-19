@@ -5,36 +5,32 @@ $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
 </%args>
 <%init>
-my @keys;
-my @values;
-
 use RT::Report::Tickets;
+my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+$tix->FromSQL( $Query );
+my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->GroupBy( $PrimaryGroupBy );
+my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
-my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my %class = (
+    Queue => 'RT::Queue',
+    Owner => 'RT::User',
+);
+my $class = $class{ $PrimaryGroupBy };
 
-$tix->GroupBy($PrimaryGroupBy);
-$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->Column( FIELD => $PrimaryGroupBy );
-$tix->FromSQL($Query);
-$tix->_DoSearch();
+my (@keys, @values);
 while ( my $entry = $tix->Next ) {
-    my $class;
-    if ( $PrimaryGroupBy eq 'Queue' ) {
-         $class = "RT::Queue";
-        }
-        elsif ( $PrimaryGroupBy eq 'Owner' ) {
-             $class = "RT::User";
-        }
-        if ($class) {
-            my $q = $class->new( $session{'CurrentUser'} );
-            $q->Load( $entry->__Value($PrimaryGroupBy) );
-                 push @keys, $q->Name();
-        }
-        else {
-                push @keys, $entry->__Value($PrimaryGroupBy);
-        }
-        push @values, $entry->id;
+    if ($class) {
+        my $q = $class->new( $session{'CurrentUser'} );
+        $q->Load( $entry->__Value( $value_name ) );
+        push @keys, $q->Name;
     }
+    else {
+        push @keys, $entry->__Value( $value_name );
+    }
+    $keys[-1] ||= loc('(no value)');
+    push @values, $entry->__Value( $count_name );
+}
 
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
@@ -77,4 +73,3 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </tr>
 
 </table>
-
