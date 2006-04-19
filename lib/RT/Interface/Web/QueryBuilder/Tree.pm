@@ -227,6 +227,52 @@ sub __LinearizeTree {
     return $list;
 }
 
+sub ParseSQL {
+    my $self = shift;
+    my %args = (
+        Query => '',
+        CurrentUser => '', #XXX: Hack
+        @_
+    );
+    my $string = $args{'Query'};
+
+    my @results;
+
+    my %field = %{ RT::Tickets->new( $args{'CurrentUser'} )->FIELDS };
+    my %lcfield = map { ( lc($_) => $_ ) } keys %field;
+
+    my $node =  $self;
+
+    my %callback;
+    $callback{'OpenParen'} = sub {
+        $node = __PACKAGE__->new( 'AND', $node );
+    };
+    $callback{'CloseParen'} = sub { $node = $node->getParent };
+    $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
+    $callback{'Condition'} = sub {
+        my ($key, $op, $value) = @_;
+
+        my $class;
+        if ( exists $lcfield{ lc $key } ) {
+            $key   = $lcfield{ lc $key };
+            $class = $field{$key}->[0];
+        }
+        unless( $class ) {
+            push @results, [ loc("Unknown field: $key"), -1 ]
+        }
+
+        $value = "'$value'" if $value =~ /[^0-9]/;
+        $key = "'$key'" if $key =~ /^CF./;
+
+        my $clause = { Key => $key, Op => $op, Value => $value };
+        $node->addChild( __PACKAGE__->new( $clause ) );
+    };
+
+    require RT::SQL;
+    RT::SQL::Parse($string, \%callback);
+    return @results;
+}
+
 eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm});
 eval "require RT::Interface::Web::QueryBuilder::Tree_Local";

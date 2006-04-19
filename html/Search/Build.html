@@ -114,7 +114,6 @@
 <%INIT>
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
-use RT::SQL;
 
 my $title = loc("Query Builder");
 
@@ -167,38 +166,9 @@ if ( $NewQuery ) {
 my $ParseQuery = sub {
     my ($string, $results) = shift;
 
-    my %field = %{ RT::Tickets->new( $session{'CurrentUser'} )->FIELDS };
-    my %lcfield = map { ( lc($_) => $_ ) } keys %field;
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
 
-    my ($tree, $node);
-    $node = $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-
-    my %callback;
-    $callback{'OpenParen'} = sub {
-        $node = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $node );
-    };
-    $callback{'CloseParen'} = sub { $node = $node->getParent };
-    $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
-    $callback{'Condition'} = sub {
-        my ($key, $op, $value) = @_;
-
-        my $class;
-        if ( exists $lcfield{ lc $key } ) {
-            $key   = $lcfield{ lc $key };
-            $class = $field{$key}->[0];
-        }
-        unless( $class ) {
-            push @$results, [ loc("Unknown field: $key"), -1 ]
-        }
-
-        $value = "'$value'" if $value =~ /[^0-9]/;
-        $key = "'$key'" if $key =~ /^CF./;
-
-        my $clause = { Key => $key, Op => $op, Value => $value };
-        $node->addChild( RT::Interface::Web::QueryBuilder::Tree->new( $clause ) );
-    };
-
-    RT::SQL::Parse($string, \%callback);
     return $tree;
 };
 
