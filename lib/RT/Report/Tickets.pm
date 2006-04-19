@@ -7,28 +7,55 @@ use strict;
 use warnings;
 
 sub Groupings {
-    qw (Owner
-    Status
-    Queue
-    DueDaily
-    DueMonthly
-    DueAnnually
-    ResolvedDaily
-    ResolvedMonthly
-    ResolvedAnnually
-    CreatedDaily
-    CreatedMonthly
-    CreatedAnnually
-    LastUpdatedDaily
-    LastUpdatedMonthly
-    LastUpdatedAnnually
-    StartedDaily
-    StartedMonthly
-    StartedAnnually
-    StartsDaily
-    StartsMonthly
-    StartsAnnually
-    )
+    my $self = shift;
+    my %args = (@_);
+    my @fields = qw(
+        Owner
+        Status
+        Queue
+        DueDaily
+        DueMonthly
+        DueAnnually
+        ResolvedDaily
+        ResolvedMonthly
+        ResolvedAnnually
+        CreatedDaily
+        CreatedMonthly
+        CreatedAnnually
+        LastUpdatedDaily
+        LastUpdatedMonthly
+        LastUpdatedAnnually
+        StartedDaily
+        StartedMonthly
+        StartedAnnually
+        StartsDaily
+        StartsMonthly
+        StartsAnnually
+    );
+    if ( $args{'Query'} ) {
+        require RT::Interface::Web::QueryBuilder::Tree;
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser );
+        my $queues = $tree->GetReferencedQueues;
+
+        my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
+        foreach my $id (keys %$queues) {
+            my $queue = RT::Queue->new( $self->CurrentUser );
+            $queue->Load($id);
+            unless ($queue->id) {
+                # XXX TODO: This ancient code dates from a former developer
+                # we have no idea what it means or why cfqueues are so encoded.
+                $id =~ s/^.'*(.*).'*$/$1/;
+                $queue->Load($id);
+            }
+            $CustomFields->LimitToQueue($queue->Id);
+        }
+        $CustomFields->LimitToGlobal;
+        while ( my $CustomField = $CustomFields->Next ) {
+            push @fields, "CF.{". $CustomField->Name ."}";
+        }
+    }
+    return @fields;
 }
 
 sub GroupBy {

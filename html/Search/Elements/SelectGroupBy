@@ -1,6 +1,7 @@
 <%args>
 $Name => 'GroupBy'
 $Default => 'Status'
+$Query   => ''
 </%args>
 <select name="<%$Name%>">
 % foreach my $option (@options) {
@@ -10,5 +11,5 @@ $Default => 'Status'
 <%init>
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new($session{'CurrentUser'});
-my @options = $report->Groupings;
+my @options = $report->Groupings( Query => $Query );
 </%init>
