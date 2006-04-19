@@ -1,7 +1,10 @@
 package RT::Report::Tickets;
+
 use base qw/RT::Tickets/;
 use RT::Report::Tickets::Entry;
 
+use strict;
+use warnings;
 
 sub Groupings {
     qw (Owner
@@ -26,19 +29,16 @@ sub Groupings {
     StartsMonthly
     StartsAnnually
     )
-
 }
 
 sub GroupBy {
     my $self = shift;
-    my $field = shift;
+    my %args = ref $_[0]? %{ $_[0] }: (@_);
 
-    $self->{'_group_by_field'} = $field; 
+    $self->{'_group_by_field'} = $args{'FIELD'};
+    %args = $self->_FieldToFunction( %args );
 
-    my $function;
-    (undef, $function) = $self->_FieldToFunction($field);
-    $self->GroupByCols({ FIELD => $field, FUNCTION => $function});
-
+    $self->SUPER::GroupBy( \%args );
 }
 
 sub Column {
@@ -46,9 +46,10 @@ sub Column {
     my %args = (@_);
 
     if ( $args{'FIELD'} && !$args{'FUNCTION'} ) {
-        ( undef, $args{'FUNCTION'} ) = $self->_FieldToFunction( $args{'FIELD'} ); }
+        %args = $self->_FieldToFunction( %args );
+    }
 
-    return $self->SUPER::Column(%args);
+    return $self->SUPER::Column( %args );
 }
 
 =head2 _DoSearch
@@ -60,12 +61,9 @@ columns if it makes sense
 
 sub _DoSearch {
     my $self = shift;
-    $self->SUPER::_DoSearch(@_);
-    $self->AddEmptyRows();
-
+    $self->SUPER::_DoSearch( @_ );
+    $self->AddEmptyRows;
 }
-
-
 
 =head2 _FieldToFunction FIELD
 
@@ -74,29 +72,35 @@ field.
 
 =cut
 
-sub _FieldToFunction{
+sub _FieldToFunction {
     my $self = shift;
-    my $field = shift;
-    my $func = '';
+    my %args = (@_);
+
+    my $field = $args{'FIELD'};
 
     if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
-        $field = $1;
-        $grouping = $2;
-        if ($grouping =~ /Daily/) {
-            $func = "SUBSTR($field,1,10)";
-            $field = '';
+        my ($field, $grouping) = ($1, $2);
+        if ( $grouping =~ /Daily/ ) {
+            $args{'FUNCTION'} = "SUBSTR($field,1,10)";
         }
-        elsif ($grouping =~ /Monthly/) {
-            $func = "SUBSTR($field,1,7)";
-            $field = '';
+        elsif ( $grouping =~ /Monthly/ ) {
+            $args{'FUNCTION'} = "SUBSTR($field,1,7)";
         }
-        elsif ($grouping =~ /Annually/) {
-            $func = "SUBSTR($field,1,4)";
-            $field = '';
+        elsif ( $grouping =~ /Annually/ ) {
+            $args{'FUNCTION'} = "SUBSTR($field,1,4)";
         }
-
+    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
+        my $cf_name = $1;
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load($cf_name);
+        unless ( $cf->id ) {
+            $RT::Logger->error("Couldn't load CustomField #$cf_name");
+        } else {
+            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf->id, $cf_name);
+            @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
+        }
     }
-    return ($field, $func);
+    return %args;
 }
 
 
@@ -136,19 +140,18 @@ for, do that.
 
 sub AddEmptyRows {
     my $self = shift;
-     if ( $self->{'_group_by_field'} eq 'Status' ) {
-            foreach my $status (RT::Queue->new($self->CurrentUser)->StatusArray ) {
-            unless ( grep { $_->__Value('Status') eq $status } @{ $self->ItemsArrayRef } )  {
-                my $record =     $self->NewItem;
-                $record->LoadFromHash(
-                        {
-                            id     => 0,
-                            status => $status
-                        }
-                    );
-                $self->AddRecord($record);
-            } 
+    if ( $self->{'_group_by_field'} eq 'Status' ) {
+        foreach my $status ( RT::Queue->new($self->CurrentUser)->StatusArray ) {
+            next if grep $_->__Value('Status') eq $status, @{ $self->ItemsArrayRef };
+
+            my $record = $self->NewItem;
+            $record->LoadFromHash( {
+                id     => 0,
+                status => $status
+            } );
+            $self->AddRecord($record);
+        }
     }
 }
-}
+
 1;

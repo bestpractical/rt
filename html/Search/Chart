@@ -34,7 +34,7 @@ use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 $tix->FromSQL( $Query );
 my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->GroupBy( $PrimaryGroupBy );
+$tix->GroupBy( FIELD => $PrimaryGroupBy );
 my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
 my %class = (
