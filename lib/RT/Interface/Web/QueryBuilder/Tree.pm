@@ -258,7 +258,7 @@ sub ParseSQL {
             $class = $field{$key}->[0];
         }
         unless( $class ) {
-            push @results, [ loc("Unknown field: $key"), -1 ]
+            push @results, [ $args{'CurrentUser'}->loc("Unknown field: $key"), -1 ]
         }
 
         $value = "'$value'" if $value =~ /[^0-9]/;
