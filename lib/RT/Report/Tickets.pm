@@ -168,8 +168,9 @@ for, do that.
 sub AddEmptyRows {
     my $self = shift;
     if ( $self->{'_group_by_field'} eq 'Status' ) {
-        foreach my $status ( RT::Queue->new($self->CurrentUser)->StatusArray ) {
-            next if grep $_->__Value('Status') eq $status, @{ $self->ItemsArrayRef };
+        my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
+
+        foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {
 
             my $record = $self->NewItem;
             $record->LoadFromHash( {
