@@ -32,12 +32,18 @@ sub Groupings {
         StartsMonthly
         StartsAnnually
     );
-    if ( $args{'Query'} ) {
+
+    @fields = map {$_, $_} @fields;
+
+    my $queues = $args{'Queues'};
+    if ( !$queues && $args{'Query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
         $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser );
-        my $queues = $tree->GetReferencedQueues;
+        $queues = $tree->GetReferencedQueues;
+    }
 
+    if ( $queues ) {
         my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
         foreach my $id (keys %$queues) {
             my $queue = RT::Queue->new( $self->CurrentUser );
@@ -52,10 +58,23 @@ sub Groupings {
         }
         $CustomFields->LimitToGlobal;
         while ( my $CustomField = $CustomFields->Next ) {
-            push @fields, "CF.{". $CustomField->Name ."}";
+            push @fields, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
         }
     }
     return @fields;
+}
+
+sub Label {
+    my $self = shift;
+    my $field = shift;
+    if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
+        my $cf = $1;
+        return $self->CurrentUser->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
+        my $obj = RT::CustomField->new( $self->CurrentUser );
+        $obj->Load( $cf );
+        return $self->CurrentUser->loc( "Custom field '[_1]'", $obj->Name );
+    }
+    return $self->CurrentUser->loc($field);
 }
 
 sub GroupBy {

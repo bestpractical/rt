@@ -19,23 +19,23 @@ if ($ChartStyle eq 'pie') {
     $chart_class = "GD::Graph::bars";
 }
 
-my $chart = $chart_class->new( 600 => 400 );
-if ($chart_class eq "GD::Graph::bars") {
-    $chart->set(
-        x_label => $PrimaryGroupBy,
-        x_labels_vertical => 1,
-        y_label => 'Tickets',
-        show_values => 1
-    );
-    $chart->set_legend_font( ['verdana', 'arial', gdMediumBoldFont], 12);
-}
-
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 $tix->FromSQL( $Query );
 my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
 $tix->GroupBy( FIELD => $PrimaryGroupBy );
 my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
+
+my $chart = $chart_class->new( 600 => 400 );
+if ($chart_class eq "GD::Graph::bars") {
+    $chart->set(
+        x_label => $tix->Label( $PrimaryGroupBy ),
+        x_labels_vertical => 1,
+        y_label => 'Tickets',
+        show_values => 1
+    );
+    $chart->set_legend_font( ['verdana', 'arial', gdMediumBoldFont], 12);
+}
 
 my %class = (
     Queue => 'RT::Queue',
