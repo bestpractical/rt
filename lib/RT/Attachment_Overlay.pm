@@ -296,7 +296,7 @@ sub OriginalContent {
     eval {return( Encode::decode_utf8($content))} || return ($content);
   }
   
-  eval { Encode::from_to($content, 'utf8' => $enc);};
+  eval { Encode::from_to($content, 'utf8' => $enc) } if $enc;
   if ($@) {
 	$RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
   }
