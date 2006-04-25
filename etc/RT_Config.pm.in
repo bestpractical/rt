@@ -590,7 +590,7 @@ Set(@InactiveStatus, qw(resolved rejected deleted));
 
 # RT-3.4 backward compatibility setting. Add/Delete Link used to record one
 # transaction and run one scrip. Set this value to 1 if you want
-# only one link transactions to have a scrip run.
+# only one of the link transactions to have scrips run.
 Set($LinkTransactionsRun1Scrip , 0);
 
 # Set $PreviewScripMessages to 1 if the scrips preview on the ticket
