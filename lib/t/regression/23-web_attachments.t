@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 16;
+use Test::More tests => 15;
 use RT;
 RT::LoadConfig;
 RT::Init;
@@ -12,20 +12,19 @@ my $BaseURL = $RT::WebURL;
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 
+my $queue_name = 'General';
+
 my $m = Test::WWW::Mechanize->new;
 isa_ok($m, 'Test::WWW::Mechanize');
 
-my $qid;
-{
-    use_ok('RT::Queue');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    $queue->Load('General');
-    plan skip_all => "you have no queue 'General'" unless $queue->id;
-    ok($qid = $queue->id, 'found id of the general queue');
-}
-
 $m->get_ok( $BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
+
+my $qid;
+{
+    $m->content =~ /<SELECT\s+NAME\s*="Queue">.*?<OPTION\s+VALUE="(\d+)"\s*\d*>\s*\Q$queue_name\E\s*<\/OPTION>/msi;
+    ok( $qid = $1, "found id of the '$queue_name' queue");
+}
 
 $m->form_number(1);
 $m->field('Queue', $qid);
