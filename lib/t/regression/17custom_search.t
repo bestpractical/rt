@@ -9,7 +9,7 @@ BEGIN {
 }
 use Test::WWW::Mechanize;
 
-use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
+use constant BaseURL => RT->Config->Get('WebURL');
 
 # reset preferences for easier test?
 

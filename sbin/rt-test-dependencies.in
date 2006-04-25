@@ -159,7 +159,7 @@ Digest::MD5 2.27
 DBI 1.37
 Test::Inline
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.35
+DBIx::SearchBuilder 1.39
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -282,16 +282,22 @@ check_users();
 
 foreach my $type (keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
+
     my $type = $1;
     section("$type dependencies");
-    my @deps = (@{$deps{$type}});
+
+    my @missing;
+    my @deps = @{ $deps{$type} };
     while (@deps) {
         my $module = shift @deps;
         my $version = shift @deps;
-        my $ret = test_dep($module, $version);	
+        my $ret = test_dep($module, $version);
 
-        if ($args{'install'} && !$ret) {
-            resolve_dep($module);		
+        push @missing, $module, $version unless $ret;
+    }
+    if ( $args{'install'} ) {
+        while( @missing ) {
+            resolve_dep(shift @missing, shift @missing);
         }
     }
 }
@@ -311,24 +317,70 @@ sub test_dep {
 
         return undef;
     } else {
-        found("$module $version", 1);
+        my $msg = "$module";
+        $msg .= " >=$version" if $version;
+        found($msg, 1);
         return 1;
     }
 }
 
 sub resolve_dep {
     my $module = shift;
-    print "\tInstall module $module\n";
+    my $version = shift;
+
+    print "\nInstall module $module\n";
+
     my $ext = $ENV{'RT_FIX_DEPS_CMD'};
     unless( $ext ) {
-	require CPAN;
-	return CPAN::Shell->install($module);
+        my $configured = 1;
+        {
+            local @INC = @INC;
+            if ( $ENV{'HOME'} ) {
+                unshift @INC, "$ENV{'HOME'}/.cpan";
+            }
+            $configured = eval { require CPAN::MyConfig } || eval { require CPAN::Config };
+        }
+        unless ( $configured ) {
+            print <<END;
+You didn't configure CPAN shell yet.
+Please run `@PERL@ -MCPAN -e shell` tool and configure it.
+END
+            exit(1);
+        }
+        my $rv = eval { require CPAN; CPAN::Shell->install($module) };
+        return $rv unless $@;
+
+        print <<END;
+Failed to load module CPAN.
+
+-------- Error ---------
+$@
+------------------------
+
+Failed to load module CPAN. Module CPAN is distributed with Perl
+and helps install perl modules from http://www.cpan.org. RT uses
+this module to install dependencies, but module's failed to load
+with error above. You have several choices to install dependencies
+in this situatation:
+1) check that you've configured CPAN module, to do this run
+   `@PERL@ -MCPAN -e shell` program from shell, if it fails
+   then you have to update CPAN module (see next suggestion)
+   or use another way to install modules;
+2) try to update module CPAN, get distribution from
+   http://search.cpan.org/dist/CPAN and try again;
+3) use a different tool to install dependencies, see description of
+   the RT_FIX_DEPS_CMD environment variable in the output of
+   the `$0` program;
+4) install modules manually.
+
+END
+        exit(1);
     }
 
     if( $ext =~ /\%s/) {
-	$ext =~ s/\%s/$module/g; # sprintf( $ext, $module );
+        $ext =~ s/\%s/$module/g; # sprintf( $ext, $module );
     } else {
-	$ext .= " $module";
+        $ext .= " $module";
     }
     print "\t\tcommand: '$ext'\n";
     return scalar `$ext 1>&2`;
@@ -379,10 +431,10 @@ sub check_perl_version {
   section("perl");
   eval {require 5.008003};
   if ($@) {
-    found("5.8.3", 0, "RT is known to be non-functional on versions of perl older than 5.8.3. Please upgrade to 5.8.3 or newer.");
-    die;
+    found("5.8.3", 0,"RT is known to be non-functional on versions of perl older than 5.8.3. Please upgrade to 5.8.3 or newer.");
+    exit(1);
   } else {
-    found("5.8.3", 1);
+    found( ">=5.8.3($])", 1);
   }
 }
 

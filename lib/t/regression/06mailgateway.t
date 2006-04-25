@@ -58,7 +58,7 @@ RT::LoadConfig();
 RT::Init();
 use RT::I18N;
 no warnings 'once';
-my $url = "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
+my $url = RT->Config->Get('WebURL');
 
 # Make sure that when we call the mailgate wrong, it tempfails
 

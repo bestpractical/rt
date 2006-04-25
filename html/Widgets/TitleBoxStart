@@ -73,8 +73,11 @@ $hideable => 1
 # This should be pretty bulletproof
 #
 my $page = $m->request_comp->path;
+
 my $tid  = "TitleBox--$page--" .
             join '--', ($class, $bodyclass, $title, $id);
+
+$tid =~ s{/}{_}g;
 
 my $i = 0;
 $i++ while $m->notes("$tid-$i");

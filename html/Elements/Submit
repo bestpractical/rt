@@ -52,16 +52,16 @@
   <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', false);return false;" class="button" />
 % }
 % if ($Reset) {
-  <input type="reset" class="button" value="<%$ResetLabel%>" class="button" />
+  <input type="reset" value="<%$ResetLabel%>" class="button" />
 % }
   </div>
   <div class="buttons">
 % if ($AlternateLabel) {
   <span class="caption"><%$AlternateCaption%></span>
-  <input type="submit" class="button"<% $Name && qq[ name="$Name"] | n %> value="<%$AlternateLabel%>" class="button" />
+  <input type="submit" <% $Name && qq[ name="$Name"] | n %> value="<%$AlternateLabel%>" class="button" />
 % } else {
   <span class="caption"><%$Caption%></span>
-  <input type="submit" class="button"<% $Name && qq[ name="$Name"] | n %> value="<%$Label%>" class="button" />
+  <input type="submit" <% $Name && qq[ name="$Name"] | n %> value="<%$Label%>" class="button" />
 % }
   </div>
   <div class="submit-clear"></div>

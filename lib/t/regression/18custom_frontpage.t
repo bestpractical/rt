@@ -9,8 +9,7 @@ BEGIN {
 }
 use Test::WWW::Mechanize;
 
-use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
-
+use constant BaseURL => RT->Config->Get('WebURL');
 
 my $user_obj = RT::User->new($RT::SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');

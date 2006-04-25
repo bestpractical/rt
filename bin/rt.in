@@ -57,6 +57,7 @@ use Cwd;
 use LWP;
 use Text::ParseWords;
 use HTTP::Request::Common;
+use Term::ReadLine;
 
 # We derive configuration information from hardwired defaults, dotfiles,
 # and the RT* environment variables (in increasing order of precedence).
@@ -71,7 +72,7 @@ my %config = (
         debug   => 0,
         user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd  => undef,
-        server  => 'http://localhost/rt/',
+        server  => 'http://localhost/',
         query   => undef,
         orderby => undef,
     ),
@@ -80,6 +81,10 @@ my %config = (
 );
 my $session = new Session("$HOME/.rt_sessions");
 my $REST = "$config{server}/REST/1.0";
+
+my $term = new Term::ReadLine 'RT CLI';
+my $prompt = 'rt> ';
+my $TERM_OUT = $term->OUT || \*STDOUT;
 
 sub whine;
 sub DEBUG { warn @_ if $config{debug} >= shift }
@@ -128,10 +133,16 @@ foreach my $fn (keys %handlers) {
 sub handler {
     my $action;
 
+    push @ARGV, 'shell' if (!@ARGV);    # default to shell mode
+    shift @ARGV if ($ARGV[0] eq 'rt');    # ignore a leading 'rt'
     if (@ARGV && exists $actions{$ARGV[0]}) {
         $action = shift @ARGV;
+        $actions{$action}->($action);
     }
-    $actions{$action || "help"}->($action || ());
+    else {
+        print STDERR "rt: Unknown command '@ARGV'.\n";
+        print STDERR "rt: For help, run 'rt help'.\n";
+    }
 }
 
 handler();
@@ -144,16 +155,12 @@ exit;
 
 sub shell {
     $|=1;
-    print "rt> ";
-    while (<>) {
-        chomp;
+    while ( defined ($_ = $term->readline($prompt)) ) {
         next if /^#/ || /^\s*$/;
 
         @ARGV = shellwords($_);
         handler();
-        print "rt> ";
     }
-    print "\n";
 }
 
 sub version {
@@ -274,7 +281,8 @@ sub list {
         whine "No $item specified.";
         $bad = 1;
     }
-    return help("list", $type) if $bad;
+    #return help("list", $type) if $bad;
+    return suggest_help("list", $type) if $bad;
 
     my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
@@ -331,7 +339,8 @@ sub show {
         whine "No objects specified.";
         $bad = 1;
     }
-    return help("show", $type) if $bad;
+    #return help("show", $type) if $bad;
+    return suggest_help("show", $type) if $bad;
 
     my $r = submit("$REST/show", { id => \@objects, %data });
     print $r->content;
@@ -438,18 +447,23 @@ sub edit {
         }
         @objects = ("$type/new");
     }
-    return help($action, $type) if $bad;
+    #return help($action, $type) if $bad;
+    return suggest_help($action, $type) if $bad;
 
     # We need a form to make changes to. We usually ask the server for
     # one, but we can avoid that if we are fed one on STDIN, or if the
     # user doesn't want to edit the form by hand, and the command line
-    # specifies only simple variable assignments.
+    # specifies only simple variable assignments.  We *should* get a
+    # form if we're creating a new ticket, so that the default values
+    # get filled in properly.
+
+    my @new_objects = grep /\/new$/, @objects;
 
     if ($input) {
         local $/ = undef;
         $text = <STDIN>;
     }
-    elsif ($edit || %add || %del || !$cl) {
+    elsif ($edit || %add || %del || !$cl || @new_objects) {
         my $r = submit("$REST/show", { id => \@objects, format => 'l' });
         $text = $r->content;
     }
@@ -605,7 +619,8 @@ sub comment {
         whine "No object specified.";
         $bad = 1;
     }
-    return help($action, "ticket") if $bad;
+    #return help($action, "ticket") if $bad;
+    return suggest_help($action, "ticket") if $bad;
 
     my $form = [
         "",
@@ -658,7 +673,7 @@ sub comment {
     }
     $data{content} = $text;
 
-    my $r = submit("$REST/ticket/comment/$id", \%data);
+    my $r = submit("$REST/ticket/$id/comment", \%data);
     print $r->content;
 }
 
@@ -685,7 +700,8 @@ sub merge {
         whine "Too $evil arguments specified.";
         $bad = 1;
     }
-    return help("merge", "ticket") if $bad;
+    #return help("merge", "ticket") if $bad;
+    return suggest_help("merge", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/merge/$id[0]", {into => $id[1]});
     print $r->content;
@@ -728,7 +744,8 @@ sub link {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    return help("link", "ticket") if $bad;
+    #return help("link", "ticket") if $bad;
+    return suggest_help("link", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/link", \%data);
     print $r->content;
@@ -1332,6 +1349,13 @@ sub is_object_spec {
     $spec =~ s|^(?:$type/)?|$type/| if defined $type;
     return $spec if ($spec =~ m{^$name/(?:$idlist|$labels)(?:/.*)?$}o);
     return;
+}
+
+sub suggest_help {
+    my ($action, $type) = @_;
+
+    print STDERR "rt: For help, run 'rt help $action'.\n" if defined $action;
+    print STDERR "rt: For help, run 'rt help $type'.\n" if defined $type;
 }
 
 __DATA__

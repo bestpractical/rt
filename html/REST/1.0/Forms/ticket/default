@@ -83,7 +83,7 @@ if ($id ne 'new') {
     }
 }
 else {
-    if (%data == 0) {
+    if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
         my $due = new RT::Date $session{CurrentUser};
@@ -161,12 +161,13 @@ else {
         delete $data{id};
         $id = $ticket->Id;
         push(@comments, "# Ticket $id created.");
-        goto DONE if %data == 0;
+        # see if the hash is empty
+        goto DONE if ! keys(%data);
     }
 }
 
 # Now we know we're dealing with an existing ticket.
-if (%data == 0) {
+if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->Id   ];

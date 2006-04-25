@@ -46,7 +46,8 @@
 %# REST/1.0/ticket/comment
 %#
 <%ARGS>
-$content
+$id
+%changes => {}
 </%ARGS>
 <%INIT>
 use MIME::Entity;
@@ -54,11 +55,14 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
+$RT::Logger->warning("Got ticket id=$id for comment");
+$RT::Logger->warning("Got args '".keys(%changes)."'.");
+
 my $ticket = new RT::Ticket $session{CurrentUser};
-my $object = $r->path_info;
 my $status = "200 Ok";
 my $output;
 my $action;
+my $content;
 
 # http://.../REST/1.0/ticket/1/comment
 my ($c, $o, $k, $e) = @{ form_parse($content)->[0] };
@@ -74,14 +78,14 @@ if ($e || !$o) {
     goto OUTPUT;
 }
 
-$object =~ s#^/##;
-$object ||= $k->{Ticket};
-unless ($object =~ /^\d+/) {
-    $output = "Invalid ticket id: `$object'.\n";
+$id =~ s#^/##;
+$id ||= $k->{Ticket};
+unless ($id =~ /^\d+/) {
+    $output = "Invalid ticket id: `$id'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
 }
-if ($k->{Ticket} && $object ne $k->{Ticket}) {
+if ($k->{Ticket} && $id ne $k->{Ticket}) {
     $output = "The submitted form and URL specify different tickets.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
@@ -139,9 +143,9 @@ foreach my $att (@atts) {
     $i++;
 }
 
-$ticket->Load($object);
+$ticket->Load($id);
 unless ($ticket->Id) {
-    $output = "Couldn't load ticket id: `$object'.\n";
+    $output = "Couldn't load ticket id: `$id'.\n";
     $status = "404 Ticket not found";
     goto OUTPUT;
 }
@@ -151,7 +155,7 @@ unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
         ($action eq "Correspond" &&
          $ticket->CurrentUserHasRight("ReplyToTicket")))
 {
-    $output = "You are not allowed to $action on ticket $object.\n";
+    $output = "You are not allowed to $action on ticket $id.\n";
     $status = "403 Permission denied";
     goto OUTPUT;
 }

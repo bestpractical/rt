@@ -1,6 +1,6 @@
 % if ($minutes < 60) {
 <&|/l, $minutes &>[_1] min</&>
-% } elsif ($minutes < 60 * 24) {
+% } else {
 <&|/l, sprintf("%.1f",$minutes / 60) &>[quant,_1,hour]</&> (<&|/l, $minutes &>[_1] min</&>)
 % }
 <%ARGS>
