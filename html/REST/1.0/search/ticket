@@ -123,7 +123,7 @@ while (my $ticket = $tickets->Next) {
     }
     else {
 	my $id = $ticket->Id;
-        my $d = $m->comp("$RT::WebPath/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+        my $d = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
         my ($c, $o, $k, $e) = @$d;
 	push @output, [ $c, $o, $k ];
     }
