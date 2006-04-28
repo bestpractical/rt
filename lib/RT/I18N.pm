@@ -101,21 +101,24 @@ ok(RT::I18N->Init);
 sub Init {
     require File::Glob;
 
-    # XXX: why do we load all language functions
-    # whne we are going to use only several languages? //ruz
-
-    # Load language-specific functions
-    foreach my $language ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm")) {
-        if ($language =~ /^([-\w\s.\/\\~:]+)$/) {
-            require $1;
-        }
-        else {
-            warn("$language is tainted. not loading");
-        } 
-    }
-
     my @lang = RT->Config->Get('LexiconLanguages');
     @lang = ('*') unless @lang;
+
+    # load default functions
+    require substr(__FILE__, 0, -3) . '/i_default.pm';
+
+    # Load language-specific functions
+    foreach my $file ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm") ) {
+        unless ( $file =~ /^([-\w\s\.\/\\~:]+)$/ ) {
+            warn("$file is tainted. not loading");
+            next;
+        }
+        $file = $1;
+
+        my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
+        next unless grep $_ eq '*' || $_ eq $lang, @lang;
+        require $file;
+    }
 
     # Acquire all .po files and iterate them into lexicons
     Locale::Maketext::Lexicon->import({
