@@ -204,6 +204,9 @@ sub CleanupRequest {
         and UNIVERSAL::can(
             'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache' ) );
 
+    # cleanup global squelching of the mails
+    require RT::Action::SendEmail;
+    RT::Action::SendEmail->SquelchMailTo( undef );
 }
 # }}}
 

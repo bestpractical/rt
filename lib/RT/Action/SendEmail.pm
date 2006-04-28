@@ -450,8 +450,26 @@ sub SetRTSpecialHeaders {
 
 # }}}
 
+=head2 SquelchMailTo 
 
-# }}}
+Mark address to be removed from list of the recipients. Returns list of the addresses.
+To empty list pass undefined argument.
+
+B<Note> that this method can be called as class method and works globaly. Don't forget to
+clean this list when blocking is not required anymore.
+
+=cut
+
+{
+    my $squelch = [];
+    sub SquelchMailTo {
+        my $self = shift;
+        if ( @_ ) {
+            $squelch = [ @_ ];
+        }
+        return grep defined, @{ $squelch };
+    }
+}
 
 # {{{ RemoveInappropriateRecipients
 
@@ -531,6 +549,7 @@ sub RemoveInappropriateRecipients {
     foreach my $attribute (@non_recipients) {
         push @blacklist, $attribute->Content;
     }
+    push @blacklist, $self->SquelchMailTo;
 
     # Cycle through the people we're sending to and pull out anyone on the
     # system blacklist

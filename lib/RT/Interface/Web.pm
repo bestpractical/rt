@@ -271,6 +271,15 @@ sub CreateTicket {
     my @Cc         = split /\s*,\s*/, ( $ARGS{'Cc'}         || '' );
     my @AdminCc    = split /\s*,\s*/, ( $ARGS{'AdminCc'}    || '' );
 
+    my @temp_squelch;
+    push @temp_squelch, @Requestors if grep $_ eq 'Requestors', @{ $ARGS{'SkipNotification'} || [] };
+    push @temp_squelch, @Cc         if grep $_ eq 'Cc',         @{ $ARGS{'SkipNotification'} || [] };
+    push @temp_squelch, @AdminCc    if grep $_ eq 'AdminCc',    @{ $ARGS{'SkipNotification'} || [] };
+    if ( @temp_squelch ) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
+    }
+
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
         From                => $ARGS{'From'},
