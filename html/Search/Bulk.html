@@ -213,7 +213,19 @@ $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $Tickets->FromSQL($Query);
-$Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+if ( $OrderBy =~ /\|/ ) {
+
+  # Multiple Sorts
+  my @OrderBy = split /\|/, $OrderBy;
+  my @Order   = split /\|/, $Order;
+  $Tickets->OrderByCols(
+    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+      ( 0 .. $#OrderBy ) );
+}
+else {
+  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+}
+
 $Tickets->RowsPerPage($Rows) if ($Rows);
 $Tickets->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
