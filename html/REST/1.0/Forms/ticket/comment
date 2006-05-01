@@ -73,7 +73,7 @@ my $action;
 ($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
 unless ($action =~ /^(?:Comment|Correspond)$/) {
     $e = 1;
-    $c = "# Invalid action: `$action'.\n";
+    $c = "# Invalid action: `$action'.";
     goto OUTPUT;
 }
 
@@ -129,7 +129,7 @@ unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
          $ticket->CurrentUserHasRight("ReplyToTicket")))
 {
     $e = 1;
-    $c = "You are not allowed to $action on ticket $id.\n";
+    $c = "# You are not allowed to $action on ticket $id.";
     goto OUTPUT;
 }
 

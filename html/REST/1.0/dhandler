@@ -291,9 +291,13 @@ foreach $object (@objects) {
         # We won't pass $e through to compose, trusting instead that the
         # handler added suitable comments for the user.
         if ($e) {
-            $status = "409 Syntax Error" if @$o;
+            if (@$o) {
+                $status = "409 Syntax Error";
+            } 
+            else {
+                $status = "400 Bad Request";
+            }
             push @output, [ $c, $o, $k ];
-            #die("handler=$handler, id=$id, args=$args, format=$format, changes=$k");
         }
         else {
             push @comments, $c;
