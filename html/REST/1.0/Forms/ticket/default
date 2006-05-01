@@ -50,7 +50,7 @@ $id
 $changes => {}
 $fields => undef
 </%ARGS>
-<%perl>
+<%INIT>
 use MIME::Entity;
 
 my @comments;
@@ -333,4 +333,4 @@ DONE:
 $c ||= join("\n", @comments) if @comments;
 return [$c, $o, $k, $e];
 
-</%perl>
+</%INIT>
