@@ -66,18 +66,18 @@ expect_send(q{rt create -t ticket set subject='rt ticket'}, "Creating a ticket w
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # add a comment to ticket
-TODO: {
-    local $TODO = "Adding comments/correspondence is broken right now";
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
-    expect_like(qr/Comment added/, "Added the comment");
+    expect_like(qr/Message recorded/, "Added the comment");
     ### should test to make sure it actually got added
     # add correspondance to ticket (?)
     expect_send("correspond -m 'correspond-$$' $ticket_id", "Adding correspondence...");
-    expect_like(qr/Correspondence added/, "Added the correspondence");
+    expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
+TODO: {
+    local $TODO = "Adding attachments is broken right now";
     # add attachments to a ticket
     expect_send("comment -m 'attach file' $rt_tool_path $ticket_id", "Adding an attachment");
-    expect_like(qr/Comment added/, "Added the attachment");
+    expect_like(qr/Message recorded/, "Added the attachment");
     ### should test to make sure it actually got added
 }
 
