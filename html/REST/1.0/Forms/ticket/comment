@@ -43,41 +43,30 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%# REST/1.0/ticket/comment
+%# REST/1.0/Forms/ticket/comment
 %#
 <%ARGS>
 $id
-%changes => {}
-</%ARGS>
-<%INIT>
+%changes
+</%ARGS> 
+<%perl>
 use MIME::Entity;
 use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
 $RT::Logger->warning("Got ticket id=$id for comment");
-$RT::Logger->warning("Got args '".keys(%changes)."'.");
+my @temp = grep { !defined $_ } values(%changes);
+$RT::Logger->warning("Got args @temp.");
 
 my $ticket = new RT::Ticket $session{CurrentUser};
 my $status = "200 Ok";
 my $output;
 my $action;
 my $content;
+my ($c, $o, $k, $e) = ("", [], {}, "");
 
 # http://.../REST/1.0/ticket/1/comment
-my ($c, $o, $k, $e) = @{ form_parse($content)->[0] };
-if ($e || !$o) {
-    if (!$o) {
-        $output = "Empty form submitted.\n";
-    }
-    else {
-        $c = "# Syntax error.";
-        $output = form_compose([[$c, $o, $k, $e]]);
-    }
-    $status = "400 Bad Request";
-    goto OUTPUT;
-}
-
 $id =~ s#^/##;
 $id ||= $k->{Ticket};
 unless ($id =~ /^\d+/) {
@@ -173,7 +162,5 @@ if ($k->{Status}) {
 }
 
 OUTPUT:
-</%INIT>
-RT/<% $RT::VERSION %> <% $status %>
-
-<% $output |n %>
+return [ $c, $o, $k, $e ];
+</%perl>
