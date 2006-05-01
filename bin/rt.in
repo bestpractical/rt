@@ -82,9 +82,7 @@ my %config = (
 my $session = new Session("$HOME/.rt_sessions");
 my $REST = "$config{server}/REST/1.0";
 
-my $term = new Term::ReadLine 'RT CLI';
 my $prompt = 'rt> ';
-my $TERM_OUT = $term->OUT || \*STDOUT;
 
 sub whine;
 sub DEBUG { warn @_ if $config{debug} >= shift }
@@ -155,6 +153,7 @@ exit;
 
 sub shell {
     $|=1;
+    my $term = new Term::ReadLine 'RT CLI';
     while ( defined ($_ = $term->readline($prompt)) ) {
         next if /^#/ || /^\s*$/;
 
