@@ -702,7 +702,7 @@ sub merge {
     #return help("merge", "ticket") if $bad;
     return suggest_help("merge", "ticket") if $bad;
 
-    my $r = submit("$REST/ticket/merge/$id[0]", {into => $id[1]});
+    my $r = submit("$REST/ticket/$id[0]/merge/$id[1]");
     print $r->content;
 }
 
@@ -1825,7 +1825,7 @@ Text:
 
         rt merge <from-id> <to-id>
 
-    Merges the two specified tickets.
+    Merges the first ticket specified into the second ticket specified.
 
 --
 
