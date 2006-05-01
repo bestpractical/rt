@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 102;
+use Test::More tests => 114;
 
 use RT;
 RT::LoadConfig();
@@ -257,6 +257,25 @@ TODO: {
 }
 }
 
+# }}}
+
+# {{{ test merging tickets
+expect_send("create -t ticket set subject='CLIMergeTest1-$$'", 'Creating first ticket to merge...');
+expect_like(qr/Ticket \d+ created/, 'Created first ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
+my $merge_ticket_A = $1;
+ok($merge_ticket_A, "Got first ticket to merge id=$merge_ticket_A");
+expect_send("create -t ticket set subject='CLIMergeTest2-$$'", 'Creating second ticket to merge...');
+expect_like(qr/Ticket \d+ created/, 'Created second ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
+my $merge_ticket_B = $1;
+ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
+expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
+expect_like(qr/Merge completed/, 'Merged the tickets');
+expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
+expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');
+expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
+expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in second ticket');
 # }}}
 
 1;
