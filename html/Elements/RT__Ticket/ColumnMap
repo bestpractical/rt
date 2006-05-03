@@ -241,7 +241,7 @@ $COLUMN_MAP = {
         attribute => 'Due',
         value     => sub { 
             my $date = $_[0]->DueObj;
-            if ($date && $date->Unix > 0 && $date->Unix < time()) {
+            if ( $date && $date->Unix > 0 && $date->Diff < 0 ) {
                 return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
             } else {
                 return $date->AgeAsString;
