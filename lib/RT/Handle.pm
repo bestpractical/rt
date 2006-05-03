@@ -67,16 +67,17 @@ ok(require RT::Handle);
 package RT::Handle;
 
 use strict;
+use warnings;
+
 use vars qw/@ISA/;
 
 eval "use DBIx::SearchBuilder::Handle::$RT::DatabaseType;
 \@ISA= qw(DBIx::SearchBuilder::Handle::$RT::DatabaseType);";
 
 if ($@) {
-    die "Unable to load DBIx::SearchBuilder database handle for '$RT::DatabaseType'.".
-        "\n".
-        "Perhaps you've picked an invalid database type or spelled it incorrectly.".
-        "\n". $@;
+    die "Unable to load DBIx::SearchBuilder database handle for '$RT::DatabaseType'.\n".
+        "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
+        $@;
 }
 
 =head2 Connect
@@ -89,19 +90,17 @@ Takes nothing. Calls SUPER::Connect with the needed args
 sub Connect {
     my $self = shift;
 
-    if ($RT::DatabaseType eq 'Oracle') {
+    if ( $RT::DatabaseType eq 'Oracle' ) {
         $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
         $ENV{'NLS_NCHAR'} = "AL32UTF8";
-        
     }
 
     $self->SUPER::Connect(
-			 User => $RT::DatabaseUser,
-			 Password => $RT::DatabasePassword,
-			);
+        User => $RT::DatabaseUser,
+        Password => $RT::DatabasePassword,
+    );
 
-    $self->dbh->{LongReadLen} = $RT::MaxAttachmentSize;
-   
+    $self->dbh->{'LongReadLen'} = $RT::MaxAttachmentSize;
 }
 
 =head2 BuildDSN
@@ -111,27 +110,30 @@ from the config file.
 
 =cut
 
-use File::Spec;
+require File::Spec;
 
 sub BuildDSN {
     my $self = shift;
-# Unless the database port is a positive integer, we really don't want to pass it.
-$RT::DatabasePort = undef unless (defined $RT::DatabasePort && $RT::DatabasePort =~ /^(\d+)$/);
-$RT::DatabaseHost = undef unless (defined $RT::DatabaseHost && $RT::DatabaseHost ne '');
-$RT::DatabaseName = File::Spec->catfile($RT::VarPath, $RT::DatabaseName)
-    if ($RT::DatabaseType eq 'SQLite') and
-	not File::Spec->file_name_is_absolute($RT::DatabaseName);
+    # Unless the database port is a positive integer, we really don't want to pass it.
+    $RT::DatabasePort = undef unless defined $RT::DatabasePort
+                                     && $RT::DatabasePort =~ /^(\d+)$/;
+    $RT::DatabaseHost = undef unless defined $RT::DatabaseHost
+                                     && $RT::DatabaseHost ne '';
 
+    if ( $RT::DatabaseType eq 'SQLite'
+         && !File::Spec->file_name_is_absolute( $RT::DatabaseName ) )
+    {
+        $RT::DatabaseName = File::Spec->catfile($RT::VarPath, $RT::DatabaseName);
+    }
 
-    $self->SUPER::BuildDSN(Host => $RT::DatabaseHost, 
-			 Database => $RT::DatabaseName, 
-			 Port => $RT::DatabasePort,
-			 Driver => $RT::DatabaseType,
-			 RequireSSL => $RT::DatabaseRequireSSL,
-             DisconnectHandleOnDestroy => 1
-			);
-   
-
+    $self->SUPER::BuildDSN(
+        Host => $RT::DatabaseHost,
+        Database => $RT::DatabaseName,
+        Port => $RT::DatabasePort,
+        Driver => $RT::DatabaseType,
+        RequireSSL => $RT::DatabaseRequireSSL,
+        DisconnectHandleOnDestroy => 1,
+    );
 }
 
 eval "require RT::Handle_Vendor";

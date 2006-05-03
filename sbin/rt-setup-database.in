@@ -133,7 +133,7 @@ if ( $args{'action'} eq 'init' ) {
 
         if ( $RT::DatabaseType eq "Oracle" ) {
             $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
-            $dbh = DBI->connect( $Handle->DSN, ${RT::DatabaseUser}, ${RT::DatabasePassword} ) || die $DBI::errstr;
+            $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseUser, $RT::DatabasePassword ) || die $DBI::errstr;
         } else {
             $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
         }
@@ -151,8 +151,8 @@ elsif ( $args{'action'} eq 'drop' ) {
     unless ( $dbh =
         DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} ) )
     {
-        warn $DBI::errstr;
-        warn "Database doesn't appear to exist. Aborting database drop.";
+        print STDERR "Connection error: $DBI::errstr\n";
+        print STDERR "Database doesn't appear to exist. Aborting database drop.\n";
         exit;
     }
     drop_db();
@@ -178,45 +178,92 @@ else {
 # {{{ sub insert_schema
 sub insert_schema {
     my $base_path = (shift || $RT::EtcPath);
+
+    my $file = get_version_file( $base_path . "/schema." . $RT::DatabaseType );
+    unless ( $file ) {
+        die "Couldn't find schema file in '$base_path' dir";
+    }
+    unless ( -f $file || -r $file ) {
+        die "File '$file' doesn't exist or couldn't be read";
+    }
+
     my (@schema);
     print "Creating database schema.\n";
 
-    if ( -f $base_path . "/schema." . $RT::DatabaseType ) {
-        no warnings 'unopened';
+    no warnings 'unopened';
 
-        open( SCHEMA, "<" . $base_path . "/schema." . $RT::DatabaseType );
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
+    open my $fh_schema, "<$file";
+    open my $fh_schema_local, "<" . get_version_file( $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
 
-        my $statement = "";
-        foreach my $line (<SCHEMA>, ($_ = ';;'), <SCHEMA_LOCAL>) {
-            $line =~ s/\#.*//g;
-            $line =~ s/--.*//g;
-            $statement .= $line;
-            if ( $line =~ /;(\s*)$/ ) {
-                $statement =~ s/;(\s*)$//g;
-                push @schema, $statement;
-                $statement = "";
-            }
+    my $statement = "";
+    foreach my $line (<$fh_schema>, ($_ = ';;'), <$fh_schema_local>) {
+        $line =~ s/\#.*//g;
+        $line =~ s/--.*//g;
+        $statement .= $line;
+        if ( $line =~ /;(\s*)$/ ) {
+            $statement =~ s/;(\s*)$//g;
+            push @schema, $statement;
+            $statement = "";
         }
+    }
+    close $fh_schema; close $fh_schema_local;
 
-        local $SIG{__WARN__} = sub {};
-        my $is_local = 0; # local/etc/schema needs to be nonfatal.
-        $dbh->begin_work or die $dbh->errstr;
-        foreach my $statement (@schema) {
-            if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
+    local $SIG{__WARN__} = sub {};
+    my $is_local = 0; # local/etc/schema needs to be nonfatal.
+    $dbh->begin_work or die $dbh->errstr;
+    foreach my $statement (@schema) {
+        if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
 
-            print STDERR "SQL: $statement\n" if defined $args{'debug'};
-            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-            unless ( $sth->execute or $is_local ) {
-                die "Problem with statement:\n $statement\n" . $sth->errstr;
-            }
+        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute or $is_local ) {
+            die "Problem with statement:\n$statement\n" . $sth->errstr;
         }
-        $dbh->commit or die $dbh->errstr;
     }
-    else {
-        die "Couldn't find schema file for " . $RT::DatabaseType . "\n";
-    }
+    $dbh->commit or die $dbh->errstr;
+
     print "Done setting up database schema.\n";
+}
+
+=head1 get_version_file
+
+Takes base name of the file as argument, scans for <base name>-<version> named
+files and returns file name with closest version to the version of the RT DB.
+
+=cut
+
+sub get_version_file {
+    my $base_name = shift;
+
+    require File::Glob;
+    my @files = File::Glob::bsd_glob("$base_name*");
+    return '' unless @files;
+
+    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
+    my $db_version = connect_rt_handle()->DatabaseVersion;
+    print "Server version $db_version\n";
+    my $version;
+    foreach ( reverse sort cmp_version keys %version ) {
+        print "version $_\n"; print "comparision ".  cmp_version( $db_version, $_ ) ."\n";
+        if ( cmp_version( $db_version, $_ ) >= 0 ) {
+            $version = $_;
+            last;
+        }
+    }
+
+    return defined $version? $version{ $version } : undef;
+}
+
+sub cmp_version($$) {
+    my ($a, $b) = (@_);
+    my @a = split /[^0-9]+/, $a;
+    my @b = split /[^0-9]+/, $b;
+    for ( my $i = 0; $i < @a; $i++ ) {
+        return 1 unless defined $b[$i];
+        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
+    }
+    return 0 if @a == @b;
+    return -1;
 }
 
 # }}}
@@ -250,7 +297,7 @@ END
         unlink $RT::DatabaseName or warn $!;
         return;
     }
-    $dbh->do("Drop DATABASE $RT::DatabaseName") or warn $DBI::errstr;
+    $dbh->do("DROP DATABASE $RT::DatabaseName") or warn $DBI::errstr;
 }
 
 # }}}
@@ -375,6 +422,24 @@ sub get_system_dsn {
         $dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
     }
     return $dsn;
+}
+
+=head2 connect_rt_handle
+
+Returns connected C<$RT::Handle>, connect with credentials from RT config.
+
+=cut
+
+sub connect_rt_handle {
+
+    require RT::Handle;
+
+    unless ( $RT::Handle ) {
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->Connect;
+    }
+
+    return $RT::Handle;
 }
 
 sub insert_initial_data {
