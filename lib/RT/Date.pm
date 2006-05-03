@@ -290,7 +290,7 @@ Returns the differnce between $self and that time as a number of seconds
 
 sub Diff {
     my $self = shift;
-    my $other = shift
+    my $other = shift;
     $other = time unless defined $other;
 
     if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
