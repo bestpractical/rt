@@ -272,8 +272,8 @@ sub SetToMidnight {
 
 # {{{ sub SetToNow
 sub SetToNow {
-        my $self = shift;
-        return($self->Set(Format => 'unix', Value => time))
+    my $self = shift;
+    return($self->Set(Format => 'unix', Value => time))
 }
 # }}}
 
@@ -289,11 +289,12 @@ Returns the differnce between $self and that time as a number of seconds
 
 sub Diff {
     my $self = shift;
-    my $other = shift;
+    my $other = shift || time;
 
     if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
-        $other=$other->Unix;
+        $other = $other->Unix;
     }
+
     return ($self->Unix - $other);
 }
 # }}}
