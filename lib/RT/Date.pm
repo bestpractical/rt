@@ -281,7 +281,8 @@ sub SetToNow {
 
 =head2 Diff
 
-Takes either an RT::Date object or the date in unixtime format as a string
+Takes either an RT::Date object or the date in unixtime format as a string, if
+nothing is specified uses the current time.
 
 Returns the differnce between $self and that time as a number of seconds
 
@@ -289,7 +290,8 @@ Returns the differnce between $self and that time as a number of seconds
 
 sub Diff {
     my $self = shift;
-    my $other = shift || time;
+    my $other = shift
+    $other = time unless defined $other;
 
     if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
         $other = $other->Unix;
