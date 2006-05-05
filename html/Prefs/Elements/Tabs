@@ -51,15 +51,19 @@
 
 <%INIT>
 my $tabs;
-unless ($Searches) {
-    $Searches = [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new($session{'CurrentUser'}))];
-}
+$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new($session{'CurrentUser'}))];
 
-$tabs->{a} = { title => loc('Quick search'),
-	       path => 'Prefs/Quicksearch.html' };
+$tabs->{a} = {
+    title => loc('Quick search'),
+	path => 'Prefs/Quicksearch.html',
+};
+
 for my $search (@$Searches) {
-    $tabs->{$search->[0]} = { title => $search->[0],
-			      path  => "Prefs/Search.html?".$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id) };
+    $tabs->{ $search->[0] } = {
+        title => $search->[0],
+        path  => "Prefs/Search.html?"
+                 .$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id),
+    };
 }
 </%INIT>
 <%ARGS>
