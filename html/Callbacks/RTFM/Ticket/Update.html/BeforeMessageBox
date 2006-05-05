@@ -17,7 +17,7 @@
 %# END LICENSE BLOCK
 
 % my %uri;
-% $uri{$_}++ for split ' ', $ARGS{$ARGS{'id'}.'-RefersTo'};
+% $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
 % foreach my $arg (keys %ARGS) {
 % if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
 % my $art = RT::FM::Article->new($session{'CurrentUser'});
