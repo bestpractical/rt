@@ -28,6 +28,13 @@ etc/upgrade/2.1.30/content
 etc/upgrade/2.1.30/schema.mysql
 etc/upgrade/2.1.30/schema.Oracle
 etc/upgrade/2.1.30/schema.Pg
+etc/upgrade/2.2.0RC2/acl.mysql
+etc/upgrade/2.2.0RC2/acl.Oracle
+etc/upgrade/2.2.0RC2/acl.Pg
+etc/upgrade/2.2.0RC2/content
+etc/upgrade/2.2.0RC2/schema.mysql
+etc/upgrade/2.2.0RC2/schema.Oracle
+etc/upgrade/2.2.0RC2/schema.Pg
 html/Admin/Global/CustomFields/RTFM-Class-RTFM-Article.html
 html/Admin/RTFM/Classes/CustomFields.html
 html/Admin/RTFM/Classes/GroupRights.html
@@ -52,6 +59,7 @@ html/Callbacks/RTFM/Elements/EditLinks/ExtraLinkInstructions
 html/Callbacks/RTFM/Elements/Header/Head
 html/Callbacks/RTFM/Elements/MessageBox/Default
 html/Callbacks/RTFM/Elements/Tabs/Default
+html/Callbacks/RTFM/RTIR/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox
 html/NoAuth/webrtfm.css
@@ -92,10 +100,13 @@ html/RTFM/Elements/Tabs
 html/RTFM/Elements/UpdatedArticles
 html/RTFM/index.html
 html/RTFM/Topics.html
+inc/Module/AutoInstall.pm
 inc/Module/Install.pm
+inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
+inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/RTx.pm
