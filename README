@@ -65,6 +65,18 @@ on "Custom Fields" and add the Custom Fields you want to each class.
 
 Grant some ACLs to your users and start creating articles.
 
+You can also bind articles to topics. Topics are created by administrators
+on classes using the 'Topics' submenu of the RTFM class configuration.
+The configuration screen for the class has a tab for 'topics'. Typing the
+name (and optionally description) of the topic, and then clicking the button
+at the appropriate location. This should allow you to build a tree of topics.
+This tree of topics should show up when creating or modifying articles
+in the class. These can be arbitrarily nested categories.
+
+Articles topics can be set from the 'Modify' screen for the article --
+simply select as many topics as you desire from the list at the bottom
+of the screen.
+
 Of course, RTFM integrates with RT.  You can extract the body of a
 ticket into an article. Within RT, you should now see an "Extract to
 article" button in the upper right hand corner of RT's UI when working
@@ -81,11 +93,9 @@ your reply. (They're editable, of course).
 You probably want to discuss RTFM on rt-users@lists.bestpractical.com.
 (Send mail to rt-users-request@lists.fsck.com to subscribe)
 
-Bug reports can be sent to rtfm-bugs@bestpractical.com.com. 
-You can look at open bug reports at http://rt3.fsck.com/
-
-
-Log in as guest/guest to see the content of bug reports
+Bug reports can be sent to rtfm-bugs@bestpractical.com. You can look
+at open bug reports at http://rt3.fsck.com/. Log in as guest/guest
+to see the content of bug reports.
 
 
         Best,
