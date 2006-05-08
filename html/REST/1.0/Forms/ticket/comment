@@ -55,8 +55,8 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
-#$RT::Logger->warning("Got ticket id=$id for comment");
-#$RT::Logger->warning("Got args @{[keys(%changes)]}.");
+$RT::Logger->debug("Got ticket id=$id for comment");
+$RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
 my $ticket = new RT::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, 0);
