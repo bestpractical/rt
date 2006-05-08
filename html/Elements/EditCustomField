@@ -69,8 +69,12 @@ if ($MaxValues == 1 and $Object and $Values) {
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
 $m->out("\n".'<input type="hidden" class="hidden" name="'.$NamePrefix.$CustomField->Id.'-Values-Magic" value="1" />'."\n");
 
+my $EditComponent = "EditCustomField$Type";
+$m->comp('/Elements/Callback', _CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object );
+$EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
+
 return $m->comp(
-    "EditCustomField$Type",
+    $EditComponent,
     %ARGS,
     Rows => $Rows,
     Cols => $Cols,
