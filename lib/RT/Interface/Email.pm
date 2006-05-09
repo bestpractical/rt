@@ -864,12 +864,8 @@ EOT
                 MIMEObj => $Message
             );
             $RT::Logger->crit( $args{'action'} . " type unknown for $MessageId" );
-            return (
-                -75,
-                "Configuration error: "
-                  . $args{'action'}
-                  . " not a recognized action",
-                $Ticket
+            return ( -75, "Configuration error: " . $args{'action'}
+                  . " not a recognized action", $Ticket
             );
     
         }
