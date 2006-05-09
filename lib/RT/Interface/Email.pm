@@ -574,12 +574,8 @@ sub Gateway {
     $args{'ticket'} ||= ParseTicketId($Subject);
 
     $SystemTicket = RT::Ticket->new($RT::SystemUser);
-    if ( $args{'ticket'} ) {
-        $SystemTicket->Load( $args{'ticket'} );
-    }
+    $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
-
-        # if there's an existing ticket, this must be a reply
         $Right = 'ReplyToTicket';
     } else {
         $Right = 'CreateTicket';
@@ -591,8 +587,7 @@ sub Gateway {
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $SystemTicket->id || $SystemQueueObj->id ) {
-        return ( -75, "RT couldn't find the queue: " . $args{'queue'},
-            undef );
+        return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
 
    # Authentication Level ($AuthStat)
@@ -617,14 +612,13 @@ sub Gateway {
             $Class = "RT::Interface::Email::" . $_
                 unless $_ =~ /^RT::Interface::Email::/;
             $Class->require;
+        }
             no strict 'refs';
-            if ( !defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) )
-            {
-                $RT::Logger->crit(
-                    "No GetCurrentUser code found in $Class module");
+            if ( !defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
+                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
                 next;
             }
-        }
+        
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
@@ -647,9 +641,8 @@ sub Gateway {
 
         last if $AuthStat == -1;
     }
-
     # {{{ If authentication fails and no new user was created, get out.
-    if ( !$CurrentUser or !$CurrentUser->Id or $AuthStat == -1 ) {
+    if ( not $CurrentUser || not $CurrentUser->id ||  $AuthStat == -1 ) {
 
         # If the plugins refused to create one, they lose.
         unless ( $AuthStat == -1 ) {
@@ -697,7 +690,6 @@ sub Gateway {
 
     my $Ticket = RT::Ticket->new($CurrentUser);
 
-    # {{{ If we don't have a ticket Id, we're creating a new ticket
     if (( !$SystemTicket || !$SystemTicket->Id )
         && grep /^(comment|correspond)$/,
         @actions
@@ -736,7 +728,6 @@ sub Gateway {
         @actions = grep !/^(comment|correspond)$/, @actions;
         $args{'ticket'} = $id;
 
-        # }}}
     } else {
 
         $Ticket->Load( $args{'ticket'} );
