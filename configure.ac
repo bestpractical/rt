@@ -202,7 +202,7 @@ AC_ARG_WITH(rt-group,
 AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
-my_group=$(groups|cut -f1 -d' ')
+my_group=$(id -gn)
 my_user=${USER:-$LOGNAME}
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
