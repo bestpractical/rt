@@ -82,3 +82,9 @@ ul.action-results {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+#comp-Search-Build .titlebox-content {
+    padding-left: 0.7em;
+    padding-right: 0.3em;
+}
+
