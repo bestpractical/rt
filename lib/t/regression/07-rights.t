@@ -68,15 +68,16 @@ while( my $ace = $acl->Next ) {
 	$ace->Delete;
 }
 
+my $rand_name = "rights". int rand($$);
 # create new queue to be shure we don't mess with rights
 my $queue = RT::Queue->new($RT::SystemUser);
-my ($queue_id) = $queue->Create( Name => 'rights');
+my ($queue_id) = $queue->Create( Name => $rand_name);
 ok( $queue_id, 'queue created for rights tests' );
 
 # new privileged user to check rights
 my $user = RT::User->new( $RT::SystemUser );
-my ($user_id) = $user->Create( Name => 'rights',
-			   EmailAddress => 'rights@localhost',
+my ($user_id) = $user->Create( Name => $rand_name,
+			   EmailAddress => $rand_name .'@localhost',
 			   Privileged => 1,
 			   Password => 'qwe123',
 			 );
