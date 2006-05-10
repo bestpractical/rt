@@ -92,6 +92,12 @@ $Type => ''
 $ShowDisabled => 0
 </%args>
 <%INIT>
+$Type ||= $ARGS{'type'} || '';
+if ( !$Type && $ARGS{'type'} ) {
+    $Type ||= $ARGS{'type'};
+    $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
+}
+
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
 $CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
