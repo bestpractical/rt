@@ -387,6 +387,7 @@ sub insert_initial_data {
     $RT::Handle->Connect();
 
     #Put together a current user object so we can create a User object
+    require RT::CurrentUser;
     my $CurrentUser = new RT::CurrentUser();
 
     print "Checking for existing system user...";
@@ -464,9 +465,23 @@ sub insert_data {
         print "Creating groups...";
         foreach $item (@Groups) {
             my $new_entry = RT::Group->new($CurrentUser);
+            my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             print "(Error: $msg)" unless ($return);
             print $return. ".";
+            if ( $member_of ) {
+                foreach( @$member_of ) {
+                    my $parent = RT::Group->new($CurrentUser);
+                    $parent->LoadByCols( %$_ );
+                    unless ( $parent->Id ) {
+                        print "(Error: couldn't load group to add member)";
+                        next;
+                    }
+                    my ( $return, $msg ) = $parent->AddMember( $new_entry->Id );
+                    print "(Error: $msg)" unless ($return);
+                    print $return. ".";
+                }
+            }
         }
         print "done.\n";
     }
