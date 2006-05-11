@@ -128,17 +128,19 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    if ( $ARGS{'UpdateTimeWorked'} ||
-	 $session{'Attachments'} || 
-	 (   defined $ARGS{'UpdateContent'}
-             && $ARGS{'UpdateContent'} ne ''
-	     && $ARGS{'UpdateContent'} ne "-- \n"
-	     . $session{'CurrentUser'}->UserObj->Signature )) {
-	$ARGS{UpdateAttachments} = $session{'Attachments'};
-	ProcessUpdateMessage( ARGSRef   => \%ARGS,
-			      Actions   => \@Actions,
-			      TicketObj => $TicketObj );
-	delete $session{'Attachments'};
+    if ( $ARGS{'UpdateTimeWorked'} || (
+        defined $ARGS{'UpdateContent'}
+        && $ARGS{'UpdateContent'} ne ''
+	    && $ARGS{'UpdateContent'} ne "-- \n"
+	       . $session{'CurrentUser'}->UserObj->Signature ) )
+    {
+	    $ARGS{UpdateAttachments} = $session{'Attachments'};
+	    ProcessUpdateMessage(
+            ARGSRef   => \%ARGS,
+			Actions   => \@Actions,
+			TicketObj => $TicketObj,
+        );
+	    delete $session{'Attachments'};
     }
     #Process status updates
     my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
