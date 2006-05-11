@@ -642,7 +642,7 @@ sub Gateway {
         last if $AuthStat == -1;
     }
     # {{{ If authentication fails and no new user was created, get out.
-    if ( not $CurrentUser || not $CurrentUser->id ||  $AuthStat == -1 ) {
+    if ( !$CurrentUser || !$CurrentUser->id || $AuthStat == -1 ) {
 
         # If the plugins refused to create one, they lose.
         unless ( $AuthStat == -1 ) {
