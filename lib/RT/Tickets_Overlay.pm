@@ -1211,87 +1211,85 @@ Factor out the Join of custom fields so we can use it for sorting too
 =cut
 
 sub _CustomFieldJoin {
-  my ($self, $cfkey, $cfid, $field) = @_;
+    my ($self, $cfkey, $cfid, $field) = @_;
  
-  my $TicketCFs;
-  my $CFs;
     # Perform one Join per CustomField
+    if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
+         $self->{_sql_cf_alias}{$cfkey} )
+    {
+        return ( $self->{_sql_object_cfv_alias}{$cfkey},
+                 $self->{_sql_cf_alias}{$cfkey} );
+    }
 
-    if ( $self->{_sql_object_cf_alias}{$cfkey} ) {
-        $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey};
+    my ($TicketCFs, $CFs);
+    if ( $cfid ) {
+        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId',
+        );
+        $self->SUPER::Limit(
+            LEFTJOIN        => $TicketCFs,
+            FIELD           => 'CustomField',
+            VALUE           => $cfid,
+            ENTRYAGGREGATOR => 'AND'
+        );
     }
     else {
-        if ($cfid) {
-            $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
-                TYPE   => 'left',
-                ALIAS1 => 'main',
-                FIELD1 => 'id',
-                TABLE2 => 'ObjectCustomFieldValues',
-                FIELD2 => 'ObjectId',
-            );
-            $self->SUPER::Limit(
-                LEFTJOIN        => $TicketCFs,
-                FIELD           => 'CustomField',
-                VALUE           => $cfid,
-                ENTRYAGGREGATOR => 'AND'
-            );
-        }
-        else {
-            my $ocfalias = $self->Join(
-                TYPE       => 'left',
-                FIELD1     => 'Queue',
-                TABLE2     => 'ObjectCustomFields',
-                FIELD2     => 'ObjectId',
-            );
+        my $ocfalias = $self->Join(
+            TYPE       => 'LEFT',
+            FIELD1     => 'Queue',
+            TABLE2     => 'ObjectCustomFields',
+            FIELD2     => 'ObjectId',
+        );
 
-            $self->SUPER::Limit(
-                    LEFTJOIN => $ocfalias,
-                    ENTRYAGGREGATOR => 'OR',
-                    FIELD => 'ObjectId',
-                    VALUE => '0',
-
-                    );
-
-
-            $CFs = $self->Join(
-                TYPE       => 'left',
-                ALIAS1     => $ocfalias,
-                FIELD1     => 'CustomField',
-                TABLE2     => 'CustomFields',
-                FIELD2     => 'id',
-            );
-
-            $TicketCFs = $self->{_sql_object_cf_alias}{$cfkey} = $self->Join(
-                TYPE   => 'left',
-                ALIAS1 => $CFs,
-                FIELD1 => 'id',
-                TABLE2 => 'ObjectCustomFieldValues',
-                FIELD2 => 'CustomField',
-            );
-            $self->SUPER::Limit(
-                LEFTJOIN        => $TicketCFs,
-                FIELD           => 'ObjectId',
-                VALUE           => 'main.id',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'AND',
-            );
-        }
         $self->SUPER::Limit(
-            LEFTJOIN        => $TicketCFs,
-            FIELD           => 'ObjectType',
-            VALUE           => 'RT::Ticket',
-            ENTRYAGGREGATOR => 'AND'
+            LEFTJOIN        => $ocfalias,
+            ENTRYAGGREGATOR => 'OR',
+            FIELD           => 'ObjectId',
+            VALUE           => '0',
+        );
+
+        $CFs = $self->{_sql_cf_alias}{$cfkey} = $self->Join(
+            TYPE       => 'LEFT',
+            ALIAS1     => $ocfalias,
+            FIELD1     => 'CustomField',
+            TABLE2     => 'CustomFields',
+            FIELD2     => 'id',
+        );
+
+        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => $CFs,
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'CustomField',
         );
         $self->SUPER::Limit(
             LEFTJOIN        => $TicketCFs,
-            FIELD           => 'Disabled',
-            OPERATOR        => '=',
-            VALUE           => '0',
-            ENTRYAGGREGATOR => 'AND'
+            FIELD           => 'ObjectId',
+            VALUE           => 'main.id',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'AND',
         );
     }
+    $self->SUPER::Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->SUPER::Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'Disabled',
+        OPERATOR        => '=',
+        VALUE           => '0',
+        ENTRYAGGREGATOR => 'AND'
+    );
 
-  return ($TicketCFs, $CFs);
+    return ($TicketCFs, $CFs);
 }
 
 =head2 _CustomFieldLimit
@@ -1326,16 +1324,18 @@ sub _CustomFieldLimit {
     my $cfkey = $cfid ? $cfid : "$queue.$field";
     my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-     $self->_OpenParen;
+    $self->_OpenParen;
 
-     $self->SUPER::Limit(
-         ALIAS           => $CFs,
-         FIELD           => 'name',
-         VALUE           => $field,
-         ENTRYAGGREGATOR => 'AND',
-     );
+    if ( $CFs ) {
+        $self->SUPER::Limit(
+            ALIAS           => $CFs,
+            FIELD           => 'Name',
+            VALUE           => $field,
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
 
-     $self->_OpenParen if $null_columns_ok;
+    $self->_OpenParen if $null_columns_ok;
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
