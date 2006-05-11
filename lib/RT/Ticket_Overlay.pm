@@ -241,7 +241,7 @@ sub Load {
 
 
     #If it's a local URI, turn it into a ticket id
-    if ( $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
+    if ( $RT::TicketBaseURI && $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
         $id = $1;
     }
 
