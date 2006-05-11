@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 43;
+use Test::More tests => 44;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
@@ -243,6 +243,10 @@ $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS 
 is($tix->Count, 1, "null cf and null cf"); 
 
 # tests with the same CF listed twice
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("CF.{SearchTest} = 'foo1'");
+is($tix->Count, 1, "is cf.{name} format");
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3'");
