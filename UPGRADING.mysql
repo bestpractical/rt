@@ -1,0 +1,31 @@
+In MySQL 4.1 and greater were implemented changes in character set handling
+that may result in RT failures: multiple login requests, binary attachments
+breakage, image custom fields breakage and other.
+
+In order to resolve this issue we've changed schema for mysql 4.1 and greater
+versions. If you're installing new RT then you can skip this file, but if
+you're upgrading then you MUST follow instructions below.
+
+1) Backup RT database
+
+2) Follow instructions in the README file to the step 7)
+
+3) Apply changes described in the seven step, but only up to version 3.6.0.
+For example if you're upgrading from 3.2.x then you must apply changes for
+versions 3.3.0, 3.3.11 and 3.5.1, but not greater.
+
+4) Apply mysql 4.0->4.1 schema changes. RT tarball has script
+etc/upgrade/schema.mysql-4.0-4.1 that contain SQL queries to upgrade schema of
+the DB. Run it:
+
+  mysql -u root -p rt3 < etc/upgrade/schema.mysql-4.0-4.1
+
+NOTE that 'rt3' is the default name of the RT DB, change it in the command above
+if you're using different name.
+
+This step shouldn't produce any errors or warnings, but if you see some then revert
+DB from backup you made at step 1) and send report to the
+rt-users@lists.bestpractical.com mailing list.
+
+5) Return to the step 7 from README and apply other upgrade scripts and follow
+other steps.
