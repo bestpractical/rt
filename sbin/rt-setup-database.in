@@ -45,7 +45,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
-use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
+use vars qw($PROMPT $VERSION $Nobody $SystemUser $item);
 use vars
   qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes);
 
@@ -88,19 +88,14 @@ unless ( $args{'action'} ) {
 
 $| = 1;    #unbuffer that output.
 
-require RT::Handle;
-my $Handle = RT::Handle->new($RT::DatabaseType);
-$Handle->BuildDSN;
-my $dbh;
-
 if ( $args{'prompt-for-dba-password'} ) {
     $args{'dba-password'} = get_dba_password();
     chomp( $args{'dba-password'} );
 }
 
+my $dbh;
 if ( $args{'action'} eq 'init' ) {
-    $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_system_dbh();
     print "Now creating a database for RT.\n";
     if ( $RT::DatabaseType ne 'Oracle' || $args{'dba'} ne $RT::DatabaseUser ) {
         create_db();
@@ -132,10 +127,9 @@ if ( $args{'action'} eq 'init' ) {
         $dbh->disconnect;
 
         if ( $RT::DatabaseType eq "Oracle" ) {
-            $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
-            $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseUser, $RT::DatabasePassword ) || die $DBI::errstr;
+            $dbh = get_rt_dbh();
         } else {
-            $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
+            $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
         }
     }
     print "Now populating database schema.\n";
@@ -148,26 +142,18 @@ if ( $args{'action'} eq 'init' ) {
     insert_data( $RT::EtcPath . "/initialdata" );
 }
 elsif ( $args{'action'} eq 'drop' ) {
-    unless ( $dbh =
-        DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} ) )
-    {
-        print STDERR "Connection error: $DBI::errstr\n";
-        print STDERR "Database doesn't appear to exist. Aborting database drop.\n";
-        exit;
-    }
+    $dbh = get_system_dbh();
     drop_db();
 }
 elsif ( $args{'action'} eq 'insert' ) {
     insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
 }
 elsif ( $args{'action'} eq 'acl' ) {
-    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
     insert_acl($args{'datadir'});
 }
 elsif ( $args{'action'} eq 'schema' ) {
-    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
     insert_schema($args{'datadir'});
 }
 else {
@@ -190,7 +176,7 @@ sub create_db {
         insert_acl();
     }
     elsif ( $RT::DatabaseType eq 'Informix' ) {
-        $ENV{DB_LOCALE} = 'en_us.utf8';
+        $ENV{'DB_LOCALE'} = 'en_us.utf8';
         $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
     }
     else {
@@ -326,9 +312,7 @@ sub insert_initial_data {
     RT::InitLogging();
 
     #connect to the db, for actual RT work
-    require RT::Handle;
-    $RT::Handle = RT::Handle->new();
-    $RT::Handle->Connect();
+    connect_rt_handle();
 
     #Put together a current user object so we can create a User object
     my $CurrentUser = new RT::CurrentUser();
@@ -352,9 +336,9 @@ sub insert_initial_data {
     my ( $val, $msg ) = $RT_System->_BootstrapCreate(
         Name     => 'RT_System',
         RealName => 'The RT System itself',
-        Comments =>
-'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-        Creator => '1',
+        Comments => 'Do not delete or modify this user. '
+            . 'It is integral to RT\'s internal database structures',
+        Creator  => '1',
         LastUpdatedBy => '1',
     );
 
@@ -364,7 +348,6 @@ sub insert_initial_data {
     }
     print "done.\n";
     $RT::Handle->Disconnect() unless $RT::DatabaseType eq 'SQLite';
-
 }
 
 # load some sort of data into the database
@@ -611,21 +594,20 @@ sub _yesno {
 =head2 get_system_dsn
 
 Returns a dsn suitable for database creates and drops
-and user creates and drops
+and user creates and drops.
 
 =cut
 
 sub get_system_dsn {
 
-    my $dsn = $Handle->DSN;
+    my $dsn = get_rt_dsn();
 
-    #with mysql, you want to connect sans database to funge things
     if ( $RT::DatabaseType eq 'mysql' ) {
+        # with mysql, you want to connect sans database to funge things
         $dsn =~ s/dbname=$RT::DatabaseName//;
-
-        # with postgres, you want to connect to database1
     }
     elsif ( $RT::DatabaseType eq 'Pg' ) {
+        # with postgres, you want to connect to database1
         $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
     }
     elsif ( $RT::DatabaseType eq 'Informix' ) {
@@ -633,6 +615,44 @@ sub get_system_dsn {
         $dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
     }
     return $dsn;
+}
+
+sub get_rt_dsn {
+    require RT::Handle;
+    $RT::Handle ||= RT::Handle->new;
+    $RT::Handle->BuildDSN;
+    return $RT::Handle->DSN;
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+        if ( $args{'debug'} ) {
+            require Carp; Carp::confess( $msg );
+        } else {
+            print STDERR $msg; exit -1;
+        }
+    }
+    return $dbh;
+}
+
+sub get_system_dbh {
+    return _get_dbh( get_system_dsn(), $args{'dba'}, $args{'dba-password'} );
+}
+
+sub get_rt_dbh {
+    my ($user, $pass) = @_;
+    if ( @_ ) {
+        ($user, $pass) = @_;
+    } else {
+        ($user, $pass) = ($RT::DatabaseUser, $RT::DatabasePassword);
+    }
+    return _get_dbh( get_rt_dsn, $user, $pass );
 }
 
 =head2 connect_rt_handle
@@ -645,10 +665,8 @@ sub connect_rt_handle {
 
     require RT::Handle;
 
-    unless ( $RT::Handle ) {
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->Connect;
-    }
+    $RT::Handle ||= RT::Handle->new;
+    $RT::Handle->Connect;
 
     return $RT::Handle;
 }
