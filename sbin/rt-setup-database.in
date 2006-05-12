@@ -175,7 +175,102 @@ else {
     exit(-1);
 }
 
-# {{{ sub insert_schema
+sub create_db {
+    print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
+    if ( $RT::DatabaseType eq 'SQLite' ) {
+        return;
+    }
+    elsif ( $RT::DatabaseType eq 'Pg' ) {
+        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'");
+        if ( $DBI::errstr ) {
+            $dbh->do("CREATE DATABASE $RT::DatabaseName") || die $DBI::errstr;
+        }
+    }
+    elsif ( $RT::DatabaseType eq 'Oracle' ) {
+        insert_acl();
+    }
+    elsif ( $RT::DatabaseType eq 'Informix' ) {
+        $ENV{DB_LOCALE} = 'en_us.utf8';
+        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
+    }
+    else {
+        $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
+    }
+}
+
+sub drop_db {
+    if ( $RT::DatabaseType eq 'Oracle' ) {
+        print <<END;
+
+To delete the tables and sequences of the RT Oracle database by running
+    \@etc/drop.Oracle
+through SQLPlus.
+
+END
+        return;
+    }
+    unless ( $args{'force'} ) {
+        print <<END;
+
+About to drop $RT::DatabaseType database $RT::DatabaseName on $RT::DatabaseHost.
+WARNING: This will erase all data in $RT::DatabaseName.
+
+END
+        exit unless _yesno();
+
+    }
+
+    print "Dropping $RT::DatabaseType database $RT::DatabaseName.\n";
+
+    if ( $RT::DatabaseType eq 'SQLite' ) {
+        unlink $RT::DatabaseName or warn $!;
+        return;
+    }
+    $dbh->do("DROP DATABASE $RT::DatabaseName") or warn $DBI::errstr;
+}
+
+
+
+sub insert_acl {
+    my $base_path = (shift || $RT::EtcPath);
+
+    if ( $RT::DatabaseType =~ /^oracle$/i ) {
+        do $base_path . "/acl.Oracle"
+          || die "Couldn't find ACLS for Oracle\n" . $@;
+    }
+    elsif ( $RT::DatabaseType =~ /^pg$/i ) {
+        do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
+    }
+    elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
+        do $base_path . "/acl.mysql"
+          || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
+    }
+    elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
+        do $base_path . "/acl.Sybase"
+          || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
+    }
+    elsif ( $RT::DatabaseType =~ /^informix$/i ) {
+        do $base_path . "/acl.Informix"
+          || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
+    }
+    elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
+        return;
+    }
+    else {
+        die "Unknown RT database type";
+    }
+
+    my @acl = acl($dbh);
+    foreach my $statement (@acl) {
+        print STDERR $statement if $args{'debug'};
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute ) {
+            die "Problem with statement:\n $statement\n" . $sth->errstr;
+        }
+    }
+    print "Done setting up database ACLs.\n";
+}
+
 sub insert_schema {
     my $base_path = (shift || $RT::EtcPath);
 
@@ -225,222 +320,6 @@ sub insert_schema {
     print "Done setting up database schema.\n";
 }
 
-=head1 get_version_file
-
-Takes base name of the file as argument, scans for <base name>-<version> named
-files and returns file name with closest version to the version of the RT DB.
-
-=cut
-
-sub get_version_file {
-    my $base_name = shift;
-
-    require File::Glob;
-    my @files = File::Glob::bsd_glob("$base_name*");
-    return '' unless @files;
-
-    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
-    my $db_version = connect_rt_handle()->DatabaseVersion;
-    print "Server version $db_version\n";
-    my $version;
-    foreach ( reverse sort cmp_version keys %version ) {
-        print "version $_\n"; print "comparision ".  cmp_version( $db_version, $_ ) ."\n";
-        if ( cmp_version( $db_version, $_ ) >= 0 ) {
-            $version = $_;
-            last;
-        }
-    }
-
-    return defined $version? $version{ $version } : undef;
-}
-
-sub cmp_version($$) {
-    my ($a, $b) = (@_);
-    my @a = split /[^0-9]+/, $a;
-    my @b = split /[^0-9]+/, $b;
-    for ( my $i = 0; $i < @a; $i++ ) {
-        return 1 unless defined $b[$i];
-        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
-    }
-    return 0 if @a == @b;
-    return -1;
-}
-
-# }}}
-
-# {{{ sub drop_db
-sub drop_db {
-    if ( $RT::DatabaseType eq 'Oracle' ) {
-        print <<END;
-
-To delete the tables and sequences of the RT Oracle database by running
-    \@etc/drop.Oracle
-through SQLPlus.
-
-END
-        return;
-    }
-    unless ( $args{'force'} ) {
-        print <<END;
-
-About to drop $RT::DatabaseType database $RT::DatabaseName on $RT::DatabaseHost.
-WARNING: This will erase all data in $RT::DatabaseName.
-
-END
-        exit unless _yesno();
-
-    }
-
-    print "Dropping $RT::DatabaseType database $RT::DatabaseName.\n";
-
-    if ( $RT::DatabaseType eq 'SQLite' ) {
-        unlink $RT::DatabaseName or warn $!;
-        return;
-    }
-    $dbh->do("DROP DATABASE $RT::DatabaseName") or warn $DBI::errstr;
-}
-
-# }}}
-
-# {{{ sub create_db
-sub create_db {
-    print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
-    if ( $RT::DatabaseType eq 'SQLite' ) {
-        return;
-    }
-    elsif ( $RT::DatabaseType eq 'Pg' ) {
-        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'");
-        if ( $DBI::errstr ) {
-            $dbh->do("CREATE DATABASE $RT::DatabaseName") || die $DBI::errstr;
-        }
-    }
-    elsif ( $RT::DatabaseType eq 'Oracle' ) {
-        insert_acl();
-    }
-    elsif ( $RT::DatabaseType eq 'Informix' ) {
-        $ENV{DB_LOCALE} = 'en_us.utf8';
-        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
-    }
-    else {
-        $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
-    }
-}
-
-# }}}
-
-sub get_dba_password {
-    print "In order to create or update your RT database,";
-    print "this script needs to connect to your "
-      . $RT::DatabaseType
-      . " instance on "
-      . $RT::DatabaseHost . " as "
-      . $args{'dba'} . ".\n";
-    print "Please specify that user's database password below. If the user has no database\n";
-    print "password, just press return.\n\n";
-    print "Password: ";
-    ReadMode('noecho');
-    my $password = ReadLine(0);
-    ReadMode('normal');
-    print "\n";
-    return ($password);
-}
-
-# {{{ sub _yesno
-sub _yesno {
-    print "Proceed [y/N]:";
-    my $x = scalar(<STDIN>);
-    $x =~ /^y/i;
-}
-
-# }}}
-
-# {{{ insert_acls
-sub insert_acl {
-    my $base_path = (shift || $RT::EtcPath);
-
-    if ( $RT::DatabaseType =~ /^oracle$/i ) {
-        do $base_path . "/acl.Oracle"
-          || die "Couldn't find ACLS for Oracle\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^pg$/i ) {
-        do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
-        do $base_path . "/acl.mysql"
-          || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
-        do $base_path . "/acl.Sybase"
-          || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^informix$/i ) {
-        do $base_path . "/acl.Informix"
-          || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
-        return;
-    }
-    else {
-        die "Unknown RT database type";
-    }
-
-    my @acl = acl($dbh);
-    foreach my $statement (@acl) {
-        print STDERR $statement if $args{'debug'};
-        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-        unless ( $sth->execute ) {
-            die "Problem with statement:\n $statement\n" . $sth->errstr;
-        }
-    }
-    print "Done setting up database ACLs.\n";
-}
-
-# }}}
-
-=head2 get_system_dsn
-
-Returns a dsn suitable for database creates and drops
-and user creates and drops
-
-=cut
-
-sub get_system_dsn {
-
-    my $dsn = $Handle->DSN;
-
-    #with mysql, you want to connect sans database to funge things
-    if ( $RT::DatabaseType eq 'mysql' ) {
-        $dsn =~ s/dbname=$RT::DatabaseName//;
-
-        # with postgres, you want to connect to database1
-    }
-    elsif ( $RT::DatabaseType eq 'Pg' ) {
-        $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
-    }
-    elsif ( $RT::DatabaseType eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
-    }
-    return $dsn;
-}
-
-=head2 connect_rt_handle
-
-Returns connected C<$RT::Handle>, connect with credentials from RT config.
-
-=cut
-
-sub connect_rt_handle {
-
-    require RT::Handle;
-
-    unless ( $RT::Handle ) {
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->Connect;
-    }
-
-    return $RT::Handle;
-}
 
 sub insert_initial_data {
 
@@ -704,6 +583,115 @@ sub insert_data {
     }
     $RT::Handle->Disconnect() unless $RT::DatabaseType eq 'SQLite';
     print "Done setting up database content.\n";
+}
+
+sub get_dba_password {
+    print "In order to create or update your RT database,";
+    print "this script needs to connect to your "
+      . $RT::DatabaseType
+      . " instance on "
+      . $RT::DatabaseHost . " as "
+      . $args{'dba'} . ".\n";
+    print "Please specify that user's database password below. If the user has no database\n";
+    print "password, just press return.\n\n";
+    print "Password: ";
+    ReadMode('noecho');
+    my $password = ReadLine(0);
+    ReadMode('normal');
+    print "\n";
+    return ($password);
+}
+
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
+}
+
+=head2 get_system_dsn
+
+Returns a dsn suitable for database creates and drops
+and user creates and drops
+
+=cut
+
+sub get_system_dsn {
+
+    my $dsn = $Handle->DSN;
+
+    #with mysql, you want to connect sans database to funge things
+    if ( $RT::DatabaseType eq 'mysql' ) {
+        $dsn =~ s/dbname=$RT::DatabaseName//;
+
+        # with postgres, you want to connect to database1
+    }
+    elsif ( $RT::DatabaseType eq 'Pg' ) {
+        $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
+    }
+    elsif ( $RT::DatabaseType eq 'Informix' ) {
+        # with Informix, you want to connect sans database:
+        $dsn =~ s/Informix:$RT::DatabaseName/Informix:/;
+    }
+    return $dsn;
+}
+
+=head2 connect_rt_handle
+
+Returns connected C<$RT::Handle>, connect with credentials from RT config.
+
+=cut
+
+sub connect_rt_handle {
+
+    require RT::Handle;
+
+    unless ( $RT::Handle ) {
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->Connect;
+    }
+
+    return $RT::Handle;
+}
+
+=head1 get_version_file
+
+Takes base name of the file as argument, scans for <base name>-<version> named
+files and returns file name with closest version to the version of the RT DB.
+
+=cut
+
+sub get_version_file {
+    my $base_name = shift;
+
+    require File::Glob;
+    my @files = File::Glob::bsd_glob("$base_name*");
+    return '' unless @files;
+
+    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
+    my $db_version = connect_rt_handle()->DatabaseVersion;
+    print "Server version $db_version\n";
+    my $version;
+    foreach ( reverse sort cmp_version keys %version ) {
+        print "version $_\n"; print "comparision ".  cmp_version( $db_version, $_ ) ."\n";
+        if ( cmp_version( $db_version, $_ ) >= 0 ) {
+            $version = $_;
+            last;
+        }
+    }
+
+    return defined $version? $version{ $version } : undef;
+}
+
+sub cmp_version($$) {
+    my ($a, $b) = (@_);
+    my @a = split /[^0-9]+/, $a;
+    my @b = split /[^0-9]+/, $b;
+    for ( my $i = 0; $i < @a; $i++ ) {
+        return 1 unless defined $b[$i];
+        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
+    }
+    return 0 if @a == @b;
+    return -1;
 }
 
 =head2 ACLEquivGroupId
