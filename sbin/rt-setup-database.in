@@ -220,30 +220,11 @@ END
 sub insert_acl {
     my $base_path = (shift || $RT::EtcPath);
 
-    if ( $RT::DatabaseType =~ /^oracle$/i ) {
-        do $base_path . "/acl.Oracle"
-          || die "Couldn't find ACLS for Oracle\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^pg$/i ) {
-        do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
-        do $base_path . "/acl.mysql"
-          || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
-        do $base_path . "/acl.Sybase"
-          || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^informix$/i ) {
-        do $base_path . "/acl.Informix"
-          || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
-    }
-    elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
+    if ( $RT::DatabaseType eq 'SQLite' ) {
         return;
-    }
-    else {
-        die "Unknown RT database type";
+    } else {
+        do $base_path ."/acl.". $RT::DatabaseType
+            || die "Couldn't find ACLs for ". $RT::DatabaseType .": " . $@;
     }
 
     my @acl = acl($dbh);
