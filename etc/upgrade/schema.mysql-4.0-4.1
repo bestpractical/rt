@@ -1,0 +1,40 @@
+ALTER TABLE Attachments CHANGE ContentType ContentType VARCHAR(80) CHARACTER SET ascii NULL;
+ALTER TABLE Attachments CHANGE Content Content LONGBLOB NULL;
+
+ALTER TABLE Queues CHANGE CorrespondAddress CorrespondAddress varchar(120) CHARACTER SET ascii NULL;
+ALTER TABLE Queues CHANGE CommentAddress CommentAddress varchar(120) CHARACTER SET ascii NULL;
+
+ALTER TABLE Links CHANGE Base Base varchar(240) CHARACTER SET ascii NULL;
+ALTER TABLE Links CHANGE Target Target varchar(240) CHARACTER SET ascii NULL;
+
+ALTER TABLE ScripConditions CHANGE ExecModule ExecModule varchar(60) CHARACTER SET ascii NULL;
+ALTER TABLE ScripConditions CHANGE Argument Argument VARBINARY(255) NULL;
+
+ALTER TABLE Transactions CHANGE ObjectType ObjectType varchar(64) CHARACTER SET ascii NOT NULL;
+ALTER TABLE Transactions CHANGE Type Type varchar(20) CHARACTER SET ascii NULL;
+ALTER TABLE Transactions CHANGE Field Field varchar(40) CHARACTER SET ascii NULL;
+ALTER TABLE Transactions CHANGE ReferenceType ReferenceType varchar(255) CHARACTER SET ascii NULL;
+
+ALTER TABLE ACL CHANGE PrincipalType PrincipalType varchar(25) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ACL CHANGE RightName RightName varchar(25) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ACL CHANGE ObjectType ObjectType varchar(25) CHARACTER SET ascii NOT NULL;
+
+ALTER TABLE Users CHANGE Password Password VARBINARY(40) NULL;
+ALTER TABLE Users CHANGE Comments Comments TEXT NULL;
+ALTER TABLE Users CHANGE Signature Signature TEXT NULL;
+ALTER TABLE Users CHANGE FreeformContactInfo FreeformContactInfo TEXT NULL;
+
+ALTER TABLE ScripActions CHANGE ExecModule ExecModule varchar(60) CHARACTER SET ascii NULL;
+ALTER TABLE ScripActions CHANGE Argument Argument VARBINARY(255) NULL;
+
+ALTER TABLE Templates CHANGE Content Content TEXT NULL;
+
+ALTER TABLE ObjectCustomFieldValues CHANGE ObjectType ObjectType varchar(255) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ObjectCustomFieldValues CHANGE LargeContent LargeContent LONGBLOB NULL;
+
+ALTER TABLE CustomFields CHANGE LookupType LookupType varchar(255) CHARACTER SET ascii NOT NULL;
+
+ALTER TABLE Attributes CHANGE Content Content BLOB;
+ALTER TABLE Attributes CHANGE ObjectType ObjectType varchar(64) CHARACTER SET ascii;
+
+ALTER TABLE sessions CHANGE a_session a_session LONGBLOB;
