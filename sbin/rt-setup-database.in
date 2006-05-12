@@ -103,23 +103,7 @@ if ( $args{'action'} eq 'init' ) {
         print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
     }
 
-    if ( $RT::DatabaseType eq "mysql" ) {
-        # Check which version we're running
-        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
-        print "*** Warning: RT is unsupported on MySQL versions before 4.0.x\n" if $version < 4;
-
-        # MySQL must have InnoDB support
-        my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
-        if ( $innodb eq "NO" ) {
-            die "RT requires that MySQL be compiled with InnoDB table support.\n".
-              "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
-        } elsif ( $innodb eq "DISABLED" ) {
-            die "RT requires that MySQL InnoDB table support be enabled.\n".
-              ($version < 4
-               ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
-               : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
-        }
-    }
+    check_db_compatibility();
 
     # SQLite can't deal with the disconnect/reconnect
     unless ( $RT::DatabaseType eq 'SQLite' ) {
@@ -146,6 +130,8 @@ elsif ( $args{'action'} eq 'drop' ) {
     drop_db();
 }
 elsif ( $args{'action'} eq 'insert' ) {
+    $dbh = get_rt_dbh();
+    check_db_compatibility();
     insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
 }
 elsif ( $args{'action'} eq 'acl' ) {
@@ -154,6 +140,7 @@ elsif ( $args{'action'} eq 'acl' ) {
 }
 elsif ( $args{'action'} eq 'schema' ) {
     $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
+    check_db_compatibility();
     insert_schema($args{'datadir'});
 }
 else {
@@ -547,6 +534,51 @@ sub insert_data {
     }
     $RT::Handle->Disconnect() unless $RT::DatabaseType eq 'SQLite';
     print "Done setting up database content.\n";
+}
+
+sub check_db_compatibility {
+    if ( $RT::DatabaseType eq "mysql" ) {
+        # Check which version we're running
+        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
+        if ( $version < 4 ) {
+            print STDERR "*** WARNING: RT is unsupported on MySQL versions before 4.0.x\n";
+        }
+
+        # MySQL must have InnoDB support
+        if ( $args{'action'} =~ /^(init|insert|schema)$/ ) {
+            print "Checking that mysql has spport for InnoDB.\n" if $args{'debug'};
+            my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
+            if ( $innodb eq "NO" ) {
+                print STDERR "RT requires that MySQL be compiled with InnoDB table support.\n".
+                  "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
+                exit -1;
+            } elsif ( $innodb eq "DISABLED" ) {
+                print STDERR "RT requires that MySQL InnoDB table support be enabled.\n".
+                  ($version < 4
+                   ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
+                   : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
+                exit -1;
+            }
+        }
+        if ( $args{'action'} =~ /^(insert|schema)$/ ) {
+            print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
+            unless ( $create_table =~ /ENGINE=InnoDB/ ) {
+                print STDERR 'RT requires that all its tables be of InnoDB type.\n'.
+                    "Upgrade RT tables.\n";
+                exit -1;
+            }
+        }
+        if ( $version >= 4.1 && $args{'action'} =~ /^(insert|schema)$/ ) {
+            print "MySQL >= 4.1, checking that user upgraded.\n" if $args{'debug'};
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+                print STDERR "*** WARNING: RT since version 3.6 has new schema for MySQL versions after 4.1.0\n"
+                    ."Follow instructions in the UPGRADING.mysql file.\n";
+                sleep 3;
+            }
+        }
+    }
 }
 
 sub get_dba_password {
