@@ -3018,21 +3018,21 @@ sub SetOwner {
 
     $RT::Handle->Commit();
 
-    my ( $trans, $msg, undef ) = $self->_NewTransaction(
-                                                   Type     => $Type,
-                                                   Field    => 'Owner',
-                                                   NewValue => $NewOwnerObj->Id,
-                                                   OldValue => $OldOwnerObj->Id,
-                                                   TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
-    if ($trans) {
+    if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
                            $OldOwnerObj->Name, $NewOwnerObj->Name );
 
         # TODO: make sure the trans committed properly
     }
-    return ( $trans, $msg );
-
+    return ( $val, $msg );
 }
 
 # }}}

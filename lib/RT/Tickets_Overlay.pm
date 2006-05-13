@@ -913,7 +913,7 @@ sub _WatcherJoin {
     # RT doesn't allow to add groups as members of the
     # ticket roles, so we just hide entries in CGM table
     # with MemberId == GroupId from results
-    my $groupmembers = $self->SUPER::Limit(
+    $self->SUPER::Limit(
         LEFTJOIN   => $groupmembers,
         FIELD      => 'GroupId',
         OPERATOR   => '!=',
