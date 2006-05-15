@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 138;
+use Test::More tests => 137;
 
 use RT;
 RT::LoadConfig();
