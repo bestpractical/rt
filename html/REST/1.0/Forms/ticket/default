@@ -49,6 +49,7 @@
 $id
 $changes => {}
 $fields => undef
+$args => undef
 </%ARGS>
 <%INIT>
 use MIME::Entity;

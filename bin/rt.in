@@ -116,6 +116,7 @@ my %handlers = (
     link        => ["link", "ln"],
     merge       => ["merge"],
     grant       => ["grant", "revoke"],
+    take        => ["take", "steal"],
     quit        => ["quit", "exit"],
 );
 
@@ -747,6 +748,46 @@ sub link {
     return suggest_help("link", "ticket") if $bad;
 
     my $r = submit("$REST/ticket/link", \%data);
+    print $r->content;
+}
+
+# Take/steal a ticket
+sub take {
+    my ($cmd) = @_;
+    my ($bad, %data) = (0, ());
+
+    my $id;
+    my $force = 0;
+    $force = 1 if $cmd eq 'steal';
+
+    # get the ticket id
+    if (@ARGV == 1) {
+        ($id) = @ARGV;
+        unless ($id =~ /^\d+$/) {
+            whine "Invalid ticket ID $id specified.";
+            $bad = 1;
+        }
+        my $form = [
+            "",
+            [ "Ticket", "Force" ],
+            {
+                Ticket => $id,
+                Force => $force,
+                Status => '',
+            }
+        ];
+
+        my $text = Form::compose([ $form ]);
+        $data{content} = $text;
+    }
+    else {
+        $bad = @ARGV < 1 ? "few" : "many";
+        whine "Too $bad arguments specified.";
+        $bad = 1;
+    }
+    return suggest_help("take", "ticket") if $bad;
+
+    my $r = submit("$REST/ticket/$id/take", \%data);
     print $r->content;
 }
 
