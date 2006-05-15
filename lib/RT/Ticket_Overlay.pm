@@ -2593,20 +2593,18 @@ sub _AddLink {
         return( 0, $msg );
     }
 
-    # By popular demand, adding a ticket link doesn't check ACLs on the second ticket 
-    #
-    #    if ( $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
-    #        my $object = $other_ticket_uri->Resolver->Object;
-    #
-    #        if (   UNIVERSAL::isa( $object, 'RT::Ticket' )
-    #            && $object->id
-    #            && !$object->CurrentUserHasRight('ModifyTicket') )
-    #        {
-    #            return ( 0, $self->loc("Permission Denied") );
-    #        }
-    #
-    #    }
-    #
+    if ( $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
+        my $object = $other_ticket_uri->Resolver->Object;
+
+        if (   UNIVERSAL::isa( $object, 'RT::Ticket' )
+            && $object->id
+            && !$object->CurrentUserHasRight('ModifyTicket') )
+        {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+
+    }
+
     # }}}
 
     my ($val, $Msg) = $self->SUPER::_AddLink(%args);
