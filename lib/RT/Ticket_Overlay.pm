@@ -1315,6 +1315,10 @@ sub AddWatcher {
         @_
     );
 
+    # XXX, FIXME, BUG: if only email is provided then we only check
+    # for ModifyTicket right, but must try to get PrincipalId and
+    # check Watch* rights too if user exist
+
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
