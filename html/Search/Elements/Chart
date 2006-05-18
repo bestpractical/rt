@@ -32,6 +32,18 @@ while ( my $entry = $tix->Next ) {
     push @values, $entry->__Value( $count_name );
 }
 
+# XXX: Convert 1970-01-01 date to the 'Not Set'
+# this code should be generalized!!!
+if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
+    my $re;
+    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
+    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
+    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
+    foreach (@keys) {
+        s/^$re/loc('Not Set')/e;
+    }   
+}
+
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
