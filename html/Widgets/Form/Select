@@ -29,6 +29,19 @@
 </div>
 <%INIT>
 my %CurrentValue = map {$_ => 1} grep defined, @CurrentValue;
+if ( $ValuesCallback ) {
+    my $values = $ValuesCallback->(
+        CurrentUser => $session{'CurrentUser'},
+        NamePrefix  => $NamePrefix,
+        Name        => $Name,
+    );
+    if ( ref $values eq 'ARRAY' ) {
+        @Values = @$values;
+    } else {
+        %ValuesLabel = %$values;
+        @Values = keys %ValuesLabel;
+    }
+}
 </%INIT>
 <%ARGS>
 $NamePrefix       => 'Select-',
@@ -36,6 +49,7 @@ $Name             => '',
 $Description      => undef,
 
 @Values           => (),
+$ValuesCallback   => undef,
 %ValuesLabel      => (),
 @CurrentValue     => (),
 
@@ -67,7 +81,10 @@ $Multiple         => 0,
 <%INIT>
 my $value = $Arguments->{ $NamePrefix . $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
-    return [ @CurrentValue ] unless $Empty;
+    unless ( $Empty ) {
+        return [ @CurrentValue ] if $Multiple;
+        return $CurrentValue[0];
+    }
     return undef;
 }
 $value = [$value] unless ref $value;
