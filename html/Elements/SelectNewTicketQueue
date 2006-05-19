@@ -48,7 +48,7 @@
 % foreach my $queue (@{$session{'create_in_queues'}}) {
 <OPTION 
     VALUE="<%$queue->{'id'}%>" 
-    <%$Default && ($queue->{'id'} == $Default) && 'SELECTED'%>>
+    <% $Default && $queue->{'id'} == $Default ? 'SELECTED': ''%>>
 <%$queue->{'Name'}%>
 %   if (($Verbose) and ($queue->{'Description'}) ){
 (<%$queue->{'Description'}%>)

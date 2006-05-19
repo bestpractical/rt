@@ -240,7 +240,7 @@ sub Load {
 
 
     #If it's a local URI, turn it into a ticket id
-    if ( $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
+    if ( $RT::TicketBaseURI && $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
         $id = $1;
     }
 
@@ -440,9 +440,9 @@ sub Create {
     if ( $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
-    elsif ( $QueueObj->DefaultDueIn ) {
+    elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
         $Due->SetToNow;
-        $Due->AddDays( $QueueObj->DefaultDueIn );
+        $Due->AddDays( $due_in );
     }
 
     my $Starts = new RT::Date( $self->CurrentUser );
@@ -1314,6 +1314,10 @@ sub AddWatcher {
         Email => undef,
         @_
     );
+
+    # XXX, FIXME, BUG: if only email is provided then we only check
+    # for ModifyTicket right, but must try to get PrincipalId and
+    # check Watch* rights too if user exist
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
@@ -3019,21 +3023,21 @@ sub SetOwner {
 
     $RT::Handle->Commit();
 
-    my ( $trans, $msg, undef ) = $self->_NewTransaction(
-                                                   Type     => $Type,
-                                                   Field    => 'Owner',
-                                                   NewValue => $NewOwnerObj->Id,
-                                                   OldValue => $OldOwnerObj->Id,
-                                                   TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
-    if ($trans) {
+    if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
                            $OldOwnerObj->Name, $NewOwnerObj->Name );
 
         # TODO: make sure the trans committed properly
     }
-    return ( $trans, $msg );
-
+    return ( $val, $msg );
 }
 
 # }}}
