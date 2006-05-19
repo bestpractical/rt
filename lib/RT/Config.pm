@@ -264,7 +264,12 @@ sub Get
     my $self = shift;
     my $name = shift;
     my $user = shift;
-    return unless exists $OPTIONS{ $name };
+    unless ( exists $OPTIONS{ $name } ) {
+        # if don't know anything about option
+        # return empty list, but undef in scalar
+        # context
+        return wantarray? (): undef;
+    }
 
     my $res;
     if ( $user && $META{ $name }->{'Overridable'} ) {
