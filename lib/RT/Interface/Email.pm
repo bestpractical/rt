@@ -602,8 +602,11 @@ sub Gateway {
 
     push @RT::MailPlugins, "Auth::MailFrom" unless @RT::MailPlugins;
 
-    # Since this needs loading, no matter what
+    # if plugin returns AuthStat -2 we skip action
+    # NOTE: this is experimental API and it would be changed
+    my %skip_action = ();
 
+    # Since this needs loading, no matter what
     foreach (@RT::MailPlugins) {
         my ($Code, $Class, $NewAuthStat);
         if ( ref($_) eq "CODE" ) {
@@ -611,7 +614,8 @@ sub Gateway {
         } else {
             $Class = "RT::Interface::Email::" . $_
                 unless $_ =~ /^RT::Interface::Email::/;
-            $Class->require;
+            $Class->require or
+                do { $RT::Logger->error("Couldn't load $Class: $@"); next };
         }
             no strict 'refs';
             if ( !defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
@@ -634,9 +638,10 @@ sub Gateway {
 # You get the highest level of authentication you were assigned, unless you get the magic -1
 # If a module returns a "-1" then we discard the ticket, so.
             $AuthStat = $NewAuthStat
-                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -1 );
+                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -1 or $NewAuthStat == -2 );
 
             last if $AuthStat == -1;
+            $skip_action{$action}++ if $AuthStat == -2;
         }
 
         last if $AuthStat == -1;
@@ -687,13 +692,17 @@ sub Gateway {
     unless ($continue) {
         return ( 0, $result, undef );
     }
+    
+    # strip actions we should skip
+    @actions = grep !$skip_action{$_}, @actions;
+
+    # if plugin's updated SystemTicket then update arguments
+    $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
 
     my $Ticket = RT::Ticket->new($CurrentUser);
 
     if (( !$SystemTicket || !$SystemTicket->Id )
-        && grep /^(comment|correspond)$/,
-        @actions
-        )
+        && grep /^(comment|correspond)$/, @actions )
     {
 
         my @Cc;
