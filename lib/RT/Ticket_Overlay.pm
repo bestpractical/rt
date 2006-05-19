@@ -440,9 +440,9 @@ sub Create {
     if ( $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
-    elsif ( $QueueObj->DefaultDueIn ) {
+    elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
         $Due->SetToNow;
-        $Due->AddDays( $QueueObj->DefaultDueIn );
+        $Due->AddDays( $due_in );
     }
 
     my $Starts = new RT::Date( $self->CurrentUser );
