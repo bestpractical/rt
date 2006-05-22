@@ -85,12 +85,12 @@ sub SetRecipients {
 
 
     if ( $arg =~ /\bOtherRecipients\b/ ) {
-        if ( $self->TransactionObj->Attachments->First ) {
-            my @cc_addresses = Mail::Address->parse($self->TransactionObj->Attachments->First->GetHeader('RT-Send-Cc'));
+        if ( my $attachment = $self->TransactionObj->Attachments->First ) {
+            my @cc_addresses = Mail::Address->parse($attachment->GetHeader('RT-Send-Cc'));
             foreach my $addr (@cc_addresses) {
                   push @Cc, $addr->address;
             }
-            my @bcc_addresses = Mail::Address->parse($self->TransactionObj->Attachments->First->GetHeader('RT-Send-Bcc'));
+            my @bcc_addresses = Mail::Address->parse($attachment->GetHeader('RT-Send-Bcc'));
 
             foreach my $addr (@bcc_addresses) {
                   push @Bcc, $addr->address;
