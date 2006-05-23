@@ -43,25 +43,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%# REST/1.0/Forms/ticket/comment
+%# REST/1.0/Forms/ticket/take
 %#
 <%ARGS>
 $id
 %changes
 </%ARGS> 
 <%INIT>
-use MIME::Entity;
-use LWP::MediaTypes;
 use RT::Interface::REST;
-use File::Temp qw(tempfile);
-
-$RT::Logger->debug("Got ticket id=$id for comment");
-$RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
 my $ticket = new RT::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
-# http://.../REST/1.0/ticket/1/comment
+# http://.../REST/1.0/ticket/1/take
 $ticket->Load($id);
 if (!$ticket->Id) {
     $e = 1;
@@ -71,78 +65,63 @@ if (!$ticket->Id) {
 
 my $action;
 ($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
-unless ($action =~ /^(?:Comment|Correspond)$/) {
+unless ($action =~ /^(?:Take|Steal|Untake)$/) {
     $e = 1;
     $c = "# Invalid action: `$action'.";
     goto OUTPUT;
 }
 
-my $text = $changes{Text};
-my @atts = @{ vsplit($changes{Attachment}) };
-
-if (!$changes{Text} && @atts == 0) {
-    $e = 1;
-    $c = "# Empty comment with no attachments submitted.";
-    goto OUTPUT;
-}
-
-my $cgi = $m->cgi_object;
-my $ent = MIME::Entity->build(Type => "multipart/mixed");
-$ent->attach(Data => $changes{Text}) if $changes{Text};
-
-my $i = 1;
-foreach my $att (@atts) {
-    local $/=undef;
-    my $file = $att;
-    $file =~ s#^.*[\\/]##;
-
-    my $fh = $cgi->upload("attachment_$i");
-    if ($fh) {
-        my $buf;
-        my ($w, $tmp) = tempfile();
-        my $info = $cgi->uploadInfo();
-
-        while (sysread($fh, $buf, 8192)) {
-            syswrite($w, $buf);
-        }
-
-        $ent->attach(
-            Path => $tmp,
-            Type => $info->{'Content-Type'} || guess_media_type($tmp),
-            Filename => $file,
-            Disposition => "attachment"
-        );
-    }
-    else {
-        $e = 1;
-        $c = "# No attachment for $att.";
-        goto OUTPUT;
-    }
-
-    $i++;
-}
-
 unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
-        ($action eq "Comment" &&
-         $ticket->CurrentUserHasRight("CommentOnTicket")) ||
-        ($action eq "Correspond" &&
-         $ticket->CurrentUserHasRight("ReplyToTicket")))
+        ( ($action eq "Take" || $action eq 'Untake') &&
+         $ticket->CurrentUserHasRight("TakeTicket")) ||
+        ($action eq "Steal" &&
+         $ticket->CurrentUserHasRight("StealTicket")))
 {
     $e = 1;
-    $c = "# You are not allowed to $action on ticket $id.";
+    $c = "# You are not allowed to $action ticket $id.";
     goto OUTPUT;
 }
 
-my $cc = join ", ", @{ vsplit($changes{Cc}) };
-my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
-my ($n, $s) = $ticket->$action(MIMEObj => $ent,
-                               CcMessageTo => $cc,
-                               BccMessageTo => $bcc,
-                               TimeTaken => $changes{TimeWorked} || 0);
-$c = "# ".$s;
-if ($changes{Status}) {
-   my  ($status_n, $status_s) = $ticket->SetStatus($changes{'Status'} );   
-  $c .= "\n# ".$status_s;
+if (!keys(%data)) {
+    # assemble a form data structure
+    my @data;
+    push @data, [ Ticket => $ticket->Id ];
+    push @data, [ Force => '0' ];       # 1 => "steal"
+}
+else {
+    # process the form data structure
+    my ($key, $val);
+    
+    foreach $key (keys %data) {
+        $val = $data{$key};
+
+        if ($key =~ /^force$/i) {
+            if ($val !~ /^(?:0|1)$/) {
+                push(@comments, "# invalid value for 'force': $val");
+                goto DONE;
+            }
+            my ($ret_id, $msg);
+
+            ### take
+            if ($val == 0) {
+                ($ret_id, $msg) = $ticket->Take;
+                if (!$ret_id) {
+                    push(@comments, "# Couldn't take ticket $id: $msg");
+                    goto DONE;
+                }
+                push(@comments, "# Ticket $id taken.");
+            }
+            ### steal
+            else {
+                ($ret_id, $msg) = $ticket->Steal;
+                if (!$ret_id) {
+                    push(@comments, "# Couldn't steal ticket $id: $msg");
+                    goto DONE;
+                }
+                push(@comments, "# Ticket $id stolen.");
+            }
+        }
+    }
 }
 
 OUTPUT:

@@ -78,7 +78,17 @@ unless (@keys && @values) {
 }
 
 my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
-$r->content_type('image/png');
-$m->out( $plot->png );
-$m->abort;
+
+if ( $plot->can('png') ) {
+    $r->content_type('image/png');
+    $m->out( $plot->png );
+}
+elsif ( $plot->can('gif') ) {
+    $r->content_type('image/gif');
+    $m->out( $plot->gif );
+}
+else { 
+    die "Your GD library appears to support neither PNG nor GIF";
+}
+$m->abort();
 </%init>

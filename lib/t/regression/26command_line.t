@@ -3,11 +3,14 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 102;
+use Test::More tests => 137;
 
 use RT;
 RT::LoadConfig();
 RT::Init;
+
+use RT::User;
+use RT::Queue;
 
 my $rt_tool_path = "$RT::BinPath/rt";
 
@@ -66,18 +69,18 @@ expect_send(q{rt create -t ticket set subject='rt ticket'}, "Creating a ticket w
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # add a comment to ticket
-TODO: {
-    local $TODO = "Adding comments/correspondence is broken right now";
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
-    expect_like(qr/Comment added/, "Added the comment");
+    expect_like(qr/Message recorded/, "Added the comment");
     ### should test to make sure it actually got added
     # add correspondance to ticket (?)
     expect_send("correspond -m 'correspond-$$' $ticket_id", "Adding correspondence...");
-    expect_like(qr/Correspondence added/, "Added the correspondence");
+    expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
+TODO: {
+    local $TODO = "Adding attachments is broken right now";
     # add attachments to a ticket
     expect_send("comment -m 'attach file' $rt_tool_path $ticket_id", "Adding an attachment");
-    expect_like(qr/Comment added/, "Added the attachment");
+    expect_like(qr/Message recorded/, "Added the attachment");
     ### should test to make sure it actually got added
 }
 
@@ -257,6 +260,99 @@ TODO: {
 }
 }
 
+# }}}
+
+# {{{ test merging tickets
+expect_send("create -t ticket set subject='CLIMergeTest1-$$'", 'Creating first ticket to merge...');
+expect_like(qr/Ticket \d+ created/, 'Created first ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
+my $merge_ticket_A = $1;
+ok($merge_ticket_A, "Got first ticket to merge id=$merge_ticket_A");
+expect_send("create -t ticket set subject='CLIMergeTest2-$$'", 'Creating second ticket to merge...');
+expect_like(qr/Ticket \d+ created/, 'Created second ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
+my $merge_ticket_B = $1;
+ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
+expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
+expect_like(qr/Merge completed/, 'Merged the tickets');
+expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
+expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');
+expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
+expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in second ticket');
+# }}}
+
+# {{{ test taking/stealing tickets
+TODO: {
+    local $TODO = "Taking/stealing haven't been implemented yet.";
+
+    # create a user; give them privileges to take and steal
+    ### TODO: implement 'grant' in the CLI tool; use that here instead.
+    ###       this breaks the abstraction barrier, like, a lot.
+    my $steal_user = RT::User->new($RT::SystemUser);
+    my ($steal_user_id, $msg) = $steal_user->Create( Name => "fooser$$",
+                                          EmailAddress => "fooser$$\@localhost",
+                                          Privileged => 1,
+                                          Password => 'foobar',
+                                        );
+    ok($steal_user_id, "Created the user? $msg");
+    my $steal_queue = RT::Queue->new($RT::SystemUser);
+    my $steal_queue_id;
+    ($steal_queue_id, $msg) = $steal_queue->Load( Name => "Steal$$" );
+    ok($steal_queue_id, "Got the queue? $msg");
+    my $status;
+    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'SeeTicket', Object => $steal_queue );
+    ok($status, "Gave 'SeeTicket' to our user? $msg");
+    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $steal_queue );
+    ok($status, "Gave 'OwnTicket' to our user? $msg");
+    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'StealTicket', Object => $steal_queue );
+    ok($status, "Gave 'StealTicket' to our user? $msg");
+    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'TakeTicket', Object => $steal_queue );
+    ok($status, "Gave 'TakeTicket' to our user? $msg");
+
+    # create a ticket to take/steal
+    expect_send("create -t ticket set subject='CLIStealTest-$$'", 'Creating ticket to steal...');
+    expect_like(qr/Ticket \d+ created/, 'Created ticket');
+    expect_handle->before() =~ /Ticket (\d+) created/;
+    my $steal_ticket_id = $1;
+    ok($steal_ticket_id, "Got ticket to steal id=$steal_ticket_id");
+
+    # root takes the ticket
+    expect_send("take $steal_ticket_id", 'root takes the ticket...');
+    expect_like(qr/Took ticket $steal_ticket_id/, 'root took the ticket');
+
+    # log in as the non-root user
+    #expect_quit();      # this is apparently unnecessary, but I'll leave it in
+                         # until I'm sure
+    $ENV{'RTUSER'} = "fooser$$";
+    $ENV{'RTPASSWD'} = 'foobar';
+    expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
+
+    # user tries to take the ticket, fails
+    # shouldn't be able to 'take' a ticket which someone else has taken out from
+    # under you; that should produce an error.  should have to explicitly 
+    # 'steal' it back from them.  'steal' can automatically 'take' a ticket,
+    # though.
+    expect_send("take $steal_ticket_id", 'user tries to take the ticket...');
+    expect_like(qr/Ticket $steal_ticket_id already owned by user root/, '...and fails.');
+    expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
+    expect_like(qr/Owner: root/, '...no change.');
+
+    # user steals the ticket
+    expect_send("steal $steal_ticket_id", 'user tries to *steal* the ticket...');
+    expect_like(qr/Stole ticket $steal_ticket_id/, '...and succeeds!');
+    expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
+    expect_like(qr/Owner: fooser$$/, '...yup, it worked.');
+    
+    # log back in as root
+    #expect_quit();     # ditto
+    $ENV{'RTUSER'} = 'root';
+    $ENV{'RTPASSWD'} = 'password';
+    expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
+
+    # root steals the ticket back
+    expect_send("steal $steal_ticket_id", 'root steals the ticket back...');
+    expect_like(qr/Stole ticket $steal_ticket_id/, '...and succeeds.');
+}
 # }}}
 
 1;

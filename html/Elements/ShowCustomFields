@@ -57,6 +57,7 @@
 <a href="<%$Value->LinkValueTo|n%>" target="_new">
 % }
 % my $comp = "ShowCustomField".$CustomField->Type;
+% $m->comp('/Elements/Callback', _CallbackName => 'ShowComponentName', Name => \$comp, CustomField => $CustomField, Object => $Object );
 % if ($m->comp_exists($comp)) {
 <& $comp, Object => $Value &>
 %   } else {

@@ -50,7 +50,7 @@ $id
 $format => 's'
 $changes => undef
 </%ARGS>
-<%perl>
+<%INIT>
 my @data;
 my $ticket = new RT::Ticket $session{CurrentUser};
 
@@ -167,4 +167,4 @@ else {
 }
 
 return [ $c, $o, $k, $e ];
-</%perl>
+</%INIT>

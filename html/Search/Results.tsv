@@ -43,17 +43,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$OrderBy => 'id'
+$Order => 'ASC'
+</%ARGS>
 <%INIT>
 
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-$Tickets->FromSQL($ARGS{'Query'});
+my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
+$Tickets->FromSQL( $ARGS{'Query'} );
+if ( $OrderBy =~ /\|/ ) {
+
+  # Multiple Sorts
+  my @OrderBy = split /\|/, $OrderBy;
+  my @Order   = split /\|/, $Order;
+  $Tickets->OrderByCols(
+    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+      ( 0 .. $#OrderBy ) );
+}
+else {
+  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+}
 
 my @rows;
 my %known_cfs;
 
 my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
                 Requestors->MemberEmailAddressesAsString DueObj->ISO ToldObj->ISO
-                CreatedObj->ISO ResolvedObj->ISO );
+                CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->Next()) {

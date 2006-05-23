@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 39;
+use Test::More tests => 44;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
@@ -242,4 +242,25 @@ $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
 is($tix->Count, 1, "null cf and null cf"); 
 
+# tests with the same CF listed twice
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("CF.{SearchTest} = 'foo1'");
+is($tix->Count, 1, "is cf.{name} format");
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3'");
+is($tix->Count, 2, "is cf1 or is cf1");
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest IS NULL");
+is($tix->Count, 3, "is cf1 or null cf1");
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("(CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3') AND (CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2')");
+is($tix->Count, 1, "(is cf1 or is cf1) and (is cf2 or is cf2)");
+
+$tix = RT::Tickets->new($RT::SystemUser);
+$tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
+is($tix->Count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 

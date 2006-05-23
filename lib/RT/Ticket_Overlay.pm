@@ -1320,7 +1320,9 @@ sub AddWatcher {
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
-       or $self->CurrentUser->UserObj->EmailAddress eq $args{'Email'}) {
+       or    lc( $self->CurrentUser->UserObj->EmailAddress )
+          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) ))
+    {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
@@ -3684,7 +3686,7 @@ sub Transactions {
 
 =head2 TransactionCustomFields
 
-    Returns the custom fields that transactions on tickets will ahve.
+    Returns the custom fields that transactions on tickets will have.
 
 =cut
 

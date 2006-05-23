@@ -25,7 +25,7 @@ msgstr ""
 msgid "$1"
 msgstr ""
 
-#: lib/RT/Record.pm:930
+#: lib/RT/Record.pm:941
 #. ($label)
 msgid "$prefix %1"
 msgstr ""
@@ -45,7 +45,7 @@ msgstr ""
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1675 lib/RT/Transaction_Overlay.pm:635 lib/RT/Transaction_Overlay.pm:678
+#: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:634 lib/RT/Transaction_Overlay.pm:677
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -57,13 +57,13 @@ msgstr ""
 msgid "%1 %2 ago"
 msgstr ""
 
-#: lib/RT/Record.pm:1682 lib/RT/Transaction_Overlay.pm:642
+#: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:641
 #. ($cf->Name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%3に変更された%1 %2 "
 
-#: lib/RT/Record.pm:1679 lib/RT/Transaction_Overlay.pm:638 lib/RT/Transaction_Overlay.pm:684
+#: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:637 lib/RT/Transaction_Overlay.pm:683
 #. ($cf->Name, $old_value->Content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -84,7 +84,7 @@ msgstr "%1 (%2) %3 このチケット\\n"
 msgid "%1 (%2) by %3"
 msgstr ""
 
-#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:102 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
+#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:104 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
 #. (loc($DefaultStatus))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
@@ -140,11 +140,11 @@ msgstr ""
      $RT::VERSION, 
      '2005', 
     '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#: html/Elements/Footer:61
-#. ('&#187;&#124;&#171;', 
      $RT::VERSION, 
      '2005', 
     '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#: html/Elements/Footer:57
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "%1 ScripAction loaded"
 msgstr "%1スクリプトアクションロードしました"
 
-#: lib/RT/Record.pm:1712
+#: lib/RT/Record.pm:1722
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%2と同じバリューの%1が追加されました"
@@ -176,25 +176,25 @@ msgstr "%1aliasesを動かすためにチケットIDが必要です(%2から) %3
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr ""
 
-#: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:520
+#: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:518
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Transaction_Overlay.pm:777 lib/RT/Transaction_Overlay.pm:786 lib/RT/Transaction_Overlay.pm:789
+#: lib/RT/Transaction_Overlay.pm:775 lib/RT/Transaction_Overlay.pm:784 lib/RT/Transaction_Overlay.pm:787
 #. ($self->Field , $q1->Name , $q2->Name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1は%2から%3に変更されました"
 
-#: html/Search/Build.html:206
+#: html/Search/Build.html:213
 #. ($Description)
 msgid "%1 copy"
 msgstr ""
 
-#: lib/RT/Record.pm:934
+#: lib/RT/Record.pm:945
 msgid "%1 could not be set to %2."
 msgstr ""
 
@@ -202,17 +202,17 @@ msgstr ""
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1はトランザクションを開始することができませんでした(%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm:2726
+#: lib/RT/Ticket_Overlay.pm:2732
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1を解決状態に設定できませんでした。RTのデータベースに一貫性がない可能性があります。"
 
-#: lib/RT/Transaction_Overlay.pm:560
+#: lib/RT/Transaction_Overlay.pm:558
 #. ($obj_type)
 msgid "%1 created"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:565
+#: lib/RT/Transaction_Overlay.pm:563
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr ""
@@ -231,7 +231,7 @@ msgstr "優先度の高いチケット%1件"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:860
+#: lib/RT/Queue_Overlay.pm:864
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1はこのキューでは%2ではありません"
@@ -248,10 +248,8 @@ msgstr "%1はカスタムフィールド%2のバリューはありません"
 msgid "%1 isn't a valid Queue id."
 msgstr "%1は有効なキューIDではありません。"
 
-#: html/Ticket/Elements/ShowBasics:58 html/Ticket/Elements/ShowBasics:64 html/Ticket/Elements/ShowBasics:69
-#. ($Ticket->TimeEstimated)
-#. ($Ticket->TimeWorked)
-#. ($Ticket->TimeLeft)
+#: html/Ticket/Elements/ShowTime:2 html/Ticket/Elements/ShowTime:4
+#. ($minutes)
 msgid "%1 min"
 msgstr "%1分"
 
@@ -263,7 +261,7 @@ msgstr "担当されていないチケット%1件"
 msgid "%1 not shown"
 msgstr "%1表示されません"
 
-#: lib/RT/CustomField_Overlay.pm:881
+#: lib/RT/CustomField_Overlay.pm:892
 msgid "%1 objects"
 msgstr ""
 
@@ -293,11 +291,11 @@ msgstr "%1はグループチケットのすべてのメンバーを解決状態�
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "%1がもしリンクされたリクエストの従属者（もしくはメンバー）であると、[ローカル]ベースを行き詰まらせることになります。"
 
-#: lib/RT/CustomField_Overlay.pm:882
+#: lib/RT/CustomField_Overlay.pm:893
 msgid "%1's %2 objects"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:883
+#: lib/RT/CustomField_Overlay.pm:894
 msgid "%1's %2's %3 objects"
 msgstr ""
 
@@ -307,7 +305,7 @@ msgstr ""
 msgid "%1's saved searches"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:470
+#: lib/RT/Transaction_Overlay.pm:468
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1:アタッチメントが指定されていません"
@@ -320,6 +318,11 @@ msgstr ""
 #: html/Ticket/Elements/ShowTransactionAttachments:75
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
+msgstr ""
+
+#: html/Ticket/Elements/ShowTime:4
+#. (sprintf("%.1f",$minutes / 60))
+msgid "%quant(%1,hour)"
 msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:1119
@@ -347,7 +350,7 @@ msgstr ""
 msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr ""
 
-#: html/Ticket/Create.html:216
+#: html/Ticket/Create.html:217
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr ""
 
@@ -381,11 +384,11 @@ msgstr ""
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "（Eメールアドレスにおけるカンマで区切られたリストへの正確なアップデートのブラインドコピーを送る。今後のアップデートを誰が受信するかは<b>変更できません</b>）"
 
-#: html/Ticket/Update.html:91
+#: html/Ticket/Update.html:90
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
 msgstr ""
 
-#: html/Ticket/Create.html:101
+#: html/Ticket/Create.html:102
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr ""
 
@@ -393,11 +396,11 @@ msgstr ""
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "（Eメールアドレスにおけるカンマで区切られたリストへの正確なアップデートのコピーを送る。今後のアップデートを誰が受信するかは<b>変更できません</b>）"
 
-#: html/Ticket/Update.html:87
+#: html/Ticket/Update.html:86
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
 msgstr ""
 
-#: html/Ticket/Create.html:91
+#: html/Ticket/Create.html:92
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr ""
 
@@ -417,7 +420,7 @@ msgstr ""
 msgid "(no subject)"
 msgstr "（サブジェクトなし）"
 
-#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:70 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:65 lib/RT/Transaction_Overlay.pm:579
+#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:70 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:86 lib/RT/Transaction_Overlay.pm:578
 msgid "(no value)"
 msgstr "（バリューなし）"
 
@@ -429,11 +432,11 @@ msgstr ""
 msgid "(only one ticket)"
 msgstr "（ひとつのチケットのみ）"
 
-#: html/Elements/RT__Ticket/ColumnMap:146
+#: html/Elements/RT__Ticket/ColumnMap:147
 msgid "(pending approval)"
 msgstr ""
 
-#: html/Elements/RT__Ticket/ColumnMap:149
+#: html/Elements/RT__Ticket/ColumnMap:150
 msgid "(pending other Collection)"
 msgstr ""
 
@@ -445,7 +448,7 @@ msgstr "（必須項目です）"
 msgid "(untitled)"
 msgstr ""
 
-#: html/Ticket/Elements/Reminders:86
+#: html/Ticket/Elements/Reminders:88
 msgid "(yyyy/mm/dd)"
 msgstr ""
 
@@ -473,7 +476,7 @@ msgstr ""
 msgid "<%$_%>"
 msgstr ""
 
-#: html/Search/Elements/DisplayOptions:65
+#: html/Search/Elements/DisplayOptions:73
 msgid "<%$field%>"
 msgstr ""
 
@@ -491,7 +494,7 @@ msgstr "<input type=\"submit\" value=\"新規作成\">&nbsp;%1"
 msgid "A blank template"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:363
+#: html/Admin/Users/Modify.html:360
 msgid "A password was not set, so user won't be able to login."
 msgstr ""
 
@@ -556,7 +559,7 @@ msgstr ""
 msgid "Add Criteria"
 msgstr ""
 
-#: html/Ticket/Create.html:145 html/Ticket/Update.html:117
+#: html/Ticket/Create.html:146 html/Ticket/Update.html:116
 msgid "Add More Files"
 msgstr ""
 
@@ -600,7 +603,7 @@ msgstr "新しいウォッチャーを追加する"
 msgid "Add these terms to your search"
 msgstr ""
 
-#: html/Search/Bulk.html:159
+#: html/Search/Bulk.html:158
 msgid "Add values"
 msgstr ""
 
@@ -608,12 +611,12 @@ msgstr ""
 msgid "Add, delete and modify custom field values for objects"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:760
+#: lib/RT/Queue_Overlay.pm:764
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "このキューに%1の責任者を追加しました"
 
-#: lib/RT/Ticket_Overlay.pm:1417
+#: lib/RT/Ticket_Overlay.pm:1426
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "このチケットに%1の責任者を追加しました"
@@ -626,7 +629,7 @@ msgstr "住所1"
 msgid "Address2"
 msgstr "住所2"
 
-#: html/Ticket/Create.html:96
+#: html/Ticket/Create.html:97
 msgid "Admin Cc"
 msgstr "管理Cc"
 
@@ -666,11 +669,11 @@ msgstr "管理Cc"
 msgid "AdminCustomField"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:171
+#: lib/RT/Group_Overlay.pm:163
 msgid "AdminGroup"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:173
+#: lib/RT/Group_Overlay.pm:165
 msgid "AdminGroupMembership"
 msgstr ""
 
@@ -771,7 +774,11 @@ msgstr ""
 msgid "Apr."
 msgstr "4月"
 
-#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:73
+#: html/Search/Elements/DisplayOptions:81
+msgid "Asc"
+msgstr ""
+
+#: html/Elements/SelectSortOrder:56
 msgid "Ascending"
 msgstr "昇順"
 
@@ -783,15 +790,15 @@ msgstr ""
 msgid "AssignCustomFields"
 msgstr ""
 
-#: html/Search/Bulk.html:142 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:117
+#: html/Search/Bulk.html:142 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:116
 msgid "Attach"
 msgstr "添付"
 
-#: html/SelfService/Create.html:92 html/Ticket/Create.html:141
+#: html/SelfService/Create.html:92 html/Ticket/Create.html:142
 msgid "Attach file"
 msgstr "添付ファイル"
 
-#: html/SelfService/Update.html:75 html/Ticket/Create.html:129 html/Ticket/Update.html:95
+#: html/SelfService/Update.html:75 html/Ticket/Create.html:130 html/Ticket/Update.html:94
 msgid "Attached file"
 msgstr ""
 
@@ -800,11 +807,11 @@ msgstr ""
 msgid "Attachment '%1' could not be loaded"
 msgstr "添付ファイル%1は見つかりません"
 
-#: lib/RT/Transaction_Overlay.pm:478
+#: lib/RT/Transaction_Overlay.pm:476
 msgid "Attachment created"
 msgstr "添付ファイルが作成されました"
 
-#: lib/RT/Tickets_Overlay.pm:1720
+#: lib/RT/Tickets_Overlay.pm:1932
 msgid "Attachment filename"
 msgstr "添付ファイル名"
 
@@ -856,7 +863,7 @@ msgstr "添付ファイルにとって悪いトランザクションナンバー
 msgid "Basics"
 msgstr "基本"
 
-#: html/Ticket/Update.html:89
+#: html/Ticket/Update.html:88
 msgid "Bcc"
 msgstr "Bcc"
 
@@ -884,11 +891,11 @@ msgstr ""
 msgid "Bookmarkable URL for this search"
 msgstr "この検索にブックマークのできるURLです"
 
-#: html/Search/Results.html:82
+#: html/Search/Results.html:79
 msgid "Bookmarkable link"
 msgstr ""
 
-#: html/Ticket/Elements/ShowHistory:60 html/Ticket/Elements/ShowHistory:65
+#: html/Ticket/Elements/ShowHistory:64 html/Ticket/Elements/ShowHistory:69
 msgid "Brief headers"
 msgstr "短いヘッダー"
 
@@ -900,7 +907,7 @@ msgstr ""
 msgid "Bulk ticket update"
 msgstr "チケットの一括アップデート"
 
-#: lib/RT/User_Overlay.pm:1883
+#: lib/RT/User_Overlay.pm:1790
 msgid "Can not modify system users"
 msgstr "システムユーザーを修正できません"
 
@@ -908,7 +915,7 @@ msgstr "システムユーザーを修正できません"
 msgid "Can this principal see this queue"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:373
+#: lib/RT/CustomField_Overlay.pm:378
 msgid "Can't add a custom field value without a name"
 msgstr "氏名なしにカスタムフィールドバリューの追加はできません"
 
@@ -917,7 +924,7 @@ msgstr "氏名なしにカスタムフィールドバリューの追加はでき
 msgid "Can't find a collection class for '%1'"
 msgstr ""
 
-#: html/Search/Build.html:742
+#: html/Search/Build.html:745
 msgid "Can't find a saved search to work with"
 msgstr ""
 
@@ -929,15 +936,15 @@ msgstr "チケット自体にはリンクできません"
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "すでに結合したチケットには結合できません。このエラーは決して出さないでください"
 
-#: html/Search/Build.html:748
+#: html/Search/Build.html:751
 msgid "Can't save this search"
 msgstr ""
 
-#: lib/RT/Record.pm:1270 lib/RT/Record.pm:1348
+#: lib/RT/Record.pm:1281 lib/RT/Record.pm:1359
 msgid "Can't specifiy both base and target"
 msgstr "ベースとターゲット両方を指定する事はできません"
 
-#: html/autohandler:166
+#: html/autohandler:193
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "ユーザー: %1を作成できません"
@@ -946,7 +953,7 @@ msgstr "ユーザー: %1を作成できません"
 msgid "Category"
 msgstr ""
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:86 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:84 lib/RT/ACE_Overlay.pm:113
+#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:87 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:113
 msgid "Cc"
 msgstr "Cc"
 
@@ -954,11 +961,11 @@ msgstr "Cc"
 msgid "Change password"
 msgstr "パスワードを変更する"
 
-#: html/Elements/Submit:91
+#: html/Elements/Submit:78
 msgid "Check All"
 msgstr ""
 
-#: html/SelfService/Update.html:78 html/Ticket/Create.html:132 html/Ticket/Update.html:98
+#: html/SelfService/Update.html:78 html/Ticket/Create.html:133 html/Ticket/Update.html:97
 msgid "Check box to delete"
 msgstr ""
 
@@ -966,12 +973,12 @@ msgstr ""
 msgid "Check box to revoke right"
 msgstr "権利を無効にするチェックボックス"
 
-#: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:64
 # XXX - I can't come up with a good translation yet. leave as is in English
+#: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:64
 msgid "Children"
 msgstr ""
 
-#: html/NoAuth/js/util.js:70 html/NoAuth/js/util.js:88
+#: html/NoAuth/js/util.js:157
 msgid "Choose a date"
 msgstr ""
 
@@ -979,7 +986,7 @@ msgstr ""
 msgid "City"
 msgstr "町"
 
-#: html/Elements/Submit:93
+#: html/Elements/Submit:80
 msgid "Clear All"
 msgstr ""
 
@@ -995,7 +1002,7 @@ msgstr "解決日時"
 msgid "Closed requests"
 msgstr "終了したリクエストです"
 
-#: html/SelfService/Closed.html:46 html/SelfService/Elements/Tabs:66
+#: html/SelfService/Closed.html:46 html/SelfService/Elements/Tabs:78
 msgid "Closed tickets"
 msgstr ""
 
@@ -1015,7 +1022,7 @@ msgstr ""
 msgid "Command not understood!\\n"
 msgstr "理解していないコマンド!\\n"
 
-#: html/Ticket/Elements/ShowTransaction:189 html/Ticket/Elements/Tabs:178
+#: html/Ticket/Elements/ShowTransaction:190 html/Ticket/Elements/Tabs:178
 msgid "Comment"
 msgstr "コメント"
 
@@ -1039,7 +1046,7 @@ msgstr ""
 msgid "Comments"
 msgstr "コメント"
 
-#: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:76
+#: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75
 msgid "Comments (Not sent to requestors)"
 msgstr "コメント（リクエスとした人には送信されません）"
 
@@ -1051,11 +1058,11 @@ msgstr "コメント（リクエスとした人には送信されません）"
 msgid "Comments about %1"
 msgstr "%1についてのコメント"
 
-#: html/Admin/Users/Modify.html:224 html/Ticket/Elements/ShowRequestor:66
+#: html/Admin/Users/Modify.html:221 html/Ticket/Elements/ShowRequestor:67
 msgid "Comments about this user"
 msgstr "このユーザーについてのコメント"
 
-#: lib/RT/Transaction_Overlay.pm:623
+#: lib/RT/Transaction_Overlay.pm:621
 msgid "Comments added"
 msgstr "コメントが追加されました"
 
@@ -1115,7 +1122,7 @@ msgstr ""
 msgid "Correspondence Address"
 msgstr "メールアドレス"
 
-#: lib/RT/Transaction_Overlay.pm:619
+#: lib/RT/Transaction_Overlay.pm:617
 msgid "Correspondence added"
 msgstr "通信が追加されました"
 
@@ -1127,20 +1134,20 @@ msgstr "記録されていない通信"
 msgid "Could not add new custom field value for ticket. "
 msgstr "チケットの新しいカスタムフィールドバリューを追加できませんでした"
 
-#: lib/RT/Record.pm:1697
+#: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
 msgstr ""
 
-#: lib/RT/Record.pm:1650
+#: lib/RT/Record.pm:1660
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2987 lib/RT/Ticket_Overlay.pm:2995 lib/RT/Ticket_Overlay.pm:3012
+#: lib/RT/Ticket_Overlay.pm:2993 lib/RT/Ticket_Overlay.pm:3001 lib/RT/Ticket_Overlay.pm:3018
 msgid "Could not change owner. "
 msgstr "担当者変更ができませんでした"
 
-#: html/Admin/CustomFields/Modify.html:135
+#: html/Admin/CustomFields/Modify.html:161
 #. ($msg)
 msgid "Could not create CustomField"
 msgstr "カスタムフィールドの作成ができませんでした"
@@ -1150,7 +1157,7 @@ msgstr "カスタムフィールドの作成ができませんでした"
 msgid "Could not create CustomField: %1"
 msgstr ""
 
-#: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:502 lib/RT/Group_Overlay.pm:509
+#: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:494 lib/RT/Group_Overlay.pm:501
 msgid "Could not create group"
 msgstr "グループの作成ができませんでした"
 
@@ -1175,11 +1182,11 @@ msgstr "チケットとそのID%1が見つかりませんでした"
 msgid "Could not find group %1."
 msgstr "グループ %1が見つかりませんでした"
 
-#: lib/RT/Queue_Overlay.pm:738 lib/RT/Ticket_Overlay.pm:1385
+#: lib/RT/Queue_Overlay.pm:742 lib/RT/Ticket_Overlay.pm:1394
 msgid "Could not find or create that user"
 msgstr "そのユーザーを作成または見つけることができませんでした"
 
-#: lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1466
+#: lib/RT/Queue_Overlay.pm:803 lib/RT/Ticket_Overlay.pm:1475
 msgid "Could not find that principal"
 msgstr "その責任者を見つけることができませんでした"
 
@@ -1191,7 +1198,7 @@ msgstr "ユーザー%1を見つけることができませんでした"
 msgid "Could not load CustomField %1"
 msgstr ""
 
-#: html/Admin/Groups/Members.html:109 html/User/Groups/Members.html:111 html/User/Groups/Modify.html:103
+#: html/Admin/Groups/Members.html:112 html/User/Groups/Members.html:111 html/User/Groups/Modify.html:103
 msgid "Could not load group"
 msgstr "グループをロードできませんでした"
 
@@ -1204,17 +1211,17 @@ msgstr ""
 msgid "Could not load search attribute"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:758
+#: lib/RT/Queue_Overlay.pm:762
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "このキューでその責任者を%1にすることができませんでした"
 
-#: lib/RT/Ticket_Overlay.pm:1406
+#: lib/RT/Ticket_Overlay.pm:1415
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "このチケットでその責任者を%1にすることができませんでした"
 
-#: lib/RT/Queue_Overlay.pm:857
+#: lib/RT/Queue_Overlay.pm:861
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "このキューでその責任者を%1として削除することができませんでした"
@@ -1227,11 +1234,11 @@ msgstr "このチケットでその責任者を%1として削除することが�
 msgid "Could not set user info"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1011
+#: lib/RT/Group_Overlay.pm:1003
 msgid "Couldn't add member to group"
 msgstr "グループにメンバーの追加ができませんでした"
 
-#: lib/RT/Record.pm:1709 lib/RT/Record.pm:1761
+#: lib/RT/Record.pm:1719 lib/RT/Record.pm:1771
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "トランザクション: %1の作成ができませんでした"
@@ -1244,15 +1251,15 @@ msgstr "GPGの返事\\nから何を行ったらよいのかわかりませんで
 msgid "Couldn't find group\\n"
 msgstr "グループ\\nが見つかりませんでした"
 
-#: lib/RT/Record.pm:943
+#: lib/RT/Record.pm:954
 msgid "Couldn't find row"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:985
+#: lib/RT/Group_Overlay.pm:977
 msgid "Couldn't find that principal"
 msgstr "責任者が見つかりませんでした"
 
-#: lib/RT/CustomField_Overlay.pm:403
+#: lib/RT/CustomField_Overlay.pm:408
 msgid "Couldn't find that value"
 msgstr "そのバリューが見つかりませんでした"
 
@@ -1319,17 +1326,17 @@ msgstr "テンプレートをロードできませんでした"
 msgid "Couldn't load that user (%1)"
 msgstr "そのユーザー（%1）をロードできませんでした"
 
-#: html/SelfService/Display.html:156
+#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "チケット'%1'をロードできませんでした"
 
-#: lib/RT/Ticket_Overlay.pm:2595
+#: lib/RT/Ticket_Overlay.pm:2590
 #. ($args{'Base'})
 msgid "Couldn't resolve base '%1' into a URI."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2594
+#: lib/RT/Ticket_Overlay.pm:2589
 #. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr ""
@@ -1338,7 +1345,7 @@ msgstr ""
 msgid "Country"
 msgstr "国"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:166 html/Ticket/Create.html:233
+#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:167 html/Ticket/Create.html:234
 msgid "Create"
 msgstr "作成"
 
@@ -1346,7 +1353,7 @@ msgstr "作成"
 msgid "Create Tickets"
 msgstr ""
 
-#: html/Admin/CustomFields/Modify.html:124 html/Admin/Elements/EditCustomField:96
+#: html/Admin/CustomFields/Modify.html:150 html/Admin/Elements/EditCustomField:96
 msgid "Create a CustomField"
 msgstr "カスタムフィールドの作成"
 
@@ -1379,11 +1386,11 @@ msgstr "新しいキューの作成"
 msgid "Create a new template"
 msgstr "新しいテンプレートの作成"
 
-#: html/Ticket/Create.html:47 html/Ticket/Create.html:51 html/Ticket/Create.html:58
+#: html/Ticket/Create.html:47 html/Ticket/Create.html:51 html/Ticket/Create.html:59
 msgid "Create a new ticket"
 msgstr "新しいチケットの作成"
 
-#: html/Admin/Users/Modify.html:251 html/Admin/Users/Modify.html:306
+#: html/Admin/Users/Modify.html:248 html/Admin/Users/Modify.html:303
 msgid "Create a new user"
 msgstr "新しいユーザーの作成"
 
@@ -1452,7 +1459,7 @@ msgstr ""
 msgid "Created"
 msgstr "作成日時"
 
-#: html/Admin/CustomFields/Modify.html:137 html/Admin/Elements/EditCustomField:117
+#: html/Admin/CustomFields/Modify.html:163 html/Admin/Elements/EditCustomField:117
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "カスタムフィールド%1を作成しました"
@@ -1497,7 +1504,7 @@ msgstr ""
 msgid "Current watchers"
 msgstr "現在のウォッチャー"
 
-#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:208 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:56
+#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62 html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:205 html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:56
 msgid "Custom Fields"
 msgstr "カスタムフィールド"
 
@@ -1522,17 +1529,17 @@ msgstr ""
 msgid "Custom field %1 %2 %3"
 msgstr "カスタムフィールド%1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:2194
+#: lib/RT/Tickets_Overlay.pm:2411
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "カスタムフィールド%1はバリューがあります"
 
-#: lib/RT/Tickets_Overlay.pm:2190
+#: lib/RT/Tickets_Overlay.pm:2407
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "カスタムフィールド%1はバリューがありません"
 
-#: lib/RT/Record.pm:1583 lib/RT/Record.pm:1744
+#: lib/RT/Record.pm:1593 lib/RT/Record.pm:1754
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "カスタムフィールド%1が見つかりません"
@@ -1541,7 +1548,7 @@ msgstr "カスタムフィールド%1が見つかりません"
 msgid "Custom field not found"
 msgstr "カスタムフィールドが見つかりません"
 
-#: lib/RT/CustomField_Overlay.pm:1144
+#: lib/RT/CustomField_Overlay.pm:1155
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "カスタムフィールド%2のためのカスタムフィールドバリュー%1が見つかりません"
@@ -1550,19 +1557,19 @@ msgstr "カスタムフィールド%2のためのカスタムフィールドバ�
 msgid "Custom field value changed from %1 to %2"
 msgstr "カスタムフィールドが%1から%2に変更されました"
 
-#: lib/RT/CustomField_Overlay.pm:413
+#: lib/RT/CustomField_Overlay.pm:418
 msgid "Custom field value could not be deleted"
 msgstr "カスタムフィールドバリューは削除されません"
 
-#: lib/RT/CustomField_Overlay.pm:1150
+#: lib/RT/CustomField_Overlay.pm:1167
 msgid "Custom field value could not be found"
 msgstr "カスタムフィールドバリューが見つかりません"
 
-#: lib/RT/CustomField_Overlay.pm:1152 lib/RT/CustomField_Overlay.pm:411
+#: lib/RT/CustomField_Overlay.pm:1169 lib/RT/CustomField_Overlay.pm:416
 msgid "Custom field value deleted"
 msgstr "カスタムフィールドバリューが削除されました"
 
-#: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51 lib/RT/Transaction_Overlay.pm:627
+#: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51 lib/RT/Transaction_Overlay.pm:625
 msgid "CustomField"
 msgstr ""
 
@@ -1570,7 +1577,7 @@ msgstr ""
 msgid "Customize"
 msgstr ""
 
-#: html/SelfService/Display.html:61 html/Ticket/Create.html:201 html/Ticket/Elements/ShowSummary:81 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
+#: html/SelfService/Display.html:61 html/Ticket/Create.html:202 html/Ticket/Elements/ShowSummary:81 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
 msgstr "日付"
 
@@ -1643,7 +1650,7 @@ msgstr ""
 msgid "Delete tickets"
 msgstr ""
 
-#: html/Search/Bulk.html:160
+#: html/Search/Bulk.html:159
 msgid "Delete values"
 msgstr ""
 
@@ -1659,7 +1666,7 @@ msgstr ""
 msgid "Deleting this object could break referential integrity"
 msgstr "このオブジェクトを削除すると指示の完全性がくずされる可能性があります"
 
-#: lib/RT/Queue_Overlay.pm:391
+#: lib/RT/Queue_Overlay.pm:395
 msgid "Deleting this object would break referential integrity"
 msgstr "このオブジェクトを削除すると指示の完全性がくずされます"
 
@@ -1671,7 +1678,7 @@ msgstr "このオブジェクトを削除すると指示の完全性が妨害さ
 msgid "Deny"
 msgstr ""
 
-#: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:219 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
+#: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
 msgid "Depended on by"
 msgstr "依存されているチケット"
 
@@ -1679,35 +1686,39 @@ msgstr "依存されているチケット"
 msgid "Dependencies: \\n"
 msgstr "従属チケット: \\n"
 
-#: lib/RT/Transaction_Overlay.pm:707
+#: lib/RT/Transaction_Overlay.pm:705
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:747
+#: lib/RT/Transaction_Overlay.pm:745
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:704
+#: lib/RT/Transaction_Overlay.pm:702
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:744
+#: lib/RT/Transaction_Overlay.pm:742
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr ""
 
-#: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:218 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
+#: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:219 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
 msgstr "依存しているチケット"
 
-#: html/Elements/SelectSortOrder:56 html/Search/Elements/DisplayOptions:78
+#: html/Search/Elements/DisplayOptions:86
+msgid "Desc"
+msgstr ""
+
+#: html/Elements/SelectSortOrder:56
 msgid "Descending"
 msgstr "降順"
 
-#: html/SelfService/Create.html:100 html/Ticket/Create.html:150
+#: html/SelfService/Create.html:100 html/Ticket/Create.html:151
 msgid "Describe the issue below"
 msgstr "チケットの本文を以下に書き込んでください"
 
@@ -1739,11 +1750,11 @@ msgstr ""
 msgid "Display Scrips for this queue"
 msgstr ""
 
-#: html/Ticket/Elements/ShowHistory:56
+#: html/Ticket/Elements/ShowHistory:59
 msgid "Display mode"
 msgstr "モードを表す"
 
-#: lib/RT/Group_Overlay.pm:176
+#: lib/RT/Group_Overlay.pm:168
 msgid "Display saved searches for this group"
 msgstr ""
 
@@ -1751,7 +1762,7 @@ msgstr ""
 msgid "Display ticket #%1"
 msgstr "チケット#%1を表す"
 
-#: html/Elements/Footer:67
+#: html/Elements/Footer:62
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr ""
 
@@ -1771,7 +1782,7 @@ msgstr "ダウンロード"
 msgid "Download as a tab-delimited file"
 msgstr ""
 
-#: html/Elements/SelectDateType:53 html/Ticket/Create.html:207 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:86 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
+#: html/Elements/SelectDateType:53 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:88 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
 msgid "Due"
 msgstr "終了予定日時"
 
@@ -1783,7 +1794,7 @@ msgstr "期限が切れる日'%1'は解析されません"
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "ERROR: はチケット '%1': %2.\\nをロードできませんでした"
 
-#: html/Elements/Quicksearch:48 html/Elements/ShowSearch:49 html/index.html:76
+#: html/Elements/Quicksearch:48 html/Elements/ShowSearch:49 html/index.html:107
 msgid "Edit"
 msgstr "編集"
 
@@ -1808,7 +1819,7 @@ msgstr ""
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr ""
 
-#: html/Search/Bulk.html:189 html/Ticket/ModifyLinks.html:57
+#: html/Search/Bulk.html:188 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
 msgstr "関係を編集する"
 
@@ -1825,7 +1836,7 @@ msgstr ""
 msgid "Edit Templates for queue %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:175
+#: lib/RT/Group_Overlay.pm:167
 msgid "Edit saved searches for this group"
 msgstr ""
 
@@ -1841,7 +1852,7 @@ msgstr "システムテンプレートを編集する"
 msgid "Edit templates for %1"
 msgstr "%1のテンプレートを編集する"
 
-#: lib/RT/Group_Overlay.pm:175
+#: lib/RT/Group_Overlay.pm:167
 msgid "EditSavedSearches"
 msgstr ""
 
@@ -1854,7 +1865,7 @@ msgstr "キュー%1の設定を編集する"
 msgid "Editing Configuration for user %1"
 msgstr "ユーザー%1の設定を編集する"
 
-#: html/Admin/CustomFields/Modify.html:141 html/Admin/Elements/EditCustomField:120
+#: html/Admin/CustomFields/Modify.html:167 html/Admin/Elements/EditCustomField:120
 #. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
 msgstr "カスタムフィールド%1を編集する"
@@ -1873,7 +1884,7 @@ msgstr "個人グループ%1の会員を編集する"
 msgid "Editing template %1"
 msgstr "テンプレート%1を編集する"
 
-#: lib/RT/Record.pm:1285 lib/RT/Record.pm:1362
+#: lib/RT/Record.pm:1296 lib/RT/Record.pm:1373
 msgid "Either base or target must be specified"
 msgstr "ベースもしくはターゲットを指定しなければなりません"
 
@@ -1909,12 +1920,12 @@ msgstr "有効になりました（もう一度このボックスをチェック
 msgid "Enabled Queues"
 msgstr "有効なキュー"
 
-#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:342 html/User/Groups/Modify.html:138
+#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:339 html/User/Groups/Modify.html:138
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "有効なステータス%1"
 
-#: html/Admin/CustomFields/Modify.html:159 html/Admin/Queues/Modify.html:162
+#: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (loc_fuzzy($msg))
 msgid "Enabled status: %1"
 msgstr ""
@@ -1935,7 +1946,7 @@ msgstr ""
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr ""
 
-#: html/Elements/EditLinks:119 html/Search/Bulk.html:190
+#: html/Elements/EditLinks:119 html/Search/Bulk.html:189
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "チケットをリンクするチケットまたはURLsを入力してください。入力する項目がいくつかある場合にはスペースで区切ってください。"
 
@@ -1943,11 +1954,11 @@ msgstr "チケットをリンクするチケットまたはURLsを入力して�
 msgid "Enter up to %1 values"
 msgstr ""
 
-#: html/Elements/Login:67 html/SelfService/Error.html:46 html/SelfService/Error.html:47
+#: html/Elements/Login:76 html/SelfService/Error.html:46 html/SelfService/Error.html:47
 msgid "Error"
 msgstr "エラー"
 
-#: lib/RT/Queue_Overlay.pm:669
+#: lib/RT/Queue_Overlay.pm:673
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "パラメーターのエラーQueue->AddWatcher"
 
@@ -1955,11 +1966,11 @@ msgstr "パラメーターのエラーQueue->AddWatcher"
 msgid "Error in parameters to Queue->DelWatcher"
 msgstr "パラメーターのエラーQueue->DelWatcher"
 
-#: lib/RT/Queue_Overlay.pm:830
+#: lib/RT/Queue_Overlay.pm:834
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:1334
+#: lib/RT/Ticket_Overlay.pm:1343
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "パラメーターのエラーTicket->AddWatcher"
 
@@ -1967,7 +1978,7 @@ msgstr "パラメーターのエラーTicket->AddWatcher"
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "パラメーターのエラーTicket->DelWatcher"
 
-#: lib/RT/Ticket_Overlay.pm:1500
+#: lib/RT/Ticket_Overlay.pm:1509
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr ""
 
@@ -2045,6 +2056,10 @@ msgstr ""
 msgid "Fill in one wikitext area"
 msgstr ""
 
+#: html/Admin/CustomFields/Modify.html:107 html/Admin/CustomFields/Modify.html:118
+msgid "Fill in this field with a URL."
+msgstr ""
+
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
 msgstr ""
@@ -2057,7 +2072,7 @@ msgstr ""
 msgid "Fin"
 msgstr "終了"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:180 html/Ticket/Elements/EditBasics:92 lib/RT/Tickets_Overlay.pm:1616
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 lib/RT/Tickets_Overlay.pm:1828
 msgid "Final Priority"
 msgstr "最終優先順位"
 
@@ -2077,7 +2092,7 @@ msgstr "新しい/開くチケットを見つける"
 msgid "Find people whose"
 msgstr "人々を見つける"
 
-#: html/Search/Results.html:144
+#: html/Search/Results.html:147
 msgid "Find tickets"
 msgstr ""
 
@@ -2105,12 +2120,12 @@ msgstr "変更を強制します"
 msgid "Format"
 msgstr ""
 
-#: html/Search/Results.html:142
+#: html/Search/Results.html:145
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
 msgstr ""
 
-#: lib/RT/Record.pm:946
+#: lib/RT/Record.pm:957
 msgid "Found Object"
 msgstr ""
 
@@ -2122,11 +2137,11 @@ msgstr "フリーフォームコンタクト情報"
 msgid "Fri."
 msgstr "金曜日"
 
-#: html/Ticket/Elements/ShowHistory:62 html/Ticket/Elements/ShowHistory:68
+#: html/Ticket/Elements/ShowHistory:66 html/Ticket/Elements/ShowHistory:72
 msgid "Full headers"
 msgstr "フルヘッダー"
 
-#: html/Tools/Offline.html:87
+#: html/Tools/Offline.html:85
 msgid "Get template from file"
 msgstr ""
 
@@ -2134,7 +2149,7 @@ msgstr ""
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "pgp sig\\nから現在のユーザーを得る"
 
-#: lib/RT/Transaction_Overlay.pm:673
+#: lib/RT/Transaction_Overlay.pm:671
 #. ($New->Name)
 msgid "Given to %1"
 msgstr ""
@@ -2160,11 +2175,11 @@ msgstr ""
 msgid "Global template: %1"
 msgstr ""
 
-#: html/Admin/CustomFields/index.html:80 html/Search/Results.html:95 html/Tools/Offline.html:91
+#: html/Admin/CustomFields/index.html:80 html/Search/Results.html:90 html/Tools/Offline.html:89
 msgid "Go"
 msgstr ""
 
-#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Elements/RefreshHomepage:48 html/Search/Results.html:77 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
+#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Elements/RefreshHomepage:48 html/Search/Results.html:74 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
 msgid "Go!"
 msgstr "行く！"
 
@@ -2192,7 +2207,7 @@ msgstr "グループ%1 %2: %3"
 msgid "Group Rights"
 msgstr "グループ権利"
 
-#: lib/RT/Group_Overlay.pm:991
+#: lib/RT/Group_Overlay.pm:983
 msgid "Group already has member"
 msgstr "グループにはすでにメンバーがいます"
 
@@ -2201,15 +2216,15 @@ msgstr "グループにはすでにメンバーがいます"
 msgid "Group could not be created: %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:529
+#: lib/RT/Group_Overlay.pm:521
 msgid "Group created"
 msgstr "グループが作成されました"
 
-#: lib/RT/Group_Overlay.pm:1163
+#: lib/RT/Group_Overlay.pm:1155
 msgid "Group has no such member"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:971 lib/RT/Queue_Overlay.pm:745 lib/RT/Queue_Overlay.pm:805 lib/RT/Ticket_Overlay.pm:1392 lib/RT/Ticket_Overlay.pm:1472
+#: lib/RT/Group_Overlay.pm:963 lib/RT/Queue_Overlay.pm:749 lib/RT/Queue_Overlay.pm:809 lib/RT/Ticket_Overlay.pm:1401 lib/RT/Ticket_Overlay.pm:1481
 msgid "Group not found"
 msgstr "グループが見つかりません"
 
@@ -2221,11 +2236,11 @@ msgstr "グループが見つかりません。\\n"
 msgid "Group not specified.\\n"
 msgstr "グループが指定されていません。\\n"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:56 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:85 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1191
+#: html/Admin/Elements/GlobalCustomFieldTabs:59 html/Admin/Elements/SelectNewGroupMembers:57 html/Admin/Elements/Tabs:56 html/Admin/Global/CustomFields/index.html:69 html/Admin/Groups/Members.html:86 html/Admin/Queues/People.html:104 html/Admin/Users/Memberships.html:53 html/Admin/index.html:67 html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1208
 msgid "Groups"
 msgstr "グループ"
 
-#: lib/RT/Group_Overlay.pm:997
+#: lib/RT/Group_Overlay.pm:989
 msgid "Groups can't be members of their members"
 msgstr "グループは彼らのメンバーにはなれません"
 
@@ -2233,7 +2248,7 @@ msgstr "グループは彼らのメンバーにはなれません"
 msgid "Groups matching search criteria"
 msgstr ""
 
-#: html/Ticket/Elements/ShowRequestor:76
+#: html/Ticket/Elements/ShowRequestor:77
 msgid "Groups this user belongs to"
 msgstr ""
 
@@ -2246,7 +2261,7 @@ msgstr "こんにちは！"
 msgid "Hello, %1"
 msgstr "こんにちは、%1さん"
 
-#: html/Admin/Elements/GroupTabs:70 html/Admin/Elements/UserTabs:64 html/Ticket/Elements/ShowHistory:51 html/Ticket/Elements/Tabs:111
+#: html/Admin/Elements/GroupTabs:70 html/Admin/Elements/UserTabs:64 html/Ticket/Elements/ShowHistory:53 html/Ticket/Elements/Tabs:111
 msgid "History"
 msgstr "更新履歴"
 
@@ -2272,7 +2287,7 @@ msgstr "ホーム"
 msgid "Hours"
 msgstr ""
 
-#: lib/RT/Base.pm:110
+#: lib/RT/Base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr ""
@@ -2281,11 +2296,11 @@ msgstr ""
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "私は[quant,_1,concrete mixer]があります。"
 
-#: html/Search/Build.html:615
+#: html/Search/Build.html:400
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1541
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1753
 msgid "Id"
 msgstr "ID"
 
@@ -2309,15 +2324,15 @@ msgstr ""
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr ""
 
-#: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:59
+#: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:60
 msgid "If you've updated anything above, be sure to"
 msgstr "変更を反映するにはボタンを推してください"
 
-#: lib/RT/Record.pm:937
+#: lib/RT/Record.pm:948
 msgid "Illegal value for %1"
 msgstr ""
 
-#: lib/RT/Record.pm:940
+#: lib/RT/Record.pm:951
 msgid "Immutable field"
 msgstr ""
 
@@ -2333,15 +2348,19 @@ msgstr "リストの無効なキューを含む"
 msgid "Include disabled users in search."
 msgstr "検索の無効なユーザーを含む"
 
-#: html/Search/Build.html:641
+#: html/Admin/CustomFields/Modify.html:113
+msgid "Include page"
+msgstr ""
+
+#: html/Search/Build.html:426
 msgid "Incomplete Query"
 msgstr ""
 
-#: html/Search/Build.html:638
+#: html/Search/Build.html:423
 msgid "Incomplete query"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1591
+#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1803
 msgid "Initial Priority"
 msgstr "最初の優先権"
 
@@ -2353,13 +2372,13 @@ msgstr ""
 msgid "Input error"
 msgstr "入力エラー"
 
-#: html/Elements/ValidateCustomFields:23 lib/RT/CustomField_Overlay.pm:1008
+#: html/Elements/ValidateCustomFields:23 lib/RT/CustomField_Overlay.pm:1019 lib/RT/CustomField_Overlay.pm:1160
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:3437
+#: lib/RT/Ticket_Overlay.pm:3448
 msgid "Internal Error"
 msgstr ""
 
@@ -2368,7 +2387,7 @@ msgstr ""
 msgid "Internal Error: %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:676
+#: lib/RT/Group_Overlay.pm:668
 msgid "Invalid Group Type"
 msgstr "無効なグループタイプです"
 
@@ -2376,7 +2395,7 @@ msgstr "無効なグループタイプです"
 msgid "Invalid Right"
 msgstr ""
 
-#: lib/RT/Record.pm:942
+#: lib/RT/Record.pm:953
 msgid "Invalid data"
 msgstr ""
 
@@ -2384,12 +2403,12 @@ msgstr ""
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "無効な担当者です。 '誰でもない'に初期設定します."
 
-#: lib/RT/CustomField_Overlay.pm:202 lib/RT/CustomField_Overlay.pm:666
+#: lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:677
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr ""
 
-#: lib/RT/Scrip_Overlay.pm:158 lib/RT/Template_Overlay.pm:276
+#: lib/RT/Scrip_Overlay.pm:158 lib/RT/Template_Overlay.pm:244
 msgid "Invalid queue"
 msgstr "無効なキューです"
 
@@ -2402,7 +2421,7 @@ msgstr "無効な権利です"
 msgid "Invalid value for %1"
 msgstr "%1には無効なバリューです"
 
-#: lib/RT/Record.pm:1601
+#: lib/RT/Record.pm:1611
 msgid "Invalid value for custom field"
 msgstr "カスタムフィールドには無効なバリューです"
 
@@ -2430,7 +2449,7 @@ msgstr ""
 msgid "Jan."
 msgstr "1月"
 
-#: lib/RT/Group_Overlay.pm:174
+#: lib/RT/Group_Overlay.pm:166
 msgid "Join or leave this group"
 msgstr ""
 
@@ -2438,7 +2457,7 @@ msgstr ""
 msgid "Jul."
 msgstr "7月"
 
-#: html/Ticket/Elements/Tabs:124
+#: html/Ticket/Elements/Tabs:125
 msgid "Jumbo"
 msgstr "総合"
 
@@ -2506,25 +2525,25 @@ msgstr "キューを%1 %2に制限します"
 msgid "Link"
 msgstr ""
 
-#: lib/RT/Record.pm:1296
+#: lib/RT/Record.pm:1307
 msgid "Link already exists"
 msgstr "リンクはすでに存在しています"
 
-#: lib/RT/Record.pm:1310
+#: lib/RT/Record.pm:1321
 msgid "Link could not be created"
 msgstr "リンクが作成されませんでした"
 
-#: lib/RT/Record.pm:1316
+#: lib/RT/Record.pm:1327
 #. ($TransString)
 msgid "Link created (%1)"
 msgstr "リンクが作成されました（%1）"
 
-#: lib/RT/Record.pm:1377
+#: lib/RT/Record.pm:1388
 #. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "リンクが削除されました（%1）"
 
-#: lib/RT/Record.pm:1383
+#: lib/RT/Record.pm:1394
 msgid "Link not found"
 msgstr "リンクが見つかりません"
 
@@ -2533,15 +2552,19 @@ msgstr "リンクが見つかりません"
 msgid "Link ticket #%1"
 msgstr "リンクチケット#%1"
 
-#: html/Ticket/Create.html:214 html/Ticket/Elements/ShowSummary:87 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
+#: html/Admin/CustomFields/Modify.html:102
+msgid "Link values to"
+msgstr ""
+
+#: html/Ticket/Create.html:215 html/Ticket/Elements/ShowSummary:87 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
 msgstr "リンク"
 
-#: html/Search/Elements/EditSearches:76
+#: html/Search/Elements/EditSearches:73
 msgid "Load"
 msgstr ""
 
-#: html/Search/Elements/EditSearches:74
+#: html/Search/Elements/EditSearches:71
 msgid "Load saved search:"
 msgstr ""
 
@@ -2562,25 +2585,24 @@ msgstr ""
 msgid "Location"
 msgstr "住所"
 
-#: lib/RT.pm:212
-#. ($RT::LogDir)
+#: NOT FOUND IN SOURCE
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "ログディレクトリー%1が見つからない、または書き出せません。\\n RTが動きません"
 
-#: html/Elements/Header:82
+#: html/Elements/Header:86
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
 msgid "Logged in as %1"
 msgstr "\"%1\"でログインしています"
 
-#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:57 html/Elements/Login:73 html/Elements/Login:89 lib/RT/StyleGuide.pod:797
+#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:100 html/Elements/Login:68 html/Elements/Login:84 lib/RT/StyleGuide.pod:797
 msgid "Login"
 msgstr "ログイン"
 
-#: html/Elements/Header:92
+#: html/Elements/Header:96
 msgid "Logout"
 msgstr "ログアウト"
 
-#: lib/RT/CustomField_Overlay.pm:920
+#: lib/RT/CustomField_Overlay.pm:931
 msgid "Lookup type mismatch"
 msgstr ""
 
@@ -2624,7 +2646,7 @@ msgstr "キューを決める"
 msgid "Make subject"
 msgstr "サブジェクトを決める"
 
-#: lib/RT/Group_Overlay.pm:177
+#: lib/RT/Group_Overlay.pm:169
 msgid "Make this group visible to user"
 msgstr ""
 
@@ -2656,25 +2678,25 @@ msgstr "3月"
 msgid "May."
 msgstr "5月"
 
-#: lib/RT/Transaction_Overlay.pm:720
+#: lib/RT/Transaction_Overlay.pm:718
 #. ($value)
 msgid "Member %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:760
+#: lib/RT/Transaction_Overlay.pm:758
 #. ($value)
 msgid "Member %1 deleted"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1008
+#: lib/RT/Group_Overlay.pm:1000
 msgid "Member added"
 msgstr "メンバーが追加されました"
 
-#: lib/RT/Group_Overlay.pm:1170
+#: lib/RT/Group_Overlay.pm:1162
 msgid "Member deleted"
 msgstr "メンバーが削除されました"
 
-#: lib/RT/Group_Overlay.pm:1174
+#: lib/RT/Group_Overlay.pm:1166
 msgid "Member not deleted"
 msgstr "メンバーが削除されていません"
 
@@ -2686,12 +2708,12 @@ msgstr "のメンバー"
 msgid "Members"
 msgstr "メンバー"
 
-#: lib/RT/Transaction_Overlay.pm:717
+#: lib/RT/Transaction_Overlay.pm:715
 #. ($value)
 msgid "Membership in %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:757
+#: lib/RT/Transaction_Overlay.pm:755
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr ""
@@ -2705,15 +2727,15 @@ msgstr ""
 msgid "Memberships of the user %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2832
+#: lib/RT/Ticket_Overlay.pm:2838
 msgid "Merge Successful"
 msgstr "結合が成功しました"
 
-#: lib/RT/Ticket_Overlay.pm:2719
+#: lib/RT/Ticket_Overlay.pm:2725
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "結合が失敗しました。有効なIDが設定できませんでした"
 
-#: lib/RT/Ticket_Overlay.pm:2727
+#: lib/RT/Ticket_Overlay.pm:2733
 msgid "Merge failed. Couldn't set Status"
 msgstr ""
 
@@ -2721,20 +2743,24 @@ msgstr ""
 msgid "Merge into"
 msgstr "に結合"
 
-#: lib/RT/Transaction_Overlay.pm:723
+#: lib/RT/Transaction_Overlay.pm:721
 #. ($value)
 msgid "Merged into %1"
 msgstr ""
 
-#: html/Search/Bulk.html:143 html/Ticket/Update.html:119
+#: html/Search/Bulk.html:143 html/Ticket/Update.html:118
 msgid "Message"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2389
+#: html/Ticket/Elements/ShowTransactionAttachments:163
+msgid "Message body not shown because it is too large or is not plain text."
+msgstr ""
+
+#: lib/RT/Ticket_Overlay.pm:2416
 msgid "Message could not be recorded"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2392
+#: lib/RT/Ticket_Overlay.pm:2419
 msgid "Message recorded"
 msgstr ""
 
@@ -2746,15 +2772,15 @@ msgstr ""
 msgid "Minutes"
 msgstr ""
 
-#: html/Search/Build.html:645
+#: html/Search/Build.html:430
 msgid "Mismatched parentheses"
 msgstr ""
 
-#: lib/RT/Record.pm:944
+#: lib/RT/Record.pm:955
 msgid "Missing a primary key?: %1"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:193 html/User/Prefs.html:93
+#: html/Admin/Users/Modify.html:193 html/User/Prefs.html:92
 msgid "Mobile"
 msgstr "携帯"
 
@@ -2784,7 +2810,7 @@ msgstr ""
 msgid "Modify Group Rights"
 msgstr ""
 
-#: html/Admin/Groups/Members.html:102 html/User/Groups/Members.html:101
+#: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
 msgid "Modify Members"
 msgstr ""
 
@@ -2828,7 +2854,7 @@ msgstr ""
 msgid "Modify dates for #%1"
 msgstr "#%1の期日を修正する"
 
-#: html/Ticket/ModifyDates.html:56
+#: html/Ticket/ModifyDates.html:57
 #. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
 msgstr "チケット#%1の期日を修正する"
@@ -2857,7 +2883,7 @@ msgstr ""
 msgid "Modify global user rights."
 msgstr "グローバルユーザーの権利を修正する"
 
-#: lib/RT/Group_Overlay.pm:171
+#: lib/RT/Group_Overlay.pm:163
 msgid "Modify group metadata or delete group"
 msgstr ""
 
@@ -2876,7 +2902,7 @@ msgstr "%1のグループ権利を修正する"
 msgid "Modify group rights for queue %1"
 msgstr "キュー%1のグループ権利を修正する"
 
-#: lib/RT/Group_Overlay.pm:173
+#: lib/RT/Group_Overlay.pm:165
 msgid "Modify membership roster for this group"
 msgstr ""
 
@@ -2889,7 +2915,7 @@ msgstr ""
 msgid "Modify people related to queue %1"
 msgstr "キュー%1に関係のある人々を修正する"
 
-#: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:56
+#: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
 #. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
@@ -2923,7 +2949,7 @@ msgstr "グループ%1を修正する"
 msgid "Modify the queue watchers"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:301
+#: html/Admin/Users/Modify.html:298
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "ユーザー%1を修正する"
@@ -2969,7 +2995,7 @@ msgstr ""
 msgid "ModifyCustomField"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:174
+#: lib/RT/Group_Overlay.pm:166
 msgid "ModifyOwnMembership"
 msgstr ""
 
@@ -2997,7 +3023,7 @@ msgstr ""
 msgid "Mon."
 msgstr "月曜日"
 
-#: html/Ticket/Elements/ShowRequestor:61
+#: html/Ticket/Elements/ShowRequestor:62
 #. ($name)
 msgid "More about %1"
 msgstr "さらに%1について"
@@ -3031,7 +3057,7 @@ msgstr ""
 msgid "My saved searches"
 msgstr ""
 
-#: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:158 html/User/Groups/Modify.html:65
+#: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
 msgid "Name"
 msgstr "名前"
 
@@ -3045,7 +3071,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "New"
-msgstr "新しい"
+msgstr "新規"
 
 #: html/Elements/EditLinks:117
 msgid "New Links"
@@ -3083,7 +3109,7 @@ msgstr "新しいパスワード情報が送られました"
 msgid "New queue"
 msgstr ""
 
-#: html/Ticket/Elements/Reminders:71
+#: html/Ticket/Elements/Reminders:73
 msgid "New reminder:"
 msgstr ""
 
@@ -3107,11 +3133,11 @@ msgstr "新しい検索"
 msgid "New template"
 msgstr ""
 
-#: html/SelfService/Elements/Tabs:69
+#: html/SelfService/Elements/Tabs:84 html/SelfService/Elements/Tabs:88
 msgid "New ticket"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2696
+#: lib/RT/Ticket_Overlay.pm:2702
 msgid "New ticket doesn't exist"
 msgstr "新しいチケットはありません"
 
@@ -3151,7 +3177,7 @@ msgstr "ニックネーム"
 msgid "No Class defined"
 msgstr ""
 
-#: html/Admin/CustomFields/Modify.html:140 html/Admin/Elements/EditCustomField:119
+#: html/Admin/CustomFields/Modify.html:166 html/Admin/Elements/EditCustomField:119
 msgid "No CustomField"
 msgstr "カスタムフィールドがありません"
 
@@ -3163,7 +3189,7 @@ msgstr ""
 msgid "No Group defined"
 msgstr "グループが定義されません"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:480
+#: lib/RT/Tickets_Overlay_SQL.pm:482
 msgid "No Query"
 msgstr ""
 
@@ -3191,7 +3217,7 @@ msgstr "チケットが指定されていません。チケットの修正を終
 msgid "No action"
 msgstr ""
 
-#: lib/RT/Record.pm:939
+#: lib/RT/Record.pm:950
 msgid "No column specified"
 msgstr ""
 
@@ -3199,7 +3225,7 @@ msgstr ""
 msgid "No command found\\n"
 msgstr "コマンドが見つかりません\\n"
 
-#: html/Ticket/Elements/ShowRequestor:67
+#: html/Ticket/Elements/ShowRequestor:68
 msgid "No comment entered about this user"
 msgstr "このユーザーに関してのコメントは入力されていません"
 
@@ -3207,12 +3233,12 @@ msgstr "このユーザーに関してのコメントは入力されていませ
 msgid "No correspondence attached"
 msgstr "通信文書の添付はありません"
 
-#: lib/RT/Action/Generic.pm:179 lib/RT/Condition/Generic.pm:198 lib/RT/Search/ActiveTicketsInQueue.pm:78 lib/RT/Search/Generic.pm:135 lib/RT/Search/Googleish.pm:78
+#: lib/RT/Action/Generic.pm:186 lib/RT/Condition/Generic.pm:198 lib/RT/Search/ActiveTicketsInQueue.pm:78 lib/RT/Search/Generic.pm:135 lib/RT/Search/Googleish.pm:78
 #. (ref $self)
 msgid "No description for %1"
 msgstr "%1記述はありません"
 
-#: lib/RT/Users_Overlay.pm:185
+#: lib/RT/Users_Overlay.pm:191
 msgid "No group specified"
 msgstr "グループが指定されていません"
 
@@ -3220,7 +3246,7 @@ msgstr "グループが指定されていません"
 msgid "No groups matching search criteria found."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2350
+#: lib/RT/Ticket_Overlay.pm:2359
 msgid "No message attached"
 msgstr ""
 
@@ -3228,7 +3254,7 @@ msgstr ""
 msgid "No password set"
 msgstr "パスワードが設定されません"
 
-#: lib/RT/Queue_Overlay.pm:358
+#: lib/RT/Queue_Overlay.pm:362
 msgid "No permission to create queues"
 msgstr "キューを作成する許可がされていません"
 
@@ -3241,7 +3267,7 @@ msgstr ""
 msgid "No permission to create users"
 msgstr "ユーザーを作成する許可がされていません"
 
-#: html/SelfService/Display.html:165
+#: html/SelfService/Display.html:167
 msgid "No permission to display that ticket"
 msgstr "そのチケットを表示する許可がありません"
 
@@ -3249,7 +3275,7 @@ msgstr "そのチケットを表示する許可がありません"
 msgid "No permission to view update ticket"
 msgstr "アップデートチケットを見る許可がさありません"
 
-#: lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1451
+#: lib/RT/Queue_Overlay.pm:796 lib/RT/Ticket_Overlay.pm:1460
 msgid "No principal specified"
 msgstr "責任者が指定されていません"
 
@@ -3273,11 +3299,11 @@ msgstr "権利が許可されていません"
 msgid "No search loaded"
 msgstr ""
 
-#: html/Search/Bulk.html:220
+#: html/Search/Bulk.html:232
 msgid "No search to operate on."
 msgstr "操作のための検索ができません"
 
-#: html/Elements/RT__Ticket/ColumnMap:134
+#: html/Elements/RT__Ticket/ColumnMap:135 html/Search/Results.rdf:78
 msgid "No subject"
 msgstr ""
 
@@ -3285,7 +3311,7 @@ msgstr ""
 msgid "No ticket id specified"
 msgstr "チケットIDが指定されていません"
 
-#: lib/RT/Transaction_Overlay.pm:517 lib/RT/Transaction_Overlay.pm:554
+#: lib/RT/Transaction_Overlay.pm:515 lib/RT/Transaction_Overlay.pm:552
 msgid "No transaction type specified"
 msgstr "トランザクションタイプが指定されていません"
 
@@ -3297,7 +3323,7 @@ msgstr "検索基準にあったユーザーが見つかりません"
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "有効なRTユーザーが見つかりません。RT　cvcハンドラが分離しています。RT管理者に相談してください。\\n"
 
-#: lib/RT/Record.pm:936
+#: lib/RT/Record.pm:947
 msgid "No value sent to _Set!\\n"
 msgstr ""
 
@@ -3305,11 +3331,11 @@ msgstr ""
 msgid "Nobody"
 msgstr ""
 
-#: lib/RT/Record.pm:941
+#: lib/RT/Record.pm:952
 msgid "Nonexistant field?"
 msgstr ""
 
-#: html/Elements/Header:84
+#: html/Elements/Header:91
 msgid "Not logged in."
 msgstr "ログインしていません"
 
@@ -3431,7 +3457,7 @@ msgstr ""
 msgid "Object of type %1 cannot take custom fields"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:955
+#: lib/RT/CustomField_Overlay.pm:966
 msgid "Object type mismatch"
 msgstr ""
 
@@ -3454,6 +3480,11 @@ msgstr ""
 #: html/Elements/SelectDateRelation:56
 msgid "On"
 msgstr "が以下である"
+
+#: lib/RT/Transaction_Overlay.pm:313
+#. ($self->CreatedAsString(), $self->CreatorObj->Name())
+msgid "On %1, %2 wrote:"
+msgstr ""
 
 #: etc/initialdata:163
 msgid "On Comment"
@@ -3492,12 +3523,12 @@ msgid "On Transaction"
 msgstr ""
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter'>")
+#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
 msgstr ""
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore'>")
+#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
 msgstr ""
 
@@ -3507,7 +3538,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Open"
-msgstr "着手済み" 
+msgstr "着手済み"
 
 #: html/Ticket/Elements/Tabs:161
 msgid "Open it"
@@ -3517,7 +3548,7 @@ msgstr "それを開く"
 msgid "Open requests"
 msgstr "リクエストを開く"
 
-#: html/SelfService/Elements/Tabs:63
+#: html/SelfService/Elements/Tabs:75
 msgid "Open tickets"
 msgstr ""
 
@@ -3537,7 +3568,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: html/Search/Elements/DisplayOptions:56
+#: html/Search/Elements/DisplayOptions:59
 msgid "Order by"
 msgstr ""
 
@@ -3554,11 +3585,11 @@ msgstr "組織"
 msgid "Originating ticket: #%1"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:611
+#: lib/RT/Transaction_Overlay.pm:609
 msgid "Outgoing email about a comment recorded"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:615
+#: lib/RT/Transaction_Overlay.pm:613
 msgid "Outgoing email recorded"
 msgstr ""
 
@@ -3574,7 +3605,7 @@ msgstr ""
 msgid "OwnTicket"
 msgstr ""
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:70 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:82 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1781
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:71 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:84 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:111 lib/RT/Tickets_Overlay.pm:1993
 msgid "Owner"
 msgstr "担当者"
 
@@ -3582,7 +3613,7 @@ msgstr "担当者"
 msgid "Owner could not be set."
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:661
+#: lib/RT/Transaction_Overlay.pm:659
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "担当者は強制的に%1から%2を変更しました"
@@ -3596,7 +3627,7 @@ msgstr "担当者は"
 msgid "Page %1 of %2"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:198 html/User/Prefs.html:97
+#: html/Admin/Users/Modify.html:198 html/User/Prefs.html:96
 msgid "Pager"
 msgstr "ポケットベル"
 
@@ -3604,12 +3635,12 @@ msgstr "ポケットベル"
 msgid "PagerPhone"
 msgstr "ポケットベル電話"
 
-#: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:60
 # XXX - I can't come up with a good translation yet. leave as is in English
+#: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:60
 msgid "Parents"
 msgstr ""
 
-#: html/Elements/Login:84 html/User/Prefs.html:105
+#: html/Elements/Login:95 html/User/Prefs.html:105
 msgid "Password"
 msgstr "パスワード"
 
@@ -3617,7 +3648,7 @@ msgstr "パスワード"
 msgid "Password Reminder"
 msgstr "パスワードのお知らせ"
 
-#: lib/RT/Transaction_Overlay.pm:769 lib/RT/User_Overlay.pm:1044
+#: lib/RT/Transaction_Overlay.pm:768 lib/RT/User_Overlay.pm:1046
 msgid "Password changed"
 msgstr ""
 
@@ -3634,7 +3665,7 @@ msgstr ""
 msgid "Password too short"
 msgstr "パスワードが短すぎます"
 
-#: html/User/Prefs.html:232
+#: html/User/Prefs.html:239
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "パスワード: %1"
@@ -3643,17 +3674,17 @@ msgstr "パスワード: %1"
 msgid "Password: Permission Denied"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:356
+#: html/Admin/Users/Modify.html:353
 msgid "Passwords do not match."
 msgstr ""
 
-#: html/User/Prefs.html:234
+#: html/User/Prefs.html:241
 msgid "Passwords do not match. Your password has not been changed"
 msgstr ""
 
-#: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
 # XXX - this is not really a good translation... but much better than
 # "人々" (daisuke)
+#: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
 msgid "People"
 msgstr "担当者等"
 
@@ -3665,9 +3696,17 @@ msgstr ""
 msgid "Perl configuration"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:262 lib/RT/ACE_Overlay.pm:268 lib/RT/ACE_Overlay.pm:594 lib/RT/ACE_Overlay.pm:604 lib/RT/ACE_Overlay.pm:614 lib/RT/ACE_Overlay.pm:679 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:405 lib/RT/Attribute_Overlay.pm:414 lib/RT/Attribute_Overlay.pm:427 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1004 lib/RT/CustomField_Overlay.pm:1125 lib/RT/CustomField_Overlay.pm:167 lib/RT/CustomField_Overlay.pm:184 lib/RT/CustomField_Overlay.pm:195 lib/RT/CustomField_Overlay.pm:369 lib/RT/CustomField_Overlay.pm:397 lib/RT/CustomField_Overlay.pm:751 lib/RT/CustomField_Overlay.pm:924 lib/RT/CustomField_Overlay.pm:959 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1138 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1252 lib/RT/Group_Overlay.pm:1258 lib/RT/Group_Overlay.pm:453 lib/RT/Group_Overlay.pm:550 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:636 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:738 lib/RT/Group_Overlay.pm:744 lib/RT/Group_Overlay.pm:930 lib/RT/Group_Overlay.pm:934 lib/RT/Group_Overlay.pm:947 lib/RT/Queue_Overlay.pm:1051 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:654 lib/RT/Queue_Overlay.pm:664 lib/RT/Queue_Overlay.pm:678 lib/RT/Queue_Overlay.pm:816 lib/RT/Queue_Overlay.pm:825 lib/RT/Queue_Overlay.pm:838 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1319 lib/RT/Ticket_Overlay.pm:1329 lib/RT/Ticket_Overlay.pm:1343 lib/RT/Ticket_Overlay.pm:1484 lib/RT/Ticket_Overlay.pm:1494 lib/RT/Ticket_Overlay.pm:1508 lib/RT/Ticket_Overlay.pm:1625 lib/RT/Ticket_Overlay.pm:1945 lib/RT/Ticket_Overlay.pm:2083 lib/RT/Ticket_Overlay.pm:2253 lib/RT/Ticket_Overlay.pm:2303 lib/RT/Ticket_Overlay.pm:2457 lib/RT/Ticket_Overlay.pm:2560 lib/RT/Ticket_Overlay.pm:2608 lib/RT/Ticket_Overlay.pm:2687 lib/RT/Ticket_Overlay.pm:2701 lib/RT/Ticket_Overlay.pm:2925 lib/RT/Ticket_Overlay.pm:2935 lib/RT/Ticket_Overlay.pm:2940 lib/RT/Ticket_Overlay.pm:3163 lib/RT/Ticket_Overlay.pm:3167 lib/RT/Ticket_Overlay.pm:3310 lib/RT/Ticket_Overlay.pm:3431 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:546 lib/RT/User_Overlay.pm:1031 lib/RT/User_Overlay.pm:1182 lib/RT/User_Overlay.pm:1886 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:736 lib/RT/User_Overlay.pm:775
+#: lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:258 lib/RT/ACE_Overlay.pm:581 lib/RT/ACE_Overlay.pm:591 lib/RT/ACE_Overlay.pm:601 lib/RT/ACE_Overlay.pm:666 lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164 lib/RT/Attribute_Overlay.pm:405 lib/RT/Attribute_Overlay.pm:414 lib/RT/Attribute_Overlay.pm:427 lib/RT/CurrentUser.pm:117 lib/RT/CurrentUser.pm:126 lib/RT/CustomField_Overlay.pm:1015 lib/RT/CustomField_Overlay.pm:1136 lib/RT/CustomField_Overlay.pm:1279 lib/RT/CustomField_Overlay.pm:172 lib/RT/CustomField_Overlay.pm:189 lib/RT/CustomField_Overlay.pm:200 lib/RT/CustomField_Overlay.pm:374 lib/RT/CustomField_Overlay.pm:402 lib/RT/CustomField_Overlay.pm:762 lib/RT/CustomField_Overlay.pm:935 lib/RT/CustomField_Overlay.pm:970 lib/RT/Group_Overlay.pm:1117 lib/RT/Group_Overlay.pm:1121 lib/RT/Group_Overlay.pm:1130 lib/RT/Group_Overlay.pm:1240 lib/RT/Group_Overlay.pm:1244 lib/RT/Group_Overlay.pm:1250 lib/RT/Group_Overlay.pm:445 lib/RT/Group_Overlay.pm:542 lib/RT/Group_Overlay.pm:620 lib/RT/Group_Overlay.pm:628 lib/RT/Group_Overlay.pm:726 lib/RT/Group_Overlay.pm:730 lib/RT/Group_Overlay.pm:736 lib/RT/Group_Overlay.pm:922 lib/RT/Group_Overlay.pm:926 lib/RT/Group_Overlay.pm:939 lib/RT/Queue_Overlay.pm:1055 lib/RT/Queue_Overlay.pm:141 lib/RT/Queue_Overlay.pm:159 lib/RT/Queue_Overlay.pm:658 lib/RT/Queue_Overlay.pm:668 lib/RT/Queue_Overlay.pm:682 lib/RT/Queue_Overlay.pm:820 lib/RT/Queue_Overlay.pm:829 lib/RT/Queue_Overlay.pm:842 lib/RT/Scrip_Overlay.pm:150 lib/RT/Scrip_Overlay.pm:161 lib/RT/Scrip_Overlay.pm:226 lib/RT/Scrip_Overlay.pm:540 lib/RT/Template_Overlay.pm:108 lib/RT/Template_Overlay.pm:277 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1338 lib/RT/Ticket_Overlay.pm:1352 lib/RT/Ticket_Overlay.pm:1493 lib/RT/Ticket_Overlay.pm:1503 lib/RT/Ticket_Overlay.pm:1517 lib/RT/Ticket_Overlay.pm:1634 lib/RT/Ticket_Overlay.pm:1954 lib/RT/Ticket_Overlay.pm:2092 lib/RT/Ticket_Overlay.pm:2262 lib/RT/Ticket_Overlay.pm:2312 lib/RT/Ticket_Overlay.pm:2484 lib/RT/Ticket_Overlay.pm:2555 lib/RT/Ticket_Overlay.pm:2603 lib/RT/Ticket_Overlay.pm:2693 lib/RT/Ticket_Overlay.pm:2707 lib/RT/Ticket_Overlay.pm:2931 lib/RT/Ticket_Overlay.pm:2941 lib/RT/Ticket_Overlay.pm:2946 lib/RT/Ticket_Overlay.pm:3169 lib/RT/Ticket_Overlay.pm:3173 lib/RT/Ticket_Overlay.pm:3316 lib/RT/Ticket_Overlay.pm:3442 lib/RT/Transaction_Overlay.pm:503 lib/RT/Transaction_Overlay.pm:510 lib/RT/Transaction_Overlay.pm:538 lib/RT/Transaction_Overlay.pm:545 lib/RT/User_Overlay.pm:1184 lib/RT/User_Overlay.pm:1793 lib/RT/User_Overlay.pm:370 lib/RT/User_Overlay.pm:736 lib/RT/User_Overlay.pm:775
 msgid "Permission Denied"
 msgstr "許可が下りませんでした"
+
+#: lib/RT/Template_Overlay.pm:238 lib/RT/Template_Overlay.pm:247
+msgid "Permission denied"
+msgstr ""
+
+#: lib/RT/Template_Overlay.pm:372
+msgid "Permissions denied"
+msgstr ""
 
 #: html/User/Elements/Tabs:56
 msgid "Personal Groups"
@@ -3681,7 +3720,7 @@ msgstr "個人グループ"
 msgid "Personal groups:"
 msgstr "個人グループ："
 
-#: html/Admin/Users/Modify.html:180 html/User/Prefs.html:82
+#: html/Admin/Users/Modify.html:180 html/User/Prefs.html:81
 msgid "Phone numbers"
 msgstr "電話番号"
 
@@ -3693,7 +3732,7 @@ msgstr "代替物"
 msgid "Pref"
 msgstr "お気に入り"
 
-#: html/Elements/Header:87 html/Elements/Tabs:91 html/SelfService/Elements/Tabs:75 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
+#: html/Elements/Header:88 html/Elements/Tabs:91 html/SelfService/Elements/Tabs:95 html/SelfService/Prefs.html:46 html/User/Prefs.html:46 html/User/Prefs.html:49
 msgid "Preferences"
 msgstr "お気に入り"
 
@@ -3722,7 +3761,7 @@ msgstr "優先度"
 msgid "Principal %1 not found."
 msgstr ""
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:179 html/Ticket/Elements/EditBasics:87 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1565
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:180 html/Ticket/Elements/EditBasics:87 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1777
 msgid "Priority"
 msgstr "優先度"
 
@@ -3738,7 +3777,7 @@ msgstr ""
 msgid "Privileged"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:334 html/User/Prefs.html:223
+#: html/Admin/Users/Modify.html:331 html/User/Prefs.html:230
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "特権ステータス: %1"
@@ -3755,7 +3794,7 @@ msgstr ""
 msgid "Query Builder"
 msgstr ""
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:60 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:40 html/Tools/Reports/ResolvedByDates.html:41 html/Tools/Reports/ResolvedByOwner.html:21 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1392
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:61 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:40 html/Tools/Reports/ResolvedByDates.html:41 html/Tools/Reports/ResolvedByOwner.html:21 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1604
 msgid "Queue"
 msgstr "キュー"
 
@@ -3777,23 +3816,23 @@ msgstr "キューの名前"
 msgid "Queue Scrips"
 msgstr "キュースクリプト"
 
-#: lib/RT/Queue_Overlay.pm:362
+#: lib/RT/Queue_Overlay.pm:366
 msgid "Queue already exists"
 msgstr "キューはすでに存在しています"
 
-#: lib/RT/Queue_Overlay.pm:371 lib/RT/Queue_Overlay.pm:377
+#: lib/RT/Queue_Overlay.pm:375 lib/RT/Queue_Overlay.pm:381
 msgid "Queue could not be created"
 msgstr "キューの作成ができませんでした"
 
-#: html/Ticket/Create.html:242 lib/t/regression/01ticket_link_searching.t:17
+#: html/Ticket/Create.html:243 lib/t/regression/01ticket_link_searching.t:17
 msgid "Queue could not be loaded."
 msgstr "キューのロードができませんでした"
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:381 lib/RT/StyleGuide.pod:809
+#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:385 lib/RT/StyleGuide.pod:809
 msgid "Queue created"
 msgstr "キューが作成されました"
 
-#: html/SelfService/Display.html:95 lib/RT/CustomField_Overlay.pm:192
+#: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
 msgid "Queue not found"
 msgstr "キューが見つかりません"
 
@@ -3817,7 +3856,7 @@ msgstr "簡易検索"
 msgid "Quick ticket creation"
 msgstr "チケット新規作成"
 
-#: html/Search/Results.html:84
+#: html/Search/Results.html:81
 msgid "RSS"
 msgstr ""
 
@@ -3874,6 +3913,14 @@ msgstr ""
 msgid "RT at a glance"
 msgstr ""
 
+#: html/Admin/CustomFields/Modify.html:117
+msgid "RT can include content from another web service when showing this custom field."
+msgstr ""
+
+#: html/Admin/CustomFields/Modify.html:106
+msgid "RT can make this custom field's values into hyperlinks to another service."
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
 msgstr "RTでは、ただいまお使いの方の認証ができませんでした"
@@ -3894,7 +3941,7 @@ msgstr ""
 msgid "RT couldn't validate this PGP signature. \\n"
 msgstr "RTはこのPGPサインを有効にすることができませんでした。\\n"
 
-#: html/Elements/Logo:49 html/Elements/PageLayout:179
+#: html/Elements/Logo:49 html/Elements/PageLayout:172
 #. ($RT::rtname)
 msgid "RT for %1"
 msgstr ""
@@ -3919,6 +3966,10 @@ msgstr ""
 msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "RTはこのメッセージがまるでサインされていないように処理します。\\n"
 
+#: html/Admin/CustomFields/Modify.html:108 html/Admin/CustomFields/Modify.html:119
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
 msgstr "RTのEメールコマンドモードではPGP認証が必要になります。貴方のメッセージにサインしなかった、もしくははサインが有効でありません"
@@ -3931,31 +3982,31 @@ msgstr "本名"
 msgid "RealName"
 msgstr "本名"
 
-#: lib/RT/Transaction_Overlay.pm:714
+#: lib/RT/Transaction_Overlay.pm:712
 #. ($value)
 msgid "Reference by %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:754
+#: lib/RT/Transaction_Overlay.pm:752
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:711
+#: lib/RT/Transaction_Overlay.pm:709
 #. ($value)
 msgid "Reference to %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:751
+#: lib/RT/Transaction_Overlay.pm:749
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr ""
 
-#: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:223 html/Ticket/Elements/BulkLinks:72
+#: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:224 html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
 msgstr "参照されているチケット"
 
-#: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:68
+#: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:223 html/Ticket/Elements/BulkLinks:68
 msgid "Refers to"
 msgstr "参照しているチケット"
 
@@ -3972,17 +4023,17 @@ msgstr "絞込み検索"
 msgid "Refresh this page every %1 minutes."
 msgstr "ページを%1分おきに更新する"
 
-#: lib/RT/Transaction_Overlay.pm:799
+#: lib/RT/Transaction_Overlay.pm:798
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:812
+#: lib/RT/Transaction_Overlay.pm:811
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:805
+#: lib/RT/Transaction_Overlay.pm:804
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr ""
@@ -4013,7 +4064,7 @@ msgstr "Ccを削除する"
 msgid "Remove Requestor"
 msgstr "作成者を削除する"
 
-#: html/Ticket/Elements/ShowTransaction:178 html/Ticket/Elements/Tabs:147
+#: html/Ticket/Elements/ShowTransaction:179 html/Ticket/Elements/Tabs:147
 msgid "Reply"
 msgstr "返信"
 
@@ -4021,7 +4072,7 @@ msgstr "返信"
 msgid "Reply Address"
 msgstr "返信アドレス"
 
-#: html/Search/Bulk.html:129 html/Ticket/ModifyAll.html:94 html/Ticket/Update.html:79
+#: html/Search/Bulk.html:129 html/Ticket/ModifyAll.html:94 html/Ticket/Update.html:78
 msgid "Reply to requestors"
 msgstr ""
 
@@ -4033,7 +4084,7 @@ msgstr ""
 msgid "ReplyToTicket"
 msgstr ""
 
-#: html/Tools/Elements/Tabs:59
+#: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:1 html/Tools/Reports/index.html:2
 msgid "Reports"
 msgstr ""
 
@@ -4045,7 +4096,7 @@ msgstr "作成者"
 msgid "Requestor email address"
 msgstr "作成者のEメールアドレス"
 
-#: html/SelfService/Create.html:63 html/Ticket/Create.html:78 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
+#: html/SelfService/Create.html:63 html/Ticket/Create.html:79 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
 msgstr "作成者"
 
@@ -4058,11 +4109,11 @@ msgstr "リクエストは次の日までに行われなければなりません
 msgid "Required parameter '%1' not specified"
 msgstr ""
 
-#: html/Elements/Submit:95
+#: html/Elements/Submit:83
 msgid "Reset"
 msgstr "リセット"
 
-#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:85
+#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:84
 msgid "Residence"
 msgstr "住所"
 
@@ -4070,7 +4121,7 @@ msgstr "住所"
 msgid "Resolve"
 msgstr "解決済みにする"
 
-#: html/Ticket/Update.html:157
+#: html/Ticket/Update.html:156
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr ""
@@ -4099,7 +4150,7 @@ msgstr ""
 msgid "Response to requestors"
 msgstr "作成者に返答する"
 
-#: html/Elements/ListActions:47 html/Search/Elements/NewListActions:47
+#: html/Elements/ListActions:46 html/Search/Elements/NewListActions:47
 msgid "Results"
 msgstr "結果"
 
@@ -4169,7 +4220,7 @@ msgstr "役割"
 msgid "Rows per box"
 msgstr ""
 
-#: html/Search/Elements/DisplayOptions:84
+#: html/Search/Elements/DisplayOptions:93
 msgid "Rows per page"
 msgstr ""
 
@@ -4177,15 +4228,15 @@ msgstr ""
 msgid "Sat."
 msgstr "土曜日"
 
-#: html/Prefs/MyRT.html:64 html/Prefs/Quicksearch.html:64 html/Prefs/Search.html:69 html/Prefs/Search.html:69 html/Search/Elements/EditSearches:70 html/Widgets/SelectionBox:212
+#: html/Prefs/MyRT.html:64 html/Prefs/Quicksearch.html:64 html/Prefs/Search.html:69 html/Prefs/Search.html:69 html/Search/Elements/EditSearches:68 html/Widgets/SelectionBox:212
 msgid "Save"
 msgstr ""
 
-#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:238 html/Prefs/Quicksearch.html:64 html/Prefs/SearchOptions.html:63 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:59 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
+#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:235 html/Prefs/Quicksearch.html:64 html/Prefs/SearchOptions.html:63 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:61 html/Ticket/ModifyPeople.html:60 html/User/Groups/Modify.html:77
 msgid "Save Changes"
 msgstr "変更を保存する"
 
-#: html/User/Prefs.html:179
+#: html/User/Prefs.html:180
 msgid "Save Preferences"
 msgstr "変更を保存する"
 
@@ -4217,7 +4268,7 @@ msgstr "スクリプトが作成されました"
 msgid "Scrip Fields"
 msgstr ""
 
-#: html/Admin/Elements/EditScrips:107
+#: html/Admin/Elements/EditScrips:109
 msgid "Scrip deleted"
 msgstr ""
 
@@ -4258,11 +4309,14 @@ msgid "Search for tickets"
 msgstr ""
 
 #: html/Search/Simple.html:57
-msgid "Search for tickets. Enter <strong>id</strong> numbers,<strong>queues</strong> by name,
+msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
 Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
 RT will look for anything else you enter in ticket bodies and attachments."
 msgstr ""
 
+Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
+RT will look for anything else you enter in ticket bodies and attachments."
+msgstr ""
 #: html/User/Elements/Tabs:62
 msgid "Search options"
 msgstr ""
@@ -4285,6 +4339,11 @@ msgstr ""
 msgid "Security:"
 msgstr ""
 
+#: html/Elements/ShowCustomFields:76
+#. ('<a href="'.$Value->IncludeContentForValue.'">' . $Value->IncludeContentForValue."</a>")
+msgid "See also: %1"
+msgstr ""
+
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
 msgstr ""
@@ -4305,7 +4364,7 @@ msgstr ""
 msgid "SeeCustomField"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:177
+#: lib/RT/Group_Overlay.pm:169
 msgid "SeeGroup"
 msgstr ""
 
@@ -4453,7 +4512,7 @@ msgstr ""
 msgid "Sep."
 msgstr "9月"
 
-#: html/Ticket/Elements/ShowTransaction:157
+#: html/Ticket/Elements/ShowTransaction:158
 msgid "Show"
 msgstr ""
 
@@ -4473,7 +4532,7 @@ msgstr "結果を見る"
 msgid "Show approved requests"
 msgstr ""
 
-#: html/Ticket/Create.html:305
+#: html/Ticket/Create.html:315
 msgid "Show basics"
 msgstr "基本を見る"
 
@@ -4481,7 +4540,7 @@ msgstr "基本を見る"
 msgid "Show denied requests"
 msgstr ""
 
-#: html/Ticket/Create.html:308
+#: html/Ticket/Create.html:318
 msgid "Show details"
 msgstr "詳細を見る"
 
@@ -4505,7 +4564,7 @@ msgstr ""
 msgid "ShowOutgoingEmail"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:176
+#: lib/RT/Group_Overlay.pm:168
 msgid "ShowSavedSearches"
 msgstr ""
 
@@ -4533,7 +4592,7 @@ msgstr ""
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:229 html/User/Prefs.html:167
+#: html/Admin/Users/Modify.html:226 html/User/Prefs.html:168
 msgid "Signature"
 msgstr "サイン"
 
@@ -4549,12 +4608,16 @@ msgstr "ひとつの"
 msgid "Size"
 msgstr ""
 
-#: html/Elements/Header:80
+#: html/Elements/Header:84
 msgid "Skip Menu"
 msgstr ""
 
 #: html/Search/Elements/EditFormat:78
 msgid "Small"
+msgstr ""
+
+#: html/Admin/CustomFields/Modify.html:120
+msgid "Some browsers may only load content from the same domain as your RT server."
 msgstr ""
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
@@ -4593,7 +4656,7 @@ msgstr "開始した"
 msgid "Started date '%1' could not be parsed"
 msgstr "開始日'%1'は見つかりませんでした"
 
-#: html/Elements/SelectDateType:52 html/Ticket/Create.html:206 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
+#: html/Elements/SelectDateType:52 html/Ticket/Create.html:207 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
 msgid "Starts"
 msgstr "開始予定日時"
 
@@ -4609,7 +4672,7 @@ msgstr "開始日'%1'を解析できませんでした"
 msgid "State"
 msgstr "都道府県"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:64 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1143 lib/RT/Tickets_Overlay.pm:1425
+#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:65 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1143 lib/RT/Tickets_Overlay.pm:1638
 msgid "Status"
 msgstr "状態"
 
@@ -4633,7 +4696,7 @@ msgstr ""
 msgid "StealTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:667
+#: lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "%1から担当者を変更しました"
@@ -4646,20 +4709,20 @@ msgstr "%1から盗用した "
 msgid "Style"
 msgstr ""
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:106 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:78 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:83 lib/RT/Ticket_Overlay.pm:1139 lib/RT/Tickets_Overlay.pm:1507
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:107 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:80 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1139 lib/RT/Tickets_Overlay.pm:1720
 msgid "Subject"
 msgstr "件名"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:689
+#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:687
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr ""
 
-#: html/Elements/Submit:88
+#: html/Elements/Submit:75
 msgid "Submit"
 msgstr "提出"
 
-#: lib/RT/Group_Overlay.pm:782
+#: lib/RT/Group_Overlay.pm:774
 msgid "Succeeded"
 msgstr ""
 
@@ -4712,8 +4775,8 @@ msgstr ""
 msgid "TEST_STRING"
 msgstr "テスト＿ストリング"
 
-#: etc/initialdata:603 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:168
 # XXX - what the...
+#: etc/initialdata:603 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:168
 msgid "Take"
 msgstr "担当する"
 
@@ -4725,7 +4788,7 @@ msgstr ""
 msgid "TakeTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:652
+#: lib/RT/Transaction_Overlay.pm:650
 msgid "Taken"
 msgstr "とられた"
 
@@ -4750,9 +4813,13 @@ msgstr "テンプレートが見つかりません"
 msgid "Template not found\\n"
 msgstr "テンプレートが見つかりません\\n"
 
-#: lib/RT/Template_Overlay.pm:376
+#: lib/RT/Template_Overlay.pm:343
 msgid "Template parsed"
 msgstr "テンプレートが解析されました"
+
+#: lib/RT/Template_Overlay.pm:391
+msgid "Template parsing error"
+msgstr ""
 
 #: html/Admin/Elements/QueueTabs:70 html/Admin/Elements/SystemTabs:57 html/Admin/Global/index.html:66
 msgid "Templates"
@@ -4762,15 +4829,15 @@ msgstr "テンプレート"
 msgid "Templates for %1\\n"
 msgstr "%1\\nのテンプレート"
 
-#: lib/RT/CustomField_Overlay.pm:931 lib/RT/Record.pm:935
+#: lib/RT/CustomField_Overlay.pm:942 lib/RT/Record.pm:946
 msgid "That is already the current value"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:406
+#: lib/RT/CustomField_Overlay.pm:411
 msgid "That is not a value for this custom field"
 msgstr "それはこのカスタムフィールドのバリューではありません"
 
-#: lib/RT/Ticket_Overlay.pm:1956
+#: lib/RT/Ticket_Overlay.pm:1965
 msgid "That is the same value"
 msgstr "それは同じバリューです"
 
@@ -4778,17 +4845,17 @@ msgstr "それは同じバリューです"
 msgid "That principal already has that right"
 msgstr ""
 
-#: lib/RT/Queue_Overlay.pm:750
+#: lib/RT/Queue_Overlay.pm:754
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "その責任者はすでにこのキューの%1です"
 
-#: lib/RT/Ticket_Overlay.pm:1397
+#: lib/RT/Ticket_Overlay.pm:1406
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "その責任者はすでにこのチケットの%1です"
 
-#: lib/RT/Queue_Overlay.pm:849
+#: lib/RT/Queue_Overlay.pm:853
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "その責任者はこのキューの%1ではありません"
@@ -4797,11 +4864,11 @@ msgstr "その責任者はこのキューの%1ではありません"
 msgid "That principal is not a %1 for this ticket"
 msgstr "その責任者はこのチケットの%1ではありません"
 
-#: lib/RT/Ticket_Overlay.pm:1952
+#: lib/RT/Ticket_Overlay.pm:1961
 msgid "That queue does not exist"
 msgstr "そのキューはありません"
 
-#: lib/RT/Ticket_Overlay.pm:3172
+#: lib/RT/Ticket_Overlay.pm:3178
 msgid "That ticket has unresolved dependencies"
 msgstr "未解決の依存関係が存在します"
 
@@ -4809,11 +4876,11 @@ msgstr "未解決の依存関係が存在します"
 msgid "That user already has that right"
 msgstr "そのユーザーはすでに権利があります"
 
-#: lib/RT/Ticket_Overlay.pm:2976
+#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:2982
 msgid "That user already owns that ticket"
 msgstr "そのユーザーはすでにチケットを所有しています"
 
-#: lib/RT/Ticket_Overlay.pm:2948
+#: lib/RT/Ticket_Overlay.pm:2954
 msgid "That user does not exist"
 msgstr "そのユーザーは存在しません"
 
@@ -4833,7 +4900,7 @@ msgstr "そのユーザーは今特権を与えられました"
 msgid "That user is now unprivileged"
 msgstr "そのユーザーは今特権を失いました"
 
-#: lib/RT/Ticket_Overlay.pm:2969
+#: lib/RT/Ticket_Overlay.pm:2975
 msgid "That user may not own tickets in that queue"
 msgstr "そのユーザーはこのキューではチケットを所有していない可能性があります"
 
@@ -4841,7 +4908,7 @@ msgstr "そのユーザーはこのキューではチケットを所有してい
 msgid "That's not a numerical id"
 msgstr "それは数字のIDではありません"
 
-#: html/SelfService/Display.html:53 html/Ticket/Create.html:175 html/Ticket/Elements/ShowSummary:49
+#: html/SelfService/Display.html:53 html/Ticket/Create.html:176 html/Ticket/Elements/ShowSummary:49
 msgid "The Basics"
 msgstr "基本"
 
@@ -4865,7 +4932,7 @@ msgstr ""
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "次のコマンドは処理されませんでした:\\n\\n"
 
-#: lib/RT/Record.pm:938
+#: lib/RT/Record.pm:949
 msgid "The new value has been set."
 msgstr ""
 
@@ -4881,7 +4948,7 @@ msgstr ""
 msgid "These comments aren't generally visible to the user"
 msgstr "それらのコメントは実際ユーザーには見ることができません"
 
-#: lib/RT/CustomField_Overlay.pm:966
+#: lib/RT/CustomField_Overlay.pm:977
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -4905,7 +4972,7 @@ msgstr ""
 msgid "This transaction appears to have no content"
 msgstr "このトランザクションにはコンテンツがありません"
 
-#: html/Ticket/Elements/ShowRequestor:69
+#: html/Ticket/Elements/ShowRequestor:70
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
 msgstr ""
@@ -4932,7 +4999,7 @@ msgstr "チケット　#%1　更新（総合ビュー）: %2"
 msgid "Ticket #%1: %2"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:1258 lib/RT/Action/CreateTickets.pm:1267 lib/RT/Action/CreateTickets.pm:595 lib/RT/Action/CreateTickets.pm:716 lib/RT/Action/CreateTickets.pm:729
+#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -4948,7 +5015,7 @@ msgstr "チケット %1がキュー '%2'で作成されました"
 msgid "Ticket %1 loaded\\n"
 msgstr "チケット%1がロードされました\\n"
 
-#: html/Search/Bulk.html:365
+#: html/Search/Bulk.html:377
 #. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
 msgstr "チケット　%1: %2"
@@ -4970,7 +5037,7 @@ msgstr "チケットID"
 msgid "Ticket Resolved"
 msgstr ""
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1188
+#: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1205
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -4978,11 +5045,11 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "チケット添付"
 
-#: lib/RT/Tickets_Overlay.pm:1695
+#: lib/RT/Tickets_Overlay.pm:1907
 msgid "Ticket content"
 msgstr "チケットコンテンツ"
 
-#: lib/RT/Tickets_Overlay.pm:1744
+#: lib/RT/Tickets_Overlay.pm:1956
 msgid "Ticket content type"
 msgstr "チケットコンテンツタイプ"
 
@@ -5019,7 +5086,7 @@ msgstr "チケットウォッチャー"
 msgid "TicketSQL search module"
 msgstr ""
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:52 lib/RT/CustomField_Overlay.pm:1187
+#: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:52 lib/RT/CustomField_Overlay.pm:1204
 msgid "Tickets"
 msgstr ""
 
@@ -5047,19 +5114,19 @@ msgstr ""
 msgid "Tickets which depend on this approval:"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:67
+#: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:67
 msgid "Time Estimated"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:194 html/Ticket/Elements/EditBasics:80
+#: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:195 html/Ticket/Elements/EditBasics:80
 msgid "Time Left"
 msgstr "残り時間"
 
-#: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:187 html/Ticket/Elements/EditBasics:73
+#: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:188 html/Ticket/Elements/EditBasics:73
 msgid "Time Worked"
 msgstr "作業時間"
 
-#: lib/RT/Tickets_Overlay.pm:1666
+#: lib/RT/Tickets_Overlay.pm:1878
 msgid "Time left"
 msgstr "残り時間"
 
@@ -5067,7 +5134,7 @@ msgstr "残り時間"
 msgid "Time to display"
 msgstr "表示する時間"
 
-#: lib/RT/Tickets_Overlay.pm:1641
+#: lib/RT/Tickets_Overlay.pm:1853
 msgid "Time worked"
 msgstr "使った時間"
 
@@ -5087,7 +5154,7 @@ msgstr "このコミットのディフをつくるために:"
 msgid "To generate a diff of this commit:\\n"
 msgstr "このコミットのディフをつくるために:\\n"
 
-#: html/Elements/Footer:68
+#: html/Elements/Footer:63
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr ""
@@ -5108,7 +5175,7 @@ msgstr ""
 msgid "Transaction"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:794
+#: lib/RT/Transaction_Overlay.pm:792
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "トランザクション%1が消去されました"
@@ -5125,7 +5192,7 @@ msgstr ""
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:858
+#: lib/RT/Transaction_Overlay.pm:857
 msgid "Transactions are immutable"
 msgstr "トランザクションは変更されることはありません"
 
@@ -5137,7 +5204,7 @@ msgstr "権利: %1を削除しています"
 msgid "Tue."
 msgstr "火曜日"
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1145 lib/RT/Tickets_Overlay.pm:1479
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1145 lib/RT/Tickets_Overlay.pm:1692
 msgid "Type"
 msgstr "タイプ"
 
@@ -5153,13 +5220,13 @@ msgstr "Unixログイン"
 msgid "UnixUsername"
 msgstr "Unixユーザーネーム"
 
-#: lib/RT/Attachment_Overlay.pm:290 lib/RT/Record.pm:851
+#: lib/RT/Attachment_Overlay.pm:290 lib/RT/Record.pm:862
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "不明なコンテンツエンコーディング%1"
 
-#: html/Search/Build.html:610
+#: html/Search/Build.html:395
 msgid "Unknown field: $key"
 msgstr ""
 
@@ -5183,11 +5250,11 @@ msgstr ""
 msgid "Unselected objects"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:648
+#: lib/RT/Transaction_Overlay.pm:646
 msgid "Untaken"
 msgstr "とられていない"
 
-#: html/Elements/RT__Ticket/ColumnMap:299 html/Search/Bulk.html:194 html/Search/Bulk.html:75
+#: html/Elements/RT__Ticket/ColumnMap:300 html/Search/Bulk.html:193 html/Search/Bulk.html:75
 msgid "Update"
 msgstr "アップデート"
 
@@ -5195,11 +5262,11 @@ msgstr "アップデート"
 msgid "Update ID"
 msgstr "アップデートID"
 
-#: html/Ticket/Update.html:136
+#: html/Ticket/Update.html:135
 msgid "Update Ticket"
 msgstr ""
 
-#: html/Search/Bulk.html:126 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:73
+#: html/Search/Bulk.html:126 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:72
 msgid "Update Type"
 msgstr "アップデートタイプ"
 
@@ -5211,7 +5278,7 @@ msgstr "すべてのチケットを一度にアップデートする"
 msgid "Update email"
 msgstr "アップデートEメール"
 
-#: html/Search/Bulk.html:200 html/Search/Results.html:81
+#: html/Search/Bulk.html:200 html/Search/Results.html:78
 msgid "Update multiple tickets"
 msgstr ""
 
@@ -5219,7 +5286,7 @@ msgstr ""
 msgid "Update name"
 msgstr "アップデートネーム"
 
-#: lib/RT/Action/CreateTickets.pm:737 lib/RT/Interface/Web.pm:524
+#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:524
 msgid "Update not recorded."
 msgstr "アップデートは記録されませんでした"
 
@@ -5244,20 +5311,20 @@ msgstr "アップデートチケット # %1"
 msgid "Update ticket #%1"
 msgstr "アップデートチケット #%1"
 
-#: html/Ticket/Update.html:159
+#: html/Ticket/Update.html:158
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:735 lib/RT/Interface/Web.pm:523
+#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:523
 msgid "Update type was neither correspondence nor comment."
 msgstr "アップデートタイプは通知でもコメントでもありません"
 
-#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1148
+#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/CustomField_Overlay.pm:1282 lib/RT/Ticket_Overlay.pm:1148
 msgid "Updated"
 msgstr "最終更新日時"
 
-#: html/Tools/Offline.html:95
+#: html/Tools/Offline.html:93
 msgid "Upload"
 msgstr ""
 
@@ -5285,7 +5352,7 @@ msgstr ""
 msgid "Upload up to %1 images"
 msgstr ""
 
-#: html/Tools/Offline.html:95
+#: html/Tools/Offline.html:93
 msgid "Upload your changes"
 msgstr ""
 
@@ -5334,12 +5401,12 @@ msgstr "ユーザーID"
 msgid "User Rights"
 msgstr "ユーザー権利"
 
-#: lib/RT/Interface/Web.pm:1279
+#: lib/RT/Interface/Web.pm:1284
 #. ($CustomFieldObj->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:292
+#: html/Admin/Users/Modify.html:290
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "ユーザーを作成することができませんでした: %1"
@@ -5368,11 +5435,11 @@ msgstr "ユーザービュー"
 msgid "User-defined groups"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:69 html/Elements/Login:79 html/Ticket/Elements/AddWatchers:56
+#: html/Admin/Users/Modify.html:69 html/Elements/Login:90 html/Ticket/Elements/AddWatchers:56
 msgid "Username"
 msgstr "ユーザーネーム"
 
-#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1189
+#: html/Admin/Elements/GlobalCustomFieldTabs:55 html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53 html/Admin/Global/CustomFields/index.html:64 html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89 html/Admin/index.html:62 html/User/Groups/Members.html:79 lib/RT/CustomField_Overlay.pm:1206
 msgid "Users"
 msgstr "ユーザー"
 
@@ -5380,7 +5447,7 @@ msgstr "ユーザー"
 msgid "Users matching search criteria"
 msgstr "ユーザーが検索基準にあっています"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:526
+#: lib/RT/Tickets_Overlay_SQL.pm:528
 msgid "Valid Query"
 msgstr ""
 
@@ -5392,7 +5459,7 @@ msgstr ""
 msgid "ValueOfQueue"
 msgstr "キューのバリュー"
 
-#: html/Admin/CustomFields/Modify.html:104 html/Admin/Elements/EditCustomField:78
+#: html/Admin/CustomFields/Modify.html:130 html/Admin/Elements/EditCustomField:78
 msgid "Values"
 msgstr "バリュー"
 
@@ -5468,11 +5535,11 @@ msgstr ""
 msgid "Whenever correspondence comes in"
 msgstr ""
 
-#: html/Admin/Users/Modify.html:188 html/User/Prefs.html:89
+#: html/Admin/Users/Modify.html:188 html/User/Prefs.html:88
 msgid "Work"
 msgstr "仕事"
 
-#: html/Search/Results.html:85
+#: html/Search/Results.html:82
 msgid "Work offline"
 msgstr ""
 
@@ -5484,11 +5551,11 @@ msgstr "電話(仕事）"
 msgid "Worked"
 msgstr "累積作業時間"
 
-#: lib/RT/Ticket_Overlay.pm:3079
+#: lib/RT/Ticket_Overlay.pm:3085
 msgid "You already own this ticket"
 msgstr "すでにこのチケットを担当しています"
 
-#: html/autohandler:176 html/autohandler:184
+#: html/autohandler:203 html/autohandler:211
 msgid "You are not an authorized user"
 msgstr "認証されていません。"
 
@@ -5496,7 +5563,7 @@ msgstr "認証されていません。"
 msgid "You can also edit the predefined search itself"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2961
+#: lib/RT/Ticket_Overlay.pm:2967
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "自分が担当しているチケットか、担当者のいないチケットしか変更する事ができません。"
 
@@ -5513,11 +5580,11 @@ msgstr "キュー%2で%1件のチケットがヒットしました"
 msgid "You have been logged out of RT."
 msgstr "RTからログアウトしました"
 
-#: html/SelfService/Display.html:109
+#: html/SelfService/Display.html:133
 msgid "You have no permission to create tickets in that queue."
 msgstr "指定ののキューでチケット作成の許可がありません"
 
-#: lib/RT/Ticket_Overlay.pm:1965
+#: lib/RT/Ticket_Overlay.pm:1974
 msgid "You may not create requests in that queue."
 msgstr "指定のキューでリクエストの作成ができません"
 
@@ -5545,7 +5612,7 @@ msgstr ""
 msgid "Your request was rejected."
 msgstr ""
 
-#: html/autohandler:211
+#: html/autohandler:240
 msgid "Your username or password is incorrect"
 msgstr "あなたののユーザーネームとパスワードが間違っています"
 
@@ -5566,7 +5633,7 @@ msgstr ""
 msgid "as granted to %1"
 msgstr "%1への許可"
 
-#: html/Search/Results.html:86
+#: html/Search/Results.html:83
 msgid "chart"
 msgstr ""
 
@@ -5610,27 +5677,27 @@ msgstr "が以下を含まない"
 msgid "equal to"
 msgstr "等しい"
 
-#: html/Search/Build.html:365
+#: html/Search/Build.html:481
 msgid "error: can't move down"
 msgstr ""
 
-#: html/Search/Build.html:387
+#: html/Search/Build.html:503
 msgid "error: can't move left"
 msgstr ""
 
-#: html/Search/Build.html:346
+#: html/Search/Build.html:462
 msgid "error: can't move up"
 msgstr ""
 
-#: html/Search/Build.html:429
+#: html/Search/Build.html:546
 msgid "error: nothing to delete"
 msgstr ""
 
-#: html/Search/Build.html:351 html/Search/Build.html:370 html/Search/Build.html:392 html/Search/Build.html:421
+#: html/Search/Build.html:467 html/Search/Build.html:486 html/Search/Build.html:508 html/Search/Build.html:537
 msgid "error: nothing to move"
 msgstr ""
 
-#: html/Search/Build.html:447
+#: html/Search/Build.html:564
 msgid "error: nothing to toggle"
 msgstr ""
 
@@ -5638,12 +5705,12 @@ msgstr ""
 msgid "greater than"
 msgstr "より大きい"
 
-#: lib/RT/Group_Overlay.pm:222
+#: lib/RT/Group_Overlay.pm:214
 #. ($self->Name)
 msgid "group '%1'"
 msgstr "グループ'%1'"
 
-#: html/Search/Results.html:92
+#: html/Search/Results.html:88
 #. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy'))
 msgid "grouped by %1"
 msgstr ""
@@ -5712,12 +5779,12 @@ msgstr "等しくない"
 msgid "open"
 msgstr "着手"
 
-#: lib/RT/Group_Overlay.pm:227
+#: lib/RT/Group_Overlay.pm:219
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
 msgstr "ユーザー　'%2'　のパーソナルグループ　'%1'　"
 
-#: lib/RT/Group_Overlay.pm:235
+#: lib/RT/Group_Overlay.pm:227
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
 msgstr "キュー　%1 %2"
@@ -5738,7 +5805,7 @@ msgstr "秒"
 msgid "show Configuration tab"
 msgstr ""
 
-#: html/Search/Results.html:83
+#: html/Search/Results.html:80
 msgid "spreadsheet"
 msgstr ""
 
@@ -5746,7 +5813,7 @@ msgstr ""
 msgid "stalled"
 msgstr "保留"
 
-#: html/Search/Results.html:93
+#: html/Search/Results.html:89
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
 msgid "style: %1"
 msgstr ""
@@ -5755,12 +5822,12 @@ msgstr ""
 msgid "summary rows"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:230
+#: lib/RT/Group_Overlay.pm:222
 #. ($self->Type)
 msgid "system %1"
 msgstr "システム　%1"
 
-#: lib/RT/Group_Overlay.pm:241
+#: lib/RT/Group_Overlay.pm:233
 #. ($self->Type)
 msgid "system group '%1'"
 msgstr "システムグループ　'%1'"
@@ -5769,12 +5836,12 @@ msgstr "システムグループ　'%1'"
 msgid "the calling component did not specify why"
 msgstr "呼び出しているコンポーネントがなぜ次のようなことが起こるのか特定できませんでした"
 
-#: lib/RT/Group_Overlay.pm:238
+#: lib/RT/Group_Overlay.pm:230
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
 msgstr "チケット　#%1 %2"
 
-#: lib/RT/Group_Overlay.pm:244
+#: lib/RT/Group_Overlay.pm:236
 #. ($self->Id)
 msgid "undescribed group %1"
 msgstr ""
@@ -5783,7 +5850,7 @@ msgstr ""
 msgid "undescripbed group %1"
 msgstr "表示されないグループ　%1"
 
-#: lib/RT/Group_Overlay.pm:219
+#: lib/RT/Group_Overlay.pm:211
 #. ($user->Object->Name)
 msgid "user %1"
 msgstr "ユーザー　%1"
@@ -5799,8 +5866,4 @@ msgstr "テンプレート　%1と"
 #: lib/RT/Date.pm:354
 msgid "years"
 msgstr "年"
-
-#: share/html/Elements/Quicksearch, et al
-msgid "New"
-msgstr "新規"
 
