@@ -138,6 +138,7 @@ my %FIELD_METADATA = (
     Watcher          => [ 'WATCHERFIELD', ],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
+    CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
     Updated          => [ 'TRANSDATE', ],
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
