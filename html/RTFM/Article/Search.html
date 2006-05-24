@@ -18,7 +18,7 @@
 
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
 
-% unless (%ARGS) {
+% unless ( keys %ARGS ) {
 %   my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
 %   $Classes->LimitToEnabled();
 <table width="100%" border="0">
@@ -47,7 +47,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
 
-<& Elements/ShowSearchResults, articles => $articles &>
+<& Elements/ShowSearchResults, query => \%filtered, articles => $articles &>
 
 <br />
 <br />
@@ -76,8 +76,7 @@ my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 # If it is a number, load the article with that ID.  Otherwise, search
 # on name and summary.
 if ($ARGS{'q'} =~ /^(\d+)$/) {
-    $m->comp("/RTFM/Article/Display.html", id => $1);
-    return;
+    return $m->comp("/RTFM/Article/Display.html", id => $1);
 } elsif ($ARGS{'q'}) {
     $articles->Limit( FIELD => 'Name',
                       SUBCLAUSE => 'NameOrSummary',
@@ -449,12 +448,24 @@ foreach my $field qw(Name Summary Class) {
     }
 }
 
+if ( @OrderBy ) {
+    if ( $OrderBy[0] && $OrderBy[0] =~ /\|/ ) {
+        @OrderBy = split '|', @OrderBy;
+        @Order   = split '|', @Order;
+    }
+    my @tmp = map
+        {{ FIELD => $OrderBy[$_], ORDER => $Order[$_] }}
+        0..$#OrderBy;
+    $articles->OrderByCols( @tmp );
+}
+
 
 $m->comp('/Elements/Callback', %ARGS, _Search => $articles);
 
 my %filtered = %ARGS;
 delete $filtered{$_} for (@metakeys, "EditTopics", "ExpandTopics");
 delete $filtered{$_} for grep {$filtered{$_} !~ /\S/} keys %filtered;
+@filtered{qw(OrderBy Order)} = (\@OrderBy, \@Order);
 my $QueryString = "?".$m->comp('/Elements/QueryString', %filtered);
 </%init>
 
@@ -466,4 +477,6 @@ $LastUpdatedAfter => ''
 $RefersTo => undef
 $ReferredToBy => undef
 $CurrentSearch => 'new'
+@OrderBy => ()
+@Order   => ()
 </%ARGS>

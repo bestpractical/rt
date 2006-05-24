@@ -25,15 +25,15 @@
 
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr class="collection-as-table">
-<th style="text-align: left" class="collection-as-table"><&|/l&>id</&></th>
-<th style="text-align: left" class="collection-as-table"><&|/l&>Name</&></th>
+<th style="text-align: left" class="collection-as-table"><% $sort_link->( loc('id'), 'id') |n %></th>
+<th style="text-align: left" class="collection-as-table"><% $sort_link->( loc('Name'), 'Name') |n %></th>
 <th style="text-align: left" class="collection-as-table"><&|/l&>Class</&></th>
-<th style="text-align: left" class="collection-as-table"><&|/l&>Created</&></th>
-<th style="text-align: left" class="collection-as-table"><&|/l&>Modified</&></th>
+<th style="text-align: left" class="collection-as-table"><% $sort_link->( loc('Created'), 'Created') |n %></th>
+<th style="text-align: left" class="collection-as-table"><% $sort_link->( loc('Modified'), 'LastUpdated') |n %></th>
 </tr>
 <tr class="collection-as-table">
 <th class="collection-as-table"></th>
-<th style="text-align: left" class="collection-as-table"><&|/l&>Summary</&></th>
+<th style="text-align: left" class="collection-as-table"><% $sort_link->( loc('Summary'), 'Summary') |n %></th>
 <th style="text-align: left" class="collection-as-table" colspan="3"><&|/l&>Topics</&></th>
 </tr>
 
@@ -76,8 +76,26 @@ class="evenline" \
 % }
 <%init>
 my $i;
+
+my @OrderBy = $query{'OrderBy'}? @{ $query{'OrderBy'} }: ();
+my @Order = $query{'Order'}? @{ $query{'Order'} }: ();
+
+my $sort_link = sub {
+    my ($title, $column) = @_;
+    my $res = qq{<a href="$RT::WebPath/RTFM/Article/Search.html?};
+    my $order;
+    for ( grep $OrderBy[$_] eq $column, 0..$#OrderBy ) {
+        $order = 'DESC' if !$Order[$_] || $Order[$_] =~ /^ASC/i;
+    }
+    $res .= $m->comp('/Elements/QueryString', %query, OrderBy => $column, Order => ($order || 'ASC'));
+
+    $res .= q{">} . $m->interp->apply_escapes($title, 'h')
+         . q{</a>};
+    return $res;
+};
 </%init>
 <%args>
 $articles => undef
 $did_search => 1
+%query => ()
 </%args>
