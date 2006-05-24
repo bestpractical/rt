@@ -1,29 +1,35 @@
 %# BEGIN LICENSE BLOCK
-%# 
+%#
 %#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
-%#  
+%#
 %#  This program is free software; you can redistribute it and/or modify
-%#  it under the terms of version 2 of the GNU General Public License 
+%#  it under the terms of version 2 of the GNU General Public License
 %#  as published by the Free Software Foundation.
-%# 
+%#
 %#  A copy of that license should have arrived with this
 %#  software, but in any event can be snarfed from www.gnu.org.
-%# 
+%#
 %#  This program is distributed in the hope that it will be useful,
 %#  but WITHOUT ANY WARRANTY; without even the implied warranty of
 %#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %#  GNU General Public License for more details.
-%# 
+%#
 %# END LICENSE BLOCK
 
-<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Topics.html",
-Title => loc('Create an article in class...') &>
-<ul>                                                                            
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
+<& /RTFM/Article/Elements/Tabs,
+    current_tab => "RTFM/Article/PreCreate.html",
+    Title => loc('Create an article in class...'),
+&>
+<ul>
+% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
-% while (my $Class = $Classes->Next) {                                          
+% my $have_classes = 0;
+% while (my $Class = $Classes->Next) {
+% $have_classes++;
 % my $qs = $m->comp("/Elements/QueryString", %ARGS, Class=> $Class->Id);
-<li><a href="Edit.html?<% $qs|n %>"><&|/l, $Class->Name&>in class [_1]</&></a></li>
-% }                                                                             
-                                                                                
-</ul>                                                                           
+<li><a href="Edit.html?<% $qs|n %>"><&|/l, $Class->Name &>in class [_1]</&></a></li>
+% }
+</ul>
+% unless ( $have_classes ) {
+<span><&|/l&>No classes you have access to...</&></span>
+% }
