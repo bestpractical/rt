@@ -941,10 +941,10 @@ sub AddToObject {
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
-    my ( $id, $msg ) =
+    my ( $ret, $msg ) =
       $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
-    return ( $id, $msg );
+    return ( $ret, $msg );
 }
 
 
@@ -976,7 +976,7 @@ sub RemoveFromObject {
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    my ( $id, $msg ) = $ObjectCF->Delete;
+    my ( $ret, $msg ) = $ObjectCF->Delete;
 
     return ( $id, $msg );
 }
