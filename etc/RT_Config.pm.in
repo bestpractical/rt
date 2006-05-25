@@ -512,6 +512,11 @@ Set($AmbiguousDayInPast , 1);
 # only one of the link transactions to have scrips run.
 Set($LinkTransactionsRun1Scrip , 0);
 
+# When this feature is enabled an user need ModifyTicket right on both
+# tickets to link them together, otherwise he can have right on any of
+# two.
+Set($StrictLinkACL, 1);
+
 # }}}
 
 

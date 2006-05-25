@@ -188,7 +188,7 @@ sub AddAttribute {
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );
 
-                                     
+
     # XXX TODO: Why won't RedoSearch work here?                                     
     $self->Attributes->_DoSearch;
     
@@ -1259,6 +1259,8 @@ sub _Links {
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
 
+Returns C<link id>, C<message> and C<exist> flag.
+
 
 =cut
 
@@ -1304,7 +1306,7 @@ sub _AddLink {
                              Target => $args{'Target'} );
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
-        return ( $old_link->id, $self->loc("Link already exists") );
+        return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
     # }}}
@@ -1369,7 +1371,7 @@ sub _DeleteLink {
         $direction='Base';
     }
     else {
-        $RT::Logger->debug("$self: Base or Target must be specified\n");
+        $RT::Logger->error("Base or Target must be specified\n");
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 

@@ -679,6 +679,20 @@ sub Create {
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
+            # Check rights on the other end of the link if we must
+            # then run _AddLink that doesn't check for ACLs
+            if ( $RT::StrictLinkACL ) {
+                my ($val, $msg, $obj) = $self->__GetTicketFromURI( URI => $link );
+                unless ( $val ) {
+                    push @non_fatal_errors, $msg;
+                    next;
+                }
+                if ( $obj && !$obj->CurrentUserHasRight('ModifyTicket') ) {
+                    push @non_fatal_errors, $self->loc('Linking. Permission denied');
+                    next;
+                }
+            }
+            
             my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
@@ -2480,11 +2494,29 @@ sub DeleteLink {
         @_
     );
 
-    #check acls
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        $RT::Logger->debug("No permission to delete links\n");
-        return ( 0, $self->loc('Permission Denied'))
+    unless ( $args{'Target'} || $args{'Base'} ) {
+        $RT::Logger->error("Base or Target must be specified\n");
+        return ( 0, $self->loc('Either base or target must be specified') );
+    }
 
+    #check acls
+    my $right = 0;
+    $right++ if $self->CurrentUserHasRight('ModifyTicket');
+    if ( !$right && $RT::StrictLinkACL ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    # If the other URI is an RT::Ticket, we want to make sure the user
+    # can modify it too...
+    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
+    return (0, $msg) unless $status;
+    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
+        $right++;
+    }
+    if ( ( !$RT::StrictLinkACL && $right == 0 ) ||
+         ( $RT::StrictLinkACL && $right < 2 ) )
+    {
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my ($val, $Msg) = $self->SUPER::_DeleteLink(%args);
@@ -2552,13 +2584,52 @@ sub AddLink {
                  Silent => undef,
                  @_ );
 
+    unless ( $args{'Target'} || $args{'Base'} ) {
+        $RT::Logger->error("Base or Target must be specified\n");
+        return ( 0, $self->loc('Either base or target must be specified') );
+    }
 
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+    my $right = 0;
+    $right++ if $self->CurrentUserHasRight('ModifyTicket');
+    if ( !$right && $RT::StrictLinkACL ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    # If the other URI is an RT::Ticket, we want to make sure the user
+    # can modify it too...
+    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
+    return (0, $msg) unless $status;
+    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
+        $right++;
+    }
+    if ( ( !$RT::StrictLinkACL && $right == 0 ) ||
+         ( $RT::StrictLinkACL && $right < 2 ) )
+    {
+        return ( 0, $self->loc("Permission Denied") );
+    }
 
-    $self->_AddLink(%args);
+    return $self->_AddLink(%args);
+}
+
+sub __GetTicketFromURI {
+    my $self = shift;
+    my %args = ( URI => '', @_ );
+
+    # If the other URI is an RT::Ticket, we want to make sure the user
+    # can modify it too...
+    my $uri_obj = RT::URI->new( $self->CurrentUser );
+    $uri_obj->FromURI( $args{'URI'} );
+
+    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
+	    my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
+        $RT::Logger->warning( "$msg\n" );
+        return( 0, $msg );
+    }
+    my $obj = $uri_obj->Resolver->Object;
+    unless ( UNIVERSAL::isa($obj, 'RT::Ticket') && $obj->id ) {
+        return (1, 'Found not a ticket', undef);
+    }
+    return (1, 'Found ticket', $obj);
 }
 
 =head2 _AddLink  
@@ -2575,47 +2646,8 @@ sub _AddLink {
                  Silent => undef,
                  @_ );
 
-    # {{{ If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my $other_ticket_uri = RT::URI->new($self->CurrentUser);
-
-    if ( $args{'Target'} ) {
-        $other_ticket_uri->FromURI( $args{'Target'} );
-
-    }
-    elsif ( $args{'Base'} ) {
-        $other_ticket_uri->FromURI( $args{'Base'} );
-    }
-
-    unless ( $other_ticket_uri->Resolver && $other_ticket_uri->Scheme ) {
-	my $msg = $args{'Target'} ? $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'})
-          : $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
-        $RT::Logger->warning( "$self $msg\n" );
-
-        return( 0, $msg );
-    }
-
-    # By popular demand, adding a ticket link doesn't check ACLs on the second ticket 
-    #
-    #    if ( $other_ticket_uri->Resolver->Scheme eq 'fsck.com-rt') {
-    #        my $object = $other_ticket_uri->Resolver->Object;
-    #
-    #        if (   UNIVERSAL::isa( $object, 'RT::Ticket' )
-    #            && $object->id
-    #            && !$object->CurrentUserHasRight('ModifyTicket') )
-    #        {
-    #            return ( 0, $self->loc("Permission Denied") );
-    #        }
-    #
-    #    }
-    #
-    # }}}
-
-    my ($val, $Msg) = $self->SUPER::_AddLink(%args);
-
-    if (!$val) {
-	return ($val, $Msg);
-    }
+    my ($val, $msg, $exist) = $self->SUPER::_AddLink(%args);
+    return ($val, $msg) if !$val || $exist;
 
     my ($direction, $remote_link);
     if ( $args{'Target'} ) {
@@ -2628,10 +2660,10 @@ sub _AddLink {
 
     # Don't write the transaction if we're doing this on create
     if ( $args{'Silent'} ) {
-        return ( $val, $Msg );
+        return ( $val, $msg );
     }
     else {
-	my $remote_uri = RT::URI->new( $self->CurrentUser );
+        my $remote_uri = RT::URI->new( $self->CurrentUser );
     	$remote_uri->FromURI( $remote_link );
 
         #Write the transaction
