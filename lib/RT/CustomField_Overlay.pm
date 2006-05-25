@@ -978,7 +978,7 @@ sub RemoveFromObject {
     }
     my ( $ret, $msg ) = $ObjectCF->Delete;
 
-    return ( $id, $msg );
+    return ( $ret, $msg );
 }
 
 # {{{ AddValueForObject
