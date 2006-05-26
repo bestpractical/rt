@@ -64,6 +64,10 @@ if (!$ticket->Id) {
 }
 
 my $action;
+
+my %data;
+my @comments;
+
 ($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
 unless ($action =~ /^(?:Take|Steal|Untake)$/) {
     $e = 1;
