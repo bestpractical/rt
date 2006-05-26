@@ -116,7 +116,7 @@ my %handlers = (
     link        => ["link", "ln"],
     merge       => ["merge"],
     grant       => ["grant", "revoke"],
-    take        => ["take", "steal"],
+    take        => ["take", "steal", "untake"],
     quit        => ["quit", "exit"],
 );
 
