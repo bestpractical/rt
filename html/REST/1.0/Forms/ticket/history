@@ -168,8 +168,7 @@ if ($tid) {
 	    $fieldstring .= $key;
 	}
 	my ($content, $forms);
-
-	$m->subexec("$RT::WebPath/REST/1.0/show", 
+	$m->subexec("/REST/1.0/show", 
 		    id => \@tid, 
 		    format => $format,
                     fields => $fieldstring);
