@@ -145,6 +145,9 @@ else {
             }
         }
 
+        # people fields allow multiple values
+        $v{$_} = vsplit($v{$_}) foreach ( grep $create{lc $_}, @people );
+
         if ($text) {
             $v{MIMEObj} =
                 MIME::Entity->build(
@@ -185,7 +188,7 @@ if (!keys(%data)) {
     }
 
     foreach $key (@people) {
-	next unless (!%$fields || (exists $fields->{lc $key}));
+        next unless (!%$fields || (exists $fields->{lc $key}));
         push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
     }
 
