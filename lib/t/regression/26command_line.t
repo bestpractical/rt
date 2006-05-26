@@ -283,8 +283,6 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
 
 # {{{ test taking/stealing tickets
 {
-#    local $TODO = "Taking/stealing haven't been implemented yet.";
-
     # create a user; give them privileges to take and steal
     ### TODO: implement 'grant' in the CLI tool; use that here instead.
     ###       this breaks the abstraction barrier, like, a lot.
@@ -320,7 +318,6 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     # root takes the ticket
     expect_send("take $steal_ticket_id", 'root takes the ticket...');
     expect_like(qr/Owner changed from Nobody to root/, 'root took the ticket');
-#    expect_like(qr/Took ticket $steal_ticket_id/, 'root took the ticket');
 
     # log in as the non-root user
     #expect_quit();      # this is apparently unnecessary, but I'll leave it in
