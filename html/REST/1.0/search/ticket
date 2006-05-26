@@ -133,7 +133,7 @@ while (my $ticket = $tickets->Next) {
 	
 
 	} else {	
-        	$output .= $ticket->Id . "\t". $ticket->Subject . "\n";
+        	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
 	}
     }
     else {
