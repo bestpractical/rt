@@ -902,7 +902,7 @@ sub submit {
             # For anything else, we just die.
             elsif ($res->code != 409) {
                 warn "rt: ", $res->content;
-                exit;
+                #exit;
             }
         }
     }
