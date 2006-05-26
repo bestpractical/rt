@@ -757,8 +757,6 @@ sub take {
     my ($bad, %data) = (0, ());
 
     my $id;
-    my $force = 0;
-    $force = 1 if $cmd eq 'steal';
 
     # get the ticket id
     if (@ARGV == 1) {
@@ -769,10 +767,10 @@ sub take {
         }
         my $form = [
             "",
-            [ "Ticket", "Force" ],
+            [ "Ticket", "Action" ],
             {
                 Ticket => $id,
-                Force => $force,
+                Action => $cmd,
                 Status => '',
             }
         ];

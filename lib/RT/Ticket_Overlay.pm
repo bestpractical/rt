@@ -2998,9 +2998,12 @@ sub SetOwner {
         ( $self->OwnerObj->Id != $RT::Nobody->Id ) and    #and the owner is set
         ( $self->CurrentUser->Id ne $self->OwnerObj->Id() )
       ) {                                                 #and it's not us
-        return ( 0,
-                 $self->loc(
-"You can only reassign tickets that you own or that are unowned" ) );
+        return ( 0, $self->loc("You can only take tickets that are unowned") )
+            if $NewOwnerObj->id == $self->CurrentUser->id;
+        return (
+            0,
+            $self->loc("You can only reassign tickets that you own or that are unowned" )
+        );
     }
 
     #If we've specified a new owner and that user can't modify the ticket
