@@ -939,7 +939,7 @@ sub _WatcherJoin {
     # RT doesn't allow to add groups as members of the
     # ticket roles, so we just hide entries in CGM table
     # with MemberId == GroupId from results
-    my $groupmembers = $self->SUPER::Limit(
+    $self->SUPER::Limit(
         LEFTJOIN   => $groupmembers,
         FIELD      => 'GroupId',
         OPERATOR   => '!=',
@@ -1309,8 +1309,8 @@ sub _CustomFieldLimit {
     my $field = $rest{SUBKEY} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
-
-    my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
+    my ($queue, $cfid);
+    ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that

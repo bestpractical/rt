@@ -3054,9 +3054,9 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    $RT::Handle->Commit();
-
-    my ( $trans, $msg, undef ) = $self->_NewTransaction(
+    $RT::Handle->Commit(); 
+    my $trans;
+    ( $trans, $msg, undef ) = $self->_NewTransaction(
                                                    Type     => $Type,
                                                    Field    => 'Owner',
                                                    NewValue => $NewOwnerObj->Id,
