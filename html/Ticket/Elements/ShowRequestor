@@ -47,17 +47,14 @@
 my $rows = 10;
 my $people = $Ticket->Requestors->UserMembersObj;
 while (my $requestor=$people->Next) {
+next if $requestor->Privileged;
 my $name=$requestor->RealName || $requestor->EmailAddress;	
 my $tickets = RT::Tickets->new($session{'CurrentUser'});
-$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $requestor->EmailAddress );
-$tickets->LimitStatus( VALUE => 'open');
-$tickets->LimitStatus( VALUE => 'new');
+$tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
 $tickets->RowsPerPage($rows);
-$tickets->OrderBy(FIELD => 'Priority',
-		  ORDER => 'DESC');
+$tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
 </%PERL>
 
-% unless ($requestor->Privileged) {
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id."\">".loc("More about [_1]", $name)."</a>" &>
 
@@ -80,7 +77,6 @@ $tickets->OrderBy(FIELD => 'Priority',
 
 <& /Elements/TitleBoxEnd &>
 
-% }
 %}
 <%ARGS>
 $Ticket=>undef
