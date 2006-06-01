@@ -91,7 +91,11 @@
 </tr>
 </table>
 </&>
-<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+<& /Elements/Submit,
+    Caption => loc("Be sure to save your changes"),
+    Label => $SubmitLabel,
+    Reset => 1,
+&>
 
 <br />
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
@@ -131,13 +135,16 @@
 </table>
 </&>
 
-<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+<& /Elements/Submit,
+    Caption => loc("Be sure to save your changes"),
+    Label => $SubmitLabel,
+    Reset => 1,
+&>
 
 </form>
 <%init>
 my (@actions);
-
-
+my $SubmitLabel;
 my $scrip = new RT::Scrip($session{'CurrentUser'});
 
 if ( $id eq 'new' ) {
@@ -187,7 +194,9 @@ elsif ($id) {
 
 elsif ($ARGS{'create'}) {
     $id = 'new';
+    $SubmitLabel = loc('Create');
 }
+$SubmitLabel ||= loc('Save');
 
 my $min_lines = 10;
 
