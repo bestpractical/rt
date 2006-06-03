@@ -73,18 +73,24 @@ if ($cache && exists $session{$cache}) {
 else {
     my $Queues = RT::Queues->new($session{'CurrentUser'});
     $Queues->UnLimit();
-    @queues = map {
-	{ Name => $_->Name, Description => $_->Description,
-	  id => $_->Id } }
-	grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
+    @queues = grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
+
+    $m->comp('/Elements/Callback', _CallbackName => 'Filter', Queues => \@queues );
+
+    @queues = map { {
+        id          => $_->Id,
+        Name        => $_->Name,
+        Description => $_->Description,
+    } } grep $_, @queues;
 
     $session{$cache} = \@queues if $cache;
 }
+
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 </%INIT>
 <%ARGS>
 $cache => undef
 $queue_filter => undef
-$conditions => ()
+$conditions => []
 </%ARGS>
