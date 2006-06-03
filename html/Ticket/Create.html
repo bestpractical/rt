@@ -237,10 +237,12 @@
 
 <%INIT>
 
-
 my @results;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
+$m->comp('/Elements/Callback', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+
 my $CFs = $QueueObj->TicketCustomFields();
 my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
 
