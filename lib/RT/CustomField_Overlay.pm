@@ -854,6 +854,7 @@ Takes an object
 sub AddToObject {
     my $self  = shift;
     my $object = shift;
+    my $id = $object->Id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
     	return ( 0, $self->loc('Lookup type mismatch') );
@@ -863,17 +864,15 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $oid = $object->Id || 0;
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $oid, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
+    my ( $ret, $msg ) =
+      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
-    my ( $id, $msg ) =
-      $ObjectCF->Create( ObjectId => $oid, CustomField => $self->Id );
-
-    return ( $id, $msg );
+    return ( $ret, $msg );
 }
 
 
@@ -889,6 +888,7 @@ Takes an object
 sub RemoveFromObject {
     my $self = shift;
     my $object = shift;
+    my $id = $object->Id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
         return ( 0, $self->loc('Object type mismatch') );
@@ -898,15 +898,14 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $oid = $object->Id || 0;
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $oid, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    my ( $id, $msg ) = $ObjectCF->Delete;
+    my ( $ret, $msg ) = $ObjectCF->Delete;
 
-    return ( $id, $msg );
+    return ( $ret, $msg );
 }
 
 # {{{ AddValueForObject

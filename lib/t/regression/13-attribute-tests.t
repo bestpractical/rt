@@ -20,6 +20,8 @@ ok($user->id, "Created a test user");
 
 ok(1, $user->Attributes->BuildSelectQuery);
 my $attr = $user->Attributes;
+# XXX: Order by id as some tests depend on it
+$attr->OrderByCols({ FIELD => 'id' });
 
 ok(1, $attr->BuildSelectQuery);
 
