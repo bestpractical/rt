@@ -67,7 +67,7 @@ sub _InitSQL {
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
   $self->{'_sql_cf_alias'}  = undef;
-  $self->{'_sql_object_cf_alias'}  = undef;
+  $self->{'_sql_object_cfv_alias'}  = undef;
   $self->{'_sql_watcher_join_users_alias'} = undef;
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
