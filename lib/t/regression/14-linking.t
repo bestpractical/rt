@@ -1,4 +1,4 @@
-use Test::More  tests => '90';
+use Test::More  tests => '89';
 
 use strict;
 use warnings;
@@ -101,7 +101,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
     my $parent = RT::Ticket->new( $RT::SystemUser );
-    ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
@@ -114,9 +114,9 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    local $RT::StrictLinkACL = 0;
+    RT->Config->Set( StrictLinkACL => 0 );
     my $parent = RT::Ticket->new( $RT::SystemUser );
-    ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
@@ -125,7 +125,8 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     is($child->_Links('Base')->Count, 1, 'link was created');
     is($child->_Links('Target')->Count, 0, 'link was created only one');
     # no scrip run on second ticket accroding to config option
-    is(link_count($filename), 0, "scrips ok"); 
+    is(link_count($filename), undef, "scrips ok");
+    RT->Config->Set( StrictLinkACL => 1 );
 }
 
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
@@ -135,14 +136,14 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
     my $parent = RT::Ticket->new( $RT::SystemUser );
-    ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
-    my ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
-    is(link_count($filename), 0, "scrips ok");
+    is(link_count($filename), undef, "scrips ok");
     $child->CurrentUser( $RT::SystemUser );
     is($child->_Links('Base')->Count, 0, 'link was not created, no permissions');
     is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
@@ -151,14 +152,14 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    local $RT::StrictLinkACL = 0;
+    RT->Config->Set( StrictLinkACL => 0 );
     my $parent = RT::Ticket->new( $RT::SystemUser );
-    ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
-    my ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->CurrentUser( $RT::SystemUser );
@@ -167,8 +168,8 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->CurrentUser( $creator );
 
     # turn off feature and try to delete link, we should fail
-    $RT::StrictLinkACL = 1;
-    my ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    RT->Config->Set( StrictLinkACL => 1 );
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->CurrentUser( $RT::SystemUser );
@@ -177,13 +178,14 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->CurrentUser( $creator );
 
     # try to delete link, we should success as feature is active
-    $RT::StrictLinkACL = 0;
-    my ($id, $msg) = $child->DeleteLink(Type => 'MemberOf', Target => $parent->id);
+    RT->Config->Set( StrictLinkACL => 0 );
+    ($id, $msg) = $child->DeleteLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
     $child->CurrentUser( $RT::SystemUser );
     $child->_Links('Base')->_DoCount;
     is($child->_Links('Base')->Count, 0, 'link was deleted');
+    RT->Config->Set( StrictLinkACL => 1 );
 }
 
 my $tid;
@@ -310,7 +312,9 @@ sub link_count {
     my $file = shift;
     open my $fh, "<$file" or die "couldn't open $file";
     my $data = <$fh>;
+    close $fh;
+
+    return undef unless $data;
     chomp $data;
     return $data + 0;
-    close $fh;
 }
