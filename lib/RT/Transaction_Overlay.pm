@@ -82,6 +82,10 @@ use vars qw( %_BriefDescriptions );
 use RT::Attachments;
 use RT::Scrips;
 
+use HTML::FormatText;
+use HTML::TreeBuilder;
+
+
 # {{{ sub Create 
 
 =head2 Create
@@ -278,9 +282,13 @@ sub Content {
     );
 
     my $content;
-    my $content_obj = $self->ContentObj;
-    if ($content_obj) {
+    if (my $content_obj = $self->ContentObj) {
         $content = $content_obj->Content;
+
+	if ($content_obj->ContentType =~ m{^text/html$}i) {
+        $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
+
+	}
     }
 
     # If all else fails, return a message that we couldn't find any content
@@ -342,7 +350,7 @@ sub ContentObj {
 
     # If it's a message or a plain part, just return the
     # body.
-    if ( $Attachment->ContentType() =~ '^(text/plain$|message/)' ) {
+    if ( $Attachment->ContentType() =~ '^(?:text/plain$|text/html|message/)' ) {
         return ($Attachment);
     }
 

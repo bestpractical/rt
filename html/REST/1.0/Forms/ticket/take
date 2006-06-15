@@ -56,14 +56,17 @@ my $ticket = new RT::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/take
-$ticket->Load($id);
-if (!$ticket->Id) {
+$ticket->Load( $id );
+unless ( $ticket->Id ) {
     $e = 1;
     $c = "# Ticket $id does not exist.";
     goto OUTPUT;
 }
 
 my $action;
+
+my @comments;
+
 ($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
 unless ($action =~ /^(?:Take|Steal|Untake)$/) {
     $e = 1;
@@ -71,58 +74,59 @@ unless ($action =~ /^(?:Take|Steal|Untake)$/) {
     goto OUTPUT;
 }
 
-unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
-        ( ($action eq "Take" || $action eq 'Untake') &&
-         $ticket->CurrentUserHasRight("TakeTicket")) ||
-        ($action eq "Steal" &&
-         $ticket->CurrentUserHasRight("StealTicket")))
-{
-    $e = 1;
-    $c = "# You are not allowed to $action ticket $id.";
-    goto OUTPUT;
-}
+my ($status, $msg) = $ticket->$action();
+$c = "# $msg";
+$e = 1  unless $status;
+goto OUTPUT;
 
-if (!keys(%data)) {
-    # assemble a form data structure
-    my @data;
-    push @data, [ Ticket => $ticket->Id ];
-    push @data, [ Force => '0' ];       # 1 => "steal"
-}
-else {
-    # process the form data structure
-    my ($key, $val);
-    
-    foreach $key (keys %data) {
-        $val = $data{$key};
+#unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
+#        ( ($action eq "Take" || $action eq 'Untake') &&
+#         $ticket->CurrentUserHasRight("TakeTicket")) ||
+#        ($action eq "Steal" &&
+#         $ticket->CurrentUserHasRight("StealTicket")))
+#{
+#    $e = 1;
+#    $c = "# You are not allowed to $action ticket $id.";
+#    goto OUTPUT;
+#}
 
-        if ($key =~ /^force$/i) {
-            if ($val !~ /^(?:0|1)$/) {
-                push(@comments, "# invalid value for 'force': $val");
-                goto DONE;
-            }
-            my ($ret_id, $msg);
-
-            ### take
-            if ($val == 0) {
-                ($ret_id, $msg) = $ticket->Take;
-                if (!$ret_id) {
-                    push(@comments, "# Couldn't take ticket $id: $msg");
-                    goto DONE;
-                }
-                push(@comments, "# Ticket $id taken.");
-            }
-            ### steal
-            else {
-                ($ret_id, $msg) = $ticket->Steal;
-                if (!$ret_id) {
-                    push(@comments, "# Couldn't steal ticket $id: $msg");
-                    goto DONE;
-                }
-                push(@comments, "# Ticket $id stolen.");
-            }
-        }
-    }
-}
+#if ( keys %changes ) {
+#}
+#else {
+#    # process the form data structure
+#    my ($key, $val);
+#    
+#    foreach $key (keys %data) {
+#        $val = $data{$key};
+#
+#        if ($key =~ /^force$/i) {
+#            if ($val !~ /^(?:0|1)$/) {
+#                push(@comments, "# invalid value for 'force': $val");
+#                goto DONE;
+#            }
+#            my ($ret_id, $msg);
+#
+#            ### take
+#            if ($val == 0) {
+#                ($ret_id, $msg) = $ticket->Take;
+#                if (!$ret_id) {
+#                    push(@comments, "# Couldn't take ticket $id: $msg");
+#                    goto DONE;
+#                }
+#                push(@comments, "# Ticket $id taken.");
+#            }
+#            ### steal
+#            else {
+#                ($ret_id, $msg) = $ticket->Steal;
+#                if (!$ret_id) {
+#                    push(@comments, "# Couldn't steal ticket $id: $msg");
+#                    goto DONE;
+#                }
+#                push(@comments, "# Ticket $id stolen.");
+#            }
+#        }
+#    }
+#}
 
 OUTPUT:
 return [ $c, $o, $k, $e ];

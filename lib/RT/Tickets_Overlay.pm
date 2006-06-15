@@ -1303,7 +1303,6 @@ sub _CustomFieldLimit {
     my $field = $rest{SUBKEY} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
-
     my ($queue, $cfid);
     ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
@@ -1330,9 +1329,9 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'AND',
         );
     }
-    
+
     $self->_OpenParen if $null_columns_ok;
-    
+
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',

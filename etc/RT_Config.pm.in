@@ -593,6 +593,11 @@ Set(@InactiveStatus, qw(resolved rejected deleted));
 # only one of the link transactions to have scrips run.
 Set($LinkTransactionsRun1Scrip , 0);
 
+# When this feature is enabled an user need ModifyTicket right on both
+# tickets to link them together, otherwise he can have right on any of
+# two.
+Set($StrictLinkACL, 1);
+
 # Set $PreviewScripMessages to 1 if the scrips preview on the ticket
 # reply page should include the content of the messages to be sent.
 

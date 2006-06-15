@@ -116,7 +116,7 @@ my %handlers = (
     link        => ["link", "ln"],
     merge       => ["merge"],
     grant       => ["grant", "revoke"],
-    take        => ["take", "steal"],
+    take        => ["take", "steal", "untake"],
     quit        => ["quit", "exit"],
 );
 
@@ -757,8 +757,6 @@ sub take {
     my ($bad, %data) = (0, ());
 
     my $id;
-    my $force = 0;
-    $force = 1 if $cmd eq 'steal';
 
     # get the ticket id
     if (@ARGV == 1) {
@@ -769,10 +767,10 @@ sub take {
         }
         my $form = [
             "",
-            [ "Ticket", "Force" ],
+            [ "Ticket", "Action" ],
             {
                 Ticket => $id,
-                Force => $force,
+                Action => $cmd,
                 Status => '',
             }
         ];
@@ -902,7 +900,7 @@ sub submit {
             # For anything else, we just die.
             elsif ($res->code != 409) {
                 warn "rt: ", $res->content;
-                exit;
+                #exit;
             }
         }
     }
