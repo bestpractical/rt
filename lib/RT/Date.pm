@@ -474,7 +474,7 @@ Returns the new time
 
 sub AddSeconds {
     my $self = shift;
-    my $delta = shift;
+    my $delta = shift or return $self->Unix;
     
     $self->Set(Format => 'unix', Value => ($self->Unix + $delta));
     
