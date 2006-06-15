@@ -10,7 +10,7 @@ RT::Init();
 
 use RT::User;
 
-use_ok('RT::Date', "loaded RT::Date");
+use_ok('RT::Date');
 {
     my $date = RT::Date->new($RT::SystemUser);
     isa_ok($date, 'RT::Date', "constructor returned RT::Date oject");
