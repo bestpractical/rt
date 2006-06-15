@@ -2700,7 +2700,7 @@ sub _AddLink {
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $val;
+        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
     }
 
     return ( $val, $msg );
