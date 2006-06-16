@@ -416,9 +416,7 @@ sub ParseErrorsToAddressFromHead {
 
     #Figure out who's sending this message.
 
-    foreach my $header ( 'Return-path', 'Errors-To', 'Reply-To', 'From',
-        'Sender' )
-    {
+    foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
 
         # If there's a header of that name
         my $headerobj = $head->get($header);
