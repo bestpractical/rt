@@ -440,9 +440,9 @@ sub Create {
     if ( $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
-    elsif ( $QueueObj->DefaultDueIn ) {
+    elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
         $Due->SetToNow;
-        $Due->AddDays( $QueueObj->DefaultDueIn );
+        $Due->AddDays( $due_in );
     }
 
     my $Starts = new RT::Date( $self->CurrentUser );
@@ -1331,6 +1331,10 @@ sub AddWatcher {
         @_
     );
 
+    # XXX, FIXME, BUG: if only email is provided then we only check
+    # for ModifyTicket right, but must try to get PrincipalId and
+    # check Watch* rights too if user exist
+
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
@@ -1998,11 +2002,16 @@ sub SetQueue {
         )
       )
     {
-        $self->Untake();
+        my $clone = RT::Ticket->new( $RT::SystemUser );
+        $clone->Load( $self->Id );
+        unless ( $clone->Id ) {
+            return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
+        }
+        my ($status, $msg) = $clone->SetOwner( $RT::Nobody->Id, 'Force' );
+        $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
     return ( $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() ) );
-
 }
 
 # }}}
@@ -3084,14 +3093,13 @@ sub SetOwner {
                                              OldValue  => $OldOwnerObj->Id,
                                              TimeTaken => 0 );
 
-    if ($trans) {
+    if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
                            $OldOwnerObj->Name, $NewOwnerObj->Name );
 
         # TODO: make sure the trans committed properly
     }
-    return ( $trans, $msg );
-
+    return ( $val, $msg );
 }
 
 # }}}

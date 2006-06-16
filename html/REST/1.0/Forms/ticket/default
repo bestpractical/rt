@@ -58,7 +58,7 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
 my $ticket = new RT::Ticket $session{CurrentUser};
-my @dates  = qw(Created Starts Started Due Resolved Told);
+my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked

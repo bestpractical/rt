@@ -47,18 +47,16 @@
 my $rows = 10;
 my $people = $Ticket->Requestors->UserMembersObj;
 while (my $requestor=$people->Next) {
+next if $requestor->Privileged;
 my $name=$requestor->RealName || $requestor->EmailAddress;	
-my $tickets = RT::Tickets->new($session{'CurrentUser'});
 my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
-$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $requestor->EmailAddress );
-$tickets->LimitStatus( VALUE => 'open');
-$tickets->LimitStatus( VALUE => 'new');
+
+my $tickets = RT::Tickets->new($session{'CurrentUser'});
+$tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
 $tickets->RowsPerPage($rows);
-$tickets->OrderBy(FIELD => 'Priority',
-		  ORDER => 'DESC');
+$tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
 </%PERL>
 
-% unless ($requestor->Privileged) {
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: '',
     title => loc("More about [_1]", $name),
@@ -84,7 +82,6 @@ $tickets->OrderBy(FIELD => 'Priority',
 </&>
 
 % }
-%}
 <%ARGS>
 $Ticket=>undef
 $DisplayPath => "/Ticket/Display.html"

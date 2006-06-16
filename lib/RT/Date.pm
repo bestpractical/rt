@@ -251,19 +251,27 @@ sub Set {
 
 # {{{ sub SetToMidnight 
 
-=head2 SetToMidnight
+=head2 SetToMidnight [Timezone => 'utc']
 
-Sets the date to midnight (at the beginning of the day) GMT
+Sets the date to midnight (at the beginning of the day).
 Returns the unixtime at midnight.
+
+Arguments:
+
+=over 4
+
+=item Timezone - Timezone context C<server> or C<UTC>
 
 =cut
 
 sub SetToMidnight {
     my $self = shift;
-    
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday) = gmtime($self->Unix);
-    $self->Unix(timegm (0,0,0,$mday,$mon,$year,$wday,$yday));
-    
+    my %args = ( Timezone => 'UTC', @_ );
+    if ( lc $args{'Timezone'} eq 'server' ) {
+        $self->Unix( timelocal( 0,0,0,(localtime $self->Unix)[3..7] ) );
+    } else {
+        $self->Unix( timegm( 0,0,0,(gmtime $self->Unix)[3..7] ) );
+    }
     return ($self->Unix);
 }
 

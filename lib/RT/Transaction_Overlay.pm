@@ -153,7 +153,13 @@ sub Create {
  
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
-    $self->_Attach( $args{'MIMEObj'} ) if defined $args{'MIMEObj'};
+    if ( defined $args{'MIMEObj'} ) {
+        my ($id, $msg) = $self->_Attach( $args{'MIMEObj'} );
+        unless ( $id ) {
+            $RT::Logger->error("Couldn't add attachment: $msg");
+            return ( 0, $self->loc("Couldn't add attachment") );
+        }
+    }
 
 
     #Provide a way to turn off scrips if we need to
@@ -477,11 +483,11 @@ sub _Attach {
     }
 
     my $Attachment = new RT::Attachment( $self->CurrentUser );
-    $Attachment->Create(
+    my ($id, $msg) = $Attachment->Create(
         TransactionId => $self->Id,
         Attachment    => $MIMEObject
     );
-    return ( $Attachment, $self->loc("Attachment created") );
+    return ( $Attachment, $msg || $self->loc("Attachment created") );
 
 }
 
