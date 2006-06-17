@@ -26,7 +26,7 @@ my $qid;
     ok( $qid = $1, "found id of the '$queue_name' queue");
 }
 
-$m->form_number(1);
+$m->form_name('CreateTicketInQueue');
 $m->field('Queue', $qid);
 $m->submit;
 is($m->status, 200, "request successful");
