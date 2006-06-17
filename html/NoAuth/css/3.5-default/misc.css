@@ -110,3 +110,9 @@ div.autocomplete ul li {
     margin: 0;
     padding: 2px;
 }
+
+#comp-Search-Build .titlebox-content {
+    padding-left: 0.7em;
+    padding-right: 0.3em;
+}
+

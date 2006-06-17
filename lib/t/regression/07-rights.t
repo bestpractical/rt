@@ -113,7 +113,7 @@ ok( $user->HasRight( Right => 'ReplyToTicket', Object => $ticket ), "user is own
 $group = RT::Group->new( $RT::SystemUser );
 ok( $group->LoadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
 $ace = RT::ACE->new( $RT::SystemUser );
-my ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ModifyTicket', Object => $queue );
+($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ModifyTicket', Object => $queue );
 ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
 ok( $group->PrincipalObj->HasRight( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
 ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket ), "user is not AdminCc and can't modify ticket" );

@@ -47,7 +47,7 @@
 my %cache;
 </%once>
 <%init>
-$Page = $m->callers(1)->path unless ($Page);
+$Page ||= $m->callers(1)->path;
 
 my $CacheKey = "Callback--$Page--$_CallbackName";
 my $callbacks = $cache{$CacheKey} || $m->notes($CacheKey);
@@ -73,7 +73,7 @@ if (!$callbacks) {
                    && !$seen{$_}++,
                  $m->interp->resolver->glob_path($path, $root);
     }
-    
+
     $m->notes($CacheKey => $callbacks);
     $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
 }

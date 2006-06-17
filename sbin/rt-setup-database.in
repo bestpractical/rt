@@ -182,10 +182,12 @@ sub insert_schema {
         no warnings 'unopened';
 
         open( SCHEMA, "<" . $base_path . "/schema." . $db_type );
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $db_type );
+
+        my $has_local = 0;
+        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $db_type ) and $has_local = 1;
 
         my $statement = "";
-        foreach my $line (<SCHEMA>, ($_ = ';;'), <SCHEMA_LOCAL>) {
+        foreach my $line (<SCHEMA>, ($_ = ';;'), ($has_local? <SCHEMA_LOCAL>: ()) ) {
             $line =~ s/\#.*//g;
             $line =~ s/--.*//g;
             $statement .= $line;

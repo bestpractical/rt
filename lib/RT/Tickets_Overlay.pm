@@ -471,11 +471,8 @@ sub _DateLimit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    use POSIX 'strftime';
-
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
-    my $time = $date->Unix;
 
     if ( $op eq "=" ) {
 
@@ -483,10 +480,10 @@ sub _DateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        my $daystart = strftime( "%Y-%m-%d %H:%M",
-            gmtime( $time - ( $time % 86400 ) ) );
-        my $dayend = strftime( "%Y-%m-%d %H:%M",
-            gmtime( $time + ( 86399 - $time % 86400 ) ) );
+        $date->SetToMidnight( Timezone => 'server' );
+        my $daystart = $date->ISO;
+        $date->AddDay;
+        my $dayend = $date->ISO;
 
         $sb->_OpenParen;
 
@@ -509,11 +506,10 @@ sub _DateLimit {
 
     }
     else {
-        $value = strftime( "%Y-%m-%d %H:%M", gmtime($time) );
         $sb->_SQLLimit(
             FIELD    => $meta->[1],
             OPERATOR => $op,
-            VALUE    => $value,
+            VALUE    => $date->ISO,
             @rest,
         );
     }
@@ -566,7 +562,6 @@ sub _TransDateLimit {
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
-    my $time = $date->Unix;
 
     $sb->_OpenParen;
     if ( $op eq "=" ) {
@@ -575,10 +570,10 @@ sub _TransDateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        my $daystart = strftime( "%Y-%m-%d %H:%M",
-            gmtime( $time - ( $time % 86400 ) ) );
-        my $dayend = strftime( "%Y-%m-%d %H:%M",
-            gmtime( $time + ( 86399 - $time % 86400 ) ) );
+        $date->SetToMidnight( Timezone => 'server' );
+        my $daystart = $date->ISO;
+        $date->AddDay;
+        my $dayend = $date->ISO;
 
         $sb->_SQLLimit(
             ALIAS         => $sb->{_sql_transalias},
@@ -608,7 +603,7 @@ sub _TransDateLimit {
             ALIAS         => $sb->{_sql_transalias},
             FIELD         => 'Created',
             OPERATOR      => $op,
-            VALUE         => $value,
+            VALUE         => $date->ISO,
             CASESENSITIVE => 0,
             @rest
         );
@@ -1303,7 +1298,6 @@ sub _CustomFieldLimit {
     my $field = $rest{SUBKEY} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
-
     my ($queue, $cfid);
     ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
@@ -1330,9 +1324,9 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'AND',
         );
     }
-    
+
     $self->_OpenParen if $null_columns_ok;
-    
+
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',

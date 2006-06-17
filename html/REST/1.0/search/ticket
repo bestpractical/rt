@@ -60,7 +60,7 @@ my $tickets = new RT::Tickets $session{CurrentUser};
 my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
 my (%fields, @fields);
 if ($fields) {
-    $format = "l";
+    $format ||= "l";
     unless ($fields =~ /^(?:$field,)*$field$/) {
         $status = "400 Bad Request";
         $output = "Invalid field specification: $fields";
@@ -115,15 +115,29 @@ my @output;
 while (my $ticket = $tickets->Next) {
     $n++;
 
+	my $id = $ticket->Id;
     if ($format eq "i") {
-        $output .= "ticket/" . $ticket->Id . "\n";
+        $output .= "ticket/" . $id . "\n";
     }
     elsif ($format eq "s") {
-        $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+	if ($fields) {
+        	my $result = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+		my ($notes, $order, $key_values, $errors) = @$result;
+		# If it's the first time through, add our header
+		if ($n == 1) {
+			$output .= join("\t",@$order)."\n";
+		}
+		# Cut off the annoying ticket/ before the id;
+		$key_values->{'id'} = $id;
+		$output .= join("\t", map {$key_values->{$_}} @$order)."\n";
+	
+
+	} else {	
+        	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+	}
     }
     else {
-	my $id = $ticket->Id;
-        my $d = $m->comp('/REST/1.0/Forms/ticket/default', id => $id, format => $format, fields => \%fields);
+        my $d = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
         my ($c, $o, $k, $e) = @$d;
 	push @output, [ $c, $o, $k ];
     }
@@ -138,4 +152,5 @@ OUTPUT:
 $m->out("RT/". $RT::VERSION . " " . $status ."\n\n");
 
 $m->out($output );
+return();
 </%INIT>

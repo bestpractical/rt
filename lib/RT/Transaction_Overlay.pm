@@ -82,6 +82,10 @@ use vars qw( %_BriefDescriptions );
 use RT::Attachments;
 use RT::Scrips;
 
+use HTML::FormatText;
+use HTML::TreeBuilder;
+
+
 # {{{ sub Create 
 
 =head2 Create
@@ -149,7 +153,13 @@ sub Create {
  
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
-    $self->_Attach( $args{'MIMEObj'} ) if defined $args{'MIMEObj'};
+    if ( defined $args{'MIMEObj'} ) {
+        my ($id, $msg) = $self->_Attach( $args{'MIMEObj'} );
+        unless ( $id ) {
+            $RT::Logger->error("Couldn't add attachment: $msg");
+            return ( 0, $self->loc("Couldn't add attachment") );
+        }
+    }
 
 
     #Provide a way to turn off scrips if we need to
@@ -278,9 +288,13 @@ sub Content {
     );
 
     my $content;
-    my $content_obj = $self->ContentObj;
-    if ($content_obj) {
+    if (my $content_obj = $self->ContentObj) {
         $content = $content_obj->Content;
+
+	if ($content_obj->ContentType =~ m{^text/html$}i) {
+        $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
+
+	}
     }
 
     # If all else fails, return a message that we couldn't find any content
@@ -342,7 +356,7 @@ sub ContentObj {
 
     # If it's a message or a plain part, just return the
     # body.
-    if ( $Attachment->ContentType() =~ '^(text/plain$|message/)' ) {
+    if ( $Attachment->ContentType() =~ '^(?:text/plain$|text/html|message/)' ) {
         return ($Attachment);
     }
 
@@ -469,11 +483,11 @@ sub _Attach {
     }
 
     my $Attachment = new RT::Attachment( $self->CurrentUser );
-    $Attachment->Create(
+    my ($id, $msg) = $Attachment->Create(
         TransactionId => $self->Id,
         Attachment    => $MIMEObject
     );
-    return ( $Attachment, $self->loc("Attachment created") );
+    return ( $Attachment, $msg || $self->loc("Attachment created") );
 
 }
 

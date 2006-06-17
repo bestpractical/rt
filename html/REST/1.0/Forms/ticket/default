@@ -58,7 +58,7 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
 my $ticket = new RT::Ticket $session{CurrentUser};
-my @dates  = qw(Created Starts Started Due Resolved Told);
+my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked
@@ -145,6 +145,9 @@ else {
             }
         }
 
+        # people fields allow multiple values
+        $v{$_} = vsplit($v{$_}) foreach ( grep $create{lc $_}, @people );
+
         if ($text) {
             $v{MIMEObj} =
                 MIME::Entity->build(
@@ -185,7 +188,7 @@ if (!keys(%data)) {
     }
 
     foreach $key (@people) {
-	next unless (!%$fields || (exists $fields->{lc $key}));
+        next unless (!%$fields || (exists $fields->{lc $key}));
         push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
     }
 
@@ -205,8 +208,9 @@ if (!keys(%data)) {
     }
 
     # Display custom fields
-    my $CustomFields = $ticket->QueueObj->CustomFields();
+    my $CustomFields = $ticket->QueueObj->TicketCustomFields();
     while (my $cf = $CustomFields->Next()) {
+	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->Name}));
         my $vals = $ticket->CustomFieldValues($cf->Id());
         my @out = ();
         while (my $v = $vals->Next()) {

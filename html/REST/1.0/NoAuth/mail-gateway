@@ -52,26 +52,30 @@ $action => "correspond"
 $ticket => undef
 </%ARGS>
 <%init>
-use RT::Interface::Email; 
+use RT::Interface::Email ();    # It's an exporter, but we don't care
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
-my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway(\%ARGS);
- if ($status == -75 ) {
-$m->out("temporary failure - ". $error);
- }
-    elsif ($status == 1) {
-$m->out('ok');
-        if ( $Ticket->Id ) {
-$m->out('Ticket: '. $Ticket->Id);
-$m->out('Queue: '. $Ticket->QueueObj->Name );
-$m->out('Owner: '. $Ticket->OwnerObj->Name);
-$m->out('Status: '. $Ticket->Status );
-$m->out('Subject: '. $Ticket->Subject );
-$m->out('Requestor: '. $Ticket->Requestors->MemberEmailAddressesAsString );
-        }
- }   else { 
-$m->out('not ok - '.$error);
- }
-
+my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
+if ( $status == 1 ) {
+  $m->out('ok');
+  if ( $Ticket->Id ) {
+    $m->out( 'Ticket: ' . $Ticket->Id );
+    $m->out( 'Queue: ' . $Ticket->QueueObj->Name );
+    $m->out( 'Owner: ' . $Ticket->OwnerObj->Name );
+    $m->out( 'Status: ' . $Ticket->Status );
+    $m->out( 'Subject: ' . $Ticket->Subject );
+    $m->out(
+      'Requestor: ' . $Ticket->Requestors->MemberEmailAddressesAsString );
+  }
+}
+else {
+  $RT::Logger->error( "Could not record email: " . $error );
+  if ( $status == -75 ) {
+    $m->out( "temporary failure - " . $error );
+  }
+  else {
+    $m->out( 'not ok - ' . $error );
+  }
+}
 $m->abort();
 </%init>

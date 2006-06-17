@@ -1,4 +1,5 @@
-use Test::More tests => '59';
+use Test::More  tests => '89';
+
 use strict;
 use warnings;
 
@@ -16,6 +17,9 @@ use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
 my $link_scrips_orig = RT->Config->Get( 'LinkTransactionsRun1Scrip' );
 RT->Config->Set( 'LinkTransactionsRun1Scrip', 1 );
+
+my $link_acl_checks_orig = RT->Config->Get( 'StrictLinkACL' );
+RT->Config->Set( 'StrictLinkACL', 1);
 
 my $condition = RT::ScripCondition->new( $RT::SystemUser );
 $condition->Load('User Defined');
@@ -80,8 +84,7 @@ my $scrip = RT::Scrip->new($RT::SystemUser);
 ok($id, "Scrip created");
 
 my $u1 = RT::User->new($RT::SystemUser);
-($id,$msg) =$u1->Create(Name => "LinkTestUser.$$");
-
+($id,$msg) = $u1->Create(Name => "LinkTestUser.$$");
 ok ($id,$msg);
 
 # grant ShowTicket right to allow count transactions
@@ -89,29 +92,122 @@ ok ($id,$msg);
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ShowTicket');
 ok ($id,$msg);
-
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'CreateTicket');
 ok ($id,$msg);
-($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
-ok ($id,$msg);
-
-my $tid;
 
 my $creator = RT::CurrentUser->new($u1->id);
 
+diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
+{
+    # on q2 we have no rights, yet
+    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    ok($id,$msg);
+    my $child = RT::Ticket->new( $creator );
+    ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
+    ok($id,$msg);
+    $child->CurrentUser( $RT::SystemUser );
+    is($child->_Links('Base')->Count, 0, 'link was not created, no permissions');
+    is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
+}
+
+diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
+{
+    # on q2 we have no rights, but use checking one only on thing
+    RT->Config->Set( StrictLinkACL => 0 );
+    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    ok($id,$msg);
+    my $child = RT::Ticket->new( $creator );
+    ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
+    ok($id,$msg);
+    $child->CurrentUser( $RT::SystemUser );
+    is($child->_Links('Base')->Count, 1, 'link was created');
+    is($child->_Links('Target')->Count, 0, 'link was created only one');
+    # no scrip run on second ticket accroding to config option
+    is(link_count($filename), undef, "scrips ok");
+    RT->Config->Set( StrictLinkACL => 1 );
+}
+
+($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
+ok ($id,$msg);
+
+diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
+{
+    # on q2 we have no rights, yet
+    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    ok($id,$msg);
+    my $child = RT::Ticket->new( $creator );
+    ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id );
+    ok($id,$msg);
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ok(!$id, $msg);
+    is(link_count($filename), undef, "scrips ok");
+    $child->CurrentUser( $RT::SystemUser );
+    is($child->_Links('Base')->Count, 0, 'link was not created, no permissions');
+    is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
+}
+
+diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
+{
+    # on q2 we have no rights, but use checking one only on thing
+    RT->Config->Set( StrictLinkACL => 0 );
+    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my ($id,$tid,$msg) = $parent->Create( Subject => 'Link test 1', Queue => $q2->id );
+    ok($id,$msg);
+    my $child = RT::Ticket->new( $creator );
+    ($id,$tid,$msg) = $child->Create( Subject => 'Link test 1', Queue => $q1->id );
+    ok($id,$msg);
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ok($id, $msg);
+    is(link_count($filename), 1, "scrips ok");
+    $child->CurrentUser( $RT::SystemUser );
+    is($child->_Links('Base')->Count, 1, 'link was created');
+    is($child->_Links('Target')->Count, 0, 'link was created only one');
+    $child->CurrentUser( $creator );
+
+    # turn off feature and try to delete link, we should fail
+    RT->Config->Set( StrictLinkACL => 1 );
+    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ok(!$id, $msg);
+    is(link_count($filename), 1, "scrips ok");
+    $child->CurrentUser( $RT::SystemUser );
+    $child->_Links('Base')->_DoCount;
+    is($child->_Links('Base')->Count, 1, 'link was not deleted');
+    $child->CurrentUser( $creator );
+
+    # try to delete link, we should success as feature is active
+    RT->Config->Set( StrictLinkACL => 0 );
+    ($id, $msg) = $child->DeleteLink(Type => 'MemberOf', Target => $parent->id);
+    ok($id, $msg);
+    is(link_count($filename), 0, "scrips ok");
+    $child->CurrentUser( $RT::SystemUser );
+    $child->_Links('Base')->_DoCount;
+    is($child->_Links('Base')->Count, 0, 'link was deleted');
+    RT->Config->Set( StrictLinkACL => 1 );
+}
+
+my $tid;
 my $ticket = RT::Ticket->new( $creator);
 ok($ticket->isa('RT::Ticket'));
 ($id,$tid, $msg) = $ticket->Create(Subject => 'Link test 1', Queue => $q1->id);
 ok ($id,$msg);
 
+diag('try link to itself') if $ENV{'TEST_VERBOSE'};
+{
+    my ($id, $msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket->id);
+    ok(!$id, $msg);
+    is(link_count($filename), 0, "scrips ok");
+}
 
 my $ticket2 = RT::Ticket->new($RT::SystemUser);
 ($id, $tid, $msg) = $ticket2->Create(Subject => 'Link test 2', Queue => $q2->id);
 ok ($id, $msg);
-
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok(!$id,$msg);
 is(link_count($filename), 0, "scrips ok");
+
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'CreateTicket');
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
@@ -121,6 +217,8 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => -1);
 ok(!$id,$msg);
+($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
 my $transactions = $ticket2->Transactions;
@@ -201,6 +299,7 @@ is(link_count($filename), 0, "scrips ok");
 
 # restore
 RT->Config->Set( LinkTransactionsRun1Scrip => $link_scrips_orig );
+RT->Config->Set( StrictLinkACL => $link_acl_checks_orig );
 
 {
     my $Scrips = RT::Scrips->new( $RT::SystemUser );
@@ -213,7 +312,9 @@ sub link_count {
     my $file = shift;
     open my $fh, "<$file" or die "couldn't open $file";
     my $data = <$fh>;
+    close $fh;
+
+    return undef unless $data;
     chomp $data;
     return $data + 0;
-    close $fh;
 }
