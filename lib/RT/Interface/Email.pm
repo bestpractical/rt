@@ -588,11 +588,11 @@ sub Gateway {
         return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
 
-   # Authentication Level ($AuthStat)
-   # -1 - Get out.  this user has been explicitly declined
-   # 0 - User may not do anything (Not used at the moment)
-   # 1 - Normal user
-   # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
+    # Authentication Level ($AuthStat)
+    # -1 - Get out.  this user has been explicitly declined
+    # 0 - User may not do anything (Not used at the moment)
+    # 1 - Normal user
+    # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
     my ( $CurrentUser, $AuthStat, $error );
 
     # Initalize AuthStat so comparisons work correctly
@@ -606,21 +606,22 @@ sub Gateway {
 
     # Since this needs loading, no matter what
     foreach (@RT::MailPlugins) {
-        my ($Code, $Class, $NewAuthStat);
+        my ($Code, $NewAuthStat);
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         } else {
-            $Class = "RT::Interface::Email::" . $_
-                unless $_ =~ /^RT::Interface::Email::/;
+            my $Class = $_;
+            $Class = "RT::Interface::Email::" . $Class
+                unless $Class =~ /^RT::Interface::Email::/;
             $Class->require or
                 do { $RT::Logger->error("Couldn't load $Class: $@"); next };
-        }
+
             no strict 'refs';
-            if ( !defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
-                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
+            unless ( defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
+                $RT::Logger->crit( "No 'GetCurrentUser' function found in '$Class' module");
                 next;
             }
-        
+        }
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
