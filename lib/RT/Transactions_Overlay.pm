@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -43,7 +43,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::Transactions - a collection of RT Transaction objects
