@@ -1,0 +1,10 @@
+<& /Admin/Elements/Header, Title => 'Error' &>
+<& /Admin/Elements/ToolTabs,
+	current_tab => 'Admin/Tools/Shredder',
+	current_subtab => 'Admin/Tools/Shredder',
+	Title => 'Error',
+&>
+<div class="error">
+You don't have <b>SuperUser</b> right.
+</div>
+

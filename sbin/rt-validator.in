@@ -1,0 +1,97 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+rtx-validator - Script that allow validate rt database
+
+=head1 SYNOPSIS
+
+rtx-validator -o Ticket-100
+
+=head1 DESCRIPTION
+
+=head2 OPTIONS
+
+=head3 -o, --object <name>-<id>
+
+Object(class) name and object id splitted with C<-> that should be validated.
+Option is case sensetive.
+
+=head1 SEE ALSO
+
+C<RT::Shredder>
+
+=cut
+
+
+use strict;
+use Getopt::Long;
+
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+
+use RT::Shredder;
+use RT::Shredder::Constants;
+RT::Shredder::Init();
+
+our %opt;
+parse_args();
+
+unless( $opt{'object'} ) {
+	usage();
+}
+
+my $obj = load_object( $opt{'object'} );
+
+my $shredder = RT::Shredder->new;
+$obj->ValidateRelations( Shredder => $shredder );
+
+foreach my $record( values %{ $shredder->{'Cache'} } ) {
+	next unless( $record->{'State'} & INVALID );
+	print STDERR $record->{'Object'}->_AsString ." is invalid\n";
+	print STDERR "\t". (ref($record->{'Description'}) ?
+			join( "\n\t", @{$record->{'Description'}} ) :
+			$record->{'Description'})
+		."\n";
+}
+
+#use Data::Dumper;
+#print Dumper( $shredder );
+
+
+
+sub usage
+{
+	print <<END;
+	usage: $0 --object <name>-<id>
+
+END
+	exit 1;
+}
+
+sub parse_args
+{
+	my $tmp;
+	Getopt::Long::Configure( "pass_through" );
+	$tmp = undef;
+	if( GetOptions( 'object=s' => \$tmp ) && $tmp ) {
+		$opt{'object'} = $tmp;
+	}
+	return;
+}
+
+sub load_object
+{
+	my $desc = shift;
+	my ($class, $id) = split /-/, $desc;
+	$class = 'RT::'. $class;
+	eval "require $class";
+	die "Couldn't load '$class' module" if $@;
+	my $obj = $class->new( $RT::SystemUser );
+	die "Couldn't construct new '$class' object" unless $obj;
+	$obj->Load( $id );
+	die "Couldn't load '$class' object by id '$id'" unless $obj->id;
+	die "Loaded object has different id" unless( $id eq $obj->id );
+	return $obj;
+}
+

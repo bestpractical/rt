@@ -1,0 +1,14 @@
+<%ARGS>
+$Path => ''
+</%ARGS>
+<& /Admin/Elements/Header, Title => 'Error' &>
+<& /Admin/Elements/ToolTabs,
+	current_tab => 'Admin/Tools/Shredder',
+	current_subtab => 'Admin/Tools/Shredder',
+	Title => 'Error',
+&>
+<div class="error">
+RTx-Shredder extension needs directory to write dumps there.
+Please, check that you have <span class="file-path"><% $Path %></span> and
+it's writable for your web server.
+</div>

@@ -1,0 +1,6 @@
+<%ARGS>
+$Object => undef
+</%ARGS>
+<a href="<% $RT::WebBaseURL %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
+Attachment(id:<% $Object->id %>, FileName: <% $Object->Filename || '(no value)' %>)
+</a>

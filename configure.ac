@@ -295,6 +295,8 @@ AC_CONFIG_FILES([
 		 sbin/rt-setup-database
 		 sbin/rt-test-dependencies
          sbin/rt-clean-sessions
+         sbin/rt-shredder
+         sbin/rt-validator
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd

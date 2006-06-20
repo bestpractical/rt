@@ -1,0 +1,15 @@
+<%ARGS>
+$Plugin => ''
+</%ARGS>
+<div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
+<span>Fill arguments:</span><br />
+% foreach my $a( $plugin_obj->SupportArgs ) {
+<span><% $a %>:<span><input type="text" name="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /><br />
+% }
+</div>
+<%INIT>
+use RT::Shredder::Plugin;
+my $plugin_obj = new RT::Shredder::Plugin;
+my ($status, $msg) = $plugin_obj->LoadByName( $Plugin );
+die $msg unless $status;
+</%INIT>

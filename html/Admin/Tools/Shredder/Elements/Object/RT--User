@@ -1,0 +1,6 @@
+<%ARGS>
+$Object => undef
+</%ARGS>
+<a href="<% $RT::WebBaseURL %>/Admin/Users/Modify.html?id=<% $Object->id %>">
+User(id:<% $Object->id %>, Name: <% $Object->Name %>)
+</a>
