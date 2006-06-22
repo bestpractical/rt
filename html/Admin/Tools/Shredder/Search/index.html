@@ -1,0 +1,74 @@
+<%ARGS>
+$Query
+$Rows => 10
+$Page => 1
+$OrderBy => 'id'
+$Order   => 'ASC'
+
+$Wipeout => ''
+@WipeoutObject => ()
+</%ARGS>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/ToolTabs,
+	current_tab => 'Admin/Tools/Shredder',
+	current_subtab => 'Admin/Tools/Shredder/Search',
+	Title => $title,
+&>
+<form id="shredder-search-form" action="<% $RT::WebPath %>/Admin/Tools/Shredder/Search/" method="GET">
+% foreach (qw(Query Rows Page OrderBy Order)) {
+<input type="hidden" name="<% $_ %>" value="<% $ARGS{$_} || '' %>" />
+% }
+<& /Elements/ListActions, actions => $messages{'Errors'} &>
+<& /Elements/ListActions, actions => $messages{'Success'} &>
+<& /Admin/Tools/Shredder/Elements/SelectObjects, Objects => \@objs &>
+</form>
+<%INIT>
+
+require RT::Shredder;
+my $title = loc('Wipeout found tickets');
+my %messages = ( Errors => [], Success => [] );
+
+my $objs = RT::Tickets->new( $session{'CurrentUser'} );
+$objs->FromSQL( $Query );
+$objs->RowsPerPage( $Rows );
+$objs->GotoPage( $Page );
+{
+    my @OrderBy = split /\|/, $OrderBy;
+    my @Order = split /\|/, $Order;
+    $objs->OrderByCols( map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0 .. $#OrderBy ) );
+}
+my $catch_non_fatals = sub {
+    require RT::Shredder::Exceptions;
+    if ( my $e = RT::Shredder::Exception::Info->caught ) {
+        push @{ $messages{Errors} }, "$e";
+        $objs = undef;
+        return 1;
+    }
+    if ( UNIVERSAL::isa( $@, 'Class::Exception' ) ) {
+        $@->rethrow;
+    } else {
+        die $@;
+    }
+};
+
+if( $Wipeout ) {
+    { # use additional block({}) to effectively exit block on errors
+        my $shredder = new RT::Shredder( force => 1 );
+        my ($fn, $fh) = $shredder->SetFile;
+        push @{ $messages{'Success'} }, "SQL dump file is '$fn'";
+
+        $shredder->PutObjects( Objects => \@WipeoutObject );
+    	eval { $shredder->WipeoutAll };
+        $catch_non_fatals->() && last if $@;
+
+	    push @{ $messages{Success} }, 'objects were successfuly removed';
+    } 
+    $objs->RedoSearch;
+}
+
+my @objs;
+{
+    my $shredder = new RT::Shredder;
+    @objs = $shredder->CastObjectsToRecords( Objects => $objs );
+}
+</%INIT>

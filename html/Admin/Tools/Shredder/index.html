@@ -33,11 +33,16 @@ my ($plugin_obj, @objs);
 
 my $catch_non_fatals = sub {
     require RT::Shredder::Exceptions;
-    die $@ unless my $e = RT::Shredder::Exception::Info->caught;
-
-    push @{ $messages{Errors} }, "$e";
-    $Search = ''; @objs = ();
-    return 1;
+    if ( my $e = RT::Shredder::Exception::Info->caught ) {
+        push @{ $messages{Errors} }, "$e";
+        $Search = ''; @objs = ();
+        return 1;
+    }
+    if ( UNIVERSAL::isa( $@, Class::Exception ) ) {
+        $@->rethrow;
+    } else {
+        die $@;
+    }
 };
 
 
