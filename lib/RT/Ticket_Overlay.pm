@@ -340,7 +340,7 @@ ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->Id, "Got ticket id");
 ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
 ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
-ok ($t->ResolvedObj->Unix == -1, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
+is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 =end testing
 
