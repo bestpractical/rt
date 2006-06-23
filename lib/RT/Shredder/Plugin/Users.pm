@@ -38,12 +38,20 @@ Cc or AdminCc) of the ticket or queue then link would be deleted.
 
 This argument could be user id or name.
 
+=head2 no_tickets - boolean
+
+If true then plugin looks for users who are not watchers (Owners,
+Requestors, Ccs or AdminCcs) of any ticket.
+
+B<Note> that found users still may have relations with other objects
+and you most probably want to use C<replace_relations> option.
+
 =cut
 
 sub SupportArgs
 {
     return $_[0]->SUPER::SupportArgs,
-           qw(status name email replace_relations);
+           qw(status name email replace_relations no_tickets);
 }
 
 sub TestArgs
@@ -86,17 +94,17 @@ sub Run
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
     my $objs = RT::Users->new( $RT::SystemUser );
-    if( $self->{'opt'}{'status'} ) {
-        my $s = $self->{'opt'}{'status'};
+    if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {
             $objs->{'find_disabled_rows'} = 1;
         } elsif( $s eq 'disabled' ) {
             $objs->{'find_disabled_rows'} = 1;
-            $objs->Limit( ALIAS => $objs->PrincipalsAlias,
-                      FIELD    => 'Disabled',
-                      OPERATOR => '!=',
-                      VALUE    => '0',
-                    );
+            $objs->Limit(
+                ALIAS => $objs->PrincipalsAlias,
+                FIELD    => 'Disabled',
+                OPERATOR => '!=',
+                VALUE    => '0',
+            );
         } else {
             $objs->LimitToEnabled;
         }
@@ -113,8 +121,16 @@ sub Run
                   VALUE => $self->{'opt'}{'name'},
                 );
     }
-    if( $self->{'opt'}{'limit'} ) {
-        $objs->RowsPerPage( $self->{'opt'}{'limit'} );
+
+    if( $self->{'opt'}{'no_tickets'} ) {
+        return $self->FilterWithoutTickets(
+            Shredder => $args{'Shredder'},
+            Objects  => $objs,
+        );
+    } else {
+        if( $self->{'opt'}{'limit'} ) {
+            $objs->RowsPerPage( $self->{'opt'}{'limit'} );
+        }
     }
     return (1, $objs);
 }
@@ -137,6 +153,52 @@ sub SetResolvers
         $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );
     }
     return (1);
+}
+
+use constant PAGE_SIZE => 100;
+
+sub FetchNext {
+    my ($self, $objs, $init) = @_;
+    if ( $init ) {
+        $objs->RowsPerPage( PAGE_SIZE );
+        $objs->FirstPage;
+        return;
+    }
+
+    for (1..3) {
+        my $obj = $objs->Next;
+        return $obj if $obj;
+        $objs->NextPage;
+    }
+}
+
+sub FilterWithoutTickets {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Objects  => undef,
+        @_,
+    );
+    my $users = $args{Objects};
+    $self->FetchNext( $users, 'init' );
+
+    my @res;
+    while ( my $user = $self->FetchNext( $users ) ) {
+        push @res, $user if $self->_WithoutTickets( $user );
+        return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
+    }
+    return (1, \@res);
+}
+
+sub _WithoutTickets {
+    my ($self, $user) = @_;
+    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->FromSQL( 'Watcher.id = '. $user->id );
+    # HACK: Count - is count all that match condtion,
+    # but we really want to know if at least one record record exist,
+    # so we fetch first only
+    $tickets->RowsPerPage(1);
+    return !$tickets->First;
 }
 
 1;

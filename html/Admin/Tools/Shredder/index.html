@@ -38,7 +38,7 @@ my $catch_non_fatals = sub {
         $Search = ''; @objs = ();
         return 1;
     }
-    if ( UNIVERSAL::isa( $@, Class::Exception ) ) {
+    if ( UNIVERSAL::isa( $@, 'Class::Exception' ) ) {
         $@->rethrow;
     } else {
         die $@;
