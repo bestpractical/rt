@@ -154,19 +154,17 @@ sub Next {
     my $self = shift;
  	
     my $Link = $self->SUPER::Next();
-    if ((defined($Link)) and (ref($Link))) {
-        # Skip links to local objects thast are deleted
-        if      ($Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
-                 and $Link->TargetObj->__Value('status') eq "deleted") {
-            return $self->Next;
-        } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
-                 and $Link->BaseObj->__Value('status') eq "deleted") {
-            return $self->Next;
-        } else {
-            return $Link;
-        }
+    return $Link unless $Link && ref $Link;
+
+    # Skip links to local objects thast are deleted
+    if ( $Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
+             and $Link->TargetObj->__Value('status') eq "deleted") {
+        return $self->Next;
+    } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
+             and $Link->BaseObj->__Value('status') eq "deleted") {
+        return $self->Next;
     } else {
-        return undef;
+        return $Link;
     }
 }
 
