@@ -817,7 +817,10 @@ sub _EncodeLOB {
             elsif ($RT::DropLongAttachments) {
 
                 # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
+                $RT::Logger->info( "$self: Dropped an attachment of size "
+                                   . length($Body) . "\n"
+                                   . "It started: " . substr( $Body, 0, 60 ) . "\n"
+                                 );
                 return ("none", "Large attachment dropped" );
             }
         }
