@@ -49,6 +49,7 @@ use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
   qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes);
 
+use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
 #This drags in  RT's config.pm
