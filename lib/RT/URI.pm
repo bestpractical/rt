@@ -143,7 +143,7 @@ sub FromURI {
     
     unless ($self->Resolver->ParseURI($uri)) {
         $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
-        $self->{resolver} = undef; # clear resolver
+        $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
     	return (undef);
     }
 
