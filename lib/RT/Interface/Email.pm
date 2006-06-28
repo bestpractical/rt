@@ -700,8 +700,7 @@ sub Gateway {
 
     my $Ticket = RT::Ticket->new($CurrentUser);
 
-    if (( !$SystemTicket || !$SystemTicket->Id )
-        && grep /^(comment|correspond)$/, @actions )
+    if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
     {
 
         my @Cc;
@@ -732,7 +731,8 @@ sub Gateway {
             return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
         }
 
-# strip comments&corresponds from the actions we don't need to record them if we've created the ticket just now
+        # strip comments&corresponds from the actions we don't need
+        # to record them if we've created the ticket just now
         @actions = grep !/^(comment|correspond)$/, @actions;
         $args{'ticket'} = $id;
 
@@ -757,13 +757,8 @@ sub Gateway {
 
         #   If the action is comment, add a comment.
         if ( $action =~ /^(?:comment|correspond)$/i ) {
-            my ( $status, $msg );
-            if ( $action =~ /^correspond$/i ) {
-                ( $status, $msg )
-                    = $Ticket->Correspond( MIMEObj => $Message );
-            } else {
-                ( $status, $msg ) = $Ticket->Comment( MIMEObj => $Message );
-            }
+            my $method = ucfirst lc $action;
+            my ( $status, $msg ) = $Ticket->$method( MIMEObj => $Message );
             unless ($status) {
 
                 #Warn the sender that we couldn't actually submit the comment.
@@ -773,16 +768,17 @@ sub Gateway {
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
-                return ( 0, "Message not recorded", $Ticket );
+                return ( 0, "Message not recorded: $msg", $Ticket );
             }
         } elsif ($RT::UnsafeEmailCommands) {
-            return _RunUnsafeAction(
+            my ( $status, $msg ) = _RunUnsafeAction(
                 Action      => $action,
                 ErrorsTo    => $ErrorsTo,
                 Message     => $Message,
                 Ticket      => $Ticket,
-                CurrentUser => $CurrentUser
+                CurrentUser => $CurrentUser,
             );
+            return ($status, $msg, $Ticket) unless $status == 1;
         }
     }
     return ( 1, "Success", $Ticket );
@@ -807,7 +803,7 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not taken", $args{'Ticket'} );
+            return ( 0, "Ticket not taken" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
         my ( $status, $msg ) = $args{'Ticket'}->SetStatus('resolved');
@@ -820,10 +816,12 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not resolved", $args{'Ticket'} );
+            return ( 0, "Ticket not resolved" );
         }
+    } else {
+        return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
     }
-    return ( 0, 'Unknown action' );
+    return ( 1, "Success" );
 }
 
 =head2 _NoAuthorizedUserFound
