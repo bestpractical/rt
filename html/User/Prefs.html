@@ -57,7 +57,7 @@
 <tr>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Identity') &>
+<&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
 
 <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
 <table cellspacing="0" cellpadding="0">
@@ -78,7 +78,7 @@
   </tr>
 </table>
 </&>
-<&| /Widgets/TitleBox, title => loc('Phone numbers') &>
+<&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Residence</&>:</td>
@@ -102,7 +102,7 @@
 </td>
 <td valign="top" class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<&| /Widgets/TitleBox, title => loc('Password') &>
+<&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
 <table>
 <tr>
 <td class="label">
@@ -123,7 +123,7 @@
 </&>
 % }
 
-<&| /Widgets/TitleBox, title => loc('Location') &>
+<&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Organization</&>:</td>
