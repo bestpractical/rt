@@ -560,6 +560,10 @@ sub insert_data {
                 next;
             }
             my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless( $return ) {
+                print "(Error: $msg)\n";
+                next;
+            }
 
             foreach my $value ( @{$values} ) {
                 my ( $eval, $emsg ) = $new_entry->AddValue(%$value);
