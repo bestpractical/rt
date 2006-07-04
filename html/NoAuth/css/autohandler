@@ -45,6 +45,17 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 $r->content_type('text/css');
+
+my @DoW = qw(Sun Mon Tue Wed Thu Fri Sat);
+my @MoY = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+my ($sec, $min, $hour, $mday, $mon, $year, $wday) = gmtime( time() + 31536000 );
+
+my $expires = sprintf("%s, %02d %s %04d %02d:%02d:%02d GMT",
+                        $DoW[$wday],
+                        $mday, $MoY[$mon], $year+1900,
+                        $hour, $min, $sec);
+
+$r->header_out( 'Expires' => $expires );
 $m->call_next();
 return();
 </%init>
