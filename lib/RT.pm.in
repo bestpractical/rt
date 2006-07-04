@@ -293,12 +293,8 @@ $SIG{__DIE__}  = sub {
     unless ($^S || !defined $^S ) {
         $RT::Handle->Rollback();
         $RT::Logger->crit("$_[0]");
-        exit(-1);
     }
-    else {
-        #Get out of here if we're in an eval
-        die $_[0];
-    }
+    die $_[0];
 };
 
 # }}}
