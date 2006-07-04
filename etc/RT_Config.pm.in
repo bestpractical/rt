@@ -391,6 +391,11 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 13456);
 
+# By default, RT shows newest transactions at the bottom of the ticket
+# history page, if you want see them at the top set this to '0'.
+
+Set($OldestTransactionsFirst, '1');
+
 # $MyTicketsLength is the length of the owned tickets table on the
 # front page. For some people, the default of 10 isn't big enough
 # to get a feel for how much work needs to be done before you get
