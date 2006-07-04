@@ -256,13 +256,21 @@ sub SendMessage {
                        strftime('%a, %d %b %Y %H:%M:%S %z', localtime()));
     }
 
+    my $SendmailArguments = $RT::SendmailArguments;
+    if (defined $RT::VERPPrefix && defined $RT::VERPDomain) {
+      my $EnvelopeFrom = $self->TransactionObj->CreatorObj->EmailAddress;
+      $EnvelopeFrom =~ s/@/=/g;
+      $EnvelopeFrom =~ s/\s//g;
+      $SendmailArguments .= " -f ${RT::VERPPrefix}${EnvelopeFrom}\@${RT::VERPDomain}";
+    }
+
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
             my $mail;
-            unless( open $mail, "|$RT::SendmailPath $RT::SendmailArguments" ) {
+            unless( open $mail, "|$RT::SendmailPath $SendmailArguments" ) {
                 die "Couldn't run $RT::SendmailPath: $!";
             }
 
@@ -288,7 +296,7 @@ sub SendMessage {
         local $ENV{MAILADDRESS};
 
         if ( $RT::MailCommand eq 'sendmail' ) {
-            push @mailer_args, split(/\s+/, $RT::SendmailArguments);
+            push @mailer_args, split(/\s+/, $SendmailArguments);
         }
         elsif ( $RT::MailCommand eq 'smtp' ) {
             $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');

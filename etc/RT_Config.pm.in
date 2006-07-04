@@ -255,6 +255,14 @@ Set($NotifyActor, 0);
 
 Set($RecordOutgoingEmail, 1);
 
+# VERP support (http://cr.yp.to/proto/verp.txt)
+# uncomment the following two directives to generate envelope senders
+# of the form ${VERPPrefix}${originaladdress}@${VERPDomain}
+# (i.e. rt-jesse=fsck.com@rt.example.com ) This currently only works
+# with sendmail and sendmailppie.
+# Set($VERPPrefix, 'rt-');
+# Set($VERPDomain, $RT::Organization);
+
 # }}}
 
 # {{{ Logging
