@@ -51,7 +51,7 @@
 =head1 SYNOPSIS
 
     use RT::Condition::Generic;
-    my $foo = new RT::Condition::IsApplicable( 
+    my $foo = RT::Condition::Generic->new( 
 		TransactionObj => $tr, 
 		TicketObj => $ti, 
 		ScripObj => $scr, 
