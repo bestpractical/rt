@@ -62,10 +62,12 @@ use_ok(RT::Interface::Web);
 =cut
 
 
-package RT::Interface::Web;
 use strict;
+use warnings;
 
-
+package RT::Interface::Web;
+use HTTP::Date;
+use URI;
 
 # {{{ EscapeUTF8
 
@@ -168,8 +170,57 @@ sub WebExternalAutoInfo {
 # }}}
 
 
+
+=head2 Redirect URL
+
+This routine ells the current user's browser to redirect to URL.  
+Additionally, it unties the user's currently active session, helping to avoid 
+A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
+a cached DBI statement handle twice at the same time.
+
+=cut
+
+
+sub Redirect {
+    my $redir_to = shift;
+    untie $HTML::Mason::Commands::session;
+    my $uri = URI->new($redir_to);
+    my $server_uri = URI->new($RT::WebURL);
+
+    # If the user is coming in via a non-canonical
+    # hostname, don't redirect them to the canonical host,
+    # it will just upset them (and invalidate their credentials)
+    if ($uri->host  eq $server_uri->host && 
+        $uri->port eq $server_uri->port) {
+            $uri->host($ENV{'HTTP_HOST'});
+            $uri->port($ENV{'SERVER_PORT'});
+        }
+
+    $HTML::Mason::Commands::m->redirect($uri->canonical);
+    $HTML::Mason::Commands::m->abort;
+}
+
+
+=head2 StaticFileHeaders 
+
+Send the browser a few headers to try to get it to (somewhat agressively)
+cache RT's static Javascript and CSS files.
+
+This routine could really use _accurate_ heuristics. (XXX TODO)
+
+=cut
+
+sub StaticFileHeaders {
+    # Expire things in a month.
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = HTTP::Date::time2str( time() + 2592000 );
+
+    # Last modified at server start time
+    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = HTTP::Date::time2str($^T);
+
+}
+
+
 package HTML::Mason::Commands;
-use strict;
 use vars qw/$r $m %session/;
 
 
