@@ -44,6 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
+RT::Interface::Web::StaticFileHeaders();
 $r->content_type('text/css');
 
 my @DoW = qw(Sun Mon Tue Wed Thu Fri Sat);

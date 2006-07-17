@@ -44,6 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
+&RT::Interface::Web::StaticFileHeaders();
 $r->content_type('application/x-javascript');
 $m->call_next();
 return();
