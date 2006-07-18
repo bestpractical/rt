@@ -107,9 +107,10 @@ sub InitSessionDir {
         umask(0077);
 
         if ($CGI::MOD_PERL) { local $@; eval {
+
             chown( Apache->server->uid, Apache->server->gid,
                 $RT::MasonSessionDir )
-        } }
+        }} 
 
         # Die if WebSessionDir doesn't exist or we can't write to it
         stat($RT::MasonSessionDir);

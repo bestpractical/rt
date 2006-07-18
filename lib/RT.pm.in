@@ -311,19 +311,13 @@ sub InitLogging {
 
 #When we call die, trap it and log->crit with the value of the die.
 
-    $SIG{__DIE__}  = sub {
-        unless ($^S || !defined $^S ) {
-            $RT::Handle->Rollback();
-            $RT::Logger->crit("$_[0]");
-            # XXX: we should never exit, even if we are not in eval context
-            # could someone explane this code?
-            exit(-1);
-        }
-        else {
-            # Get out of here if we're in an eval
-            die $_[0];
-        }
-    };
+$SIG{__DIE__}  = sub {
+    unless ($^S || !defined $^S ) {
+        $RT::Handle->Rollback();
+        $RT::Logger->crit("$_[0]");
+    }
+    die $_[0];
+};
 
 # }}}
 

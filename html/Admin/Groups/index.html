@@ -78,6 +78,10 @@ $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 my $caption;
 
+if ($FindDisabledGroups) {
+    $Groups->FindAllRows();
+}
+
 if (length $GroupString) {
     $caption = loc("Groups matching search criteria");
     if ($GroupField =~ /^CustomField-(\d+)/) {

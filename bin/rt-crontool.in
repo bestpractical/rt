@@ -75,18 +75,27 @@ unless ( $CurrentUser->Id ) {
 }
 
 my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
-     $template_id, $help, $verbose );
-GetOptions( "search=s"        => \$search,
-            "search-arg=s"    => \$search_arg,
-            "condition=s"     => \$condition,
-            "condition-arg=s" => \$condition_arg,
-            "action-arg=s"    => \$action_arg,
-            "action=s"        => \$action,
-	    "template-id=s"   => \$template_id,
-            "help"            => \$help,
-            "verbose|v"       => \$verbose );
+     $template_id, $transaction, $transaction_type, $help, $verbose );
+GetOptions( "search=s"           => \$search,
+            "search-arg=s"       => \$search_arg,
+            "condition=s"        => \$condition,
+            "condition-arg=s"    => \$condition_arg,
+            "action-arg=s"       => \$action_arg,
+            "action=s"           => \$action,
+            "template-id=s"      => \$template_id,
+            "transaction=s"      => \$transaction,
+            "transaction-type=s" => \$transaction_type,
+            "help"               => \$help,
+            "verbose|v"          => \$verbose );
 
 help() if $help or not $search or not $action;
+
+$transaction ||= 'first';
+unless ( $transaction =~ /^(first|last)$/i ) {
+    print STDERR loc("--transaction argument could be only 'first' or 'last'");
+    exit 1;
+}
+$transaction = lc($transaction) eq 'first'? 'ASC': 'DESC';
 
 # We _must_ have a search object
 load_module($search);
@@ -99,6 +108,8 @@ if ($template_id) {
     $template_obj = RT::Template->new($CurrentUser);
     $template_obj->Load($template_id);
 }
+my $void_scrip = RT::Scrip->new( $CurrentUser );
+my $void_scrip_action = RT::ScripAction->new( $CurrentUser );
 
 #At the appointed time:
 
@@ -119,11 +130,20 @@ my $tickets = $search->TicketsObj;
 while ( my $ticket = $tickets->Next() ) {
     print $ticket->Id() . ": " if ($verbose);
 
+    my $transaction = get_transaction($ticket);
+    print loc("Using transaction #[_1]...", $transaction->id)
+        if $verbose && $transaction;
+
     # perform some more advanced check
     if ($condition) {
-        my $condition_obj = $condition->new( TicketObj => $ticket,
-                                             Argument  => $condition_arg,
-                                             CurrentUser => $CurrentUser );
+        my $condition_obj = $condition->new(
+            TransactionObj => $transaction,
+            TicketObj      => $ticket,
+            ScripObj       => $void_scrip,
+            TemplateObj    => $template_obj,
+            Argument       => $condition_arg,
+            CurrentUser    => $CurrentUser,
+        );
 
         # if the condition doesn't apply, get out of here
 
@@ -133,10 +153,13 @@ while ( my $ticket = $tickets->Next() ) {
 
     #prepare our action
     my $action_obj = $action->new(
-        TicketObj   => $ticket,
-        TemplateObj => $template_obj,
-        Argument    => $action_arg,
-        CurrentUser => $CurrentUser
+        TicketObj      => $ticket,
+        TransactionObj => $transaction,
+        TemplateObj    => $template_obj,
+        Argument       => $action_arg,
+        ScripObj       => $void_scrip,
+        ScripActionObj => $void_scrip_action,
+        CurrentUser    => $CurrentUser,
     );
 
     #if our preparation, move onto the next ticket
@@ -146,6 +169,26 @@ while ( my $ticket = $tickets->Next() ) {
     #commit our action.
     next unless ( $action_obj->Commit );
     print loc("Action committed.\n") if ($verbose);
+}
+
+=head2 get_transaction
+
+Takes ticket and returns its transaction acording to command
+line arguments C<--transaction> and <--transaction-type>.
+
+=cut
+
+sub get_transaction {
+    my $ticket = shift;
+    my $txns = $ticket->Transactions;
+    $txns->OrderByCols(
+        { FIELD => 'Created', ORDER => $transaction },
+        { FIELD => 'id', ORDER => $transaction },
+    );
+    $txns->Limit( FIELD => 'Type', VALUE => $transaction_type )
+        if $transaction_type;
+    $txns->RowsPerPage(1);
+    return $txns->First;
 }
 
 # {{{ load_module 
@@ -205,6 +248,15 @@ sub help {
       . "\n";
     print "	"
       . loc( "[_1] - An argument to pass to [_2]", "--action-argument", "--action" )
+      . "\n";
+    print "	"
+      . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
+      . "\n";
+    print "	"
+      . loc( "[_1] - Specify if you want to use either 'first' or 'last' tarnsaction", "--transaction" )
+      . "\n";
+    print "	"
+      . loc( "[_1] - Specify the type of a transaction you want to use", "--transaction-type" )
       . "\n";
     print "	"
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";

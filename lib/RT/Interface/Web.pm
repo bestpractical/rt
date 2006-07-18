@@ -339,9 +339,18 @@ sub CreateTicket {
         Body                => $ARGS{'Content'},
     );
 
-    if ($ARGS{'Attachments'}) {
-        $MIMEObj->make_multipart;
-        $MIMEObj->add_part($_) foreach values %{$ARGS{'Attachments'}};
+    if ( $ARGS{'Attachments'} ) {
+        my $rv = $MIMEObj->make_multipart;
+        $RT::Logger->error("Couldn't make multipart message")
+            if !$rv || $rv !~ /^(?:DONE|ALREADY)$/;
+
+        foreach ( values %{$ARGS{'Attachments'}} ) {
+            unless ( $_ ) {
+                $RT::Logger->error("Couldn't add empty attachemnt");
+                next;
+            }
+            $MIMEObj->add_part($_);
+        }
     }
 
     my %create_args = (

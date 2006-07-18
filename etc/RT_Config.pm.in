@@ -439,6 +439,11 @@ Set($MaxInlineBody, 13456);
 
 Set($DefaultSummaryRows, 10);
 
+# By default, RT shows newest transactions at the bottom of the ticket
+# history page, if you want see them at the top set this to '0'.
+
+Set($OldestTransactionsFirst, '1');
+
 
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").

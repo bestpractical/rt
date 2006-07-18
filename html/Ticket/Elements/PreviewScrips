@@ -86,6 +86,9 @@ my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
     TimeTaken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
+unless ( $Transaction ) {
+    $RT::Logger->error("Coulfn't fire '$action' action: $Description");
+}
 
 
 my @non_recipients = $TicketObj->SquelchMailTo;
