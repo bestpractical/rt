@@ -22,11 +22,11 @@ $m->content_like(qr/Logout/, 'we did log in');
 
 my $qid;
 {
-    $m->content =~ /<SELECT\s+NAME\s*="Queue">.*?<OPTION\s+VALUE="(\d+)"\s*\d*>\s*\Q$queue_name\E\s*<\/OPTION>/msi;
+    $m->content =~ /<SELECT\s*NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
     ok( $qid = $1, "found id of the '$queue_name' queue");
 }
 
-$m->form_number(1);
+$m->form_name('CreateTicketInQueue');
 $m->field('Queue', $qid);
 $m->submit;
 is($m->status, 200, "request successful");
