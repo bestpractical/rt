@@ -47,7 +47,7 @@
 
 % my $UserMembers = $Group->UserMembersObj;
 % while (my $member = $UserMembers->Next()) {
-<& ShowUserEntry, User => $member &><br />
+<& ShowUserEntry, User => $member, Ticket => $Ticket  &><br />
 % }
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
@@ -57,4 +57,5 @@
 
 <%ARGS>
 $Group => undef
+$Ticket => undef
 </%ARGS>
