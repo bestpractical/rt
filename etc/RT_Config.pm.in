@@ -444,6 +444,11 @@ Set($DefaultSummaryRows, 10);
 
 Set($OldestTransactionsFirst, '1');
 
+# By default, RT shows images attached to incoming (and outgoing) ticket updates
+# inline. Set this variable to 0 if you'd like to disable that behaviour
+
+Set($ShowTransactionImages, 1);
+
 
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").
