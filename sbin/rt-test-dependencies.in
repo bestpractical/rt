@@ -183,7 +183,7 @@ Tree::Simple 1.04
 Scalar::Util
 Module::Versions::Report
 Cache::Simple::TimedExpiry
-XML::Simple
+UNIVERSAL::require
 Calendar::Simple
 .
 
@@ -229,6 +229,7 @@ WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
+XML::Simple
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];
@@ -280,7 +281,7 @@ check_perl_version();
 check_users();
 
 
-foreach my $type (keys %args) {
+foreach my $type (sort keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
 
     my $type = $1;
@@ -357,21 +358,25 @@ Failed to load module CPAN.
 $@
 ------------------------
 
-Failed to load module CPAN. Module CPAN is distributed with Perl
-and helps install perl modules from http://www.cpan.org. RT uses
-this module to install dependencies, but module's failed to load
-with error above. You have several choices to install dependencies
-in this situatation:
-1) check that you've configured CPAN module, to do this run
-   `@PERL@ -MCPAN -e shell` program from shell, if it fails
-   then you have to update CPAN module (see next suggestion)
-   or use another way to install modules;
-2) try to update module CPAN, get distribution from
-   http://search.cpan.org/dist/CPAN and try again;
-3) use a different tool to install dependencies, see description of
-   the RT_FIX_DEPS_CMD environment variable in the output of
-   the `$0` program;
-4) install modules manually.
+When we tried to start installing RT's perl dependencies, 
+we were unable to load the CPAN client. This module is usually distributed
+with Perl. This usually indicates that your vendor has shipped an unconfigured
+or incorrectly configured CPAN client.
+The error above may (or may not) give you a hint about what went wrong
+
+You have several choices about how to install dependencies in 
+this situatation:
+
+1) use a different tool to install dependencies by running setting the following
+   shell environment variable and rerunning this tool:
+    RT_FIX_DEPS_CMD='@PERL@ -MCPAN -e"install %s"'
+2) Attempt to configure CPAN by running:
+   `@PERL@ -MCPAN -e shell` program from shell.
+   If this fails, you may have to manually upgrade CPAN (see below)
+3) Try to update the CPAN client. Download it from:
+   http://search.cpan.org/dist/CPAN and try again
+4) Install each dependency manually by downloading them one by one from
+   http://search.cpan.org
 
 END
         exit(1);
