@@ -637,7 +637,8 @@ sub SetReturnAddress {
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
         if ($RT::UseFriendlyFromLine) {
-            my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
+            my $friendly_name = $self->TransactionObj->CreatorObj->RealName
+                || $self->TransactionObj->CreatorObj->Name;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
             }
