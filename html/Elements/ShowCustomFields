@@ -47,7 +47,7 @@
 % my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
 % my $Values = $Object->CustomFieldValues($CustomField->Id);
-  <tr>
+  <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><%$CustomField->Name%>:</td>
     <td class="value">
 <ul>
