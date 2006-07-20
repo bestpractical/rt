@@ -46,14 +46,16 @@
 <%args>
 $Name => 'GroupBy'
 $Default => 'Status'
+$Query   => ''
 </%args>
-<select name="<%$Name%>">
-% foreach my $option (@options) {
-<option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%loc($option)%></option>
+<select name="<% $Name %>">
+% while (@options) {
+% my ($text, $value) = (shift @options, shift @options);
+<option value="<% $value %>" <% $value eq $Default ? 'selected' : '' %>><% loc($text) %></option>
 % }
 </select>
 <%init>
 use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new($session{'CurrentUser'});
-my @options = $report->Groupings;
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my @options = $report->Groupings( Query => $Query );
 </%init>

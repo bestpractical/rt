@@ -50,49 +50,56 @@ $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
 </%args>
 <%init>
-my @keys;
-my @values;
-
 use RT::Report::Tickets;
+my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+$tix->FromSQL( $Query );
+my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->GroupBy( FIELD => $PrimaryGroupBy );
+my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
-my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my %class = (
+    Queue => 'RT::Queue',
+    Owner => 'RT::User',
+);
+my $class = $class{ $PrimaryGroupBy };
 
-$tix->GroupBy($PrimaryGroupBy);
-$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->Column( FIELD => $PrimaryGroupBy );
-$tix->FromSQL($Query);
-$tix->_DoSearch();
+my (@keys, @values);
 while ( my $entry = $tix->Next ) {
-    my $class;
-    if ( $PrimaryGroupBy eq 'Queue' ) {
-         $class = "RT::Queue";
-        }
-        elsif ( $PrimaryGroupBy eq 'Owner' ) {
-             $class = "RT::User";
-        }
-        if ($class) {
-            my $q = $class->new( $session{'CurrentUser'} );
-            $q->Load( $entry->__Value($PrimaryGroupBy) );
-                 push @keys, $q->Name();
-        }
-        else {
-                push @keys, $entry->__Value($PrimaryGroupBy);
-        }
-        push @values, $entry->id;
+    if ($class) {
+        my $q = $class->new( $session{'CurrentUser'} );
+        $q->Load( $entry->__Value( $value_name ) );
+        push @keys, $q->Name;
     }
+    else {
+        push @keys, $entry->__Value( $value_name );
+    }
+    $keys[-1] ||= loc('(no value)');
+    push @values, $entry->__Value( $count_name );
+}
+
+# XXX: Convert 1970-01-01 date to the 'Not Set'
+# this code should be generalized!!!
+if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
+    my $re;
+    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
+    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
+    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
+    foreach (@keys) {
+        s/^$re/loc('Not Set')/e;
+    }   
+}
 
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
-<img src="<%$RT::WebPath%>/Search/Chart?<%$query_string|n%>" />
-<br />
-<%$Query%>
+<% loc('Query:') %>&nbsp;<% $Query %><br />
 
-<br />
+<img src="<%$RT::WebPath%>/Search/Chart?<%$query_string|n%>" /><br />
+
 <table class="collection-as-table">
 <tr>
-<th class="collection-as-table"><%loc($PrimaryGroupBy)%>
+<th class="collection-as-table"><% $tix->Label($PrimaryGroupBy) %>
 </th>
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>
@@ -123,4 +130,3 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </tr>
 
 </table>
-

@@ -85,7 +85,7 @@
 %foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>"/>
 %}
-<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
+<&|/l, $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query) &>grouped by [_1]</&>
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
 <input type="submit" class="button" value="<%loc('Go')%>" />
 </form>
