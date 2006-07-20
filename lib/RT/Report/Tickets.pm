@@ -283,6 +283,7 @@ sub _ParseQuery {
     my $depth = 1;
 
     # make a tree root
+    use RT::Interface::Web::QueryBuilder::Tree;
     $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
     my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
     my $lastnode   = $root;
