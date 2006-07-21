@@ -340,7 +340,7 @@ sub _ParseQuery {
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
             push @actions,
               [
-                $self->loc(
+                $self->CurrentUser->loc(
 "current: $current, want $want, Error near ->$val<- expecting a "
                       . $token
                       . " in '$string'\n"
@@ -407,12 +407,12 @@ sub _ParseQuery {
                 $val = "'$val'";
             }
 
-            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
+            push @actions, [ $self->CurrentUser->loc("Unknown field: $key"), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }
         else {
-            push @actions, [ loc("I'm lost"), -1 ];
+            push @actions, [ $self->CurrentUser->loc("I'm lost"), -1 ];
         }
 
         if ( $current & VALUE ) {
@@ -435,14 +435,14 @@ sub _ParseQuery {
         $last = $current;
     }    # while
 
-    push @actions, [ loc("Incomplete query"), -1 ]
+    push @actions, [ $self->CurrentUser->loc("Incomplete query"), -1 ]
       unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
 
-    push @actions, [ loc("Incomplete Query"), -1 ]
+    push @actions, [ $self->CurrentUser->loc("Incomplete Query"), -1 ]
       unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
 
     # This will never happen, because the parser will complain
-    push @actions, [ loc("Mismatched parentheses"), -1 ]
+    push @actions, [ $self->CurrentUser->loc("Mismatched parentheses"), -1 ]
       unless $depth == 1;
 };
 
