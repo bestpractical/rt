@@ -340,7 +340,7 @@ sub _ParseQuery {
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
             push @actions,
               [
-                loc(
+                $self->loc(
 "current: $current, want $want, Error near ->$val<- expecting a "
                       . $token
                       . " in '$string'\n"
