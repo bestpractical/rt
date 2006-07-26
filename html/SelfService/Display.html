@@ -183,7 +183,8 @@ if ( $id[0] eq 'new' ) {
 
     if (
         $session{'Attachments'}
-        || (   $ARGS{'UpdateContent'} ne ''
+        || ( defined $ARGS{'UpdateContent'}
+            && $ARGS{'UpdateContent'} ne ''
             && $ARGS{'UpdateContent'} ne "-- \n"
             . $session{'CurrentUser'}->UserObj->Signature )
       )
