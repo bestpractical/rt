@@ -60,7 +60,7 @@ BEGIN {
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-my $field = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-[a-z0-9_ -]+)';
 
 # WARN: this code is duplicated in bin/rt.in,
 # change both functions at once
