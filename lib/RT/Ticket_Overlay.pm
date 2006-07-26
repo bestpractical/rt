@@ -328,9 +328,19 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
+Ticket links can be set up during create by passing the link type as a hask key and
+the ticket id to be linked to as a value (or a URI when linking to other objects).
+Multiple links of the same type can be created by passing an array ref. For example:
+
+  Parent => 45,
+  DependsOn => [ 15, 22 ],
+  RefersTo => 'http://www.bestpractical.com',
+
+Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
+C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
+C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
-
 
 =begin testing
 
