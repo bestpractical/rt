@@ -262,7 +262,7 @@ my $_match = sub {
 my $ParseQuery = sub {
     my $string  = shift;
     my $tree    = shift;
-    my @actions = shift;
+    my $actions = shift;
     my $want    = KEYWORD | PAREN;
     my $last    = undef;
 
@@ -323,13 +323,10 @@ my $ParseQuery = sub {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions,
+            push @$actions,
               [
-                loc(
-"current: $current, want $want, Error near ->$val<- expecting a "
-                      . $token
-                      . " in '$string'\n"
-                ),
+                loc("Error near ->[_1]<- expecting a [_2] in '[_3]'",
+                                  $val,              $token, $string ),
                 -1
               ];
         }
@@ -388,16 +385,20 @@ my $ParseQuery = sub {
                 $key   = $lcfields{ lc $key };
                 $class = $FIELDS{$key}->[0];
             }
+            elsif ( $key =~ /^C(?:ustom)?F(?:ield)?\.{(.*)}$/i ) {
+                $class = $FIELDS{'CF'}->[0];
+            }
+
             if ( $class ne 'INT' ) {
                 $val = "'$val'";
             }
 
-            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
+            push @$actions, [ loc("Unknown field: $key"), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }
         else {
-            push @actions, [ loc("I'm lost"), -1 ];
+            push @$actions, [ loc("I'm lost"), -1 ];
         }
 
         if ( $current & VALUE ) {
@@ -420,25 +421,31 @@ my $ParseQuery = sub {
         $last = $current;
     }    # while
 
-    push @actions, [ loc("Incomplete query"), -1 ]
+    push @$actions, [ loc("Incomplete query"), -1 ]
       unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
 
-    push @actions, [ loc("Incomplete Query"), -1 ]
+    push @$actions, [ loc("Incomplete Query"), -1 ]
       unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
 
     # This will never happen, because the parser will complain
-    push @actions, [ loc("Mismatched parentheses"), -1 ]
+    push @$actions, [ loc("Mismatched parentheses"), -1 ]
       unless $depth == 1;
 };
 
 my $tree;
-$ParseQuery->( $Query, \$tree, \@actions );
+{
+    my @parsing_errors;
+    $ParseQuery->( $Query, \$tree, \@parsing_errors );
 
-# if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
-    $m->comp( "Edit.html", Query => $Query, actions => \@actions );
-    $m->comp('/Elements/Footer');
-    $m->abort();
+    # if parsing went poorly, send them to the edit page
+    # to fix it
+    if ( @parsing_errors ) {
+        return $m->comp(
+            "Edit.html",
+            Query   => $Query,
+            actions => \@parsing_errors
+        );
+    }
 }
 
 $Query  = "";
