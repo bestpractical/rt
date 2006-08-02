@@ -57,7 +57,7 @@
 </div>
 
 <div id="header">
-<h1><%$title%></h1>
+<h1><% $title %></h1>
 
 % my $sep       = 0;
 % my $postsep   = 0;
@@ -161,15 +161,13 @@
 <%INIT>
 if ( defined $current_toptab ) {
     foreach my $tab ( values %{$toptabs} ) {
-        if ( $tab->{'path'} eq $current_toptab ) {
-            $tab->{'subtabs'} = $tabs;
-            $tab->{'current_subtab'} = $current_tab;
-        }
+        next unless $tab->{'path'} eq $current_toptab;
+        @{ $tab }{ qw(subtabs current_subtab) } = ($tabs, $current_tab);
     }
 }
 
-if (! defined($AppName)) {
-  $AppName = loc("RT for [_1]", RT->Config->Get('rtname'));
+unless ( defined $AppName ) {
+    $AppName = loc("RT for [_1]", RT->Config->Get('rtname'));
 }
 
 my ($menu_depth, $almost_last, $page_tabs);
