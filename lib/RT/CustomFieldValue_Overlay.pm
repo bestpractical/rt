@@ -45,7 +45,17 @@ sub Category {
 sub SetCategory {
     my $self = shift;
     my $category = shift;
-    $self->SetAttribute(Name => 'Category', Content => $category);
+    if ( defined $category && length $category ) {
+        return $self->SetAttribute(
+            Name    => 'Category',
+            Content => $category,
+        );
+    }
+    else {
+        $self->DeleteAttribute( Name => 'Category' );
+        # return true even if there was no category
+        return (1, $self->loc('Category unset'));
+    }
 }
 
 sub ValidateName { 1 };
