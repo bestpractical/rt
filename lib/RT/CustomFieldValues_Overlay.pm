@@ -46,6 +46,7 @@
 package RT::CustomFieldValues;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub LimitToCustomField
@@ -59,13 +60,13 @@ Limits the returned set to values for the custom field with Id FIELD
 sub LimitToCustomField {
     my $self = shift;
     my $cf = shift;
-    return ($self->Limit( FIELD => 'CustomField',
-			  VALUE => $cf,
-			  OPERATOR => '='));
-
+    return $self->Limit(
+        FIELD    => 'CustomField',
+        VALUE    => $cf,
+        OPERATOR => '=',
+    );
 }
 
 # }}}
 
 1;
-

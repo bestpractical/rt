@@ -15,24 +15,27 @@ from being integers.
 
 sub Create {
     my $self = shift;
-    my %args = @_;
-    (defined $args{$_} or delete $args{$_}) for keys %args;
-    %args = ((CustomField => '0',
-              Name => '',
-              Description => '',
-              SortOrder => '0',
-              Category => ''), %args);
+    my %args = (
+        CustomField => 0,
+        Name        => '',
+        Description => '',
+        SortOrder   => 0,
+        Category    => '',
+        @_,
+    );
 
     my ($id, $msg) = $self->SUPER::Create(
-        map {$_ => $args{$_}} qw(CustomField Name Description SortOrder)
+        map { $_ => $args{$_} } qw(CustomField Name Description SortOrder)
     );
-    if ($id and length $args{Category}) {
+
+    if ( $id && length $args{Category} ) {
         # $self would be loaded at this stage
         my ($status, $msg) = $self->SetCategory( $args{Category} );
         unless ( $status ) {
             $RT::Logger->error("Couldn't set category: $msg");
         }
     }
+
     return ($id, $msg);
 }
 
