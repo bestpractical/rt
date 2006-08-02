@@ -98,7 +98,7 @@ use DBIx::SearchBuilder::Unique;
 # FIELD_METADATA is a mapping of searchable Field name, to Type, and other
 # metadata.
 
-my %FIELD_METADATA = (
+our %FIELD_METADATA = (
     Status          => [ 'ENUM', ],
     Queue           => [ 'ENUM' => 'Queue', ],
     Type            => [ 'ENUM', ],
@@ -148,7 +148,7 @@ my %FIELD_METADATA = (
 );
 
 # Mapping of Field Type to Function
-my %dispatch = (
+our %dispatch = (
     ENUM            => \&_EnumLimit,
     INT             => \&_IntLimit,
     LINK            => \&_LinkLimit,
@@ -161,7 +161,7 @@ my %dispatch = (
     LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
-my %can_bundle = ();# WATCHERFIELD => "yes", );
+our %can_bundle = ();# WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs

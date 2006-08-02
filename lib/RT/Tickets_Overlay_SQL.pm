@@ -53,9 +53,7 @@ use RT::SQL;
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
-my %FIELD_METADATA = %{FIELDS()};
-my %dispatch = %{dispatch()};
-my %can_bundle = %{can_bundle()};
+our (%FIELD_METADATA, %dispatch, %can_bundle);
 
 # Lower Case version of FIELDS, for case insensitivity
 my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
