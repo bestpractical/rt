@@ -28,7 +28,10 @@ sub Create {
     );
     if ($id and length $args{Category}) {
         # $self would be loaded at this stage
-        $self->SetCategory($args{Category});
+        my ($status, $msg) = $self->SetCategory( $args{Category} );
+        unless ( $status ) {
+            $RT::Logger->error("Couldn't set category: $msg");
+        }
     }
     return ($id, $msg);
 }
