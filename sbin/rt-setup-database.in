@@ -46,8 +46,8 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
-use vars
-  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes @Initial @Final);
+use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions
+            @Templates @CustomFields @Scrips @Attributes @Initial @Final);
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
@@ -59,7 +59,6 @@ BEGIN {
     RT::LoadConfig();
     RT::InitClasses();
 }
-use Carp;
 
 use Term::ReadKey;
 use Getopt::Long;
@@ -78,6 +77,11 @@ unless ( $args{'action'} ) {
 }
 
 $| = 1;    #unbuffer that output.
+
+foreach my $key(qw(Type Host Name User Password)) {
+    next unless exists $ENV{ 'RT_DB_'. uc $key };
+    RT->Config->Set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
+}
 
 my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
