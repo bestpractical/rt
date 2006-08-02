@@ -1291,7 +1291,6 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-    $RT::Logger->crit('_CustomFieldLimit');
     my ( $self, $_field, $op, $value, @rest ) = @_;
 
     my %rest  = @rest;
