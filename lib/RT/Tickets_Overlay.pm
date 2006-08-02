@@ -1176,7 +1176,7 @@ sub _CustomFieldDecipher {
     my $cfid;
     if ( $queue ) {
         my $q = RT::Queue->new( $self->CurrentUser );
-        $q->Load( $queue ) if $queue;
+        $q->Load( $queue );
 
         my $cf;
         if ( $q->id ) {
@@ -1190,8 +1190,7 @@ sub _CustomFieldDecipher {
         $cfid = $cf->id if $cf;
     }
  
-  return ($queue, $field, $cfid);
- 
+    return ($queue, $field, $cfid);
 }
  
 =head2 _CustomFieldJoin
@@ -1292,6 +1291,7 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
+    $RT::Logger->crit('_CustomFieldLimit');
     my ( $self, $_field, $op, $value, @rest ) = @_;
 
     my %rest  = @rest;
@@ -1336,7 +1336,7 @@ sub _CustomFieldLimit {
         @rest
     );
 
-    if ($null_columns_ok) {
+    if ( $null_columns_ok ) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
             FIELD           => 'Content',
