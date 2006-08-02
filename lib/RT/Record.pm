@@ -1581,7 +1581,6 @@ sub _AddCustomFieldValue {
     );
 
     my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
-
     unless ( $cf->Id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
@@ -1597,20 +1596,20 @@ sub _AddCustomFieldValue {
             )
         );
     }
-    # Load up a ObjectCustomFieldValues object for this custom field and this ticket
-    my $values = $cf->ValuesForObject($self);
-
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
         return ( 0, $self->loc("Invalid value for custom field") );
     }
 
     # If the custom field only accepts a certain # of values, delete the existing
     # value and record a "changed from foo to bar" transaction
-    unless ( $cf->UnlimitedValues) {
+    unless ( $cf->UnlimitedValues ) {
 
- # We need to whack any old values here.  In most cases, the custom field should
- # only have one value to delete.  In the pathalogical case, this custom field
- # used to be a multiple and we have many values to whack....
+        # Load up a ObjectCustomFieldValues object for this custom field and this ticket
+        my $values = $cf->ValuesForObject($self);
+
+        # We need to whack any old values here.  In most cases, the custom field should
+        # only have one value to delete.  In the pathalogical case, this custom field
+        # used to be a multiple and we have many values to whack....
         my $cf_values = $values->Count;
 
         if ( $cf_values > $cf->MaxValues ) {
@@ -1641,7 +1640,7 @@ sub _AddCustomFieldValue {
         if ( $old_value = $values->First ) {
             $old_content = $old_value->Content;
             return (1) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
-                          ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '');
+                          ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '' );
         }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
@@ -1651,19 +1650,17 @@ sub _AddCustomFieldValue {
             ContentType  => $args{'ContentType'},
         );
 
-        unless ($new_value_id) {
-            return ( 0, $self->loc( "Could not add new custom field value. [_1] ",, $value_msg));
+        unless ( $new_value_id ) {
+            return ( 0, $self->loc( "Could not add new custom field value: [_1] ", $value_msg ) );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load($new_value_id);
+        $new_value->Load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one
-        if ($old_value) {
+        if ( $old_value ) {
             my ( $val, $msg ) = $old_value->Delete();
-            unless ($val) {
-                return ( 0, $msg );
-            }
+            return ( 0, $msg ) unless $val;
         }
 
         if ( $args{'RecordTransaction'} ) {
@@ -1692,32 +1689,29 @@ sub _AddCustomFieldValue {
 
     # otherwise, just add a new value and record "new value added"
     else {
-        my ($new_value_id) = $cf->AddValueForObject(
+        my ($new_value_id, $msg) = $cf->AddValueForObject(
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             ContentType  => $args{'ContentType'},
         );
 
-        unless ($new_value_id) {
-            return ( 0, $self->loc("Could not add new custom field value. ") );
+        unless ( $new_value_id ) {
+            return ( 0, $self->loc( "Could not add new custom field value: [_1] ", $msg ) );
         }
         if ( $args{'RecordTransaction'} ) {
-            my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction(
+            my ( $tid, $msg ) = $self->_NewTransaction(
                 Type          => 'CustomField',
                 Field         => $cf->Id,
                 NewReference  => $new_value_id,
                 ReferenceType => 'RT::ObjectCustomFieldValue',
-              );
-            unless ($TransactionId) {
-                return ( 0,
-                    $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
+            );
+            unless ( $tid ) {
+                return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
             }
         }
-        return ( 1, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name));
+        return ( 1, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
     }
-
 }
 
 # }}}
@@ -1745,10 +1739,10 @@ sub DeleteCustomFieldValue {
     );
 
     my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
-
     unless ( $cf->Id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
+
     my ( $val, $msg ) = $cf->DeleteValueForObject(
         Object  => $self,
         Id      => $args{'ValueId'},
@@ -1757,6 +1751,7 @@ sub DeleteCustomFieldValue {
     unless ($val) {
         return ( 0, $msg );
     }
+
     my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
         Type          => 'CustomField',
         Field         => $cf->Id,
@@ -1790,13 +1785,10 @@ Takes a field id or name
 sub FirstCustomFieldValue {
     my $self = shift;
     my $field = shift;
-    my $values = $self->CustomFieldValues($field);
-    if ($values->First) {
-        return $values->First->Content;
-    } else {
-        return undef;
-    }
 
+    my $values = $self->CustomFieldValues( $field );
+    return undef unless my $first = $values->First;
+    return $first->Content;
 }
 
 
@@ -1816,10 +1808,10 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    if ($field) {
-        my $cf = $self->LoadCustomFieldByIdentifier($field);
+    if ( $field ) {
+        my $cf = $self->LoadCustomFieldByIdentifier( $field );
 
-        # we were asked to search on a custom field we couldn't fine
+        # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             return RT::ObjectCustomFieldValues->new( $self->CurrentUser );
         }
@@ -1828,12 +1820,11 @@ sub CustomFieldValues {
 
     # we're not limiting to a specific custom field;
     my $ocfs = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
-    $ocfs->LimitToObject($self);
+    $ocfs->LimitToObject( $self );
     return $ocfs;
-
 }
 
-=head2 CustomField IDENTIFER
+=head2 LoadCustomFieldByIdentifier IDENTIFER
 
 Find the custom field has id or name IDENTIFIER for this object.
 
@@ -1852,7 +1843,7 @@ sub LoadCustomFieldByIdentifier {
     }
     elsif ($field =~ /^\d+$/) {
         $cf = RT::CustomField->new($self->CurrentUser);
-        $cf->Load($field); 
+        $cf->LoadById($field);
     } else {
 
         my $cfs = $self->CustomFields($self->CurrentUser);
@@ -1873,7 +1864,7 @@ sub BasicColumns {
 }
 
 sub WikiBase {
-  return RT->Config->Get('WebPath'). "/index.html?q=";
+    return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
 eval "require RT::Record_Vendor";
