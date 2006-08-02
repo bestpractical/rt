@@ -52,23 +52,26 @@ no warnings qw(redefine);
 sub Create {
     my $self = shift;
     my %args = (
-                CustomField => '0',
-                ObjectType => '',
-                ObjectId => '0',
-                Disabled => '0',
-                Content => '',
-                LargeContent => '',
-                ContentType => '',
-                ContentEncoding => '',
+        CustomField     => 0,
+        ObjectType      => '',
+        ObjectId        => 0,
+        Disabled        => 0,
+        Content         => '',
+        LargeContent    => undef,
+        ContentType     => '',
+        ContentEncoding => '',
+        @_,
+    );
 
-          @_);
-
-   
-    if( $args{'Content'} && length($args{'Content'}) > 255 && !$args{'LargeContent'} ) {
-
-        $args{'LargeContent'} = $args{'Content'};
-        $args{'Content'} = '';
-        $args{'ContentType'} = 'text/plain';
+    if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
+        if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
+            $RT::Logger->error("Content is longer than 255 and LargeContent specified");
+        }
+        else {
+            $args{'LargeContent'} = $args{'Content'};
+            $args{'Content'} = '';
+            $args{'ContentType'} ||= 'text/plain';
+        }
     }
 
     ( $args{'ContentEncoding'}, $args{'LargeContent'} ) =
