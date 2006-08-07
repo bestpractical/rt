@@ -38,7 +38,7 @@ sub __DependsOn
 
 # Custom Fields
     $objs = RT::CustomFields->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Queue', VALUE => $self->id );
+    $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
