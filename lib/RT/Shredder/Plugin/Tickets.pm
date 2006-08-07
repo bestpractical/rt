@@ -42,10 +42,8 @@ sub TestArgs
     if( $args{'status'} ) {
         $queue ||= RT::Queue->new( $RT::SystemUser );
         my @statuses = qw(new open stalled deleted rejected);
-        if( $queue->can( 'StatusArray' ) ) {
-            @statuses = $queue->StatusArray;
-        }
-        unless( grep $_ eq $args{'status'}, @statuses ) {
+        @statuses = $queue->StatusArray if $queue->can('StatusArray');
+        unless( grep lc $_ eq lc $args{'status'}, @statuses ) {
             return( 0, "Invalid status '$args{status}'" );
         }
     }
