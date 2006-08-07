@@ -425,12 +425,14 @@ sbin-install:
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
-		sbin/rt-clean-sessions
+		sbin/rt-clean-sessions \
+		sbin/rt-shredder
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		sbin/rt-clean-sessions \
+		sbin/rt-shredder \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}
