@@ -25,7 +25,7 @@ use RT::Tickets;
     my $tickets = RT::Tickets->new( $RT::SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->LimitStatus( VALUE => 'deleted' );
-    is( $tickets->Count, 1, "found one deleted ticket" ) or diag( note_not_patched );
+    is( $tickets->Count, 1, "found one deleted ticket" );
 
     my $shredder = shredder_new();
     $shredder->PutObjects( Objects => $tickets );

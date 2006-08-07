@@ -581,21 +581,6 @@ See also perldoc lib/t/regression/shredder/utils.pl to know how to use this info
 END
 }
 
-=head3 note_not_patched
-
-Returns note about patch if RT looks like not patched.
-
-=cut
-
-sub note_not_patched
-{
-	return <<END;
-Couldn't find deleted ticket, may be you didn't patch
-your RT. Please, read README about how, when and why you
-have to patch your RT.
-END
-}
-
 =head2 OTHER
 
 =head3 is_all_seccessful
