@@ -97,7 +97,11 @@ sub TestArgs
 {
     my $self = shift;
     my %args = @_;
-    $self->{'opt'} = \%args;
+    if ( $self->{'opt'} ) {
+        $self->{'opt'} = { %{$self->{'opt'}}, %args };
+    } else {
+        $self->{'opt'} = \%args;
+    }
     return 1;
 }
 
