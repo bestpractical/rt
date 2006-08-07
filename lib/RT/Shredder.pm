@@ -1,4 +1,5 @@
 package RT::Shredder;
+
 use strict;
 use warnings;
 
@@ -188,7 +189,7 @@ ARRAY, C<RT::Record> ancesstors or C<RT::SearchBuilder> ancesstor.
 Most methods that takes C<Objects> argument use this method to
 cast argument value to list of records.
 
-Returns array of the records.
+Returns an array of records.
 
 For example:
 
@@ -409,9 +410,9 @@ sub WipeoutAll
 {
     my $self = $_[0];
 
-    foreach ( values %{ $self->{'cache'} } ) {
-        next if $_->{'State'} & (WIPED | IN_WIPING);
-        $self->Wipeout( Object => $_->{'Object'} );
+    while ( my ($k, $v) = each %{ $self->{'cache'} } ) {
+        next if $v->{'State'} & (WIPED | IN_WIPING);
+        $self->Wipeout( Object => $v->{'Object'} );
     }
 }
 
@@ -444,8 +445,8 @@ sub _Wipeout
     unless( $object->BeforeWipeout ) {
         RT::Shredder::Exception->throw( "BeforeWipeout check returned error" );
     }
-    my $deps = $object->Dependencies( Shredder => $self );
 
+    my $deps = $object->Dependencies( Shredder => $self );
     $deps->List(
         WithFlags => DEPENDS_ON | VARIABLE,
         Callback  => sub { $self->ApplyResolvers( Dependency => $_[0] ) },
@@ -456,9 +457,8 @@ sub _Wipeout
         Callback     => sub { $self->_Wipeout( Object => $_[0]->TargetObject ) },
     );
 
-    my $insert_query = $object->_AsInsertQuery;
+    $self->DumpObject( Object => $object );
     $object->__Wipeout;
-    $self->DumpSQL( Query => $insert_query );
     $record->{'State'} |= WIPED; delete $record->{'Object'};
 
     $deps->List(
@@ -486,56 +486,38 @@ sub ValidateRelations
 Shredder allow you to store data you delete in files as scripts with SQL
 commands.
 
-=head3 SetFile( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
-
-Calls C<GetFileName> method to check and translate file name, then checks
-if file is empty, opens it. After this you can dump records with C<DumpSQL>
-method.
-
-Returns name and handle.
-
-B<NOTE:> If file allready exists then file content would be overriden.
-Also in this situation method prints warning to the STDERR unless C<force>
-shredder's option is used.
-
-Examples:
-    # file from storage with default name format
-    my ($fname, $fh) = $shredder->SetFile;
-    # file from storage with custom name format
-    my ($fname, $fh) = $shredder->SetFile( FileName => 'shredder-XXXX.backup' );
-    # file with path relative to the current dir
-    my ($fname, $fh) = $shredder->SetFile( FromStorage => 0, FileName => 'backups/shredder.sql' );
-    # file with absolute path
-    my ($fname, $fh) = $shredder->SetFile( FromStorage => 0, FileName => '/var/backups/shredder-XXXX.sql' );
-
-=cut
-
-sub SetFile
-{
-    my $self = shift;
-    my $file = $self->GetFileName( @_ );
-    if( -s $file ) {
-        print STDERR "WARNING: file '$file' is not empty, content would be overwriten\n" unless $opt{'force'};
-    }
-    open my $fh, ">$file" or die "Couldn't open '$file' for write: $!";
-    ($self->{'opt'}->{'sqldump_fn'}, $self->{'opt'}->{'sqldump_fh'}) = ($file, $fh);
-    return ($file, $fh);
-}
-
 =head3 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
 Takes desired C<FileName> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
-* Default C<FileName> value is C<< <ISO DATETIME>-XXXX.sql >>;
-* if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with
-digits from 0000 to 9999 range, with first one notexistant value;
-* if C<FromStorage> argument is true then result path would always be relative to C<StoragePath>;
-* if C<FromStorage> argument is false then result would be relative to the current dir unless it's
-allready absolute path.
+* Default value of the C<FileName> option is C<< <ISO DATETIME>-XXXX.sql >>;
+* if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be
+changed with digits from 0000 to 9999 range, with first one free value;
+* if C<FromStorage> argument is true (default behaviour) then result path would always
+be relative to C<StoragePath>;
+* if C<FromStorage> argument is false then result would be relative to the current
+dir unless it's allready absolute path.
 
-Returns file absolute path.
+Returns an absolute path of the file.
 
-See example for method C<SetFile>
+Examples:
+    # file from storage with default name format
+    my $fname = $shredder->GetFileName;
+
+    # file from storage with custom name format
+    my $fname = $shredder->GetFileName( FileName => 'shredder-XXXX.backup' );
+
+    # file with path relative to the current dir
+    my $fname = $shredder->GetFileName(
+        FromStorage => 0,
+        FileName => 'backups/shredder.sql',
+    );
+
+    # file with absolute path
+    my $fname = $shredder->GetFileName(
+        FromStorage => 0,
+        FileName => '/var/backups/shredder-XXXX.sql'
+    );
 
 =cut
 
@@ -548,7 +530,7 @@ sub GetFileName
     my $file = $args{'FileName'};
     unless( $file ) {
         require POSIX;
-        $file = POSIX::strftime("%Y%m%dT%H%M%S-XXXX.sql", gmtime );
+        $file = POSIX::strftime( "%Y%m%dT%H%M%S-XXXX.sql", gmtime );
     }
 
     # convert to absolute path
@@ -599,9 +581,9 @@ Returns absolute path to storage dir. By default it's
 F</path-to-RT-var-dir/data/RTx-Shredder/>
 (in default RT install would be F</opt/rt3/var/data/RTx-Shredder>),
 but you can change this value with config option C<$RT::ShredderStoragePath>.
-See C<CONFIGURATION> sections in this doc.
+See L</CONFIGURATION> sections.
 
-See C<SetFile> and C<GetFileName> methods description.
+See also description of the L</GetFileName> method.
 
 =cut
 
@@ -611,16 +593,31 @@ sub StoragePath
     return File::Spec->catdir( $RT::VarPath, qw(data RTx-Shredder) );
 }
 
-sub DumpSQL
-{
+sub AddDumpPlugin {
     my $self = shift;
-    return unless exists $self->{'opt'}->{'sqldump_fh'};
+    my %args = ( Name => 'SQLDump', Arguments => {}, @_ );
 
-    my %args = ( Query => undef, @_ );
-    $args{'Query'} .= "\n" unless $args{'Query'} =~ /\n$/;
+    my $plugin = RT::Shredder::Plugin->new;
+    my( $status, $msg ) = $plugin->LoadByName( $args{'Name'} );
+    die "Couldn't load dump plugin: $msg\n" unless $status;
+    die "Plugin '$args{'Name'}' is not of correct type"
+        unless $plugin->Type eq 'dump';
 
-    my $fh = $self->{'opt'}->{'sqldump_fh'};
-    return print $fh $args{'Query'} or die "Couldn't write to filehandle";
+    ($status, $msg) = $plugin->TestArgs( %{ $args{'Arguments'} } );
+    die "Couldn't set plugin args: $msg\n" unless $status;
+
+    push @{ $self->{'opt'}{'dump_plugins'} ||= [] }, $plugin;
+
+    return $plugin;
+}
+
+sub DumpObject {
+    my $self = shift;
+    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+        my ($state, $msg) = $_->Run( @_ );
+        die "Couldn't run plugin: $msg" unless $state;
+    }
+    return;
 }
 
 1;
@@ -646,7 +643,7 @@ L<http://bugs.mysql.com/bug.php?id=4042>
 
 =head1 BUGS AND HOW TO CONTRIBUTE
 
-I need your feedback in all cases: if you use it or not,
+We need your feedback in all cases: if you use it or not,
 is it works for you or not.
 
 =head2 Testing
@@ -689,7 +686,6 @@ Perl distribution.
 
 =head1 SEE ALSO
 
-L<rtx-shredder>, L<rtx-validator>
+L<rt-shredder>, L<rt-validator>
 
 =cut
-

@@ -54,8 +54,10 @@ my $catch_non_fatals = sub {
 if( $Wipeout ) {
     { # use additional block({}) to effectively exit block on errors
         my $shredder = new RT::Shredder( force => 1 );
-        my ($fn, $fh) = $shredder->SetFile;
-        push @{ $messages{'Success'} }, "SQL dump file is '$fn'";
+        my $plugin = eval { $shredder->AddDumpPlugin };
+        $catch_non_fatals->() && last if $@;
+
+        push @{ $messages{'Success'} }, "SQL dump file is '". $plugin->FileName ."'";
 
         $shredder->PutObjects( Objects => \@WipeoutObject );
     	eval { $shredder->WipeoutAll };

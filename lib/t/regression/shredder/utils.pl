@@ -177,8 +177,13 @@ sub connect_sqlite
 sub shredder_new
 {
     my $obj = new RT::Shredder;
+
     my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
-    $obj->SetFile( FileName => $file, FromStorage => 0 );
+    $obj->AddDumpPlugin( Arguments => {
+        file_name    => $file,
+        from_storage => 0,
+    } );
+
     return $obj;
 }
 
