@@ -9,8 +9,8 @@ require File::Copy;
 require Cwd;
 
 BEGIN {
-### after: 	push @INC, qw(@RT_LIB_PATH@);
-	push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
+### after:     push @INC, qw(@RT_LIB_PATH@);
+    push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
 }
 use RT::Shredder;
 
@@ -73,25 +73,25 @@ RT config option to switch to local SQLite database.
 
 sub rewrite_rtconfig
 {
-	# database
-	config_set( '$DatabaseType'       , 'SQLite' );
-	config_set( '$DatabaseHost'       , 'localhost' );
-	config_set( '$DatabaseRTHost'     , 'localhost' );
-	config_set( '$DatabasePort'       , '' );
-	config_set( '$DatabaseUser'       , 'rt_user' );
-	config_set( '$DatabasePassword'   , 'rt_pass' );
-	config_set( '$DatabaseRequireSSL' , undef );
-	# database file name
-	config_set( '$DatabaseName'       , db_name() );
+    # database
+    config_set( '$DatabaseType'       , 'SQLite' );
+    config_set( '$DatabaseHost'       , 'localhost' );
+    config_set( '$DatabaseRTHost'     , 'localhost' );
+    config_set( '$DatabasePort'       , '' );
+    config_set( '$DatabaseUser'       , 'rt_user' );
+    config_set( '$DatabasePassword'   , 'rt_pass' );
+    config_set( '$DatabaseRequireSSL' , undef );
+    # database file name
+    config_set( '$DatabaseName'       , db_name() );
 
-	# generic logging
-	config_set( '$LogToSyslog'    , undef );
-	config_set( '$LogToScreen'    , 'error' );
-	config_set( '$LogStackTraces' , 1 );
-	# logging to standalone file
-	config_set( '$LogToFile'      , 'debug' );
-	my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
-	config_set( '$LogToFileNamed' , $fname );
+    # generic logging
+    config_set( '$LogToSyslog'    , undef );
+    config_set( '$LogToScreen'    , 'error' );
+    config_set( '$LogStackTraces' , 1 );
+    # logging to standalone file
+    config_set( '$LogToFile'      , 'debug' );
+    my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
+    config_set( '$LogToFileNamed' , $fname );
 }
 
 =head3 config_set
@@ -118,16 +118,16 @@ in common situation.
 
 sub init_db
 {
-	RT::LoadConfig();
-	rewrite_rtconfig();
-	cleanup_tmp();
-	RT::InitLogging();
+    RT::LoadConfig();
+    rewrite_rtconfig();
+    cleanup_tmp();
+    RT::InitLogging();
 
     diag( _init_db() );
 
-	RT::Init();
-	$SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
-	$SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; die @_ };
+    RT::Init();
+    $SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
+    $SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; die @_ };
 }
 
 use IPC::Open2;
@@ -165,7 +165,7 @@ Takes path to sqlite db.
 
 sub connect_sqlite
 {
-	return DBI->connect("dbi:SQLite:dbname=". shift, "", "");
+    return DBI->connect("dbi:SQLite:dbname=". shift, "", "");
 }
 
 =head2 SHREDDER
@@ -195,10 +195,10 @@ For exmple returns '00load' for 't/00load.t' test file.
 
 sub test_name
 {
-	my $name = $0;
-	$name =~ s/^.*[\\\/]//;
-	$name =~ s/\..*$//;
-	return $name;
+    my $name = $0;
+    $name =~ s/^.*[\\\/]//;
+    $name =~ s/\..*$//;
+    return $name;
 }
 
 =head2 TEMPORARY DIRECTORY
@@ -218,7 +218,7 @@ Creates tmp dir if doesn't exist. Returns tmpdir absolute path.
 
 =cut
 
-sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );	return $n }
+sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
 
 =head3 cleanup_tmp
 
@@ -229,8 +229,8 @@ See also C<test_name> function.
 
 sub cleanup_tmp
 {
-	my $mask = File::Spec->catfile( tmpdir(), test_name() ) .'.*';
-	return unlink glob($mask);
+    my $mask = File::Spec->catfile( tmpdir(), test_name() ) .'.*';
+    return unlink glob($mask);
 }
 
 =head2 SAVEPOINTS
@@ -244,8 +244,8 @@ Takes one argument - savepoint name, by default C<sp>.
 
 sub savepoint_name
 {
-	my $name = shift || 'sp';
-	return File::Spec->catfile( create_tmpdir(), test_name() .".$name.db" );
+    my $name = shift || 'sp';
+    return File::Spec->catfile( create_tmpdir(), test_name() .".$name.db" );
 }
 
 =head3 create_savepoint
@@ -264,16 +264,16 @@ sub create_savepoint { return __cp_db( db_name() => savepoint_name( shift ) ) }
 sub restore_savepoint { return __cp_db( savepoint_name( shift ) => db_name() ) }
 sub __cp_db
 {
-	my( $orig, $dest ) = @_;
-	$RT::Handle->dbh->disconnect;
-	# DIRTY HACK: undef Handles to force reconnect
-	$RT::Handle = undef;
+    my( $orig, $dest ) = @_;
+    $RT::Handle->dbh->disconnect;
+    # DIRTY HACK: undef Handles to force reconnect
+    $RT::Handle = undef;
     %DBIx::SearchBuilder::DBIHandle = ();
     $DBIx::SearchBuilder::PrevHandle = undef;
 
-	File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
-	RT::ConnectToDatabase();
-	return;
+    File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
+    RT::ConnectToDatabase();
+    return;
 }
 
 
@@ -283,11 +283,11 @@ sub __cp_db
 
 Returns DB dump as complex hash structure:
     {
-	TableName => {
-		#id => {
-			lc_field => 'value',
-		}
-	}
+    TableName => {
+        #id => {
+            lc_field => 'value',
+        }
+    }
     }
 
 Takes named argument C<CleanDates>. If true clean all date fields from
@@ -297,25 +297,25 @@ dump. True by default.
 
 sub dump_sqlite
 {
-	my $dbh = shift;
-	my %args = ( CleanDates => 1, @_ );
+    my $dbh = shift;
+    my %args = ( CleanDates => 1, @_ );
 
-	my $old_fhkn = $dbh->{'FetchHashKeyName'};
-	$dbh->{'FetchHashKeyName'} = 'NAME_lc';
+    my $old_fhkn = $dbh->{'FetchHashKeyName'};
+    $dbh->{'FetchHashKeyName'} = 'NAME_lc';
 
-	my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
-	my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
+    my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
+    my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
 
-	my $res = {};
-	foreach my $t( @tables ) {
-		next if lc($t) eq 'sessions';
-		$res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
-		clean_dates( $res->{$t} ) if $args{'CleanDates'};
-		die $DBI::err if $DBI::err;
-	}
+    my $res = {};
+    foreach my $t( @tables ) {
+        next if lc($t) eq 'sessions';
+        $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
+        clean_dates( $res->{$t} ) if $args{'CleanDates'};
+        die $DBI::err if $DBI::err;
+    }
 
-	$dbh->{'FetchHashKeyName'} = $old_fhkn;
-	return $res;
+    $dbh->{'FetchHashKeyName'} = $old_fhkn;
+    return $res;
 }
 
 =head3 dump_current_and_savepoint
@@ -327,10 +327,10 @@ Takes one argument - savepoint name.
 
 sub dump_current_and_savepoint
 {
-	my $orig = savepoint_name( shift );
-	die "Couldn't find savepoint file" unless -f $orig && -r _;
-	my $odbh = connect_sqlite( $orig );
-	return ( dump_sqlite( $RT::Handle->dbh, @_ ), dump_sqlite( $odbh, @_ ) );
+    my $orig = savepoint_name( shift );
+    die "Couldn't find savepoint file" unless -f $orig && -r _;
+    my $odbh = connect_sqlite( $orig );
+    return ( dump_sqlite( $RT::Handle->dbh, @_ ), dump_sqlite( $odbh, @_ ) );
 }
 
 =head3 dump_savepoint_and_current
@@ -344,15 +344,15 @@ sub dump_savepoint_and_current { return reverse dump_current_and_savepoint(@_) }
 
 sub clean_dates
 {
-	my $h = shift;
-	my $date_re = qr/^\d\d\d\d\-\d\d\-\d\d\s*\d\d\:\d\d(\:\d\d)?$/i;
-	foreach my $id ( keys %{ $h } ) {
-		next unless $h->{ $id };
-		foreach ( keys %{ $h->{ $id } } ) {
-			delete $h->{$id}{$_} if $h->{$id}{$_} &&
-			  $h->{$id}{$_} =~ /$date_re/;
-		}
-	}
+    my $h = shift;
+    my $date_re = qr/^\d\d\d\d\-\d\d\-\d\d\s*\d\d\:\d\d(\:\d\d)?$/i;
+    foreach my $id ( keys %{ $h } ) {
+        next unless $h->{ $id };
+        foreach ( keys %{ $h->{ $id } } ) {
+            delete $h->{$id}{$_} if $h->{$id}{$_} &&
+              $h->{$id}{$_} =~ /$date_re/;
+        }
+    }
 }
 
 =head2 NOTES
@@ -367,15 +367,15 @@ Returns note about debug info you can find if test failed.
 
 sub note_on_fail
 {
-	my $name = test_name();
-	my $tmpdir = tmpdir();
-	return <<END;
+    my $name = test_name();
+    my $tmpdir = tmpdir();
+    return <<END;
 Some tests in '$0' file failed.
 You can find debug info in '$tmpdir' dir.
 There is should be:
-	$name.log - RT debug log file
-	$name.db - latest RT DB sed while testing
-	$name.*.db - savepoint databases
+    $name.log - RT debug log file
+    $name.db - latest RT DB sed while testing
+    $name.*.db - savepoint databases
 See also perldoc lib/t/regression/shredder/utils.pl to know how to use this info.
 END
 }
@@ -390,9 +390,9 @@ Returns true if all tests you've already run are successful.
 
 sub is_all_successful
 {
-	use Test::Builder;
-	my $Test = Test::Builder->new;
-	return grep( !$_, $Test->summary )? 0: 1;
+    use Test::Builder;
+    my $Test = Test::Builder->new;
+    return grep( !$_, $Test->summary )? 0: 1;
 }
 
 1;
