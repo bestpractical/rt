@@ -37,14 +37,6 @@ C<example.com> domain.
 2) C<?> matches exactly one character.
 For example C<????> will match any string four characters long.
 
-=head1 ARGUMENTS
-
-Arguments which all plugins support.
-
-=head2 limit - unsigned integer
-
-Allow you to limit search results. B<< Default value is C<10> >>.
-
 =head1 METHODS
 
 =head2 for subclassing in plugins
@@ -67,13 +59,13 @@ classes B<must> support.
 
 =cut
 
-sub SupportArgs { return qw(limit) }
+sub SupportArgs { return () }
 
 =head3 HasSupportForArgs
 
-Takes list of the argument names.
-Returns true if all arguments are supported by plugin
-and returns C<(0, $msg)> in other case.
+Takes a list of argument names. Returns true if
+all arguments are supported by plugin and returns
+C<(0, $msg)> in other case.
 
 =cut
 
@@ -105,16 +97,6 @@ sub TestArgs
 {
     my $self = shift;
     my %args = @_;
-    if( defined $args{'limit'} && $args{'limit'} ne '' ) {
-        my $limit = $args{'limit'};
-        $limit =~ s/[^0-9]//g;
-        unless( $args{'limit'} eq $limit ) {
-            return( 0, "Argmument limit should be an unsigned integer");
-        }
-        $args{'limit'} = $limit;
-    } else {
-        $args{'limit'} = 10;
-    }
     $self->{'opt'} = \%args;
     return 1;
 }
@@ -133,8 +115,6 @@ case values of the arguments are not available.
 =cut
 
 sub Run { return (0, "This is abstract plugin, you couldn't use it directly") }
-
-sub SetResolvers { return (1) }
 
 =head2 utils
 

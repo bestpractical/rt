@@ -2,17 +2,13 @@ package RT::Shredder::Plugin::Objects;
 
 use strict;
 use warnings FATAL => 'all';
-use base qw(RT::Shredder::Plugin::Base);
+use base qw(RT::Shredder::Plugin::Base::Search);
 
 use RT::Shredder;
 
 =head1 NAME
 
 RT::Shredder::Plugin::Objects - search plugin for wiping any selected object.
-
-=cut
-
-sub Type { return 'search' }
 
 =head1 ARGUMENTS
 
@@ -61,4 +57,3 @@ sub Run
 }
 
 1;
-

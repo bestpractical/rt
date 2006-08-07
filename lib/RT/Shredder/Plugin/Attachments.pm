@@ -2,15 +2,11 @@ package RT::Shredder::Plugin::Attachments;
 
 use strict;
 use warnings FATAL => 'all';
-use base qw(RT::Shredder::Plugin::Base);
+use base qw(RT::Shredder::Plugin::Base::Search);
 
 =head1 NAME
 
 RT::Shredder::Plugin::Attachments - search plugin for wiping attachments.
-
-=cut
-
-sub Type { return 'search' }
 
 =head1 ARGUMENTS
 

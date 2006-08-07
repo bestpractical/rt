@@ -8,10 +8,6 @@ use base qw(RT::Shredder::Plugin::Base);
 
 RT::Shredder::Plugin::Users - search plugin for wiping users.
 
-=cut
-
-sub Type { return 'search' }
-
 =head1 ARGUMENTS
 
 =head2 status - string
@@ -94,6 +90,10 @@ sub Run
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
     my $objs = RT::Users->new( $RT::SystemUser );
+    # XXX: we want preload only things we need, but later while
+    # logging we need all data, TODO envestigate this
+    # $objs->Columns(qw(id Name EmailAddress Lang Timezone
+    #                   Creator Created LastUpdated LastUpdatedBy));
     if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {
             $objs->{'find_disabled_rows'} = 1;
@@ -194,9 +194,9 @@ sub _WithoutTickets {
     my ($self, $user) = @_;
     my $tickets = RT::Tickets->new( $RT::SystemUser );
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
-    # HACK: Count - is count all that match condtion,
-    # but we really want to know if at least one record record exist,
-    # so we fetch first only
+    # HACK: we may use Count method which counts all records
+    # that match condtion, but we really want to know only that
+    # at least one record exist, so we fetch first row only
     $tickets->RowsPerPage(1);
     return !$tickets->First;
 }
