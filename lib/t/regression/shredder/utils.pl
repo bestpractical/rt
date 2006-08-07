@@ -121,230 +121,29 @@ sub init_db
 	RT::LoadConfig();
 	rewrite_rtconfig();
 	cleanup_tmp();
-
 	RT::InitLogging();
-	RT::ConnectToDatabase();
-	__init_schema( $RT::Handle->dbh );
 
-    require RT::CurrentUser;
+    diag( _init_db() );
 
-	__insert_initial_data();
-	RT::Init();
-	my $fname = File::Spec->catfile( $RT::EtcPath, 'initialdata' );
-	__insert_data( $fname );
-	$fname = File::Spec->catfile( $RT::LocalEtcPath, 'initialdata' );
-	__insert_data( $fname ) if -f $fname && -r _;
 	RT::Init();
 	$SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
 	$SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; die @_ };
 }
 
-sub __init_schema
+use IPC::Open2;
+sub _init_db
 {
-	my $dbh = shift;
-	my (@schema);
+    foreach ( qw(Type Host Port Name User Password) ) {
+        $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
+    }
+    my $cmd = 'sbin/rt-setup-database'
+        .' --action init';
 
-	my $fname = File::Spec->catfile( $RT::EtcPath, "schema.SQLite" );
-	if( -f $fname && -r _ ) {
-		open my $fh, "<$fname" or die "Couldn't open '$fname': $!";
-		push @schema, <$fh>;
-		close $fh;
-	} else {
-		die "Couldn't find '$fname'";
-	}
-	$fname = File::Spec->catfile( $RT::LocalEtcPath, "schema.SQLite" );
-	if( -f $fname && -r _ ) {
-		open my $fh, "<$fname" or die "Couldn't open '$fname': $!";
-		push @schema, <$fh>;
-		close $fh;
-	}
-
-	my $statement = "";
-	foreach my $line (splice @schema) {
-		$line =~ s/\#.*//g;
-		$line =~ s/--.*//g;
-		$statement .= $line;
-		if( $line =~ /;(\s*)$/ ) {
-			$statement =~ s/;(\s*)$//g;
-			push @schema, $statement;
-			$statement = "";
-		}
-	}
-
-	$dbh->begin_work or die $dbh->errstr;
-	foreach my $statement (@schema) {
-		my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-		unless ( $sth->execute ) {
-			die "Couldn't execute statement '$statement':" . $sth->errstr;
-		}
-	}
-	$dbh->commit or die $dbh->errstr;
-}
-
-sub __insert_initial_data
-{
-	my $CurrentUser = new RT::CurrentUser();
-
-	my $RT_System = new RT::User($CurrentUser);
-
-	my ( $status, $msg ) = $RT_System->_BootstrapCreate(
-		Name     => 'RT_System',
-		Creator => '1',
-		RealName => 'The RT System itself',
-		Comments => "Do not delete or modify this user. It is integral to RT's internal database structures",
-		LastUpdatedBy => '1' );
-	unless ($status) {
-		die "Couldn't create RT::SystemUser: $msg";
-	}
-	my $equiv_group = RT::Group->new($RT_System);
-	$equiv_group->LoadACLEquivalenceGroup($RT_System);
-
-	my $superuser_ace = RT::ACE->new($CurrentUser);
-	($status, $msg) = $superuser_ace->_BootstrapCreate(
-		PrincipalId => $equiv_group->Id,
-		PrincipalType => 'Group',
-		RightName     => 'SuperUser',
-		ObjectType    => 'RT::System',
-		ObjectId      => '1' );
-	unless ($status) {
-		die "Couldn't grant RT::SystemUser with SuperUser right: $msg";
-	}
-}
-
-sub __insert_data
-{
-	my $datafile = shift;
-	require $datafile
-	  || die "Couldn't load datafile '$datafile' for import: $@";
-	our (@Groups, @Users, @Queues,
-		@ACL, @CustomFields, @ScripActions,
-		@ScripConditions, @Templates, @Scrips,
-		@Attributes);
-
-	if (@Groups) {
-		for my $item (@Groups) {
-			my $new_entry = RT::Group->new($RT::SystemUser);
-			my ( $return, $msg ) = $new_entry->_Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@Users) {
-		for my $item (@Users) {
-			my $new_entry = new RT::User($RT::SystemUser);
-			my ( $return, $msg ) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@Queues) {
-		for my $item (@Queues) {
-			my $new_entry = new RT::Queue($RT::SystemUser);
-			my ( $return, $msg ) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@ACL) {
-		for my $item (@ACL) {
-			my ($princ, $object);
-
-			# Global rights or Queue rights?
-			if ($item->{'Queue'}) {
-				$object = RT::Queue->new($RT::SystemUser);
-				$object->Load( $item->{'Queue'} );
-			} else {
-				$object = $RT::System;
-			}
-
-			# Group rights or user rights?
-			if ($item->{'GroupDomain'}) {
-				$princ = RT::Group->new($RT::SystemUser);
-				if ($item->{'GroupDomain'} eq 'UserDefined') {
-					$princ->LoadUserDefinedGroup( $item->{'GroupId'} );
-				} elsif ($item->{'GroupDomain'} eq 'SystemInternal') {
-					$princ->LoadSystemInternalGroup( $item->{'GroupType'} );
-				} elsif ($item->{'GroupDomain'} eq 'RT::System-Role') {
-					$princ->LoadSystemRoleGroup( $item->{'GroupType'} );
-				} elsif ($item->{'GroupDomain'} eq 'RT::Queue-Role' &&
-					$item->{'Queue'}) {
-					$princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
-						Queue => $object->id);
-				} else {
-					$princ->Load( $item->{'GroupId'} );
-				}
-			} else {
-				$princ = RT::User->new($RT::SystemUser);
-				$princ->Load( $item->{'UserId'} );
-			}
-
-			# Grant it
-			my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-				Right => $item->{'Right'},
-				Object => $object );
-			die "$msg" unless $return;
-		}
-	}
-	if (@CustomFields) {
-		for my $item (@CustomFields) {
-			my $new_entry = new RT::CustomField($RT::SystemUser);
-			my $values    = $item->{'Values'};
-			delete $item->{'Values'};
-			my $q     = $item->{'Queue'};
-			my $q_obj = RT::Queue->new($RT::SystemUser);
-			$q_obj->Load($q);
-			if ( $q_obj->Id ) {
-				$item->{'Queue'} = $q_obj->Id;
-			}
-			elsif ( $q == 0 ) {
-				$item->{'Queue'} = 0;
-			}
-			else {
-				die "Couldn't find queue '$q'" unless $q_obj->Id;
-			}
-			my ( $return, $msg ) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-
-			foreach my $value ( @{$values} ) {
-				my ( $eval, $emsg ) = $new_entry->AddValue(%$value);
-				die "$emsg" unless $eval;
-			}
-		}
-	}
-	if (@ScripActions) {
-		for my $item (@ScripActions) {
-			my $new_entry = RT::ScripAction->new($RT::SystemUser);
-			my ($return, $msg) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@ScripConditions) {
-		for my $item (@ScripConditions) {
-			my $new_entry = RT::ScripCondition->new($RT::SystemUser);
-			my ($return, $msg) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@Templates) {
-		for my $item (@Templates) {
-			my $new_entry = new RT::Template($RT::SystemUser);
-			my ($return, $msg) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@Scrips) {
-		for my $item (@Scrips) {
-			my $new_entry = new RT::Scrip($RT::SystemUser);
-			my ( $return, $msg ) = $new_entry->Create(%$item);
-			die "$msg" unless $return;
-		}
-	}
-	if (@Attributes) {
-		my $sys = RT::System->new($RT::SystemUser);
-		for my $item (@Attributes) {
-			my $obj = delete $item->{Object}; # XXX: make this something loadable
-			$obj ||= $sys;
-			my ( $return, $msg ) = $obj->AddAttribute (%$item);
-			die "$msg" unless $return;
-		}
-	}
+    my ($child_out, $child_in);
+    my $pid = open2($child_out, $child_in, $cmd);
+    close $child_in;
+    my $result = do { local $/; <$child_out> };
+    return $result;
 }
 
 =head3 db_name
