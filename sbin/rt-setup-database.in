@@ -45,7 +45,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
-use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
+use vars qw($PROMPT $VERSION $Nobody $SystemUser $item);
 use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions
             @Templates @CustomFields @Scrips @Attributes @Initial @Final);
 
@@ -66,9 +66,10 @@ use Getopt::Long;
 my %args;
 GetOptions(
     \%args,
-    'prompt-for-dba-password', 'force', 'debug',
-    'action=s',                'dba=s', 'dba-password=s', 'datafile=s',
-    'datadir=s'
+    'action=s',
+    'force', 'debug',
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
+    'datafile=s', 'datadir=s'
 );
 
 unless ( $args{'action'} ) {
@@ -100,32 +101,15 @@ $Handle->BuildDSN;
 my $dbh;
 
 if ( $args{'action'} eq 'init' ) {
-    $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_system_dbh();
     print "Now creating a database for RT.\n";
     if ( $db_type ne 'Oracle' || $args{'dba'} ne $db_user ) {
         create_db();
     } else {
-        print "...skipped as ".$args{'dba'} ." is not " . $db_user . " or we're working with Oracle.\n";
+        print "...skipped as ".$args{'dba'} ." is not " . $db_user ." or we're working with Oracle.\n";
     }
 
-    if ( $db_type eq "mysql" ) {
-        # Check which version we're running
-        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
-        print "*** Warning: RT is unsupported on MySQL versions before 4.0.x\n" if $version < 4;
-
-        # MySQL must have InnoDB support
-        my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
-        if ( $innodb eq "NO" ) {
-            die "RT requires that MySQL be compiled with InnoDB table support.\n".
-              "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
-        } elsif ( $innodb eq "DISABLED" ) {
-            die "RT requires that MySQL InnoDB table support be enabled.\n".
-              ($version < 4
-               ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
-               : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
-        }
-    }
+    check_db_compatibility();
 
     # SQLite can't deal with the disconnect/reconnect
     unless ( $db_type eq 'SQLite' ) {
@@ -133,10 +117,9 @@ if ( $args{'action'} eq 'init' ) {
         $dbh->disconnect;
 
         if ( $db_type eq "Oracle" ) {
-            $dbh = DBI->connect( $Handle->DSN, $db_user, $db_pass ) || die $DBI::errstr;
-        }
-        else {
-            $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
+            $dbh = get_rt_dbh();
+        } else {
+            $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
         }
     }
     print "Now populating database schema.\n";
@@ -149,26 +132,21 @@ if ( $args{'action'} eq 'init' ) {
     insert_data( $RT::EtcPath . "/initialdata" );
 }
 elsif ( $args{'action'} eq 'drop' ) {
-    unless ( $dbh =
-        DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} ) )
-    {
-        warn $DBI::errstr;
-        warn "Database doesn't appear to exist. Aborting database drop.";
-        exit;
-    }
+    $dbh = get_system_dbh();
     drop_db();
 }
 elsif ( $args{'action'} eq 'insert' ) {
+    $dbh = get_rt_dbh();
+    check_db_compatibility();
     insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
 }
 elsif ( $args{'action'} eq 'acl' ) {
-    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
     insert_acl($args{'datadir'});
 }
 elsif ( $args{'action'} eq 'schema' ) {
-    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
+    check_db_compatibility();
     insert_schema($args{'datadir'});
 }
 else {
@@ -176,55 +154,29 @@ else {
     exit(-1);
 }
 
-# {{{ sub insert_schema
-sub insert_schema {
-    my $base_path = (shift || $RT::EtcPath);
-    my (@schema);
-    print "Creating database schema.\n";
-
-    if ( -f $base_path . "/schema." . $db_type ) {
-        no warnings 'unopened';
-
-        open( SCHEMA, "<" . $base_path . "/schema." . $db_type );
-
-        my $has_local = 0;
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $db_type ) and $has_local = 1;
-
-        my $statement = "";
-        foreach my $line (<SCHEMA>, ($_ = ';;'), ($has_local? <SCHEMA_LOCAL>: ()) ) {
-            $line =~ s/\#.*//g;
-            $line =~ s/--.*//g;
-            $statement .= $line;
-            if ( $line =~ /;(\s*)$/ ) {
-                $statement =~ s/;(\s*)$//g;
-                push @schema, $statement;
-                $statement = "";
-            }
+sub create_db {
+    print "Creating $db_type database $db_name.\n";
+    if ( $db_type eq 'SQLite' ) {
+        return;
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'");
+        if ( $DBI::errstr ) {
+            $dbh->do("CREATE DATABASE $db_name") || die $DBI::errstr;
         }
-
-        local $SIG{__WARN__} = sub {};
-        my $is_local = 0; # local/etc/schema needs to be nonfatal.
-        $dbh->begin_work or die $dbh->errstr;
-        foreach my $statement (@schema) {
-            if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
-
-            print STDERR "SQL: $statement\n" if defined $args{'debug'};
-            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-            unless ( $sth->execute or $is_local ) {
-                die "Problem with statement:\n $statement\n" . $sth->errstr;
-            }
-        }
-        $dbh->commit or die $dbh->errstr;
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        insert_acl();
+    }
+    elsif ( $db_type eq 'Informix' ) {
+        $ENV{'DB_LOCALE'} = 'en_us.utf8';
+        $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
     }
     else {
-        die "Couldn't find schema file for " . $db_type . "\n";
+        $dbh->do("CREATE DATABASE $db_name") or die $DBI::errstr;
     }
-    print "Done setting up database schema.\n";
 }
 
-# }}}
-
-# {{{ sub drop_db
 sub drop_db {
     if ( $db_type eq 'Oracle' ) {
         print <<END;
@@ -256,89 +208,17 @@ END
     $dbh->do("DROP DATABASE ". $db_name) or warn $DBI::errstr;
 }
 
-# }}}
 
-# {{{ sub create_db
-sub create_db {
-    print "Creating $db_type database $db_name.\n";
-    if ( $db_type eq 'SQLite' ) {
-        return;
-    }
-    elsif ( $db_type eq 'Pg' ) {
-        $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'");
-        if ( $DBI::errstr ) {
-            $dbh->do("CREATE DATABASE $db_name") || die $DBI::errstr;
-        }
-    }
-    elsif ( $db_type eq 'Oracle' ) {
-        insert_acl();
-    }
-    elsif ( $db_type eq 'Informix' ) {
-        $ENV{DB_LOCALE} = 'en_us.utf8';
-        $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
-    }
-    else {
-        $dbh->do("CREATE DATABASE $db_name") or die $DBI::errstr;
-    }
-}
 
-# }}}
-
-sub get_dba_password {
-    print "In order to create or update your RT database,";
-    print "this script needs to connect to your "
-      . $db_type
-      . " instance on "
-      . $db_host . " as "
-      . $args{'dba'} . ".\n";
-    print "Please specify that user's database password below. If the user has no database\n";
-    print "password, just press return.\n\n";
-    print "Password: ";
-    ReadMode('noecho');
-    my $password = ReadLine(0);
-    ReadMode('normal');
-    print "\n";
-    return ($password);
-}
-
-# {{{ sub _yesno
-sub _yesno {
-    print "Proceed [y/N]:";
-    my $x = scalar(<STDIN>);
-    $x =~ /^y/i;
-}
-
-# }}}
-
-# {{{ insert_acls
 sub insert_acl {
     my $base_path = (shift || $RT::EtcPath);
     my $db_type = $db_type;
 
-    if ( $db_type =~ /^oracle$/i ) {
-        do $base_path . "/acl.Oracle"
-          || die "Couldn't find ACLS for Oracle\n" . $@;
-    }
-    elsif ( $db_type =~ /^pg$/i ) {
-        do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
-    }
-    elsif ( $db_type =~ /^mysql$/i ) {
-        do $base_path . "/acl.mysql"
-          || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
-    }
-    elsif ( $db_type =~ /^Sybase$/i ) {
-        do $base_path . "/acl.Sybase"
-          || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
-    }
-    elsif ( $db_type =~ /^informix$/i ) {
-        do $base_path . "/acl.Informix"
-          || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
-    }
-    elsif ( $db_type =~ /^SQLite$/i ) {
+    if ( $db_type eq 'SQLite' ) {
         return;
-    }
-    else {
-        die "Unknown RT database type";
+    } else {
+        do $base_path ."/acl.". $db_type
+            || die "Couldn't find ACLs for ". $db_type .": " . $@;
     }
 
     my @acl = acl($dbh);
@@ -352,42 +232,62 @@ sub insert_acl {
     print "Done setting up database ACLs.\n";
 }
 
-# }}}
-
-=head2 get_system_dsn
-
-Returns a dsn suitable for database creates and drops
-and user creates and drops
-
-=cut
-
-sub get_system_dsn {
-
-    my $dsn = $Handle->DSN;
-
-    #with mysql, you want to connect sans database to funge things
-    if ( $db_type eq 'mysql' ) {
-        $dsn =~ s/dbname=\Q$db_name//;
+sub insert_schema {
+    my $base_path = (shift || $RT::EtcPath);
+    my $file = get_version_file( $base_path . "/schema." . $db_type );
+    unless ( $file ) {
+        die "Couldn't find schema file in '$base_path' dir";
     }
-    elsif ( $db_type eq 'Pg' ) {
-        # with postgres, you want to connect to database1
-        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
+    unless ( -f $file || -r $file ) {
+        die "File '$file' doesn't exist or couldn't be read";
     }
-    elsif ( $db_type eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:\Q$db_name/Informix:/;
+
+    my (@schema);
+    print "Creating database schema.\n";
+
+    open my $fh_schema, "<$file";
+
+    my $has_local = 0;
+    open my $fh_schema_local, "<" . get_version_file( $RT::LocalEtcPath . "/schema." . $db_type )
+        and $has_local = 1;
+
+    my $statement = "";
+    foreach my $line ( <$fh_schema>, ($_ = ';;'), $has_local? <$fh_schema_local>: () ) {
+        $line =~ s/\#.*//g;
+        $line =~ s/--.*//g;
+        $statement .= $line;
+        if ( $line =~ /;(\s*)$/ ) {
+            $statement =~ s/;(\s*)$//g;
+            push @schema, $statement;
+            $statement = "";
+        }
     }
-    return $dsn;
+    close $fh_schema; close $fh_schema_local;
+
+    local $SIG{__WARN__} = sub {};
+    my $is_local = 0; # local/etc/schema needs to be nonfatal.
+    $dbh->begin_work or die $dbh->errstr;
+    foreach my $statement (@schema) {
+        if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
+
+        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute or $is_local ) {
+            die "Problem with statement:\n$statement\n" . $sth->errstr;
+        }
+    }
+    $dbh->commit or die $dbh->errstr;
+
+    print "Done setting up database schema.\n";
 }
+
 
 sub insert_initial_data {
 
     RT::InitLogging();
 
     #connect to the db, for actual RT work
-    require RT::Handle;
-    $RT::Handle = RT::Handle->new();
-    $RT::Handle->Connect();
+    connect_rt_handle();
 
     #Put together a current user object so we can create a User object
     my $CurrentUser = new RT::CurrentUser();
@@ -406,14 +306,14 @@ sub insert_initial_data {
     }
 
     print "Creating system user...";
-    my $RT_System = new RT::User($CurrentUser);
+    my $RT_System = RT::User->new($CurrentUser);
 
     my ( $val, $msg ) = $RT_System->_BootstrapCreate(
         Name     => 'RT_System',
         RealName => 'The RT System itself',
-        Comments =>
-'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-        Creator => '1',
+        Comments => 'Do not delete or modify this user. '
+            . 'It is integral to RT\'s internal database structures',
+        Creator  => '1',
         LastUpdatedBy => '1',
     );
 
@@ -423,7 +323,6 @@ sub insert_initial_data {
     }
     print "done.\n";
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
-
 }
 
 # load some sort of data into the database
@@ -689,6 +588,193 @@ sub insert_data {
     }
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
     print "Done setting up database content.\n";
+}
+
+sub check_db_compatibility {
+    if ( $db_type eq "mysql" ) {
+        # Check which version we're running
+        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
+        if ( $version < 4 ) {
+            print STDERR "*** WARNING: RT is unsupported on MySQL versions before 4.0.x\n";
+        }
+
+        # MySQL must have InnoDB support
+        if ( $args{'action'} =~ /^(init|insert|schema)$/ ) {
+            print "Checking that mysql has spport for InnoDB.\n" if $args{'debug'};
+            my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
+            if ( $innodb eq "NO" ) {
+                print STDERR "RT requires that MySQL be compiled with InnoDB table support.\n".
+                  "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
+                exit -1;
+            } elsif ( $innodb eq "DISABLED" ) {
+                print STDERR "RT requires that MySQL InnoDB table support be enabled.\n".
+                  ($version < 4
+                   ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
+                   : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
+                exit -1;
+            }
+        }
+        if ( $args{'action'} =~ /^(insert|schema)$/ ) {
+            print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
+            unless ( $create_table =~ /ENGINE=InnoDB/ ) {
+                print STDERR 'RT requires that all its tables be of InnoDB type.\n'.
+                    "Upgrade RT tables.\n";
+                exit -1;
+            }
+        }
+        if ( $version >= 4.1 && $args{'action'} =~ /^(insert|schema)$/ ) {
+            print "MySQL >= 4.1, checking that user upgraded.\n" if $args{'debug'};
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+                print STDERR "*** WARNING: RT since version 3.6 has new schema for MySQL versions after 4.1.0\n"
+                    ."Follow instructions in the UPGRADING.mysql file.\n";
+                sleep 3;
+            }
+        }
+    }
+}
+
+sub get_dba_password {
+    print "In order to create or update your RT database,";
+    print "this script needs to connect to your "
+      . $db_type
+      . " instance on "
+      . $db_host . " as "
+      . $args{'dba'} . ".\n";
+    print "Please specify that user's database password below. If the user has no database\n";
+    print "password, just press return.\n\n";
+    print "Password: ";
+    ReadMode('noecho');
+    my $password = ReadLine(0);
+    ReadMode('normal');
+    print "\n";
+    return ($password);
+}
+
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
+}
+
+=head2 get_system_dsn
+
+Returns a dsn suitable for database creates and drops
+and user creates and drops.
+
+=cut
+
+sub get_system_dsn {
+
+    my $dsn = get_rt_dsn();
+
+    if ( $db_type eq 'mysql' ) {
+        # with mysql, you want to connect sans database to funge things
+        $dsn =~ s/dbname=\Q$db_name//;
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        # with postgres, you want to connect to template1 database
+        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
+    }
+    elsif ( $db_type eq 'Informix' ) {
+        # with Informix, you want to connect sans database:
+        $dsn =~ s/Informix:\Q$db_name/Informix:/;
+    }
+    return $dsn;
+}
+
+sub get_rt_dsn {
+    require RT::Handle;
+    $RT::Handle ||= RT::Handle->new;
+    $RT::Handle->BuildDSN;
+    return $RT::Handle->DSN;
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+        if ( $args{'debug'} ) {
+            require Carp; Carp::confess( $msg );
+        } else {
+            print STDERR $msg; exit -1;
+        }
+    }
+    return $dbh;
+}
+
+sub get_system_dbh {
+    return _get_dbh( get_system_dsn(), $args{'dba'}, $args{'dba-password'} );
+}
+
+sub get_rt_dbh {
+    my ($user, $pass) = @_;
+    unless ( @_ ) {
+        ($user, $pass) = ($db_user, $db_pass);
+    }
+    return _get_dbh( get_rt_dsn, $user, $pass );
+}
+
+=head2 connect_rt_handle
+
+Returns connected C<$RT::Handle>, connect with credentials from RT config.
+
+=cut
+
+sub connect_rt_handle {
+
+    require RT::Handle;
+
+    $RT::Handle ||= RT::Handle->new;
+    $RT::Handle->Connect;
+
+    return $RT::Handle;
+}
+
+=head1 get_version_file
+
+Takes base name of the file as argument, scans for <base name>-<version> named
+files and returns file name with closest version to the version of the RT DB.
+
+=cut
+
+sub get_version_file {
+    my $base_name = shift;
+
+    require File::Glob;
+    my @files = File::Glob::bsd_glob("$base_name*");
+    return '' unless @files;
+
+    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
+    my $db_version = connect_rt_handle()->DatabaseVersion;
+    print "Server version $db_version\n";
+    my $version;
+    foreach ( reverse sort cmp_version keys %version ) {
+        print "version $_\n"; print "comparision ".  cmp_version( $db_version, $_ ) ."\n";
+        if ( cmp_version( $db_version, $_ ) >= 0 ) {
+            $version = $_;
+            last;
+        }
+    }
+
+    return defined $version? $version{ $version } : undef;
+}
+
+sub cmp_version($$) {
+    my ($a, $b) = (@_);
+    my @a = split /[^0-9]+/, $a;
+    my @b = split /[^0-9]+/, $b;
+    for ( my $i = 0; $i < @a; $i++ ) {
+        return 1 unless defined $b[$i];
+        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
+    }
+    return 0 if @a == @b;
+    return -1;
 }
 
 =head2 ACLEquivGroupId
