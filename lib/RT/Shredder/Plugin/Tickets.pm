@@ -67,9 +67,10 @@ sub Run
         $objs->LimitQueue( VALUE => $self->{'opt'}{'queue'} );
     }
     if( $self->{'opt'}{'updated_before'} ) {
-        $objs->LimitLastUpdated( OPERATOR => '<',
-                        VALUE => $self->{'opt'}{'updated_before'},
-                      );
+        $objs->LimitLastUpdated(
+            OPERATOR => '<',
+            VALUE => $self->{'opt'}{'updated_before'},
+        );
     }
     if( $self->{'opt'}{'limit'} ) {
         $objs->RowsPerPage( $self->{'opt'}{'limit'} );
