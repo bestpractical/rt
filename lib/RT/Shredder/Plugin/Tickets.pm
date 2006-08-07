@@ -37,6 +37,7 @@ sub TestArgs
         $queue = RT::Queue->new( $RT::SystemUser );
         $queue->Load( $args{'queue'} );
         return( 0, "Couldn't load queue '$args{'queue'}'" ) unless $queue->id;
+        $args{'queue'} = $queue->id;
     }
     if( $args{'status'} ) {
         $queue ||= RT::Queue->new( $RT::SystemUser );
