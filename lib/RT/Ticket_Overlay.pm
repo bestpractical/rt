@@ -1346,9 +1346,9 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
+    if ( $self->CurrentUser->PrincipalId == ($args{'PrincipalId'} || 0)
        or    lc( $self->CurrentUser->UserObj->EmailAddress )
-          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) ))
+          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) || '' ) )
     {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -2129,7 +2129,7 @@ sub SetStarted {
 
     #We create a date object to catch date weirdness
     my $time_obj = new RT::Date( $self->CurrentUser() );
-    if ( $time != 0 ) {
+    if ( $time ) {
         $time_obj->Set( Format => 'ISO', Value => $time );
     }
     else {
@@ -2422,8 +2422,9 @@ sub _RecordNote {
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
-    unless ($args{'MIMEObj'}->head->get('Message-ID')
-            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@$RT::Organization>/) {
+    unless ( ($args{'MIMEObj'}->head->get('Message-ID') || '')
+            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$RT::Organization>/ )
+    {
         $args{'MIMEObj'}->head->set( 'RT-Message-ID',
             "<rt-"
             . $RT::VERSION . "-"
