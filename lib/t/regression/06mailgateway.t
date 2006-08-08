@@ -58,13 +58,14 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 use RT::I18N;
+use Digest::MD5 qw(md5_base64);
 
 no warnings 'once';
 my $url = join( ':', grep $_, "http://localhost", $RT::WebPort ) . $RT::WebPath ."/";
 
 # Make sure that when we call the mailgate wrong, it tempfails
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://this.test.for.non-connection.is.expected.to.generate.an.error"), "Opened the mailgate - The error below is expected - $@");
 print MAIL <<EOF;
 From: root\@localhost
@@ -81,7 +82,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate  --debug --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
@@ -110,7 +111,7 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # {{{This is a test of new ticket creation as an unknown user
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist\@$RT::rtname
@@ -132,7 +133,7 @@ ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
 $u->Load("doesnotexist\@$RT::rtname");
-ok( $u->Id == 0, " user does not exist and was not created by failed ticket submission");
+ok( !$u->Id, " user does not exist and was not created by failed ticket submission");
 
 
 # }}}
@@ -147,7 +148,7 @@ my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 ok ($val, "Granted everybody the right to create tickets - $msg");
 
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist\@$RT::rtname
@@ -181,7 +182,7 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist-2\@$RT::rtname
@@ -197,7 +198,7 @@ is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist-2@$RT::rtname');
-ok( $u->Id == 0, " user does not exist and was not created by ticket correspondence submission");
+ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
 # }}}
 
 
@@ -207,7 +208,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist-2\@$RT::rtname
@@ -234,7 +235,7 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist-3\@$RT::rtname
@@ -251,7 +252,7 @@ is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
 $u->Load("doesnotexist-3\@$RT::rtname");
-ok( $u->Id == 0, " user does not exist and was not created by ticket comment submission");
+ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
 
 # }}}
 # {{{  can another random reply to a ticket after being granted privs? answer should be yes
@@ -260,7 +261,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: doesnotexist-3\@$RT::rtname
@@ -302,7 +303,7 @@ $entity->attach(Path => $LOGO_FILE,
                 Encoding => 'base64');
 
 # Create a ticket with a binary attachment
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
 
 $entity->print(\*MAIL);
@@ -324,8 +325,7 @@ my $file = `cat $LOGO_FILE`;
 ok ($file, "Read in the logo image");
 
 
-        use Digest::MD5;
-warn "for the raw file the content is ".Digest::MD5::md5_base64($file);
+diag( "for the raw file the content is ". md5_base64($file) );
 
 
 
@@ -337,7 +337,7 @@ my $attachment = $attachments->First;
 ok($attachment->Id);
 my $acontent = $attachment->Content;
 
-        warn "coming from the  database, the content is ".Digest::MD5::md5_base64($acontent);
+diag( "coming from the database, the content is ". md5_base64($acontent) );
 
 is( $acontent, $file, 'The attachment isn\'t screwed up in the database.');
 # Log in as root
@@ -361,7 +361,7 @@ is($file, $r->content, 'The attachment isn\'t screwed up in download');
 
 # {{{ Simple I18N testing
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
                                                                          
 print MAIL <<EOF;
@@ -396,7 +396,7 @@ is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attac
 ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
                                                                          
 print MAIL <<EOF;
@@ -456,7 +456,7 @@ my ($id) = $tick->Create( Queue => 'ext-mailgate', Subject => 'test');
 ok( $id, 'new ticket created' );
 is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
@@ -481,7 +481,7 @@ is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 
 
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $RT::WebURL --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
@@ -505,7 +505,7 @@ $txns->OrderBy( FIELD => 'id', ORDER => 'DESC' );
 is( $tick->Transactions->Count, 6, 'no superfluous transactions');
 is( $txns->First->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve --debug"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
@@ -537,7 +537,7 @@ $tick = RT::Ticket->new($RT::SystemUser);
 ($id) = $tick->Create( Queue => $qid, Subject => 'test' );
 ok( $id, 'create new ticket' );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
@@ -555,7 +555,7 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
@@ -570,7 +570,7 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "one transactions added" );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
@@ -611,7 +611,7 @@ ok( $status, "successfuly granted right: $msg" );
 ($status, $msg) = $user->PrincipalObj->GrantRight( Object => $queue, Right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
-$! = '';
+$! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
