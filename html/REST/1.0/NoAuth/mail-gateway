@@ -60,13 +60,13 @@ my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
 if ( $status == 1 ) {
   $m->out('ok');
   if ( $Ticket->Id ) {
-    $m->out( 'Ticket: ' . $Ticket->Id );
-    $m->out( 'Queue: ' . $Ticket->QueueObj->Name );
-    $m->out( 'Owner: ' . $Ticket->OwnerObj->Name );
-    $m->out( 'Status: ' . $Ticket->Status );
-    $m->out( 'Subject: ' . $Ticket->Subject );
+    $m->out( 'Ticket: '  . ($Ticket->Id             || '') );
+    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
+    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
+    $m->out( 'Status: '  . ($Ticket->Status         || '') );
+    $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
     $m->out(
-      'Requestor: ' . $Ticket->Requestors->MemberEmailAddressesAsString );
+      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') );
   }
 }
 else {
