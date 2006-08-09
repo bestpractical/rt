@@ -52,7 +52,7 @@ rt-mailgate - Mail interface to RT3.
 =cut
 
 use strict;
-use Test::More tests => 104;
+use Test::More tests => 109;
 
 use RT;
 RT::LoadConfig();
@@ -108,6 +108,32 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # }}}
 
+# {{{ Test new ticket creation without --action argument
+
+$! = 0;
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --debug --url $url --queue general"), "Opened the mailgate - $!");
+print MAIL <<EOF;
+From: root\@localhost
+To: rt\@$RT::rtname
+Subject: using mailgate without --action arg
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
+
+$tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+$tick = $tickets->First;
+isa_ok ($tick,'RT::Ticket');
+ok ($tick->Id, "found ticket ".$tick->Id);
+is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
+
+# }}}
 
 # {{{This is a test of new ticket creation as an unknown user
 
