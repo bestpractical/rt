@@ -953,7 +953,8 @@ Returns a list of valid actions we've found for this message
 
 sub IsCorrectAction {
     my $action = shift;
-    my @actions = split /-/, $action;
+    my @actions = grep $_, split /-/, $action;
+    return ( 0, '(no value)' ) unless @actions;
     foreach (@actions) {
         return ( 0, $_ ) unless /^(?:comment|correspond|take|resolve)$/;
     }
