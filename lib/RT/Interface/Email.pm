@@ -219,7 +219,7 @@ Returns the same array with any IsRTAddress()es weeded out.
 =cut
 
 sub CullRTAddresses {
-    return ( grep { IsRTAddress($_) } @_ );
+    return grep !IsRTAddress($_), @_;
 }
 
 # }}}
@@ -297,7 +297,6 @@ sub CreateUser {
     unless ($Val) {
 
         # Deal with the race condition of two account creations at once
-        #
         if ($Username) {
             $NewUser->LoadByName($Username);
         }
@@ -444,9 +443,8 @@ sub ParseAddressFromHeader {
 
     my @Addresses = Mail::Address->parse($Addr);
 
-    my $AddrObj = $Addresses[0];
-
-    unless ( ref($AddrObj) ) {
+    my ($AddrObj) = grep ref $_, @Addresses;
+    unless ( $AddrObj ) {
         return ( undef, undef );
     }
 
