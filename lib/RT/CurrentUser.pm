@@ -352,11 +352,14 @@ specification. but currently doesn't
 
 ok (my $cu = RT::CurrentUser->new('root'));
 ok (my $lh = $cu->LanguageHandle('en-us'));
-ok ($lh != undef);
+ok (defined $lh);
 ok ($lh->isa('Locale::Maketext'));
 is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
 ok ($lh = $cu->LanguageHandle('fr'));
-is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
+SKIP: {
+    skip "fr locale is not loaded", 1 unless grep $_ eq 'fr', @RT::LexiconLanguages;
+    is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
+}
 
 =end testing
 
