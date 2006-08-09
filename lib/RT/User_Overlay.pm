@@ -1096,18 +1096,11 @@ Returns true if the user has a valid password, otherwise returns false.
 
 sub HasPassword {
     my $self = shift;
-    if (   ( $self->__Value('Password') eq '' )
-        || ( $self->__Value('Password') eq undef ) )
-    {
-
-        return (undef);
-    }
-    if ( $self->__Value('Password') eq '*NO-PASSWORD*' ) {
-        return undef;
-    }
-
+    my $pwd = $self->__Value('Password');
+    return undef if !defined $pwd
+                    || $pwd eq ''
+                    || $pwd eq '*NO-PASSWORD*';
     return 1;
-
 }
 
 
