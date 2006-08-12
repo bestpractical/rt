@@ -195,24 +195,40 @@ sub process_plugins
 			print STDERR "Error: $msg\n";
 			exit(1);
 		}
-		
-		my @objs = ();
-		($status, @objs) = $plugin->Run;
-		unless( $status ) {
-			print STDERR "Couldn't run plugin\n";
-			print STDERR "Error: $objs[1]\n";
-			exit(1);
-		}
-
-		($status, $msg) = $plugin->SetResolvers( Shredder => $shredder );
-		unless( $status ) {
-			print STDERR "Couldn't set conflicts resolver\n";
-			print STDERR "Error: $msg\n";
-			exit(1);
-		}
-		push @res, @objs;
+        if ( lc $plugin->Type eq 'search' ) {
+            push @res, _process_search_plugin( $shredder, $plugin );
+        }
+        elsif ( lc $plugin->Type eq 'dump' ) {
+            _process_dump_plugin( $shredder, $plugin );
+        }
 	}
 	return RT::Shredder->CastObjectsToRecords( Objects => \@res );
+}
+
+sub _process_search_plugin {
+    my ($shredder, $plugin) = @_;
+    my ($status, @objs) = $plugin->Run;
+    unless( $status ) {
+        print STDERR "Couldn't run plugin\n";
+        print STDERR "Error: $objs[1]\n";
+        exit(1);
+    }
+
+    my $msg;
+    ($status, $msg) = $plugin->SetResolvers( Shredder => $shredder );
+    unless( $status ) {
+        print STDERR "Couldn't set conflicts resolver\n";
+        print STDERR "Error: $msg\n";
+        exit(1);
+    }
+    return @objs;
+}
+
+sub _process_dump_plugin {
+    my ($shredder, $plugin) = @_;
+    $shredder->AddDumpPlugin(
+        Object => $plugin,
+    );
 }
 
 sub show_plugin_list
