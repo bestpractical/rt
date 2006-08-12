@@ -418,16 +418,21 @@ sub WipeoutAll
 
 sub Wipeout
 {
-    die "Couldn't begin transaction" unless $RT::Handle->BeginTransaction;
-
-    eval { (shift)->_Wipeout( @_ ) };
+    my $self = shift;
+    my $mark;
+    eval {
+        die "Couldn't begin transaction" unless $RT::Handle->BeginTransaction;
+        $mark = $self->PushDumpMark or die "Couldn't get dump mark";
+        $self->_Wipeout( @_ );
+        $self->PopDumpMark( Mark => $mark );
+        die "Couldn't commit transaction" unless $RT::Handle->Commit;
+    };
     if( $@ ) {
         $RT::Handle->Rollback('force');
+        $self->RollbackDumpTo( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";
     }
-
-    die "Couldn't commit transaction" unless $RT::Handle->Commit;
 }
 
 sub _Wipeout
@@ -440,8 +445,10 @@ sub _Wipeout
     return if $record->{'State'} & (WIPED | IN_WIPING);
 
     $record->{'State'} |= IN_WIPING;
-
     my $object = $record->{'Object'};
+
+    $self->DumpObject( Object => $object, State => 'before any action' );
+
     unless( $object->BeforeWipeout ) {
         RT::Shredder::Exception->throw( "BeforeWipeout check returned error" );
     }
@@ -451,21 +458,25 @@ sub _Wipeout
         WithFlags => DEPENDS_ON | VARIABLE,
         Callback  => sub { $self->ApplyResolvers( Dependency => $_[0] ) },
     );
+    $self->DumpObject( Object => $object, State => 'after resolvers' );
+
     $deps->List(
         WithFlags    => DEPENDS_ON,
         WithoutFlags => WIPE_AFTER | VARIABLE,
         Callback     => sub { $self->_Wipeout( Object => $_[0]->TargetObject ) },
     );
+    $self->DumpObject( Object => $object, State => 'after wiping dependencies' );
 
-    $self->DumpObject( Object => $object );
     $object->__Wipeout;
     $record->{'State'} |= WIPED; delete $record->{'Object'};
+    $self->DumpObject( Object => $object, State => 'after wipeout' );
 
     $deps->List(
         WithFlags => DEPENDS_ON | WIPE_AFTER,
         WithoutFlags => VARIABLE,
         Callback => sub { $self->_Wipeout( Object => $_[0]->TargetObject ) },
     );
+    $self->DumpObject( Object => $object, State => 'after late dependencies' );
 
     return;
 }
@@ -593,6 +604,7 @@ sub StoragePath
     return File::Spec->catdir( $RT::VarPath, qw(data RTx-Shredder) );
 }
 
+my %active_dump_state = ();
 sub AddDumpPlugin {
     my $self = shift;
     my %args = ( Object => undef, Name => 'SQLDump', Arguments => undef, @_ );
@@ -611,6 +623,10 @@ sub AddDumpPlugin {
         die "Couldn't set plugin args: $msg\n" unless $status;
     }
 
+    my @applies_to = $plugin->AppliesToStates;
+    die "Plugin doesn't apply to any state" unless @applies_to;
+    $active_dump_state{ lc $_ } = 1 foreach @applies_to;
+
     push @{ $self->{'opt'}{'dump_plugins'} ||= [] }, $plugin;
 
     return $plugin;
@@ -618,11 +634,41 @@ sub AddDumpPlugin {
 
 sub DumpObject {
     my $self = shift;
+    my %args = (Object => undef, State => undef, @_);
+    die "No state passed" unless $args{'State'};
+    return unless $active_dump_state{ lc $args{'State'} };
+
     foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
-        my ($state, $msg) = $_->Run( @_ );
+        next unless grep lc $args{'State'} eq lc $_, $_->AppliesToStates;
+        my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }
-    return;
+}
+
+{ my $mark = 1; # XXX: integer overflows?
+sub PushDumpMark {
+    my $self = shift;
+    $mark++;
+    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+        my ($state, $msg) = $_->PushMark( Mark => $mark );
+        die "Couldn't push mark: $msg" unless $state;
+    }
+    return $mark;
+}
+sub PopDumpMark {
+    my $self = shift;
+    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+        my ($state, $msg) = $_->PushMark( @_ );
+        die "Couldn't pop mark: $msg" unless $state;
+    }
+}
+sub RollbackDumpTo {
+    my $self = shift;
+    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+        my ($state, $msg) = $_->RollbackTo( @_ );
+        die "Couldn't rollback to mark: $msg" unless $state;
+    }
+}
 }
 
 1;

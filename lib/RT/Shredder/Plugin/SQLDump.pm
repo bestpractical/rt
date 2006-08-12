@@ -5,6 +5,8 @@ use warnings;
 
 use base qw(RT::Shredder::Plugin::Base::Dump);
 
+sub AppliesToStates { return 'after wiping dependencies' }
+
 sub SupportArgs
 {
     my $self = shift;
