@@ -2,7 +2,7 @@ package RT::Shredder::Plugin::Users;
 
 use strict;
 use warnings FATAL => 'all';
-use base qw(RT::Shredder::Plugin::Base);
+use base qw(RT::Shredder::Plugin::Base::Search);
 
 =head1 NAME
 

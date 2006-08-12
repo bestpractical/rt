@@ -101,8 +101,8 @@ sub LoadByName
 
     local $@;
     my $plugin = "RT::Shredder::Plugin::$name";
-    eval "require $plugin";
-    return( 0, $@ ) if $@;
+    eval "require $plugin" or return( 0, $@ );
+    return( 0, "Plugin '$plugin' has no method new") unless $plugin->can('new');
 
     my $obj = eval { $plugin->new( @_ ) };
     return( 0, $@ ) if $@;

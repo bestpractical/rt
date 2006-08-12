@@ -7,18 +7,23 @@ use Test::More;
 use Test::Deep;
 BEGIN { require "lib/t/regression/shredder/utils.pl"; }
 
-plan tests => 9;
+plan tests => 10;
 
-my @ARGS = qw(limit status name email replace_relations);
+my @ARGS = sort qw(limit status name email replace_relations no_tickets);
 
 use_ok('RT::Shredder::Plugin::Users');
 {
     my $plugin = new RT::Shredder::Plugin::Users;
     isa_ok($plugin, 'RT::Shredder::Plugin::Users');
-    my @args = $plugin->SupportArgs;
+
+    is(lc $plugin->Type, 'search', 'correct type');
+
+    my @args = sort $plugin->SupportArgs;
     cmp_deeply(\@args, \@ARGS, "support all args");
+
     my ($status, $msg) = $plugin->TestArgs( name => 'r??t*' );
     ok($status, "arg name = 'r??t*'") or diag("error: $msg");
+
     ($status, $msg) = $plugin->TestArgs( name => '!@#' );
     ok(!$status, "bad arg name = '!@#'");
     for (qw(any disabled enabled)) {
