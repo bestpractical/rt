@@ -60,7 +60,7 @@
 <%loc($Ticket->Status)%>
 </td><td>
 <%$Ticket->OwnerObj->Name%>
-</tr>
+</td></tr>
 % }
 </table>
 </&>
