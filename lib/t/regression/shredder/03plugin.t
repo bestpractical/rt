@@ -7,7 +7,7 @@ use Test::More;
 use Test::Deep;
 BEGIN { require "lib/t/regression/shredder/utils.pl"; }
 
-my @PLUGINS = qw(Attachments Base Objects Tickets Users);
+my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
 plan tests => 7 + 3 * @PLUGINS;
 
 use_ok('RT::Shredder::Plugin');

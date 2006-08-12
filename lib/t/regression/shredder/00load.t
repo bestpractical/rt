@@ -1,4 +1,4 @@
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 BEGIN { require "lib/t/regression/shredder/utils.pl" }
 
@@ -17,4 +17,5 @@ use_ok("RT::Shredder::Plugin::Users");
 # dump plugins
 use_ok("RT::Shredder::Plugin::Base::Dump");
 use_ok("RT::Shredder::Plugin::SQLDump");
+use_ok("RT::Shredder::Plugin::Summary");
 
