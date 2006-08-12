@@ -595,16 +595,21 @@ sub StoragePath
 
 sub AddDumpPlugin {
     my $self = shift;
-    my %args = ( Name => 'SQLDump', Arguments => {}, @_ );
+    my %args = ( Object => undef, Name => 'SQLDump', Arguments => undef, @_ );
 
-    my $plugin = RT::Shredder::Plugin->new;
-    my( $status, $msg ) = $plugin->LoadByName( $args{'Name'} );
-    die "Couldn't load dump plugin: $msg\n" unless $status;
-    die "Plugin '$args{'Name'}' is not of correct type"
-        unless $plugin->Type eq 'dump';
+    my $plugin = $args{'Object'};
+    unless ( $plugin ) {
+        require RT::Shredder::Plugin;
+        $plugin = RT::Shredder::Plugin->new;
+        my( $status, $msg ) = $plugin->LoadByName( $args{'Name'} );
+        die "Couldn't load dump plugin: $msg\n" unless $status;
+    }
+    die "Plugin is not of correct type" unless lc $plugin->Type eq 'dump';
 
-    ($status, $msg) = $plugin->TestArgs( %{ $args{'Arguments'} } );
-    die "Couldn't set plugin args: $msg\n" unless $status;
+    if ( my $pargs = $args{'Arguments'} ) {
+        my ($status, $msg) = $plugin->TestArgs( %$pargs );
+        die "Couldn't set plugin args: $msg\n" unless $status;
+    }
 
     push @{ $self->{'opt'}{'dump_plugins'} ||= [] }, $plugin;
 
