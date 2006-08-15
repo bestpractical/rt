@@ -89,6 +89,11 @@ if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
     }   
 }
 
+my %data;
+foreach my $key (@keys) { $data{$key} = shift @values; }
+my @sorted_keys = sort @keys;
+my @sorted_values = map { $data{$_}} @sorted_keys;
+
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
@@ -105,9 +110,9 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </th>
 </tr>
 % my ($i,$total);
-% while (my $key = shift @keys) {
+% while (my $key = shift @sorted_keys) {
 % $i++;
-% my $value = shift @values;
+% my $value = shift @sorted_values;
 % $total += $value;
 <tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
 <td class="label collection-as-table">
