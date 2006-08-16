@@ -44,35 +44,41 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% my $Values = $Object->CustomFieldValues($CustomField->Id);
+% while ( my $CustomField = $CustomFields->Next ) {
+% my $Values = $Object->CustomFieldValues( $CustomField->Id );
+% my $count = $Values->Count;
   <tr>
-    <td class="label"><%$CustomField->Name%>:</td>
+    <td class="label"><% $CustomField->Name %>:</td>
     <td class="value">
+% unless ( $count ) {
+<i><&|/l&>(no value)</&></i>
+% } elsif ( $count == 1 ) {
+%   $print_value->( $CustomField, $Values->First );
+% } else {
 <ul>
-% while (my $Value = $Values->Next()) {
-<li>
-% my $comp = "ShowCustomField".$CustomField->Type;
-% if ($m->comp_exists($comp)) {
-<& $comp, Object => $Value &>
-%   } else {
-<%$Value->Content%>
-%   }
-</li>
-% }
-% unless ($Values->Count()) {
-<li><i><&|/l&>(no value)</&></i></li>
+% while ( my $Value = $Values->Next ) {
+<li><% $print_value->( $CustomField, $Value ) |n %></li>
 % }
 </ul>
+% }
     </td>
   </tr>
 % }
 </table>
 <%INIT>
 my $CustomFields = $Object->CustomFields;
- $m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
+$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
                                 CustomFields => $CustomFields);
+
+my $print_value = sub {
+    my ($cf, $value) = @_;
+    my $comp = "ShowCustomField". $cf->Type;
+    if ( $m->comp_exists( $comp ) ) {
+        $m->comp( $comp, Object => $value );
+    } else {
+        $m->print( $value->Content );
+    }
+};
 
 </%INIT>
 <%ARGS>
