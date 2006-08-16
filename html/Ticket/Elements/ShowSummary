@@ -70,6 +70,9 @@
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
+
+    <& /Elements/Callback, %ARGS, _CallbackName => 'LeftColumn' &>
+
 	</TD>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
 
@@ -91,6 +94,7 @@
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
+    <& /Elements/Callback, %ARGS, _CallbackName => 'RightColumn' &>
 
 	</TD>
       </TR>
