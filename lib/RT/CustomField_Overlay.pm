@@ -366,7 +366,8 @@ sub AddValue {
         return (0, $self->loc('Permission Denied'));
     }
 
-    unless ($args{'Name'}) {
+    # allow zero value
+    if ( !defined $args{'Name'} || $args{'Name'} eq '' ) {
         return(0, $self->loc("Can't add a custom field value without a name"));
     }
 	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
