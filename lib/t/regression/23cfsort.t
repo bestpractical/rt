@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More qw/no_plan/;
+use Test::More tests => 15;
 use RT;
 RT::LoadConfig();
 RT::Init();
