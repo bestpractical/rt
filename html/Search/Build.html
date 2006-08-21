@@ -381,9 +381,13 @@ my $ParseQuery = sub {
             $val =~ s!\\(.)!$1!g;
 
             my $class;
-            if ( exists $lcfields{ lc $key } ) {
-                $key   = $lcfields{ lc $key };
-                $class = $FIELDS{$key}->[0];
+
+            my ($key_base, $subkey)  = split(/\./,$key,2);
+            $key_base =~ s/\..*$//; # Strip off .EmailAddress, for example
+
+            if ( exists $lcfields{lc $key_base } ) {
+                $key   = $lcfields{lc $key_base } . (defined $subkey ? '.'.$subkey : '');
+                $class = $FIELDS{$key_base}->[0];
             }
             elsif ( $key =~ /^C(?:ustom)?F(?:ield)?\.{(.*)}$/i ) {
                 $class = $FIELDS{'CF'}->[0];
