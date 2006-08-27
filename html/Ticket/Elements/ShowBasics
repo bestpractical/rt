@@ -45,36 +45,36 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="label"><&|/l&>Id</&>:</td>
-    <td class="value"><%$Ticket->Id %></td>
+    <td class="label id"><&|/l&>Id</&>:</td>
+    <td class="value id"><%$Ticket->Id %></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value"><&|/l&><% $Ticket->Status%></&></td>
+    <td class="label status"><&|/l&>Status</&>:</td>
+    <td class="value status"><&|/l&><% $Ticket->Status%></&></td>
   </tr>
 % if ($Ticket->TimeEstimated) {
   <tr>
-    <td class="label"><&|/l&>Estimated</&>:</td>
-    <td class="value"><&|/l, $Ticket->TimeEstimated &>[_1] min</&></td>
+    <td class="label time estimated"><&|/l&>Estimated</&>:</td>
+    <td class="value time estimated"><&|/l, $Ticket->TimeEstimated &>[_1] min</&></td>
   </tr>
 % }
 % if ($Ticket->TimeWorked) {
   <tr>
-    <td class="label"><&|/l&>Worked</&>:</td>
-    <td class="value"><&|/l, $Ticket->TimeWorked &>[_1] min</&></td>
+    <td class="label time worked"><&|/l&>Worked</&>:</td>
+    <td class="value time worked"><&|/l, $Ticket->TimeWorked &>[_1] min</&></td>
   </tr>
 % }
   <tr>
-    <td class="label"><&|/l&>Left</&>:</td>
-    <td class="value"><&|/l, $Ticket->TimeLeft &>[_1] min</&></td>
+    <td class="label time left"><&|/l&>Left</&>:</td>
+    <td class="value time left"><&|/l, $Ticket->TimeLeft &>[_1] min</&></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><%$Ticket->Priority%>/<%$Ticket->FinalPriority %></td>
+    <td class="label priority"><&|/l&>Priority</&>:</td>
+    <td class="value priority"><%$Ticket->Priority%>/<%$Ticket->FinalPriority %></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Queue</&>:</td>
-    <td class="value"><%$Ticket->QueueObj->Name%></td>
+    <td class="label queue"><&|/l&>Queue</&>:</td>
+    <td class="value queue"><%$Ticket->QueueObj->Name%></td>
   </tr>
 <& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $Ticket, %ARGS &>
 </table>

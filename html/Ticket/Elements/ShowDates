@@ -45,36 +45,36 @@
 %# END BPS TAGGED BLOCK }}}
 <TABLE>
   <TR>
-    <TD class="label"><&|/l&>Created</&>:</TD>
-    <TD class="value"><% $Ticket->CreatedObj->AsString %></TD>
+    <TD class="label date created"><&|/l&>Created</&>:</TD>
+    <TD class="value date created"><% $Ticket->CreatedObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Starts</&>:</TD>
-    <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
+    <TD class="label date starts"><&|/l&>Starts</&>:</TD>
+    <TD class="value date starts"><% $Ticket->StartsObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Started</&>:</TD>
-    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
+    <TD class="label date started"><&|/l&>Started</&>:</TD>
+    <TD class="value date started"><% $Ticket->StartedObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</TD>
-    <TD class="value"><% $Ticket->ToldObj->AsString %></TD>
+    <TD class="label date told"><a href="<% $RT::WebPath %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</TD>
+    <TD class="value date told"><% $Ticket->ToldObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Due</&>:</TD>
-    <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
+    <TD class="label date due"><&|/l&>Due</&>:</TD>
+    <TD class="value date due"><% $Ticket->DueObj->AsString  %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Closed</&>:</TD>
-    <TD class="value"><% $Ticket->ResolvedObj->AsString  %></TD>
+    <TD class="label date resolved"><&|/l&>Closed</&>:</TD>
+    <TD class="value date resolved"><% $Ticket->ResolvedObj->AsString  %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Updated</&>:</TD>
-% my $UpdatedString = $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never");
+    <TD class="label date updated"><&|/l&>Updated</&>:</TD>
+% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name) : loc("Never");
 % if ($UpdatedLink) {
-    <TD class="value"><A HREF="#lasttrans"><% $UpdatedString | h %></a></TD>
+    <TD class="value date updated"><A HREF="#lasttrans"><% $UpdatedString | h %></a></TD>
 % } else {
-    <TD class="value"><% $UpdatedString | h %></TD>
+    <TD class="value date updated"><% $UpdatedString | h %></TD>
 % }
   </TR>
 </TABLE>
