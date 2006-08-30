@@ -69,10 +69,12 @@
 		color => "#333399" &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	<BR/>
+
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+
+      <& /Elements/Callback, %ARGS, _CallbackName => 'LeftColumn' &>
 
 	</TD>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
@@ -100,6 +102,7 @@
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
         <br />
+    <& /Elements/Callback, %ARGS, _CallbackName => 'RightColumn' &>
 
 	</TD>
       </TR>

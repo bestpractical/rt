@@ -497,7 +497,7 @@ sub _Create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
-        $self->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
+        $RT::Logger->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
         return ( 0, $self->loc('Could not create group') );
     }
 

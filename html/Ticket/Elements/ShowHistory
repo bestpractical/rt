@@ -136,8 +136,16 @@ if ($Tickets) {
 } else {
     $Transactions = $Ticket->Transactions;
 }
-my $i;
 
+
+my $OldestFirst = $RT::OldestTransactionsFirst? 'ASC': 'DESC';
+$Transactions->OrderByCols( { FIELD => 'Created',
+                              ORDER => $OldestFirst },
+                            { FIELD => 'id',
+                              ORDER => $OldestFirst },
+                          );
+
+my $i;
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
