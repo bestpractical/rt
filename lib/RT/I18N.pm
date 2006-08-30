@@ -294,7 +294,7 @@ sub DecodeMIMEWordsToEncoding {
 
     # add everything that hasn't matched to the end of the latest
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    @_[-1] .= substr($str, pos $str);
+    $_[-1] .= substr($str, pos $str);
 
     $str = "";
     while (@_) {
