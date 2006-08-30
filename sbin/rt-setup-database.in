@@ -47,7 +47,7 @@
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
-  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips);
+  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes);
 
 use lib "@RT_LIB_PATH@";
 
@@ -617,6 +617,23 @@ sub insert_data {
         for $item (@Scrips) {
             my $new_entry = new RT::Scrip($CurrentUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
+            if ($return) {
+                print $return. ".";
+            }
+            else {
+                print "(Error: $msg)\n";
+            }
+        }
+        print "done.\n";
+    }
+    if (@Attributes) {
+        print "Creating predefined searches...";
+	my $sys = RT::System->new($CurrentUser);
+
+        for $item (@Attributes) {
+	    my $obj = delete $item->{Object}; # XXX: make this something loadable
+	    $obj ||= $sys;
+	    my ( $return, $msg ) = $obj->AddAttribute (%$item);
             if ($return) {
                 print $return. ".";
             }

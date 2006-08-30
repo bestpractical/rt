@@ -58,16 +58,29 @@
       <td class="value"><%$SelectQueue|n%></td>
     </TR>
   <TR>
+      <td class="label"><&|/l&>Owner</&>:</td>
+      <td class="value">
+<& /Elements/SelectOwner, Name => 'Owner', QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $TicketObj->OwnerObj->Id, DefaultValue => 0&></td>
+    </TR>
+
+  <TR>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
-      <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5"></td>
+      <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5">
+    <& /Elements/SelectTimeUnits, Name =>'TimeEstimated-TimeUnits' &>
+</td>
     </TR>
   <TR>
       <td class="label"><&|/l&>Time Worked</&>:</td>
-      <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5"></td>
+      <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5">
+    <& /Elements/SelectTimeUnits, Name =>'TimeWorked-TimeUnits' &>
+</td>
+
     </TR>
   <TR>
       <td class="label"><&|/l&>Time Left</&>:</td>
-      <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5"></td>
+      <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5">
+    <& /Elements/SelectTimeUnits, Name =>'TimeLeft-TimeUnits' &>
+    </td>
     </TR>
 
   <TR>
@@ -79,6 +92,8 @@
       <td class="label"><&|/l&>Final Priority</&>:</td>
       <td class="value"><input name=FinalPriority value="<%$TicketObj->FinalPriority|h%>" SIZE="5"></td>
     </TR>
+
+
 <& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS &>
 </TABLE>
 

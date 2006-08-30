@@ -183,8 +183,23 @@
 <TABLE BORDER=0>
 <TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Estimated</&>:</TD>
+<TD>
+<input size=3 name="TimeEstimated" value="<%$ARGS{TimeEstimated}%>">
+<& /Elements/SelectTimeUnits, Name =>'TimeEstimated-TimeUnits' &>
+
+</TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
+<TD>
+<input size=3 name="TimeWorked" value="<%$ARGS{TimeWorked}%>">
+<& /Elements/SelectTimeUnits, Name =>'TimeWorked-TimeUnits' &>
+
+</TD></TR>
+<TR>
+<TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
+<TD><input size=3 name="TimeLeft" value="<%$ARGS{TimeLeft}%>">
+<& /Elements/SelectTimeUnits, Name =>'TimeLeft-TimeUnits' &>
+</TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <br>
@@ -287,7 +302,6 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
-    return();
 }
 </%INIT>
 

@@ -65,10 +65,7 @@
 </nobr>
 
 % }
-
-% if ($Dirty or $SearchId eq 'new') {
 <input type="submit" name="Save" value="<%loc('Save')%>">
-% }
 <hr>
 % }
 <&|/l&>Load saved search:</&><br>
@@ -92,7 +89,10 @@ $groups->LimitToUserDefinedGroups;
 $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
                     Recursively => 1);
 
-                    push (@Objects, @{$groups->ItemsArrayRef()});
+push (@Objects, @{$groups->ItemsArrayRef()});
+push @Objects, RT::System->new($session{'CurrentUser'})
+    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+					  Right => 'SuperUser');
 </%INIT>
 
 <%ARGS>

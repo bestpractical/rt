@@ -374,10 +374,13 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 font-weight: bold;
 	 color: #0066CC }
-.value {       font-weight: bold; }
+.value {       font-weight: normal; vertical-align: top; }
 .entry {       font-weight: normal; }
-.label {       font-weight: normal;
-	       text-align: right; }
+.label {       font-weight: bold; 
+	       text-align: right;
+               vertical-align: top; }
+.value input, .value select { vertical-align: top; }
+.value ul { margin-top: 0; margin-bottom: 0; }
 .labeltop {       font-weight: normal;
 	       text-align: right;
 	       vertical-align: top }
@@ -534,20 +537,6 @@ SPAN.titleboxtitle a:after {
 	content: "...";
 }
 
-SPAN.titleboxright {
-        font-size: 0.8em;
-        color: #ffffff;
-	 vertical-align: middle;
-	 text-align: right;
-        }
-
-SPAN.attribution {
-  font-weight: bold;
-}
-
-SPAN.label { font-size: 0.8em; 
-}
-
 DIV.page-stats { font-size: 0.8em;
                   color: #cccccc;
                   text-align: right;
@@ -603,6 +592,18 @@ TD.collection-as-table {  text-align: left;
                           padding-left: .5em;
                           padding-right: .5em;
                         }
+
+
+SPAN.titleboxright  {
+        font-size: 0.5em;
+        color: #000000;
+         vertical-align: top;
+         text-align: right;
+        }
+
+SPAN.titleboxright a {
+        color: #ffffff;
+        }
 
 textarea.signature {
     width: 100%;

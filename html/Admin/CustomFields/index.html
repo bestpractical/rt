@@ -48,6 +48,7 @@
     current_tab => 'Admin/CustomFields/', 
     Title => loc('Select a Custom Field') &>
 
+% my @types;
 % my $prev_lookup = '';
 % while (my $CustomFieldObj = $CustomFields->Next) { 
 %    $CustomFieldObj->CurrentUserHasRight('AdminCustomField') or next;
@@ -59,6 +60,7 @@
 <H2><% loc("Custom Fields for [_1]", $lookup) %></H2>
 <UL>
 %        $prev_lookup = $lookup;
+%        push @types, [$lookup, $CustomFieldObj->LookupType];
 %    }
 %    
 <LI>
@@ -69,8 +71,21 @@
 </UL>
 % }
 
+<form action="<%$RT::WebPath%>/Admin/CustomFields/index.html" method="GET">
+<&|/l&>Only show custom fields for:</&>
+<select name="type">
+% for (@types) {
+<option value="<% $_->[1] %>"><% $_->[0] %></option>
+% }
+</select> <input type="submit" value="<%loc('Go')%>" />
+</form>
+
+<%args>
+$type => undef
+</%args>
 <%INIT>
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit();
+$CustomFields->LimitToLookupType($type) if defined $type;
 $CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
 </%INIT>

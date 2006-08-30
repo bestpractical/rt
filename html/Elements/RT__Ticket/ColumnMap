@@ -194,12 +194,15 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
+        attribute => 'Requestor.EmailAddress',
         value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
     },
     Cc => {
+        attribute => 'Cc.EmailAddress',
         value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
     },
     AdminCc => {
+        attribute => 'AdminCc.EmailAddress',
         value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
     },
     StartsRelative => {
@@ -291,6 +294,12 @@ $COLUMN_MAP = {
 
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
+    },
+    '_CHECKBOX' => {
+        attribute => 'checkbox',
+        title => loc('Update'),
+        align     => 'right',
+        value     => sub { return \('<input type=checkbox name="UpdateTicket'.$_[0]->id.'" value="1" CHECKED>') }
     },
 
 };

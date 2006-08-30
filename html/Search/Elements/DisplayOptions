@@ -79,6 +79,7 @@ SELECTED
 </select>
 </td>
 </tr>
+<tr>
 <td class=label>
 <&|/l&>Rows per page</&>:
 </td><td class="value">
@@ -98,6 +99,7 @@ my $tickets = new RT::Tickets($session{'CurrentUser'});
 my %fields = %{$tickets->FIELDS};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};
+$fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
 
 
 </%INIT>
@@ -107,4 +109,5 @@ $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
 $Format => undef
+$GroupBy => 'id'
 </%ARGS>

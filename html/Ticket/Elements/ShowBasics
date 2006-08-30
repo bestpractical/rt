@@ -55,18 +55,18 @@
 % if ($Ticket->TimeEstimated) {
   <tr>
     <td class="label time estimated"><&|/l&>Estimated</&>:</td>
-    <td class="value time estimated"><&|/l, $Ticket->TimeEstimated &>[_1] min</&></td>
+    <td class="value time estimated"><& ShowTime, minutes => $Ticket->TimeEstimated &></td>
   </tr>
 % }
 % if ($Ticket->TimeWorked) {
   <tr>
     <td class="label time worked"><&|/l&>Worked</&>:</td>
-    <td class="value time worked"><&|/l, $Ticket->TimeWorked &>[_1] min</&></td>
+    <td class="value time worked"><& ShowTime, minutes => $Ticket->TimeWorked &></td>
   </tr>
 % }
   <tr>
     <td class="label time left"><&|/l&>Left</&>:</td>
-    <td class="value time left"><&|/l, $Ticket->TimeLeft &>[_1] min</&></td>
+    <td class="value time left"><& ShowTime, minutes => $Ticket->TimeLeft &></td>
   </tr>
   <tr>
     <td class="label priority"><&|/l&>Priority</&>:</td>

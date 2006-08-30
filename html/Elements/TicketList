@@ -108,8 +108,17 @@ my $next = $m->comp(
 my $maxitems = 0;
 
 $Format ||= $RT::DefaultSearchResultFormat;
+
+# DisplayFormat lets us use a "temporary" format for display, while 
+# still using our original format for next/prev page links.
+# bulk update uses this feature to add checkboxes
+
+
+$DisplayFormat ||= $Format;
+
 # Scrub the html of the format string to remove any potential nasties.
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
+$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
 
 
 unless ($Collection) {
@@ -117,7 +126,7 @@ unless ($Collection) {
         $Collection->FromSQL($Query);
 }
 
-my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Format);
+my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
 # Find the maximum number of items in any row, so we can pad the table.
 my $item = 0;
@@ -149,6 +158,7 @@ $Order => undef
 $OrderBy => undef
 $BaseURL => undef
 $Format => $RT::DefaultSearchResultFormat
+$DisplayFormat => undef
 $ShowNavigation => 1
 $ShowHeader => 1
 </%ARGS>

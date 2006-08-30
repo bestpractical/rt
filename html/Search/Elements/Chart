@@ -1,0 +1,81 @@
+<%args>
+$Query => "id > 0"
+$PrimaryGroupBy => 'Queue'
+$SecondaryGroupBy => undef
+$ChartStyle => 'bars'
+</%args>
+<%init>
+my @keys;
+my @values;
+
+use RT::Report::Tickets;
+
+my $tix   = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
+$tix->GroupBy($PrimaryGroupBy);
+$tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->Column( FIELD => $PrimaryGroupBy );
+$tix->FromSQL($Query);
+$tix->_DoSearch();
+while ( my $entry = $tix->Next ) {
+    my $class;
+    if ( $PrimaryGroupBy eq 'Queue' ) {
+         $class = "RT::Queue";
+        }
+        elsif ( $PrimaryGroupBy eq 'Owner' ) {
+             $class = "RT::User";
+        }
+        if ($class) {
+            my $q = $class->new( $session{'CurrentUser'} );
+            $q->Load( $entry->__Value($PrimaryGroupBy) );
+                 push @keys, $q->Name();
+        }
+        else {
+                push @keys, $entry->__Value($PrimaryGroupBy);
+        }
+        push @values, $entry->id;
+    }
+
+
+my $query_string = $m->comp('/Elements/QueryString', %ARGS);
+</%init>
+
+<img src="<%$RT::WebPath%>/Search/Chart?<%$query_string|n%>">
+<br/>
+<%$Query%>
+
+<br/>
+<table class="collection-as-table">
+<tr>
+<th class="collection-as-table"><%loc($PrimaryGroupBy)%>
+</th>
+<th class="collection-as-table"><&|/l&>Tickets</&>
+</th>
+</tr>
+% my ($i,$total);
+% while (my $key = shift @keys) {
+% $i++;
+% my $value = shift @values;
+% $total += $value;
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
+<td class="label collection-as-table">
+<%$key%>
+</td>
+<td class="value collection-as-table">
+<%$value%>
+</td>
+</tr>
+% }
+
+%$i++;
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
+<td class="label collection-as-table">
+<%loc('Total')%>
+</td>
+<td class="value collection-as-table">
+<%$total%>
+</td>
+</tr>
+
+</table>
+

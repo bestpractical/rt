@@ -52,36 +52,39 @@ my @rows;
 my %known_cfs;
 
 my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
-                Requestors->MemberEmailAddressesAsString DueObj->ISO ToldObj->ISO
-                CreatedObj->ISO ResolvedObj->ISO );
+                Requestors->MemberEmailAddressesAsString Cc->MemberEmailAddressesAsString AdminCc->MemberEmailAddressesAsString
+                DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO );
 
-    $r->content_type('application/vnd.ms-excel');
-    while ( my $Ticket = $Tickets->Next()) {
-       my $row;
- 	foreach my $attr (@attrs) {
-                my $method = '$Ticket->'.$attr.'()';
-	    $row->{$attr} = eval $method;
+$r->content_type('application/vnd.ms-excel');
+while ( my $Ticket = $Tickets->Next()) {
+    my $row;
+    foreach my $attr (@attrs) {
+        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
+            $row->{$attr} = "";
+        } else {
+            my $method = '$Ticket->'.$attr.'()';
+            $row->{$attr} = eval $method;
             if ($@) {die "Failed to find $attr - ". $@}; 
-	}
-
-        my $cfs = $Ticket->QueueObj->TicketCustomFields();
-        while (my $cf = $cfs->Next) {
-                my @content;
-               my $values = $Ticket->CustomFieldValues($cf->Id);
-               while (my $value = $values->Next) {
-                       push @content, $value->Content;
-               }
-                $row->{'CustomField-'.$cf->Id} = join(', ',@content);
-                if ($row->{'CustomField-'.$cf->Id}) {
-                        $known_cfs{$cf->Id} = $cf->Name;
-                }
         }
-        push @rows, $row;
-
-
     }
+
+    my $cfs = $Ticket->QueueObj->TicketCustomFields();
+    while (my $cf = $cfs->Next) {
+        my @content;
+        my $values = $Ticket->CustomFieldValues($cf->Id);
+        while (my $value = $values->Next) {
+            push @content, $value->Content;
+        }
+        $row->{'CustomField-'.$cf->Id} = join(', ',@content);
+        if ($row->{'CustomField-'.$cf->Id}) {
+            $known_cfs{$cf->Id} = $cf->Name;
+        }
+    }
+    push @rows, $row;
+}
+
 { 
-my @header;
+    my @header;
     foreach my $attr (@attrs) {
         my $label = $attr;
         $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
@@ -89,27 +92,25 @@ my @header;
 	push @header, $label;
     }
     foreach my $id (sort keys %known_cfs) {
-        push @header, $known_cfs{$id}; 
+        push @header, "CF-".$known_cfs{$id}; 
     }
-
-$m->out(join("\t", @header));
-$m->out("\n");
+    $m->out(join("\t", @header));
+    $m->out("\n");
 }
+
 foreach my $row (@rows) {
-        my @row;
-        foreach my $attr(@attrs) {
-                push @row, $row->{"$attr"};
-        }
-        foreach my $id (sort keys %known_cfs) {
-	        my $val = $row->{'CustomField-'.$id};
-                $val =~ s/(\n|\r)//g;
-                push @row, $val;
-        }
-        
-        $m->out(join("\t",@row));
-        $m->out("\n");
+    my @row;
+    foreach my $attr(@attrs) {
+        push @row, $row->{"$attr"};
+    }
+    foreach my $id (sort keys %known_cfs) {
+        my $val = $row->{'CustomField-'.$id};
+        $val =~ s/(\n|\r)//g;
+        push @row, $val;
+    }
+    $m->out(join("\t",@row));
+    $m->out("\n");
 }
-
 
 $m->abort();
 </%INIT>

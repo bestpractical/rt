@@ -116,7 +116,7 @@ sub Load {
 	    return (0, $self->loc("Search attribute load failure"));
 	}
     } else {
-	$RT::Logger->error("Could not load object $privacy when loading search");
+	$RT::Logger->warning("Could not load object $privacy when loading search");
 	return (0, $self->loc("Could not load object for [_1]", $privacy));
     }
 

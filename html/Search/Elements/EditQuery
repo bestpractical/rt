@@ -44,20 +44,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
-<& /Elements/TitleBoxStart, title => join(': ', grep defined, loc("Query"), $Description) &>
+<&|/Elements/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
 <select size="10" name="clauses" style="width: 100%" multiple>
 % $m->out($optionlist);
 </select>
-<p align="center">
-<input type=submit name="Up" value="^">
-<input type=submit name="Down" value="v">
-<input type=submit name="Left" value="<">
-<input type=submit name="Right" value=">">
-<input type=submit name="Toggle" value="<&|/l&>And/Or</&>">
-<input type=submit name="DeleteClause" value="<&|/l&>Delete</&>">
-%#<input type=submit name="EditQuery" value="Advanced">
-</p>
-<& /Elements/TitleBoxEnd &>
+<br />
+<input type=submit name="Up" value="^" /><input type=submit name="Down" value="v" /><input type=submit name="Left" value="<" /><input type=submit name="Right" value=">" /><input type=submit name="Toggle" value="<&|/l&>And/Or</&>" /><input type=submit name="DeleteClause" value="<&|/l&>Delete</&>" />
+<br><br>
+</&>
 <%ARGS>
 $Description
 $optionlist

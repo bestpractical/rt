@@ -287,6 +287,11 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 @LogToSyslogConf = () unless (@LogToSyslogConf);
 
+# RT has rudimentary SQL statement logging support if you have
+# DBIx-SearchBuilder 1.31_1 or higher; simply set $StatementLog to be
+# the level that you wish SQL statements to be logged at.
+Set($StatementLog, undef);
+
 # }}}
 
 # {{{ Web interface configuration
@@ -300,10 +305,15 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 Set($WebPath , "");
 
+# If we're running as a superuser, run on port 80
+# Otherwise, pick a high port for this user.
+
+Set($WebPort , 80);# + ($< * 7274) % 32766 + ($< && 1024));
+
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-Set($WebBaseURL , "http://localhost");
+Set($WebBaseURL , "http://localhost:$WebPort");
 
 Set($WebURL , $WebBaseURL . $WebPath . "/");
 
@@ -328,6 +338,12 @@ Set($MessageBoxWidth , 72);
 
 # Default wrapping: "HARD"  (choices "SOFT", "HARD")
 Set($MessageBoxWrap, "HARD");
+
+# Support implicit links in WikiText custom fields?  A true value
+# causes InterCapped or ALLCAPS words in WikiText fields to
+# automatically become links to searches for those words.  If used on
+# RTFM articles, it links to the RTFM article with that name.
+Set($WikiImplicitLinks, 0);
 
 # if TrustHTMLAttachments is not defined, we will display them
 # as text. This prevents malicious HTML and javascript from being
@@ -396,17 +412,15 @@ Set($MaxInlineBody, 13456);
 
 Set($OldestTransactionsFirst, '1');
 
-# $MyTicketsLength is the length of the owned tickets table on the
-# front page. For some people, the default of 10 isn't big enough
-# to get a feel for how much work needs to be done before you get
-# some time off.
+# $DefaultSummaryRows is default number of rows displayed in for search
+# results on the frontpage.
 
-Set($MyTicketsLength, 10);
+Set($DefaultSummaryRows, 10);
 
-# $MyRequestsLength is the length of the requested tickets table
-# on the front page.
 
-Set($MyRequestsLength, 10);
+# $HomepageComponents is an arrayref of allowed components customized homepage.
+
+Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage)]);
 
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful

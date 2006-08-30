@@ -59,6 +59,12 @@
 	       h => { title => loc('Delegation'),
 			   path => 'User/Delegation.html',
 			 },
+	       f => { title => loc('Search options'),
+			   path => 'Prefs/SearchOptions.html',
+			 },
+	       r => { title => loc('RT at a glance'),
+			   path => 'Prefs/MyRT.html',
+			 },
 	     };
 
   # Now let callbacks add their extra tabs

@@ -82,7 +82,7 @@
 <tr valign="top">
 <td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => $queues &>
-<& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
+<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
 </td>
 
 <td>
@@ -91,6 +91,7 @@
     actions => \@actions,
     optionlist => $optionlist,
     Description => $Description &>
+<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 
@@ -105,11 +106,7 @@
 
 <& Elements/DisplayOptions, %ARGS, Format=> $Format,
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
-</td>
-</tr>
-<tr>
-<td colspan=2 class="boxcontainer">
-<& /Elements/Submit, Caption => loc("Do the Search"), Label => loc('Search'), Name => 'DoSearch'&>
+<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 </table>
@@ -152,17 +149,31 @@ if ( $NewQuery or $ARGS{'Delete'} ) {
 # We don't read or write to the session again until the end
 $search_hash = $session{'CurrentSearchHash'};
 
+# Read from user preferences
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $Query       ||= $search_hash->{'Query'};
-$Format      ||= $search_hash->{'Format'};
+$Format      ||= $search_hash->{'Format'} || $prefs->{'Format'};
 $Description ||= $search_hash->{'Description'};
 $SearchId    ||= $search_hash->{'SearchId'} || 'new';
-$Order       ||= $search_hash->{'Order'} || 'ASC';
-$OrderBy     ||= $search_hash->{'OrderBy'} || 'id';
-$RowsPerPage = ( $search_hash->{'RowsPerPage'} || 50 )
-  unless defined($RowsPerPage);
-$search ||= $search_hash->{'Object'};
+$Order       ||= $search_hash->{'Order'} || $prefs->{'Order'} || 'ASC';
+$OrderBy     ||= $search_hash->{'OrderBy'} || $prefs->{'OrderBy'} || 'id';
+
+unless ( defined $RowsPerPage ) {
+    if ( defined $search_hash->{'RowsPerPage'} ) {
+        $RowsPerPage = $search_hash->{'RowsPerPage'};
+    }
+    elsif ( defined $prefs->{'RowsPerPage'} ) {
+        $RowsPerPage = $prefs->{'RowsPerPage'};
+    }
+    else {
+        $RowsPerPage = 50;
+    }
+}
+
+  $search ||= $search_hash->{'Object'};
 
 # }}}
 
@@ -175,31 +186,14 @@ $Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
 if ( $ARGS{'Delete'} ) {
 
     # We set $SearchId to 'new' above already, so peek into the %ARGS
-    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        my $obj_type  = $1;
-        my $obj_id    = $2;
-        my $search_id = $3;
-
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
-        {
-            $container_object = $session{'CurrentUser'}->UserObj;
-        }
-        elsif ( $obj_type eq 'RT::Group' ) {
-            $container_object = RT::Group->new( $session{'CurrentUser'} );
-            $container_object->Load($obj_id);
-        }
-
-        if ( $container_object->id ) {
-
-            # We have the object the entry is an attribute on; delete
-            # the entry..
-            $container_object->Attributes->DeleteEntry(
-                Name => 'SavedSearch',
-                id   => $search_id
+    my ($container_object, $search_id) = _parse_saved_search ($ARGS{'SearchId'});
+    if ($container_object && $container_object->id) {
+	# We have the object the entry is an attribute on; delete the
+	# entry..
+	$container_object->Attributes->DeleteEntry(
+            Name => 'SavedSearch',
+	    id   => $search_id
             );
-        }
-
     }
 }
 
@@ -223,25 +217,8 @@ if ( $ARGS{'Revert'} ) {
 
 # {{{ if we're asked to load a search, load it.
 
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    # We explicitly list out the available types (user and group) and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-
-    }
-    elsif ( $obj_type eq 'RT::Group' ) {
-        my $group = RT::Group->new( $session{'CurrentUser'} );
-        $group->Load($obj_id);
-        $search = $group->Attributes->WithId($search_id);
-    }
+if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSavedSearch'})) {
+    $search = $container_object->Attributes->WithId($search_id);
 
     # We have a $search and now; import the others
     $SearchId    = $ARGS{'LoadSavedSearch'};
@@ -453,6 +430,7 @@ $ParseQuery->( $Query, \$tree, \@actions );
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
     $m->comp( "Edit.html", Query => $Query, actions => \@actions );
+    $m->comp('/Elements/Footer');
     $m->abort();
 }
 
@@ -583,7 +561,7 @@ elsif ( $ARGS{"Toggle"} ) {
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
     if (
-        $arg =~ m/^ValueOf(.+)/
+            $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
         && ( ref $ARGS{$arg} eq "ARRAY"
             ? grep { $_ ne "" } @{ $ARGS{$arg} }
             : $ARGS{$arg} ne "" )
@@ -697,8 +675,13 @@ my ( $AvailableColumns, $CurrentFormat );
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
-
     if ( $search && $search->id ) {
+	# permission check
+	if ($search->Object->isa('RT::System')) {
+	    unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+		Abort("No permission to save system-wide searches");
+	    }
+	}
 
         # This search is based on a previously loaded search -- so
         # just update the current search object with new values
@@ -713,27 +696,25 @@ if ( $ARGS{'Save'} ) {
 
     }
     elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-
         # We're saving a new search
         my $obj_type = $1;
         my $obj_id   = $2;
 
         # Find out if we're saving on the user, or a group
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
-        {
-            $container_object = $session{'CurrentUser'}->UserObj;
-        }
-        elsif ( $obj_type eq 'RT::Group' ) {
-            $container_object = RT::Group->new( $session{'CurrentUser'} );
-            $container_object->Load($obj_id);
-        }
+        my $container_object = _load_container_object ($obj_type, $obj_id);
 
         if ( $container_object->id ) {
+	    # permission check
+	    if ($container_object->isa('RT::System')) {
+		unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+		    Abort("No permission to save system-wide searches");
+		}
+	    }
 
+	    my $name = $obj_type eq 'RT::System' ? "Search - $Description" : 'SavedSearch';
             # If we got one or the other, add the saerch
             my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-                Name        => 'SavedSearch',
+                Name        => $name,
                 Description => $Description,
                 Content     => {
                     Format      => $Format,
@@ -743,20 +724,21 @@ if ( $ARGS{'Save'} ) {
                     RowsPerPage => $RowsPerPage,
                 }
             );
-            $search =
-              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+	    if ( $search_id ) {
+		$search =
+		    $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+		# Build new SearchId
+		$SearchId =
+		    ref( $session{'CurrentUser'}->UserObj ) . '-'
+			. $session{'CurrentUser'}->UserObj->Id
+			. '-SavedSearch-'
+			. $search->Id;
+	    }
+	    else {
+		push @actions, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
+	    }
 
-            # Build new SearchId
-            $SearchId =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-              . $session{'CurrentUser'}->UserObj->Id
-              . '-SavedSearch-'
-              . $search->Id;
-        }
-        unless ( $search->id ) {
-            push @actions, [ loc("Can't find a saved search to work with"), 0 ];
-        }
-
+	}
     }
     else {
         push @actions, [ loc("Can't save this search"), 0 ];
@@ -793,7 +775,7 @@ $session{'CurrentSearchHash'} = $search_hash;
 # }}}
 
 # {{{ Show the results, if we were asked.
-if ( $ARGS{"DoSearch"} ) {
+if ( $ARGS{"DoSearch"}) {
     $m->comp(
         "Results.html",
         Query   => $Query,
@@ -802,6 +784,7 @@ if ( $ARGS{"DoSearch"} ) {
         OrderBy => $OrderBy,
         Rows    => $RowsPerPage
     );
+    $m->comp('/Elements/Footer');
     $m->abort();
 }
 

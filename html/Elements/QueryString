@@ -49,7 +49,12 @@ while ( my ($key, $value) = each %ARGS ){
     if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
 	push @params, map $key."=".$m->interp->apply_escapes($_,'u'), @$value;
     } else {
-	push @params, $key."=".$m->interp->apply_escapes($value,'u');
+  if (ref $value eq "ARRAY") {
+    push @params, $key."=".$m->interp->apply_escapes($_, 'u')
+      for @{$value};
+  } else {
+    push @params, $key."=".$m->interp->apply_escapes($value,'u');
+  }
     }
 }
 return(join('&',@params));

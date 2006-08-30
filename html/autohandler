@@ -49,6 +49,11 @@
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
 
+if ($RT::StatementLog) {
+    $RT::Handle->ClearSQLStatementLog;
+    $RT::Handle->LogSQLStatements(1);
+}
+
 local *session unless $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 # Disable AutoFlush using an attribute
@@ -67,6 +72,24 @@ if ($m->request_comp->attr_exists('AutoFlush')) {
 	($type eq 'HASH')
 	? { map { (ref($_) or Encode::is_utf8($_)) ? $_ : Encode::decode(utf8 => $_, Encode::FB_PERLQQ) } %$_ } : $_
     } %ARGS;
+
+
+# This code canonicalizes time inputs in hours into minutes
+my @TimeUnitFields = grep { /-TimeUnits$/ } keys %ARGS;
+foreach my $field (@TimeUnitFields) { 
+    next unless ($field =~ /^(.*?)-TimeUnits$/i);
+    my $local = $1;
+    $ARGS{$local} =~ s|\b (\d* \s+) (\d+)/(\d+) \b
+                      |$1 + ($3 == 0 ? 0 : ($2 / $3))
+                      |xe;
+    if ($ARGS{$field} =~ /hours/i) {
+        $ARGS{$local} *= 60;
+    }
+    delete $ARGS{$field};
+}
+
+
+
 
 $m->{'rt_base_time'} = [Time::HiRes::gettimeofday()];
         
@@ -221,6 +244,25 @@ else {
     $m->comp('/Elements/Login', %ARGS);
     $m->abort();
 }
+
+if ($RT::StatementLog) {
+    my @log = $RT::Handle->SQLStatementLog;
+    $RT::Handle->ClearSQLStatementLog;
+    for my $stmt (@log) {
+        my ($time, $sql, $bind, $duration) = @{$stmt};
+        my @bind;
+        if (ref $bind) {
+            @bind = @{$bind};
+        } else {
+            # Older DBIx-SB
+            $duration = $bind;
+        }
+        $RT::Logger->log( level => $RT::StatementLog,
+                          message => "SQL(".sprintf("%.2f",$duration)."s): $sql;" . (@bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "")
+                        );
+    }
+}
+
 </%INIT>
 <& /Elements/Footer, %ARGS &>
 <%ARGS>

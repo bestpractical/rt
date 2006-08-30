@@ -43,28 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|/Elements/TitleBox, 
-        title => loc("[_1] newest unowned tickets", $rows),
-	title_href => "Search/Results.html".$QueryString &>
-<& /Elements/TicketList, 
-        Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"$RT::WebPath/Ticket/Display.html?Action=Take&id=__id__\">".loc('Take')."</a>/TITLE:&nbsp;' ",
-        Query => $Query,
-        OrderBy => 'Created',
-        Order => 'DESC',
-        ShowNavigation => 0,
-        Rows => $rows
 
-        &>
-</&>
-<%init>
-my $rows = $RT::MyRequestsLength;
-
-my $Query = "Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')";
-
-my $QueryString = "";
-$QueryString = '?' . $m->comp('/Elements/QueryString', 
-                              Query => $Query,
-                              Order => 'DESC',
-                              OrderBy => 'Priority') if ($Query);
-
-</%init>
+%# DEPRECATED
+<& /Elements/ShowSearch, Name => 'My Requests' &>

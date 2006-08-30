@@ -121,20 +121,6 @@
 </tr>
 <tr>
 <td class="label">
-<& SelectPersonType, Name => 'WatcherGroupField', Default => 'RequestorGroup', Suffix => 'Group' &>
-</td><td>
-<& /Elements/SelectBoolean, Name => "WatcherGroupOp", 
-					  True=> loc('belongs to'), 
-					  False=> loc('does not belong to'), 
-					  TrueVal=> '=', 
-					  FalseVal => '!='
-&>
-</td><td>
-<& SelectGroup, Name => 'ValueOfWatcherGroup' &>
-</td> 
-</tr>
-<tr>
-<td class="label">
 <& /Elements/SelectDateType, Name=>"DateField" &>
 </td><td>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
@@ -152,6 +138,7 @@
 <& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
 </td><td>
 <INPUT Name="ValueOfTime" SIZE=5>
+<& /Elements/SelectTimeUnits, Name =>'ValueOfTime-TimeUnits' &>
 </td>
 </tr>
 <tr>

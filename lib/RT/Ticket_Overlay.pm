@@ -1321,7 +1321,8 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
+       or $self->CurrentUser->UserObj->EmailAddress eq $args{'Email'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {

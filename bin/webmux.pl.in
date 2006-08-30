@@ -105,7 +105,6 @@ sub handler {
     local $SIG{__WARN__};
     local $SIG{__DIE__};
 
-    # We don't need to handle non-text, non-xml items
     if ($r->content_type =~ m/^httpd\b.*\bdirectory/i) {
         use File::Spec::Unix;
         # Our DirectoryIndex is always index.html, regardless of httpd settings
