@@ -419,7 +419,8 @@ sub _LinkLimit {
     }
     else {
         my $linkalias = $sb->NewAlias('Links');
-        $sb->_OpenParen();
+        $sb->_OpenParen;
+
         $sb->_SQLLimit(
             @rest,
             ALIAS    => $linkalias,
@@ -427,22 +428,59 @@ sub _LinkLimit {
             OPERATOR => '=',
             VALUE    => $meta->[2],
         ) if $meta->[2];
-        $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            FIELD           => 'Local' . $linkfield,
-            OPERATOR        => '=',
-            VALUE           => 'main.id',
-            QUOTEVALUE      => 0,
-            ENTRYAGGREGATOR => 'AND',
-        );
-        $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            FIELD           => $matchfield,
-            OPERATOR        => $op,
-            VALUE           => $value,
-            ENTRYAGGREGATOR => 'AND',
-        );
-        $sb->_CloseParen();
+
+        $sb->_OpenParen;
+        if ( $direction ) {
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'Local' . $linkfield,
+                OPERATOR        => '=',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield,
+                OPERATOR        => '=',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        } else {
+            $sb->_OpenParen;
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'LocalBase',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield .'Target',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_CloseParen;
+
+            $sb->_OpenParen;
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'LocalTarget',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'OR',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield .'Base',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_CloseParen;
+        }
+        $sb->_CloseParen;
+        $sb->_CloseParen;
     }
 }
 
