@@ -136,7 +136,7 @@ our %FIELD_METADATA = (
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
     Watcher          => [ 'WATCHERFIELD', ],
-    LinkedTo         => [ 'LINKFIELD', ],
+
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -158,7 +158,6 @@ our %dispatch = (
     TRANSDATE       => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
-    LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
 our %can_bundle = ();# WATCHERFIELD => "yes", );
@@ -1080,83 +1079,6 @@ sub _WatcherMembershipLimit {
     $self->_CloseParen;
 
 }
-
-sub _LinkFieldLimit {
-    my $restriction;
-    my $self;
-    my $LinkAlias;
-    my %args;
-    if ( $restriction->{'TYPE'} ) {
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'Type',
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'TYPE'}
-        );
-    }
-
-    #If we're trying to limit it to things that are target of
-    if ( $restriction->{'TARGET'} ) {
-
-        # If the TARGET is an integer that means that we want to look at
-        # the LocalTarget field. otherwise, we want to look at the
-        # "Target" field
-        my ($matchfield);
-        if ( $restriction->{'TARGET'} =~ /^(\d+)$/ ) {
-            $matchfield = "LocalTarget";
-        }
-        else {
-            $matchfield = "Target";
-        }
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'TARGET'}
-        );
-
-        #If we're searching on target, join the base to ticket.id
-        $self->_SQLJoin(
-            ALIAS1 => 'main',
-            FIELD1 => $self->{'primary_key'},
-            ALIAS2 => $LinkAlias,
-            FIELD2 => 'LocalBase'
-        );
-    }
-
-    #If we're trying to limit it to things that are base of
-    elsif ( $restriction->{'BASE'} ) {
-
-        # If we're trying to match a numeric link, we want to look at
-        # LocalBase, otherwise we want to look at "Base"
-        my ($matchfield);
-        if ( $restriction->{'BASE'} =~ /^(\d+)$/ ) {
-            $matchfield = "LocalBase";
-        }
-        else {
-            $matchfield = "Base";
-        }
-
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'BASE'}
-        );
-
-        #If we're searching on base, join the target to ticket.id
-        $self->_SQLJoin(
-            ALIAS1 => 'main',
-            FIELD1 => $self->{'primary_key'},
-            ALIAS2 => $LinkAlias,
-            FIELD2 => 'LocalTarget'
-        );
-    }
-}
-
 
 =head2 _CustomFieldDecipher
 
