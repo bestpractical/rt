@@ -329,27 +329,18 @@ sub _LinkLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     my $meta = $FIELD_METADATA{$field};
-    die "Incorrect Metadata for $field"
-        unless defined $meta->[1] && defined $meta->[2];
-
     die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS|IS NOT)$/io;
 
-    my $direction = $meta->[1];
-
-    my $matchfield;
-    my $linkfield;
+    my $direction = $meta->[1] || '';
+    my ($matchfield, $linkfield) = ('', '');
     if ( $direction eq 'To' ) {
-        $matchfield = "Target";
-        $linkfield  = "Base";
-
+        ($matchfield, $linkfield) = ("Target", "Base");
     }
     elsif ( $direction eq 'From' ) {
-        $linkfield  = "Target";
-        $matchfield = "Base";
-
+        ($matchfield, $linkfield) = ("Base", "Target");
     }
-    else {
-        die "Invalid link direction '$meta->[1]' for $field\n";
+    elsif ( $direction ) {
+        die "Invalid link direction '$direction' for $field\n";
     }
 
     my ($is_local, $is_null) = (1, 0);
@@ -357,7 +348,7 @@ sub _LinkLimit {
         $is_null = 1;
         $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
     }
-    elsif ( $value =~ /\D/o ) {
+    elsif ( $value =~ /\D/ ) {
         $is_local = 0;
     }
     $matchfield = "Local$matchfield" if $is_local;
@@ -374,7 +365,7 @@ sub _LinkLimit {
 #                                      AND(main.id = Links_1.LocalTarget))
 #        WHERE Links_1.LocalBase IS NULL;
 
-    if ($is_null) {
+    if ( $is_null ) {
         my $linkalias = $sb->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
@@ -387,7 +378,7 @@ sub _LinkLimit {
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
+        ) if $meta->[2];
         $sb->_SQLLimit(
             @rest,
             ALIAS      => $linkalias,
@@ -410,7 +401,7 @@ sub _LinkLimit {
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
+        ) if $meta->[2];
         $sb->SUPER::Limit(
             LEFTJOIN => $linkalias,
             FIELD    => $matchfield,
@@ -435,7 +426,7 @@ sub _LinkLimit {
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
+        ) if $meta->[2];
         $sb->_SQLLimit(
             ALIAS           => $linkalias,
             FIELD           => 'Local' . $linkfield,
