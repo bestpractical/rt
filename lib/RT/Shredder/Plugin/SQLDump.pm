@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use base qw(RT::Shredder::Plugin::Base::Dump);
+use RT::Shredder;
 
 sub AppliesToStates { return 'after wiping dependencies' }
 
@@ -23,7 +24,7 @@ sub TestArgs
         FromStorage => delete $args{'from_storage'},
     );
     open $args{'file_handle'}, ">:raw", $file
-        or die "Couldn't open '$file' for write: $!";
+        or return (0, "Couldn't open '$file' for write: $!");
 
     return $self->SUPER::TestArgs( %args );
 }

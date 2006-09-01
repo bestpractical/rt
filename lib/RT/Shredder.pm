@@ -142,6 +142,9 @@ our @SUPPORTED_OBJECTS = qw(
 =head3 Init( %options )
 
 Sets shredder defaults, loads RT config and init RT interface.
+Defaults could later be overriden by object constructor and
+if you allready loaded config and initalized RT then you may
+skip this function call.
 
 B<NOTE> that this is function and must be called with C<RT::Shredder::Init();>.
 

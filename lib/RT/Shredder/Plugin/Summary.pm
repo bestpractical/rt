@@ -43,6 +43,22 @@ sub WriteDownDefault {
 }
 
 # TODO: cover other objects
+# ACE.pm
+# Attachment.pm
+# CustomField.pm
+# CustomFieldValue.pm
+# GroupMember.pm
+# Group.pm
+# Link.pm
+# ObjectCustomFieldValue.pm
+# Principal.pm
+# Queue.pm
+# Ticket.pm
+# User.pm
+
+# ScripAction.pm - works fine with defaults
+# ScripCondition.pm - works fine with defaults
+# Template.pm - works fine with defaults
 
 sub WriteDownCachedGroupMember { return 1 }
 sub WriteDownPrincipal { return 1 }
@@ -68,6 +84,18 @@ sub WriteDownTransaction {
 
     delete $props->{$_} foreach grep
         !defined $props->{$_} || $props->{$_} eq '', keys %$props;
+
+    return $self->_WriteDownHash( $args{'Object'}, $props );
+}
+
+sub WriteDownScrip {
+    my $self = shift;
+    my %args = ( Object => undef, @_ );
+    my $props = $self->_MakeHash( $args{'Object'} );
+    $props->{'Action'} = $args{'Object'}->ActionObj->Name;
+    $props->{'Condition'} = $args{'Object'}->ConditionObj->Name;
+    $props->{'Template'} = $args{'Object'}->TemplateObj->Name;
+    $props->{'Queue'} = $args{'Object'}->QueueObj->Name || 'global';
 
     return $self->_WriteDownHash( $args{'Object'}, $props );
 }
