@@ -112,6 +112,10 @@ our %FIELD_METADATA = (
     Priority        => [ 'INT', ],
     TimeLeft        => [ 'INT', ],
     TimeWorked      => [ 'INT', ],
+
+    Linked          => [ 'LINK' ],
+    LinkedTo        => [ 'LINK' => 'To' ],
+    LinkedFrom      => [ 'LINK' => 'From' ],
     MemberOf        => [ 'LINK' => To => 'MemberOf', ],
     DependsOn       => [ 'LINK' => To => 'DependsOn', ],
     RefersTo        => [ 'LINK' => To => 'RefersTo', ],
