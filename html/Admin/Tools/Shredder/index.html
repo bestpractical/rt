@@ -79,11 +79,27 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
 
 if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
 	my $shredder = new RT::Shredder( force => 1 );
-	my ($fn, $fh) = $shredder->SetFile;
+    my $backup_plugin = new RT::Shredder::Plugin;
+    my ($status, $msg) = $backup_plugin->LoadByName('SQLDump');
+	unless( $status ) {
+		push @{ $messages{Errors} }, $msg;
+		$Search = ''; @objs = ();
+		last;
+	}
+    ($status, $msg) = $backup_plugin->TestArgs;
+	unless( $status ) {
+		push @{ $messages{Errors} }, $msg;
+		$Search = ''; @objs = ();
+		last;
+	}
+
+	my ($fn) = $backup_plugin->FileName;
     push @{ $messages{'Success'} }, "SQL dump file is '$fn'";
 
+    $shredder->AddDumpPlugin( Object => $backup_plugin );
+
 	$shredder->PutObjects( Objects => \@WipeoutObject );
-	my ($status, $msg) = $plugin_obj->SetResolvers( Shredder => $shredder );
+	($status, $msg) = $plugin_obj->SetResolvers( Shredder => $shredder );
 	unless( $status ) {
 		push @{ $messages{Errors} }, $msg;
 		$Search = ''; @objs = ();
