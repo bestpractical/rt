@@ -204,8 +204,8 @@
 		 color => "#663366" &>
 
 <table>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></td></tr>
+<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
 </table>
 </&>
 <br />
