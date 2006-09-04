@@ -36,7 +36,7 @@ sub TestArgs
     if( $args{'query'} ) {
         my $objs = RT::Tickets->new( $RT::SystemUser );
         $objs->{'allow_deleted_search'} = 1;
-        my ($status, $msg) = $queue->FromSQL( $args{'query'} );
+        my ($status, $msg) = $objs->FromSQL( $args{'query'} );
         return( 0, "Bad query argument, error: $msg" ) unless $status;
         $args{'query'} = $objs;
     }
