@@ -48,8 +48,7 @@
 <td valign="top" width="50%">
 <table>
 
-% my @entry_fields;
-% my $i;
+% my $i = 0;
 % my $cfcount = $CustomFields->Count;
 %  $cfcount++ if ($cfcount % 2) ; # if we have an odd number of 
 % #custom fields, fudge it so we know where to put in the table break
