@@ -474,10 +474,9 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     if ( $QueueObj->IsInactiveStatus( $args{'Status'} ) && !$args{'Resolved'} )
     {
-        $RT::Logger->debug( "Got a "
-              . $args{'Status'}
-              . "ticket with a resolved of "
-              . $args{'Resolved'} );
+        $RT::Logger->debug( "Got a ". $args{'Status'}
+            ." ticket with undefined resolved date. Setting to now."
+        );
         $Resolved->SetToNow;
     }
 
