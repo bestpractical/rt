@@ -21,6 +21,8 @@ Arguments which all plugins support.
 
 Allow you to limit search results. B<< Default value is C<10> >>.
 
+=head1 METHODS
+
 =cut
 
 sub SupportArgs
@@ -50,6 +52,43 @@ sub TestArgs
 }
 
 sub SetResolvers { return 1 }
+
+
+=head2 FetchNext $collection [, $init]
+
+Returns next object in collection as method L<RT::SearchBuilder/Next>, but
+doesn't stop on page boundaries.
+
+When method is called with true C<$init> arg it enables pages on collection
+and selects first page.
+
+Main purpose of this method is to avoid loading of whole collection into
+memory as RT does by default when pager is not used. This method init paging
+on the collection, but doesn't stop when reach page end.
+
+Example:
+
+    $plugin->FetchNext( $tickets, 'init' );
+    while( my $ticket = $plugin->FetchNext( $tickets ) ) {
+        ...
+    }
+
+=cut
+
+use constant PAGE_SIZE => 100;
+sub FetchNext {
+    my ($self, $objs, $init) = @_;
+    if ( $init ) {
+        $objs->RowsPerPage( PAGE_SIZE );
+        $objs->FirstPage;
+        return;
+    }
+
+    my $obj = $objs->Next;
+    return $obj if $obj;
+    $objs->NextPage;
+    return $objs->Next;
+}
 
 1;
 

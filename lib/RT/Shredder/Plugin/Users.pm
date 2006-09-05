@@ -155,23 +155,6 @@ sub SetResolvers
     return (1);
 }
 
-use constant PAGE_SIZE => 100;
-
-sub FetchNext {
-    my ($self, $objs, $init) = @_;
-    if ( $init ) {
-        $objs->RowsPerPage( PAGE_SIZE );
-        $objs->FirstPage;
-        return;
-    }
-
-    for (1..3) {
-        my $obj = $objs->Next;
-        return $obj if $obj;
-        $objs->NextPage;
-    }
-}
-
 sub FilterWithoutTickets {
     my $self = shift;
     my %args = (
