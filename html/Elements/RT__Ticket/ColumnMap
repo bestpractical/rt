@@ -77,14 +77,16 @@ sub ColumnMap {
             # For Image custom fields we also show a thumbnail here.
             return sub {
                 my $values = $_[0]->CustomFieldValues($field);
-                return map {
+                my @values =  map {
                     (
                         ($_->CustomFieldObj->Type eq 'Image')
                             ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
                             : $_->Content
                     ),
                     \'<br />',
-                } @{ $values->ItemsArrayRef }
+                } @{ $values->ItemsArrayRef };
+            pop @values; # Remove that last <br />
+            return @values;
 	    };
         }
     }
