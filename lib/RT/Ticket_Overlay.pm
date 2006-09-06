@@ -2123,7 +2123,7 @@ sub SetStarted {
     my $time = shift || 0;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, self->loc("Permission Denied") );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     #We create a date object to catch date weirdness
