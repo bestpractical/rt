@@ -56,7 +56,7 @@ use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use Mail::Address;
-use POSIX qw(strftime);
+use Date::Format qw(strftime);
 
 =head1 NAME
 
@@ -252,8 +252,9 @@ sub SendMessage {
     }
 
     unless ($MIMEObj->head->get('Date')) {
-      $self->SetHeader('Date',
-                       strftime('%a, %d %b %Y %H:%M:%S %z', localtime()));
+        # We coerce localtime into an array since strftime has a flawed prototype that only accepts
+        # a list
+      $self->SetHeader('Date', strftime('%a, %d %b %Y %H:%M:%S %z', @{[localtime()]}));
     }
 
     my $SendmailArguments = $RT::SendmailArguments;
