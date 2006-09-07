@@ -371,9 +371,22 @@ sub insert_data {
             print "(Error: $msg)" unless $return;
             print $return. ".";
             if ( $member_of ) {
+                $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
                     my $parent = RT::Group->new($CurrentUser);
-                    $parent->LoadByCols( %$_ );
+                    if ( ref $_ eq 'HASH' ) {
+                        $parent->LoadByCols( %$_ );
+                    }
+                    elsif ( !ref $_ ) {
+                        $parent->LoadUserDefinedGroup( $_ );
+                    }
+                    else {
+                        print "(Error: wrong format of MemberOf field."
+                            ." Should be name of user defined group or"
+                            ." hash reference with 'column => value' pairs."
+                            ." Use array reference to add to multiple groups)";
+                        next;
+                    }
                     unless ( $parent->Id ) {
                         print "(Error: couldn't load group to add member)";
                         next;
