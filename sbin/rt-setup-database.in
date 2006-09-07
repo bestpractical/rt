@@ -755,7 +755,6 @@ sub get_version_file {
     print "Server version $db_version\n";
     my $version;
     foreach ( reverse sort cmp_version keys %version ) {
-        print "version $_\n"; print "comparision ".  cmp_version( $db_version, $_ ) ."\n";
         if ( cmp_version( $db_version, $_ ) >= 0 ) {
             $version = $_;
             last;
