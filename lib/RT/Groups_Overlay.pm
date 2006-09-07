@@ -268,9 +268,11 @@ Principal PRINCIPAL_ID as a member
 =begin testing
 
 my $u = RT::User->new($RT::SystemUser);
-$u->Create(Name => 'Membertests');
+my ($id, $msg) = $u->Create( Name => 'Membertests'. $$ );
+ok ($id, 'created user') or diag "error: $msg";
+
 my $g = RT::Group->new($RT::SystemUser);
-my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
+($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
 ok ($id, $msg);
 
 my ($aid, $amsg) =$g->AddMember($u->id);
@@ -343,6 +345,7 @@ is($groups->Count, 3);
 my $RTxGroup = RT::Group->new($RT::SystemUser);
 ($id, $msg) = $RTxGroup->CreateUserDefinedGroup( Name => 'RTxGroup', Description => "RTx extension group");
 ok ($id,$msg);
+is ($RTxGroup->id, $id, "group loaded");
 
 my $RTxSysObj = {};
 bless $RTxSysObj, 'RTx::System';
