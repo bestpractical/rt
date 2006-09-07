@@ -19,9 +19,8 @@ $Plugin => ''
 </div>
 % }
 </div>
-<%INIT>
+<%ONCE>
 use RT::Shredder::Plugin;
 my $plugin_obj = new RT::Shredder::Plugin;
-my %plugins = $plugin_obj->List;
-delete $plugins{'Base'};
-</%INIT>
+my %plugins = $plugin_obj->List('Search');
+</%ONCE>
