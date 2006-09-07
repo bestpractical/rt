@@ -63,18 +63,36 @@ Returns hash with names of the available plugins as keys and path to
 library files as values. Method has no arguments. Can be used as class
 method too.
 
+Takes optional argument C<type> and leaves in the result hash only
+plugins of that type.
+
 =cut
 
 sub List
 {
     my $self = shift;
+    my $type = shift;
+
     my @files;
     foreach my $root( @INC ) {
-        my $mask = File::Spec->catdir( $root, qw(RT Shredder Plugin *.pm) );
+        my $mask = File::Spec->catfile( $root, qw(RT Shredder Plugin *.pm) );
         push @files, glob $mask;
     }
 
     my %res = map { $_ =~ m/([^\\\/]+)\.pm$/; $1 => $_ } reverse @files;
+
+    return %res unless $type;
+
+    delete $res{'Base'};
+    foreach my $name( keys %res ) {
+        my $class = join '::', qw(RT Shredder Plugin), $name;
+        unless( eval "require $class" ) {
+            delete $res{ $name };
+            next;
+        }
+        next if lc $class->Type eq lc $type;
+        delete $res{ $name };
+    }
 
     return %res;
 }
