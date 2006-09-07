@@ -17,7 +17,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 
   # load plugin by name
   my $plugin = new RT::Shredder::Plugin;
-  my( $status, $msg ) = $plugin->LoadByString( 'Tickets' );
+  my( $status, $msg ) = $plugin->LoadByName( 'Tickets' );
   unless( $status ) {
       print STDERR "Couldn't load plugin 'Tickets': $msg\n";
       exit(1);
