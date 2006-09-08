@@ -418,12 +418,23 @@ Set($WebExternalAuto , undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
+
+# By default, RT's session cookie isn't marked as "secure" Some web browsers 
+# will treat secure cookies more carefully than non-secure ones, being careful
+# not to write them to disk, only send them over an SSL secured connection 
+# and so on. To enable this behaviour, set # $WebSecureCookies to a true value. 
+# NOTE: You probably don't want to turn this on _unless_ users are only connecting
+# via SSL encrypted HTTP connections.
+
+Set($WebSecureCookies, 0);
+
+
 # By default, RT clears its database cache after every page view.
 # This ensures that you've always got the most current information 
 # when working in a multi-process (mod_perl or FastCGI) Environment
 # Setting $WebFlushDbCacheEveryRequest to '0' will turn this off,
 # which will speed RT up a bit, at the expense of a tiny bit of data 
-# accuracy
+# accuracy.
 
 Set($WebFlushDbCacheEveryRequest, '1');
 

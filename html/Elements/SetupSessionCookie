@@ -110,7 +110,8 @@ if ( !$cookies{$cookiename} ) {
     my $cookie = new CGI::Cookie(
         -name  => $cookiename,
         -value => $session{_session_id},
-        -path  => '/',
+        -path  => $RT::WebPath,
+        -secure => ($RT::WebSecureCookies ? 1 :0)
     );
     $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
 
