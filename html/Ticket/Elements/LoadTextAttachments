@@ -80,7 +80,9 @@ if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     $attachments->Limit ( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text/plain');
     $attachments->Limit ( FIELD => 'ContentType', OPERATOR => 'STARTSWITH', VALUE => 'message/');
     $attachments->Limit ( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text');
-
+    if ($RT::SuppressInlineTextFiles) {
+        $attachments->Limit ( FIELD => 'Filename', OPERATOR => 'IS', VALUE => 'NULL');
+    }
 }
 return ($attachments);
 </%INIT>

@@ -479,6 +479,18 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+# If $SuppressInlineTextFiles is set to a true value, then uploaded
+# text files (text-type attachments with file names) are prevented
+# from being displayed in-line when viewing a ticket's history.
+
+Set($SuppressInlineTextFiles, undef);
+
+# If $DontSearchFileAttachments is set to a true value, then uploaded
+# files (attachments with file names) are not searched during full-content
+# ticket searches.
+
+Set($DontSearchFileAttachments, undef);
+
 
 # }}}
 

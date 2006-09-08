@@ -679,14 +679,36 @@ sub _TransLimit {
     $self->_OpenParen;
 
     #Search for the right field
-    $self->_SQLLimit(
-        ALIAS         => $self->{_sql_trattachalias},
-        FIELD         => $field,
-        OPERATOR      => $op,
-        VALUE         => $value,
-        CASESENSITIVE => 0,
-        @rest
-    );
+    if ($field eq 'Content' and $RT::DontSearchFileAttachments) {
+       $self->_SQLLimit(
+			ALIAS         => $self->{_sql_trattachalias},
+			FIELD         => 'Filename',
+			OPERATOR      => 'IS',
+			VALUE         => 'NULL',
+			SUBCLAUSE     => 'contentquery',
+			ENTRYAGGREGATOR => 'AND',
+		       );
+       $self->_SQLLimit(
+			ALIAS         => $self->{_sql_trattachalias},
+			FIELD         => $field,
+			OPERATOR      => $op,
+			VALUE         => $value,
+			CASESENSITIVE => 0,
+			@rest,
+			ENTRYAGGREGATOR => 'AND',
+			SUBCLAUSE     => 'contentquery',
+		       );
+    } else {
+       $self->_SQLLimit(
+			ALIAS         => $self->{_sql_trattachalias},
+			FIELD         => $field,
+			OPERATOR      => $op,
+			VALUE         => $value,
+			CASESENSITIVE => 0,
+			ENTRYAGGREGATOR => 'AND',
+			@rest
+		       );
+    }
 
     $self->_SQLJoin(
         ALIAS1 => $self->{_sql_trattachalias},

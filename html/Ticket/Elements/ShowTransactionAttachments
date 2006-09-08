@@ -95,6 +95,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 
     # If it's text
     if (   $message->ContentType =~ m{^(text|message)}i
+ 	&& !($RT::SuppressInlineTextFiles && $message->Filename)
         && $message->ContentLength <= $RT::MaxInlineBody )
     {
 
