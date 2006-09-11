@@ -133,6 +133,12 @@ sub LoadConfig {
     }
     require $CORE_CONFIG_FILE
       || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
+
+
+    # RT::Essentials mistakenly recommends that WebPath be set to '/'.
+    # If the user does that, do what they mean.
+    $RT::WebPath = '' if ($RT::WebPath eq '/');
+
     RT::I18N->Init;
 }
 

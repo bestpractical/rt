@@ -327,8 +327,11 @@ Set($WebDefaultStylesheet, '3.5-default');
 # documents.
 
 # If you're putting the web ui somewhere other than at the root of
-# your server
-# $WebPath requires a leading / but no trailing /
+# your server, you should set $WebPath to the path you'll be 
+# serving RT at.
+# $WebPath requires a leading / but no trailing /.
+#
+# In most cases, you should leave $WebPath set to '' (an empty value).
 
 Set($WebPath , "");
 
