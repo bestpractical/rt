@@ -69,7 +69,8 @@ if ( $opts{help} ) {
 }
 
 for (qw(url)) {
-    die "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n" unless $opts{$_};
+    print STDERR "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n" unless $opts{$_};
+    exit 1;
 }
 
 my $ua      = LWP::UserAgent->new();
