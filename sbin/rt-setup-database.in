@@ -96,8 +96,6 @@ if ( $args{'prompt-for-dba-password'} ) {
 }
 
 require RT::Handle;
-my $Handle = RT::Handle->new($db_type);
-$Handle->BuildDSN;
 my $dbh;
 
 if ( $args{'action'} eq 'init' ) {
@@ -604,7 +602,7 @@ sub insert_data {
 }
 
 sub check_db_compatibility {
-    if ( $db_type eq "mysql" ) {
+    if ( lc $db_type eq "mysql" ) {
         # Check which version we're running
         my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
         if ( $version < 4 ) {
@@ -673,7 +671,7 @@ sub _yesno {
 
 =head2 get_system_dsn
 
-Returns a dsn suitable for database creates and drops
+Returns a DSN suitable for database creates and drops
 and user creates and drops.
 
 =cut
@@ -697,11 +695,44 @@ sub get_system_dsn {
     return $dsn;
 }
 
+=head2 get_system_dbh
+
+Returns L<DBI> database handle connected to B<system> with DBA credentials.
+
+See also L</get_system_dsn>.
+
+=cut
+
+sub get_system_dbh {
+    return _get_dbh( get_system_dsn(), $args{'dba'}, $args{'dba-password'} );
+}
+
+=head2 get_rt_dsn
+
+Returns DSN according to RT config.
+
+=cut
+
 sub get_rt_dsn {
-    require RT::Handle;
-    $RT::Handle ||= RT::Handle->new;
-    $RT::Handle->BuildDSN;
-    return $RT::Handle->DSN;
+    my $rt_handle = RT::Handle->new;
+    $rt_handle->BuildDSN;
+    return $rt_handle->DSN;
+}
+
+=head2 get_rt_dbh [USER, PASSWORD]
+
+Returns L<DBI> database handle connected to RT database,
+you may specify credentials(USER and PASSWORD) to connect
+with. By default connects with credentials from RT config.
+
+=cut
+
+sub get_rt_dbh {
+    my ($user, $pass) = @_;
+    unless ( @_ ) {
+        ($user, $pass) = ($db_user, $db_pass);
+    }
+    return _get_dbh( get_rt_dsn, $user, $pass );
 }
 
 sub _get_dbh {
@@ -721,21 +752,10 @@ sub _get_dbh {
     return $dbh;
 }
 
-sub get_system_dbh {
-    return _get_dbh( get_system_dsn(), $args{'dba'}, $args{'dba-password'} );
-}
-
-sub get_rt_dbh {
-    my ($user, $pass) = @_;
-    unless ( @_ ) {
-        ($user, $pass) = ($db_user, $db_pass);
-    }
-    return _get_dbh( get_rt_dsn, $user, $pass );
-}
-
 =head2 connect_rt_handle
 
-Returns connected C<$RT::Handle>, connect with credentials from RT config.
+Returns connected C<RT::Handle> object. Connects with credentials
+from RT config.Alos, inits C<$RT::Handle> global variable.
 
 =cut
 
@@ -743,10 +763,32 @@ sub connect_rt_handle {
 
     require RT::Handle;
 
-    $RT::Handle ||= RT::Handle->new;
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->BuildDSN;
     $RT::Handle->Connect;
 
     return $RT::Handle;
+}
+
+=head2 get_rt_handle_as_dba
+
+Returns connected C<$RT::Handle> object. Uses DBA's credentials.
+
+=cut
+
+sub get_rt_handle_as_dba {
+    require RT::Handle;
+    RT->Config->Set( DatabaseUser => $args{'dba'} );
+    RT->Config->Set( DatabasePassword => $args{'dba-password'} );
+
+    my $rt_handle = RT::Handle->new;
+    $rt_handle->BuildDSN;
+    $rt_handle->Connect;
+
+    RT->Config->Set( DatabaseUser => $db_user );
+    RT->Config->Set( DatabasePassword => $db_pass );
+
+    return $rt_handle;
 }
 
 =head1 get_version_file
@@ -764,7 +806,7 @@ sub get_version_file {
     return '' unless @files;
 
     my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
-    my $db_version = connect_rt_handle()->DatabaseVersion;
+    my $db_version = get_rt_handle_as_dba()->DatabaseVersion;
     print "Server version $db_version\n";
     my $version;
     foreach ( reverse sort cmp_version keys %version ) {
