@@ -90,8 +90,12 @@ unless ( $args{message} =~ /\S/ ) {
     exit 0;
 }
 
-if ($opts{'extension'}) {
-        $args{$opts{'extension'}} = $ENV{'EXTENSION'};
+if ( $opts{'extension'} ) {
+    unless ( $opts{'extension'} =~ /^(action|queue|ticket)$/i ) {
+        print STDERR "Wrong value of --extension argument\n";
+        exit 1;
+    }
+    $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
 }
 
 # Set up cookie here.
