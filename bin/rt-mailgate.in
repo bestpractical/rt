@@ -69,7 +69,7 @@ if ( $opts{help} ) {
 }
 
 unless ( $opts{'url'} ) {
-    print STDERR "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n";
+    print STDERR "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
     exit 1;
 }
 
@@ -84,7 +84,6 @@ my %args = (
 
 # Read the message in from STDIN
 $args{'message'} = do { local (@ARGV, $/); <> };
-
 unless ( $args{message} =~ /\S/ ) {
     print STDERR "$0: no message passed on STDIN!\n";
     exit 0;
@@ -96,6 +95,18 @@ if ( $opts{'extension'} ) {
         exit 1;
     }
     $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
+}
+
+# add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
+if ( exists $ENV{'EXTENSION'} and my $value = $ENV{'EXTENSION'} ) {
+    # prepare value to avoid MIME format brakage
+    # strip trailing newline symbols
+    $value =~ s/(\r*\n)+$//;
+    # make a correct multiline header field,
+    # with tabs in the beginning of each line
+    $value =~ s/(\r*\n)/\t$1/g;
+    $args{'message'} = "X-RT-Mail-Extension: $value\n"
+        . $args{'message'};
 }
 
 # Set up cookie here.
@@ -320,6 +331,23 @@ to communicate with RT at all, (a "permission denied" error is mailed to
 the correspondent) or one, which is the normal mode of operation.
 Additionally, if C<-1> is returned, then the processing of the plug-ins
 stops immediately and the message is ignored.
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item EXTENSION
+
+Some MTAs will route mail sent to user-foo@host or user+foo@host to user@host
+and present "foo" in the environment variable C<EXTENSION>. Mailgate adds value
+of this variable to message in the C<X-RT-Mail-Extension> field of the message
+header.
+
+See also C<--extension> option. Note that value of the environment variable is
+always added to the message header when it's not empty even if C<--extension>
+option is not provided.
+
+=back 4
 
 =cut
 
