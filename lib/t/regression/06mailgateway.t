@@ -54,7 +54,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use Test::More tests => 68;
+use Test::More tests => 96;
 
 use RT;
 RT::LoadConfig();
@@ -66,6 +66,7 @@ use MIME::Entity;
 use Digest::MD5;
 use LWP::UserAgent;
 
+# TODO: --extension queue
 
 my $url = RT->Config->Get('WebURL');
 
@@ -115,6 +116,8 @@ sub create_ticket_via_gate {
         unless ( $id ) {
             diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
         }
+    } else {
+        diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
     }
     return ($status, $id);
 }
@@ -170,7 +173,7 @@ EOF
 }
 
 my $everyone_group;
-diag "revoke rights tests depend on";
+diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
 {
     $everyone_group = RT::Group->new( $RT::SystemUser );
     $everyone_group->LoadSystemInternalGroup( 'Everyone' );
@@ -203,6 +206,44 @@ EOF
     ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
 }
 
+diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of the X-RT-Mail-Extension field
+
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = "bad value with\nnewlines\n";
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket #$id");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket");
+    is ($tick->Id, $id, "correct ticket id");
+    ok ($tick->Subject eq 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
+
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Create', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    # XXX: We eat all newlines in header, that's not what RFC's suggesting
+    is (
+        $attachment->GetHeader('X-RT-Mail-Extension'),
+        "bad value with newlines",
+        'header is in place, without trailing newline char'
+    );
+}
+
 diag "This is a test of new ticket creation as an unknown user" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
@@ -227,7 +268,7 @@ EOF
     ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
 }
 
-diag "grant everybody with CreateTicket right";
+diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
     my ($val, $msg) = $everyone_group->PrincipalObj->GrantRight( Right => 'CreateTicket' );
     ok ($val, "Granted everybody the right to create tickets") or diag "error: $msg";
@@ -304,6 +345,37 @@ EOF
     ok ($u->Id, "user exists and was created by ticket correspondence submission");
 }
 
+diag "add a reply to the ticket using '--extension ticket' feature" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of a reply as an unknown user
+
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = $ticket_id;
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'ticket');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "replied to the ticket");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
+
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Correspond', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
+}
 
 diag "can another random comment on a ticket without being granted privs? answer should be no" if $ENV{'TEST_VERBOSE'};
 {
@@ -325,7 +397,7 @@ EOF
 }
 
 
-diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
+diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     my ($val,$msg) = $everyone_group->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
     ok ($val, "Granted everybody the right to reply to  tickets - $msg");
@@ -348,6 +420,38 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok ($u->Id, " user exists and was created by ticket comment submission");
+}
+
+diag "add comment to the ticket using '--extension action' feature" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment via '--extension action'
+
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = 'comment';
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'action');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "added comment to the ticket");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
+
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Comment', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
 }
 
 diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
@@ -485,6 +589,8 @@ my ($val,$msg) = $everyone_group->PrincipalObj->RevokeRight(Right => 'CreateTick
 ok ($val, $msg);
 
 =for later
+
+# TODO, XXX: merge from 3.6 or 3.4, these tests are implemented there
 
 TODO: {
 

@@ -104,9 +104,10 @@ if ( exists $ENV{'EXTENSION'} and my $value = $ENV{'EXTENSION'} ) {
     $value =~ s/(\r*\n)+$//;
     # make a correct multiline header field,
     # with tabs in the beginning of each line
-    $value =~ s/(\r*\n)/\t$1/g;
+    $value =~ s/(\r*\n)/$1\t/g;
     $args{'message'} = "X-RT-Mail-Extension: $value\n"
         . $args{'message'};
+    print $args{'message'};
 }
 
 # Set up cookie here.
