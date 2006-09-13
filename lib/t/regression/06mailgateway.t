@@ -54,7 +54,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use Test::More tests => 64;
+use Test::More tests => 68;
 
 use RT;
 RT::LoadConfig();
@@ -127,7 +127,35 @@ sub latest_ticket {
     return $tickets->First;
 }
 
-diag "Make sure that when we call the mailgate wrong, it tempfails" if $ENV{'TEST_VERBOSE'};
+diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of new ticket creation
+
+Foob!
+EOF
+    my ($status, $id) = create_ticket_via_gate($text, url => undef);
+    is ($status >> 8, 1, "The mail gateway exited with a failure");
+    ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
+}
+
+diag "Make sure that when we call the mailgate with wrong --extension, it fails" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of new ticket creation
+
+Foob!
+EOF
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'bad-extension-arg' );
+    is ($status >> 8, 1, "The mail gateway exited with a failure");
+    ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
+}
+
+diag "Make sure that when we call the mailgate with wrong URL, it tempfails" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -140,7 +168,6 @@ EOF
     is ($status >> 8, 75, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id");
 }
-
 
 my $everyone_group;
 diag "revoke rights tests depend on";
