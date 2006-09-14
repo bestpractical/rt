@@ -397,14 +397,11 @@ sub ApplyResolvers
     unless( @resolvers ) {
         die "Couldn't find resolver for dependency '". $dep->AsString ."'";
     }
-    foreach( @resolvers ) {
-        eval { $_->(
-                Shredder  => $self,
-                BaseObject   => $dep->BaseObject,
-                TargetObject => $dep->TargetObject,
-        ) };
-        die "Resolver failed: $@" if $@;
-    }
+    $_->(
+        Shredder     => $self,
+        BaseObject   => $dep->BaseObject,
+        TargetObject => $dep->TargetObject,
+    ) foreach @resolvers;
 
     return;
 }
