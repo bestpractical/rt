@@ -36,6 +36,12 @@ correct and it's problem of the Shredder then you can get full error
 message from RT log files and send bug report.
 END
 
+    NoResolver => <<END,
+Object has dependency that could be resolved, but resolver
+wasn't defined. You have to re-read documentation of the
+plugin you're using, for example the 'Users' plugin has
+option 'replace_relations' argument.
+END
 );
 
 sub full_message {
