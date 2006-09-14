@@ -62,19 +62,14 @@ sub TestArgs
         $args{'status'} = 'disabled';
     }
     if( $args{'email'} ) {
-        unless( $args{'email'} =~ /^[\w\.@?*]+$/ ) {
-            return (0, "Invalid characters in email '$args{'email'}'");
-        }
         $args{'email'} = $self->ConvertMaskToSQL( $args{'email'} );
     }
     if( $args{'name'} ) {
-        unless( $args{'name'} =~ /^[\w?*]+$/ ) {
-            return (0, "Invalid characters in name '$args{'name'}'");
-        }
         $args{'name'} = $self->ConvertMaskToSQL( $args{'name'} );
     }
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
+        # XXX: it's possible that SystemUser is not available
         my $user = RT::User->new( $RT::SytemUser );
         $user->Load( $uid );
         unless( $user->id ) {
