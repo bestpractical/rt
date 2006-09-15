@@ -137,7 +137,7 @@ load plugin. The format of the string is
 
   <plugin name>[=<arg>,<val>[;<arg>,<val>]...]
 
-exactly like in the L<rtx-shredder> script. All other
+exactly like in the L<rt-shredder> script. All other
 arguments are sent to the plugins constructor.
 
 Method does the same things as C<LoadByName>, but also

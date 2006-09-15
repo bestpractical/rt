@@ -11,7 +11,7 @@ RT::Shredder - Cleanup RT database
 
 =head2 CLI
 
-  rtx-shredder --force --plugin 'Tickets=queue,general;status,deleted'
+  rt-shredder --force --plugin 'Tickets=queue,general;status,deleted'
 
 =head2 API
 
@@ -35,7 +35,7 @@ from RT database. Now Shredder support wipe out of almost all RT objects
 
 =head2 Command line tools(CLI)
 
-L<rtx-shredder> script that is shipped with the distribution allow
+L<rt-shredder> script that is shipped with the distribution allow
 you to delete objects from command line or with system tasks
 scheduler(cron or other).
 
@@ -50,7 +50,7 @@ from browser.
 
 L<RT::Shredder> modules is extension to RT API which add(push) methods
 into base RT classes. API is not well documented yet, but you can find
-usage examples in L<rtx-shredder> script code and in F<t/*> files.
+usage examples in L<rt-shredder> script code and in F<t/*> files.
 
 =head1 CONFIGURATION
 
@@ -65,7 +65,7 @@ F<RT_SiteConfig.pm> add C<Set( $DependenciesLimit, new_limit );>
 
 =head2 $RT::ShredderStoragePath
 
-By default shredder saves dumps in F</path-to-RT-var-dir/data/RTx-Shredder>,
+By default shredder saves dumps in F</path-to-RT-var-dir/data/Rt-Shredder>,
 with this option you can change path, but B<note> that value should be absolute
 path to the dir you want.
 
@@ -590,8 +590,8 @@ sub GetFileName
 =head3 StoragePath
 
 Returns absolute path to storage dir. By default it's
-F</path-to-RT-var-dir/data/RTx-Shredder/>
-(in default RT install would be F</opt/rt3/var/data/RTx-Shredder>),
+F</path-to-RT-var-dir/data/RT-Shredder/>
+(in default RT install would be F</opt/rt3/var/data/RT-Shredder>),
 but you can change this value with config option C<$RT::ShredderStoragePath>.
 See L</CONFIGURATION> sections.
 
@@ -602,7 +602,7 @@ See also description of the L</GetFileName> method.
 sub StoragePath
 {
     return $RT::ShredderStoragePath if $RT::ShredderStoragePath;
-    return File::Spec->catdir( $RT::VarPath, qw(data RTx-Shredder) );
+    return File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();
@@ -679,8 +679,8 @@ __END__
 
 =head2 Database transactions support
 
-Since RTx-Shredder-0.03_01 extension uses database transactions and should
-be much safer to run on production servers.
+Since 0.03_01 RT::Shredder uses database transactions and should be
+much safer to run on production servers.
 
 =head2 Foreign keys
 

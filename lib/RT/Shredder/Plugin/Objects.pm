@@ -17,7 +17,7 @@ the object name as argument and id as value, for example if
 you want select ticket #123 then from CLI you write next
 command:
 
-  rtx-shredder --plugin 'Objects=Ticket,123'
+  rt-shredder --plugin 'Objects=Ticket,123'
 
 =cut
 
