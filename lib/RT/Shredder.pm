@@ -724,7 +724,10 @@ describes some problems code has.
 
 =head2 Repository
 
-You can find repository of this project at
+Since RT-3.7 shredder is a part of the RT distribution.
+Versions of the RTx::Shredder extension could
+be downloaded from the CPAN. Those work with older
+RT versions or you can find repository at
 L<https://opensvn.csie.org/rtx_shredder>
 
 =head1 AUTHOR
