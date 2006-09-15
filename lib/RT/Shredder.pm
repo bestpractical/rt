@@ -502,13 +502,14 @@ commands.
 
 Takes desired C<FileName> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
+
 * Default value of the C<FileName> option is C<< <ISO DATETIME>-XXXX.sql >>;
-* if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be
-changed with digits from 0000 to 9999 range, with first one free value;
-* if C<FromStorage> argument is true (default behaviour) then result path would always
-be relative to C<StoragePath>;
-* if C<FromStorage> argument is false then result would be relative to the current
-dir unless it's allready absolute path.
+
+* if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
+
+* if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
+
+* if C<FromStorage> argument is false then result would be relative to the current dir unless it's allready absolute path.
 
 Returns an absolute path of the file.
 
