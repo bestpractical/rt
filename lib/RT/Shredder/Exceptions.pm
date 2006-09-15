@@ -44,9 +44,19 @@ option 'replace_relations' argument.
 END
 );
 
+sub Fields { return ((shift)->SUPER::Fields(@_), 'tag') }
+
+sub tag { return (shift)->{'tag'} }
+
 sub full_message {
     my $self = shift;
     my $error = $self->message;
+    if ( my $tag = $self->tag ) {
+        my $message = $DESCRIPTION{ $self->tag } || '';
+        warn "Tag '$tag' doesn't exist" unless $message;
+        $message .= "\nAdditional info:\n$error" if $error;
+        return $message;
+    }
     return $DESCRIPTION{$error} || $error;
 }
 

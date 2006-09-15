@@ -395,8 +395,10 @@ sub ApplyResolvers
     );
 
     unless( @resolvers ) {
-        warn "Couldn't find resolver for dependency '". $dep->AsString ."'";
-        RT::Shredder::Exception::Info->throw('NoResolver');
+        RT::Shredder::Exception::Info->throw(
+            tag   => 'NoResolver',
+            error => "Couldn't find resolver for dependency '". $dep->AsString ."'",
+        );
     }
     $_->(
         Shredder     => $self,
