@@ -48,9 +48,9 @@ return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 use RT::Interface::Web::Session;
 
-my %cookies = CGI::Cookie->fetch;
-my $cookiename = "RT_SID_".RT->Config->Get('rtname');
-$cookiename .= ".".$ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
+my %cookies      = CGI::Cookie->fetch;
+my $cookiename   = "RT_SID_". RT->Config->Get('rtname');
+$cookiename     .= ".". $ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
 $SessionCookie ||= ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef ),
 
 tie %session, 'RT::Interface::Web::Session', $SessionCookie;
@@ -73,12 +73,13 @@ if ( !$cookies{$cookiename} ) {
     my $cookie = new CGI::Cookie(
         -name  => $cookiename,
         -value => $session{_session_id},
-        -path  => '/',
+        -path  => scalar RT->Config->Get('WebPath'),
+        -secure => (scalar RT->Config->Get('WebSecureCookies') ? 1 :0),
     );
     $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
-return();
+return ();
 </%INIT>
 <%ARGS>
 $SessionCookie => ''

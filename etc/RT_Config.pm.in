@@ -355,8 +355,11 @@ Set($WebDefaultStylesheet, '3.5-default');
 # documents.
 
 # If you're putting the web ui somewhere other than at the root of
-# your server
-# $WebPath requires a leading / but no trailing /
+# your server, you should set $WebPath to the path you'll be 
+# serving RT at.
+# $WebPath requires a leading / but no trailing /.
+#
+# In most cases, you should leave $WebPath set to '' (an empty value).
 
 Set($WebPath, "");
 
@@ -459,12 +462,22 @@ Set($AutoCreate, undef);
 
 Set($AutoLogoff, 0);
 
+# By default, RT's session cookie isn't marked as "secure" Some web browsers 
+# will treat secure cookies more carefully than non-secure ones, being careful
+# not to write them to disk, only send them over an SSL secured connection 
+# and so on. To enable this behaviour, set # $WebSecureCookies to a true value. 
+# NOTE: You probably don't want to turn this on _unless_ users are only connecting
+# via SSL encrypted HTTP connections.
+
+Set($WebSecureCookies, 0);
+
+
 # By default, RT clears its database cache after every page view.
 # This ensures that you've always got the most current information 
 # when working in a multi-process (mod_perl or FastCGI) Environment
 # Setting $WebFlushDbCacheEveryRequest to '0' will turn this off,
 # which will speed RT up a bit, at the expense of a tiny bit of data 
-# accuracy
+# accuracy.
 
 Set($WebFlushDbCacheEveryRequest, '1');
 
@@ -516,6 +529,18 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__ToldRelative__</small>',
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
+
+# If $SuppressInlineTextFiles is set to a true value, then uploaded
+# text files (text-type attachments with file names) are prevented
+# from being displayed in-line when viewing a ticket's history.
+
+Set($SuppressInlineTextFiles, undef);
+
+# If $DontSearchFileAttachments is set to a true value, then uploaded
+# files (attachments with file names) are not searched during full-content
+# ticket searches.
+
+Set($DontSearchFileAttachments, undef);
 
 
 # MakeClicky detects various formats of data in headers and email

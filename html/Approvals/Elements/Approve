@@ -52,8 +52,12 @@
   <div class="originating-ticket">
     <span class="link"><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a></span>
     <div class="info">
+% if ($ShowCustomFields) {
       <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
+% }
+% if ($ShowHistory) {
       <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+% }
     </div>
   </div>
 %     }
@@ -82,5 +86,7 @@
 </div>
 <%ARGS>
 $ShowApproving => 1
+$ShowCustomFields => 1
+$ShowHistory => 1
 $ticket => undef
 </%ARGS>
