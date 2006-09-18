@@ -275,10 +275,20 @@ possible.
 
 sub SendEmail {
     my (%args) = (
-                  entity => undef,
-                  bounce => 0,
-                  @_,
-                 );
+        entity => undef,
+        bounce => 0,
+        @_,
+    );
+    unless ( $args{'entity'} ) {
+        $RT::Logger->crit( "Could not send mail without 'entity' object" );
+        return 0;
+    }
+    unless ( $args{'entity'}->head->get('Date') ) {
+        require RT::Date;
+        my $date = RT::Date->new( $RT::SystemUser );
+        $date->SetToNow;
+        $args{'entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+    }
 
     if ( RT->Config->Get('MailCommand') eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
@@ -304,7 +314,7 @@ sub SendEmail {
                 $RT::Logger->warning( "$path exitted with status $?" );
             }
         };
-        if ($@) {
+        if ( $@ ) {
             $RT::Logger->crit( "Could not send mail: " . $@ );
             return 0;
         }
