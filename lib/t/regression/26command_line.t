@@ -68,6 +68,28 @@ expect_like(qr/Ticket \d+ created/, "Created the ticket");
 expect_send(q{rt create -t ticket set subject='rt ticket'}, "Creating a ticket with 'rt create'...");
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
+# {{{ test queue manipulation
+
+# creating queues
+expect_send("create -t queue set Name='NewQueue$$'", 'Creating a queue...');
+expect_like(qr/Queue \d+ created/, 'Created the queue');
+expect_handle->before() =~ /Queue (\d+) created/;
+my $queue_id = $1;
+ok($queue_id, "Got queue id=$queue_id");
+# updating users
+expect_send("edit queue/$queue_id set Name='EditedQueue$$'", 'Editing the queue');
+expect_like(qr/Queue $queue_id updated/, 'Edited the queue');
+expect_send("show queue/$queue_id", 'Showing the queue...');
+expect_like(qr/id: queue\/$queue_id/, 'Saw the queue');
+expect_like(qr/Name: EditedQueue$$/, 'Saw the modification');
+TODO: { 
+    todo_skip "Listing non-ticket items doesn't work", 2;
+    expect_send("list -t queue 'id > 0'", 'Listing the queues...');
+    expect_like(qr/$queue_id: EditedQueue$$/, 'Found the queue');
+}
+
+# }}}
+
 # add a comment to ticket
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
     expect_like(qr/Message recorded/, "Added the comment");
@@ -105,15 +127,15 @@ expect_like(qr/Ticket $ticket_id updated/, 'Changed priority');
 expect_send("show ticket/$ticket_id -f priority", 'Verifying change...');
 expect_like(qr/Priority: 10/, 'Verified change');
 # move a ticket to a different queue
-expect_send("edit ticket/$ticket_id set queue=Foo", 'Changing queue...');
+expect_send("edit ticket/$ticket_id set queue=EditedQueue$$", 'Changing queue...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed queue');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying change...');
-expect_like(qr/Queue: Foo/, 'Verified change');
+expect_like(qr/Queue: EditedQueue$$/, 'Verified change');
 # cannot move ticket to a nonexistent queue
 expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to nonexistent queue...');
 expect_like(qr/queue does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
-expect_like(qr/Queue: Foo/, 'Verified lack of change');
+expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
 # ...
 # change a ticket's ...[other properties]...
 # ...
@@ -211,28 +233,6 @@ TODO: {
     expect_send("list -t group 'id > 0'", 'Listing the groups...');
     expect_like(qr/$group_id: EditedGroup$$/, 'Found the group');
 }
-}
-
-# }}}
-
-# {{{ test queue manipulation
-
-# creating queues
-expect_send("create -t queue set Name='NewQueue$$'", 'Creating a queue...');
-expect_like(qr/Queue \d+ created/, 'Created the queue');
-expect_handle->before() =~ /Queue (\d+) created/;
-my $queue_id = $1;
-ok($queue_id, "Got queue id=$queue_id");
-# updating users
-expect_send("edit queue/$queue_id set Name='EditedQueue$$'", 'Editing the queue');
-expect_like(qr/Queue $queue_id updated/, 'Edited the queue');
-expect_send("show queue/$queue_id", 'Showing the queue...');
-expect_like(qr/id: queue\/$queue_id/, 'Saw the queue');
-expect_like(qr/Name: EditedQueue$$/, 'Saw the modification');
-TODO: { 
-    todo_skip "Listing non-ticket items doesn't work", 2;
-    expect_send("list -t queue 'id > 0'", 'Listing the queues...');
-    expect_like(qr/$queue_id: EditedQueue$$/, 'Found the queue');
 }
 
 # }}}
