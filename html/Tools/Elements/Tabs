@@ -80,7 +80,3 @@ $current_tab => undef
 $current_subtab => undef
 $Title => undef
 </%ARGS>
-
-%# Local Variables:
-%# mode:perl
-%# End:
