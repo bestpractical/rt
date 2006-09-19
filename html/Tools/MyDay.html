@@ -43,15 +43,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$thispage => "MyDay.html"
-</%args>
-<%init>
-my $title = loc("What I did today");
-</%init>
-
 <& /Elements/Header, Title => $title &>
-<& /Tools/Elements/Tabs, current_tab => "Tools/$thispage", Title => $title &>
+<& /Tools/Elements/Tabs, current_tab => "Tools/MyDay.html", Title => $title &>
 (displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -78,8 +71,8 @@ cols="60"></textarea></td></tr>
 <& /Elements/Submit, Label => "Record all updates" ,  Reset => 'Clear'&>
 </form>
 </html>
-
 <%INIT>
+my $title = loc("What I did today");
 
 my $i = 0;
 
@@ -89,11 +82,4 @@ $Tickets->LimitStatus( VALUE => 'open' );
 $Tickets->LimitStatus ( VALUE => 'new');
 $Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
 
-while (my $Ticket = $Tickets->Next()) {
-	#Process updates	
-	
-
-}
-
 </%INIT>
-
