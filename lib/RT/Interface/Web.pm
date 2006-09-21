@@ -1165,7 +1165,7 @@ sub ProcessObjectCustomFieldUpdates {
                     } elsif ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
                         @values = ($ARGSRef->{$arg});
                     } else {
-                        @values = split /\n/, $ARGSRef->{$arg};
+                        @values = split /\n/, $ARGSRef->{$arg} || '';
                     }
                     
                     if ( ($CustomFieldObj->Type eq 'Freeform' 
@@ -1222,7 +1222,7 @@ sub ProcessObjectCustomFieldUpdates {
 
                         }
                         while ( my $cf_value = $cf_values->Next ) {
-                            unless ( $values_hash{ $cf_value->Content } == 1 ) {
+                            unless ( $values_hash{ $cf_value->Content } ) {
                                 my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
                                     Field => $cf,
                                     Value => $cf_value->Content
