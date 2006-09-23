@@ -1,0 +1,14 @@
+<div id="shredder-dump-file-link" class="shredder-help">
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>">Download dumpfile</a>
+</div>
+<%ARGS>
+$File => ''
+</%ARGS>
+<%INIT>
+return unless $File;
+use File::Spec ();
+use RT::Shredder ();
+
+$File = File::Spec->abs2rel( $File, RT::Shredder->StoragePath )
+    if File::Spec->file_name_is_absolute($File);
+</%INIT>

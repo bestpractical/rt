@@ -14,6 +14,7 @@ $Wipeout => ''
 <div id="shredder-select-plugin">
 <& /Elements/ListActions, actions => $messages{'Errors'} &>
 <& /Elements/ListActions, actions => $messages{'Success'} &>
+<& Elements/DumpFileLink, File => $dump_file &>
 <& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
 <div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
 <& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
@@ -77,6 +78,8 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
 	}
 } }
 
+my $dump_file = '';
+
 if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
 	my $shredder = new RT::Shredder( force => 1 );
     my $backup_plugin = new RT::Shredder::Plugin;
@@ -93,8 +96,8 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
 		last;
 	}
 
-	my ($fn) = $backup_plugin->FileName;
-    push @{ $messages{'Success'} }, "SQL dump file is '$fn'";
+	($dump_file) = $backup_plugin->FileName;
+    push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->AddDumpPlugin( Object => $backup_plugin );
 

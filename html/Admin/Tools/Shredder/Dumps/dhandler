@@ -1,0 +1,21 @@
+<%ATTR>
+AutoFlush => 0
+</%ATTR>
+<%FLAGS>
+inherit => undef
+</%FLAGS>
+<%INIT>
+my $arg = $m->dhandler_arg;
+$m->abort(404) if $arg =~ m{\.\.|/|\\};
+
+use File::Spec ();
+use RT::Shredder ();
+my $File = File::Spec->catfile( RT::Shredder->StoragePath, $arg );
+$r->content_type('application/octets-stream');
+open my $fh, "<:raw", $File or $m->abort(404);
+my $buf;
+while( read $fh, $buf, 1024*1024 ) {
+    $m->out($buf);
+}
+return 0;
+</%INIT>

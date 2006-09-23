@@ -604,8 +604,8 @@ See also description of the L</GetFileName> method.
 
 sub StoragePath
 {
-    return $RT::ShredderStoragePath if $RT::ShredderStoragePath;
-    return File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
+    return $RT::ShredderStoragePath ||
+        File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();
