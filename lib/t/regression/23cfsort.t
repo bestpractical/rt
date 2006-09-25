@@ -86,7 +86,7 @@ sub check_order {
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);
-  is( $results, $order );
+  is( $results, $order , "Ordered correctly: $order");
 }
 
 # The real tests start here
@@ -96,17 +96,19 @@ my $tx = new RT::Tickets( $RT::SystemUser );
 # Make sure we can sort in both directions on a queue specific field.
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.${queue}.{Charlie}", ORDER => 'DES' );
-is($tx->Count,2);
+is($tx->Count,2 ,"We found 2 tickets when lookign for cf charlie");
 check_order( $tx, 1, 2);
 
+$tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC' );
-is($tx->Count,2);
+is($tx->Count,2, "We found two tickets when sorting by cf charlie without limiting to it" );
 check_order( $tx, 2, 1);
 
 # When ordering by _global_ CustomFields, if more than one queue has a
 # CF named Charlie, things will go bad.  So, these results are uniqued
 # in Tickets_Overlay.
+$tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'DES' );
 is($tx->Count,2);
@@ -122,6 +124,7 @@ $t3->AddCustomFieldValue(Field => $cfA->Id,  Value => '3');
 $t3->AddCustomFieldValue(Field => $cfB->Id,  Value => '2');
 $t3->AddCustomFieldValue(Field => $cfC->Id,  Value => 'AAA');
 
+$tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols({FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC'},
                  {FIELD => "CF.${queue}.{Alpha}", ORDER => 'DES'}
@@ -131,6 +134,7 @@ check_order( $tx, 3, 2, 1);
 
 # Reverse the order of the secondary column, which changes the order
 # of the first two tickets.
+$tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols({FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC'},
                  {FIELD => "CF.${queue}.{Alpha}", ORDER => 'ASC'}
