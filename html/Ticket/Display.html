@@ -51,7 +51,7 @@
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
-
+<& /Elements/Callback, _CallbackName => 'BeforeShowSummary', Ticket => $TicketObj, %ARGS &>
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
@@ -147,10 +147,11 @@ if ($ARGS{'id'} eq 'new') {
 	    delete $session{'Attachments'};
     }
     #Process status updates
+    my @PeopleActions = ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
     my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
     my @results = ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
-    push (@Actions, @BasicActions, @results);
+    push (@Actions, @PeopleActions, @BasicActions, @results);
 }
 
 # This code does automatic redirection if any updates happen. 
