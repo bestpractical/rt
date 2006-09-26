@@ -2667,14 +2667,6 @@ sub _AddLink {
 
     my ($val, $msg, $exist) = $self->SUPER::_AddLink(%args);
     return ($val, $msg) if !$val || $exist;
-    unless ( $other_ticket_uri->Resolver && $other_ticket_uri->Scheme ) {
-	my $msg = $args{'Target'} ? $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'})
-          : $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
-        $RT::Logger->warning( "$self $msg\n" );
-
-        return( 0, $msg );
-    }
-
 
     my ($direction, $remote_link);
     if ( $args{'Target'} ) {
