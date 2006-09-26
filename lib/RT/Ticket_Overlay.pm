@@ -2667,6 +2667,14 @@ sub _AddLink {
 
     my ($val, $msg, $exist) = $self->SUPER::_AddLink(%args);
     return ($val, $msg) if !$val || $exist;
+    unless ( $other_ticket_uri->Resolver && $other_ticket_uri->Scheme ) {
+	my $msg = $args{'Target'} ? $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'})
+          : $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
+        $RT::Logger->warning( "$self $msg\n" );
+
+        return( 0, $msg );
+    }
+
 
     my ($direction, $remote_link);
     if ( $args{'Target'} ) {
@@ -3759,14 +3767,13 @@ sub CustomFieldValues {
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->QueueObj->Id );
+        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
         unless ( $cf->id ) {
-            $cf->LoadByNameAndQueue( Name => $field, Queue => '0' );
+            $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
         }
-        $field = $cf->id;
-        unless ( $field =~ /^\d+$/ ) {
-          # If we didn't find a valid cfid, give up.
-          return RT::CustomFieldValues->new($self->CurrentUser);
+        unless ( $cf->id ) {
+            # If we didn't find a valid cfid, give up.
+            return RT::CustomFieldValues->new($self->CurrentUser);
         }
     }
     return $self->SUPER::CustomFieldValues($field);

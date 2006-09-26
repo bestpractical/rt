@@ -48,6 +48,7 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
+
 if ($RT::StatementLog) {
     $RT::Handle->ClearSQLStatementLog;
     $RT::Handle->LogSQLStatements(1);
@@ -94,7 +95,7 @@ foreach my $field ( keys %ARGS ) {
     next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{$1};
     my $local = $1;
     $ARGS{$local} =~ s|\b (?: (\d+) \s+ )? (\d+)/(\d+) \b
-                      |$1 + $3 ? $2 / $3 : 0
+                      |($1 || 0) + $3 ? $2 / $3 : 0
                       |xe;
     if ( $ARGS{$field} && $ARGS{$field} =~ /hours/i ) {
         $ARGS{$local} *= 60;

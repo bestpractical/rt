@@ -1,7 +1,7 @@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
-#  
+#
 # This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 #

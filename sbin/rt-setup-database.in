@@ -135,7 +135,7 @@ if ( $args{'action'} eq 'init' ) {
         if ( $RT::DatabaseType eq "Oracle" ) {
             $RT::DatabasePassword = $RT::DatabasePassword; #Warning avidance
             $dbh = DBI->connect( $Handle->DSN, ${RT::DatabaseUser}, ${RT::DatabasePassword} ) || die $DBI::errstr;
-        } else {
+        } else {	
             $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
         }
     }

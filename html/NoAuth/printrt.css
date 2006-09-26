@@ -1,11 +1,5 @@
-%# BEGIN BPS TAGGED BLOCK {{{
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
-%# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
-%#                                          <jesse@bestpractical.com>
-%# 
-%# (Except where explicitly superseded by other copyright notices)
 %# 
 %# 
 %# LICENSE:
@@ -42,63 +36,42 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Format
-</%ARGS>
+%# }}} END BPS TAGGED BLOCK
+%#
+%# Special stylesheet for printing tickets
+%# Koos van den Hout koos@cs.uu.nl 2005-11-21
+%#
 
-<%init>
-use Regexp::Common qw/delimited/;
-my @Columns;
+SPAN.nav { display: none !important; }
+.nav2 { display: none !important; }
+.nav { display: none !important; }
+.topnav { display: none !important; }
+.blue { display: none !important; }
+.darkblue { display: none !important; }
+.blueright { display: none !important; }
+.currentnav { display: none !important; }
+th.titlebox { border-top: none; border-bottom: none; }
+th.titleboxright { display:none !important; border-top: none; border-bottom: none; }
+.titlebox { border-top: none; border-bottom: none; }
 
-while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
-    my $col = $1;
-
-    if ($col =~ /^$RE{quoted}$/o) {
-        substr($col,0,1) = "";
-        substr($col,-1,1) = "";
-    }
-
-    my $colref = {
-        title => '',
-    };
-
-    if ( $col =~ s!/STYLE:([^/]+)!!io ) {
-        $colref->{'style'} = $1;
-    }
-    if ( $col =~ s!/CLASS:([^/]+)!!io ) {
-        $colref->{'class'} = $1;
-    }
-    if ( $col =~ s!/TITLE:([^/]+)!!io ) {
-        $colref->{'title'} = $1;
-    }
-    if ( $col =~ s!/ALIGN:([^\/]+)!!io ) {
-        $colref->{'align'} = $1;
-    }
-    if ( $col =~ /__(.*?)__/gio ) {
-        my @subcols;
-        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
-            push ( @subcols, $1 ) if ($1);
-            push ( @subcols, "__$2__" );
-            $colref->{'attribute'} = $2;
-        }
-        push ( @subcols, $col );
-        @{ $colref->{'output'} } = @subcols;
-    }
-    else {
-        @{ $colref->{'output'} } = ( "__" . $col . "__" );
-        $colref->{'attribute'} = $col;
-    }
-    
-    if ( !$colref->{'title'} && grep { /^__(.+?)__$/io }
-        @{ $colref->{'output'} } )
-    {   
-        $colref->{'title'}     = $1;
-        $colref->{'attribute'} = $1;
-    }
-
-
-    push @Columns, $colref;
+div.downloadattachment, div.downloadcontenttype {
+       display: none !important;
 }
-    return(@Columns);
+
+
+a[href$="Respond"], a[href$="Comment"], a[href*="ShowEmailRecord"] {
+       display: none !important;
+}
+
+
+%# Provide a callback for adding/modifying the style sheet.
+%# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
+%#   "latter specified rule wins"
+<& /Elements/Callback &>
+<%flags>
+inherit => undef
+</%flags>
+<%init>
+$r->content_type('text/css');
+$r->headers_out->{'Expires'} = '+30m';
 </%init>

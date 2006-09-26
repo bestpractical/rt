@@ -4085,7 +4085,7 @@ msgstr "RT Configuratie fout"
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT Kritieke fout: Bericht niet bewaard!"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT Fout"
 
@@ -6119,7 +6119,7 @@ msgstr "systeem %1"
 msgid "system group '%1'"
 msgstr "systeem groep '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "het aanroepende component specificeerde niet waarom"
 

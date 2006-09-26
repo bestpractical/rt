@@ -129,4 +129,15 @@ TODO: {
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
 
+{
+    my $tix = RT::Tickets->new($RT::SystemUser);
+    $tix->FromSQL("Queue = '$queue'");
+    $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
+    $tix->RowsPerPage(30);
+    my @mails;
+    while (my $t = $tix->Next) { push @mails, $t->RequestorAddresses; }
+    is(@mails, 30, "found thirty tickets");
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
+}
+
 # vim:ft=perl:

@@ -5676,7 +5676,7 @@ msgstr "RT 设定错误"
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT 致命错误。讯息未被纪录。"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT 错误"
 
@@ -8182,7 +8182,7 @@ msgstr "系统 %1"
 msgid "system group '%1'"
 msgstr "系统群组 '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "呼叫组件未指明原因"
 

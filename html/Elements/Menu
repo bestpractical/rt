@@ -83,10 +83,14 @@
 %            if $postsep;
 %
 %     $class->{li} = join ' ', @li;
+%
+%     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^https?:/i
+%         ? $toptabs->{$tab}->{'path'} || ''
+%         : $RT::WebPath . "/" . $toptabs->{$tab}->{'path'};
 %     
   <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>>
     <% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
-    <a href="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'} || '' %>"
+    <a href="<% $url %>"
     <% $class->{a} && qq[ class="$class->{a}"] |n%>
     <% !$level && " accesskey='".$accesskey++."'" |n%>>
     <% $toptabs->{$tab}->{'title'} || ''%></a>

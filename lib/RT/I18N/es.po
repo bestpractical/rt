@@ -205,7 +205,7 @@ msgstr "%1 ha cambiado de %2 a %3"
 #: html/Search/Build.html:213
 #. ($Description)
 msgid "%1 copy"
-msgstr ""
+msgstr "%1 copiar"
 
 #: lib/RT/Record.pm:945
 msgid "%1 could not be set to %2."
@@ -223,12 +223,12 @@ msgstr "%1 no pudo fijar el estado a resuelto. La base de datos de RT podría se
 #: lib/RT/Transaction_Overlay.pm:558
 #. ($obj_type)
 msgid "%1 created"
-msgstr ""
+msgstr "%1 creado"
 
 #: lib/RT/Transaction_Overlay.pm:563
 #. ($obj_type)
 msgid "%1 deleted"
-msgstr ""
+msgstr "%1 borrado"
 
 #: html/Search/Chart:71
 #. ($Query, $PrimaryGroupBy)
@@ -241,7 +241,7 @@ msgstr "%1 casos de mayor prioridad que poseo"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I own..."
-msgstr "Los %1 tickets de mayor prioridad que poseo... "
+msgstr "Los %1 tickets de mayor prioridad que poseo..."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I requested..."
@@ -284,7 +284,7 @@ msgstr "%1 no mostrado"
 
 #: lib/RT/CustomField_Overlay.pm:892
 msgid "%1 objects"
-msgstr ""
+msgstr "%1 ibjetos"
 
 #: html/User/Elements/DelegateRights:97
 #. (loc($ObjectType =~ /^RT::(.*)$/))
@@ -318,17 +318,17 @@ msgstr "%1 pondrá como pendiente una BASE [local] si es dependiente [o miembro]
 
 #: lib/RT/CustomField_Overlay.pm:893
 msgid "%1's %2 objects"
-msgstr ""
+msgstr "%1's %2 objetos"
 
 #: lib/RT/CustomField_Overlay.pm:894
 msgid "%1's %2's %3 objects"
-msgstr ""
+msgstr "%1's %2's %3 objetos"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:56
 #. ($object->Name)
 #. ($Object->Name)
 msgid "%1's saved searches"
-msgstr ""
+msgstr "búsquedas guardadas de %1"
 
 #: lib/RT/Transaction_Overlay.pm:468
 #. ($self)
@@ -459,7 +459,7 @@ msgstr "(Envía una copia de esta actualización a una lista de direcciones de c
 
 #: html/Admin/Elements/EditScrip:102
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
-msgstr ""
+msgstr "(Usar estos campos cuando se selecciona 'Definido por el usuario' para una condición o acción)"
 
 #: html/Admin/Groups/index.html:57 html/User/Groups/index.html:54
 msgid "(empty)"
@@ -491,7 +491,7 @@ msgstr "(pendiente de aprobación)"
 
 #: html/Elements/RT__Ticket/ColumnMap:150
 msgid "(pending other Collection)"
-msgstr ""
+msgstr "(pendiente de otra Recopilación)"
 
 #: NOT FOUND IN SOURCE
 msgid "(pending other tickets)"
@@ -581,7 +581,7 @@ msgstr "ACEs solo pueden ser creadas o borradas."
 
 #: html/Search/Elements/SelectAndOr:46
 msgid "AND"
-msgstr ""
+msgstr "Y"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
@@ -606,11 +606,11 @@ msgstr "Acción %1 no encontrada"
 
 #: NOT FOUND IN SOURCE
 msgid "Action committed."
-msgstr "Action committed."
+msgstr "Acción realizada."
 
 #: bin/rt-crontool:148
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "Acción realizada.\\n"
 
 #: bin/rt-crontool:144
 msgid "Action prepared..."
@@ -646,7 +646,7 @@ msgstr "Añadir solicitante"
 
 #: html/Admin/Elements/AddCustomFieldValue:46
 msgid "Add Value"
-msgstr ""
+msgstr "Añadir Valor"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a keyword selection to this queue"
@@ -690,7 +690,7 @@ msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
+msgstr "Añadir, borrar y modificar campo personalizo para objetos"
 
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
@@ -816,11 +816,11 @@ msgstr "Agregador"
 
 #: etc/initialdata:363
 msgid "All Approvals Passed"
-msgstr ""
+msgstr "Todas las Aprobaciones Superadas"
 
 #: NOT FOUND IN SOURCE
 msgid "All Custom Fields"
-msgstr "Todos los campos custom"
+msgstr "Todos los Campos Personalizados"
 
 #: html/Admin/Queues/index.html:75
 msgid "All Queues"
@@ -832,19 +832,19 @@ msgstr "Siempre envía un mensaje a los solicitantes independientemente del remi
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "Y/O"
 
 #: html/Admin/CustomFields/Modify.html:73 html/Admin/Elements/CustomFieldTabs:83
 msgid "Applies to"
-msgstr ""
+msgstr "Aplica a"
 
 #: html/Search/Edit.html:64
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: html/Search/Edit.html:64
 msgid "Apply your changes"
-msgstr ""
+msgstr "Aplicar cambios"
 
 #: html/Elements/Tabs:77
 msgid "Approval"
@@ -873,11 +873,11 @@ msgstr "Detalles de la aprobación"
 
 #: etc/initialdata:351
 msgid "Approval Passed"
-msgstr ""
+msgstr "Aprobación superada"
 
 #: etc/initialdata:374
 msgid "Approval Rejected"
-msgstr ""
+msgstr "Aprobación rechazada"
 
 #: NOT FOUND IN SOURCE
 msgid "Approval diagram"
@@ -909,7 +909,7 @@ msgstr "Ascendente"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Assign and remove custom fields"
-msgstr ""
+msgstr "Asignar y borrar campos personalizados"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "AssignCustomFields"
@@ -946,7 +946,7 @@ msgstr "Archivos adjuntos"
 
 #: lib/RT/Attributes_Overlay.pm:172
 msgid "Attribute Deleted"
-msgstr ""
+msgstr "Atributo borrado"
 
 #: lib/RT/Date.pm:444
 msgid "Aug."
@@ -1059,11 +1059,11 @@ msgstr "No se puede agregar un campo personalizable si no tiene un nombre"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "No se puede encontrar una clase de recopilación para '%1'"
 
 #: html/Search/Build.html:745
 msgid "Can't find a saved search to work with"
-msgstr ""
+msgstr "No se puede encontrar una búsqueda guardada para trabajar"
 
 #: lib/RT/Link_Overlay.pm:160
 msgid "Can't link a ticket to itself"
@@ -1100,11 +1100,11 @@ msgstr "Cambiar contraseña"
 
 #: html/Elements/Submit:78
 msgid "Check All"
-msgstr ""
+msgstr "Seleccionar Todo"
 
 #: html/SelfService/Update.html:78 html/Ticket/Create.html:133 html/Ticket/Update.html:97
 msgid "Check box to delete"
-msgstr "Check box to delete"
+msgstr "Selecciona la casilla para borrar"
 
 #: html/Admin/Elements/SelectRights:55
 msgid "Check box to revoke right"
@@ -1124,7 +1124,7 @@ msgstr "Ciudad"
 
 #: html/Elements/Submit:80
 msgid "Clear All"
-msgstr ""
+msgstr "Borrar Todo"
 
 #: html/Helpers/CalPopup.html:6
 msgid "Close window"
@@ -1252,7 +1252,7 @@ msgstr "No se pudo crear grupo"
 
 #: html/Search/Elements/EditSearches:64
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: etc/initialdata:286
 msgid "Correspondence"
@@ -1280,12 +1280,12 @@ msgstr "No se pudo añadir un nuevo valor de campo personalizable para el ticket
 
 #: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
-msgstr ""
+msgstr "No se pudo añadir nuevo valor de campo personalizado."
 
 #: lib/RT/Record.pm:1660
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
-msgstr ""
+msgstr "No se pudo añadir nuevo valor de campo personalizado. %1 "
 
 #: lib/RT/Ticket_Overlay.pm:2993 lib/RT/Ticket_Overlay.pm:3001 lib/RT/Ticket_Overlay.pm:3018
 msgid "Could not change owner. "
@@ -1299,7 +1299,7 @@ msgstr "No se puede crear un CampoPersonalizable"
 #: html/Admin/Elements/EditCustomField:113
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "No se pudo crear CustomField: %1"
 
 #: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:494 lib/RT/Group_Overlay.pm:501
 msgid "Could not create group"
@@ -1344,7 +1344,7 @@ msgstr "No se pudo encontrar el usuario %1."
 
 #: html/Admin/CustomFields/Objects.html:69
 msgid "Could not load CustomField %1"
-msgstr ""
+msgstr "No se pudo cargar CustomField %1"
 
 #: html/Admin/Groups/Members.html:112 html/User/Groups/Members.html:111 html/User/Groups/Modify.html:103
 msgid "Could not load group"
@@ -1353,11 +1353,11 @@ msgstr "No se puede cargar el grupo"
 #: lib/RT/SavedSearch.pm:120
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "No se pudo cargar objeto para %1"
 
 #: lib/RT/SavedSearch.pm:188
 msgid "Could not load search attribute"
-msgstr ""
+msgstr "No se pudo cargar atributo de búsqueda"
 
 #: lib/RT/Queue_Overlay.pm:762
 #. ($args{'Type'})
@@ -1380,7 +1380,7 @@ msgstr "No se pudo quitar ese principal como un %1 para este ticket"
 
 #: lib/RT/User_Overlay.pm:192
 msgid "Could not set user info"
-msgstr ""
+msgstr "No se pudo establecer la información del usuario"
 
 #: lib/RT/Group_Overlay.pm:1003
 msgid "Couldn't add member to group"
@@ -1427,12 +1427,12 @@ msgstr "No se pudo cargar %1 desde la base de datos de usuarios.\\n"
 #: html/Admin/CustomFields/UserRights.html:149
 #. ($id)
 msgid "Couldn't load Class %1"
-msgstr ""
+msgstr "No se pudo cargar Class %1"
 
 #: html/Admin/CustomFields/GroupRights.html:107
 #. ($id)
 msgid "Couldn't load CustomField %1"
-msgstr ""
+msgstr "No se pudo cargar CustomField %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load KeywordSelects."
@@ -1458,7 +1458,7 @@ msgstr "No se puedo cargar el enlace"
 #: html/Admin/Elements/ObjectCustomFields:83 html/Admin/Queues/CustomFields.html:59 html/Admin/Users/CustomFields.html:59
 #. ($id)
 msgid "Couldn't load object %1"
-msgstr ""
+msgstr "No se pudo cargar objeto %1"
 
 #: html/Admin/Queues/People.html:142
 #. ($id)
@@ -1581,7 +1581,7 @@ msgstr "Crear una plantilla"
 
 #: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
-msgstr ""
+msgstr "Crear un ticket"
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
@@ -1654,7 +1654,7 @@ msgstr ""
 
 #: html/Search/Elements/PickBasics:102
 msgid "Creator"
-msgstr ""
+msgstr "Creador"
 
 #: html/Elements/EditLinks:49
 msgid "Current Links"
@@ -1695,7 +1695,7 @@ msgstr "Campos personalizables"
 #: html/Admin/CustomFields/index.html:60
 #. ($lookup)
 msgid "Custom Fields for %1"
-msgstr ""
+msgstr "Campos Personalizados para %1"
 
 #: html/Admin/Elements/EditScrip:123
 msgid "Custom action cleanup code"
@@ -1839,16 +1839,16 @@ msgstr "Borrar"
 
 #: html/Admin/Elements/EditTemplates:79
 msgid "Delete Template"
-msgstr ""
+msgstr "Borrar Plantilla"
 
 #: lib/RT/SavedSearch.pm:211
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "Borrado fallido: %1"
 
 #: html/Admin/Elements/EditScrips:74
 msgid "Delete selected scrips"
-msgstr ""
+msgstr "Borrar scripts seleccionados"
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "Delete tickets"
@@ -1864,7 +1864,7 @@ msgstr "DeleteTicket"
 
 #: lib/RT/SavedSearch.pm:209
 msgid "Deleted search"
-msgstr ""
+msgstr "Búsqueda borrada"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
@@ -1901,22 +1901,22 @@ msgstr "Dependencias: \\n"
 #: lib/RT/Transaction_Overlay.pm:705
 #. ($value)
 msgid "Dependency by %1 added"
-msgstr ""
+msgstr "Dependencia para %1 añadida"
 
 #: lib/RT/Transaction_Overlay.pm:745
 #. ($value)
 msgid "Dependency by %1 deleted"
-msgstr ""
+msgstr "Dependencia para %1 borrada"
 
 #: lib/RT/Transaction_Overlay.pm:702
 #. ($value)
 msgid "Dependency on %1 added"
-msgstr ""
+msgstr "Dependencia en %1 añadida"
 
 #: lib/RT/Transaction_Overlay.pm:742
 #. ($value)
 msgid "Dependency on %1 deleted"
-msgstr ""
+msgstr "Dependencia en %1 borrada"
 
 #: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:219 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
@@ -1972,7 +1972,7 @@ msgstr "Modo de despliegue"
 
 #: lib/RT/Group_Overlay.pm:168
 msgid "Display saved searches for this group"
-msgstr ""
+msgstr "Mostrar búsquedas guardadas para este grupo"
 
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
@@ -2004,11 +2004,11 @@ msgstr "Descargar como fichero delimitado por tabuladores"
 
 #: html/Elements/SelectDateType:53 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:88 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
 msgid "Due"
-msgstr "Retraso"
+msgstr "Esperado"
 
 #: NOT FOUND IN SOURCE
 msgid "Due date '%1' could not be parsed"
-msgstr "La fecha de retraso '%1' no pudo ser leida"
+msgstr "La fecha esperada '%1' no pudo ser leída"
 
 #: NOT FOUND IN SOURCE
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
@@ -2029,11 +2029,11 @@ msgstr "Editar campos personalizados para %1"
 
 #: html/Admin/Global/CustomFields/Groups.html:9
 msgid "Edit Custom Fields for all groups"
-msgstr ""
+msgstr "Editar Campos Personalizados para todos los grupos"
 
 #: html/Admin/Global/CustomFields/Users.html:9
 msgid "Edit Custom Fields for all users"
-msgstr ""
+msgstr "Editar Campos Personalizados para todos los usuarios"
 
 #: html/Admin/Global/CustomFields/Queue-Tickets.html:9 html/Admin/Global/CustomFields/Queue-Transactions.html:9
 msgid "Edit Custom Fields for tickets in all queues"
@@ -2157,7 +2157,7 @@ msgstr "Estado %1 habilitado"
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (loc_fuzzy($msg))
 msgid "Enabled status: %1"
-msgstr ""
+msgstr "Estado habilitado: %1"
 
 #: lib/RT/CustomField_Overlay.pm:64
 msgid "Enter multiple values"
@@ -2165,7 +2165,7 @@ msgstr "Introducir multiples valores"
 
 #: html/Elements/EditLinks:126
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Entrar objetos o URIs para linkar a los objetos. Separar múltiples entradas con espacios."
 
 #: lib/RT/CustomField_Overlay.pm:65
 msgid "Enter one value"
@@ -2173,7 +2173,7 @@ msgstr "Introducir un valor"
 
 #: html/Elements/EditLinks:123
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Entrar colas o URIs para linkar a las colas. Separar múltiples entradas con espacios."
 
 #: html/Elements/EditLinks:119 html/Search/Bulk.html:189
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
@@ -2181,7 +2181,7 @@ msgstr "Ingrese los números de ticket o las URL que llevan hacia el ticket. Sep
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
-msgstr ""
+msgstr "Entrar hasta %1 valor/es"
 
 #: html/Elements/Login:76 html/SelfService/Error.html:46 html/SelfService/Error.html:47
 msgid "Error"
@@ -2201,7 +2201,7 @@ msgstr "Error en los parámetros para Queue->DelWatcher"
 
 #: lib/RT/Queue_Overlay.pm:834
 msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr ""
+msgstr "Error en los parámetros para Queue->DeleteWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1343
 msgid "Error in parameters to Ticket->AddWatcher"
@@ -2213,15 +2213,15 @@ msgstr "Error en los parámetros para Queue->DelWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1509
 msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr ""
+msgstr "Error en los parámetros para Ticket->DeleteWatcher"
 
 #: bin/rt-crontool:233
 msgid "Escalate tickets"
-msgstr ""
+msgstr "Escalar tickets"
 
 #: html/Ticket/Elements/ShowBasics:57
 msgid "Estimated"
-msgstr ""
+msgstr "Estimado"
 
 #: etc/initialdata:20
 msgid "Everyone"
@@ -2245,7 +2245,7 @@ msgstr "Información extra"
 
 #: lib/RT/SavedSearch.pm:165
 msgid "Failed to create search attribute"
-msgstr ""
+msgstr "Fallado en crear atributo de búsqueda"
 
 #: lib/RT/User_Overlay.pm:377
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -2263,7 +2263,7 @@ msgstr "Error al cargar el modulo %1. (%2)"
 #: lib/RT/SavedSearch.pm:168
 #. ($privacy)
 msgid "Failed to load object for %1"
-msgstr ""
+msgstr "Error al cargar objeto para %1"
 
 #: lib/RT/Date.pm:438
 msgid "Feb."
@@ -2275,23 +2275,23 @@ msgstr "Febrero"
 
 #: html/Elements/SelectAttachmentField:50
 msgid "Filename"
-msgstr ""
+msgstr "Nombre de fichero"
 
 #: lib/RT/CustomField_Overlay.pm:69
 msgid "Fill in multiple text areas"
-msgstr ""
+msgstr "Rellenar en multiples areas de texto"
 
 #: lib/RT/CustomField_Overlay.pm:74
 msgid "Fill in multiple wikitext areas"
-msgstr ""
+msgstr "Rellenar en multiples areas wikitext"
 
 #: lib/RT/CustomField_Overlay.pm:70
 msgid "Fill in one text area"
-msgstr ""
+msgstr "Rellenar en un area de texto"
 
 #: lib/RT/CustomField_Overlay.pm:75
 msgid "Fill in one wikitext area"
-msgstr ""
+msgstr "Rellenar en un area wikitext"
 
 #: html/Admin/CustomFields/Modify.html:107 html/Admin/CustomFields/Modify.html:118
 msgid "Fill in this field with a URL."
@@ -2299,11 +2299,11 @@ msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
-msgstr ""
+msgstr "Rellenar en hasta %1 areas de texto"
 
 #: lib/RT/CustomField_Overlay.pm:76
 msgid "Fill in up to %1 wikitext areas"
-msgstr ""
+msgstr "Rellenar en hasta %1 areas wikitext"
 
 #: NOT FOUND IN SOURCE
 msgid "Fin"
@@ -2413,7 +2413,7 @@ msgstr "Global"
 
 #: html/Admin/Elements/EditCustomFields:55
 msgid "Global Custom Fields"
-msgstr ""
+msgstr "Campos Personalizados Globales"
 
 #: NOT FOUND IN SOURCE
 msgid "Global Keyword Selections"
@@ -2425,7 +2425,7 @@ msgstr "Acciones Globales"
 
 #: html/Admin/Global/CustomFields/index.html:59
 msgid "Global custom field configuration"
-msgstr ""
+msgstr "Configuración de Campos Personalizados Globales"
 
 #: html/Admin/Elements/SelectTemplate:59
 #. (loc($Template->Name))
@@ -2507,11 +2507,11 @@ msgstr "Los grupos no pueden ser miembros de sus propios miembros"
 
 #: html/Admin/Groups/index.html:82
 msgid "Groups matching search criteria"
-msgstr ""
+msgstr "Grupos coincidentes con el criterio de búsqueda"
 
 #: html/Ticket/Elements/ShowRequestor:77
 msgid "Groups this user belongs to"
-msgstr ""
+msgstr "Grupos a los que este usuario pertenece"
 
 #: lib/RT/Interface/CLI.pm:94 lib/RT/Interface/CLI.pm:94
 msgid "Hello!"
@@ -2529,12 +2529,12 @@ msgstr "Historial"
 #: html/Admin/Groups/History.html:62
 #. ($GroupObj->Name)
 msgid "History of the group %1"
-msgstr ""
+msgstr "Historico del grupo %1"
 
 #: html/Admin/Users/History.html:62
 #. ($UserObj->Name)
 msgid "History of the user %1"
-msgstr ""
+msgstr "Historico del usuario %1"
 
 #: NOT FOUND IN SOURCE
 msgid "HomePhone"
@@ -2559,7 +2559,7 @@ msgstr "Tengo [quant,_1,concrete mixer]."
 
 #: html/Search/Build.html:400
 msgid "I'm lost"
-msgstr ""
+msgstr "Estoy perdido"
 
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1753
 msgid "Id"
@@ -2764,11 +2764,11 @@ msgstr "Leng"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76
 msgid "Language"
-msgstr ""
+msgstr "Lenguaje"
 
 #: html/Search/Elements/EditFormat:79
 msgid "Large"
-msgstr ""
+msgstr "Grande"
 
 #: html/Ticket/Elements/Tabs:96
 msgid "Last"
@@ -2800,7 +2800,7 @@ msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:68
 msgid "Left"
-msgstr "Izquierda"
+msgstr "Queda"
 
 #: html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
@@ -2875,7 +2875,7 @@ msgstr ""
 
 #: html/Admin/Tools/Configuration.html:64
 msgid "Loaded perl modules"
-msgstr ""
+msgstr "Modulos perl cargados"
 
 #: lib/RT/SavedSearch.pm:112
 #. ($self->Name)
@@ -3050,7 +3050,7 @@ msgstr "Fusión fallida. No se pudo establecer el EffectiveId"
 
 #: lib/RT/Ticket_Overlay.pm:2733
 msgid "Merge failed. Couldn't set Status"
-msgstr ""
+msgstr "Unión fallida. No se pudo establecer el Estado"
 
 #: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
@@ -3059,7 +3059,7 @@ msgstr "Fusionar dentro de"
 #: lib/RT/Transaction_Overlay.pm:721
 #. ($value)
 msgid "Merged into %1"
-msgstr ""
+msgstr "Unido en %1"
 
 #: html/Search/Bulk.html:143 html/Ticket/Update.html:118
 msgid "Message"
@@ -3087,7 +3087,7 @@ msgstr "Minutos"
 
 #: html/Search/Build.html:430
 msgid "Mismatched parentheses"
-msgstr ""
+msgstr "Parentesis no coincidentes"
 
 #: lib/RT/Record.pm:955
 msgid "Missing a primary key?: %1"
@@ -3112,12 +3112,12 @@ msgstr "Modificar el campo personalizable %1"
 #: html/Admin/Elements/ObjectCustomFields:96
 #. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr ""
+msgstr "Modificar Campos Personalizados que aplican a %1 para todo %2"
 
 #: html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($Types)))
 msgid "Modify Custom Fields which apply to all %1"
-msgstr ""
+msgstr "Modificar Campos Personalizados que aplican a todo %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Custom Fields which apply to all queues"
@@ -3254,13 +3254,13 @@ msgstr "Modificar la propia cuenta RT"
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
 #. ($QueueObj->Name)
 msgid "Modify people related to queue %1"
-msgstr "Modificar personas relacionadas al cola %1"
+msgstr "Modificar personas relacionadas con la cola %1"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
 #. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
-msgstr "Modificar personas relacionadas al ticket #%1"
+msgstr "Modificar personas relacionadas con el ticket #%1"
 
 #: html/Admin/Queues/Scrips.html:67
 #. ($QueueObj->Name)
@@ -3528,7 +3528,7 @@ msgstr "Alias"
 
 #: html/Admin/CustomFields/UserRights.html:145
 msgid "No Class defined"
-msgstr ""
+msgstr "No existe Class definida"
 
 #: html/Admin/CustomFields/Modify.html:166 html/Admin/Elements/EditCustomField:119
 msgid "No CustomField"
@@ -3536,7 +3536,7 @@ msgstr "No hay campo personalizable"
 
 #: html/Admin/CustomFields/GroupRights.html:103
 msgid "No CustomField defined"
-msgstr ""
+msgstr "No existe CustomField definido"
 
 #: html/Admin/Groups/GroupRights.html:105 html/Admin/Groups/UserRights.html:92
 msgid "No Group defined"
@@ -3544,7 +3544,7 @@ msgstr "No hay grupo definido"
 
 #: lib/RT/Tickets_Overlay_SQL.pm:482
 msgid "No Query"
-msgstr ""
+msgstr "No existe Consulta"
 
 #: html/Admin/Queues/GroupRights.html:118 html/Admin/Queues/UserRights.html:89
 msgid "No Queue defined"
@@ -3568,7 +3568,7 @@ msgstr "No se especificó ticket. Abortando las modificaciones al ticket\\n\\n"
 
 #: html/Approvals/Elements/Approve:73
 msgid "No action"
-msgstr "No action"
+msgstr "No acción"
 
 #: lib/RT/Record.pm:950
 msgid "No column specified"
@@ -3601,7 +3601,7 @@ msgstr "No existen grupos que coincidan con el criterio de búsqueda."
 
 #: lib/RT/Ticket_Overlay.pm:2359
 msgid "No message attached"
-msgstr ""
+msgstr "Mensaje no adjuntado"
 
 #: lib/RT/User_Overlay.pm:1035
 msgid "No password set"
@@ -3650,7 +3650,7 @@ msgstr "Sin privilegios concedidos"
 
 #: lib/RT/SavedSearch.pm:187
 msgid "No search loaded"
-msgstr ""
+msgstr "No hay búsqueda cargada"
 
 #: html/Search/Bulk.html:232
 msgid "No search to operate on."
@@ -3730,11 +3730,11 @@ msgstr "Notificar AdminCcs como comentario"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
 msgid "Notify Ccs"
-msgstr ""
+msgstr "Notificar Ccs"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
 msgid "Notify Ccs as Comment"
-msgstr ""
+msgstr "Notificar Ccs como Comentarios"
 
 #: etc/initialdata:128
 msgid "Notify Other Recipients"
@@ -3798,7 +3798,7 @@ msgstr "Noviembre"
 
 #: html/Search/Elements/SelectAndOr:47
 msgid "OR"
-msgstr ""
+msgstr "O"
 
 #: lib/RT/Record.pm:323
 msgid "Object could not be created"
@@ -3806,7 +3806,7 @@ msgstr "No se pudo crear el objeto"
 
 #: lib/RT/Record.pm:124
 msgid "Object could not be deleted"
-msgstr ""
+msgstr "Objeto no pudo ser borrado"
 
 #: lib/RT/Record.pm:342
 msgid "Object created"
@@ -3873,7 +3873,7 @@ msgstr "Al cambiar de propietario"
 
 #: etc/initialdata:177 etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
-msgstr ""
+msgstr "Al cambiar de prioridad"
 
 #: etc/initialdata:192
 msgid "On Queue Change"
@@ -3956,11 +3956,11 @@ msgstr "Ticket originario: #%1"
 
 #: lib/RT/Transaction_Overlay.pm:609
 msgid "Outgoing email about a comment recorded"
-msgstr ""
+msgstr "Email saliente acerca de un comentario grabado"
 
 #: lib/RT/Transaction_Overlay.pm:613
 msgid "Outgoing email recorded"
-msgstr ""
+msgstr "Email saliente grabado"
 
 #: html/Admin/Queues/Modify.html:90
 msgid "Over time, priority moves toward"
@@ -3998,7 +3998,7 @@ msgstr "El propietario es"
 #: html/Elements/TicketList:78
 #. ($Page, int($TotalFound/$Rows)+$oddRows)
 msgid "Page %1 of %2"
-msgstr ""
+msgstr "Pagina %1 de %2"
 
 #: html/Admin/Users/Modify.html:198 html/User/Prefs.html:96
 msgid "Pager"
@@ -4275,7 +4275,7 @@ msgstr "Error de configuración del RT"
 msgid "RT Critical error. Message not recorded!"
 msgstr "Error crítico en RT. El mensaje no fue grabado!"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "Error del RT"
 
@@ -4321,7 +4321,7 @@ msgstr "RT no pudo encontrar la cola: %1"
 
 #: html/Elements/SetupSessionCookie:90
 msgid "RT couldn't store your session."
-msgstr ""
+msgstr "RT no pudo almacenar tu sesión."
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't validate this PGP signature. \\n"
@@ -4375,22 +4375,22 @@ msgstr "Nombre real"
 #: lib/RT/Transaction_Overlay.pm:712
 #. ($value)
 msgid "Reference by %1 added"
-msgstr ""
+msgstr "Referencia para %1 añadida"
 
 #: lib/RT/Transaction_Overlay.pm:752
 #. ($value)
 msgid "Reference by %1 deleted"
-msgstr ""
+msgstr "Referencia para %1 borrada"
 
 #: lib/RT/Transaction_Overlay.pm:709
 #. ($value)
 msgid "Reference to %1 added"
-msgstr ""
+msgstr "Referencia para %1 añadida"
 
 #: lib/RT/Transaction_Overlay.pm:749
 #. ($value)
 msgid "Reference to %1 deleted"
-msgstr ""
+msgstr "Referencia para %1 borrada"
 
 #: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:224 html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
@@ -4755,7 +4755,7 @@ msgstr "Ver campos personalizados"
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "See exact outgoing email messages and their recipeients"
-msgstr ""
+msgstr "Ver mensajes email salientes exactos y sus receptores"
 
 #: lib/RT/Queue_Overlay.pm:105
 msgid "See ticket private commentary"
@@ -5051,7 +5051,7 @@ msgstr ""
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
 msgid "Sort"
-msgstr ""
+msgstr "Ordenar"
 
 #: NOT FOUND IN SOURCE
 msgid "Sort key"
@@ -5079,7 +5079,7 @@ msgstr "Página de inicio"
 
 #: html/Elements/SelectDateType:48 html/Ticket/Elements/EditDates:53 html/Ticket/Elements/ShowDates:56
 msgid "Started"
-msgstr "Empezado"
+msgstr "Comenzado"
 
 #: NOT FOUND IN SOURCE
 msgid "Started date '%1' could not be parsed"
@@ -5087,11 +5087,11 @@ msgstr "La fecha de inicio '%1' no se pudo leer"
 
 #: html/Elements/SelectDateType:52 html/Ticket/Create.html:207 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
 msgid "Starts"
-msgstr "Empieza"
+msgstr "Comienzo"
 
 #: NOT FOUND IN SOURCE
 msgid "Starts By"
-msgstr "Empezado por"
+msgstr "Comenzado por"
 
 #: NOT FOUND IN SOURCE
 msgid "Starts date '%1' could not be parsed"
@@ -5287,7 +5287,7 @@ msgstr "Este es el mismo valor"
 
 #: lib/RT/ACE_Overlay.pm:306 lib/RT/ACE_Overlay.pm:615
 msgid "That principal already has that right"
-msgstr ""
+msgstr "Ese principal ya tiene ese derecho"
 
 #: lib/RT/Queue_Overlay.pm:754
 #. ($args{'Type'})
@@ -5398,7 +5398,7 @@ msgstr "Estos comentarios generalmente no están visibles para el usuario"
 
 #: lib/RT/CustomField_Overlay.pm:977
 msgid "This custom field does not apply to that object"
-msgstr ""
+msgstr "Este campo personalizado no se aplica a este objeto"
 
 #: html/Admin/Tools/Configuration.html:50
 msgid "This feature is only available to system administrators"
@@ -5439,7 +5439,7 @@ msgstr "Ticket # %1  %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket # %1 Jumbo update: %2"
-msgstr "Actualizacion Jumbo para el ticket # %1: %2"
+msgstr "Actualización Jumbo para el ticket # %1: %2"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
 #. ($Ticket->Id, $Ticket->Subject)
@@ -5548,7 +5548,7 @@ msgstr "Observadores del caso"
 #: lib/RT/Search/FromSQL.pm:83
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr ""
+msgstr "Modulo de búsqueda TicketSQL"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:52 lib/RT/CustomField_Overlay.pm:1204
 msgid "Tickets"
@@ -5666,11 +5666,11 @@ msgstr "Campos personalizables de Transacción"
 
 #: NOT FOUND IN SOURCE
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
-msgstr "Transaction->Create no pudo, ya no no especificó un ID de ticket"
+msgstr "Transaction->Create no pudo, ya que no especificó un ID de ticket"
 
 #: lib/RT/Transaction_Overlay.pm:125
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr ""
+msgstr "Transaction->Create no pudo, ya que no especificó un tipo de objeto e ID"
 
 #: lib/RT/Transaction_Overlay.pm:857
 msgid "Transactions are immutable"
@@ -5708,7 +5708,7 @@ msgstr "Codificación de contenido desconocida: %1"
 
 #: html/Search/Build.html:395
 msgid "Unknown field: $key"
-msgstr ""
+msgstr "Campo desconocido: $key"
 
 #: html/Elements/SelectResultsPerPage:58
 msgid "Unlimited"
@@ -5716,7 +5716,7 @@ msgstr "Ilimitado"
 
 #: html/Search/Elements/SelectSearchesForObjects:63
 msgid "Unnamed search"
-msgstr ""
+msgstr "Búsqueda sin nombre"
 
 #: etc/initialdata:32
 msgid "Unprivileged"
@@ -5724,11 +5724,11 @@ msgstr "No privilegiado"
 
 #: html/Admin/Elements/EditCustomFields:60
 msgid "Unselected Custom Fields"
-msgstr ""
+msgstr "Campos Personalizados No Seleccionados"
 
 #: html/Admin/CustomFields/Objects.html:61
 msgid "Unselected objects"
-msgstr ""
+msgstr "Objetos No Seleccionados"
 
 #: lib/RT/Transaction_Overlay.pm:646
 msgid "Untaken"
@@ -5806,35 +5806,35 @@ msgstr "Actualizado"
 
 #: html/Tools/Offline.html:93
 msgid "Upload"
-msgstr ""
+msgstr "Subir"
 
 #: lib/RT/CustomField_Overlay.pm:84
 msgid "Upload multiple files"
-msgstr ""
+msgstr "Subir multiples ficheros"
 
 #: lib/RT/CustomField_Overlay.pm:79
 msgid "Upload multiple images"
-msgstr ""
+msgstr "Subir multiples imagenes"
 
 #: lib/RT/CustomField_Overlay.pm:85
 msgid "Upload one file"
-msgstr ""
+msgstr "Subir un fichero"
 
 #: lib/RT/CustomField_Overlay.pm:80
 msgid "Upload one image"
-msgstr ""
+msgstr "Subir una imagen"
 
 #: lib/RT/CustomField_Overlay.pm:86
 msgid "Upload up to %1 files"
-msgstr ""
+msgstr "Subir hasta %1 ficheros"
 
 #: lib/RT/CustomField_Overlay.pm:81
 msgid "Upload up to %1 images"
-msgstr ""
+msgstr "Subir hasta %1 imagenes"
 
 #: html/Tools/Offline.html:93
 msgid "Upload your changes"
-msgstr ""
+msgstr "Subir cambios"
 
 #: html/Admin/index.html:90
 msgid "Use other RT administrative tools"
@@ -5851,7 +5851,7 @@ msgstr "Usuario %1 Contraseña: %2\\n"
 #: lib/RT/Ticket_Overlay.pm:497
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
-msgstr ""
+msgstr "No se encontro el Usuario '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "User '%1' not found"
@@ -5867,7 +5867,7 @@ msgstr "Definido por el usuario"
 
 #: html/Admin/Elements/EditScrip:98
 msgid "User Defined conditions and actions"
-msgstr ""
+msgstr "Condiciones y acciones Definidas por el Usuario"
 
 #: NOT FOUND IN SOURCE
 msgid "User ID"
@@ -5901,7 +5901,7 @@ msgstr "Grupos definidos por el usuario"
 
 #: lib/RT/User_Overlay.pm:593 lib/RT/User_Overlay.pm:613
 msgid "User loaded"
-msgstr ""
+msgstr "Usuario cargado"
 
 #: NOT FOUND IN SOURCE
 msgid "User notified"
@@ -5929,7 +5929,7 @@ msgstr "Usuarios que concuerdan con los criterios de búsqueda"
 
 #: lib/RT/Tickets_Overlay_SQL.pm:528
 msgid "Valid Query"
-msgstr ""
+msgstr "Consulta Valida"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
@@ -5945,7 +5945,7 @@ msgstr "Valores"
 
 #: lib/RT/Queue_Overlay.pm:108
 msgid "Watch"
-msgstr "Observar"
+msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "WatchAsAdminCc"
@@ -5981,7 +5981,7 @@ msgstr "Cuando un ticket se crea"
 
 #: etc/initialdata:418
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
-msgstr "Cuando una aprobacion de ticket se crea, notifica al propietario y AdminCC del item que espera su aprobación"
+msgstr "Cuando una aprobación de ticket se crea, notifica al propietario y AdminCC del item que espera su aprobación"
 
 #: etc/initialdata:151
 msgid "When anything happens"
@@ -5997,7 +5997,7 @@ msgstr "Siempre que el propietario de un ticket cambie"
 
 #: etc/initialdata:178 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
-msgstr ""
+msgstr "Siempre que la prioridad de un ticket cambie"
 
 #: etc/initialdata:193
 msgid "Whenever a ticket's queue changes"
@@ -6009,7 +6009,7 @@ msgstr "Siempre que el estado de un ticket cambie"
 
 #: etc/initialdata:207
 msgid "Whenever a user-defined condition occurs"
-msgstr "Siempre que ocurra una condicion definida por el usuario"
+msgstr "Siempre que ocurra una condición definida por el usuario"
 
 #: etc/initialdata:164
 msgid "Whenever comments come in"
@@ -6090,7 +6090,7 @@ msgstr "Su petición ha sido aprobada por %1. Otras aprobaciones pueden estar pe
 
 #: etc/initialdata:540
 msgid "Your request has been approved."
-msgstr "Su peticion ha sido aprobada."
+msgstr "Su petición ha sido aprobada."
 
 #: NOT FOUND IN SOURCE
 msgid "Your request was rejected"
@@ -6183,23 +6183,23 @@ msgstr "igual a"
 
 #: html/Search/Build.html:481
 msgid "error: can't move down"
-msgstr ""
+msgstr "error: no se puede mover abajo"
 
 #: html/Search/Build.html:503
 msgid "error: can't move left"
-msgstr ""
+msgstr "error: no se puede mover a la izquierda"
 
 #: html/Search/Build.html:462
 msgid "error: can't move up"
-msgstr ""
+msgstr "error: no se puede mover arriba"
 
 #: html/Search/Build.html:546
 msgid "error: nothing to delete"
-msgstr ""
+msgstr "error: nada a borrar"
 
 #: html/Search/Build.html:467 html/Search/Build.html:486 html/Search/Build.html:508 html/Search/Build.html:537
 msgid "error: nothing to move"
-msgstr ""
+msgstr "error: nada a mover"
 
 #: html/Search/Build.html:564
 msgid "error: nothing to toggle"
@@ -6273,7 +6273,7 @@ msgstr "nuevo"
 
 #: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
 msgid "no name"
-msgstr ""
+msgstr "sin nombre"
 
 #: html/Admin/Elements/EditScrips:64
 msgid "no value"
@@ -6319,7 +6319,7 @@ msgstr "sec"
 
 #: lib/RT/System.pm:86
 msgid "show Configuration tab"
-msgstr ""
+msgstr "mostrar etiqueta de Configuración"
 
 #: html/Search/Results.html:80
 msgid "spreadsheet"
@@ -6348,7 +6348,7 @@ msgstr "sistema %1"
 msgid "system group '%1'"
 msgstr "grupo del sistema '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "el componente que llama no especifica por qué"
 

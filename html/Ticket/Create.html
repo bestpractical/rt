@@ -50,6 +50,7 @@
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket"),
     actions => $actions &>
+<& /Elements/ListActions, actions => \@results &>
 <form action="<%$RT::WebPath%>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 <& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>

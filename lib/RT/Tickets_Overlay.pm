@@ -1,38 +1,38 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
+#
 # This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -41,7 +41,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 # Major Changes:
 
@@ -162,7 +162,7 @@ my %dispatch = (
     LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
-my %can_bundle = ( WATCHERFIELD => "yes", );
+my %can_bundle = ( WATCHERFIELD => "yes", ); # XXX: in 3.4 this part is commented out
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
@@ -700,7 +700,7 @@ sub _TransLimit {
 			SUBCLAUSE     => 'contentquery',
 		       );
     } else {
-       $self->_SQLLimit(
+        $self->_SQLLimit(
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => $field,
 			OPERATOR      => $op,
@@ -708,7 +708,7 @@ sub _TransLimit {
 			CASESENSITIVE => 0,
 			ENTRYAGGREGATOR => 'AND',
 			@rest
-		       );
+		);
     }
 
     $self->_SQLJoin(
@@ -1181,57 +1181,50 @@ sub _LinkFieldLimit {
 }
 
 
-
 =head2 _CustomFieldDecipher
- 
+
 Try and turn a CF descriptor into (cfid, cfname) object pair.
- 
 
 =cut
 
 sub _CustomFieldDecipher {
-  my ($self, $field) = @_;
+    my ($self, $field) = @_;
  
-  my $queue = 0;
-  if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-    $queue = $1;
-    $field = $2;
- }
-  $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
- 
-  my $cfid;
- 
-  if ($queue) {
-    my $q = RT::Queue->new( $self->CurrentUser );
-    $q->Load($queue) if ($queue);
- 
-    my $cf;
-    if ( $q->id ) {
-      # $queue = $q->Name; # should we normalize the queue?
-      $cf = $q->CustomField($field);
+    my $queue = 0;
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+        ($queue, $field) = ($1, $2);
     }
-    else {
-      $cf = RT::CustomField->new( $self->CurrentUser );
-      $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
-     }
-    $cfid = $cf->id if $cf;
-  }
+    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+
+    my $cfid;
+    if ( $queue ) {
+        my $q = RT::Queue->new( $self->CurrentUser );
+        $q->Load( $queue ) if $queue;
+
+        my $cf;
+        if ( $q->id ) {
+            # $queue = $q->Name; # should we normalize the queue?
+            $cf = $q->CustomField( $field );
+        }
+        else {
+            $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByNameAndQueue( Queue => 0, Name => $field );
+        }
+        $cfid = $cf->id if $cf;
+    }
  
-  return ($queue, $field, $cfid);
+    return ($queue, $field, $cfid);
  
 }
  
-
- 
 =head2 _CustomFieldJoin
- 
+
 Factor out the Join of custom fields so we can use it for sorting too
 
 =cut
 
 sub _CustomFieldJoin {
     my ($self, $cfkey, $cfid, $field) = @_;
- 
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
          $self->{_sql_cf_alias}{$cfkey} )
@@ -1327,6 +1320,7 @@ sub _CustomFieldLimit {
     my $field = $rest{SUBKEY} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
+
     my ($queue, $cfid);
     ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
@@ -1374,8 +1368,8 @@ sub _CustomFieldLimit {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'OR',
         );
+        $self->_CloseParen;
     }
-    $self->_CloseParen if $null_columns_ok;
 
     $self->_CloseParen;
 
@@ -1418,57 +1412,57 @@ sub OrderByCols {
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
            unless ($cfid) {
-             # For those cases where we are doing a join against the
-             # CF name, and don't have a CFid, use Unique to make sure
-             # we don't show duplicate tickets.  NOTE: I'm pretty sure
-             # this will stay mixed in for the life of the
-             # class/package, and not just for the life of the object.
-             # Potential performance issue.
-             require DBIx::SearchBuilder::Unique;
-             DBIx::SearchBuilder::Unique->import;
+               # For those cases where we are doing a join against the
+               # CF name, and don't have a CFid, use Unique to make sure
+               # we don't show duplicate tickets.  NOTE: I'm pretty sure
+               # this will stay mixed in for the life of the
+               # class/package, and not just for the life of the object.
+               # Potential performance issue.
+               require DBIx::SearchBuilder::Unique;
+               DBIx::SearchBuilder::Unique->import;
            }
            my $CFvs = $self->Join(
-                TYPE   => 'left',
-                ALIAS1 => $TicketCFs,
-                FIELD1 => 'CustomField',
-                TABLE2 => 'CustomFieldValues',
-                FIELD2 => 'CustomField',
-            );
+               TYPE   => 'left',
+               ALIAS1 => $TicketCFs,
+               FIELD1 => 'CustomField',
+               TABLE2 => 'CustomFieldValues',
+               FIELD2 => 'CustomField',
+           );
            $self->SUPER::Limit(
-                LEFTJOIN => $CFvs,
-                FIELD => 'Name',
-                QUOTEVALUE => 0,
-                VALUE => $TicketCFs . ".Content",
-                ENTRYAGGREGATOR => 'AND'
-                              );
+               LEFTJOIN => $CFvs,
+               FIELD => 'Name',
+               QUOTEVALUE => 0,
+               VALUE => $TicketCFs . ".Content",
+               ENTRYAGGREGATOR => 'AND'
+           );
 
-          push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
-          push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
+           push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
+           push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
        } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
-         # PAW logic is "reversed"
-         my $order = "ASC";
-         if (exists $row->{ORDER} ) {
-           my $o = $row->{ORDER};
-           delete $row->{ORDER};
-           $order = "DESC" if $o =~ /asc/i;
-         }
+           # PAW logic is "reversed"
+           my $order = "ASC";
+           if (exists $row->{ORDER} ) {
+               my $o = $row->{ORDER};
+               delete $row->{ORDER};
+               $order = "DESC" if $o =~ /asc/i;
+           }
 
-         # Unowned
-         # Else
+           # Unowned
+           # Else
 
-         # Ticket.Owner  1 0 0
-         my $ownerId = $self->CurrentUser->Id;
-         push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
+           # Ticket.Owner  1 0 0
+           my $ownerId = $self->CurrentUser->Id;
+           push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
 
-         # Unowned Tickets 0 1 0
-         my $nobodyId = $RT::Nobody->Id;
-         push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+           # Unowned Tickets 0 1 0
+           my $nobodyId = $RT::Nobody->Id;
+           push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
 
-         push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
-	}
-        else {
-            push @res, $row;
-        }
+           push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
+       }
+       else {
+           push @res, $row;
+       }
     }
     return $self->SUPER::OrderByCols(@res);
 }
@@ -1503,7 +1497,7 @@ sub Limit {
 
     my $index = $self->_NextIndex;
 
-#make the TicketRestrictions hash the equivalent of whatever we just passed in;
+# make the TicketRestrictions hash the equivalent of whatever we just passed in;
 
     %{ $self->{'TicketRestrictions'}{$index} } = %args;
 
@@ -2719,9 +2713,9 @@ sub _RestrictionsToClauses {
         #use Data::Dumper;
         #print Dumper($restriction),"\n";
 
-   # We need to reimplement the subclause aggregation that SearchBuilder does.
-   # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
-   # Then SB AND's the different Subclauses together.
+        # We need to reimplement the subclause aggregation that SearchBuilder does.
+        # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
+        # Then SB AND's the different Subclauses together.
 
         # So, we want to group things into Subclauses, convert them to
         # SQL, and then join them with the appropriate DefaultEA.
@@ -2745,7 +2739,7 @@ sub _RestrictionsToClauses {
 
         die "I don't know about $field yet"
             unless ( exists $FIELD_METADATA{$realfield}
-            or $restriction->{CUSTOMFIELD} );
+                or $restriction->{CUSTOMFIELD} );
 
         my $type = $FIELD_METADATA{$realfield}->[0];
         my $op   = $restriction->{'OPERATOR'};
