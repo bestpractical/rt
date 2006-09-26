@@ -80,7 +80,7 @@ my $print_value = sub {
     $m->comp('/Elements/Callback',
         _CallbackName => 'ShowComponentName',
         Name          => \$comp,
-        CustomField   => $CustomField,
+        CustomField   => $cf,
         Object        => $Object
     );
     if ( $m->comp_exists( $comp ) ) {
