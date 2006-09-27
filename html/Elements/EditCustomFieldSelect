@@ -43,22 +43,32 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
+
+%# Build up the set of cascading select boxes as "guides"
+%# each one limits the options of the final one a bit
+%# (perhaps by tweaking the .display style?)
+%       my $selected = 0;
+%       my @category;
+%       my $id = $NamePrefix . $CustomField->Id;
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
+%       if (@category) {
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/cascaded.js"></script>
+%#      XXX - Hide this select from w3m?
+      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<%$id%>-Category"
+        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>-</&></option>
+%           foreach my $cat (@category) {
+%               my ($depth, $name) = @$cat;
+        <option value="<% $name %>"><% '&nbsp;' x $depth |n %><%$name%></option>
+%           }
+      </select><br />
+%       }
+      <select name="<%$id%>-Values" id="<%$id%>-Values"
+%       if ($Multiple or !@category) {
         size="<%$Rows%>"
+%       }
         <% $Multiple && 'MULTIPLE' %>>
-% my $selected;
-% my $CFVs = $CustomField->Values;
-% while ($CFVs and my $value = $CFVs->Next ) {
-        <option value="<%$value->Name%>" 
-% if ($Values) {
-            <% ($Values->HasEntry($value->Name)||'') && ($selected = 1) && 'SELECTED' %>
-% } elsif ($Default) {
-            <% (ref $Default ? (grep {$_ eq $value->Name} @{$Default}) : ($Default eq $value->Name))
-                && ($selected = 1) && 'SELECTED' %>
-% }
-            ><% $value->Name%></option>
-% }
         <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+%       $m->out($out);
       </select>
 <%ARGS>
 $Object => undef
@@ -69,3 +79,49 @@ $Values => undef
 $Multiple => 0
 $Rows => undef
 </%ARGS>
+
+<%method options>
+% my $selected;
+% my $CFVs = $CustomField->Values;
+% my @levels;
+% while ($CFVs and my $value = $CFVs->Next ) {
+%       my $category = $value->Category;
+%       if (1) { # length $category) {
+%           my $level = (split(/:/, $category))[0];
+%           while (@levels) {
+%               if ($levels[-1] eq $level) {
+%                   undef $level;
+%                   last;
+%               } elsif (index($level, $levels[-1]) != 0) {
+        </optgroup>
+%                   pop @levels;
+%               } else {
+%                   last;
+%               }
+%           }
+%           if (length $level) {
+%               push @$CategoryRef, [0+@levels, $level];
+        <optgroup style="padding-left: <% @levels/2 %>em" label="<%$category%>">
+%               push @levels, $level;
+%           }
+%       }
+        <option value="<%$value->Name%>" 
+% if ($Values) {
+            <% ($Values->HasEntry($value->Name)||'') && ($$SelectedRef = 1) && 'SELECTED' %>
+% } elsif ($Default) {
+            <% (ref $Default ? (grep {$_ eq $value->Name} @{$Default}) : ($Default eq $value->Name))
+                && ($$SelectedRef = 1) && 'SELECTED' %>
+% }
+            ><% $value->Name%></option>
+% }
+% for (@levels) {
+            </optgroup>
+% }
+<%args>
+$CustomField => undef
+$Default => undef
+$Values => undef
+$SelectedRef => undef
+$CategoryRef => undef
+</%args>
+</%method>

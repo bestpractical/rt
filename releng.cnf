@@ -1,7 +1,7 @@
 PRODUCT			        = rt
-TAG			            = 3.4.6rc1
+TAG			            = 3.4.CH7
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rt/
 TAGS		            = tags/
-TRUNK	                = branches/3.4-RELEASE
+TRUNK	                = branches/CHALDEA-EXPERIMENTAL
 TMP_DIR			        = /tmp
 RELEASE_DIR		        = /home/ftp/pub/rt/devel

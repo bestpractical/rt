@@ -50,19 +50,22 @@
 % my $count;
 % foreach my $Object (@Objects) {
 <TR>
+%   my $id = "Object-".$Object->id."-CF-".$id;
 %   if (!$ReadOnly) {
   <TD valign="TOP">
-<input type="checkbox" name="Object-<%$Object->id%>-CF-<%$id%>" value="1" <% $Checked ? 'CHECKED' : ''%>
+<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
 >
   </TD>
 %   }
   <TD valign="TOP">
+    <label for="<% $id %>">
 % if ($Object->Name) {
     <b><%$Object->Name%></b><br>
 % } else {
     <i>(<%loc("no name")%>)</i><br>
 % }
     <%$Object->can('Description') && $Object->Description%>
+    </label>
   </TD>
 %#  <TD valign="TOP">
 %#    <i><% $CustomFieldObj->FriendlyTypeComposite %></i>

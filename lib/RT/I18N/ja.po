@@ -2024,7 +2024,7 @@ msgstr ""
 msgid "Found Object"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:59
 msgid "FreeformContactInfo"
 msgstr "フリーフォームコンタクト情報"
 

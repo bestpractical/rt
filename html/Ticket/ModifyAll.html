@@ -52,6 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST ACTION="ModifyAll.html" ENCTYPE="multipart/form-data">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 
 
@@ -145,9 +146,20 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
+$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
+    # There might be two owners. 
+    if ( ref ($ARGS{'Owner'} )) {
+        my @owners =@{$ARGS{'Owner'}};
+        delete $ARGS{'Owner'};
+        foreach my $owner(@owners){
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+        }
+
+    }
+
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
  @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);

@@ -142,6 +142,7 @@ msgstr "%1 nem találhato az adatbázisban, pedig helyi objektumnak látszik"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:520
 #. ($self->BriefDescription , $self->CreatorObj->Name)
+#. ($ticket->LastUpdatedAsString, $ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1  (%2)"
@@ -197,6 +198,7 @@ msgstr "Ennek a sornak %1 már nem %2-je."
 #: html/Ticket/Create.html:186 html/Ticket/Create.html:187 html/Ticket/Elements/ShowBasics:58 html/Ticket/Elements/ShowBasics:64 html/Ticket/Elements/ShowBasics:69
 #. ('<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">')
 #. ('<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">')
+#. ($ticket->TimeWorked)
 #. ($Ticket->TimeEstimated)
 #. ($Ticket->TimeWorked)
 #. ($Ticket->TimeLeft)
@@ -1840,7 +1842,7 @@ msgstr ""
 msgid "Illegal value for %1"
 msgstr "Érvénytelen érték %1-nek"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:61
 msgid "Image"
 msgstr "Kép"
 
@@ -1970,7 +1972,7 @@ msgstr "Nagy"
 msgid "Last"
 msgstr "Utolsó"
 
-#: html/Ticket/Elements/EditDates:59 html/Ticket/Elements/ShowDates:60
+#: html/Ticket/AsciiExport:88 html/Ticket/Elements/EditDates:59 html/Ticket/Elements/ShowDates:60
 msgid "Last Contact"
 msgstr "Utolsó kapcsolat"
 
@@ -2052,7 +2054,7 @@ msgstr ""
 #: lib/RT/SavedSearch.pm:112
 #. ($self->Name)
 msgid "Loaded search %1"
-msgstr ""
+msgstr "Cím"
 
 #: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"

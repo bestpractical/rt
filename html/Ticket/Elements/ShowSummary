@@ -69,13 +69,25 @@
 		color => "#333399" &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	<BR>
 
-    <& /Elements/Callback, %ARGS, _CallbackName => 'LeftColumn' &>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
+
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+
+      <& /Elements/Callback, %ARGS, _CallbackName => 'LeftColumn' &>
 
 	</TD>
 	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
-
+	  <&|/Elements/TitleBox, title => loc("Reminders"),
+		title_href =>"$RT::WebPath/Ticket/Reminders.html?id=".$Ticket->Id, 
+		title_class=> 'inverse',  
+		 color => "#666699" &>
+            <form action="<%$RT::WebPath%>/Ticket/Display.html" method="post">
+	  <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+        <div align="right"><input type="submit" value="Save" /></div>
+        </form>
+	  </&>
+        <br />
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
@@ -89,11 +101,7 @@
 		titleright => '', color=> "#336633" &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
-        <BR>
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
-
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
-
+        <br />
     <& /Elements/Callback, %ARGS, _CallbackName => 'RightColumn' &>
 
 	</TD>

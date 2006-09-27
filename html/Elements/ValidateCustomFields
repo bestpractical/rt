@@ -1,0 +1,34 @@
+<%INIT>
+my $valid = 1;
+$CustomFields->GotoFirstItem;
+while (my $CF = $CustomFields->Next) {
+    my $pattern = $CF->Pattern;
+    my $field = $NamePrefix . $CF->Id . "-Value";
+    my $value;
+
+    if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
+        $value = $ARGSRef->{"${field}s"};
+
+        # We only validate Single Combos -- multis can never be user input
+        next if ref $value;
+    }
+    else {
+        $value = $ARGSRef->{$field};
+    }
+
+    $m->notes(('Field-' . $CF->Id) => $value);
+    next if $CF->MatchPattern($value);
+    $m->notes(
+        ('InvalidField-' . $CF->Id)
+            => (loc("Input must match [_1]", $CF->FriendlyPattern))
+    );
+    $valid = 0;
+}
+$m->notes('ValidFields', $valid);
+return $valid;
+</%INIT>
+<%ARGS>
+$CustomFields
+$ARGSRef
+$NamePrefix => "Object-RT::Ticket--CustomField-"
+</%ARGS>

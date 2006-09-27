@@ -560,6 +560,44 @@ sub ISO {
 
 # }}}
 
+# {{{ sub Date
+
+=head2 Date
+
+Takes nothing
+
+Returns the object's date in yyyy-mm-dd format; this is the same as
+the ISO format without the time
+
+=cut
+
+sub Date {
+    my $self = shift;
+    my ($date, $time) = split ' ', $self->ISO;
+    return $date;
+}
+
+# }}}}
+
+# {{{ sub Time
+
+=head2 Time
+
+Takes nothing
+
+Returns the object's time in hh:mm:ss format; this is the same as
+the ISO format without the date
+
+=cut
+
+sub Time {
+    my $self = shift;
+    my ($date, $time) = split ' ', $self->ISO;
+    return $time;
+}
+
+# }}}}
+
 # {{{ sub W3CDTF
 
 =head2 W3CDTF

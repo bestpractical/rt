@@ -43,30 +43,25 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<UL>
-% while (my $Link = $Ticket->RefersTo->Next) {
-<LI>
-% if ($Link->TargetURI->IsLocal) {
-% my $member = $Link->TargetObj;
+<nobr>
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/combobox.js"></script>
 
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-<A HREF="<%$Link->TargetURI->HREF%>"><%$Link->Target%></A>
+<span id="<% $Name %>_Container">
+<input name="<% $Name %>" id="<% $Name %>" value="<% $Default %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
+<br style="display: none"><span id="<% $Name %>_Button"></span></span><select name="List-<% $Name %>" id="<% $Name %>_List" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " rows="<% $Rows %>">
+<option style="display: none" value="">-</option>
+% foreach my $value (@Values) {
+        <option value="<%$value%>"><% $value%></option>
 % }
-%}
-
-
-
-% while (my $Link = $Ticket->ReferredToBy->Next) {
-<LI>
-% if ($Link->BaseURI->IsLocal) {
-% my $member = $Link->BaseObj;
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-<A HREF="<%$Link->BaseURI->HREF%>"><%$Link->Base%></A>
-%}
-% }
-</UL>
+</select>
+<script language="javascript"><!--
+ComboBox_InitWith('<% $Name %>');
+//--></script>
+</nobr>
 <%ARGS>
-$Ticket => undef
+$Name
+$Size    => undef
+$Rows    => 5
+$Default => ''
+@Values  => ()
 </%ARGS>

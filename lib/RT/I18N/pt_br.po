@@ -2296,7 +2296,7 @@ msgstr "Encontrado %quant(%1,tíquete)"
 msgid "Found Object"
 msgstr "Objeto Encontrado"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:59
 msgid "FreeformContactInfo"
 msgstr "FreeformContactInfo"
 
@@ -5890,7 +5890,12 @@ msgstr "correspondência (provavelmente) não enviada"
 msgid "correspondence sent"
 msgstr "correspondência enviada"
 
-#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:342
+#: html/Search/Build.html:563
+#. ( . $token . " in '$string'\n")
+msgid "current: $current, want $want, Error near ->$val<- expecting a "
+msgstr ""
+
+#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:341
 msgid "days"
 msgstr "dias"
 

@@ -77,15 +77,56 @@
 </td>
 </tr>
 <tr>
+<td class="label"><&|/l&>Validation</&></td>
+<td>
+<& /Widgets/ComboBox,
+    Name    => 'Pattern',
+    Default => $CustomFieldObj->Pattern,
+    Size    => 20,
+    Values  => [
+        '(?#Mandatory).',
+        '(?#Digits)^[\d.]+$',
+        '(?#Year)^[12]\d{3}$',
+    ],
+&>
+</td></tr>
+</tr>
+<tr>
 <td class="label">&nbsp;</td>
 <td>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td>
 </tr>
+<tr>
+<td class="label"><&|/l&>Link values to</&></td>
+</td>
+<td><input size="60" name="LinkValueTo"  value="<%$CustomFieldObj->LinkValueTo%>" />
+<div class="hints">
+<&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
+<&|/l&>Fill in this field with a URL.</&>
+<&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
+</div>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Include page</&></td>
+</td>
+<td><input size="60" name="IncludeContentForValue"  value="<%$CustomFieldObj->IncludeContentForValue%>" />
+<div class="hints">
+<&|/l&>RT can include content from another web service when showing this custom field.</&>
+<&|/l&>Fill in this field with a URL.</&>
+<&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
+<i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
+</div>
+</td>
+</tr>
+
+
+
 </table>
 <BR>
-% if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
+% if ($CustomFieldObj->Id && $CustomFieldObj->IsSelectionType) {
 <H2><&|/l&>Values</&></H2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -115,7 +156,8 @@ else {
         my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
                                                     TypeComposite => $TypeComposite,
                                                     LookupType => $LookupType,
-                                                    Description => $Description,);
+                                                    Description => $Description,
+                                                    Pattern => $Pattern,);
         $m->comp("/Elements/Error", Why =>  loc( "Could not create CustomField", $msg ) ) unless ($val);
         push @results, $msg;
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name() );
@@ -124,7 +166,7 @@ else {
         $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why =>  loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
 
-        my @attribs = qw( Name TypeComposite LookupType Description);
+        my @attribs = qw( Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
         my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
                                            Object        => $CustomFieldObj,
                                            ARGSRef       => \%ARGS );
@@ -167,7 +209,7 @@ foreach my $key (keys %ARGS) {
 # Update any existing values
 my $values = $CustomFieldObj->ValuesObj;
 while (my $value = $values->Next) {
-	foreach my $attr qw(Name Description SortOrder) {
+	foreach my $attr qw(Name Description SortOrder Category) {
 	my $param = $paramtag.$value->Id."-".$attr;
 
 	if ( $ARGS{$param} && ($value->$attr() ne $ARGS{$param}))  {
@@ -184,9 +226,10 @@ while (my $value = $values->Next) {
 
 # Add any new values
 if ($ARGS{$paramtag."new-Name"}) {
-	my ($id, $msg) = $CustomFieldObj->AddValue ( Name => $ARGS{$paramtag."new-Name"},
-						 Description => $ARGS{$paramtag."new-Description"},
-						 SortOrder => $ARGS{$paramtag."new-SortOrder"});
+	my ($id, $msg) = $CustomFieldObj->AddValue (
+            map { $_ => $ARGS{$paramtag."new-$_"} }
+                qw( Name Description SortOrder Category )
+        );
 	push (@results, $msg);
 }
 
@@ -206,6 +249,7 @@ $LookupType => undef
 $MaxValues => undef
 $SortOrder => undef
 $Description => undef
+$Pattern => undef
 $Name => undef
 $SetEnabled => undef
 $Enabled => undef

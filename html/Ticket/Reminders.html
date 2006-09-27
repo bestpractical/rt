@@ -43,15 +43,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<UL>
-% my $memberof = $Ticket->MemberOf;
-% while (my $member_of = $memberof->Next) {
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: <%$member_of->Subject%> [<%$member_of->Status%>]
-% }
-</UL>
+<& /Elements/Header, Title => loc("Reminder ticket #[_1]", $Ticket->Id) &>
+<& /Ticket/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
+    Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
+<form action="<%$RT::WebPath%>/Ticket/Reminders.html" method="post">
+<&|/Elements/TitleBox, title => loc("Reminders"),
+                       title_class=> 'inverse',
+                       color => "#666699" &>
+
+<& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1 &>
+</&>
+<& /Elements/Submit, Label => 'Save'&>
+</form>
+
 
 <%INIT>
+  
+my $Ticket = LoadTicket($id);
+    
 </%INIT>
 <%ARGS>
-$Ticket => undef
+$id => undef
 </%ARGS>

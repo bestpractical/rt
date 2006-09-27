@@ -2992,6 +2992,14 @@ msgid "Object could not be deleted"
 msgstr ""
 
 #: lib/RT/Record.pm:338
+msgid "Object could not be created"
+msgstr ""
+
+#: lib/RT/Record.pm:123
+msgid "Object could not be deleted"
+msgstr ""
+
+#: lib/RT/Record.pm:312
 msgid "Object created"
 msgstr ""
 

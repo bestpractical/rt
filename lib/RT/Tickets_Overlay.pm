@@ -1189,7 +1189,7 @@ sub _CustomFieldDecipher {
         $cfid = $cf->id if $cf;
     }
  
-  return ($queue, $field, $cfid);
+    return ($queue, $field, $cfid);
  
 }
  
@@ -2074,9 +2074,10 @@ TARGET is the id or URI of the TARGET of the link
 sub LimitLinkedTo {
     my $self = shift;
     my %args = (
-        TICKET => undef,
-        TARGET => undef,
-        TYPE   => undef,
+        TICKET   => undef,
+        TARGET   => undef,
+        TYPE     => undef,
+        OPERATOR => '=',
         @_
     );
 
@@ -2090,6 +2091,7 @@ sub LimitLinkedTo {
             $self->loc( $args{'TYPE'} ),
             ( $args{'TARGET'} || $args{'TICKET'} )
         ),
+        OPERATOR    => $args{'OPERATOR'},
     );
 }
 
@@ -2112,9 +2114,10 @@ BASE is the id or URI of the BASE of the link
 sub LimitLinkedFrom {
     my $self = shift;
     my %args = (
-        BASE   => undef,
-        TICKET => undef,
-        TYPE   => undef,
+        BASE     => undef,
+        TICKET   => undef,
+        TYPE     => undef,
+        OPERATOR => '=',
         @_
     );
 
@@ -2136,6 +2139,7 @@ sub LimitLinkedFrom {
             $self->loc( $args{'TYPE'} ),
             ( $args{'BASE'} || $args{'TICKET'} )
         ),
+        OPERATOR    => $args{'OPERATOR'},
     );
 }
 

@@ -422,7 +422,7 @@ msgstr "(Benyt disse felter når du vælger 'Bruger Defineret' for en betingelse
 msgid "(empty)"
 msgstr "(tom)"
 
-#: html/Admin/Users/index.html:60
+#: html/Admin/Users/index.html:62
 msgid "(no name listed)"
 msgstr "(intet navn listet)"
 
@@ -963,7 +963,7 @@ msgstr "Kan ikke tilføje custom felt værdi uden et navn"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "Kan ikke finde en gemt søgning til at arbejde med"
 
 #: html/Search/Build.html:761
 msgid "Can't find a saved search to work with"
@@ -2164,6 +2164,10 @@ msgstr "Fandt %quant(%1,ticket)"
 #: lib/RT/Record.pm:942
 msgid "Found Object"
 msgstr "Fandt Objekt"
+
+#: lib/RT/CustomField_Overlay.pm:59
+msgid "Freeform"
+msgstr "Freeform"
 
 #: NOT FOUND IN SOURCE
 msgid "Freeform"

@@ -949,7 +949,7 @@ msgstr "Kan geen specifiek veld toevoegen zonder een naam"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "Kan geen bewaarde zoekopdracht vinden om mee te werken"
 
 #: html/Search/Build.html:761
 msgid "Can't find a saved search to work with"
@@ -2151,7 +2151,7 @@ msgstr ""
 msgid "Found Object"
 msgstr "Gevonden Object"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:59
 msgid "Freeform"
 msgstr "Vrije vorm"
 
@@ -2350,7 +2350,7 @@ msgstr "Als u een van de bovenstaande elemented ververst heeft, zorg dan dat u"
 msgid "Illegal value for %1"
 msgstr "Illegale waarde voor %1"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:62
 msgid "Image"
 msgstr "Afbeelding"
 
@@ -4781,7 +4781,7 @@ msgstr "Sjablonen"
 msgid "Templates for %1\\n"
 msgstr "Sjablonen voor %1\\n"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:61
 msgid "Text"
 msgstr "Tekst"
 

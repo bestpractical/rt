@@ -43,63 +43,24 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table>
-% while ( my $CustomField = $CustomFields->Next ) {
-% my $Values = $Object->CustomFieldValues( $CustomField->Id );
-% my $count = $Values->Count;
-  <tr>
-    <td class="label"><% $CustomField->Name %>:</td>
-    <td class="value">
-% unless ( $count ) {
-<i><&|/l&>(no value)</&></i>
-% } elsif ( $count == 1 ) {
-%   $print_value->( $CustomField, $Values->First );
-% } else {
-<ul>
-% while ( my $Value = $Values->Next ) {
-<li><% $print_value->( $CustomField, $Value ) |n %></li>
+% while ($Values and my $value = $Values->Next and $Multiple) {
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><% $value->Content %>
+<br>
 % }
-</ul>
-% }
-    </td>
-  </tr>
-% }
-</table>
-<%INIT>
-my $CustomFields = $Object->CustomFields;
-$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
-                                CustomFields => $CustomFields);
-
-my $print_value = sub {
-    my ($cf, $value) = @_;
-    my $linked = $cf->LinkValueTo;
-    if ( $linked ) {
-        $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
-    }
-    my $comp = "ShowCustomField". $cf->Type;
-    if ( $m->comp_exists( $comp ) ) {
-        $m->comp( $comp, Object => $value );
-    } else {
-        $m->print( $value->Content );
-    }
-    $m->out('</a>') if $linked;
-
-    # This section automatically populates a div with the "IncludeContentForValue" for this custom
-    # field if it's been defined
-    if ( $cf->IncludeContentForValue ) {
-       my $vid = $value->id;
-       $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
-       $m->print( loc("See also:") );
-       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
-       $m->print( $value->IncludeContentForValue );
-       $m->out(   qq{</a></div>\n} );
-       $m->out(   qq{<script><!--\nahah('} );
-       $m->print( $value->IncludeContentForValue );
-       $m->out(   qq{', 'object_cf_value_$vid');\n--></script>\n} );
-    }
-};
-
-</%INIT>
+% (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
+<& /Widgets/ComboBox,
+    Name    => $NamePrefix . $CustomField->Id . "-Value",
+    Default => $Default,
+    Rows    => $Rows,
+    Values  => [map {$_->Name} @{$CustomField->Values->ItemsArrayRef}],
+&>
 <%ARGS>
 $Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Default => undef
+$Values => undef
+$Multiple => 0
+$Rows => undef
+$MaxValues => undef
 </%ARGS>

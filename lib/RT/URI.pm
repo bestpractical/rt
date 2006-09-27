@@ -250,7 +250,17 @@ sub IsLocal {
 
 # }}}
 
+=head2 AsHREF
 
+
+=cut
+
+
+sub AsHREF {
+    my $self = shift;
+    return $self->Resolver->HREF;
+
+}
 =head Resolver
 
 Returns this URI's URI resolver object

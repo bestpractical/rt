@@ -47,7 +47,9 @@
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket") &>
+<& /Elements/ListActions, actions => \@results &>
 <FORM ACTION="<%$RT::WebPath%>/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data" NAME="TicketCreate">
+<& /Elements/Callback, _CallbackName => 'FormStart',ARGSRef =>\%ARGS &>
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
 	
@@ -208,9 +210,8 @@
 		 color => "#663366" &>
 
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts" value="<% $ARGS{Starts} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due" value="<%
-$ARGS{Due}%>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
@@ -249,11 +250,17 @@ $ARGS{Due}%>"></TD></TR>
 <%INIT>
 
 
-
+my @results;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->TicketCustomFields();
 my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
+
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CFs,
+    ARGSRef => \%ARGS
+);
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
@@ -300,8 +307,19 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
-    $m->comp('Display.html', %ARGS);
+if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new')) { # new ticket?
+    if ($ValidCFs) {
+        $m->comp('Display.html', %ARGS);
+        $RT::Logger->crit("After display call; error is $@");
+        $m->abort();
+    }
+    else {
+        # Invalid CFs
+        while (my $CF = $CFs->Next) {
+            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+            push @results, $CF->Name . ': ' . $msg;
+        }
+    }
 }
 </%INIT>
 

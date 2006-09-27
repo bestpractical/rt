@@ -2133,6 +2133,10 @@ msgstr ""
 msgid "Found Object"
 msgstr ""
 
+#: lib/RT/CustomField_Overlay.pm:59
+msgid "Freeform"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "FreeformContactInfo"
 msgstr "Vapaamuotoiset yhteystiedot"
@@ -3486,6 +3490,14 @@ msgid "Object could not be deleted"
 msgstr ""
 
 #: lib/RT/Record.pm:338
+msgid "Object could not be created"
+msgstr ""
+
+#: lib/RT/Record.pm:123
+msgid "Object could not be deleted"
+msgstr ""
+
+#: lib/RT/Record.pm:312
 msgid "Object created"
 msgstr ""
 

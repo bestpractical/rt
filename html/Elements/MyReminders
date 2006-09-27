@@ -43,63 +43,30 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table>
-% while ( my $CustomField = $CustomFields->Next ) {
-% my $Values = $Object->CustomFieldValues( $CustomField->Id );
-% my $count = $Values->Count;
-  <tr>
-    <td class="label"><% $CustomField->Name %>:</td>
-    <td class="value">
-% unless ( $count ) {
-<i><&|/l&>(no value)</&></i>
-% } elsif ( $count == 1 ) {
-%   $print_value->( $CustomField, $Values->First );
-% } else {
-<ul>
-% while ( my $Value = $Values->Next ) {
-<li><% $print_value->( $CustomField, $Value ) |n %></li>
-% }
-</ul>
-% }
-    </td>
-  </tr>
-% }
+
+%# DEPRECATED
+<&|/Elements/TitleBox,
+    title => loc("Reminders") &>
+<table width="100%">
+% my $i =0;
+% while (my $reminder = $reminders->Next) {
+% $i++;
+% if ($reminder->RefersTo->First) {
+% my $ticket= $reminder->RefersTo->First->TargetObj;
+<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
+<blockquote>
+#<%$ticket->id%>: <%$ticket->Subject%><br />
+<%$reminder->OwnerObj->Name %>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>
+</blockquote>
+</td>
+</tr>
+% }}
 </table>
-<%INIT>
-my $CustomFields = $Object->CustomFields;
-$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
-                                CustomFields => $CustomFields);
+</&>
 
-my $print_value = sub {
-    my ($cf, $value) = @_;
-    my $linked = $cf->LinkValueTo;
-    if ( $linked ) {
-        $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
-    }
-    my $comp = "ShowCustomField". $cf->Type;
-    if ( $m->comp_exists( $comp ) ) {
-        $m->comp( $comp, Object => $value );
-    } else {
-        $m->print( $value->Content );
-    }
-    $m->out('</a>') if $linked;
-
-    # This section automatically populates a div with the "IncludeContentForValue" for this custom
-    # field if it's been defined
-    if ( $cf->IncludeContentForValue ) {
-       my $vid = $value->id;
-       $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
-       $m->print( loc("See also:") );
-       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
-       $m->print( $value->IncludeContentForValue );
-       $m->out(   qq{</a></div>\n} );
-       $m->out(   qq{<script><!--\nahah('} );
-       $m->print( $value->IncludeContentForValue );
-       $m->out(   qq{', 'object_cf_value_$vid');\n--></script>\n} );
-    }
-};
-
-</%INIT>
-<%ARGS>
-$Object => undef
-</%ARGS>
+<%init>
+my $reminders = RT::Tickets->new($session{'CurrentUser'});
+$reminders->FromSQL('(Owner = "Nobody" OR Owner = "'.$session{'CurrentUser'}->Name.'")' .
+    ' AND Type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
+$reminders->OrderBy(FIELD => 'Due', ORDER => 'DESC');
+</%init>

@@ -615,9 +615,9 @@ return 0; # ignore $passed;
 	  { type => 'component',  name => 'QuickCreate'},
 	],
         'summary' => # loc
-	[ { type => 'component', name => 'Quicksearch' },
-	  { type => 'component', name => 'MySupportQueues' },
-	  { type => 'component', name => 'MyAdminQueues' },
+	[ 
+	  { type => 'component', name => 'MyReminders' },
+          { type => 'component', name => 'Quicksearch' },
 	  { type => 'component', name => 'RefreshHomepage' },
 	]
     },

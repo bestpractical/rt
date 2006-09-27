@@ -371,6 +371,12 @@ msgstr "(inserire i numeri o gli URL dei ticket, separati da spazi)"
 msgid "(If left blank, will default to %1)"
 msgstr "(se non specificato usa: %1)"
 
+#: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
+#. ($RT::CorrespondAddress)
+#. ($RT::CommentAddress)
+msgid "(If left blank, will default to %1)"
+msgstr "(Se non specificato usa: %1)"
+
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
 msgstr "(nessun valore)"
@@ -2338,7 +2344,7 @@ msgstr "Trovati %quant(%1,ticket)"
 msgid "Found Object"
 msgstr "Trovato Oggetto"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:59
 msgid "Freeform"
 msgstr "Testo libero"
 
@@ -2565,7 +2571,7 @@ msgstr "Se hai aggiornato qualche impostazione, assicurati di premere"
 msgid "Illegal value for %1"
 msgstr "Valore non valido per %1"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:62
 msgid "Image"
 msgstr "Immagine"
 
@@ -3767,6 +3773,14 @@ msgid "Object could not be deleted"
 msgstr "L'oggetto non può essere cancellato"
 
 #: lib/RT/Record.pm:338
+msgid "Object could not be created"
+msgstr "L'oggetto non può essere creato"
+
+#: lib/RT/Record.pm:123
+msgid "Object could not be deleted"
+msgstr "L'oggetto non può essere cancellato"
+
+#: lib/RT/Record.pm:312
 msgid "Object created"
 msgstr "Oggetto creato"
 
@@ -4624,7 +4638,7 @@ msgstr "VediGruppo"
 msgid "SeeQueue"
 msgstr "VediCoda"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:60
 msgid "Select"
 msgstr "Seleziona"
 
@@ -5108,7 +5122,7 @@ msgstr "Modelli"
 msgid "Templates for %1\\n"
 msgstr "Modelli per %1\\n"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:61
 msgid "Text"
 msgstr "Testo"
 

@@ -1303,8 +1303,8 @@ sub _ProcessObjectCustomFieldUpdates {
             }
         }
         else {
-            push ( @results, loc("User asked for an unknown update type"
-                ." for custom field [_1] for [_2] object #[_3]",
+            push ( @results,
+                loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]",
                 $cf->Name, ref $args{'Object'}, $args{'Object'}->id )
             );
         }

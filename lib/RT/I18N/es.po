@@ -2074,6 +2074,10 @@ msgstr "Ingrese los números de ticket o las URL que llevan hacia el ticket. Sep
 msgid "Enter up to %1 values"
 msgstr "Entrar hasta %1 valor/es"
 
+#: lib/RT/CustomField_Overlay.pm:532
+msgid "Enter up to %1 values"
+msgstr ""
+
 #: html/Elements/Login:61 html/SelfService/Error.html:46 html/SelfService/Error.html:47
 msgid "Error"
 msgstr "Error"
@@ -2260,6 +2264,10 @@ msgstr "Encontrado %quant(%1,ticket)"
 #: lib/RT/Record.pm:942
 msgid "Found Object"
 msgstr "Objeto encontrado"
+
+#: lib/RT/CustomField_Overlay.pm:59
+msgid "Freeform"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "FreeformContactInfo"
@@ -5839,7 +5847,12 @@ msgstr "Respuesta (probablemente) no enviada"
 msgid "correspondence sent"
 msgstr "Correspondencia enviada"
 
-#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:342
+#: html/Search/Build.html:563
+#. ( . $token . " in '$string'\n")
+msgid "current: $current, want $want, Error near ->$val<- expecting a "
+msgstr ""
+
+#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:341
 msgid "days"
 msgstr "días"
 

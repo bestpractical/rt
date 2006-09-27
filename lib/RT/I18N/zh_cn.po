@@ -3046,7 +3046,7 @@ msgstr "已找到对象"
 msgid "Fourth-"
 msgstr "四"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:59
 msgid "Freeform"
 msgstr "输入"
 
@@ -3413,7 +3413,7 @@ msgstr "若您已更新以上数据，请记得按一下"
 msgid "Illegal value for %1"
 msgstr "%1 的值错误"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:62
 msgid "Image"
 msgstr "图片"
 
@@ -6020,7 +6020,7 @@ msgstr ""
 msgid "SeeQueue"
 msgstr "查阅表单"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:60
 msgid "Select"
 msgstr "选择"
 
@@ -6600,7 +6600,7 @@ msgstr "通知模板"
 msgid "Templates for %1\\n"
 msgstr "找不到 %1 的模板\\n"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/CustomField_Overlay.pm:61
 msgid "Text"
 msgstr "文字"
 
