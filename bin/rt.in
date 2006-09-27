@@ -1939,7 +1939,11 @@ Text:
 Title: topics
 Text:
 
-    Use "rt help <topic>" for help on any of the following subjects:
+    Syntax:
+
+        rt help <topic>
+
+    Get help on any of the following subjects:
 
         - tickets, users, groups, queues.
         - show, edit, ls/list/search, new/create.
@@ -1970,8 +1974,12 @@ Text:
 Title: shell
 Text:
 
-    Use "rt shell" to open an interactive shell, at which you can issue 
-    commands of the form "<action> [options] [arguments]".
+    Syntax:
+
+        rt shell
+
+    Opens an interactive shell, at which you can issue commands of 
+    the form "<action> [options] [arguments]".
 
     To exit the shell, type "quit" or "exit".
 
@@ -1984,6 +1992,38 @@ Text:
         # Ticket 8 created.
         rt> quit
         $
+
+--
+
+Title: take
+Title: untake
+Title: steal
+Text:
+
+    Syntax:
+
+        rt <take|untake|steal> <ticket-id>
+
+    Sets the owner of the specified ticket to the current user, 
+    assuming said user has the bits to do so, or releases the 
+    ticket.  
+    
+    'Take' is used on tickets which are not currently owned 
+    (Owner: Nobody), 'steal' is used on tickets which *are* 
+    currently owned, and 'untake' is used to "release" a ticket 
+    (reset its Owner to Nobody).  'Take' cannot be used on
+    tickets which are currently owned.
+
+    Example:
+        alice$ rt create -t ticket set subject="New ticket"
+        # Ticket 7 created.
+        alice$ rt take 7
+        # Owner changed from Nobody to alice
+        alice$ su bob
+        bob$ rt steal 7
+        # Owner changed from alice to bob
+        bob$ rt untake 7
+        # Owner changed from bob to Nobody
 
 --
 
