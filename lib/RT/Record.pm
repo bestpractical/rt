@@ -1637,10 +1637,11 @@ sub _AddCustomFieldValue {
                       );
                 }
             }
+            $values->RedoSearch if $i; # redo search if have deleted at least one value
         }
 
         my ( $old_value, $old_content );
-        if ( $old_value = $cf->ValuesForObject($self)->First ) {
+        if ( $old_value = $values->First ) {
             $old_content = $old_value->Content();
             return (1) if( $old_content eq $args{'Value'} && $old_value->LargeContent eq $args{'LargeContent'});;
         }
