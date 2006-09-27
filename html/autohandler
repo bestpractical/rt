@@ -93,9 +93,8 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
 foreach my $field ( keys %ARGS ) {
     next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{ $1 };
     my $local = $1;
-    $ARGS{$local} =~ s|\b (?: (\d+) \s+ )? (\d+)/(\d+) \b
-                      |$1 + $3 ? $2 / $3 : 0
-                      |xe;
+    $ARGS{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
+                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
     if ( $ARGS{$field} && $ARGS{$field} =~ /hours/i ) {
         $ARGS{$local} *= 60;
     }

@@ -116,7 +116,7 @@ if ( $args{'action'} eq 'init' ) {
 
         if ( $db_type eq "Oracle" ) {
             $dbh = get_rt_dbh();
-        } else {
+        } else {	
             $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
         }
     }

@@ -59,6 +59,10 @@ my $tabs = {
         title => loc('Reports'),
         path  => 'Tools/Reports/index.html',
     },
+    c => {
+        title => loc('My Day'),
+        path  => 'Tools/MyDay.html',
+    },
 };
 
 $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);

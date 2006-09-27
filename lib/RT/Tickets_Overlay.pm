@@ -112,6 +112,7 @@ our %FIELD_METADATA = (
     Priority        => [ 'INT', ],
     TimeLeft        => [ 'INT', ],
     TimeWorked      => [ 'INT', ],
+    TimeEstimated   => [ 'INT', ],
 
     Linked          => [ 'LINK' ],
     LinkedTo        => [ 'LINK' => 'To' ],
@@ -731,7 +732,7 @@ sub _TransLimit {
 			SUBCLAUSE     => 'contentquery',
 		       );
     } else {
-       $self->_SQLLimit(
+        $self->_SQLLimit(
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => $field,
 			OPERATOR      => $op,
@@ -739,7 +740,7 @@ sub _TransLimit {
 			CASESENSITIVE => 0,
 			ENTRYAGGREGATOR => 'AND',
 			@rest
-		       );
+		);
     }
 
     $self->_SQLJoin(
@@ -1178,7 +1179,6 @@ Factor out the Join of custom fields so we can use it for sorting too
 
 sub _CustomFieldJoin {
     my ($self, $cfkey, $cfid, $field) = @_;
- 
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
          $self->{_sql_cf_alias}{$cfkey} )
@@ -1274,6 +1274,7 @@ sub _CustomFieldLimit {
     my $field = $rest{SUBKEY} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
+
     my ($queue, $cfid);
     ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
 
@@ -1450,7 +1451,7 @@ sub Limit {
 
     my $index = $self->_NextIndex;
 
-#make the TicketRestrictions hash the equivalent of whatever we just passed in;
+# make the TicketRestrictions hash the equivalent of whatever we just passed in;
 
     %{ $self->{'TicketRestrictions'}{$index} } = %args;
 
@@ -2651,9 +2652,9 @@ sub _RestrictionsToClauses {
         #use Data::Dumper;
         #print Dumper($restriction),"\n";
 
-   # We need to reimplement the subclause aggregation that SearchBuilder does.
-   # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
-   # Then SB AND's the different Subclauses together.
+        # We need to reimplement the subclause aggregation that SearchBuilder does.
+        # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
+        # Then SB AND's the different Subclauses together.
 
         # So, we want to group things into Subclauses, convert them to
         # SQL, and then join them with the appropriate DefaultEA.
@@ -2677,7 +2678,7 @@ sub _RestrictionsToClauses {
 
         die "I don't know about $field yet"
             unless ( exists $FIELD_METADATA{$realfield}
-            or $restriction->{CUSTOMFIELD} );
+                or $restriction->{CUSTOMFIELD} );
 
         my $type = $FIELD_METADATA{$realfield}->[0];
         my $op   = $restriction->{'OPERATOR'};

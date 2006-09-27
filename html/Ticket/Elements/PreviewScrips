@@ -94,6 +94,7 @@ unless ( $Transaction ) {
 my @non_recipients = $TicketObj->SquelchMailTo;
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
+
 % if ( $Object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 

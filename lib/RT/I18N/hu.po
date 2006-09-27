@@ -3379,7 +3379,7 @@ msgstr "RT %1 %2-nek"
 msgid "RT Administration"
 msgstr "Konfiguráció"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT Hiba"
 
@@ -5029,7 +5029,7 @@ msgstr "rendszer %1"
 msgid "system group '%1'"
 msgstr ""
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr ""
 

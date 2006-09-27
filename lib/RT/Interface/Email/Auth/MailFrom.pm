@@ -60,6 +60,10 @@ sub GetCurrentUser {
 
     # We don't need to do any external lookups
     my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    unless ( $Address ) {
+        return ( $args{'CurrentUser'}, -1 );
+    }
+
     my $CurrentUser = new RT::CurrentUser;
     $CurrentUser->LoadByEmail( $Address );
     $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;

@@ -21,8 +21,8 @@ msgstr "n°"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($ticket->Id, $ticket->Subject)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject)
 #. ($ticket->Id, $ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject)
@@ -1812,7 +1812,7 @@ msgstr "Modèle global :  %1"
 
 #: html/Admin/CustomFields/index.html:80 html/Search/Results.html:90 html/Tools/Offline.html:89
 msgid "Go"
-msgstr "Go"
+msgstr "Lancer"
 
 #: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Elements/RefreshHomepage:48 html/Search/Results.html:74 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
 msgid "Go!"
@@ -1957,7 +1957,7 @@ msgstr "Inclure les utilisateurs désactivés dans le résultat."
 
 #: html/Admin/CustomFields/Modify.html:113
 msgid "Include page"
-msgstr ""
+msgstr "Requête incomplète"
 
 #: html/Search/Build.html:426
 msgid "Incomplete Query"
@@ -2860,7 +2860,7 @@ msgstr "Personne"
 
 #: lib/RT/Record.pm:952
 msgid "Nonexistant field?"
-msgstr "Champ inexistant?"
+msgstr "Champ inexistant ? "
 
 #: html/Elements/Header:91
 msgid "Not logged in."
@@ -3672,7 +3672,7 @@ msgstr "Rechercher des tickets"
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
 Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
 RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
+msgstr "Mise à jour de la recherche %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
@@ -4984,7 +4984,7 @@ msgstr "système %1"
 msgid "system group '%1'"
 msgstr "groupe système '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "le composant appelant n'a pas spécifié pourquoi"
 

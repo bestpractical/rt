@@ -4529,7 +4529,7 @@ msgstr "Błąd konfiguracji RT"
 msgid "RT Critical error. Message not recorded!"
 msgstr "Błąd krytyczny RT. Nie udało się zapisać wiadomości!"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "Błąd RT"
 
@@ -6728,7 +6728,7 @@ msgstr "system %1"
 msgid "system group '%1'"
 msgstr "grupy systemowej '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "przywoływany komponent nie określił powodu"
 

@@ -220,7 +220,7 @@ msgstr ""
 #: html/Search/Chart:71
 #. ($Query, $PrimaryGroupBy)
 msgid "%1 grouped by %2"
-msgstr ""
+msgstr "優先度の高いチケット%1件"
 
 #: etc/initialdata:593
 msgid "%1 highest priority tickets I own"
@@ -975,6 +975,7 @@ msgstr "権利を無効にするチェックボックス"
 
 # XXX - I can't come up with a good translation yet. leave as is in English
 #: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:64
+# XXX - I can't come up with a good translation yet. leave as is in English
 msgid "Children"
 msgstr ""
 
@@ -3637,6 +3638,7 @@ msgstr "ポケットベル電話"
 
 # XXX - I can't come up with a good translation yet. leave as is in English
 #: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:60
+# XXX - I can't come up with a good translation yet. leave as is in English
 msgid "Parents"
 msgstr ""
 
@@ -3685,6 +3687,8 @@ msgstr ""
 # XXX - this is not really a good translation... but much better than
 # "人々" (daisuke)
 #: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
+# XXX - this is not really a good translation... but much better than
+# "人々" (daisuke)
 msgid "People"
 msgstr "担当者等"
 
@@ -3842,11 +3846,11 @@ msgstr "キュー"
 
 #: html/Elements/MyAdminQueues:46
 msgid "Queues I administer"
-msgstr ""
+msgstr "簡易検索"
 
 #: html/Elements/MySupportQueues:46
 msgid "Queues I'm an AdminCc for"
-msgstr ""
+msgstr "チケット新規作成"
 
 #: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58 html/Prefs/Quicksearch.html:70
 msgid "Quick search"
@@ -3893,7 +3897,7 @@ msgstr "RT設定エラー"
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT重大なエラー。メッセージが記録されません"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RTエラー"
 
@@ -4777,6 +4781,7 @@ msgstr "テスト＿ストリング"
 
 # XXX - what the...
 #: etc/initialdata:603 html/Search/Elements/EditFormat:72 html/Ticket/Elements/Tabs:168
+# XXX - what the...
 msgid "Take"
 msgstr "担当する"
 
@@ -5832,7 +5837,7 @@ msgstr "システム　%1"
 msgid "system group '%1'"
 msgstr "システムグループ　'%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "呼び出しているコンポーネントがなぜ次のようなことが起こるのか特定できませんでした"
 
@@ -5866,4 +5871,8 @@ msgstr "テンプレート　%1と"
 #: lib/RT/Date.pm:354
 msgid "years"
 msgstr "年"
+
+#: share/html/Elements/Quicksearch, et al
+msgid "New"
+msgstr "新規"
 

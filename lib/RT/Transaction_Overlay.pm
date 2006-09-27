@@ -967,25 +967,29 @@ sub TicketObj {
 
 sub OldValue {
     my $self = shift;
-    if (my $type = $self->__Value('ReferenceType')) {
-	my $Object = $type->new($self->CurrentUser);
-	$Object->Load($self->__Value('OldReference'));
-	return $Object->Content;
+    if ( my $type = $self->__Value('ReferenceType')
+         and my $id = $self->__Value('OldReference') )
+    {
+        my $Object = $type->new($self->CurrentUser);
+        $Object->Load( $id );
+        return $Object->Content;
     }
     else {
-	return $self->__Value('OldValue');
+        return $self->__Value('OldValue');
     }
 }
 
 sub NewValue {
     my $self = shift;
-    if (my $type = $self->__Value('ReferenceType')) {
-	my $Object = $type->new($self->CurrentUser);
-	$Object->Load($self->__Value('NewReference'));
-	return $Object->Content;
+    if ( my $type = $self->__Value('ReferenceType')
+         and my $id = $self->__Value('NewReference') )
+    {
+        my $Object = $type->new($self->CurrentUser);
+        $Object->Load( $id );
+        return $Object->Content;
     }
     else {
-	return $self->__Value('NewValue');
+        return $self->__Value('NewValue');
     }
 }
 

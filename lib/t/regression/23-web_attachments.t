@@ -22,7 +22,7 @@ $m->content_like(qr/Logout/, 'we did log in');
 
 my $qid;
 {
-    $m->content =~ /<SELECT\s+NAME\s*="Queue">.*?<OPTION\s+VALUE="(\d+)"\s*\d*>\s*\Q$queue_name\E\s*<\/OPTION>/msi;
+    $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msi;
     ok( $qid = $1, "found id of the '$queue_name' queue");
 }
 

@@ -3760,14 +3760,13 @@ sub CustomFieldValues {
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->QueueObj->Id );
+        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
         unless ( $cf->id ) {
-            $cf->LoadByNameAndQueue( Name => $field, Queue => '0' );
+            $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
         }
-        $field = $cf->id;
-        unless ( $field =~ /^\d+$/ ) {
-          # If we didn't find a valid cfid, give up.
-          return RT::CustomFieldValues->new($self->CurrentUser);
+        unless ( $cf->id ) {
+            # If we didn't find a valid cfid, give up.
+            return RT::CustomFieldValues->new($self->CurrentUser);
         }
     }
     return $self->SUPER::CustomFieldValues($field);

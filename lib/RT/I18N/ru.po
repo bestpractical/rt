@@ -2677,7 +2677,7 @@ msgstr "Показывать отключенных пользователей."
 
 #: html/Admin/CustomFields/Modify.html:113
 msgid "Include page"
-msgstr ""
+msgstr "Незавершенный запрос"
 
 #: html/Search/Build.html:426
 msgid "Incomplete Query"
@@ -3149,7 +3149,7 @@ msgstr "Сообщения об этой заявке не будет отпра
 
 #: html/Elements/SelectTimeUnits:47
 msgid "Minutes"
-msgstr ""
+msgstr "Несовпадающие скобки"
 
 #: html/Search/Build.html:430
 msgid "Mismatched parentheses"
@@ -4818,7 +4818,7 @@ msgstr "Критерии поиска"
 
 #: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
 msgid "Search Preferences"
-msgstr ""
+msgstr "Ошибка загрузки атрибута запроса"
 
 #: lib/RT/SavedSearch.pm:116
 msgid "Search attribute load failure"
@@ -5278,7 +5278,7 @@ msgstr "ПереназначатьЗаявкуСебе"
 
 #: lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1"
+msgid "Stolen from %1 "
 msgstr ""
 
 #: NOT FOUND IN SOURCE

@@ -1255,7 +1255,7 @@ sub _Links {
 
 =head2 _AddLink
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
 
 Returns C<link id>, C<message> and C<exist> flag.
 
@@ -1282,13 +1282,11 @@ sub _AddLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	my $class = ref($self);
         $remote_link    = $args{'Base'};
         $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	my $class = ref($self);
         $remote_link  = $args{'Target'};
         $direction    = 'Base';
     }

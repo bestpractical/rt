@@ -4118,9 +4118,7 @@ msgstr "Promemoria password"
 msgid "Password changed"
 msgstr "Password cambiata"
 
-#
-2000
-: lib/RT/User_Overlay.pm:1035 lib/RT/User_Overlay.pm:214
+#: lib/RT/User_Overlay.pm:1038 lib/RT/User_Overlay.pm:215
 #: lib/RT/User_Overlay.pm:1038 lib/RT/User_Overlay.pm:215
 #. ($RT::MinimumPasswordLength)
 msgid "Password needs to be at least %1 characters long"
@@ -4384,7 +4382,7 @@ msgstr "Errore nella configurazione di RT"
 msgid "RT Critical error. Message not recorded!"
 msgstr "Errore critico. Messaggio not registrato!"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:65 html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "Errore RT"
 
@@ -6506,7 +6504,7 @@ msgstr "sistema %1"
 msgid "system group '%1'"
 msgstr "gruppo di sistema '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:66 html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "il componente chiamante non ha specificato il perché"
 
