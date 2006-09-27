@@ -106,7 +106,7 @@ $Rows => undef
 %     }
         <option value="<%$value->Name%>" 
 % if ($Values) {
-            <% $Values->HasEntry($value->Name) && ($$SelectedRef = 1) && 'SELECTED' %>
+            <% ($Values->HasEntry($value->Name)||'') && ($$SelectedRef = 1) && 'SELECTED' %>
 % } elsif ($Default) {
             <% (ref $Default ? (grep {$_ eq $value->Name} @{$Default}) : ($Default eq $value->Name))
                 && ($$SelectedRef = 1) && 'SELECTED' %>
