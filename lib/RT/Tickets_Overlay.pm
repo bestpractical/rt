@@ -740,7 +740,7 @@ sub _TransLimit {
 			CASESENSITIVE => 0,
 			ENTRYAGGREGATOR => 'AND',
 			@rest
-		);
+        );
     }
 
     $self->_SQLJoin(
