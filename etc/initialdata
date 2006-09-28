@@ -210,6 +210,17 @@
 
     },
 
+    {  Name                 => 'On Close',                                 # loc
+       Description          => 'Whenever a ticket is closed(inactivated)', # loc
+       ApplicableTransTypes => 'Status',
+       ExecModule           => 'CloseTicket',
+    },
+    {  Name                 => 'On Reopen',                                # loc
+       Description          => 'Whenever a ticket is reopened(activated)', # loc
+       ApplicableTransTypes => 'Status',
+       ExecModule           => 'ReopenTicket',
+    },
+
 );
 
 @Templates = (
