@@ -466,7 +466,7 @@ sub Create {
         $RT::Logger->debug( "Got a "
               . $args{'Status'}
               . "ticket with a resolved of "
-              . $args{'Resolved'} );
+              . ($args{'Resolved'} || '') );
         $Resolved->SetToNow;
     }
 
