@@ -671,7 +671,43 @@ sub Create {
     }
 
     # }}}
+
+    # {{{ Add all the custom fields
+
+    foreach my $arg ( keys %args ) {
+        next unless ( $arg =~ /^CustomField-(\d+)$/i );
+        my $cfid = $1;
+        foreach
+          my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+        {
+            next unless ( length($value) );
+
+            # Allow passing in uploaded LargeContent etc by hash reference
+            $self->_AddCustomFieldValue(
+                (UNIVERSAL::isa( $value => 'HASH' )
+                    ? %$value
+                    : (Value => $value)
+                ),
+                Field             => $cfid,
+                RecordTransaction => 0,
+            );
+        }
+    }
+
+    # }}}
+
     # {{{ Deal with setting up links
+
+    # TODO: Adding link may fire scrips on other end and those scrips
+    # could create transactions on this ticket before 'Create' transaction.
+    #
+    # We should implement different schema: record 'Create' transaction,
+    # create links and only then fire create transaction's scrips.
+    #
+    # Ideal variant: add all links without firing scrips, record create
+    # transaction and only then fire scrips on the other ends of links.
+    #
+    # //RUZ
 
     foreach my $type ( keys %LINKTYPEMAP ) {
         next unless ( defined $args{$type} );
@@ -701,30 +737,6 @@ sub Create {
             );
 
             push @non_fatal_errors, $wmsg unless ($wval);
-        }
-    }
-
-    # }}}
-
-    # {{{ Add all the custom fields
-
-    foreach my $arg ( keys %args ) {
-        next unless ( $arg =~ /^CustomField-(\d+)$/i );
-        my $cfid = $1;
-        foreach
-          my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
-        {
-            next unless ( length($value) );
-
-            # Allow passing in uploaded LargeContent etc by hash reference
-            $self->_AddCustomFieldValue(
-                (UNIVERSAL::isa( $value => 'HASH' )
-                    ? %$value
-                    : (Value => $value)
-                ),
-                Field             => $cfid,
-                RecordTransaction => 0,
-            );
         }
     }
 
