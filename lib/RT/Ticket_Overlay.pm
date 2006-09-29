@@ -3652,7 +3652,7 @@ sub HasRight {
 
     unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
     {
-        Carp::cluck;
+        Carp::cluck("Principal attrib undefined for Ticket::HasRight");
         $RT::Logger->crit("Principal attrib undefined for Ticket::HasRight");
         return(undef);
     }
