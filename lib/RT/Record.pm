@@ -748,7 +748,7 @@ DBIx::SearchBuilder::Record
 
 sub _ClassAccessible {
     my $self = shift;
-    return $_TABLE_ATTR->{ref($self)};
+    return $_TABLE_ATTR->{ ref($self) || $self };
 }
 
 =head2 _Accessible COLUMN ATTRIBUTE
