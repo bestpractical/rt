@@ -238,12 +238,11 @@ sub MailError {
         @_
     );
 
-    my $message_id = $args{'MIMEObj'}->head->get('Message-Id');
+    
     $RT::Logger->log(
         level   => $args{'LogLevel'},
         message => $args{'Explanation'}
     );
-    $RT::Logger->debug("Message-ID: $message_id");
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
         Type                   => "multipart/mixed",
@@ -253,7 +252,7 @@ sub MailError {
         Subject                => $args{'Subject'},
         'Precedence:'             => 'bulk',
         'X-RT-Loop-Prevention:' => $RT::rtname,
-        'In-Reply-To:'          => $message_id,
+        'In-Reply-To:'          => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef
     );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
