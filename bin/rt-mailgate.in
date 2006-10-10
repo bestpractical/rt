@@ -89,16 +89,15 @@ unless ( $args{message} =~ /\S/ ) {
     exit 0;
 }
 
-if ( $opts{'extension'} ) {
-    unless ( $opts{'extension'} =~ /^(action|queue|ticket)$/i ) {
-        print STDERR "Wrong value of --extension argument\n";
-        exit 1;
-    }
+if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
     $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
+} elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
+    print STDERR "Value of the --extension argument is not action, queue or ticket"
+        .", but environment variable EXTENSION is also defined. The former is ignored.";
 }
 
 # add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
-if ( exists $ENV{'EXTENSION'} and my $value = $ENV{'EXTENSION'} ) {
+if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
     # prepare value to avoid MIME format brakage
     # strip trailing newline symbols
     $value =~ s/(\r*\n)+$//;

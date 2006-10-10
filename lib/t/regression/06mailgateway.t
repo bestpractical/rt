@@ -54,7 +54,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use Test::More tests => 96;
+use Test::More tests => 100;
 
 use RT;
 RT::LoadConfig();
@@ -89,20 +89,6 @@ Subject: This is a test of new ticket creation
 Foob!
 EOF
     my ($status, $id) = create_ticket_via_gate($text, url => undef);
-    is ($status >> 8, 1, "The mail gateway exited with a failure");
-    ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
-}
-
-diag "Make sure that when we call the mailgate with wrong --extension, it fails" if $ENV{'TEST_VERBOSE'};
-{
-    my $text = <<EOF;
-From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: This is a test of new ticket creation
-
-Foob!
-EOF
-    my ($status, $id) = create_ticket_via_gate($text, extension => 'bad-extension-arg' );
     is ($status >> 8, 1, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
 }
@@ -150,7 +136,6 @@ EOF
 
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket");
     is ($tick->Id, $id, "correct ticket id");
     ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
 }
@@ -172,9 +157,8 @@ EOF
 
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket");
     is ($tick->Id, $id, "correct ticket id");
-    ok ($tick->Subject eq 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
+    is ($tick->Subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
 
     my $transactions = $tick->Transactions;
     $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
@@ -190,6 +174,39 @@ EOF
         $attachment->GetHeader('X-RT-Mail-Extension'),
         "bad value with newlines",
         'header is in place, without trailing newline char'
+    );
+}
+
+diag "Make sure that not standard --extension is passed" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of new ticket creation
+
+Foob!
+EOF
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'some-extension-arg' );
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket #$id");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    is ($tick->Id, $id, "correct ticket id");
+
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Create', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is (
+        $attachment->GetHeader('X-RT-Mail-Extension'),
+        'some-extension-arg',
+        'header is in place'
     );
 }
 
