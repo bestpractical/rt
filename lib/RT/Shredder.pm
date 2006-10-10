@@ -509,6 +509,8 @@ path by next rules:
 
 * if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
 
+* if C<FileName> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+
 * if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
 
 * if C<FromStorage> argument is false then result would be relative to the current dir unless it's allready absolute path.
@@ -542,10 +544,11 @@ sub GetFileName
     my %args = ( FileName => '', FromStorage => 1, @_ );
 
     # default value
-    my $file = $args{'FileName'};
-    unless( $file ) {
+    my $file = $args{'FileName'} || '%t-XXXX.sql';
+    if( $file =~ /\%t/i ) {
         require POSIX;
-        $file = POSIX::strftime( "%Y%m%dT%H%M%S-XXXX.sql", gmtime );
+        my $date_time = POSIX::strftime( "%Y%m%dT%H%M%S", gmtime );
+        $file =~ s/\%t/$date_time/gi;
     }
 
     # convert to absolute path
