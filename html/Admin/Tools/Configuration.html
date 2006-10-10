@@ -60,14 +60,11 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
 
 
-
 <h2><&|/l&>Loaded perl modules</&></h2>
+% my $report = Module::Versions::Report::report();
+% my @report = grep /v\d/, split("\n",$report);
 <pre>
-% my $report =  Module::Versions::Report::report();
-% my @report = grep { /v\d/ } split("\n",$report);
-<%join('<br />', @report)|n%>
-
-
+<% join('<br />', @report) |n %>
 </pre>
 
 <h2><&|/l&>RT Config</&></h2>
@@ -79,8 +76,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <td>
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em>Password not printed</em>
-% } else {
-% unless ( ref $val ) {
+% } elsif ( !ref $val ) {
 <% $val %>
 % } elsif ( ref $val eq 'ARRAY' ) {
 <% join ', ', @$val %>
@@ -89,35 +85,31 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % } else {
 <% ref $val %>
 % }
-% }
-</td>
-</tr>
+</td></tr>
 % }
 </table>
 
 <h2><&|/l&>RT Variables</&></h2>
 <table>
-%{
-%no strict qw/refs/;
-
-%foreach my $key (sort keys %{*RT::}) {
-% next unless ${'RT::'.$key};
-% next if ref ${'RT::'.$key};
-<tr><td>RT::<%$key%></td>
+% { no strict qw/refs/;
+% my %config_opt = map { $_ => 1 } RT->Config->Options( Overridable => undef );
+% foreach my $key ( sort keys %{*RT::} ) {
+% next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
+<tr><td>RT::<% $key %></td>
 <td>
-% if ($key =~ /Password(?!Length)/i) { 
+% if ( $key =~ /Password(?!Length)/i ) { 
 <em>Password not printed</em>
 % } else {
-<%${'RT::'.$key} %>
+<% ${'RT::'.$key} %>
 % }
 </td>
 </tr>
 % }
-%}
+% }
 </table>
 
 <h2><&|/l&>Perl configuration</&></h2>
 % require Config;
 <pre>
-<%Config::myconfig()%>
+<% Config::myconfig() %>
 </pre>
