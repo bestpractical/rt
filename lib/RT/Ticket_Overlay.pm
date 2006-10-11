@@ -454,6 +454,9 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
+    elsif ( $args{'Status'} ne 'new' ) {
+        $Starts->SetToNow;
+    }
 
     my $Resolved = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Resolved'} ) {
