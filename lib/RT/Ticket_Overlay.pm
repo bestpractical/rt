@@ -375,23 +375,21 @@ sub Create {
         @_
     );
 
-    my ( $ErrStr, $Owner, $resolved );
-    my (@non_fatal_errors);
+    my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Queue->new($RT::SystemUser);
-
-    if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj->Load( $args{'Queue'} );
-    }
-    elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
+    my $QueueObj = RT::Queue->new( $RT::SystemUser );
+    if ( ref $args{'Queue'} eq 'RT::Queue' ) {
         $QueueObj->Load( $args{'Queue'}->Id );
+    }
+    elsif ( $args{'Queue'} ) {
+        $QueueObj->Load( $args{'Queue'} );
     }
     else {
         $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
-    unless ( defined($QueueObj) && $QueueObj->Id ) {
+    unless ( $QueueObj->Id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
         return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
     }
@@ -414,14 +412,13 @@ sub Create {
     }
 
     #Since we have a queue, we can set queue defaults
-    #Initial Priority
 
+    #Initial Priority
     # If there's no queue default initial priority and it's not set, set it to 0
     $args{'InitialPriority'} = $QueueObj->InitialPriority || 0
         unless defined $args{'InitialPriority'};
 
     #Final priority
-
     # If there's no queue default final priority and it's not set, set it to 0
     $args{'FinalPriority'} = $QueueObj->FinalPriority || 0
         unless defined $args{'FinalPriority'};
@@ -464,10 +461,10 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    if ( $QueueObj->IsInactiveStatus( $args{'Status'} ) && !$args{'Resolved'} )
+    elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
         $RT::Logger->debug(
-            "Got a $args{'Status'} ticket with no resolved date"
+            "Got a $args{'Status'} ticket with no resolved date, set to now"
         );
         $Resolved->SetToNow;
     }
@@ -484,6 +481,7 @@ sub Create {
 
     # {{{ Deal with setting the owner
 
+    my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
         $Owner = $args{'Owner'};
     }
@@ -586,8 +584,8 @@ sub Create {
 
     # Delete the time worked if we're counting it in the transaction
     delete $params{TimeWorked} if $args{'_RecordTransaction'};
-    
-    my ($id,$ticket_message) = $self->SUPER::Create( %params);
+
+    my ($id,$ticket_message) = $self->SUPER::Create( %params );
     unless ($id) {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         $RT::Handle->Rollback();
