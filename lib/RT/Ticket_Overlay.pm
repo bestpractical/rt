@@ -2134,7 +2134,7 @@ sub SetStarted {
 
     #We create a date object to catch date weirdness
     my $time_obj = new RT::Date( $self->CurrentUser() );
-    if ( $time != 0 ) {
+    if ( $time ) {
         $time_obj->Set( Format => 'ISO', Value => $time );
     }
     else {
