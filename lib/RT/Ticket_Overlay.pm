@@ -437,8 +437,7 @@ sub Create {
 
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $Due = new RT::Date( $self->CurrentUser );
-
-    if ( $args{'Due'} ) {
+    if ( defined $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
     elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
