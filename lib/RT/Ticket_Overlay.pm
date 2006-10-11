@@ -290,7 +290,7 @@ sub LoadByURI {
 
     # FIXME: there is no TicketBaseURI option in config
     my $base_uri = RT->Config->Get('TicketBaseURI');
-    if ( $uri =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
         return $self->Load($id);
     }
