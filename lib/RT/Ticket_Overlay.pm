@@ -452,7 +452,7 @@ sub Create {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
     elsif ( $args{'Status'} ne 'new' ) {
-        $Starts->SetToNow;
+        $Started->SetToNow;
     }
 
     my $Resolved = new RT::Date( $self->CurrentUser );
