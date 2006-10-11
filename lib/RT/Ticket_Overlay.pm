@@ -3261,7 +3261,7 @@ sub SetStatus {
     $now->SetToNow();
 
     #If we're changing the status from new, record that we've started
-    if ( ( $self->Status =~ /new/ ) && ( $args{Status} ne 'new' ) ) {
+    if ( $self->Status eq 'new' && $args{Status} ne 'new' ) {
 
         #Set the Started time to "now"
         $self->_Set( Field             => 'Started',
