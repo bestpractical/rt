@@ -417,18 +417,19 @@ sub Create {
     #Initial Priority
 
     # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'InitialPriority'} = ( $QueueObj->InitialPriority || 0 )
-      unless ( $args{'InitialPriority'} );
+    $args{'InitialPriority'} = $QueueObj->InitialPriority || 0
+        unless defined $args{'InitialPriority'};
 
     #Final priority
 
     # If there's no queue default final priority and it's not set, set it to 0
-    $args{'FinalPriority'} = ( $QueueObj->FinalPriority || 0 )
-      unless ( $args{'FinalPriority'} );
+    $args{'FinalPriority'} = $QueueObj->FinalPriority || 0
+        unless defined $args{'FinalPriority'};
 
     # Priority may have changed from InitialPriority, for the case
     # where we're importing tickets (eg, from an older RT version.)
-    my $priority = $args{'Priority'} || $args{'InitialPriority'};
+    $args{'Priority'} = $args{'InitialPriority'}
+        unless defined $args{'Priority'};
 
     # {{{ Dates
     #TODO we should see what sort of due date we're getting, rather +
@@ -557,7 +558,7 @@ sub Create {
         Subject         => $args{'Subject'},
         InitialPriority => $args{'InitialPriority'},
         FinalPriority   => $args{'FinalPriority'},
-        Priority        => $priority,
+        Priority        => $args{'Priority'},
         Status          => $args{'Status'},
         TimeWorked      => $args{'TimeWorked'},
         TimeEstimated   => $args{'TimeEstimated'},
