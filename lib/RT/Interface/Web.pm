@@ -372,13 +372,12 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
     foreach my $arg (keys %ARGS) {
-            my $cfid = $1;
+        next if $arg =~ /-(?:Magic|Category)$/;
 
-            next if ($arg =~ /-Magic$/);
-       #Object-RT::Ticket--CustomField-3-Values
         if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
             $create_args{$arg} = $ARGS{$arg};
         }
+        # Object-RT::Ticket--CustomField-3-Values
         elsif ($arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/) {
             my $cfid = $1;
             my $cf = RT::CustomField->new( $session{'CurrentUser'});
