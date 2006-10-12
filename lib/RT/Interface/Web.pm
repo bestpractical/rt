@@ -1103,7 +1103,7 @@ sub ProcessTicketCustomFieldUpdates {
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Ticket-(\d+-.*)*/) {
+        if ( $arg =~ /^Ticket-(\d+-.*)/) {
             $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
         }
         elsif ( $arg =~ /^CustomField-(\d+-.*)/) {
