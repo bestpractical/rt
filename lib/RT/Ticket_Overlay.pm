@@ -2977,10 +2977,12 @@ sub SetOwner {
     my $NewOwner = shift;
     my $Type     = shift || "Give";
 
+    my $OldOwnerObj = $self->OwnerObj;
+
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
-    if ( $self->OwnerObj->Id == $RT::Nobody->Id ) {
+    if ( $OldOwnerObj->Id == $RT::Nobody->Id ) {
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('TakeTicket') ) {
             return ( 0, $self->loc("Permission Denied") );
@@ -2988,8 +2990,8 @@ sub SetOwner {
     }
 
     # see if it's a steal
-    elsif (    $self->OwnerObj->Id != $RT::Nobody->Id
-            && $self->OwnerObj->Id != $self->CurrentUser->id ) {
+    elsif (    $OldOwnerObj->Id != $RT::Nobody->Id
+            && $OldOwnerObj->Id != $self->CurrentUser->id ) {
 
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('StealTicket') ) {
@@ -3001,22 +3003,19 @@ sub SetOwner {
             return ( 0, $self->loc("Permission Denied") );
         }
     }
-    my $NewOwnerObj = RT::User->new( $self->CurrentUser );
-    my $OldOwnerObj = $self->OwnerObj;
 
-    $NewOwnerObj->Load($NewOwner);
-    if ( !$NewOwnerObj->Id ) {
+    my $NewOwnerObj = RT::User->new( $self->CurrentUser );
+    $NewOwnerObj->Load( $NewOwner );
+    unless ( $NewOwnerObj->Id ) {
         return ( 0, $self->loc("That user does not exist") );
     }
 
-    #If thie ticket has an owner and it's not the current user
-
-    if (    ( $Type ne 'Steal' )
-        and ( $Type ne 'Force' )
-        and    #If we're not stealing
-        ( $self->OwnerObj->Id != $RT::Nobody->Id ) and    #and the owner is set
-        ( $self->CurrentUser->Id ne $self->OwnerObj->Id() )
-      ) {                                                 #and it's not us
+    # If we're not stealing and the ticket has an owner and it's not 
+    # the current user
+    if ( $Type ne 'Steal' and $Type ne 'Force'
+         and $OldOwnerObj->Id != $RT::Nobody->Id
+         and $OldOwnerObj->Id != $self->CurrentUser->Id )
+    {
         return ( 0, $self->loc("You can only take tickets that are unowned") )
             if $NewOwnerObj->id == $self->CurrentUser->id;
         return (
@@ -3026,17 +3025,13 @@ sub SetOwner {
     }
 
     #If we've specified a new owner and that user can't modify the ticket
-    elsif ( ( $NewOwnerObj->Id )
-            and ( !$NewOwnerObj->HasRight( Right  => 'OwnTicket',
-                                           Object => $self ) )
-      ) {
+    elsif ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) ) {
         return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
-    #If the ticket has an owner and it's the new owner, we don't need
-    #To do anything
-    elsif (     ( $self->OwnerObj )
-            and ( $NewOwnerObj->Id eq $self->OwnerObj->Id ) ) {
+    # If the ticket has an owner and it's the new owner, we don't need
+    # To do anything
+    elsif ( $NewOwnerObj->Id == $OldOwnerObj->Id ) {
         return ( 0, $self->loc("That user already owns that ticket") );
     }
 
