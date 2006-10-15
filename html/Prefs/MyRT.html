@@ -107,7 +107,7 @@ foreach my $s( @searches ) {
         my $oid = join '-', ref $s->{'Object'},
                             $s->{'Object'}->Id,
                             'SavedSearch',
-                            $s->{'Search'};
+                            $s->{'Search'}->Id;
         push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
     }
 }
