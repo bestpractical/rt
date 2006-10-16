@@ -444,6 +444,8 @@ Takes an address from $head->get('Line') and returns a tuple: user@host, friendl
 sub ParseAddressFromHeader {
     my $Addr = shift;
 
+    # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
+    $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;                                                                                                                                                  
     my @Addresses = Mail::Address->parse($Addr);
 
     my ($AddrObj) = grep ref $_, @Addresses;
