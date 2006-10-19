@@ -63,7 +63,9 @@ use_ok(RT::Interface::Web);
 
 
 package RT::Interface::Web;
+
 use strict;
+use warnings;
 
 
 
@@ -159,7 +161,10 @@ sub WebExternalAutoInfo {
 
 
 package HTML::Mason::Commands;
+
 use strict;
+use warnings;
+
 use vars qw/$r $m %session/;
 
 
