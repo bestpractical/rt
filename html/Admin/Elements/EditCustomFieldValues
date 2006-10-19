@@ -43,46 +43,37 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (!$values->Count) {
+% unless ( $values->Count ) {
 <p><em><&|/l&>(no values)</&></em></p>
 %    return;
 % }
+
 <i><&|/l&>(Check box to delete)</&></i>
 <table>
+
 <tr>
-<td>&nbsp;</td>
-<td><&|/l&>Sort</&></td>
-<td><&|/l&>Name</&></td>
-<td><&|/l&>Description</&></td>
+<th>&nbsp;</th>
+<th><&|/l&>Sort</&></th>
+<th><&|/l&>Name</&></th>
+<th><&|/l&>Description</&></th>
 % if ($CustomField->Type ne 'Combobox') {
-<td><&|/l&>Category</&></td>
+<th><&|/l&>Category</&></th>
 % }
 </tr>
-% while (my $value = $values->Next) {
+
+% while ( my $value = $values->Next ) {
+% my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
 <tr>
-<td>
-<input type="checkbox" class="checkbox" name="Delete-CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>" />
-</td>
-<td>
-<input size="3" name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-SortOrder" value="<%$value->SortOrder%>" />
-</td>
-<td>
-<input type="text" size="30" name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Name" value="<%$value->Name%>" />
-</td>
-<td>
-<font size="-1">
-<input type="text" size="50" name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Description" value="<%$value->Description%>" />
-</font>
-</td>
-% if ($CustomField->Type ne 'Combobox') {
-<td>
-<font size="-1">
-<input type="text" size="10" name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Category" value="<%$value->Category%>" />
-</font>
-</td>
+<td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
+<td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" /></td>
+<td><input type="text" size="30" name="<% $paramtag %>-Name" value="<% $value->Name %>" /></td>
+<td><input type="text" size="50" name="<% $paramtag %>-Description" value="<% $value->Description %>" /></td>
+% if ( $CustomField->Type ne 'Combobox' ) {
+<td><input type="text" size="10" name="<% $paramtag %>-Category" value="<% $value->Category %>" /></td>
 % }
 </tr>
 % }
+
 </table>
 <%init>
 
