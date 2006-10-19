@@ -52,15 +52,15 @@
 
 
 <form method="post" action="Modify.html" name="ModifyCustomField">
-<input type="hidden" class="hidden" name="id" value="<%$id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
 <table>
-<tr>
-<td class="label"><&|/l&>Name</&></td>
+
+<tr><td class="label"><&|/l&>Name</&></td>
 <td><input name="Name" value="<% $CustomFieldObj->Name %>" size="20" /></td></tr>
-<tr>
-<td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td>
-</tr>
+
+<tr><td class="label"><&|/l&>Description</&></td>
+<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
@@ -78,12 +78,10 @@
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         Name => "LookupType", 
         Default => $CustomFieldObj->LookupType, &>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Validation</&></td>
-<td>
-<& /Widgets/ComboBox,
+</td></tr>
+
+<tr><td class="label"><&|/l&>Validation</&></td>
+<td><& /Widgets/ComboBox,
     Name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
     Size    => 20,
@@ -92,54 +90,40 @@
         '(?#Digits)^[\d.]+$',
         '(?#Year)^[12]\d{3}$',
     ],
-&>
-</td></tr>
-</tr>
-<tr>
-<td class="label">&nbsp;</td>
-<td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Link values to</&></td>
-</td>
-<td><input size="60" name="LinkValueTo"  value="<%$CustomFieldObj->LinkValueTo%>" />
+&></td></tr>
+
+<tr><td class="label"><&|/l&>Link values to</&></td><td>
+<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
 <&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
-</div>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Include page</&></td>
-</td>
-<td><input size="60" name="IncludeContentForValue"  value="<%$CustomFieldObj->IncludeContentForValue%>" />
+</div></td></tr>
+
+<tr><td class="label"><&|/l&>Include page</&></td><td>
+<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>
 <&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
 <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
-</div>
-</td>
-</tr>
+</div></td></tr>
 
-
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked %> />
+<&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+</td></tr>
 
 </table>
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
-% unless ( $CustomFieldObj->IsExternalValues ) {
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </div>
 % }
-% }
-<&/Elements/Submit, Name => 'Update' &>
-</form>
 
 <%INIT>
 
