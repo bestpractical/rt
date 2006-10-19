@@ -27,10 +27,11 @@ sub Create {
     my ($id, $msg) = $self->SUPER::Create(
         map { $_ => $args{$_} } qw(CustomField Name Description SortOrder)
     );
+    return ($id, $msg) unless $id;
 
-    if ( $id && length $args{Category} ) {
+    if ( defined $args{'Category'} && length $args{'Category'} ) {
         # $self would be loaded at this stage
-        my ($status, $msg) = $self->SetCategory( $args{Category} );
+        my ($status, $msg) = $self->SetCategory( $args{'Category'} );
         unless ( $status ) {
             $RT::Logger->error("Couldn't set category: $msg");
         }
