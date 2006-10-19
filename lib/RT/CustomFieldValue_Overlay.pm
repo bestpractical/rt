@@ -64,6 +64,8 @@ sub SetCategory {
     }
 }
 
-sub ValidateName { 1 };
+sub ValidateName {
+    return defined $_[1] && length $_[1];
+};
 
 1;
