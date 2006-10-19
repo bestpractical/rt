@@ -55,7 +55,10 @@ sub SetCategory {
         );
     }
     else {
-        $self->DeleteAttribute( Name => 'Category' );
+        my ($status, $msg) = $self->DeleteAttribute( 'Category' );
+        unless ( $status ) {
+            $RT::Logger->warning("Couldn't delete atribute: $msg");
+        }
         # return true even if there was no category
         return (1, $self->loc('Category unset'));
     }
