@@ -940,9 +940,8 @@ sub AddValueForObject {
 
     $RT::Handle->BeginTransaction;
 
-    my $current_values = $self->ValuesForObject($obj);
-
     if ( $self->MaxValues ) {
+        my $current_values = $self->ValuesForObject($obj);
         my $extra_values = ( $current_values->Count + 1 ) - $self->MaxValues;
 
         # (The +1 is for the new value we're adding)
