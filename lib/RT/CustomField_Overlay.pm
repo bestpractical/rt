@@ -928,7 +928,7 @@ sub AddValueForObject {
         ContentType  => undef,
         @_
     );
-    my $obj = $args{'Object'} or return;
+    my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
     unless ( $self->CurrentUserHasRight('ModifyCustomField') ) {
         return ( 0, $self->loc('Permission Denied') );
