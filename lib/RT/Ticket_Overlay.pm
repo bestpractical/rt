@@ -675,15 +675,16 @@ sub Create {
     # {{{ Add all the custom fields
 
     foreach my $arg ( keys %args ) {
-        next unless ( $arg =~ /^CustomField-(\d+)$/i );
+        next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
-        foreach
-          my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+
+        foreach my $value (
+            UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
         {
-            next unless ( length($value) );
+            next unless defined $value && length $value;
 
             # Allow passing in uploaded LargeContent etc by hash reference
-            $self->_AddCustomFieldValue(
+            my ($status, $msg) = $self->_AddCustomFieldValue(
                 (UNIVERSAL::isa( $value => 'HASH' )
                     ? %$value
                     : (Value => $value)
@@ -691,6 +692,7 @@ sub Create {
                 Field             => $cfid,
                 RecordTransaction => 0,
             );
+            push @non_fatal_errors, $msg unless $status;
         }
     }
 

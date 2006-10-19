@@ -934,7 +934,7 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    unless ( $self->MatchPattern($args{Content}) ) {
+    unless ( $self->MatchPattern($args{'Content'}) ) {
         return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
@@ -977,7 +977,7 @@ sub AddValueForObject {
 
     unless ($val) {
         $RT::Handle->Rollback();
-        return ($val);
+        return ($val, $self->loc("Couldn't create record"));
     }
 
     $RT::Handle->Commit();
