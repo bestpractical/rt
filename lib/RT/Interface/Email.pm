@@ -238,7 +238,6 @@ sub MailError {
         @_
     );
 
-    my $message_id = $args{'MIMEObj'}->head->get('Message-Id');
     $RT::Logger->log(
         level   => $args{'LogLevel'},
         message => $args{'Explanation'}
