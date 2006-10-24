@@ -1145,11 +1145,10 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 sub _CustomFieldDecipher {
     my ($self, $field) = @_;
  
-    my $queue = 0;
-    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-        ($queue, $field) = ($1, $2);
+    my ($queue, $column) = (0, '');
+    if ( $field =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/ ) {
+        ($queue, $field, $column) = ($1, $2, $3);
     }
-    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
     my $cfid;
     if ( $queue ) {
@@ -1168,7 +1167,7 @@ sub _CustomFieldDecipher {
         $cfid = $cf->id if $cf;
     }
  
-    return ($queue, $field, $cfid);
+    return ($queue, $field, $cfid, $column);
 }
  
 =head2 _CustomFieldJoin
@@ -1268,15 +1267,14 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-    my ( $self, $_field, $op, $value, @rest ) = @_;
+    my ( $self, $_field, $op, $value, %rest ) = @_;
 
-    my %rest  = @rest;
-    my $field = $rest{SUBKEY} || die "No field specified";
+    my $field = $rest{'SUBKEY'} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
 
-    my ($queue, $cfid);
-    ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
+    my ($queue, $cfid, $column);
+    ($queue, $field, $cfid, $column) = $self->_CustomFieldDecipher( $field );
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that
@@ -1306,17 +1304,17 @@ sub _CustomFieldLimit {
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
-        FIELD      => 'Content',
+        FIELD      => $column || 'Content',
         OPERATOR   => $op,
         VALUE      => $value,
         QUOTEVALUE => 1,
-        @rest
+        %rest
     );
 
     if ( $null_columns_ok ) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
-            FIELD           => 'Content',
+            FIELD           => $column || 'Content',
             OPERATOR        => 'IS',
             VALUE           => 'NULL',
             QUOTEVALUE      => 0,
