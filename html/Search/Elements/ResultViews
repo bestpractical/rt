@@ -14,6 +14,7 @@ $ShortQueryString => undef
 <a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
 <a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
+
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % foreach my $key (keys(%hiddens)) {
@@ -23,6 +24,15 @@ $ShortQueryString => undef
 <&|/l, $m->scomp('SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
 <input type="submit" class="button" value="<%loc('Go')%>" />
 </form>
-% if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
-<a href="<%$RT::WebPath%>/Admin/Tools/Shredder/?Search=1&Plugin=Tickets&Tickets%3Aquery=<% $Query |nu %>"><&|/l&>Shredder...</&></a>
+
+<%PERL>
+if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
+    my $query_string = $m->comp('/Elements/QueryString',
+        Search => 1,
+        Plugin => 'Tickets',
+        'Tickets:query' => $Query,
+        'Tickets:limit' => $Rows || '',
+    );
+</%PERL>
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
 % }
