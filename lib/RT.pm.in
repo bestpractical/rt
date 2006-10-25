@@ -96,9 +96,9 @@ A fully featured request tracker package
 =head2 LoadConfig
 
 Load RT's config file.  First, the site configuration file
-(C<RT_SiteConfig.pm>) is loaded, in order to establish overall site
+(F<RT_SiteConfig.pm>) is loaded, in order to establish overall site
 settings like hostname and name of RT instance.  Then, the core
-configuration file (C<RT_Config.pm>) is loaded to set fallback values
+configuration file (F<RT_Config.pm>) is loaded to set fallback values
 for all settings; it bases some values on settings from the site
 configuration file.
 
@@ -244,7 +244,7 @@ sub InitLogging {
                 return "$p{message} ($filename:$line)\n"
             }
         };
-        
+
         if ( $Config->Get('LogToFile') ) {
             my ($filename, $logdir) = (
                 $Config->Get('LogToFileNamed') || 'rt.log',
@@ -291,7 +291,6 @@ sub InitLogging {
                            $Config->Get('LogToSyslogConf'),
                          ));
         }
-
     }
 
 # {{{ Signal handlers
