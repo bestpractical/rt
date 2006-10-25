@@ -1087,7 +1087,7 @@ sub DeleteValueForObject {
 
 =head2 ValuesForObject OBJECT
 
-Return an RT::ObjectCustomFieldValues object containing all of this custom field's values for OBJECT 
+Return an L<RT::ObjectCustomFieldValues> object containing all of this custom field's values for OBJECT 
 
 =cut
 
