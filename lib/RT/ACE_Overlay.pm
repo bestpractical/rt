@@ -777,14 +777,7 @@ the correct case. If it's not found, will return undef.
 
 sub CanonicalizeRightName {
     my $self  = shift;
-    my $right = shift;
-    $right = lc $right;
-    if ( exists $LOWERCASERIGHTNAMES{"$right"} ) {
-        return ( $LOWERCASERIGHTNAMES{"$right"} );
-    }
-    else {
-        return (undef);
-    }
+    return $LOWERCASERIGHTNAMES{ lc shift };
 }
 
 # }}}
