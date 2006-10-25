@@ -1143,12 +1143,11 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 =cut
 
 sub _CustomFieldDecipher {
-    my ($self, $field) = @_;
- 
-    my ($queue, $column) = (0, '');
-    if ( $field =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/ ) {
-        ($queue, $field, $column) = ($1, $2, $3);
-    }
+    my ($self, $string) = @_;
+
+    my ($queue, $field, $column) =
+        ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/);
+    $field ||= ($string =~ /^{(.*?)}$/)[0] || $string;
 
     my $cfid;
     if ( $queue ) {
@@ -1161,10 +1160,16 @@ sub _CustomFieldDecipher {
             $cf = $q->CustomField( $field );
         }
         else {
-            $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByNameAndQueue( Queue => 0, Name => $field );
+            $RT::Logger->warning("Queue '$queue' doesn't exists, parsed from '$string'");
+            $queue = 0;
         }
-        $cfid = $cf->id if $cf;
+
+        if ( $cf and my $id = $cf->id ) {
+            $cfid = $cf->id;
+            $field = $cf->Name;
+        }
+    } else {
+        $queue = 0;
     }
  
     return ($queue, $field, $cfid, $column);
