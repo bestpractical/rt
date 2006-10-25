@@ -181,7 +181,19 @@ sub InitLogging {
     $, = '';
     use Log::Dispatch 1.6;
 
-    unless ($RT::Logger) {
+    my %level_num = (
+        map( { $_ => } 0..7 ),
+        debug     => 0,
+        infog     => 1,
+        notice    => 2,
+        warning   => 3,
+        error     => 4, 'err' => 4,
+        critical  => 5, crit  => 5,
+        alert     => 6, 
+        emergency => 7, emerg => 7,
+    );
+
+    unless ( $RT::Logger ) {
 
         $RT::Logger = Log::Dispatch->new;
         my $simple_cb = sub {
@@ -192,13 +204,18 @@ sub InitLogging {
 
             my $frame = 0; # stack frame index
             # skip Log::* stack frames
-            $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
+            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
 
             my ($package, $filename, $line) = caller($frame);
-            $p{message} =~ s/(?:\r*\n)+$//;
-            my $str = "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n";
+            $p{'message'} =~ s/(?:\r*\n)+$//;
+            my $str = "[". gmtime(time) ."] [". $p{'level'} ."]: "
+                . $p{'message'} ." ($filename:$line)\n";
 
-            if( $Config->Get('LogStackTraces') ) {
+            if ( my $level = RT->Config->Get('LogStackTraces') ) {
+                $level = 0 if $level =~ /^\d+$/;
+                $level = $level_num{ $level } || 0;
+                return $str unless $level_num{ $p{'level'} } >= $level;
+
                 $str .= "\nStack trace:\n";
                 # skip calling of the Log::* subroutins
                 $frame++ while( caller($frame) && (caller($frame))[3] =~ /^Log::/ );
