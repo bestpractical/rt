@@ -181,10 +181,10 @@ sub InitLogging {
     $, = '';
     use Log::Dispatch 1.6;
 
-    my %level_num = (
+    my %level_to_num = (
         map( { $_ => } 0..7 ),
         debug     => 0,
-        infog     => 1,
+        info      => 1,
         notice    => 2,
         warning   => 3,
         error     => 4, 'err' => 4,
@@ -196,42 +196,39 @@ sub InitLogging {
     unless ( $RT::Logger ) {
 
         $RT::Logger = Log::Dispatch->new;
+
+        my $stack_from_level;
+        if ( $stack_from_level = RT->Config->Get('LogStackTraces') ) {
+            # if option has old style '\d'(true) value
+            $stack_from_level = 0 if $stack_from_level =~ /^\d+$/;
+            $stack_from_level = $level_to_num{ $stack_from_level } || 0;
+        } else {
+            $stack_from_level = 99; # don't log
+        }
+
         my $simple_cb = sub {
             # if this code throw any warning we can get segfault
             no warnings;
+            my %p = @_;
 
+            # skip Log::* stack frames
+            my $frame = 0;
+            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
+            my ($package, $filename, $line) = caller($frame);
+
+            $p{'message'} =~ s/(?:\r*\n)+$//;
+            return "[". gmtime(time) ."] [". $p{'level'} ."]: "
+                . $p{'message'} ." ($filename:$line)\n";
+        };
+
+        my $syslog_cb = sub {
+            # if this code throw any warning we can get segfault
+            no warnings;
             my %p = @_;
 
             my $frame = 0; # stack frame index
             # skip Log::* stack frames
             $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-
-            my ($package, $filename, $line) = caller($frame);
-            $p{'message'} =~ s/(?:\r*\n)+$//;
-            my $str = "[". gmtime(time) ."] [". $p{'level'} ."]: "
-                . $p{'message'} ." ($filename:$line)\n";
-
-            if ( my $level = RT->Config->Get('LogStackTraces') ) {
-                $level = 0 if $level =~ /^\d+$/;
-                $level = $level_num{ $level } || 0;
-                return $str unless $level_num{ $p{'level'} } >= $level;
-
-                $str .= "\nStack trace:\n";
-                # skip calling of the Log::* subroutins
-                $frame++ while( caller($frame) && (caller($frame))[3] =~ /^Log::/ );
-                while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
-                    $str .= "\t". $sub ."() called at $filename:$line\n";
-                }
-            }
-            return $str;
-        };
-
-        my $syslog_cb = sub {
-            my %p = @_;
-
-            my $frame = 0; # stack frame index
-            # skip Log::* stack frames
-            $frame++ while( caller($frame) && caller($frame) =~ /^Log::/ );
             my ($package, $filename, $line) = caller($frame);
 
             # syswrite() cannot take utf8; turn it off here.
@@ -239,10 +236,27 @@ sub InitLogging {
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {
-                return "$p{message}\n"
+                return "$p{message}\n";
             } else {
-                return "$p{message} ($filename:$line)\n"
+                return "$p{message} ($filename:$line)\n";
             }
+        };
+
+        my $stack_cb = sub {
+            no warnings;
+            my %p = @_;
+            return $p{'message'} unless $level_to_num{ $p{'level'} } >= $stack_from_level;
+
+            # skip calling of the Log::* subroutins
+            my $frame = 0;
+            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
+            $frame++ while caller($frame) && (caller($frame))[3] =~ /^Log::/;
+
+            $p{'message'} .= "\nStack trace:\n";
+            while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
+                $p{'message'} .= "\t$sub(...) called at $filename:$line\n";
+            }
+            return $p{'message'};
         };
 
         if ( $Config->Get('LogToFile') ) {
@@ -268,7 +282,7 @@ sub InitLogging {
                              min_level=> $Config->Get('LogToFile'),
                              filename=> $filename,
                              mode=>'append',
-                             callbacks => $simple_cb,
+                             callbacks => [ $simple_cb, $stack_cb ],
                            ));
         }
         if ( $Config->Get('LogToScreen') ) {
@@ -276,7 +290,7 @@ sub InitLogging {
             $RT::Logger->add( Log::Dispatch::Screen->new
                          ( name => 'screen',
                            min_level => $Config->Get('LogToScreen'),
-                           callbacks => $simple_cb,
+                           callbacks => [ $simple_cb, $stack_cb ],
                            stderr => 1,
                          ));
         }
@@ -286,7 +300,7 @@ sub InitLogging {
                          ( name => 'syslog',
                            ident => 'RT',
                            min_level => $Config->Get('LogToSyslog'),
-                           callbacks => $syslog_cb,
+                           callbacks => [ $syslog_cb, $stack_cb ],
                            stderr => 1,
                            $Config->Get('LogToSyslogConf'),
                          ));
