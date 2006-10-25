@@ -246,6 +246,10 @@ sub InitLogging {
             no warnings;
             my %p = @_;
             return $p{'message'} unless $level_to_num{ $p{'level'} } >= $stack_from_level;
+            
+            use Devel::StackTrace;
+            my $trace = Devel::StackTrace->new( ignore_class => [ 'Log::Dispatch', 'Log::Dispatch::Base' ] );
+            return $p{'message'} . $trace->as_string;
 
             # skip calling of the Log::* subroutins
             my $frame = 0;
