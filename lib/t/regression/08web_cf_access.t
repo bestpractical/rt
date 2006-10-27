@@ -13,8 +13,7 @@ use constant BaseURL => RT->Config->Get('WebURL');
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
     local $/;
-    open my $fh, '<', ImageFile or die $!;
-    binmode($fh);
+    open my $fh, '<:raw', ImageFile or die $!;
     scalar <$fh>;
 };
 
@@ -23,6 +22,7 @@ isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get( BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
+
 $m->follow_link( text => 'Configuration' );
 $m->title_is(q/RT Administration/, 'admin screen');
 $m->follow_link( text => 'Custom Fields' );
@@ -51,7 +51,7 @@ $m->form_name('EditCustomFields');
 my @names = map  { $_->[1] }
             sort { $a->[0] <=> $b->[0] }
             map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
-            map  $_->name, $m->current_form->inputs;
+            grep defined, map $_->name, $m->current_form->inputs;
 my $tcf = pop(@names);
 $m->field( $tcf => 1 );         # Associate the new CF with this queue
 $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
