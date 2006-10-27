@@ -75,15 +75,18 @@ package RT::Attachments;
 use strict;
 no warnings qw(redefine);
 
+use RT::Attachment;
+
 # {{{ sub _Init  
 sub _Init   {
-  my $self = shift;
- 
-  $self->{'table'} = "Attachments";
-  $self->{'primary_key'} = "id";
-  $self->OrderBy ( FIELD => 'id',
-                   ORDER => 'ASC');
-  return ( $self->SUPER::_Init(@_));
+    my $self = shift;
+    $self->{'table'} = "Attachments";
+    $self->{'primary_key'} = "id";
+    $self->OrderBy(
+        FIELD => 'id',
+        ORDER => 'ASC',
+    );
+    return $self->SUPER::_Init( @_ );
 }
 # }}}
 
@@ -121,20 +124,19 @@ Limit result set to children of Attachment ID
 
 
 sub ChildrenOf  {
-  my $self = shift;
-  my $attachment = shift;
-  $self->Limit ( FIELD => 'Parent',
-		 VALUE => $attachment);
+    my $self = shift;
+    my $attachment = shift;
+    return $self->Limit(
+        FIELD => 'Parent',
+        VALUE => $attachment
+    );
 }
 # }}}
 
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-
-  use RT::Attachment;
-  my $item = new RT::Attachment($self->CurrentUser);
-  return($item);
+  return RT::Attachment->new( $self->CurrentUser );
 }
 # }}}
 
@@ -165,8 +167,4 @@ sub Next {
 }
 # }}}
 
-  1;
-
-
-
-
+1;
