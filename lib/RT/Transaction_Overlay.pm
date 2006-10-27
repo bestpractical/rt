@@ -360,13 +360,24 @@ sub ContentObj {
     # If it's a multipart object, first try returning the first
     # text/plain part.
 
-    elsif ( $Attachment->ContentType() =~ '^multipart/' ) {
-        my $plain_parts = $Attachment->Children();
+    elsif ( $Attachment->ContentType =~ '^multipart/' ) {
+        my $plain_parts = $Attachment->Children;
         $plain_parts->ContentType( VALUE => 'text/plain' );
+        $plain_parts->Limit(
+            FIELD => 'Content',
+            OPERATOR => 'IS NOT',
+            VALUE => undef,
+        );
+        $plain_parts->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD => 'Content',
+            OPERATOR => '!=',
+            VALUE => '',
+        );
 
         # If we actully found a part, return its content
-        if ( $plain_parts->First && $plain_parts->First->Content ne '' ) {
-            return ( $plain_parts->First );
+        if ( my $first = $plain_parts->First ) {
+            return $first;
         }
 
 
