@@ -380,19 +380,14 @@ sub ContentObj {
             return $first;
         }
 
-
-        # If that fails, return the  first text/plain or message/ part
+        # If that fails, return the first text/plain or message/... part
         # which has some content.
-
-        else {
-            my $all_parts = $self->Attachments();
-            while ( my $part = $all_parts->Next ) {
-                if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
-                    return ($part);
-                }
-            }
+        my $all_parts = $self->Attachments;
+        while ( my $part = $all_parts->Next ) {
+            next unless $part->ContentType =~ '^(text/plain$|message/)'
+                        && $part->Content;
+            return $part;
         }
-
     }
 
     # We found no content. suck
@@ -436,34 +431,31 @@ sub Attachments {
         return $self->{'attachments'};
     }
 
-        #If it's a comment, return an empty object if they don't have the right to see it
-        if ( $self->Type eq 'Comment' ) {
-            unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-                return ( $self->{'attachments'} );
-            }
+    $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
+
+    # if it's a comment, return an empty object if they don't have the right to see it
+    if ( $self->Type eq 'Comment' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            return $self->{'attachments'};
         }
-
-        #if they ain't got rights to see, return an empty object
-        elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
-            unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-                return ( $self->{'attachments'} );
-            }
+    }
+    # if they ain't got rights to see, return an empty object
+    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
+        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+            return $self->{'attachments'};
         }
+    }
 
-        $self->{'attachments'}->Limit( FIELD => 'TransactionId',
-                                       VALUE => $self->Id );
+    $self->{'attachments'}->Limit( FIELD => 'TransactionId', VALUE => $self->Id );
 
-        # Get the self->{'attachments'} in the order they're put into
-        # the database.  Arguably, we should be returning a tree
-        # of self->{'attachments'}, not a set...but no current app seems to need
-        # it.
+    # Get the self->{'attachments'} in the order they're put into
+    # the database.  Arguably, we should be returning a tree
+    # of self->{'attachments'}, not a set...but no current app seems to need
+    # it.
 
-        $self->{'attachments'}->OrderBy( ALIAS => 'main',
-                                         FIELD => 'id',
-                                         ORDER => 'asc' );
+    $self->{'attachments'}->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 
-    return ( $self->{'attachments'} );
-
+    return $self->{'attachments'};
 }
 
 # }}}
