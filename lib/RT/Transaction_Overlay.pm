@@ -431,8 +431,10 @@ a ContentType that Attachments should be restricted to.
 sub Attachments {
     my $self = shift;
 
-    unless ( $self->{'attachments'} ) {
-        $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
+    if ( $self->{'attachments'} ) {
+        $self->{'attachments'}->GotoFirstItem;
+        return $self->{'attachments'};
+    }
 
         #If it's a comment, return an empty object if they don't have the right to see it
         if ( $self->Type eq 'Comment' ) {
@@ -460,7 +462,6 @@ sub Attachments {
                                          FIELD => 'id',
                                          ORDER => 'asc' );
 
-    }
     return ( $self->{'attachments'} );
 
 }
