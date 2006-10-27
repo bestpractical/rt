@@ -873,43 +873,38 @@ Returns its value as a string, if the user passes an ACL check
 =cut
 
 sub _Value {
-
     my $self  = shift;
     my $field = shift;
 
     #if the field is public, return it.
     if ( $self->_Accessible( $field, 'public' ) ) {
-        return ( $self->__Value($field) );
-
+        return $self->SUPER::_Value( $field );
     }
 
     #If it's a comment, we need to be extra special careful
-    if ( $self->__Value('Type') eq 'Comment' ) {
+    my $type = $self->__Value('Type');
+    if ( $type eq 'Comment' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             return (undef);
         }
     }
-    elsif ( $self->__Value('Type') eq 'CommentEmailRecord' ) {
+    elsif ( $type eq 'CommentEmailRecord' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments')
             && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
             return (undef);
         }
-
     }
-    elsif ( $self->__Value('Type') eq 'EmailRecord' ) {
+    elsif ( $type eq 'EmailRecord' ) {
         unless ( $self->CurrentUserHasRight('ShowOutgoingEmail')) {
             return (undef);
         }
-
     }
     # Make sure the user can see the custom field before showing that it changed
-    elsif ( ( $self->__Value('Type') eq 'CustomField' ) && $self->__Value('Field') ) {
+    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->Load( $self->__Value('Field') );
-        return (undef) unless ( $cf->CurrentUserHasRight('SeeCustomField') );
+        $cf->Load( $cf_id );
+        return undef unless $cf->CurrentUserHasRight('SeeCustomField');
     }
-
-
     #if they ain't got rights to see, don't let em
     elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
@@ -917,8 +912,7 @@ sub _Value {
         }
     }
 
-    return ( $self->__Value($field) );
-
+    return $self->SUPER::_Value( $field );
 }
 
 # }}}
@@ -1015,7 +1009,6 @@ sub UpdateCustomFields {
     # value "ARGSRef", which was a reference to a hash of arguments.
     # This was insane. The next few lines of code preserve that API
     # while giving us something saner.
-       
 
     # TODO: 3.6: DEPRECATE OLD API
 
