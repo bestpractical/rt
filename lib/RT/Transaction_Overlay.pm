@@ -401,12 +401,8 @@ Otherwise, returns null
 
 sub Subject {
     my $self = shift;
-    if ( $self->Attachments->First ) {
-        return ( $self->Attachments->First->Subject );
-    }
-    else {
-        return (undef);
-    }
+    return undef unless my $first = $self->Attachments->First;
+    return $first->Subject;
 }
 
 # }}}
