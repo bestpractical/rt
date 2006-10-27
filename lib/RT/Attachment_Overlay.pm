@@ -325,36 +325,18 @@ sub OriginalEncoding {
 
 # }}}
 
-=head2 ParentObj
-
-Returns a parent's L<RT::Attachment> object if this attachment
-has a parent, otherwise returns undef.
-
-=cut
-
-sub ParentObj {
-    my $self = shift;
-    return undef unless $self->Parent;
-
-    my $parent = RT::Attachment->new( $self->CurrentUser );
-    $parent->LoadById( $self->Parent );
-    return $parent;
-}
-
 # {{{ sub Children
 
 =head2 Children
 
-Returns an L<RT::Attachments> object which is preloaded with
-all attachments objects with this attachment\'s Id as their
-C<Parent>.
+Returns an RT::Attachments object which is preloaded with all Attachments objects with this Attachment\'s Id as their 'Parent'
 
 =cut
 
 sub Children {
     my $self = shift;
     
-    my $kids = RT::Attachments->new( $self->CurrentUser );
+    my $kids = new RT::Attachments($self->CurrentUser);
     $kids->ChildrenOf( $self->Id );
     return($kids);
 }
@@ -447,8 +429,8 @@ sub NiceHeaders {
 Returns this object's headers as a string.  This method specifically
 removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
 We need to record the RT-Send-Cc and RT-Send-Bcc values so that we can actually send
-out mail. The mailing rules are separated from the ticket update code by
-an abstraction barrier that makes it impossible to pass this data directly.
+out mail. (The mailing rules are separated from the ticket update code by
+an abstraction barrier that makes it impossible to pass this data directly
 
 =cut
 
