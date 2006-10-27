@@ -202,7 +202,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     }
 }
 
-$id = $CustomFieldObj->id;
+$id = $CustomFieldObj->id if $CustomFieldObj->id;
 
 my $EnabledChecked = "checked";
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
