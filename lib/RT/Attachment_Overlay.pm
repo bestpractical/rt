@@ -325,6 +325,22 @@ sub OriginalEncoding {
 
 # }}}
 
+=head2 ParentObj
+
+Returns a parent's L<RT::Attachment> object if this attachment
+has a parent, otherwise returns undef.
+
+=cut
+
+sub ParentObj {
+    my $self = shift;
+    return undef unless $self->Parent;
+
+    my $parent = RT::Attachment->new( $self->CurrentUser );
+    $parent->LoadById( $self->Parent );
+    return $parent;
+}
+
 # {{{ sub Children
 
 =head2 Children
