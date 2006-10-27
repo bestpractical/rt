@@ -242,8 +242,8 @@ sub Delete {
 
 =head2 Message
 
-  Returns the RT::Attachments Object which contains the "top-level"object
-  attachment for this transaction
+Returns the L<RT::Attachments> Object which contains the "top-level" object
+attachment for this transaction.
 
 =cut
 
@@ -288,13 +288,15 @@ sub Content {
     );
 
     my $content;
-    if (my $content_obj = $self->ContentObj) {
+    if ( my $content_obj = $self->ContentObj ) {
         $content = $content_obj->Content;
 
-	if ($content_obj->ContentType =~ m{^text/html$}i) {
-        $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
-
-	}
+        if ( lc $content_obj->ContentType eq 'text/html' ) {
+            $content = HTML::FormatText->new(
+                leftmargin  => 0,
+                rightmargin => 78,
+            )->format( HTML::TreeBuilder->new_from_content( $content ) );
+        }
     }
 
     # If all else fails, return a message that we couldn't find any content
@@ -310,7 +312,7 @@ sub Content {
         # What's the longest line like?
         my $max = 0;
         foreach ( split ( /\n/, $content ) ) {
-            $max = length if ( length > $max );
+            $max = length if length > $max;
         }
 
         if ( $max > 76 ) {
@@ -324,7 +326,7 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString(), $self->CreatorObj->Name())
+        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
           . "\n$content\n\n";
     }
 
@@ -343,7 +345,6 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 
 sub ContentObj {
-
     my $self = shift;
 
     # If we don\'t have any content, return undef now.
@@ -356,7 +357,7 @@ sub ContentObj {
 
     # If it's a message or a plain part, just return the
     # body.
-    if ( $Attachment->ContentType() =~ '^(?:text/plain$|text/html|message/)' ) {
+    if ( $Attachment->ContentType =~ '^(?:text/plain$|text/html|message/)' ) {
         return ($Attachment);
     }
 
@@ -475,20 +476,17 @@ sub _Attach {
     my $self       = shift;
     my $MIMEObject = shift;
 
-    if ( !defined($MIMEObject) ) {
-        $RT::Logger->error(
-"$self _Attach: We can't attach a mime object if you don't give us one.\n"
-        );
+    unless ( defined $MIMEObject ) {
+        $RT::Logger->error("We can't attach a mime object if you don't give us one.");
         return ( 0, $self->loc("[_1]: no attachment specified", $self) );
     }
 
-    my $Attachment = new RT::Attachment( $self->CurrentUser );
+    my $Attachment = RT::Attachment->new( $self->CurrentUser );
     my ($id, $msg) = $Attachment->Create(
         TransactionId => $self->Id,
         Attachment    => $MIMEObject
     );
     return ( $Attachment, $msg || $self->loc("Attachment created") );
-
 }
 
 # }}}
@@ -525,11 +523,11 @@ sub Description {
         }
     }
 
-    if ( !defined( $self->Type ) ) {
+    unless ( defined $self->Type ) {
         return ( $self->loc("No transaction type specified"));
     }
 
-    return ( $self->loc("[_1] by [_2]",$self->BriefDescription , $self->CreatorObj->Name ));
+    return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
 }
 
 # }}}
@@ -562,7 +560,7 @@ sub BriefDescription {
 
     my $type = $self->Type;    #cache this, rather than calling it 30 times
 
-    if ( !defined($type) ) {
+    unless ( defined $type ) {
         return $self->loc("No transaction type specified");
     }
 
