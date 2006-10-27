@@ -434,7 +434,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
     # if it's a comment, return an empty object if they don't have the right to see it
-    if ( $self->Type eq 'Comment' ) {
+    if ( $self->__Value('Type') eq 'Comment' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             return $self->{'attachments'};
         }
