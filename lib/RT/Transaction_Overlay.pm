@@ -935,11 +935,9 @@ passed in here.
 sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
-    return (
-        $self->CurrentUser->HasRight(
-            Right     => "$right",
-            Object => $self->TicketObj
-          )
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $self->Object
     );
 }
 
