@@ -347,13 +347,9 @@ Returns the RT::Attachment object which contains the content for this Transactio
 sub ContentObj {
     my $self = shift;
 
-    # If we don\'t have any content, return undef now.
-    unless ( $self->Attachments->First ) {
-        return (undef);
-    }
-
+    # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
-    my $Attachment = $self->Attachments->First();
+    return undef unless my $Attachment = $self->Attachments->First;
 
     # If it's a message or a plain part, just return the
     # body.
