@@ -6,7 +6,7 @@ use warnings;
 
 =head1 NAME
 
-RT::Shredder - Permanently delete data from RT
+RT::Shredder - Permanently wipeout data from RT
 
 
 =head1 SYNOPSIS
@@ -32,9 +32,17 @@ Same action as in CLI example, but from perl script:
 
 =head1 DESCRIPTION
 
-RT::Shredder is extention to RT which allows you to permanently delete
-data from the RT database.  Shredder supports the deletion of almost
+RT::Shredder is extention to RT which allows you to permanently wipeout
+data from the RT database.  Shredder supports the wiping of almost
 all RT objects (Tickets, Transactions, Attachments, Users...).
+
+
+=head2 "Delete" vs "Wipeout"
+
+RT uses the term "delete" to mean "deactivate".  To avoid confusion,
+RT::Shredder uses the term "Wipeout" to mean "permanently erase" (or
+what most people would think of as "delete").
+
 
 =head2 Why do you want this?
 
@@ -55,14 +63,16 @@ into RT.
 
 =head2 Command line tools (CLI)
 
-L<rt-shredder> is a program which allows you to delete objects from
+L<rt-shredder> is a program which allows you to wipe objects from
 command line or with system tasks scheduler (cron, for example).
+
 
 =head2 Web based interface (WebUI)
 
 Shredder's WebUI integrates into RT's WebUI.  You can find it in the
 Configuration->Tools->Shredder tab.  The interface is similar to the
 CLI and gives you the same functionality.
+
 
 =head2 API
 
@@ -517,7 +527,7 @@ sub ValidateRelations
 
 =head2 DATA STORAGE AND BACKUPS
 
-Shredder allow you to store data you delete in files as scripts with SQL
+Shredder allow you to store data you wiped in files as scripts with SQL
 commands.
 
 =head3 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
