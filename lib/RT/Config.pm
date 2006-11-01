@@ -365,6 +365,7 @@ sub __GetNameByRef
     my $ref = shift;
     my $pack = shift || 'main::';
     $pack .= '::' unless $pack =~ /::$/;
+
     my %ref_sym = (
         SCALAR => '$',
         ARRAY => '@',
@@ -389,6 +390,7 @@ sub __GetNameByRef
         # SCALAR, ARRAY... and other types with
         # the same name
         my $entry = ${$pack}{$k};
+        next unless $entry;
 
         # get entry for type we are looking for
         my $entry_ref = *{$entry}{ref($ref)};
