@@ -34,7 +34,24 @@ Same action as in CLI example, but from perl script:
 
 RT::Shredder is extention to RT which allows you to permanently delete
 data from the RT database.  Shredder supports the deletion of almost
-all RT objects (Tickets, Transactions, Attachments, Users...)
+all RT objects (Tickets, Transactions, Attachments, Users...).
+
+=head2 Why do you want this?
+
+Normally in RT, "deleting" an item simply deactivates it and makes it
+invisible from view.  This is done to retain full history and
+auditability of your tickets.  For most RT users this is fine and they
+have no need of RT::Shredder.
+
+But in some large and heavily used RT instances the database can get
+clogged up with junk, particularly spam.  This can slow down searches
+and bloat the size of the database.  For these users, RT::Shredder
+allows them to completely clear the database of this unwanted junk.
+
+An additional use of Shredder is to obliterate sensitive information
+(passwords, credit card numbers, ...) which might have made their way
+into RT.
+
 
 =head2 Command line tools (CLI)
 
