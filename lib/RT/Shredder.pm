@@ -3,9 +3,11 @@ package RT::Shredder;
 use strict;
 use warnings;
 
+
 =head1 NAME
 
-RT::Shredder - Cleanup RT database
+RT::Shredder - Permanently delete data from RT
+
 
 =head1 SYNOPSIS
 
@@ -27,30 +29,31 @@ Same action as in CLI example, but from perl script:
       $t->Wipeout;
   }
 
+
 =head1 DESCRIPTION
 
-RT::Shredder is extention to RT API which allow you to delete data
-from RT database. Now Shredder support wipe out of almost all RT objects
- (Tickets, Transactions, Attachments, Users...)
+RT::Shredder is extention to RT which allows you to permanently delete
+data from the RT database.  Shredder supports the deletion of almost
+all RT objects (Tickets, Transactions, Attachments, Users...)
 
-=head2 Command line tools(CLI)
+=head2 Command line tools (CLI)
 
-L<rt-shredder> script that is shipped with the distribution allow
-you to delete objects from command line or with system tasks
-scheduler(cron or other).
+L<rt-shredder> is a program which allows you to delete objects from
+command line or with system tasks scheduler (cron, for example).
 
-=head2 Web based interface(WebUI)
+=head2 Web based interface (WebUI)
 
-Shredder's WebUI integrates into RT's WebUI and you can find it
-under Configuration->Tools->Shredder tab. This interface is similar
-to CLI and give you the same functionality, but it's available
-from browser.
+Shredder's WebUI integrates into RT's WebUI.  You can find it in the
+Configuration->Tools->Shredder tab.  The interface is similar to the
+CLI and gives you the same functionality.
 
 =head2 API
 
-L<RT::Shredder> modules is extension to RT API which add(push) methods
-into base RT classes. API is not well documented yet, but you can find
-usage examples in L<rt-shredder> script code and in F<t/*> files.
+L<RT::Shredder> is an extension to RT which adds shredder methods to
+RT objects and classes.  The API is not well documented yet, but you
+can find usage examples in L<rt-shredder> and the
+F<lib/t/regression/shredder/*.t> test files.
+
 
 =head1 CONFIGURATION
 
