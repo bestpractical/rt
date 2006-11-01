@@ -86,23 +86,32 @@ F<lib/t/regression/shredder/*.t> test files.
 
 =head2 $RT::DependenciesLimit
 
-Shredder stops with error if object has more then C<$RT::DependenciesLimit>
-dependencies. By default this value is 1000. For example: ticket has 1000
-transactions or transaction has 1000 attachments. This is protection
-from bugs in shredder code, but sometimes when you have big mail loops
-you may hit it. You can change default value, in
-F<RT_SiteConfig.pm> add C<Set( $DependenciesLimit, new_limit );>
+Shredder stops with an error if object has more then
+C<$RT::DependenciesLimit> dependencies. For example: a ticket has 1000
+transactions or a transaction has 1000 attachments. This is protection
+from bugs in shredder from wiping out your whole database, but
+sometimes when you have big mail loops you may hit it.
+
+Defaults to 1000.
+
+You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
+$DependenciesLimit, new_limit );>
+
 
 =head2 $RT::ShredderStoragePath
 
-By default shredder saves dumps in F</path-to-RT-var-dir/data/Rt-Shredder>,
-with this option you can change path, but B<note> that value should be absolute
-path to the dir you want.
+Directory containing Shredder backup dumps.
+
+Defaults to F</path-to-RT-var-dir/data/RT-Shredder>.
+
+You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
+$ShredderStoragePath, new_path );>  Be sure to use an absolute path.
+
 
 =head1 API DESCRIPTION
 
-L<RT::Shredder> class implements interfaces to objects cache, actions
-on the objects in the cache and backups storage.
+L<RT::Shredder> implements interfaces to objects cache, actions on the
+objects in the cache and backups storage.
 
 =head2 Dependencies
 
@@ -527,7 +536,7 @@ sub ValidateRelations
 
 =head2 DATA STORAGE AND BACKUPS
 
-Shredder allow you to store data you wiped in files as scripts with SQL
+Shredder allows you to store data you wiped in files as scripts with SQL
 commands.
 
 =head3 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
@@ -625,11 +634,8 @@ sub GetFileName
 
 =head3 StoragePath
 
-Returns absolute path to storage dir. By default it's
-F</path-to-RT-var-dir/data/RT-Shredder/>
-(in default RT install would be F</opt/rt3/var/data/RT-Shredder>),
-but you can change this value with config option C<$RT::ShredderStoragePath>.
-See L</CONFIGURATION> sections.
+Returns an absolute path to the storage dir.  See
+L<CONFIGURATION/$RT::ShredderStoragePath>.
 
 See also description of the L</GetFileName> method.
 
