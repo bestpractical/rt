@@ -16,13 +16,13 @@ rt-shredder - Script which wipe out tickets from RT DB
 =head1 DESCRIPTION
 
 rt-shredder - is script that allow you to wipe out objects
-from RT DB. This script uses API that RT::Shredder module adds to RT.
+from RT DB. This script uses API that L<RT::Shredder> module adds to RT.
 Script can be used as example of usage of the shredder API.
 
 =head1 USAGE
 
 You can use several options to control which objects script
-should delete.
+should wipeout.
 
 =head1 OPTIONS
 
