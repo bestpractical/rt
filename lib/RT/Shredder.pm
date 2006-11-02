@@ -178,16 +178,15 @@ our @SUPPORTED_OBJECTS = qw(
 
 =head2 GENERIC
 
-=head3 Init( %options )
+=head3 Init
 
-Sets shredder defaults, loads RT config and init RT interface.
-Defaults could later be overriden by object constructor and
-if you allready loaded config and initalized RT then you may
-skip this function call.
+    RT::Shredder::Init( %default_options );
 
-B<NOTE> that this is function and must be called with C<RT::Shredder::Init();>.
+C<RT::Shredder::Init()> should be called before creating an
+RT::Shredder object.  It iniitalizes RT and loads the RT
+configuration.
 
-B<TODO:> describe possible shredder options.
+%default_options are passed to every C<<RT::Shredder->new>> call.
 
 =cut
 
@@ -200,9 +199,13 @@ sub Init
     RT::Init();
 }
 
-=head3 new( %options )
+=head3 new
 
-Shredder object constructor takes options hash and returns new object.
+  my $shredder = RT::Shredder->new(%options);
+
+Construct a new RT::Shredder object.
+
+There currently are no %options.
 
 =cut
 
@@ -217,9 +220,10 @@ sub new
 sub _Init
 {
     my $self = shift;
-    $self->{'opt'} = { %opt, @_ };
-    $self->{'cache'} = {};
-    $self->{'resolver'} = {};
+    $self->{'opt'}          = { %opt, @_ };
+    $self->{'cache'}        = {};
+    $self->{'resolver'}     = {};
+    $self->{'dump_plugins'} = [];
 }
 
 =head3 CastObjectsToRecords( Objects => undef )
@@ -670,7 +674,7 @@ sub AddDumpPlugin {
     die "Plugin doesn't apply to any state" unless @applies_to;
     $active_dump_state{ lc $_ } = 1 foreach @applies_to;
 
-    push @{ $self->{'opt'}{'dump_plugins'} ||= [] }, $plugin;
+    push @{ $self->{'dump_plugins'} }, $plugin;
 
     return $plugin;
 }
@@ -681,7 +685,7 @@ sub DumpObject {
     die "No state passed" unless $args{'State'};
     return unless $active_dump_state{ lc $args{'State'} };
 
-    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+    foreach (@{ $self->{'dump_plugins'} }) {
         next unless grep lc $args{'State'} eq lc $_, $_->AppliesToStates;
         my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
@@ -692,7 +696,7 @@ sub DumpObject {
 sub PushDumpMark {
     my $self = shift;
     $mark++;
-    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+    foreach (@{ $self->{'dump_plugins'} }) {
         my ($state, $msg) = $_->PushMark( Mark => $mark );
         die "Couldn't push mark: $msg" unless $state;
     }
@@ -700,14 +704,14 @@ sub PushDumpMark {
 }
 sub PopDumpMark {
     my $self = shift;
-    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+    foreach (@{ $self->{'dump_plugins'} }) {
         my ($state, $msg) = $_->PushMark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
 }
 sub RollbackDumpTo {
     my $self = shift;
-    foreach ( @{ $self->{'opt'}->{'dump_plugins'} } ) {
+    foreach (@{ $self->{'dump_plugins'} }) {
         my ($state, $msg) = $_->RollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
