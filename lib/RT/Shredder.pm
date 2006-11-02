@@ -543,6 +543,26 @@ sub ValidateRelations
 Shredder allows you to store data you wiped in files as scripts with SQL
 commands.
 
+=head3 Restoring from backup
+
+Should you wipeout something you did not intend to the objects can be
+restored by using the storage files.  These files are a simple set of
+SQL commands to re-insert your objects into the RT database.
+
+1) Locate the appropriate shredder SQL dump file.  In the WebUI, when
+   you use shredder, the path to the dump file is displayed.  It also
+   gives the option to download the dump file after each wipeout.  Or
+   it can be found in your C<$RT::ShredderStoragePath>.
+
+2) Load the shredder SQL dump into your RT database.  The details will
+   be different for each database and RT configuration, consult your
+   database manual and RT config.  For example, in MySQL...
+
+    mysql -u your_rt_user -p your_rt_database < /path/to/rt/var/data/shredder/dump.sql
+
+That's it.
+
+
 =head3 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
 Takes desired C<FileName> and flag C<FromStorage> then translate file name to absolute
