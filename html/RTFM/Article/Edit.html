@@ -132,10 +132,17 @@ elsif ( $id eq 'new' ) {
     );
     push( @results, $msg );
     if ($id) {
-        my @cf_results = ProcessObjectCustomFieldUpdates(
-            Object  => $ArticleObj,
-            ARGSRef => \%ARGS
-        );
+
+    foreach my $key (keys %ARGS) {
+    # when we create articles, we don't have an article id for the cf naming. 
+    # but here, we really want it for adding the value. so we do that now.
+    if ($key =~ /^Object-RT::FM::Article--/) {
+            my $new_key = $key;
+            $new_key =~ s/--/-$id-/; 
+            $ARGS{$new_key} = delete $ARGS{$key};
+        }
+    }
+    my @cf_results = ProcessObjectCustomFieldUpdates( Object  => $ArticleObj , ARGSRef => \%ARGS);
         @results = ( @results, @cf_results );
 
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
