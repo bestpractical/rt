@@ -218,15 +218,16 @@ mentioned above.
 To install RT with FastCGI, you'll need to add a few lines to your 
 Apache configuration file telling it about RT:
 
+
+# Tell FastCGI to put its temporary files somewhere sane.
+FastCgiIpcDir /tmp
+
+FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
+
 <VirtualHost rt.example.com>
 
    # Pass through requests to display images
    Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
-   
-   # Tell FastCGI to put its temporary files somewhere sane.
-   FastCgiIpcDir /tmp
-
-   FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
 
    AddHandler fastcgi-script fcgi
    ScriptAlias / /opt/rt3/bin/mason_handler.fcgi/
