@@ -127,13 +127,36 @@ have not been set already.
 
 sub LoadConfig {
      local *Set = sub { $_[0] = $_[1] unless defined $_[0] }; 
-    if ( -f "$SITE_CONFIG_FILE" ) {
-        require $SITE_CONFIG_FILE
-          || die ("Couldn't load RT config file  '$SITE_CONFIG_FILE'\n$@");
-    }
-    require $CORE_CONFIG_FILE
-      || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
 
+    my $username = getpwuid($>);
+    my $group = getgrgid($();
+    my $message = qq{Couldn't load RT config file %s as user $username / group $group.
+The file is owned by user %s and group %s.
+This usually means that the user/group your webserver is running as cannot read the file.
+Be careful not to make the permissions on this file too liberal, because it contains database
+passwords.  You may need to put the webserver user in the appropriate group (%s) or change
+permissions be able to run succesfully};
+
+    if ( -f "$SITE_CONFIG_FILE" ) {
+        eval { require $SITE_CONFIG_FILE };
+        if ($@) {
+            my ($fileuid,$filegid) = (stat($SITE_CONFIG_FILE))[4,5];
+            my $fileusername = getpwuid($fileuid);
+            my $filegroup = getgrgid($filegid);
+            my $errormessage = sprintf($message, $SITE_CONFIG_FILE,
+                                       $fileusername, $filegroup, $filegroup);
+            die ("$errormessage\n$@");
+        }
+    }
+    eval { require $CORE_CONFIG_FILE };
+    if ($@) {
+        my ($fileuid,$filegid) = (stat($SITE_CONFIG_FILE))[4,5];
+        my $fileusername = getpwuid($fileuid);
+        my $filegroup = getgrgid($filegid);
+        my $errormessage = sprintf($message, $SITE_CONFIG_FILE,
+                                   $fileusername, $filegroup, $filegroup);
+        die ("$message '$CORE_CONFIG_FILE'\n$@") 
+    }
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
     # If the user does that, do what they mean.
