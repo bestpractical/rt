@@ -367,7 +367,7 @@ CREATE TABLE CustomFields (
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
-  Pattern varchar(255) NULL  ,	# New -- Must validate against this
+  Pattern varchar(65536) NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
