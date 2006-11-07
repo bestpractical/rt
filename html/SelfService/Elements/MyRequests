@@ -44,41 +44,44 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
-<table border="0" cellspacing="1" cellpadding="1" bgcolor="#eeeeee" width="100%">
-<tr>
-<th><&|/l&>Subject</&></th>
-<th><&|/l&>Status</&></th>
-<th><&|/l&>Owner</&></th>
-</tr>
-<tr>
-% while (my $Ticket = $MyTickets->Next) {
-<tr>
-<td>
-<a href="<%$RT::WebPath%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
-</td>
-<td>
-<%loc($Ticket->Status)%>
-</td><td>
-<%$Ticket->OwnerObj->Name%>
-</td></tr>
-% }
-</table>
+<& /Elements/TicketList, Title   => $title,
+			 Format  => @Format, 
+			 Query   => $Query, 
+			 Order   => $Order, 
+			 OrderBy => $OrderBy,
+			 BaseURL => $BaseURL,
+			 Page    => $Page &>
 </&>
 
 <%INIT>
 $title ||= loc("My [_1] tickets", $friendly_status);
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
-$MyTickets->OrderBy(FIELD => 'id', ORDER => 'ASC');
-
-foreach my $status (@status) {
-
-        $MyTickets->LimitStatus(VALUE => $status);
+my $EmailAddress = $session{'CurrentUser'}->EmailAddress;
+my $Role = shift @roles;
+my $Query = "( ";
+$Query .= $Role . " = '" . $EmailAddress . "'";
+foreach $Role (@roles) {
+   $Query .= " OR " . $Role . " = '" . $EmailAddress . "'";
 }
+$Query .= " )";
+if (@status) {
+   $Query .= " AND ( Status = '";
+   $Query .= join "' OR Status = '", @status; 
+   $Query .= "' )";
+}
+my $Order = "ASC";
+my $OrderBy = "Created";
+my @Format = qq{
+   '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   Status,
+   '__Requestors__',
+   OwnerName};
 </%INIT>
 <%ARGS>
 $title => undef
 $friendly_status => loc('open')
+@roles => ('Requestor', 'Cc', 'AdminCc')
 @status => ('open', 'new', 'stalled')
+$BaseURL => undef
+$Page => 1
 </%ARGS>
