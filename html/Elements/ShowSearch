@@ -44,12 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => loc($search->Description, $rows),
+    title => loc($search->Description, $SearchArg->{'Rows'}),
     title_href => "Search/Results.html".$QueryString,
     titleright => loc('Edit'),
     titleright_href => $customize &>
 <& /Elements/TicketList, %$SearchArg,
-        Rows => $rows,
         ShowNavigation => 0
         &>
 </&>
@@ -77,13 +76,23 @@ else {
 	return;
     }
     $SearchArg = $user->Preferences($search, $search->Content);
+    $SearchArg->{'Rows'} = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
     $customize = $RT::WebPath.'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search).'-'.$search->Id)
 }
 
-my $rows = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
 $SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
 $SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
 $SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+
+$m->comp(
+    '/Elements/Callback',
+    _CallbackName => 'ModifySearch',
+    Search        => $SearchArg,
+    %ARGS
+);
+
+
+
 my $QueryString = '?' . $m->comp('/Elements/QueryString',
                                   %$SearchArg);
 	    #map { $_ => $SearchArg->{$_} } qw(Query Order OrderBy));
