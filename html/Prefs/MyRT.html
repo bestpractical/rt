@@ -71,10 +71,12 @@ my $title = loc("Customize").' '.loc("RT at a glance");
 my $user = $session{'CurrentUser'}->UserObj;
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
+    my $portlets; 
+    
+    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    $portlets  = $default_portlets ? $default_portlets->Content  : {};
+    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
-
 if ($ARGS{SummaryRows}) {
     $user->SetPreferences('SummaryRows', $ARGS{SummaryRows});
     push @actions, loc ('Preferences saved for [_1].', loc('summary rows'));

@@ -70,9 +70,15 @@
 my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    my $portlets; 
+    if ($default_portlets) {
+        $portlets = $default_portlets->Content(); 
+    } else {
+        $portlets = {};
+    }
     my $user = $session{'CurrentUser'}->UserObj;
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
+    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 
 my $portlets = $session{'my_rt_portlets'};
