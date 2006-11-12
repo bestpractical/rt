@@ -222,7 +222,37 @@ sub _LoadConfig
     };
     if( $@ ) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
-        die ("Couldn't load config file '$args{File}': $@");
+
+        my ($our_user, $our_group) = (scalar getpwuid $>, scalar getgrgid $();
+
+        my ($file_path, $fileuid, $filegid);
+        foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
+            my $tmp = File::Spec->catfile( $_, $args{File} );
+            ($fileuid,$filegid) = (stat( $tmp ))[4,5];
+            if ( defined $fileuid ) {
+                $file_path = $tmp;
+                last;
+            }
+        }
+
+        my $message;
+        if ( $file_path ) {
+            my ($file_user, $file_group) = (scalar getpwuid $fileuid, scalar getgrgid $filegid);
+            $message = qq{Couldn't load RT config file $file_path as user $our_user / group $our_group.
+The file is owned by user $file_user and group $file_group.
+This usually means that the user/group your webserver/script is running as cannot read the file.
+Be careful not to make the permissions on this file too liberal, because it contains database
+passwords.  You may need to put the webserver user in the appropriate group ($file_group) or change
+permissions be able to run succesfully};
+        } else {
+            $message = qq{Couldn't load RT config file $args{'File'} as user $our_user / group $our_group.
+The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.
+This usually means that the user/group your webserver/script is running as cannot read the file
+or has no access to the dirs. Be careful not to make the permissions on this file too liberal,
+because it contains database passwords.};
+        }
+
+        die "$message\n$@";
     }
     return 1;
 }
