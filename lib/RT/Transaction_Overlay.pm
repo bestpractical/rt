@@ -366,7 +366,8 @@ sub ContentObj {
         $plain_parts->Limit(
             FIELD => 'Content',
             OPERATOR => 'IS NOT',
-            VALUE => undef,
+            VALUE => 'NULL',
+            QUOTEVALUE => 0,
         );
         $plain_parts->Limit(
             ENTRYAGGREGATOR => 'AND',
