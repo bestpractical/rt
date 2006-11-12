@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="approval">
   <div class="name">
-    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font>
+    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)
   </div>
 % if ($ShowApproving) {
 %     foreach my $approving ( $ticket->AllDependedOnBy( Type => 'ticket' ) ) {

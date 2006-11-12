@@ -609,7 +609,8 @@ Set($AmbiguousDayInPast , 1);
 
 # You can define new statuses and even reorder existing statuses here.
 # WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
-# will break horribly.
+# will break horribly. The statuses you add must be no longer than
+# 10 characters.
 
 Set(@ActiveStatus, qw(new open stalled));
 Set(@InactiveStatus, qw(resolved rejected deleted));

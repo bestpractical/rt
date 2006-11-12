@@ -138,21 +138,20 @@ foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
 $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 $current_tab = "Ticket/Display.html?id=" . $id;
 
+my %can = (
+    ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'),
+);
 
-
-
-
-if (    $Ticket->CurrentUserHasRight('ModifyTicket')
-     or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
-    $actions->{'F'} = { title => loc('Reply'),
-                        path  => "Ticket/Update.html?Action=Respond&id=" . $id,
+if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
+    $actions->{'F'} = {
+        title => loc('Reply'),
+        path  => "Ticket/Update.html?Action=Respond&id=" . $id,
     };
 }
 
-if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+if ( $can{'ModifyTicket'} ) {
     if ( $Ticket->Status ne 'resolved' ) {
         $actions->{'G'} = {
-
             path => "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
     }
@@ -163,20 +162,28 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-    if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'B'} = { path => "Ticket/Display.html?Action=Take&id=" . $id,
-                            title => loc('Take') };
+    if ( $Ticket->OwnerObj->Id == $RT::Nobody->id
+         and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('TakeTicket') ) )
+    {
+        $actions->{'B'} = {
+            path => "Ticket/Display.html?Action=Take&id=" . $id,
+            title => loc('Take'),
+        };
     }
-    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'C'} = {path => "Ticket/Display.html?Action=Steal&id=" . $id,
-                           title => loc('Steal') };
+    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id 
+            and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('StealTicket') ) )
+    {
+        $actions->{'C'} = {
+            path => "Ticket/Display.html?Action=Steal&id=" . $id,
+            title => loc('Steal'),
+        };
     }
 }
 
-if (    $Ticket->CurrentUserHasRight('ModifyTicket')
-     or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
-    $actions->{'E'} = { title => loc('Comment'),
-                        path  => "Ticket/Update.html?Action=Comment&id=" . $id,
+if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
+    $actions->{'E'} = {
+        title => loc('Comment'),
+        path  => "Ticket/Update.html?Action=Comment&id=" . $id,
     };
 }
 }

@@ -43,6 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => undef &>
+<& /SelfService/Elements/Header, Title => loc('Open Tickets') &>
 
-<& /SelfService/Elements/MyRequests &>
+<& /SelfService/Elements/MyRequests, BaseURL => $RT::WebPath . "/SelfService/?", 
+				     Page    => $Page &>
+<%ARGS>
+$Page => 1
+</%ARGS>

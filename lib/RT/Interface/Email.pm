@@ -244,6 +244,7 @@ sub MailError {
         Subject                => $args{'Subject'},
         Precedence             => 'bulk',
         'X-RT-Loop-Prevention' => RT->Config->Get('rtname'),
+        'In-Reply-To:'         => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef,
     );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
@@ -511,6 +512,8 @@ Takes an address from $head->get('Line') and returns a tuple: user@host, friendl
 sub ParseAddressFromHeader {
     my $Addr = shift;
 
+    # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
+    $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;                                                                                                                                                  
     my @Addresses = Mail::Address->parse($Addr);
 
     my $AddrObj = $Addresses[0];

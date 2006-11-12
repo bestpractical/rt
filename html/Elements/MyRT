@@ -64,12 +64,13 @@ my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
 $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
     $Portlets = $session{'my_rt_portlets'} =
                 $session{'CurrentUser'}->UserObj->Preferences( 
                     'HomepageSettings',
-                    $d_portlets->Content,
+                    $default_portlets? $default_portlets->Content: {},
                 );
+    }
 }
 
 my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
