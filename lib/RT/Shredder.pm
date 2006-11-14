@@ -15,20 +15,6 @@ RT::Shredder - Permanently wipeout data from RT
 
   rt-shredder --force --plugin 'Tickets=queue,general;status,deleted'
 
-=head2 API
-
-Same action as in CLI example, but from perl script:
-
-  use RT::Shredder;
-  RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Tickets->new( $RT::SystemUser );
-  $deleted->{'allow_deleted_search'} = 1;
-  $deleted->LimitQueue( VALUE => 'general' );
-  $deleted->LimitStatus( VALUE => 'deleted' );
-  while( my $t = $deleted->Next ) {
-      $t->Wipeout;
-  }
-
 
 =head1 DESCRIPTION
 
@@ -65,22 +51,42 @@ into RT.
 
 L<rt-shredder> is a program which allows you to wipe objects from
 command line or with system tasks scheduler (cron, for example).
+See also 'rt-shredder --help'.
 
 
 =head2 Web based interface (WebUI)
 
 Shredder's WebUI integrates into RT's WebUI.  You can find it in the
 Configuration->Tools->Shredder tab.  The interface is similar to the
-CLI and gives you the same functionality.
+CLI and gives you the same functionality. You can find 'Shredder' link
+at the bottom of tickets search results, so you could wipeout tickets
+in the way similar to the bulk update.
 
 
-=head2 API
+=head1 DATA STORAGE AND BACKUPS
 
-L<RT::Shredder> is an extension to RT which adds shredder methods to
-RT objects and classes.  The API is not well documented yet, but you
-can find usage examples in L<rt-shredder> and the
-F<lib/t/regression/shredder/*.t> test files.
+Shredder allows you to store data you wiped in files as scripts with SQL
+commands.
 
+=head3 Restoring from backup
+
+Should you wipeout something you did not intend to the objects can be
+restored by using the storage files.  These files are a simple set of
+SQL commands to re-insert your objects into the RT database.
+
+1) Locate the appropriate shredder SQL dump file.  In the WebUI, when
+   you use shredder, the path to the dump file is displayed.  It also
+   gives the option to download the dump file after each wipeout.  Or
+   it can be found in your C<$RT::ShredderStoragePath>.
+
+2) Load the shredder SQL dump into your RT database.  The details will
+   be different for each database and RT configuration, consult your
+   database manual and RT config.  For example, in MySQL...
+
+    mysql -u your_rt_user -p your_rt_database < /path/to/rt/var/data/shredder/dump.sql
+
+That's it.i This will restore everything you'd deleted during a
+shredding session when the file had been created.
 
 =head1 CONFIGURATION
 
@@ -108,12 +114,33 @@ You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
 $ShredderStoragePath, new_path );>  Be sure to use an absolute path.
 
 
-=head1 API DESCRIPTION
+=head1 INFORMATION FOR DEVELOPERS
+
+=head2 General API
+
+L<RT::Shredder> is an extension to RT which adds shredder methods to
+RT objects and classes.  The API is not well documented yet, but you
+can find usage examples in L<rt-shredder> and the
+F<lib/t/regression/shredder/*.t> test files.
+
+However, here is small example that do the same action as in CLI
+example from L</SYNOPSIS>:
+
+  use RT::Shredder;
+  RT::Shredder::Init( force => 1 );
+  my $deleted = RT::Tickets->new( $RT::SystemUser );
+  $deleted->{'allow_deleted_search'} = 1;
+  $deleted->LimitQueue( VALUE => 'general' );
+  $deleted->LimitStatus( VALUE => 'deleted' );
+  while( my $t = $deleted->Next ) {
+      $t->Wipeout;
+  }
+
+
+=head2 RT::Shredder class' API
 
 L<RT::Shredder> implements interfaces to objects cache, actions on the
 objects in the cache and backups storage.
-
-=head2 Dependencies
 
 =cut
 
@@ -176,9 +203,9 @@ our @SUPPORTED_OBJECTS = qw(
     User
 );
 
-=head2 GENERIC
+=head3 GENERIC
 
-=head3 Init
+=head4 Init
 
     RT::Shredder::Init( %default_options );
 
@@ -199,7 +226,7 @@ sub Init
     RT::Init();
 }
 
-=head3 new
+=head4 new
 
   my $shredder = RT::Shredder->new(%options);
 
@@ -226,7 +253,7 @@ sub _Init
     $self->{'dump_plugins'} = [];
 }
 
-=head3 CastObjectsToRecords( Objects => undef )
+=head4 CastObjectsToRecords( Objects => undef )
 
 Cast objects to the C<RT::Record> objects or its ancesstors.
 Objects can be passed as SCALAR (format C<< <class>-<id> >>),
@@ -292,9 +319,9 @@ sub CastObjectsToRecords
     return @res;
 }
 
-=head2 OBJECTS CACHE
+=head3 OBJECTS CACHE
 
-=head3 PutObjects( Objects => undef )
+=head4 PutObjects( Objects => undef )
 
 Puts objects into cache.
 
@@ -318,7 +345,7 @@ sub PutObjects
     return @res;
 }
 
-=head3 PutObject( Object => undef )
+=head4 PutObject( Object => undef )
 
 Puts record object into cache and returns its cache entry.
 
@@ -342,7 +369,7 @@ sub PutObject
     return ($self->{'cache'}->{ $str } ||= { State => ON_STACK, Object => $obj } );
 }
 
-=head3 GetObject, GetState, GetRecord( String => ''| Object => '' )
+=head4 GetObject, GetState, GetRecord( String => ''| Object => '' )
 
 Returns record object from cache, cache entry state or cache entry accordingly.
 
@@ -380,7 +407,11 @@ sub GetRecord
     return $self->{'cache'}->{ $str };
 }
 
-=head2 DEPENDENCIES RESOLVERS
+=head3 Dependencies resolvers
+
+=head4 PutResolver, GetResolvers and ApplyResolvers
+
+TODO: These methods have no documentation.
 
 =cut
 
@@ -538,32 +569,9 @@ sub ValidateRelations
     }
 }
 
-=head2 DATA STORAGE AND BACKUPS
+=head3 Data storage and backups
 
-Shredder allows you to store data you wiped in files as scripts with SQL
-commands.
-
-=head3 Restoring from backup
-
-Should you wipeout something you did not intend to the objects can be
-restored by using the storage files.  These files are a simple set of
-SQL commands to re-insert your objects into the RT database.
-
-1) Locate the appropriate shredder SQL dump file.  In the WebUI, when
-   you use shredder, the path to the dump file is displayed.  It also
-   gives the option to download the dump file after each wipeout.  Or
-   it can be found in your C<$RT::ShredderStoragePath>.
-
-2) Load the shredder SQL dump into your RT database.  The details will
-   be different for each database and RT configuration, consult your
-   database manual and RT config.  For example, in MySQL...
-
-    mysql -u your_rt_user -p your_rt_database < /path/to/rt/var/data/shredder/dump.sql
-
-That's it.
-
-
-=head3 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
+=head4 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
 Takes desired C<FileName> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
@@ -656,7 +664,7 @@ sub GetFileName
     return $file;
 }
 
-=head3 StoragePath
+=head4 StoragePath
 
 Returns an absolute path to the storage dir.  See
 L<CONFIGURATION/$RT::ShredderStoragePath>.
