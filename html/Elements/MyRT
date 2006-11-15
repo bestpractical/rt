@@ -70,7 +70,6 @@ unless ( $Portlets ) {
                     'HomepageSettings',
                     $default_portlets? $default_portlets->Content: {},
                 );
-    }
 }
 
 my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
