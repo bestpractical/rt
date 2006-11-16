@@ -251,6 +251,8 @@ WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
+Pod::Tests
+File::Find
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
