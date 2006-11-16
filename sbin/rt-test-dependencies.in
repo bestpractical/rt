@@ -231,6 +231,7 @@ Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
 XML::Simple
+File::Find
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];
