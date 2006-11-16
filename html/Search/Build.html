@@ -271,7 +271,6 @@ my $ParseQuery = sub {
     # make a tree root
     $$tree = RT::Interface::Web::QueryBuilder::Tree->new;
     my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
-    my $lastnode   = $root;
     my $parentnode = $root;
 
     # get the FIELDS from Tickets_Overlay
@@ -345,13 +344,13 @@ my $ParseQuery = sub {
             else {
                 $depth--;
                 $parentnode = $parentnode->getParent();
-                $lastnode   = $parentnode;
             }
 
             $want = KEYWORD | PAREN | AGGREG;
         }
         elsif ( $current & AGGREG ) {
             $ea   = $val;
+            $parentnode->setNodeValue($ea);
             $want = KEYWORD | PAREN;
         }
         elsif ( $current & KEYWORD ) {
@@ -416,8 +415,7 @@ my $ParseQuery = sub {
             };
 
             # explicity add a child to it
-            $lastnode = RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
-            $lastnode->getParent()->setNodeValue($ea);
+            RT::Interface::Web::QueryBuilder::Tree->new( $clause, $parentnode );
 
             ( $ea, $key, $op, $value ) = ( "", "", "", "" );
 

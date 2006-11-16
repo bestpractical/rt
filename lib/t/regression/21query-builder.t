@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 31;
+use Test::More tests => 35;
 use Test::WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;
@@ -78,6 +78,7 @@ $agent->submit();
 ok($agent->form_name('BuildQuery'), "found the form a third time");
 
 sub getQueryFromForm {
+    $agent->form_name('BuildQuery');
     # This pulls out the "hidden input" query from the page
     my $q = $agent->current_form->find_input("Query")->value;
     $q =~ s/^\s+//g;
@@ -139,37 +140,36 @@ $agent->select("clauses", ["1"]);
 $agent->click("Up");
 
 ok($agent->form_name('BuildQuery'), "found the form again");
-TODO: {
-  local $TODO = "query builder incorrectly changes OR to AND";
-  is(getQueryFromForm, "( id > 1234 ) OR Queue != 'Regression'", "moved up");
-}
+is(getQueryFromForm, "( id > 1234 ) OR Queue != 'Regression'", "moved up");
 
 $agent->select("clauses", ["0"]); # this is a null clause
-
 $agent->click("Up");
-
 ok($agent->form_name('BuildQuery'), "found the form again");
-
 $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
 
 $agent->click("Left");
-
 ok($agent->form_name('BuildQuery'), "found the form again");
-
 $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
 
 $agent->select("clauses", ["1"]);
 $agent->select("ValueOfStatus" => "stalled");
-
 $agent->submit;
 ok($agent->form_name('BuildQuery'), "found the form again");
 is_deeply(selectedClauses, ["2"], 'the one we added is selected');
-TODO: {
-  local $TODO = "query builder incorrectly changes OR to AND";
-  is(getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'", "added new one");
+is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'", "added new one" );
+
+# click advanced, enter "C1 OR ( C2 AND C3 )", apply, aggregators should stay the same.
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_number(3), "found the form");
+    $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND Subject LIKE 'office' )");
+    $agent->submit;
+    is( getQueryFromForm,
+        "Status = 'new' OR ( Status = 'open' AND Subject LIKE 'office' )",
+        "no aggregators change"
+    );
 }
-
-
 
 # - new items go one level down
 # - add items at currently selected level
@@ -212,6 +212,5 @@ TODO: {
 # - clears it from the session, too
 
 # }}}
-
 
 1;
