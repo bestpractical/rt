@@ -16,7 +16,20 @@ my $agent = Test::WWW::Mechanize->new();
 $agent->cookie_jar($cookie_jar);
 
 use RT;
-RT::LoadConfig;
+RT::LoadConfig();
+RT::Init();
+
+# create a regression queue if it doesn't exist
+{
+    my $queue = RT::Queue->new( $RT::SystemUser );
+    $queue->Load( 'Regression' );
+    if ( $queue->id ) {
+        ok(1, "queue 'Regression' exists");
+    } else {
+        $queue->Create( Name => 'Regression' );
+        ok($queue->id, "created queue 'Regression'");
+    }
+}
 
 # get the top page
 my $url = $RT::WebURL;
