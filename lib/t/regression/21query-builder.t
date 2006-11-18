@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 35;
+use Test::More tests => 39;
 use Test::WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;
@@ -212,5 +212,33 @@ is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regress
 # - clears it from the session, too
 
 # }}}
+
+# create a custom field with nonascii name and try to add a condition
+{
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf->LoadByName( Name => "\x{442}", Queue => 0 );
+    if ( $cf->id ) {
+        is($cf->Type, 'Freeform', 'loaded and type is correct');
+    } else {
+        my ($return, $msg) = $cf->Create(
+            Name => "\x{442}",
+            Queue => 0,
+            Type => 'Freeform',
+        );
+        ok($return, 'created CF') or diag "error: $msg";
+    }
+
+    my $response = $agent->get($url."Search/Build.html?NewQuery=1");
+    ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
+
+    ok($agent->form_name('BuildQuery'), "found the form once");
+    $agent->field("ValueOf'CF.{\321\202}'", "\321\201");
+    $agent->submit();
+    is( getQueryFromForm,
+        "'CF.{\321\202}' LIKE '\321\201'",
+        "no changes, no duplicate condition with badly encoded text"
+    );
+
+}
 
 1;
