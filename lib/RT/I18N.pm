@@ -338,6 +338,10 @@ sub DecodeMIMEWordsToEncoding {
 	$str .= $prefix . $enc_str . $trailing;
     }
 
+    # We might have \n without trailing whitespace, which will result in
+    # invalid headers.
+    $str =~ s/\n//g;
+
     return ($str)
 }
 
