@@ -182,10 +182,8 @@ This method doesn't return anything meaningful.
 sub SetMIMEEntityToEncoding {
     my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
 
-    #if ( $entity->is_multipart ) {
-    #$RT::Logger->crit("This entity is a multipart " . $entity->head->as_string);
-	SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
-    #}
+    # do the same for parts first of all
+    SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
     my $charset = _FindOrGuessCharset($entity) or return;
     # one and only normalization
@@ -298,20 +296,20 @@ sub DecodeMIMEWordsToEncoding {
     $str = "";
     while (@_) {
 	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-	    (shift, shift, shift, shift, shift);
+	    (shift, shift, lc shift, shift, shift);
 
         $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
 
-	if ($encoding eq 'Q' or $encoding eq 'q') {
+	if ( $encoding eq 'q' ) {
 	    use MIME::QuotedPrint;
 	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
 	    $enc_str = decode_qp($enc_str);
-	} elsif ($encoding eq 'B' or $encoding eq 'b') {
+	} elsif ( $encoding eq 'b' ) {
 	    use MIME::Base64;
 	    $enc_str = decode_base64($enc_str);
 	} else {
-	    $RT::Logger->warning("RT::I18N::DecodeMIMEWordsToCharset got a " .
-			      "strange encoding: $encoding.");
+	    $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
+            ."only Q(uoted-printable) and B(ase64) are supported");
 	}
 
 	# now we have got a decoded subject, try to convert into the encoding
@@ -360,8 +358,8 @@ sub _FindOrGuessCharset {
     my $head_only = shift;
     my $head = $entity->head;
 
-    if ($head->mime_attr("content-type.charset")) {
-	return $head->mime_attr("content-type.charset");
+    if ( my $charset = $head->mime_attr("content-type.charset") ) {
+        return $charset;
     }
 
     if ( !$head_only and $head->mime_type =~ m{^text/}) {
