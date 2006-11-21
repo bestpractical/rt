@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 143;
+use Test::More tests => 142;
 
 use RT;
 RT::LoadConfig();
