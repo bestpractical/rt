@@ -65,6 +65,11 @@ if ($SavedSearch) {
 	$m->out ("Saved Search $SavedSearch not found");
 	return;
     }
+    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+        # XXX: dispatch to different handler here
+        $m->comp( '/Search/Elements/Chart', %$SearchArg );
+        $m->abort;
+    }
     $customize = $RT::WebPath.'/Search/Build.html?'.
 	$m->comp('/Elements/QueryString',
 		 LoadSavedSearch => $SavedSearch);

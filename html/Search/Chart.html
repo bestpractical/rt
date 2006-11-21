@@ -46,12 +46,71 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
+$SecondaryGroupBy => undef
+$ChartStyle => 'bars'
+$Description => undef
+
 </%args>
 <%init>
 
 my      $title = loc("Search results grouped by [_1]", $PrimaryGroupBy);
 
+my @Objects;
+
+push @Objects,  $session{CurrentUser}->UserObj;
+
+my $groups = RT::Groups->new($session{'CurrentUser'});
+
+$groups->LimitToUserDefinedGroups;
+$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
+                    Recursively => 1);
+
+push (@Objects, @{$groups->ItemsArrayRef()});
+push @Objects, RT::System->new($session{'CurrentUser'})
+    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+					  Right => 'SuperUser');
+
+if ( $ARGS{Save} ) {
+    if ( $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
+
+        # We're saving a new search
+        my $obj_type = $1;
+        my $obj_id   = $2;
+
+        # Find out if we're saving on the user, or a group
+        my $container_object = _load_container_object( $obj_type, $obj_id );
+        warn 'orz';
+        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
+            Name        => 'SavedSearch',
+            Description => $Description,
+            Content     => {
+                Query            => $Query,
+                SearchType       => 'Chart',
+                PrimaryGroupBy   => $PrimaryGroupBy,
+                SecondaryGroupBy => $SecondaryGroupBy,
+                ChartStyle       => $ChartStyle,
+
+            }
+        );
+
+    }
+}
+
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, Title => $title &>
 <& /Search/Elements/Chart, %ARGS &>
+
+<form method="post" action="Chart.html" name="SaveChart">
+
+<& Elements/SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br />
+
+<&|/l&>Description</&>:<br>
+<font size="-1"><input size="25" name="Description" value="" /></font>
+<input type="hidden" class="hidden" name="Query" value="<%$Query%>" />
+<input type="hidden" class="hidden" name="PrimaryGroupBy" value="<%$PrimaryGroupBy%>" />
+<input type="hidden" class="hidden" name="SecondaryGroupBy" value="<%$SecondaryGroupBy%>" />
+<input type="hidden" class="hidden" name="ChartStyle" value="<%$ChartStyle%>" />
+
+<input type="submit" name="Save" value="<%loc('Save')%>" class="button" />
+</form>
