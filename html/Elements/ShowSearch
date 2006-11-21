@@ -68,7 +68,7 @@ if ($SavedSearch) {
     if ( $SearchArg->{SearchType} ne 'Ticket' ) {
         # XXX: dispatch to different handler here
         $m->comp( '/Search/Elements/Chart', %$SearchArg );
-        $m->abort;
+        return;
     }
     $customize = $RT::WebPath.'/Search/Build.html?'.
 	$m->comp('/Elements/QueryString',
