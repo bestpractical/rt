@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 139;
+use Test::More tests => 143;
 
 use RT;
 RT::LoadConfig();
@@ -530,6 +530,18 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     ok ($ticket->id, "found ticket ". $ticket->id);
     is ($ticket->Subject, 'test', 'correct subject');
 }
+
+diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+{
+    my $content = file_content("$RT::BasePath/lib/t/data/very-long-subject");
+    my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
+        { message => $content, queue => 1, action => 'correspond' }
+    );
+    ok ($status, 'created ticket') or diag "error: $msg";
+    ok ($ticket->id, "found ticket ". $ticket->id);
+    is ($ticket->Subject, '0123456789'x20, 'correct subject');
+}
+
 
 
 # Don't taint the environment
