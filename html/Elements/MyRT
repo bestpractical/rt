@@ -89,7 +89,7 @@ sub _show {
     if ($type eq 'component') {
 	my $name = $entry->{name};
 	# security check etc.
-	$m->comp ($name);
+	$m->comp ($name, %{$entry->{arguments} || {}});
     }
     elsif ($type eq 'system') {
 	$m->comp ('/Elements/ShowSearch', Name => $entry->{name});
