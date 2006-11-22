@@ -67,6 +67,7 @@ use warnings;
 
 package RT::Interface::Web;
 use HTTP::Date;
+use RT::SavedSearches;
 use URI;
 
 # {{{ EscapeUTF8
@@ -1621,7 +1622,7 @@ Instantiate container object for saving searches.
 
 sub _load_container_object {
     my ($obj_type, $obj_id) = @_;
-    return RT::SavedSearch->new($self->CurrentUser)->_load_privacy_object($obj_type, $obj_id);
+    return RT::SavedSearch->new($session{'CurrentUser'})->_load_privacy_object($obj_type, $obj_id);
 }
 
 =head2 _parse_saved_search ( $arg );

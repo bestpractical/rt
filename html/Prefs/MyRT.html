@@ -65,7 +65,6 @@
 </form>
 </&>
 <%INIT>
-use RT::SavedSearches;
 my @actions;
 
 my $title = loc("Customize").' '.loc("RT at a glance");
@@ -105,7 +104,8 @@ my @sys_searches;
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
 	my ($desc, $search) = @$_;
-	if ($object eq $sys) {
+	my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+	if ($object eq $sys && $SearchType eq 'Ticket') {
 	    push @items, ["system-$desc", $desc];
 	    push @sys_searches, [$desc, $search];
 	}
