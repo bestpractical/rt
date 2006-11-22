@@ -46,7 +46,7 @@
 <&|/Widgets/TitleBox,
     title => loc($search->Description, $SearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
-    titleright => loc('Edit'),
+    titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize &>
 <& $query_display_component, %$SearchArg,
         ShowNavigation => 0
