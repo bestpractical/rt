@@ -111,7 +111,9 @@ for my $object (@objs) {
 	}
 	else {
 	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-	    push @items, ["saved-$oid", "Saved Search: $desc"];
+	    my $type = ($SearchType eq 'Ticket')
+		? 'Saved Search' : $SearchType; # loc
+	    push @items, ["saved-$oid", loc($type).": $desc"];
 	}
     }
 }
