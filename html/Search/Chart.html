@@ -58,6 +58,33 @@ my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser');
+# look for the current one in the available saved searches
+my $SearchParams = {
+    Query            => $Query,
+    PrimaryGroupBy   => $PrimaryGroupBy,
+    SecondaryGroupBy => $SecondaryGroupBy || '',
+    ChartStyle       => $ChartStyle
+};
+
+my $CurrentSearch;
+my $SearchId = 'new';
+for my $obj (@Objects) {
+    for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $obj ) ) {
+        my ( $desc, $search ) = @$_;
+        use Data::Dumper;
+	# FFS
+        $Data::Dumper::Sortkeys = 1;
+        if ( Dumper( $search->Content ) eq
+            Dumper( { %$SearchParams, SearchType => 'Chart' } ) )
+        {
+            $CurrentSearch->{Object}      = $search;
+            $CurrentSearch->{Description} = $search->Description;
+            $SearchId                     = $search->Id;
+            warn "got... $SearchId";
+        }
+    }
+}
+
 my @actions;
 if ( $ARGS{Save} ) {
     my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
@@ -65,12 +92,7 @@ if ( $ARGS{Save} ) {
         Privacy      => $ARGS{'Owner'},
         Name         => $Description,
         Type         => 'Chart',
-        SearchParams => {
-            Query            => $Query,
-            PrimaryGroupBy   => $PrimaryGroupBy,
-            SecondaryGroupBy => $SecondaryGroupBy,
-            ChartStyle       => $ChartStyle
-        });
+        SearchParams => $SearchParams );
     if ($ok) {
 	push @actions, loc( 'Chart [_1] saved.', $Description );
     }
@@ -87,10 +109,8 @@ if ( $ARGS{Save} ) {
 
 <form method="post" action="Chart.html" name="SaveChart">
 
-<& Elements/SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br />
-
-<&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="" /></font>
+<& Elements/EditSearches, Name => 'Owner', SearchType => 'Chart',
+   CurrentSearch => $CurrentSearch, SearchId => $SearchId &><br />
 <input type="hidden" class="hidden" name="Query" value="<%$Query%>" />
 <input type="hidden" class="hidden" name="PrimaryGroupBy" value="<%$PrimaryGroupBy%>" />
 <input type="hidden" class="hidden" name="SecondaryGroupBy" value="<%$SecondaryGroupBy%>" />

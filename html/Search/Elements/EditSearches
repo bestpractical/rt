@@ -69,7 +69,7 @@
 <hr />
 % }
 <&|/l&>Load saved search:</&><br />
-<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
+<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects, SearchType => $SearchType &>
 <input value="<%loc('Load')%>" type="submit" class="button" />
 </&>
 
@@ -87,6 +87,7 @@ push @Objects, RT::System->new($session{'CurrentUser'})
 </%INIT>
 
 <%ARGS>
+$SearchType => 'Ticket'
 $SearchId => undef
 $CurrentSearch => undef
 $Description => undef
