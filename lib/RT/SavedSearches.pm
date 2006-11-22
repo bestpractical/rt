@@ -161,40 +161,7 @@ sub _GetObject {
     my $self = shift;
     my $privacy = shift;
 
-    my ($obj_type, $obj_id) = split(/\-/, $privacy);
-    unless ($obj_type eq 'RT::User' || $obj_type eq 'RT::Group') {
-	$RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
-	return undef;
-    }
-
-    my $object;
-    eval "
-         require $obj_type;
-         \$object = $obj_type->new(\$self->CurrentUser);
-         \$object->Load($obj_id);
-    ";
-    unless (ref($object) eq $obj_type) {
-	$RT::Logger->error("Could not load object of type $obj_type with ID $obj_id");
-	return undef;
-    }
-    
-    # Do not allow the loading of a user object other than the current
-    # user, or of a group object of which the current user is not a member.
-
-    if ($obj_type eq 'RT::User'
-	&& $object->Id != $self->CurrentUser->UserObj->Id()) {
-	$RT::Logger->error('Requested user ' . $object->Id 
-			   . 'is not current user');
-	return undef;
-    }
-    if ($obj_type eq 'RT::Group'
-	&& !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
-	$RT::Logger->error('Current user does not belong to requested group ' 
-			   . $object->Id);
-	return undef;
-    }
-
-    return $object;
+    return RT::SavedSearch->new($self->CurrentUser)->_GetObject($privacy);
 }
 
 ### Internal methods
