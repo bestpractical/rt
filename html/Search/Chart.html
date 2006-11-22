@@ -58,36 +58,31 @@ my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser');
-
+my @actions;
 if ( $ARGS{Save} ) {
-    if ( $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-
-        # We're saving a new search
-        my $obj_type = $1;
-        my $obj_id   = $2;
-
-        # Find out if we're saving on the user, or a group
-        my $container_object = _load_container_object( $obj_type, $obj_id );
-        my $name = $obj_type eq 'RT::System' ? "Search - $Description" : 'SavedSearch';
-        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-            Name        => $name,
-            Description => $Description,
-            Content     => {
-                Query            => $Query,
-                SearchType       => 'Chart',
-                PrimaryGroupBy   => $PrimaryGroupBy,
-                SecondaryGroupBy => $SecondaryGroupBy,
-                ChartStyle       => $ChartStyle,
-
-            }
-        );
-
+    my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    my ( $ok, $search_msg ) = $saved_search->Save(
+        Privacy      => $ARGS{'Owner'},
+        Name         => $Description,
+        Type         => 'Chart',
+        SearchParams => {
+            Query            => $Query,
+            PrimaryGroupBy   => $PrimaryGroupBy,
+            SecondaryGroupBy => $SecondaryGroupBy,
+            ChartStyle       => $ChartStyle
+        });
+    if ($ok) {
+	push @actions, loc( 'Chart [_1] saved.', $Description );
+    }
+    else {
+	push @actions, [ loc("Can't save chart").': '.loc($search_msg), 0 ];
     }
 }
 
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, Title => $title &>
+<& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
 <form method="post" action="Chart.html" name="SaveChart">
