@@ -148,23 +148,34 @@ sub Save {
 
     $params{'SearchType'} = $type;
     my $object = $self->_GetObject($privacy);
-    if ($object) {
-	my ($att_id, $att_msg) = $object->AddAttribute(
-						       'Name' => 'SavedSearch',
-						       'Description' => $name,
-						       'Content' => \%params);
-	if ($att_id) {
-	    $self->{'Attribute'} = $object->Attributes->WithId($att_id);
-	    $self->{'Id'} = $att_id;
-	    $self->{'Privacy'} = $privacy;
-	    $self->{'Type'} = $type;
-	    return (1, $self->loc("Saved search [_1]", $name));
-	} else {
-	    $RT::Logger->error("SavedSearch save failure: $att_msg");
-	    return (0, $self->loc("Failed to create search attribute"));
-	}
-    } else {
-	return (0, $self->loc("Failed to load object for [_1]", $privacy));
+
+    return (0, $self->loc("Failed to load object for [_1]", $privacy))
+        unless $object;
+
+    if ( $object->isa('RT::System') ) {
+        return ( 0, $self->loc("No permission to save system-wide searches") )
+            unless $self->CurrentUser->HasRight(
+            Object => $RT::System,
+            Right  => 'SuperUser'
+        );
+    }
+
+    my $attr_name = $object->isa('RT::System') ? "Search - $name" : 'SavedSearch';
+    my ( $att_id, $att_msg ) = $object->AddAttribute(
+        'Name'        => $attr_name,
+        'Description' => $name,
+        'Content'     => \%params
+    );
+    if ($att_id) {
+        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Id'}        = $att_id;
+        $self->{'Privacy'}   = $privacy;
+        $self->{'Type'}      = $type;
+        return ( 1, $self->loc( "Saved search [_1]", $name ) );
+    }
+    else {
+        $RT::Logger->error("SavedSearch save failure: $att_msg");
+        return ( 0, $self->loc("Failed to create search attribute") );
     }
 }
 
