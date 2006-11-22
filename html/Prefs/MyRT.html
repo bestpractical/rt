@@ -118,30 +118,21 @@ for my $object (@objs) {
     }
 }
 
-my %item_map = map {$_->[0] => $_->[1]} @items;
-my @panes;
-for my $pane ('body', 'summary') {
-    push @panes,
-	$m->comp ('/Widgets/SelectionBox:new',
-		  Action => 'MyRT.html',
-		  Name => $pane,
-                  Available => \@items,
-                  AutoSave => 1,
-		  OnSubmit =>
-		  sub { my $sel = shift;
-			$portlets->{$pane} =
-			    [map { m/(\w+)-(.*)$}/;
-				   { type => $1,
-				     name => $2,
-				 }} @{$sel->{Current}}];
-			$user->SetPreferences('HomepageSettings', $portlets);
-			push @actions, loc ('Preferences saved for [_1].', $pane);
-			delete $session{'my_rt_portlets'};
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureMyRT',
+    panes  => ['body', 'summary'],
+    Action => 'MyRT.html',
+    items => \@items,
+    current_portlets => $portlets,
+    OnSave => sub {
+        my ( $conf, $pane ) = @_;
+        $user->SetPreferences( 'HomepageSettings', $conf );
+        push @actions, loc( 'Preferences saved for [_1].', $pane );
+        delete $session{'my_rt_portlets'};
+    }
+);
 
-		  },
-		  Selected => [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}]);
-}
-
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @panes;
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
 
 </%INIT>
