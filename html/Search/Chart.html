@@ -79,7 +79,6 @@ if ( $ARGS{Save} ) {
 
         # Find out if we're saving on the user, or a group
         my $container_object = _load_container_object( $obj_type, $obj_id );
-        warn 'orz';
         my ( $search_id, $search_msg ) = $container_object->AddAttribute(
             Name        => 'SavedSearch',
             Description => $Description,
