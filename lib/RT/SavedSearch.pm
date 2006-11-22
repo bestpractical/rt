@@ -276,6 +276,24 @@ sub Type {
 
 ### Internal methods
 
+sub _load_privacy_object {
+    my ($self, $obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' && $obj_id == $self->CurrentUser->Id)  {
+        return $self->CurrentUser->UserObj;
+    }
+    elsif ($obj_type eq 'RT::Group') {
+        my $group = RT::Group->new($self->CurrentUser);
+        $group->Load($obj_id);
+        return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+        return RT::System->new($self->CurrentUser);
+    }
+
+    RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
+    return undef;
+}
+
 # _GetObject: helper routine to load the correct object whose parameters
 #  have been passed.
 
@@ -284,22 +302,14 @@ sub _GetObject {
     my $privacy = shift;
 
     my ($obj_type, $obj_id) = split(/\-/, $privacy);
-    unless ($obj_type eq 'RT::User' || $obj_type eq 'RT::Group') {
-	$RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
-	return undef;
-    }
 
-    my $object;
-    eval "
-         require $obj_type;
-         \$object = $obj_type->new(\$self->CurrentUser);
-         \$object->Load(\$obj_id);
-    ";
+    my $object = $self->_load_privacy_object($obj_type, $obj_id);
+
     unless (ref($object) eq $obj_type) {
 	$RT::Logger->error("Could not load object of type $obj_type with ID $obj_id");
 	return undef;
     }
-    
+
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 

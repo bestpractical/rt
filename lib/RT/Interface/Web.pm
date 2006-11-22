@@ -1621,20 +1621,7 @@ Instantiate container object for saving searches.
 
 sub _load_container_object {
     my ($obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-        return $session{'CurrentUser'}->UserObj;
-    }
-    elsif ($obj_type eq 'RT::Group') {
-        my $group = RT::Group->new($session{'CurrentUser'});
-        $group->Load($obj_id);
-        return $group;
-    }
-    elsif ($obj_type eq 'RT::System') {
-        # XXX: check hasright
-        return RT::System->new($session{'CurrentUser'});
-    }
-    else {
-    }
+    return RT::SavedSearch->new($self->CurrentUser)->_load_privacy_object($obj_type, $obj_id);
 }
 
 =head2 _parse_saved_search ( $arg );
