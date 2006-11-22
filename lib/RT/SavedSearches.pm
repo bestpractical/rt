@@ -197,6 +197,22 @@ sub _GetObject {
     return $object;
 }
 
+### Internal methods
+
+# _PrivacyObjects: returns a list of objects that can be used to load saved searches from.
+
+sub _PrivacyObjects {
+    my $self        = shift;
+    my $CurrentUser = $self->CurrentUser;
+
+    my $groups = RT::Groups->new($CurrentUser);
+    $groups->LimitToUserDefinedGroups;
+    $groups->WithMember( PrincipalId => $CurrentUser->Id,
+                         Recursively => 1 );
+
+    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+}
+
 eval "require RT::SavedSearches_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Vendor.pm});
 eval "require RT::SavedSearches_Local";

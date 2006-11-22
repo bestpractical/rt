@@ -74,25 +74,17 @@
 </&>
 
 <%init>
-
+use RT::SavedSearches;
 unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-                                          Object=> $RT::System )) {
+                                           Object=> $RT::System )) {
     return;
 }
-my @Objects;
 
-push @Objects,  $session{CurrentUser}->UserObj;
-
-my $groups = RT::Groups->new($session{'CurrentUser'});
-
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
-
-push (@Objects, @{$groups->ItemsArrayRef()});
+my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
+                                          Right => 'SuperUser');
+
 </%INIT>
 
 <%ARGS>

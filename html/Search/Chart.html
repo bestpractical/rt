@@ -52,23 +52,12 @@ $Description => undef
 
 </%args>
 <%init>
+my $title = loc( "Search results grouped by [_1]", $PrimaryGroupBy );
 
-my      $title = loc("Search results grouped by [_1]", $PrimaryGroupBy);
-
-my @Objects;
-
-push @Objects,  $session{CurrentUser}->UserObj;
-
-my $groups = RT::Groups->new($session{'CurrentUser'});
-
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
-
-push (@Objects, @{$groups->ItemsArrayRef()});
+my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
+                                          Right => 'SuperUser');
 
 if ( $ARGS{Save} ) {
     if ( $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {

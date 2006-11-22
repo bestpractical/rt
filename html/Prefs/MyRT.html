@@ -65,6 +65,7 @@
 </form>
 </&>
 <%INIT>
+use RT::SavedSearches;
 my @actions;
 
 my $title = loc("Customize").' '.loc("RT at a glance");
@@ -96,14 +97,9 @@ push @items, map {["component-$_", $_]} sort keys %allowed_components;
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
-if ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-				       Object=> $RT::System )) {
-    my $groups = RT::Groups->new($session{'CurrentUser'});
-    $groups->LimitToUserDefinedGroups;
-    $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-			Recursively => 1);
-    push @objs, ($user, @{$groups->ItemsArrayRef()});
-}
+push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
+    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
+                                          Object => $RT::System );
 
 my @sys_searches;
 for my $object (@objs) {
