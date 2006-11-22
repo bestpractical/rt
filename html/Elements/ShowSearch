@@ -70,7 +70,7 @@ if ($SavedSearch) {
     if ( $SearchArg->{SearchType} ne 'Ticket' ) {
         # XXX: dispatch to different handler here
         $query_display_component = '/Search/Elements/'.$SearchArg->{SearchType};
-        $query_link_url = 'Search/Chart.html';
+        $query_link_url = "Search/$SearchArg->{SearchType}.html";
     }
     else {
 	$customize = $RT::WebPath.'/Search/Build.html?'.
