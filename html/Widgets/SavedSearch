@@ -92,7 +92,6 @@ $args
 % for my $field (@{$self->{SearchFields}}) {
 <input type="hidden" class="hidden" name="<%$field%>" value="<%$ARGS{$field} || ''%>" />
 % }
-<input type="submit" name="Save" value="<%loc('Save')%>" class="button" />
 </form>
 <%ARGS>
 $self => undef
