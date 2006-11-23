@@ -160,9 +160,8 @@ sub Save {
         );
     }
 
-    my $attr_name = $object->isa('RT::System') ? "Search - $name" : 'SavedSearch';
     my ( $att_id, $att_msg ) = $object->AddAttribute(
-        'Name'        => $attr_name,
+        'Name'        => 'SavedSearch',
         'Description' => $name,
         'Content'     => \%params
     );
