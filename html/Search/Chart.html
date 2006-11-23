@@ -46,60 +46,20 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
-$SecondaryGroupBy => undef
+$SecondaryGroupBy => ''
 $ChartStyle => 'bars'
 $Description => undef
-
 </%args>
 <%init>
+$ARGS{SecondaryGroupBy} ||= '';
+
 my $title = loc( "Search results grouped by [_1]", $PrimaryGroupBy );
 
-my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
-push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser');
-# look for the current one in the available saved searches
-my $SearchParams = {
-    Query            => $Query,
-    PrimaryGroupBy   => $PrimaryGroupBy,
-    SecondaryGroupBy => $SecondaryGroupBy || '',
-    ChartStyle       => $ChartStyle
-};
+my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
+    SearchType   => 'Chart',
+    SearchFields => [qw(Query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
 
-my $CurrentSearch;
-my $SearchId = 'new';
-for my $obj (@Objects) {
-    for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $obj ) ) {
-        my ( $desc, $search ) = @$_;
-        use Data::Dumper;
-	# FFS
-        $Data::Dumper::Sortkeys = 1;
-        if ( Dumper( $search->Content ) eq
-            Dumper( { %$SearchParams, SearchType => 'Chart' } ) )
-        {
-            $CurrentSearch->{Object}      = $search;
-            $CurrentSearch->{Description} = $search->Description;
-            $SearchId                     = $search->Id;
-            warn "got... $SearchId";
-        }
-    }
-}
-
-my @actions;
-if ( $ARGS{Save} ) {
-    my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
-    my ( $ok, $search_msg ) = $saved_search->Save(
-        Privacy      => $ARGS{'Owner'},
-        Name         => $Description,
-        Type         => 'Chart',
-        SearchParams => $SearchParams );
-    if ($ok) {
-	push @actions, loc( 'Chart [_1] saved.', $Description );
-    }
-    else {
-	push @actions, [ loc("Can't save chart").': '.loc($search_msg), 0 ];
-    }
-}
+my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
 </%init>
 <& /Elements/Header, Title => $title &>
@@ -107,14 +67,4 @@ if ( $ARGS{Save} ) {
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
-<form method="post" action="Chart.html" name="SaveChart">
-
-<& Elements/EditSearches, Name => 'Owner', SearchType => 'Chart',
-   CurrentSearch => $CurrentSearch, SearchId => $SearchId &><br />
-<input type="hidden" class="hidden" name="Query" value="<%$Query%>" />
-<input type="hidden" class="hidden" name="PrimaryGroupBy" value="<%$PrimaryGroupBy%>" />
-<input type="hidden" class="hidden" name="SecondaryGroupBy" value="<%$SecondaryGroupBy%>" />
-<input type="hidden" class="hidden" name="ChartStyle" value="<%$ChartStyle%>" />
-
-<input type="submit" name="Save" value="<%loc('Save')%>" class="button" />
-</form>
+<& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search &>

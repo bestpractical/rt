@@ -61,7 +61,9 @@
 <input type="submit" class="button" name="Revert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="Delete" value="<%loc('Delete')%>" />
+% if ($AllowCopy) {
 <input type="submit" class="button" name="CopySearch" value="<%loc('Copy')%>" />
+% }
 </nobr>
 
 % }
@@ -93,4 +95,5 @@ $CurrentSearch => undef
 $Description => undef
 $HideResults => 0
 $Dirty => 0
+$AllowCopy => 1
 </%ARGS>
