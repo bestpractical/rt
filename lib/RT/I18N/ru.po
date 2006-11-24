@@ -1,16 +1,18 @@
 # translation of Request Tracker en.po to Russian
-# Andrew Kornilov <hiddenman@tpway.com>, 2004, 2005.
+# Andrew Kornilov <akornilov@gmail.com>, 2004, 2005, 2006.
 # 
 # 
 msgid ""
 msgstr ""
-"Last-Translator: Andrew Kornilov <hiddenman@tpway.com>\n"
-"PO-Revision-Date: 2005-09-25 22:16+0300\n"
+"Project-Id-Version: RT 3.6.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: (null)\n"
+"PO-Revision-Date: 2006-06-24 19:52+0300\n"
+"Last-Translator: Andrew Kornilov <akornilov@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: RT 3.5.x\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: NOT FOUND IN SOURCE
 msgid "#"
@@ -89,7 +91,7 @@ msgstr "%1 (%2) %3 эта заявка\\n"
 #: html/Ticket/Elements/ShowAttachments:72
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
-msgstr ""
+msgstr "%1 (%2) от %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:104 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
 #. (loc($DefaultStatus))
@@ -207,7 +209,7 @@ msgstr "%1 удалена"
 #: html/Search/Chart:71
 #. ($Query, $PrimaryGroupBy)
 msgid "%1 grouped by %2"
-msgstr ""
+msgstr "%1 сгрупированные по %2"
 
 #: etc/initialdata:593
 msgid "%1 highest priority tickets I own"
@@ -300,7 +302,7 @@ msgstr "%1 %2 объектов"
 
 #: lib/RT/CustomField_Overlay.pm:894
 msgid "%1's %2's %3 objects"
-msgstr ""
+msgstr "%1 %2 %3 объектов"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:56
 #. ($object->Name)
@@ -371,13 +373,13 @@ msgstr "(Введите идентификаторы или ссылки на з
 
 #: NOT FOUND IN SOURCE
 msgid "(If left blank, will default to %1"
-msgstr "(Если пустое, то по-умолчанию равно %1"
+msgstr "(Если не заполнено, то по умолчанию равно %1"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
 msgid "(If left blank, will default to %1)"
-msgstr ""
+msgstr "(Если не заполнено, то по умолчанию равно %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
@@ -405,43 +407,43 @@ msgstr "(Нет)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Отправить скрытую копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать скрытые копии сообщения об обновлениях, <b>не</b> будет изменен.)"
+msgstr "(Отправить скрытую копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать скрытые копии сообщения об изменениях, <b>не</b> будет изменен.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "(Отправить скрытую копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать скрытые копии сообщения об обновлениях, <b>не</b> будет изменен.)"
+msgstr "(Отправить скрытую копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать скрытые копии сообщения об изменениях, <b>не</b> будет изменен.)"
 
 #: html/Ticket/Update.html:90
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(Отправить скрытую копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать скрытые копии сообщения об изменениях, <b>не</b> будет изменен.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Отправить копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об обновлениях.)"
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об изменениях.)"
 
 #: html/Ticket/Create.html:102
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об изменениях.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Отправить копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать копии сообщения об обновлениях, <b>не</b> будет изменен.)"
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать копии сообщения об изменениях, <b>не</b> будет изменен.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "(Отправить копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать копии сообщения об обновлениях, <b>не</b> будет изменен.)"
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать копии сообщения об изменении, <b>не</b> будет изменен.)"
 
 #: html/Ticket/Update.html:86
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Список получателей, которые в дальнейшем будут получать копии сообщения об изменениях, <b>не</b> будет изменен.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Отправить копию сообщения об этом обновлении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об обновлениях.)"
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об изменениях.)"
 
 #: html/Ticket/Create.html:92
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Отправить копию сообщения об этом изменении на эти адреса [разделяются запятой]. Эти получатели в дальнейшем <b>будут</b> получать копии сообщения об изменениях.)"
 
 #: html/Admin/Elements/EditScrip:102
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -505,7 +507,7 @@ msgstr "(без названия)"
 
 #: html/Ticket/Elements/Reminders:88
 msgid "(yyyy/mm/dd)"
-msgstr ""
+msgstr "(гггг/мм/дд)"
 
 #: html/Elements/EditCustomFieldSelect:58
 msgid "-"
@@ -538,7 +540,7 @@ msgstr ""
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" class=\"button\" value=\"Создать заявку в\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -551,7 +553,7 @@ msgstr "Пустой шаблон"
 
 #: html/Admin/Users/Modify.html:360
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "Пароль не был установлен, поэтому пользователь не сможет зайти в систему."
 
 #: NOT FOUND IN SOURCE
 msgid "ACE could not be deleted"
@@ -579,7 +581,7 @@ msgstr "Прекращаем работу во избежание нежелат
 
 #: html/User/Elements/Tabs:53
 msgid "About me"
-msgstr "Обо мне"
+msgstr "Личные настройки"
 
 #: html/Admin/Users/Modify.html:106
 msgid "Access control"
@@ -596,11 +598,11 @@ msgstr "Действие %1 не найдено"
 
 #: NOT FOUND IN SOURCE
 msgid "Action committed."
-msgstr "Действие принято."
+msgstr "Действие зафиксировано."
 
 #: bin/rt-crontool:148
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "Действие зафиксировано.\\n"
 
 #: bin/rt-crontool:144
 msgid "Action prepared..."
@@ -668,7 +670,7 @@ msgstr "Добавить дополнительный критерий"
 
 #: html/Search/Build.html:109 html/Search/Build.html:94
 msgid "Add and Search"
-msgstr ""
+msgstr "Добавить и начать поиск"
 
 #: html/Search/Bulk.html:124
 msgid "Add comments or replies to selected tickets"
@@ -684,11 +686,11 @@ msgstr "Добавить наблюдателей"
 
 #: html/Search/Build.html:85
 msgid "Add these terms to your search"
-msgstr ""
+msgstr "Добавить эти условия в ваш запрос"
 
 #: html/Search/Bulk.html:158
 msgid "Add values"
-msgstr ""
+msgstr "Добавить значения"
 
 # Manual merge by Andrew Kornilov <andy@eva.dp.ua>
 #: lib/RT/CustomField_Overlay.pm:108
@@ -823,7 +825,7 @@ msgstr "Возраст"
 
 #: html/Search/Elements/PickCriteria:52
 msgid "Aggregator"
-msgstr ""
+msgstr "Агрегатор"
 
 #: NOT FOUND IN SOURCE
 msgid "Alias"
@@ -920,7 +922,7 @@ msgstr "Апрель"
 
 #: html/Search/Elements/DisplayOptions:81
 msgid "Asc"
-msgstr ""
+msgstr "По позрастанию"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Ascending"
@@ -993,7 +995,7 @@ msgstr "АвтоответАвторатЗаявки"
 
 #: html/Widgets/SelectionBox:186
 msgid "Available"
-msgstr ""
+msgstr "Доступно"
 
 #: NOT FOUND IN SOURCE
 msgid "Available Columns"
@@ -1065,11 +1067,11 @@ msgstr "Сокращенные заголовки"
 
 #: html/Ticket/Elements/Tabs:220
 msgid "Bulk Update"
-msgstr ""
+msgstr "Множественное изменение"
 
 #: NOT FOUND IN SOURCE
 msgid "Bulk ticket update"
-msgstr "Множественное обновление заявки"
+msgstr "Множественное изменение заявки"
 
 #: lib/RT/User_Overlay.pm:1790
 msgid "Can not modify system users"
@@ -1115,7 +1117,7 @@ msgstr "Невозможно создать пользователя: %1"
 
 #: html/Admin/Elements/AddCustomFieldValue:62 html/Admin/Elements/EditCustomFieldValues:58
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:87 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:113
 msgid "Cc"
@@ -1143,7 +1145,7 @@ msgstr "Потомки"
 
 #: html/NoAuth/js/util.js:157
 msgid "Choose a date"
-msgstr ""
+msgstr "Выберите дату"
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
@@ -1155,7 +1157,7 @@ msgstr "Очистить все"
 
 #: html/Helpers/CalPopup.html:6
 msgid "Close window"
-msgstr ""
+msgstr "Закрыть окно"
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1179,15 +1181,15 @@ msgstr "Код"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-msgstr ""
+msgstr "Комбинированный список: Выберите или введите несколько значений"
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
-msgstr ""
+msgstr "Комбинированный список: Выберите или введите одно значение"
 
 #: lib/RT/CustomField_Overlay.pm:91
 msgid "Combobox: Select or enter up to %1 values"
-msgstr ""
+msgstr "Комбинированный список: Выберите или введите до %1 значений"
 
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
@@ -1521,12 +1523,12 @@ msgstr "Невозможно загрузить заявку '%1'"
 #: lib/RT/Ticket_Overlay.pm:2590
 #. ($args{'Base'})
 msgid "Couldn't resolve base '%1' into a URI."
-msgstr ""
+msgstr "Невозможно преобразовать базу '%1' в URI."
 
 #: lib/RT/Ticket_Overlay.pm:2589
 #. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
-msgstr ""
+msgstr "Невозможно преобразовать цель '%1' в URI."
 
 #: html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
 msgid "Country"
@@ -1685,7 +1687,7 @@ msgstr "Создано во время"
 
 #: html/Tools/Reports/Elements/Tabs:63
 msgid "Created in a date range"
-msgstr ""
+msgstr "Создано за промежуток времени"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -1693,7 +1695,7 @@ msgstr "Создан шаблон %1"
 
 #: html/Tools/Reports/CreatedByDates.html:7
 msgid "Created tickets in period, grouped by status"
-msgstr ""
+msgstr "Создано заявок за период, с группировкой по статусу"
 
 #: html/Search/Elements/PickBasics:102
 msgid "Creator"
@@ -1721,7 +1723,7 @@ msgstr "Текущие права"
 
 #: html/Search/Elements/EditQuery:47
 msgid "Current search"
-msgstr ""
+msgstr "Текущий запрос"
 
 #: NOT FOUND IN SOURCE
 msgid "Current search criteria"
@@ -1814,7 +1816,7 @@ msgstr "ДополнительноеПоле"
 
 #: html/Prefs/MyRT.html:70 html/Prefs/Quicksearch.html:70 html/Prefs/Search.html:75
 msgid "Customize"
-msgstr ""
+msgstr "Настроить"
 
 #: NOT FOUND IN SOURCE
 msgid "Data error"
@@ -1851,6 +1853,7 @@ msgstr "Автор заявки по умолчанию"
 #: etc/initialdata:296
 msgid "Default admin comment template"
 msgstr "Шаблон административного комментария по умолчанию"
+""
 
 #: etc/initialdata:275
 msgid "Default admin correspondence template"
@@ -1907,7 +1910,7 @@ msgstr "Удалить заявки"
 
 #: html/Search/Bulk.html:159
 msgid "Delete values"
-msgstr ""
+msgstr "Удалить значения"
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "DeleteTicket"
@@ -1979,7 +1982,7 @@ msgstr "Зависит от"
 
 #: html/Search/Elements/DisplayOptions:86
 msgid "Desc"
-msgstr ""
+msgstr "По убыванию"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Descending"
@@ -2079,7 +2082,7 @@ msgstr "Редактировать условия"
 
 #: html/Search/Bulk.html:149
 msgid "Edit Custom Fields"
-msgstr ""
+msgstr "Редактировать Дополнительные Поля"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
 #. ($Object->Name)
@@ -2112,7 +2115,7 @@ msgstr "Редактировать взаимосвязи"
 
 #: html/Ticket/Elements/Tabs:207
 msgid "Edit Search"
-msgstr ""
+msgstr "Редактировать запрос"
 
 #: html/Admin/Queues/Templates.html:63
 #. ($QueueObj->Name)
@@ -2365,7 +2368,7 @@ msgstr "Заполнить одно поле wikitext"
 
 #: html/Admin/CustomFields/Modify.html:107 html/Admin/CustomFields/Modify.html:118
 msgid "Fill in this field with a URL."
-msgstr ""
+msgstr "Введите в этом поле URL."
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
@@ -2389,11 +2392,11 @@ msgstr "Конечный приоритет"
 
 #: NOT FOUND IN SOURCE
 msgid "Find group whose"
-msgstr "Найти группы, которые"
+msgstr "Найти группы, у которых"
 
 #: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82 html/Ticket/Elements/EditPeople:55
 msgid "Find groups whose"
-msgstr "Найти группы, которые"
+msgstr "Найти группы, у которых"
 
 #: NOT FOUND IN SOURCE
 msgid "Find new/open tickets"
@@ -2604,7 +2607,7 @@ msgstr "В начало"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
-msgstr ""
+msgstr "Часов"
 
 #: lib/RT/Base.pm:119
 #. (6)
@@ -2677,7 +2680,7 @@ msgstr "Показывать отключенных пользователей."
 
 #: html/Admin/CustomFields/Modify.html:113
 msgid "Include page"
-msgstr "Незавершенный запрос"
+msgstr "Вставить страницу"
 
 #: html/Search/Build.html:426
 msgid "Incomplete Query"
@@ -2703,7 +2706,7 @@ msgstr "Ошибка ввода"
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
-msgstr ""
+msgstr "Ввод должен соответствовать %1"
 
 #: lib/RT/Ticket_Overlay.pm:3448
 msgid "Internal Error"
@@ -2737,7 +2740,7 @@ msgstr "Несуществующий ответственный. Использ�
 #: lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:677
 #. ($msg)
 msgid "Invalid pattern: %1"
-msgstr ""
+msgstr "Недопустимый образец: %1"
 
 #: lib/RT/Scrip_Overlay.pm:158 lib/RT/Template_Overlay.pm:244
 msgid "Invalid queue"
@@ -2850,15 +2853,15 @@ msgstr "Последнее уведомление"
 
 #: html/Elements/SelectDateType:51
 msgid "Last Updated"
-msgstr "Последнее обновление"
+msgstr "Последнее изменение"
 
 #: NOT FOUND IN SOURCE
 msgid "LastUpdated"
-msgstr "Последнее обновление"
+msgstr "Последнее изменение"
 
 #: html/Search/Elements/PickBasics:103
 msgid "LastUpdatedBy"
-msgstr "Последний раз обновлено"
+msgstr "Последний раз изменено"
 
 #: html/Ticket/Elements/ShowBasics:68
 msgid "Left"
@@ -2917,7 +2920,7 @@ msgstr "Связать заявку %1"
 
 #: html/Admin/CustomFields/Modify.html:102
 msgid "Link values to"
-msgstr ""
+msgstr "Связать значения с"
 
 #: html/Ticket/Create.html:215 html/Ticket/Elements/ShowSummary:87 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
@@ -3149,7 +3152,7 @@ msgstr "Сообщения об этой заявке не будет отпра
 
 #: html/Elements/SelectTimeUnits:47
 msgid "Minutes"
-msgstr "Несовпадающие скобки"
+msgstr "Минут"
 
 #: html/Search/Build.html:430
 msgid "Mismatched parentheses"
@@ -3550,7 +3553,7 @@ msgstr "Новая очередь"
 
 #: html/Ticket/Elements/Reminders:73
 msgid "New reminder:"
-msgstr ""
+msgstr "Новое напоминание:"
 
 #: NOT FOUND IN SOURCE
 msgid "New request"
@@ -3720,7 +3723,7 @@ msgstr "Нет прав для просмотра этой заявки"
 
 #: html/SelfService/Update.html:117
 msgid "No permission to view update ticket"
-msgstr "Нет прав для просмотра обновлений этой заявки"
+msgstr "Нет прав для просмотра изменений этой заявки"
 
 #: lib/RT/Queue_Overlay.pm:796 lib/RT/Ticket_Overlay.pm:1460
 msgid "No principal specified"
@@ -3900,7 +3903,7 @@ msgstr "Невозможно создать объект"
 
 #: lib/RT/Record.pm:124
 msgid "Object could not be deleted"
-msgstr "Объект не может быть удален"
+msgstr "Невозможно удалить объект"
 
 #: lib/RT/Record.pm:342
 msgid "Object created"
@@ -3947,7 +3950,7 @@ msgstr "На"
 #: lib/RT/Transaction_Overlay.pm:313
 #. ($self->CreatedAsString(), $self->CreatorObj->Name())
 msgid "On %1, %2 wrote:"
-msgstr ""
+msgstr "%1, %2 писал:"
 
 #: etc/initialdata:163
 msgid "On Comment"
@@ -3997,7 +4000,7 @@ msgstr "Показывать подтверждения только для за
 
 #: html/Admin/CustomFields/index.html:75
 msgid "Only show custom fields for:"
-msgstr ""
+msgstr "Показывать дополнительные поля только для:"
 
 #: NOT FOUND IN SOURCE
 msgid "Open"
@@ -4009,11 +4012,11 @@ msgstr "Открыть"
 
 #: NOT FOUND IN SOURCE
 msgid "Open requests"
-msgstr "Открыть запросы"
+msgstr "Открытые запросы"
 
 #: html/SelfService/Elements/Tabs:75
 msgid "Open tickets"
-msgstr "Открыть заявки"
+msgstr "Открытые заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Open tickets (from listing) in a new window"
@@ -4029,7 +4032,7 @@ msgstr "Открыть заявки при корреспонденции"
 
 #: html/Prefs/MyRT.html:62
 msgid "Options"
-msgstr ""
+msgstr "Параметры"
 
 #: html/Search/Elements/DisplayOptions:59
 msgid "Order by"
@@ -4133,7 +4136,7 @@ msgstr "Пароль должен состоят не менее чем из %1 
 
 #: lib/RT/User_Overlay.pm:1045
 msgid "Password set"
-msgstr ""
+msgstr "Пароль установлен"
 
 #: NOT FOUND IN SOURCE
 msgid "Password too short"
@@ -4146,7 +4149,7 @@ msgstr "Пароль: %1"
 
 #: lib/RT/User_Overlay.pm:1031
 msgid "Password: Permission Denied"
-msgstr ""
+msgstr "Пароль: доступ запрещен"
 
 #: html/Admin/Users/Modify.html:353
 msgid "Passwords do not match."
@@ -4174,11 +4177,11 @@ msgstr "Нет доступа"
 
 #: lib/RT/Template_Overlay.pm:238 lib/RT/Template_Overlay.pm:247
 msgid "Permission denied"
-msgstr ""
+msgstr "Доступ запрещен"
 
 #: lib/RT/Template_Overlay.pm:372
 msgid "Permissions denied"
-msgstr ""
+msgstr "Доступы запрещены"
 
 #: html/User/Elements/Tabs:56
 msgid "Personal Groups"
@@ -4326,11 +4329,11 @@ msgstr "Очереди"
 
 #: html/Elements/MyAdminQueues:46
 msgid "Queues I administer"
-msgstr ""
+msgstr "Очереди, которыми вы управляете"
 
 #: html/Elements/MySupportQueues:46
 msgid "Queues I'm an AdminCc for"
-msgstr ""
+msgstr "Очереди, для которых вы являетесь Административной Копией"
 
 #: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58 html/Prefs/Quicksearch.html:70
 msgid "Quick search"
@@ -4411,11 +4414,11 @@ msgstr "Обзор RT"
 
 #: html/Admin/CustomFields/Modify.html:117
 msgid "RT can include content from another web service when showing this custom field."
-msgstr ""
+msgstr "RT может добавлять содержимое другого ресурса сети, когда отображает это дополнительное поле."
 
 #: html/Admin/CustomFields/Modify.html:106
 msgid "RT can make this custom field's values into hyperlinks to another service."
-msgstr ""
+msgstr "RT может преобразовывать значения этого дополнительного поля в гиперссылки на другой сервис."
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
@@ -4468,7 +4471,7 @@ msgstr "RT считает, что это сообщение может быть 
 
 #: html/Search/Simple.html:60
 msgid "RT will look for anything else you enter in ticket subjects."
-msgstr ""
+msgstr "Всё остальное, что вы введёте, RT будет искать в темах заявок."
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -4476,7 +4479,7 @@ msgstr "RT будет обрабатывать это сообщение как 
 
 #: html/Admin/CustomFields/Modify.html:108 html/Admin/CustomFields/Modify.html:119
 msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr ""
+msgstr "RT заменит <tt>__id__</tt> и <tt>__CustomField__</tt> идентификатором записи и значением дополнительного поля соответственно"
 
 #: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
@@ -4542,31 +4545,31 @@ msgstr "Связи"
 #: lib/RT/Transaction_Overlay.pm:798
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
-msgstr ""
+msgstr "Напоминание '%1' добавлено"
 
 #: lib/RT/Transaction_Overlay.pm:811
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
-msgstr ""
+msgstr "Напоминание '%1' завершено"
 
 #: lib/RT/Transaction_Overlay.pm:804
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
-msgstr ""
+msgstr "Напоминание '%1' открыто заново"
 
 #: html/Ticket/Reminders.html:46
 #. ($Ticket->Id)
 msgid "Reminder ticket #%1"
-msgstr ""
+msgstr "Заявка напоминания #%1"
 
 #: html/Elements/MyReminders:49 html/Ticket/Elements/ShowSummary:73 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
 msgid "Reminders"
-msgstr ""
+msgstr "Напоминания"
 
 #: html/Ticket/Reminders.html:50
 #. ($Ticket->Id)
 msgid "Reminders for ticket #%1"
-msgstr ""
+msgstr "Напоминания для заявки #%1"
 
 #: html/Search/Bulk.html:94
 msgid "Remove AdminCc"
@@ -4602,7 +4605,7 @@ msgstr "ОтвечатьНаЗаявку"
 
 #: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:1 html/Tools/Reports/index.html:2
 msgid "Reports"
-msgstr ""
+msgstr "Отчёты"
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:112
 msgid "Requestor"
@@ -4648,7 +4651,7 @@ msgstr "Решить"
 #: html/Ticket/Update.html:156
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "Решить заявка #%1 (%2)"
+msgstr "Решить заявку #%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1149
 msgid "Resolved"
@@ -4656,19 +4659,19 @@ msgstr "Решено"
 
 #: html/Tools/Reports/Elements/Tabs:55
 msgid "Resolved by owner"
-msgstr ""
+msgstr "Решено ответственным"
 
 #: html/Tools/Reports/Elements/Tabs:59
 msgid "Resolved in date range"
-msgstr ""
+msgstr "Решено в промежутке времени"
 
 #: html/Tools/Reports/ResolvedByDates.html:7
 msgid "Resolved tickets in period, grouped by owner"
-msgstr ""
+msgstr "Решено заявок за период, с группировкой по ответственному"
 
 #: html/Tools/Reports/ResolvedByOwner.html:5
 msgid "Resolved tickets, grouped by owner"
-msgstr ""
+msgstr "Решено заявок, с группировкой по ответственному"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -4688,7 +4691,7 @@ msgstr "Повторите пароль"
 
 #: html/Search/Elements/EditSearches:61
 msgid "Revert"
-msgstr "Обратить"
+msgstr "Откатить"
 
 #: NOT FOUND IN SOURCE
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
@@ -4742,7 +4745,7 @@ msgstr "Псевдо-группы"
 
 #: html/Prefs/MyRT.html:64
 msgid "Rows per box"
-msgstr ""
+msgstr "Строк для отображения"
 
 #: html/Search/Elements/DisplayOptions:93
 msgid "Rows per page"
@@ -4818,7 +4821,7 @@ msgstr "Критерии поиска"
 
 #: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
 msgid "Search Preferences"
-msgstr "Ошибка загрузки атрибута запроса"
+msgstr "Параметры поиска"
 
 #: lib/RT/SavedSearch.pm:116
 msgid "Search attribute load failure"
@@ -4830,30 +4833,29 @@ msgstr "Поиск подтверждений"
 
 #: html/Search/Simple.html:69
 msgid "Search for tickets"
-msgstr ""
+msgstr "Поиск заявок"
 
 #: html/Search/Simple.html:57
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
 Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
 RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
+msgstr "Поиск заявок. Введите номер <strong>идентификатора</strong>, имя <strong>очереди</strong>,
+имя <strong>ответственного</strong>, email-адрес <strong>автора заявки</strong>.
+Всё остальное, что вы введёте, RT будет искать в тексте и вложениях заявок."
 
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
 #: html/User/Elements/Tabs:62
 msgid "Search options"
-msgstr ""
+msgstr "Параметры поиска"
 
 #: html/Search/Chart.html:7
 #. ($PrimaryGroupBy)
 msgid "Search results grouped by %1"
-msgstr ""
+msgstr "Группировать результаты поиска по %1"
 
 #: lib/RT/SavedSearch.pm:194
 #. ($msg)
 msgid "Search update: %1"
-msgstr "Обновление запроса: %1"
+msgstr "Изменение запроса: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
@@ -4861,7 +4863,7 @@ msgstr "Запросы не могут быть ассоциированы с т
 
 #: html/Search/Simple.html:59
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
+msgstr "Полнотекстовый поиск по каждой заявке может занять длительное время, но если он необходим вам, вы можете искать любое слово по всей  истории заявки, введя <b>fulltext:<i>слово</i></b>."
 
 #: bin/rt-crontool:213
 msgid "Security:"
@@ -4870,7 +4872,7 @@ msgstr "Безопасность:"
 #: html/Elements/ShowCustomFields:76
 #. ('<a href="'.$Value->IncludeContentForValue.'">' . $Value->IncludeContentForValue."</a>")
 msgid "See also: %1"
-msgstr ""
+msgstr "Смотрите также: %1"
 
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
@@ -4966,7 +4968,7 @@ msgstr "Выберите очередь"
 
 #: html/Prefs/Quicksearch.html:53
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
-msgstr ""
+msgstr "Выберите очереди, которые будут отображаться на странице \"Обзор RT\""
 
 #: html/Admin/Global/Scrip.html:58 html/Admin/Global/Scrips.html:57 html/Admin/Queues/Scrip.html:61 html/Admin/Queues/Scrips.html:73
 msgid "Select scrip"
@@ -5002,7 +5004,7 @@ msgstr "Выбранные объекты"
 
 #: html/Widgets/SelectionBox:210
 msgid "Selections modified. Please save your changes"
-msgstr ""
+msgstr "Выбор изменён. Пожалуйста, сохраните ваши изменения"
 
 #: NOT FOUND IN SOURCE
 msgid "Self Service"
@@ -5166,7 +5168,7 @@ msgstr "Зарегистрирован как %1"
 
 #: html/Elements/Tabs:68
 msgid "Simple Search"
-msgstr ""
+msgstr "Простой поиск"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:47
 msgid "Single"
@@ -5186,7 +5188,7 @@ msgstr "Маленький"
 
 #: html/Admin/CustomFields/Modify.html:120
 msgid "Some browsers may only load content from the same domain as your RT server."
-msgstr ""
+msgstr "Некотороые обозреватели могут загружать содержимое только с такого же домена, как у сервера RT."
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
 msgid "Sort"
@@ -5278,8 +5280,8 @@ msgstr "ПереназначатьЗаявкуСебе"
 
 #: lib/RT/Transaction_Overlay.pm:665
 #. ($Old->Name)
-msgid "Stolen from %1 "
-msgstr ""
+msgid "Stolen from %1"
+msgstr "Ответственный переназначен с %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
@@ -5430,7 +5432,7 @@ msgstr "Шаблон обработан"
 
 #: lib/RT/Template_Overlay.pm:391
 msgid "Template parsing error"
-msgstr ""
+msgstr "Ошибка обработки шаблона"
 
 #: html/Admin/Elements/QueueTabs:70 html/Admin/Elements/SystemTabs:57 html/Admin/Global/index.html:66
 msgid "Templates"
@@ -5723,11 +5725,11 @@ msgstr "Наблюдатели за заявкой"
 #: lib/RT/Search/FromSQL.pm:83
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr ""
+msgstr "Модуль поиска TicketSQL"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:52 lib/RT/CustomField_Overlay.pm:1204
 msgid "Tickets"
-msgstr "Поиск заявки"
+msgstr "Расширенный поиск"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets %1 %2"
@@ -5739,11 +5741,11 @@ msgstr "Заявки %1 пользователя %2"
 
 #: html/Tools/Reports/CreatedByDates.html:41
 msgid "Tickets created after"
-msgstr ""
+msgstr "Заявки, созданные после"
 
 #: html/Tools/Reports/CreatedByDates.html:43
 msgid "Tickets created before"
-msgstr ""
+msgstr "Заявки, созданные до"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets from %1"
@@ -5751,11 +5753,11 @@ msgstr "Заявки от %1"
 
 #: html/Tools/Reports/ResolvedByDates.html:42
 msgid "Tickets resolved after"
-msgstr ""
+msgstr "Заявки, решённые после"
 
 #: html/Tools/Reports/ResolvedByDates.html:44
 msgid "Tickets resolved before"
-msgstr ""
+msgstr "Заявки, решённые до"
 
 #: html/Approvals/Elements/ShowDependency:48
 msgid "Tickets which depend on this approval:"
@@ -5779,7 +5781,7 @@ msgstr "Осталось времени"
 
 #: html/Elements/Footer:52
 msgid "Time to display"
-msgstr "Время для показа"
+msgstr "Время генерации страницы"
 
 #: lib/RT/Tickets_Overlay.pm:1853
 msgid "Time worked"
@@ -5799,11 +5801,11 @@ msgstr "Заголовок"
 
 #: NOT FOUND IN SOURCE
 msgid "To generate a diff of this commit:"
-msgstr "Для генерации изменений этого коммита:"
+msgstr "Для генерации изменений этой фиксации:"
 
 #: NOT FOUND IN SOURCE
 msgid "To generate a diff of this commit:\\n"
-msgstr "Для генерации изменений этого коммита:\\n"
+msgstr "Для генерации изменений этой фиксации:\\n"
 
 #: html/Elements/Footer:63
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
@@ -5820,7 +5822,7 @@ msgstr "Утилиты"
 
 #: html/Search/Elements/Chart:73
 msgid "Total"
-msgstr ""
+msgstr "Всего"
 
 #: etc/initialdata:252
 msgid "Transaction"
@@ -5915,23 +5917,23 @@ msgstr "Безымянный запрос"
 
 #: html/Elements/RT__Ticket/ColumnMap:300 html/Search/Bulk.html:193 html/Search/Bulk.html:75
 msgid "Update"
-msgstr "Обновить"
+msgstr "Изменить"
 
 #: NOT FOUND IN SOURCE
 msgid "Update All"
-msgstr "Обновить все"
+msgstr "Изменить все"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ID"
-msgstr "Обновить идентификатор"
+msgstr "Изменить идентификатор"
 
 #: html/Ticket/Update.html:135
 msgid "Update Ticket"
-msgstr "Обновить заявку"
+msgstr "Изменить заявку"
 
 #: html/Search/Bulk.html:126 html/Ticket/ModifyAll.html:87 html/Ticket/Update.html:72
 msgid "Update Type"
-msgstr "Обновить тип"
+msgstr "Изменить тип"
 
 #: NOT FOUND IN SOURCE
 msgid "Update all these tickets at once"
@@ -5939,53 +5941,53 @@ msgstr "Изменить все эти заявки одновременно"
 
 #: NOT FOUND IN SOURCE
 msgid "Update email"
-msgstr "Обновить e-mail"
+msgstr "Изменить e-mail"
 
 #: html/Search/Bulk.html:200 html/Search/Results.html:78
 msgid "Update multiple tickets"
-msgstr "Обновить несколько заявок"
+msgstr "Изменить несколько заявок"
 
 #: NOT FOUND IN SOURCE
 msgid "Update name"
-msgstr "Обновить имя"
+msgstr "Изменить имя"
 
 #: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:524
 msgid "Update not recorded."
-msgstr "Обновление не записано."
+msgstr "Изменение не записано."
 
 #: NOT FOUND IN SOURCE
 msgid "Update selected tickets"
-msgstr "Обновить выбранные заявки"
+msgstr "Изменить выбранные заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Update signature"
-msgstr "Обновить подпись"
+msgstr "Изменить подпись"
 
 #: html/Ticket/ModifyAll.html:84
 msgid "Update ticket"
-msgstr "Обновить заявку"
+msgstr "Изменить заявку"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ticket # %1"
-msgstr "Обновление заявки # %1"
+msgstr "Изменение заявки # %1"
 
 #: html/SelfService/Update.html:112 html/SelfService/Update.html:47
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "Обновление заявки #%1"
+msgstr "Изменение заявки #%1"
 
 #: html/Ticket/Update.html:158
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Обновление заявки #%1 (%2)"
+msgstr "Изменение заявки #%1 (%2)"
 
 #: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:523
 msgid "Update type was neither correspondence nor comment."
-msgstr "Обновление не было ни сообщением, ни комментарием."
+msgstr "Изменение не было ни сообщением, ни комментарием."
 
 #: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/CustomField_Overlay.pm:1282 lib/RT/Ticket_Overlay.pm:1148
 msgid "Updated"
-msgstr "Обновлена"
+msgstr "Изменена"
 
 #: html/Tools/Offline.html:93
 msgid "Upload"
@@ -6067,7 +6069,7 @@ msgstr "Права пользователя"
 #: lib/RT/Interface/Web.pm:1284
 #. ($CustomFieldObj->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
-msgstr "Пользователь запросил обновление неизвестного типа для дополнительного поля %1 для объекта %2  #%3"
+msgstr "Пользователь запросил изменение неизвестного типа для дополнительного поля %1 для объекта %2  #%3"
 
 #: html/Admin/Users/Modify.html:290
 #. ($msg)
@@ -6116,7 +6118,7 @@ msgstr "Проверить запрос"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
-msgstr ""
+msgstr "Проверка корректности"
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"
@@ -6244,7 +6246,7 @@ msgstr "Вы можете получить это, нажав справа кн�
 
 #: html/Prefs/Search.html:56
 msgid "You can also edit the predefined search itself"
-msgstr ""
+msgstr "Вы также можете редактировать предварительно заданный запрос"
 
 #: lib/RT/Ticket_Overlay.pm:2967
 msgid "You can only reassign tickets that you own or that are unowned"
@@ -6432,7 +6434,7 @@ msgstr "группа '%1'"
 #: html/Search/Results.html:88
 #. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy'))
 msgid "grouped by %1"
-msgstr ""
+msgstr "сгруппировано по %1"
 
 #: lib/RT/Date.pm:338
 msgid "hours"
@@ -6539,11 +6541,11 @@ msgstr "приостановлена"
 #: html/Search/Results.html:89
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
 msgid "style: %1"
-msgstr ""
+msgstr "стиль: %1"
 
 #: html/Prefs/MyRT.html:80
 msgid "summary rows"
-msgstr ""
+msgstr "строки сводной информации"
 
 #: lib/RT/Group_Overlay.pm:222
 #. ($self->Type)
