@@ -50,7 +50,7 @@
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
-% $m->rt_callback( _CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->rt_callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>" />
@@ -65,7 +65,7 @@
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
-% $m->rt_callback( _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS );
+% $m->rt_callback( CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
 % }
@@ -116,7 +116,7 @@ value="<% $ARGS{UpdateCc} %>" /><br />
 <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->rt_callback( _CallbackName => 'BeforeMessageBox', %ARGS );
+% $m->rt_callback( CallbackName => 'BeforeMessageBox', %ARGS );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
