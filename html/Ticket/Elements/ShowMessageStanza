@@ -43,21 +43,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (ref($Message)) {
+% if ( ref $Message ) {
 <div class="message-stanza-depth-<% $Depth %>">
 <%perl>
+my $para = '';
 foreach my $stanza (@$Message) {
     if ( ref $stanza eq "ARRAY" ) {
+        $print_content->( \$para ); $para = '';
         $m->comp( 'ShowMessageStanza',
                   Depth   => $Depth + 1,
                   Transaction => $Transaction,
                   Message => $stanza );
     }
     elsif ( ref $stanza eq "HASH" ) {
-        my $content = $stanza->{raw};
-        $print_content->( \$content );
+        $para .= $stanza->{raw};
     }
 }
+$print_content->( \$para ) if length $para;
 </%perl>
 </div>
 % } else {
