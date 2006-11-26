@@ -984,7 +984,7 @@ sub Object {
     my $self  = shift;
     my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
     $Object->Load($self->__Value('ObjectId'));
-    return($Object);
+    return $Object;
 }
 
 sub FriendlyObjectType {
