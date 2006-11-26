@@ -63,7 +63,7 @@ $tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
 &>
 
 %# Additional information about this user.  Empty by default.
-<& /Elements/Callback, _CallbackName => 'AboutThisUser', requestor => $requestor, %ARGS &>
+% $m->rt_callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
 
 <&|/l&>Comments about this user</&>:<br />
 <b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />

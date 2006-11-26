@@ -70,7 +70,9 @@ my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 
 my $print_content = sub {
     my $ref = shift;
-    $m->comp('/Elements/Callback', content => $ref, %ARGS);
+    return unless defined $$ref && length $$ref;
+
+    $m->rt_callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
     $$ref =~ s{$}{<br />}mg if defined $$ref;
     $m->out( $$ref );

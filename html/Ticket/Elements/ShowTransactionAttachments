@@ -46,7 +46,7 @@
 <%PERL>
 # Find all the attachments which have parent $Parent
 # For each of these attachments
-foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
+foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     $m->comp( 'ShowMessageHeaders',
               Message        => $message,
               DisplayHeaders => \@DisplayHeaders,
@@ -146,7 +146,8 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 # }}}
 
 $m->comp(
-    'ShowTransactionAttachments', %ARGS,
+    $m->current_comp,
+    %ARGS,
     Parent    => $message->id,
     ParentObj => $message
 );
@@ -171,14 +172,14 @@ $Parent => 0
 $ParentObj => undef
 </%ARGS>
 <%INIT>
-my @DisplayHeaders=qw( _all);
+my @DisplayHeaders=qw(_all);
 if ( $Transaction->Type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
 }
 
 # If the transaction has anything attached to it at all
 elsif (!$ShowHeaders)  {
-        @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
+    @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
 }
 
 my $size_to_str = sub {

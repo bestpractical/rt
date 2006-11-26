@@ -84,12 +84,14 @@ my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
 
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
-    $m->comp( '/Elements/Callback',
-              _CallbackName => 'SkipTransaction',
-              Transaction   => $Transaction,
-              skip          => \$skip,
-              %ARGS );
+    $m->rt_callback(
+        %ARGS,
+        Transaction   => $Transaction,
+        skip          => \$skip,
+        CallbackName  => 'SkipTransaction',
+    );
     next if $skip;
+
     $i++;
 
     my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;

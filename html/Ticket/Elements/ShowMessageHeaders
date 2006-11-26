@@ -61,11 +61,11 @@ foreach my $field( $Message->SplitHeaders ) {
 
 my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
 
-$m->comp( '/Elements/Callback',
-          message         => $Message,
-          headers         => \@headers,
-          display_headers => \%display_headers,
-        );
+$m->rt_callback(
+    message         => $Message,
+    headers         => \@headers,
+    display_headers => \%display_headers,
+);
 
 unless ( $display_headers{'_all'} ) {
     @headers = grep $display_headers{ lc $_->{'Tag'} }, @headers;

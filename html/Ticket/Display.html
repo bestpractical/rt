@@ -58,7 +58,7 @@
 
 <br />
 
-<& /Elements/Callback, _CallbackName => 'BeforeShowHistory', Ticket => $TicketObj, %ARGS &>
+% $m->rt_callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
 
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
@@ -80,7 +80,7 @@ $Collapsed => undef
 
 <%INIT>
 
-$m->comp('/Elements/Callback', _CallbackName => 'Initial', TicketObj => $TicketObj, ARGSRef => \%ARGS);
+$m->rt_callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my (@Actions, $Tickets);  
 
@@ -149,8 +149,12 @@ if (@Actions) {
     delete $session{"Actions"};
 }
 
-$m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
-         TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
+$m->rt_callback(
+    CallbackName => 'BeforeDisplay',
+    TicketObj    => \$TicketObj,
+    Tickets      => \$Tickets,
+    ARGSRef      => \%ARGS,
+);
 
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
