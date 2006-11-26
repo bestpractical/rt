@@ -56,6 +56,7 @@ use HTML::Entities;
 use HTML::Scrubber;
 use Text::Quoted;
 use RT::Interface::Web::Handler;
+use RT::Interface::Web::Request;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
@@ -71,7 +72,8 @@ sub DefaultHandlerArgs  { (
     # Turn off static source if we're in developer mode.
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
-    autoflush            => 0
+    autoflush            => 0,
+    request_class        => 'RT::Interface::Web::Request',
 ) };
 
 # {{{ sub new 
@@ -87,10 +89,7 @@ sub new {
     my $class = shift;
     $class->InitSessionDir;
 
-    if ( $mod_perl::VERSION && $mod_perl::VERSION >= 1.9908 ) {
-        goto &NewApacheHandler;
-    }
-    elsif ($CGI::MOD_PERL) {
+    if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
         goto &NewApacheHandler;
     }
     else {
@@ -136,22 +135,6 @@ sub InitSessionDir {
 sub NewApacheHandler {
     require HTML::Mason::ApacheHandler;
     return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
-}
-
-# }}}
-
-# {{{ sub NewApache2Handler 
-
-=head2 NewApache2Handler
-
-  Takes extra options to pass to MasonX::Apache2Handler->new
-  Returns a new MasonX::Apache2Handler object
-
-=cut
-
-sub NewApache2Handler {
-    require MasonX::Apache2Handler;
-    return NewHandler('MasonX::Apache2Handler', args_method => "CGI", @_);
 }
 
 # }}}
