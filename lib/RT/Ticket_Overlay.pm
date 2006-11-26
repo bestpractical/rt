@@ -2068,8 +2068,8 @@ sub DueObj {
     my $time = new RT::Date( $self->CurrentUser );
 
     # -1 is RT::Date slang for never
-    if ( $self->Due ) {
-        $time->Set( Format => 'sql', Value => $self->Due );
+    if ( my $due = $self->Due ) {
+        $time->Set( Format => 'sql', Value => $due );
     }
     else {
         $time->Set( Format => 'unix', Value => -1 );
@@ -3628,13 +3628,10 @@ sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
 
-    return (
-        $self->HasRight(
-            Principal => $self->CurrentUser->UserObj(),
-            Right     => "$right"
-          )
-    );
-
+    return $self->CurrentUser->PrincipalObj->HasRight(
+        Object => $self,
+        Right  => $right,
+    )
 }
 
 # }}}
