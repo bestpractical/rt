@@ -99,10 +99,7 @@ The primary keys for RT classes is 'id'
 
 =cut
 
-sub _PrimaryKeys {
-    my $self = shift;
-    return ( ['id'] );
-}
+sub _PrimaryKeys { return ['id'] }
 
 # }}}
 
@@ -251,10 +248,7 @@ sub FirstAttribute {
 
 
 # {{{ sub _Handle 
-sub _Handle {
-    my $self = shift;
-    return ($RT::Handle);
-}
+sub _Handle { return $RT::Handle }
 
 # }}}
 
@@ -358,40 +352,29 @@ DB is case sensitive
 
 sub LoadByCols {
     my $self = shift;
-    my %hash = (@_);
 
     # We don't want to hang onto this
     delete $self->{'attributes'};
 
+    return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
+
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
-    if ( $self->_Handle->CaseSensitive ) {
-        my %newhash;
-        foreach my $key ( keys %hash ) {
+    my %hash = (@_);
+    foreach my $key ( keys %hash ) {
 
-            # If we've been passed an empty value, we can't do the lookup. 
-            # We don't need to explicitly downcase integers or an id.
-            if ( $key =~ '^id$'
-                || !defined( $hash{$key} )
-                || $hash{$key} =~ /^\d+$/
-                 )
-            {
-                $newhash{$key} = $hash{$key};
-            }
-            else {
-                my ($op, $val, $func);
-                ($key, $op, $val, $func) = $self->_Handle->_MakeClauseCaseInsensitive($key, '=', $hash{$key});
-                $newhash{$key}->{operator} = $op;
-                $newhash{$key}->{value} = $val;
-                $newhash{$key}->{function} = $func;
-            }
+        # If we've been passed an empty value, we can't do the lookup. 
+        # We don't need to explicitly downcase integers or an id.
+        if ( $key ne 'id' && defined $hash{ $key } && $hash{ $key } !~ /^\d+$/ ) {
+            my ($op, $val, $func);
+            ($key, $op, $val, $func) =
+                $self->_Handle->_MakeClauseCaseInsensitive( $key, '=', delete $hash{ $key } );
+            $hash{$key}->{operator} = $op;
+            $hash{$key}->{value}    = $val;
+            $hash{$key}->{function} = $func;
         }
-
-        # We've clobbered everything we care about. bash the old hash
-        # and replace it with the new hash
-        %hash = %newhash;
     }
-    $self->SUPER::LoadByCols(%hash);
+    return $self->SUPER::LoadByCols( %hash );
 }
 
 # }}}
