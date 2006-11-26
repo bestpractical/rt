@@ -50,6 +50,7 @@ $record => undef
 $maxitems => undef
 $Depth => undef
 $Warning => undef
+$ColumnMap => {}
 </%ARGS>
 
 <%PERL>
@@ -79,11 +80,16 @@ foreach my $column (@Format) {
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
             my $col   = $1;
-            my $value = $m->comp(
-                '/Elements/RT__Ticket/ColumnMap',
-                Name => $col,
-                Attr => 'value'
-            );
+
+            unless ( exists $ColumnMap->{ $col } ) {
+                $ColumnMap->{ $col } = $m->comp(
+                    '/Elements/RT__Ticket/ColumnMap',
+                    Name => $col,
+                    Attr => 'value'
+                );
+            }
+
+            my $value = $ColumnMap->{ $col };
             my @out;
 
             if ( $value && ref($value) ) {
