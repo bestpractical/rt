@@ -140,15 +140,16 @@ sub UserObj {
     my $self = shift;
 
     my $user = RT::User->new( $self );
-
-    unless ( $user->Load( $self->Id ) ) {
-        $RT::Logger->err($self->loc("Couldn't load [_1] from the users database.\n", $self->Id));
+    unless ( $user->LoadById( $self->Id ) ) {
+        $RT::Logger->error(
+            $self->loc("Couldn't load [_1] from the users database.\n", $self->Id)
+        );
     }
     return $user;
 }
 # }}}
 
-# {{{ sub PrincipalObj 
+# {{{ sub PrincipalObj
 
 =head2 PrincipalObj
 
@@ -157,10 +158,7 @@ $self->UserObj->PrincipalObj
 
 =cut
 
-sub PrincipalObj {
-    my $self = shift;
-    return($self->UserObj->PrincipalObj);
-}
+sub PrincipalObj { return $_[0]->UserObj->PrincipalObj }
 
 
 # }}}
