@@ -207,6 +207,7 @@ Module::Versions::Report
 Cache::Simple::TimedExpiry
 XML::Simple
 Calendar::Simple
+Encode 2.13
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];

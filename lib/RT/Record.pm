@@ -65,12 +65,16 @@ ok (require RT::Record);
 =cut
 
 package RT::Record;
+
+use strict;
+use warnings;
+
 use RT::Date;
 use RT::User;
 use RT::Attributes;
 use RT::Base;
 
-use strict;
+use Encode ();
 
 our $_TABLE_ATTR;
 our @ISA = qw(RT::Base);
@@ -636,34 +640,20 @@ sub SQLType {
 
 }
 
-require Encode::compat if $] < 5.007001;
-require Encode;
-
-
-
-
 sub __Value {
     my $self  = shift;
     my $field = shift;
-    my %args = ( decode_utf8 => 1,
-                 @_ );
+    my %args = ( decode_utf8 => 1, @_ );
 
-    unless (defined $field && $field) {
-        $RT::Logger->error("$self __Value called with undef field");
+    unless ( $field ) {
+        $RT::Logger->error("__Value called with undef field");
     }
-    my $value = $self->SUPER::__Value($field);
-
-    return('') if ( !defined($value) || $value eq '');
 
     if( $args{'decode_utf8'} ) {
-    	# XXX: is_utf8 check should be here unless Encode bug would be fixed
-        # see http://rt.cpan.org/NoAuth/Bug.html?id=14559 
-        return Encode::decode_utf8($value) unless Encode::is_utf8($value);
+        return Encode::decode_utf8( $self->SUPER::__Value( $field ) );
     } else {
-        # check is_utf8 here just to be shure
-        return Encode::encode_utf8($value) if Encode::is_utf8($value);
+        return Encode::encode_utf8( $self->SUPER::__Value( $field ) );
     }
-    return $value;
 }
 
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
