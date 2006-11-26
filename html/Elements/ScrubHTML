@@ -43,9 +43,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%init>
-my $scrubber = HTML::Scrubber->new();
-
+<%ONCE>
+my $scrubber = new HTML::Scrubber;
 $scrubber->default(
     0,
     {
@@ -57,15 +56,17 @@ $scrubber->default(
         href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
         face   => 1,
         size   => 1,
-        target => 1
+        target => 1,
     }
 );
-
 $scrubber->deny(qw[*]);
 $scrubber->allow(
-    qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD PRE]);
+    qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD PRE]
+);
 $scrubber->comment(0);
-return ( $scrubber->scrub($Content) );
+</%ONCE>
+<%init>
+return $scrubber->scrub($Content);
 </%init>
 <%args>
 $Content => undef
