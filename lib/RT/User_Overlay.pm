@@ -1210,15 +1210,16 @@ is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group
 
 sub PrincipalObj {
     my $self = shift;
-    unless ($self->{'PrincipalObj'} && 
-            ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
-            ($self->{'PrincipalObj'}->PrincipalType eq 'User')) {
-
-            $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
-            $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,
-                                                'PrincipalType' => 'User') ;
-            }
-    return($self->{'PrincipalObj'});
+    unless ( $self->{'PrincipalObj'} ) {
+        my $obj = RT::Principal->new( $self->CurrentUser );
+        $obj->LoadById( $self->id );
+        unless ( $obj->id && $obj->PrincipalType eq 'User' ) {
+            $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
+        } else {
+            $self->{'PrincipalObj'} = $obj;
+        }
+    }
+    return $self->{'PrincipalObj'};
 }
 
 
