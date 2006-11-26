@@ -51,15 +51,16 @@
   </ul>
 </&>
 <%init>
+# XXX: run callbacks per row really crazy idea
 @actions =
     grep $_,
     grep {
         my $skip;
-        $m->comp('/Elements/Callback',
-            _CallbackName => 'ModifyRow',
-            row => \$_,
+        $m->rt_callback(
+            %ARGS,
+            row  => \$_,
             skip => \$skip,
-            %ARGS
+            CallbackName => 'ModifyRow',
         );
         !$skip;
     }

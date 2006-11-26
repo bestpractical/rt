@@ -313,6 +313,6 @@ $COLUMN_MAP = {
 };
 </%ONCE>
 <%init>
-$m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+$m->rt_callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
 return ColumnMap($Name, $Attr);
 </%init>

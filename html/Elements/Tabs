@@ -100,10 +100,12 @@ if (!defined $topactions) {
    $topactions = $basetopactions;
 }
                     
-  # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', 
+# Now let callbacks add their extra tabs
+$m->rt_callback(
     topactions => $topactions, 
-    toptabs => $toptabs, %ARGS);
+    toptabs    => $toptabs,
+    %ARGS
+);
 
 </%INIT>
 <%ARGS>

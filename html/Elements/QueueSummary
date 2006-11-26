@@ -75,7 +75,7 @@ else {
     $Queues->UnLimit();
     @queues = grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
 
-    $m->comp('/Elements/Callback', _CallbackName => 'Filter', Queues => \@queues );
+    $m->rt_callback( CallbackName => 'Filter', Queues => \@queues );
 
     @queues = map { {
         id          => $_->Id,

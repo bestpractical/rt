@@ -155,8 +155,8 @@
 </div>
 
 <div id="body">
-<& /Elements/Callback, _CallbackName => 'BeforeBody',  %ARGS &>
-%$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
+% $m->rt_callback( %ARGS, CallbackName => 'BeforeBody' );
+% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>
 if ( defined $current_toptab ) {

@@ -43,7 +43,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>"><& /Elements/Callback, %ARGS &><% $Default || '' %><% $message %><% $signature %></textarea>
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>">\
+% $m->rt_callback( %ARGS );
+<% $Default || '' %><% $message %><% $signature %></textarea>
 <%INIT>
 
 my $message = '';
@@ -69,4 +71,3 @@ $Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'}
 $Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>
-
