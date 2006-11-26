@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
-<& /Elements/Callback, _CallbackName => 'FormStart', ARGSRef => \%ARGS &>
+% $m->rt_callback( _CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>

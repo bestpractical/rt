@@ -102,7 +102,7 @@
 
 
 
-<& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS &>
+% $m->rt_callback( _CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
 </table>
 
 <%INIT>
