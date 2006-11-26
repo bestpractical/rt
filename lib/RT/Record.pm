@@ -649,11 +649,13 @@ sub __Value {
         $RT::Logger->error("__Value called with undef field");
     }
 
+    my $value = $self->SUPER::__Value( $field );
     if( $args{'decode_utf8'} ) {
-        return Encode::decode_utf8( $self->SUPER::__Value( $field ) );
+        return Encode::decode_utf8( $value ) unless Encode::is_utf8( $value );
     } else {
-        return Encode::encode_utf8( $self->SUPER::__Value( $field ) );
+        return Encode::encode_utf8( $value ) if Encode::is_utf8( $value );
     }
+    return $value;
 }
 
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
