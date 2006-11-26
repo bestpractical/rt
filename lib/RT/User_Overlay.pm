@@ -519,21 +519,25 @@ sub Delete {
 =head2 Load
 
 Load a user object from the database. Takes a single argument.
-If the argument is numerical, load by the column 'id'. Otherwise, load by
-the "Name" column which is the user's textual username.
+If the argument is numerical, load by the column 'id'. If a user
+object or its subclass passed then loads the same user by id.
+Otherwise, load by the "Name" column which is the user's textual
+username.
 
 =cut
 
 sub Load {
-    my $self       = shift;
+    my $self = shift;
     my $identifier = shift || return undef;
 
-    #if it's an int, load by id. otherwise, load by name.
     if ( $identifier !~ /\D/ ) {
-        $self->SUPER::LoadById($identifier);
+        return $self->SUPER::LoadById( $identifier );
+    }
+    elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
+        return $self->SUPER::LoadById( $identifier->Id );
     }
     else {
-        $self->LoadByCol( "Name", $identifier );
+        return $self->LoadByCol( "Name", $identifier );
     }
 }
 

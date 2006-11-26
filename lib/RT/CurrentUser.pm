@@ -74,7 +74,7 @@ use RT::I18N;
 use RT::User;
 
 use strict;
-use base qw/RT::Record/;
+use base qw/RT::User/;
 
 # {{{ sub _Init 
 
@@ -90,11 +90,8 @@ sub _Init {
 
     if ( defined $User ) {
 
-        if (   UNIVERSAL::isa( $User, 'RT::User' )
-            || UNIVERSAL::isa( $User, 'RT::CurrentUser' ) )
-        {
-            $self->Load( $User->id );
-
+        if ( UNIVERSAL::isa( $User, 'RT::User' ) ) {
+            $self->LoadById( $User->id );
         }
         elsif ( ref $User ) {
             $RT::Logger->crit(
@@ -149,37 +146,6 @@ sub UserObj {
 }
 # }}}
 
-# {{{ sub PrincipalObj
-
-=head2 PrincipalObj
-
-Returns this user's principal object.  this is just a helper routine for
-$self->UserObj->PrincipalObj
-
-=cut
-
-sub PrincipalObj { return $_[0]->UserObj->PrincipalObj }
-
-
-# }}}
-
-
-# {{{ sub PrincipalId 
-
-=head2 PrincipalId
-
-Returns this user's principal Id.  this is just a helper routine for
-$self->UserObj->PrincipalId
-
-=cut
-
-sub PrincipalId {
-    my $self = shift;
-    return($self->UserObj->PrincipalId);
-}
-
-# }}}
-
 # {{{ sub _Accessible 
 
 sub _CoreAccessible  {
@@ -192,25 +158,6 @@ sub _CoreAccessible  {
           EmailAddress => { 'read' => 1, 'write' => 0 }
      };
   
-}
-# }}}
-
-# {{{ sub LoadByEmail
-
-=head2 LoadByEmail
-
-Loads a User into this CurrentUser object.
-Takes the email address of the user to load.
-
-=cut
-
-sub LoadByEmail  {
-    my $self = shift;
-    my $identifier = shift;
-
-    $identifier = RT::User::CanonicalizeEmailAddress( undef, $identifier );
-
-    return $self->LoadByCol( "EmailAddress", $identifier );
 }
 # }}}
 
@@ -242,89 +189,6 @@ sub LoadByName {
     my $self = shift;
     return $self->LoadByCol( "Name", shift );
 }
-# }}}
-
-# {{{ sub Load 
-
-=head2 Load
-
-Loads a User into this CurrentUser object.
-Takes either an integer (users id column reference) or a Name
-The latter is deprecated. Instead, you should use LoadByName.
-Formerly, this routine also took email addresses. 
-
-=cut
-
-sub Load {
-    my $self = shift;
-    my $identifier = shift;
-  
-    #if it's an int, load by id. otherwise, load by name.
-    if ( $identifier !~ /\D/ ) {
-        return $self->SUPER::LoadById( $identifier );
-    }
-    elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
-        # DWIM if they pass a user in
-        return $self->SUPER::LoadById( $identifier->Id );
-    } 
-    else {
-        # This is a bit dangerous, we might get false authen if somebody
-        # uses ambigous userids or real names:
-        return $self->LoadByCol( "Name", $identifier );
-    }
-}
-
-# }}}
-
-# {{{ sub IsPassword
-
-=head2 IsPassword
-
-Takes a password as a string.  Passes it off to IsPassword in this
-user's UserObj.  If it is the user's password and the user isn't
-disabled, returns 1.
-
-Otherwise, returns undef.
-
-=cut
-
-sub IsPassword { 
-    my $self = shift;
-    return $self->UserObj->IsPassword( shift );
-}
-
-# }}}
-
-# {{{ sub Privileged
-
-=head2 Privileged
-
-Returns true if the current user can be granted rights and be
-a member of groups.
-
-=cut
-
-sub Privileged {
-    my $self = shift;
-    return $self->UserObj->Privileged;
-}
-
-# }}}
-
-
-# {{{ sub HasRight
-
-=head2 HasRight
-
-calls $self->UserObj->HasRight with the arguments passed in
-
-=cut
-
-sub HasRight {
-    my $self = shift;
-    return ($self->UserObj->HasRight(@_));
-}
-
 # }}}
 
 # {{{ Localization
