@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
+<&| /Widgets/TitleBox, title => loc($Title)&>
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
@@ -96,4 +96,5 @@ $Description => undef
 $HideResults => 0
 $Dirty => 0
 $AllowCopy => 1
+$Title => 'Saved searches'
 </%ARGS>

@@ -88,7 +88,7 @@ $args
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
 <& /Search/Elements/EditSearches, Name => 'Owner', SearchType => $self->{SearchType}, AllowCopy => 0,
-   CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId} &><br />
+   CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
 % for my $field (@{$self->{SearchFields}}) {
 <input type="hidden" class="hidden" name="<%$field%>" value="<%$ARGS{$field} || ''%>" />
 % }
@@ -96,6 +96,7 @@ $args
 <%ARGS>
 $self => undef
 $Action => ''
+$Title => 'Saved searches'
 </%ARGS>
 <%init>
 </%init>
