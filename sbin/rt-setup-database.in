@@ -555,6 +555,11 @@ sub insert_data {
                 print "(Error: $emsg)\n" unless $eval;
             }
 
+            if ($item->{LookupType}) { # enable by default
+                my $ocf = RT::ObjectCustomField->new($CurrentUser);
+                $ocf->Create( CustomField => $new_entry->Id );
+            }
+
             print "(Error: $msg)\n" unless $return;
             print $return. ".";
         }
