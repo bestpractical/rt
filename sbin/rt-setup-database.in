@@ -544,20 +544,6 @@ sub insert_data {
             my $new_entry = new RT::CustomField($CurrentUser);
             my $values    = $item->{'Values'};
             delete $item->{'Values'};
-            my $q     = $item->{'Queue'};
-            my $q_obj = RT::Queue->new($CurrentUser);
-            $q_obj->Load($q);
-            if ( $q_obj->Id ) {
-                $item->{'Queue'} = $q_obj->Id;
-            }
-            elsif ( $q == 0 ) {
-                $item->{'Queue'} = 0;
-            }
-            else {
-                print "(Error: Could not find queue " . $q . ")\n"
-                  unless ( $q_obj->Id );
-                next;
-            }
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless( $return ) {
                 print "(Error: $msg)\n";
