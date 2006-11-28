@@ -100,7 +100,12 @@ perl(1).
 sub Commit {
     my $self = shift;
 
-    return($self->SendMessage($self->TemplateObj->MIMEObj));
+    my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    if ($ret) {
+        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+            if ($RT::RecordOutgoingEmail);
+    }
+    return ($ret);
 }
 
 # }}}
@@ -320,8 +325,6 @@ sub SendMessage {
         $success .= " $_: ". $recipients if $recipients;
     }
     $success =~ s/\n//g;
-
-    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
     $RT::Logger->info($success);
 
