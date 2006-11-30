@@ -183,7 +183,7 @@ sub Create {
     require RT::ScripCondition;
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
-    my $condition = RT::ScripCondition->( $self->CurrentUser );
+    my $condition = RT::ScripCondition->new( $self->CurrentUser );
     $condition->Load( $args{'ScripCondition'} );
     return ( 0, $self->loc('Condition not found') )
         unless $condition->Id;
