@@ -46,12 +46,26 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
+$SecondaryGroupBy => ''
+$ChartStyle => 'bars'
+$Description => undef
 </%args>
 <%init>
+$ARGS{SecondaryGroupBy} ||= '';
 
-my      $title = loc("Search results grouped by [_1]", $PrimaryGroupBy);
+my $title = loc( "Search results grouped by [_1]", $PrimaryGroupBy );
+
+my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
+    SearchType   => 'Chart',
+    SearchFields => [qw(Query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
+
+my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, Title => $title &>
+<& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
+
+
+<& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => 'Saved charts' &>

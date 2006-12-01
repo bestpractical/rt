@@ -1,0 +1,33 @@
+<%args>
+$Action
+$OnSave
+$items
+$panes
+$current_portlets
+</%args>
+<%init>
+my $portlets = $current_portlets;
+my @panes;
+for my $pane (@$panes) {
+    push @panes, $m->comp(
+        '/Widgets/SelectionBox:new',
+        Action    => $Action,
+        Name      => $pane,
+        Available => $items,
+        AutoSave  => 1,
+        OnSubmit  => sub {
+            my $sel = shift;
+            $portlets->{$pane} = [
+                map { m/(\w+)-(.*)$}/;
+                      { type => $1,
+                        name => $2 } } @{ $sel->{Current} }
+            ];
+            $OnSave->( $portlets, $pane );
+        },
+        Selected => [ map { join( '-', @{$_}{qw/type name/} ) }
+                      @{ $portlets->{$pane} } ]
+    );
+}
+
+return @panes;
+</%init>

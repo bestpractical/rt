@@ -45,10 +45,10 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     title => loc($search->Description, $SearchArg->{'Rows'}),
-    title_href => "Search/Results.html".$QueryString,
-    titleright => loc('Edit'),
+    title_href => $query_link_url.$QueryString,
+    titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize &>
-<& /Elements/TicketList, %$SearchArg,
+<& $query_display_component, %$SearchArg,
         ShowNavigation => 0
         &>
 </&>
@@ -57,6 +57,8 @@ my $search;
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
+my $query_display_component = '/Elements/TicketList';
+my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {
     my ($container_object, $search_id ) = _parse_saved_search ($SavedSearch);
@@ -65,9 +67,16 @@ if ($SavedSearch) {
 	$m->out ("Saved Search $SavedSearch not found");
 	return;
     }
-    $customize = $RT::WebPath.'/Search/Build.html?'.
-	$m->comp('/Elements/QueryString',
-		 LoadSavedSearch => $SavedSearch);
+    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+        # XXX: dispatch to different handler here
+        $query_display_component = '/Search/Elements/'.$SearchArg->{SearchType};
+        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+    }
+    else {
+	$customize = $RT::WebPath.'/Search/Build.html?'.
+	    $m->comp('/Elements/QueryString',
+		     LoadSavedSearch => $SavedSearch);
+    }
 }
 else {
     ($search) = RT::System->new($session{'CurrentUser'})->Attributes->Named('Search - '.$Name);

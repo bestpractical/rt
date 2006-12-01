@@ -239,6 +239,62 @@ if ( my ($container_object, $search_id ) = _parse_saved_search ($ARGS{'LoadSaved
 
 # }}}
 
+# {{{ if we're asked to save the current search, save it
+if ( $ARGS{'Save'} ) {
+    if ( $search && $search->id ) {
+	# permission check
+	if ($search->Object->isa('RT::System')) {
+	    unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+		Abort("No permission to save system-wide searches");
+	    }
+	}
+
+        # This search is based on a previously loaded search -- so
+        # just update the current search object with new values
+        $search->SetSubValues(
+            Format      => $Format,
+            Query       => $Query,
+            Order       => $Order,
+            OrderBy     => $OrderBy,
+            RowsPerPage => $RowsPerPage,
+        );
+        $search->SetDescription($Description);
+
+    }
+    elsif ( $SearchId eq 'new' ) {
+        my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+        my ( $ok, $search_msg ) = $saved_search->Save(
+            Privacy      => $ARGS{'Owner'},
+            Name         => $Description,
+            SearchParams => {
+                Format      => $Format,
+                Query       => $Query,
+                Order       => $Order,
+                OrderBy     => $OrderBy,
+                RowsPerPage => $RowsPerPage } );
+
+	if ($ok) {
+	    $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($saved_search->Id);
+	    # Build new SearchId
+	    $SearchId =
+		    ref( $session{'CurrentUser'}->UserObj ) . '-'
+			. $session{'CurrentUser'}->UserObj->Id
+			. '-SavedSearch-'
+			. $search->Id;
+	}
+	else {
+	    push @actions, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
+	}
+    }
+    else {
+        push @actions, [ loc("Can't save this search"), 0 ];
+    }
+
+}
+
+# }}}
+
+
 # {{{ Parse the query
 use Regexp::Common qw /delimited/;
 
@@ -687,81 +743,6 @@ my ( $AvailableColumns, $CurrentFormat );
     cfqueues => $queues,
     %ARGS, Format => $Format
 );
-
-# }}}
-
-# {{{ if we're asked to save the current search, save it
-if ( $ARGS{'Save'} ) {
-    if ( $search && $search->id ) {
-	# permission check
-	if ($search->Object->isa('RT::System')) {
-	    unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-		Abort("No permission to save system-wide searches");
-	    }
-	}
-
-        # This search is based on a previously loaded search -- so
-        # just update the current search object with new values
-        $search->SetSubValues(
-            Format      => $Format,
-            Query       => $Query,
-            Order       => $Order,
-            OrderBy     => $OrderBy,
-            RowsPerPage => $RowsPerPage,
-        );
-        $search->SetDescription($Description);
-
-    }
-    elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-        # We're saving a new search
-        my $obj_type = $1;
-        my $obj_id   = $2;
-
-        # Find out if we're saving on the user, or a group
-        my $container_object = _load_container_object ($obj_type, $obj_id);
-
-        if ( $container_object->id ) {
-	    # permission check
-	    if ($container_object->isa('RT::System')) {
-		unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-		    Abort("No permission to save system-wide searches");
-		}
-	    }
-
-	    my $name = $obj_type eq 'RT::System' ? "Search - $Description" : 'SavedSearch';
-            # If we got one or the other, add the saerch
-            my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-                Name        => $name,
-                Description => $Description,
-                Content     => {
-                    Format      => $Format,
-                    Query       => $Query,
-                    Order       => $Order,
-                    OrderBy     => $OrderBy,
-                    RowsPerPage => $RowsPerPage,
-                }
-            );
-	    if ( $search_id ) {
-		$search =
-		    $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-		# Build new SearchId
-		$SearchId =
-		    ref( $session{'CurrentUser'}->UserObj ) . '-'
-			. $session{'CurrentUser'}->UserObj->Id
-			. '-SavedSearch-'
-			. $search->Id;
-	    }
-	    else {
-		push @actions, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
-	    }
-
-	}
-    }
-    else {
-        push @actions, [ loc("Can't save this search"), 0 ];
-    }
-
-}
 
 # }}}
 

@@ -100,7 +100,12 @@ perl(1).
 sub Commit {
     my $self = shift;
 
-    return($self->SendMessage($self->TemplateObj->MIMEObj));
+    my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    if ($ret) {
+        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+            if ($RT::RecordOutgoingEmail);
+    }
+    return ($ret);
 }
 
 # }}}
@@ -254,9 +259,39 @@ sub SendMessage {
     unless ($MIMEObj->head->get('Date')) {
         # We coerce localtime into an array since strftime has a flawed prototype that only accepts
         # a list
-      $self->SetHeader('Date', strftime('%a, %d %b %Y %H:%M:%S %z', @{[localtime()]}));
+      $MIMEObj->head->replace(Date => strftime('%a, %d %b %Y %H:%M:%S %z', @{[localtime()]}));
     }
 
+    return (0) unless ($self->OutputMIMEObject($MIMEObj));
+
+    my $success = $msgid . " sent ";
+    foreach( qw(To Cc Bcc) ) {
+        my $recipients = $MIMEObj->head->get($_);
+        $success .= " $_: ". $recipients if $recipients;
+    }
+    $success =~ s/\n//g;
+
+    $RT::Logger->info($success);
+
+    return (1);
+}
+
+
+=head2 OutputMIMEObject MIME::Entity
+
+Sends C<MIME::Entity> as an email message according to RT's mailer configuration.
+
+=cut 
+
+
+
+sub OutputMIMEObject {
+    my $self = shift;
+    my $MIMEObj = shift;
+    
+    my $msgid = $MIMEObj->head->get('Message-ID');
+    chomp $msgid;
+    
     my $SendmailArguments = $RT::SendmailArguments;
     if (defined $RT::VERPPrefix && defined $RT::VERPDomain) {
       my $EnvelopeFrom = $self->TransactionObj->CreatorObj->EmailAddress;
@@ -264,6 +299,7 @@ sub SendMessage {
       $EnvelopeFrom =~ s/\s//g;
       $SendmailArguments .= " -f ${RT::VERPPrefix}${EnvelopeFrom}\@${RT::VERPDomain}";
     }
+
 
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
@@ -313,19 +349,7 @@ sub SendMessage {
             return (0);
         }
     }
-
-    my $success = $msgid . " sent ";
-    foreach( qw(To Cc Bcc) ) {
-        my $recipients = $MIMEObj->head->get($_);
-        $success .= " $_: ". $recipients if $recipients;
-    }
-    $success =~ s/\n//g;
-
-    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
-
-    $RT::Logger->info($success);
-
-    return (1);
+    return 1;
 }
 
 # }}}

@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
+<&| /Widgets/TitleBox, title => loc($Title)&>
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
@@ -61,7 +61,9 @@
 <input type="submit" class="button" name="Revert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="Delete" value="<%loc('Delete')%>" />
+% if ($AllowCopy) {
 <input type="submit" class="button" name="CopySearch" value="<%loc('Copy')%>" />
+% }
 </nobr>
 
 % }
@@ -69,36 +71,30 @@
 <hr />
 % }
 <&|/l&>Load saved search:</&><br />
-<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
+<& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects, SearchType => $SearchType &>
 <input value="<%loc('Load')%>" type="submit" class="button" />
 </&>
 
 <%init>
-
 unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-                                          Object=> $RT::System )) {
+                                           Object=> $RT::System )) {
     return;
 }
-my @Objects;
 
-push @Objects,  $session{CurrentUser}->UserObj;
-
-my $groups = RT::Groups->new($session{'CurrentUser'});
-
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
-
-push (@Objects, @{$groups->ItemsArrayRef()});
+my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					  Right => 'SuperUser');
+                                          Right => 'SuperUser');
+
 </%INIT>
 
 <%ARGS>
+$SearchType => 'Ticket'
 $SearchId => undef
 $CurrentSearch => undef
 $Description => undef
 $HideResults => 0
 $Dirty => 0
+$AllowCopy => 1
+$Title => 'Saved searches'
 </%ARGS>

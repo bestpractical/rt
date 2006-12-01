@@ -148,23 +148,33 @@ sub Save {
 
     $params{'SearchType'} = $type;
     my $object = $self->_GetObject($privacy);
-    if ($object) {
-	my ($att_id, $att_msg) = $object->AddAttribute(
-						       'Name' => 'SavedSearch',
-						       'Description' => $name,
-						       'Content' => \%params);
-	if ($att_id) {
-	    $self->{'Attribute'} = $object->Attributes->WithId($att_id);
-	    $self->{'Id'} = $att_id;
-	    $self->{'Privacy'} = $privacy;
-	    $self->{'Type'} = $type;
-	    return (1, $self->loc("Saved search [_1]", $name));
-	} else {
-	    $RT::Logger->error("SavedSearch save failure: $att_msg");
-	    return (0, $self->loc("Failed to create search attribute"));
-	}
-    } else {
-	return (0, $self->loc("Failed to load object for [_1]", $privacy));
+
+    return (0, $self->loc("Failed to load object for [_1]", $privacy))
+        unless $object;
+
+    if ( $object->isa('RT::System') ) {
+        return ( 0, $self->loc("No permission to save system-wide searches") )
+            unless $self->CurrentUser->HasRight(
+            Object => $RT::System,
+            Right  => 'SuperUser'
+        );
+    }
+
+    my ( $att_id, $att_msg ) = $object->AddAttribute(
+        'Name'        => 'SavedSearch',
+        'Description' => $name,
+        'Content'     => \%params
+    );
+    if ($att_id) {
+        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Id'}        = $att_id;
+        $self->{'Privacy'}   = $privacy;
+        $self->{'Type'}      = $type;
+        return ( 1, $self->loc( "Saved search [_1]", $name ) );
+    }
+    else {
+        $RT::Logger->error("SavedSearch save failure: $att_msg");
+        return ( 0, $self->loc("Failed to create search attribute") );
     }
 }
 
@@ -276,6 +286,24 @@ sub Type {
 
 ### Internal methods
 
+sub _load_privacy_object {
+    my ($self, $obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' && $obj_id == $self->CurrentUser->Id)  {
+        return $self->CurrentUser->UserObj;
+    }
+    elsif ($obj_type eq 'RT::Group') {
+        my $group = RT::Group->new($self->CurrentUser);
+        $group->Load($obj_id);
+        return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+        return RT::System->new($self->CurrentUser);
+    }
+
+    RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
+    return undef;
+}
+
 # _GetObject: helper routine to load the correct object whose parameters
 #  have been passed.
 
@@ -284,22 +312,14 @@ sub _GetObject {
     my $privacy = shift;
 
     my ($obj_type, $obj_id) = split(/\-/, $privacy);
-    unless ($obj_type eq 'RT::User' || $obj_type eq 'RT::Group') {
-	$RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
-	return undef;
-    }
 
-    my $object;
-    eval "
-         require $obj_type;
-         \$object = $obj_type->new(\$self->CurrentUser);
-         \$object->Load(\$obj_id);
-    ";
+    my $object = $self->_load_privacy_object($obj_type, $obj_id);
+
     unless (ref($object) eq $obj_type) {
 	$RT::Logger->error("Could not load object of type $obj_type with ID $obj_id");
 	return undef;
     }
-    
+
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
