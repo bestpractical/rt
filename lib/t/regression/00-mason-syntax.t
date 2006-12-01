@@ -11,7 +11,7 @@ use File::Find;
 find( {
     no_chdir => 1,
     wanted   => sub {
-        return if /\.(?:jpe?g|png|gif)$/i;
+        return if /\.(?:jpe?g|png|gif|rej|\~)$/i;
         return unless -f $_;
         diag "testing $_" if $ENV{'TEST_VERBOSE'};
         eval { compile_file($_) } and return;
