@@ -634,15 +634,15 @@ sub check_db_compatibility {
                 exit -1;
             }
         }
-        if ( $version >= 4.1 && $args{'action'} =~ /^(insert|schema)$/ ) {
-            print "MySQL >= 4.1, checking that user upgraded.\n" if $args{'debug'};
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
-            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
-                print STDERR "*** WARNING: RT since version 3.6 has new schema for MySQL versions after 4.1.0\n"
-                    ."Follow instructions in the UPGRADING.mysql file.\n";
-                sleep 3;
-            }
-        }
+#        if ( $version >= 4.1 && $args{'action'} =~ /^(insert|schema)$/ ) {
+#            print "MySQL >= 4.1, checking that user upgraded.\n" if $args{'debug'};
+#            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+#            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+#                print STDERR "*** WARNING: RT since version 3.6 has new schema for MySQL versions after 4.1.0\n"
+#                    ."Follow instructions in the UPGRADING.mysql file.\n";
+#                sleep 3;
+#            }
+#        }
     }
 }
 
