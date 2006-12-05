@@ -53,7 +53,7 @@
 
 <form method="post" action="ModifyPeople.html">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-% $m->rt_callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
 </&>
@@ -65,7 +65,7 @@
 my (@results, @wresults);
 
 my $Ticket = LoadTicket($id);
-$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
+$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {

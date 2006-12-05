@@ -50,7 +50,7 @@ my $escaper = sub {
 # Hook to add more Clicky types
 # XXX Have to have Page argument, as Mason gets caller wrong in Callback?
 # This happens as we are in <%ONCE> block
-$m->rt_callback(
+$m->callback(
     CallbackPage => "/Elements/MakeClicky",
     types        => \@types,
     actions      => \%actions,

@@ -79,7 +79,7 @@ $tabs->{"B"} = { title     => loc('New group'),
 		 separator => 1, };
 
 # Now let callbacks add their extra tabs
-$m->comp( '/Elements/Callback', tabs => $tabs, %ARGS );
+$m->callback( %ARGS, tabs => $tabs );
 foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {  
     if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab ) {
         $tabs->{'this'}->{'subtabs'}->{$tab}->{"subtabs"}        = $subtabs; 

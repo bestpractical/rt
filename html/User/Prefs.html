@@ -98,7 +98,7 @@
   </tr>
 </table>
 </&>
-<& /Elements/Callback, _CallbackName => 'FormLeftColumn', UserObj => $UserObj, %ARGS &>
+% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
@@ -155,7 +155,7 @@
   </tr>
 </table>
 </&>
-<& /Elements/Callback, _CallbackName => 'FormRightColumn', UserObj => $UserObj, %ARGS &>
+% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
 <tr>

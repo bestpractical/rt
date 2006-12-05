@@ -46,6 +46,6 @@
 <%INIT>
 $ARGS{'CallbackPage'} = delete $ARGS{'Page'} || $m->callers(1)->path;
 $ARGS{'CallbackName'} = delete $ARGS{'_CallbackName'};
-$RT::Logger->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->rt_callback");
-return $m->rt_callback( %ARGS );
+$RT::Logger->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->callback");
+return $m->callback( %ARGS );
 </%INIT>

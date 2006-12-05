@@ -71,7 +71,7 @@
 	     };
 
   # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+  $m->callback( %ARGS, tabs => $tabs );
 
   if( defined $current_tab ) {
     foreach my $tab (keys %{$tabs}) {

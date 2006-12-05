@@ -103,7 +103,7 @@
 </td>
 <td colspan="4"><input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
-<& /Elements/Callback, QueueObj => $QueueObj, results => \@results, %ARGS &>
+% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td>
 </tr>
 

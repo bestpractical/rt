@@ -52,7 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-% $m->rt_callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
@@ -145,7 +145,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
-$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
+$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {

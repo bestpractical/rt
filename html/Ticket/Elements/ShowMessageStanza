@@ -72,7 +72,7 @@ my $print_content = sub {
     my $ref = shift;
     return unless defined $$ref && length $$ref;
 
-    $m->rt_callback( content => $ref, %ARGS );
+    $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
     $$ref =~ s{$}{<br />}mg if defined $$ref;
     $m->out( $$ref );

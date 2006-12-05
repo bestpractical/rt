@@ -64,7 +64,7 @@ my $form_action = defined $goto             ? $goto
                 ;
 </%INIT>
 
-% $m->rt_callback( %ARGS, CallbackName => 'Header' );
+% $m->callback( %ARGS, CallbackName => 'Header' );
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
 
@@ -79,7 +79,7 @@ my $form_action = defined $goto             ? $goto
 </&>
 % }
 
-% $m->rt_callback( %ARGS, CallbackName => 'BeforeForm' );
+% $m->callback( %ARGS, CallbackName => 'BeforeForm' );
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
@@ -102,7 +102,7 @@ my $form_action = defined $goto             ? $goto
 </div>
 
 %# Give callbacks a chance to add more control elements
-% $m->rt_callback( %ARGS );
+% $m->callback( %ARGS );
 
 % # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
 % # But on Mason 1.15 it's fixed again, so we still use it.
@@ -127,7 +127,7 @@ my $form_action = defined $goto             ? $goto
 % }
 </&>
 </div><!-- #login-box -->
-% $m->rt_callback( %ARGS, CallbackName => 'AfterForm' );
+% $m->callback( %ARGS, CallbackName => 'AfterForm' );
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""

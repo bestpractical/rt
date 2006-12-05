@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->rt_callback( %ARGS, error => $error );
+% $m->callback( %ARGS, error => $error );
 <& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
 <& /Elements/Tabs, Title => $Title &>
 <div class="error">

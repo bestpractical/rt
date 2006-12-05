@@ -52,7 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyDates.html">
-% $m->rt_callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id) &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
@@ -64,7 +64,7 @@
 <%INIT>
 
 my $TicketObj = LoadTicket($id);
-$m->comp('/Elements/Callback', TicketObj => $TicketObj, ARGSRef => \%ARGS);
+$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS );
 my @results = ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
 </%INIT>

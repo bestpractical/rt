@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>">\
-% $m->rt_callback( %ARGS );
+% $m->callback( %ARGS );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 <%INIT>
 

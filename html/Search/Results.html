@@ -85,7 +85,7 @@
     RSSFeedURL => $RSSFeedURL,
     ShortQueryString => $ShortQueryString,
 &>
-<& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
+% $m->callback( QueryString => $QueryString, CallbackName => 'SearchActions' );
 </div>
 <%INIT>
 # Read from user preferences

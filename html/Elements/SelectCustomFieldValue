@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->rt_callback( Name => $Name, CustomField => $CustomField );
+% $m->callback( Name => $Name, CustomField => $CustomField );
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">

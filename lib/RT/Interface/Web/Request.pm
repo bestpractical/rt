@@ -22,7 +22,7 @@ sub new {
     return $self;
 }
 
-=head2 rt_callback
+=head2 callback
 
 Method replaces deprecated component C<Element/Callback>.
 
@@ -59,7 +59,7 @@ be called as default callback for F</autohandler>.
 {
 my %cache = ();
 my %called = ();
-sub rt_callback {
+sub callback {
     my ($self, %args) = @_;
 
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;

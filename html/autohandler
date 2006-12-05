@@ -223,7 +223,7 @@ delete $session{'CurrentUser'}
     unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
 # Process per-page authentication callbacks
-$m->comp( '/Elements/Callback', %ARGS, _CallbackName => 'Auth' );
+$m->callback( %ARGS, CallbackName => 'Auth' );
 
 delete $session{'CurrentUser'}
     unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
@@ -254,7 +254,7 @@ unless( $session{'CurrentUser'} ) {
 
 # we've got credentials, let's serve the file up.
 # Process per-page global callbacks
-$m->comp('/Elements/Callback', %ARGS);
+$m->callback( %ARGS );
 
 # If the user isn't privileged, they can only see SelfService
 unless ( $session{'CurrentUser'}->Privileged ) {

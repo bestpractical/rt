@@ -61,7 +61,7 @@ foreach my $field( $Message->SplitHeaders ) {
 
 my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
 
-$m->rt_callback(
+$m->callback(
     message         => $Message,
     headers         => \@headers,
     display_headers => \%display_headers,

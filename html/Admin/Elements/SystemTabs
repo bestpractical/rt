@@ -72,7 +72,7 @@
 };
 
   # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+  $m->callback( %ARGS, tabs => $tabs );
 
   foreach my $tab (sort keys %{$tabs}) {
     if ($tabs->{$tab}->{'path'} eq $current_tab) {

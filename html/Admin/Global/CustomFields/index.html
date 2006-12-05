@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Callback, tabs => $tabs, %ARGS &>
+% $m->callback( %ARGS, tabs => $tabs );
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs, Title => $title &>
 
@@ -87,5 +87,5 @@ my $tabs = {
 };
 
 
-$m->comp('/Elements/Callback', tabs => $tabs);
+$m->callback( tabs => $tabs );
 </%INIT>

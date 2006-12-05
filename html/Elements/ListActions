@@ -56,7 +56,7 @@
     grep $_,
     grep {
         my $skip;
-        $m->rt_callback(
+        $m->callback(
             %ARGS,
             row  => \$_,
             skip => \$skip,

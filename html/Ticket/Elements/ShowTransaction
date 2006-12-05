@@ -52,7 +52,7 @@
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;
-% $m->rt_callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
+% $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
     <td class="description">
       <%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
     </td>

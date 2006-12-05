@@ -87,7 +87,7 @@ while ( my $CustomField = $CustomFields->Next ) {
     push @lines, \%line;
 }
 
-$m->comp('/Elements/Callback', Conditions => \@lines, Queues => \%cfqueues );
+$m->callback( Conditions => \@lines, Queues => \%cfqueues );
 
 </%INIT>
 

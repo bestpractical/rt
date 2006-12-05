@@ -76,7 +76,7 @@
 % }
 --></script>
 
-% $m->rt_callback( %ARGS, CallbackName => 'Head' );
+% $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
   <body<% $id && qq[ id="comp-$id"] |n %>>
@@ -95,7 +95,7 @@
 % } else {
     <&|/l&>Not logged in.</&>
 % }
-% $m->rt_callback( %ARGS );
+% $m->callback( %ARGS );
 % unless (!$session{'CurrentUser'}->Name
 %         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
     | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>

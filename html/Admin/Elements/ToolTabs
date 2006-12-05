@@ -61,7 +61,7 @@
     };
 
     # Now let callbacks add their extra tabs
-    $m->comp('/Elements/Callback', %ARGS, tabs => $tabs);
+    $m->callback( %ARGS, tabs => $tabs );
 
     foreach my $tab ( values %{$tabs} ) {
         next unless $tab->{'path'} eq $current_tab;

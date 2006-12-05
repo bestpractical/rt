@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->rt_callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS );
+% $m->callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS );
 <& /Elements/Tabs, 
     tabs => $tabs, 
     actions => $actions, 

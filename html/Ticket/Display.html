@@ -51,14 +51,14 @@
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
-<& /Elements/Callback, _CallbackName => 'BeforeShowSummary', Ticket => $TicketObj, %ARGS &>
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
 
 <br />
 
-% $m->rt_callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
+% $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
 
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
@@ -69,7 +69,7 @@
       AttachmentContent => $attachment_content
 &> 
 
-<& /Elements/Callback, _CallbackName => 'AfterShowHistory', Ticket => $TicketObj, %ARGS &>
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'AfterShowHistory' );
 
 <%ARGS>
 $id => undef
@@ -80,7 +80,7 @@ $Collapsed => undef
 
 <%INIT>
 
-$m->rt_callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my (@Actions, $Tickets);  
 
@@ -149,7 +149,7 @@ if (@Actions) {
     delete $session{"Actions"};
 }
 
-$m->rt_callback(
+$m->callback(
     CallbackName => 'BeforeDisplay',
     TicketObj    => \$TicketObj,
     Tickets      => \$Tickets,

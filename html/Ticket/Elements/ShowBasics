@@ -76,7 +76,7 @@
     <td class="label queue"><&|/l&>Queue</&>:</td>
     <td class="value queue"><%$Ticket->QueueObj->Name%></td>
   </tr>
-% $m->rt_callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
+% $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef

@@ -84,7 +84,7 @@ my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
 
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
-    $m->rt_callback(
+    $m->callback(
         %ARGS,
         Transaction   => $Transaction,
         skip          => \$skip,

@@ -204,6 +204,6 @@ my @lines = (
     },
 );
 
-$m->comp('/Elements/Callback', Conditions => \@lines);
+$m->callback( Conditions => \@lines );
 
 </%INIT>

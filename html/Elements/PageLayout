@@ -155,7 +155,7 @@
 </div>
 
 <div id="body">
-% $m->rt_callback( %ARGS, CallbackName => 'BeforeBody' );
+% $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>

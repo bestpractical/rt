@@ -96,7 +96,7 @@ else {
 }                                           
 
 # Now let callbacks add their extra limits
-$m->comp('/Elements/Callback', Templates => $Templates, %ARGS);
+$m->callback( %ARGS, Templates => $Templates );
 
 # {{{ deal with deleting existing templates
 foreach my $key (keys %ARGS) {

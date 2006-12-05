@@ -6,7 +6,7 @@
 <%INIT>
 return unless $Condition && $Condition->{'Name'};
 
-$m->comp('/Elements/Callback', Condition => \$Condition);
+$m->callback( Condition => \$Condition );
 return unless $Condition;
 
 my $handle_block;

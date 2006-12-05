@@ -46,7 +46,7 @@
 
 %# End of div#body from /Elements/PageLayout
 </div>
-% $m->rt_callback( %ARGS );
+% $m->callback( %ARGS );
 <div id="footer">
   <p id="time">
     <span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span>

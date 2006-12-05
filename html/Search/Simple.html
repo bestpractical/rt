@@ -72,7 +72,7 @@ use RT::Search::Googleish;
 if ($q) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
     
-    $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'ModifyQuery', query => \$q);
+    $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
     
     my $search  = RT::Search::Googleish->new(Argument   => $q,
                                              TicketsObj => $tickets);
