@@ -58,5 +58,5 @@ selected
 $Name => undef
 @Options => ( loc('contains'), loc("doesn't contain"), loc('is'), loc("isn't"), loc('less than'), loc('greater than'))
 @Values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
-$Default => undef
+$Default => ''
 </%ARGS>
