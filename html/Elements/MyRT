@@ -85,20 +85,18 @@ my $portlets = $session{'my_rt_portlets'};
 
 sub _show {
     my $entry = shift;
-    my $type = $entry->{type};
-    if ($type eq 'component') {
-	my $name = $entry->{name};
-	# security check etc.
-	$m->comp ($name, %{$entry->{arguments} || {}});
-    }
-    elsif ($type eq 'system') {
-	$m->comp ('/Elements/ShowSearch', Name => $entry->{name});
-    }
-    elsif ($type eq 'saved') {
-	$m->comp ('/Elements/ShowSearch', SavedSearch => $entry->{name});
-    }
-    else {
-	$RT::Logger->error ("unknown portlet type $type");
+    my $type  = $entry->{type};
+    if ( $type eq 'component' ) {
+        my $name = $entry->{name};
+
+        # security check etc.
+        $m->comp( $name, %{ $entry->{arguments} || {} } );
+    } elsif ( $type eq 'system' ) {
+        $m->comp( '/Elements/ShowSearch', Name => $entry->{name} );
+    } elsif ( $type eq 'saved' ) {
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $entry->{name} );
+    } else {
+        $RT::Logger->error("unknown portlet type $type");
     }
 }
 
