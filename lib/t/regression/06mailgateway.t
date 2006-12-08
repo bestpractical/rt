@@ -410,7 +410,12 @@ EOF
 
     my $transactions = $tick->Transactions;
     $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
-    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    $transactions->Limit(
+        FIELD => 'Type',
+        OPERATOR => 'NOT ENDSWITH',
+        VALUE => 'EmailRecord',
+        ENTRYAGGREGATOR => 'AND',
+    );
     my $txn = $transactions->First;
     isa_ok ($txn, 'RT::Transaction');
     is ($txn->Type, 'Comment', "correct type");
