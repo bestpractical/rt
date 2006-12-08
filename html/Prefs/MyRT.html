@@ -55,17 +55,17 @@
 
 <form method="post" action="MyRT.html">
 <input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<%loc('Reset to default')%>">
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
 </form>
 
 <br />
 
-% foreach my $box( @boxes ) {
+% foreach my $pane( @panes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $box->{Name} ),
+    title => loc('RT at a glance') .': '. loc( $pane->{Name} ),
     bodyclass => ""
 &>
-<& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
 </&>
 % }
 
@@ -101,7 +101,7 @@ if ($ARGS{Reset}) {
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    my $portlets  = $default_portlets ? $default_portlets->Content  : {};
+    my $portlets = $default_portlets ? $default_portlets->Content  : {};
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 my $portlets = $session{'my_rt_portlets'};
@@ -109,21 +109,28 @@ my $portlets = $session{'my_rt_portlets'};
 my %seen;
 my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
+my $sys = RT::System->new($session{'CurrentUser'});
+my @objs = ($sys);
+
+push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
+    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
+                                          Object => $RT::System );
+
 my @sys_searches;
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-	my ($desc, $search) = @$_;
-	my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-	if ($object eq $sys && $SearchType eq 'Ticket') {
-	    push @items, ["system-$desc", $desc];
-	    push @sys_searches, [$desc, $search];
-	}
-	else {
-	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-	    my $type = ($SearchType eq 'Ticket')
-		? 'Saved Search' : $SearchType; # loc
-	    push @items, ["saved-$oid", loc($type).": $desc"];
-	}
+        my ($desc, $search) = @$_;
+        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            push @items, ["system-$desc", $desc];
+            push @sys_searches, [$desc, $search];
+        }
+        else {
+            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+            my $type = ($SearchType eq 'Ticket')
+                ? 'Saved Search' : $SearchType; # loc
+            push @items, ["saved-$oid", loc($type).": $desc"];
+        }
     }
 }
 
@@ -136,7 +143,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         $user->SetPreferences( 'HomepageSettings', $conf );
-        push @actions, loc( 'Preferences saved for [_1].', $pane );
+        push @results, loc( 'Preferences saved for [_1].', $pane );
         delete $session{'my_rt_portlets'};
     }
 );
