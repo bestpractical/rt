@@ -171,7 +171,7 @@ sub Load {
 
 =head2 LoadGlobalTemplate NAME
 
-Load the global tempalte with the name NAME
+Load the global template with the name NAME
 
 =cut
 

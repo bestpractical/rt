@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 137;
+use Test::More tests => 143;
 
 use RT;
 RT::LoadConfig();
@@ -349,7 +349,7 @@ sub text_html_russian_redef_sendmessage {
                 is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
                 my $content_1251;
                 $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
-                ok ($content_1251 =~ qr{Ó÷eáíûé Öeíòp "ÊÀÄÐÛ ÄÅËÎÂÎÃÎ ÌÈÐÀ" ïpèãëaøaeò ía òpeíèíã:},
+                ok ($content_1251 =~ qr{ï¿½eï¿½ï¿½ï¿½ï¿½p "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½" ï¿½ï¿½ï¿½aeï¿½ï¿½ ï¿½eï¿½ï¿½:},
 "Content matches drugim in codepage 1251" );
                  }';
 }
@@ -520,6 +520,30 @@ ok ($cc =~ /test4/, "Found test 4");
 ok ($cc =~ /test5/, "Found test 5");
 
 # }}}
+
+diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+{
+    my $content = file_content("$RT::BasePath/lib/t/data/subject-with-folding-ws");
+    my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
+        { message => $content, queue => 1, action => 'correspond' }
+    );
+    ok ($status, 'created ticket') or diag "error: $msg";
+    ok ($ticket->id, "found ticket ". $ticket->id);
+    is ($ticket->Subject, 'test', 'correct subject');
+}
+
+diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+{
+    my $content = file_content("$RT::BasePath/lib/t/data/very-long-subject");
+    my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
+        { message => $content, queue => 1, action => 'correspond' }
+    );
+    ok ($status, 'created ticket') or diag "error: $msg";
+    ok ($ticket->id, "found ticket ". $ticket->id);
+    is ($ticket->Subject, '0123456789'x20, 'correct subject');
+}
+
+
 
 # Don't taint the environment
 $everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');

@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -140,8 +140,8 @@ sub Create {
         CustomPrepareCode      => undef,
         CustomCommitCode       => undef,
         CustomIsApplicableCode => undef,
-
-        @_ );
+        @_
+    );
 
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
@@ -152,7 +152,7 @@ sub Create {
         $args{'Queue'} = 0;    # avoid undef sneaking in
     }
     else {
-        my $QueueObj = new RT::Queue( $self->CurrentUser );
+        my $QueueObj = RT::Queue->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} );
         unless ( $QueueObj->id ) {
             return ( 0, $self->loc('Invalid queue') );
@@ -166,29 +166,28 @@ sub Create {
     #TODO +++ validate input
 
     require RT::ScripAction;
-    my $action = new RT::ScripAction( $self->CurrentUser );
-    if ( $args{'ScripAction'} ) {
-        $action->Load( $args{'ScripAction'} );
-    }
+    return ( 0, $self->loc("Action is mandatory argument") )
+        unless $args{'ScripAction'};
+    my $action = RT::ScripAction->new( $self->CurrentUser );
+    $action->Load( $args{'ScripAction'} );
     return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
         unless $action->Id;
 
     require RT::Template;
-    my $template = new RT::Template( $self->CurrentUser );
-    if ( $args{'Template'} ) {
-        $template->Load( $args{'Template'} );
-    }
+    return ( 0, $self->loc("Template is mandatory argument") )
+        unless $args{'Template'};
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->Load( $args{'Template'} );
     return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
         unless $template->Id;
 
     require RT::ScripCondition;
-    my $condition = new RT::ScripCondition( $self->CurrentUser );
-    if ( $args{'ScripCondition'} ) {
-        $condition->Load( $args{'ScripCondition'} );
-    }
-    unless ( $condition->Id ) {
-        return ( 0, $self->loc( "Condition '[_1]' not found", $args{'ScripCondition'} ) );
-    }
+    return ( 0, $self->loc("Condition is mandatory argument") )
+        unless $args{'ScripCondition'};
+    my $condition = RT::ScripCondition->new( $self->CurrentUser );
+    $condition->Load( $args{'ScripCondition'} );
+    return ( 0, $self->loc( "Condition '[_1]' not found", $args{'ScripCondition'} ) )
+        unless $condition->Id;
 
     my ( $id, $msg ) = $self->SUPER::Create(
         Queue                  => $args{'Queue'},
@@ -200,9 +199,8 @@ sub Create {
         CustomPrepareCode      => $args{'CustomPrepareCode'},
         CustomCommitCode       => $args{'CustomCommitCode'},
         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
-
     );
-    if ($id) {
+    if ( $id ) {
         return ( $id, $self->loc('Scrip Created') );
     }
     else {
@@ -597,15 +595,17 @@ sub HasRight {
                  Principal => undef,
                  @_ );
 
-    if (     ( defined $self->SUPER::_Value('Queue') )
-         and ( $self->SUPER::_Value('Queue') != 0 ) ) {
-        return ( $args{'Principal'}->HasRight( Right  => $args{'Right'},
-                                               Object => $self->QueueObj ) );
-
+    if ( $self->SUPER::_Value('Queue') ) {
+        return $args{'Principal'}->HasRight(
+            Right  => $args{'Right'},
+            Object => $self->QueueObj
+        );
     }
     else {
-        return ( $args{'Principal'}
-                 ->HasRight( Object => $RT::System, Right => $args{'Right'} ) );
+        return $args{'Principal'}->HasRight(
+            Object => $RT::System,
+            Right  => $args{'Right'},
+        );
     }
 }
 

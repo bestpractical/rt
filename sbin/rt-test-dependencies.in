@@ -253,6 +253,7 @@ Module::Refresh 0.03
 Test::Expect 0.30
 Pod::Tests
 File::Find
+File::Find
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];

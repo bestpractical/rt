@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
+<&| /Widgets/TitleBox, title => loc($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
@@ -64,7 +64,9 @@
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+% if ( $AllowCopy ) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
+% }
 </nobr>
 
 % }
@@ -73,46 +75,39 @@
 <br />
 
 <&|/l&>Load saved search:</&>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects&>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
 
 </&>
 
 <%INIT>
-
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',
     Object => $RT::System,
 );
 
-# If we're modifying an old query, check if it has changed
+# If we're modifying an old query, check if it's been changed
 my $Dirty = $m->comp(
     'EditSearches:IsDirty',
     Query => $CurrentSearch,
     SavedSearch => { Id => $Id, Object => $Object, Description => $Description }
 );
 
-my @Objects;
-push @Objects,  $session{CurrentUser}->UserObj;
-
-my $groups = RT::Groups->new( $session{'CurrentUser'} );
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(
-    PrincipalId => $session{'CurrentUser'}->Id,
-    Recursively => 1,
-);
-
-push @Objects, @{ $groups->ItemsArrayRef };
+my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
 					                      Right => 'SuperUser' );
+
 </%INIT>
 
 <%ARGS>
 $Id => 'new'
 $Object => undef
+$Type => 'Ticket'
 $Description => ''
 $CurrentSearch => {}
+$AllowCopy => 1
+$Title => 'Saved searches'
 </%ARGS>
 
 <%METHOD Init>

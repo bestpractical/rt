@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use_ok("RT");
 
@@ -37,6 +37,17 @@ diag q{'=' char in a trailing part after an encoded part} if $ENV{TEST_VERBOSE};
     is(
         RT::I18N::DecodeMIMEWordsToUTF8($str),
         'attachment; filename="мой_файл.bin"; some_prop="value"',
+        "right decoding"
+    );
+}
+
+diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+{
+    my $str = qq{Subject: =?ISO-8859-1?Q?Re=3A_=5BXXXXXX=23269=5D_=5BComment=5D_Frag?=}
+        . qq{\n =?ISO-8859-1?Q?e_zu_XXXXXX--xxxxxx_/_Xxxxx=FCxxxxxxxxxx?=};
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        qq{Subject: Re: [XXXXXX#269] [Comment] Frage zu XXXXXX--xxxxxx / Xxxxxüxxxxxxxxxx},
         "right decoding"
     );
 }

@@ -3,7 +3,7 @@
 */
 // Fetched from http://www.opendarwin.org/~drernie/src/ahah.js
 function ahah(url, target, delay) {
-  document.getElementById(target).innerHTML = 'Loading <a href="'+url+'">'+url +'</a>...';
+  // document.getElementById(target).innerHTML = 'Loading <a href="'+url+'">'+url +'</a>...';
   if (window.XMLHttpRequest) {
     req = new XMLHttpRequest();
   } else if (window.ActiveXObject) {

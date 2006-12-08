@@ -428,7 +428,6 @@ sub insert_data {
                 my $queue_ref = delete $item->{'Queue'};
                 @queues = ref $queue_ref ? @{$queue_ref} : ($queue_ref);
                 $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
-            }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
             print "(Error: $msg)\n" and next unless $return;
@@ -438,6 +437,11 @@ sub insert_data {
                 print "(Error: $msg)\n" unless $return;
             }
 
+            if ($item->{LookupType}) { # enable by default
+                my $ocf = RT::ObjectCustomField->new($CurrentUser);
+                $ocf->Create( CustomField => $new_entry->Id );
+            }
+       
             for my $q (@queues) {
                 my $q_obj = RT::Queue->new($CurrentUser);
                 $q_obj->Load($q);

@@ -209,7 +209,11 @@
 <tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>
+% if ($UserObj->id) {
 <& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
+% } else {
+<& /Elements/EditCustomField, %ARGS, NamePrefix => 'Object-RT::User-new-CustomField-', CustomField => $CF &>
+% }
 </td></tr>
 % }
 <tr>
@@ -286,12 +290,19 @@ else {
 
 	if ($val) {
 		push @results, $msg;
+        foreach my $key ( keys %ARGS) {
+            # Convert custom fields on the "new" object to custom fields on the one we've just created
+            if ($key =~ /^Object-RT::User-new-CustomField-(.*)$/) {
+            $ARGS{'Object-RT::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
+            }
+        }
+        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 	} else {
 		push @results, loc('User could not be created: [_1]', $msg);
 	}
     } else {
-	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
-	$val = $UserObj->Id();
+	    $UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
+        $val = $UserObj->Id();
     }
 
     if ($val) {

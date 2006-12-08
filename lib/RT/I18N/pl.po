@@ -216,12 +216,12 @@ msgstr "%1 nie udało się ustawić statusu na zamknięty. Baza danych RT może 
 #: lib/RT/Transaction_Overlay.pm:558
 #. ($obj_type)
 msgid "%1 created"
-msgstr "%1 crĂŠĂŠ(e)"
+msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:563
 #. ($obj_type)
 msgid "%1 deleted"
-msgstr "%1 supprimĂŠ(e)"
+msgstr ""
 
 #: html/Search/Chart:71
 #. ($Query, $PrimaryGroupBy)
@@ -310,7 +310,7 @@ msgstr "%1 to nieznany typ dla %2"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 was created without a CurrentUser\\n"
-msgstr "%1 a ĂŠtĂŠ crĂŠĂŠ sans utilisateur courant\\n"
+msgstr ""
 
 #: lib/RT/Action/ResolveMembers.pm:63
 #. (ref $self)
@@ -404,7 +404,7 @@ msgstr "(Jeśli pozostawisz puste, domyślnie zostanie ustawione na %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
-msgstr "(Non renseignĂŠ)"
+msgstr ""
 
 #: html/Admin/Elements/EditCustomFields:74 html/Admin/Elements/ListGlobalCustomFields:53
 msgid "(No custom fields)"
@@ -424,7 +424,7 @@ msgstr "(Brak szablonów)"
 
 #: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
 msgid "(None)"
-msgstr "(Aucun)"
+msgstr "(Brak)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
@@ -578,19 +578,19 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ACE Deleted"
-msgstr "ACE SupprimĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ACE Loaded"
-msgstr "ACE ChargĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ACE could not be deleted"
-msgstr "l'ACE n'a pu ĂŞtre supprimĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ACE could not be found"
-msgstr "l'ACE n'a pu ĂŞtre trouvĂŠ"
+msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:175 lib/RT/Principal_Overlay.pm:219
 msgid "ACE not found"
@@ -663,7 +663,7 @@ msgstr "Dodaj więcej plików"
 
 #: NOT FOUND IN SOURCE
 msgid "Add Next State"
-msgstr "Ajouter ĂŠtape suivant"
+msgstr ""
 
 #: html/Search/Bulk.html:84
 msgid "Add Requestor"
@@ -675,7 +675,7 @@ msgstr "Dodaj wartość"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a keyword selection to this queue"
-msgstr "Ajouter une sĂŠlection de mots clĂŠ Ă  cette queue"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Add a new a global scrip"
@@ -877,11 +877,11 @@ msgstr "Zawsze wysyła wiadomość do zgłaszających niezależnie od nadawcy wi
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "I/Lub"
 
 #: html/Admin/CustomFields/Modify.html:73 html/Admin/Elements/CustomFieldTabs:83
 msgid "Applies to"
-msgstr "S'applique Ă "
+msgstr "Zastosuj do: "
 
 #: html/Search/Edit.html:64
 msgid "Apply"
@@ -974,11 +974,11 @@ msgstr "Rosnąco"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Assign and remove custom fields"
-msgstr "Fixer et supprimer les champs personnalisĂŠs"
+msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "AssignCustomFields"
-msgstr "FixerChampsPersonnalisĂŠs"
+msgstr ""
 
 #: html/Search/Bulk.html:142 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:116
 msgid "Attach"
@@ -1173,7 +1173,7 @@ msgstr "Zmień hasło"
 
 #: html/Elements/Submit:78
 msgid "Check All"
-msgstr "Tout vĂŠrifier"
+msgstr "Zaznacz wszystko"
 
 #: html/SelfService/Update.html:78 html/Ticket/Create.html:133 html/Ticket/Update.html:97
 msgid "Check box to delete"
@@ -1213,7 +1213,7 @@ msgstr "Klasy"
 
 #: html/Elements/Submit:80
 msgid "Clear All"
-msgstr "Tout effacer"
+msgstr "Odznacz wszystko"
 
 #: html/Helpers/CalPopup.html:6
 msgid "Close window"
@@ -1341,7 +1341,7 @@ msgstr "Typ zawartości"
 
 #: NOT FOUND IN SOURCE
 msgid "Coould not create group"
-msgstr "Le groupe n'a pas pu ĂŞtre crĂŠĂŠ"
+msgstr ""
 
 #: html/Search/Elements/EditSearches:64
 msgid "Copy"
@@ -1369,7 +1369,7 @@ msgstr "Nie udało się wprowadzić nowej wartości pola dla zgłoszenia."
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "La valeur de champ personnalisĂŠ n'a pas pu ĂŞtre ajoutĂŠe. %1"
+msgstr ""
 
 #: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
@@ -1413,7 +1413,7 @@ msgstr "Nie udało się utworzyć użytkownika"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not create watcher for requestor"
-msgstr "L'observateur n'a pas pu ĂŞtre crĂŠe pour le demandeur"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find a ticket with id %1"
@@ -1437,7 +1437,7 @@ msgstr "Nie udało się wyszukać użytkownika %1."
 
 #: html/Admin/CustomFields/Objects.html:69
 msgid "Could not load CustomField %1"
-msgstr "Impossible de charger le champ personnalisĂŠ %1"
+msgstr ""
 
 #: html/Admin/Groups/Members.html:112 html/User/Groups/Members.html:111 html/User/Groups/Modify.html:103
 msgid "Could not load group"
@@ -1506,7 +1506,7 @@ msgstr "Nie udało się wyszukać tej wartości"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't find that watcher"
-msgstr "L'observateur n'a pas pu ĂŞtre trouvĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't find user\\n"
@@ -1529,7 +1529,7 @@ msgstr "Nie udało się załadować pola %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load KeywordSelects."
-msgstr "KeywordSelects n'a pas pu ĂŞtre chargĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load RT config file '%1' %2"
@@ -1694,11 +1694,11 @@ msgstr "Utwórz artykuł w ramach klasy..."
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
-msgstr "Echec Ă  la crĂŠation de: %1 / %2 / %3"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
-msgstr "Echec Ă  la crĂŠation de: %1/%2/%3"
+msgstr ""
 
 #: etc/initialdata:137
 msgid "Create new tickets based on this scrip's template"
@@ -1816,7 +1816,7 @@ msgstr "Pola def. przez użytkownika"
 #: html/Admin/CustomFields/index.html:60
 #. ($lookup)
 msgid "Custom Fields for %1"
-msgstr "Champs personnalisĂŠs pour %1"
+msgstr ""
 
 #: html/Admin/Elements/EditScrip:123
 msgid "Custom action cleanup code"
@@ -1836,7 +1836,7 @@ msgstr "Pole definiowane przez użytkownika %1 %2 %3"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field %1 does not apply to this object"
-msgstr "Le champ personnalisĂŠ %1 ne s'applique pas Ă  cet objet"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:2411
 #. ($CF->Name)
@@ -1892,7 +1892,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Data error"
-msgstr "Erreur de donnĂŠes"
+msgstr ""
 
 #: html/SelfService/Display.html:61 html/Ticket/Create.html:202 html/Ticket/Elements/ShowSummary:81 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
@@ -2009,11 +2009,11 @@ msgstr "Usunięcie tego obiektu naruszy spójność"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object would violate referential integrity."
-msgstr "Effacer cet objet violerait l'intĂŠgritĂŠ rĂŠfĂŠrentielle"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object would violate referential integrity. That's bad."
-msgstr "Effacer cet objet violerait l'intĂŠgritĂŠ rĂŠfĂŠrentielle, c'est serait facheux!"
+msgstr ""
 
 #: html/Approvals/Elements/Approve:69
 msgid "Deny"
@@ -2129,7 +2129,7 @@ msgstr "Pobierz "
 
 #: html/Admin/Groups/index.html:61 html/Admin/Users/index.html:64
 msgid "Download as a tab-delimited file"
-msgstr "TĂŠlĂŠcharger en tant que fichier dĂŠlimitĂŠ par tabulations"
+msgstr "Pobierz jako listę [dane każdego użytkownika/grupy w jednej linii, odzielone tabulatorem]"
 
 #: html/Elements/SelectDateType:53 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:88 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1150
 msgid "Due"
@@ -2174,7 +2174,7 @@ msgstr ""
 
 #: html/Admin/Global/CustomFields/Queue-Tickets.html:9 html/Admin/Global/CustomFields/Queue-Transactions.html:9
 msgid "Edit Custom Fields for tickets in all queues"
-msgstr ""
+msgstr "Edycja zdefiniowanych przez użytkownia pól dla zgłoszeń we wszystkich kolejkach"
 
 #: html/Search/Bulk.html:188 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
@@ -2199,7 +2199,7 @@ msgstr "Edytuj szablony kolejki %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit keywords"
-msgstr "Modifier les mots clĂ"
+msgstr ""
 
 #: lib/RT/Group_Overlay.pm:167
 msgid "Edit saved searches for this group"
@@ -2349,7 +2349,7 @@ msgstr "Błąd"
 
 #: NOT FOUND IN SOURCE
 msgid "Error adding watcher"
-msgstr "Erreur Ă  l'ajout de l'observateur"
+msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:673
 msgid "Error in parameters to Queue->AddWatcher"
@@ -2496,7 +2496,7 @@ msgstr "Wyszukaj grupę, której"
 
 #: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82 html/Ticket/Elements/EditPeople:55
 msgid "Find groups whose"
-msgstr "Trouver les groupes dont"
+msgstr "Wyszukaj grupy, których:"
 
 #: NOT FOUND IN SOURCE
 msgid "Find new/open tickets"
@@ -2590,11 +2590,11 @@ msgstr "Globalna"
 
 #: html/Admin/Elements/EditCustomFields:55
 msgid "Global Custom Fields"
-msgstr "Champs personnalisĂŠs globaux"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Global Keyword Selections"
-msgstr "Mots clĂŠ globaux"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Global Scrips"
@@ -2651,7 +2651,7 @@ msgstr "Grupa ma już członka"
 
 #: NOT FOUND IN SOURCE
 msgid "Group could not be created."
-msgstr "Le groupe n'a pas pu ĂŞtre crĂŠĂŠ"
+msgstr ""
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
@@ -2688,11 +2688,11 @@ msgstr "Nie można przypisac grup jako członków tych grup"
 
 #: html/Admin/Groups/index.html:82
 msgid "Groups matching search criteria"
-msgstr "Groupes correspondant au critĂ¨re de recherche"
+msgstr ""
 
 #: html/Ticket/Elements/ShowRequestor:77
 msgid "Groups this user belongs to"
-msgstr "Cette utilisateur appartient aux groupes"
+msgstr ""
 
 #: lib/RT/Interface/CLI.pm:94 lib/RT/Interface/CLI.pm:94
 msgid "Hello!"
@@ -2838,7 +2838,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Interest noted"
-msgstr "Votre intĂŠret est notĂŠ"
+msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:3448
 msgid "Internal Error"
@@ -3098,7 +3098,7 @@ msgstr "Wyloguj się"
 
 #: lib/RT/CustomField_Overlay.pm:931
 msgid "Lookup type mismatch"
-msgstr "Faire attention aux types diffĂŠrents"
+msgstr ""
 
 #: html/Search/Bulk.html:82
 msgid "Make Owner"
@@ -3146,7 +3146,7 @@ msgstr ""
 
 #: html/Admin/index.html:78
 msgid "Manage custom fields and custom field values"
-msgstr "GĂŠrer les champs personnalisĂŠs et leur valeurs"
+msgstr "Administracja polami zdefiniowanymi przez użytkownika "
 
 #: html/Admin/index.html:69
 msgid "Manage groups and group membership"
@@ -3318,7 +3318,7 @@ msgstr ""
 #: html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($Types)))
 msgid "Modify Custom Fields which apply to all %1"
-msgstr "Modifier les champs personnalisĂŠs qui s'appliquent Ă  tous les %1"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Custom Fields which apply to all queues"
@@ -3346,7 +3346,7 @@ msgstr "Modyfikuj skrypty dla tej kolejki"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify System ACLS"
-msgstr "Modifier ACLs systĂ¨me"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Template %1"
@@ -3381,11 +3381,11 @@ msgstr "Modyfikuj artykuł #%1"
 #: html/Admin/CustomFields/Objects.html:90
 #. ($CF->Name)
 msgid "Modify associated objects for %1"
-msgstr "Modifier les objets associĂŠs Ă  %1"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Modify dates for # %1"
-msgstr "Modifier les dates pur nÂ°%1"
+msgstr ""
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
 #. ($TicketObj->Id)
@@ -3399,7 +3399,7 @@ msgstr "Modyfikuj daty dla zgłoszenia # %1"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:65 html/Admin/Global/index.html:72
 msgid "Modify global custom fields"
-msgstr ""
+msgstr "Modyfikuj globalne pola definiowane przez użytkownika"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:70 html/Admin/Global/GroupRights.html:46 html/Admin/Global/GroupRights.html:49 html/Admin/Global/index.html:77
 msgid "Modify global group rights"
@@ -3517,7 +3517,7 @@ msgstr "Modyfikuj zgłoszenia"
 #: html/Admin/CustomFields/UserRights.html:157
 #. ($CustomFieldObj->Name)
 msgid "Modify user rights for custom field %1"
-msgstr "Modifier les droits utilisateurs pour le champ personnalisĂŠ %1"
+msgstr ""
 
 #: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50 html/Admin/Groups/UserRights.html:56
 #. ($GroupObj->Name)
@@ -3576,7 +3576,7 @@ msgstr "Więcej o %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Move"
-msgstr "DĂŠplacer"
+msgstr ""
 
 #: html/Admin/Elements/PickCustomFields:83
 msgid "Move down"
@@ -3830,7 +3830,7 @@ msgstr "Nie określono grupy"
 
 #: html/Admin/Groups/index.html:52
 msgid "No groups matching search criteria found."
-msgstr "Aucun groupe trouvĂŠ d'aprĂ¨s le critĂ¨re de recherche."
+msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2359
 msgid "No message attached"
@@ -3903,7 +3903,7 @@ msgstr "Nie określono typu transakcji"
 
 #: NOT FOUND IN SOURCE
 msgid "No user or email address specified"
-msgstr "Aucun utilisateur ou adresse email spĂŠcifiĂŠ"
+msgstr ""
 
 #: html/Admin/Users/index.html:55
 msgid "No users matching search criteria found."
@@ -4053,7 +4053,7 @@ msgstr ""
 #. ($ObjectType)
 #. ($LookupType)
 msgid "Object of type %1 cannot take custom fields"
-msgstr "Les objets de type %1 ne peuvent avoir de champs personnalisĂŠs"
+msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:966
 msgid "Object type mismatch"
@@ -4193,7 +4193,6 @@ msgstr "Zgłoszenie źródłowe: #%1"
 
 #: lib/RT/Transaction_Overlay.pm:609
 msgid "Outgoing email about a comment recorded"
-msgstr "Mail sortant suite Ă  l'enregistrement d'un commentaire"
 msgstr "Zarejestrowano wychodzącą wiadomość o komentarzu"
 
 #: lib/RT/Transaction_Overlay.pm:613
@@ -4430,7 +4429,7 @@ msgstr "Nie udało się wyszukać kolejki '%1 '\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Queue Keyword Selections"
-msgstr "SĂŠlection des mots clĂŠ de queue"
+msgstr ""
 
 #: html/Admin/Queues/Modify.html:64
 msgid "Queue Name"
@@ -4539,7 +4538,7 @@ msgstr "RT otrzymał e-mail (%1) z RT"
 
 #: NOT FOUND IN SOURCE
 msgid "RT Recieved mail (%1) from itself."
-msgstr "RT a reĂ§u du courrier (%1) de lui mĂŞme"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT Self Service"
@@ -4547,7 +4546,7 @@ msgstr "Samoobsługa RT"
 
 #: NOT FOUND IN SOURCE
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT Self Service / Tickets rĂŠsolus"
+msgstr ""
 
 #: html/Admin/Tools/Configuration.html:73
 msgid "RT Variables"
@@ -4604,7 +4603,7 @@ msgstr "RT &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt
 
 #: NOT FOUND IN SOURCE
 msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT est &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. DistribuĂŠ sous <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 de la licence gĂŠnĂŠrale GNU.</a>"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
@@ -5014,7 +5013,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
-msgstr "Les recherches ne peuvent ĂŞtre associĂŠes Ă  ce type d'objet"
+msgstr ""
 
 #: html/Search/Simple.html:59
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
@@ -5031,7 +5030,7 @@ msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
-msgstr "Voir les champs personnalisĂŠs"
+msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "See exact outgoing email messages and their recipeients"
@@ -5111,7 +5110,7 @@ msgstr ""
 
 #: html/Admin/Global/CustomFields/index.html:83
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr ""
+msgstr "Wybór pól zdefiniowanych przez użytkownika dla zgłoszeń we wszystkich kolejkach"
 
 #: html/Admin/Elements/GroupTabs:75 html/User/Elements/GroupTabs:71
 msgid "Select group"
@@ -5159,11 +5158,11 @@ msgstr "Wybór jednej wartości"
 
 #: html/Admin/Elements/EditCustomFields:58
 msgid "Selected Custom Fields"
-msgstr "Champs personnalisĂŠs sĂŠlectionnĂŠs"
+msgstr "Zaznaczone pola"
 
 #: html/Admin/CustomFields/Objects.html:59
 msgid "Selected objects"
-msgstr "Objets sĂŠlectionnĂŠs"
+msgstr ""
 
 #: html/Widgets/SelectionBox:210
 msgid "Selections modified. Please save your changes"
@@ -5505,11 +5504,11 @@ msgstr "Błąd systemowy"
 
 #: NOT FOUND IN SOURCE
 msgid "System Error. Right not granted."
-msgstr "Erreur SystĂ¨me. Droit non dĂŠlĂŠguĂŠ."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "System Error. right not granted"
-msgstr "Erreur SystĂ¨me. Droit non dĂŠlĂŠguĂŠ"
+msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:215 lib/RT/Transaction_Overlay.pm:221
 #. ($msg)
@@ -5530,7 +5529,7 @@ msgstr "Błąd systemowy. Uprawnienie nie zostało przydzielone"
 
 #: NOT FOUND IN SOURCE
 msgid "System error. Unable to grant rights."
-msgstr "Erreur SystĂ¨me. Imposible de dĂŠlĂŠguer les droits"
+msgstr ""
 
 #: html/Admin/CustomFields/GroupRights.html:58 html/Admin/Global/GroupRights.html:56 html/Admin/Groups/GroupRights.html:58 html/Admin/Queues/GroupRights.html:57
 msgid "System groups"
@@ -5562,7 +5561,7 @@ msgstr "Przyjęty"
 
 #: NOT FOUND IN SOURCE
 msgid "Task"
-msgstr "TĂ˘che"
+msgstr ""
 
 #: html/Admin/Elements/EditScrip:79 html/Tools/Offline.html:78
 msgid "Template"
@@ -5730,7 +5729,7 @@ msgstr "Te komentarze nie są generalnie widoczne dla użytkownika"
 
 #: lib/RT/CustomField_Overlay.pm:977
 msgid "This custom field does not apply to that object"
-msgstr "Ce champ personnalisĂŠ ne s'applique pas Ă  cet objet"
+msgstr ""
 
 #: html/Admin/Tools/Configuration.html:50
 msgid "This feature is only available to system administrators"
@@ -5806,7 +5805,7 @@ msgstr "Zgłoszenie %1:  %2"
 
 #: html/Admin/Elements/QueueTabs:74
 msgid "Ticket Custom Fields"
-msgstr "Champs personnalisĂŠs du ticket"
+msgstr ""
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
 #. ($Ticket->Id, $Ticket->Subject)
@@ -5823,7 +5822,7 @@ msgstr "Zgłoszenie zamknięte"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:69 html/Admin/Global/CustomFields/index.html:81 lib/RT/CustomField_Overlay.pm:1205
 msgid "Ticket Transactions"
-msgstr "Transactions du ticket"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket attachment"
@@ -5859,7 +5858,7 @@ msgstr "Nie udało się wyszukać numeru zgłoszenia"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket killed"
-msgstr "Ticket effacĂŠ"
+msgstr ""
 
 #: html/Ticket/Display.html:55
 msgid "Ticket metadata"
@@ -5994,7 +5993,7 @@ msgstr "Transakcja została utworzona"
 
 #: html/Admin/Elements/QueueTabs:78
 msgid "Transaction Custom Fields"
-msgstr "Champs personnalisĂŠes de la transaction"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
@@ -6002,7 +6001,7 @@ msgstr "Transakcja-> Nie udało się utworzyć, ponieważ nie określono numeru 
 
 #: lib/RT/Transaction_Overlay.pm:125
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transation->Create a ĂŠchouĂŠ car vous n'avez pas spĂŠcifiĂŠ de type d'objet et d'id"
+msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:857
 msgid "Transactions are immutable"
@@ -6060,11 +6059,11 @@ msgstr "Nieuprawnieni"
 
 #: html/Admin/Elements/EditCustomFields:60
 msgid "Unselected Custom Fields"
-msgstr "Champs personnalisĂŠs non sĂŠlectionnĂŠs"
+msgstr "Niezaznaczone Pola"
 
 #: html/Admin/CustomFields/Objects.html:61
 msgid "Unselected objects"
-msgstr "Objets non sĂŠlectionnĂŠs"
+msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:646
 msgid "Untaken"
@@ -6232,7 +6231,7 @@ msgstr "Uprawnienia użytkowników"
 #: lib/RT/Interface/Web.pm:1284
 #. ($CustomFieldObj->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
-msgstr "L'utilisateur a demandĂŠ un type de mise Ă  jour non connu pour le champ personnalisĂŠ %1 de l'objet %2Â%3"
+msgstr ""
 
 #: html/Admin/Users/Modify.html:290
 #. ($msg)
@@ -6261,7 +6260,7 @@ msgstr "Widok użytkownika"
 
 #: html/Admin/Groups/index.html:99
 msgid "User-defined groups"
-msgstr "Groupe dĂŠfinis par l'utilisateur"
+msgstr "Grupy zdefiniowane przez użytkownika"
 
 #: html/Admin/Users/Modify.html:69 html/Elements/Login:90 html/Ticket/Elements/AddWatchers:56
 msgid "Username"
@@ -6301,7 +6300,7 @@ msgstr "WatchAsAdminCc"
 
 #: NOT FOUND IN SOURCE
 msgid "Watcher loaded"
-msgstr "Observateur chargĂŠ"
+msgstr ""
 
 #: html/Admin/Elements/QueueTabs:63
 msgid "Watchers"
@@ -6531,7 +6530,7 @@ msgstr "dniami"
 
 #: NOT FOUND IN SOURCE
 msgid "dead"
-msgstr "effacĂŠ"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "delete"
