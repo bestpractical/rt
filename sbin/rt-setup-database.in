@@ -428,6 +428,7 @@ sub insert_data {
                 my $queue_ref = delete $item->{'Queue'};
                 @queues = ref $queue_ref ? @{$queue_ref} : ($queue_ref);
                 $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
+            }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
             print "(Error: $msg)\n" and next unless $return;
