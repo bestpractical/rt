@@ -3720,11 +3720,13 @@ sub Transactions {
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "Comment"
             );
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "CommentEmailRecord",
