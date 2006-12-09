@@ -101,9 +101,8 @@ sub Commit {
     my $self = shift;
 
     my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
-    if ($ret) {
+    if ( $ret && RT->Config->Get('RecordOutgoingEmail') ) {
         $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
-            if ($RT::RecordOutgoingEmail);
     }
     return ($ret);
 }
@@ -255,7 +254,10 @@ sub SendMessage {
         return (1);
     }
 
-    return(0) unless RT::Interface::Email::SendEmail( entity => $MIMEObj );
+    return(0) unless RT::Interface::Email::SendEmail(
+        entity => $MIMEObj,
+        transaction => $self->TransactionObj,
+    );
 
     my $success = $msgid . " sent ";
     foreach( qw(To Cc Bcc) ) {
@@ -268,84 +270,6 @@ sub SendMessage {
 
     return (1);
 }
-
-
-=head2 OutputMIMEObject MIME::Entity
-
-Sends C<MIME::Entity> as an email message according to RT's mailer configuration.
-
-=cut 
-
-
-
-sub OutputMIMEObject {
-    my $self = shift;
-    my $MIMEObj = shift;
-    
-    my $msgid = $MIMEObj->head->get('Message-ID');
-    chomp $msgid;
-    
-    my $SendmailArguments = $RT::SendmailArguments;
-    if (defined $RT::VERPPrefix && defined $RT::VERPDomain) {
-      my $EnvelopeFrom = $self->TransactionObj->CreatorObj->EmailAddress;
-      $EnvelopeFrom =~ s/@/=/g;
-      $EnvelopeFrom =~ s/\s//g;
-      $SendmailArguments .= " -f ${RT::VERPPrefix}${EnvelopeFrom}\@${RT::VERPDomain}";
-    }
-
-
-    if ( $RT::MailCommand eq 'sendmailpipe' ) {
-        eval {
-            # don't ignore CHLD signal to get proper exit code
-            local $SIG{'CHLD'} = 'DEFAULT';
-
-            my $mail;
-            unless( open $mail, "|$RT::SendmailPath $SendmailArguments" ) {
-                die "Couldn't run $RT::SendmailPath: $!";
-            }
-
-            # if something wrong with $mail->print we will get PIPE signal, handle it
-            local $SIG{'PIPE'} = sub { die "$RT::SendmailPath closed pipe" };
-            $MIMEObj->print($mail);
-
-            unless ( close $mail ) {
-                die "Close failed: $!" if $!; # system error
-                # sendmail exit statuses mostly errors with data not software
-                # TODO: status parsing: core dump, exit on signal or EX_*
-                $RT::Logger->warning( "$RT::SendmailPath exitted with status $?" );
-            }
-        };
-        if ($@) {
-            $RT::Logger->crit( $msgid . "Could not send mail: " . $@ );
-            return 0;
-        }
-    }
-    else {
-        my @mailer_args = ($RT::MailCommand);
-
-        local $ENV{MAILADDRESS};
-
-        if ( $RT::MailCommand eq 'sendmail' ) {
-            push @mailer_args, split(/\s+/, $SendmailArguments);
-        }
-        elsif ( $RT::MailCommand eq 'smtp' ) {
-            $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
-            push @mailer_args, ( Server => $RT::SMTPServer );
-            push @mailer_args, ( Debug  => $RT::SMTPDebug );
-        }
-        else {
-            push @mailer_args, $RT::MailParams;
-        }
-
-        unless ( $MIMEObj->send(@mailer_args) ) {
-            $RT::Logger->crit( $msgid . "Could not send mail." );
-            return (0);
-        }
-    }
-    return 1;
-}
-
-# }}}
 
 # {{{ AddAttachments 
 

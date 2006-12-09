@@ -284,6 +284,10 @@ sub SendEmail {
         $RT::Logger->crit( "Could not send mail without 'entity' object" );
         return 0;
     }
+
+    my $msgid = $args{'entity'}->head->get('Message-ID') || '';
+    chomp $msgid;
+
     unless ( $args{'entity'}->head->get('Date') ) {
         require RT::Date;
         my $date = RT::Date->new( $RT::SystemUser );
@@ -297,6 +301,18 @@ sub SendEmail {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
         $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'bounce'};
+
+        # VERP
+        if ( $args{'transaction'} and
+             my $prefix = RT->Config->Get('VERPPrefix') and 
+             my $domain = RT->Config->Get('VERPDomain') )
+        {
+            my $from = $args{'transaction'}->CreatorObj->EmailAddress;
+            $from =~ s/@/=/g;
+            $from =~ s/\s//g;
+            $args .= " -f $prefix$from\@$domain";
+        }
+
         eval {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
@@ -311,13 +327,13 @@ sub SendEmail {
                 die "close pipe failed: $!" if $!; # system error
                 # sendmail exit statuses mostly errors with data not software
                 # TODO: status parsing: core dump, exit on signal or EX_*
-                my $msg = "`$path $args` exitted with code ". ($?>>8);
+                my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
                 $msg = ", interrupted by signal ". ($?&127) if $?&127;
                 $RT::Logger->error( $msg );
             }
         };
         if ( $@ ) {
-            $RT::Logger->crit( "Could not send mail with command `$path $args`: " . $@ );
+            $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
             return 0;
         }
     }
@@ -339,7 +355,7 @@ sub SendEmail {
         }
 
         unless ( $args{'entity'}->send( @mailer_args ) ) {
-            $RT::Logger->crit( "Could not send mail." );
+            $RT::Logger->crit( "$msgid: Could not send mail." );
             return 0;
         }
     }
