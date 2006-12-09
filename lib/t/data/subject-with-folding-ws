@@ -1,0 +1,10 @@
+Subject: =?ISO-8859-1?Q?te?=
+ =?ISO-8859-1?Q?st?=
+Date: Mon, 02 Jun 2003 20:58:30 +0200
+To: rt@example.com
+From: foo@example.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+
+test

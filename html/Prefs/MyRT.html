@@ -52,12 +52,20 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
-% foreach my $box( @boxes ) {
+
+<form method="post" action="MyRT.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
+</form>
+
+<br />
+
+% foreach my $pane( @panes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $box->{Name} ),
+    title => loc('RT at a glance') .': '. loc( $pane->{Name} ),
     bodyclass => ""
 &>
-<& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
 </&>
 % }
 
@@ -86,11 +94,14 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
-unless (exists $session{'my_rt_portlets'}) {
-    my $portlets; 
+if ($ARGS{Reset}) {
+    $user->SetPreferences('HomepageSettings', {});
+    delete $session{'my_rt_portlets'};
+}
 
+unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $portlets  = $default_portlets ? $default_portlets->Content  : {};
+    my $portlets = $default_portlets ? $default_portlets->Content  : {};
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 my $portlets = $session{'my_rt_portlets'};
@@ -98,46 +109,46 @@ my $portlets = $session{'my_rt_portlets'};
 my %seen;
 my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
+my $sys = RT::System->new($session{'CurrentUser'});
+my @objs = ($sys);
+
+push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
+    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
+                                          Object => $RT::System );
+
 my @sys_searches;
-my @searches = $m->comp( "/Search/Elements/UserSearches" );
-foreach my $s( @searches ) {
-    #XXX: get rid of this exception
-    if ( $s->{'Type'} eq 'system' ) {
-        push @items, ["system-".$s->{'Description'}, $s->{'Description'} ];
-        push @sys_searches, [ $s->{'Description'}, $s->{'Search'} ];
-    }
-    else {
-        my $oid = join '-', ref $s->{'Object'},
-                            $s->{'Object'}->Id,
-                            'SavedSearch',
-                            $s->{'Search'}->Id;
-        push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
+for my $object (@objs) {
+    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+        my ($desc, $search) = @$_;
+        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            push @items, ["system-$desc", $desc];
+            push @sys_searches, [$desc, $search];
+        }
+        else {
+            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+            my $type = ($SearchType eq 'Ticket')
+                ? 'Saved Search' : $SearchType; # loc
+            push @items, ["saved-$oid", loc($type).": $desc"];
+        }
     }
 }
 
-my @boxes;
-foreach my $pane ( sort keys %$portlets ) {
-    push @boxes,
-        $m->comp(
-            '/Widgets/SelectionBox:new',
-            Action    => 'MyRT.html',
-            Name      => $pane,
-            Available => \@items,
-            AutoSave  => 1,
-            OnSubmit  => sub {
-                my $self = shift;
-                $portlets->{$pane} = [
-                    map { m/(\w+)-(.*)$}/; { type => $1, name => $2, }}
-                    @{$self->{Current}}
-                ];
-                $user->SetPreferences('HomepageSettings', $portlets);
-                push @results, loc ('Preferences saved for [_1].', $pane);
-                delete $session{'my_rt_portlets'};
-            },
-            Selected  => [ map { join '-', @{$_}{qw/type name/} } @{ $portlets->{$pane} } ]
-        );
-}
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureMyRT',
+    panes  => ['body', 'summary'],
+    Action => 'MyRT.html',
+    items => \@items,
+    current_portlets => $portlets,
+    OnSave => sub {
+        my ( $conf, $pane ) = @_;
+        $user->SetPreferences( 'HomepageSettings', $conf );
+        push @results, loc( 'Preferences saved for [_1].', $pane );
+        delete $session{'my_rt_portlets'};
+    }
+);
 
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @boxes;
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
 
 </%INIT>

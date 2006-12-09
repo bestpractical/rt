@@ -115,7 +115,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
             # if it's a text/plain show the body
             elsif ( $message->ContentType =~ m{^(text|message)}i ) {
 
-                eval { $content = Text::Quoted::extract($content); };
+                eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
                 if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
 
                 $m->comp(

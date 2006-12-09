@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -76,20 +76,17 @@ my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
 
 my $show_cb = sub {
     my $entry = shift;
-    my $type = $entry->{type};
+    my $type  = $entry->{type};
     my $name = $entry->{'name'};
-    if ($type eq 'component') {
-	# XXX: security check etc.
-	$m->comp( $name );
-    }
-    elsif ($type eq 'system') {
-	$m->comp( '/Elements/ShowSearch', Name => $name );
-    }
-    elsif ($type eq 'saved') {
-	$m->comp( '/Elements/ShowSearch', SavedSearch => $name );
-    }
-    else {
-	$RT::Logger->error ("unknown portlet type '$type'");
+    if ( $type eq 'component' ) {
+        # XXX: security check etc.
+        $m->comp( $name, %{ $entry->{arguments} || {} } );
+    } elsif ( $type eq 'system' ) {
+        $m->comp( '/Elements/ShowSearch', Name => $name );
+    } elsif ( $type eq 'saved' ) {
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name );
+    } else {
+        $RT::Logger->error("unknown portlet type '$type'");
     }
 };
 

@@ -100,7 +100,11 @@ perl(1).
 sub Commit {
     my $self = shift;
 
-    return($self->SendMessage($self->TemplateObj->MIMEObj));
+    my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    if ( $ret && RT->Config->Get('RecordOutgoingEmail') ) {
+        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+    }
+    return ($ret);
 }
 
 # }}}
@@ -250,7 +254,10 @@ sub SendMessage {
         return (1);
     }
 
-    return(0) unless RT::Interface::Email::SendEmail( entity => $MIMEObj );
+    return(0) unless RT::Interface::Email::SendEmail(
+        entity => $MIMEObj,
+        transaction => $self->TransactionObj,
+    );
 
     my $success = $msgid . " sent ";
     foreach( qw(To Cc Bcc) ) {
@@ -259,14 +266,10 @@ sub SendMessage {
     }
     $success =~ s/\n//g;
 
-    $self->RecordOutgoingMailTransaction($MIMEObj) if RT->Config->Get('RecordOutgoingEmail');
-
     $RT::Logger->info($success);
 
     return (1);
 }
-
-# }}}
 
 # {{{ AddAttachments 
 

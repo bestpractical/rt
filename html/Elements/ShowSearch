@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,40 +45,57 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     title => loc($search->Description, $SearchArg->{'Rows'}),
-    title_href => "Search/Results.html".$QueryString,
-    titleright => loc('Edit'),
+    title_href => $query_link_url.$QueryString,
+    titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize &>
-<& /Elements/TicketList, %$SearchArg, ShowNavigation => 0 &>
+<& $query_display_component, %$SearchArg, ShowNavigation => 0 &>
 </&>
 <%init>
 my $search;
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
+my $query_display_component = '/Elements/TicketList';
+my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {
-    my ($container_object, $search_id ) = _parse_saved_search ($SavedSearch);
+    my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
     $search = $container_object->Attributes->WithId($search_id);
-    unless ($search->Id && ref ($SearchArg = $search->Content) eq 'HASH') {
-	$m->out ("Saved Search $SavedSearch not found");
-	return;
+    unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+        $m->out("Saved Search $SavedSearch not found");
+        return;
     }
-    $customize = RT->Config->Get('WebPath').'/Search/Build.html?'.
-	$m->comp('/Elements/QueryString',
-		 LoadSavedSearch => $SavedSearch);
-}
-else {
-    ($search) = RT::System->new($session{'CurrentUser'})->Attributes->Named('Search - '.$Name);
-    unless ($search && $search->Id) {
-	$m->out ("Predefined search $Name not found");
-	return;
+    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+
+        # XXX: dispatch to different handler here
+        $query_display_component
+            = '/Search/Elements/' . $SearchArg->{SearchType};
+        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+    } else {
+        $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString',
+            LoadSavedSearch => $SavedSearch );
     }
-    $SearchArg = $user->Preferences($search, $search->Content);
+} else {
+    ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
+    unless ( $search && $search->Id ) {
+        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
+        foreach my $custom (@custom_searches) {
+            if ($custom->Description eq $Name) { $search = $custom; last }
+        }
+        unless ($search && $search->id) {
+            $m->out("Predefined search $Name not found");
+            return;
+        }
+    }
+
+    $SearchArg = $user->Preferences( $search, $search->Content );
     $SearchArg->{'Rows'} = $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
-    $customize = RT->Config->Get('WebPath').'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search).'-'.$search->Id)
+    $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+        . $m->comp( '/Elements/QueryString', name => ref($search) . '-' . $search->Id );
 }
 
-$SearchArg->{'Query'} =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
+$SearchArg->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
 $SearchArg->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/RT->Config->Get($1)/ge;
 $SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 
@@ -89,11 +106,7 @@ $m->comp(
     %ARGS
 );
 
-
-
-my $QueryString = '?' . $m->comp('/Elements/QueryString',
-                                  %$SearchArg);
-	    #map { $_ => $SearchArg->{$_} } qw(Query Order OrderBy));
+my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>

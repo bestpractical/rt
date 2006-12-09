@@ -54,7 +54,6 @@ use Time::ParseDate;
 use Time::HiRes;
 use HTML::Entities;
 use HTML::Scrubber;
-use Text::Quoted;
 use RT::Interface::Web::Handler;
 use RT::Interface::Web::Request;
 use File::Path qw( rmtree );

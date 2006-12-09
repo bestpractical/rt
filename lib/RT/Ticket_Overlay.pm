@@ -2986,6 +2986,8 @@ my $txns = RT::Transactions->new($RT::SystemUser);
 $txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $txns->Limit(FIELD => 'ObjectId', VALUE => '1');
 $txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
+$txns->Limit(FIELD => 'Type', OPERATOR => '!=',  VALUE => 'EmailRecord');
+
 my $steal  = $txns->First;
 ok($steal->OldValue == $root->Id , "Stolen from root");
 ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
@@ -3715,11 +3717,13 @@ sub Transactions {
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "Comment"
             );
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "CommentEmailRecord",

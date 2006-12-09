@@ -68,7 +68,7 @@
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
 <option value="<%$field%>"
-% if ($field eq $OrderBy[$o]) {
+% if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
 selected
 % }
 ><&|/l&><%$field%></&></option>
