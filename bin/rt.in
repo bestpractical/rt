@@ -342,7 +342,14 @@ sub show {
     return suggest_help("show", $type) if $bad;
 
     my $r = submit("$REST/show", { id => \@objects, %data });
-    print $r->content;
+    my $c = $r->content;
+    # if this isn't a text reply, remove the trailing newline so we
+    # don't corrupt things like tarballs when people do
+    # show ticket/id/attachments/id/content > foo.tar.gz
+    if ($r->content_type !~ /^text\//) {
+        chomp($c);
+    }
+    print $c;
 }
 
 # To create a new object, we ask the server for a form with the defaults
