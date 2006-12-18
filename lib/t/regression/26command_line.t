@@ -103,7 +103,7 @@ TODO: {
     # text attachment
     check_attachment("$RT::BasePath/lib/t/data/lorem-ipsum");
     # binary attachment
-    check_attachment("$RT::BasePath/html/NoAuth/images/bplogo.gif");
+    check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
