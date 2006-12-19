@@ -152,7 +152,8 @@ if ($OrderBy =~ /\|/) {
 }
 
 $Collection->RowsPerPage($Rows) if ($Rows);
-$Collection->GotoPage($Page-1); # SB uses page 0 as the first page
+$Page = 1 unless $Page > 0; # workaround problems with Page = '' or undef
+$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 my $TotalFound =  $Collection->CountAll();
 
 </%INIT>
