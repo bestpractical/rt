@@ -67,6 +67,7 @@ if ($SavedSearch) {
         $m->out("Saved Search $SavedSearch not found");
         return;
     }
+    $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
         # XXX: dispatch to different handler here
