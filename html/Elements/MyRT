@@ -48,7 +48,7 @@
 <td width="70%" class="boxcontainer">
 
 % for my $portlet (@{$portlets->{body}}) {
-<% _show($portlet) %>
+<% $show_cb->( $portlet ) %>
 <br />
 % }
 
@@ -57,7 +57,7 @@
 <td class="boxcontainer">
 
 % for my $portlet (@{$portlets->{summary}}) {
-<% _show($portlet) %>
+<% $show_cb->( $portlet ) %>
 <br />
 % }
 
@@ -69,6 +69,7 @@
 
 my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
 
+my $user = $session{'CurrentUser'}->UserObj;
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
     my $portlets; 
@@ -77,13 +78,14 @@ unless (exists $session{'my_rt_portlets'}) {
     } else {
         $portlets = {};
     }
-    my $user = $session{'CurrentUser'}->UserObj;
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 
 my $portlets = $session{'my_rt_portlets'};
 
-sub _show {
+my $Rows = $user->Preferences( 'SummaryRows', ( $RT::DefaultSummaryRows || 10 ) );
+
+my $show_cb = sub {
     my $entry = shift;
     my $type  = $entry->{type};
     if ( $type eq 'component' ) {
@@ -92,12 +94,12 @@ sub _show {
         # security check etc.
         $m->comp( $name, %{ $entry->{arguments} || {} } );
     } elsif ( $type eq 'system' ) {
-        $m->comp( '/Elements/ShowSearch', Name => $entry->{name} );
+        $m->comp( '/Elements/ShowSearch', Name => $entry->{name}, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $entry->{name} );
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $entry->{name}, Override => { Rows => $Rows } );
     } else {
         $RT::Logger->error("unknown portlet type $type");
     }
-}
+};
 
 </%INIT>

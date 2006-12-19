@@ -93,12 +93,12 @@ if ($SavedSearch) {
     }
 
     $SearchArg = $user->Preferences( $search, $search->Content );
-    $SearchArg->{'Rows'}
-        = $user->Preferences( 'SummaryRows', $RT::DefaultSummaryRows );
     $customize = $RT::WebPath . '/Prefs/Search.html?'
         . $m->comp( '/Elements/QueryString',
         name => ref($search) . '-' . $search->Id );
 }
+
+$SearchArg = { %$SearchArg, %Override } if keys %Override;
 
 $SearchArg->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
 $SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
@@ -113,10 +113,9 @@ $m->comp(
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
-#map { $_ => $SearchArg->{$_} } qw(Query Order OrderBy));
-
 </%init>
 <%ARGS>
-$Name => undef
+$Name        => undef
 $SavedSearch => undef
+%Override    => ()
 </%ARGS>
