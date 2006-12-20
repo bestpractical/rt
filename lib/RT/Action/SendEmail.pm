@@ -100,12 +100,12 @@ perl(1).
 sub Commit {
     my $self = shift;
 
-    my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
-    if ($ret) {
+    my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    if ( $ret > 0 ) {
         $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
             if ($RT::RecordOutgoingEmail);
     }
-    return ($ret);
+    return (abs $ret);
 }
 
 # }}}
@@ -253,7 +253,7 @@ sub SendMessage {
         || $MIMEObj->head->get('Bcc') )
     {
         $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
-        return (1);
+        return (-1);
     }
 
     unless ($MIMEObj->head->get('Date')) {
