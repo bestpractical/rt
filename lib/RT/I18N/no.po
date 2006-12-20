@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2003-04-01 06:06+0200\n"
-"PO-Revision-Date: 2005-10-03 13:50-0400\n"
+"PO-Revision-Date: 2006-12-20 20:59+0100\n"
 "Last-Translator: Ronny Pettersen <ronny.pettersen@edb.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "MIME-Version: 1.0\n"
@@ -28,12 +28,12 @@ msgstr "#%1: %2"
 
 #: html/Elements/ShowSearch:86
 msgid "$1"
-msgstr ""
+msgstr "$1"
 
 #: lib/RT/Record.pm:941
 #. ($label)
 msgid "$prefix %1"
-msgstr ""
+msgstr "$prefix %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:257
 #. ($self->ObjectType, $self->Object->Id)
@@ -136,30 +136,6 @@ msgstr "%1 - Oppgi betingelsesmodulen du ønsker å bruke"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Oppgi søkemodulen du ønsker å bruke"
 
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: html/Elements/Footer:57
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
@@ -209,7 +185,7 @@ msgstr "%1 ble endret fra %2 til %3"
 #: html/Search/Build.html:213
 #. ($Description)
 msgid "%1 copy"
-msgstr ""
+msgstr "%1 kopi"
 
 #: lib/RT/Record.pm:945
 msgid "%1 could not be set to %2."
@@ -227,12 +203,12 @@ msgstr "%1 kunne ikke sette status til løst. RT-basen kan være inkonsistent."
 #: lib/RT/Transaction_Overlay.pm:558
 #. ($obj_type)
 msgid "%1 created"
-msgstr ""
+msgstr "%1 opprettet"
 
 #: lib/RT/Transaction_Overlay.pm:563
 #. ($obj_type)
 msgid "%1 deleted"
-msgstr ""
+msgstr "%1 slettet"
 
 #: html/Search/Chart:71
 #. ($Query, $PrimaryGroupBy)
@@ -2972,7 +2948,7 @@ msgstr "Sett Status"
 
 #: html/Search/Bulk.html:114
 msgid "Make date Due"
-msgstr "msgstr "Sett tidsfrist" "
+msgstr "Sett tidsfrist "
 
 #: html/Search/Bulk.html:116
 msgid "Make date Resolved"
@@ -4392,7 +4368,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't validate this PGP signature. \\n"
-msgstr "msgstr "RT kunne ikke validere denne PGP signaturen. \\n" "
+msgstr "RT kunne ikke validere denne PGP signaturen. \\n"
 
 #: html/Elements/Logo:49 html/Elements/PageLayout:172
 #. ($RT::rtname)
@@ -4783,19 +4759,6 @@ msgstr "Søk etter godkjenninger"
 
 #: html/Search/Simple.html:69
 msgid "Search for tickets"
-msgstr ""
-
-#: html/Search/Simple.html:57
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
-
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
-#: html/User/Elements/Tabs:62
-msgid "Search options"
 msgstr ""
 
 #: html/Search/Chart.html:7
