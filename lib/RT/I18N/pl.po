@@ -4974,14 +4974,9 @@ msgid "Search for tickets"
 msgstr ""
 
 #: html/Search/Simple.html:57
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
+msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
 msgstr ""
 
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
 #: html/User/Elements/Tabs:62
 msgid "Search options"
 msgstr ""
@@ -5167,7 +5162,7 @@ msgstr "Wyślij e-mail do wszystkich obserwatorów jako \"komentarz\""
 
 #: etc/initialdata:112
 msgid "Send mail to requestors and Ccs"
-msgstr "Wyślij e-mail do zgłaszających i osób o uprawnieniach Cc""
+msgstr "Wyślij e-mail do zgłaszających i osób o uprawnieniach Cc"
 
 #: etc/initialdata:107
 msgid "Send mail to requestors and Ccs as a comment"

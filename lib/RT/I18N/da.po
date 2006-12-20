@@ -635,7 +635,6 @@ msgstr ""
 msgid "Add, delete and modify custom field values for objects"
 msgstr "Tilføj, slet og editer custom felt værdier for objekter"
 
-HERTIL
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
 msgstr "TilføjNæsteStatus"
@@ -1309,7 +1308,7 @@ msgstr "Kunne ikke fjerne den principal %1 for denne k¯"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "msgstr "Kunne ikke fjerne den principal %1 for denne ticket" "
+msgstr "Kunne ikke fjerne den principal %1 for denne ticket"
 
 #: lib/RT/User_Overlay.pm:192
 msgid "Could not set user info"
@@ -4527,14 +4526,9 @@ msgid "Search for tickets"
 msgstr ""
 
 #: html/Search/Simple.html:57
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
+msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
 msgstr ""
 
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
 #: html/User/Elements/Tabs:62
 msgid "Search options"
 msgstr ""
