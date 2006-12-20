@@ -91,7 +91,7 @@ msgstr "%1 (%2) %3 tento požadavek\\n"
 #: html/Ticket/Elements/ShowAttachments:72
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
-msgstr ""%1 (%2) vytvořil %3"
+msgstr "%1 (%2) vytvořil %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:104 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
 #. (loc($DefaultStatus))
@@ -132,24 +132,6 @@ msgstr "%1 - Jaký podmínkový modul chcete použít"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Jaký vyhledávací modul chcete použít"
 
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: html/Elements/Footer:57
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
@@ -4478,19 +4460,6 @@ msgstr "Vyhledávání schvalování"
 
 #: html/Search/Simple.html:69
 msgid "Search for tickets"
-msgstr ""
-
-#: html/Search/Simple.html:57
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name,
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
-
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
-#: html/User/Elements/Tabs:62
-msgid "Search options"
 msgstr ""
 
 #: html/Search/Chart.html:7
