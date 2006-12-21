@@ -34,7 +34,7 @@ msgstr "#%1: %2"
 
 #: html/Elements/ShowSearch:105
 msgid "$1"
-msgstr ""
+msgstr "$1"
 
 #: lib/RT/Record.pm:940
 #. ($label)
@@ -2720,7 +2720,7 @@ msgstr "Meine %1 Anfragen"
 
 #: html/Tools/Elements/Tabs:63
 msgid "My Day"
-msgstr ""
+msgstr "Mein Tag"
 
 #: html/Approvals/index.html:46 html/Approvals/index.html:47
 msgid "My approvals"
@@ -3830,7 +3830,7 @@ msgstr "Suche nach Anfragen"
 
 #: html/Search/Simple.html:55
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
+msgstr "Suche nach Tickets. Eingabe <strong>id</strong> Nummer, <strong>Stapel</strong> nach Name, Besitzer nach <strong>Benutzername</strong> und Klienten nach <strong>Email Adresse</strong>. RT wird nach Deiner Eingabe in Tickets und Anhängen suchen."
 
 #: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers,<strong>queues</strong> by name"
@@ -3860,7 +3860,7 @@ msgstr "Sicherheit:"
 
 #: html/Elements/ShowCustomFields:98
 msgid "See also:"
-msgstr ""
+msgstr "Siehe auch:"
 
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
@@ -4834,7 +4834,7 @@ msgstr "Mi."
 
 #: html/Tools/MyDay.html:75
 msgid "What I did today"
-msgstr ""
+msgstr "Was ich heute tat"
 
 #: etc/initialdata:521
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
