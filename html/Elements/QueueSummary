@@ -58,7 +58,7 @@
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>" title="<% $queue->{Description} %>"><%$queue->{Name}%></a></td>
 %   for my $condition (@$conditions) {
-%       $Tickets->FromSQL($queue_cond.$condition->{cond}), 
+%       $Tickets->FromSQL( "Queue = $queue->{id} AND ". $condition->{cond} );
 <td align="right"><a href="<% $RT::WebPath%>/Search/Results.html?Query=<%$queue_cond.$condition->{cond}%>"><% $Tickets->Count %></a></td>
 %   }
 </tr>
