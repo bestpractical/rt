@@ -163,8 +163,7 @@ if (@Actions) {
     $session{"Actions"} = \@Actions;
     RT::Interface::Web::Redirect($RT::WebURL."Ticket/Display.html?id=".$TicketObj->id);
 } else {
-    @Actions = @{$session{"Actions"} || [] };
-    delete $session{"Actions"};
+    @Actions = @{ delete $session{"Actions"} || [] };
 }
 
 $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
