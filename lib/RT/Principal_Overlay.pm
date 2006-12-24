@@ -304,7 +304,7 @@ sub HasRight {
     $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
 
     if ( $self->Disabled ) {
-        $RT::Logger->error( "Disabled User:  "
+        $RT::Logger->error( "Disabled User #"
               . $self->id
               . " failed access check for "
               . $args{'Right'} );
