@@ -158,15 +158,8 @@ if ( $id[0] eq 'new' ) {
                 Why => loc( "Couldn't load ticket '[_1]'", $id ) );
             $m->abort();
         }
-    }
 
     # }}}
-
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        $m->comp( 'Error.html',
-            Why => loc("No permission to display that ticket") );
-        $m->abort();
-    }
 
     my ( $code, $msg );
 
@@ -205,6 +198,13 @@ if ( $id[0] eq 'new' ) {
     push (@results, @cfupdates);
 
     # }}}
+    }
+
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        $m->comp( 'Error.html',
+            Why => loc("No permission to display that ticket") );
+        $m->abort();
+    }
 
     my $Transactions = $Ticket->Transactions;
 
