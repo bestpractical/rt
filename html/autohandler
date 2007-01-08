@@ -274,15 +274,12 @@ if (    ( defined $session{'CurrentUser'} )
         if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html'
             and $ARGS{'id'} )
         {
-            $m->comp( "/SelfService/Display.html", %ARGS );
-            $m->comp( "/Elements/Footer",          %ARGS );
-            $m->abort();
+            RT::Interface::Web::Redirect($RT::WebURL."SelfService/Display.html?id=".$ARGS{'id'});
         }
 
         # otherwise, drop the user at the SelfService default page
         elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
-            $m->comp('/SelfService/index.html');
-            $m->abort();
+            RT::Interface::Web::Redirect($RT::WebURL."SelfService/");
         }
         else {
             $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
