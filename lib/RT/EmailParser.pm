@@ -49,6 +49,8 @@ package RT::EmailParser;
 use base qw/RT::Base/;
 
 use strict;
+use warnings;
+
 use Mail::Address;
 use MIME::Entity;
 use MIME::Head;
@@ -162,7 +164,7 @@ sub ParseMIMEEntityFromSTDIN {
 
 =head2 ParseMIMEEntityFromScalar  $message
 
-Takes either a scalar or a reference to a scalr which contains a stringified MIME message.
+Takes either a scalar or a reference to a scalar which contains a stringified MIME message.
 Parses it.
 
 Returns true if it wins.
