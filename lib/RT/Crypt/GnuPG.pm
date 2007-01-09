@@ -5,6 +5,7 @@ use warnings;
 
 use IO::Handle;
 use GnuPG::Interface;
+use RT::EmailParser ();
 
 # gnupg options supported by GnuPG::Interface
 # other otions should be handled via extra args params
@@ -121,7 +122,7 @@ sub SignEncrypt {
             map Mail::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
 
-        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( DIR => '/tmp' );
+        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
         binmode $tmp_fh, ':raw';
 
         my %handle;
@@ -376,7 +377,7 @@ sub VerifyAttachment {
         meta_interactive => 0,
     );
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( DIR => '/tmp' );
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
@@ -427,7 +428,7 @@ sub VerifyRFC3156 {
         meta_interactive => 0,
     );
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( DIR => '/tmp' );
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw:eol(CRLF?)';
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
@@ -478,7 +479,7 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( DIR => '/tmp' );
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my %handle;
@@ -519,8 +520,8 @@ sub DecryptRFC3156 {
 
     seek $tmp_fh, 0, 0;
     my $parser = new MIME::Parser;
+    RT::EmailParser->_SetupMIMEParser( $parser );
     my $decrypted = $parser->parse( $tmp_fh );
-
     $args{'Top'}->parts( [] );
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
