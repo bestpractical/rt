@@ -334,7 +334,7 @@ sub InitLogging {
         # if we are not in eval and perl is not parsing code
         # then rollback transactions and log RT error
         unless ($^S || !defined $^S ) {
-            $RT::Handle->Rollback if $RT::Handle;
+            $RT::Handle->Rollback(1) if $RT::Handle;
             $RT::Logger->crit("$_[0]") if $RT::Logger;
         }
         die $_[0];
