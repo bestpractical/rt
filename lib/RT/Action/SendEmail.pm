@@ -46,11 +46,11 @@
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
 package RT::Action::SendEmail;
-require RT::Action::Generic;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+use warnings;
+
+use base qw(RT::Action::Generic);
 
 use MIME::Words qw(encode_mimeword);
 
@@ -337,7 +337,6 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 sub RecordOutgoingMailTransaction {
     my $self = shift;
     my $MIMEObj = shift;
-           
 
     my @parts = $MIMEObj->parts;
     my @attachments;
@@ -540,10 +539,7 @@ sub RemoveInappropriateRecipients {
     }
 
     # Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
-    my @non_recipients = $self->TicketObj->SquelchMailTo;
-    foreach my $attribute (@non_recipients) {
-        push @blacklist, $attribute->Content;
-    }
+    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo;
     push @blacklist, $self->SquelchMailTo;
 
     # Cycle through the people we're sending to and pull out anyone on the
@@ -553,7 +549,7 @@ sub RemoveInappropriateRecipients {
         $person_to_yank =~ s/\s//g;
         foreach my $type (@types) {
             @{ $self->{$type} } =
-              grep ( !/^\Q$person_to_yank\E$/, @{ $self->{$type} } );
+              grep !/^\Q$person_to_yank\E$/, @{ $self->{$type} };
         }
     }
 }
@@ -710,7 +706,6 @@ Set References and In-Reply-To headers for this message.
 =cut
 
 sub SetReferencesHeaders {
-
     my $self = shift;
     my ( @in_reply_to, @references, @msgid );
 
