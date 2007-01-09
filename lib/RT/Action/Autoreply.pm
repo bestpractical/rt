@@ -44,11 +44,11 @@
 # 
 # END BPS TAGGED BLOCK }}}
 package RT::Action::Autoreply;
-require RT::Action::SendEmail;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::SendEmail);
+use warnings;
+
+use base qw(RT::Action::SendEmail);
 
 =head2 Prepare
 
