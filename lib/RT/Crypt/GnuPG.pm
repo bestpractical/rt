@@ -51,8 +51,6 @@ sub SignEncrypt {
     );
     my $entity = $args{'Entity'};
 
-    local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -79,6 +77,8 @@ sub SignEncrypt {
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
+            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+
             my $pid = $gnupg->detach_sign( handles => $handles );
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
@@ -100,7 +100,7 @@ sub SignEncrypt {
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
             $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-            return (undef, \%res);
+            return %res;
         }
 
         # setup RFC1847(Ch.2.1) requirements
@@ -138,6 +138,8 @@ sub SignEncrypt {
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
+            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+
             my $pid = $args{'Sign'}?
                 $gnupg->sign_and_encrypt( handles => $handles ):
                 $gnupg->encrypt( handles => $handles );
@@ -158,7 +160,7 @@ sub SignEncrypt {
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
             $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-            return (undef, \%res);
+            return %res;
         }
 
         my $protocol = 'application/pgp-encrypted';
@@ -180,7 +182,7 @@ sub SignEncrypt {
         );
         $entity->parts(-1)->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
     }
-    return ($entity, \%res);
+    %res;
 }
 
 sub FindProtectedParts {
@@ -291,7 +293,7 @@ sub VerifyDecrypt {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { VerifyRFC3156( %$item ) };
             if ( $args{'Detach'} ) {
-                $item->{'Top'}->parts( [ $item->{'Body'} ] );
+                $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
         } elsif ( $item->{'Format'} eq 'Inline' ) {
@@ -317,7 +319,7 @@ sub VerifyDecrypt {
 #            }
         }
     }
-    return @res[0];
+    return @res;
 }
 
 sub VerifyInline {
