@@ -48,7 +48,8 @@ $Class        => 'RT__Ticket'
 
 @Format       => undef
 $FormatString => undef
-$Order        => undef
+@OrderBy      => ()
+@Order        => ()
 $Query        => undef
 $Rows         => undef
 $Page         => undef
@@ -121,12 +122,15 @@ foreach my $col ( @Format ) {
         )
       )
     {
+        my $new_order = 'ASC';
+        $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
+            if $OrderBy[0] && $OrderBy[0] eq $attr;
+
         $m->out(
             '<a href="' . $BaseURL
             . $m->comp( '/Elements/QueryString',
                 %generic_query_args,
-                OrderBy => $attr || $col->{'attribute'},
-                Order   => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
+                OrderBy => $attr, Order => $new_order
             )
             . '">'. $title .'</a>'
         );
