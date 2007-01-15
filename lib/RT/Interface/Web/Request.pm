@@ -64,14 +64,12 @@ sub callback {
 
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
     my $name = delete $args{'CallbackName'} || 'Default';
-    my $once = delete $args{'CallbackOnce'};
 
     my $CacheKey = "$page--$name";
-    my $callbacks = $cache{ $CacheKey };
-
     return 1 if delete $args{'CallbackOnce'} && $called{ $CacheKey };
     ++$called{ $CacheKey };
 
+    my $callbacks = $cache{ $CacheKey };
     unless ( $callbacks ) {
         my $path  = "/Callbacks/*$page/$name";
         my @roots = map $_->[1],
