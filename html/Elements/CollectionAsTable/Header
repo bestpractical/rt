@@ -44,15 +44,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-@Format => undef
+$Class        => 'RT__Ticket'
+@Format       => undef
 $FormatString => undef
 $AllowSorting => undef
-$Order=>undef
-$BaseURL => undef
-$Query => undef
-$Rows => undef
-$Page => undef
-$maxitems => undef
+$Order        => undef
+$BaseURL      => undef
+$Query        => undef
+$Rows         => undef
+$Page         => undef
+$maxitems     => undef
 </%ARGS>
 <tr class="collection-as-table">
 <%perl>
@@ -83,7 +84,7 @@ foreach my $col (@Format) {
 
     $title =~ s/^__(.*)__$/$1/o;
     my $tmp = $m->comp(
-        '/Elements/RT__Ticket/ColumnMap',
+        "/Elements/$Class/ColumnMap",
         Name => $title,
         Attr => 'title',
     );
@@ -110,7 +111,7 @@ foreach my $col (@Format) {
            $AllowSorting
         && $col->{'attribute'}
         && $m->comp(
-            '/Elements/RT__Ticket/ColumnMap',
+            "/Elements/$Class/ColumnMap",
             Name => $col->{'attribute'},
             Attr => 'attribute'
         )
@@ -124,7 +125,7 @@ foreach my $col (@Format) {
                 %generic_query_args,
                 OrderBy => (
                     $m->comp(
-                        '/Elements/RT__Ticket/ColumnMap',
+                        "/Elements/$Class/ColumnMap",
                         Name => $col->{'attribute'},
                         Attr => 'attribute'
                       )
