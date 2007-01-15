@@ -71,14 +71,12 @@ package RT::Queue;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@DEFAULT_ACTIVE_STATUS @DEFAULT_INACTIVE_STATUS $RIGHTS);
-
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
 
-@DEFAULT_ACTIVE_STATUS = qw(new open stalled);
-@DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
+our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
+our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
 
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
@@ -88,7 +86,7 @@ use RT::Interface::Email;
 # $self->loc('deleted'); # For the string extractor to get a string to localize
 
 
-$RIGHTS = {
+our $RIGHTS = {
     SeeQueue            => 'Can this principal see this queue',       # loc_pair
     AdminQueue          => 'Create, delete and modify queues',        # loc_pair
     ShowACL             => 'Display Access Control List',             # loc_pair
