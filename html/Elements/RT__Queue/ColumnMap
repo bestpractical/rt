@@ -1,0 +1,43 @@
+<%ARGS>
+$Name => undef
+$Attr => undef
+</%ARGS>
+<%ONCE>
+our $COLUMN_MAP = {
+    id => {
+        title     => '#',
+        attribute => 'id',
+        align     => 'right',
+        value     => sub { return $_[0]->id },
+    },
+    Disabled => {
+        title     => \'&nbsp;',
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
+    Priority => {
+        value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
+    },
+    Address  => {
+        value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
+    },
+};
+foreach my $col(qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
+    $COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
+}
+
+our $ColumnMap = sub {
+    my $name = shift;
+    my $attr = shift;
+
+    return $COLUMN_MAP->{$name}->{$attr}
+        if $COLUMN_MAP->{$name};
+
+};
+
+</%ONCE>
+<%INIT>
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+return $ColumnMap->($Name, $Attr);
+</%INIT>
+
