@@ -51,6 +51,7 @@ $maxitems => undef
 $Depth => undef
 $Warning => undef
 $ColumnMap => {}
+$Class     => 'RT__Ticket'
 </%ARGS>
 
 <%PERL>
@@ -83,7 +84,7 @@ foreach my $column (@Format) {
 
             unless ( exists $ColumnMap->{ $col } ) {
                 $ColumnMap->{ $col } = $m->comp(
-                    '/Elements/RT__Ticket/ColumnMap',
+                    "/Elements/$Class/ColumnMap",
                     Name => $col,
                     Attr => 'value'
                 );
