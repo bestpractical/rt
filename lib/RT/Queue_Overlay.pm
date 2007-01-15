@@ -499,11 +499,14 @@ sub SetSign {
     return ( 0, $self->loc('Permission Denied') )
         unless $self->CurrentUserHasRight('AdminQueue');
 
-    return $self->SetAttribute(
+    my ($status, $msg) = $self->SetAttribute(
         Name        => 'Sign',
         Description => 'Sign outgoing messages by default',
         Content     => $value,
     );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc('Signing enabled')) if $value;
+    return ($status, $self->loc('Signing disabled'));
 }
 
 sub Encrypt {
@@ -522,11 +525,14 @@ sub SetEncrypt {
     return ( 0, $self->loc('Permission Denied') )
         unless $self->CurrentUserHasRight('AdminQueue');
 
-    return $self->SetAttribute(
+    my ($status, $msg) = $self->SetAttribute(
         Name        => 'Encrypt',
         Description => 'Encrypt outgoing messages by default',
         Content     => $value,
     );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc('Encrypting enabled')) if $value;
+    return ($status, $self->loc('Encrypting disabled'));
 }
 
 # {{{ sub Templates
