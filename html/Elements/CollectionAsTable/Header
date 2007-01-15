@@ -56,13 +56,13 @@ $Page         => undef
 $maxitems     => undef
 </%ARGS>
 <tr class="collection-as-table">
-<%perl>
+<%PERL>
 
 my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format => $FormatString );
 
 my $item = 0;
-foreach my $col (@Format) {
-    my $title = $col->{title} || '';
+foreach my $col ( @Format ) {
+    my $title = $col->{'title'} || '';
     if ( $title eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
@@ -75,7 +75,7 @@ foreach my $col (@Format) {
     } elsif ( $title eq 'NBSP' ) {
         $item++;
         $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
-	next;
+        next;
     }
 
     $item++;
@@ -107,35 +107,22 @@ foreach my $col (@Format) {
         }
     }
 
-    if (
-           $AllowSorting
-        && $col->{'attribute'}
-        && $m->comp(
+    if ( $AllowSorting and $col->{'attribute'}
+        and my $attr = $m->comp(
             "/Elements/$Class/ColumnMap",
             Name => $col->{'attribute'},
             Attr => 'attribute'
         )
       )
     {
-
         $m->out(
             '<a href="' . $BaseURL
-              . $m->comp(
-                '/Elements/QueryString',
+            . $m->comp( '/Elements/QueryString',
                 %generic_query_args,
-                OrderBy => (
-                    $m->comp(
-                        "/Elements/$Class/ColumnMap",
-                        Name => $col->{'attribute'},
-                        Attr => 'attribute'
-                      )
-                      || $col->{'attribute'}
-                ),
-                Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
-              )
-              . '">'
-              . $title
-              . '</a>'
+                OrderBy => $attr || $col->{'attribute'},
+                Order   => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
+            )
+            . '">'. $title .'</a>'
         );
     }
     else {
@@ -143,5 +130,5 @@ foreach my $col (@Format) {
     }
     $m->out('</th>');
 }
-</%perl>
+</%PERL>
 </tr>
