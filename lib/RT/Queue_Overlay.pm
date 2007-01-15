@@ -366,10 +366,11 @@ sub Create {
         return ( 0, $self->loc('Queue already exists') );
     }
 
+    my %attrs = map {$_ => 1} $self->ReadableAttributes;
+
     #TODO better input validation
     $RT::Handle->BeginTransaction();
-
-    my $id = $self->SUPER::Create(%args);
+    my $id = $self->SUPER::Create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
     unless ($id) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
