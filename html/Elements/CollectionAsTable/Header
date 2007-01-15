@@ -45,20 +45,26 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Class        => 'RT__Ticket'
+
 @Format       => undef
 $FormatString => undef
-$AllowSorting => undef
 $Order        => undef
-$BaseURL      => undef
 $Query        => undef
 $Rows         => undef
 $Page         => undef
+
 $maxitems     => undef
+
+$AllowSorting  => undef
+$BaseURL       => undef
+@PassArguments => qw(Query Format Rows Page Order OrderBy)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>
 
-my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page, Format => $FormatString );
+my %generic_query_args = map { $_ => $ARGS{$_} } @PassArguments;
+# backward compatibility workaround
+$generic_query_args{'Format'} = $FormatString if grep $_ eq 'Format', @PassArguments;
 
 my $item = 0;
 foreach my $col ( @Format ) {
