@@ -53,11 +53,8 @@
 
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
-%if ($Create ) { 
-<input type="hidden" class="hidden" name="id" value="new" />
-% } else {
-<input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>" />
-% }
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
 <table>
 <tr><td align="right"><&|/l&>Queue Name</&>:</td>
@@ -93,8 +90,7 @@
 </tr>
 
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /></td>
-<td colspan="3"><input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
+<td colspan="3"><&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>
 
@@ -105,34 +101,30 @@
 
 
 <%INIT>
-my $current_tab;
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id);
-my  ($title, @results, $Disabled, $EnabledChecked);
-$EnabledChecked = "CHECKED";
+my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj->Load( $id ) if !$id || $id eq 'new';
+
+$EnabledChecked = "checked";
 
 if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
 } else {
-    if ($id eq 'new') {
-       my ($val, $msg) =  $QueueObj->Create(Name => $Name);
-       delete $session{'create_in_queues'};
-       if ($val == 0 ) {
-           Abort("$msg");
-	}
-	else {
+    if ( $id eq 'new' ) {
+        my ($val, $msg) = $QueueObj->Create( Name => $Name );
+        Abort("$msg") unless $val;
+        delete $session{'create_in_queues'};
 		push @results, $msg;
-	}    
-     }
-     else {
-        $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort("Couldn't load queue '$Name'");
     }
-        $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
+    else {
+        $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
+    }
+    $title = loc('Editing configuration for queue [_1]', $QueueObj->Name);
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
-if ($QueueObj->Id) {
+if ( $QueueObj->Id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt Disabled);
