@@ -349,9 +349,11 @@ sub Create {
         CorrespondAddress => '',
         Description       => '',
         CommentAddress    => '',
-        InitialPriority   => "0",
-        FinalPriority     => "0",
-        DefaultDueIn      => "0",
+        InitialPriority   => 0,
+        FinalPriority     => 0,
+        DefaultDueIn      => 0,
+        Sign              => undef,
+        Encrypt           => undef,
         @_
     );
 
@@ -378,8 +380,19 @@ sub Create {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
     }
+    $RT::Handle->Commit;
 
-    $RT::Handle->Commit();
+    if ( defined $args{'Sign'} ) {
+        my ($status, $msg) = $self->SetSign( $args{'Sign'} );
+        $RT::Logger->error("Couldn't set attribute 'Sign': $msg")
+            unless $status;
+    }
+    if ( defined $args{'Encrypt'} ) {
+        my ($status, $msg) = $self->SetEncrypt( $args{'Encrypt'} );
+        $RT::Logger->error("Couldn't set attribute 'Encrypt': $msg")
+            unless $status;
+    }
+
     return ( $id, $self->loc("Queue created") );
 }
 
@@ -465,6 +478,56 @@ sub ValidateName {
 }
 
 # }}}
+
+=head2 SetSign
+
+=cut
+
+sub Sign {
+    my $self = shift;
+    my $value = shift;
+
+    return undef unless $self->CurrentUserHasRight('SeeQueue');
+    my $attr = $self->FirstAttribute('Sign') or return 0;
+    return $attr->Content;
+}
+
+sub SetSign {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    return $self->SetAttribute(
+        Name        => 'Sign',
+        Description => 'Sign outgoing messages by default',
+        Content     => $value,
+    );
+}
+
+sub Encrypt {
+    my $self = shift;
+    my $value = shift;
+
+    return undef unless $self->CurrentUserHasRight('SeeQueue');
+    my $attr = $self->FirstAttribute('Encrypt') or return 0;
+    return $attr->Content;
+}
+
+sub SetEncrypt {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    return $self->SetAttribute(
+        Name        => 'Encrypt',
+        Description => 'Encrypt outgoing messages by default',
+        Content     => $value,
+    );
+}
 
 # {{{ sub Templates
 
