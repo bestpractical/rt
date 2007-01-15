@@ -72,10 +72,6 @@ package RT::User;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(%_USERS_KEY_CACHE);
-
-%_USERS_KEY_CACHE = ();
-
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
