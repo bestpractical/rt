@@ -81,9 +81,8 @@ sub callback {
         @$callbacks = sort map { 
                 # Skip backup files, files without a leading package name,
                 # and files we've already seen
-                grep      !$seen{$_}++ && !m'/.' && !/~$/
-                       && m{^/Callbacks/[^/]+\Q$page/$name\E$},
-                     $self->interp->resolver->glob_path($path, $_);
+                grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
+                $self->interp->resolver->glob_path($path, $_);
             } @roots;
 
         $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
