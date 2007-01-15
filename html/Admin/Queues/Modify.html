@@ -60,52 +60,43 @@
 % }
 
 <table>
-<tr><td align="right">
-<&|/l&>Queue Name</&>: 
-</td>
-<td><input name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>" /></td>
-</tr><tr>
-<td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td></tr>
-<tr>
-<td align="right">
-<&|/l&>Reply Address</&>:
-</td><td>
-<input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span>
-</td>
-<td align="right">
-
-<&|/l&>Comment Address</&>: </td><td>
-<input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
-</td>
-</tr><tr>
-
-<td align="right">
-<&|/l&>Priority starts at</&>: 
-</td><td><input name="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>" />
-</td>
-<td align="right">
-<&|/l&>Over time, priority moves toward</&>:
-</td><td><input name="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>" />
-</td>
+<tr><td align="right"><&|/l&>Queue Name</&>:</td>
+<td colspan="3"><input name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>" /></td>
 </tr>
-<tr>
-<td align="right">
-<&|/l&>Requests should be due in</&>:
-</td><td>
-<input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>" /> <&|/l&>days</&>.
-</td>
+
+<tr><td align="right"><&|/l&>Description</&>:</td>
+<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td>
 </tr>
-<tr>
-<td>
-</td>
-<td colspan="4"><input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
+
+<tr><td align="right"><&|/l&>Reply Address</&>:</td>
+<td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
+<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
+<td align="right"><&|/l&>Comment Address</&>:</td>
+<td><input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>" />
+<br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
+</tr>
+
+<tr><td align="right"><&|/l&>Priority starts at</&>:</td>
+<td><input name="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>" /></td>
+<td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
+<td><input name="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>" /></td>
+</tr>
+
+<tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
+<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
+</tr>
+
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked': '' %> /></td>
+<td><&|/l&>Sign by default</&></td>
+<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked': '' %> /></td>
+<td><&|/l&>Encrypt by default</&></td>
+</tr>
+
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /></td>
+<td colspan="3"><input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
-</td>
-</tr>
+</td></tr>
 
 </table>
 <& /Elements/Submit, Label => loc('Save Changes') &>
@@ -141,35 +132,34 @@ if ($Create) {
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
-if ($QueueObj->Id()) {
+if ($QueueObj->Id) {
     delete $session{'create_in_queues'};
-my @attribs= qw(Description CorrespondAddress CommentAddress Name 
-                InitialPriority FinalPriority DefaultDueIn);
+    my @attribs= qw(Description CorrespondAddress CommentAddress Name
+        InitialPriority FinalPriority DefaultDueIn Sign Encrypt Disabled);
 
-  @results = UpdateRecordObject( AttributesRef => \@attribs, 
-				    Object => $QueueObj, 
-				    ARGSRef => \%ARGS);
+    # we're asking about enabled on the web page but really care about disabled
+    if ( $SetEnabled ) {
+        $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+        $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
+            qw(Sign Encrypt Disabled);
+    }
 
-  #we're asking about enabled on the web page but really care about disabled.
-  if ($Enabled == 1) {
-      $Disabled = 0;
-  }	
-  else {
-      $Disabled = 1;
-  }
-  if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
-      my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
-      push @results, loc('Enabled status: [_1]', loc_fuzzy($msg));
-  }
-  
-  if ($QueueObj->Disabled()) {
-      $EnabledChecked ="";
-  }
+    push @results, UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object => $QueueObj, 
+        ARGSRef => \%ARGS
+    );
+
+    $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+
+    $EnabledChecked = "" if $QueueObj->Disabled;
 
     my @linkresults;
-    $m->comp('/Elements/Callback', results => \@linkresults, 
-	     RecordObj => $QueueObj, ARGSRef => \%ARGS, 
-	     _CallbackName => 'ProcessLinks');
+    $m->comp('/Elements/Callback',
+        results => \@linkresults, 
+	    RecordObj => $QueueObj, ARGSRef => \%ARGS, 
+	    _CallbackName => 'ProcessLinks'
+    );
     push @results, @linkresults;
 }
 </%INIT>
