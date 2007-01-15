@@ -57,7 +57,7 @@ $Class     => 'RT__Ticket'
 <%PERL>
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
-foreach my $column (@Format) {
+foreach my $column ( @Format ) {
     if ( $column->{title} && $column->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
@@ -75,45 +75,43 @@ foreach my $column (@Format) {
 
     $m->out('<td class="collection-as-table" ');
     $m->out( 'align="' . $column->{align} . '"' ) if $column->{align};
-    $m->out( 'style="' . $column->{style} . '"' ) if ( $column->{style} );
+    $m->out( 'style="' . $column->{style} . '"' ) if $column->{style};
     $m->out('>');
 
     foreach my $subcol ( @{ $column->{output} } ) {
-        if ( $subcol =~ /^__(.*?)__$/o ) {
-            my $col   = $1;
-
-            unless ( exists $ColumnMap->{ $col } ) {
-                $ColumnMap->{ $col } = $m->comp(
-                    "/Elements/$Class/ColumnMap",
-                    Name => $col,
-                    Attr => 'value'
-                );
-            }
-
-            my $value = $ColumnMap->{ $col };
-            my @out;
-
-            if ( $value && ref($value) ) {
-
-                # All HTML snippets are returned by the callback function
-                # as scalar references.  Data fetched from the objects are
-                # plain scalars, and needs to be escaped properly.
-                @out =
-                    map {
-                        ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' )
-                      } &{$value}( $record, $i );
-            }
-            else {
-
-                # Simple value; just escape it.
-                @out = $m->interp->apply_escapes( $value => 'h' );
-            }
-            s/\n/<br \/>/gs for @out;
-            $m->out( @out );
+        unless ( $subcol =~ /^__(.*?)__$/ ) {
+            $m->out( $subcol );
+            next;
         }
-        else {
-            $m->out($subcol);
+
+        my $col = $1;
+        unless ( exists $ColumnMap->{ $col } ) {
+            $ColumnMap->{ $col } = $m->comp(
+                "/Elements/$Class/ColumnMap",
+                Name => $col,
+                Attr => 'value'
+            );
         }
+
+        my $value = $ColumnMap->{ $col };
+        my @out;
+
+        if ( ref $value ) {
+
+            # All HTML snippets are returned by the callback function
+            # as scalar references.  Data fetched from the objects are
+            # plain scalars, and needs to be escaped properly.
+            @out = grep defined && length, map {
+                ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' )
+            } $value->( $record, $i );
+        }
+        elsif ( defined $value && length $value ) {
+
+            # Simple value; just escape it.
+            @out = $m->interp->apply_escapes( $value => 'h' );
+        }
+        s/\n/<br \/>/gs for @out;
+        $m->out( @out ) if @out;
     }
     $m->out('</td>');
 }
