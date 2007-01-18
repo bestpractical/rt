@@ -51,10 +51,10 @@ while ( my $requestor = $people->Next ) {
     next if $requestor->Privileged;
     my $name = $m->scomp('ShowUserEntry', User => $requestor);
 
-my $tickets = RT::Tickets->new($session{'CurrentUser'});
-$tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
-$tickets->RowsPerPage($rows);
-$tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
+    $tickets->RowsPerPage( $rows );
+    $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
 </%PERL>
 
 <&| /Widgets/TitleBox,
