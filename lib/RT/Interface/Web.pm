@@ -364,7 +364,7 @@ sub CreateTicket {
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
-        TimeEstimated        => $ARGS{'TimeEstimated'},
+        TimeEstimated   => $ARGS{'TimeEstimated'},
         TimeWorked      => $ARGS{'TimeWorked'},
         Requestor       => \@Requestors,
         Cc              => \@Cc,
@@ -405,10 +405,7 @@ sub CreateTicket {
         }
     }
 
-
-    # XXX TODO This code should be about six lines. and badly needs refactoring.
- 
-    # {{{ turn new link lists into arrays, and pass in the proper arguments
+    # turn new link lists into arrays, and pass in the proper arguments
     my %map = (
         'new-DependsOn' => 'DependsOn',
         'DependsOn-new' => 'DependedOnBy',
@@ -422,8 +419,6 @@ sub CreateTicket {
         $create_args{ $map{ $key } } = [ grep $_, split ' ', $ARGS{ $key } ];
         
     }
-    # }}}
-  
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
