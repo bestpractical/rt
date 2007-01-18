@@ -581,50 +581,45 @@ sub LoadOrCreateByEmail {
     my $self = shift;
     my $email = shift;
 
-        my ($val, $message);
+    my ($message, $name);
+    if ( UNIVERSAL::isa( $email => 'Mail::Address' ) ) {
+        ($email, $name) = ($email->address, $email->phrase);
+    } else {
+	    ($email, $name) = RT::Interface::Email::ParseAddressFromHeader( $email );
+    }
 
-	my ( $Address, $Name ) =
-	RT::Interface::Email::ParseAddressFromHeader($email);
-	$email = $Address;
+    $self->LoadByEmail( $email );
+	$self->Load( $email ) unless $self->Id;
+    $message = $self->loc('User loaded');
 
-        $self->LoadByEmail($email);
-        $message = $self->loc('User loaded');
-        unless ($self->Id) {
-		$self->Load($email);
-	}
-	unless($self->Id) {
-            ( $val, $message ) = $self->Create(
-                Name => $email,
-                EmailAddress => $email,
-                RealName     => $Name,
-                Privileged   => 0,
-                Comments     => 'Autocreated when added as a watcher');
-            unless ($val) {
-                # Deal with the race condition of two account creations at once
-                $self->LoadByEmail($email);
-                unless ($self->Id) {
-                    sleep 5;
-                    $self->LoadByEmail($email);
-                }
-                if ($self->Id) {
-                    $RT::Logger->error("Recovered from creation failure due to race condition");
-                    $message = $self->loc("User loaded");
-                }
-                else {
-                    $RT::Logger->crit("Failed to create user ".$email .": " .$message);
-                }
+	unless( $self->Id ) {
+        my $val;
+        ($val, $message) = $self->Create(
+            Name         => $email,
+            EmailAddress => $email,
+            RealName     => $Name,
+            Privileged   => 0,
+            Comments     => 'Autocreated when added as a watcher',
+        );
+        unless ( $val ) {
+            # Deal with the race condition of two account creations at once
+            $self->LoadByEmail( $email );
+            unless ( $self->Id ) {
+                sleep 5;
+                $self->LoadByEmail( $email );
+            }
+            if ( $self->Id ) {
+                $RT::Logger->error("Recovered from creation failure due to race condition");
+                $message = $self->loc("User loaded");
+            }
+            else {
+                $RT::Logger->crit("Failed to create user ". $email .": " .$message);
             }
         }
-
-        if ($self->Id) {
-            return($self->Id, $message);
-        }
-        else {
-            return(0, $message);
-        }
-
-
     }
+    return (0, $message) unless $self->id;
+    return ($self->Id, $message);
+}
 
 # }}}
 
