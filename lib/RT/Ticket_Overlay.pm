@@ -1344,8 +1344,7 @@ sub AddWatcher {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+            unless ( $self->CurrentUserHasRight('WatchAsAdminCc') ) {
                 return ( 0, $self->loc('Permission Denied'))
             }
         }
@@ -1353,9 +1352,7 @@ sub AddWatcher {
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
         elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('Watch') ) {
+            unless ( $self->CurrentUserHasRight('Watch') ) {
                 return ( 0, $self->loc('Permission Denied'))
             }
         }
@@ -1369,9 +1366,7 @@ sub AddWatcher {
     # and the current user  doesn't have 'ModifyTicket'
     # bail
     else {
-        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     # }}}
