@@ -1328,6 +1328,9 @@ sub AddWatcher {
         @_
     );
 
+    return $self->_AddWatcher( %args )
+        if $self->CurrentUserHasRight('ModifyTicket');
+
     # XXX, FIXME, BUG: if only email is provided then we only check
     # for ModifyTicket right, but must try to get PrincipalId and
     # check Watch* rights too if user exist
