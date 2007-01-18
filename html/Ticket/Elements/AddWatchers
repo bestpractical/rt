@@ -43,9 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<br />
-<%$msg%><br />
-
 <&|/l&>Add new watchers</&>:<br />
 
 <table>
@@ -94,7 +91,7 @@
 </table>
 
 <%INIT>
-my ($msg, $Users, $Groups);
+my ($Users, $Groups);
 
 if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
