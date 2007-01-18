@@ -1328,50 +1328,48 @@ sub AddWatcher {
         @_
     );
 
+    # ModifyTicket works in any case
     return $self->_AddWatcher( %args )
         if $self->CurrentUserHasRight('ModifyTicket');
 
-    # XXX, FIXME, BUG: if only email is provided then we only check
-    # for ModifyTicket right, but must try to get PrincipalId and
-    # check Watch* rights too if user exist
+    if ( $args{'Email'} ) {
+        my ($addr) = Mail::Address->parse( $args{'Email'} );
+        return (0, $self->loc("Couldn't parse address from '[_1] string", $args{'Email'} ))
+            unless $addr;
 
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
-       or    lc( $self->CurrentUser->UserObj->EmailAddress )
-          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) ))
-    {
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-        else {
-            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
+        if ( lc $self->CurrentUser->UserObj->EmailAddress
+            eq lc RT::User->CanonicalizeEmailAddress( $addr->address ) )
+        {
+            $args{'PrincipalId'} = $self->CurrentUser->id;
+            delete $args{'Email'};
         }
     }
 
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyTicket'
+    # If the watcher isn't the current user then the current user has no right
     # bail
-    else {
+    unless ( $args{'PrincipalId'} && $self->CurrentUser->id == $args{'PrincipalId'} ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    # }}}
+    #  If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+    if ( $args{'Type'} eq 'AdminCc' ) {
+        unless ( $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
 
-    return ( $self->_AddWatcher(%args) );
+    #  If it's a Requestor or Cc and they don't have 'Watch', bail
+    elsif ( $args{'Type'} eq 'Cc' || $args{'Type'} eq 'Requestor' ) {
+        unless ( $self->CurrentUserHasRight('Watch') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+    else {
+        $RT::Logger->warning( "AddWatcher got passed a bogus type");
+        return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
+    }
+
+    return $self->_AddWatcher( %args );
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
