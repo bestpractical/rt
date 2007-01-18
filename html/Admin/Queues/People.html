@@ -93,9 +93,11 @@
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
-"Queue-AddWatcher-Principal-".$u->PrincipalId &> <%$u->Name%>
-(<%$u->RealName%>)
+<li><& /Elements/SelectWatcherType,
+    Scope => 'queue',
+    Name => "Queue-AddWatcher-Principal-". $u->PrincipalId,
+&>
+<& /Ticket/Elements/ShowUserEntry, User => $u &></li>
 % }
 </ul>
 % }

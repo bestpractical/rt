@@ -82,7 +82,7 @@
 <ul>
 % while (my $member = $UserMembers->Next()) {
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<%$member->MemberId%>" value="1" />
-<%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
+<& /Ticket/Elements/ShowUserEntry, User => $member->MemberObj->Object &>
 % }
 </ul>
 <&|/l&>Groups</&>

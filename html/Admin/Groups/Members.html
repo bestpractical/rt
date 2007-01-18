@@ -80,7 +80,7 @@
 % while ( my $user = $Users->Next ) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<% $user->Name %> (<% $user->RealName %>)
+<& '/Ticket/Elements/ShowUserEntry', User => $user &></li>
 % }
 </ul>
 <&|/l&>Groups</&>
