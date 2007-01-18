@@ -69,14 +69,15 @@ $r->content_type('application/rss+xml');
 
 
     while ( my $Ticket = $Tickets->Next()) {
-       my $row;
+        my $creator_str = $m->scomp('/Ticket/Elements/ShowUserEntry', User => $Ticket->CreatorObj);
+        $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->Subject,
           link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
           dc => {
             subject  => ($Ticket->Subject  || loc('No subject')),
-            creator  => $Ticket->CreatorObj->RealName . "<".$Ticket->CreatorObj->EmailAddress.">",
+            creator  => $creator_str,
           },
         );
     }
