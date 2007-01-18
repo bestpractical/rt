@@ -45,21 +45,22 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 %# Print out a placeholder if there are none.
-%if ($Members->Count == 0 ) {
+% unless ( $Members->Count ) {
 <li><i><&|/l&>none</&></i></li>
 % }
 
 
-%while (my $watcher=$Members->Next) {
+% while ( my $watcher = $Members->Next ) {
+% my $member = $watcher->MemberObj->Object;
 <li>
-<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<%$Watchers->Type%>-Principal-<%$watcher->MemberId%>" value="1" unchecked />
-%if ($watcher->MemberObj->IsUser) { 
-<a href="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
-<%$watcher->MemberObj->Object->Name%></a>
-%} else {
-<a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
-<%$watcher->MemberObj->Object->Name%></a>
-%}
+<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Type %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
+% if ( $member->isa( 'RT::User' ) ) { 
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
+<% $member->Name %></a>
+% } else {
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $watcher->MemberId %>">
+<% $member->Name %></a>
+% }
 </li>
 % }
 </ul>
@@ -70,6 +71,3 @@ my $Members = $Watchers->MembersObj;
 $TicketObj => undef
 $Watchers => undef
 </%ARGS>
-
-
-
