@@ -540,13 +540,11 @@ sub Create {
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        next unless ( defined $args{$type} );
-        foreach my $watcher (
-            ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+        foreach my $watcher ( grep $_ && !/^\d+$/,
+            ref $args{$type}? @{ $args{$type} } : $args{$type} )
         {
-            my $user = RT::User->new($RT::SystemUser);
-            $user->LoadOrCreateByEmail($watcher)
-              if ( $watcher && $watcher !~ /^\d+$/ );
+            my $user = RT::User->new( $RT::SystemUser );
+            $user->LoadOrCreateByEmail( $watcher )
         }
     }
 
@@ -572,18 +570,19 @@ sub Create {
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
     foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
-        $params{$attr} = $args{$attr} if ( $args{$attr} );
+        $params{$attr} = $args{$attr} if $args{$attr};
     }
 
     # Delete null integer parameters
     foreach my $attr
-      qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority) {
+        qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority)
+    {
         delete $params{$attr}
           unless ( exists $params{$attr} && $params{$attr} );
     }
 
     # Delete the time worked if we're counting it in the transaction
-    delete $params{TimeWorked} if $args{'_RecordTransaction'};
+    delete $params{'TimeWorked'} if $args{'_RecordTransaction'};
 
     my ($id,$ticket_message) = $self->SUPER::Create( %params );
     unless ($id) {
@@ -599,10 +598,9 @@ sub Create {
         Field => 'EffectiveId',
         Value => ( $args{'EffectiveId'} || $id )
     );
-
-    unless ($val) {
-        $RT::Logger->crit("$self ->Create couldn't set EffectiveId: $msg\n");
-        $RT::Handle->Rollback();
+    unless ( $val ) {
+        $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
+        $RT::Handle->Rollback;
         return ( 0, 0,
             $self->loc("Ticket could not be created due to an internal error")
         );
@@ -631,42 +629,27 @@ sub Create {
     # {{{ Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        next unless ( defined $args{$type} );
-        foreach my $watcher (
-            ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+        foreach my $watcher ( grep $_,
+            ref $args{$type}? @{ $args{$type} } : $args{$type} )
         {
-
-            # If there is an empty entry in the list, let's get out of here.
-            next unless $watcher;
 
             # we reason that all-digits number must be a principal id, not email
             # this is the only way to can add
             my $field = 'Email';
             $field = 'PrincipalId' if $watcher =~ /^\d+$/;
 
-            my ( $wval, $wmsg );
+            # Note that we're using AddWatcher, rather than _AddWatcher, as we
+            # actually _want_ that ACL check. Otherwise, random ticket creators
+            # could make themselves adminccs and maybe get ticket rights. that would
+            # be poor
+            my $method = $type eq 'AdminCc'? 'AddWatcher': '_AddWatcher';
 
-            if ( $type eq 'AdminCc' ) {
-
-        # Note that we're using AddWatcher, rather than _AddWatcher, as we
-        # actually _want_ that ACL check. Otherwise, random ticket creators
-        # could make themselves adminccs and maybe get ticket rights. that would
-        # be poor
-                ( $wval, $wmsg ) = $self->AddWatcher(
-                    Type   => $type,
-                    $field => $watcher,
-                    Silent => 1
-                );
-            }
-            else {
-                ( $wval, $wmsg ) = $self->_AddWatcher(
-                    Type   => $type,
-                    $field => $watcher,
-                    Silent => 1
-                );
-            }
-
-            push @non_fatal_errors, $wmsg unless ($wval);
+            my ($val, $msg) = $self->$method(
+                Type   => $type,
+                $field => $watcher,
+                Silent => 1,
+            );
+            push @non_fatal_errors, $msg unless $val;
         }
     }
 
