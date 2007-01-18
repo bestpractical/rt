@@ -81,11 +81,11 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 
 my @results;
 
-if ($ARGS{'QuickCreate'} ) {
+if ( $ARGS{'QuickCreate'} ) {
     my $ticket = RT::Ticket->new($session{'CurrentUser'});
     my ($tid, $trans, $tmsg) = $ticket->Create(Queue => $ARGS{'Queue'},
                     Owner => $ARGS{'Owner'},
-                    Requestor => $session{'CurrentUser'}->UserObj->EmailAddress,
+                    Requestor => $session{'CurrentUser'}->id,
                     Subject => $ARGS{'Subject'});
 
 
