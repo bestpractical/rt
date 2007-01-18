@@ -597,7 +597,7 @@ sub LoadOrCreateByEmail {
         ($val, $message) = $self->Create(
             Name         => $email,
             EmailAddress => $email,
-            RealName     => $Name,
+            RealName     => $name,
             Privileged   => 0,
             Comments     => 'Autocreated when added as a watcher',
         );
