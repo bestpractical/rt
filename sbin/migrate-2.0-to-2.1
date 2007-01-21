@@ -69,6 +69,7 @@ while ( my $cf = $cfs->Next ) {
     #
     # find out which classes its tied to
 
+    use RT::FM::ClassCustomFieldCollection;
     my $cf_classes = RT::FM::ClassCustomFieldCollection->new($RT::SystemUser);
     $cf_classes->Limit( FIELD => 'CustomField', VALUE => $cf->id);
     my @classes;
@@ -149,6 +150,7 @@ while ( my $cf = $cfs->Next ) {
 }
 
 # Find all articles
+    use RT::FM::ArticleCollection;
 my $articles = RT::FM::ArticleCollection->new($RT::SystemUser);
 $articles->UnLimit();
 
@@ -161,6 +163,7 @@ while ( my $article = $articles->Next ) {
 
     #       find its custom fields
 
+    use RT::FM::ArticleCFValueCollection;
     my $cfvs = RT::FM::ArticleCFValueCollection->new($RT::SystemUser);
     $cfvs->LimitToArticle( $article->id );
 
