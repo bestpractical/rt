@@ -75,8 +75,8 @@ use RT::Base;
 use RT::Attribute;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw/RT::Base/;
+use warnings;
+use base qw/RT::Base/;
 
 sub new  {
     my $proto = shift;
