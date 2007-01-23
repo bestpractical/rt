@@ -199,7 +199,8 @@ sub Create {
         unless ( $queue->CurrentUserHasRight('AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
+        $args{'LookupType'} = 'RT::Queue-RT::Ticket';
+        $args{'Queue'} = $queue->Id;
     }
 
     my ($ok, $msg) = $self->_IsValidRegex($args{'Pattern'});
