@@ -43,10 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select multiple name="<%$Name%>"  size="10">
-%while (my $user = $users->Next) {
-<option value="<%$user->id%>"><%$user->Name%>
-%}
+<select multiple name="<% $Name %>"  size="10">
+% while ( my $user = $users->Next ) {
+<option value="<% $user->id %>">\
+<& /Ticket/Elements/ShowUserEntry, User => $user &>\
+</option>
+% }
 </select>
 
 <%INIT>

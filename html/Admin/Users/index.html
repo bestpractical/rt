@@ -51,18 +51,19 @@
 <h1><%$caption%></h1>
 <p><&|/l&>Select a user</&>:</p>
 <ul>
-%if ($users->Count == 0) {
+% unless ( $users->Count ) {
 <li><em><&|/l&>No users matching search criteria found.</&></em></li>
 % }
-%my @ids;
-%while ( $user = $users->Next) {
+
+% my @ids;
+% while ( $user = $users->Next ) {
 %    push @ids, $user->Id;
-<li><a href="Modify.html?id=<%$user->id%>"><%$user->Name || loc('(no name listed)')%></a></li>
+<li><a href="Modify.html?id=<% $user->id %>"><& /Ticket/Elements/ShowUserEntry, User => $user &></a></li>
 %}
 </ul>
-%if (my $ids = join(',', @ids)) {
+% if ( my $ids = join(',', @ids) ) {
 <em>(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
-%}
+% }
 
 <br /><br />
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">

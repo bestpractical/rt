@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %while ( $user = $users->Next) {
-<a href="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a><br />
+<a href="Modify.html?id=<%$user->id%>"><%$user->id%>: <& /Ticket/Elements/ShowUserEntry, User => $user &></a><br />
 %}
 <%INIT>
 my ($user);

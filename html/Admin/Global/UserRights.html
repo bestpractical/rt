@@ -52,30 +52,26 @@
   <form method="post" action="UserRights.html">
       
 <&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
-      
 <table>
-        
-%	while (my $Member = $Users->Next()) {
-% my $UserObj = $Member->MemberObj->Object();
+
+% while ( my $Member = $Users->Next ) {
+% my $UserObj = $Member->MemberObj->Object;
 % my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <tr align="right"> 
-	<td valign="top">
-	    <% $UserObj->Name %>
-		  </td>
-	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $group->PrincipalId,
-        Object => $RT::System  &>
-	  </td>
-	</tr>
+% $group->LoadACLEquivalenceGroup( $Member->MemberObj );
+  <tr align="right">
+	<td valign="top"><& /Ticket/Elements/ShowUserEntry, User => $UserObj &></td>
+	<td><& /Admin/Elements/SelectRights,
+        PrincipalId => $group->PrincipalId,
+        Object => $RT::System,
+    &></td>
+  </tr>
 % }
 </table>
-            
-      </&>
-      <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
+</&>
+
+<& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
       
-  </form>
-  
+</form> 
 <%INIT>
  
   #Update the acls.

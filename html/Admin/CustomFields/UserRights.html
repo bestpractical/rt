@@ -60,9 +60,7 @@ Title => $title, &>
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
   <tr align="right"> 
-	<td valign="top">
-	    <% $UserObj->Name %>
-		  </td>
+	<td valign="top"><& /Ticket/Elements/ShowUserEntry, User => $UserObj &></td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
         Object => $CustomFieldObj  &>

@@ -54,29 +54,25 @@
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
 <&| /Widgets/TitleBox, title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
-      
 <table>
-        
-%	while (my $Member = $Users->Next()) {
-% my $UserObj = $Member->MemberObj->Object();
-  <tr align="right"> 
-	<td valign="top">
-	    <% $UserObj->Name %>
-		  </td>
-	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Member->MemberObj->Id,
-        PrincipalType => 'User', 
-        Object => $GroupObj  &>
-	  </td>
-	</tr>
+% while ( my $Member = $Users->Next ) {
+% my $UserObj = $Member->MemberObj->Object;
+  <tr align="right">
+    <td valign="top"><& /Ticket/Elements/ShowUserEntry, User => $UserObj &></td>
+    <td><& /Admin/Elements/SelectRights,
+        PrincipalId => $Member->MemberObj->Id,
+        PrincipalType => 'User',
+        Object => $GroupObj,
+    &></td>
+  </tr>
 % }
-      </table>
-            
-      </&>
-      <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
-      
-  </form>
-  
+</table>
+</&>
+
+<& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
+
+</form>
+
 <%INIT>
  
   #Update the acls.
