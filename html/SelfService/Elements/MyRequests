@@ -54,19 +54,14 @@
 </&>
 
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $EmailAddress = $session{'CurrentUser'}->EmailAddress;
-my $Role = shift @roles;
-my $Query = "( ";
-$Query .= $Role . " = '" . $EmailAddress . "'";
-foreach $Role (@roles) {
-   $Query .= " OR " . $Role . " = '" . $EmailAddress . "'";
-}
-$Query .= " )";
-if (@status) {
-   $Query .= " AND ( Status = '";
-   $Query .= join "' OR Status = '", @status; 
-   $Query .= "' )";
+my $id = $session{'CurrentUser'}->id;
+my $Query = "( "
+    . join( ' OR ', map "$_.id = $id", @roles )
+    . ")";
+if ( @status ) {
+    $Query .= " AND ( "
+        . join( ' OR ', map "Status = '$_'", @status )
+        . " )";
 }
 my $Order = "ASC";
 my $OrderBy = "Created";
@@ -78,8 +73,8 @@ my @Format = qq{
    OwnerName};
 </%INIT>
 <%ARGS>
-$title => undef
 $friendly_status => loc('open')
+$title => loc("My [_1] tickets", $friendly_status)
 @roles => ('Requestor', 'Cc', 'AdminCc')
 @status => ('open', 'new', 'stalled')
 $BaseURL => undef
