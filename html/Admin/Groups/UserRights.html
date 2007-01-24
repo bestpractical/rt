@@ -58,7 +58,7 @@
 % while ( my $Member = $Users->Next ) {
 % my $UserObj = $Member->MemberObj->Object;
   <tr align="right">
-    <td valign="top"><& /Ticket/Elements/ShowUserEntry, User => $UserObj &></td>
+    <td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
     <td><& /Admin/Elements/SelectRights,
         PrincipalId => $Member->MemberObj->Id,
         PrincipalType => 'User',

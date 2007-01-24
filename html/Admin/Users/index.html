@@ -58,7 +58,7 @@
 % my @ids;
 % while ( $user = $users->Next ) {
 %    push @ids, $user->Id;
-<li><a href="Modify.html?id=<% $user->id %>"><& /Ticket/Elements/ShowUserEntry, User => $user &></a></li>
+<li><a href="Modify.html?id=<% $user->id %>"><& /Elements/ShowUser, User => $user &></a></li>
 %}
 </ul>
 % if ( my $ids = join(',', @ids) ) {

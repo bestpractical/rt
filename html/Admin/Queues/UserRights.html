@@ -61,7 +61,7 @@
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
   <tr align="right"> 
-	<td valign="top"><& /Ticket/Elements/ShowUserEntry, User => $UserObj &></td>
+	<td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
         Object => $QueueObj  &>

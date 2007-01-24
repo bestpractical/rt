@@ -46,7 +46,7 @@
 <select multiple name="<% $Name %>"  size="10">
 % while ( my $user = $users->Next ) {
 <option value="<% $user->id %>">\
-<& /Ticket/Elements/ShowUserEntry, User => $user &>\
+<& /Elements/ShowUser, User => $user &>\
 </option>
 % }
 </select>

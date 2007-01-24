@@ -54,7 +54,7 @@
 %} elsif ($ValueAttribute eq 'Name') {
     value="<%$User->Name%>"
 %}
-><& /Ticket/Elements/ShowUserEntry, User => $User &></option>
+><& /Elements/ShowUser, User => $User &></option>
 %}
 </select>
 <%INIT>

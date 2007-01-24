@@ -49,7 +49,7 @@ my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::Syst
 my $people = $Ticket->Requestors->UserMembersObj;
 while ( my $requestor = $people->Next ) {
     next if $requestor->Privileged;
-    my $name = $m->scomp('ShowUserEntry', User => $requestor);
+    my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
     $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
