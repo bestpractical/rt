@@ -374,7 +374,7 @@ if ( $UserObj->Id ) {
 
 
 # {{{ Do some setup for the ui
-unless ($UserObj->Disabled()) {
+unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked ="CHECKED";
 }
 
