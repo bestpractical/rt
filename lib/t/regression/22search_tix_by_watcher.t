@@ -212,4 +212,21 @@ my $nobody = RT::Nobody();
     is($tix->Count, 2, "found ticket(s)");
 }
 
+
+@data = ( { Subject => '4', Requestor => [ 'charly@example.com', 'bravo@example.com' ] } );
+add_tix_from_data();
+
+diag "Requestor = 'x' AND Requestor = 'y'" if $ENV{'TEST_VERBOSE'};
+{
+    my $tix = RT::Tickets->new($RT::SystemUser);
+    $tix->FromSQL("Queue = '$queue' AND
+                   (Requestor = 'bravo\@example.com' AND Requestor = 'charly\@example.com')");
+    is($tix->Count, 1, "found ticket(s)");
+    is_deeply( [sort $tix->First->RequestorAddresses],
+               ['bravo@example.com', 'charly@example.com'],
+               "requestor addresses are correct"
+             );
+}
+
+
 exit(0)
