@@ -62,17 +62,18 @@
 # XXX: we don't use this, but should.
 my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
+my $user = $session{'CurrentUser'}->UserObj;
 $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $Portlets = $session{'my_rt_portlets'} =
-                $session{'CurrentUser'}->UserObj->Preferences( 
-                    'HomepageSettings',
-                    $default_portlets? $default_portlets->Content: {},
-                );
+    $Portlets = $session{'my_rt_portlets'} = $user->Preferences( 
+        HomepageSettings => $default_portlets? $default_portlets->Content: {},
+    );
 }
 
 my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
+
+my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
 my $show_cb = sub {
     my $entry = shift;
@@ -82,9 +83,9 @@ my $show_cb = sub {
         # XXX: security check etc.
         $m->comp( $name, %{ $entry->{arguments} || {} } );
     } elsif ( $type eq 'system' ) {
-        $m->comp( '/Elements/ShowSearch', Name => $name );
+        $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name );
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
     } else {
         $RT::Logger->error("unknown portlet type '$type'");
     }

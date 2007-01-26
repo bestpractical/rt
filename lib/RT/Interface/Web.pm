@@ -647,25 +647,9 @@ sub MakeMIMEEntity {
 
     if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
 
-
-
-    use File::Temp qw(tempfile tempdir);
-
-    #foreach my $filehandle (@filenames) {
-
-    my ( $fh, $temp_file );
-    for ( 1 .. 10 ) {
-        # on NFS and NTFS, it is possible that tempfile() conflicts
-        # with other processes, causing a race condition. we try to
-        # accommodate this by pausing and retrying.
-        last if ($fh, $temp_file) = eval { tempfile( UNLINK => 1) };
-        sleep 1;
-    }
-
-    binmode $fh;    #thank you, windows
-    my ($buffer);
+    my (@content,$buffer);
     while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
-        print $fh $buffer;
+        push @content, $buffer;
     }
 
     my $uploadinfo = $cgi_object->uploadInfo($filehandle);
@@ -676,12 +660,13 @@ sub MakeMIMEEntity {
                    
     $filename =~ s#^.*[\\/]##;
 
+
+    
     $Message->attach(
-        Path     => $temp_file,
+        Data    => \@content,
         Filename => Encode::decode_utf8($filename),
         Type     => $uploadinfo->{'Content-Type'},
     );
-    close($fh);
 
     #   }
 
@@ -1369,27 +1354,30 @@ sub ProcessTicketWatchers {
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    # {{{ Munge watchers
+    # Munge watchers
 
     foreach my $key ( keys %$ARGSRef ) {
 
-        # {{{ Delete deletable watchers
-        if ( ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
-            my ( $code, $msg ) = 
-                $Ticket->DeleteWatcher(PrincipalId => $2,
-                                       Type => $1);
+        # Delete deletable watchers
+        if ( ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) )
+        {
+            my ( $code, $msg ) = $Ticket->DeleteWatcher(
+                PrincipalId => $2,
+                Type        => $1
+            );
             push @results, $msg;
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {        
-            my ( $code, $msg ) = $Ticket->DeleteWatcher( Email => $ARGSRef->{$key}, Type => $1 );
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
+            my ( $code, $msg ) = $Ticket->DeleteWatcher(
+                Email => $ARGSRef->{$key},
+                Type  => $1
+            );
             push @results, $msg;
         }
 
-        # }}}
-
-        # Add new wathchers by email address      
+        # Add new wathchers by email address
         elsif ( ( $ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/ )
             and ( $key =~ /^WatcherTypeEmail(\d*)$/ ) )
         {
@@ -1412,18 +1400,23 @@ sub ProcessTicketWatchers {
         }
 
         # Add new  watchers by owner
-        elsif ( ( $ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/ )
-            and ( $key =~ /^Ticket-AddWatcher-Principal-(\d*)$/ ) ) {
+        elsif ( $key =~ /^Ticket-AddWatcher-Principal-(\d*)$/ ) {
+            my $form = $ARGSRef->{$key};
+            foreach my $value ( ref($form) ? @{$form} : ($form) ) {
 
-            #They're in this order because otherwise $1 gets clobbered :/
-            my ( $code, $msg ) =
-              $Ticket->AddWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
-            push @results, $msg;
+                if ( $value =~ /^(AdminCc|Cc|Requestor)$/ ) {
+
+                 #They're in this order because otherwise $1 gets clobbered :/
+                    my ( $code, $msg ) = $Ticket->AddWatcher(
+                        Type        => $ARGSRef->{$key},
+                        PrincipalId => $1
+                    );
+                    push @results, $msg;
+                }
+            }
         }
+
     }
-
-    # }}}
-
     return (@results);
 }
 

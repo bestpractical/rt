@@ -100,11 +100,11 @@ perl(1).
 sub Commit {
     my $self = shift;
 
-    my $ret = $self->SendMessage( $self->TemplateObj->MIMEObj );
-    if ( $ret && RT->Config->Get('RecordOutgoingEmail') ) {
+    my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
         $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
     }
-    return ($ret);
+    return (abs $ret);
 }
 
 # }}}
@@ -251,7 +251,7 @@ sub SendMessage {
         || $MIMEObj->head->get('Bcc') )
     {
         $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
-        return (1);
+        return (-1);
     }
 
     return(0) unless RT::Interface::Email::SendEmail(
@@ -688,13 +688,21 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 
 sub SetSubjectToken {
     my $self = shift;
-    my $tag  = "[". RT->Config->Get('rtname') ." #". $self->TicketObj->id ."]";
     my $sub  = $self->TemplateObj->MIMEObj->head->get('Subject');
-    unless ( $sub =~ /\Q$tag\E/ ) {
-        $sub =~ s/(\r\n|\n|\s)/ /gi;
-        chomp $sub;
-        $self->TemplateObj->MIMEObj->head->replace( 'Subject', "$tag $sub" );
+    my $id   = $self->TicketObj->id;
+
+    my $token_re = RT->Config->Get('EmailSubjectTagRegex');
+    unless ( $token_re ) {
+        my $rtname = RT->Config->Get('rtname');
+        $token_re = qr/\Q$rtname\E/o;
     }
+    return if $sub =~ /\[$token_re\s+#$id\]/;
+
+    $sub =~ s/(\r\n|\n|\s)/ /gi;
+    chomp $sub;
+    $self->TemplateObj->MIMEObj->head->replace(
+        Subject => "[$RT::rtname #$id] $sub",
+    );
 }
 
 # }}}

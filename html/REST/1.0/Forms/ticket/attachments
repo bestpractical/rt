@@ -80,7 +80,12 @@ if ($aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
     if ($content) {
-	$c = $attachment->OriginalContent;
+        $c = $attachment->OriginalContent;
+        # if we're sending a binary attachment (and only the attachment)
+        # flag it so bin/rt knows to special case it
+        if ($attachment->ContentType !~ /^text\//) {
+            $r->content_type($attachment->ContentType);
+        }
     } else {
 	my @data;
 	push @data, [ id    => $attachment->Id   ];
