@@ -274,12 +274,12 @@ unless ( $session{'CurrentUser'}->Privileged ) {
     if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html'
          && $ARGS{'id'} )
     {
-        $m->comp("/SelfService/Display.html", %ARGS);
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".$ARGS{'id'});
     }
 
     # otherwise, drop the user at the SelfService default page
     elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
-        $m->comp('/SelfService/index.html');
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/" );
     }
     # if user is in SelfService dir let him do anything
     else {

@@ -76,12 +76,12 @@ selected
 </select>
 <select name="Order">
 <option value="ASC"
-% if ($Order[$o] eq "ASC") {
+% unless ( ($Order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
-% if ($Order[$o] eq "DESC") {
+% if ( ($Order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Desc</&></option>

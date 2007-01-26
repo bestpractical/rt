@@ -734,6 +734,10 @@ sub Gateway {
             $skip_action{$action}++ if $AuthStat == -2;
         }
 
+        # strip actions we should skip
+        @actions = grep !$skip_action{$_}, @actions if $AuthStat == -2;
+        last unless @actions;
+
         last if $AuthStat == -1;
     }
     # {{{ If authentication fails and no new user was created, get out.
@@ -783,9 +787,6 @@ sub Gateway {
         return ( 0, $result, undef );
     }
     
-    # strip actions we should skip
-    @actions = grep !$skip_action{$_}, @actions;
-
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
 
@@ -827,7 +828,7 @@ sub Gateway {
         @actions = grep !/^(comment|correspond)$/, @actions;
         $args{'ticket'} = $id;
 
-    } else {
+    } elsif ( $args{'ticket'} ) {
 
         $Ticket->Load( $args{'ticket'} );
         unless ( $Ticket->Id ) {
@@ -841,6 +842,9 @@ sub Gateway {
 
             return ( 0, $error );
         }
+        $args{'ticket'} = $Ticket->id;
+    } else {
+        return ( 1, "Success", $Ticket );
     }
 
     # }}}

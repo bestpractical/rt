@@ -93,6 +93,7 @@ my $Dirty = $m->comp(
     SavedSearch => { Id => $Id, Object => $Object, Description => $Description }
 );
 
+use RT::SavedSearches;
 my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,

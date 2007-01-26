@@ -207,6 +207,15 @@ sub help {
       . loc( "[_1] - An argument to pass to [_2]", "--action-argument", "--action" )
       . "\n";
     print "	"
+      . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
+      . "\n";
+    print "	"
+      . loc( "[_1] - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
+      . "\n";
+    print "	"
+      . loc( "[_1] - Specify the type of a transaction you want to use", "--transaction-type" )
+      . "\n";
+    print "	"
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
     print "\n";

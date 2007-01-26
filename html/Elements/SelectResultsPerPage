@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,8 +46,8 @@
 %# TODO: Better default handling
 
 <select name="<% $Name %>">
-% foreach my $value (@values) {
-<option value="<% $value %>" <% $value == $Default && 'SELECTED' %>>
+% foreach my $value ( @values ) {
+<option value="<% $value %>" <% $value == $Default? 'selected': '' %>>
 <% shift @labels %>
 </option>
 % }
@@ -56,6 +56,7 @@
 <%INIT>
 my @values = qw(0 10 25 50 100);
 my @labels = (loc('Unlimited'), qw(10 25 50 100));
+$Default = 50 unless defined $Default;
 </%INIT>
 <%ARGS>
 

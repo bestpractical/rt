@@ -4,28 +4,28 @@ msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "PO-Revision-Date: 2005-10-03 13:44-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/RT/Date.pm:440
+#: lib/RT/Date.pm:444
 msgid "Apr."
 msgstr "Apr"
 
-#: lib/RT/Date.pm:444
+#: lib/RT/Date.pm:448
 msgid "Aug."
 msgstr "Aug"
 
-#: lib/RT/Date.pm:448
+#: lib/RT/Date.pm:452
 msgid "Dec."
 msgstr "Dec"
 
-#: lib/RT/Date.pm:438
+#: lib/RT/Date.pm:442
 msgid "Feb."
 msgstr "Feb"
 
-#: lib/RT/Date.pm:417
+#: lib/RT/Date.pm:421
 msgid "Fri."
 msgstr "Fri"
 
@@ -33,39 +33,39 @@ msgstr "Fri"
 msgid "Homepage"
 msgstr "Home"
 
-#: lib/RT/Date.pm:437
+#: lib/RT/Date.pm:441
 msgid "Jan."
 msgstr "Jan"
 
-#: lib/RT/Date.pm:443
+#: lib/RT/Date.pm:447
 msgid "Jul."
 msgstr "Jul"
 
-#: lib/RT/Date.pm:442
+#: lib/RT/Date.pm:446
 msgid "Jun."
 msgstr "Jun"
 
-#: lib/RT/Date.pm:439
+#: lib/RT/Date.pm:443
 msgid "Mar."
 msgstr "Mar"
 
-#: lib/RT/Date.pm:441
+#: lib/RT/Date.pm:445
 msgid "May."
 msgstr "May"
 
-#: lib/RT/Date.pm:413
+#: lib/RT/Date.pm:417
 msgid "Mon."
 msgstr "Mon"
 
-#: lib/RT/Date.pm:447
+#: lib/RT/Date.pm:451
 msgid "Nov."
 msgstr "Nov"
 
-#: lib/RT/Date.pm:446
+#: lib/RT/Date.pm:450
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs:161
+#: html/Ticket/Elements/Tabs:160
 msgid "Open it"
 msgstr "Open"
 
@@ -73,27 +73,27 @@ msgstr "Open"
 msgid "Residence"
 msgstr "Home"
 
-#: lib/RT/Date.pm:418
+#: lib/RT/Date.pm:422
 msgid "Sat."
 msgstr "Sat"
 
-#: lib/RT/Date.pm:445
+#: lib/RT/Date.pm:449
 msgid "Sep."
 msgstr "Sep"
 
-#: lib/RT/Date.pm:419
+#: lib/RT/Date.pm:423
 msgid "Sun."
 msgstr "Sun"
 
-#: lib/RT/Date.pm:416
+#: lib/RT/Date.pm:420
 msgid "Thu."
 msgstr "Thu"
 
-#: lib/RT/Date.pm:414
+#: lib/RT/Date.pm:418
 msgid "Tue."
 msgstr "Tue"
 
-#: lib/RT/Date.pm:415
+#: lib/RT/Date.pm:419
 msgid "Wed."
 msgstr "Wed"
 

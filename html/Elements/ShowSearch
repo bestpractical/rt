@@ -65,6 +65,7 @@ if ($SavedSearch) {
         $m->out("Saved Search $SavedSearch not found");
         return;
     }
+    $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
         # XXX: dispatch to different handler here
@@ -90,10 +91,11 @@ if ($SavedSearch) {
     }
 
     $SearchArg = $user->Preferences( $search, $search->Content );
-    $SearchArg->{'Rows'} = $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
     $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
         . $m->comp( '/Elements/QueryString', name => ref($search) . '-' . $search->Id );
 }
+
+$SearchArg = { %$SearchArg, %Override } if keys %Override;
 
 $SearchArg->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
 $SearchArg->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/RT->Config->Get($1)/ge;
@@ -110,6 +112,7 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$Name => undef
+$Name        => undef
 $SavedSearch => undef
+%Override    => ()
 </%ARGS>
