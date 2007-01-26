@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 202;
+use Test::More tests => 148;
 
 use RT;
 RT::LoadConfig();
@@ -353,8 +353,6 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
 }
 # }}}
 
-}
-
 # wrap up all the file handling stuff for attachment testing
 sub check_attachment {
     my $attachment_path = shift;
@@ -372,4 +370,6 @@ sub check_attachment {
     close $fh;
     chomp $attachment_content;
     expect_is($attachment_content,"Attachment contains original text");
+}
+
 1;
