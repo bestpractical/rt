@@ -218,8 +218,7 @@ $tabs->{"h"} = { path      => "Search/Edit.html$args",
 if ($args) {
   $tabs->{"i"} = { path      => "Search/Results.html$args",
                    title     => loc('Show Results'),
-                   separator => 1,
-                   subtabs   => $searchtabs };
+                   };
   if ($current_tab =~  "Search/Results.html") {
     $current_tab = "Search/Results.html$args";
   }
@@ -228,6 +227,9 @@ if ($args) {
                    };
   if ($current_tab =~  "Search/Bulk.html") {
     $current_tab = "Search/Bulk.html$args";
+  }
+  foreach my $searchtab (keys %{$searchtabs}) {
+    ($searchtab =~ /^_/) ? $tabs->{"s".$searchtab} = $searchtabs->{$searchtab} : $tabs->{"z_".$searchtab} = $searchtabs->{$searchtab};
   }
 }
 
