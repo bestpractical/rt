@@ -74,9 +74,9 @@ unless (keys %args) {
 # Set up defaults
 $args{'with-MASON'} = 1;
 $args{'with-CORE'} = 1;
-$args{'with-DEV'} = @RT_DEVEL_MODE@; 
 $args{'with-CLI'} = 1;
 $args{'with-MAILGATE'} = 1; 
+$args{'with-DEV'} = @RT_DEVEL_MODE@; 
 $args{'with-STANDALONE'} = @RT_STANDALONE@; 
 {
   my $section;
@@ -291,10 +291,10 @@ check_perl_version();
 check_users();
 
 
-foreach my $type (sort keys %args) {
+foreach my $type (sort grep $args{$_}, keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
 
-    my $type = $1;
+    $type = $1;
     section("$type dependencies");
 
     my @missing;
