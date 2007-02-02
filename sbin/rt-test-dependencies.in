@@ -196,7 +196,6 @@ Exception::Class 1.14
 HTML::Mason 1.23
 MLDBM
 Errno
-FreezeThaw
 Digest::MD5 2.27
 CGI::Cookie 1.20
 Storable 2.08
