@@ -70,14 +70,20 @@ unless (keys %args) {
     help();
     exit(0);
 }
-
 # Set up defaults
-$args{'with-MASON'} = 1;
-$args{'with-CORE'} = 1;
-$args{'with-CLI'} = 1;
-$args{'with-MAILGATE'} = 1; 
-$args{'with-DEV'} = @RT_DEVEL_MODE@; 
-$args{'with-STANDALONE'} = @RT_STANDALONE@; 
+my %default = (
+    'with-MASON' => 1,
+    'with-CORE' => 1,
+    'with-CLI' => 1,
+    'with-MAILGATE' => 1, 
+    'with-DEV' => @RT_DEVEL_MODE@, 
+    'with-STANDALONE' => @RT_STANDALONE@,
+);
+$args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
+
+use Data::Dumper;
+print Dumper( \%args );
+
 {
   my $section;
   my %always_show_sections = (
