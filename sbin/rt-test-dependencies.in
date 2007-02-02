@@ -222,6 +222,10 @@ LWP::UserAgent
 
 $deps{'CLI'} = [ _( << '.') ];
 Getopt::Long 2.24
+LWP
+HTTP::Request::Common
+Text::ParseWords
+Term::ReadLine
 Term::ReadKey
 .
 
