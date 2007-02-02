@@ -218,6 +218,7 @@ HTML::TreeBuilder
 HTML::FormatText
 Getopt::Long
 LWP::UserAgent
+Pod::Usage
 .
 
 $deps{'CLI'} = [ _( << '.') ];
