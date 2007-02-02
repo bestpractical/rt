@@ -61,6 +61,7 @@ GetOptions(
     'with-ORACLE',                        'with-FASTCGI',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
+    'with-STANDALONE',
     'download=s',
     'repository=s'
 );
@@ -73,9 +74,10 @@ unless (keys %args) {
 # Set up defaults
 $args{'with-MASON'} = 1;
 $args{'with-CORE'} = 1;
-$args{'with-DEV'} =1; 
-$args{'with-CLI'} =1; 
-$args{'with-MAILGATE'} =1; 
+$args{'with-DEV'} = @RT_DEVEL_MODE@; 
+$args{'with-CLI'} = 1;
+$args{'with-MAILGATE'} = 1; 
+$args{'with-STANDALONE'} = @RT_STANDALONE@; 
 {
   my $section;
   my %always_show_sections = (
@@ -130,6 +132,7 @@ The following switches will tell the tool to check for specific dependencies
 	--with-sqlite		Database interface and driver for SQLite (unsupported)
 	--with-oracle		Database interface for oracle (unsupported)
 
+	--with-standalone	Libraries needed to support the standalone simple pure perl server
 	--with-fastcgi		Libraries needed to support the fastcgi handler
 	--with-speedycgi	Libraries needed to support the speedycgi handler
 	--with-modperl1		Libraries needed to support the modperl 1 handler
@@ -199,12 +202,15 @@ CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
 XML::RSS 1.05
-HTTP::Server::Simple 0.07
-HTTP::Server::Simple::Mason 0.09
 GD
 GD::Graph
 GD::Text
 Text::WikiFormat 0.76
+.
+
+$deps{'STANDALONE'} = [ _( << '.') ];
+HTTP::Server::Simple 0.07
+HTTP::Server::Simple::Mason 0.09
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];
