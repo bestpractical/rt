@@ -144,7 +144,7 @@ The "RT_FIX_DEPS_CMD" environment variable, if set, will be used
 instead of the standard CPAN shell by --install to install any
 required modules.  It will be called with the module name, or, if
 "RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
-module name ebcore calling the program.
+module name before calling the program.
 .
 }
 
