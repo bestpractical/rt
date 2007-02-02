@@ -204,8 +204,9 @@ if ( $id[0] eq 'new' ) {
         # resubmission on refresh.
         # But we need to store Actions somewhere too, so we don't lose them.
         $session{"Actions"} = \@results;
-        RT::Interface::Web::Redirect($RT::WebURL."SelfService/Display.html?id="
-                                     . $Ticket->id);
+        RT::Interface::Web::Redirect(
+            RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
+        );
     } else {
         @results = @{ delete $session{"Actions"} || [] };
     }
