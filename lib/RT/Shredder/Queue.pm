@@ -32,6 +32,11 @@ sub __DependsOn
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     push( @$list, $objs );
 
+# Scrips
+    $objs = RT::Scrips->new( $self->CurrentUser );
+    $objs->LimitToQueue( $self->id );
+    push( @$list, $objs );
+
 # Templates
     $objs = $self->Templates;
     push( @$list, $objs );
