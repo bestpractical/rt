@@ -40,7 +40,7 @@ Upgrade instructions (From any  2.0.x release):
 3) Type "make install"
 
 4) Type "ls etc/upgrade"; For each item in that directory whose name
-   is greater than your previously installed RT version, run:
+   is greater than your previously installed RTFM version, run:
 
             /opt/rt3/sbin/rt-setup-database --action schema \
                 --datadir etc/upgrade/<version>
