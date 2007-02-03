@@ -1469,7 +1469,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( $RT::UseTransactionBatch and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans;
+	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
     }
     return ( $transaction, $msg, $trans );
 }
