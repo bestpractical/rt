@@ -712,7 +712,7 @@ sub _TransLimit {
     $self->_OpenParen;
 
     #Search for the right field
-    if ($field eq 'Content' and $RT::DontSearchFileAttachments) {
+    if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
        $self->_SQLLimit(
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => 'Filename',
@@ -2872,6 +2872,8 @@ ok( $unlimittickets->UnLimit );
 ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
 
 =end testing
+
+=cut
 
 1;
 
