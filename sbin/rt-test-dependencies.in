@@ -486,7 +486,7 @@ sub check_perl_version {
     print_found("5.8.3", 0,"RT is known to be non-functional on versions of perl older than 5.8.3. Please upgrade to 5.8.3 or newer.");
     exit(1);
   } else {
-    print_found( ">=5.8.3($])", 1);
+    print_found( sprintf(">=5.8.3(%vd)", $^V), 1 );
   }
 }
 
