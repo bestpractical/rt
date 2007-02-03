@@ -39,9 +39,6 @@ my $uri = RT::URI::fsck_com_rtfm->new($RT::SystemUser);
 
 ok(ref($uri));
 
-use Data::Dumper;
-
-
 ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rtfm), "It's an RT::URI::fsck_com_rtfm");
 
 ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
