@@ -196,9 +196,6 @@ Calendar::Simple
 .
 
 $deps{'MASON'} = [ _( << '.') ];
-Params::Validate 0.02
-Cache::Cache
-Exception::Class 1.14
 HTML::Mason 1.23
 MLDBM
 Errno
