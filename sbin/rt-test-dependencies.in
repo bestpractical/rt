@@ -204,7 +204,6 @@ Calendar::Simple
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
 HTML::Mason 1.23
-MLDBM
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20
