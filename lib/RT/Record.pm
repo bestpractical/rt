@@ -64,18 +64,22 @@ ok (require RT::Record);
 =cut
 
 package RT::Record;
+
+use strict;
+use warnings;
+
+use base qw(RT::Base);
+
 use RT::Date;
 use RT::User;
 use RT::Attributes;
-use RT::Base;
 use DBIx::SearchBuilder::Record::Cachable;
+use Encode qw();
 
-use strict;
-use vars qw/@ISA $_TABLE_ATTR/;
+our $_TABLE_ATTR = { };
 
-@ISA = qw(RT::Base);
 
-if ($RT::DontCacheSearchBuilderRecords ) {
+if ( $RT::DontCacheSearchBuilderRecords ) {
     push (@ISA, 'DBIx::SearchBuilder::Record');
 } else {
     push (@ISA, 'DBIx::SearchBuilder::Record::Cachable');
@@ -653,11 +657,6 @@ sub SQLType {
 
 
 }
-
-require Encode::compat if $] < 5.007001;
-require Encode;
-
-
 
 
 sub __Value {

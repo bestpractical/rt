@@ -52,23 +52,19 @@ RT::I18N - a base class for localization of RT
 package RT::I18N;
 
 use strict;
+use warnings;
+
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
 use base ('Locale::Maketext::Fuzzy');
-use vars qw( %Lexicon );
 
-#If we're running on 5.6, we desperately need Encode::compat. But if we're on 5.8, we don't really need it.
-BEGIN { if ($] < 5.007001) {
-require Encode::compat;
-} }
 use Encode;
-
 use MIME::Entity;
 use MIME::Head;
 
 # I decree that this project's first language is English.
 
-%Lexicon = (
+our %Lexicon = (
    'TEST_STRING' => 'Concrete Mixer',
 
     '__Content-Type' => 'text/plain; charset=utf-8',
