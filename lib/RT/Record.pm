@@ -68,6 +68,7 @@ package RT::Record;
 use strict;
 use warnings;
 
+our @ISA;
 use base qw(RT::Base);
 
 use RT::Date;
