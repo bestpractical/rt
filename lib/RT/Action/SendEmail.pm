@@ -705,7 +705,7 @@ sub SetSubjectToken {
     $sub =~ s/(\r\n|\n|\s)/ /gi;
     chomp $sub;
     $self->TemplateObj->MIMEObj->head->replace(
-        Subject => "[$RT::rtname #$id] $sub",
+        Subject => "[". RT->Config->Get('rtname') ." #$id] $sub",
     );
 }
 
