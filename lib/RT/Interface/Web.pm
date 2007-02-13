@@ -176,7 +176,7 @@ sub Redirect {
     my $redir_to = shift;
     untie $HTML::Mason::Commands::session;
     my $uri = URI->new($redir_to);
-    my $server_uri = URI->new($RT::WebURL);
+    my $server_uri = URI->new( RT->Config->Get('WebURL') );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
