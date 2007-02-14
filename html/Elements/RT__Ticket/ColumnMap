@@ -52,7 +52,7 @@ $Attr => undef
 <%ONCE>
 our ( $COLUMN_MAP );
 
-sub ColumnMap {
+my $ColumnMap = sub {
     my $name = shift;
     my $attr = shift;
 
@@ -92,7 +92,7 @@ sub ColumnMap {
     }
 }
 
-sub LinkCallback {
+my $LinkCallback = sub {
     my $method = shift;
 
     my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
@@ -291,7 +291,7 @@ $COLUMN_MAP = {
 
     # Everything from LINKTYPEMAP
     (map {
-        $_ => { value => LinkCallback( $_ ) }
+        $_ => { value => $LinkCallback->( $_ ) }
     } keys %RT::Ticket::LINKTYPEMAP),
 
     '_CLASS' => {
@@ -308,5 +308,5 @@ $COLUMN_MAP = {
 </%ONCE>
 <%init>
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
-return ColumnMap($Name, $Attr);
+return $ColumnMap->( $Name, $Attr );
 </%init>
