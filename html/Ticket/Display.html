@@ -154,6 +154,13 @@ if ($ARGS{'id'} eq 'new') {
     push (@Actions, @PeopleActions, @BasicActions, @results);
 }
 
+$m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
+	 TicketObj => \$TicketObj,
+     Tickets => \$Tickets,
+     Actions => \@Actions,
+     ARGSRef => \%ARGS,
+);
+
 # This code does automatic redirection if any updates happen. 
 
 if (@Actions) {
@@ -165,10 +172,6 @@ if (@Actions) {
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };
 }
-
-$m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
-	 TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
-
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
