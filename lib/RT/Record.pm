@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2006 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -65,14 +65,18 @@ ok (require RT::Record);
 =cut
 
 package RT::Record;
+
+use strict;
+use warnings;
+
 use RT::Date;
 use RT::User;
 use RT::Attributes;
+use Encode qw();
+
+our $_TABLE_ATTR = { };
+
 use RT::Base;
-
-use strict;
-
-our $_TABLE_ATTR;
 our @ISA = qw(RT::Base);
 my $base = 'DBIx::SearchBuilder::Record::Cachable';
 if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
@@ -652,11 +656,6 @@ sub SQLType {
 
 
 }
-
-require Encode::compat if $] < 5.007001;
-require Encode;
-
-
 
 
 sub __Value {
@@ -1468,7 +1467,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans;
+	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
     }
     return ( $transaction, $msg, $trans );
 }

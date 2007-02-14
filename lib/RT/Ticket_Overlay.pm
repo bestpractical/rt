@@ -3448,6 +3448,8 @@ sub DESTROY {
     return if $self->{_Destroyed}++;
 
     my $batch = $self->TransactionBatch or return;
+    return unless @$batch;
+
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
 	Stage		=> 'TransactionBatch',

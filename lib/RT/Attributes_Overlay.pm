@@ -50,7 +50,7 @@
 
 =head1 SYNOPSIS
 
-  use RT:Attributes;
+  use RT::Attributes;
 my $Attributes = new RT::Attributes($CurrentUser);
 
 =head1 DESCRIPTION

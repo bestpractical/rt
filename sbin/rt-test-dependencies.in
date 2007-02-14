@@ -201,7 +201,7 @@ Time::ParseDate
 Time::HiRes 
 File::Temp
 Text::Autoformat
-Text::Quoted 1.3
+Text::Quoted 1.10
 Tree::Simple 1.04
 UNIVERSAL::require
 Regexp::Common
@@ -213,11 +213,7 @@ Calendar::Simple
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-Params::Validate 0.02
-Cache::Cache
-Exception::Class 1.14
 HTML::Mason 1.23
-MLDBM
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20
