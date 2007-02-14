@@ -633,8 +633,8 @@ sub check_db_compatibility {
         if ( $args{'action'} =~ /^(insert|schema)$/ ) {
             print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
             my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
-            unless ( $create_table =~ /ENGINE=InnoDB/ ) {
-                print STDERR 'RT requires that all its tables be of InnoDB type.\n'.
+            unless ( $create_table =~ /(?:ENGINE|TYPE)=InnoDB/i ) {
+                print STDERR "RT requires that all its tables be of InnoDB type.\n".
                     "Upgrade RT tables.\n";
                 exit -1;
             }

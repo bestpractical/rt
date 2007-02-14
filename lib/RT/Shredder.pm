@@ -77,7 +77,7 @@ SQL commands to re-insert your objects into the RT database.
 1) Locate the appropriate shredder SQL dump file.  In the WebUI, when
    you use shredder, the path to the dump file is displayed.  It also
    gives the option to download the dump file after each wipeout.  Or
-   it can be found in your C<$RT::ShredderStoragePath>.
+   it can be found in your C<$ShredderStoragePath>.
 
 2) Load the shredder SQL dump into your RT database.  The details will
    be different for each database and RT configuration, consult your
@@ -104,7 +104,7 @@ You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
 $DependenciesLimit, new_limit );>
 
 
-=head2 $RT::ShredderStoragePath
+=head2 $ShredderStoragePath
 
 Directory containing Shredder backup dumps.
 
@@ -667,7 +667,7 @@ sub GetFileName
 =head4 StoragePath
 
 Returns an absolute path to the storage dir.  See
-L<CONFIGURATION/$RT::ShredderStoragePath>.
+L<CONFIGURATION/$ShredderStoragePath>.
 
 See also description of the L</GetFileName> method.
 
@@ -675,8 +675,8 @@ See also description of the L</GetFileName> method.
 
 sub StoragePath
 {
-    return $RT::ShredderStoragePath ||
-        File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
+    return scalar( RT->Config->Get('ShredderStoragePath') )
+        || File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();

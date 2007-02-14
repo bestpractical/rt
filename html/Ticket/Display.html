@@ -133,6 +133,14 @@ if ($ARGS{'id'} eq 'new') {
     }
 }
 
+$m->callback(
+    CallbackName => 'BeforeDisplay',
+	TicketObj => \$TicketObj,
+    Tickets => \$Tickets,
+    Actions => \@Actions,
+    ARGSRef => \%ARGS,
+);
+
 # This code does automatic redirection if any updates happen. 
 # It doesn't work for the client.
 
@@ -147,14 +155,6 @@ if (@Actions) {
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };
 }
-
-$m->callback(
-    CallbackName => 'BeforeDisplay',
-    TicketObj    => \$TicketObj,
-    Tickets      => \$Tickets,
-    ARGSRef      => \%ARGS,
-);
-
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);

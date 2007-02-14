@@ -956,7 +956,7 @@ sub _NoAuthorizedUserFound {
 
     # Notify the RT Admin of the failure.
     MailError(
-        To          => $RT::OwnerEmail,
+        To          => scalar RT->Config->Get('OwnerEmail'),
         Subject     => "Could not load a valid user",
         Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow

@@ -48,10 +48,17 @@
     src="<%RT->Config->Get('WebImagesURL')%>/bplogo.gif"
     alt="<% loc("Best Practical Solutions, LLC corporate logo") %>"
     width="177" height="33" /></a>
-% if ( $show_name ) {
-    <span class="rtname"><% loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
+% if ( $ShowName ) {
+    <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
 % }
 </div>
+<%INIT>
+if ( exists $ARGS{'show_name'} ) {
+    $RT::Logger->warn('show_name argument was renamed, use ShowName');
+    $ShowName = delete $ARGS{'show_name'};
+}
+</%INIT>
 <%ARGS>
-$show_name => 1
+$ShowName => 1
+$Name => undef
 </%ARGS>

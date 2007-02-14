@@ -70,7 +70,7 @@ sub TestArgs
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
         # XXX: it's possible that SystemUser is not available
-        my $user = RT::User->new( $RT::SytemUser );
+        my $user = RT::User->new( $RT::SystemUser );
         $user->Load( $uid );
         unless( $user->id ) {
             return (0, "Couldn't load user '$uid'" );
