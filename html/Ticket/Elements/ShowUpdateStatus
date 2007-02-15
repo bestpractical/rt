@@ -1,0 +1,10 @@
+<&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
+There is new messages you havn't seen, click on title box to jump to the oldest message.
+You can also <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&MarkAsSeen=1">mark</a> the current available messages as seen.
+</&>
+<%ARGS>
+$Ticket
+</%ARGS>
+<%INIT>
+my $txn = $Ticket->SeenUpTo or return;
+</%INIT>

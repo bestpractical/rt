@@ -51,6 +51,8 @@
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
+<& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
+
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
@@ -131,6 +133,13 @@ if ($ARGS{'id'} eq 'new') {
     unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
         Abort("No permission to view ticket");
     }
+    if ( $ARGS{'MarkAsSeen'} ) {
+        $TicketObj->SetAttribute(
+            Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
+            Content => $TicketObj->LastUpdated,
+        );
+        push @Actions, loc('Marked all messages as seen');
+    }
 }
 
 $m->callback(
@@ -143,8 +152,6 @@ $m->callback(
 
 # This code does automatic redirection if any updates happen. 
 # It doesn't work for the client.
-
-
 
 if (@Actions) {
     # We've done something, so we need to clear the decks to avoid 

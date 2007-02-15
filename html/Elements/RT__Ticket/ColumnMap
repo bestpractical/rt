@@ -294,6 +294,15 @@ $COLUMN_MAP = {
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
+    UpdateStatus => {
+        title => loc('New messages'),
+        value => sub {
+            my $txn = $_[0]->SeenUpTo or return $_[0]->loc('No');
+            return \('<a href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
+                . $_[0]->id .'#txn-'. $txn->id .'">'),
+                $_[0]->loc('New'), \'</a>';
+        },
+    },
 
     # Everything from LINKTYPEMAP
     (map {
