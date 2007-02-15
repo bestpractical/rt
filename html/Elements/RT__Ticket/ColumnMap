@@ -90,7 +90,7 @@ my $ColumnMap = sub {
 	    };
         }
     }
-}
+};
 
 my $LinkCallback = sub {
     my $method = shift;
@@ -110,7 +110,7 @@ my $LinkCallback = sub {
             \'</a><br />',
         } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
     }
-}
+};
 
 $COLUMN_MAP = {
     QueueName => {
