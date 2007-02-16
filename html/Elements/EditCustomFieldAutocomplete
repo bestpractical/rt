@@ -7,7 +7,7 @@ new Ajax.Autocompleter(
     "<% $name %>-Values",
     "<% $name %>-Choices",
     "/Helpers/Autocomplete/CustomFieldValues",
-    {}
+    { tokens: [ ',', '\n' ] }
 );
 </script>
 <%INIT>
