@@ -157,9 +157,11 @@ else {
                 );
         }
 
-        $ticket->Create(%v);
-        unless ($ticket->Id) {
-            return [ "# Could not create ticket.", [], {}, 1 ];
+        my($tid,$trid,$terr) = $ticket->Create(%v);    
+        unless ($tid) {
+            push(@comments, "# Could not create ticket.");
+            push(@comments, "# " . $terr);
+            goto DONE;
         }
 
         delete $data{id};
