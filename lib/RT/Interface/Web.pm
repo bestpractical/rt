@@ -1398,18 +1398,16 @@ sub ProcessTicketWatchers {
 
         # Add new  watchers by owner
         elsif ( $key =~ /^Ticket-AddWatcher-Principal-(\d*)$/ ) {
+            my $principal_id = $1;
             my $form = $ARGSRef->{$key};
             foreach my $value ( ref($form) ? @{$form} : ($form) ) {
+                next unless $value =~ /^(?:AdminCc|Cc|Requestor)$/i;
 
-                if ( $value =~ /^(AdminCc|Cc|Requestor)$/ ) {
-
-                 #They're in this order because otherwise $1 gets clobbered :/
-                    my ( $code, $msg ) = $Ticket->AddWatcher(
-                        Type        => $ARGSRef->{$key},
-                        PrincipalId => $1
-                    );
-                    push @results, $msg;
-                }
+                my ( $code, $msg ) = $Ticket->AddWatcher(
+                    Type        => $value,
+                    PrincipalId => $principal_id
+                );
+                push @results, $msg;
             }
         }
 
