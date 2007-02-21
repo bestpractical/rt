@@ -45,43 +45,36 @@
 %# END BPS TAGGED BLOCK }}}
 <table border="0" width="100%">
 <tr valign="top">
-<td width="70%" class="boxcontainer">
 
-% for my $portlet (@{$portlets->{body}}) {
-<% $show_cb->( $portlet ) %>
-<br />
-% }
-
-%#GAH!
+<td class="boxcontainer" width="70%" <% $summary? 'width="70%"': '' %>>
+% $show_cb->($_) foreach @$body;
 </td>
+
+% if ( $summary ) {
 <td class="boxcontainer">
-
-% for my $portlet (@{$portlets->{summary}}) {
-<% $show_cb->( $portlet ) %>
-<br />
+% $show_cb->($_) foreach @$summary;
+</td>
 % }
 
-</td>
 </tr>
 </table>
 
 <%INIT>
 
-my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
-
 my $user = $session{'CurrentUser'}->UserObj;
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    my $portlets; 
-    if ($default_portlets) {
-        $portlets = $default_portlets->Content(); 
-    } else {
-        $portlets = {};
-    }
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
+    $session{'my_rt_portlets'} = $user->Preferences(
+        HomepageSettings => $default_portlets? $default_portlets->Content: {},
+    );
 }
 
-my $portlets = $session{'my_rt_portlets'};
+my ($body, $summary) = @{$session{'my_rt_portlets'}}{qw(body summary)};
+unless( $body && @$body ) {
+    $body = $summary || [];
+    $summary = undef;
+}
+$summary = undef unless $summary && @$summary;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( $RT::DefaultSummaryRows || 10 ) );
 
