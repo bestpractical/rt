@@ -172,7 +172,7 @@ Time::HiRes
 File::Temp
 Term::ReadKey
 Text::Autoformat
-Text::Quoted 1.3
+Text::Quoted 2.02
 UNIVERSAL::require
 Tree::Simple 1.04
 Scalar::Util
