@@ -44,13 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => loc($search->Description, $SearchArg->{'Rows'}),
+    title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize &>
-<& $query_display_component, %$SearchArg,
-        ShowNavigation => 0
-        &>
+<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0 &>
 </&>
 <%init>
 my $search;
@@ -98,18 +96,23 @@ if ($SavedSearch) {
         name => ref($search) . '-' . $search->Id );
 }
 
-$SearchArg = { %$SearchArg, %Override } if keys %Override;
-
-$SearchArg->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
-$SearchArg->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
-$SearchArg->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+# ProcessedSearchArg is a search with overridings, but for link we use
+# orginal search's poperties
+my $ProcessedSearchArg = $SearchArg;
+$ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 
 $m->comp(
-    '/Elements/Callback',
-    _CallbackName => 'ModifySearch',
-    Search        => $SearchArg,
-    %ARGS
+    '/Elements/Callback', %ARGS,
+    _CallbackName  => 'ModifySearch',
+    OriginalSearch => $SearchArg,
+    Search         => $ProcessedSearchArg,
 );
+
+foreach ( $SearchArg, $ProcessedSearchArg ) {
+    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
+    $_->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
+    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+}
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
