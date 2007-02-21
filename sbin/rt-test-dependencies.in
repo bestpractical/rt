@@ -192,7 +192,7 @@ Time::ParseDate
 Time::HiRes 
 File::Temp
 Text::Autoformat
-Text::Quoted 1.10
+Text::Quoted 2.02
 Tree::Simple 1.04
 Regexp::Common
 Scalar::Util
