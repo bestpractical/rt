@@ -382,32 +382,41 @@ sub CreateTicket {
             $create_args{$arg} = $ARGS{$arg};
         }
         # Object-RT::Ticket--CustomField-3-Values
-        elsif ($arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/) {
+        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1;
-            my $cf = RT::CustomField->new( $session{'CurrentUser'});
-            $cf->Load($cfid);
 
-            if ( $cf->Type eq 'Freeform' && ! $cf->SingleValue) {
-                $ARGS{$arg} =~ s/\r\n/\n/g;
-                $ARGS{$arg} = [split('\n', $ARGS{$arg})];
-            }
-
-            if ( $cf->Type =~ /text/i) { # Catch both Text and Wikitext
-                $ARGS{$arg} =~ s/\r//g;
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->Load( $cfid );
+            unless ( $cf->id ) {
+                $RT::Logger->error( "Couldn't load custom field #". $cfid );
+                next;
             }
 
             if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-".$cfid} = _UploadedFile($arg);
+                $create_args{"CustomField-$cfid"} = _UploadedFile( $arg );
+                next;
             }
-            else {
-                $create_args{"CustomField-".$cfid} = $ARGS{"$arg"};
+
+            my $type = $cf->Type;
+
+            my @values = ();
+            if ( ref $ARGS{ $arg } eq 'ARRAY' ) {
+                @values = @{ $ARGS{ $arg } };
+            } elsif ( $type =~ /text/i ) {
+                @values = ($ARGS{ $arg });
+            } else {
+                @values = split /\n/, $ARGS{ $arg } || '';
             }
+        
+            if ( $type =~ /text/i || $type eq 'Freeform' ) {
+                s/\r//g foreach grep defined, @values;
+            }
+            @values = grep defined && $_ ne '', @values;
+
+            $create_args{"CustomField-$cfid"} = \@values;
         }
     }
 
-
-    # XXX TODO This code should be about six lines. and badly needs refactoring.
- 
     # {{{ turn new link lists into arrays, and pass in the proper arguments
     my %map = (
         'new-DependsOn' => 'DependsOn',
@@ -1231,7 +1240,7 @@ sub _ProcessObjectCustomFieldUpdates {
             @values = split /\n/, $args{'ARGS'}->{ $arg } || '';
         }
         
-        if ( ( $cf_type eq 'Freeform' && !$cf->SingleValue ) || $cf_type =~ /text/i ) {
+        if ( $cf_type eq 'Freeform' || $cf_type =~ /text/i ) {
             s/\r//g foreach grep defined, @values;
         }
         @values = grep defined && $_ ne '', @values;
@@ -1356,8 +1365,7 @@ sub ProcessTicketWatchers {
     foreach my $key ( keys %$ARGSRef ) {
 
         # Delete deletable watchers
-        if ( ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) )
-        {
+        if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->DeleteWatcher(
                 PrincipalId => $2,
                 Type        => $1
@@ -1375,8 +1383,8 @@ sub ProcessTicketWatchers {
         }
 
         # Add new wathchers by email address
-        elsif ( ( $ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/ )
-            and ( $key =~ /^WatcherTypeEmail(\d*)$/ ) )
+        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:AdminCc|Cc|Requestor)$/
+            and $key =~ /^WatcherTypeEmail(\d*)$/ )
         {
 
             #They're in this order because otherwise $1 gets clobbered :/
