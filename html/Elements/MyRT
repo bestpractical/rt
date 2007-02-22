@@ -46,13 +46,13 @@
 <table border="0" width="100%">
 <tr valign="top">
 
-<td class="boxcontainer" <% $two_columns ? 'width="70%"':'' %>>
-% $show_cb->($_) foreach @{$Portlets->{body}};
+<td class="boxcontainer" width="70%" <% $summary? 'width="70%"': '' %>>
+% $show_cb->($_) foreach @$body;
 </td>
 
-% if( $two_columns ) {
+% if ( $summary ) {
 <td class="boxcontainer">
-% $show_cb->($_) foreach @{$Portlets->{summary}};
+% $show_cb->($_) foreach @$summary;
 </td>
 % }
 
@@ -71,7 +71,12 @@ unless ( $Portlets ) {
     );
 }
 
-my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
+my ($body, $summary) = @{$Portlets}{qw(body summary)};
+unless( $body && @$body ) {
+    $body = $summary || [];
+    $summary = undef;
+}
+$summary = undef unless $summary && @$summary;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
