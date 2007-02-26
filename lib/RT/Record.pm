@@ -1624,7 +1624,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1] ", $value_msg ) );
+            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
@@ -1670,7 +1670,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1] ", $msg ) );
+            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $msg ) );
         }
         if ( $args{'RecordTransaction'} ) {
             my ( $tid, $msg ) = $self->_NewTransaction(
