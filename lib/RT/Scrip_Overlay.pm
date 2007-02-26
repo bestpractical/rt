@@ -280,22 +280,16 @@ sub ActionObj {
 
 =head2 ConditionObj
 
-Retuns an RT::ScripCondition object with this Scrip's IsApplicable
+Retuns an L<RT::ScripCondition> object with this Scrip's IsApplicable
 
 =cut
 
 sub ConditionObj {
     my $self = shift;
 
-    unless ( defined $self->{'ScripConditionObj'} ) {
-        require RT::ScripCondition;
-        $self->{'ScripConditionObj'} =
-          RT::ScripCondition->new( $self->CurrentUser );
-        if ( $self->ScripCondition ) {
-            $self->{'ScripConditionObj'}->Load( $self->ScripCondition );
-        }
-    }
-    return ( $self->{'ScripConditionObj'} );
+    my $res = RT::ScripCondition->new( $self->CurrentUser );
+    $res->Load( $self->ScripCondition );
+    return $res;
 }
 
 # }}}
@@ -442,6 +436,7 @@ sub IsApplicable {
             }
 	}
     };
+
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
         return (undef);
