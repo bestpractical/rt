@@ -413,13 +413,16 @@ sub CreateTicket {
             } elsif ( $type =~ /text/i ) {
                 @values = ($ARGS{ $arg });
             } else {
-                @values = split /\n/, $ARGS{ $arg } || '';
+                @values = split /\r*\n/, $ARGS{ $arg } || '';
             }
-        
-            if ( $type =~ /text/i || $type eq 'Freeform' ) {
-                s/\r//g foreach grep defined, @values;
-            }
-            @values = grep defined && $_ ne '', @values;
+            @values = grep $_ ne '',
+                map {
+                    s/\r+\n/\n/g;
+                    s/^\s+//;
+                    s/\s+$//;
+                    $_;
+                }
+                grep defined, @values;
 
             $create_args{"CustomField-$cfid"} = \@values;
         }
@@ -1245,14 +1248,17 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\n/, $args{'ARGS'}->{ $arg } || '';
+            @values = split /\r*\n/, $args{'ARGS'}->{ $arg } || '';
         }
+        @values = grep $_ ne '',
+            map {
+                s/\r+\n/\n/g;
+                s/^\s+//;
+                s/\s+$//;
+                $_;
+            }
+            grep defined, @values;
         
-        if ( $cf_type eq 'Freeform' || $cf_type =~ /text/i ) {
-            s/\r//g foreach grep defined, @values;
-        }
-        @values = grep defined && $_ ne '', @values;
-
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
