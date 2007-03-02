@@ -69,7 +69,7 @@ sub Limit {
 
 sub __BuildLimitCheck {
     my ($self, %args) = (@_);
-    return unless $args{'FIELD'} =~ /^(?:Name|Description)$/;
+    return undef unless $args{'FIELD'} =~ /^(?:Name|Description)$/;
 
     $args{'OPERATOR'} ||= '=';
     my $quoted_value = $args{'VALUE'};
