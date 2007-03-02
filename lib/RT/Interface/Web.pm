@@ -633,58 +633,60 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldName => undef,
-#        map Encode::encode_utf8($_), @_,
         @_,
     );
+    my $Message = MIME::Entity->build(
+        Type    => 'multipart/mixed',
+        Subject => $args{'Subject'} || "",
+        From    => $args{'From'},
+        Cc      => $args{'Cc'},        
+    );
 
-    #Make the update content have no 'weird' newlines in it
+    if ( defined $args{'Body'} && length $args{'Body'} ) {
+        # Make the update content have no 'weird' newlines in it
+        $args{'Body'} =~ s/\r\n/\n/gs;
 
-    $args{'Body'} =~ s/\r\n/\n/gs;
-    my $Message;
-    {
         # MIME::Head is not happy in utf-8 domain.  This only happens
         # when processing an incoming email (so far observed).
         no utf8;
         use bytes;
-        $Message = MIME::Entity->build(
-            Subject => $args{'Subject'} || "",
-            From    => $args{'From'},
-            Cc      => $args{'Cc'},
-            Charset => 'utf8',
-            Data    => [ $args{'Body'} ]
+        $Message->attach(
+            Type    => 'text/plain',
+            Charset => 'UTF-8',
+            Data    => $args{'Body'},
         );
     }
 
-    my $cgi_object = $m->cgi_object;
+    if ( $args{'AttachmentFieldName'} ) {
 
-    if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+        my $cgi_object = $m->cgi_object;
 
-    my (@content,$buffer);
-    while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
-        push @content, $buffer;
+        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+
+            my (@content,$buffer);
+            while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
+                push @content, $buffer;
+            }
+
+            my $uploadinfo = $cgi_object->uploadInfo($filehandle);
+
+            # Prefer the cached name first over CGI.pm stringification.
+            my $filename = $RT::Mason::CGI::Filename;
+            $filename = "$filehandle" unless defined($filename);
+                           
+            $filename =~ s#^.*[\\/]##;
+
+
+            
+            $Message->attach(
+                Type     => $uploadinfo->{'Content-Type'},
+                Filename => Encode::decode_utf8($filename),
+                Data     => \@content,
+            );
+        }
     }
 
-    my $uploadinfo = $cgi_object->uploadInfo($filehandle);
-
-    # Prefer the cached name first over CGI.pm stringification.
-    my $filename = $RT::Mason::CGI::Filename;
-    $filename = "$filehandle" unless defined($filename);
-                   
-    $filename =~ s#^.*[\\/]##;
-
-
-    
-    $Message->attach(
-        Data    => \@content,
-        Filename => Encode::decode_utf8($filename),
-        Type     => $uploadinfo->{'Content-Type'},
-    );
-
-    #   }
-
-    }
-
-    $Message->make_singlepart();
+    $Message->make_singlepart;
     RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
 
     return ($Message);
