@@ -174,8 +174,7 @@ sub Create {
     unless ( defined $Attachment->bodyhandle ) {
         my ($id) = $self->SUPER::Create(
             TransactionId => $args{'TransactionId'},
-            # XXX: possible bug, we force parent here, that's bad
-            Parent        => 0,
+            Parent        => $args{'Parent'},
             ContentType   => $Attachment->mime_type,
             Headers       => $Attachment->head->as_string,
             MessageId     => $MessageId,
