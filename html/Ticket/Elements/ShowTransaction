@@ -87,52 +87,59 @@ $AttachmentContent => undef
 $ShowBody => 1
 $LastTransaction => 0
 </%ARGS>
+<%ONCE>
 
+my %class = (
+    Create     => 'message',
+    Correspond => 'message',
+    Comment    => 'message',
+
+    AddWatcher => 'people',
+    DelWatcher => 'people',
+    Take       => 'people',
+    Untake     => 'people',
+    Force      => 'people',
+    Steal      => 'people',
+    Give       => 'people',
+
+    AddLink    => 'links',
+    DeleteLink => 'links',
+);
+
+</%ONCE>
 <%INIT>
-
-my ( $TimeTaken, $TicketString, $type_class );
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
-if ( $Transaction->Type =~ /^(Create|Correspond|Comment$)/ ) {
-    if ( $Transaction->IsInbound ) {
-        $type_class = 'message';
+my ($type, $field) = ($Transaction->Type, $Transaction->Field);
+my $type_class = $class{ $type };
+
+unless ( $type_class ) {
+    if ( $field eq 'Owner' ) {
+        $type_class = 'people';
+    }
+    elsif ( $type =~ /^(Status|Set|Told)$/ ) {
+        if ( $field =~ /^(Told|Starts|Started|Due)$/ ) {
+            $type_class = 'dates';
+        }
+        else {
+            $type_class = 'basics';
+        }
     }
     else {
-        $type_class = 'message';
+        $type_class = 'other';
     }
-}
-elsif (    ( $Transaction->Field =~ /^Owner$/ )
-        or ( $Transaction->Type =~ /^(AddWatcher|DelWatcher)$/ ) ) {
-    $type_class = 'people';
-
-}
-elsif ( $Transaction->Type =~ /^(AddLink|DeleteLink)$/ ) {
-    $type_class = 'links';
-}
-elsif ( $Transaction->Type =~ /^(Status|Set|Told)$/ ) {
-    if ( $Transaction->Field =~ /^(Told|Starts|Started|Due)$/ ) {
-        $type_class = 'dates';
-    }
-    else {
-        $type_class = 'basics';
-    }
-}
-else {
-    $type_class = 'other';
 }
 
+my $TicketString = '';
 if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = "Ticket " . $Transaction->Ticket . ": ";
 }
-$TicketString ||= '';
 
-if ( $Transaction->TimeTaken != 0 ) {
-    $TimeTaken = $Transaction->TimeTaken . " min";
-} else {
-    $TimeTaken = '';
-}
+my $TimeTaken = '';
+$TimeTaken = $Transaction->TimeTaken . " min"
+    if $Transaction->TimeTaken;
 
 unless ($Attachments) { 
     my $attachments = $Transaction->Attachments;
