@@ -3391,6 +3391,31 @@ sub _SetTold {
                            Value => $now->ISO ) );
 }
 
+=head2 SeenUpTo
+
+
+=cut
+
+sub SeenUpTo {
+    my $self = shift;
+
+    my $uid = $self->CurrentUser->id;
+    my $attr = $self->FirstAttribute( "User-". $uid ."-SeenUpTo" );
+    return if $attr && $attr->Content gt $self->LastUpdated;
+
+    my $txns = $self->Transactions;
+    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
+    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
+    $txns->Limit(
+        FIELD => 'Created',
+        OPERATOR => '>',
+        VALUE => $attr->Content
+    ) if $attr;
+    $txns->RowsPerPage(1);
+    return $txns->First;
+}
+
 # }}}
 
 =head2 TransactionBatch
