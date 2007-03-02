@@ -43,26 +43,26 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="ticket-transaction<% $type_class && " $type_class" %><% $RowNum % 2 ? ' odd' : ' even' %>">
+<div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td rowspan="2" valign="top" class="type">
-      <a name="txn-<%$Transaction->Id%>" href="<% $DisplayPath %>#txn-<%$Transaction->Id%>">#</a>
+      <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
       <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
     <td class="description">
-      <%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$desc%>
+      <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
     </td>
-    <td class="time-taken"><%$TimeTaken%></td>
-    <td class="actions"><%$titlebar_commands|n%></td>
+    <td class="time-taken"><% $TimeTaken %></td>
+    <td class="actions"><% $titlebar_commands |n %></td>
   </tr>
 
   <tr>
     <td colspan="4" class="content">
-% if ($Transaction->CustomFieldValues->Count) {
+% if ( $Transaction->CustomFieldValues->Count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
@@ -150,7 +150,7 @@ my $titlebar_commands = '&nbsp;';
 
 my @DisplayHeaders=qw ( _all);
 
-if ( $Transaction->Type =~ /EmailRecord$/ ) {
+if ( $type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
 
     my $aid = 
@@ -175,19 +175,17 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')
-             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
+        my $can_modify = $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket');
+        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"".$UpdatePath."?id="
-              . $Transaction->Ticket
-              . "&QuoteTransaction="
-              . $Transaction->Id
+                "[<a href=\"".$UpdatePath
+              . "?id=" . $Transaction->Ticket
+              . "&QuoteTransaction=" . $Transaction->Id
               . "&Action=Respond\">"
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')
-             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
+        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
