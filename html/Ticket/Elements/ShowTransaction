@@ -194,6 +194,14 @@ else {
               . "&Action=Comment\">"
               . loc('Comment') . "</a>]";
         }
+        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('ForwardMessage') ) {
+            $titlebar_commands .=
+                "[<a href=\"/Ticket/Forward.html?id="
+              . $Transaction->Ticket
+              . "&QuoteTransaction="
+              . $Transaction->Id
+              . "\">". loc('Forward') . "</a>]";
+        }
     }
 }
 </%INIT>
