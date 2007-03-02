@@ -2749,9 +2749,6 @@ sub _RestrictionsToClauses {
     foreach $row ( keys %{ $self->{'TicketRestrictions'} } ) {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 
-        #use Data::Dumper;
-        #print Dumper($restriction),"\n";
-
         # We need to reimplement the subclause aggregation that SearchBuilder does.
         # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
         # Then SB AND's the different Subclauses together.
@@ -2828,7 +2825,6 @@ sub _RestrictionsToClauses {
         # here is where we store extra data, say if it's a keyword or
         # something.  (I.e. "TYPE SPECIFIC STUFF")
 
-        #print Dumper($data);
         push @{ $clause{$realfield} }, $data;
     }
     return \%clause;
