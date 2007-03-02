@@ -67,9 +67,6 @@ my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
 
 ok(ref($uri));
 
-use Data::Dumper;
-
-
 ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rt), "It's an RT::URI::fsck_com_rt");
 
 ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
