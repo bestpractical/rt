@@ -621,8 +621,9 @@ sub ContentLength {
                         ) || $trx->CurrentUserHasRight('ShowTicket');
 
     my $len = $self->GetHeader('Content-Length');
-    unless ( $len ) {
+    unless ( defined $len ) {
         use bytes;
+        no warnings 'uninitialized';
         $len = length($self->Content);
         $self->SetHeader('Content-Length' => $len);
     }
