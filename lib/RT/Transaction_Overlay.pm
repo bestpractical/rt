@@ -886,35 +886,8 @@ sub _Value {
         return $self->SUPER::_Value( $field );
     }
 
-    #If it's a comment, we need to be extra special careful
-    my $type = $self->__Value('Type');
-    if ( $type eq 'Comment' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return (undef);
-        }
-    }
-    elsif ( $type eq 'CommentEmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments')
-            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            return (undef);
-        }
-    }
-    elsif ( $type eq 'EmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail')) {
-            return (undef);
-        }
-    }
-    # Make sure the user can see the custom field before showing that it changed
-    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
-        my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->Load( $cf_id );
-        return undef unless $cf->CurrentUserHasRight('SeeCustomField');
-    }
-    #if they ain't got rights to see, don't let em
-    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return (undef);
-        }
+    unless ( $self->CurrentUserCanSee ) {
+        return undef;
     }
 
     return $self->SUPER::_Value( $field );
@@ -938,6 +911,53 @@ sub CurrentUserHasRight {
         Right  => $right,
         Object => $self->Object
     );
+}
+
+=head2 CurrentUserCanSee
+
+Returns true if current user has rights to see this particular transaction.
+
+This fact depends on type of the transaction, type of an object the transaction
+is attached to and may be other conditions, so this method is prefered over
+custom implementations.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+
+    # If it's a comment, we need to be extra special careful
+    my $type = $self->__Value('Type');
+    if ( $type eq 'Comment' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            return 0;
+        }
+    }
+    elsif ( $type eq 'CommentEmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments')
+            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
+    }
+    elsif ( $type eq 'EmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
+    }
+    # Make sure the user can see the custom field before showing that it changed
+    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load( $cf_id );
+        return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
+    }
+    #if they ain't got rights to see, don't let em
+    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
+        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 # }}}
