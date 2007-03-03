@@ -520,7 +520,6 @@ Returns its value as a string, if the user passes an ACL check
 =cut
 
 sub _Value {
-
     my $self  = shift;
     my $field = shift;
 
@@ -529,23 +528,8 @@ sub _Value {
         return ( $self->__Value( $field, @_ ) );
     }
 
-    my $txn = $self->TransactionObj;
-    # If it's a comment, we need to be extra special careful
-    if ( $txn->__Value('Type') =~ /^Comment/ ) {
-        if ( $txn->CurrentUserHasRight('ShowTicketComments') )
-        {
-            return ( $self->__Value( $field, @_ ) );
-        }
-    }
-    elsif ( $txn->CurrentUserHasRight('ShowTicket') ) {
-        return ( $self->__Value( $field, @_ ) );
-    }
-
-    #if they ain't got rights to see, don't let em
-    else {
-        return (undef);
-    }
-
+    return undef unless $self->TransactionObj->CurrentUserCanSee;
+    return $self->__Value( $field, @_ );
 }
 
 # }}}
@@ -615,10 +599,7 @@ sub _SplitHeaders {
 sub ContentLength {
     my $self = shift;
 
-    my $trx = $self->TransactionObj;
-    return undef unless ( $trx->Type eq 'Comment'
-                          && $trx->CurrentUserHasRight('ShowTicketComments')
-                        ) || $trx->CurrentUserHasRight('ShowTicket');
+    return undef unless $self->TransactionObj->CurrentUserCanSee;
 
     my $len = $self->GetHeader('Content-Length');
     unless ( defined $len ) {
