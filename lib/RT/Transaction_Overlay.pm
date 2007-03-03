@@ -434,17 +434,8 @@ sub Attachments {
 
     $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
-    # if it's a comment, return an empty object if they don't have the right to see it
-    if ( $self->__Value('Type') eq 'Comment' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return $self->{'attachments'};
-        }
-    }
-    # if they ain't got rights to see, return an empty object
-    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return $self->{'attachments'};
-        }
+    unless ( $self->CurrentUserCanSee ) {
+        return $self->{'attachments'};
     }
 
     $self->{'attachments'}->Limit( FIELD => 'TransactionId', VALUE => $self->Id );
@@ -503,21 +494,8 @@ Returns a text string which describes this transaction
 sub Description {
     my $self = shift;
 
-    #Check those ACLs
-    #If it's a comment or a comment email record,
-    #  we need to be extra special careful
-
-    if ( $self->__Value('Type') =~ /^Comment/ ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return ( $self->loc("Permission Denied") );
-        }
-    }
-
-    #if they ain't got rights to see, don't let em
-    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return ($self->loc("Permission Denied") );
-        }
+    unless ( $self->CurrentUserCanSee ) {
+        return ( $self->loc("Permission Denied") );
     }
 
     unless ( defined $self->Type ) {
@@ -540,19 +518,8 @@ Returns a text string which briefly describes this transaction
 sub BriefDescription {
     my $self = shift;
 
-    #If it's a comment or a comment email record,
-    #  we need to be extra special careful
-    if ( $self->__Value('Type') =~ /^Comment/ ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return ( $self->loc("Permission Denied") );
-        }
-    }
-
-    #if they ain't got rights to see, don't let em
-    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return ( $self->loc("Permission Denied") );
-        }
+    unless ( $self->CurrentUserCanSee ) {
+        return ( $self->loc("Permission Denied") );
     }
 
     my $type = $self->Type;    #cache this, rather than calling it 30 times
