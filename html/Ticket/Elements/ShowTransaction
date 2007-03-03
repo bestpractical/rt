@@ -81,6 +81,7 @@ $RowNum => 1
 $DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
 $UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
+$ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
 $EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
@@ -194,12 +195,11 @@ else {
               . "&Action=Comment\">"
               . loc('Comment') . "</a>]";
         }
-        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('ForwardMessage') ) {
+        if ( $Transaction->TicketObj->CurrentUserHasRight('ForwardMessage') ) {
             $titlebar_commands .=
-                "[<a href=\"/Ticket/Forward.html?id="
-              . $Transaction->Ticket
-              . "&QuoteTransaction="
-              . $Transaction->Id
+                "[<a href=\"". $ForwardPath
+              . "?id=". $Transaction->Ticket
+              . "&QuoteTransaction=". $Transaction->Id
               . "\">". loc('Forward') . "</a>]";
         }
     }

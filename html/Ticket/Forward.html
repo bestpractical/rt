@@ -31,6 +31,9 @@
 my $TicketObj = LoadTicket($id);
 $id = $ARGS{'id'} = $TicketObj->id;
 
+Abort( loc("Permission denied") )
+    unless $TicketObj->CurrentUserHasRight('ForwardMessage');
+
 my $txn = RT::Transaction->new( $session{'CurrentUser'} );
 $txn->Load( $QuoteTransaction );
 Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )

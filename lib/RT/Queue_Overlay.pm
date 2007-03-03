@@ -114,6 +114,8 @@ our $RIGHTS = {
     TakeTicket      => 'Take tickets',                                # loc_pair
     StealTicket     => 'Steal tickets',                               # loc_pair
 
+    ForwardMessage  => 'Forward messages to third person(s)',         # loc_pair
+
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
