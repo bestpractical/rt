@@ -1,8 +1,8 @@
 
 use Test::More qw/no_plan/;
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 {
     undef $main::_STDOUT_;
