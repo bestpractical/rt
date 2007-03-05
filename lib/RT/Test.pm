@@ -35,7 +35,7 @@ my @server;
 sub import {
     my $class = shift;
     require RT::Handle;
-    unless ( $_[0] eq 'nodb' ) {
+    unless ( ($_[0] || '') eq 'nodb' ) {
         RT::Handle->drop_db( undef, { force => 1 } );
         RT::Handle->create_db;
 
