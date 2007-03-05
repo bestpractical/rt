@@ -344,6 +344,7 @@ sub insert_initial_data {
     RT::InitLogging();
 
     # connect to the db, for actual RT work
+    $RT::Handle->Disconnect;
     $RT::Handle = RT::Handle->new;
     $RT::Handle->BuildDSN;
     $RT::Handle->Connect;
