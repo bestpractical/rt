@@ -1,4 +1,4 @@
-use Test::More tests => 2;
+use Test::More tests => 6;
 use RT;
 use RT::Test;
 
