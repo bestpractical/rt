@@ -208,6 +208,11 @@ END
     $dbh->do("DROP DATABASE ". $db_name) or warn $DBI::errstr;
 }
 
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
+}
 
 =head2 insert_acl
 
@@ -349,6 +354,7 @@ sub insert_initial_data {
     $RT::Handle->Connect;
 
     #Put together a current user object so we can create a User object
+    require RT::CurrentUser;
     my $CurrentUser = new RT::CurrentUser();
 
     print "Checking for existing system user...";

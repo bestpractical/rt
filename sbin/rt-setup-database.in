@@ -213,12 +213,6 @@ sub get_dba_password {
     return ($password);
 }
 
-sub _yesno {
-    print "Proceed [y/N]:";
-    my $x = scalar(<STDIN>);
-    $x =~ /^y/i;
-}
-
 =head2 get_system_dsn
 
 Returns a DSN suitable for database creates and drops

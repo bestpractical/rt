@@ -6,10 +6,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 44;
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+use Test::More tests => 43;
+use RT::Test;
 
 # setup the queue
 
