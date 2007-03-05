@@ -17,7 +17,7 @@ Set( \$DatabaseName , "rt3test");
 1;
 };
     close $config;
-    $ENV{RT_SITE_CONFIG} = $config;
+    $ENV{RT_SITE_CONFIG} = $config->filename;
     use RT;
     RT::LoadConfig;
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
