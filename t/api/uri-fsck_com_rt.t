@@ -1,15 +1,14 @@
-
-use Test::More qw/no_plan/;
+use Test::More tests => 8;
 use RT;
 use RT::Test;
 
-
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-
 use_ok("RT::URI::fsck_com_rt");
 my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+my ($trans);
+($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
+ok ($id, $msg);
 
 ok(ref($uri));
 
@@ -21,22 +20,9 @@ ok ($uri->isa('RT::Base'), "It's an RT::Base");
 is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
-
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-
 my $ticket = RT::Ticket->new($RT::SystemUser);
 $ticket->Load(1);
 my $uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
 is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
-
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
 
 1;

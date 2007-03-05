@@ -1,12 +1,11 @@
-
-use Test::More qw/no_plan/;
+use Test::More tests => 2;
 use RT;
 use RT::Test;
 
-
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
+my $t1 = RT::Ticket->new($RT::SystemUser);
+my ($trans);
+($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
+ok ($id, $msg);
 
 use_ok("RT::URI::t");
 my $uri = RT::URI::t->new($RT::SystemUser);
@@ -18,10 +17,5 @@ is(ref($uri->Object), "RT::Ticket", "Object loaded is a ticket");
 is($uri->Object->Id, 1, "Object loaded has correct ID");
 is($uri->URI, 'fsck.com-rt://'.RT->Config->Get('Organization').'/ticket/1',
    "URI object has correct URI string");
-
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
 
 1;
