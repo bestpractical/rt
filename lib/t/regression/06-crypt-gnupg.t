@@ -1,7 +1,10 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 95;
+use Test::More;
+eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
+
+plan tests => 95;
 
 use_ok("RT");
 
@@ -12,7 +15,6 @@ use Data::Dumper;
 
 RT::Init();
 
-use GnuPG::Interface;
 
 use File::Spec ();
 use Cwd;
