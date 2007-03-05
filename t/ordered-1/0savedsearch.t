@@ -7,9 +7,7 @@ use RT::Queue;
 
 use_ok(RT::SavedSearch);
 use_ok(RT::SavedSearches);
-
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
 
 # Set up some infrastructure.  These calls are tested elsewhere.
 
