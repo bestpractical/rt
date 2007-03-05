@@ -6,8 +6,8 @@ use warnings;
 use Test::More  tests => '17';
 
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 # validate that when merging two tickets, the comments from both tickets
 # are integrated into the new ticket

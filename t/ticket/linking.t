@@ -10,8 +10,8 @@ use_ok('RT::ScripActions');
 use_ok('RT::Template');
 use_ok('RT::Scrips');
 use_ok('RT::Scrip');
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
