@@ -1,12 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 6;
-
-use_ok("RT");
-
-RT::LoadConfig();
-RT::Init();
+use Test::More tests => 5;
+use RT::Test 'nodata';
 
 use_ok('RT::I18N');
 

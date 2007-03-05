@@ -4,17 +4,12 @@ use warnings;
 use Test::More;
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
-plan tests => 95;
+plan tests => 94;
+use RT::Test 'nodata';
 
-use_ok("RT");
-
-RT::LoadConfig();
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );
 use Data::Dumper;
-
-RT::Init();
-
 
 use File::Spec ();
 use Cwd;

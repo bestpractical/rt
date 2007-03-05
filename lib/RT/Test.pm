@@ -35,13 +35,14 @@ my @server;
 sub import {
     my $class = shift;
     require RT::Handle;
-    unless ( ($_[0] || '') eq 'nodb' ) {
-        RT::Handle->drop_db( undef, { force => 1 } );
-        RT::Handle->create_db;
+    RT::Handle->drop_db( undef, { force => 1 } );
+    RT::Handle->create_db;
 
-        RT->ConnectToDatabase;
-        $RT::Handle->insert_schema($dbh);
-        $RT::Handle->insert_initial_data();
+    RT->ConnectToDatabase;
+    $RT::Handle->insert_schema($dbh);
+    $RT::Handle->insert_initial_data();
+
+    unless ( ($_[0] || '') eq 'nodata' ) {
         $RT::Handle->insert_data( $RT::EtcPath . "/initialdata" );
     }
     RT::Init;
