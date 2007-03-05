@@ -4,8 +4,8 @@ use strict;
 use Test::More tests => 7;
 
 use RT;
-RT::LoadConfig();
-RT::Init;
+use RT::Test;
+
 
 # {{{ test scrip ordering based on description
 

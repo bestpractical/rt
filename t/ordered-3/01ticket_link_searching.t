@@ -5,10 +5,10 @@ use strict;
 use RT;
 
 # Load the config file
-RT::LoadConfig();
+use RT::Test;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init();
+
 
 #Get the current user all loaded
 my $CurrentUser = $RT::SystemUser;

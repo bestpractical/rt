@@ -3,8 +3,8 @@ use strict; use warnings;
 
 use Test::More qw/no_plan/;
 use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 use_ok('RT::Action::CreateTickets');
 
 my $QUEUE = 'uploadtest-'.$$;

@@ -2,8 +2,8 @@
 
 use Test::More qw/no_plan/;
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 use strict;
 use warnings;

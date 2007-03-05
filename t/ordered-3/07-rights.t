@@ -47,8 +47,8 @@
 
 use Test::More tests => 26;
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 use RT::I18N;
 use strict;
 no warnings 'once';

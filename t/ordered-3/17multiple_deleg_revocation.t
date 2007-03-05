@@ -4,8 +4,7 @@ use Test::More qw(no_plan);
 
 use RT;
 
-ok( RT::LoadConfig, "Locating config files" );
-ok( RT::Init,       "Basic initialization and DB connectivity" );
+use RT::Test;
 
 my ($u1, $g1, $pg1, $pg2, $ace, @groups, @users, @principals);
 @groups = (\$g1, \$pg1, \$pg2);

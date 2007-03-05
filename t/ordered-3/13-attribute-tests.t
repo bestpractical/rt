@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use Test::More tests => 34;
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 
 my $runid = rand(200);

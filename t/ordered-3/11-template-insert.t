@@ -6,8 +6,8 @@ use strict;
 use Test::More tests => 7;
 
 use RT;
-RT::LoadConfig();
-RT::Init;
+use RT::Test;
+
 
 
 # This tiny little test script triggers an interaction bug between DBD::Oracle 1.16, SB 1.15 and RT 3.4
