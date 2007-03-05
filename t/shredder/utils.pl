@@ -39,12 +39,12 @@ but want to learn more about RT. New tests are very welcome.
 
 Shredder distribution has several files to help write new tests.
 
-  lib/t/regression/shredder/utils.pl - this file, utilities
+  t/shredder/utils.pl - this file, utilities
   t/00skeleton.t - skeleteton .t file for new test files
 
 All tests runs by next algorithm:
 
-  require "lib/t/regression/shredder/utils.pl"; # plug in utilities
+  require "t/shredder/utils.pl"; # plug in utilities
   init_db(); # create new tmp RT DB and init RT API
   # create RT data you want to be always in the RT DB
   # ...
@@ -87,7 +87,7 @@ sub rewrite_rtconfig
     # generic logging
     config_set( '$LogToSyslog'    , undef );
     config_set( '$LogToScreen'    , 'error' );
-    config_set( '$LogStackTraces' , 1 );
+    config_set( '$LogStackTraces' , 'crit' );
     # logging to standalone file
     config_set( '$LogToFile'      , 'debug' );
     my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
@@ -381,7 +381,7 @@ There is should be:
     $name.log - RT debug log file
     $name.db - latest RT DB sed while testing
     $name.*.db - savepoint databases
-See also perldoc lib/t/regression/shredder/utils.pl to know how to use this info.
+See also perldoc t/shredder/utils.pl to know how to use this info.
 END
 }
 

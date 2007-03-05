@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
-BEGIN { require "lib/t/regression/shredder/utils.pl"; }
+BEGIN { require "t/shredder/utils.pl"; }
 init_db();
 
 plan tests => 8;

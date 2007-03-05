@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
-BEGIN { require "lib/t/regression/shredder/utils.pl"; }
+BEGIN { require "t/shredder/utils.pl"; }
 
 my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
 plan tests => 7 + 3 * @PLUGINS;

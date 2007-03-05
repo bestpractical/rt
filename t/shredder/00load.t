@@ -1,6 +1,6 @@
 use Test::More tests => 11;
 
-BEGIN { require "lib/t/regression/shredder/utils.pl" }
+BEGIN { require "t/shredder/utils.pl" }
 
 use_ok("RT::Shredder");
 

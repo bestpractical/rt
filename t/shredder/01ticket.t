@@ -8,7 +8,7 @@ use Test::Deep;
 
 plan tests => 15;
 
-BEGIN { require "lib/t/regression/shredder/utils.pl"; }
+BEGIN { require "t/shredder/utils.pl"; }
 init_db();
 create_savepoint('clean');
 
