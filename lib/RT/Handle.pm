@@ -137,6 +137,162 @@ sub BuildDSN {
 
 }
 
+# dealing with intial data
+
+=head2 
+
+=cut
+
+sub create_db {
+    my $self = shift;
+    my $dbh  = shift || $self->dbh;
+    my $db_type = RT->Config->Get('DatabaseType');
+    my $db_name = RT->Config->Get('DatabaseName');
+    print "Creating $db_type database $db_name.\n";
+    if ( $db_type eq 'SQLite' ) {
+        return;
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'");
+        if ( $DBI::errstr ) {
+            $dbh->do("CREATE DATABASE $db_name") || die $DBI::errstr;
+        }
+    }
+    elsif ( $db_type eq 'Informix' ) {
+        $ENV{'DB_LOCALE'} = 'en_us.utf8';
+        $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
+    }
+    else {
+        $dbh->do("CREATE DATABASE $db_name") or die $DBI::errstr;
+    }
+}
+
+=head2 insert_acl
+
+=cut
+
+sub insert_acl {
+    my $self = shift;
+    my $dbh  = shift || $self->dbh;
+    my $base_path = (shift || $RT::EtcPath);
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    return if $db_type eq 'SQLite';
+
+    # XXX: this is polluting acl()
+    do $base_path ."/acl.". $db_type
+        || die "Couldn't find ACLs for ". $db_type .": " . $@;
+
+    my @acl = acl($dbh);
+    foreach my $statement (@acl) {
+#        print STDERR $statement if $args{'debug'};
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute ) {
+            die "Problem with statement:\n $statement\n" . $sth->errstr;
+        }
+    }
+    print "Done setting up database ACLs.\n";
+}
+
+=head2 insert_schema
+
+=cut
+
+sub insert_schema {
+    my $self = shift;
+    my $dbh  = shift || $self->dbh;
+    my $base_path = (shift || $RT::EtcPath);
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    my $file = get_version_file( $base_path . "/schema." . $db_type );
+    unless ( $file ) {
+        die "Couldn't find schema file in '$base_path' dir";
+    }
+    unless ( -f $file || -r $file ) {
+        die "File '$file' doesn't exist or couldn't be read";
+    }
+
+    my (@schema);
+    print "Creating database schema.\n";
+
+    open my $fh_schema, "<$file";
+
+    my $has_local = 0;
+    open my $fh_schema_local, "<" . get_version_file( $RT::LocalEtcPath . "/schema." . $db_type )
+        and $has_local = 1;
+
+    my $statement = "";
+    foreach my $line ( <$fh_schema>, ($_ = ';;'), $has_local? <$fh_schema_local>: () ) {
+        $line =~ s/\#.*//g;
+        $line =~ s/--.*//g;
+        $statement .= $line;
+        if ( $line =~ /;(\s*)$/ ) {
+            $statement =~ s/;(\s*)$//g;
+            push @schema, $statement;
+            $statement = "";
+        }
+    }
+    close $fh_schema; close $fh_schema_local;
+
+    local $SIG{__WARN__} = sub {};
+    my $is_local = 0; # local/etc/schema needs to be nonfatal.
+    $dbh->begin_work or die $dbh->errstr;
+    foreach my $statement (@schema) {
+        if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
+
+#        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute or $is_local ) {
+            die "Problem with statement:\n$statement\n" . $sth->errstr;
+        }
+    }
+    $dbh->commit or die $dbh->errstr;
+
+    print "Done setting up database schema.\n";
+}
+
+=head1 get_version_file
+
+Takes base name of the file as argument, scans for <base name>-<version> named
+files and returns file name with closest version to the version of the RT DB.
+
+=cut
+
+sub get_version_file {
+    my $base_name = shift;
+
+    require File::Glob;
+    my @files = File::Glob::bsd_glob("$base_name*");
+    return '' unless @files;
+
+    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
+    my $db_version = $RT::Handle->DatabaseVersion;
+    print "Server version $db_version\n";
+    my $version;
+    foreach ( reverse sort cmp_version keys %version ) {
+        if ( cmp_version( $db_version, $_ ) >= 0 ) {
+            $version = $_;
+            last;
+        }
+    }
+
+    return defined $version? $version{ $version } : undef;
+}
+
+sub cmp_version($$) {
+    my ($a, $b) = (@_);
+    my @a = split /[^0-9]+/, $a;
+    my @b = split /[^0-9]+/, $b;
+    for ( my $i = 0; $i < @a; $i++ ) {
+        return 1 unless defined $b[$i];
+        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
+    }
+    return 0 if @a == @b;
+    return -1;
+}
+
+
+
 eval "require RT::Handle_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});
 eval "require RT::Handle_Local";
