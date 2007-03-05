@@ -1,12 +1,10 @@
 #!/usr/bin/perl -w
 use strict;
-use WWW::Mechanize;
 use HTTP::Cookies;
 
-use Test::More tests => 34;
-use RT;
-RT::LoadConfig();
-RT::Init();
+use Test::More tests => 35;
+use RT::Test;
+my ($baseurl, $agent) = RT::Test->started_ok;
 
 # Create a user with basically no rights, to start.
 my $user_obj = RT::User->new($RT::SystemUser);
@@ -22,7 +20,6 @@ ok($ret, "ACL test password set. $msg");
 
 
 my $cookie_jar = HTTP::Cookies->new;
-my $agent = WWW::Mechanize->new();
 
 # give the agent a place to stash the cookies
 

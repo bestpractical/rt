@@ -2,20 +2,18 @@
 
 use strict;
 use Test::More qw/no_plan/;
-use WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
 
 my $cookie_jar = HTTP::Cookies->new;
-my $agent = WWW::Mechanize->new();
+
+use RT::Test;
+my ($baseurl, $agent) = RT::Test->started_ok;
 
 # give the agent a place to stash the cookies
 $agent->cookie_jar($cookie_jar);
-
-use RT;
-RT::LoadConfig();
 
 # get the top page
 my $url = RT->Config->Get('WebURL');

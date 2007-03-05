@@ -1,23 +1,20 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 39;
-use Test::WWW::Mechanize;
+use Test::More tests => 40;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
+use RT::Test;
 
 my $cookie_jar = HTTP::Cookies->new;
-my $agent = Test::WWW::Mechanize->new();
+my ($baseurl, $agent) = RT::Test->started_ok;
+
 
 # give the agent a place to stash the cookies
 
 $agent->cookie_jar($cookie_jar);
-
-use RT;
-RT::LoadConfig();
-RT::Init();
 
 # create a regression queue if it doesn't exist
 {

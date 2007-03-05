@@ -54,11 +54,11 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use Test::More tests => 100;
+use Test::More tests => 101;
 
-use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
+
 use RT::Tickets;
 
 use MIME::Entity;

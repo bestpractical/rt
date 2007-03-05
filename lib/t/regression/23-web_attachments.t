@@ -2,10 +2,8 @@
 use strict;
 
 use Test::More tests => 15;
-use RT;
-RT::LoadConfig;
-RT::Init;
-use Test::WWW::Mechanize;
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 $RT::WebURL ||= 0; # avoid stupid warning
 my $BaseURL = $RT::WebURL;
@@ -13,9 +11,6 @@ use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 
 my $queue_name = 'General';
-
-my $m = Test::WWW::Mechanize->new;
-isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get_ok( $BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');

@@ -5,11 +5,6 @@ use warnings;
 
 use Test::More;
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-}
 
 my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
 if ( keys %clicky ) {
@@ -18,6 +13,9 @@ if ( keys %clicky ) {
 else {
     plan skip_all => 'No active Make Clicky actions';
 }
+
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 use_ok('MIME::Entity');
 
@@ -47,10 +45,7 @@ my ($id) = $ticket->Create(
 ok($id, "We created a ticket #$id");
 ok($ticket->Transactions->First->Content, "Has some content");
 
-use Test::WWW::Mechanize;
 use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
-my $m = Test::WWW::Mechanize->new;
-isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get_ok( BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');

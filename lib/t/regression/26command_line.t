@@ -3,11 +3,9 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 148;
-
-use RT;
-RT::LoadConfig();
-RT::Init;
+use Test::More tests => 149;
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
 use RT::Queue;

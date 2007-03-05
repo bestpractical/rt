@@ -2,12 +2,8 @@
 use strict;
 
 use Test::More tests => 7;
-BEGIN {
-    use RT;
-    RT::LoadConfig;
-    RT::Init;
-}
-use Test::WWW::Mechanize;
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 use constant BaseURL => RT->Config->Get('WebURL');
 
@@ -21,9 +17,6 @@ $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
-
-my $m = Test::WWW::Mechanize->new ( autocheck => 1 );
-isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get( BaseURL."?user=customer;pass=customer" );
 

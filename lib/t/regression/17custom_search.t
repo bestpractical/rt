@@ -2,12 +2,8 @@
 use strict;
 
 use Test::More tests => 10;
-BEGIN {
-    use RT;
-    RT::LoadConfig;
-    RT::Init;
-}
-use Test::WWW::Mechanize;
+use RT::Test;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 use constant BaseURL => RT->Config->Get('WebURL');
 
@@ -17,9 +13,6 @@ my $t = RT::Ticket->new($RT::SystemUser);
 $t->Create(Subject => 'for custom search', Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'created ticket for custom search');
-
-my $m = Test::WWW::Mechanize->new ( autocheck => 1 );
-isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get( BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
