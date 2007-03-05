@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 61 lib/RT/Queue_Overlay.pm
 
 use RT::Queue;
 
@@ -19,7 +18,6 @@ use RT::Queue;
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 238 lib/RT/Queue_Overlay.pm
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsValidStatus('new')== 1, 'New is a valid status');
@@ -33,7 +31,6 @@ ok($q->IsValidStatus('f00')== 0, 'f00 is not a valid status');
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 265 lib/RT/Queue_Overlay.pm
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsActiveStatus('new')== 1, 'New is a Active status');
@@ -48,7 +45,6 @@ ok($q->IsActiveStatus('f00')== 0, 'f00 is not a Active status');
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 293 lib/RT/Queue_Overlay.pm
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsInactiveStatus('new')== 0, 'New is a Active status');
@@ -63,7 +59,6 @@ ok($q->IsInactiveStatus('f00')== 0, 'f00 is not a Active status');
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 335 lib/RT/Queue_Overlay.pm
 
 my $queue = RT::Queue->new($RT::SystemUser);
 my ($id, $val) = $queue->Create( Name => 'Test1');
@@ -80,7 +75,6 @@ ok(!$id, $val);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 643 lib/RT/Queue_Overlay.pm
 
 my $Queue = RT::Queue->new($RT::SystemUser); my ($id, $msg) = $Queue->Create(Name => "Foo",
                 );

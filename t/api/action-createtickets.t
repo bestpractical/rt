@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 238 lib/RT/Action/CreateTickets.pm
 
 ok (require RT::Action::CreateTickets);
 use_ok(RT::Scrip);

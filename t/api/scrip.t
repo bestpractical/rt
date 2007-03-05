@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 61 lib/RT/Scrip_Overlay.pm
 
 ok (require RT::Scrip);
 

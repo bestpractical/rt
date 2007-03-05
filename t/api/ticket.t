@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 62 lib/RT/Ticket_Overlay.pm
 
 use_ok ( RT::Queue);
 ok(my $testqueue = RT::Queue->new($RT::SystemUser));
@@ -90,7 +89,6 @@ ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 160 lib/RT/Ticket_Overlay.pm
 
 
 ok(require RT::Ticket, "Loading the RT::Ticket library");
@@ -103,7 +101,6 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 335 lib/RT/Ticket_Overlay.pm
 
 my $t = RT::Ticket->new($RT::SystemUser);
 
@@ -122,7 +119,6 @@ is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Uni
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 784 lib/RT/Ticket_Overlay.pm
 
 my $simple_update = <<EOF;
 Subject: target
@@ -147,7 +143,6 @@ ok($ticket->Requestors->HasMember( $jesse->PrincipalObj), "It has the jesse prin
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1220 lib/RT/Ticket_Overlay.pm
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(Subject => "Foo",
@@ -196,7 +191,6 @@ ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group h
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1578 lib/RT/Ticket_Overlay.pm
 
 my $t = RT::Ticket->new($RT::SystemUser);
 ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
@@ -232,7 +226,6 @@ is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned)
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 2716 lib/RT/Ticket_Overlay.pm
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 $t1->Create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
@@ -259,7 +252,6 @@ is ($t1->Requestors->MembersObj->Count, 2);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 2948 lib/RT/Ticket_Overlay.pm
 
 my $root = RT::User->new($RT::SystemUser);
 $root->Load('root');
@@ -288,7 +280,6 @@ ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 3182 lib/RT/Ticket_Overlay.pm
 
 my $tt = RT::Ticket->new($RT::SystemUser);
 my ($id, $tid, $msg)= $tt->Create(Queue => 'general',

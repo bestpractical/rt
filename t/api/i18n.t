@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 89 lib/RT/I18N.pm
 
 use_ok (RT::I18N);
 ok(RT::I18N->Init);
@@ -20,7 +19,6 @@ ok(RT::I18N->Init);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 140 lib/RT/I18N.pm
 
 ok(my $chinese = RT::I18N->get_handle('zh_tw'));
 ok(UNIVERSAL::can($chinese, 'maketext'));

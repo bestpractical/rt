@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 97 lib/RT/Interface/Email.pm
 
 ok(require RT::Interface::Email);
 

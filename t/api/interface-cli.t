@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 102 lib/RT/Interface/CLI.pm
 
 ok(require RT::Interface::CLI);
 

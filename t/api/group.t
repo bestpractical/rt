@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 66 lib/RT/Group_Overlay.pm
 
 # {{{ Tests
 ok (require RT::Group);
@@ -93,7 +92,6 @@ ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1363 lib/RT/Group_Overlay.pm
 
 ok(my $u = RT::Group->new($RT::SystemUser));
 ok($u->Load(4), "Loaded the first user");

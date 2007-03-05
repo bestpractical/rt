@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 61 lib/RT/User_Overlay.pm
 
 ok(require RT::User);
 
@@ -19,7 +18,6 @@ ok(require RT::User);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 116 lib/RT/User_Overlay.pm
 
 # Make sure we can create a user
 
@@ -75,7 +73,6 @@ is ($u7->EmailAddress, '');
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 342 lib/RT/User_Overlay.pm
 
 
 ok(my $user = RT::User->new($RT::SystemUser));
@@ -96,7 +93,6 @@ ok($user->Privileged, "User 'root' is privileged again");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1195 lib/RT/User_Overlay.pm
 
 ok(my $u = RT::User->new($RT::SystemUser));
 ok($u->Load(1), "Loaded the first user");
@@ -111,7 +107,6 @@ is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1315 lib/RT/User_Overlay.pm
 
 my $root = RT::User->new($RT::SystemUser);
 $root->Load('root');

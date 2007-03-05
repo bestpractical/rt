@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 74 lib/RT/Tickets_Overlay.pm
 
 ok (require RT::Tickets);
 ok( my $testtickets = RT::Tickets->new( $RT::SystemUser ) );
@@ -23,7 +22,6 @@ ok( $testtickets->Count == 0 );
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 793 lib/RT/Tickets_Overlay.pm
 
 # Test to make sure that you can search for tickets by requestor address and
 # by requestor name.
@@ -95,7 +93,6 @@ is ($tix4->Count, 2);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 2079 lib/RT/Tickets_Overlay.pm
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 $t1->Create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
@@ -108,7 +105,6 @@ $t1->Create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 2961 lib/RT/Tickets_Overlay.pm
 
 # We assume that we've got some tickets hanging around from before.
 ok( my $unlimittickets = RT::Tickets->new( $RT::SystemUser ) );

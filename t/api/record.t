@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 58 lib/RT/Record.pm
 
 ok (require RT::Record);
 
@@ -19,7 +18,6 @@ ok (require RT::Record);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 133 lib/RT/Record.pm
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my $group = RT::Group->new($RT::SystemUser);
@@ -34,7 +32,6 @@ is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 1029 lib/RT/Record.pm
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 my ($id, $trans, $msg) = $t1->Create(Subject => 'DepTest1', Queue => 'general');

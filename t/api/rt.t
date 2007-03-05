@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 395 lib/RT.pm
 
 ok ($RT::Nobody->Name() eq 'Nobody', "Nobody is nobody");
 ok ($RT::Nobody->Name() ne 'root', "Nobody isn't named root");

@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 308 lib/RT/CustomField_Overlay.pm
 
 use_ok(RT::CustomField);
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
@@ -45,7 +44,6 @@ ok($bad_id == 0, 'Global custom field correctly decided to not create a cf with 
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 373 lib/RT/CustomField_Overlay.pm
 
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
 $cf->Load(1);
@@ -63,7 +61,6 @@ ok ($delval,"Deleting a cf value: $delmsg");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 565 lib/RT/CustomField_Overlay.pm
 
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
 ok($cf->ValidateType('SelectSingle'));

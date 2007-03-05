@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 63 lib/RT/CurrentUser.pm
 
 ok (require RT::CurrentUser);
 
@@ -19,7 +18,6 @@ ok (require RT::CurrentUser);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 202 lib/RT/CurrentUser.pm
 
 ok (my $cu = RT::CurrentUser->new('root'));
 ok (my $lh = $cu->LanguageHandle('en-us'));

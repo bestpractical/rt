@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 79 lib/RT/Action/SendEmail.pm
 
 ok (require RT::Action::SendEmail);
 

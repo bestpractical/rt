@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 63 lib/RT/Attachment_Overlay.pm
 
 ok (require RT::Attachment);
 
@@ -19,7 +18,6 @@ ok (require RT::Attachment);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 557 lib/RT/Attachment_Overlay.pm
 
 my $test1 = "From: jesse";
 my @headers = RT::Attachment->_SplitHeaders($test1);

@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 60 lib/RT/SearchBuilder.pm
 
 ok (require RT::SearchBuilder);
 
@@ -19,7 +18,6 @@ ok (require RT::SearchBuilder);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 347 lib/RT/SearchBuilder.pm
 
 use_ok(RT::Queues);
 ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');

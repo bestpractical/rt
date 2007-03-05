@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 64 lib/RT/URI/fsck_com_rt.pm
 
 use_ok("RT::URI::fsck_com_rt");
 my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
@@ -29,7 +28,6 @@ is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 115 lib/RT/URI/fsck_com_rt.pm
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 $ticket->Load(1);

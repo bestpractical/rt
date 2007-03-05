@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 60 lib/RT/Action/Generic.pm
 
 ok (require RT::Action::Generic);
 

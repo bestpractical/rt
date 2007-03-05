@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 67 lib/RT/Groups_Overlay.pm
 
 ok (require RT::Groups);
 
@@ -19,7 +18,6 @@ ok (require RT::Groups);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 91 lib/RT/Groups_Overlay.pm
 
 # next had bugs
 # Groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => xx );
@@ -41,7 +39,6 @@ ok (!$bug, "didn't find group");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 269 lib/RT/Groups_Overlay.pm
 
 my $u = RT::User->new($RT::SystemUser);
 my ($id, $msg) = $u->Create( Name => 'Membertests'. $$ );
@@ -69,7 +66,6 @@ ok ($groups->First->Id == $g->Id, "it's the right one");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 318 lib/RT/Groups_Overlay.pm
 
 my $q = RT::Queue->new($RT::SystemUser);
 my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');

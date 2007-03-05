@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 62 lib/RT/GroupMembers_Overlay.pm
 
 ok (require RT::GroupMembers);
 

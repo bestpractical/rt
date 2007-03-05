@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 104 lib/RT/System.pm
 
 my $s = RT::System->new($RT::SystemUser);
 my $rights = $s->AvailableRights;
@@ -27,7 +26,6 @@ ok (!$rights->{'CasdasdsreateTicket'},"bogus right not found");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 147 lib/RT/System.pm
 
 use RT::System;
 my $sys = RT::System->new();

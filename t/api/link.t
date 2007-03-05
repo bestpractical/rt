@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 64 lib/RT/Link_Overlay.pm
 
 
 use RT::Link;

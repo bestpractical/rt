@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 58 lib/RT/Handle.pm
 
 ok(require RT::Handle);
 

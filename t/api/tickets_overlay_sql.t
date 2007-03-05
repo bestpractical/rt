@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 273 lib/RT/Tickets_Overlay_SQL.pm
 
 use RT::Tickets;
 use strict;

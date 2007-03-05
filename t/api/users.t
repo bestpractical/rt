@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 62 lib/RT/Users_Overlay.pm
 
 ok(require RT::Users);
 
@@ -19,7 +18,6 @@ ok(require RT::Users);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 235 lib/RT/Users_Overlay.pm
 
 ok(my $users = RT::Users->new($RT::SystemUser));
 $users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser');

@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 60 lib/RT/ACE_Overlay.pm
 
 ok(require RT::ACE);
 
@@ -19,7 +18,6 @@ ok(require RT::ACE);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 92 lib/RT/ACE_Overlay.pm
 
 my $Queue = RT::Queue->new($RT::SystemUser);
 
@@ -35,7 +33,6 @@ is ($RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', 
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 350 lib/RT/ACE_Overlay.pm
 
 use_ok(RT::User);
 my $user_a = RT::User->new($RT::SystemUser);

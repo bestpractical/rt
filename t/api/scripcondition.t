@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 63 lib/RT/ScripCondition_Overlay.pm
 
 ok (require RT::ScripCondition);
 

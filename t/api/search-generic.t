@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 70 lib/RT/Search/Generic.pm
 
 ok (require RT::Search::Generic);
 

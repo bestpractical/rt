@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 41 lib/RT/URI/t.pm
 
 use_ok("RT::URI::t");
 my $uri = RT::URI::t->new($RT::SystemUser);

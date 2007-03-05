@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 65 lib/RT/Attachments_Overlay.pm
 
 ok (require RT::Attachments);
 

@@ -7,7 +7,6 @@ RT::Init();
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 62 lib/RT/Template_Overlay.pm
 
 ok(require RT::Template);
 
@@ -19,7 +18,6 @@ ok(require RT::Template);
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
-#line 124 lib/RT/Template_Overlay.pm
 
 my $t = RT::Template->new($RT::SystemUser);
 $t->Create(Name => "Foo", Queue => 1);
