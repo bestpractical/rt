@@ -3,7 +3,7 @@
 use strict;
 use Test::More tests => 143;
 
-use RT::Test 'nodata';
+use RT::Test;
 
 use RT::EmailParser;
 use RT::Tickets;
