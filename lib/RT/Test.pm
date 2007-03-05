@@ -1,4 +1,5 @@
 package RT::Test;
+use strict;
 
 use Test::More;
 
@@ -35,11 +36,20 @@ my @server;
 sub import {
     my $class = shift;
     require RT::Handle;
-    RT::Handle->drop_db( undef, { force => 1 } );
-    RT::Handle->create_db;
+    # bootstrap with dba cred
+    my $dbh = _get_dbh(RT::Handle->get_system_dsn,
+		       $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    RT::Handle->drop_db( $dbh, { force => 1 } );
+    RT::Handle->create_db( $dbh );
+
+    my $dbh = _get_dbh(RT::Handle->get_rt_dsn,
+		       $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
 
     RT->ConnectToDatabase;
     $RT::Handle->insert_schema($dbh);
+    $RT::Handle->insert_acl($dbh) unless $db_type eq 'Oracle';
     $RT::Handle->insert_initial_data();
 
     unless ( ($_[0] || '') eq 'nodata' ) {
@@ -52,6 +62,19 @@ sub started_ok {
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     return ($s->started_ok, Test::WWW::Mechanize->new);
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+	print STDERR $msg; exit -1;
+    }
+    return $dbh;
 }
 
 
