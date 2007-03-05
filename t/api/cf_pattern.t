@@ -4,8 +4,8 @@ use strict;
 use Test::More tests => 17;
 
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 sub fails { ok(!$_[0], "This should fail: $_[1]") }
 sub works { ok($_[0], $_[1] || 'This works') }

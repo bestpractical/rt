@@ -4,8 +4,8 @@ use strict;
 use Test::More tests => 8;
 
 use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 
 my $q = RT::Queue->new($RT::SystemUser);

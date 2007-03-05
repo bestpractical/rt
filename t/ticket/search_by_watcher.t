@@ -3,10 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 79;
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+use Test::More tests => 78;
+use RT::Test;
 use RT::Ticket;
 
 my $q = RT::Queue->new( $RT::SystemUser );

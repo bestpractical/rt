@@ -7,9 +7,7 @@ use Test::More tests => 10;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 
-use RT;
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
 
 my $SUBJECT = "Search test - ".$$;
 

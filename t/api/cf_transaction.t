@@ -7,8 +7,8 @@ use Test::More qw/no_plan/;
 
 use_ok('RT');
 use_ok('RT::Transactions');
-RT::LoadConfig();
-RT::Init();
+use RT::Test;
+
 
 my $q = RT::Queue->new($RT::SystemUser);
 my ($id,$msg) = $q->Create( Name => 'TxnCFTest'.$$);
