@@ -54,11 +54,6 @@
 
 =head1 DESCRIPTION
 
-=begin testing
-
-ok(require RT::Handle);
-
-=end testing
 
 =head1 METHODS
 
@@ -400,7 +395,7 @@ sub insert_data {
     my $datafile = shift;
 
     #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-    RT::Init;
+    RT::Init();
 
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');

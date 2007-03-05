@@ -75,11 +75,6 @@ RT::Action::AutoReply is a good example subclass.
 Basically, you create another module RT::Action::YourAction which ISA
 RT::Action::SendEmail.
 
-=begin testing
-
-ok (require RT::Action::SendEmail);
-
-=end testing
 
 
 =head1 AUTHOR

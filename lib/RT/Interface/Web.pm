@@ -53,11 +53,6 @@
 
 RT::Interface::Web
 
-=begin testing
-
-use_ok(RT::Interface::Web);
-
-=end testing
 
 =cut
 

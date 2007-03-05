@@ -56,11 +56,6 @@
 
 =head1 METHODS
 
-=begin testing
-
-ok (require RT::Action::Generic);
-
-=end testing
 
 =cut
 

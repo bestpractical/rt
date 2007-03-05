@@ -56,11 +56,6 @@
 =head1 DESCRIPTION
 
 
-=begin testing
-
-ok (require RT::ScripActions);
-
-=end testing
 
 =head1 METHODS
 

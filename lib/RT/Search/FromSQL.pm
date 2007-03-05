@@ -57,11 +57,6 @@ Find all tickets described by the SQL statement passed as an argument
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Search::Generic);
-
-=end testing
 
 
 =cut

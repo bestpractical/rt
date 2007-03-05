@@ -64,11 +64,6 @@ doing something wrong.
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::GroupMember);
-
-=end testing
 
 
 =cut

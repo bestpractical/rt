@@ -60,20 +60,6 @@ should only be accessed through exported APIs in Ticket other similar objects.
 =head1 METHODS
 
 
-=begin testing
-
-
-use RT::Link;
-my $link = RT::Link->new($RT::SystemUser);
-
-
-ok (ref $link);
-ok (UNIVERSAL::isa($link, 'RT::Link'));
-ok (UNIVERSAL::isa($link, 'RT::Base'));
-ok (UNIVERSAL::isa($link, 'RT::Record'));
-ok (UNIVERSAL::isa($link, 'DBIx::SearchBuilder::Record'));
-
-=end testing
 
 =cut
 

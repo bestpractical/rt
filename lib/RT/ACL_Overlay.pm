@@ -58,11 +58,6 @@ my $ACL = new RT::ACL($CurrentUser);
 
 =head1 METHODS
 
-=begin testing
-
-ok(require RT::ACL);
-
-=end testing
 
 =cut
 

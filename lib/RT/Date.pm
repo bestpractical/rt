@@ -58,11 +58,6 @@ RT Date is a simple Date Object designed to be speedy and easy for RT to use
 
 The fact that it assumes that a time of 0 means "never" is probably a bug.
 
-=begin testing
-
-ok (require RT::Date);
-
-=end testing
 
 =head1 METHODS
 

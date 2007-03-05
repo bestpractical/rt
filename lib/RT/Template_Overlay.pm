@@ -58,11 +58,6 @@
 
 =head1 METHODS
 
-=begin testing
-
-ok(require RT::Template);
-
-=end testing
 
 =cut
 
@@ -120,15 +115,6 @@ Takes the name of a table column.
 Returns its value as a string, if the user passes an ACL check
 
 
-=begin testing
-
-my $t = RT::Template->new($RT::SystemUser);
-$t->Create(Name => "Foo", Queue => 1);
-my $t2 = RT::Template->new($RT::Nobody);
-$t2->Load($t->Id);
-ok($t2->QueueObj->id, "Got the template's queue objet");
-
-=end testing
 
 
 

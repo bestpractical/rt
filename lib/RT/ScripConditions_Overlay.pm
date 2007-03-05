@@ -57,11 +57,6 @@
 
 
 
-=begin testing
-
-ok (require RT::ScripConditions);
-
-=end testing
 
 =head1 METHODS
 

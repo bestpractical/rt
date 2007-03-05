@@ -69,11 +69,6 @@
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Condition::Generic);
-
-=end testing
 
 
 =cut
