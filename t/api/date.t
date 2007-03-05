@@ -1,13 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More qw/no_plan/;
-#use Test::More tests => 25;
+use Test::More tests => 164;
 
 use warnings; use strict;
-use RT;
-RT::LoadConfig();
-RT::Init();
-
+use RT::Test;
 use RT::User;
 
 use_ok('RT::Date');

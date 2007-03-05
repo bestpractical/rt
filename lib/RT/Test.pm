@@ -33,14 +33,17 @@ unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 my @server;
 
 sub import {
+    my $class = shift;
     require RT::Handle;
-    RT::Handle->drop_db(undef, { force => 1});
-    RT::Handle->create_db;
+    unless ( $_[0] eq 'nodb' ) {
+        RT::Handle->drop_db( undef, { force => 1 } );
+        RT::Handle->create_db;
 
-    RT->ConnectToDatabase;
-    $RT::Handle->insert_schema($dbh);
-    $RT::Handle->insert_initial_data();
-    $RT::Handle->insert_data( $RT::EtcPath . "/initialdata" );
+        RT->ConnectToDatabase;
+        $RT::Handle->insert_schema($dbh);
+        $RT::Handle->insert_initial_data();
+        $RT::Handle->insert_data( $RT::EtcPath . "/initialdata" );
+    }
     RT::Init;
 }
 
