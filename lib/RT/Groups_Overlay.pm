@@ -82,9 +82,6 @@ use RT::Users;
 
 # {{{ sub _Init
 
-
-=cut
-
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Groups";
