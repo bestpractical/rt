@@ -44,8 +44,9 @@ sub import {
     RT::Handle->drop_db( $dbh, { force => 1 } );
     RT::Handle->create_db( $dbh );
 
-    my $dbh = _get_dbh(RT::Handle->get_rt_dsn,
-		       $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
+    $dbh->disconnect;
+    $dbh = _get_dbh(RT::Handle->get_rt_dsn,
+		    $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
 
     RT->ConnectToDatabase;
     $RT::Handle->insert_schema($dbh);
