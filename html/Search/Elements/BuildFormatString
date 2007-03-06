@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
+<%ARGS>
 $Format => undef
 %cfqueues => undef
 $Face => undef
@@ -56,55 +56,41 @@ $ColUp => undef
 $ColDown => undef
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
-</%args>
-<%init>
-
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+</%ARGS>
+<%ONCE>
 
 # All the things we can display in the format string by default
 my @fields = qw(
-  id
-  Status
-  ExtendedStatus
-  Subject
-  QueueName
-  OwnerName
-  Priority
-  InitialPriority
-  FinalPriority
-  Type
-  TimeWorked
-  TimeLeft
-  TimeEstimated
-  CreatedBy
-  LastUpdatedBy
-  Requestors
-  Cc
-  AdminCc
-  Starts
-  StartsRelative
-  Started
-  StartedRelative
-  Created
-  CreatedRelative
-  LastUpdated
-  LastUpdatedRelative
-  Told
-  ToldRelative
-  Due
-  DueRelative
-  Resolved
-  ResolvedRelative
-  RefersTo
-  ReferredToBy
-  DependsOn
-  DependedOnBy
-  MemberOf
-  Members
-  Parents
-  Children
-  NEWLINE
+    id QueueName Subject
+    Status ExtendedStatus
+    Type
+
+    OwnerName Requestors Cc AdminCc CreatedBy LastUpdatedBy
+
+    Priority InitialPriority FinalPriority
+
+    TimeWorked TimeLeft TimeEstimated
+
+    Starts      StartsRelative
+    Started     StartedRelative
+    Created     CreatedRelative
+    LastUpdated LastUpdatedRelative
+    Told        ToldRelative
+    Due         DueRelative
+    Resolved    ResolvedRelative
+
+    RefersTo    ReferredToBy
+    DependsOn   DependedOnBy
+    MemberOf    Members
+    Parents     Children
+
+    NEWLINE
 );
+
+</%ONCE>
+<%init>
+
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {
