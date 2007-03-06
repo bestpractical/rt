@@ -45,15 +45,19 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Format => undef
+
 %cfqueues => undef
+
 $Face => undef
 $Size => undef
 $Link => undef
 $Title => undef
+
 $AddCol => undef
 $RemoveCol => undef
 $ColUp => undef
 $ColDown => undef
+
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
 </%ARGS>
@@ -147,44 +151,44 @@ if ( $RemoveCol ) {
 }
 elsif ( $AddCol ) {
     if ( defined $SelectDisplayColumns ) {
-	my $selected = $SelectDisplayColumns;
-	my @columns;
-	if (ref($selected) eq 'ARRAY') {
-	    @columns = @$selected;
-	} else {
-	    push @columns, $selected;
-	}
-	foreach my $col (@columns) {
-	    my %column = ();
-	    $column{Column} = $col;
+        my $selected = $SelectDisplayColumns;
+        my @columns;
+        if (ref($selected) eq 'ARRAY') {
+            @columns = @$selected;
+        } else {
+            push @columns, $selected;
+        }
+        foreach my $col (@columns) {
+            my %column = ();
+            $column{Column} = $col;
 
-    if ( $Face eq "Bold" ) {
-        $column{Prefix} .= "<b>";
-        $column{Suffix} .= "</b>";
-    }
-    if ( $Face eq "Italic" ) {
-        $column{Prefix} .= "<i>";
-        $column{Suffix} .= "</i>";
-    }
-    if ($Size) {
-        $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
-        $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
-    }
-    if ( $Link eq "Display" ) {
-        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
-        $column{Suffix} .= "</a>";
-    }
-    elsif ( $Link eq "Take" ) {
-        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
-        $column{Suffix} .= "</a>";
-    }
+            if ( $Face eq "Bold" ) {
+                $column{Prefix} .= "<b>";
+                $column{Suffix} .= "</b>";
+            }
+            if ( $Face eq "Italic" ) {
+                $column{Prefix} .= "<i>";
+                $column{Suffix} .= "</i>";
+            }
+            if ($Size) {
+                $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
+                $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
+            }
+            if ( $Link eq "Display" ) {
+                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
+                $column{Suffix} .= "</a>";
+            }
+            elsif ( $Link eq "Take" ) {
+                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
+                $column{Suffix} .= "</a>";
+            }
 
-    if ($Title) {
-        $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            if ($Title) {
+                $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            }
+            push @seen, \%column;
+        }
     }
-    push @seen, \%column;
-}
-}
 }
 elsif ( $ColUp ) {
     my $index = $CurrentDisplayColumns;
