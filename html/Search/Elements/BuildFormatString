@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Format => undef
+$Format => RT->Config->Get('DefaultSearchResultFormat')
 
 %cfqueues => undef
 
@@ -93,8 +93,7 @@ my @fields = qw(
 
 </%ONCE>
 <%init>
-
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+$m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {
@@ -115,6 +114,8 @@ $CustomFields->LimitToGlobal;
 while ( my $CustomField = $CustomFields->Next ) {
     push @fields, "CustomField.{" . $CustomField->Name . "}";
 }
+
+$m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
 
