@@ -44,28 +44,23 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table>
+
 <tr>
-<td>
-<&|/l&>Add Columns</&>:
-</td>
-<td>
-<&|/l&>Format</&>:
-</td>
-<td></td>
-<td>
-<&|/l&>Show Columns</&>:
-</td>
+<th><&|/l&>Add Columns</&>:</th>
+<th><&|/l&>Format</&>:</th>
+<th></th>
+<th><&|/l&>Show Columns</&>:</th>
+</tr>
+
 <tr>
-<td valign="top">
-<select size="6" name="SelectDisplayColumns" multiple>
+
+<td valign="top"><select size="6" name="SelectDisplayColumns" multiple>
 % foreach my $field ( @$AvailableColumns) {
-<option value="<%$field%>"><% loc( $field) %></option>
-%# $m->comp( '/Elements/RT__Ticket/ColumnMap', Name => $field, Attr => 'title') || 
+<option value="<% $field %>"><% loc($field) %></option>
 % }
-</select>
-</td>
-<td>
-<&|/l&>Link</&>:
+</select></td>
+
+<td><&|/l&>Link</&>:
 <select name="Link">
 <option value="None">-</option>
 <option value="Display"><&|/l&>Display</&></option>
@@ -85,15 +80,14 @@
 <option value="Italic"><&|/l&>Italic</&></option>
 </select>
 </td>
-<td>
-<input type="submit" class="button" name="AddCol" value=" &rarr; " />
-</td>
+
+<td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
+
 <td valign="top">
 <select size="4" name="CurrentDisplayColumns">
 % my $i=0;
-% foreach my $field (@$CurrentFormat) {
-<option value="<%$i++%>><%$field->{Column}%>">
-<%loc( $field->{Column}) %></option>
+% foreach my $field ( @$CurrentFormat ) {
+<option value="<% $i++ %>><% $field->{Column} %>"><% loc( $field->{Column} ) %></option>
 % }
 </select>
 <br />
@@ -103,8 +97,7 @@
 <input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
 </center>
 </td>
-<td colspan="3" align="center">
-</td>
+
 </tr>
 </table>
 
