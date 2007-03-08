@@ -219,7 +219,7 @@ About to drop $db_type database $db_name on $db_host.
 WARNING: This will erase all data in $db_name.
 
 END
-        exit unless _yesno();
+        return unless _yesno();
 
     }
 
