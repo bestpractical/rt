@@ -162,6 +162,8 @@ sub CreateDatabase {
         return;
     }
     elsif ( $db_type eq 'Pg' ) {
+        # XXX: as we get external DBH we don't know if RaiseError or PrintError
+        # are enabled, so we have to setup it here and restore them back
         $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'");
         if ( $DBI::errstr ) {
             $dbh->do("CREATE DATABASE $db_name") || die $DBI::errstr;
