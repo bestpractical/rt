@@ -138,15 +138,23 @@ sub BuildDSN {
 
 }
 
-# dealing with intial data
+=head2 Database maintanance
 
-=head2 
+=head2 CreateDatabase $DBH
+
+Creates a new database. This method can be used as class method.
+
+Takes DBI handle. Many database systems require special handle to
+allow you to create a new database, so you have to use L<SystemDSN>
+method during connection.
+
+Fetches type and name of the DB from the config.
 
 =cut
 
-sub create_db {
+sub CreateDatabase {
     my $self = shift;
-    my $dbh  = shift || $self->dbh;
+    my $dbh  = shift || die "No DBI handle provided";
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
     print "Creating $db_type database $db_name.\n";
@@ -168,17 +176,30 @@ sub create_db {
     }
 }
 
-=head2 drop_db
+=head3 DropDatabase $DBH [Force => 0]
+
+Drops RT's database. This method can be used as class method.
+
+Takes DBI handle as first argument. Many database systems require
+special handle to allow you to create a new database, so you have
+to use L<SystemDSN> method during connection.
+
+Takes as well optional named argument C<Force>, if it's true than
+no questions would be asked.
+
+Fetches type and name of the DB from the config.
 
 =cut
 
-sub drop_db {
+sub DropDatabase {
     my $self = shift;
-    my $dbh  = shift || $self->dbh;
-    my %args = %{ shift || {}};
+    my $dbh  = shift || die "No DBI handle provided";
+    my %args = ( Force => 0, @_ );
+
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
     my $db_host = RT->Config->Get('DatabaseHost');
+
     if ( $db_type eq 'Oracle' ) {
         print <<END;
 
@@ -200,7 +221,7 @@ END
 
     }
 
-    print "Dropping ". $db_type ." database ". $db_name .".\n";
+    print "Dropping $db_type database $db_name.\n";
 
     if ( $db_type eq 'SQLite' ) {
         unlink $RT::VarPath.'/'.$db_name or warn $!;
