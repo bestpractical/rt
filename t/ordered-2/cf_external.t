@@ -5,7 +5,7 @@ use strict;
 use Test::More qw(no_plan);
 
 use RT;
-RT::LoadConfig();
+require RT::Test;
 RT::Init();
 
 sub new (*) {

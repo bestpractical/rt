@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 
 use Test::More qw/no_plan/;
-#use RT::Test;
-RT::LoadConfig();
+require RT::Test;
 RT::Init();
 
 use strict;
