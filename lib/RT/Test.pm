@@ -39,7 +39,7 @@ sub import {
     my $class = shift;
     require RT::Handle;
     # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->get_system_dsn,
+    my $dbh = _get_dbh(RT::Handle->SystemDSN,
 		       $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
     my $db_type = RT->Config->Get('DatabaseType');
 
@@ -47,7 +47,7 @@ sub import {
     RT::Handle->create_db( $dbh );
 
     $dbh->disconnect;
-    $dbh = _get_dbh(RT::Handle->get_rt_dsn,
+    $dbh = _get_dbh(RT::Handle->DSN,
 		    $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
     RT->ConnectToDatabase;

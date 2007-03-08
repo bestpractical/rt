@@ -225,7 +225,7 @@ See also L<RT::Handle/SystemDSN>.
 =cut
 
 sub get_system_dbh {
-    return _get_dbh( RT::Handle->get_system_dsn(), $dba_user, $dba_pass );
+    return _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
 }
 
 =head2 get_rt_dbh [USER, PASSWORD]
@@ -241,7 +241,7 @@ sub get_rt_dbh {
     unless ( @_ ) {
         ($user, $pass) = ($db_user, $db_pass);
     }
-    return _get_dbh( RT::Handle->get_rt_dsn, $user, $pass );
+    return _get_dbh( RT::Handle->DSN, $user, $pass );
 }
 
 sub _get_dbh {
