@@ -138,6 +138,57 @@ sub BuildDSN {
 
 }
 
+=head2 DSN
+
+Returns the DSN for this handle. In order to get correct value you must
+build DSN first, see L</BuildDSN>.
+
+This is method can be called as class method, in this case creates
+temporary handle object, L</BuildDSN builds DSN> and returns it.
+
+=cut
+
+sub DSN {
+    my $self = shift;
+    return $self->SUPER::DSN if ref $self;
+
+    my $handle = $self->new;
+    $handle->BuildDSN;
+    return $handle->DSN;
+}
+
+=head2 SystemDSN
+
+Returns a DSN suitable for database creates and drops
+and user creates and drops.
+
+Gets RT's DSN first (see L<DSN>) and then change it according
+to requirements of a database system RT's using.
+
+=cut
+
+sub SystemDSN {
+    my $self = shift;
+
+    my $db_name = RT->Config->Get('DatabaseName');
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    my $dsn = $self->DSN;
+    if ( $db_type eq 'mysql' ) {
+        # with mysql, you want to connect sans database to funge things
+        $dsn =~ s/dbname=\Q$db_name//;
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        # with postgres, you want to connect to template1 database
+        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
+    }
+    elsif ( $db_type eq 'Informix' ) {
+        # with Informix, you want to connect sans database:
+        $dsn =~ s/Informix:\Q$db_name/Informix:/;
+    }
+    return $dsn;
+}
+
 =head2 Database maintanance
 
 =head2 CreateDatabase $DBH
@@ -721,49 +772,6 @@ sub ACLEquivGroupId {
     $equiv_group->LoadACLEquivalenceGroup($user);
     return ( $equiv_group->Id );
 }
-
-
-
-=head2 get_system_dsn
-
-Returns a DSN suitable for database creates and drops
-and user creates and drops.
-
-=cut
-
-sub get_system_dsn {
-    my $db_name = RT->Config->Get('DatabaseName');
-    my $db_type = RT->Config->Get('DatabaseType');
-    my $dsn = get_rt_dsn();
-
-    if ( $db_type eq 'mysql' ) {
-        # with mysql, you want to connect sans database to funge things
-        $dsn =~ s/dbname=\Q$db_name//;
-    }
-    elsif ( $db_type eq 'Pg' ) {
-        # with postgres, you want to connect to template1 database
-        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
-    }
-    elsif ( $db_type eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:\Q$db_name/Informix:/;
-    }
-    return $dsn;
-}
-
-=head2 get_rt_dsn
-
-Returns DSN according to RT config.
-
-=cut
-
-sub get_rt_dsn {
-    my $rt_handle = RT::Handle->new;
-    $rt_handle->BuildDSN;
-    return $rt_handle->DSN;
-}
-
-
 
 eval "require RT::Handle_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});
