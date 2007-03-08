@@ -170,7 +170,7 @@ sub CreateDatabase {
         }
     }
     elsif ( $db_type eq 'Informix' ) {
-        $ENV{'DB_LOCALE'} = 'en_us.utf8';
+        local $ENV{'DB_LOCALE'} = 'en_us.utf8';
         $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
     }
     else {
