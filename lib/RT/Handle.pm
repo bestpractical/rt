@@ -50,20 +50,26 @@
 
 =head1 SYNOPSIS
 
-  use RT::Handle;
+    use RT;
+    BEGIN { RT::LoadConfig() };
+    use RT::Handle;
 
 =head1 DESCRIPTION
 
-
-=head1 METHODS
+C<RT::Handle> is RT specific wrapper over one of L<DBIx::SearchBuilder::Handle>
+classes. As RT works with different types of DBs we subclass repsective handler
+from L<DBIx::SerachBuilder>. Type of the DB is defined by C<DatabasseType> RT's
+config option. You B<must> load this module only when the configs have been
+loaded.
 
 =cut
 
 package RT::Handle;
 
 use strict;
-use vars qw/@ISA/;
+use warnings;
 
+use vars qw/@ISA/;
 eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
 \@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
 
@@ -74,35 +80,35 @@ if ($@) {
         "\n". $@;
 }
 
+=head1 METHODS
+
 =head2 Connect
 
-Connects to RT's database handle.
-Takes nothing. Calls SUPER::Connect with the needed args
+Connects to RT's database using credentials and options from the RT config.
+Takes nothing.
 
 =cut
 
 sub Connect {
     my $self = shift;
 
-    if (RT->Config->Get('DatabaseType') eq 'Oracle') {
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
         $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
         $ENV{'NLS_NCHAR'} = "AL32UTF8";
-        
     }
 
     $self->SUPER::Connect(
-			 User => RT->Config->Get('DatabaseUser'),
-			 Password => RT->Config->Get('DatabasePassword'),
-			);
+	    User => RT->Config->Get('DatabaseUser'),
+        Password => RT->Config->Get('DatabasePassword'),
+	);
 
-    $self->dbh->{LongReadLen} = RT->Config->Get('MaxAttachmentSize');
-   
+    $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
 
 =head2 BuildDSN
 
-Build the DSN for the RT database. doesn't take any parameters, draws all that
-from the config file.
+Build the DSN for the RT database. Doesn't take any parameters, draws all that
+from the config.
 
 =cut
 
