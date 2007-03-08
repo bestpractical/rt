@@ -263,7 +263,7 @@ through SQLPlus.
 END
         return;
     }
-    unless ( $args{'force'} ) {
+    unless ( $args{'Force'} ) {
         print <<END;
 
 About to drop $db_type database $db_name on $db_host.

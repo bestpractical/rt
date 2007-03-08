@@ -43,8 +43,8 @@ sub import {
 		       $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
     my $db_type = RT->Config->Get('DatabaseType');
 
-    RT::Handle->drop_db( $dbh, { force => 1 } );
-    RT::Handle->create_db( $dbh );
+    RT::Handle->DropDatabase( $dbh, Force => 1 );
+    RT::Handle->CreateDatabase( $dbh );
 
     $dbh->disconnect;
     $dbh = _get_dbh(RT::Handle->DSN,

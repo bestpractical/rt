@@ -106,7 +106,7 @@ if ( $args{'action'} eq 'init' ) {
     $dbh = get_system_dbh();
     print "Now creating a database for RT.\n";
     if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-        RT::Handle->create_db($dbh);
+        RT::Handle->CreateDatabase($dbh);
     } else {
         print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
     }
@@ -136,7 +136,7 @@ if ( $args{'action'} eq 'init' ) {
 }
 elsif ( $args{'action'} eq 'drop' ) {
     $dbh = get_system_dbh();
-    RT::Handle->drop_db($dbh, \%args);
+    RT::Handle->DropDatabase($dbh, Force => $args{'force'} );
 }
 elsif ( $args{'action'} eq 'insert' ) {
     $dbh = get_rt_dbh();
