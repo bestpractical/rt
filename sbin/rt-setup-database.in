@@ -92,9 +92,9 @@ my $db_user = RT->Config->Get('DatabaseUser') || '';
 my $db_pass = RT->Config->Get('DatabasePassword') || '';
 
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
-my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'} || '';
+my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
-if ( $args{'prompt-for-dba-password'} ) {
+if ( !$args{force} || !defined $dba_pass || $args{'prompt-for-dba-password'} ) {
     $dba_pass = get_dba_password();
     chomp $dba_pass;
 }
