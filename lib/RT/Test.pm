@@ -1,11 +1,13 @@
 package RT::Test;
+
 use strict;
+use warnings;
 
 use Test::More;
 
-my $port;
 use File::Temp;
 my $config;
+my $port;
 
 BEGIN {
     # TODO: allocate a port dynamically
@@ -38,7 +40,7 @@ sub import {
     require RT::Handle;
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->get_system_dsn,
-		       $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
+		       $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
     my $db_type = RT->Config->Get('DatabaseType');
 
     RT::Handle->drop_db( $dbh, { force => 1 } );
@@ -46,7 +48,7 @@ sub import {
 
     $dbh->disconnect;
     $dbh = _get_dbh(RT::Handle->get_rt_dsn,
-		    $ENV{DB_DBA}, $ENV{DB_DBA_PASS});
+		    $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
     RT->ConnectToDatabase;
     $RT::Handle->insert_schema($dbh);
