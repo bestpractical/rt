@@ -188,7 +188,7 @@ sub LoadConfig
     my $self = shift;
     my %args = (File => '', @_);
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if (my $site_config = $ENV{RT_SITE_CONFIG}) {
+    if ($args{'File'} eq 'RT_SiteConfig.pm' and my $site_config = $ENV{RT_SITE_CONFIG}) {
         $self->_LoadConfig( %args, File => $site_config );
     }
     else {
@@ -264,8 +264,8 @@ because it contains database passwords.};
 
 =head2 Configs
 
-Returns list of the configs file names.
-F<RT_Config.pm> is always first, other configs are ordered by name.
+Returns list of the top level configs file names. F<RT_Config.pm> is always
+first, other configs are ordered by name.
 
 =cut
 
