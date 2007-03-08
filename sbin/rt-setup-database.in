@@ -203,7 +203,7 @@ sub check_db_compatibility {
 }
 
 sub get_dba_password {
-    print "In order to create or update your RT database,";
+    print "In order to create or update your RT database,"
         . " this script needs to connect to your "
         . " $db_type instance on $db_host as $dba_user\n";
     print "Please specify that user's database password below. If the user has no database\n";
