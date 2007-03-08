@@ -45,7 +45,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
-use vars qw($PROMPT $VERSION $Nobody $SystemUser $item);
+use warnings;
+
+use vars qw($Nobody $SystemUser $item);
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
@@ -77,6 +79,7 @@ unless ( $args{'action'} ) {
 
 $| = 1;    #unbuffer that output.
 
+# set options from environment
 foreach my $key(qw(Type Host Name User Password)) {
     next unless exists $ENV{ 'RT_DB_'. uc $key };
     RT->Config->Set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
@@ -88,9 +91,12 @@ my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
 my $db_pass = RT->Config->Get('DatabasePassword') || '';
 
+my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
+my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'} || '';
+
 if ( $args{'prompt-for-dba-password'} ) {
-    $args{'dba-password'} = get_dba_password();
-    chomp( $args{'dba-password'} );
+    $dba_pass = get_dba_password();
+    chomp $dba_pass;
 }
 
 require RT::Handle;
@@ -99,10 +105,10 @@ my $dbh;
 if ( $args{'action'} eq 'init' ) {
     $dbh = get_system_dbh();
     print "Now creating a database for RT.\n";
-    if ( $db_type ne 'Oracle' || $args{'dba'} ne $db_user ) {
+    if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
         RT::Handle->create_db($dbh);
     } else {
-        print "...skipped as ".$args{'dba'} ." is not " . $db_user ." or we're working with Oracle.\n";
+        print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
     }
 
     check_db_compatibility();
@@ -115,7 +121,7 @@ if ( $args{'action'} eq 'init' ) {
         if ( $db_type eq "Oracle" ) {
             $dbh = get_rt_dbh();
         } else {	
-            $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
+            $dbh = get_rt_dbh( $dba_user, $dba_pass );
         }
     }
     RT->ConnectToDatabase;
@@ -138,11 +144,11 @@ elsif ( $args{'action'} eq 'insert' ) {
     $RT::Handle->insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
 }
 elsif ( $args{'action'} eq 'acl' ) {
-    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
+    $dbh = get_rt_dbh( $dba_user, $dba_pass );
     $RT::Handle->insert_acl($dbh, $args{'datadir'});
 }
 elsif ( $args{'action'} eq 'schema' ) {
-    $dbh = get_rt_dbh( $args{'dba'}, $args{'dba-password'} );
+    $dbh = get_rt_dbh( $dba_user, $dba_pass );
     check_db_compatibility();
     $RT::Handle->insert_schema($dbh, $args{'datadir'});
 }
@@ -198,11 +204,8 @@ sub check_db_compatibility {
 
 sub get_dba_password {
     print "In order to create or update your RT database,";
-    print "this script needs to connect to your "
-      . $db_type
-      . " instance on "
-      . $db_host . " as "
-      . $args{'dba'} . ".\n";
+        . " this script needs to connect to your "
+        . " $db_type instance on $db_host as $dba_user\n";
     print "Please specify that user's database password below. If the user has no database\n";
     print "password, just press return.\n\n";
     print "Password: ";
@@ -217,12 +220,12 @@ sub get_dba_password {
 
 Returns L<DBI> database handle connected to B<system> with DBA credentials.
 
-See also L</get_system_dsn>.
+See also L<RT::Handle/SystemDSN>.
 
 =cut
 
 sub get_system_dbh {
-    return _get_dbh( RT::Handle->get_system_dsn(), $args{'dba'}, $args{'dba-password'} );
+    return _get_dbh( RT::Handle->get_system_dsn(), $dba_user, $dba_pass );
 }
 
 =head2 get_rt_dbh [USER, PASSWORD]
