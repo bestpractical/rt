@@ -63,6 +63,8 @@ BEGIN {
 use Term::ReadKey;
 use Getopt::Long;
 
+$| = 1; # unbuffer all output.
+
 my %args;
 GetOptions(
     \%args,
@@ -77,11 +79,33 @@ unless ( $args{'action'} ) {
     exit(-1);
 }
 
-$| = 1;    #unbuffer that output.
+# check and setup @actions
+my @actions = grep $_, split /,/, $args{'action'};
+if ( @actions > 1 && $args{'datafile'} ) {
+    print STDERR "You can not use --datafile option with init or multiple actions.\n";
+    exit(-1);
+}
+foreach ( @actions ) {
+    unless ( /^(?:init|create|drop|schema|acl|coredata|insert)$/ ) {
+        print STDERR "$0 called with an invalid --action parameter.\n";
+        exit(-1);
+    }
+    if ( ($_ eq 'init' || $_ eq 'drop') && @actions > 1 ) {
+        print STDERR "You can not mix init or drop action with any action.\n";
+        exit(-1);
+    }
+}
+
+# convert init to multiple actions
+if ( $actions[0] eq 'init' ) {
+    @actions = qw(create schema acl coredata insert);
+    $args{'datafile'} ||= $RT::EtcPath . "/initialdata";
+}
 
 # set options from environment
 foreach my $key(qw(Type Host Name User Password)) {
     next unless exists $ENV{ 'RT_DB_'. uc $key };
+    print "Using Database$key from RT_DB_". uc($key) ." environment variable.\n";
     RT->Config->Set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
 }
 
@@ -91,73 +115,84 @@ my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
 my $db_pass = RT->Config->Get('DatabasePassword') || '';
 
+# load it here to get error immidiatly if DB type is not supported
+require RT::Handle;
+
+if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
+    $db_name = File::Spec->catfile($RT::VarPath, $db_name);
+    RT->Config->Set( DatabaseName => $db_name );
+}
+
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
 my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
-if ( !$args{force} || !defined $dba_pass || $args{'prompt-for-dba-password'} ) {
+if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
     $dba_pass = get_dba_password();
     chomp $dba_pass;
 }
 
-require RT::Handle;
+print "Working with:\n"
+    ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
+    ."User:\t$db_user\nDBA:\t$dba_user\n";
+
+$RT::Handle ||= new RT::Handle;
+
 my $dbh;
-
-if ( $args{'action'} eq 'init' ) {
-    $dbh = get_system_dbh();
-    print "Now creating a database for RT.\n";
-    if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-        RT::Handle->CreateDatabase($dbh);
-    } else {
-        print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
-    }
-
-    check_db_compatibility();
-
-    # SQLite can't deal with the disconnect/reconnect
-    unless ( $db_type eq 'SQLite' ) {
-
-        $dbh->disconnect;
-
-        if ( $db_type eq "Oracle" ) {
-            $dbh = get_rt_dbh();
-        } else {	
-            $dbh = get_rt_dbh( $dba_user, $dba_pass );
+foreach my $action ( @actions ) {
+    if ( $action eq 'create' ) {
+        $dbh = get_system_dbh();
+        print "Now creating a database for RT.\n";
+        if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
+            RT::Handle->CreateDatabase( $dbh );
+        } else {
+            print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
         }
     }
-    RT->ConnectToDatabase;
-    print "Now populating database schema.\n";
-    $RT::Handle->insert_schema($dbh);
-    print "Now inserting database ACLs\n";
-    $RT::Handle->insert_acl($dbh) unless $db_type eq 'Oracle';
-    print "Now inserting RT core system objects\n";
-    $RT::Handle->insert_initial_data();
-    print "Now inserting RT data\n";
-    $RT::Handle->insert_data( $RT::EtcPath . "/initialdata" );
-}
-elsif ( $args{'action'} eq 'drop' ) {
-    $dbh = get_system_dbh();
-    RT::Handle->DropDatabase($dbh, Force => $args{'force'} );
-}
-elsif ( $args{'action'} eq 'insert' ) {
-    $dbh = get_rt_dbh();
-    check_db_compatibility();
-    $RT::Handle->insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
-}
-elsif ( $args{'action'} eq 'acl' ) {
-    $dbh = get_rt_dbh( $dba_user, $dba_pass );
-    $RT::Handle->insert_acl($dbh, $args{'datadir'});
-}
-elsif ( $args{'action'} eq 'schema' ) {
-    $dbh = get_rt_dbh( $dba_user, $dba_pass );
-    check_db_compatibility();
-    $RT::Handle->insert_schema($dbh, $args{'datadir'});
-}
-else {
-    print STDERR "$0 called with an invalid --action parameter\n";
-    exit(-1);
+    elsif ( $action eq 'drop' ) {
+        $dbh = get_system_dbh();
+
+        print "Now dropping RT database\n";
+        RT::Handle->DropDatabase( $dbh, Force => $args{'force'} );
+    }
+    elsif ( $action eq 'schema' ) {
+        $dbh = get_rt_dbh( $dba_user, $dba_pass );
+        check_db_compatibility( $dbh );
+
+        $RT::Handle->dbh( $dbh );
+
+        print "Now populating database schema.\n";
+        $RT::Handle->insert_schema($dbh, $args{'datadir'});
+    }
+    elsif ( $action eq 'acl' ) {
+        $dbh = get_rt_dbh( $dba_user, $dba_pass );
+        check_db_compatibility( $dbh );
+
+        $RT::Handle->dbh( $dbh );
+
+        print "Now inserting database ACLs\n";
+        $RT::Handle->insert_acl($dbh, $args{'datadir'}) # unless $db_type eq 'Oracle'
+    }
+    elsif ( $action eq 'coredata' ) {
+        $dbh = get_rt_dbh();
+        check_db_compatibility( $dbh );
+
+        $RT::Handle->dbh( $dbh );
+
+        print "Now inserting RT core system objects\n";
+        $RT::Handle->insert_initial_data();
+    }
+    elsif ( $action eq 'insert' ) {
+        $dbh = get_rt_dbh();
+        check_db_compatibility( $dbh );
+
+        $RT::Handle->dbh( $dbh );
+
+        $RT::Handle->insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
+    }
 }
 
 sub check_db_compatibility {
+    my $dbh = shift;
     if ( lc $db_type eq "mysql" ) {
         # Check which version we're running
         my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
@@ -181,7 +216,7 @@ sub check_db_compatibility {
                 exit -1;
             }
         }
-        if ( $args{'action'} =~ /^(insert|schema)$/ ) {
+        if ( $args{'action'} =~ /^(insert)$/ ) {
             print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
             my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
             unless ( $create_table =~ /(?:ENGINE|TYPE)=InnoDB/i ) {
