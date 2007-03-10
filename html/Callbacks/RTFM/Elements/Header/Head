@@ -15,4 +15,4 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrtfm.css" type="text/css">
+<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrtfm.css" type="text/css" />

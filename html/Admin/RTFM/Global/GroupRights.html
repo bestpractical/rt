@@ -26,57 +26,41 @@
     Title => loc('Modify global group rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="GroupRights.html">
-      
+<form method="post" action="GroupRights.html">
 <& /Elements/TitleBoxStart, title => loc('Modify global group rights.')&>
-      
 <h1><&|/l&>System groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
-%	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
-	    <% loc($Group->Type) %>
-		  </TD>
-	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        Object  =>$RT::FM::System &>
-	  </TD>
-	</TR>
+% while (my $Group = $Groups->Next()) {
+<tr align="right"> 
+	<td valign="top"><% loc($Group->Type) %></td>
+	<td><& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+        Object  =>$RT::FM::System &></td>
+</tr>
 % }
-</TABLE>
+</table>
 <h1><&|/l&>User defined groups</&></h1>
-<TABLE>
+<table>
 % $Groups = RT::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
-%	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
-	    <% $Group->Name %>
-		  </TD>
-	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        Object  => $RT::FM::System &>
-	  </TD>
-	</TR>
+% while (my $Group = $Groups->Next()) {
+<tr align="right"> 
+	<td valign="top"><% $Group->Name %></td>
+	<td><& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+        Object  => $RT::FM::System &></td>
+</tr>
 % }
-</TABLE>
-            
-      <& /Elements/TitleBoxEnd &>
-      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
-      
-  </FORM>
-  
+</table>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+</form>
 <%INIT>
- 
+
   #Update the acls.
   my @results =  ProcessACLChanges(\%ARGS);
 
-
 my $Groups;
-    
 </%INIT>
-
 <%ARGS>
 </%ARGS>

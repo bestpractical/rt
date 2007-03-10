@@ -19,8 +19,8 @@
 <& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->id, Title => $title, current_tab => "Admin/RTFM/Classes/Topics.html?id=$id" &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html" method="POST">
-<input type="hidden" name="id" value="<%$ClassObj->Id%>">
+<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html" method="post">
+<input type="hidden" name="id" value="<%$ClassObj->Id%>" />
 
 % if (!$Modify) {
 <table>

@@ -20,8 +20,8 @@
 $current_subtab, Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" method="POST">
-<input type="hidden" name="Submitted" value="1">
+<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" method="post">
+<input type="hidden" name="Submitted" value="1" />
 %if ($Create ) {
 <input type="hidden" name="id" value="new" />
 % } else {
@@ -31,14 +31,17 @@ $current_subtab, Title => $title &>
 <table>
 <tr>
 <td align="right"><&|/l&>Class Name</&>: </td>
-<td><input name="Name" value="<% $Create ? "" : $ClassObj->Name %>" /></td>
-</tr><tr>
-<td align="right"><&|/l&>Description</&>:</TD>
-<td><input name="Description" value="<% $Create ? "" : $ClassObj->Description %>" size=60></td>
-</tr><tr>
+<td><input name="Name" value="<% $Create ? ' ' : $classobj->Name %>" /></td>
+</tr>
+<tr>
+<td align="right"><&|/l&>Description</&>:</td>
+<td><input name="Description" value="<% $Create ? ' ' : $classobj->Description %>" size=60 /></td>
+</tr>
+<tr>
 <td>&nbsp;</td>
 <td><input type="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this Class)</&></td>
-</tr><tr>
+</tr>
+<tr>
 <td>&nbsp;</td>
 <td><input type="checkbox" name="HotList" value="1" <%$HotListChecked%>> <&|/l&>All articles in this topic are on dropdown on ticket reply page</&></td>
 </tr>
@@ -51,8 +54,8 @@ $current_subtab, Title => $title &>
 % while (my $cf = $cfs->Next) {
 <li>Include custom field '<% $cf->Name %>'
   <ul>
-    <li><input type="checkbox" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %>>Title</li>
-    <li><input type="checkbox" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %>>Value</li>
+    <li><input type="checkbox" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />Title</li>
+    <li><input type="checkbox" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />Value</li>
   </ul>
 </li>
 % }

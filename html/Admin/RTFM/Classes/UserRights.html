@@ -19,44 +19,30 @@
 <& /Admin/RTFM/Elements/ClassTabs, id => $id , Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="UserRights.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $ClassObj->id %>">
-      
+<form method="post" action="UserRights.html">
+<input type="hidden" name="id" value="<% $ClassObj->id %>" />
 <& /Elements/TitleBoxStart, title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
-      
-<TABLE>
-        
-%	while (my $Member = $Users->Next()) {
+<table>
+% while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
 % my $group = RT::Group->new($session{'CurrentUser'});
 % $group->LoadACLEquivalenceGroup($Member->MemberObj);
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
-	    <% $UserObj->Name %>
-		  </TD>
-	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
-        Object => $ClassObj  &>
-	  </TD>
-	</TR>
+<tr align="right"> 
+	<td valign="top"><% $UserObj->Name %></td>
+	<td><& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
+        Object => $ClassObj &></td>
+</tr>
 % }
-      </TABLE>
-            
-      <& /Elements/TitleBoxEnd &>
-      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
-      
-  </FORM>
-  
+</table>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+</form>
 <%INIT>
- 
-  #Update the acls.
+#Update the acls.
 
-  my @results =  ProcessACLChanges(\%ARGS);
-
+my @results =  ProcessACLChanges(\%ARGS);
 
 # {{{ Deal with setting up the display of current rights.
-
-
 
 if (!defined $id) {
     $m->comp("/RTFM/Elements/Error", Why => loc("No Class defined"));
@@ -70,12 +56,8 @@ my $Privileged = RT::Group->new($session{'CurrentUser'});
 $Privileged->LoadSystemInternalGroup('Privileged');
 my $Users = $Privileged->MembersObj();
 
-    
-  
 # }}}
-    
 </%INIT>
-
 <%ARGS>
 $id => undef
 $UserString => undef

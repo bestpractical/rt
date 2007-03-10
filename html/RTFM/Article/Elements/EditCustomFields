@@ -17,11 +17,8 @@
 %# END LICENSE BLOCK
 
 % while (my $CustomField = $CustomFields->Next()) {
-  <tr>
-    <td class="labeltop">
-      <b><%$CustomField->Name%></b><br>
-      <i><%$CustomField->FriendlyType%></i>
-    </td>
+<tr>
+    <td class="labeltop"><b><%$CustomField->Name%></b><br /><i><%$CustomField->FriendlyType%></i></td>
     <td class="entry"><& /Elements/EditCustomField, 
         Object => $ArticleObj, 
         CustomField => $CustomField, 
@@ -34,7 +31,7 @@
         Rows => 15,
         Cols => 70
         &></td>
-  </tr>
+</tr>
 % }
 <%INIT>
 my $CustomFields;

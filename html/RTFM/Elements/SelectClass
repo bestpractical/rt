@@ -17,9 +17,9 @@
 %# END LICENSE BLOCK
 
 % if ($Lite) {
-<INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
+<input name="<%$Name%>" size="25" default="<%$d->Name%>" />
 % } else {
-<SELECT NAME ="<%$Name%>"
+<select NAME ="<%$Name%>"
 % if ($Multiple) {
 MULTIPLE
 % }
@@ -28,19 +28,19 @@ SIZE=<%$Size%>
 % }
 >
 % if ($ShowNullOption) {
-<OPTION VALUE="">-</OPTION>
+<option value="">-</option>
 % }
 % while (my $Class=$Classes->Next) {
 % next unless ($Class->Name); # if they can't see it, don't list it
 % if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
-<OPTION VALUE="<%$Class->Id%>" <%(grep (( $Class->Id == $_ || $Class->Name eq $_ ), @Default)) && 'SELECTED'%>><%$Class->Name%>
+<option VALUE="<%$Class->Id%>" <%(grep (( $Class->Id == $_ || $Class->Name eq $_ ), @Default)) && 'SELECTED'%>><%$Class->Name%>
 %   if (($Verbose) and ($Class->Description) ){
 (<%$Class->Description%>)
 %  }
-</OPTION>
+</option>
 % }
 % }
-</SELECT>
+</select>
 % }
 <%ARGS>
 $Multiple => undef

@@ -18,40 +18,32 @@
 
 <& /Admin/RTFM/Elements/ClassTabs, current_tab => 'Admin/RTFM/Classes/', current_subtab => 'Admin/RTFM/Classes/', Title => loc("Select a Class") &>
 
-
-<TABLE>
-<TR>
-<TD>
-<%$caption%>:<BR>
-<UL>
+<table>
+<tr>
+<td><%$caption%>:<br />
+<ul>
 % if (scalar @allowed_classes == 0) {
-<LI> <i><&|/l&>No Classes matching search criteria found.</&></i>
+<li><i><&|/l&>No Classes matching search criteria found.</&></i></li>
 % }
 % foreach my $class ( @allowed_classes ) {
 % if ($session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class)) {
-<LI><A HREF="Modify.html?id=<%$class->id%>"><%$class->Name%></a></LI>
+<li><a href="Modify.html?id=<%$class->id%>"><%$class->Name%></a></li>
 % } else {
-<LI><A HREF="Topics.html?id=<%$class->id%>"><%$class->Name%></a></LI>
+<li><a href="Topics.html?id=<%$class->id%>"><%$class->Name%></a></li>
 % }
 %}
-
-
-</UL>
-</TD>
-</TR>
-<TR>
-<TD VALIGN=TOP>
-
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/RTFM/Classes/index.html">
-
-<input type="checkbox" name="FindDisabledClasses" value="1"> <&|/l&>Include disabled classes in listing.</&>
-<BR>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
-</FORM>
-</TD>
-</TR>
-</TABLE>
-
+</ul>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<form method="post" action="<% $RT::WebPath %>/Admin/RTFM/Classes/index.html">
+<input type="checkbox" name="FindDisabledClasses" value="1" /><&|/l&>Include disabled classes in listing.</&><br />
+<div align="right"><input type="submit" value="<&|/l&>Go!</&>" /></div> 
+</form>
+</td>
+</tr>
+</table>
 <%INIT>
 my $caption;
 my $Classes = new RT::FM::ClassCollection($session{'CurrentUser'});

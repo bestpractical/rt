@@ -15,11 +15,10 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc('Quick search') &>
 <ul>
 % while (my $class = $classes->Next) {
-<li><A HREF="<%$RT::WebPath%>/RTFM/Article/Search.html?Class=<%$class->Name%>&Parent=0&HideOptions=1"><%$class->Name%></a>
+<li><a href="<%$RT::WebPath%>/RTFM/Article/Search.html?Class=<%$class->Name%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
 % }
 </ul>
 <& /Elements/TitleBoxEnd &>

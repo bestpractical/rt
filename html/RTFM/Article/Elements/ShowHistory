@@ -19,7 +19,7 @@
 <table width="100%" cellspacing="0" cellpadding="2">
 % my $i;
 % while (my $transaction = $transactions->Next) {
-<TR class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >
+<tr class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >
 <td width="20%"><small><%$transaction->CreatedObj->AsString%></small></td>
 <td><%$transaction->CreatorObj->Name%></td>
 <td><%$transaction->Description%></td>

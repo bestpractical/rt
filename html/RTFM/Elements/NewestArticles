@@ -17,42 +17,28 @@
 %# END LICENSE BLOCK
 
 <& /Elements/TitleBoxStart, title => loc("[_1] newest articles", $rows), bodyclass=> '' &>
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-<TH ALIGN=RIGHT><&|/l&>#</&></TH>
-<TH ALIGN=LEFT><&|/l&>Name</&></TH>
-<TH ALIGN=LEFT width="20%"><&|/l&>Created by</&></TH>
-<TH ALIGN=LEFT>&nbsp;</TH>
-</TR>
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
+<tr>
+<th align="right"><&|/l&>#</&></th>
+<th align="left"><&|/l&>Name</&></th>
+<th align="left" width="20%"><&|/l&>Created by</&></th>
+<th align="left">&nbsp;</th>
+</tr>
 % while (my $Article = $MyArticles->Next) {
 % $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<TD ALIGN=RIGHT>
-<%$Article->Id%>
-</TD>
-<TD>
-<A HREF="<% $RT::WebPath %>/RTFM/Article/Display.html?id=<%$Article->Id%>">
-<%$Article->Name || loc('(no name)')%>
-</A>
-</TD>
-<TD>
-<%$Article->CreatorObj->Name%>
-</TD>
-<TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/RTFM/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
-</TD>
-</TR>
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<TD>&nbsp;</TD>
-<TD COLSPAN=3>
-<SMALL><%$Article->Summary || loc('(no Summary)')%></SMALL>
-</TD>
-</TR>
+<tr class="<% $i%2 ? 'oddline' : 'evenline'%>">                                
+<td align="right"><%$Article->Id%></td>
+<td><a href="<% $RT::WebPath %>/RTFM/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></td>
+<td><%$Article->CreatorObj->Name%></td>
+<td align="right">[<a href="<% $RT::WebPath %>/RTFM/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</td>
+</tr>
+<tr class="<% $i%2 ? 'oddline' : 'evenline'%>">
+<td>&nbsp;</td>
+<td colspan="3"><small><%$Article->Summary || loc('(no Summary)')%></small></td>
+</tr>
 % }
-</TABLE>
+</table>
 <& /Elements/TitleBoxEnd &>
-
-
 <%INIT>
 my $rows = 10;
 my $i;

@@ -18,18 +18,16 @@
 
 <& /RTFM/Elements/Tabs, Title => loc('Extract article from ticket #[_1] into class [_2]',$Ticket, $ClassObj->Name) &> 
 <form action="Edit.html" method="post">
-<input type="hidden" name="Class" value="<%$ARGS{'Class'}%>">
-<input type="hidden" name="Summary" value="<%$ticket->Subject%>">
+<input type="hidden" name="Class" value="<%$ARGS{'Class'}%>" />
+<input type="hidden" name="Summary" value="<%$ticket->Subject%>" />
 % for (@Topics) {
-<input type="hidden" name="Topics" value="<% $_ %>">
+<input type="hidden" name="Topics" value="<% $_ %>" />
 % }
-<input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>">
+<input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>" />
 <table width="100%" valign="top" border=0 cellspacing=0>
-
 <p><&|/l&>Use the dropdown menus to select which ticket updates you want to extract into a new article.</&>
 <&|/l&>You can insert ticket content into any freeform, text or wiki field.</&>
 </p>
-
 <tr>
 <th><&|/l&>Field</&></th>
 <th><&|/l&>Ticket update</&></th>
@@ -37,7 +35,7 @@
 % my $i;
 % while ( my $trans = $transactions->Next ) { 
 % next unless $trans->Content;
-<TR class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >                                
+<tr class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >                                
 <td valign="top">
 <select name="Transaction-<%$trans->Id%>">
 <option value="">-</option>
@@ -46,13 +44,12 @@
 % }
 </select>
 </td>
-<td><b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b><br>
+<td><b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b><br />
 <pre><%$trans->Content%></pre>
 </td>
 </tr>
 % } 
 </table>
-      
 <& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
 </form>
 <%INIT>

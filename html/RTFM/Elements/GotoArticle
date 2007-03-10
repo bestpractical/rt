@@ -16,11 +16,11 @@
 %# 
 %# END LICENSE BLOCK
 
-<FORM ACTION="<%$RT::WebPath%>/RTFM/Article/Search.html">
-<input type="hidden" name="HideOptions" value="1">
-<input size="12" name="q" accesskey="0">
+<form ACTION="<%$RT::WebPath%>/RTFM/Article/Search.html">
+<input type="hidden" name="HideOptions" value="1" />
+<input size="12" name="q" accesskey="0" />
 % if ($class or $topic) {
-<input type="hidden" name="ExpandTopics" value="1">
+<input type="hidden" name="ExpandTopics" value="1" />
 <select name="Topics">
 % if ($topic) {
 <option value="<% $topic %>">in this topic</option>
@@ -36,8 +36,8 @@
 <option value="">in all topics</option>
 </select>
 % }
-<input type="submit" value="<&|/l&>Search RTFM</&>">&nbsp;
-</FORM>
+<input type="submit" value="<&|/l&>Search RTFM</&>" />&nbsp;
+</form>
 <%args>
 $topic => ""
 $class => ""

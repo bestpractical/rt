@@ -15,23 +15,25 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-<tr><td class="label"></td>
-<td class="value">
-<i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&>
-<& LinkEntryInstructions &>
+<tr>
+<td class="label"></td>
+<td class="value"><i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&>
+<& LinkEntryInstructions &></i>
 % unless ($id eq 'new') {
-<i><&|/l&>(Check boxes to delete)</&></i><br>
+<i><&|/l&>(Check boxes to delete)</&></i><br />
 % }
 </td>
 </tr>
-<TR><TD class="label"><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>"><br>
-<UL>
+<tr>
+<td class="label"><&|/l&>Refers to</&>:</td>
+<td><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>" /><br />
+<ul>
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
 %   while (my $link = $refersto->Next) {
 %     my $member = $link->TargetURI;
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+<li>
+<input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
 %     if ($link->TargetURI->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -41,23 +43,26 @@
 %       }
 </a>
 %     } else {
-<A HREF="<%$member->Resolver->HREF%>"><%$link->Target%></A>
+<a href="<%$member->Resolver->HREF%>"><%$link->Target%></a>
 %     }
 %   }
 % }
-</UL>
-</TD></TR>
-<TR><TD class="label"><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}%>">
-<br>
-<UL>
+</ul>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Referred to by</&>:</td>
+<td><input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}%>" />
+<br />
+<ul>
 % if ($id ne 'new') {
 %   my $referredtoby = $ArticleObj->ReferredToBy;
 %   while (my $link = $referredtoby->Next) {
 %     my $member = $link->BaseURI;
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+<li>
+<input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
 %     if ($link->BaseURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -65,15 +70,13 @@
 %       }
 </a>
 %     } else {
-<A HREF="<%$member->Resolver->HREF%>"><%$link->Base%></A>
+<a href="<%$member->Resolver->HREF%>"><%$link->Base%></a>
 %     }
 %   }
 % }
-</UL>
-</TD></TR>
-
-
-      
+</ul>
+</td>
+</tr>
 <%ARGS>
 $ArticleObj => undef
 $id => undef

@@ -19,13 +19,13 @@
 <& /RTFM/Elements/Tabs &>
 <& /Elements/TitleBoxStart, class=> "error",  title => $Title &>
 <%$Why%>
-<br>
+<br />
 <font size=-1>
 <%$Details%>
 </font>
 <& /Elements/TitleBoxEnd &>
 </body>
-</HTML>
+</html>
 
 <%perl>
 $m->abort();

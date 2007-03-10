@@ -54,13 +54,13 @@
 <&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy',
 	Default => $Privacy &><br />
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
-<input value="<%loc('Update')%>" name="Update" type="submit">&nbsp;
-<input value="<%loc('Save new')%>" name="Save" type="submit">&nbsp;
-<input value="<%loc('Delete')%>" name="Delete" type="submit">&nbsp;
+<input value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
+<input value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
+<input value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
 %     } else {
-<input value="<%loc('Save')%>" name="Save" type="submit">
+<input value="<%loc('Save')%>" name="Save" type="submit" />
 %     }
-<hr>
+<hr />
 % } # if HasRight 'CreateSavedSearch'
 
 <h2><&|/l&>Load a saved search</&></h2>

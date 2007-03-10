@@ -21,11 +21,10 @@
     Title => $title, 
     current_subtab => 'RTFM/Article/Display.html?id='.$id &>
 <h2><&|/l&>Basics</&></h2>
-<span class="label"><&|/l&>Class</&></span>: <span class="value"><%$article->ClassObj->Name%></span><br/>
+<span class="label"><&|/l&>Class</&></span>: <span class="value"><%$article->ClassObj->Name%></span><br />
 <em><span class="value"><%$article->Summary%></span></em>
 <h2><&|/l&>Content</&></h2>
 <& /Elements/ShowCustomFields, Object => $article &>
-
 
 <h2><&|/l&>Links</&></h2>
 <& Elements/ShowLinks, article => $article &>

@@ -25,7 +25,7 @@
 % my $member = $link->TargetURI;
 <li>
 % if ($link->TargetURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 % } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -46,7 +46,7 @@
 % my $member = $link->BaseURI;
 <li>
 % if ($member->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 % } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {

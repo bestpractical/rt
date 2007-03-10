@@ -22,45 +22,32 @@
 <& /Elements/TitleBoxStart, title => loc('Advanced search') &>
 % }
 <table>
-<tr><td class="label" colspan="2">
-<h2><&|/l&>Basics</&></h2>
-</td></tr>
-
-<tr><td class="label"><&|/l&>Class</&></td><td class="value">
-is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Basics</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Class</&></td><td class="value">is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
 <&|/l&>and not</&>
-<& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
-</td></tr>
-
-<tr><td class="label"><&|/l&>Name</&></td><td class="value">
-<&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>">
-<&|/l&>and not</&>
-<input name="Name!~" value="<%$ARGS{'Name!~'}%>">
-</td></tr>
-
-<tr><td class="label">
-<&|/l&>Summary</&></td><td class="value">
-<&|/l&>matches</&> 
-<input name="Summary~" value="<%$ARGS{'Summary~'}%>">
-<&|/l&>and not</&>
-<input name="Summary!~" value="<%$ARGS{'Summary!~'}%>">
-</td></tr>
-<tr><td class="label" colspan="2">
-<h2><&|/l&>Content</&></h2>
-</td></tr>
-
-<tr><td class="label"><&|/l&>Any field</&></td><td class="value">
-<&|/l&>matches</&> 
-<input name="Article~" value="<%$ARGS{'Article~'}%>">
-<&|/l&>and not</&>
-<input name="Article!~" value="<%$ARGS{'Article!~'}%>">
-</td></tr>
-
+<& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Name</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Summary</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Content</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
+</tr>
 % while (my $field = $customfields->Next ) {
-<tr><td class="label">
-<% $field->Name %>
-</td><td class="value">
-<&|/l&>matches</&> 
+<tr>
+<td class="label"><% $field->Name %></td>
+<td class="value"><&|/l&>matches</&> 
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
 <& /RTFM/Article/Elements/SearchByCustomField, 
@@ -73,52 +60,60 @@ is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , Sho
     Name => $nomatches,
     Values => $ARGS{$nomatches}
     &>
-</td></tr>
+</td>
+</tr>
 % }
-<tr><td class="label" colspan="2">
-<h2><&|/l&>Dates</&></h2>
-</td></tr>
-
-<tr><td class="label"><&|/l&>Created</&></td><td class="value"><&|/l&>after</&>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Dates</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Created</&></td>
+<td class="value"><&|/l&>after</&>
 <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
 <&|/l&>and before</&>
 <& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
-</td></tr>
-
-<tr><td class="label"><&|/l&>Last updated</&></td><td class="value"><&|/l&>after</&>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Last updated</&></td>
+<td class="value"><&|/l&>after</&>
 <& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
 ($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
 <&|/l&>and before</&>
 <& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
 ($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
-</td></tr>
-
-<tr><td class="label" colspan="2">
-<h2><&|/l&>Links</&></h2>
-</td></tr>
-<tr><td class="label"></td><td>
-<& LinkEntryInstructions &>
-</td></tr>
-<tr><td class="label"><&|/l&>Refer to</&></td><td class="value">
-<input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
-</td></tr>
-<td class="label"><&|/l&>Referred to by</&></td><td class="value">
-<input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
-</td></tr>
-
-<tr><td class="label" colspan="2">
-<h2><&|/l&>Topics</&></h2>
-</td></tr>
-<tr><td class="label"></td><td>
+</td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Links</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td><& LinkEntryInstructions &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Refer to</&></td>
+<td class="value"><input type=text size=50 name="RefersTo" value="<%$RefersTo%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Referred to by</&></td>
+<td class="value"><input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Topics</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td>
 <& /RTFM/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
-<br /><input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+<br />
+<input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
 <&|/l&>Include subtopics</&> 
-</td></tr>
+</td>
+</tr>
 </table>
-
 <& /Elements/Submit, Label => loc('Search') &>
 <&/Elements/TitleBoxEnd&>
-
 <%init>
 my @Classes =
  ( ref $ARGS{'Class'} eq 'ARRAY' )

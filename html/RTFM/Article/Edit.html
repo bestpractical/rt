@@ -30,10 +30,12 @@
 
 <form method="post" action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
 <input type="hidden" name="next" value="<%$ARGS{next}%>" />
-<input type="hidden" name="id" value="<%$id%>"/>
+<input type="hidden" name="id" value="<%$id%>" />
 <table width="100%">
-<tr><td><h2><&|/l&>Basics</&></h2>
-</td><td></td></tr>
+<tr>
+<td><h2><&|/l&>Basics</&></h2></td>
+<td></td>
+</tr>
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
                         EditClass =>$EditClass,
                         ClassObj => $ClassObj,  
@@ -41,8 +43,10 @@
                         id => $id
                         &>
 
-<tr><td><h2><&|/l&>Content</&></h2>
-</td><td></td></tr>
+<tr>
+<td><h2><&|/l&>Content</&></h2></td>
+<td></td>
+</tr>
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
                               ClassObj => $ClassObj, 
@@ -50,17 +54,20 @@
                               id =>$id,
                               &>
 
-<tr><td><h2><&|/l&>Links</&></h2>
-</td><td></td></tr>
+<tr>
+<td><h2><&|/l&>Links</&></h2></td>
+<td></td>
+</tr>
 <& Elements/EditLinks, ArticleObj => $ArticleObj, 
                        %ARGS,
                         id => $id
                        &>
-<tr><td><h2><&|/l&>Topics</&></h2>
-</td><td></td></tr>
 <tr>
-<td class="label"><&|/l&>Topics</&>
-</td>
+<td><h2><&|/l&>Topics</&></h2></td>
+<td></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Topics</&></td>
 <td>
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         Classes => [$ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj],

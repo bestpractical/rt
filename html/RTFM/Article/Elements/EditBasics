@@ -15,37 +15,25 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
-<TR>
-<TD class="label">
- <&|/l&>Name</&>
-</td>
+<tr>
+<td class="label"><&|/l&>Name</&></td>
+<td><input name="Name" value="<%($ARGS{'id'} eq 'new' ? ' ' : $ArticleObj->Name) || $ARGS{'Name'} |h%>" size="50" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Summary</&></td>
+<td><input name="Summary" value="<%($ARGS{'id'} eq 'new' ? ' ' : $ArticleObj->Summary) || $ARGS{'Summary'} |h%>" size="50" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Class</&></td>
 <td>
-<input name="Name" value="<%($ARGS{'id'} eq 'new' ? "" : $ArticleObj->Name) || $ARGS{'Name'} |h%>" size="50" />
-</TD>
-</TR>
-<TR>
-<TD class="label">
- <&|/l&>Summary</&>
-</td>
-<td>
-<input name="Summary" value="<%($ARGS{'id'} eq 'new' ? "" : $ArticleObj->Summary) || $ARGS{'Summary'} |h%>" size="50" />
-</TD>
-</TR>
-<TR>
-<TD class="label">
-<&|/l&>Class</&>
-</TD>
-<TD>
 % if ($EditClass) {
 <& /RTFM/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
 % } else {
 <%$ClassObj->Name%>
-<input type="hidden" Name="Class" value="<%$ClassObj->Id%>">
+<input type="hidden" name="Class" value="<%$ClassObj->Id%>" />
 % }
-</TD>
-</TR>
-
+</td>
+</tr>
 <%INIT>
 </%INIT>
 <%ARGS>
