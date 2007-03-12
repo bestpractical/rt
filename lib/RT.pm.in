@@ -93,7 +93,7 @@ A fully featured request tracker package
 
 =head1 DESCRIPTION
 
-=head2 METHODS
+=head2 INITIALIZATION
 
 =head2 LoadConfig
 
@@ -123,14 +123,10 @@ sub LoadConfig {
     RT::I18N->Init;
 }
 
-sub Config {
-    return $Config;
-}
-
-
 =head2 Init
 
-Conenct to the database, set up logging.
+L<Connect to the database /ConnectToDatabase>, L<initilizes system objects /InitSystemObjects>,
+L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
 
 =cut
 
@@ -141,10 +137,9 @@ sub Init {
     InitLogging(); 
 }
 
-
 =head2 ConnectToDatabase
 
-Get a database connection
+Get a database connection. See also </Handle>.
 
 =cut
 
@@ -152,11 +147,12 @@ sub ConnectToDatabase {
     require RT::Handle;
     $Handle = new RT::Handle unless $Handle;
     $Handle->Connect;
+    return $Handle;
 }
 
 =head2 InitLogging
 
-Create the RT::Logger object. 
+Create the Logger object and set up signal handlers.
 
 =cut
 
@@ -298,8 +294,8 @@ sub InitLogging {
         }
     }
 
-# {{{ Signal handlers
 
+# Signal handlers
 ## This is the default handling of warnings and die'ings in the code
 ## (including other used modules - maybe except for errors catched by
 ## Mason).  It will log all problems through the standard logging
@@ -327,14 +323,11 @@ sub InitLogging {
         }
         die $_[0];
     };
-
-# }}}
-
 }
 
 =head2 InitClasses
 
-Load all modules that define base classes
+Load all modules that define base classes.
 
 =cut
 
@@ -355,8 +348,6 @@ sub InitClasses {
     require RT::ObjectCustomFields;
     require RT::ObjectCustomFieldValues;
 }
-
-# }}}
 
 =head2 InitSystemObjects
 
@@ -380,14 +371,66 @@ sub InitSystemObjects {
     $System = new RT::System;
 }
 
+=head1 CLASS METHODS
 
-sub SystemUser {
-    return($SystemUser);
-}
+=head2 Config
 
-sub Nobody {
-    return ($Nobody);
-}
+Returns the current L<config object RT::Config>, but note that
+you must L<load config /LoadConfig> first otherwise this method
+returns undef.
+
+Method can be called as class method.
+
+=cut
+
+sub Config { return $Config }
+
+=head2 Handle
+
+Returns the current L<database handle object RT::Handle>.
+
+See also L</ConnectToDatabase>.
+
+=cut
+
+sub Handle { return $Handle }
+
+=head2 Logger
+
+Returns the logger. See also L</InitLogging>.
+
+=cut
+
+sub Logger { return $Logger }
+
+=head2 System
+
+Returns the current L<system object RT::System>. See also
+L</InitSystemObjects>.
+
+=cut
+
+sub System { return $System }
+
+=head2 SystemUser
+
+Returns the system user's object, it's object of
+L<RT::CurrentUser> class that represents the system. See also
+L</InitSystemObjects>.
+
+=cut
+
+sub SystemUser { return $SystemUser }
+
+=head2 Nobody
+
+Returns object of Nobody. It's object of L<RT::CurrentUser> class
+that represents a user who can own ticket and nothing else. See
+also L</InitSystemObjects>.
+
+=cut
+
+sub Nobody { return $Nobody }
 
 =head1 BUGS
 
