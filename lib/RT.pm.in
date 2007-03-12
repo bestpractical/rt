@@ -132,7 +132,7 @@ L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
 
 sub Init {
     ConnectToDatabase();
-    InitSystemObjects;
+    InitSystemObjects();
     InitClasses();
     InitLogging(); 
 }
@@ -385,7 +385,7 @@ Method can be called as class method.
 
 sub Config { return $Config }
 
-=head2 Handle
+=head2 DatabaseHandle
 
 Returns the current L<database handle object RT::Handle>.
 
@@ -393,7 +393,7 @@ See also L</ConnectToDatabase>.
 
 =cut
 
-sub Handle { return $Handle }
+sub DatabaseHandle { return $Handle }
 
 =head2 Logger
 
