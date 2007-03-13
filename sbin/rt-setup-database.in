@@ -135,8 +135,6 @@ print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user\n";
 
-$RT::Handle ||= new RT::Handle;
-
 foreach my $action ( @actions ) {
     if ( $action eq 'create' ) {
         my $dbh = get_system_dbh();
@@ -157,36 +155,39 @@ foreach my $action ( @actions ) {
         my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
+        $RT::Handle = new RT::Handle;
         $RT::Handle->dbh( $dbh );
 
         print "Now populating database schema.\n";
-        $RT::Handle->insert_schema($dbh, $args{'datadir'});
+        $RT::Handle->InsertSchema( $dbh, $args{'datadir'} );
     }
     elsif ( $action eq 'acl' ) {
         my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
+        $RT::Handle = new RT::Handle;
         $RT::Handle->dbh( $dbh );
 
         print "Now inserting database ACLs\n";
         $RT::Handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
     }
     elsif ( $action eq 'coredata' ) {
-        my $dbh = get_rt_dbh();
-        check_db_compatibility( $dbh );
-
-        $RT::Handle->dbh( $dbh );
+        $RT::Handle = new RT::Handle;
+        $RT::Handle->dbh( undef );
+        RT::ConnectToDatabase();
+        RT::InitLogging();
+        check_db_compatibility( $RT::Handle->dbh );
 
         print "Now inserting RT core system objects\n";
-        $RT::Handle->insert_initial_data();
+        $RT::Handle->InsertInitialData();
     }
     elsif ( $action eq 'insert' ) {
-        my $dbh = get_rt_dbh();
-        check_db_compatibility( $dbh );
+        $RT::Handle = new RT::Handle;
+        RT::Init();
+        check_db_compatibility( $RT::Handle->dbh );
 
-        $RT::Handle->dbh( $dbh );
-
-        $RT::Handle->insert_data( $args{'datafile'} || ($args{'datadir'}."/content") );
+        print "Now inserting data\n";
+        $RT::Handle->InsertData( $args{'datafile'} || ($args{'datadir'}."/content") );
     }
 }
 
