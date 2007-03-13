@@ -432,13 +432,6 @@ sub cmp_version($$) {
 sub InsertInitialData {
     my $self    = shift;
     my $db_type = RT->Config->Get('DatabaseType');
-    RT::InitLogging();
-
-    # connect to the db, for actual RT work
-    $RT::Handle->Disconnect;
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->BuildDSN;
-    $RT::Handle->Connect;
 
     #Put together a current user object so we can create a User object
     require RT::CurrentUser;
