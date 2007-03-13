@@ -466,11 +466,17 @@ sub InsertInitialData {
         print "$msg\n";
         exit(-1);
     }
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    print "done.\n";
 
     print "Creating system user's ACL...";
 
-    my $CurrentUser = new RT::CurrentUser;
+    $CurrentUser = new RT::CurrentUser;
     $CurrentUser->LoadByName('RT_System');
+    unless ( $CurrentUser->id ) {
+        print "Couldn't load system user\n";
+        exit(-1);
+    }
 
     my $superuser_ace = RT::ACE->new( $CurrentUser );
     $superuser_ace->_BootstrapCreate(
