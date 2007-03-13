@@ -137,10 +137,9 @@ print "Working with:\n"
 
 $RT::Handle ||= new RT::Handle;
 
-my $dbh;
 foreach my $action ( @actions ) {
     if ( $action eq 'create' ) {
-        $dbh = get_system_dbh();
+        my $dbh = get_system_dbh();
         print "Now creating a database for RT.\n";
         if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
             RT::Handle->CreateDatabase( $dbh );
@@ -149,13 +148,13 @@ foreach my $action ( @actions ) {
         }
     }
     elsif ( $action eq 'drop' ) {
-        $dbh = get_system_dbh();
+        my $dbh = get_system_dbh();
 
         print "Now dropping RT database\n";
         RT::Handle->DropDatabase( $dbh, Force => $args{'force'} );
     }
     elsif ( $action eq 'schema' ) {
-        $dbh = get_rt_dbh( $dba_user, $dba_pass );
+        my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
         $RT::Handle->dbh( $dbh );
@@ -164,16 +163,16 @@ foreach my $action ( @actions ) {
         $RT::Handle->insert_schema($dbh, $args{'datadir'});
     }
     elsif ( $action eq 'acl' ) {
-        $dbh = get_rt_dbh( $dba_user, $dba_pass );
+        my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
         $RT::Handle->dbh( $dbh );
 
         print "Now inserting database ACLs\n";
-        $RT::Handle->insert_acl($dbh, $args{'datadir'}) # unless $db_type eq 'Oracle'
+        $RT::Handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
     }
     elsif ( $action eq 'coredata' ) {
-        $dbh = get_rt_dbh();
+        my $dbh = get_rt_dbh();
         check_db_compatibility( $dbh );
 
         $RT::Handle->dbh( $dbh );
@@ -182,7 +181,7 @@ foreach my $action ( @actions ) {
         $RT::Handle->insert_initial_data();
     }
     elsif ( $action eq 'insert' ) {
-        $dbh = get_rt_dbh();
+        my $dbh = get_rt_dbh();
         check_db_compatibility( $dbh );
 
         $RT::Handle->dbh( $dbh );
@@ -263,6 +262,10 @@ sub get_system_dbh {
     return _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
 }
 
+sub get_admin_dbh {
+    return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+}
+
 =head2 get_rt_dbh [USER, PASSWORD]
 
 Returns L<DBI> database handle connected to RT database,
@@ -272,11 +275,7 @@ with. By default connects with credentials from RT config.
 =cut
 
 sub get_rt_dbh {
-    my ($user, $pass) = @_;
-    unless ( @_ ) {
-        ($user, $pass) = ($db_user, $db_pass);
-    }
-    return _get_dbh( RT::Handle->DSN, $user, $pass );
+    return _get_dbh( RT::Handle->DSN, $db_user, $db_pass );
 }
 
 sub _get_dbh {
