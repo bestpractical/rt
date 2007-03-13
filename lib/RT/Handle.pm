@@ -462,6 +462,21 @@ sub insert_initial_data {
         print "$msg\n";
         exit(-1);
     }
+
+    print "Creating system user's ACL...";
+
+    my $CurrentUser = new RT::CurrentUser;
+    $CurrentUser->LoadByName('RT_System');
+
+    my $superuser_ace = RT::ACE->new( $CurrentUser );
+    $superuser_ace->_BootstrapCreate(
+        PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
+        PrincipalType => 'Group',
+        RightName     => 'SuperUser',
+        ObjectType    => 'RT::System',
+        ObjectId      => 1,
+    );
+
     print "done.\n";
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
 }
@@ -480,21 +495,6 @@ sub insert_data {
 
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');
-
-    if ( $datafile eq $RT::EtcPath . "/initialdata" ) {
-
-        print "Creating Superuser  ACL...";
-
-        my $superuser_ace = RT::ACE->new($CurrentUser);
-        $superuser_ace->_BootstrapCreate(
-                             PrincipalId => ACLEquivGroupId( $CurrentUser->Id ),
-                             PrincipalType => 'Group',
-                             RightName     => 'SuperUser',
-                             ObjectType    => 'RT::System',
-                             ObjectId      => '1' );
-
-        print "done.\n";
-    }
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
