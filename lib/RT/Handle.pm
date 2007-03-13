@@ -500,12 +500,6 @@ sub InsertData {
     my $self     = shift;
     my $datafile = shift;
 
-    #Connect to the database and get RT::SystemUser and RT::Nobody loaded
-    RT::Init();
-
-    my $CurrentUser = RT::CurrentUser->new();
-    $CurrentUser->LoadByName('RT_System');
-
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
 	   @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
@@ -523,7 +517,7 @@ sub InsertData {
     if ( @Groups ) {
         print "Creating groups...";
         foreach my $item (@Groups) {
-            my $new_entry = RT::Group->new($CurrentUser);
+            my $new_entry = RT::Group->new( $RT::SystemUser );
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             print "(Error: $msg)" unless $return;
@@ -531,7 +525,7 @@ sub InsertData {
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
-                    my $parent = RT::Group->new($CurrentUser);
+                    my $parent = RT::Group->new($RT::SystemUser);
                     if ( ref $_ eq 'HASH' ) {
                         $parent->LoadByCols( %$_ );
                     }
@@ -560,7 +554,7 @@ sub InsertData {
     if ( @Users ) {
         print "Creating users...";
         foreach my $item (@Users) {
-            my $new_entry = new RT::User($CurrentUser);
+            my $new_entry = new RT::User($RT::SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             print "(Error: $msg)" unless $return;
             print $return. ".";
@@ -570,7 +564,7 @@ sub InsertData {
     if ( @Queues ) {
         print "Creating queues...";
         for my $item (@Queues) {
-            my $new_entry = new RT::Queue($CurrentUser);
+            my $new_entry = new RT::Queue($RT::SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             print "(Error: $msg)" unless $return;
             print $return. ".";
@@ -580,7 +574,7 @@ sub InsertData {
     if ( @CustomFields ) {
         print "Creating custom fields...";
         for my $item ( @CustomFields ) {
-            my $new_entry = new RT::CustomField( $CurrentUser );
+            my $new_entry = new RT::CustomField( $RT::SystemUser );
             my $values    = delete $item->{'Values'};
 
             my @queues;
@@ -599,18 +593,18 @@ sub InsertData {
             }
 
             if ($item->{LookupType}) { # enable by default
-                my $ocf = RT::ObjectCustomField->new($CurrentUser);
+                my $ocf = RT::ObjectCustomField->new($RT::SystemUser);
                 $ocf->Create( CustomField => $new_entry->Id );
             }
        
             for my $q (@queues) {
-                my $q_obj = RT::Queue->new($CurrentUser);
+                my $q_obj = RT::Queue->new($RT::SystemUser);
                 $q_obj->Load($q);
                 unless ( $q_obj->Id ) {
                     print "(Error: Could not find queue " . $q . ")\n";
                     next;
                 }
-                my $OCF = RT::ObjectCustomField->new($CurrentUser);
+                my $OCF = RT::ObjectCustomField->new($RT::SystemUser);
                 ( $return, $msg ) = $OCF->Create(
                     CustomField => $new_entry->Id,
                     ObjectId    => $q_obj->Id,
@@ -631,12 +625,12 @@ sub InsertData {
 
             # Global rights or Queue rights?
             if ( $item->{'CF'} ) {
-                $object = RT::CustomField->new( $CurrentUser );
+                $object = RT::CustomField->new( $RT::SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
                 $object->LoadByName( @columns );
             } elsif ( $item->{'Queue'} ) {
-                $object = RT::Queue->new($CurrentUser);
+                $object = RT::Queue->new($RT::SystemUser);
                 $object->Load( $item->{'Queue'} );
             } else {
                 $object = $RT::System;
@@ -646,7 +640,7 @@ sub InsertData {
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
-                $princ = RT::Group->new($CurrentUser);
+                $princ = RT::Group->new($RT::SystemUser);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
@@ -662,7 +656,7 @@ sub InsertData {
                   $princ->Load( $item->{'GroupId'} );
                 }
             } else {
-                $princ = RT::User->new($CurrentUser);
+                $princ = RT::User->new($RT::SystemUser);
                 $princ->Load( $item->{'UserId'} );
             }
 
@@ -687,7 +681,7 @@ sub InsertData {
         print "Creating ScripActions...";
 
         for my $item (@ScripActions) {
-            my $new_entry = RT::ScripAction->new($CurrentUser);
+            my $new_entry = RT::ScripAction->new($RT::SystemUser);
             my $return    = $new_entry->Create(%$item);
             print $return. ".";
         }
@@ -699,7 +693,7 @@ sub InsertData {
         print "Creating ScripConditions...";
 
         for my $item (@ScripConditions) {
-            my $new_entry = RT::ScripCondition->new($CurrentUser);
+            my $new_entry = RT::ScripCondition->new($RT::SystemUser);
             my $return    = $new_entry->Create(%$item);
             print $return. ".";
         }
@@ -711,7 +705,7 @@ sub InsertData {
         print "Creating templates...";
 
         for my $item (@Templates) {
-            my $new_entry = new RT::Template($CurrentUser);
+            my $new_entry = new RT::Template($RT::SystemUser);
             my $return    = $new_entry->Create(%$item);
             print $return. ".";
         }
@@ -721,7 +715,7 @@ sub InsertData {
         print "Creating scrips...";
 
         for my $item (@Scrips) {
-            my $new_entry = new RT::Scrip($CurrentUser);
+            my $new_entry = new RT::Scrip($RT::SystemUser);
 
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
@@ -740,7 +734,7 @@ sub InsertData {
     }
     if ( @Attributes ) {
         print "Creating predefined searches...";
-        my $sys = RT::System->new($CurrentUser);
+        my $sys = RT::System->new($RT::SystemUser);
 
         for my $item (@Attributes) {
             my $obj = delete $item->{Object}; # XXX: make this something loadable
