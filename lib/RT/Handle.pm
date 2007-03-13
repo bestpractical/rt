@@ -301,10 +301,21 @@ sub insert_acl {
 
     return if $db_type eq 'SQLite';
 
-    # XXX: this is polluting acl()
-    do $base_path ."/acl.". $db_type
-        || die "Couldn't find ACLs for ". $db_type .": " . $@;
+    die "'$base_path' doesn't exist" unless -e $base_path;
 
+    my $path;
+    if ( -d $base_path ) {
+        $path = File::Spec->catfile( $base_path, "acl.$db_type");
+        $path = File::Spec->catfile( $base_path, "acl")
+            unless -e $path;
+        die "Couldn't find ACLs for $db_type"
+            unless -e $path;
+    } else {
+        $path = $base_path;
+    }
+
+    local *acl;
+    do $path || die "Couldn't load ACLs: " . $@;
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
 #        print STDERR $statement if $args{'debug'};
