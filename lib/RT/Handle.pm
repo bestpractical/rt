@@ -289,16 +289,16 @@ sub _yesno {
     $x =~ /^y/i;
 }
 
-=head2 insert_acl
+=head2 InsertACL
 
 =cut
 
-sub insert_acl {
-    my $self = shift;
-    my $dbh  = shift || $self->dbh;
-    my $base_path = (shift || $RT::EtcPath);
-    my $db_type = RT->Config->Get('DatabaseType');
+sub InsertACL {
+    my $self      = shift;
+    my $dbh       = shift || $self->dbh;
+    my $base_path = shift || $RT::EtcPath;
 
+    my $db_type = RT->Config->Get('DatabaseType');
     return if $db_type eq 'SQLite';
 
     die "'$base_path' doesn't exist" unless -e $base_path;
