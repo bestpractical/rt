@@ -327,11 +327,11 @@ sub InsertACL {
     print "Done setting up database ACLs.\n";
 }
 
-=head2 insert_schema
+=head2 InsertSchema
 
 =cut
 
-sub insert_schema {
+sub InsertSchema {
     my $self = shift;
     my $dbh  = shift || $self->dbh;
     my $base_path = (shift || $RT::EtcPath);
@@ -425,11 +425,11 @@ sub cmp_version($$) {
 }
 
 
-=head2 insert_initial_data
+=head2 InsertInitialData
 
 =cut
 
-sub insert_initial_data {
+sub InsertInitialData {
     my $self    = shift;
     my $db_type = RT->Config->Get('DatabaseType');
     RT::InitLogging();
@@ -492,12 +492,12 @@ sub insert_initial_data {
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
 }
 
-=head insert_data
+=head InsertData
 
 =cut
 
 # load some sort of data into the database
-sub insert_data {
+sub InsertData {
     my $self     = shift;
     my $datafile = shift;
 
