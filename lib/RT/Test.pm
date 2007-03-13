@@ -37,28 +37,45 @@ my @server;
 
 sub import {
     my $class = shift;
+
     require RT::Handle;
+
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
-		       $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-    my $db_type = RT->Config->Get('DatabaseType');
-
+               $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
     RT::Handle->DropDatabase( $dbh, Force => 1 );
     RT::Handle->CreateDatabase( $dbh );
-
     $dbh->disconnect;
-    $dbh = _get_dbh(RT::Handle->DSN,
-		    $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
+    $dbh = _get_dbh(RT::Handle->DSN,
+            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( $dbh );
+    $RT::Handle->InsertSchema( $dbh );
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
-    $RT::Handle->insert_schema($dbh);
-    $RT::Handle->insert_acl($dbh) unless $db_type eq 'Oracle';
-    $RT::Handle->insert_initial_data();
+    RT->InitLogging;
+    $RT::Handle->InsertInitialData;
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT->Init;
+
+    $RT::Handle->PrintError;
+    $RT::Handle->dbh->{PrintError} = 1;
 
     unless ( ($_[0] || '') eq 'nodata' ) {
-        $RT::Handle->insert_data( $RT::EtcPath . "/initialdata" );
+        $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
-    RT::Init;
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    RT->Init;
 }
 
 sub started_ok {
@@ -71,11 +88,11 @@ sub _get_dbh {
     my ($dsn, $user, $pass) = @_;
     my $dbh = DBI->connect(
         $dsn, $user, $pass,
-        { RaiseError => 0, PrintError => 0 },
+        { RaiseError => 0, PrintError => 1 },
     );
     unless ( $dbh ) {
         my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
-	print STDERR $msg; exit -1;
+    print STDERR $msg; exit -1;
     }
     return $dbh;
 }
