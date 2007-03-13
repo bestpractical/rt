@@ -196,7 +196,7 @@ sub check_db_compatibility {
         # Check which version we're running
         my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
         if ( $version < 4 ) {
-            print STDERR "*** WARNING: RT is unsupported on MySQL versions before 4.0.x\n";
+            print STDERR "*** WARNING: RT is unsupported on MySQL versions before 4.0.x, it's $version\n";
         }
 
         # MySQL must have InnoDB support
