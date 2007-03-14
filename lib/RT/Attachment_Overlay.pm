@@ -404,6 +404,27 @@ sub Quote {
     return (\$body, $max);
 }
 
+=head2 ContentAsMIME
+
+Returns MIME entity built from this attachment.
+
+=cut
+
+sub ContentAsMIME {
+    my $self = shift;
+
+    my $entity = new MIME::Entity;
+    $entity->head->add( split /:/, $_, 2 )
+        foreach $self->SplitHeaders;
+
+    use MIME::Body;
+    $entity->bodyhandle(
+        MIME::Body::Scalar->new( $self->OriginalContent )
+    );
+
+    return $entity;
+}
+
 =head2 NiceHeaders
 
 Returns a multi-line string of the To, From, Cc, Date and Subject headers.
