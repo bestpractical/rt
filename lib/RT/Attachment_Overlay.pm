@@ -46,15 +46,13 @@
 
 =head1 SYNOPSIS
 
-  use RT::Attachment;
-
+    use RT::Attachment;
 
 =head1 DESCRIPTION
 
 This module should never be instantiated directly by client code. it's an internal 
 module which should only be instantiated through exported APIs in Ticket, Queue and other 
 similar objects.
-
 
 =head1 METHODS
 
@@ -74,12 +72,9 @@ use strict;
 no warnings qw(redefine);
 
 use RT::Transaction;
-
 use MIME::Base64;
 use MIME::QuotedPrint;
 
-
-# {{{ sub _OverlayAccessible 
 sub _OverlayAccessible {
   {
     TransactionId   => { 'read'=>1, 'public'=>1, 'write' => 0 },
@@ -95,35 +90,6 @@ sub _OverlayAccessible {
     Created         => { 'read'=>1, 'auto'=>1, },
   };
 }
-# }}}
-
-# {{{ sub TransactionObj 
-
-=head2 TransactionObj
-
-Returns the transaction object asscoiated with this attachment.
-
-=cut
-
-sub TransactionObj {
-    my $self = shift;
-
-    unless ( $self->{_TransactionObj} ) {
-        $self->{_TransactionObj} = RT::Transaction->new( $self->CurrentUser );
-        $self->{_TransactionObj}->Load( $self->TransactionId );
-    }
-
-    unless ($self->{_TransactionObj}->Id) {
-        $RT::Logger->crit(  "Attachment ". $self->id
-                           ." can't find transaction ". $self->TransactionId
-                           ." which it is ostensibly part of. That's bad");
-    }
-    return $self->{_TransactionObj};
-}
-
-# }}}
-
-# {{{ sub Create 
 
 =head2 Create
 
@@ -226,9 +192,6 @@ sub Create {
     }
 }
 
-# }}}
-
-
 =head2 Import
 
 Create an attachment exactly as specified in the named parameters.
@@ -245,7 +208,59 @@ sub Import {
     return ( $self->SUPER::Create(%args) );
 }
 
-# {{{ sub Content
+=head2 TransactionObj
+
+Returns the transaction object asscoiated with this attachment.
+
+=cut
+
+sub TransactionObj {
+    my $self = shift;
+
+    unless ( $self->{_TransactionObj} ) {
+        $self->{_TransactionObj} = RT::Transaction->new( $self->CurrentUser );
+        $self->{_TransactionObj}->Load( $self->TransactionId );
+    }
+
+    unless ($self->{_TransactionObj}->Id) {
+        $RT::Logger->crit(  "Attachment ". $self->id
+                           ." can't find transaction ". $self->TransactionId
+                           ." which it is ostensibly part of. That's bad");
+    }
+    return $self->{_TransactionObj};
+}
+
+=head2 ParentObj
+
+Returns a parent's L<RT::Attachment> object if this attachment
+has a parent, otherwise returns undef.
+
+=cut
+
+sub ParentObj {
+    my $self = shift;
+    return undef unless $self->Parent;
+
+    my $parent = RT::Attachment->new( $self->CurrentUser );
+    $parent->LoadById( $self->Parent );
+    return $parent;
+}
+
+=head2 Children
+
+Returns an L<RT::Attachments> object which is preloaded with
+all attachments objects with this attachment\'s Id as their
+C<Parent>.
+
+=cut
+
+sub Children {
+    my $self = shift;
+    
+    my $kids = RT::Attachments->new( $self->CurrentUser );
+    $kids->ChildrenOf( $self->Id );
+    return($kids);
+}
 
 =head2 Content
 
@@ -256,16 +271,12 @@ before returning it.
 
 sub Content {
     my $self = shift;
-    return $self->_DecodeLOB( $self->ContentType,
-                              $self->ContentEncoding,
-                              $self->_Value('Content', decode_utf8 => 0),
-                            );
+    return $self->_DecodeLOB(
+        $self->ContentType,
+        $self->ContentEncoding,
+        $self->_Value('Content', decode_utf8 => 0),
+    );
 }
-
-# }}}
-
-
-# {{{ sub OriginalContent
 
 =head2 OriginalContent
 
@@ -306,11 +317,6 @@ sub OriginalContent {
     return $content;
 }
 
-# }}}
-
-
-# {{{ sub OriginalEncoding
-
 =head2 OriginalEncoding
 
 Returns the attachment's original encoding.
@@ -322,49 +328,30 @@ sub OriginalEncoding {
     return $self->GetHeader('X-RT-Original-Encoding');
 }
 
-# }}}
+=head2 ContentLength
 
-=head2 ParentObj
-
-Returns a parent's L<RT::Attachment> object if this attachment
-has a parent, otherwise returns undef.
+Returns length of L</Content> in bytes.
 
 =cut
 
-sub ParentObj {
+sub ContentLength {
     my $self = shift;
-    return undef unless $self->Parent;
 
-    my $parent = RT::Attachment->new( $self->CurrentUser );
-    $parent->LoadById( $self->Parent );
-    return $parent;
+    return undef unless $self->TransactionObj->CurrentUserCanSee;
+
+    my $len = $self->GetHeader('Content-Length');
+    unless ( defined $len ) {
+        use bytes;
+        no warnings 'uninitialized';
+        $len = length($self->Content);
+        $self->SetHeader('Content-Length' => $len);
+    }
+    return $len;
 }
 
-# {{{ sub Children
-
-=head2 Children
-
-Returns an L<RT::Attachments> object which is preloaded with
-all attachments objects with this attachment\'s Id as their
-C<Parent>.
+=head2 Quote
 
 =cut
-
-sub Children {
-    my $self = shift;
-    
-    my $kids = RT::Attachments->new( $self->CurrentUser );
-    $kids->ChildrenOf( $self->Id );
-    return($kids);
-}
-
-# }}}
-
-# {{{ UTILITIES
-
-# {{{ sub Quote 
-
-
 
 sub Quote {
     my $self=shift;
@@ -416,9 +403,6 @@ sub Quote {
 
     return (\$body, $max);
 }
-# }}}
-
-# {{{ sub NiceHeaders - pulls out only the most relevant headers
 
 =head2 NiceHeaders
 
@@ -437,9 +421,6 @@ sub NiceHeaders {
     }
     return $hdrs;
 }
-# }}}
-
-# {{{ sub Headers
 
 =head2 Headers
 
@@ -455,12 +436,7 @@ sub Headers {
     return join("\n", $_[0]->SplitHeaders);
 }
 
-
-# }}}
-
-# {{{ sub GetHeader
-
-=head2 GetHeader ( 'Tag')
+=head2 GetHeader $TAG
 
 Returns the value of the header Tag as a string. This bypasses the weeding out
 done in Headers() above.
@@ -480,9 +456,6 @@ sub GetHeader {
     # we found no header. return an empty string
     return undef;
 }
-# }}}
-
-# {{{ sub SetHeader
 
 =head2 SetHeader ( 'Tag', 'Value' )
 
@@ -508,31 +481,6 @@ sub SetHeader {
     $newheader .= "$tag: $_[0]\n" if defined $tag;
     $self->__Set( Field => 'Headers', Value => $newheader);
 }
-# }}}
-
-# {{{ sub _Value 
-
-=head2 _Value
-
-Takes the name of a table column.
-Returns its value as a string, if the user passes an ACL check
-
-=cut
-
-sub _Value {
-    my $self  = shift;
-    my $field = shift;
-
-    #if the field is public, return it.
-    if ( $self->_Accessible( $field, 'public' ) ) {
-        return ( $self->__Value( $field, @_ ) );
-    }
-
-    return undef unless $self->TransactionObj->CurrentUserCanSee;
-    return $self->__Value( $field, @_ );
-}
-
-# }}}
 
 =head2 SplitHeaders
 
@@ -596,24 +544,28 @@ sub _SplitHeaders {
 }
 
 
-sub ContentLength {
-    my $self = shift;
+=head2 _Value
+
+Takes the name of a table column.
+Returns its value as a string, if the user passes an ACL check
+
+=cut
+
+sub _Value {
+    my $self  = shift;
+    my $field = shift;
+
+    #if the field is public, return it.
+    if ( $self->_Accessible( $field, 'public' ) ) {
+        return ( $self->__Value( $field, @_ ) );
+    }
 
     return undef unless $self->TransactionObj->CurrentUserCanSee;
-
-    my $len = $self->GetHeader('Content-Length');
-    unless ( defined $len ) {
-        use bytes;
-        no warnings 'uninitialized';
-        $len = length($self->Content);
-        $self->SetHeader('Content-Length' => $len);
-    }
-    return $len;
+    return $self->__Value( $field, @_ );
 }
 
-# }}}
-
-# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
+# Transactions don't change. by adding this cache congif directiove,
+# we don't lose pathalogically on long tickets.
 sub _CacheConfig {
     {
         'cache_p'       => 1,
