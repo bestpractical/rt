@@ -728,7 +728,7 @@ sub Gateway {
         if ( $id == 0 ) {
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Ticket creation failed",
+                Subject     => "Ticket creation failed: $Subject",
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
@@ -747,7 +747,7 @@ sub Gateway {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Message not recorded",
+                Subject     => "Message not recorded: $Subject",
                 Explanation => $error,
                 MIMEObj     => $Message
             );
@@ -771,7 +771,7 @@ sub Gateway {
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded",
+                    Subject     => "Message not recorded: $Subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
