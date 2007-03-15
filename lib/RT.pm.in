@@ -130,12 +130,21 @@ sub LoadConfig {
 
     my $username = getpwuid($>);
     my $group = getgrgid($();
-    my $message = qq{Couldn't load RT config file %s as user $username / group $group.
-The file is owned by user %s and group %s.
-This usually means that the user/group your webserver is running as cannot read the file.
-Be careful not to make the permissions on this file too liberal, because it contains database
-passwords.  You may need to put the webserver user in the appropriate group (%s) or change
-permissions be able to run succesfully};
+    my $message = <<EOF;
+
+RT couldn't load RT config file %s as:
+    user: $username 
+    group: $group
+
+The file is owned by user %s and group %s.  
+
+This usually means that the user/group your webserver is running
+as cannot read the file.  Be careful not to make the permissions
+on this file too liberal, because it contains database passwords.
+You may need to put the webserver user in the appropriate group
+(%s) or change permissions be able to run succesfully.
+EOF
+
 
     if ( -f "$SITE_CONFIG_FILE" ) {
         eval { require $SITE_CONFIG_FILE };
@@ -172,6 +181,8 @@ Conenct to the database, set up logging.
 =cut
 
 sub Init {
+
+    CheckPerlRequirements();
 
     #Get a database connection
     ConnectToDatabase();
@@ -351,6 +362,40 @@ $SIG{__DIE__}  = sub {
 # }}}
 
 }
+
+
+sub CheckPerlRequirements {
+    if ($^V < 5.008003) {
+        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
+    }
+
+    local ($@);
+    eval { 
+        my $x = ''; 
+        my $y = \$x;
+        require Scalar::Util; Scalar::Util::weaken($y);
+    };
+    if ($@) {
+        die <<"EOF";
+
+RT requires the Scalar::Util module be built with support for  the 'weaken'
+function. 
+
+It is sometimes the case that operating system upgrades will replace 
+a working Scalar::Util with a non-working one. If your system was working
+correctly up until now, this is likely the cause of the problem.
+
+Please reinstall Scalar::Util, being careful to let it build with your C 
+compiler. Ususally this is as simple as running the following command as
+root.
+
+    perl -MCPAN -e'install Scalar::Util'
+
+EOF
+
+    }
+}
+
 
 =head2 InitClasses
 
