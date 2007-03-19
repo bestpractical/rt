@@ -66,12 +66,7 @@ my $ColumnMap = sub {
 
         return sub { $COLUMN_MAP->{$mainkey}->{$attr}->( @_, $subkey ) };
     }
-    elsif ( $name =~ /^(WebPath|WebBaseURL|WebURL)$/ ) {
-        if ( $attr eq 'value' ) {
-            my $value = RT->Config->Get($1);
-            return sub { return \$value };
-        }
-    }
+
 };
 
 my $LinkCallback = sub {
@@ -284,6 +279,12 @@ $COLUMN_MAP = {
     (map {
         $_ => { value => $LinkCallback->( $_ ) }
     } keys %RT::Ticket::LINKTYPEMAP),
+
+    (map {
+        my $value = RT->Config->Get($_);
+        $_ => { value => sub { return \$value } };
+    
+    } qw(WebPath WebBaseURL WebURL)),
 
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
