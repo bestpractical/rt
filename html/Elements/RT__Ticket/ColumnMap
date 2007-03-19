@@ -322,6 +322,7 @@ $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap' );
 return $ColumnMap->( $Name, $Attr );
 </%init>
