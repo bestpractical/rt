@@ -60,35 +60,11 @@ my $ColumnMap = sub {
     if ( $COLUMN_MAP->{$name} ) {
         return ( $COLUMN_MAP->{$name}->{$attr} );
     }
+    elsif ( (my ($mainkey, $subkey) = $name =~ /^(.*?)\.{(.+)}$/) && $COLUMN_MAP->{$1} ) {
+        return $COLUMN_MAP->{$mainkey}->{$attr}
+            unless ref $COLUMN_MAP->{$mainkey}->{$attr} eq 'CODE';
 
-    # now, let's deal with harder things, like Custom Fields
-
-    elsif ( $name =~ /^(?:CF|CustomField)\.\{(.+)\}$/ ) {
-        my $field = $1;
-
-        if ( $attr eq 'attribute' ) {
-            return (undef);
-        }
-        elsif ( $attr eq 'title' ) {
-            return ( $field );
-        }
-        elsif ( $attr eq 'value' ) {
-            # Display custom field contents, separated by newlines.
-            # For Image custom fields we also show a thumbnail here.
-            return sub {
-                my $values = $_[0]->CustomFieldValues($field);
-                my @values =  map {
-                    (
-                        ($_->CustomFieldObj->Type eq 'Image')
-                            ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
-                            : $_->Content
-                    ),
-                    \'<br />',
-                } @{ $values->ItemsArrayRef };
-            pop @values; # Remove that last <br />
-            return @values;
-            };
-        }
+        return sub { $COLUMN_MAP->{$mainkey}->{$attr}->( @_, $subkey ) };
     }
     elsif ( $name =~ /^(WebPath|WebBaseURL|WebURL)$/ ) {
         if ( $attr eq 'value' ) {
@@ -319,7 +295,30 @@ $COLUMN_MAP = {
         value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
     },
 
+    CustomField => {
+        attribute => undef,
+        title     => sub { return pop @_ },
+        value     => sub {
+            # Display custom field contents, separated by newlines.
+            # For Image custom fields we also show a thumbnail here.
+
+            my $values = $_[0]->CustomFieldValues( $_[-1] );
+            my @values = map {
+                (
+                    ($_->CustomFieldObj->Type eq 'Image')
+                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
+                        : $_->Content
+                ),
+                \'<br />',
+            } @{ $values->ItemsArrayRef };
+            pop @values; # Remove that last <br />
+            return @values;
+        },
+    },
 };
+
+$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
+
 </%ONCE>
 <%init>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
