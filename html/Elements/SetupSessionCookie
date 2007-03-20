@@ -69,7 +69,7 @@ eval {
     tie %session, $session_class,
         $SessionCookie
         || ( $cookies{$cookiename} ? $cookies{$cookiename}->value() : undef ),
-        $backends{$RT::DatabaseType}
+        $session_class
         ? {
         Handle     => $RT::Handle->dbh,
         LockHandle => $RT::Handle->dbh,
