@@ -73,7 +73,6 @@ eval {
         ? {
         Handle     => $RT::Handle->dbh,
         LockHandle => $RT::Handle->dbh,
-        Commit => 1
         }
         : {
         Directory     => $RT::MasonSessionDir,
@@ -88,7 +87,6 @@ if ($@) {
             ? {
             Handle     => $RT::Handle->dbh,
             LockHandle => $RT::Handle->dbh,
-            Commit => 1
             }
             : {
             Directory     => $RT::MasonSessionDir,
