@@ -556,7 +556,7 @@ msgstr "De 25 højest prioriterede sager, jeg rekvirerede..."
 
 #: html/Ticket/Elements/ShowBasics:53
 msgid "<% $Ticket->Status%>"
-msgstr "<% $Sag->Status%>"
+msgstr "<% $Ticket->Status%>"
 
 #: html/Elements/SelectTicketTypes:48
 msgid "<% $_ %>"
@@ -573,13 +573,13 @@ msgstr "<%$field%>"
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 #: html/Elements/CreateTicket:47
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<inputtype=\"godkendt\" klasse=\"knap\" værdi=\"Ny sag kommet\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\"  value=\"Ny sag kommet\" />&nbsp;%1"
 
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 #: docs/design_docs/string-extraction-guide.txt:54
 #: lib/RT/StyleGuide.pod:787
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<inputtype=\"submit\" værdi=\"Ny sag kommet\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"Ny sag kommet\">&nbsp;%1"
 
 #: etc/initialdata:218
 msgid "A blank template"
@@ -2765,7 +2765,7 @@ msgstr "Jeg har %quant(%1,concrete mixer)."
 
 #: NOT FOUND IN SOURCE
 msgid "I have [quant,_1,concrete mixer]."
-msgstr "Jeg har [antal,_1,concrete mixer]."
+msgstr "Jeg har [quant,_1,concrete mixer]."
 
 #: html/Search/Build.html:460
 #: lib/RT/Report/Tickets.pm:415
