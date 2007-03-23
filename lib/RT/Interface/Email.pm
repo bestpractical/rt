@@ -405,7 +405,7 @@ sub ForwardTransaction {
         $attachments->Columns(qw(id Parent TransactionId Headers));
         $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
         $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
+        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
         $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
         my $tmp = $attachments->First;
         if ( $tmp && $tmp->id ne $main_content->id ) {
