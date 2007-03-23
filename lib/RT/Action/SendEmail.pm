@@ -297,17 +297,59 @@ sub AddAttachments {
     # attach any of this transaction's attachments
     while ( my $attach = $attachments->Next ) {
         $MIMEObj->make_multipart('mixed');
-        $MIMEObj->attach(
-            Type     => $attach->ContentType,
-            Charset  => $attach->OriginalEncoding,
-            Data     => $attach->OriginalContent,
-            Filename => $self->MIMEEncodeString( $attach->Filename,
-                RT->Config->Get('EmailOutputEncoding') ),
-            'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
-            Encoding => '-SUGGEST'
-        );
+        $self->AddAttachment( $attach );
     }
 
+}
+
+=head2 AddAttachment $attachment
+
+Takes one attachment object of L<RT::Attachmment> class and attaches it to the message
+we're building.
+
+=cut
+
+sub AddAttachment {
+    my $self = shift;
+    my $attach = shift;
+    my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
+
+    $MIMEObj->attach(
+        Type     => $attach->ContentType,
+        Charset  => $attach->OriginalEncoding,
+        Data     => $attach->OriginalContent,
+        Filename => $self->MIMEEncodeString( $attach->Filename,
+            RT->Config->Get('EmailOutputEncoding') ),
+        'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
+        Encoding => '-SUGGEST',
+    );
+}
+
+sub AttachTicket {
+    my $self = shift;
+    my $tid = shift || $self->TicketObj->id;
+
+    # XXX: we need a current user here, but who is current user?
+    my $attachs = RT::Attachments->new( $RT::SystemUser );
+    # XXX: comments, correspondence or any?
+    $attachs->LimitByTicket( $tid );
+    $attachs->LimitNotEmpty;
+    $attachs->OrderBy( FIELD => 'Created' );
+
+    my $ticket_mime = MIME::Entity->build(
+        Type => 'multipart/mixed',
+        Top => 0,
+        Description => "ticket #$tid",
+    );
+    while ( my $attachment = $attachs->Next ) {
+        $self->AddAttachment( $attachment, $ticket_mime );
+    }
+    if ( $ticket_mime->parts ) {
+        my $email_mime = $self->TemplateObj->MIMEObj;
+        $email_mime->make_multipart;
+        $email_mime->add_part( $ticket_mime );
+    }
+    return;
 }
 
 =head2 RecordOutgoingMailTransaction MIMEObj
