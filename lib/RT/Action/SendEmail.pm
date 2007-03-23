@@ -92,11 +92,6 @@ perl(1).
 
 =cut
 
-# {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
-
-
-# {{{ sub Commit
-
 sub Commit {
     my $self = shift;
 
@@ -106,10 +101,6 @@ sub Commit {
     }
     return (abs $ret);
 }
-
-# }}}
-
-# {{{ sub Prepare
 
 sub Prepare {
     my $self = shift;
@@ -169,12 +160,6 @@ sub Prepare {
 
 }
 
-# }}}
-
-# }}}
-
-
-
 =head2 To
 
 Returns an array of Mail::Address objects containing all the To: recipients for this notification
@@ -219,8 +204,6 @@ sub _AddressesFromHeader  {
     return (@addresses);
 }
 
-
-# {{{ SendMessage
 
 =head2 SendMessage MIMEObj
 
@@ -270,8 +253,6 @@ sub SendMessage {
 
     return (1);
 }
-
-# {{{ AddAttachments 
 
 =head2 AddAttachments
 
@@ -329,10 +310,6 @@ sub AddAttachments {
 
 }
 
-# }}}
-
-# {{{ RecordOutgoingMailTransaction
-
 =head2 RecordOutgoingMailTransaction MIMEObj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
@@ -389,11 +366,6 @@ sub RecordOutgoingMailTransaction {
 
 
 }
-
-# }}}
-#
-
-# {{{ sub SetRTSpecialHeaders
 
 =head2 SetRTSpecialHeaders 
 
@@ -457,8 +429,6 @@ sub SetRTSpecialHeaders {
 
 }
 
-# }}}
-
 =head2 SquelchMailTo 
 
 Mark address to be removed from list of the recipients. Returns list of the addresses.
@@ -479,8 +449,6 @@ clean this list when blocking is not required anymore.
         return grep defined, @{ $squelch };
     }
 }
-
-# {{{ RemoveInappropriateRecipients
 
 =head2 RemoveInappropriateRecipients
 
@@ -561,9 +529,6 @@ sub RemoveInappropriateRecipients {
     }
 }
 
-# }}}
-# {{{ sub SetReturnAddress
-
 =head2 SetReturnAddress is_comment => BOOLEAN
 
 Calculate and set From and Reply-To headers based on the is_comment flag.
@@ -620,10 +585,6 @@ sub SetReturnAddress {
 
 }
 
-# }}}
-
-# {{{ sub SetHeader
-
 =head2 SetHeader FIELD, VALUE
 
 Set the FIELD of the current MIME object into VALUE.
@@ -641,11 +602,6 @@ sub SetHeader {
     $self->TemplateObj->MIMEObj->head->replace( $field,     $val );
     return $self->TemplateObj->MIMEObj->head->get($field);
 }
-
-# }}}
-
-
-# {{{ sub SetSubject
 
 =head2 SetSubject
 
@@ -683,10 +639,6 @@ sub SetSubject {
 
 }
 
-# }}}
-
-# {{{ sub SetSubjectToken
-
 =head2 SetSubjectToken
 
 This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
@@ -711,8 +663,6 @@ sub SetSubjectToken {
         Subject => "[". RT->Config->Get('rtname') ." #$id] $sub",
     );
 }
-
-# }}}
 
 =head2 SetReferencesHeaders
 
@@ -785,8 +735,6 @@ sub SetReferencesHeaders {
 
 }
 
-# }}}
-
 =head2 PseudoReference
 
 Returns a fake Message-ID: header for the ticket to allow a base level of threading
@@ -800,8 +748,6 @@ sub PseudoReference {
     return $pseudo_ref;
 }
 
-
-# {{{ SetHeadingAsEncoding
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
@@ -830,9 +776,6 @@ sub SetHeaderAsEncoding {
 
 
 } 
-# }}}
-
-# {{{ MIMEEncodeString
 
 =head2 MIMEEncodeString STRING ENCODING
 
@@ -879,8 +822,6 @@ sub MIMEEncodeString {
       $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
     }
 }
-
-# }}}
 
 eval "require RT::Action::SendEmail_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
