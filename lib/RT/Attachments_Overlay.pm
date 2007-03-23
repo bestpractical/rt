@@ -126,16 +126,15 @@ Limit result set to attachments of ContentType 'TYPE'...
 
 
 sub ContentType  {
-  my $self = shift;
-  my %args = ( VALUE => 'text/plain',
-	       OPERATOR => '=',
-	       ENTRYAGGREGATOR => 'OR',
-	       @_);
+    my $self = shift;
+    my %args = (
+        VALUE           => 'text/plain',
+	    OPERATOR        => '=',
+	    ENTRYAGGREGATOR => 'OR',
+	    @_
+    );
 
-  $self->Limit ( FIELD => 'ContentType',
-		 VALUE => $args{'VALUE'},
-		 OPERATOR => $args{'OPERATOR'},
-		 ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'});
+    return $self->Limit ( %args, FIELD => 'ContentType' );
 }
 
 =head2 ChildrenOf ID
