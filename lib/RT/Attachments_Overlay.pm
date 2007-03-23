@@ -77,7 +77,6 @@ no warnings qw(redefine);
 
 use RT::Attachment;
 
-# {{{ sub _Init  
 sub _Init   {
     my $self = shift;
     $self->{'table'} = "Attachments";
@@ -88,10 +87,36 @@ sub _Init   {
     );
     return $self->SUPER::_Init( @_ );
 }
-# }}}
+
+sub CleanSlate {
+    my $self = shift;
+    delete $self->{_sql_transaction_alias};
+    return $self->SUPER::CleanSlate( @_ );
+}
 
 
-# {{{ sub ContentType
+=head2 TransactionAlias
+
+Returns alias for transactions table with applied join condition.
+Always return the same alias, so if you want to build some complex
+or recursive joining then you have to create new alias youself.
+
+=cut
+
+sub TransactionAlias {
+    my $self = shift;
+    return $self->{'_sql_transaction_alias'}
+        if $self->{'_sql_transaction_alias'};
+
+    my $res = $self->NewAlias('Transactions');
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'TransactionId',
+        VALUE           => $res . '.id',
+        QUOTEVALUE      => 0,
+    );
+    return $self->{'_sql_transaction_alias'} = $res;
+}
 
 =head2 ContentType (VALUE => 'text/plain', ENTRYAGGREGATOR => 'OR', OPERATOR => '=' ) 
 
@@ -112,9 +137,6 @@ sub ContentType  {
 		 OPERATOR => $args{'OPERATOR'},
 		 ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'});
 }
-# }}}
-
-# {{{ sub ChildrenOf 
 
 =head2 ChildrenOf ID
 
@@ -165,13 +187,8 @@ Limit result set to attachments of a ticket.
 sub LimitByTicket {
     my $self = shift;
     my $tid = shift;
-    my $transactions = $self->NewAlias('Transactions');
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        FIELD           => 'TransactionId',
-        VALUE           => $transactions . '.id',
-        QUOTEVALUE      => 0,
-    );
+
+    my $transactions = $self->TransactionAlias;
     $self->Limit(
         ENTRYAGGREGATOR => 'AND',
         ALIAS           => $transactions,
