@@ -331,7 +331,9 @@ sub AttachTicket {
 
     # XXX: we need a current user here, but who is current user?
     my $attachs = RT::Attachments->new( $RT::SystemUser );
-    # XXX: comments, correspondence or any?
+    my $txn_alias = $attachs->TransactionAlias;
+    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
+    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Correspond' );
     $attachs->LimitByTicket( $tid );
     $attachs->LimitNotEmpty;
     $attachs->OrderBy( FIELD => 'Created' );
