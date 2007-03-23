@@ -300,6 +300,8 @@ sub AddAttachments {
     # We want to make sure that we don't include the attachment that's
     # being sued as the "Content" of this message"
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
+    # XXX: this is legacy check of content type looks quite incorrect
+    # to me //ruz
     if ( $transaction_content_obj && $transaction_content_obj->id
          && $transaction_content_obj->ContentType =~ m{text/plain}i )
     {
