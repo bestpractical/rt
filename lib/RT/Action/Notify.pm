@@ -45,12 +45,13 @@
 # END BPS TAGGED BLOCK }}}
 #
 package RT::Action::Notify;
-require RT::Action::SendEmail;
-use Mail::Address;
-use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::SendEmail);
 
+use strict;
+use warnings;
+
+use base qw(RT::Action::SendEmail);
+
+use Mail::Address;
 
 =head2 Prepare
 
