@@ -156,6 +156,46 @@ sub LimitNotEmpty {
     return;
 }
 
+=head2 LimitByTicket $ticket_id
+
+Limit result set to attachments of a ticket.
+
+=cut
+
+sub LimitByTicket {
+    my $self = shift;
+    my $tid = shift;
+    my $transactions = $self->NewAlias('Transactions');
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'TransactionId',
+        VALUE           => $transactions . '.id',
+        QUOTEVALUE      => 0,
+    );
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        ALIAS           => $transactions,
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+    );
+
+    my $tickets = $self->NewAlias('Tickets');
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        ALIAS           => $tickets,
+        FIELD           => 'id',
+        VALUE           => $transactions . '.ObjectId',
+        QUOTEVALUE      => 0,
+    );
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        ALIAS           => $tickets,
+        FIELD           => 'EffectiveId',
+        VALUE           => $tid,
+    );
+    return;
+}
+
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
