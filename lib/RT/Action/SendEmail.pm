@@ -293,6 +293,8 @@ sub AddAttachments {
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
     );
+    # Don't attach anything blank
+    $attachments->LimitNotEmpty;
     $attachments->OrderBy( FIELD => 'id');
 
     # We want to make sure that we don't include the attachment that's
@@ -311,10 +313,6 @@ sub AddAttachments {
 
     # attach any of this transaction's attachments
     while ( my $attach = $attachments->Next ) {
-
-        # Don't attach anything blank
-        next unless ( $attach->ContentLength );
-
         $MIMEObj->make_multipart('mixed');
         $MIMEObj->attach(
             Type     => $attach->ContentType,
