@@ -137,8 +137,8 @@ sub Prepare {
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
-      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) ) and ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc'));
+        if $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } && !$MIMEObj->head->get('To') 
+           && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
@@ -162,7 +162,7 @@ sub Prepare {
 
 =head2 To
 
-Returns an array of Mail::Address objects containing all the To: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
 
 =cut
 
@@ -173,7 +173,7 @@ sub To {
 
 =head2 Cc
 
-Returns an array of Mail::Address objects containing all the Cc: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
 
 =cut
 
@@ -184,7 +184,7 @@ sub Cc {
 
 =head2 Bcc
 
-Returns an array of Mail::Address objects containing all the Bcc: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
 
 =cut
 
