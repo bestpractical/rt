@@ -295,7 +295,19 @@ sub AddAttachments {
     );
     $attachments->OrderBy( FIELD => 'id');
 
+    # We want to make sure that we don't include the attachment that's
+    # being sued as the "Content" of this message"
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
+    if ( $transaction_content_obj && $transaction_content_obj->id
+         && $transaction_content_obj->ContentType =~ m{text/plain}i )
+    {
+        $attachments->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'id',
+            OPERATOR        => '!=',
+            VALUE           => $transaction_content_obj->id,
+        );
+    }
 
     # attach any of this transaction's attachments
     while ( my $attach = $attachments->Next ) {
@@ -303,11 +315,6 @@ sub AddAttachments {
         # Don't attach anything blank
         next unless ( $attach->ContentLength );
 
-# We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
-        next
-          if ( $transaction_content_obj
-            && $transaction_content_obj->Id == $attach->Id
-            && $transaction_content_obj->ContentType =~ qr{text/plain}i );
         $MIMEObj->make_multipart('mixed');
         $MIMEObj->attach(
             Type     => $attach->ContentType,
