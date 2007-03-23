@@ -131,7 +131,30 @@ sub ChildrenOf  {
         VALUE => $attachment
     );
 }
-# }}}
+
+=head2 LimitNotEmpty
+
+Limit result set to attachments with not empty content.
+
+=cut
+
+sub LimitNotEmpty {
+    my $self = shift;
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'Content',
+        OPERATOR        => 'IS NOT',
+        VALUE           => 'NULL',
+        QUOTEVALUE      => 0,
+    );
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'Content',
+        OPERATOR        => '!=',
+        VALUE           => '',
+    );
+    return;
+}
 
 # {{{ sub NewItem 
 sub NewItem  {
