@@ -75,20 +75,25 @@ RT::Action::AutoReply is a good example subclass.
 Basically, you create another module RT::Action::YourAction which ISA
 RT::Action::SendEmail.
 
-=begin testing
+=head1 METHODS
 
 ok (require RT::Action::SendEmail);
 
 =end testing
 
+=cut
 
-=head1 AUTHOR
 
-Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
+sub CleanSlate {
+    my $self = shift;
+    $self->SquelchMailTo( undef );
+    $self->AttachTickets( undef );
+}
 
-=head1 SEE ALSO
+=head2 Commit
 
-perl(1).
+Sends the prepared message and writes outgoing record into DB if the feature is
+activated in the config.
 
 =cut
 
@@ -101,6 +106,12 @@ sub Commit {
     }
     return (abs $ret);
 }
+
+=head2 Prepare
+
+Builds an outgoing email we're going to send using scrip's template.
+
+=cut
 
 sub Prepare {
     my $self = shift;
@@ -914,6 +925,16 @@ eval "require RT::Action::SendEmail_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
 eval "require RT::Action::SendEmail_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
+
+=head1 AUTHOR
+
+Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
+
+=head1 SEE ALSO
+
+L<RT::Action::Notify>, L<RT::Action::NotifyAsComment> and L<RT::Action::Autoreply>
+
+=cut
 
 1;
 
