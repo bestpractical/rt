@@ -77,9 +77,9 @@ RT::Action::SendEmail.
 
 =head1 METHODS
 
-ok (require RT::Action::SendEmail);
+=head2 CleanSlate
 
-=end testing
+Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
 
 =cut
 
