@@ -2780,14 +2780,23 @@ sub MergeInto {
         return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
-    my ( $status_val, $status_msg ) = $self->__Set( Field => 'Status', Value => 'resolved');
 
-    unless ($status_val) {
-        $RT::Handle->Rollback();
-        $RT::Logger->error( $self->loc("[_1] couldn't set status to resolved. RT's Database may be inconsistent.", $self) );
-        return ( 0, $self->loc("Merge failed. Couldn't set Status") );
+    if ( $self->__Value('Status') ne 'resolved' ) {
+
+        my ( $status_val, $status_msg )
+            = $self->__Set( Field => 'Status', Value => 'resolved' );
+
+        unless ($status_val) {
+            $RT::Handle->Rollback();
+            $RT::Logger->error(
+                $self->loc(
+                    "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
+                    $self
+                )
+            );
+            return ( 0, $self->loc("Merge failed. Couldn't set Status") );
+        }
     }
-
 
     # update all the links that point to that old ticket
     my $old_links_to = RT::Links->new($self->CurrentUser);
