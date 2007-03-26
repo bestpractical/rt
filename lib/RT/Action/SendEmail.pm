@@ -154,7 +154,9 @@ sub Prepare {
     $self->SetHeader( 'Content-Type', 'text/plain; charset="'. $output_enc .'"' );
 
     # Build up a MIME::Entity that looks like the original message.
-    $self->AddAttachments() if ( $MIMEObj->head->get('RT-Attach-Message') );
+    $self->AddAttachments if $MIMEObj->head->get('RT-Attach-Message');
+
+    $self->AddTickets;
 
     return $result;
 
@@ -325,9 +327,50 @@ sub AddAttachment {
     );
 }
 
-sub AttachTicket {
+=head2 AttachTickets [@IDs]
+
+Returns or set list of ticket's IDs that should be attached to an outgoing message.
+
+B<Note> this method works as a class method and setup things global, so you have to
+clean list by passing undef as argument.
+
+=cut
+
+{
+    my $list = [];
+    sub AttachTickets {
+        my $self = shift;
+        $list = [ grep defined, @_ ] if @_;
+        return @$list;
+    }
+}
+
+=head2 AddTickets
+
+Attaches tickets to the current message, list of tickets' ids get from
+L</AttachTickets> method.
+
+=cut
+
+sub AddTickets {
     my $self = shift;
-    my $tid = shift || $self->TicketObj->id;
+    $self->AddTicket($_) foreach $self->AttachTickets;
+    return;
+}
+
+=head2 AddTicket $ID
+
+Attaches a ticket with ID to the message.
+
+Each ticket is attached as multipart entity and all its messages and attachments
+are attached as sub entities in order of creation, but only if transaction type
+is Create or Correspond.
+
+=cut
+
+sub AddTicket {
+    my $self = shift;
+    my $tid = shift;
 
     # XXX: we need a current user here, but who is current user?
     my $attachs = RT::Attachments->new( $RT::SystemUser );
@@ -473,13 +516,13 @@ sub SetRTSpecialHeaders {
 
 }
 
-=head2 SquelchMailTo 
+=head2 SquelchMailTo [@ADDRESSES]
 
-Mark address to be removed from list of the recipients. Returns list of the addresses.
+Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
 To empty list pass undefined argument.
 
 B<Note> that this method can be called as class method and works globaly. Don't forget to
-clean this list when blocking is not required anymore.
+clean this list when blocking is not required anymore, pass undef to do this.
 
 =cut
 
@@ -488,9 +531,9 @@ clean this list when blocking is not required anymore.
     sub SquelchMailTo {
         my $self = shift;
         if ( @_ ) {
-            $squelch = [ @_ ];
+            $squelch = [ grep defined, @_ ];
         }
-        return grep defined, @{ $squelch };
+        return @$squelch;
     }
 }
 
