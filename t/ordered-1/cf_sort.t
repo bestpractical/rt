@@ -85,7 +85,8 @@ sub check_order {
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);
-  is( $results, $order , "Ordered correctly: $order");
+  @_ = ($results, $order , "Ordered correctly: $order");
+  goto \&is;
 }
 
 # The real tests start here
