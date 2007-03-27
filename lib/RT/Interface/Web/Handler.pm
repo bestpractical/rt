@@ -190,7 +190,7 @@ sub CleanupRequest {
 
     # cleanup global squelching of the mails
     require RT::Action::SendEmail;
-    RT::Action::SendEmail->SquelchMailTo( undef );
+    RT::Action::SendEmail->CleanSlate;
 }
 # }}}
 

@@ -104,14 +104,10 @@ while ( my $Transaction = $Transactions->Next ) {
     $m->comp( 'ShowTransaction',
             %ARGS,
 
-              AttachPath           => $AttachPath,
-              UpdatePath           => $UpdatePath,
               Ticket               => $Ticket,
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
-              Collapsed            => $Collapsed,
               RowNum               => $i,
-              ShowTitleBarCommands => $ShowTitleBarCommands,
               Attachments          => \@trans_attachments,
               AttachmentContent    => $trans_content,
               LastTransaction      => $Transactions->IsLast
@@ -158,10 +154,6 @@ $Tickets => undef
 $Attachments => undef
 $AttachmentContent => undef
 $ShowHeaders => undef
-$Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
-$ShowTitleBarCommands => 1
-$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
 </%ARGS>

@@ -39,75 +39,9 @@ $txn->Load( $QuoteTransaction );
 Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
     unless $txn->id;
 
-my $create_entity = sub {
-    my $attachment = shift;
-
-    my $entity = new MIME::Entity;
-    $entity->head->add( split /:/, $_, 2 )
-        foreach $attachment->SplitHeaders;
-
-    use MIME::Body;
-    $entity->bodyhandle(
-        MIME::Body::Scalar->new( $attachment->OriginalContent )
-    );
-
-    return $entity;
-};
-
-
 if ( $ARGS{'Forward'} ) {
-    my $main_content = $txn->ContentObj;
-
-    my $entity = $create_entity->( $main_content );
-    if ( $main_content->Parent ) {
-        # main content is not top most entity, we shouldn't loose
-        # From/To/Cc headers that are on a top part
-        my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
-        $attachments->Columns(qw(id Parent TransactionId Headers));
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-        my $tmp = $attachments->First;
-        if ( $tmp && $tmp->id ne $main_content->id ) {
-            $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
-            $entity->make_singlepart;
-        }
-    }
-
-    my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
-    $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => $main_content->id,
-    );
-    $attachments->Limit(
-        FIELD => 'ContentType',
-        OPERATOR => 'NOT STARTSWITH',
-        VALUE => 'multipart/',
-    );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
-    );
-    while ( my $a = $attachments->Next ) {
-        $entity->make_multipart;
-        $entity->add_part( $create_entity->( $a ) );
-    }
-
-    my $mail = MIME::Entity->build(
-        To => $ARGS{'To'},
-        Cc => $ARGS{'Cc'},
-        Bcc => $ARGS{'Bcc'},
-        Subject => 'Fwd: '. ($txn->Subject || $TicketObj->Subject ),
-        Type => 'message/rfc822',
-        Encoding => '8bit',
-        Data => $entity->as_string,
-    );
-    RT::Interface::Email::SendEmail( entity => $mail );
+    require RT::Interface::Email;
+    RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
 }
 
 my $Title = loc('Forward message');

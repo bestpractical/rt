@@ -43,68 +43,57 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Format => undef
+<%ARGS>
+$Format => RT->Config->Get('DefaultSearchResultFormat')
+
 %cfqueues => undef
+
 $Face => undef
 $Size => undef
 $Link => undef
 $Title => undef
+
 $AddCol => undef
 $RemoveCol => undef
 $ColUp => undef
 $ColDown => undef
+
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
-</%args>
-<%init>
-
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+</%ARGS>
+<%ONCE>
 
 # All the things we can display in the format string by default
 my @fields = qw(
-  id
-  Status
-  ExtendedStatus
-  Subject
-  QueueName
-  OwnerName
-  Priority
-  InitialPriority
-  FinalPriority
-  Type
-  TimeWorked
-  TimeLeft
-  TimeEstimated
-  CreatedBy
-  LastUpdatedBy
-  Requestors
-  Cc
-  AdminCc
-  Starts
-  StartsRelative
-  Started
-  StartedRelative
-  Created
-  CreatedRelative
-  LastUpdated
-  LastUpdatedRelative
-  Told
-  ToldRelative
-  Due
-  DueRelative
-  Resolved
-  ResolvedRelative
-  RefersTo
-  ReferredToBy
-  DependsOn
-  DependedOnBy
-  MemberOf
-  Members
-  Parents
-  Children
-  NEWLINE
+    id QueueName Subject
+    Status ExtendedStatus UpdateStatus
+    Type
+
+    OwnerName Requestors Cc AdminCc CreatedBy LastUpdatedBy
+
+    Priority InitialPriority FinalPriority
+
+    TimeWorked TimeLeft TimeEstimated
+
+    Starts      StartsRelative
+    Started     StartedRelative
+    Created     CreatedRelative
+    LastUpdated LastUpdatedRelative
+    Told        ToldRelative
+    Due         DueRelative
+    Resolved    ResolvedRelative
+
+    RefersTo    ReferredToBy
+    DependsOn   DependedOnBy
+    MemberOf    Members
+    Parents     Children
+
+    NEWLINE
 );
+
+</%ONCE>
+<%init>
+$m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {
@@ -125,6 +114,8 @@ $CustomFields->LimitToGlobal;
 while ( my $CustomField = $CustomFields->Next ) {
     push @fields, "CustomField.{" . $CustomField->Name . "}";
 }
+
+$m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
 
@@ -161,44 +152,44 @@ if ( $RemoveCol ) {
 }
 elsif ( $AddCol ) {
     if ( defined $SelectDisplayColumns ) {
-	my $selected = $SelectDisplayColumns;
-	my @columns;
-	if (ref($selected) eq 'ARRAY') {
-	    @columns = @$selected;
-	} else {
-	    push @columns, $selected;
-	}
-	foreach my $col (@columns) {
-	    my %column = ();
-	    $column{Column} = $col;
+        my $selected = $SelectDisplayColumns;
+        my @columns;
+        if (ref($selected) eq 'ARRAY') {
+            @columns = @$selected;
+        } else {
+            push @columns, $selected;
+        }
+        foreach my $col (@columns) {
+            my %column = ();
+            $column{Column} = $col;
 
-    if ( $Face eq "Bold" ) {
-        $column{Prefix} .= "<b>";
-        $column{Suffix} .= "</b>";
-    }
-    if ( $Face eq "Italic" ) {
-        $column{Prefix} .= "<i>";
-        $column{Suffix} .= "</i>";
-    }
-    if ($Size) {
-        $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
-        $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
-    }
-    if ( $Link eq "Display" ) {
-        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
-        $column{Suffix} .= "</a>";
-    }
-    elsif ( $Link eq "Take" ) {
-        $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
-        $column{Suffix} .= "</a>";
-    }
+            if ( $Face eq "Bold" ) {
+                $column{Prefix} .= "<b>";
+                $column{Suffix} .= "</b>";
+            }
+            if ( $Face eq "Italic" ) {
+                $column{Prefix} .= "<i>";
+                $column{Suffix} .= "</i>";
+            }
+            if ($Size) {
+                $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
+                $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
+            }
+            if ( $Link eq "Display" ) {
+                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
+                $column{Suffix} .= "</a>";
+            }
+            elsif ( $Link eq "Take" ) {
+                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
+                $column{Suffix} .= "</a>";
+            }
 
-    if ($Title) {
-        $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            if ($Title) {
+                $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            }
+            push @seen, \%column;
+        }
     }
-    push @seen, \%column;
-}
-}
 }
 elsif ( $ColUp ) {
     my $index = $CurrentDisplayColumns;

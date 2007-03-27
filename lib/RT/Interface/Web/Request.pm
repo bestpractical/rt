@@ -17,9 +17,7 @@ sub new {
 
     $class->alter_superclass( $new_class );
     $class->valid_params( %{ $new_class->valid_params } );
-    my $self = $class->SUPER::new(@_);
-    return if $self->is_subrequest;
-    return $self;
+    return $class->SUPER::new(@_);
 }
 
 =head2 callback

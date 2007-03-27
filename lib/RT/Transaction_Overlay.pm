@@ -358,18 +358,7 @@ sub ContentObj {
     elsif ( $Attachment->ContentType =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children;
         $plain_parts->ContentType( VALUE => 'text/plain' );
-        $plain_parts->Limit(
-            FIELD => 'Content',
-            OPERATOR => 'IS NOT',
-            VALUE => 'NULL',
-            QUOTEVALUE => 0,
-        );
-        $plain_parts->Limit(
-            ENTRYAGGREGATOR => 'AND',
-            FIELD => 'Content',
-            OPERATOR => '!=',
-            VALUE => '',
-        );
+        $plain_parts->LimitNotEmpty;
 
         # If we actully found a part, return its content
         if ( my $first = $plain_parts->First ) {

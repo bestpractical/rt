@@ -378,6 +378,16 @@ sub CreateTicket {
         RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
     }
 
+    if ( $ARGS{'AttachTickets'} ) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->AttachTickets(
+            RT::Action::SendEmail->AttachTickets,
+            ref $ARGS{'AttachTickets'}?
+                @{ $ARGS{'AttachTickets'} }
+                :( $ARGS{'AttachTickets'} )
+        );
+    }
+
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
@@ -520,7 +530,7 @@ sub ProcessUpdateMessage {
 
     # skip updates if the content contains only user's signature
     # and we don't update other fields
-    if( $args{'SkipSignatureOnly'} ) {
+    if ( $args{'SkipSignatureOnly'} ) {
         my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
@@ -576,6 +586,16 @@ sub ProcessUpdateMessage {
         $Message->make_multipart;
         $Message->add_part($_)
            foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+    }
+
+    if ( $args{ARGSRef}->{'AttachTickets'} ) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->AttachTickets(
+            RT::Action::SendEmail->AttachTickets,
+            ref $args{ARGSRef}->{'AttachTickets'}?
+                @{ $args{ARGSRef}->{'AttachTickets'} }
+                :( $args{ARGSRef}->{'AttachTickets'} )
+        );
     }
 
     ## TODO: Implement public comments

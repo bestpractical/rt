@@ -386,7 +386,63 @@ sub SendEmail {
     return 1;
 }
 
+sub ForwardTransaction {
+    my $txn = shift;
+    my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
+    my $main_content = $txn->ContentObj;
+    my $entity = $main_content->ContentAsMIME;
+
+    if ( $main_content->Parent ) {
+        # main content is not top most entity, we shouldn't loose
+        # From/To/Cc headers that are on a top part
+        my $attachments = RT::Attachments->new( $txn->CurrentUser );
+        $attachments->Columns(qw(id Parent TransactionId Headers));
+        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
+        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
+        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
+        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+        my $tmp = $attachments->First;
+        if ( $tmp && $tmp->id ne $main_content->id ) {
+            $entity->make_multipart;
+            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
+            $entity->make_singlepart;
+        }
+    }
+
+    my $attachments = RT::Attachments->new( $txn->CurrentUser );
+    $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
+    $attachments->Limit(
+        FIELD => 'id',
+        OPERATOR => '!=',
+        VALUE => $main_content->id,
+    );
+    $attachments->Limit(
+        FIELD => 'ContentType',
+        OPERATOR => 'NOT STARTSWITH',
+        VALUE => 'multipart/',
+    );
+    $attachments->Limit(
+        FIELD => 'Content',
+        OPERATOR => '!=',
+        VALUE => '',
+    );
+    while ( my $a = $attachments->Next ) {
+        $entity->make_multipart unless $entity->is_multipart;
+        $entity->add_part( $a->ContentAsMIME );
+    }
+
+    my $mail = MIME::Entity->build(
+        To => $args{'To'},
+        Cc => $args{'Cc'},
+        Bcc => $args{'Bcc'},
+        Subject => 'Fwd: '. ($txn->Subject || $txn->Object->Subject ),
+        Type => 'message/rfc822',
+        Encoding => '8bit',
+        Data => $entity->as_string,
+    );
+    SendEmail( entity => $mail );
+}
 
 sub CreateUser {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;

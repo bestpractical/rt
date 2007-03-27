@@ -75,22 +75,26 @@ RT::Action::AutoReply is a good example subclass.
 Basically, you create another module RT::Action::YourAction which ISA
 RT::Action::SendEmail.
 
+=head1 METHODS
+
+=head2 CleanSlate
+
+Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
 
 
-=head1 AUTHOR
 
-Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
+sub CleanSlate {
+    my $self = shift;
+    $self->SquelchMailTo( undef );
+    $self->AttachTickets( undef );
+}
 
-=head1 SEE ALSO
+=head2 Commit
 
-perl(1).
+Sends the prepared message and writes outgoing record into DB if the feature is
+activated in the config.
 
 =cut
-
-# {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
-
-
-# {{{ sub Commit
 
 sub Commit {
     my $self = shift;
@@ -102,9 +106,11 @@ sub Commit {
     return (abs $ret);
 }
 
-# }}}
+=head2 Prepare
 
-# {{{ sub Prepare
+Builds an outgoing email we're going to send using scrip's template.
+
+=cut
 
 sub Prepare {
     my $self = shift;
@@ -141,8 +147,8 @@ sub Prepare {
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
-      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) ) and ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc'));
+        if $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } && !$MIMEObj->head->get('To') 
+           && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
@@ -158,21 +164,17 @@ sub Prepare {
     $self->SetHeader( 'Content-Type', 'text/plain; charset="'. $output_enc .'"' );
 
     # Build up a MIME::Entity that looks like the original message.
-    $self->AddAttachments() if ( $MIMEObj->head->get('RT-Attach-Message') );
+    $self->AddAttachments if $MIMEObj->head->get('RT-Attach-Message');
+
+    $self->AddTickets;
 
     return $result;
 
 }
 
-# }}}
-
-# }}}
-
-
-
 =head2 To
 
-Returns an array of Mail::Address objects containing all the To: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
 
 =cut
 
@@ -183,7 +185,7 @@ sub To {
 
 =head2 Cc
 
-Returns an array of Mail::Address objects containing all the Cc: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
 
 =cut
 
@@ -194,7 +196,7 @@ sub Cc {
 
 =head2 Bcc
 
-Returns an array of Mail::Address objects containing all the Bcc: recipients for this notification
+Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
 
 =cut
 
@@ -214,8 +216,6 @@ sub _AddressesFromHeader  {
     return (@addresses);
 }
 
-
-# {{{ SendMessage
 
 =head2 SendMessage MIMEObj
 
@@ -266,8 +266,6 @@ sub SendMessage {
     return (1);
 }
 
-# {{{ AddAttachments 
-
 =head2 AddAttachments
 
 Takes any attachments to this transaction and attaches them to the message
@@ -288,38 +286,126 @@ sub AddAttachments {
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
     );
+    # Don't attach anything blank
+    $attachments->LimitNotEmpty;
     $attachments->OrderBy( FIELD => 'id');
 
+    # We want to make sure that we don't include the attachment that's
+    # being sued as the "Content" of this message"
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
+    # XXX: this is legacy check of content type looks quite incorrect
+    # to me //ruz
+    if ( $transaction_content_obj && $transaction_content_obj->id
+         && $transaction_content_obj->ContentType =~ m{text/plain}i )
+    {
+        $attachments->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'id',
+            OPERATOR        => '!=',
+            VALUE           => $transaction_content_obj->id,
+        );
+    }
 
     # attach any of this transaction's attachments
     while ( my $attach = $attachments->Next ) {
-
-        # Don't attach anything blank
-        next unless ( $attach->ContentLength );
-
-# We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
-        next
-          if ( $transaction_content_obj
-            && $transaction_content_obj->Id == $attach->Id
-            && $transaction_content_obj->ContentType =~ qr{text/plain}i );
         $MIMEObj->make_multipart('mixed');
-        $MIMEObj->attach(
-            Type     => $attach->ContentType,
-            Charset  => $attach->OriginalEncoding,
-            Data     => $attach->OriginalContent,
-            Filename => $self->MIMEEncodeString( $attach->Filename,
-                RT->Config->Get('EmailOutputEncoding') ),
-            'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
-            Encoding => '-SUGGEST'
-        );
+        $self->AddAttachment( $attach );
     }
 
 }
 
-# }}}
+=head2 AddAttachment $attachment
 
-# {{{ RecordOutgoingMailTransaction
+Takes one attachment object of L<RT::Attachmment> class and attaches it to the message
+we're building.
+
+=cut
+
+sub AddAttachment {
+    my $self = shift;
+    my $attach = shift;
+    my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
+
+    $MIMEObj->attach(
+        Type     => $attach->ContentType,
+        Charset  => $attach->OriginalEncoding,
+        Data     => $attach->OriginalContent,
+        Filename => $self->MIMEEncodeString( $attach->Filename,
+            RT->Config->Get('EmailOutputEncoding') ),
+        'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
+        Encoding => '-SUGGEST',
+    );
+}
+
+=head2 AttachTickets [@IDs]
+
+Returns or set list of ticket's IDs that should be attached to an outgoing message.
+
+B<Note> this method works as a class method and setup things global, so you have to
+clean list by passing undef as argument.
+
+=cut
+
+{
+    my $list = [];
+    sub AttachTickets {
+        my $self = shift;
+        $list = [ grep defined, @_ ] if @_;
+        return @$list;
+    }
+}
+
+=head2 AddTickets
+
+Attaches tickets to the current message, list of tickets' ids get from
+L</AttachTickets> method.
+
+=cut
+
+sub AddTickets {
+    my $self = shift;
+    $self->AddTicket($_) foreach $self->AttachTickets;
+    return;
+}
+
+=head2 AddTicket $ID
+
+Attaches a ticket with ID to the message.
+
+Each ticket is attached as multipart entity and all its messages and attachments
+are attached as sub entities in order of creation, but only if transaction type
+is Create or Correspond.
+
+=cut
+
+sub AddTicket {
+    my $self = shift;
+    my $tid = shift;
+
+    # XXX: we need a current user here, but who is current user?
+    my $attachs = RT::Attachments->new( $RT::SystemUser );
+    my $txn_alias = $attachs->TransactionAlias;
+    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
+    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Correspond' );
+    $attachs->LimitByTicket( $tid );
+    $attachs->LimitNotEmpty;
+    $attachs->OrderBy( FIELD => 'Created' );
+
+    my $ticket_mime = MIME::Entity->build(
+        Type => 'multipart/mixed',
+        Top => 0,
+        Description => "ticket #$tid",
+    );
+    while ( my $attachment = $attachs->Next ) {
+        $self->AddAttachment( $attachment, $ticket_mime );
+    }
+    if ( $ticket_mime->parts ) {
+        my $email_mime = $self->TemplateObj->MIMEObj;
+        $email_mime->make_multipart;
+        $email_mime->add_part( $ticket_mime );
+    }
+    return;
+}
 
 =head2 RecordOutgoingMailTransaction MIMEObj
 
@@ -377,11 +463,6 @@ sub RecordOutgoingMailTransaction {
 
 
 }
-
-# }}}
-#
-
-# {{{ sub SetRTSpecialHeaders
 
 =head2 SetRTSpecialHeaders 
 
@@ -445,15 +526,13 @@ sub SetRTSpecialHeaders {
 
 }
 
-# }}}
+=head2 SquelchMailTo [@ADDRESSES]
 
-=head2 SquelchMailTo 
-
-Mark address to be removed from list of the recipients. Returns list of the addresses.
+Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
 To empty list pass undefined argument.
 
 B<Note> that this method can be called as class method and works globaly. Don't forget to
-clean this list when blocking is not required anymore.
+clean this list when blocking is not required anymore, pass undef to do this.
 
 =cut
 
@@ -462,13 +541,11 @@ clean this list when blocking is not required anymore.
     sub SquelchMailTo {
         my $self = shift;
         if ( @_ ) {
-            $squelch = [ @_ ];
+            $squelch = [ grep defined, @_ ];
         }
-        return grep defined, @{ $squelch };
+        return @$squelch;
     }
 }
-
-# {{{ RemoveInappropriateRecipients
 
 =head2 RemoveInappropriateRecipients
 
@@ -549,9 +626,6 @@ sub RemoveInappropriateRecipients {
     }
 }
 
-# }}}
-# {{{ sub SetReturnAddress
-
 =head2 SetReturnAddress is_comment => BOOLEAN
 
 Calculate and set From and Reply-To headers based on the is_comment flag.
@@ -608,10 +682,6 @@ sub SetReturnAddress {
 
 }
 
-# }}}
-
-# {{{ sub SetHeader
-
 =head2 SetHeader FIELD, VALUE
 
 Set the FIELD of the current MIME object into VALUE.
@@ -629,11 +699,6 @@ sub SetHeader {
     $self->TemplateObj->MIMEObj->head->replace( $field,     $val );
     return $self->TemplateObj->MIMEObj->head->get($field);
 }
-
-# }}}
-
-
-# {{{ sub SetSubject
 
 =head2 SetSubject
 
@@ -671,10 +736,6 @@ sub SetSubject {
 
 }
 
-# }}}
-
-# {{{ sub SetSubjectToken
-
 =head2 SetSubjectToken
 
 This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
@@ -699,8 +760,6 @@ sub SetSubjectToken {
         Subject => "[". RT->Config->Get('rtname') ." #$id] $sub",
     );
 }
-
-# }}}
 
 =head2 SetReferencesHeaders
 
@@ -773,8 +832,6 @@ sub SetReferencesHeaders {
 
 }
 
-# }}}
-
 =head2 PseudoReference
 
 Returns a fake Message-ID: header for the ticket to allow a base level of threading
@@ -788,8 +845,6 @@ sub PseudoReference {
     return $pseudo_ref;
 }
 
-
-# {{{ SetHeadingAsEncoding
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
@@ -818,9 +873,6 @@ sub SetHeaderAsEncoding {
 
 
 } 
-# }}}
-
-# {{{ MIMEEncodeString
 
 =head2 MIMEEncodeString STRING ENCODING
 
@@ -868,12 +920,20 @@ sub MIMEEncodeString {
     }
 }
 
-# }}}
-
 eval "require RT::Action::SendEmail_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
 eval "require RT::Action::SendEmail_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
+
+=head1 AUTHOR
+
+Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
+
+=head1 SEE ALSO
+
+L<RT::Action::Notify>, L<RT::Action::NotifyAsComment> and L<RT::Action::Autoreply>
+
+=cut
 
 1;
 
