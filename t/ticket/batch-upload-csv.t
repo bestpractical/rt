@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict; use warnings;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 12;
 use_ok('RT');
 use RT::Test;
 
@@ -35,8 +35,11 @@ my @results = $action->CreateByTemplate();
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL ("Queue = '". $QUEUE."'");
-ok($tix->Count);
+$tix->OrderByCols({ Field => 'id',  ORDER => 'ASC' });
+is($tix->Count, 2, '2 tickets');
+
 my $first = $tix->First();
+
 is($first->Subject(), 'hi'); 
 is($first->FirstCustomFieldValue($cf->id), '2.0');
 
