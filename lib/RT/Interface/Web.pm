@@ -383,6 +383,14 @@ sub CreateTicket {
         RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
     }
 
+    if ( $ARGS{'AttachTickets'} ) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->AttachTickets(
+            RT::Action::SendEmail->AttachTickets,
+            @{ $ARGS{'AttachTickets'} }
+        );
+    }
+
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
