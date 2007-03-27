@@ -82,7 +82,11 @@ sub import {
 sub started_ok {
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
-    return ($s->started_ok, Test::WWW::Mechanize->new);
+    my $ret = $s->started_ok;
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+    return ($ret, Test::WWW::Mechanize->new);
 }
 
 sub _get_dbh {
