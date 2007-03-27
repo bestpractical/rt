@@ -61,6 +61,7 @@ sub import {
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
     RT->InitLogging;
+    RT->InitSystemObjects;
     $RT::Handle->InsertInitialData;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
