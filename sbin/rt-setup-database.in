@@ -176,6 +176,7 @@ foreach my $action ( @actions ) {
         $RT::Handle->dbh( undef );
         RT::ConnectToDatabase();
         RT::InitLogging();
+        RT::InitSystemObjects();
         check_db_compatibility( $RT::Handle->dbh );
 
         print "Now inserting RT core system objects\n";
