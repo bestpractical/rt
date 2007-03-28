@@ -446,7 +446,9 @@ sub ForwardTransaction {
         Encoding => '8bit',
         Data => $entity->as_string,
     );
-    SendEmail( entity => $mail );
+    my $status = SendEmail( entity => $mail );
+    return (0, $txn->loc("Couldn't send email")) unless $status;
+    return (1, $txn->loc("Send email successfully"));
 }
 
 sub CreateUser {
