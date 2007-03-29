@@ -328,6 +328,12 @@ sub SendEmail {
         return 0;
     }
 
+    if ( $args{'Transaction'} && !$args{'Ticket'}
+        && $args{'Transaction'}->ObjectType eq 'RT::Ticket' )
+    {
+        $args{'Ticket'} = $args{'Transaction'}->Object;
+    }
+
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
