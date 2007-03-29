@@ -12,13 +12,11 @@
 </&>
 
 <%ARGS>
-$UserObj
+$EmailAddress
 </%ARGS>
 <%INIT>
-return unless $UserObj->EmailAddress;
-
 require RT::Crypt::GnuPG;
-my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $UserObj->EmailAddress );
+my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $EmailAddress );
 
 </%INIT>
 

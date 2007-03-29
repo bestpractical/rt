@@ -232,7 +232,9 @@
 </&>
 % }
 
-<& Elements/ShowPublicKeyInfo, UserObj => $UserObj &>
+% if ( my $email = $UserObj->EmailAddress ) {
+<& Elements/ShowPublicKeyInfo, EmailAddress => $email &>
+% }
 
 </td>
 </tr>
