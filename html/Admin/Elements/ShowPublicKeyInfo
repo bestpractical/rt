@@ -1,6 +1,6 @@
-<&| /Widgets/TitleBox, title => loc('GnuPG Public Key') &>
+<&| /Widgets/TitleBox, title => loc('GnuPG public key for [_1]', $EmailAddress) &>
 % if ( $res{'exit_code'} ) {
-<% loc('User has no public key') %>
+<% loc('No public key') %>
 % } else {
 <table>
 <tr><th><% loc('User') %>:</th>   <td><% $res{'info'}{'User'} %></td></tr>
@@ -19,4 +19,3 @@ require RT::Crypt::GnuPG;
 my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $EmailAddress );
 
 </%INIT>
-
