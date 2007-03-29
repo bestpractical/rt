@@ -310,23 +310,32 @@ Sets Date field of the head to now if it's not set.
 
 sub SendEmail {
     my (%args) = (
-        entity => undef,
-        bounce => 0,
+        Entity => undef,
+        Bounce => 0,
+        Ticket => undef,
+        Transaction => undef,
         @_,
     );
-    unless ( $args{'entity'} ) {
-        $RT::Logger->crit( "Could not send mail without 'entity' object" );
+    foreach my $arg( qw(Entity Bounce) ) {
+        next unless defined $args{ lc $arg };
+
+        $RT::Logger->warning("'". lc($arg) ."' argument is deprecated, use '$arg' instead");
+        $args{ $arg } = delete $args{ lc $arg };
+    }
+
+    unless ( $args{'Entity'} ) {
+        $RT::Logger->crit( "Could not send mail without 'Entity' object" );
         return 0;
     }
 
-    my $msgid = $args{'entity'}->head->get('Message-ID') || '';
+    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
-    unless ( $args{'entity'}->head->get('Date') ) {
+    unless ( $args{'Entity'}->head->get('Date') ) {
         require RT::Date;
         my $date = RT::Date->new( $RT::SystemUser );
         $date->SetToNow;
-        $args{'entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+        $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
 
     my $mail_command = RT->Config->Get('MailCommand');
@@ -334,14 +343,14 @@ sub SendEmail {
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'bounce'};
+        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
         # VERP
-        if ( $args{'transaction'} and
+        if ( $args{'Transaction'} and
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
         {
-            my $from = $args{'transaction'}->CreatorObj->EmailAddress;
+            my $from = $args{'Transaction'}->CreatorObj->EmailAddress;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";
@@ -355,7 +364,7 @@ sub SendEmail {
 
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
-            $args{'entity'}->print($mail);
+            $args{'Entity'}->print($mail);
 
             unless ( close $mail ) {
                 die "close pipe failed: $!" if $!; # system error
@@ -380,7 +389,7 @@ sub SendEmail {
             push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
         }
         elsif ( $mail_command eq 'smtp' ) {
-            $ENV{'MAILADDRESS'} = RT->Config->Get('SMTPFrom') || $args{'entity'}->head->get('From');
+            $ENV{'MAILADDRESS'} = RT->Config->Get('SMTPFrom') || $args{'Entity'}->head->get('From');
             push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
             push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
         }
@@ -388,7 +397,7 @@ sub SendEmail {
             push @mailer_args, RT->Config->Get('MailParams');
         }
 
-        unless ( $args{'entity'}->send( @mailer_args ) ) {
+        unless ( $args{'Entity'}->send( @mailer_args ) ) {
             $RT::Logger->crit( "$msgid: Could not send mail." );
             return 0;
         }
