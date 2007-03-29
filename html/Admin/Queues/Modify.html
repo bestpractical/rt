@@ -94,6 +94,13 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>
 
+% if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
+<tr><td colspan="4"><& /Admin/Elements/ShowPrivateKeyInfo, EmailAddress => $email &></td></tr>
+% }
+% if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
+<tr><td colspan="4"><& /Admin/Elements/ShowPrivateKeyInfo, EmailAddress => $email &></td></tr>
+% }
+
 </table>
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
