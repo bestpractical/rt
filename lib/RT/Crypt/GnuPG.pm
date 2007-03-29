@@ -813,6 +813,108 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
+sub GetPublicKeyInfo {
+    my $email = shift;
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPG');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $opt{'with-colons'} = undef;
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        armor => 1,
+        meta_interactive => 0,
+    );
+
+    my %res;
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdout => ($handle{'output'} = new IO::Handle),
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = $gnupg->list_public_keys( handles => $handles, command_args => [ $email ]  );
+        waitpid $pid, 0;
+    };
+
+    my @info = readline $handle{'output'};
+    use Data::Dumper; $RT::Logger->error( Dumper(\@info) );
+
+    close $handle{'output'};
+
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $@ || $? ) {
+        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        return %res;
+    }
+
+    @info = ParseKeysInfo( @info );
+    $res{'info'} = $info[0];
+    return %res;
+}
+
+sub ParseKeysInfo {
+    my @lines = @_;
+
+    my @res = ();
+    foreach my $line( @lines ) {
+        chomp $line;
+        my ($tag, $line) = split /:/, $line, 2;
+        if ( $tag eq 'pub' ) {
+            my %info;
+            @info{ qw(
+                Trust KeyLenght Algorithm Key
+                Created Expire Empty OwnerTrust
+                User Empty KeyCapabilities Other
+            ) } = split /:/, $line, 12;
+            $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            push @res, \%info;
+        }
+        elsif ( $tag eq 'fpr' ) {
+            $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
+        }
+
+    }
+    return @res;
+}
+
+{
+    my %mapping = (
+        o => 'Unknown (this value is new to the system)', #loc
+        # deprecated
+        d   => "The key has been disabled", #loc
+        r   => "The key has been revoked", #loc
+        e   => "The key has expired", #loc
+        '-' => 'Unknown (no trust value assigned)', #loc
+        #gpupg docs says that '-' and 'q' may safely be treated as the same value
+        q   => 'Unknown (no trust value assigned)', #loc
+        n   => "Don't trust this key at all", #loc
+        m   => "There is marginal trust in this key", #loc
+        f   => "The key is fully trusted", #loc
+        u   => "The key is ultimately trusted", #loc
+    );
+    sub _ConvertTrustChar {
+        my $value = shift;
+        $value = substr $value, 0, 1;
+        return $mapping{ $value } || $mapping{'o'};
+    }
+}
+
 1;
 
 # helper package to avoid using temp file
