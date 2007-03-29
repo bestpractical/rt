@@ -1,0 +1,21 @@
+<&| /Widgets/TitleBox, title => loc('GnuPG private key for [_1]', $EmailAddress) &>
+% if ( $res{'exit_code'} ) {
+<% loc('No private key') %>
+% } else {
+<table>
+<tr><th><% loc('User') %>:</th>   <td><% $res{'info'}{'User'} %></td></tr>
+<tr><th><% loc('Created') %>:</th><td><% $res{'info'}{'Created'} %></td></tr>
+<tr><th><% loc('Expire') %>:</th>  <td><% $res{'info'}{'Expire'} %></td></tr>
+</table>
+% }
+</&>
+
+<%ARGS>
+$EmailAddress
+</%ARGS>
+<%INIT>
+require RT::Crypt::GnuPG;
+my %res = RT::Crypt::GnuPG::GetPrivateKeyInfo( $EmailAddress );
+
+</%INIT>
+
