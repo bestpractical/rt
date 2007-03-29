@@ -51,6 +51,10 @@ sub SignEncrypt {
     );
     my $entity = $args{'Entity'};
 
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase();
+    }
+
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -481,6 +485,9 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
+
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
@@ -528,6 +535,10 @@ sub DecryptRFC3156 {
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
     return %res;
+}
+
+sub GetPassphrase {
+    return undef;
 }
 
 my %inv_recp_reason = (
