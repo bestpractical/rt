@@ -1,0 +1,24 @@
+<&| /Widgets/TitleBox, title => loc('GnuPG Public Key') &>
+% if ( $res{'exit_code'} ) {
+<% loc('User has no public key') %>
+% } else {
+<table>
+<tr><th><% loc('User') %>:</th>   <td><% $res{'info'}{'User'} %></td></tr>
+<tr><th><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
+<tr><th><% loc('Created') %>:</th><td><% $res{'info'}{'Created'} %></td></tr>
+<tr><th><% loc('Expire') %>:</th>  <td><% $res{'info'}{'Expire'} %></td></tr>
+</table>
+% }
+</&>
+
+<%ARGS>
+$UserObj
+</%ARGS>
+<%INIT>
+return unless $UserObj->EmailAddress;
+
+require RT::Crypt::GnuPG;
+my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $UserObj->EmailAddress );
+
+</%INIT>
+
