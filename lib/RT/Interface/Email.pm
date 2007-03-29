@@ -334,6 +334,19 @@ sub SendEmail {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }
 
+    if ( $args{'Ticket'} ) {
+        my $sign = $args{'Ticket'}->QueueObj->Sign;
+        my $encrypt = $args{'Ticket'}->QueueObj->Encrypt;
+        if ( $sign || $encrypt ) {
+            require RT::Crypt::GnuPG;
+            my %res = RT::Crypt::GnuPG::SignEncrypt(
+                Entity => $args{'Entity'},
+                Sign => $sign, Encrypt => $encrypt,
+            );
+            return 0 if $res{'exit_code'};
+        }
+    }
+
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
