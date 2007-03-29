@@ -920,6 +920,8 @@ sub ParseKeysInfo {
     );
     sub _ConvertTrustChar {
         my $value = shift;
+        return $mapping{'-'} unless $value;
+
         $value = substr $value, 0, 1;
         return $mapping{ $value } || $mapping{'o'};
     }
