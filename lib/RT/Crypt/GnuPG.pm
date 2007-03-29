@@ -814,7 +814,16 @@ sub _PrepareGnuPGOptions {
 }
 
 sub GetPublicKeyInfo {
+    return GetKeyInfo(shift, 'public');
+}
+
+sub GetPrivateKeyInfo {
+    return GetKeyInfo(shift, 'private');
+}
+
+sub GetKeyInfo {
     my $email = shift;
+    my $type = shift || 'public';
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
@@ -839,7 +848,8 @@ sub GetPublicKeyInfo {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-        my $pid = $gnupg->list_public_keys( handles => $handles, command_args => [ $email ]  );
+        my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
+        my $pid = $gnupg->$method( handles => $handles, command_args => [ $email ]  );
         waitpid $pid, 0;
     };
 
