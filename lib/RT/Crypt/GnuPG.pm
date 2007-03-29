@@ -885,6 +885,16 @@ sub ParseKeysInfo {
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
             push @res, \%info;
         }
+        elsif ( $tag eq 'sec' ) {
+            my %info;
+            @info{ qw(
+                Empty KeyLenght Algorithm Key
+                Created Expire Empty OwnerTrust
+                User Empty KeyCapabilities Other
+            ) } = split /:/, $line, 12;
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            push @res, \%info;
+        }
         elsif ( $tag eq 'fpr' ) {
             $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
         }
