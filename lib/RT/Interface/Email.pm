@@ -293,7 +293,7 @@ sub MailError {
 
     }
 
-    SendEmail(entity => $entity, bounce => 1);
+    SendEmail( Entity => $entity, Bounce => 1 );
 }
 
 
@@ -460,7 +460,7 @@ sub ForwardTransaction {
         Encoding => '8bit',
         Data => $entity->as_string,
     );
-    my $status = SendEmail( entity => $mail );
+    my $status = SendEmail( Entity => $mail, Transaction => $txn );
     return (0, $txn->loc("Couldn't send email")) unless $status;
     return (1, $txn->loc("Send email successfully"));
 }
