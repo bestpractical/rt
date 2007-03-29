@@ -35,9 +35,18 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => '' ]
+=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
 
-Sign and/or encrypt email message with GnuPG.
+Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
+only during signing.
+
+Returns a hash with the follwoing keys:
+
+* exit_code
+* error
+* logger
+* status
+* message
 
 =cut
 
@@ -475,7 +484,13 @@ sub VerifyRFC3156 {
 }
 
 sub DecryptRFC3156 {
-    my %args = ( Data => undef, Info => undef, Top => undef, Passphrase => undef, @_ );
+    my %args = (
+        Data => undef,
+        Info => undef,
+        Top => undef,
+        Passphrase => undef,
+        @_
+    );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
@@ -694,7 +709,19 @@ sub ParseStatus {
             }
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
-                @res{ qw(Fingerprint CreationDate Timestamp ExpireTimestamp Version Reserved PubkeyAlgo HashAlgo Class PKFingerprint Other) } = split /\s+/, $1, 11;
+                @res{ qw(
+                    Fingerprint
+                    CreationDate
+                    Timestamp
+                    ExpireTimestamp
+                    Version
+                    Reserved
+                    PubkeyAlgo
+                    HashAlgo
+                    Class
+                    PKFingerprint
+                    Other
+                ) } = split /\s+/, $1, 10;
                 last;
             }
             push @res, \%res;
