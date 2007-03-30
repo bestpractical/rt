@@ -905,6 +905,14 @@ sub ParseKeysInfo {
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
             push @res, \%info;
         }
+        elsif ( $tag eq 'uid' ) {
+            my %info;
+            @info{ qw(Trust Created Expire String) }
+                = (split /:/, $line)[0,4,5,8];
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
+            push @{ $res[-1]{'User'} ||= [] }, \%info;
+        }
         elsif ( $tag eq 'fpr' ) {
             $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
         }
