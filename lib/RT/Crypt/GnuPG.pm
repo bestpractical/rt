@@ -937,6 +937,22 @@ sub ParseKeysInfo {
     }
 }
 
+sub _ParseDate {
+    my $value = shift;
+    # never
+    return $value unless $value;
+
+    require RT::Date;
+    my $obj = RT::Date->new( $RT::SystemUser );
+    # unix time
+    if ( $value =~ /^\d+$/ ) {
+        $obj->Set( Value => $value );
+    } else {
+        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
+    }
+    return $obj;
+}
+
 1;
 
 # helper package to avoid using temp file
