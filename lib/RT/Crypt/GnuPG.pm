@@ -828,7 +828,8 @@ sub GetKeyInfo {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
     $opt{'digest-algo'} ||= 'SHA1';
-    $opt{'with-colons'} = undef;
+    $opt{'with-colons'} = undef; # parseable format
+    $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
@@ -889,7 +890,7 @@ sub ParseKeysInfo {
             @info{ qw(
                 Trust KeyLenght Algorithm Key
                 Created Expire Empty OwnerTrust
-                User Empty KeyCapabilities Other
+                Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
             $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
@@ -902,7 +903,7 @@ sub ParseKeysInfo {
             @info{ qw(
                 Empty KeyLenght Algorithm Key
                 Created Expire Empty OwnerTrust
-                User Empty KeyCapabilities Other
+                Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
