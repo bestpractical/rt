@@ -893,6 +893,8 @@ sub ParseKeysInfo {
             ) } = split /:/, $line, 12;
             $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
             push @res, \%info;
         }
         elsif ( $tag eq 'sec' ) {
@@ -903,6 +905,8 @@ sub ParseKeysInfo {
                 User Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
             push @res, \%info;
         }
         elsif ( $tag eq 'uid' ) {
@@ -916,7 +920,6 @@ sub ParseKeysInfo {
         elsif ( $tag eq 'fpr' ) {
             $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
         }
-
     }
     return @res;
 }
