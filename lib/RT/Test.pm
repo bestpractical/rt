@@ -8,11 +8,19 @@ use Test::More;
 use File::Temp;
 my $config;
 my $port;
+my $existing_server;
 
 BEGIN {
     # TODO: allocate a port dynamically
+    if (my $test_server = $ENV{RT_TEST_SERVER}) {
+	my ($host, $test_port) = split(':', $test_server, 2);
+	$port = $test_port || 80;
+	$existing_server = "http://$host:$port";
+    }
+    else {
+	$port = 11229;
+    }
     $config = File::Temp->new;
-    $port = 11229;
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
@@ -39,6 +47,10 @@ sub import {
     my $class = shift;
 
     require RT::Handle;
+    if ($existing_server) {
+	RT->Init;
+	return;
+    }
 
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
@@ -80,6 +92,11 @@ sub import {
 }
 
 sub started_ok {
+    if ($existing_server) {
+	ok(1, "using existing server $existing_server");
+	warn $existing_server;
+	return ($existing_server, Test::WWW::Mechanize->new);
+    }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
