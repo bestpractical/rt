@@ -1,8 +1,12 @@
-<&| /Widgets/TitleBox, title => loc('GnuPG private key for [_1]', $EmailAddress) &>
+<&| /Widgets/TitleBox, title => $title &>
 % if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
-<% loc('No private key') %>
+<% loc('No keys for this address') %>
 % } else {
 <table>
+
+% unless ( $Type eq 'private' ) {
+<tr><th><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
+% }
 
 <tr><th><% loc('Created') %>:</th>
 <td><% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %></td></tr>
@@ -24,10 +28,17 @@
 
 <%ARGS>
 $EmailAddress
+$Type => 'public'
 </%ARGS>
 <%INIT>
 require RT::Crypt::GnuPG;
-my %res = RT::Crypt::GnuPG::GetPrivateKeyInfo( $EmailAddress );
+my %res = RT::Crypt::GnuPG::GetKeyInfo( $EmailAddress, $Type );
+
+my $title;
+unless ( $Type eq 'private' ) {
+    $title = loc('GnuPG public key(s) for [_1]', $EmailAddress);
+} else {
+    $title = loc('GnuPG private key(s) for [_1]', $EmailAddress);
+}
 
 </%INIT>
-
