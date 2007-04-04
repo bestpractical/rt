@@ -1,6 +1,6 @@
 <div id="form-box-<% lc $Name %>">
 <span class="description"><% $Description %></span>:
-<input type="text" name="Integer-<% $Name %>" value="<% $CurrentValue || '' %>" />
+<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />
 % if ( $Empty ) {
 <span class="comment"><% $EmptyLabel %></span>
 % }
@@ -27,7 +27,7 @@ $CurrentValue => '',
 $Empty        => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ "Integer-$Name" };
+my $value = $Arguments->{ $Name };
 if ( !defined $value || $value eq '' ) {
     return $CurrentValue unless $Empty;
     return undef;
