@@ -2,7 +2,7 @@
 % if ( $Description ) {
 <% $Description %>:
 % }
-<select name="<% $NamePrefix %><% $Name %>">
+<select name="<% $Name %>">
 
 % if ( $Empty ) {
 % my $selected = '';
@@ -24,7 +24,7 @@
 
 </select>
 % if ( $Alternative ) {
-<input type="text" class="alternative" name="<% $NamePrefix %>Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
+<input type="text" class="alternative" name="Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
 % }
 </div>
 <%INIT>
@@ -32,7 +32,6 @@ my %CurrentValue = map {$_ => 1} grep defined, @CurrentValue;
 if ( $ValuesCallback ) {
     my $values = $ValuesCallback->(
         CurrentUser => $session{'CurrentUser'},
-        NamePrefix  => $NamePrefix,
         Name        => $Name,
     );
     if ( ref $values eq 'ARRAY' ) {
@@ -44,8 +43,7 @@ if ( $ValuesCallback ) {
 }
 </%INIT>
 <%ARGS>
-$NamePrefix       => 'Select-',
-$Name             => '',
+$Name
 $Description      => undef,
 
 @Values           => (),
@@ -65,10 +63,9 @@ $Multiple         => 0,
 
 <%METHOD Process>
 <%ARGS>
-$Arguments        => {},
+$Name
 
-$NamePrefix       => 'Select-',
-$Name             => undef,
+$Arguments        => {},
 
 @Values           => (),
 %ValuesLabel      => (),
@@ -79,7 +76,7 @@ $Alternative      => 0,
 $Multiple         => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $NamePrefix . $Name };
+my $value = $Arguments->{ $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
     unless ( $Empty ) {
         return [ @CurrentValue ] if $Multiple;
@@ -90,7 +87,7 @@ if( !defined $value || $value eq '__empty_value__' ) {
 $value = [$value] unless ref $value;
 
 if ( $Alternative ) {
-    my $alt = $Arguments->{ $NamePrefix ."Alternative-". $Name };
+    my $alt = $Arguments->{ "Alternative-". $Name };
     if( $Multiple ) {
         push @$value, split /\s*,\s*/, $alt;
     } else {
