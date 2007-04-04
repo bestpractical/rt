@@ -1,16 +1,20 @@
 <div id="form-box-<% lc $Name %>">
-<span class="description"><% $Description %></span>:
-<input type="checkbox" name="Boolean-<% $Name %>" <% $value && 'checked' %>" />
+<span class="description"><% $Description %></span>:\
+<& SELF:InputOnly, %ARGS &>
 </div>
-<%INIT>
-my $value = defined $CurrentValue ? $CurrentValue : $EmptyValue;
-</%INIT>
 <%ARGS>
 $Name         => undef,
 $Description  => undef,
-$EmptyValue   => 0,
+</%ARGS>
+
+<%METHOD InputOnly>
+<%ARGS>
+$Name         => undef,
 $CurrentValue => undef,
 </%ARGS>
+<input type="hidden" name="<% $Name %>" value="0" />\
+<input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %>" />\
+</%METHOD>
 
 <%METHOD Process>
 <%ARGS>
@@ -20,7 +24,9 @@ $Name         => undef,
 $CurrentValue => 0,
 </%ARGS>
 <%INIT>
-return $Arguments->{ "Boolean-$Name" }? 1: 0;
+return $Arguments->{ $Name }? 1: 0
+    if defined $Arguments->{ $Name };
+return $CurrentValue;
 </%INIT>
 </%METHOD>
 
