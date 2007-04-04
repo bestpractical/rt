@@ -1,3 +1,6 @@
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
 <div id="form-box-<% lc $Name %>">
 % if ( $Description ) {
 <% $Description %>:\
@@ -19,9 +22,9 @@ $ValuesCallback   => undef,
 %ValuesLabel      => (),
 @CurrentValue     => (),
 
-$Empty            => 1,
-@EmptyValue       => (),
-$EmptyLabel       => loc('Use system default ([_1])', join ', ', @EmptyValue),
+$Default            => 1,
+@DefaultValue       => (),
+$DefaultLabel       => loc('Use system default ([_1])', join ', ', @DefaultValue),
 
 $Alternative      => 0,
 $AlternativeLabel => loc('other...'),
@@ -30,10 +33,10 @@ $Multiple         => 0,
 </%ARGS>
 <select name="<% $Name %>">
 
-% if ( $Empty ) {
+% if ( $Default ) {
 % my $selected = '';
 % $selected = 'selected="selected"' unless @CurrentValue;
-<option value="__empty_value__" <% $selected |n %>><% $EmptyLabel %></option>
+<option value="__empty_value__" <% $selected |n %>><% $DefaultLabel %></option>
 % }
 
 % foreach my $v( @Values ) {
@@ -78,16 +81,17 @@ $Arguments        => {},
 
 @Values           => (),
 %ValuesLabel      => (),
+
+$Default          => 0,
 @DefaultValue     => (),
 
-$Empty            => 1,
 $Alternative      => 0,
 $Multiple         => 0,
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
-    return undef if $Empty;
+    return undef if $Default;
     return [ @DefaultValue ] if $Multiple;
     return $DefaultValue[0];
 }

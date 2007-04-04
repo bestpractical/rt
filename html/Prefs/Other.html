@@ -11,10 +11,10 @@
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
-    Empty        => 1,
+    Default      => 1,
     %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
     Name         => $option,
-    EmptyValue   => scalar RT->Config->Get( $option ),
+    DefaultValue => scalar RT->Config->Get( $option ),
     CurrentValue => $preferences->{ $option },
 &>
 % }
@@ -35,7 +35,7 @@ if ( $Update ) {
         my $meta = RT->Config->Meta( $option );
         my $value = $m->comp($meta->{'Widget'} .":Process",
             Arguments    => \%ARGS,
-            Empty        => 1,
+            Default      => 1,
             %{ $meta->{'WidgetArguments'} },
             Name         => $option,
             DefaultValue => scalar RT->Config->Get( $option ),

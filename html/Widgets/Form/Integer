@@ -1,8 +1,11 @@
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
 <div id="form-box-<% lc $Name %>">
 <span class="description"><% $Description %></span>:\
 <& SELF:InputOnly, %ARGS &>
-% if ( $Empty ) {
-<span class="comment"><% $EmptyLabel %></span>
+% if ( $Default ) {
+<span class="comment"><% $DefaultLabel %></span>
 % }
 </div>
 <%INIT>
@@ -14,9 +17,9 @@ $Description  => undef,
 
 $CurrentValue => '',
 
-$Empty        => 0,
-$EmptyValue   => 0,
-$EmptyLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $EmptyValue ),
+$Default        => 0,
+$DefaultValue   => 0,
+$DefaultLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>
@@ -33,13 +36,13 @@ $Name
 
 $Arguments    => {},
 
+$Default      => 0,
 $DefaultValue => '',
-$Empty        => 0,
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
 if ( !defined $value || $value eq '' ) {
-    return $DefaultValue unless $Empty;
+    return $DefaultValue unless $Default;
     return undef;
 }
 return $value;

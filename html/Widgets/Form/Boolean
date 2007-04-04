@@ -1,3 +1,6 @@
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
 <div id="form-box-<% lc $Name %>">
 <span class="description"><% $Description %></span>:\
 <& SELF:InputOnly, %ARGS &>
@@ -11,13 +14,13 @@ $Description  => undef,
 <%ARGS>
 $Name         => undef,
 
-$Empty        => 0,
-$EmptyValue   => 0,
-$EmptyLabel   => loc( 'System default ([_1])', $EmptyValue? loc('Yes'): loc('No') ),
+$Default        => 0,
+$DefaultValue   => 0,
+$DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
 
 $CurrentValue => undef,
 </%ARGS>
-% unless ( $Empty ) {
+% unless ( $Default ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
 <input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %> />\
 % } else {
@@ -26,21 +29,21 @@ $CurrentValue => undef,
 <input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? 'checked="checked"': '' %> />\
 <% loc('No') %>
 <input type="radio" name="<% $Name %>" value="__empty_value__" <% !defined $CurrentValue? 'checked="checked"': '' %> />\
-<% $EmptyLabel %>
+<% $DefaultLabel %>
 % }
 </%METHOD>
 
 <%METHOD Process>
 <%ARGS>
+$Name
 $Arguments    => {},
 
-$Name         => undef,
-$Empty        => 0,
+$Default      => 0,
 $DefaultValue => 0,
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
-if ( $Empty ) {
+if ( $Default ) {
     return undef if !defined $value || $value eq '__empty_value__';
     return $value? 1: 0;
 } else {
