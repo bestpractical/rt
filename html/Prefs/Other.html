@@ -38,8 +38,7 @@ if ( $Update ) {
             Empty        => 1,
             %{ $meta->{'WidgetArguments'} },
             Name         => $option,
-            EmptyValue   => scalar RT->Config->Get( $option ),
-            CurrentValue => $preferences->{ $option },
+            DefaultValue => scalar RT->Config->Get( $option ),
         );
         if ( defined $value ) {
             $preferences->{ $option } = $value;

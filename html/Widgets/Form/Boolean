@@ -36,7 +36,7 @@ $Arguments    => {},
 
 $Name         => undef,
 $Empty        => 0,
-$CurrentValue => 0,
+$DefaultValue => 0,
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
@@ -45,7 +45,7 @@ if ( $Empty ) {
     return $value? 1: 0;
 } else {
     return $value? 1: 0 if defined $value;
-    return $CurrentValue;
+    return $DefaultValue;
 }
 </%INIT>
 </%METHOD>

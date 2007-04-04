@@ -33,13 +33,13 @@ $Name
 
 $Arguments    => {},
 
-$CurrentValue => '',
+$DefaultValue => '',
 $Empty        => 0,
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
 if ( !defined $value || $value eq '' ) {
-    return $CurrentValue unless $Empty;
+    return $DefaultValue unless $Empty;
     return undef;
 }
 return $value;

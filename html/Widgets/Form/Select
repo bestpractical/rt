@@ -78,7 +78,7 @@ $Arguments        => {},
 
 @Values           => (),
 %ValuesLabel      => (),
-@CurrentValue     => (),
+@DefaultValue     => (),
 
 $Empty            => 1,
 $Alternative      => 0,
@@ -88,8 +88,8 @@ $Multiple         => 0,
 my $value = $Arguments->{ $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
     return undef if $Empty;
-    return [ @CurrentValue ] if $Multiple;
-    return $CurrentValue[0];
+    return [ @DefaultValue ] if $Multiple;
+    return $DefaultValue[0];
 }
 $value = [$value] unless ref $value;
 
