@@ -1,6 +1,6 @@
 <div id="form-box-<% lc $Name %>">
-<span class="description"><% $Description %></span>:
-<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />
+<span class="description"><% $Description %></span>:\
+<& SELF:InputOnly, %ARGS &>
 % if ( $Empty ) {
 <span class="comment"><% $EmptyLabel %></span>
 % }
@@ -8,7 +8,8 @@
 <%INIT>
 </%INIT>
 <%ARGS>
-$Name         => undef,
+$Name
+
 $Description  => undef,
 
 $CurrentValue => '',
@@ -18,11 +19,20 @@ $EmptyValue   => 0,
 $EmptyLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $EmptyValue ),
 </%ARGS>
 
+<%METHOD InputOnly>
+<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
+<%ARGS>
+$Name
+$CurrentValue => '',
+</%ARGS>
+</%METHOD>
+
 <%METHOD Process>
 <%ARGS>
+$Name
+
 $Arguments    => {},
 
-$Name         => undef,
 $CurrentValue => '',
 $Empty        => 0,
 </%ARGS>
