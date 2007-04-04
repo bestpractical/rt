@@ -147,6 +147,15 @@
 <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
 </td>
 </tr>
+
+<tr>
+<td><% loc('Sign')%></td>
+<td><input type="checkbox" name="Sign" <% $ARGS{'Sign'} || $QueueObj->Sign? 'checked': '' %> /></td>
+<td><% loc('Encrypt')%></td>
+<td><input type="checkbox" name="Encrypt" <% $ARGS{'Encrypt'} || $QueueObj->Encrypt? 'checked': '' %> /></td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
 <tr>
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
