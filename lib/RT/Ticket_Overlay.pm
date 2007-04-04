@@ -2358,34 +2358,34 @@ Performs no access control checks. hence, dangerous.
 =cut
 
 sub _RecordNote {
-
     my $self = shift;
-    my %args = ( CcMessageTo  => undef,
-                 BccMessageTo => undef,
-                 MIMEObj      => undef,
-                 Content      => undef,
-                 TimeTaken    => 0,
-                 CommitScrips => 1,
-                 @_ );
+    my %args = ( 
+        CcMessageTo  => undef,
+        BccMessageTo => undef,
+        MIMEObj      => undef,
+        Content      => undef,
+        TimeTaken    => 0,
+        CommitScrips => 1,
+        @_
+    );
 
     unless ( $args{'MIMEObj'} || $args{'Content'} ) {
-            return ( 0, $self->loc("No message attached"), undef );
+        return ( 0, $self->loc("No message attached"), undef );
     }
+
     unless ( $args{'MIMEObj'} ) {
-            $args{'MIMEObj'} = MIME::Entity->build( Data => (
-                                                          ref $args{'Content'}
-                                                          ? $args{'Content'}
-                                                          : [ $args{'Content'} ]
-                                                    ) );
-        }
+        $args{'MIMEObj'} = MIME::Entity->build(
+            Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
+        );
+    }
 
     # convert text parts into utf-8
     RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
 
-# If we've been passed in CcMessageTo and BccMessageTo fields,
-# add them to the mime object for passing on to the transaction handler
-# The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
-# headers
+    # If we've been passed in CcMessageTo and BccMessageTo fields,
+    # add them to the mime object for passing on to the transaction handler
+    # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
+    # RT-Send-Bcc: headers
 
     $args{'MIMEObj'}->head->add(
         'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
