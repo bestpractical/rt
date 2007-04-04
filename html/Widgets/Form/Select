@@ -1,25 +1,51 @@
 <div id="form-box-<% lc $Name %>">
 % if ( $Description ) {
-<% $Description %>:
+<% $Description %>:\
 % }
+<& SELF:InputOnly, %ARGS &>
+</div>
+<%ARGS>
+$Name
+$Description      => undef,
+</%ARGS>
+
+<%METHOD InputOnly>
+<%ARGS>
+$Name
+$Description      => undef,
+
+@Values           => (),
+$ValuesCallback   => undef,
+%ValuesLabel      => (),
+@CurrentValue     => (),
+
+$Empty            => 1,
+@EmptyValue       => (),
+$EmptyLabel       => loc('Use system default ([_1])', join ', ', @EmptyValue),
+
+$Alternative      => 0,
+$AlternativeLabel => loc('other...'),
+
+$Multiple         => 0,
+</%ARGS>
 <select name="<% $Name %>">
 
 % if ( $Empty ) {
 % my $selected = '';
-% $selected = 'selected' unless @CurrentValue;
-<option value="__empty_value__" <% $selected %>><% $EmptyLabel %></option>
+% $selected = 'selected="selected"' unless @CurrentValue;
+<option value="__empty_value__" <% $selected |n %>><% $EmptyLabel %></option>
 % }
 
 % foreach my $v( @Values ) {
 % my $selected = '';
-% $selected = 'selected' if delete $CurrentValue{ $v };
-<option value="<% $v %>" <% $selected %>><% $ValuesLabel{ $v } || $v %></option>
+% $selected = 'selected="selected"' if delete $CurrentValue{ $v };
+<option value="<% $v %>" <% $selected |n %>><% $ValuesLabel{ $v } || $v %></option>
 % }
 
 % if ( $Alternative ) {
 %     my $selected = '';
-%     $selected = 'selected' if keys %CurrentValue;
-<option value="__alternative_value__" <% $selected %>><% $AlternativeLabel %></option>
+%     $selected = 'selected="selected"' if keys %CurrentValue;
+<option value="__alternative_value__" <% $selected |n %>><% $AlternativeLabel %></option>
 % }
 
 </select>
@@ -42,24 +68,7 @@ if ( $ValuesCallback ) {
     }
 }
 </%INIT>
-<%ARGS>
-$Name
-$Description      => undef,
-
-@Values           => (),
-$ValuesCallback   => undef,
-%ValuesLabel      => (),
-@CurrentValue     => (),
-
-$Empty            => 1,
-@EmptyValue       => (),
-$EmptyLabel       => loc('Use system default ([_1])', join ', ', @EmptyValue),
-
-$Alternative      => 0,
-$AlternativeLabel => loc('other...'),
-
-$Multiple         => 0,
-</%ARGS>
+</%METHOD>
 
 <%METHOD Process>
 <%ARGS>
@@ -78,11 +87,9 @@ $Multiple         => 0,
 <%INIT>
 my $value = $Arguments->{ $Name };
 if( !defined $value || $value eq '__empty_value__' ) {
-    unless ( $Empty ) {
-        return [ @CurrentValue ] if $Multiple;
-        return $CurrentValue[0];
-    }
-    return undef;
+    return undef if $Empty;
+    return [ @CurrentValue ] if $Multiple;
+    return $CurrentValue[0];
 }
 $value = [$value] unless ref $value;
 
