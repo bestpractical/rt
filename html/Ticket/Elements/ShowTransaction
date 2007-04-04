@@ -113,7 +113,7 @@ my %class = (
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
-my ($type, $field) = ($Transaction->Type, $Transaction->Field);
+my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
 my $type_class = $class{ $type };
 
 unless ( $type_class ) {
