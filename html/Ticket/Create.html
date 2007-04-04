@@ -150,9 +150,9 @@
 
 <tr>
 <td><% loc('Sign')%></td>
-<td><input type="checkbox" name="Sign" <% $ARGS{'Sign'} || $QueueObj->Sign? 'checked': '' %> /></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><input type="checkbox" name="Encrypt" <% $ARGS{'Encrypt'} || $QueueObj->Encrypt? 'checked': '' %> /></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
 
@@ -257,6 +257,14 @@ my $ValidCFs = $m->comp(
     CustomFields => $CFs,
     ARGSRef => \%ARGS
 );
+
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        CurrentValue => $QueueObj->$_,
+        Arguments => \%ARGS,
+    );
+}
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
