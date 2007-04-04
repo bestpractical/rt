@@ -105,7 +105,7 @@ is ($ticket->Priority , '24', "Ticket priority is set right");
 
 sub IsApplicable {
     my $self = shift;
-    if ($self->TransactionObj->Field eq 'Owner') {
+    if ( ( $self->TransactionObj->Field || '' ) eq 'Owner' ) {
 	return(1);
     } 
     else {
