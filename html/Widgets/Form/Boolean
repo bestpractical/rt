@@ -10,10 +10,24 @@ $Description  => undef,
 <%METHOD InputOnly>
 <%ARGS>
 $Name         => undef,
+
+$Empty        => 0,
+$EmptyValue   => 0,
+$EmptyLabel   => loc( 'System default ([_1])', $EmptyValue? loc('Yes'): loc('No') ),
+
 $CurrentValue => undef,
 </%ARGS>
+% unless ( $Empty ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
-<input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %>" />\
+<input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %> />\
+% } else {
+<input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
+<% loc('Yes') %>
+<input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? 'checked="checked"': '' %> />\
+<% loc('No') %>
+<input type="radio" name="<% $Name %>" value="" <% !defined $CurrentValue? 'checked="checked"': '' %> />\
+<% $EmptyLabel %>
+% }
 </%METHOD>
 
 <%METHOD Process>
@@ -21,12 +35,17 @@ $CurrentValue => undef,
 $Arguments    => {},
 
 $Name         => undef,
+$Empty        => 0,
 $CurrentValue => 0,
 </%ARGS>
 <%INIT>
-return $Arguments->{ $Name }? 1: 0
-    if defined $Arguments->{ $Name };
-return $CurrentValue;
+my $value = $Arguments->{ $Name };
+if ( $Empty ) {
+    return undef if !defined $value || $value eq '__empty_value__';
+    return $value? 1: 0;
+} else {
+    return $value? 1: 0 if defined $value;
+    return $CurrentValue;
+}
 </%INIT>
 </%METHOD>
-
