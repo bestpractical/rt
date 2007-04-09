@@ -270,6 +270,7 @@ sub MailError {
         level   => $args{'LogLevel'},
         message => $args{'Explanation'}
     ) if $args{'LogLevel'};
+
     my $entity = MIME::Entity->build(
         Type                   => "multipart/mixed",
         From                   => $args{'From'},
@@ -277,7 +278,7 @@ sub MailError {
         To                     => $args{'To'},
         Subject                => $args{'Subject'},
         Precedence             => 'bulk',
-        'X-RT-Loop-Prevention' => RT->Config->Get('rtname'),
+        'X-RT-Loop-Prevention' => scalar RT->Config->Get('rtname'),
         'In-Reply-To:'         => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef,
     );
 
