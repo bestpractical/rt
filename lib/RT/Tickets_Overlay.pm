@@ -593,8 +593,20 @@ sub _TransDateLimit {
 
     # See the comments for TransLimit, they apply here too
 
-    $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
-        unless defined $sb->{_sql_transalias};
+    unless ( $sb->{_sql_transalias} ) {
+        $sb->{_sql_transalias} = $sb->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'ObjectId',
+        );
+        $sb->SUPER::Limit(
+            ALIAS           => $sb->{_sql_transalias},
+            FIELD           => 'ObjectType',
+            VALUE           => 'RT::Ticket',
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -645,20 +657,6 @@ sub _TransDateLimit {
         );
     }
 
-    # Join Transactions to Tickets
-    $sb->_SQLJoin(
-        ALIAS1 => 'main',
-        FIELD1 => $sb->{'primary_key'},     # UGH!
-        ALIAS2 => $sb->{_sql_transalias},
-        FIELD2 => 'ObjectId'
-    );
-
-    $sb->SUPER::Limit(
-        ALIAS => $sb->{_sql_transalias},
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Ticket'
-    );
-
     $sb->_CloseParen;
 }
 
@@ -707,10 +705,29 @@ sub _TransLimit {
 
     my ( $self, $field, $op, $value, @rest ) = @_;
 
-    $self->{_sql_transalias} = $self->NewAlias('Transactions')
-        unless defined $self->{_sql_transalias};
-    $self->{_sql_trattachalias} = $self->NewAlias('Attachments')
-        unless defined $self->{_sql_trattachalias};
+    unless ( $self->{_sql_transalias} ) {
+        $self->{_sql_transalias} = $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'ObjectId',
+        );
+        $self->SUPER::Limit(
+            ALIAS           => $self->{_sql_transalias},
+            FIELD           => 'ObjectType',
+            VALUE           => 'RT::Ticket',
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
+    unless ( defined $self->{_sql_trattachalias} ) {
+        $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
+            ALIAS1 => $self->{_sql_transalias},
+            FIELD1 => 'id',
+            TABLE2 => 'Attachments',
+            FIELD2 => 'TransactionId',
+        );
+    }
 
     $self->_OpenParen;
 
@@ -745,28 +762,6 @@ sub _TransLimit {
 			@rest
         );
     }
-
-    $self->_SQLJoin(
-        ALIAS1 => $self->{_sql_trattachalias},
-        FIELD1 => 'TransactionId',
-        ALIAS2 => $self->{_sql_transalias},
-        FIELD2 => 'id'
-    );
-
-    # Join Transactions to Tickets
-    $self->_SQLJoin(
-        ALIAS1 => 'main',
-        FIELD1 => $self->{'primary_key'},     # Why not use "id" here?
-        ALIAS2 => $self->{_sql_transalias},
-        FIELD2 => 'ObjectId'
-    );
-
-    $self->SUPER::Limit(
-        ALIAS           => $self->{_sql_transalias},
-        FIELD           => 'ObjectType',
-        VALUE           => 'RT::Ticket',
-        ENTRYAGGREGATOR => 'AND'
-    );
 
     $self->_CloseParen;
 

@@ -87,9 +87,8 @@
 <td class="labeltop">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="5">
-<input name="Cc" size="40" value="<% $ARGS{Cc} %>" /><br />
-<i><font size="-2">
+<td class="value" colspan="3"><input name="Cc" size="40" value="<% $ARGS{Cc} %>" /></td>
+<td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
 </tr>
@@ -97,9 +96,8 @@
 <td class="labeltop">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="5">
-<input name="AdminCc" size="40" value="<% $ARGS{AdminCc} %>" /><br />
-<i><font size="-2">
+<td class="value" colspan="3"><input name="AdminCc" size="40" value="<% $ARGS{AdminCc} %>" /></td>
+<td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
 </tr>
@@ -147,6 +145,15 @@
 <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
 </td>
 </tr>
+
+<tr>
+<td><% loc('Sign')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><% loc('Encrypt')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
 <tr>
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
@@ -157,10 +164,6 @@
 %}
 
 <br />
-</td>
-</tr>
-<tr>
-<td align="right" colspan="2">
 </td>
 </tr>
 </table>
@@ -252,6 +255,14 @@ my $ValidCFs = $m->comp(
     CustomFields => $CFs,
     ARGSRef => \%ARGS
 );
+
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        CurrentValue => $QueueObj->$_,
+        Arguments => \%ARGS,
+    );
+}
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists

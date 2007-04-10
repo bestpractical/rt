@@ -232,6 +232,10 @@
 </&>
 % }
 
+% if ( my $email = $UserObj->EmailAddress ) {
+<& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
+% }
+
 </td>
 </tr>
 </table>
@@ -373,7 +377,7 @@ if ( $UserObj->Id ) {
 }
 
 
-# {{{ Do some setup for the ui
+# Do some setup for the ui
 unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked ="CHECKED";
 }
@@ -381,8 +385,6 @@ unless ( $UserObj->id && $UserObj->Disabled ) {
 if ($UserObj->Privileged()) {  
     $PrivilegedChecked = "CHECKED";
 }
-
-# }}}
 
 # set the id, so the the menu will have the right info, this needs to
 # be done here to avoid creating and then modifying a user

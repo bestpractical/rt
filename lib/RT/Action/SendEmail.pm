@@ -250,8 +250,9 @@ sub SendMessage {
     }
 
     return(0) unless RT::Interface::Email::SendEmail(
-        entity => $MIMEObj,
-        transaction => $self->TransactionObj,
+        Entity => $MIMEObj,
+        Ticket => $self->TicketObj,
+        Transaction => $self->TransactionObj,
     );
 
     my $success = $msgid . " sent ";

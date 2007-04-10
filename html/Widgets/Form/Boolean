@@ -1,26 +1,54 @@
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
 <div id="form-box-<% lc $Name %>">
-<span class="description"><% $Description %></span>:
-<input type="checkbox" name="Boolean-<% $Name %>" <% $value && 'checked' %>" />
+<span class="description"><% $Description %></span>:\
+<& SELF:InputOnly, %ARGS &>
 </div>
-<%INIT>
-my $value = defined $CurrentValue ? $CurrentValue : $EmptyValue;
-</%INIT>
 <%ARGS>
 $Name         => undef,
 $Description  => undef,
-$EmptyValue   => 0,
+</%ARGS>
+
+<%METHOD InputOnly>
+<%ARGS>
+$Name         => undef,
+
+$Default        => 0,
+$DefaultValue   => 0,
+$DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+
 $CurrentValue => undef,
 </%ARGS>
+% unless ( $Default ) {
+<input type="hidden" name="<% $Name %>" value="0" />\
+<input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %> />\
+% } else {
+<input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
+<% loc('Yes') %>
+<input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? 'checked="checked"': '' %> />\
+<% loc('No') %>
+<input type="radio" name="<% $Name %>" value="__empty_value__" <% !defined $CurrentValue? 'checked="checked"': '' %> />\
+<% $DefaultLabel %>
+% }
+</%METHOD>
 
 <%METHOD Process>
 <%ARGS>
+$Name
 $Arguments    => {},
 
-$Name         => undef,
-$CurrentValue => 0,
+$Default      => 0,
+$DefaultValue => 0,
 </%ARGS>
 <%INIT>
-return $Arguments->{ "Boolean-$Name" }? 1: 0;
+my $value = $Arguments->{ $Name };
+if ( $Default ) {
+    return undef if !defined $value || $value eq '__empty_value__';
+    return $value? 1: 0;
+} else {
+    return $value? 1: 0 if defined $value;
+    return $DefaultValue;
+}
 </%INIT>
 </%METHOD>
-

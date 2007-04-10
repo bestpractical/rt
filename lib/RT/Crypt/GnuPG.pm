@@ -35,9 +35,18 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => '' ]
+=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
 
-Sign and/or encrypt email message with GnuPG.
+Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
+only during signing.
+
+Returns a hash with the follwoing keys:
+
+* exit_code
+* error
+* logger
+* status
+* message
 
 =cut
 
@@ -50,6 +59,10 @@ sub SignEncrypt {
         @_
     );
     my $entity = $args{'Entity'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase();
+    }
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
@@ -471,7 +484,13 @@ sub VerifyRFC3156 {
 }
 
 sub DecryptRFC3156 {
-    my %args = ( Data => undef, Info => undef, Top => undef, Passphrase => undef, @_ );
+    my %args = (
+        Data => undef,
+        Info => undef,
+        Top => undef,
+        Passphrase => undef,
+        @_
+    );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPG');
@@ -480,6 +499,9 @@ sub DecryptRFC3156 {
         _PrepareGnuPGOptions( %opt ),
         meta_interactive => 0,
     );
+
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
@@ -528,6 +550,10 @@ sub DecryptRFC3156 {
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
     return %res;
+}
+
+sub GetPassphrase {
+    return undef;
 }
 
 my %inv_recp_reason = (
@@ -683,7 +709,19 @@ sub ParseStatus {
             }
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
-                @res{ qw(Fingerprint CreationDate Timestamp ExpireTimestamp Version Reserved PubkeyAlgo HashAlgo Class PKFingerprint Other) } = split /\s+/, $1, 11;
+                @res{ qw(
+                    Fingerprint
+                    CreationDate
+                    Timestamp
+                    ExpireTimestamp
+                    Version
+                    Reserved
+                    PubkeyAlgo
+                    HashAlgo
+                    Class
+                    PKFingerprint
+                    Other
+                ) } = split /\s+/, $1, 10;
                 last;
             }
             push @res, \%res;
@@ -773,6 +811,158 @@ sub _PrepareGnuPGOptions {
             if defined $opt{ $o };
     }
     return %res;
+}
+
+sub GetPublicKeyInfo {
+    return GetKeyInfo(shift, 'public');
+}
+
+sub GetPrivateKeyInfo {
+    return GetKeyInfo(shift, 'private');
+}
+
+sub GetKeyInfo {
+    my $email = shift;
+    my $type = shift || 'public';
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPG');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $opt{'with-colons'} = undef; # parseable format
+    $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        armor => 1,
+        meta_interactive => 0,
+    );
+
+    my %res;
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdout => ($handle{'output'} = new IO::Handle),
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
+        my $pid = $gnupg->$method( handles => $handles, command_args => [ $email ]  );
+        waitpid $pid, 0;
+    };
+
+    my @info = readline $handle{'output'};
+    use Data::Dumper; $RT::Logger->error( Dumper(\@info) );
+
+    close $handle{'output'};
+
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $@ || $? ) {
+        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        return %res;
+    }
+
+    @info = ParseKeysInfo( @info );
+    $res{'info'} = $info[0];
+    return %res;
+}
+
+sub ParseKeysInfo {
+    my @lines = @_;
+
+    my @res = ();
+    foreach my $line( @lines ) {
+        chomp $line;
+        my ($tag, $line) = split /:/, $line, 2;
+        if ( $tag eq 'pub' ) {
+            my %info;
+            @info{ qw(
+                Trust KeyLenght Algorithm Key
+                Created Expire Empty OwnerTrust
+                Empty Empty KeyCapabilities Other
+            ) } = split /:/, $line, 12;
+            $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
+            push @res, \%info;
+        }
+        elsif ( $tag eq 'sec' ) {
+            my %info;
+            @info{ qw(
+                Empty KeyLenght Algorithm Key
+                Created Expire Empty OwnerTrust
+                Empty Empty KeyCapabilities Other
+            ) } = split /:/, $line, 12;
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
+            push @res, \%info;
+        }
+        elsif ( $tag eq 'uid' ) {
+            my %info;
+            @info{ qw(Trust Created Expire String) }
+                = (split /:/, $line)[0,4,5,8];
+            $info{ $_ } = _ParseDate( $info{ $_ } )
+                foreach qw(Created Expire);
+            push @{ $res[-1]{'User'} ||= [] }, \%info;
+        }
+        elsif ( $tag eq 'fpr' ) {
+            $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
+        }
+    }
+    return @res;
+}
+
+{
+    my %mapping = (
+        o => 'Unknown (this value is new to the system)', #loc
+        # deprecated
+        d   => "The key has been disabled", #loc
+        r   => "The key has been revoked", #loc
+        e   => "The key has expired", #loc
+        '-' => 'Unknown (no trust value assigned)', #loc
+        #gpupg docs says that '-' and 'q' may safely be treated as the same value
+        q   => 'Unknown (no trust value assigned)', #loc
+        n   => "Don't trust this key at all", #loc
+        m   => "There is marginal trust in this key", #loc
+        f   => "The key is fully trusted", #loc
+        u   => "The key is ultimately trusted", #loc
+    );
+    sub _ConvertTrustChar {
+        my $value = shift;
+        return $mapping{'-'} unless $value;
+
+        $value = substr $value, 0, 1;
+        return $mapping{ $value } || $mapping{'o'};
+    }
+}
+
+sub _ParseDate {
+    my $value = shift;
+    # never
+    return $value unless $value;
+
+    require RT::Date;
+    my $obj = RT::Date->new( $RT::SystemUser );
+    # unix time
+    if ( $value =~ /^\d+$/ ) {
+        $obj->Set( Value => $value );
+    } else {
+        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
+    }
+    return $obj;
 }
 
 1;
