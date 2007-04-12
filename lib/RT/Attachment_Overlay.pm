@@ -429,7 +429,7 @@ sub ContentAsMIME {
 =head2 Addresses
 
 Returns a hashref of all addresses related to this attachment.  
-The keys of the hash are C<To>,C<Cc> and C<Bcc>. The values are references to lists of Mail::Address objects.
+The keys of the hash are C<From>,C<To>,C<Cc>, C<Bcc>, C<RT-Send-Cc> and C<RT-Send-Bcc>. The values are references to lists of Mail::Address objects.
 
 
 =cut
@@ -442,7 +442,7 @@ sub Addresses {
     my $current_user_address = lc $self->CurrentUser->EmailAddress;
     my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
     my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
-    foreach my $hdr (qw(To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
+    foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line      = $self->GetHeader($hdr);
         
