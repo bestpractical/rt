@@ -67,7 +67,7 @@ foreach my $address (@unsquelchto) {
 
 my $action;
 
-if (( $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'Action'} eq 'Respond' )) {
+if (($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'Action'} && $ARGS{'Action'} eq 'Respond' )) {
     $action = 'Correspond';
 }
 else {
@@ -100,7 +100,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
-<b><% $scrip->Description %></b><br />
+<b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
 <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {

@@ -822,7 +822,7 @@ sub _EncodeLOB {
 sub _DecodeLOB {
     my $self            = shift;
     my $ContentType     = shift;
-    my $ContentEncoding = shift;
+    my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
     if ( $ContentEncoding eq 'base64' ) {
