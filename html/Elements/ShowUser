@@ -44,20 +44,26 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<% $obj->format %>\
+<% $Address->format %>\
 <%INIT>
 my ($phrase, $address, $comment);
+
+if ($User) {
 $address = $User->EmailAddress;
 $phrase = $User->RealName
     if $User->RealName && lc $User->RealName ne lc $address;
 $comment = $User->Name if lc $User->Name ne lc $address;
-my $obj = Mail::Address->new( $phrase, $address, $comment );
-$obj->comment('') if $comment && lc $obj->user eq lc $comment;
+ $Address = Mail::Address->new( $phrase, $address, $comment );
+} 
+
+
+$Address->comment('') if $comment && lc $Address->user eq lc $comment;
 if ( $phrase and my ($l, $r) = ($phrase =~ /^(\w+) (\w+)$/) ) {
-    $obj->phrase('') if $obj->user =~ /^\Q$l\E.\Q$r\E$/
-                        || $obj->user =~ /^\Q$r\E.\Q$l\E$/; 
+    $Address->phrase('') if $Address->user =~ /^\Q$l\E.\Q$r\E$/
+                        || $Address->user =~ /^\Q$r\E.\Q$l\E$/; 
 }
 </%INIT>
 <%ARGS>
 $User => undef
+$Address => undef
 </%ARGS>
