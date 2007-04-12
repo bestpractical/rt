@@ -30,6 +30,9 @@ name="UpdateCc-<%$addr%>"
         <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
 </div>
 </td></tr>
+<%args>
+$TicketObj
+</%args>
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses;};
 </%init>
