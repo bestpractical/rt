@@ -1,0 +1,35 @@
+<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" id = "UpdateCc" size="60"
+        value="<% $ARGS{UpdateCc}||'' %>" />
+<input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
+        <br />
+
+%foreach my $addr ( keys %txn_addresses) {
+<input 
+id="UpdateCc-<%$addr%>" 
+name="UpdateCc-<%$addr%>" 
+    type="checkbox" 
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+    <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+%}
+<div class="hints"><i><font size="-2">
+            <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+</div>
+</td></tr>
+<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input id="UpdateBcc"  name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}||''%>" /><br />
+%foreach my $addr ( keys %txn_addresses) {
+<input
+    id="UpdateBcc-<%$addr%>"
+    name="UpdateBcc-<%$addr%>"
+    type="checkbox" 
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
+        <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
+<& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+%}
+        <div class="hints">
+<i><font size="-2">
+        <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+</div>
+</td></tr>
+<%init>
+my %txn_addresses = %{$TicketObj->TransactionAddresses;};
+</%init>
