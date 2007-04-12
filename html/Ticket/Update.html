@@ -51,9 +51,9 @@
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>" />
-<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
-<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>" />
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
+<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
+<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 <table border="0">
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
@@ -61,7 +61,7 @@
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
-<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" /> 
+<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
@@ -72,23 +72,49 @@
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
-  <option value="private" <%$ARGS{'UpdateType'} eq "private" ? "SELECTED" : !$ARGS{'UpdateType'}&&$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-   <option value="response" <%$ARGS{'UpdateType'} eq "response" ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
+<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
 </td></tr>
 <tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>" /></td></tr>
-<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size="60"
-value="<% $ARGS{UpdateCc} %>" /><br />
-<i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" id = "UpdateCc" size="60"
+        value="<% $ARGS{UpdateCc}||'' %>" />
+<input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
+        <br />
+
+%foreach my $addr ( keys %txn_addresses) {
+<input 
+id="UpdateCc-<%$addr%>" 
+name="UpdateCc-<%$addr%>" 
+    type="checkbox" 
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+    <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+%}
+<div class="hints"><i><font size="-2">
+            <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+</div>
 </td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>" /><br />
+<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input id="UpdateBcc"  name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}||''%>" /><br />
+%foreach my $addr ( keys %txn_addresses) {
+<input
+    id="UpdateBcc-<%$addr%>"
+    name="UpdateBcc-<%$addr%>"
+    type="checkbox" 
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
+        <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
+<& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+%}
+        <div class="hints">
 <i><font size="-2">
-<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+        <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
+</div>
 </td></tr>
+<pre>
+</pre>
+
 % if (exists $session{'Attachments'}) {
 <td>
 <&|/l&>Attached file</&>:
@@ -164,9 +190,12 @@ if ($DefaultStatus eq 'resolved') {
 my ($CommentDefault, $ResponseDefault);
 if ($Action ne 'Respond') {
    $CommentDefault = "SELECTED"; 
+    $ResponseDefault = "";
 } else {
+    $CommentDefault = ""; 
     $ResponseDefault = "SELECTED";
 }
+
 
 
 $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
@@ -216,6 +245,9 @@ if ( exists $ARGS{SubmitTicket} ) {
     $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }
+
+my %txn_addresses = %{$TicketObj->TransactionAddresses;};
+
 
 </%INIT>
 

@@ -603,25 +603,43 @@ sub ProcessUpdateMessage {
         );
     }
 
-    ## TODO: Implement public comments
-    if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(
-            CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-            BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
+           my  $bcc = $args{ARGSRef}->{'UpdateBcc'};
+           my  $cc = $args{ARGSRef}->{'UpdateCc'};
+
+    my %message_args = (
+            CcMessageTo  => $cc,
+            BccMessageTo => $bcc,
             MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-        );
+            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
+
+
+        unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} =="1") {
+        foreach my $key ( keys %{ $args{ARGSRef} } ) {
+            if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
+                my $var   = ucfirst($1).'MessageTo';
+                my $value = $2;
+                {
+                    if ( $args{$var} ) {
+                        $message_args{$var} .= ", $value";
+                    } else {
+                        $message_args{$var} = $value;
+                    }
+                }
+            }
+
+        }
+    }
+
+
+
+    if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
+        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) =
-          $args{TicketObj}->Correspond(
-            CcMessageTo  => $args{ARGSRef}->{'UpdateCc'},
-            BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
-            MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
-          );
+          $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
