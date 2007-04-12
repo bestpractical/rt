@@ -47,7 +47,7 @@
 <div class="message-stanza-depth-<% $Depth %>">
 <%perl>
 my $para = '';
-foreach my $stanza (@$Message) {
+foreach my $stanza ( @$Message) {
     if ( ref $stanza eq "ARRAY" ) {
         $print_content->( \$para ); $para = '';
         $m->comp( 'ShowMessageStanza',
@@ -56,7 +56,7 @@ foreach my $stanza (@$Message) {
                   Message => $stanza );
     }
     elsif ( ref $stanza eq "HASH" ) {
-        $para .= $stanza->{raw};
+        $para .= ($stanza->{raw}||'');
     }
 }
 $print_content->( \$para ) if length $para;

@@ -56,11 +56,12 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $message->Filename | u%>">
+<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>">
 <&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
 % if ( !$message->Filename && $message->ContentType =~ /text/ ) {
 <span>[<a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>]</span>
 % }
+<br/>
 <span class="downloadcontenttype">[<% $message->ContentType %> <% $size_to_str->( $size ) %>]</span>
 </div>
 %   }
