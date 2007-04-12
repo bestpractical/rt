@@ -1925,6 +1925,44 @@ sub IsOwner {
 
 # }}}
 
+
+=head2 TransactionAddresses
+
+Returns a composite hashref of the results of L<RT::Transaction/Addresses> for all this ticket's Create, Comment or Correspond transactions.
+The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
+
+NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _Value.
+
+=cut
+
+
+sub TransactionAddresses {
+    my $self = shift;
+    my $txns = $self->Transactions;
+
+    my %addresses = ();
+    foreach my $type (qw(Create Comment Correspond)) {
+    $txns->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => $type , ENTRYAGGREGATOR => 'OR', CASESENSITIVE => 1);
+        }
+
+    while (my $txn = $txns->Next) {
+        my $txnaddrs = $txn->Addresses; 
+        foreach my $addrlist ( values %$txnaddrs ) {
+                foreach my $addr (@$addrlist) {
+                    # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
+                    next if ($addresses{$addr->address} && $addresses{$addr->address}->phrase && not $addr->phrase);
+                    $addresses{$addr->address} = $addr;
+                }
+        }
+    }
+
+    return \%addresses;
+
+}
+
+
+
+
 # {{{ Routines dealing with queues 
 
 # {{{ sub ValidateQueue
@@ -2400,8 +2438,11 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    unless ($args{'MIMEObj'}->head->get('Message-ID')
-            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
+    
+    
+    
+    my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
+    unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
         $args{'MIMEObj'}->head->set( 'RT-Message-ID',
             "<rt-"
             . $RT::VERSION . "-"
