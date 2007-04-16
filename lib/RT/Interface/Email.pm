@@ -533,6 +533,108 @@ sub ForwardTransaction {
     return (1, $txn->loc("Send email successfully"));
 }
 
+=head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
+
+Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
+handle errors with users' keys.
+
+If a recipient has no key or has other problems with it, then the
+unction sends a error to him using 'Error: public key' template.
+Also, notifies RT's owner using template 'Error to RT owner: public key'
+to inform that there are problems with users' keys. Then we filter
+all bad recipients and retry.
+
+Returns 1 on success, 0 on error and -1 if all recipients are bad and
+had been filtered out.
+
+=cut
+
+sub SignEncrypt {
+    my %args = (
+        Entity => undef,
+        Sign => 0,
+        Encrypt => 0,
+        @_
+    );
+    return 1 unless $args{'Sign'} || $args{'Ecrypt'};
+
+    $RT::Logger->debug('Signing message') if $args{'Sign'};
+    $RT::Logger->debug('Encrypting message') if $args{'Ecrypt'};
+
+    require RT::Crypt::GnuPG;
+    my %res = RT::Crypt::GnuPG::SignEncrypt(
+        Entity => $args{'Entity'},
+        Sign => $args{'Sign'},
+        Encrypt => $args{'Encrypt'},
+    );
+    return 1 unless $res{'exit_code'};
+
+    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+
+    my @bad_recipients;
+    foreach my $line ( @status ) {
+        next unless ($line->{'Operation'}||'') eq 'RecipientsCheck';
+        next if $line->{'Status'} eq 'DONE';
+        $RT::Logger->error( $line->{'Message'} );
+        push @bad_recipients, $line;
+    }
+    return 0 unless @bad_recipients;
+
+    $_->{'AddressObj'} = (Mail::Address->parse( $_->{'Recipient'} ))[0]
+        foreach @bad_recipients;
+
+    foreach my $recipient ( @bad_recipients ) {
+        my $status = SendEmailUsingTemplate(
+            To        => $recipient->{'AddressObj'}->address,
+            Template  => 'Error: public key',
+            Arguments => {
+                %$recipient,
+                TicketObj      => $args{'Ticket'},
+                TransactionObj => $args{'Transaction'},
+            },
+        );
+        unless ( $status ) {
+            $RT::Logger->error("Couldn't send 'Error: public key'");
+        }
+    }
+
+    my $status = SendEmailUsingTemplate(
+        To        => RT->Config->Get('OwnerEmail'),
+        Template  => 'Error to RT owner: public key',
+        Arguments => {
+            BadRecipients  => \@bad_recipients,
+            TicketObj      => $args{'Ticket'},
+            TransactionObj => $args{'Transaction'},
+        },
+    );
+    unless ( $status ) {
+        $RT::Logger->error("Couldn't send 'Error to RT owner: public key'");
+    }
+
+    DeleteRecipientsFromHead(
+        $args{'Entity'}->head,
+        map $_->{'AddressObj'}->address, @bad_recipients
+    );
+
+    unless ( $args{'Entity'}->head->get('To')
+          || $args{'Entity'}->head->get('Cc')
+          || $args{'Entity'}->head->get('Bcc') )
+    {
+        return -1;
+    }
+
+    # redo without broken recipients
+    %res = RT::Crypt::GnuPG::SignEncrypt(
+        Entity => $args{'Entity'},
+        Sign => $args{'Sign'},
+        Encrypt => $args{'Encrypt'},
+    );
+    return 0 if $res{'exit_code'};
+
+    return 1;
+}
+
+
 sub CreateUser {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
 
@@ -550,7 +652,6 @@ sub CreateUser {
     unless ($Val) {
 
         # Deal with the race condition of two account creations at once
-        #
         if ($Username) {
             $NewUser->LoadByName($Username);
         }
