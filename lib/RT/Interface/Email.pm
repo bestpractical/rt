@@ -347,13 +347,8 @@ sub SendEmail {
             }
         }
 
-        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
-            require RT::Crypt::GnuPG;
-            my %res = RT::Crypt::GnuPG::SignEncrypt(
-                %crypt, Entity => $args{'Entity'},
-            );
-            return 0 if $res{'exit_code'};
-        }
+        my $res = SignEncrypt( %args, %crypt );
+        return $res unless $res > 0;
     }
 
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
