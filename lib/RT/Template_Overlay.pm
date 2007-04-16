@@ -359,14 +359,6 @@ sub _ParseContent {
         @_
     );
 
-    no warnings 'redefine';
-    local $T::Ticket      = $args{'TicketObj'};
-    local $T::Transaction = $args{'TransactionObj'};
-    local $T::Argument    = $args{'Argument'};
-    local $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
-    local $T::rtname      = RT->Config->Get('rtname');
-    local *T::loc         = sub { $T::Ticket->loc(@_) };
-
     my $content = $self->Content;
     unless ( defined $content ) {
         return ( undef, $self->loc("Permissions denied") );
@@ -380,14 +372,34 @@ sub _ParseContent {
         SOURCE => $content
     );
 
+    $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
+    $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
+    foreach my $key ( keys %args ) {
+        next unless ref $args{ $key };
+        next if ref $args{ $key } =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        my $val = $args{ $key };
+        $args{ $key } = \$val;
+    }
+
+    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name };
+    $args{'rtname'}    = RT->Config->Get('rtname');
+    if ( $args{'Ticket'} ) {
+        $args{'loc'} = sub { $args{'Ticket'}->loc(@_) };
+    } else {
+        $args{'loc'} = sub { $self->loc(@_) };
+    }
+
     my $is_broken = 0;
-    my $retval = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
-        my (%args) = @_;
-        $RT::Logger->error("Template parsing error: $args{error}")
-            unless $args{error} =~ /^Died at /; # ignore intentional die()
-        $is_broken++;
-        return undef;
-    } );
+    my $retval = $template->fill_in(
+        HASH => \%args,
+        BROKEN => sub {
+            my (%args) = @_;
+            $RT::Logger->error("Template parsing error: $args{error}")
+                unless $args{error} =~ /^Died at /; # ignore intentional die()
+            $is_broken++;
+            return undef;
+        }, 
+    );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
     # MIME::Parser has problems dealing with high-bit utf8 data.
