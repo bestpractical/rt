@@ -615,7 +615,7 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-        unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} =="1") {
+    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} =="1") {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
                 my $var   = ucfirst($1).'MessageTo';
@@ -641,7 +641,7 @@ sub ProcessUpdateMessage {
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) =
-          $args{TicketObj}->Correspond(%message_args);
+        $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
