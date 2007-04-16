@@ -107,6 +107,14 @@
 
 <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
+
+<tr><td>&nbsp;</td><td><table>
+<td><% loc('Sign')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><% loc('Encrypt')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+</table></td></tr>
+
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 % $m->callback( CallbackName => 'BeforeMessageBox', %ARGS );
 % if (exists $ARGS{UpdateContent}) {
@@ -148,6 +156,14 @@ if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 } else {
     $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
+}
+
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        DefaultValue => $TicketObj->QueueObj->$_,
+        Arguments => \%ARGS,
+    );
 }
 
 # Things needed in the template - we'll do the processing here, just

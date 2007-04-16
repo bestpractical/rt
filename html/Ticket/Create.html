@@ -259,7 +259,7 @@ my $ValidCFs = $m->comp(
 foreach ( qw(Sign Encrypt) ) {
     $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
         Name => $_,
-        CurrentValue => $QueueObj->$_,
+        DefaultValue => $QueueObj->$_,
         Arguments => \%ARGS,
     );
 }
