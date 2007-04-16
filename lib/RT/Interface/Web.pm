@@ -610,7 +610,7 @@ sub ProcessUpdateMessage {
             CcMessageTo  => $cc,
             BccMessageTo => $bcc,
             Sign         => $args{ARGSRef}->{'Sign'},
-            Encrypt         => $args{ARGSRef}->{'Encrypt'},
+            Encrypt      => $args{ARGSRef}->{'Encrypt'},
             MIMEObj      => $Message,
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
