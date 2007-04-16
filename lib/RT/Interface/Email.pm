@@ -706,23 +706,22 @@ sub ParseCcAddressesFromHead {
         @_
     );
 
-    my (@Addresses);
+    my @recipients =
+        map lc $_->address,
+        map Mail::Address->parse( $args{'Head'}->get( $_ ) ),
+        qw(To Cc);
 
-    my @ToObjs = Mail::Address->parse( $args{'Head'}->get('To') );
-    my @CcObjs = Mail::Address->parse( $args{'Head'}->get('Cc') );
+    my @res;
+    foreach my $address ( @recipients ) {
+        $address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress( $address );
+        next if lc $args{'CurrentUser'}->EmailAddress   eq $address;
+        next if lc $args{'QueueObj'}->CorrespondAddress eq $address;
+        next if lc $args{'QueueObj'}->CommentAddress    eq $address;
+        next if IsRTAddress( $address );
 
-    foreach my $AddrObj ( @ToObjs, @CcObjs ) {
-        my $Address = $AddrObj->address;
-        $Address = $args{'CurrentUser'}
-            ->UserObj->CanonicalizeEmailAddress($Address);
-        next if ( $args{'CurrentUser'}->EmailAddress   =~ /^\Q$Address\E$/i );
-        next if ( $args{'QueueObj'}->CorrespondAddress =~ /^\Q$Address\E$/i );
-        next if ( $args{'QueueObj'}->CommentAddress    =~ /^\Q$Address\E$/i );
-        next if ( RT::EmailParser->IsRTAddress($Address) );
-
-        push( @Addresses, $Address );
+        push @res, $address;
     }
-    return (@Addresses);
+    return @res;
 }
 
 
