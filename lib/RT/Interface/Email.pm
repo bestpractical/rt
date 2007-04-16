@@ -665,6 +665,25 @@ sub ParseAddressFromHeader {
     return ( $Address, $Name );
 }
 
+=head2 DeleteRecipientsFromHead HEAD RECIPIENTS
+
+Gets a head object and list of addresses.
+Deletes addresses from To, Cc or Bcc fields.
+
+=cut
+
+sub DeleteRecipientsFromHead {
+    my $head = shift;
+    my %skip = map { lc $_ => 1 } @_;
+
+    foreach my $field ( qw(To Cc Bcc) ) {
+        $head->set( $field =>
+            join ', ', map $_->format, grep !$skip{ lc $_->address },
+                Mail::Address->parse( $head->get( $field ) )
+        );
+    }
+}
+
 
 
 sub ParseTicketId {
