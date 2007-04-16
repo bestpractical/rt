@@ -609,6 +609,8 @@ sub ProcessUpdateMessage {
     my %message_args = (
             CcMessageTo  => $cc,
             BccMessageTo => $bcc,
+            Sign         => $args{ARGSRef}->{'Sign'},
+            Encrypt         => $args{ARGSRef}->{'Encrypt'},
             MIMEObj      => $Message,
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
