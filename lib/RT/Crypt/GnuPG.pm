@@ -553,8 +553,40 @@ sub DecryptRFC3156 {
 }
 
 sub GetPassphrase {
-    return undef;
+    return 'passphrase';
 }
+
+=head2 ParseStatus
+
+Takes a string containing output of gnupg status stream. Parses it and returns
+array of hashes. Each element of array is a hash ref and represents line or
+group of lines in the status message.
+
+All hashes have Operation, Status and Message elements.
+
+=over
+
+=item Operation
+
+Classification of operations gnupg perfoms. Now we have suppoort
+for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
+values.
+
+=item Status
+
+Informs about success. Value is 'DONE' on success, other values means that
+an operation failed, for example 'ERROR', 'BAD', 'MISSING' and may be other.
+
+=item Message
+
+User friendly message.
+
+=back
+
+This parser is based on information from GnuPG distribution, see also
+F<docs/design_docs/gnupg_details_on_output_formats> in the RT distribution.
+
+=cut
 
 my %inv_recp_reason = (
     0 => "No specific reason given",
@@ -581,7 +613,7 @@ my %simple_keyword = (
     NO_RECP => {
         Operation => 'RecipientsCheck',
         Status    => 'ERROR',
-        Message   => 'No recipients are usable',
+        Message   => 'No recipients',
     },
     UNEXPECTED => {
         Operation => 'Data',
@@ -595,6 +627,7 @@ my %simple_keyword = (
     },
 );
 
+# keywords we parse
 my %parse_keyword = map { $_ => 1 } qw(
     USERID_HINT
     SIG_CREATED GOODSIG
@@ -604,6 +637,8 @@ my %parse_keyword = map { $_ => 1 } qw(
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
 
+# keywords we ignore without any messages as we parse them using other
+# keywords as starting point or just ignore as they are useless for us
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
@@ -628,6 +663,7 @@ sub ParseStatus {
         my ($keyword, $args) = ($line =~ /^(\S+)\s*(.*)$/s);
         if ( $simple_keyword{ $keyword } ) {
             push @res, $simple_keyword{ $keyword };
+            $res[-1]->{'Keyword'} = $keyword;
             next;
         }
         unless ( $parse_keyword{ $keyword } ) {
@@ -683,12 +719,15 @@ sub ParseStatus {
             push @res, \%res;
         }
         elsif ( $keyword eq 'ENC_TO' ) {
-            my ($main_key_id, $alg_id) = split /\s+/, $args;
+            my ($key, $alg, $key_length) = split /\s+/, $args;
             my %res = (
+                Operation => 'Decrypt',
+                Status    => 'DONE',
+                Message   => "The message is encrypted to $key",
                 Keyword   => 'ENC_TO',
-                Operation => 'Encoded',
-                MainKey   => $main_key_id,
-                Algorithm => $alg_id,
+                Key       => $key,
+                KeyLength => $key_length,
+                Algorithm => $alg,
             );
             $user_hint{ $main_key_id } ||= {};
             $res{'User'} = $user_hint{ $main_key_id };
@@ -704,7 +743,7 @@ sub ParseStatus {
             @res{qw(Key UserString)} = split /\s+/, $args, 2;
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^TRUST_(\S+)/;
-                $res{'Trust'} = ($1);
+                $res{'Trust'} = $1;
                 last;
             }
             foreach my $line ( @status[ $i .. $#status ] ) {
@@ -738,8 +777,8 @@ sub ParseStatus {
         elsif ( $keyword eq 'ERRSIG' ) {
             my %res = (
                 Operation => 'Verify',
-                Message   => 'Not possible to check the signature',
                 Status    => 'ERROR',
+                Message   => 'Not possible to check the signature',
             );
             @res{qw(Key PubkeyAlgo HashAlgo Class Timestamp ReasonCode Other)}
                 = split /\s+/, $args, 7;
@@ -775,16 +814,19 @@ sub ParseStatus {
                 Status  => 'ERROR',
                 Message => "Recipient '$recipient' is unusable, the reason is '$reason'",
                 Recipient => $recipient,
+                ReasonCode => $rcode,
                 Reason => $reason,
             };
         }
         elsif ( $keyword eq 'NODATA' ) {
-            my $what = $nodata_what{ (split /\s+/, $args)[0] } || 'Unknown';
+            my $rcode = (split /\s+/, $args)[0];
+            my $reason = $nodata_what{ $rcode } || 'Unknown';
             push @res, {
-                Operation => 'Data',
-                Keyword => 'NODATA',
-                Message => "No data has been found. The reason is '$what'",
-                What    => $what,
+                Operation  => 'Data',
+                Keyword    => 'NODATA',
+                Message    => "No data has been found. The reason is '$reason'",
+                ReasonCode => $rcode,
+                Reason     => $reason,
             };
         }
     }
