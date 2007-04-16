@@ -335,14 +335,22 @@ sub SendEmail {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }
 
-    if ( $args{'Ticket'} ) {
-        my $sign = $args{'Ticket'}->QueueObj->Sign;
-        my $encrypt = $args{'Ticket'}->QueueObj->Encrypt;
-        if ( $sign || $encrypt ) {
+    if ( $args{'Ticket'} && $args{'Transaction'} ) {
+        my $attachment = $args{'Transaction'}->Attachments->First;
+
+        my %crypt;
+        foreach my $argument ( qw(Sign Encrypt) ) {
+            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
+                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
+            } else {
+                $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
+            }
+        }
+
+        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
             require RT::Crypt::GnuPG;
             my %res = RT::Crypt::GnuPG::SignEncrypt(
-                Entity => $args{'Entity'},
-                Sign => $sign, Encrypt => $encrypt,
+                %crypt, Entity => $args{'Entity'},
             );
             return 0 if $res{'exit_code'};
         }
