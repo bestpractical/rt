@@ -392,6 +392,31 @@ Greetings,
 Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
 '
     },
+    {  Queue       => 0,
+       Name        => "Error: public key",    # loc
+       Description =>
+         "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
+       Content => q{Subject: We have no your public key or it's wrong
+
+You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
+}
+    },
+    {  Queue       => 0,
+       Name        => "Error to RT owner: public key",    # loc
+       Description =>
+         "Inform RT owner that user(s) have problems with public keys", # loc
+       Content => q{Subject: Some users have problems with public keys
+
+You received this message as RT has problems with public keys of the following user:
+{
+    my $res = '';
+    foreach my $e ( @BadRecipients ) {
+        $res .= "* ". $e->{'Message'} ."\n";
+    }
+    $res
+}
+}
+    },
 );
 # }}}
 
