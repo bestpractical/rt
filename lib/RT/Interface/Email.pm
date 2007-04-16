@@ -458,6 +458,7 @@ sub SendEmailUsingTemplate {
     $template->Parse( %{ $args{'Arguments'} } );
 
     my $msg = $template->MIMEObj;
+    # template parsing error
     return 0 unless $msg;
 
     $msg->head->set( $_ => $args{ $_ } )
