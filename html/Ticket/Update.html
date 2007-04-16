@@ -83,19 +83,6 @@
 
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
-% if (exists $session{'Attachments'}) {
-<td>
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
 
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
@@ -105,6 +92,17 @@
     "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </tr>
 %    } # end if while
+% } # end of if
+
+% if (exists $session{'Attachments'}) {
+<tr><td><&|/l&>Attached file</&>:</td>
+<td>
+<&|/l&>Check box to delete</&><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+</td>
+</tr>
 % } # end of if
 
 <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
