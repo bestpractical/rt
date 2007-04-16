@@ -433,6 +433,45 @@ sub SendEmail {
     return 1;
 }
 
+=head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
+
+Sends email using a template, takes name of template, arguments for it and recipients.
+
+=cut
+
+sub SendEmailUsingTemplate {
+    my %args = (
+        Template => '',
+        Arguments => {},
+        To => undef,
+        Cc => undef,
+        Bcc => undef,
+        @_
+    );
+
+    my $template = RT::Template->new( $RT::SystemUser );
+    $template->LoadGlobalTemplate( $args{'Template'} );
+    unless ( $template->id ) {
+        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
+        return 0;
+    }
+    $template->Parse( %{ $args{'Arguments'} } );
+
+    my $msg = $template->MIMEObj;
+    return 0 unless $msg;
+
+    $msg->head->set( $_ => $args{ $_ } )
+        foreach grep defined $args{$_}, qw(To Cc Bcc);
+
+    return SendEmail( Entity => $msg );
+}
+
+=head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
+
+Forwards transaction with all attachments 'message/rfc822'.
+
+=cut
+
 sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
