@@ -772,8 +772,9 @@ sub ParseStatus {
             push @res, {
                 Operation => 'RecipientsCheck',
                 Keyword => 'INV_RECP',
+                Status  => 'ERROR',
                 Message => "Recipient '$recipient' is unusable, the reason is '$reason'",
-                RequestedRecipient => $recipient,
+                Recipient => $recipient,
                 Reason => $reason,
             };
         }
