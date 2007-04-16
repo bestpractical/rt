@@ -731,9 +731,9 @@ sub Create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-                                                     Type      => "Create",
-                                                     TimeTaken => $args{'TimeWorked'},
-                                                     MIMEObj => $args{'MIMEObj'}
+            Type      => "Create",
+            TimeTaken => $args{'TimeWorked'},
+            MIMEObj   => $args{'MIMEObj'},
         );
 
         if ( $self->Id && $Trans ) {
@@ -2400,8 +2400,11 @@ sub _RecordNote {
     my %args = ( 
         CcMessageTo  => undef,
         BccMessageTo => undef,
+        Encrypt      => undef,
+        Sign         => undef,
         MIMEObj      => undef,
         Content      => undef,
+        NoteType     => 'Correspond',
         TimeTaken    => 0,
         CommitScrips => 1,
         @_
@@ -2425,13 +2428,17 @@ sub _RecordNote {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
+    # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
+    # as CanonicalizeEmailAddress expect only one address at a time
     $args{'MIMEObj'}->head->add(
         'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
     ) if defined $args{'CcMessageTo'};
 
-    $args{'MIMEObj'}->head->add(
-        'RT-Send-Bcc' => RT::User->CanonicalizeEmailAddress( $args{'BccMessageTo'} )
-    ) if defined $args{'BccMessageTo'};
+    foreach my $argument (qw(Encrypt Sign)) {
+        $args{'MIMEObj'}->head->add(
+            "X-RT-$argument" => $args{ $argument }
+        ) if defined $args{ $argument };
+    }
 
     # XXX: This code is duplicated several times
     # If this is from an external source, we need to come up with its
