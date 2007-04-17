@@ -729,8 +729,8 @@ sub ParseStatus {
                 KeyLength => $key_length,
                 Algorithm => $alg,
             );
-            $user_hint{ $main_key_id } ||= {};
-            $res{'User'} = $user_hint{ $main_key_id };
+            $user_hint{ $key } ||= {};
+            $res{'User'} = $user_hint{ $key };
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
