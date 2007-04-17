@@ -114,6 +114,9 @@ our %META = (
             },
         },
     },
+    GnuPG      => {
+        Type            => 'HASH'
+    },
 );
 my %OPTIONS = ();
 
