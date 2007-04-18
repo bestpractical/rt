@@ -539,7 +539,7 @@ sub DecryptRFC3156 {
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-        return (undef, \%res);
+        return %res;
     }
 
     seek $tmp_fh, 0, 0;
@@ -632,8 +632,10 @@ my %parse_keyword = map { $_ => 1 } qw(
     USERID_HINT
     SIG_CREATED GOODSIG
     END_ENCRYPTION
+    DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
     ENC_TO
+    NO_SECKEY NO_PUBKEY
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
 
@@ -642,6 +644,7 @@ my %parse_keyword = map { $_ => 1 } qw(
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
+    BEGIN_DECRYPTION END_DECRYPTION
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
@@ -710,12 +713,31 @@ sub ParseStatus {
             my %res = (
                 Operation => 'Encrypt',
                 Status    => 'DONE',
+                Message   => 'Data has been encrypted',
             );
             foreach my $line ( reverse @status[ 0 .. $i-1 ] ) {
                 next unless $line =~ /^BEGIN_ENCRYPTION\s+(\S+)\s+(\S+)/;
                 @res{'MdcMethod', 'SymAlgo'} = ($1, $2);
                 last;
             }
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'DECRYPTION_FAILED' ) {
+            my %res = (
+                Operation => 'Decrypt',
+                Status    => 'ERROR',
+                Message   => 'Decryption failed',
+                Keyword   => $keyword,
+            );
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'DECRYPTION_OKAY' ) {
+            my %res = (
+                Operation => 'Decrypt',
+                Status    => 'DONE',
+                Message   => 'Decryption process succeeded',
+                Keyword   => $keyword,
+            );
             push @res, \%res;
         }
         elsif ( $keyword eq 'ENC_TO' ) {
@@ -728,6 +750,20 @@ sub ParseStatus {
                 Key       => $key,
                 KeyLength => $key_length,
                 Algorithm => $alg,
+            );
+            $user_hint{ $key } ||= {};
+            $res{'User'} = $user_hint{ $key };
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
+            my ($key) = split /\s+/, $args;
+            my $type = $keyword eq 'NO_SECKEY'? 'secret': 'public';
+            my %res = (
+                Operation => 'KeyCheck',
+                Status    => 'MISSING',
+                Message   => ucfirst( $type ) ." key $key is not available",
+                Keyword   => $keyword,
+                Key       => $key,
             );
             $user_hint{ $key } ||= {};
             $res{'User'} = $user_hint{ $key };
