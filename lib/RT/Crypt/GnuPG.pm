@@ -287,6 +287,22 @@ sub FindProtectedParts {
         };
     }
 
+    # attachments with inline encryption
+    my @encrypted_files =
+        grep $_->head->recommended_filename
+            && $_->head->recommended_filename =~ /\.pgp$/,
+        $entity->parts;
+
+    foreach my $part ( @encrypted_files ) {
+        $skip{"$part"}++;
+        push @res, {
+            Type      => 'encrypted',
+            Format    => 'Attachment',
+            Top       => $entity,
+            Data      => $part,
+        };
+    }
+
     push @res, FindProtectedParts( Entity => $_ )
         foreach grep !$skip{"$_"}, $entity->parts;
 
