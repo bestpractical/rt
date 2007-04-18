@@ -61,13 +61,17 @@ sub GetCurrentUser {
     # We don't need to do any external lookups
     my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
     unless ( $Address ) {
+        $RT::Logger->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
     }
 
     my $CurrentUser = new RT::CurrentUser;
     $CurrentUser->LoadByEmail( $Address );
     $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
-    return ( $CurrentUser, 1 ) if $CurrentUser->Id;
+    if ( $CurrentUser->Id ) {
+        $RT::Logger->error("Mail from user #". $CurrentUser->Id ." ($Address)" );
+        return ( $CurrentUser, 1 );
+    }
 
     # If the user can't be loaded, we may need to create one. Figure out the acl situation.
     my $unpriv = RT::Group->new( $RT::SystemUser );
@@ -83,6 +87,8 @@ sub GetCurrentUser {
         $RT::Logger->crit("Couldn't find the 'Everyone' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
+
+    $RT::Logger->debug("Going to create user with address '$Address'" );
 
     # but before we do that, we need to make sure that the created user would have the right
     # to do what we're doing.
@@ -140,6 +146,7 @@ sub GetCurrentUser {
 
         }
         else {
+            $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
             return ( $args{'CurrentUser'}, 0 );
         }
     }
