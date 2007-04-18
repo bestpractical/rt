@@ -898,8 +898,6 @@ sub GetKeyInfo {
     };
 
     my @info = readline $handle{'output'};
-    use Data::Dumper; $RT::Logger->error( Dumper(\@info) );
-
     close $handle{'output'};
 
     $res{'exit_code'} = $?;
