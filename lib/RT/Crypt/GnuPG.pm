@@ -323,7 +323,7 @@ sub VerifyDecrypt {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { DecryptRFC3156( %$item ) };
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-#            push @res, { DecryptInline( %$item ) };
+            push @res, { DecryptInline( %$item ) };
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
 #            push @res, { DecryptAttachment( %$item ) };
 #            if ( $args{'Detach'} ) {
@@ -551,6 +551,69 @@ sub DecryptRFC3156 {
     $args{'Top'}->parts( [] );
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
+    return %res;
+}
+
+sub DecryptInline {
+    my %args = (
+        Data => undef,
+        Passphrase => undef,
+        @_
+    );
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPG');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdout => $tmp_fh,
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+    $handles->options( 'stdout' )->{'direct'} = 1;
+
+    my %res;
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
+
+        $gnupg->passphrase( $args{'Passphrase'} );
+        my $pid = $gnupg->decrypt( handles => $handles );
+        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        close $handle{'input'};
+
+        waitpid $pid, 0;
+    };
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $@ || $? ) {
+        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        return %res;
+    }
+
+    seek $tmp_fh, 0, 0;
+    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
     return %res;
 }
 
