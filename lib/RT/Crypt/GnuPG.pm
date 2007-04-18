@@ -341,7 +341,7 @@ sub VerifyDecrypt {
         } elsif ( $item->{'Format'} eq 'Inline' ) {
             push @res, { DecryptInline( %$item ) };
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-#            push @res, { DecryptAttachment( %$item ) };
+            push @res, { DecryptAttachment( %$item ) };
 #            if ( $args{'Detach'} ) {
 #                $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
 #                $item->{'Top'}->make_singlepart;
@@ -630,6 +630,24 @@ sub DecryptInline {
     seek $tmp_fh, 0, 0;
     $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
     $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    return %res;
+}
+
+sub DecryptAttachment {
+    my %args = (
+        Top  => undef,
+        Data => undef,
+        Passphrase => undef,
+        @_
+    );
+    my %res = DecryptInline( %args );
+    return %res if $res{'exit_code'};
+
+    my $filename = $args{'Data'}->head->recommended_filename;
+    $filename =~ s/\.pgp$//i;
+    $args{'Data'}->head->mime_attr( $_ => $filename )
+        foreach (qw(Content-Type.name Content-Disposition.filename));
+
     return %res;
 }
 
