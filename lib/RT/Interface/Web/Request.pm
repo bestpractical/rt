@@ -64,6 +64,7 @@ sub callback {
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
     unless ( $page ) {
         $RT::Logger->error("Coulnd't get a page name for callbacks");
+        return;
     }
 
     my $CacheKey = "$page--$name";
