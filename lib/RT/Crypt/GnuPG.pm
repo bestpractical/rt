@@ -687,26 +687,40 @@ F<docs/design_docs/gnupg_details_on_output_formats> in the RT distribution.
 
 =cut
 
-my %inv_recp_reason = (
-    0 => "No specific reason given",
-    1 => "Not Found",
-    2 => "Ambigious specification",
-    3 => "Wrong key usage",
-    4 => "Key revoked",
-    5 => "Key expired",
-    6 => "No CRL known",
-    7 => "CRL too old",
-    8 => "Policy mismatch",
-    9 => "Not a secret key",
-    10 => "Key not trusted",
+my %REASON_CODE_TO_TEXT = (
+    NODATA => {
+        1 => "No armored data",
+        2 => "Expected a packet, but did not found one",
+        3 => "Invalid packet found",
+        4 => "Signature expected, but not found",
+    },
+    INV_RECP => {
+        0 => "No specific reason given",
+        1 => "Not Found",
+        2 => "Ambigious specification",
+        3 => "Wrong key usage",
+        4 => "Key revoked",
+        5 => "Key expired",
+        6 => "No CRL known",
+        7 => "CRL too old",
+        8 => "Policy mismatch",
+        9 => "Not a secret key",
+        10 => "Key not trusted",
+    },
+    ERRSIG => {
+        0 => 'not specified',
+        4 => 'unknown algorithm',
+        9 => 'missing public key',
+    },
 );
 
-my %nodata_what = (
-    1 => "No armored data",
-    2 => "Expected a packet, but did not found one",
-    3 => "Invalid packet found",
-    4 => "Signature expected, but not found",
-);
+sub ReasonCodeToText {
+    my $keyword = shift;
+    my $code = shift;
+    return $REASON_CODE_TO_TEXT{ $keyword }{ $code }
+        if exists $REASON_CODE_TO_TEXT{ $keyword }{ $code };
+    return 'unknown';
+}
 
 my %simple_keyword = (
     NO_RECP => {
@@ -912,9 +926,10 @@ sub ParseStatus {
             );
             @res{qw(Key PubkeyAlgo HashAlgo Class Timestamp ReasonCode Other)}
                 = split /\s+/, $args, 7;
-            my %rc = ( 4 => 'unknown algorithm', 9 => 'missing public key' );
-            $res{'Reason'} = $rc{ $res{'ReasonCode'} } || 'not specified';
-            $res{'Message'} .= ", the reasion is ". $res{'ReasonCode'};
+
+            $res{'Reason'} = ReasonCodeToText( $keyword, $res{'ReasonCode'} );
+            $res{'Message'} .= ", the reasion is ". $res{'Reason'};
+
             push @res, \%res;
         }
         elsif ( $keyword eq 'SIG_CREATED' ) {
@@ -937,7 +952,7 @@ sub ParseStatus {
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
-            my $reason = $inv_recp_reason{$rcode} || 'Unknown';
+            my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
                 Operation => 'RecipientsCheck',
                 Status  => 'ERROR',
@@ -949,7 +964,7 @@ sub ParseStatus {
         }
         elsif ( $keyword eq 'NODATA' ) {
             my $rcode = (split /\s+/, $args)[0];
-            my $reason = $nodata_what{ $rcode } || 'Unknown';
+            my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
                 Operation  => 'Data',
                 Message    => "No data has been found. The reason is '$reason'",
