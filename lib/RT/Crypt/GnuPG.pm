@@ -788,7 +788,6 @@ sub ParseStatus {
             my $key_id = $args;
             my %res = (
                 Operation => 'PassphraseCheck',
-                Keyword   => $keyword,
                 Status    => $keyword eq 'BAD_PASSPHRASE'? 'BAD' : 'DONE',
                 Key       => $key_id,
             );
@@ -826,7 +825,6 @@ sub ParseStatus {
                 Operation => 'Decrypt',
                 Status    => 'ERROR',
                 Message   => 'Decryption failed',
-                Keyword   => $keyword,
             );
             push @res, \%res;
         }
@@ -835,7 +833,6 @@ sub ParseStatus {
                 Operation => 'Decrypt',
                 Status    => 'DONE',
                 Message   => 'Decryption process succeeded',
-                Keyword   => $keyword,
             );
             push @res, \%res;
         }
@@ -845,7 +842,6 @@ sub ParseStatus {
                 Operation => 'Decrypt',
                 Status    => 'DONE',
                 Message   => "The message is encrypted to $key",
-                Keyword   => 'ENC_TO',
                 Key       => $key,
                 KeyLength => $key_length,
                 Algorithm => $alg,
@@ -861,7 +857,6 @@ sub ParseStatus {
                 Operation => 'KeyCheck',
                 Status    => 'MISSING',
                 Message   => ucfirst( $type ) ." key $key is not available",
-                Keyword   => $keyword,
                 Key       => $key,
             );
             $user_hint{ $key } ||= {};
@@ -945,7 +940,6 @@ sub ParseStatus {
             my $reason = $inv_recp_reason{$rcode} || 'Unknown';
             push @res, {
                 Operation => 'RecipientsCheck',
-                Keyword => 'INV_RECP',
                 Status  => 'ERROR',
                 Message => "Recipient '$recipient' is unusable, the reason is '$reason'",
                 Recipient => $recipient,
@@ -958,12 +952,16 @@ sub ParseStatus {
             my $reason = $nodata_what{ $rcode } || 'Unknown';
             push @res, {
                 Operation  => 'Data',
-                Keyword    => 'NODATA',
                 Message    => "No data has been found. The reason is '$reason'",
                 ReasonCode => $rcode,
                 Reason     => $reason,
             };
         }
+        else {
+            $RT::Logger->warning("Keyword $keyword is unknown");
+            next;
+        }
+        $res[-1]{'Keyword'} = $keyword unless $res[-1]{'Keyword'};
     }
     return @res;
 }
