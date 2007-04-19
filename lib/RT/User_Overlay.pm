@@ -1062,7 +1062,7 @@ sub _GeneratePassword {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->hexdigest);
 
 }
@@ -1079,7 +1079,7 @@ sub _GeneratePasswordBase64 {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->b64digest);
 
 }
