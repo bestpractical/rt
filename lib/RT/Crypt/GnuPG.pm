@@ -774,7 +774,7 @@ sub ParseStatus {
 
     my @res;
     my (%user_hint, $latest_user_main_key);
-    for( my $i = 0; $i < @status; $i++ ) {
+    for ( my $i = 0; $i < @status; $i++ ) {
         my $line = $status[$i];
         my ($keyword, $args) = ($line =~ /^(\S+)\s*(.*)$/s);
         if ( $simple_keyword{ $keyword } ) {
@@ -860,8 +860,7 @@ sub ParseStatus {
                 KeyLength => $key_length,
                 Algorithm => $alg,
             );
-            $user_hint{ $key } ||= {};
-            $res{'User'} = $user_hint{ $key };
+            $res{'User'} = ( $user_hint{ $key } ||= {} );
             push @res, \%res;
         }
         elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
@@ -873,8 +872,7 @@ sub ParseStatus {
                 Message   => ucfirst( $type ) ." key '0x$key' is not available",
                 Key       => $key,
             );
-            $user_hint{ $key } ||= {};
-            $res{'User'} = $user_hint{ $key };
+            $res{'User'} = ( $user_hint{ $key } ||= {} );
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
@@ -958,12 +956,12 @@ sub ParseStatus {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
             my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
-                Operation => 'RecipientsCheck',
-                Status  => 'ERROR',
-                Message => "Recipient '$recipient' is unusable, the reason is '$reason'",
-                Recipient => $recipient,
+                Operation  => 'RecipientsCheck',
+                Status     => 'ERROR',
+                Message    => "Recipient '$recipient' is unusable, the reason is '$reason'",
+                Recipient  => $recipient,
                 ReasonCode => $rcode,
-                Reason => $reason,
+                Reason     => $reason,
             };
         }
         elsif ( $keyword eq 'NODATA' ) {
