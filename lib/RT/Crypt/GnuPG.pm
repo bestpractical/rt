@@ -817,7 +817,7 @@ sub ParseStatus {
             if ( exists $res{'User'}->{'EmailAddress'} ) {
                 $res{'Message'} .= ' for '. $res{'User'}->{'EmailAddress'};
             } else {
-                $res{'Message'} .= ' for '. $key_id;
+                $res{'Message'} .= " for '0x$key_id'";
             }
             push @res, \%res;
         }
@@ -855,7 +855,7 @@ sub ParseStatus {
             my %res = (
                 Operation => 'Decrypt',
                 Status    => 'DONE',
-                Message   => "The message is encrypted to $key",
+                Message   => "The message is encrypted to '0x$key'",
                 Key       => $key,
                 KeyLength => $key_length,
                 Algorithm => $alg,
