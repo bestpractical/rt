@@ -132,11 +132,12 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    if ( $ARGS{'UpdateTimeWorked'} || (
-        defined $ARGS{'UpdateContent'}
-        && $ARGS{'UpdateContent'} ne ''
-	    && $ARGS{'UpdateContent'} ne "-- \n"
-	       . $session{'CurrentUser'}->UserObj->Signature ) )
+    if ( $ARGS{'UpdateTimeWorked'}
+         || ($session{'Attachments'} && %{$session{'Attachments'}})
+         || (defined $ARGS{'UpdateContent'}
+             && $ARGS{'UpdateContent'} ne ''
+             && $ARGS{'UpdateContent'} ne
+                 "-- \n" . $session{'CurrentUser'}->UserObj->Signature ) )
     {
 	    $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(
