@@ -812,12 +812,12 @@ sub ParseStatus {
                 @res{'MainKey', 'Key', 'KeyType'} = ($1, $2, $3);
                 last;
             }
-            $res{'Message'} = ucfirst( lc $res{'Status'} ) .' passphrase';
+            $res{'Message'} = ucfirst( lc( $res{'Status'} eq 'DONE'? 'GOOD': $res{'Status'} ) ) .' passphrase';
             $res{'User'} = ( $user_hint{ $res{'MainKey'} } ||= {} ) if $res{'MainKey'};
             if ( exists $res{'User'}->{'EmailAddress'} ) {
-                $res{'Message'} .= ' for address '. $res{'User'}->{'EmailAddress'};
+                $res{'Message'} .= ' for '. $res{'User'}->{'EmailAddress'};
             } else {
-                $res{'Message'} .= ' for key '. $key_id;
+                $res{'Message'} .= ' for '. $key_id;
             }
             push @res, \%res;
         }
@@ -870,7 +870,7 @@ sub ParseStatus {
             my %res = (
                 Operation => 'KeyCheck',
                 Status    => 'MISSING',
-                Message   => ucfirst( $type ) ." key $key is not available",
+                Message   => ucfirst( $type ) ." key '0x$key' is not available",
                 Key       => $key,
             );
             $user_hint{ $key } ||= {};
@@ -885,11 +885,15 @@ sub ParseStatus {
                 Message    => 'The signature is good',
             );
             @res{qw(Key UserString)} = split /\s+/, $args, 2;
+            $res{'Message'} .= ', signed by '. $res{'UserString'};
+
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^TRUST_(\S+)/;
                 $res{'Trust'} = $1;
                 last;
             }
+            $res{'Message'} .= ', trust level is '. lc( $res{'Trust'} || 'unknown');
+
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
                 @res{ qw(
