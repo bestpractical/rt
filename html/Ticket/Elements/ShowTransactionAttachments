@@ -56,13 +56,12 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>">
-<&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
-% if ( !$message->Filename && $message->ContentType =~ /text/ ) {
-<span>[<a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>]</span>
+<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+% if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
+ / <a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
 <br/>
-<span class="downloadcontenttype">[<% $message->ContentType %> <% $size_to_str->( $size ) %>]</span>
+<span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
 </div>
 %   }
 
@@ -161,6 +160,7 @@ $Ticket => undef
 $Transaction => undef
 $ShowHeaders => 0
 $Collapsed => undef
+$DownloadableHeaders => 1
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
