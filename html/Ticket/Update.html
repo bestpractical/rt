@@ -65,7 +65,7 @@
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
-% $m->callback( CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS );
+% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
 % }
@@ -116,7 +116,7 @@
 </table></td></tr>
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->callback( CallbackName => 'BeforeMessageBox', %ARGS );
+% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
