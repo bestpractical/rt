@@ -278,7 +278,7 @@ sub MailError {
         To                     => $args{'To'},
         Subject                => $args{'Subject'},
         Precedence             => 'bulk',
-        'X-RT-Loop-Prevention' => scalar RT->Config->Get('rtname'),
+        'X-RT-Loop-Prevention' => RT->Config->Get('rtname'),
         'In-Reply-To:'         => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef,
     );
 
@@ -1210,7 +1210,7 @@ sub _NoAuthorizedUserFound {
 
     # Notify the RT Admin of the failure.
     MailError(
-        To          => scalar RT->Config->Get('OwnerEmail'),
+        To          => RT->Config->Get('OwnerEmail'),
         Subject     => "Could not load a valid user",
         Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
