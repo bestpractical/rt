@@ -184,6 +184,7 @@ Digest::base
 Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
+GnuPG::Interface
 DBIx::SearchBuilder 1.40
 Text::Template
 File::Spec 0.8
