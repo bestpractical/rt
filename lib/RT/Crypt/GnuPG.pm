@@ -810,6 +810,7 @@ sub ParseStatus {
             } else {
                 $user_hint{ $tmp{'MainKey'} } = \%tmp;
             }
+            next;
         }
         elsif ( $keyword eq 'BAD_PASSPHRASE' || $keyword eq 'GOOD_PASSPHRASE' ) {
             my $key_id = $args;
