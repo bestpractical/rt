@@ -50,7 +50,18 @@ Returns a hash with the following keys:
 
 =cut
 
+
 sub SignEncrypt {
+    
+    my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
+    if ( $format eq 'inline' ) {
+        SignEncryptInline( @_ );
+    } else {
+        SignEncryptRFC3156( @_ );
+    }
+}
+
+sub SignEncryptRFC3156 {
     my %args = (
         Entity => undef,
         Encrypt => 1,
