@@ -98,10 +98,13 @@ sub SignEncryptRFC3156 {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
+    # address of the queue
+    my $sign_as = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
         meta_interactive => 0,
+        default_key => $sign_as,
     );
 
     my %res;
@@ -126,7 +129,7 @@ sub SignEncryptRFC3156 {
             close $handle{'input'};
             waitpid $pid, 0;
         };
-
+	my $err = $@;
         my @signature = readline $handle{'output'};
         close $handle{'output'};
 
@@ -139,8 +142,8 @@ sub SignEncryptRFC3156 {
         $RT::Logger->debug( $res{'status'} ) if $res{'status'};
         $RT::Logger->warning( $res{'error'} ) if $res{'error'};
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-        if ( $@ || $? ) {
-            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        if ( $err || $res{'exit_code'} ) {
+            $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
             return %res;
         }
 
