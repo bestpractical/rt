@@ -50,6 +50,26 @@ Returns a hash with the following keys:
 
 =cut
 
+sub _safe_run_child (&) {
+    # We need to reopen stdout temporarily, because in FCGI
+    # environment, stdout is tied to FCGI::Stream, and the child
+    # of the run3 wouldn't be able to reopen STDOUT properly.
+    my $stdin = IO::Handle->new;
+    $stdin->fdopen( 0, 'r' );
+    local *STDIN = $stdin;
+
+    my $stdout = IO::Handle->new;
+    $stdout->fdopen( 1, 'w' );
+    local *STDOUT = $stdout;
+
+    my $stderr = IO::Handle->new;
+    $stderr->fdopen( 2, 'w' );
+    local *STDERR = $stderr;
+
+    local $SIG{'CHLD'} = 'DEFAULT';
+    local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+    shift->();
+}
 
 sub SignEncrypt {
     
@@ -100,10 +120,7 @@ sub SignEncryptRFC3156 {
         $gnupg->passphrase( $args{'Passphrase'} );
 
         eval {
-            local $SIG{'CHLD'} = 'DEFAULT';
-            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-
-            my $pid = $gnupg->detach_sign( handles => $handles );
+            my $pid = _safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
             close $handle{'input'};
@@ -161,12 +178,9 @@ sub SignEncryptRFC3156 {
         $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
         eval {
-            local $SIG{'CHLD'} = 'DEFAULT';
-            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-
-            my $pid = $args{'Sign'}?
-                $gnupg->sign_and_encrypt( handles => $handles ):
-                $gnupg->encrypt( handles => $handles );
+            my $pid = _safe_run_child { $args{'Sign'}
+                ? $gnupg->sign_and_encrypt( handles => $handles )
+                : $gnupg->encrypt( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
             close $handle{'input'};
@@ -384,10 +398,7 @@ sub VerifyInline {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles ) };
         $args{'Data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -435,10 +446,7 @@ sub VerifyAttachment {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
         $args{'Signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -486,10 +494,7 @@ sub VerifyRFC3156 {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
         $args{'Signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -545,11 +550,8 @@ sub DecryptRFC3156 {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
         $gnupg->passphrase( $args{'Passphrase'} );
-        my $pid = $gnupg->decrypt( handles => $handles );
+        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
         $args{'Data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -614,11 +616,8 @@ sub DecryptInline {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
         $gnupg->passphrase( $args{'Passphrase'} );
-        my $pid = $gnupg->decrypt( handles => $handles );
+        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
         $args{'Data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -1051,10 +1050,8 @@ sub GetKeyInfo {
     );
 
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-        my $pid = $gnupg->$method( handles => $handles, command_args => [ $email ]  );
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, command_args => [ $email ]  ) };
         waitpid $pid, 0;
     };
 
