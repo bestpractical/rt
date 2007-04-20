@@ -615,7 +615,7 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} =="1") {
+    if ( not  $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'}) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
                 my $var   = ucfirst($1).'MessageTo';

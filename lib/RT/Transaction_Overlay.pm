@@ -615,7 +615,7 @@ sub BriefDescription {
             $field = $cf->Name();
         }
 
-        if ( $self->OldValue eq '' ) {
+        if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
             return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
         }
         elsif ( $self->NewValue eq '' ) {
