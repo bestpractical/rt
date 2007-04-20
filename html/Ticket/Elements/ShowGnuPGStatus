@@ -1,0 +1,50 @@
+<table class="crypt-runs">
+<tr><td align="right" class="labeltop" rowspan="<% scalar @messages %>">GnuPG:</td>
+<td><% shift @messages %></td></tr>
+
+% foreach my $msg( @messages ) {
+<tr><td><% $msg %></td></tr>
+% }
+
+</table>
+<%ARGS>
+$Attachment
+</%ARGS>
+<%INIT>
+my @runs;
+foreach ( $Attachment->SplitHeaders ) {
+    next unless s/^X-RT-GnuPG-Status:\s*//i;
+
+    require RT::Crypt::GnuPG;
+    push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+}
+return unless @runs;
+
+my @messages;
+foreach my $run ( @runs ) {
+    foreach my $line ( @$run ) {
+        next if $line->{'Operation'} eq 'KeyCheck';
+
+        if ( $line->{'Operation'} eq 'PassphraseCheck' ) {
+            next if $line->{'Status'} eq 'DONE';
+            push @messages, loc( $line->{'Message'} );
+        }
+        elsif ( $line->{'Operation'} eq 'Decrypt' ) {
+            next if $line->{'Keyword'} eq 'ENC_TO';
+            push @messages, loc( $line->{'Message'} );
+        }
+        elsif ( $line->{'Operation'} eq 'Verify' ) {
+            push @messages, loc( $line->{'Message'} );
+        }
+        else {
+            next if $line->{'Status'} eq 'DONE';
+            push @messages, loc( $line->{'Message'} );
+        }
+    }
+}
+return unless @messages;
+
+my %seen;
+@messages = grep !$seen{$_}++, @messages;
+
+</%INIT>

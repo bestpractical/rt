@@ -330,6 +330,26 @@ sub Content {
 
 # }}}
 
+
+=head2 Addresses
+
+Returns a hashref of addresses related to this transaction. See L<RT::Attachment/Addresses> for details.
+
+=cut
+
+sub Addresses {
+	my $self = shift;
+
+	if (my $attach = $self->Attachments->First) {	
+		return $attach->Addresses;
+	}
+	else {
+		return {};
+	}
+
+}
+
+
 # {{{ ContentObj
 
 =head2 ContentObj 

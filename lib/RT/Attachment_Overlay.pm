@@ -420,6 +420,42 @@ sub ContentAsMIME {
     return $entity;
 }
 
+
+=head2 Addresses
+
+Returns a hashref of all addresses related to this attachment.  
+The keys of the hash are C<From>,C<To>,C<Cc>, C<Bcc>, C<RT-Send-Cc> and C<RT-Send-Bcc>. The values are references to lists of Mail::Address objects.
+
+
+=cut
+
+
+sub Addresses {
+    my $self = shift;
+
+    my %data = ();
+    my $current_user_address = lc $self->CurrentUser->EmailAddress;
+    my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
+    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
+    foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
+        my @Addresses;
+        my $line      = $self->GetHeader($hdr);
+        
+        foreach my $AddrObj ( Mail::Address->parse( $line )) {
+            my $address = $AddrObj->address;
+            my $user    = RT::User->new($RT::SystemUser);
+            $address = lc $user->CanonicalizeEmailAddress($address);
+            next if ( $current_user_address eq $address );
+            next if ( $comment              eq $address );
+            next if ( $correspond           eq $address );
+            next if ( RT::EmailParser->IsRTAddress($address) );
+            push @Addresses, $AddrObj ;
+        }
+		$data{$hdr} = \@Addresses;
+    }
+	return \%data;
+}
+
 =head2 NiceHeaders
 
 Returns a multi-line string of the To, From, Cc, Date and Subject headers.

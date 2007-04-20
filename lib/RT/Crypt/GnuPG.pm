@@ -8,7 +8,7 @@ use GnuPG::Interface;
 use RT::EmailParser ();
 
 # gnupg options supported by GnuPG::Interface
-# other otions should be handled via extra args params
+# other otions should be handled via extra_args argument
 my %supported_opt = map { $_ => 1 } qw(
        always_trust
        armor
@@ -38,9 +38,9 @@ my %supported_opt = map { $_ => 1 } qw(
 =head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
 
 Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
-only during signing.
+only during signing, if value is undefined then L</GetPassphrase> called to get it.
 
-Returns a hash with the follwoing keys:
+Returns a hash with the following keys:
 
 * exit_code
 * error
@@ -50,7 +50,38 @@ Returns a hash with the follwoing keys:
 
 =cut
 
+sub _safe_run_child (&) {
+    # We need to reopen stdout temporarily, because in FCGI
+    # environment, stdout is tied to FCGI::Stream, and the child
+    # of the run3 wouldn't be able to reopen STDOUT properly.
+    my $stdin = IO::Handle->new;
+    $stdin->fdopen( 0, 'r' );
+    local *STDIN = $stdin;
+
+    my $stdout = IO::Handle->new;
+    $stdout->fdopen( 1, 'w' );
+    local *STDOUT = $stdout;
+
+    my $stderr = IO::Handle->new;
+    $stderr->fdopen( 2, 'w' );
+    local *STDERR = $stderr;
+
+    local $SIG{'CHLD'} = 'DEFAULT';
+    local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+    shift->();
+}
+
 sub SignEncrypt {
+    
+    my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
+    if ( $format eq 'inline' ) {
+        SignEncryptInline( @_ );
+    } else {
+        SignEncryptRFC3156( @_ );
+    }
+}
+
+sub SignEncryptRFC3156 {
     my %args = (
         Entity => undef,
         Encrypt => 1,
@@ -65,12 +96,15 @@ sub SignEncrypt {
     }
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
+    # address of the queue
+    my $sign_as = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
         meta_interactive => 0,
+        default_key => $sign_as,
     );
 
     my %res;
@@ -89,16 +123,13 @@ sub SignEncrypt {
         $gnupg->passphrase( $args{'Passphrase'} );
 
         eval {
-            local $SIG{'CHLD'} = 'DEFAULT';
-            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-
-            my $pid = $gnupg->detach_sign( handles => $handles );
+            my $pid = _safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
             close $handle{'input'};
             waitpid $pid, 0;
         };
-
+	my $err = $@;
         my @signature = readline $handle{'output'};
         close $handle{'output'};
 
@@ -111,8 +142,8 @@ sub SignEncrypt {
         $RT::Logger->debug( $res{'status'} ) if $res{'status'};
         $RT::Logger->warning( $res{'error'} ) if $res{'error'};
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-        if ( $@ || $? ) {
-            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        if ( $err || $res{'exit_code'} ) {
+            $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
             return %res;
         }
 
@@ -150,12 +181,9 @@ sub SignEncrypt {
         $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
         eval {
-            local $SIG{'CHLD'} = 'DEFAULT';
-            local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-
-            my $pid = $args{'Sign'}?
-                $gnupg->sign_and_encrypt( handles => $handles ):
-                $gnupg->encrypt( handles => $handles );
+            my $pid = _safe_run_child { $args{'Sign'}
+                ? $gnupg->sign_and_encrypt( handles => $handles )
+                : $gnupg->encrypt( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
             close $handle{'input'};
@@ -287,6 +315,22 @@ sub FindProtectedParts {
         };
     }
 
+    # attachments with inline encryption
+    my @encrypted_files =
+        grep $_->head->recommended_filename
+            && $_->head->recommended_filename =~ /\.pgp$/,
+        $entity->parts;
+
+    foreach my $part ( @encrypted_files ) {
+        $skip{"$part"}++;
+        push @res, {
+            Type      => 'encrypted',
+            Format    => 'Attachment',
+            Top       => $entity,
+            Data      => $part,
+        };
+    }
+
     push @res, FindProtectedParts( Entity => $_ )
         foreach grep !$skip{"$_"}, $entity->parts;
 
@@ -323,9 +367,9 @@ sub VerifyDecrypt {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { DecryptRFC3156( %$item ) };
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-#            push @res, { DecryptInline( %$item ) };
+            push @res, { DecryptInline( %$item ) };
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-#            push @res, { DecryptAttachment( %$item ) };
+            push @res, { DecryptAttachment( %$item ) };
 #            if ( $args{'Detach'} ) {
 #                $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
 #                $item->{'Top'}->make_singlepart;
@@ -339,7 +383,7 @@ sub VerifyInline {
     my %args = ( Data => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -357,10 +401,7 @@ sub VerifyInline {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles ) };
         $args{'Data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -385,7 +426,7 @@ sub VerifyAttachment {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -408,10 +449,7 @@ sub VerifyAttachment {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
         $args{'Signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -436,7 +474,7 @@ sub VerifyRFC3156 {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -459,10 +497,7 @@ sub VerifyRFC3156 {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
-        my $pid = $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] );
+        my $pid = _safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
         $args{'Signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -493,7 +528,7 @@ sub DecryptRFC3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -518,11 +553,8 @@ sub DecryptRFC3156 {
 
     my %res;
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG','LC_ALL'} = ('C', 'C');
-
         $gnupg->passphrase( $args{'Passphrase'} );
-        my $pid = $gnupg->decrypt( handles => $handles );
+        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
         $args{'Data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
@@ -539,49 +571,175 @@ sub DecryptRFC3156 {
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-        return (undef, \%res);
+        return %res;
     }
 
     seek $tmp_fh, 0, 0;
     my $parser = new MIME::Parser;
-    RT::EmailParser->_SetupMIMEParser( $parser );
+    my $rt_parser = new RT::EmailParser;
+    $rt_parser->_SetupMIMEParser( $parser );
     my $decrypted = $parser->parse( $tmp_fh );
+    $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $rt_parser;
     $args{'Top'}->parts( [] );
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
     return %res;
 }
 
-sub GetPassphrase {
-    return undef;
+sub DecryptInline {
+    my %args = (
+        Data => undef,
+        Passphrase => undef,
+        @_
+    );
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdout => $tmp_fh,
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+    $handles->options( 'stdout' )->{'direct'} = 1;
+
+    my %res;
+    eval {
+        $gnupg->passphrase( $args{'Passphrase'} );
+        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
+        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        close $handle{'input'};
+
+        waitpid $pid, 0;
+    };
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $@ || $? ) {
+        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+        return %res;
+    }
+
+    seek $tmp_fh, 0, 0;
+    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    return %res;
 }
 
-my %inv_recp_reason = (
-    0 => "No specific reason given",
-    1 => "Not Found",
-    2 => "Ambigious specification",
-    3 => "Wrong key usage",
-    4 => "Key revoked",
-    5 => "Key expired",
-    6 => "No CRL known",
-    7 => "CRL too old",
-    8 => "Policy mismatch",
-    9 => "Not a secret key",
-    10 => "Key not trusted",
+sub DecryptAttachment {
+    my %args = (
+        Top  => undef,
+        Data => undef,
+        Passphrase => undef,
+        @_
+    );
+    my %res = DecryptInline( %args );
+    return %res if $res{'exit_code'};
+
+    my $filename = $args{'Data'}->head->recommended_filename;
+    $filename =~ s/\.pgp$//i;
+    $args{'Data'}->head->mime_attr( $_ => $filename )
+        foreach (qw(Content-Type.name Content-Disposition.filename));
+
+    return %res;
+}
+
+sub GetPassphrase {
+    return 'passphrase';
+}
+
+=head2 ParseStatus
+
+Takes a string containing output of gnupg status stream. Parses it and returns
+array of hashes. Each element of array is a hash ref and represents line or
+group of lines in the status message.
+
+All hashes have Operation, Status and Message elements.
+
+=over
+
+=item Operation
+
+Classification of operations gnupg perfoms. Now we have suppoort
+for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
+values.
+
+=item Status
+
+Informs about success. Value is 'DONE' on success, other values means that
+an operation failed, for example 'ERROR', 'BAD', 'MISSING' and may be other.
+
+=item Message
+
+User friendly message.
+
+=back
+
+This parser is based on information from GnuPG distribution, see also
+F<docs/design_docs/gnupg_details_on_output_formats> in the RT distribution.
+
+=cut
+
+my %REASON_CODE_TO_TEXT = (
+    NODATA => {
+        1 => "No armored data",
+        2 => "Expected a packet, but did not found one",
+        3 => "Invalid packet found",
+        4 => "Signature expected, but not found",
+    },
+    INV_RECP => {
+        0 => "No specific reason given",
+        1 => "Not Found",
+        2 => "Ambigious specification",
+        3 => "Wrong key usage",
+        4 => "Key revoked",
+        5 => "Key expired",
+        6 => "No CRL known",
+        7 => "CRL too old",
+        8 => "Policy mismatch",
+        9 => "Not a secret key",
+        10 => "Key not trusted",
+    },
+    ERRSIG => {
+        0 => 'not specified',
+        4 => 'unknown algorithm',
+        9 => 'missing public key',
+    },
 );
 
-my %nodata_what = (
-    1 => "No armored data",
-    2 => "Expected a packet, but did not found one",
-    3 => "Invalid packet found",
-    4 => "Signature expected, but not found",
-);
+sub ReasonCodeToText {
+    my $keyword = shift;
+    my $code = shift;
+    return $REASON_CODE_TO_TEXT{ $keyword }{ $code }
+        if exists $REASON_CODE_TO_TEXT{ $keyword }{ $code };
+    return 'unknown';
+}
 
 my %simple_keyword = (
     NO_RECP => {
         Operation => 'RecipientsCheck',
         Status    => 'ERROR',
-        Message   => 'No recipients are usable',
+        Message   => 'No recipients',
     },
     UNEXPECTED => {
         Operation => 'Data',
@@ -595,18 +753,24 @@ my %simple_keyword = (
     },
 );
 
+# keywords we parse
 my %parse_keyword = map { $_ => 1 } qw(
     USERID_HINT
     SIG_CREATED GOODSIG
     END_ENCRYPTION
+    DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
     ENC_TO
+    NO_SECKEY NO_PUBKEY
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
 
+# keywords we ignore without any messages as we parse them using other
+# keywords as starting point or just ignore as they are useless for us
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
+    BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
@@ -623,11 +787,12 @@ sub ParseStatus {
 
     my @res;
     my (%user_hint, $latest_user_main_key);
-    for( my $i = 0; $i < @status; $i++ ) {
+    for ( my $i = 0; $i < @status; $i++ ) {
         my $line = $status[$i];
         my ($keyword, $args) = ($line =~ /^(\S+)\s*(.*)$/s);
         if ( $simple_keyword{ $keyword } ) {
             push @res, $simple_keyword{ $keyword };
+            $res[-1]->{'Keyword'} = $keyword;
             next;
         }
         unless ( $parse_keyword{ $keyword } ) {
@@ -650,7 +815,6 @@ sub ParseStatus {
             my $key_id = $args;
             my %res = (
                 Operation => 'PassphraseCheck',
-                Keyword   => $keyword,
                 Status    => $keyword eq 'BAD_PASSPHRASE'? 'BAD' : 'DONE',
                 Key       => $key_id,
             );
@@ -661,12 +825,12 @@ sub ParseStatus {
                 @res{'MainKey', 'Key', 'KeyType'} = ($1, $2, $3);
                 last;
             }
-            $res{'Message'} = ucfirst( lc $res{'Status'} ) .' passphrase';
+            $res{'Message'} = ucfirst( lc( $res{'Status'} eq 'DONE'? 'GOOD': $res{'Status'} ) ) .' passphrase';
             $res{'User'} = ( $user_hint{ $res{'MainKey'} } ||= {} ) if $res{'MainKey'};
             if ( exists $res{'User'}->{'EmailAddress'} ) {
-                $res{'Message'} .= ' for address '. $res{'User'}->{'EmailAddress'};
+                $res{'Message'} .= ' for '. $res{'User'}->{'EmailAddress'};
             } else {
-                $res{'Message'} .= ' for key '. $key_id;
+                $res{'Message'} .= " for '0x$key_id'";
             }
             push @res, \%res;
         }
@@ -674,6 +838,7 @@ sub ParseStatus {
             my %res = (
                 Operation => 'Encrypt',
                 Status    => 'DONE',
+                Message   => 'Data has been encrypted',
             );
             foreach my $line ( reverse @status[ 0 .. $i-1 ] ) {
                 next unless $line =~ /^BEGIN_ENCRYPTION\s+(\S+)\s+(\S+)/;
@@ -682,16 +847,45 @@ sub ParseStatus {
             }
             push @res, \%res;
         }
-        elsif ( $keyword eq 'ENC_TO' ) {
-            my ($main_key_id, $alg_id) = split /\s+/, $args;
+        elsif ( $keyword eq 'DECRYPTION_FAILED' ) {
             my %res = (
-                Keyword   => 'ENC_TO',
-                Operation => 'Encoded',
-                MainKey   => $main_key_id,
-                Algorithm => $alg_id,
+                Operation => 'Decrypt',
+                Status    => 'ERROR',
+                Message   => 'Decryption failed',
             );
-            $user_hint{ $main_key_id } ||= {};
-            $res{'User'} = $user_hint{ $main_key_id };
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'DECRYPTION_OKAY' ) {
+            my %res = (
+                Operation => 'Decrypt',
+                Status    => 'DONE',
+                Message   => 'Decryption process succeeded',
+            );
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'ENC_TO' ) {
+            my ($key, $alg, $key_length) = split /\s+/, $args;
+            my %res = (
+                Operation => 'Decrypt',
+                Status    => 'DONE',
+                Message   => "The message is encrypted to '0x$key'",
+                Key       => $key,
+                KeyLength => $key_length,
+                Algorithm => $alg,
+            );
+            $res{'User'} = ( $user_hint{ $key } ||= {} );
+            push @res, \%res;
+        }
+        elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
+            my ($key) = split /\s+/, $args;
+            my $type = $keyword eq 'NO_SECKEY'? 'secret': 'public';
+            my %res = (
+                Operation => 'KeyCheck',
+                Status    => 'MISSING',
+                Message   => ucfirst( $type ) ." key '0x$key' is not available",
+                Key       => $key,
+            );
+            $res{'User'} = ( $user_hint{ $key } ||= {} );
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
@@ -702,11 +896,15 @@ sub ParseStatus {
                 Message    => 'The signature is good',
             );
             @res{qw(Key UserString)} = split /\s+/, $args, 2;
+            $res{'Message'} .= ', signed by '. $res{'UserString'};
+
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^TRUST_(\S+)/;
-                $res{'Trust'} = ($1);
+                $res{'Trust'} = $1;
                 last;
             }
+            $res{'Message'} .= ', trust level is '. lc( $res{'Trust'} || 'unknown');
+
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
                 @res{ qw(
@@ -738,14 +936,15 @@ sub ParseStatus {
         elsif ( $keyword eq 'ERRSIG' ) {
             my %res = (
                 Operation => 'Verify',
-                Message   => 'Not possible to check the signature',
                 Status    => 'ERROR',
+                Message   => 'Not possible to check the signature',
             );
             @res{qw(Key PubkeyAlgo HashAlgo Class Timestamp ReasonCode Other)}
                 = split /\s+/, $args, 7;
-            my %rc = ( 4 => 'unknown algorithm', 9 => 'missing public key' );
-            $res{'Reason'} = $rc{ $res{'ReasonCode'} } || 'not specified';
-            $res{'Message'} .= ", the reasion is ". $res{'ReasonCode'};
+
+            $res{'Reason'} = ReasonCodeToText( $keyword, $res{'ReasonCode'} );
+            $res{'Message'} .= ", the reasion is ". $res{'Reason'};
+
             push @res, \%res;
         }
         elsif ( $keyword eq 'SIG_CREATED' ) {
@@ -768,24 +967,31 @@ sub ParseStatus {
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
-            my $reason = $inv_recp_reason{$rcode} || 'Unknown';
+            my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
-                Operation => 'RecipientsCheck',
-                Keyword => 'INV_RECP',
-                Message => "Recipient '$recipient' is unusable, the reason is '$reason'",
-                RequestedRecipient => $recipient,
-                Reason => $reason,
+                Operation  => 'RecipientsCheck',
+                Status     => 'ERROR',
+                Message    => "Recipient '$recipient' is unusable, the reason is '$reason'",
+                Recipient  => $recipient,
+                ReasonCode => $rcode,
+                Reason     => $reason,
             };
         }
         elsif ( $keyword eq 'NODATA' ) {
-            my $what = $nodata_what{ (split /\s+/, $args)[0] } || 'Unknown';
+            my $rcode = (split /\s+/, $args)[0];
+            my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
-                Operation => 'Data',
-                Keyword => 'NODATA',
-                Message => "No data has been found. The reason is '$what'",
-                What    => $what,
+                Operation  => 'Data',
+                Message    => "No data has been found. The reason is '$reason'",
+                ReasonCode => $rcode,
+                Reason     => $reason,
             };
         }
+        else {
+            $RT::Logger->warning("Keyword $keyword is unknown");
+            next;
+        }
+        $res[-1]{'Keyword'} = $keyword unless $res[-1]{'Keyword'};
     }
     return @res;
 }
@@ -826,7 +1032,7 @@ sub GetKeyInfo {
     my $type = shift || 'public';
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'} = undef; # parseable format
     $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
@@ -847,16 +1053,12 @@ sub GetKeyInfo {
     );
 
     eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-        my $pid = $gnupg->$method( handles => $handles, command_args => [ $email ]  );
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, command_args => [ $email ]  ) };
         waitpid $pid, 0;
     };
 
     my @info = readline $handle{'output'};
-    use Data::Dumper; $RT::Logger->error( Dumper(\@info) );
-
     close $handle{'output'};
 
     $res{'exit_code'} = $?;

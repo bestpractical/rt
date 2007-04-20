@@ -49,7 +49,7 @@
 %}
 %foreach my $status (@status) {
 %next if ($SkipDeleted && $status eq 'deleted');
-<option <% ($status eq $Default) && "SELECTED" %> value="<%$status%>"><%loc($status)%></option>
+<option <% (defined $Default &&  $status eq $Default) && "SELECTED" %> value="<%$status%>"><%loc($status)%></option>
 % }
 </select>
 <%ONCE>

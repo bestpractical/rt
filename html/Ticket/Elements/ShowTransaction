@@ -62,6 +62,9 @@
 
   <tr>
     <td colspan="4" class="content">
+% if ( $Attachments->[0] && $Attachments->[0]->id ) {
+    <& ShowGnuPGStatus, Attachment => $Attachments->[0] &>
+% }
 % if ( $Transaction->CustomFieldValues->Count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }

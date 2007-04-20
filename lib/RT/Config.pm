@@ -56,6 +56,7 @@ our %META = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Interface style', #loc
+            # XXX: we need support for 'get values callback'
             Values      => [qw(3.5-default 3.4-compat)],
         },
     },
@@ -113,6 +114,12 @@ our %META = (
                 W3CDTF        => 'W3C (1995-11-25T21:59:12Z)', #loc
             },
         },
+    },
+    GnuPG               => {
+        Type            => 'HASH'
+    },
+    GnuPGOptions        => {
+        Type            => 'HASH'
     },
 );
 my %OPTIONS = ();
@@ -292,6 +299,23 @@ sub Configs
 
 Takes name of the option as argument and returns its current value.
 
+Returns different things in scalar and array contexts. For scalar
+options it's not that important, however for arrays and hash it's.
+In scalar context returns references to arrays and hashes.
+
+Use C<scalar> perl's op to force context, especially when you use
+C<(..., Argument => RT->Config->Get('ArrayOpt'), ...)>
+as perl's '=>' op doesn't change context of the right hand argument to
+scalar. Instead use C<(..., Argument => scalar RT->Config->Get('ArrayOpt'), ...)>.
+
+It's also important for options that have no default value(no default
+in F<etc/RT_Config.pm>). If you don't force scalar context then you'll
+get empty list and all your named args will be messed up. For example
+C<(arg1 => 1, arg2 => RT->Config->Get('OptionDoesNotExist'), arg3 => 3)>
+will result in C<(arg1 => 1, arg2 => 'arg3', 3)> what is most probably
+unexpected, or C<(arg1 => 1, arg2 => RT->Config->Get('ArrayOption'), arg3 => 3)>
+will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 'arg3', 3)>.
+
 =cut
 
 sub Get
@@ -326,8 +350,11 @@ sub Get
 
 =head2 Set
 
-Takes two arguments: name of the option and new value.
-Set option's value to new value.
+Set option's value to new value. Takes name of the option and new value.
+
+The new value should scalar, array or hash depending on type of the option.
+If the option is not defined in meta or the default RT config then it is of
+sclar type.
 
 =cut
 

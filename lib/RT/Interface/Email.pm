@@ -273,7 +273,7 @@ sub MailError {
         To                     => $args{'To'},
         Subject                => $args{'Subject'},
         Precedence             => 'bulk',
-        'X-RT-Loop-Prevention' => scalar RT->Config->Get('rtname'),
+        'X-RT-Loop-Prevention' => RT->Config->Get('rtname'),
         'In-Reply-To:'         => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef,
     );
 
@@ -330,17 +330,20 @@ sub SendEmail {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }
 
-    if ( $args{'Ticket'} ) {
-        my $sign = $args{'Ticket'}->QueueObj->Sign;
-        my $encrypt = $args{'Ticket'}->QueueObj->Encrypt;
-        if ( $sign || $encrypt ) {
-            require RT::Crypt::GnuPG;
-            my %res = RT::Crypt::GnuPG::SignEncrypt(
-                Entity => $args{'Entity'},
-                Sign => $sign, Encrypt => $encrypt,
-            );
-            return 0 if $res{'exit_code'};
+    if ( $args{'Ticket'} && $args{'Transaction'} ) {
+        my $attachment = $args{'Transaction'}->Attachments->First;
+
+        my %crypt;
+        foreach my $argument ( qw(Sign Encrypt) ) {
+            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
+                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
+            } else {
+                $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
+            }
         }
+
+        my $res = SignEncrypt( %args, %crypt );
+        return $res unless $res > 0;
     }
 
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
@@ -420,6 +423,46 @@ sub SendEmail {
     return 1;
 }
 
+=head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
+
+Sends email using a template, takes name of template, arguments for it and recipients.
+
+=cut
+
+sub SendEmailUsingTemplate {
+    my %args = (
+        Template => '',
+        Arguments => {},
+        To => undef,
+        Cc => undef,
+        Bcc => undef,
+        @_
+    );
+
+    my $template = RT::Template->new( $RT::SystemUser );
+    $template->LoadGlobalTemplate( $args{'Template'} );
+    unless ( $template->id ) {
+        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
+        return 0;
+    }
+    $template->Parse( %{ $args{'Arguments'} } );
+
+    my $msg = $template->MIMEObj;
+    # template parsing error
+    return 0 unless $msg;
+
+    $msg->head->set( $_ => $args{ $_ } )
+        foreach grep defined $args{$_}, qw(To Cc Bcc);
+
+    return SendEmail( Entity => $msg );
+}
+
+=head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
+
+Forwards transaction with all attachments 'message/rfc822'.
+
+=cut
+
 sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
@@ -480,6 +523,108 @@ sub ForwardTransaction {
     return (1, $txn->loc("Send email successfully"));
 }
 
+=head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
+
+Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
+handle errors with users' keys.
+
+If a recipient has no key or has other problems with it, then the
+unction sends a error to him using 'Error: public key' template.
+Also, notifies RT's owner using template 'Error to RT owner: public key'
+to inform that there are problems with users' keys. Then we filter
+all bad recipients and retry.
+
+Returns 1 on success, 0 on error and -1 if all recipients are bad and
+had been filtered out.
+
+=cut
+
+sub SignEncrypt {
+    my %args = (
+        Entity => undef,
+        Sign => 0,
+        Encrypt => 0,
+        @_
+    );
+    return 1 unless $args{'Sign'} || $args{'Ecrypt'};
+
+    $RT::Logger->debug('Signing message') if $args{'Sign'};
+    $RT::Logger->debug('Encrypting message') if $args{'Ecrypt'};
+
+    require RT::Crypt::GnuPG;
+    my %res = RT::Crypt::GnuPG::SignEncrypt(
+        Entity => $args{'Entity'},
+        Sign => $args{'Sign'},
+        Encrypt => $args{'Encrypt'},
+    );
+    return 1 unless $res{'exit_code'};
+
+    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+
+    my @bad_recipients;
+    foreach my $line ( @status ) {
+        next unless ($line->{'Operation'}||'') eq 'RecipientsCheck';
+        next if $line->{'Status'} eq 'DONE';
+        $RT::Logger->error( $line->{'Message'} );
+        push @bad_recipients, $line;
+    }
+    return 0 unless @bad_recipients;
+
+    $_->{'AddressObj'} = (Mail::Address->parse( $_->{'Recipient'} ))[0]
+        foreach @bad_recipients;
+
+    foreach my $recipient ( @bad_recipients ) {
+        my $status = SendEmailUsingTemplate(
+            To        => $recipient->{'AddressObj'}->address,
+            Template  => 'Error: public key',
+            Arguments => {
+                %$recipient,
+                TicketObj      => $args{'Ticket'},
+                TransactionObj => $args{'Transaction'},
+            },
+        );
+        unless ( $status ) {
+            $RT::Logger->error("Couldn't send 'Error: public key'");
+        }
+    }
+
+    my $status = SendEmailUsingTemplate(
+        To        => RT->Config->Get('OwnerEmail'),
+        Template  => 'Error to RT owner: public key',
+        Arguments => {
+            BadRecipients  => \@bad_recipients,
+            TicketObj      => $args{'Ticket'},
+            TransactionObj => $args{'Transaction'},
+        },
+    );
+    unless ( $status ) {
+        $RT::Logger->error("Couldn't send 'Error to RT owner: public key'");
+    }
+
+    DeleteRecipientsFromHead(
+        $args{'Entity'}->head,
+        map $_->{'AddressObj'}->address, @bad_recipients
+    );
+
+    unless ( $args{'Entity'}->head->get('To')
+          || $args{'Entity'}->head->get('Cc')
+          || $args{'Entity'}->head->get('Bcc') )
+    {
+        return -1;
+    }
+
+    # redo without broken recipients
+    %res = RT::Crypt::GnuPG::SignEncrypt(
+        Entity => $args{'Entity'},
+        Sign => $args{'Sign'},
+        Encrypt => $args{'Encrypt'},
+    );
+    return 0 if $res{'exit_code'};
+
+    return 1;
+}
+
+
 sub CreateUser {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
 
@@ -497,7 +642,6 @@ sub CreateUser {
     unless ($Val) {
 
         # Deal with the race condition of two account creations at once
-        #
         if ($Username) {
             $NewUser->LoadByName($Username);
         }
@@ -557,23 +701,22 @@ sub ParseCcAddressesFromHead {
         @_
     );
 
-    my (@Addresses);
+    my @recipients =
+        map lc $_->address,
+        map Mail::Address->parse( $args{'Head'}->get( $_ ) ),
+        qw(To Cc);
 
-    my @ToObjs = Mail::Address->parse( $args{'Head'}->get('To') );
-    my @CcObjs = Mail::Address->parse( $args{'Head'}->get('Cc') );
+    my @res;
+    foreach my $address ( @recipients ) {
+        $address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress( $address );
+        next if lc $args{'CurrentUser'}->EmailAddress   eq $address;
+        next if lc $args{'QueueObj'}->CorrespondAddress eq $address;
+        next if lc $args{'QueueObj'}->CommentAddress    eq $address;
+        next if IsRTAddress( $address );
 
-    foreach my $AddrObj ( @ToObjs, @CcObjs ) {
-        my $Address = $AddrObj->address;
-        $Address = $args{'CurrentUser'}
-            ->UserObj->CanonicalizeEmailAddress($Address);
-        next if ( $args{'CurrentUser'}->EmailAddress   =~ /^\Q$Address\E$/i );
-        next if ( $args{'QueueObj'}->CorrespondAddress =~ /^\Q$Address\E$/i );
-        next if ( $args{'QueueObj'}->CommentAddress    =~ /^\Q$Address\E$/i );
-        next if ( RT::EmailParser->IsRTAddress($Address) );
-
-        push( @Addresses, $Address );
+        push @res, $address;
     }
-    return (@Addresses);
+    return @res;
 }
 
 
@@ -650,6 +793,25 @@ sub ParseAddressFromHeader {
     my $Address = $AddrObj->address;
 
     return ( $Address, $Name );
+}
+
+=head2 DeleteRecipientsFromHead HEAD RECIPIENTS
+
+Gets a head object and list of addresses.
+Deletes addresses from To, Cc or Bcc fields.
+
+=cut
+
+sub DeleteRecipientsFromHead {
+    my $head = shift;
+    my %skip = map { lc $_ => 1 } @_;
+
+    foreach my $field ( qw(To Cc Bcc) ) {
+        $head->set( $field =>
+            join ', ', map $_->format, grep !$skip{ lc $_->address },
+                Mail::Address->parse( $head->get( $field ) )
+        );
+    }
 }
 
 
@@ -1043,7 +1205,7 @@ sub _NoAuthorizedUserFound {
 
     # Notify the RT Admin of the failure.
     MailError(
-        To          => scalar RT->Config->Get('OwnerEmail'),
+        To          => RT->Config->Get('OwnerEmail'),
         Subject     => "Could not load a valid user",
         Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow

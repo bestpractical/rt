@@ -259,3 +259,18 @@ function checkAllObjects()
 		}
 	}
 }
+
+function checkboxToInput(target,checkbox,val){    
+    var tar=$(target);
+    var box = $(checkbox);
+    if(box.checked){
+        if (tar.value==''){
+            tar.value=val;
+        }else{
+            tar.value=val+', '+tar.value;        }
+    }else{
+        tar.value=tar.value.replace(val+', ','');
+        tar.value=tar.value.replace(val,'');
+    }
+}
+

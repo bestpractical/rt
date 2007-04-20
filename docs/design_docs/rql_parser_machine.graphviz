@@ -2,6 +2,9 @@
 /* GraphViz graph representing the state diagram of the RQL parser.
 */
 
+/* XXX: It's not up to date anymore, we should delete it or update.
+*/
+
 digraph G {
 
     PAREN -> PAREN;

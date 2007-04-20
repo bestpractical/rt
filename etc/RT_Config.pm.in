@@ -284,6 +284,30 @@ Set($RecordOutgoingEmail, 1);
 
 # }}}
 
+# {{{ GnuPG
+
+Set( %GnuPG,
+    Enable => 0,
+    OutgoingMessagesFormat => 'RFC', # Inline
+);
+
+# Options of GnuPG program
+
+Set(%GnuPGOptions,
+    homedir => '@RT_VAR_PATH@/data/gpg',
+
+# URL of a keyserver
+#    keyserver => 'hkp://subkeys.pgp.net',
+
+# enables the automatic retrieving of keys when encrypting
+#    'auto-key-locate' => 'keyserver',
+
+# enables the automatic retrieving of keys when verifying signatures
+#    'auto-key-retrieve' => undef,
+);
+
+# }}}
+
 # {{{ Logging
 
 # Logging.  The default is to log anything except debugging

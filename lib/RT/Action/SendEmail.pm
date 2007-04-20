@@ -238,7 +238,7 @@ sub SendMessage {
         . $self->TransactionObj->id
         . " - Scrip "
         . $self->ScripObj->id . " "
-        . $self->ScripObj->Description );
+        . ($self->ScripObj->Description || '') );
 
     #If we don't have any recipients to send to, don't send a message;
     unless ( $MIMEObj->head->get('To')

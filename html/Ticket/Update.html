@@ -51,9 +51,9 @@
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>" />
-<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
-<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action} %>" />
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
+<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
+<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 <table border="0">
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
@@ -61,47 +61,28 @@
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
-<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" /> 
+<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
-% $m->callback( CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS );
+% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
-  <option value="private" <%$ARGS{'UpdateType'} eq "private" ? "SELECTED" : !$ARGS{'UpdateType'}&&$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-   <option value="response" <%$ARGS{'UpdateType'} eq "response" ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
+<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
 </td></tr>
 <tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>" /></td></tr>
-<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size="60"
-value="<% $ARGS{UpdateCc} %>" /><br />
-<i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>" /><br />
-<i><font size="-2">
-<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</td></tr>
-% if (exists $session{'Attachments'}) {
-<td>
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
+
+<& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
+
 
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
@@ -113,10 +94,29 @@ value="<% $ARGS{UpdateCc} %>" /><br />
 %    } # end if while
 % } # end of if
 
+% if (exists $session{'Attachments'}) {
+<tr><td><&|/l&>Attached file</&>:</td>
+<td>
+<&|/l&>Check box to delete</&><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+</td>
+</tr>
+% } # end of if
+
 <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
+
+<tr><td>&nbsp;</td><td><table>
+<td><% loc('Sign')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><% loc('Encrypt')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+</table></td></tr>
+
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->callback( CallbackName => 'BeforeMessageBox', %ARGS );
+% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
@@ -158,15 +158,26 @@ if ($DefaultStatus eq 'resolved') {
     $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 }
 
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        DefaultValue => $TicketObj->QueueObj->$_,
+        Arguments => \%ARGS,
+    );
+}
+
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
 
 my ($CommentDefault, $ResponseDefault);
 if ($Action ne 'Respond') {
    $CommentDefault = "SELECTED"; 
+    $ResponseDefault = "";
 } else {
+    $CommentDefault = ""; 
     $ResponseDefault = "SELECTED";
 }
+
 
 
 $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
@@ -216,6 +227,8 @@ if ( exists $ARGS{SubmitTicket} ) {
     $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }
+
+
 
 </%INIT>
 

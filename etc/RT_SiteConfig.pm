@@ -1,18 +1,22 @@
-# Any configuration directives you include  here will override 
-# RT's default configuration file, RT_Config.pm
-#
-# To include a directive here, just copy the equivalent statement
-# from RT_Config.pm and change the value. We've included a single
-# sample value below.
-#
-# This file is actually a perl module, so you can include valid
-# perl code, as well.
-#
-# The converse is also true, if this file isn't valid perl, you're
-# going to run into trouble. To check your SiteConfig file, use
-# this comamnd:
-#
-#   perl -c /path/to/your/etc/RT_SiteConfig.pm
 
 Set( $rtname, 'example.com');
+Set( $WebPort , 11235);
+Set( $WebBaseURL , "http://localhost:$WebPort");
+
+   $RTIR_CONFIG_FILE = $RT::LocalEtcPath."/IR/RTIR_Config.pm";
+
+   require $RTIR_CONFIG_FILE
+     || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
+
+Set( %GnuPG,
+    Enable => 1,
+    OutgoingMessagesFormat => 'RFC', # Inline
+);
+
+
+Set(%GnuPGOptions, homedir => '/home/clkao/.gnupg');
+Set(@MailPlugins, 'Auth::GnuPGNG');
+
+
 1;
+
