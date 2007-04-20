@@ -115,7 +115,10 @@ our %META = (
             },
         },
     },
-    GnuPG      => {
+    GnuPG               => {
+        Type            => 'HASH'
+    },
+    GnuPGOptions        => {
         Type            => 'HASH'
     },
 );
