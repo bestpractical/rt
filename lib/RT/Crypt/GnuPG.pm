@@ -65,7 +65,7 @@ sub SignEncrypt {
     }
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -355,7 +355,7 @@ sub VerifyInline {
     my %args = ( Data => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -401,7 +401,7 @@ sub VerifyAttachment {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -452,7 +452,7 @@ sub VerifyRFC3156 {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -509,7 +509,7 @@ sub DecryptRFC3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -578,7 +578,7 @@ sub DecryptInline {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -1019,7 +1019,7 @@ sub GetKeyInfo {
     my $type = shift || 'public';
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPG');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'} = undef; # parseable format
     $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
