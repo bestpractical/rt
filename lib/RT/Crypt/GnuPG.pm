@@ -8,7 +8,7 @@ use GnuPG::Interface;
 use RT::EmailParser ();
 
 # gnupg options supported by GnuPG::Interface
-# other otions should be handled via extra args params
+# other otions should be handled via extra_args argument
 my %supported_opt = map { $_ => 1 } qw(
        always_trust
        armor
@@ -38,9 +38,9 @@ my %supported_opt = map { $_ => 1 } qw(
 =head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
 
 Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
-only during signing.
+only during signing, if value is undefined then L</GetPassphrase> called to get it.
 
-Returns a hash with the follwoing keys:
+Returns a hash with the following keys:
 
 * exit_code
 * error
