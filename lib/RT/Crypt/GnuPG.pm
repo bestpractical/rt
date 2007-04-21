@@ -1094,7 +1094,8 @@ sub ParseKeysInfo {
     my @res = ();
     foreach my $line( @lines ) {
         chomp $line;
-        my ($tag, $line) = split /:/, $line, 2;
+        my $tag;
+        ($tag, $line) = split /:/, $line, 2;
         if ( $tag eq 'pub' ) {
             my %info;
             @info{ qw(
