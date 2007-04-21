@@ -241,20 +241,12 @@ sub SendMessage {
         . $self->ScripObj->id . " "
         . ($self->ScripObj->Description || '') );
 
-    #If we don't have any recipients to send to, don't send a message;
-    unless ( $MIMEObj->head->get('To')
-        || $MIMEObj->head->get('Cc')
-        || $MIMEObj->head->get('Bcc') )
-    {
-        $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
-        return (-1);
-    }
-
-    return(0) unless RT::Interface::Email::SendEmail(
+    my $status = RT::Interface::Email::SendEmail(
         Entity => $MIMEObj,
         Ticket => $self->TicketObj,
         Transaction => $self->TransactionObj,
     );
+    return $status unless $status > 0;
 
     my $success = $msgid . " sent ";
     foreach( qw(To Cc Bcc) ) {
