@@ -998,7 +998,7 @@ sub ParseStatus {
             $RT::Logger->warning("Keyword $keyword is unknown");
             next;
         }
-        $res[-1]{'Keyword'} = $keyword unless $res[-1]{'Keyword'};
+        $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
     }
     return @res;
 }
