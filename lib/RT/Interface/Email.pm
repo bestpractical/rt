@@ -329,6 +329,18 @@ sub SendEmail {
         return 0;
     }
 
+    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
+    chomp $msgid;
+    
+    # If we don't have any recipients to send to, don't send a message;
+    unless ( $args{'Entity'}->head->get('To')
+        || $args{'Entity'}->head->get('Cc')
+        || $args{'Entity'}->head->get('Bcc') )
+    {
+        $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
+        return -1;
+    }
+
     if ( $args{'Transaction'} && !$args{'Ticket'}
         && $args{'Transaction'}->ObjectType eq 'RT::Ticket' )
     {
@@ -350,9 +362,6 @@ sub SendEmail {
         my $res = SignEncrypt( %args, %crypt );
         return $res unless $res > 0;
     }
-
-    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
-    chomp $msgid;
 
     unless ( $args{'Entity'}->head->get('Date') ) {
         require RT::Date;
@@ -553,8 +562,11 @@ sub SignEncrypt {
     );
     return 1 unless $args{'Sign'} || $args{'Ecrypt'};
 
-    $RT::Logger->debug('Signing message') if $args{'Sign'};
-    $RT::Logger->debug('Encrypting message') if $args{'Ecrypt'};
+    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
+    chomp $msgid;
+
+    $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
+    $RT::Logger->debug("$msgid Encrypting message") if $args{'Ecrypt'};
 
     require RT::Crypt::GnuPG;
     my %res = RT::Crypt::GnuPG::SignEncrypt(
@@ -615,6 +627,7 @@ sub SignEncrypt {
           || $args{'Entity'}->head->get('Cc')
           || $args{'Entity'}->head->get('Bcc') )
     {
+        $RT::Logger->debug("$msgid No recipients that have public key, not sending");
         return -1;
     }
 
