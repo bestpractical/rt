@@ -129,7 +129,7 @@ sub SignEncryptRFC3156 {
             close $handle{'input'};
             waitpid $pid, 0;
         };
-	my $err = $@;
+        my $err = $@;
         my @signature = readline $handle{'output'};
         close $handle{'output'};
 
