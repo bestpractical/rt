@@ -1,7 +1,7 @@
-package RT::Crypt::GnuPG;
-
 use strict;
 use warnings;
+
+package RT::Crypt::GnuPG;
 
 use IO::Handle;
 use GnuPG::Interface;
@@ -1180,8 +1180,6 @@ sub _ParseDate {
 # helper package to avoid using temp file
 package IO::Handle::CRLF;
 
-use strict;
-use warnings FATAL => 'all';
 use base qw(IO::Handle);
 
 sub print {
