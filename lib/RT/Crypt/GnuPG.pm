@@ -74,9 +74,9 @@ sub SignEncrypt {
     
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        SignEncryptInline( @_ );
+        return SignEncryptInline( @_ );
     } else {
-        SignEncryptRFC3156( @_ );
+        return SignEncryptRFC3156( @_ );
     }
 }
 
@@ -225,6 +225,117 @@ sub SignEncryptRFC3156 {
         $entity->parts(-1)->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
     }
     %res;
+}
+
+sub SignEncryptInline {
+    my %args = (@_);
+
+    my $entity = $args{'Entity'};
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+    }
+
+    my %res;
+
+    $entity->make_singlepart;
+    if ( $entity->is_multipart ) {
+        foreach ( $entity->parts ) {
+            %res = SignEncryptInline( %args, Entity => $_ );
+            return %res if $res{'exit_code'};
+        }
+        return %res;
+    }
+
+    return _SignEncryptTextInline( %args )
+        if $entity->effective_type =~ /^text\//i;
+
+    return _SignEncryptAttachmentInline( %args );
+}
+
+sub _SignEncryptTextInline {
+    my %args = (
+        Entity => undef,
+        Encrypt => 1,
+        Sign => 1,
+        Signer => undef,
+        Passphrase => undef,
+        @_
+    );
+    return unless $args{'Sign'} || $args{'Encrypt'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase();
+    }
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        armor => 1,
+        meta_interactive => 0,
+        ( $args{'Sign'} && $args{'Signer'}? (default_key => $args{'Signer'}): () ),
+    );
+
+    my $entity = $args{'Entity'};
+    if ( $args{'Encrypt'} ) {
+        my %seen;
+        $gnupg->options->push_recipients( $_ )
+            foreach grep $_ && !$seen{ $_ }++, map $_->address,
+                map Mail::Address->parse( $entity->head->get( $_ ) ),
+                qw(To Cc Bcc);
+    }
+
+    my %res;
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdout => $tmp_fh,
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+    $handles->options( 'stdout'  )->{'direct'} = 1;
+    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        my $method = $args{'Sign'} && $args{'Encrypt'}
+            ? 'sign_and_encrypt'
+            : ($args{'Sign'}? 'clearsign': 'encrypt');
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
+        $entity->bodyhandle->print( $handle{'input'} );
+        close $handle{'input'};
+        waitpid $pid, 0;
+    };
+    $res{'exit_code'} = $?;
+    my $err = $@;
+
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+        return %res;
+    }
+
+    $entity->bodyhandle( new MIME::Body::File $tmp_fn );
+    $entity->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+
+    return %res;
+}
+
+sub _SignEncryptAttachmentInline {
+
 }
 
 sub FindProtectedParts {
