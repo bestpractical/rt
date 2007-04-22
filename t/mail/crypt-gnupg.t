@@ -19,7 +19,13 @@ mkdir $homedir;
 use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
-RT->Config->Set( 'GnuPG', homedir => $homedir );
+RT->Config->Set( 'GnuPG',
+                 Enable => 1,
+                 OutgoingMessagesFormat => 'RFC' );
+
+RT->Config->Set( 'GnuPGOptions',
+                 homedir => $homedir );
+
 
 diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
 {
