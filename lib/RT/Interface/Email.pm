@@ -569,11 +569,7 @@ sub SignEncrypt {
     $RT::Logger->debug("$msgid Encrypting message") if $args{'Ecrypt'};
 
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::SignEncrypt(
-        Entity => $args{'Entity'},
-        Sign => $args{'Sign'},
-        Encrypt => $args{'Encrypt'},
-    );
+    my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
@@ -632,11 +628,7 @@ sub SignEncrypt {
     }
 
     # redo without broken recipients
-    %res = RT::Crypt::GnuPG::SignEncrypt(
-        Entity => $args{'Entity'},
-        Sign => $args{'Sign'},
-        Encrypt => $args{'Encrypt'},
-    );
+    %res = RT::Crypt::GnuPG::SignEncrypt( %args );
     return 0 if $res{'exit_code'};
 
     return 1;
