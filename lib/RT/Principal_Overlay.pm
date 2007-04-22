@@ -320,11 +320,13 @@ sub HasRight {
 
     # If this object is a ticket, we care about ticket roles and queue roles
     if ( UNIVERSAL::isa( $args{'Object'} => 'RT::Ticket' ) ) {
+         
+
 
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        push( @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj );
+        push( @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects);
 
     }
 

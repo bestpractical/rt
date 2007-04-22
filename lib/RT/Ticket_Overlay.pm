@@ -3597,6 +3597,23 @@ sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket";
 }
 
+=head2 ACLEquivalenceObjects
+
+This method returns a list of objects for which a user's rights also apply
+to this ticket. Generally, this is only the ticket's queue, but some RT 
+extensions may make other objects availalbe too.
+
+This method is called from L<RT::Principal/HasRight>.
+
+=cut
+
+sub ACLEquivalenceObjects {
+    my $self = shift;
+    return $self->QueueObj;
+
+}
+
+
 1;
 
 =head1 AUTHOR
