@@ -119,5 +119,21 @@ sub _get_dbh {
     return $dbh;
 }
 
+sub open_mailgate_ok {
+    my $class   = shift;
+    my $baseurl = shift;
+    my $queue   = shift || 'general';
+    my $action  = shift || 'correspond';
+    ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    return $mail;
+}
+
+
+sub close_mailgate_ok {
+    my $class = shift;
+    my $mail  = shift;
+    close $mail;
+    is ($? >> 8, 0, "The mail gateway exited normally. yay");
+}
 
 1;
