@@ -115,6 +115,9 @@ our %META = (
             },
         },
     },
+    MailPlugins         => {
+        Type            => 'ARRAY'
+    },
     GnuPG               => {
         Type            => 'HASH'
     },
