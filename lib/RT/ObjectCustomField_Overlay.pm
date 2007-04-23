@@ -70,6 +70,7 @@ sub Create {
     $ObjectCFs->LimitToCustomField( $cf->id );
     $ObjectCFs->LimitToLookupType( $cf->LookupType );
     if ( my $first = $ObjectCFs->First ) {
+        $self->Load( $first->id );
         return $first->id;
     }
 
