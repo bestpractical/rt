@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 18;
+use Test::More tests => 32;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -16,7 +16,7 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir );
 
-RT->Config->Set( 'MailPlugins' => 'Auth::GnuPGNG', 'Auth::MailFrom' );
+RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPGNG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -29,10 +29,17 @@ $m->submit_form( form_number => 3,
 		 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
+ok(my $user = RT::User->new($RT::SystemUser));
+ok($user->Load('root'), "Loaded user 'root'");
+$user->SetEmailAddress('recipient@example.com');
+
+# test simple mail.  supposedly this should fail when
+# 1. the queue requires signature
+# 2. the from is not what the key is associated with
 my $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<EOF;
-From: root\@localhost
-To: rt\@$RT::rtname
+From: recipient\@example.com
+To: general\@$RT::rtname
 Subject: This is a test of new ticket creation as root
 
 Blah!
@@ -41,12 +48,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( UNIVERSAL::isa( $tick, 'RT::Ticket' ) );
-    ok( $tick->Id, "found ticket " . $tick->Id );
+    my $tick = get_latest_ticket_ok();
     is( $tick->Subject,
         'This is a test of new ticket creation as root',
         "Created the ticket"
@@ -63,24 +65,115 @@ RT::Test->close_mailgate_ok($mail);
     like( $txn->Attachments->First->Content, qr'Blah');
 }
 
-# test for encrypted mail
+# test for signed mail
 my $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --encrypt --armor),
-        '--recipient' => 'general@example.com',
-        '--homedir'   => $homedir,
+        qw(gpg --armor --sign),
+        '--default-key' => 'recipient@example.com',
+        '--homedir'     => $homedir,
+        '--passphrase'  => 'recipient',
     ),
-    \"orzzzzzz\r\n",
+    \"fnord\r\n",
     \$buf,
-    \*STDERR
+    \*STDOUT
 );
 
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
-From: root\@localhost
-To: rt\@$RT::rtname
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: signed message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    my $tick = get_latest_ticket_ok();
+    is( $tick->Subject, 'signed message for queue',
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my $attach = $txn->Attachments->First;
+    TODO: { local $TODO = 'not yet';
+    is( $attach->GetHeader('X-RT-Incoming-Encryption'),
+        'Not encrypted',
+        'recorded incoming mail that is encrypted'
+    );
+    }
+    # test for some kind of PGP-Signed-By: Header
+    like( $attach->Content, qr'fnord');
+}
+
+SKIP: { skip 'Apr 23 14:34:31 localhost RT: Deep recursion on subroutine "RT::Interface::Email::Auth::GnuPGNG::VerifyDecrypt" at lib/RT/Interface/Email/Auth/GnuPGNG.pm line 67. (lib/RT/Interface/Email/Auth/GnuPGNG.pm:67)', 8;
+
+# test for clear-signed mail
+$buf = '';
+
+run3(
+    shell_quote(
+        qw(gpg --armor --sign --clearsign),
+        '--default-key' => 'recipient@example.com',
+        '--homedir'     => $homedir,
+        '--passphrase'  => 'recipient',
+    ),
+    \"clearfnord\r\n",
+    \$buf,
+    \*STDOUT
+);
+diag $buf;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: signed message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    my $tick = get_latest_ticket_ok();
+    is( $tick->Subject, 'signed message for queue',
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my $attach = $txn->Attachments->First;
+    TODO: { local $TODO = 'not yet';
+    is( $attach->GetHeader('X-RT-Incoming-Encryption'),
+        'Not encrypted',
+        'recorded incoming mail that is encrypted'
+    );
+    }
+    # test for some kind of PGP-Signed-By: Header
+    like( $attach->Content, qr'clearfnord');
+}
+}
+
+# test for signed and encrypted mail
+$buf = '';
+
+run3(
+    shell_quote(
+        qw(gpg --encrypt --armor --sign),
+        '--recipient'   => 'general@example.com',
+        '--default-key' => 'recipient@example.com',
+        '--homedir'     => $homedir,
+        '--passphrase'  => 'recipient',
+    ),
+    \"orzzzzzz\r\n",
+    \$buf,
+    \*STDOUT
+);
+
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
 Subject: Encrypted message for queue
 
 $buf
@@ -88,12 +181,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( UNIVERSAL::isa( $tick, 'RT::Ticket' ) );
-    ok( $tick->Id, "found ticket " . $tick->Id );
+    my $tick = get_latest_ticket_ok();
     is( $tick->Subject, 'Encrypted message for queue',
         "Created the ticket"
     );
@@ -109,3 +197,11 @@ RT::Test->close_mailgate_ok($mail);
     like( $attach->Content, qr'orz');
 }
 
+sub get_latest_ticket_ok {
+    my $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    my $tick = $tickets->First();
+    ok( $tick->Id, "found ticket " . $tick->Id );
+    return $tick;
+}
