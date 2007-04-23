@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 36;
+use Test::More tests => 45;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -227,6 +227,78 @@ RT::Test->close_mailgate_ok($mail);
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
     unlike( $attach->Content, qr'should not be there');
+}
+
+# test for encrypted mail with key not associated to the queue
+$buf = '';
+
+run3(
+    shell_quote(
+        qw(gpg --armor --encrypt),
+        '--recipient'   => 'random@localhost',
+        '--homedir'     => $homedir,
+    ),
+    \"should not be there either\r\n",
+    \$buf,
+    \*STDOUT
+);
+
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: signed message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    my $tick = get_latest_ticket_ok();
+    my $txn = $tick->Transactions->First;
+    my $attach = $txn->Attachments->First;
+    unlike( $attach->Content, qr'should not be there either');
+}
+
+# test for badly encrypted mail
+{
+my $outgoing_mail = 0;
+local *RT::Action::SendEmail::OutputMIMEObject = sub {
+    my ($self, $mime_obj) = @_;
+    diag $mime_obj->as_string;
+    ++$outgoing_mail;
+    # XXX: check signature as wel
+};
+
+$buf = '';
+
+run3(
+    shell_quote(
+        qw(gpg --armor --encrypt),
+        '--recipient'   => 'rt@example.com',
+        '--homedir'     => $homedir,
+    ),
+    \"really should not be there either\r\n",
+    \$buf,
+    \*STDOUT
+);
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: signed message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+ok($outgoing_mail, 'got rejection mail.');
+}
+
+{
+    my $tick = get_latest_ticket_ok();
+    my $txn = $tick->Transactions->First;
+    my $attach = $txn->Attachments->First;
+    unlike( $attach->Content, qr'really should not be there either');
 }
 
 sub get_latest_ticket_ok {
