@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 32;
+use Test::More tests => 36;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -195,6 +195,38 @@ RT::Test->close_mailgate_ok($mail);
     );
     }
     like( $attach->Content, qr'orz');
+}
+
+# test for signed mail by other key
+$buf = '';
+
+run3(
+    shell_quote(
+        qw(gpg --armor --sign),
+        '--default-key' => 'rt@example.com',
+        '--homedir'     => $homedir,
+        '--passphrase'  => 'test',
+    ),
+    \"should not be there\r\n",
+    \$buf,
+    \*STDOUT
+);
+
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: signed message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    my $tick = get_latest_ticket_ok();
+    my $txn = $tick->Transactions->First;
+    my $attach = $txn->Attachments->First;
+    unlike( $attach->Content, qr'should not be there');
 }
 
 sub get_latest_ticket_ok {
