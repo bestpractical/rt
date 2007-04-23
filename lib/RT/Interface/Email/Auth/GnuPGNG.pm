@@ -29,16 +29,42 @@ sub GetCurrentUser {
         @_
     );
 
-    $args{'Message'}->head->delete('X-RT-GnuPG-Status');
+    $args{'Message'}->head->delete($_)
+        for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
+               X-RT-Incoming-Signature X-RT-Privacy);
 
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
-    return @args{qw(CurrentUser AuthLevel)} if $status && !@res;
+    if ( $status && !@res ) {
+        $args{'Message'}
+            ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
+
+        return @args{qw(CurrentUser AuthLevel)};
+    }
 
     $RT::Logger->error("Had a problem during decrypting and verifying")
         unless $status;
 
     $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
         foreach @res;
+    $args{'Message'}->head->add( 'X-RT-Privacy' => 'PGP' );
+
+    # XXX: first entity only for now
+    if (@res) {
+        my $decrypted;
+        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
+        for (@status) {
+            if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
+                $decrypted = 1;
+            }
+            if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
+                $args{'Message'}->head->add(
+                    'X-RT-Incoming-Signature' => $_->{UserString} );
+            }
+        }
+        $args{'Message'}->head->add( 'X-RT-Incoming-Encryption' => $decrypted
+            ? 'Success'
+            : 'Not encrypted' );
+    }
 
     return @args{qw(CurrentUser AuthLevel)};
 }
