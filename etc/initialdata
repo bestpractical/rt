@@ -414,8 +414,19 @@ You received this message as RT has problems with public keys of the following u
         $res .= "* ". $e->{'Message'} ."\n";
     }
     $res
-}
-}
+}}
+    },
+    {  Queue       => 0,
+       Name        => "Error: no private key",    # loc
+       Description =>
+         "Inform user that we received an encrypted email and we have no private keys to decrypt", # loc
+       Content => q{Subject: we received message we cannot decrypt
+
+You sent an encrypted message with subject '{ $Message->head->get('Subject') }',
+but we have no private key it's encrypted to.
+
+Please, check that you encrypt messages with correct keys
+or contact the system administrator.}
     },
 );
 # }}}
