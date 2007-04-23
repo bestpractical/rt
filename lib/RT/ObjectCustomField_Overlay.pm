@@ -75,7 +75,7 @@ sub Create {
     }
 
     unless ( defined $args{'SortOrder'} ) {
-        my $ObjectCFs = RT::ObjectCustomFields->new( $RT::SuperUser );
+        my $ObjectCFs = RT::ObjectCustomFields->new( $RT::SystemUser );
         $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
         $ObjectCFs->OrderBy({ FIELD => 'SortOrder', ORDER => 'DESC' });
