@@ -1122,8 +1122,16 @@ sub ParseStatus {
                 Status    => 'MISSING',
                 Message   => ucfirst( $type ) ." key '0x$key' is not available",
                 Key       => $key,
+                KeyType   => $type,
             );
             $res{'User'} = ( $user_hint{ $key } ||= {} );
+            if ( $type eq 'secret' ) {
+                foreach ( reverse @res ) {
+                    next unless $_->{'Keyword'} eq 'ENC_TO' && $_->{'Key'} eq $key;
+                    $_->{'KeyMissing'} = 1;
+                    last;
+                }
+            }
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
