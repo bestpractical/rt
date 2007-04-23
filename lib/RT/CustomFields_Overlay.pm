@@ -250,7 +250,7 @@ sub LimitToGlobalOrObjectId {
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
 
     $self->OrderByCols(
-	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId' },
+	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId', ORDER => 'DESC' },
 	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },
     );
     
