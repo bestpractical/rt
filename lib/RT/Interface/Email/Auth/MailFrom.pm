@@ -69,7 +69,7 @@ sub GetCurrentUser {
     $CurrentUser->LoadByEmail( $Address );
     $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
     if ( $CurrentUser->Id ) {
-        $RT::Logger->error("Mail from user #". $CurrentUser->Id ." ($Address)" );
+        $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
         return ( $CurrentUser, 1 );
     }
 
