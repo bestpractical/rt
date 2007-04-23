@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 45;
+use Test::More tests => 46;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -54,14 +54,11 @@ RT::Test->close_mailgate_ok($mail);
         "Created the ticket"
     );
     my $txn = $tick->Transactions->First;
-    TODO: {
-    local $TODO = 'not yet';
     like(
         $txn->Attachments->First->Headers,
         qr/^X-RT-Incoming-Encryption: Not encrypted/m,
         'recorded incoming mail that is not encrypted'
     );
-    }
     like( $txn->Attachments->First->Content, qr'Blah');
 }
 
@@ -98,12 +95,10 @@ RT::Test->close_mailgate_ok($mail);
 
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
-    TODO: { local $TODO = 'not yet';
     is( $attach->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
-    }
     # test for some kind of PGP-Signed-By: Header
     like( $attach->Content, qr'fnord');
 }
@@ -143,12 +138,10 @@ RT::Test->close_mailgate_ok($mail);
 
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
-    TODO: { local $TODO = 'not yet';
     is( $attach->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
-    }
     # test for some kind of PGP-Signed-By: Header
     like( $attach->Content, qr'clearfnord');
 }
@@ -188,12 +181,14 @@ RT::Test->close_mailgate_ok($mail);
 
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
-    TODO: { local $TODO = 'not yet';
     is( $attach->GetHeader('X-RT-Incoming-Encryption'),
         'Success',
         'recorded incoming mail that is encrypted'
     );
-    }
+    is( $attach->GetHeader('X-RT-Privacy'),
+        'PGP',
+        'recorded incoming mail that is encrypted'
+    );
     like( $attach->Content, qr'orz');
 }
 
