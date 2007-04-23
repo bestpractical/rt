@@ -93,8 +93,8 @@ sub Delete {
 sub CustomFieldObj {
     my $self = shift;
     my $id = shift || $self->CustomField;
-    my $CF = RT::CustomField->new($self->CurrentUser);
-    $CF->Load($id) or die "Cannot load CustomField $id";
+    my $CF = RT::CustomField->new( $self->CurrentUser );
+    $CF->Load( $id );
     return $CF;
 }
 
