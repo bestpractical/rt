@@ -41,6 +41,9 @@ sub GetCurrentUser {
         return @args{qw(CurrentUser AuthLevel)};
     }
 
+    # FIXME: Check if the message is encrypted to the address of
+    # _this_ queue. send rejecting mail otherwise.
+
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
