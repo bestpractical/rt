@@ -13,6 +13,15 @@ use constant BaseURL => RT->Config->Get('WebURL');
 
 # reset preferences for easier test?
 
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+$tix->UnLimit();
+
+while(my $tick = $tix->Next) {
+$tick->SetStatus('resolved');
+}
+
+
 my $t = RT::Ticket->new($RT::SystemUser);
 $t->Create(Subject => 'for custom search', Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
