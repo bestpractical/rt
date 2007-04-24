@@ -1240,7 +1240,7 @@ EOT
     );
 
     # Also notify the requestor that his request has been dropped.
-    if ($args{'Requestor'} ne $RT::OwnerEmail) {
+    if ($args{'Requestor'} ne RT->Config->Get('OwnerEmail')) {
     MailError(
         To          => $args{'Requestor'},
         Subject     => "Could not load a valid user",
@@ -1307,7 +1307,7 @@ sub _HandleMachineGeneratedMail {
         }
 
         #Do we actually want to store it?
-        return ( 0, $ErrorsTo, "Message Bounced", $IsALoop ) unless ($RT::StoreLoops);
+        return ( 0, $ErrorsTo, "Message Bounced", $IsALoop ) unless (RT->Config->Get('StoreLoops'));
     }
 
     # Squelch replies if necessary
