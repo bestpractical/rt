@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 45;
+use Test::More tests => 46;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -95,8 +95,9 @@ RT::Test->close_mailgate_ok($mail);
     );
 
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
-    is( $attach->GetHeader('X-RT-Incoming-Encryption'),
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
@@ -136,8 +137,8 @@ RT::Test->close_mailgate_ok($mail);
     );
 
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
-    is( $attach->GetHeader('X-RT-Incoming-Encryption'),
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
@@ -178,16 +179,20 @@ RT::Test->close_mailgate_ok($mail);
     );
 
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
-    is( $attach->GetHeader('X-RT-Incoming-Encryption'),
+    my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Success',
         'recorded incoming mail that is encrypted'
     );
-    is( $attach->GetHeader('X-RT-Privacy'),
+    is( $msg->GetHeader('X-RT-Privacy'),
         'PGP',
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr'orz');
+
+    is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
+    ok(index($orig->Content, $buf) != -1, 'found original msg');
 }
 
 # test for signed mail by other key
@@ -219,8 +224,9 @@ RT::Test->close_mailgate_ok($mail);
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
-    like( $attach->Content, qr'alright');
-    is( $attach->GetHeader('X-RT-Incoming-Signature'),
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    # XXX: in this case, which credential should we be using?
+    is( $msg->GetHeader('X-RT-Incoming-Signature'),
         'Test User <rt@example.com>',
         'recorded incoming mail signed by others'
     );
@@ -253,7 +259,7 @@ RT::Test->close_mailgate_ok($mail);
 {
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     unlike( $attach->Content, qr'should not be there either');
 }
 
@@ -294,7 +300,7 @@ ok($outgoing_mail, 'got rejection mail.');
 {
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     unlike( $attach->Content, qr'really should not be there either');
 }
 
@@ -306,3 +312,4 @@ sub get_latest_ticket_ok {
     ok( $tick->Id, "found ticket " . $tick->Id );
     return $tick;
 }
+
