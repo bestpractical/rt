@@ -619,46 +619,7 @@ sub VerifyDecrypt {
 
 sub VerifyInline {
     my %args = ( Data => undef, Top => undef, @_ );
-
-    my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
-        meta_interactive => 0,
-    );
-
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => ($handle{'output'} = new IO::Handle),
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
-
-    my %res;
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = _safe_run_child { $gnupg->verify( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
-
-        waitpid $pid, 0;
-    };
-    $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $@ || $? ) {
-        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-    }
-    return %res;
+    return DecryptInline( %args );
 }
 
 sub VerifyAttachment {
