@@ -9,6 +9,7 @@ use IPC::Run3 'run3';
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
+RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
@@ -103,8 +104,6 @@ RT::Test->close_mailgate_ok($mail);
     like( $attach->Content, qr'fnord');
 }
 
-SKIP: { skip 'Apr 23 14:34:31 localhost RT: Deep recursion on subroutine "RT::Interface::Email::Auth::GnuPGNG::VerifyDecrypt" at lib/RT/Interface/Email/Auth/GnuPGNG.pm line 67. (lib/RT/Interface/Email/Auth/GnuPGNG.pm:67)', 8;
-
 # test for clear-signed mail
 $buf = '';
 
@@ -144,7 +143,6 @@ RT::Test->close_mailgate_ok($mail);
     );
     # test for some kind of PGP-Signed-By: Header
     like( $attach->Content, qr'clearfnord');
-}
 }
 
 # test for signed and encrypted mail
