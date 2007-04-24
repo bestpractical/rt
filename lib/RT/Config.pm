@@ -364,9 +364,9 @@ sub _ReturnValue {
     return $res unless wantarray;
 
     if( $type eq 'ARRAY' ) {
-        return @{ $res };
+        return @{ $res || [] };
     } elsif( $type eq 'HASH' ) {
-        return %{ $res };
+        return %{ $res || {} };
     }
     return $res;
 }
