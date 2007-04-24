@@ -75,7 +75,7 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0 );
+    my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => '' );
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
     ok( $res{'error'}, "error is here" );
     ok( $res{'logger'}, "log is here as well" );
