@@ -50,7 +50,7 @@ $Name => undef
 $Attr => undef
 </%ARGS>
 <%ONCE>
-our $COLUMN_MAP = {
+our $QUEUE_COLUMN_MAP = {
     id => {
         title     => '#',
         attribute => 'id',
@@ -70,21 +70,21 @@ our $COLUMN_MAP = {
     },
 };
 foreach my $col(qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
-    $COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
+    $QUEUE_COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 
 our $ColumnMap = sub {
     my $name = shift;
     my $attr = shift;
 
-    return $COLUMN_MAP->{$name}->{$attr}
-        if $COLUMN_MAP->{$name};
+    return $QUEUE_COLUMN_MAP->{$name}->{$attr}
+        if $QUEUE_COLUMN_MAP->{$name};
 
 };
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $QUEUE_COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
 return $ColumnMap->($Name, $Attr);
 </%INIT>
 

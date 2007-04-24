@@ -55,8 +55,7 @@ $Warning => undef
 $ColumnMap => {}
 $Class     => 'RT__Ticket'
 </%ARGS>
-
-<%PERL>
+<%init>
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column ( @Format ) {
@@ -118,4 +117,4 @@ foreach my $column ( @Format ) {
     $m->out('</td>');
 }
 $m->out('</tr>');
-</%PERL>
+</%init>
