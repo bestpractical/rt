@@ -467,8 +467,10 @@ sub FindProtectedParts {
         my $io = $entity->open('r');
         while ( defined($_ = $io->getline) ) {
             next unless /-----BEGIN PGP (SIGNED )?MESSAGE-----/;
+            my $type = $1? 'signed': 'encrypted';
+            $RT::Logger->debug("Found $type inline part");
             return {
-                Type   => ( $1? 'signed': 'encrypted' ),
+                Type   => $type,
                 Format => 'Inline',
                 Data   => $entity,
             };
@@ -495,6 +497,7 @@ sub FindProtectedParts {
                 $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
                 return ();
             }
+            $RT::Logger->debug("Found encrypted according to RFC3156 part");
             return {
                 Type   => 'encrypted',
                 Format => 'RFC3156',
@@ -507,6 +510,7 @@ sub FindProtectedParts {
                 $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
                 return ();
             }
+            $RT::Logger->debug("Found signed according to RFC3156 part");
             return {
                 Type      => 'signed',
                 Format    => 'RFC3156',
@@ -538,6 +542,7 @@ sub FindProtectedParts {
         }
 
         $skip{"$data_part"}++;
+        $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
         push @res, {
             Type      => 'signed',
             Format    => 'Attachment',
@@ -555,6 +560,7 @@ sub FindProtectedParts {
 
     foreach my $part ( @encrypted_files ) {
         $skip{"$part"}++;
+        $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
         push @res, {
             Type      => 'encrypted',
             Format    => 'Attachment',
