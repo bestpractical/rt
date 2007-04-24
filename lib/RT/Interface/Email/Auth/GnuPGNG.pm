@@ -33,6 +33,7 @@ sub GetCurrentUser {
         for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
                X-RT-Incoming-Signature X-RT-Privacy);
 
+    my $msg = $args{'Message'}->dup;
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}
@@ -49,6 +50,13 @@ sub GetCurrentUser {
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return $args{'CurrentUser'}, -2;
     }
+
+    # attach the original encrypted message
+    $args{'Message'}->attach(
+        Type        => 'application/x-rt-original-message',
+        Disposition => 'inline',
+        Data        => $msg->as_string,
+    );
 
     $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
         foreach @res;
@@ -67,6 +75,7 @@ sub GetCurrentUser {
                     'X-RT-Incoming-Signature' => $_->{UserString} );
             }
         }
+
         $args{'Message'}->head->add( 'X-RT-Incoming-Encryption' => $decrypted
             ? 'Success'
             : 'Not encrypted' );
