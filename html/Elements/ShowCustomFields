@@ -67,8 +67,7 @@
 </table>
 <%INIT>
 my $CustomFields = $Object->CustomFields;
-$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
-                                CustomFields => $CustomFields);
+$m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
 my $print_value = sub {
     my ($cf, $value) = @_;
@@ -77,11 +76,11 @@ my $print_value = sub {
         $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
     }
     my $comp = "ShowCustomField". $cf->Type;
-    $m->comp('/Elements/Callback',
-        _CallbackName => 'ShowComponentName',
-        Name          => \$comp,
-        CustomField   => $cf,
-        Object        => $Object
+    $m->callback(
+        CallbackName => 'ShowComponentName',
+        Name         => \$comp,
+        CustomField  => $cf,
+        Object       => $Object,
     );
     if ( $m->comp_exists( $comp ) ) {
         $m->comp( $comp, Object => $value );

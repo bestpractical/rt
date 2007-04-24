@@ -50,26 +50,47 @@ no warnings qw(redefine);
 
 sub Create {
     my $self = shift;
-    my %args = ( 
-                CustomField => '0',
-                ObjectId => '0',
-                SortOrder => undef,
-                  @_);
+    my %args = (
+        CustomField => 0,
+        ObjectId    => 0,
+        SortOrder   => undef,
+        @_
+    );
 
-    if (!defined $args{SortOrder}) {
-        my $CF = $self->CustomFieldObj($args{'CustomField'});
-        my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCFs->LimitToObjectId($args{'ObjectId'});
-        $ObjectCFs->LimitToLookupType($CF->LookupType);
-
-        $args{SortOrder} = $ObjectCFs->Count + 1;
+    my $cf = $self->CustomFieldObj( $args{'CustomField'} );
+    unless ( $cf->id ) {
+        $RT::Logger->error("Couldn't load '$args{'CustomField'}' custom field");
+        return 0;
     }
 
-    $self->SUPER::Create(
-                         CustomField => $args{'CustomField'},
-                         ObjectId => $args{'ObjectId'},
-                         SortOrder => $args{'SortOrder'},
-                     );
+    #XXX: Where is ACL check for 'AssignCustomFields'?
+
+    my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
+    $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
+    $ObjectCFs->LimitToCustomField( $cf->id );
+    $ObjectCFs->LimitToLookupType( $cf->LookupType );
+    if ( my $first = $ObjectCFs->First ) {
+        $self->Load( $first->id );
+        return $first->id;
+    }
+
+    unless ( defined $args{'SortOrder'} ) {
+        my $ObjectCFs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
+        $ObjectCFs->LimitToLookupType( $cf->LookupType );
+        $ObjectCFs->OrderBy( FIELD => 'SortOrder', ORDER => 'DESC' );
+        if ( my $first = $ObjectCFs->First ) {
+            $args{'SortOrder'} = $first->SortOrder + 1;
+        } else {
+            $args{'SortOrder'}   = 0;
+        }
+    }
+
+    return $self->SUPER::Create(
+        CustomField => $args{'CustomField'},
+        ObjectId    => $args{'ObjectId'},
+        SortOrder   => $args{'SortOrder'},
+    );
 }
 
 sub Delete {
@@ -93,8 +114,8 @@ sub Delete {
 sub CustomFieldObj {
     my $self = shift;
     my $id = shift || $self->CustomField;
-    my $CF = RT::CustomField->new($self->CurrentUser);
-    $CF->Load($id) or die "Cannot load CustomField $id";
+    my $CF = RT::CustomField->new( $self->CurrentUser );
+    $CF->Load( $id );
     return $CF;
 }
 

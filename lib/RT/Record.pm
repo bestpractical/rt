@@ -1730,6 +1730,7 @@ sub CustomFieldValues {
 
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
+            $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
             return RT::ObjectCustomFieldValues->new( $self->CurrentUser );
         }
         return ( $cf->ValuesForObject($self) );
