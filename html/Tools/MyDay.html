@@ -47,6 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Tools/Elements/Tabs, current_tab => "Tools/MyDay.html", Title => $title &>
+
+<& /Elements/ListActions, actions => \@results &>
+
 (displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -77,11 +80,38 @@ cols="60"></textarea></td></tr>
 my $title = loc("What I did today");
 
 my $i = 0;
+my @results;
+foreach my $arg ( keys %ARGS ) {
+    next unless ( $arg =~ /^UpdateStatus-(\d*)$/ );
+    my $id     = $1;
+    my $ticket = LoadTicket($id);
+    next unless ( $ticket->id );
+    if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
+        my ( $val, $msg ) = $ticket->Comment(
+            Content   => $content,
+            TimeTaken => $ARGS{ 'UpdateTimeWorked-' . $id }
+        );
+        push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+    } elsif ( my $worked = $ARGS{ 'UpdateTimeWorked-' . $id } ) {
+        my ( $val, $msg ) = $ticket->SetTimeWorked( $worked + $ticket->TimeWorked );
+            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+    }
+
+    if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
+        if ( $status ne $ticket->Status ) {
+            my ( $val, $msg ) = $ticket->SetStatus($status);
+            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+
+        }
+    }
+
+}
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 $Tickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
 $Tickets->LimitStatus( VALUE => 'open' );
 $Tickets->LimitStatus ( VALUE => 'new');
 $Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
+
 
 </%INIT>

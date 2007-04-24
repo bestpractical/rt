@@ -123,7 +123,6 @@ $fields{'Custom.Ownership'} = 1;
 my @Order = split /\|/, $Order;
 my @OrderBy = split /\|/, $OrderBy;
 
-
 </%INIT>
 
 <%ARGS>
