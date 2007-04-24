@@ -578,10 +578,10 @@ sub InsertData {
             my $values    = delete $item->{'Values'};
 
             my @queues;
-            if ( $item->{'Queue'} ) {
-                my $queue_ref = delete $item->{'Queue'};
-                @queues = ref $queue_ref ? @{$queue_ref} : ($queue_ref);
+            # if ref then it's list of queues, so we do things ourself
+            if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
                 $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
+                @queues = @{ delete $item->{'Queue'} };
             }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
@@ -592,11 +592,12 @@ sub InsertData {
                 print "(Error: $msg)\n" unless $return;
             }
 
-            if ($item->{LookupType}) { # enable by default
+            # apply by default
+            if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
                 my $ocf = RT::ObjectCustomField->new($RT::SystemUser);
                 $ocf->Create( CustomField => $new_entry->Id );
             }
-       
+
             for my $q (@queues) {
                 my $q_obj = RT::Queue->new($RT::SystemUser);
                 $q_obj->Load($q);
