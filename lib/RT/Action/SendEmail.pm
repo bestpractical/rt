@@ -81,7 +81,7 @@ RT::Action::SendEmail.
 
 Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
 
-
+=cut
 
 sub CleanSlate {
     my $self = shift;
