@@ -64,7 +64,6 @@
 <% $member->Name %></a>
 % }
 </li>
-</li>
 % }
 </ul>
 <%INIT>
