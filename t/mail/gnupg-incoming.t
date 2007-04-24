@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 46;
+use Test::More tests => 45;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -118,7 +118,7 @@ run3(
     \$buf,
     \*STDOUT
 );
-diag $buf;
+
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
@@ -200,7 +200,7 @@ run3(
         '--homedir'     => $homedir,
         '--passphrase'  => 'test',
     ),
-    \"should not be there\r\n",
+    \"alright\r\n",
     \$buf,
     \*STDOUT
 );
@@ -219,7 +219,11 @@ RT::Test->close_mailgate_ok($mail);
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
     my $attach = $txn->Attachments->First;
-    unlike( $attach->Content, qr'should not be there');
+    like( $attach->Content, qr'alright');
+    is( $attach->GetHeader('X-RT-Incoming-Signature'),
+        'Test User <rt@example.com>',
+        'recorded incoming mail signed by others'
+    );
 }
 
 # test for encrypted mail with key not associated to the queue
