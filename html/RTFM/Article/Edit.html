@@ -129,6 +129,48 @@ elsif ( $id eq 'new' ) {
     }
 
 
+    foreach my $arg (keys %ARGS) {
+        next if $arg =~ /-(?:Magic|Category)$/;
+        warn "Conteplating CF arg $arg"; 
+        # Object-RT::FM::Article--CustomField-3-Values
+        if ( $arg =~ /^Object-RT::FM::Article--CustomField-(\d+)(.*?)$/ ) {
+            my $cfid = $1; 
+        
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->Load( $cfid );
+            unless ( $cf->id ) {
+                $RT::Logger->error( "Couldn't load custom field #". $cfid );
+                next;
+            }
+
+            if ( $arg =~ /-Upload$/ ) {
+                $create_args{"CustomField-$cfid"} = _UploadedFile( $arg );
+                next;
+            }
+            
+            my $type = $cf->Type;
+        
+            my @values = ();
+            if ( ref $ARGS{ $arg } eq 'ARRAY' ) {
+                @values = @{ $ARGS{ $arg } };
+            } elsif ( $type =~ /text/i ) {
+                @values = ($ARGS{ $arg });
+            } else {
+                @values = split /\r*\n/, $ARGS{ $arg } || '';
+            }
+            @values = grep $_ ne '',
+                map {
+                    s/\r+\n/\n/g;
+                    s/^\s+//;
+                    s/\s+$//;
+                    $_;
+                }
+                grep defined, @values;
+
+            $create_args{"CustomField-$cfid"} = \@values;
+        }
+    }
+
     my $msg;
     ( $id, $msg ) = $ArticleObj->Create(
         Summary => $ARGS{'Summary'},
@@ -140,23 +182,14 @@ elsif ( $id eq 'new' ) {
     push( @results, $msg );
     if ($id) {
 
-    foreach my $key (keys %ARGS) {
-    # when we create articles, we don't have an article id for the cf naming. 
-    # but here, we really want it for adding the value. so we do that now.
-    if ($key =~ /^Object-RT::FM::Article--/) {
-            my $new_key = $key;
-            $new_key =~ s/--/-$id-/; 
-            $ARGS{$new_key} = delete $ARGS{$key};
-        }
-    }
-    my @cf_results = ProcessObjectCustomFieldUpdates( Object  => $ArticleObj , ARGSRef => \%ARGS);
-        @results = ( @results, @cf_results );
+
+        $ArticleObj->Load($id);
 
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
         delete $ARGS{id};
         $m->redirect($ARGS{next}) if $ARGS{next};
     }
-    else {
+   if (!$id) {
         $ClassObj->Load($Class);
         unless ( $ClassObj->Id ) {
             $m->comp( "/RTFM/Elements/Error",
@@ -213,7 +246,7 @@ else {
 
     foreach my $linktype (@linktypes) {
 
-        for my $luri ( split( / /, $ARGS{ $ArticleObj->Id . "-$linktype" } ) ) {
+    for my $luri ( split( / /, ( $ARGS{ $ArticleObj->Id . "-$linktype" } || '' )) ) {
             $luri =~ s/\s*$//;    # Strip trailing whitespace
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Target => $luri, Type => $linktype );
@@ -221,7 +254,7 @@ else {
             delete $ARGS{ $ArticleObj->Id . "-$linktype" } if $val;
         }
 
-        for my $luri ( split( / /, $ARGS{ "$linktype-" . $ArticleObj->Id } ) ) {
+        for my $luri ( split( / /, ( $ARGS{ "$linktype-" . $ArticleObj->Id } || '' )) ) {
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Base => $luri, Type => $linktype );
             push @results, $msg;

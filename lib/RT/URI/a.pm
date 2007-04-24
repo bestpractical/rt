@@ -68,8 +68,8 @@ sub ParseURI {
     # articles after stripping off the a: prefix.
 
     if ($uri =~ /^$scheme:(\d+)/) {
-        warn $1;
-	return $self->SUPER::ParseURI($1);
+            my $value = $1;
+	return $self->SUPER::ParseURI($value);
     } else {
 	$self->{'uri'} = $uri;
 	return undef;

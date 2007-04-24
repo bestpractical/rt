@@ -69,6 +69,7 @@ $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 $tcf =~ /(\d+)$/ or die "Hey this is impossible dude";
 my $upload_field = "Object-RT::FM::Article--CustomField-$1-Upload";
 
+diag("Uploading an image to $upload_field");
 
 $m->submit_form(
     form_name => "EditArticle",
@@ -83,56 +84,7 @@ $m->content_like(qr/Article \d+ created/, "an article was created succesfully");
 
 my $id = $1 if $m->content =~ /Article (\d+) created/;
 
-$m->title_like(qr/Modify article #$id/, "Editing!");
+$m->title_like(qr/Modify article #$id/, "Editing article $id");
 
 $m->follow_link( text => 'bplogo.gif' );
 $m->content_is(ImageFileContent, "it links to the uploaded image");
-exit;
-$m->get( BaseURL );
-
-$m->follow_link( text => 'Tickets' );
-$m->follow_link( text => 'New Query' );
-
-$m->title_is(q/Query Builder/, 'Query building');
-$m->submit_form(
-    form_name => "BuildQuery",
-    fields => {
-        idOp => '=',
-        ValueOfid => $id,
-        ValueOfQueue => 'General',
-    },
-    button => 'AddClause',
-);
-
-$m->form_name('BuildQuery');
-
-my $col = ($m->current_form->find_input('SelectDisplayColumns'))[-1];
-$col->value( ($col->possible_values)[-1] );
-
-$m->click('AddCol');
-
-$m->form_name('BuildQuery');
-$m->click('DoSearch');
-
-$m->follow_link( text_regex => qr/bplogo\.gif/ );
-$m->content_is(ImageFileContent, "it links to the uploaded image");
-
-__END__
-[FC] Bulk Update does not have custom fields.
-
-
-# Create an RTFM class
-
-# Create a custom field
-
-
-# Associate the custom field with our class
-
-# create an RTFM article
-
-# Upload a file to that article
-
-# Validate that it has been erased
-
-
-

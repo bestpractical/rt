@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use Test::More qw/no_plan/;
+use Test::More tests => 38;
 
 
 use_ok('RT');
@@ -112,7 +112,7 @@ is ($txn2->ObjectId, $art->id);
 is ($txn2->id, ($txn->id +1));
 is ($txn2->Type, 'CustomField');
 is($txn2->NewValue, 'Testing');
-is ($txn2->OldValue, '');
+ok (!$txn2->OldValue, "It had no old value");
 
-
+1;
 

@@ -35,8 +35,9 @@ Loads a class, either by name or by id
 
 sub Load {
     my $self = shift;
-    my $id   = shift;
+    my $id   = shift ;
 
+    return unless $id;
     if ( $id =~ /^\d+$/ ) {
         $self->SUPER::Load($id);
     }

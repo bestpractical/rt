@@ -96,13 +96,15 @@ sub Create {
     foreach my $key ( keys %args ) {
         next unless ( $key =~ /CustomField-(.*)$/ );
         my $cf   = $1;
-        my @vals =
-          ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
-        foreach my $val (@vals) {
+        my @vals = ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
+        foreach my $value (@vals) {
 
             my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
-                Field             => $1,
-                Value             => $val,
+                (UNIVERSAL::isa( $value => 'HASH' )
+                    ? %$value
+                    : (Value => $value)
+                ),
+                Field             => $cf,
                 RecordTransaction => 0
             );
 

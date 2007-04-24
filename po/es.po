@@ -1,3 +1,4 @@
+# translation of es.po to spanish
 # translation of es.po to
 # Copyright (c) 2003 Jesse Vincent <jesse@bestpractical.com>
 #
@@ -6,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "POT-Creation-Date: 2002-07-07\n"
-"PO-Revision-Date: 2007-04-04 13:12-0500\n"
+"PO-Revision-Date: 2007-04-09 16:38-0500\n"
 "Last-Translator: Luis Barajas <lbarajas@mixbaal.com>\n"
-"Language-Team:  <en@li.org>\n"
+"Language-Team: spanish <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +22,7 @@ msgstr "#"
 #: lib/RT/FM/Article_Overlay.pm:976
 #. ($args{'Content'}, $cf->Name)
 msgid "%1 added as a value for %2"
-msgstr "%1 añadido como valor de %2"
+msgstr "%1 aÃ±adido como valor de %2"
 
 #: lib/RT/FM/Transaction_Overlay.pm:53
 #. ($self->Field , $self->OldContent, $self->NewContent)
@@ -31,7 +32,7 @@ msgstr "%1 cambiado de '%2' a '%3'"
 #: lib/RT/FM/ArticleCFValue_Overlay.pm:82
 #. ($args{'Content'}, $cf->Name, $args{'Article'})
 msgid "%1 is an invalid value for custom field %2 for article %3"
-msgstr "%1 es un valor inválido para un campo personalizado %2 para artículo %3a"
+msgstr "%1 es un valor invÃ¡lido para un campo personalizado %2 para artÃ­culo %3a"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:76
 #. ($field->Name)
@@ -41,12 +42,12 @@ msgstr "%1 concuerda"
 #: html/RTFM/Elements/UpdatedArticles:19
 #. ($rows)
 msgid "%1 most recently updated articles"
-msgstr "%1 artículos recientemente actualizados"
+msgstr "%1 artÃ­culos recientemente actualizados"
 
 #: html/RTFM/Elements/NewestArticles:19
 #. ($rows)
 msgid "%1 newest articles"
-msgstr "%1 artículos nuevos"
+msgstr "%1 artÃ­culos nuevos"
 
 #: lib/RT/FM/Transaction_Overlay.pm:73
 #. ($cf->Name, $self->NewContent)
@@ -113,7 +114,7 @@ msgstr "ValoresAdmin"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:24
 msgid "Advanced Search Criteria"
-msgstr "Criterio de Búsqueda Avanzada"
+msgstr "Criterio de BÃºsqueda Avanzada"
 
 #: html/RTFM/Admin/Classes/index.html:57
 msgid "All Classes"
@@ -121,41 +122,41 @@ msgstr "Todas las Clases"
 
 #: html/RTFM/Article/Delete.html:29
 msgid "Are you sure you want to delete this article?"
-msgstr "Está seguro que deseas borrar este artículo?"
+msgstr "EstÃ¡ seguro que deseas borrar este artÃ­culo?"
 
 #: html/RTFM/Article/Delete.html:69
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
-msgstr "Artículo #%1 borrado"
+msgstr "ArtÃ­culo #%1 borrado"
 
 #: html/RTFM/Article/Display.html:46
 #. ($article->Id, $article->Name)
 msgid "Article #%1: %2"
-msgstr "Artículo #%1: %2"
+msgstr "ArtÃ­culo #%1: %2"
 
 #: lib/RT/FM/Article_Overlay.pm:280
 msgid "Article Deleted"
-msgstr "Artículo Borrado"
+msgstr "ArtÃ­culo Borrado"
 
 #: lib/RT/FM/Transaction_Overlay.pm:80
 msgid "Article created"
-msgstr "Artículo creado"
+msgstr "ArtÃ­culo creado"
 
 #: html/RTFM/Article/Display.html:35 html/RTFM/Article/Elements/ShowHistory:35
 msgid "Article not found"
-msgstr "Artículo no encontrado"
+msgstr "ArtÃ­culo no encontrado"
 
 #: html/RTFM/Elements/Tabs:43
 msgid "Articles"
-msgstr "Artículos"
+msgstr "ArtÃ­culos"
 
 #: html/RTFM/Admin/Elements/ClassTabs:29 html/RTFM/Admin/Elements/CustomFieldTabs:38
 msgid "Basics"
-msgstr "Básicos"
+msgstr "BÃ¡sicos"
 
 #: html/RTFM/Admin/Classes/GroupRights.html:59 html/RTFM/Admin/Classes/UserRights.html:46 html/RTFM/Admin/CustomFields/GroupRights.html:61 html/RTFM/Admin/CustomFields/UserRights.html:46
 msgid "Be sure to save your changes"
-msgstr "Asegrate de grabar tus cambios"
+msgstr "AsegÃºrate de grabar tus cambios"
 
 #: lib/RT/FM/Article_Overlay.pm:359
 msgid "Can't link a ticket to itself"
@@ -163,7 +164,7 @@ msgstr "No es posible ligar un caso a si mismo"
 
 #: lib/RT/FM/Article_Overlay.pm:340 lib/RT/FM/Article_Overlay.pm:569
 msgid "Can't specifiy both base and target"
-msgstr "No es posible especificar base y objetico"
+msgstr "No es posible especificar base y objetivo"
 
 #: html/RTFM/Article/Create.html:46 html/RTFM/Article/Elements/EditBasics:38 html/RTFM/Article/Elements/ShowSearchResults:25
 msgid "Class"
@@ -183,7 +184,7 @@ msgstr "Clases"
 
 #: html/RTFM/Elements/Tabs:45
 msgid "Configuration"
-msgstr "Configuración"
+msgstr "ConfiguraciÃ³n"
 
 #: lib/RT/FM/ArticleCFValue_Overlay.pm:76
 msgid "Content not set"
@@ -192,12 +193,12 @@ msgstr "Contenido no establecido"
 #: lib/RT/FM/Article_Overlay.pm:962
 #. ($new_value_msg)
 msgid "Could not add new custom field value for Article. %1"
-msgstr "No es posible añadir un nuevo valor de campo personalizable para el artículo. %1"
+msgstr "No es posible aÃ±adir un nuevo valor de campo personalizable para el artÃ­culo. %1"
 
 #: lib/RT/FM/Article_Overlay.pm:923
 #. ($value_msg)
 msgid "Could not add new custom field value for Article. %1 "
-msgstr "No es posible añadir un nuevo valor de campo personalizable para el artículo. %1"
+msgstr "No es posible aÃ±adir un nuevo valor de campo personalizable para el artÃ­culo. %1"
 
 #: html/RTFM/Admin/CustomFields/Basics.html:64
 #. ($msg)
@@ -207,11 +208,11 @@ msgstr "No es posible crear campo personalizable"
 #: lib/RT/FM/Article_Overlay.pm:973
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
-msgstr "No es posible crear la transacción: %1"
+msgstr "No es posible crear la transacciÃ³n: %1"
 
 #: lib/RT/FM/CustomField_Overlay.pm:257
 msgid "Couldn't find that value"
-msgstr "No se encontró ese valor"
+msgstr "No se encontrÃ³ ese valor"
 
 #: html/RTFM/Admin/Classes/GroupRights.html:71 html/RTFM/Admin/Classes/UserRights.html:66 html/RTFM/Admin/CustomFields/UserRights.html:121
 #. ($id)
@@ -226,7 +227,7 @@ msgstr "No es posible cargar en campo personalizable %1"
 #: lib/RT/FM/Article_Overlay.pm:1018
 #. ($cf->Id, $args{'Content'})
 msgid "Couldn't load custom field %1 value %2 while trying to delete it."
-msgstr "No fué posible cargar el campo personalizable %1 valor %2 cuando se intenta borrar."
+msgstr "No fue posible cargar el campo personalizable %1 valor %2 cuando se intenta borrar."
 
 #: html/RTFM/Article/Create.html:100 html/RTFM/Article/ExtractFromTicket.html:51
 msgid "Create"
@@ -242,23 +243,23 @@ msgstr "Crear un Campo Personalizable"
 
 #: html/RTFM/Article/Create.html:19
 msgid "Create a new article"
-msgstr "Crear un nuevo artículo"
+msgstr "Crear un nuevo artÃ­culo"
 
 #: html/RTFM/Elements/CreateArticle:19
 msgid "Create an article"
-msgstr "Crear un artículo"
+msgstr "Crear un artÃ­culo"
 
 #: html/RTFM/Article/PreCreate.html:20
 msgid "Create an article in class..."
-msgstr "Crear un artículo en la clase..."
+msgstr "Crear un artÃ­culo en la clase..."
 
 #: lib/RT/FM/Class_Overlay.pm:54
 msgid "Create articles in this class"
-msgstr "Crear artículos en esta clase"
+msgstr "Crear artÃ­culos en esta clase"
 
 #: lib/RT/FM/Class_Overlay.pm:54
 msgid "CreateArticle"
-msgstr "CrearArtículo"
+msgstr "CrearArtÃ­culo"
 
 #: html/RTFM/Article/Elements/ShowSearchResults:26
 msgid "Created"
@@ -293,7 +294,7 @@ msgstr "Campo personalizable %1 no encontrado"
 #: lib/RT/FM/Article_Overlay.pm:862
 #. ($args{'Field'})
 msgid "Custom field %1 not valid for that article"
-msgstr "Campo personalizable %1 inválido para ese artículo"
+msgstr "Campo personalizable %1 invÃ¡lido para ese artÃ­culo"
 
 #: lib/RT/FM/ArticleCFValue_Overlay.pm:64
 msgid "Custom field not found"
@@ -302,12 +303,12 @@ msgstr "Campo personalizable no encontrado"
 #: lib/RT/FM/CustomField_Overlay.pm:461
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr "El valor del campo personalizable %1 no se encontró para el campo personalizable %2"
+msgstr "El valor del campo personalizable %1 no se encontrÃ³ para el campo personalizable %2"
 
 #: lib/RT/FM/Article_Overlay.pm:951
 #. ($old_value, $new_value->Content)
 msgid "Custom field value changed from '%1' to '%2'"
-msgstr "El valor del campo personalizable cambió de '%1' a '%2'"
+msgstr "El valor del campo personalizable cambiÃ³ de '%1' a '%2'"
 
 #: lib/RT/FM/CustomField_Overlay.pm:267
 msgid "Custom field value could not be deleted"
@@ -328,11 +329,11 @@ msgstr "Borrar"
 #: html/RTFM/Article/Delete.html:73
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
-msgstr "Borrar artículo #%1"
+msgstr "Borrar artÃ­culo #%1"
 
 #: html/RTFM/Admin/Classes/Modify.html:41 html/RTFM/Admin/CustomFields/Basics.html:28 html/RTFM/Admin/Elements/EditCustomFieldValues:22
 msgid "Description"
-msgstr "Descripción"
+msgstr "DescripciÃ³n"
 
 #: html/RTFM/Article/Elements/Tabs:39
 msgid "Display"
@@ -350,7 +351,7 @@ msgstr "Editar campos personalizables de la clase %1"
 #: html/RTFM/Admin/Classes/Modify.html:79
 #. ($ClassObj->Name)
 msgid "Editing Configuration for Class %1"
-msgstr "Editando la Configuración de la clase %1"
+msgstr "Editando la ConfiguraciÃ³n de la clase %1"
 
 #: html/RTFM/Admin/CustomFields/Basics.html:70
 #. ($CustomFieldObj->Name())
@@ -376,21 +377,21 @@ msgstr "Estado %1 habilitado"
 
 #: html/RTFM/Article/Create.html:88 html/RTFM/Article/Elements/EditLinks:73
 msgid "Enter Articles or URIs to link Articles to. Separate multiple entries with spaces."
-msgstr "Entrar artículos o URIs para ligar a los artículos. Separar mltiples entradas con espacios."
+msgstr "Entrar artÃ­culos o URIs para ligar a los artÃ­culos. Separar mÃºltiples entradas con espacios."
 
 #: html/Callbacks/RTFM/Ticket/Elements/Tabs/Default:21
 msgid "Extract Article"
-msgstr "Extraer Artículo"
+msgstr "Extraer ArtÃ­culo"
 
 #: html/RTFM/Article/ExtractIntoClass.html:19
 #. ($Ticket)
 msgid "Extract article from ticket #%1"
-msgstr "Extraer un artículo del caso #%1"
+msgstr "Extraer un artÃ­culo del caso #%1"
 
 #: html/RTFM/Article/ExtractFromTicket.html:19
 #. ($Ticket, $ClassObj->Name)
 msgid "Extract article from ticket #%1 into class %2"
-msgstr "Extraer un artículo del caso #%1 a la clase %2"
+msgstr "Extraer un artÃ­culo del caso #%1 a la clase %2"
 
 #: html/RTFM/Admin/Classes/index.html:44
 msgid "Go!"
@@ -407,15 +408,15 @@ msgstr "Historia"
 #: html/RTFM/Article/History.html:22
 #. ($id)
 msgid "History for article #%1"
-msgstr "Historia del artículo #%1"
+msgstr "Historia del artÃ­culo #%1"
 
 #: html/RTFM/Article/Edit.html:33
 msgid "If you've updated anything above, be sure to"
-msgstr "Si ha actualizado algo más arriba, no olvide"
+msgstr "Si ha actualizado algo mÃ¡s arriba, no olvide"
 
 #: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:34
 msgid "Include RTFM article:"
-msgstr "Incluir un artículo de RTFM:"
+msgstr "Incluir un artÃ­culo de RTFM:"
 
 #: html/RTFM/Admin/Classes/index.html:42
 msgid "Include disabled classes in listing."
@@ -431,15 +432,15 @@ msgstr "Error Interno"
 
 #: lib/RT/FM/Article_Overlay.pm:103
 msgid "Invalid Class"
-msgstr "Clase inválida"
+msgstr "Clase invÃ¡lida"
 
 #: lib/RT/FM/ArticleCFValue_Overlay.pm:56
 msgid "Invalid article"
-msgstr "Artículo inválido"
+msgstr "ArtÃ­culo invÃ¡lido"
 
 #: lib/RT/FM/CustomField_Overlay.pm:613 lib/RT/FM/CustomField_Overlay.pm:673 lib/RT/FM/CustomField_Overlay.pm:710
 msgid "Invalid value for class"
-msgstr "Valor inválido para la clase"
+msgstr "Valor invÃ¡lido para la clase"
 
 #: lib/RT/FM/Article_Overlay.pm:372
 msgid "Link already exists"
@@ -482,7 +483,7 @@ msgstr "Modificar la lista de control de acceso"
 #: html/RTFM/Article/Edit.html:210
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
-msgstr "Modificar artículo #%1"
+msgstr "Modificar artÃ­culo #%1"
 
 #: html/RTFM/Admin/Classes/GroupRights.html:19 html/RTFM/Admin/Classes/GroupRights.html:25
 #. ($ClassObj->Name)
@@ -504,7 +505,7 @@ msgstr "Modificar metadatos para esta campo personalizable"
 
 #: lib/RT/FM/Class_Overlay.pm:57
 msgid "Modify or delete articles in this class"
-msgstr "Modificar o borrar artículos en esta clase"
+msgstr "Modificar o borrar artÃ­culos en esta clase"
 
 #: html/RTFM/Admin/Classes/UserRights.html:19 html/RTFM/Admin/Classes/UserRights.html:25
 #. ($ClassObj->Name)
@@ -538,11 +539,11 @@ msgstr "Nombre coincide"
 
 #: html/RTFM/Article/Elements/Tabs:29
 msgid "New Article"
-msgstr "Artículo Nuevo"
+msgstr "ArtÃ­culo Nuevo"
 
 #: html/RTFM/Article/Elements/EditLinks:72
 msgid "New Relationships"
-msgstr "Nueva Relación"
+msgstr "Nueva RelaciÃ³n"
 
 #: html/RTFM/Admin/Elements/ClassTabs:52
 msgid "New class"
@@ -562,7 +563,7 @@ msgstr "Ninguna Clase definida"
 
 #: html/RTFM/Admin/Classes/index.html:28
 msgid "No Classes matching search criteria found."
-msgstr "No existen clases que coincidan con el criterio de bsqueda."
+msgstr "No existen clases que coincidan con el criterio de bÃºsqueda."
 
 #: html/RTFM/Admin/CustomFields/Basics.html:69
 msgid "No CustomField"
@@ -574,7 +575,7 @@ msgstr "No hay campo personalizable definido"
 
 #: html/RTFM/Elements/Tabs:41 html/RTFM/index.html:19
 msgid "Overview"
-msgstr "Información general"
+msgstr "InformaciÃ³n general"
 
 #: html/RTFM/Article/Display.html:40 html/RTFM/Article/Elements/ShowHistory:40 lib/RT/FM/Article_Overlay.pm:1001 lib/RT/FM/Article_Overlay.pm:107 lib/RT/FM/Article_Overlay.pm:1178 lib/RT/FM/Article_Overlay.pm:234 lib/RT/FM/Article_Overlay.pm:332 lib/RT/FM/Article_Overlay.pm:561 lib/RT/FM/Article_Overlay.pm:701 lib/RT/FM/Article_Overlay.pm:838 lib/RT/FM/Class_Overlay.pm:164 lib/RT/FM/Class_Overlay.pm:242 lib/RT/FM/CustomField_Overlay.pm:127 lib/RT/FM/CustomField_Overlay.pm:222 lib/RT/FM/CustomField_Overlay.pm:251 lib/RT/FM/CustomField_Overlay.pm:616 lib/RT/FM/CustomField_Overlay.pm:676 lib/RT/FM/CustomField_Overlay.pm:713
 msgid "Permission Denied"
@@ -582,7 +583,7 @@ msgstr "Permiso Denegado"
 
 #: html/RTFM/Elements/QuickSearch:19
 msgid "Quick search"
-msgstr "Bsqueda rápida"
+msgstr "BÃºsqueda rÃ¡pida"
 
 #: html/RTFM/Elements/Tabs:35
 msgid "RT"
@@ -594,7 +595,7 @@ msgstr "RTFM"
 
 #: html/RTFM/Admin/index.html:19
 msgid "RTFM Administration"
-msgstr "Administración de RTFM"
+msgstr "AdministraciÃ³n de RTFM"
 
 #: html/RTFM/Elements/Error:36
 msgid "RTFM Error"
@@ -610,7 +611,7 @@ msgstr "Se refiere a "
 
 #: html/RTFM/Article/Create.html:87
 msgid "Relationships"
-msgstr "Relationes"
+msgstr "Relaciones"
 
 #: html/RTFM/Admin/CustomFields/GroupRights.html:99
 #. ($object_type)
@@ -632,15 +633,15 @@ msgstr "Buscar"
 
 #: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:30
 msgid "Search for RTFM articles matching"
-msgstr "Buscar artículos de RTFM que concuerden"
+msgstr "Buscar artÃ­culos de RTFM que concuerden"
 
 #: html/RTFM/Article/Search.html:19
 msgid "Search for articles"
-msgstr "Buscar artículos"
+msgstr "Buscar artÃ­culos"
 
 #: lib/RT/FM/Class_Overlay.pm:55 lib/RT/FM/Class_Overlay.pm:56
 msgid "See articles in this class"
-msgstr "Ver artículos en esta clase"
+msgstr "Ver artÃ­culos en esta clase"
 
 #: lib/RT/FM/Class_Overlay.pm:53
 msgid "See that this class exists"
@@ -676,11 +677,11 @@ msgstr "Selecciona un campo personalizable"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:68
 msgid "Separate multiple URLs with spaces"
-msgstr "Separar URLs mltiples con espacios"
+msgstr "Separar URLs mÃºltiples con espacios"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:22
 msgid "Show advanced search options..."
-msgstr "Mostrar opciones de bsqueda avanzadas..."
+msgstr "Mostrar opciones de bÃºsqueda avanzadas..."
 
 #: lib/RT/FM/Class_Overlay.pm:59 lib/RT/FM/CustomField_Overlay.pm:32
 msgid "ShowACL"
@@ -688,11 +689,11 @@ msgstr "MostrarACL"
 
 #: lib/RT/FM/Class_Overlay.pm:55
 msgid "ShowArticle"
-msgstr "MostrarArtículo"
+msgstr "MostrarArtÃ­culo"
 
 #: lib/RT/FM/Class_Overlay.pm:56
 msgid "ShowArticleHistory"
-msgstr "MostrarHistoriadeArtículo"
+msgstr "MostrarHistoriadeArtÃ­culo"
 
 #: lib/RT/FM/CustomField_Overlay.pm:29
 msgid "ShowCustomField"
@@ -729,20 +730,20 @@ msgstr "Ese no es un valor para este campo personalizable"
 #: lib/RT/FM/Transaction_Overlay.pm:59
 #. ($self->Field , $self->OldContent)
 msgid "This article no longer %1 '%2'"
-msgstr "Este artículo no es más %1 '%2'"
+msgstr "Este artÃ­culo no es mÃ¡s %1 '%2'"
 
 #: lib/RT/FM/Transaction_Overlay.pm:57
 #. ($self->Field , $self->NewContent)
 msgid "This article now %1 '%2'"
-msgstr "Este artículo ahora %1 '%2'"
+msgstr "Este artÃ­culo ahora %1 '%2'"
 
 #: lib/RT/FM/CustomField_Overlay.pm:683 lib/RT/FM/CustomField_Overlay.pm:719
 msgid "This custom field does not apply to that class"
-msgstr "Este campo personalizable no ae aplica para la clase"
+msgstr "Este campo personalizable no se aplica para la clase"
 
 #: lib/RT/FM/Article_Overlay.pm:1116
 msgid "Transaction recorded"
-msgstr "Transacción grabada"
+msgstr "TransacciÃ³n grabada"
 
 #: html/RTFM/Admin/CustomFields/Basics.html:29
 msgid "Type"
@@ -750,7 +751,7 @@ msgstr "Tipo"
 
 #: html/RTFM/Article/Delete.html:59 html/RTFM/Article/Edit.html:73
 msgid "Unable to load article"
-msgstr "No es posible cargar el artículo"
+msgstr "No es posible cargar el artÃ­culo"
 
 #: html/RTFM/Elements/NewestArticles:42 html/RTFM/Elements/UpdatedArticles:43
 msgid "Update"
@@ -758,7 +759,7 @@ msgstr "Actualizar"
 
 #: html/RTFM/Article/ExtractFromTicket.html:26
 msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
-msgstr "Utilize los menus en cascada para seleccionar que transacción quiere extraer a un nuevo artículo de RTFM"
+msgstr "Utilice los menÃºs en cascada para seleccionar que transacciÃ³n quiere extraer a un nuevo artÃ­culo de RTFM"
 
 #: html/RTFM/Admin/Elements/ClassTabs:40 html/RTFM/Admin/Elements/CustomFieldTabs:46
 msgid "User Rights"
@@ -770,7 +771,7 @@ msgstr "Grupos definidos por el usuario"
 
 #: lib/RT/FM/ArticleCFValue_Overlay.pm:89
 msgid "Value added"
-msgstr "Valor añadido"
+msgstr "Valor aÃ±adido"
 
 #: html/RTFM/Admin/CustomFields/Basics.html:35
 msgid "Values"
@@ -807,7 +808,7 @@ msgstr "en la clase %1"
 
 #: html/RTFM/Elements/Error:37
 msgid "the calling component did not specify why"
-msgstr "el componente que llama no especifica por qué"
+msgstr "el componente que llama no especifica por quÃ©"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:54 html/RTFM/Article/Elements/ShowSearchCriteria:60
 msgid "till"
