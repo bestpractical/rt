@@ -307,7 +307,7 @@ sub LimitCustomField {
             OPERATOR        => $op,
             VALUE           => $value,
             QUOTEVALUE      => $args{'QUOTEVALUE'},
-            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            ENTRYAGGREGATOR => 'AND', #$args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
         );
         $self->SUPER::Limit(

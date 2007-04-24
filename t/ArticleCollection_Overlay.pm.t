@@ -118,9 +118,7 @@ is(
 $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 $arts->Limit(FIELD =>'Class', VALUE => $class->id);
 $arts->LimitCustomField( OPERATOR => 'NOT LIKE', VALUE => 'est', FIELD => $cf->id );
-is( $arts->Count , 0, "Found 0 cf values not matching 'est' for CF  ".$cf->id);
-
-
+is( $arts->Count , 0, "Found 0 cf values not matching 'est' for CF  ".$cf->id. " " . join(',', map {$_->id} @{$arts->ItemsArrayRef}));
 $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 $arts->Limit(FIELD =>'Class', VALUE => $class->id);
 $arts->LimitCustomField( OPERATOR => 'NOT LIKE', VALUE => 'BOGUS', FIELD => $cf->id );
