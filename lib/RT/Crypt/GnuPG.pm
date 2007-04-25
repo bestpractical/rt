@@ -311,6 +311,9 @@ sub SignEncryptRFC3156 {
 }
 
 sub SignEncryptInline {
+    my %args = ( @_ );
+
+    my $entity = $args{'Entity'};
 
     my %res;
     $entity->make_singlepart;
