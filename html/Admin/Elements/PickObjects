@@ -66,7 +66,7 @@
 % } else {
     <i>(<%loc("no name")%>)</i><br />
 % }
-    <%$Object->can('Description') && $Object->Description%>
+    <%$Object->can('Description') ? ($Object->Description||'') : '' %>
     </label>
   </td>
 </tr>
