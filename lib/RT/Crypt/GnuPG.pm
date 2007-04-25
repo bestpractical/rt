@@ -118,12 +118,27 @@ Returns a hash with the following keys:
 =cut
 
 sub SignEncrypt {
+    my %args = (@_);
+
+    my $entity = $args{'Entity'};
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+    }
+    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+        my %seen;
+        $args{'Recipients'} = [
+            grep $_ && !$seen{ $_ }++, map $_->address,
+            map Mail::Address->parse( $entity->head->get( $_ ) ),
+            qw(To Cc Bcc)
+        ];
+    }
+
     
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return SignEncryptInline( @_ );
+        return SignEncryptInline( %args );
     } else {
-        return SignEncryptRFC3156( @_ );
+        return SignEncryptRFC3156( %args );
     }
 }
 
@@ -275,36 +290,21 @@ sub SignEncryptRFC3156 {
 }
 
 sub SignEncryptInline {
-    my %args = (@_);
-
-    my $entity = $args{'Entity'};
-    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
-    }
-    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
-        my %seen;
-        $args{'Recipients'} = [
-            grep $_ && !$seen{ $_ }++, map $_->address,
-            map Mail::Address->parse( $entity->head->get( $_ ) ),
-            qw(To Cc Bcc)
-        ];
-    }
 
     my %res;
-
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = SignEncryptInline( %args, Entity => $_ );
+            %res = SignEncryptInline( @_, Entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
     }
 
-    return _SignEncryptTextInline( %args )
+    return _SignEncryptTextInline( @_ )
         if $entity->effective_type =~ /^text\//i;
 
-    return _SignEncryptAttachmentInline( %args );
+    return _SignEncryptAttachmentInline( @_ );
 }
 
 sub _SignEncryptTextInline {
