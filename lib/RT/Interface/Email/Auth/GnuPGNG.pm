@@ -149,6 +149,12 @@ sub HandleErrors {
                 $reject = 1;
             }
         }
+        unless ( $sent_once{'BadData'} ) {
+            unless ( CheckBadData( Message => $args{'Message'}, Status => \@status ) ) {
+                $sent_once{'BadData'}++;
+                $reject = 1;
+            }
+        }
     }
     return $reject;
 }
@@ -174,6 +180,31 @@ sub CheckNoPrivateKey {
     );
     unless ( $status ) {
         $RT::Logger->error("Couldn't send 'Error: no private key'");
+    }
+    return 0;
+}
+
+sub CheckBadData {
+    my %args = (Message => undef, Status => [], @_ );
+    my @bad_data_messages = 
+        map $_->{'Message'},
+        grep $_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data',
+        @{ $args{'Status'} };
+    return 1 unless @bad_data_messages;
+
+    $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
+
+    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
+    my $status = RT::Interface::Email::SendEmailUsingTemplate(
+        To        => $address,
+        Template  => 'Error: bad GnuPG data',
+        Arguments => {
+            Messages  => [ @bad_data_messages ],
+            TicketObj => $args{'Ticket'},
+        },
+    );
+    unless ( $status ) {
+        $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
     }
     return 0;
 }
