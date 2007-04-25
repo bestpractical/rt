@@ -95,7 +95,7 @@ sub GetCurrentUser {
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return $args{'CurrentUser'}, -2;
+        return $args{'CurrentUser'}, -2 if $reject;
     }
 
     # attach the original encrypted message
