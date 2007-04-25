@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -22,7 +22,9 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
 # 
 # 
 # CONTRIBUTION SUBMISSION POLICY:
@@ -131,6 +133,10 @@ L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
 =cut
 
 sub Init {
+
+    CheckPerlRequirements();
+
+    #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses();
@@ -324,6 +330,40 @@ sub InitLogging {
         die $_[0];
     };
 }
+
+
+sub CheckPerlRequirements {
+    if ($^V < 5.008003) {
+        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
+    }
+
+    local ($@);
+    eval { 
+        my $x = ''; 
+        my $y = \$x;
+        require Scalar::Util; Scalar::Util::weaken($y);
+    };
+    if ($@) {
+        die <<"EOF";
+
+RT requires the Scalar::Util module be built with support for  the 'weaken'
+function. 
+
+It is sometimes the case that operating system upgrades will replace 
+a working Scalar::Util with a non-working one. If your system was working
+correctly up until now, this is likely the cause of the problem.
+
+Please reinstall Scalar::Util, being careful to let it build with your C 
+compiler. Ususally this is as simple as running the following command as
+root.
+
+    perl -MCPAN -e'install Scalar::Util'
+
+EOF
+
+    }
+}
+
 
 =head2 InitClasses
 

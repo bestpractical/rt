@@ -1,38 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-#
+# 
 # COPYRIGHT:
-#
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC
+#  
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
-#
+# 
 # (Except where explicitly superseded by other copyright notices)
-#
-#
+# 
+# 
 # LICENSE:
-#
+# 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-#
+# 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-#
-#
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+# 
+# 
 # CONTRIBUTION SUBMISSION POLICY:
-#
+# 
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-#
+# 
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -41,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-#
+# 
 # END BPS TAGGED BLOCK }}}
 package RT::Interface::Email;
 
@@ -349,7 +351,7 @@ sub SendEmail {
         foreach my $argument ( qw(Sign Encrypt) ) {
             if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
                 $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } else {
+    } else {
                 $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
             }
         }
@@ -927,6 +929,22 @@ sub Gateway {
     #Pull apart the subject line
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
+    
+    # {{{ Lets check for mail loops of various sorts.
+    my ($should_store_machine_generated_message, $IsALoop, $result);
+    ( $should_store_machine_generated_message, $ErrorsTo, $result, $IsALoop ) =
+      _HandleMachineGeneratedMail(
+        Message  => $Message,
+        ErrorsTo => $ErrorsTo,
+        Subject  => $Subject,
+        MessageId => $MessageId
+    );
+
+    # Do not pass loop messages to MailPlugins, to make sure the loop
+    # is broken, unless $RT::StoreLoops is set.
+    if ($IsALoop && !$should_store_machine_generated_message) {
+        return ( 0, $result, undef );
+    }
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
@@ -1044,16 +1062,8 @@ sub Gateway {
         );
     }
 
-    # {{{ Lets check for mail loops of various sorts.
-    my ($continue, $result);
-     ( $continue, $ErrorsTo, $result ) = _HandleMachineGeneratedMail(
-        Message  => $Message,
-        ErrorsTo => $ErrorsTo,
-        Subject  => $Subject,
-        MessageId => $MessageId
-    );
 
-    unless ($continue) {
+    unless ($should_store_machine_generated_message) {
         return ( 0, $result, undef );
     }
 
@@ -1087,7 +1097,7 @@ sub Gateway {
         if ( $id == 0 ) {
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Ticket creation failed",
+                Subject     => "Ticket creation failed: $Subject",
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
@@ -1105,7 +1115,7 @@ sub Gateway {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Message not recorded",
+                Subject     => "Message not recorded: $Subject",
                 Explanation => $error,
                 MIMEObj     => $Message
             );
@@ -1136,7 +1146,7 @@ sub Gateway {
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded",
+                    Subject     => "Message not recorded: $Subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
@@ -1225,6 +1235,7 @@ EOT
     );
 
     # Also notify the requestor that his request has been dropped.
+    if ($args{'Requestor'} ne RT->Config->Get('OwnerEmail')) {
     MailError(
         To          => $args{'Requestor'},
         Subject     => "Could not load a valid user",
@@ -1236,6 +1247,7 @@ EOT
         MIMEObj  => $args{'Message'},
         LogLevel => 'error'
     );
+    }
 }
 
 =head2 _HandleMachineGeneratedMail
@@ -1246,7 +1258,8 @@ Takes named params:
     Subject
 
 Checks the message to see if it's a bounce, if it looks like a loop, if it's autogenerated, etc.
-Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message");
+Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message",
+"This message appears to be a loop (boolean)" );
 
 =cut
 
@@ -1276,7 +1289,7 @@ sub _HandleMachineGeneratedMail {
 
     # Warn someone if it's a loop, before we drop it on the ground
     if ($IsALoop) {
-        $RT::Logger->crit("RT Recieved mail (".$args{MessageId}.") from itself.");
+        $RT::Logger->crit("RT Received mail (".$args{MessageId}.") from itself.");
 
         #Should we mail it to RTOwner?
         if ( RT->Config->Get('LoopsToRTOwner') ) {
@@ -1289,7 +1302,7 @@ sub _HandleMachineGeneratedMail {
         }
 
         #Do we actually want to store it?
-        return ( 0, $ErrorsTo, "Message Bounced" ) unless RT->Config->Get('StoreLoops');
+        return ( 0, $ErrorsTo, "Message Bounced", $IsALoop ) unless (RT->Config->Get('StoreLoops'));
     }
 
     # Squelch replies if necessary
@@ -1313,7 +1326,7 @@ sub _HandleMachineGeneratedMail {
         $head->add( 'RT-Squelch-Replies-To',    $Sender );
         $head->add( 'RT-DetectedAutoGenerated', 'true' );
     }
-    return ( 1, $ErrorsTo, "Handled machine detection" );
+    return ( 1, $ErrorsTo, "Handled machine detection", $IsALoop );
 }
 
 =head2 IsCorrectAction

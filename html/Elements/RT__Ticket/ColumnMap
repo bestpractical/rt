@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -22,7 +22,9 @@
 %# 
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
-%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -50,21 +52,21 @@ $Attr => undef
 
 
 <%ONCE>
-our ( $COLUMN_MAP );
+our ( $TICKET_COLUMN_MAP );
 
 my $ColumnMap = sub {
     my $name = shift;
     my $attr = shift;
 
     # First deal with the simple things from the map
-    if ( $COLUMN_MAP->{$name} ) {
-        return ( $COLUMN_MAP->{$name}->{$attr} );
+    if ( $TICKET_COLUMN_MAP->{$name} ) {
+        return ( $TICKET_COLUMN_MAP->{$name}->{$attr} );
     }
-    elsif ( (my ($mainkey, $subkey) = $name =~ /^(.*?)\.{(.+)}$/) && $COLUMN_MAP->{$1} ) {
-        return $COLUMN_MAP->{$mainkey}->{$attr}
-            unless ref $COLUMN_MAP->{$mainkey}->{$attr} eq 'CODE';
+    elsif ( (my ($mainkey, $subkey) = $name =~ /^(.*?)\.{(.+)}$/) && $TICKET_COLUMN_MAP->{$1} ) {
+        return $TICKET_COLUMN_MAP->{$mainkey}->{$attr}
+            unless ref $TICKET_COLUMN_MAP->{$mainkey}->{$attr} eq 'CODE';
 
-        return sub { $COLUMN_MAP->{$mainkey}->{$attr}->( @_, $subkey ) };
+        return sub { $TICKET_COLUMN_MAP->{$mainkey}->{$attr}->( @_, $subkey ) };
     }
 
 };
@@ -89,7 +91,7 @@ my $LinkCallback = sub {
     }
 };
 
-$COLUMN_MAP = {
+$TICKET_COLUMN_MAP = {
     QueueName => {
         attribute => 'Queue',
         title     => 'Queue',
@@ -318,11 +320,11 @@ $COLUMN_MAP = {
     },
 };
 
-$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
+$TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap' );
+$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'ColumnMap' );
 return $ColumnMap->( $Name, $Attr );
 </%init>

@@ -2,11 +2,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-02-14 13:35+0100\n"
-"Last-Translator: Jakob Arvidsson\n"
+"PO-Revision-Date: 2007-03-16 12:57+0100\n"
+"Last-Translator: Heidi Senderovitz\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. ($self->{CurrentSearch}{Object}->Description)
@@ -29,8 +29,10 @@ msgstr " %1 sparad."
 #. ($ticket->Id, $ticket->Subject)
 #. ($Ticket->id, $Ticket->Subject)
 #: html/Approvals/Elements/Approve:48
-#: html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46
-#: html/Ticket/Display.html:47 html/Ticket/Display.html:51
+#: html/Approvals/Elements/ShowDependency:71
+#: html/SelfService/Display.html:46
+#: html/Ticket/Display.html:47
+#: html/Ticket/Display.html:51
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -61,7 +63,8 @@ msgstr "%1 %2 %3 %4:%5:%6 %7"
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
-#: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647
+#: lib/RT/Record.pm:1685
+#: lib/RT/Transaction_Overlay.pm:647
 #: lib/RT/Transaction_Overlay.pm:690
 msgid "%1 %2 added"
 msgstr "%1 %2 tillagt"
@@ -73,20 +76,23 @@ msgstr "%1 %2 sedan"
 
 #. ($cf->Name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
-#: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
+#: lib/RT/Record.pm:1692
+#: lib/RT/Transaction_Overlay.pm:654
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ändrat till %3"
 
 #. ($cf->Name, $old_value->Content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
-#: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650
+#: lib/RT/Record.pm:1689
+#: lib/RT/Transaction_Overlay.pm:650
 #: lib/RT/Transaction_Overlay.pm:696
 msgid "%1 %2 deleted"
 msgstr "%1 %2 raderad"
 
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
-#: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63
+#: html/Admin/Elements/EditScrips:65
+#: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 med mall %3"
@@ -100,8 +106,10 @@ msgstr "%1 (%2) av %3"
 #. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name())
 #. (loc($DefaultStatus))
-#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108
-#: html/Ticket/Update.html:61 html/Ticket/Update.html:63
+#: html/SelfService/Update.html:60
+#: html/Ticket/Elements/EditBasics:108
+#: html/Ticket/Update.html:61
+#: html/Ticket/Update.html:63
 #: html/Tools/MyDay.html:66
 msgid "%1 (Unchanged)"
 msgstr "%1 (Oändrad)"
@@ -109,7 +117,9 @@ msgstr "%1 (Oändrad)"
 #. ("--search-argument", "--search")
 #. ("--condition-argument", "--condition")
 #. ("--action-argument", "--action")
-#: bin/rt-crontool:237 bin/rt-crontool:244 bin/rt-crontool:250
+#: bin/rt-crontool:237
+#: bin/rt-crontool:244
+#: bin/rt-crontool:250
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - En parameter att skicka till %2"
 
@@ -126,8 +136,7 @@ msgstr "%1 - Specificera ID på mall du vill använda"
 #. ("--transaction")
 #: bin/rt-crontool:256
 msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
-msgstr ""
-"%1 - Specificera om du vill använda 'första' eller 'sista' transaktionen"
+msgstr "%1 - Specificera om du vill använda 'första' eller 'sista' transaktionen"
 
 #. ("--action")
 #: bin/rt-crontool:247
@@ -166,20 +175,23 @@ msgstr "%1 tillagt som värde för %2"
 
 #. ($args{'Base'})
 #. ($args{'Target'})
-#: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
+#: lib/RT/Link_Overlay.pm:144
+#: lib/RT/Link_Overlay.pm:151
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 tycks vara ett lokalt objekt men går inte att hitta i databasen"
 
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($self->BriefDescription , $self->CreatorObj->Name)
-#: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
+#: html/Ticket/Elements/ShowDates:73
+#: lib/RT/Transaction_Overlay.pm:531
 msgid "%1 by %2"
 msgstr "%1 av %2"
 
 #. ($self->Field , $q1->Name , $q2->Name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
-#: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797
+#: lib/RT/Transaction_Overlay.pm:788
+#: lib/RT/Transaction_Overlay.pm:797
 #: lib/RT/Transaction_Overlay.pm:800
 msgid "%1 changed from %2 to %3"
 msgstr "%1 ändrat från %2 till %3"
@@ -214,12 +226,8 @@ msgstr "%1 högsta prioriterade ärenden som tillhör mig"
 
 #. ($0)
 #: bin/rt-crontool:229
-msgid ""
-"%1 is a tool to act on tickets from an external scheduling tool, such as "
-"cron."
-msgstr ""
-"%1 är ett verktyg som reagerar på ärenden från ett externt "
-"planeringsverktyg, så som cron."
+msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
+msgstr "%1 är ett verktyg som reagerar på ärenden från ett externt planeringsverktyg, så som cron."
 
 #. ($principal->Object->Name, $args{'Type'})
 #: lib/RT/Queue_Overlay.pm:863
@@ -227,7 +235,8 @@ msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 är inte längre en %2 för denna kö."
 
 #. ($minutes)
-#: html/Ticket/Elements/ShowTime:47 html/Ticket/Elements/ShowTime:49
+#: html/Ticket/Elements/ShowTime:47
+#: html/Ticket/Elements/ShowTime:49
 msgid "%1 min"
 msgstr "%1 min."
 
@@ -291,23 +300,23 @@ msgid "'%1' is an invalid value for status"
 msgstr "'%1' är ogiltigt statusvärde"
 
 #: html/Admin/Elements/EditCustomFieldValues:50
-#: html/Admin/Elements/EditQueueWatchers:50 html/Admin/Elements/EditScrips:56
-#: html/Admin/Elements/EditTemplates:57 html/Admin/Groups/Members.html:73
-#: html/Elements/EditLinks:54 html/Ticket/Elements/EditPeople:67
+#: html/Admin/Elements/EditQueueWatchers:50
+#: html/Admin/Elements/EditScrips:56
+#: html/Admin/Elements/EditTemplates:57
+#: html/Admin/Groups/Members.html:73
+#: html/Elements/EditLinks:54
+#: html/Ticket/Elements/EditPeople:67
 #: html/User/Groups/Members.html:76
 msgid "(Check box to delete)"
-msgstr "(Kontrollera box för radering)"
+msgstr "(Markera box för radering)"
 
 #: html/Ticket/Elements/PreviewScrips:99
 msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr ""
-"(Kontrollera boxar för bortväljande av meddelande till registrerade "
-"mottagare)"
+msgstr "(Markera boxar för bortväljande av meddelande till registrerade mottagare)"
 
 #: html/Ticket/Elements/PreviewScrips:123
 msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr ""
-"(Kontrollera boxar för tillval av meddelande till registrerade mottagare)"
+msgstr "(Markera boxar för tillval av meddelande till registrerade mottagare)"
 
 #: html/Ticket/Create.html:218
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -315,7 +324,8 @@ msgstr "(Mata in ärende-ID:n eller URL, separerade med mellanrum)"
 
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
-#: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
+#: html/Admin/Queues/Modify.html:75
+#: html/Admin/Queues/Modify.html:81
 msgid "(If left blank, will default to %1)"
 msgstr "(Lämnas det tomt kommer default att vara %1)"
 
@@ -324,11 +334,13 @@ msgstr "(Lämnas det tomt kommer default att vara %1)"
 msgid "(No custom fields)"
 msgstr "(Inga extrafält)"
 
-#: html/Admin/Groups/Members.html:71 html/User/Groups/Members.html:74
+#: html/Admin/Groups/Members.html:71
+#: html/User/Groups/Members.html:74
 msgid "(No members)"
 msgstr "(Inga medlemmar)"
 
-#: html/Admin/Elements/EditScrips:53 html/Admin/Elements/ListGlobalScrips:48
+#: html/Admin/Elements/EditScrips:53
+#: html/Admin/Elements/ListGlobalScrips:48
 msgid "(No scrips)"
 msgstr "(Inga scrips)"
 
@@ -336,58 +348,38 @@ msgstr "(Inga scrips)"
 msgid "(No templates)"
 msgstr "(Inga mallar)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47
+#: html/Admin/Elements/PickObjects:47
 msgid "(None)"
 msgstr "(Inga)"
 
 #: html/Ticket/Update.html:90
-msgid ""
-"(Sends a blind carbon-copy of this update to a comma-delimited list of email "
-"addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
-"(Skickar en hemlig kopia av denna uppdatering till en kommaseparerad lista "
-"med e-postadresser. Ändrar <strong>inte</strong> på vem som får framtida "
-"uppdateringar.)"
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
+msgstr "(Skickar en hemlig kopia av denna uppdatering till en kommaseparerad lista med e-postadresser. Ändrar <strong>inte</strong> på vem som får framtida uppdateringar.)"
 
 #: html/Ticket/Create.html:103
-msgid ""
-"(Sends a carbon-copy of this update to a comma-delimited list of "
-"administrative email addresses. These people <strong>will</strong> receive "
-"future updates.)"
-msgstr ""
-"(Skickar en kopia av denna uppdatering till en kommaseparerad lista med "
-"administrativa e-postadresser. Dessa <strong>kommer</strong> att få framtida "
-"uppdateringar.)"
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
+msgstr "(Skickar en kopia av denna uppdatering till en kommaseparerad lista med administrativa e-postadresser. Dessa <strong>kommer</strong> att få framtida uppdateringar.)"
 
 #: html/Ticket/Update.html:86
-msgid ""
-"(Sends a carbon-copy of this update to a comma-delimited list of email "
-"addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
-"(Skickar en kopia av denna uppdatering till en kommaseparerad lista med e-"
-"postadresser. Ändrar <strong>inte</strong> på vem som får framtida "
-"uppdateringar.)"
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
+msgstr "(Skickar en kopia av denna uppdatering till en kommaseparerad lista med e-postadresser. Ändrar <strong>inte</strong> på vem som får framtida uppdateringar.)"
 
 #: html/Ticket/Create.html:93
-msgid ""
-"(Sends a carbon-copy of this update to a comma-delimited list of email "
-"addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
-"(Skickar en kopia av denna uppdatering till en kommaseparerad lista med e-"
-"postadresser. Dessa <strong>kommer</strong> att få framtida uppdateringar.)"
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
+msgstr "(Skickar en kopia av denna uppdatering till en kommaseparerad lista med e-postadresser. Dessa <strong>kommer</strong> att få framtida uppdateringar.)"
 
 #: html/Admin/Elements/EditScrip:96
-msgid ""
-"(Use these fields when you choose 'User Defined' for a condition or action)"
-msgstr ""
-"(Använd dessa fält när du väljer 'Användardefinierat' för villkor eller "
-"handling)"
+msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
+msgstr "(Använd dessa fält när du väljer 'Användardefinierat' för villkor eller handling)"
 
-#: html/Ticket/Elements/EditWatchers:60 html/Ticket/Elements/ShowUserEntry:53
+#: html/Ticket/Elements/EditWatchers:60
+#: html/Ticket/Elements/ShowUserEntry:53
 msgid "(Will not be sent email)"
 msgstr "(Kommer inte att skickas som e-post)"
 
-#: html/Admin/Groups/index.html:57 html/User/Groups/index.html:54
+#: html/Admin/Groups/index.html:57
+#: html/User/Groups/index.html:54
 msgid "(empty)"
 msgstr "(tom)"
 
@@ -395,9 +387,12 @@ msgstr "(tom)"
 msgid "(no name listed)"
 msgstr "(inga namn registrerade)"
 
-#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:69
-#: html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:54
-#: html/Search/Chart:56 html/Search/Elements/Chart:76
+#: html/Admin/Elements/SelectRights:72
+#: html/Elements/EditCustomFieldSelect:69
+#: html/Elements/SelectCustomFieldValue:51
+#: html/Elements/ShowCustomFields:54
+#: html/Search/Chart:56
+#: html/Search/Elements/Chart:76
 #: lib/RT/Transaction_Overlay.pm:591
 msgid "(no value)"
 msgstr "(inget värde)"
@@ -406,7 +401,8 @@ msgstr "(inget värde)"
 msgid "(no values)"
 msgstr "(inga värden)"
 
-#: html/Elements/EditLinks:132 html/Ticket/Elements/BulkLinks:49
+#: html/Elements/EditLinks:132
+#: html/Ticket/Elements/BulkLinks:49
 msgid "(only one ticket)"
 msgstr "(endast ett ärende)"
 
@@ -456,13 +452,12 @@ msgstr "<%$fält%>"
 
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 #: html/Elements/CreateTicket:47
-msgid ""
-"<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
-"<input type=\"submit\" class=\"button\" value=\"Nytt ärende i\" />&nbsp;%1"
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nytt ärende i\" />&nbsp;%1"
 
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
-#: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
+#: docs/design_docs/string-extraction-guide.txt:54
+#: lib/RT/StyleGuide.pod:787
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Nytt ärende i\">&nbsp;%1"
 
@@ -474,7 +469,8 @@ msgstr "En tom mall"
 msgid "A password was not set, so user won't be able to login."
 msgstr "Det har inte satts något lösenord, så användare kan inte logga in."
 
-#: lib/RT/ACE_Overlay.pm:174 lib/RT/Principal_Overlay.pm:219
+#: lib/RT/ACE_Overlay.pm:174
+#: lib/RT/Principal_Overlay.pm:219
 msgid "ACE not found"
 msgstr "ACE ej funnen"
 
@@ -535,7 +531,8 @@ msgstr "Lägg till kolumner"
 msgid "Add Criteria"
 msgstr "Lägg till kriterium"
 
-#: html/Ticket/Create.html:147 html/Ticket/Update.html:116
+#: html/Ticket/Create.html:147
+#: html/Ticket/Update.html:116
 msgid "Add More Files"
 msgstr "Lägg till fler filer"
 
@@ -551,7 +548,8 @@ msgstr "Lägg till värde"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Lägg till ett scrip som kommer att fungera för alla köer"
 
-#: html/Search/Build.html:109 html/Search/Build.html:94
+#: html/Search/Build.html:109
+#: html/Search/Build.html:94
 msgid "Add and Search"
 msgstr "Lägg till och sök"
 
@@ -559,11 +557,13 @@ msgstr "Lägg till och sök"
 msgid "Add comments or replies to selected tickets"
 msgstr "Lägg till kommentarer eller svar på utvalda ärenden"
 
-#: html/Admin/Groups/Members.html:63 html/User/Groups/Members.html:60
+#: html/Admin/Groups/Members.html:63
+#: html/User/Groups/Members.html:60
 msgid "Add members"
 msgstr "Lägg till medlemmar"
 
-#: html/Admin/Queues/People.html:87 html/Ticket/Elements/AddWatchers:49
+#: html/Admin/Queues/People.html:87
+#: html/Ticket/Elements/AddWatchers:49
 msgid "Add new watchers"
 msgstr "Lägg till nya observatörer"
 
@@ -589,11 +589,13 @@ msgstr "Tillagd principal som en %1 för denna kö"
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tillagd principal som en %1 för detta ärende"
 
-#: html/Admin/Users/Modify.html:146 html/User/Prefs.html:133
+#: html/Admin/Users/Modify.html:146
+#: html/User/Prefs.html:133
 msgid "Address1"
 msgstr "Adress1"
 
-#: html/Admin/Users/Modify.html:151 html/User/Prefs.html:137
+#: html/Admin/Users/Modify.html:151
+#: html/User/Prefs.html:137
 msgid "Address2"
 msgstr "Adress2"
 
@@ -609,15 +611,18 @@ msgstr "Admin.kommentar"
 msgid "Admin Correspondence"
 msgstr "Admin.korrespondens"
 
-#: html/Admin/Queues/index.html:46 html/Admin/Queues/index.html:49
+#: html/Admin/Queues/index.html:46
+#: html/Admin/Queues/index.html:49
 msgid "Admin queues"
 msgstr "Admin.köer"
 
-#: html/Admin/Global/index.html:47 html/Admin/Global/index.html:49
+#: html/Admin/Global/index.html:47
+#: html/Admin/Global/index.html:49
 msgid "Admin/Global configuration"
 msgstr "Admin/Global konfiguration"
 
-#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:60
+#: etc/initialdata:56
+#: html/Ticket/Elements/ShowPeople:60
 #: lib/RT/ACE_Overlay.pm:113
 msgid "AdminCc"
 msgstr "Admin.kopia"
@@ -646,7 +651,8 @@ msgstr "AdminKö"
 msgid "AdminUsers"
 msgstr "AdminAnvändare"
 
-#: html/Admin/Queues/People.html:69 html/Ticket/Elements/EditPeople:75
+#: html/Admin/Queues/People.html:69
+#: html/Ticket/Elements/EditPeople:75
 msgid "Administrative Cc"
 msgstr "Administrativ kopia"
 
@@ -694,7 +700,8 @@ msgstr "Godkännande"
 #. ($ticket->id, $msg)
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63
+#: html/Approvals/Display.html:65
+#: html/Approvals/Elements/ShowDependency:63
 #: html/Approvals/index.html:86
 msgid "Approval #%1: %2"
 msgstr "Godkännande #%1: %2"
@@ -745,22 +752,27 @@ msgstr "Lägg till och radera extrafält"
 msgid "AssignCustomFields"
 msgstr "LäggtillExtraFält"
 
-#: html/Search/Bulk.html:142 html/SelfService/Update.html:87
-#: html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:116
+#: html/Search/Bulk.html:142
+#: html/SelfService/Update.html:87
+#: html/Ticket/ModifyAll.html:115
+#: html/Ticket/Update.html:116
 msgid "Attach"
 msgstr "Bifoga"
 
-#: html/SelfService/Create.html:92 html/Ticket/Create.html:143
+#: html/SelfService/Create.html:92
+#: html/Ticket/Create.html:143
 msgid "Attach file"
 msgstr "Bifoga fil"
 
-#: html/SelfService/Update.html:75 html/Ticket/Create.html:131
+#: html/SelfService/Update.html:75
+#: html/Ticket/Create.html:131
 #: html/Ticket/Update.html:94
 msgid "Attached file"
 msgstr "Bifogad fil"
 
 #. ($Attachment)
-#: html/Ticket/ShowEmailRecord.html:52 html/Ticket/ShowEmailRecord.html:56
+#: html/Ticket/ShowEmailRecord.html:52
+#: html/Ticket/ShowEmailRecord.html:56
 #: html/Ticket/ShowEmailRecord.html:59
 msgid "Attachment '%1' could not be loaded"
 msgstr "Bifogad fil '%1' kunde inte läsas in"
@@ -797,22 +809,27 @@ msgstr "Autosvar till rekvirenter"
 msgid "Available"
 msgstr "Tillgänglig"
 
-#: html/Admin/Elements/CustomFieldTabs:65 html/Admin/Elements/GroupTabs:60
-#: html/Admin/Elements/QueueTabs:60 html/Admin/Elements/UserTabs:58
-#: html/Ticket/Elements/Tabs:113 html/User/Elements/GroupTabs:59
+#: html/Admin/Elements/CustomFieldTabs:65
+#: html/Admin/Elements/GroupTabs:60
+#: html/Admin/Elements/QueueTabs:60
+#: html/Admin/Elements/UserTabs:58
+#: html/Ticket/Elements/Tabs:113
+#: html/User/Elements/GroupTabs:59
 msgid "Basics"
-msgstr "Basics"
+msgstr "Grunddata"
 
 #: html/Ticket/Update.html:88
 msgid "Bcc"
 msgstr "Hemlig kopia"
 
 #: html/Admin/CustomFields/GroupRights.html:91
-#: html/Admin/CustomFields/UserRights.html:74 html/Admin/Elements/EditScrip:89
+#: html/Admin/CustomFields/UserRights.html:74
+#: html/Admin/Elements/EditScrip:89
 msgid "Be sure to save your changes"
 msgstr "Se till att spara dina ändringar"
 
-#: html/Elements/SelectDateRelation:55 lib/RT/CurrentUser.pm:361
+#: html/Elements/SelectDateRelation:55
+#: lib/RT/CurrentUser.pm:361
 msgid "Before"
 msgstr "Före"
 
@@ -832,7 +849,8 @@ msgstr "Fetstil"
 msgid "Bookmarkable link"
 msgstr "Länk som kan sparas som bokmärke"
 
-#: html/Ticket/Elements/ShowHistory:64 html/Ticket/Elements/ShowHistory:69
+#: html/Ticket/Elements/ShowHistory:64
+#: html/Ticket/Elements/ShowHistory:69
 msgid "Brief headers"
 msgstr "Korta headers"
 
@@ -874,7 +892,8 @@ msgstr "kan inte spara %1"
 msgid "Can't save this search"
 msgstr "Kan inte spara den här sökningen"
 
-#: lib/RT/Record.pm:1282 lib/RT/Record.pm:1358
+#: lib/RT/Record.pm:1282
+#: lib/RT/Record.pm:1358
 msgid "Can't specifiy both base and target"
 msgstr "Kan inte specificera både bas och mål"
 
@@ -888,10 +907,14 @@ msgstr "Kan inte skapa användare: %1"
 msgid "Category"
 msgstr "Kategori"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65
-#: html/SelfService/Create.html:71 html/Ticket/Create.html:88
-#: html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56
-#: html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:112
+#: etc/initialdata:50
+#: html/Admin/Queues/People.html:65
+#: html/SelfService/Create.html:71
+#: html/Ticket/Create.html:88
+#: html/Ticket/Elements/EditPeople:72
+#: html/Ticket/Elements/ShowPeople:56
+#: html/Ticket/Update.html:83
+#: lib/RT/ACE_Overlay.pm:112
 msgid "Cc"
 msgstr "Kopia"
 
@@ -901,19 +924,22 @@ msgstr "Ändra lösenord"
 
 #: html/Elements/Submit:78
 msgid "Check All"
-msgstr "Kontrollera alla"
+msgstr "Markera alla"
 
-#: html/SelfService/Update.html:78 html/Ticket/Create.html:134
+#: html/SelfService/Update.html:78
+#: html/Ticket/Create.html:134
 #: html/Ticket/Update.html:97
 msgid "Check box to delete"
-msgstr "Kontrollera box för radering"
+msgstr "Markera box för radering"
 
 #: html/Admin/Elements/SelectRights:55
 msgid "Check box to revoke right"
-msgstr "Kontrollera box för indragande av rättigheter"
+msgstr "Markera box för indragande av rättigheter"
 
-#: html/Elements/EditLinks:148 html/Elements/EditLinks:85
-#: html/Elements/ShowLinks:78 html/Ticket/Create.html:223
+#: html/Elements/EditLinks:148
+#: html/Elements/EditLinks:85
+#: html/Elements/ShowLinks:78
+#: html/Ticket/Create.html:223
 #: html/Ticket/Elements/BulkLinks:64
 msgid "Children"
 msgstr "Barn"
@@ -922,7 +948,8 @@ msgstr "Barn"
 msgid "Choose a date"
 msgstr "Välj ett datum"
 
-#: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
+#: html/Admin/Users/Modify.html:156
+#: html/User/Prefs.html:141
 msgid "City"
 msgstr "Ort"
 
@@ -938,7 +965,8 @@ msgstr "Stäng fönster"
 msgid "Closed"
 msgstr "Stängt"
 
-#: html/SelfService/Closed.html:46 html/SelfService/Elements/Tabs:78
+#: html/SelfService/Closed.html:46
+#: html/SelfService/Elements/Tabs:78
 msgid "Closed tickets"
 msgstr "Stängda ärenden"
 
@@ -954,7 +982,8 @@ msgstr "Combobox: Välj eller mata in ett värde"
 msgid "Combobox: Select or enter up to %1 values"
 msgstr "Combobox: Välj eller mata in upp till %1 värden"
 
-#: html/Ticket/Elements/ShowTransaction:190 html/Ticket/Elements/Tabs:185
+#: html/Ticket/Elements/ShowTransaction:190
+#: html/Ticket/Elements/Tabs:185
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -970,7 +999,8 @@ msgstr "Kommentar på ärenden"
 msgid "CommentOnTicket"
 msgstr "KommentarPåÄrende"
 
-#: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75
+#: html/Ticket/ModifyAll.html:91
+#: html/Ticket/Update.html:75
 msgid "Comments (Not sent to requestors)"
 msgstr "Kommentarer (Ej skickade till rekvirent)"
 
@@ -978,7 +1008,8 @@ msgstr "Kommentarer (Ej skickade till rekvirent)"
 msgid "Comments (not sent to requestors)"
 msgstr "Kommentarer (ej skickade till rekvirent)"
 
-#: html/Admin/Users/Modify.html:225 html/Ticket/Elements/ShowRequestor:67
+#: html/Admin/Users/Modify.html:225
+#: html/Ticket/Elements/ShowRequestor:67
 msgid "Comments about this user"
 msgstr "Kommentarer om denna användare"
 
@@ -1015,7 +1046,8 @@ msgid "Confirm"
 msgstr "Bekräfta"
 
 #: html/Admin/Elements/ModifyTemplate:65
-#: html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:119
+#: html/Elements/SelectAttachmentField:48
+#: html/Ticket/ModifyAll.html:119
 msgid "Content"
 msgstr "Innehåll"
 
@@ -1044,7 +1076,8 @@ msgstr "Går ej att lägga till nytt extrafältvärde. "
 msgid "Could not add new custom field value. %1 "
 msgstr "Går ej att lägga till nytt extrafältvärde. %1 "
 
-#: lib/RT/Ticket_Overlay.pm:3048 lib/RT/Ticket_Overlay.pm:3056
+#: lib/RT/Ticket_Overlay.pm:3048
+#: lib/RT/Ticket_Overlay.pm:3056
 #: lib/RT/Ticket_Overlay.pm:3073
 msgid "Could not change owner. "
 msgstr "Går ej att byta ägare. "
@@ -1059,32 +1092,41 @@ msgstr "Går ej att skapa ExtraFält"
 msgid "Could not create CustomField: %1"
 msgstr "Går ej att skapa ExtraFält: %1"
 
-#: html/User/Groups/Modify.html:98 lib/RT/Group_Overlay.pm:494
+#: html/User/Groups/Modify.html:98
+#: lib/RT/Group_Overlay.pm:494
 #: lib/RT/Group_Overlay.pm:501
 msgid "Could not create group"
 msgstr "Går ej att skapa grupp"
 
 #. ($msg)
-#: html/Admin/Global/Template.html:96 html/Admin/Queues/Template.html:93
+#: html/Admin/Global/Template.html:96
+#: html/Admin/Queues/Template.html:93
 msgid "Could not create template: %1"
 msgstr "Går ej att skapa mall: %1"
 
-#: lib/RT/Ticket_Overlay.pm:1075 lib/RT/Ticket_Overlay.pm:407
+#: lib/RT/Ticket_Overlay.pm:1075
+#: lib/RT/Ticket_Overlay.pm:407
 msgid "Could not create ticket. Queue not set"
 msgstr "Går ej att skapa ärende. Kö ej satt"
 
-#: lib/RT/User_Overlay.pm:255 lib/RT/User_Overlay.pm:269
-#: lib/RT/User_Overlay.pm:278 lib/RT/User_Overlay.pm:287
-#: lib/RT/User_Overlay.pm:296 lib/RT/User_Overlay.pm:310
-#: lib/RT/User_Overlay.pm:320 lib/RT/User_Overlay.pm:496
+#: lib/RT/User_Overlay.pm:255
+#: lib/RT/User_Overlay.pm:269
+#: lib/RT/User_Overlay.pm:278
+#: lib/RT/User_Overlay.pm:287
+#: lib/RT/User_Overlay.pm:296
+#: lib/RT/User_Overlay.pm:310
+#: lib/RT/User_Overlay.pm:320
+#: lib/RT/User_Overlay.pm:496
 msgid "Could not create user"
 msgstr "Går ej att skapa användare"
 
-#: lib/RT/Queue_Overlay.pm:741 lib/RT/Ticket_Overlay.pm:1423
+#: lib/RT/Queue_Overlay.pm:741
+#: lib/RT/Ticket_Overlay.pm:1423
 msgid "Could not find or create that user"
 msgstr "Går ej att hitta eller skapa denna användare"
 
-#: lib/RT/Queue_Overlay.pm:802 lib/RT/Ticket_Overlay.pm:1504
+#: lib/RT/Queue_Overlay.pm:802
+#: lib/RT/Ticket_Overlay.pm:1504
 msgid "Could not find that principal"
 msgstr "Går ej att hitta denna principal"
 
@@ -1092,7 +1134,8 @@ msgstr "Går ej att hitta denna principal"
 msgid "Could not load CustomField %1"
 msgstr "Går ej att läsa in ExtraFält %1"
 
-#: html/Admin/Groups/Members.html:112 html/User/Groups/Members.html:111
+#: html/Admin/Groups/Members.html:112
+#: html/User/Groups/Members.html:111
 #: html/User/Groups/Modify.html:103
 msgid "Could not load group"
 msgstr "Går ej att läsa in grupp"
@@ -1134,7 +1177,8 @@ msgid "Couldn't add member to group"
 msgstr "Går ej att lägga till medlem till grupp"
 
 #. ($Msg)
-#: lib/RT/Record.pm:1719 lib/RT/Record.pm:1771
+#: lib/RT/Record.pm:1719
+#: lib/RT/Record.pm:1771
 msgid "Couldn't create a transaction: %1"
 msgstr "Går ej att skapa transaktion: %1"
 
@@ -1171,11 +1215,13 @@ msgid "Couldn't load copy of ticket #%1."
 msgstr "Går ej att läsa in kopia av ärende #%1."
 
 #. ($id)
-#: html/Admin/Groups/GroupRights.html:109 html/Admin/Groups/UserRights.html:96
+#: html/Admin/Groups/GroupRights.html:109
+#: html/Admin/Groups/UserRights.html:96
 msgid "Couldn't load group %1"
 msgstr "Går ej att läsa in grupp %1"
 
-#: lib/RT/Link_Overlay.pm:202 lib/RT/Link_Overlay.pm:211
+#: lib/RT/Link_Overlay.pm:202
+#: lib/RT/Link_Overlay.pm:211
 #: lib/RT/Link_Overlay.pm:238
 msgid "Couldn't load link"
 msgstr "Går ej att läsa in länk"
@@ -1193,17 +1239,20 @@ msgid "Couldn't load queue"
 msgstr "Går ej att läsa in kö"
 
 #. ($id)
-#: html/Admin/Queues/GroupRights.html:122 html/Admin/Queues/UserRights.html:93
+#: html/Admin/Queues/GroupRights.html:122
+#: html/Admin/Queues/UserRights.html:93
 msgid "Couldn't load queue %1"
 msgstr "Går ej att läsa in kö %1"
 
 #. ($id)
-#: html/Admin/Elements/EditScrip:126 html/Admin/Elements/EditScrip:167
+#: html/Admin/Elements/EditScrip:126
+#: html/Admin/Elements/EditScrip:167
 msgid "Couldn't load scrip #%1"
 msgstr "Går ej att läsa in scrip #%1"
 
 #. ($id)
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158
+#: lib/RT/Action/CreateTickets.pm:680
 msgid "Couldn't load ticket '%1'"
 msgstr "Går ej att läsa in ärende '%1'"
 
@@ -1212,14 +1261,18 @@ msgstr "Går ej att läsa in ärende '%1'"
 msgid "Couldn't resolve '%1' into a URI."
 msgstr "Kunde inte omvandla '%1' till en URI."
 
-#: html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
+#: html/Admin/Users/Modify.html:173
+#: html/User/Prefs.html:153
 msgid "Country"
 msgstr "Land"
 
 #: html/Admin/Elements/CreateUserCalled:47
-#: html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133
-#: html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65
-#: html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/EditCustomField:84
+#: html/Admin/Elements/EditScrip:133
+#: html/Admin/Queues/Template.html:66
+#: html/Elements/QuickCreate:65
+#: html/Ticket/Create.html:168
+#: html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Skapa"
 
@@ -1237,20 +1290,24 @@ msgstr "Skapa ett ExtraFält"
 msgid "Create a CustomField for queue %1"
 msgstr "Skapa ett ExtraFält för kö %1"
 
-#: html/Admin/Groups/Modify.html:125 html/Admin/Groups/Modify.html:99
+#: html/Admin/Groups/Modify.html:125
+#: html/Admin/Groups/Modify.html:99
 msgid "Create a new group"
 msgstr "Skapa en ny grupp"
 
-#: html/User/Groups/Modify.html:113 html/User/Groups/Modify.html:88
+#: html/User/Groups/Modify.html:113
+#: html/User/Groups/Modify.html:88
 msgid "Create a new personal group"
 msgstr "Skapa en ny personlig grupp"
 
-#: html/Ticket/Create.html:47 html/Ticket/Create.html:51
+#: html/Ticket/Create.html:47
+#: html/Ticket/Create.html:51
 #: html/Ticket/Create.html:60
 msgid "Create a new ticket"
 msgstr "Skapa ett nytt ärende"
 
-#: html/Admin/Users/Modify.html:252 html/Admin/Users/Modify.html:314
+#: html/Admin/Users/Modify.html:252
+#: html/Admin/Users/Modify.html:314
 msgid "Create a new user"
 msgstr "Skapa en ny användare"
 
@@ -1263,7 +1320,8 @@ msgstr "Skapa en kö"
 msgid "Create a scrip for queue %1"
 msgstr "Skapa en scrip för kö %1"
 
-#: html/Admin/Global/Template.html:90 html/Admin/Queues/Template.html:86
+#: html/Admin/Global/Template.html:90
+#: html/Admin/Queues/Template.html:86
 msgid "Create a template"
 msgstr "Skapa en mall"
 
@@ -1308,7 +1366,8 @@ msgstr "SkapaSparadSök"
 msgid "CreateTicket"
 msgstr "SkapaÄrende"
 
-#: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48
+#: html/Elements/SelectDateType:47
+#: html/Ticket/Elements/ShowDates:48
 #: lib/RT/Ticket_Overlay.pm:1169
 msgid "Created"
 msgstr "Skapat"
@@ -1339,7 +1398,8 @@ msgstr "Nuvarande relationer"
 msgid "Current Scrips"
 msgstr "Nuvarande scrips"
 
-#: html/Admin/Groups/Members.html:60 html/User/Groups/Members.html:63
+#: html/Admin/Groups/Members.html:60
+#: html/User/Groups/Members.html:63
 msgid "Current members"
 msgstr "Nuvarande medlemmar"
 
@@ -1351,13 +1411,17 @@ msgstr "Nuvarande rättigheter"
 msgid "Current search"
 msgstr "Nuvarande sökning"
 
-#: html/Admin/Queues/People.html:62 html/Ticket/Elements/EditPeople:66
+#: html/Admin/Queues/People.html:62
+#: html/Ticket/Elements/EditPeople:66
 msgid "Current watchers"
 msgstr "Nuvarande observatörer"
 
-#: html/Admin/Elements/SystemTabs:61 html/Admin/Elements/Tabs:62
-#: html/Admin/Global/index.html:71 html/Admin/Users/Modify.html:205
-#: html/Admin/index.html:77 html/Ticket/Elements/ShowSummary:56
+#: html/Admin/Elements/SystemTabs:61
+#: html/Admin/Elements/Tabs:62
+#: html/Admin/Global/index.html:71
+#: html/Admin/Users/Modify.html:205
+#: html/Admin/index.html:77
+#: html/Ticket/Elements/ShowSummary:56
 msgid "Custom Fields"
 msgstr "Extrafält"
 
@@ -1389,13 +1453,15 @@ msgid "Custom field %1 has no value."
 msgstr "Extrafält %1 har inget värde."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1592 lib/RT/Record.pm:1754
+#: lib/RT/Record.pm:1592
+#: lib/RT/Record.pm:1754
 msgid "Custom field %1 not found"
 msgstr "Extrafält %1 ej funnet"
 
 #. ($cf)
 #. ($obj->Name)
-#: lib/RT/Report/Tickets.pm:118 lib/RT/Report/Tickets.pm:121
+#: lib/RT/Report/Tickets.pm:118
+#: lib/RT/Report/Tickets.pm:121
 msgid "Custom field '%1'"
 msgstr "Extrafält '%1'"
 
@@ -1412,22 +1478,27 @@ msgstr "Extrafältvärde går ej att radera"
 msgid "Custom field value could not be found"
 msgstr "Extrafält går ej att hitta"
 
-#: lib/RT/CustomField_Overlay.pm:1171 lib/RT/CustomField_Overlay.pm:417
+#: lib/RT/CustomField_Overlay.pm:1171
+#: lib/RT/CustomField_Overlay.pm:417
 msgid "Custom field value deleted"
 msgstr "Extrafältvärde raderat"
 
-#: html/Elements/SelectGroups:51 html/Elements/SelectUsers:51
+#: html/Elements/SelectGroups:51
+#: html/Elements/SelectUsers:51
 #: lib/RT/Transaction_Overlay.pm:638
 msgid "CustomField"
 msgstr "ExtraFält"
 
-#: html/Prefs/MyRT.html:78 html/Prefs/Quicksearch.html:70
+#: html/Prefs/MyRT.html:78
+#: html/Prefs/Quicksearch.html:70
 #: html/Prefs/Search.html:75
 msgid "Customize"
 msgstr "Anpassa"
 
-#: html/SelfService/Display.html:61 html/Ticket/Create.html:203
-#: html/Ticket/Elements/ShowSummary:83 html/Ticket/Elements/Tabs:116
+#: html/SelfService/Display.html:61
+#: html/Ticket/Create.html:203
+#: html/Ticket/Elements/ShowSummary:83
+#: html/Ticket/Elements/Tabs:116
 #: html/Ticket/ModifyAll.html:65
 msgid "Dates"
 msgstr "Datum"
@@ -1464,7 +1535,8 @@ msgstr "Default korrespondensmall"
 msgid "Default transaction template"
 msgstr "Default transaktionsmall"
 
-#: html/User/Delegation.html:46 html/User/Delegation.html:49
+#: html/User/Delegation.html:46
+#: html/User/Delegation.html:49
 msgid "Delegate rights"
 msgstr "Överlåt rättigheter"
 
@@ -1480,8 +1552,10 @@ msgstr "ÖverlåtRättigheter"
 msgid "Delegation"
 msgstr "Överlåtelse"
 
-#: html/Admin/Elements/EditScrips:75 html/Search/Elements/EditFormat:103
-#: html/Search/Elements/EditQuery:57 html/Search/Elements/EditSearches:63
+#: html/Admin/Elements/EditScrips:75
+#: html/Search/Elements/EditFormat:103
+#: html/Search/Elements/EditQuery:57
+#: html/Search/Elements/EditSearches:63
 #: html/Widgets/SelectionBox:204
 msgid "Delete"
 msgstr "Radera"
@@ -1527,9 +1601,12 @@ msgstr "Radering av detta objekt strider mot referentiell integritet"
 msgid "Deny"
 msgstr "Avvisa"
 
-#: html/Elements/EditLinks:140 html/Elements/EditLinks:66
-#: html/Elements/ShowLinks:58 html/Ticket/Create.html:221
-#: html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
+#: html/Elements/EditLinks:140
+#: html/Elements/EditLinks:66
+#: html/Elements/ShowLinks:58
+#: html/Ticket/Create.html:221
+#: html/Ticket/Elements/BulkLinks:56
+#: html/Ticket/Elements/ShowDependencies:53
 msgid "Depended on by"
 msgstr "Avhängighet av till"
 
@@ -1553,9 +1630,12 @@ msgstr "Avhängighet av %1 tillagd"
 msgid "Dependency on %1 deleted"
 msgstr "Avhängighet av %1 raderad"
 
-#: html/Elements/EditLinks:136 html/Elements/EditLinks:57
-#: html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48
-#: html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:52
+#: html/Elements/EditLinks:136
+#: html/Elements/EditLinks:57
+#: html/Elements/SelectLinkType:48
+#: html/Elements/ShowLinks:48
+#: html/Ticket/Create.html:220
+#: html/Ticket/Elements/BulkLinks:52
 #: html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
 msgstr "Avhängig av"
@@ -1568,7 +1648,8 @@ msgstr "Fallande"
 msgid "Descending"
 msgstr "Fallande"
 
-#: html/SelfService/Create.html:100 html/Ticket/Create.html:152
+#: html/SelfService/Create.html:100
+#: html/Ticket/Create.html:152
 msgid "Describe the issue below"
 msgstr "Beskriv problemet nedan"
 
@@ -1576,13 +1657,17 @@ msgstr "Beskriv problemet nedan"
 #: html/Admin/Elements/AddCustomFieldValue:57
 #: html/Admin/Elements/EditCustomField:60
 #: html/Admin/Elements/EditCustomFieldValues:56
-#: html/Admin/Elements/EditScrip:55 html/Admin/Elements/ModifyTemplate:57
-#: html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69
-#: html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
+#: html/Admin/Elements/EditScrip:55
+#: html/Admin/Elements/ModifyTemplate:57
+#: html/Admin/Groups/Modify.html:71
+#: html/Admin/Queues/Modify.html:69
+#: html/Search/Elements/EditSearches:56
+#: html/User/Groups/Modify.html:70
 msgid "Description"
 msgstr "Beskrivning"
 
-#: html/Search/Elements/EditFormat:71 html/Ticket/Elements/Tabs:108
+#: html/Search/Elements/EditFormat:71
+#: html/Ticket/Elements/Tabs:108
 msgid "Display"
 msgstr "Visa"
 
@@ -1611,12 +1696,8 @@ msgid "Display saved searches for this group"
 msgstr "Visa sparade sökningar för denna grupp"
 
 #: html/Elements/Footer:61
-msgid ""
-"Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html"
-"\"> of the GNU GPL.</a>"
-msgstr ""
-"Distribuerade under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html"
-"\"> of the GNU GPL.</a>"
+msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
+msgstr "Distribuerade under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 
 #: lib/RT/System.pm:75
 msgid "Do anything and everything"
@@ -1630,17 +1711,22 @@ msgstr "Återinläs inte denna sida."
 msgid "Download"
 msgstr "Ladda ner"
 
-#: html/Admin/Groups/index.html:61 html/Admin/Users/index.html:64
+#: html/Admin/Groups/index.html:61
+#: html/Admin/Users/index.html:64
 msgid "Download as a tab-delimited file"
 msgstr "Ladda ner som tab-uppdelad fil"
 
-#: html/Elements/SelectDateType:53 html/Ticket/Create.html:209
-#: html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:133
-#: html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1173
+#: html/Elements/SelectDateType:53
+#: html/Ticket/Create.html:209
+#: html/Ticket/Elements/EditDates:66
+#: html/Ticket/Elements/Reminders:133
+#: html/Ticket/Elements/ShowDates:64
+#: lib/RT/Ticket_Overlay.pm:1173
 msgid "Due"
 msgstr "Förfallo"
 
-#: html/Elements/Quicksearch:48 html/Elements/ShowSearch:49
+#: html/Elements/Quicksearch:48
+#: html/Elements/ShowSearch:49
 #: html/index.html:107
 msgid "Edit"
 msgstr "Redigera"
@@ -1669,7 +1755,8 @@ msgstr "Redigera extrafält för alla användare"
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "Redigera extrafält för ärenden i alla köer"
 
-#: html/Search/Bulk.html:188 html/Ticket/ModifyLinks.html:57
+#: html/Search/Bulk.html:188
+#: html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
 msgstr "Redigera länkar"
 
@@ -1720,12 +1807,15 @@ msgstr "Redigera medlemskap för grupp %1"
 msgid "Editing membership for personal group %1"
 msgstr "Redigera medlemskap för personlig grupp %1"
 
-#: lib/RT/Record.pm:1295 lib/RT/Record.pm:1372 lib/RT/Ticket_Overlay.pm:2518
+#: lib/RT/Record.pm:1295
+#: lib/RT/Record.pm:1372
+#: lib/RT/Ticket_Overlay.pm:2518
 #: lib/RT/Ticket_Overlay.pm:2608
 msgid "Either base or target must be specified"
 msgstr "Antingen bas eller mål måste specificeras"
 
-#: html/Admin/Users/Modify.html:74 html/Ticket/Elements/AddWatchers:77
+#: html/Admin/Users/Modify.html:74
+#: html/Ticket/Elements/AddWatchers:77
 #: html/User/Prefs.html:65
 msgid "Email"
 msgstr "E-post"
@@ -1739,7 +1829,8 @@ msgstr "E-postadress används"
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "Aktiverad (Bortval av denna box deaktiverar detta extrafält)"
 
-#: html/Admin/Groups/Modify.html:84 html/User/Groups/Modify.html:74
+#: html/Admin/Groups/Modify.html:84
+#: html/User/Groups/Modify.html:74
 msgid "Enabled (Unchecking this box disables this group)"
 msgstr "Aktiverad (Bortval av denna box deaktiverar denna grupp)"
 
@@ -1752,13 +1843,16 @@ msgid "Enabled Queues"
 msgstr "Aktiverade köer"
 
 #. (loc_fuzzy($msg))
-#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150
-#: html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
+#: html/Admin/Elements/EditCustomField:136
+#: html/Admin/Groups/Modify.html:150
+#: html/Admin/Users/Modify.html:350
+#: html/User/Groups/Modify.html:138
 msgid "Enabled status %1"
 msgstr "Aktiverad status %1"
 
 #. (loc_fuzzy($msg))
-#: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
+#: html/Admin/CustomFields/Modify.html:185
+#: html/Admin/Queues/Modify.html:162
 msgid "Enabled status: %1"
 msgstr "Aktiverad status: %1"
 
@@ -1767,38 +1861,28 @@ msgid "Enter multiple values"
 msgstr "Mata in flera värden"
 
 #: html/Elements/EditLinks:126
-msgid ""
-"Enter objects or URIs to link objects to. Separate multiple entries with "
-"spaces."
-msgstr ""
-"Mata in objekt eller URI att koppla objekt till. Separera flera inmatningar "
-"med mellanrum."
+msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
+msgstr "Mata in objekt eller URI att koppla objekt till. Separera flera inmatningar med mellanrum."
 
 #: lib/RT/CustomField_Overlay.pm:65
 msgid "Enter one value"
 msgstr "Mata in ett värde"
 
 #: html/Elements/EditLinks:123
-msgid ""
-"Enter queues or URIs to link queues to. Separate multiple entries with "
-"spaces."
-msgstr ""
-"Mata in köer eller URI att koppla köer till. Separera flera inmatningar med "
-"mellanrum."
+msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
+msgstr "Mata in köer eller URI att koppla köer till. Separera flera inmatningar med mellanrum."
 
-#: html/Elements/EditLinks:119 html/Search/Bulk.html:189
-msgid ""
-"Enter tickets or URIs to link tickets to. Separate multiple entries with "
-"spaces."
-msgstr ""
-"Mata in ärenden eller URI att koppla ärenden till. Separera flera "
-"inmatningar med mellanrum."
+#: html/Elements/EditLinks:119
+#: html/Search/Bulk.html:189
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
+msgstr "Mata in ärenden eller URI att koppla ärenden till. Separera flera inmatningar med mellanrum."
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
 msgstr "Mata in upp till %1 värde"
 
-#: html/Elements/Login:76 html/SelfService/Error.html:46
+#: html/Elements/Login:76
+#: html/SelfService/Error.html:46
 #: html/SelfService/Error.html:47
 msgid "Error"
 msgstr "Fel"
@@ -1898,8 +1982,10 @@ msgstr "Fyll i upp till %1 textområden"
 msgid "Fill in up to %1 wikitext areas"
 msgstr "Fyll i upp till %1 wikitextområden"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182
-#: html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149
+#: html/Ticket/Create.html:182
+#: html/Ticket/Elements/EditBasics:97
+#: lib/RT/Tickets_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Slutlig Prioritet"
 
@@ -1907,12 +1993,14 @@ msgstr "Slutlig Prioritet"
 msgid "FinalPriority"
 msgstr "SlutligPrioritet"
 
-#: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82
+#: html/Admin/Groups/index.html:72
+#: html/Admin/Queues/People.html:82
 #: html/Ticket/Elements/EditPeople:55
 msgid "Find groups whose"
 msgstr "Hitta grupper vars"
 
-#: html/Admin/Queues/People.html:78 html/Admin/Users/index.html:70
+#: html/Admin/Queues/People.html:78
+#: html/Admin/Users/index.html:70
 #: html/Ticket/Elements/EditPeople:51
 msgid "Find people whose"
 msgstr "Hitta personer vars"
@@ -1925,11 +2013,13 @@ msgstr "Hitta ärenden"
 msgid "First"
 msgstr "Första"
 
-#: docs/design_docs/string-extraction-guide.txt:33 lib/RT/StyleGuide.pod:766
+#: docs/design_docs/string-extraction-guide.txt:33
+#: lib/RT/StyleGuide.pod:766
 msgid "Foo Bar Baz"
 msgstr "Foo Bar Baz"
 
-#: docs/design_docs/string-extraction-guide.txt:24 lib/RT/StyleGuide.pod:757
+#: docs/design_docs/string-extraction-guide.txt:24
+#: lib/RT/StyleGuide.pod:757
 msgid "Foo!"
 msgstr "Foo!"
 
@@ -1954,7 +2044,8 @@ msgstr "Hittade Objekt"
 msgid "Fri."
 msgstr "Fre."
 
-#: html/Ticket/Elements/ShowHistory:66 html/Ticket/Elements/ShowHistory:72
+#: html/Ticket/Elements/ShowHistory:66
+#: html/Ticket/Elements/ShowHistory:72
 msgid "Full headers"
 msgstr "Fullständiga headers"
 
@@ -1967,7 +2058,8 @@ msgstr "Hämta mall från fil"
 msgid "Given to %1"
 msgstr "Har givits till %1"
 
-#: html/Admin/Elements/Tabs:65 html/Admin/index.html:82
+#: html/Admin/Elements/Tabs:65
+#: html/Admin/index.html:82
 msgid "Global"
 msgstr "Global"
 
@@ -1989,20 +2081,27 @@ msgstr "Global portlet %1 sparad."
 msgid "Global template: %1"
 msgstr "Global mall: %1"
 
-#: html/Admin/CustomFields/index.html:80 html/Search/Results.html:90
+#: html/Admin/CustomFields/index.html:80
+#: html/Search/Results.html:90
 #: html/Tools/Offline.html:89
 msgid "Go"
 msgstr "Starta"
 
-#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73
-#: html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84
-#: html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73
-#: html/Elements/RefreshHomepage:48 html/Search/Results.html:74
-#: html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
+#: html/Admin/Groups/index.html:67
+#: html/Admin/Groups/index.html:73
+#: html/Admin/Queues/People.html:80
+#: html/Admin/Queues/People.html:84
+#: html/Admin/Queues/index.html:66
+#: html/Admin/Users/index.html:73
+#: html/Elements/RefreshHomepage:48
+#: html/Search/Results.html:74
+#: html/Ticket/Elements/EditPeople:53
+#: html/Ticket/Elements/EditPeople:57
 msgid "Go!"
 msgstr "Starta!"
 
-#: html/Elements/GotoTicket:46 html/SelfService/Elements/GotoTicket:46
+#: html/Elements/GotoTicket:46
+#: html/SelfService/Elements/GotoTicket:46
 msgid "Goto ticket"
 msgstr "Gå till ärende"
 
@@ -2012,8 +2111,10 @@ msgstr "Gå till ärende"
 msgid "Group"
 msgstr "Grupp"
 
-#: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66
-#: html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65
+#: html/Admin/Elements/CustomFieldTabs:68
+#: html/Admin/Elements/GroupTabs:66
+#: html/Admin/Elements/QueueTabs:82
+#: html/Admin/Elements/SystemTabs:65
 #: html/Admin/Global/index.html:76
 msgid "Group Rights"
 msgstr "Grupprättigheter"
@@ -2035,18 +2136,24 @@ msgstr "Grupp har skapats"
 msgid "Group has no such member"
 msgstr "Grupp har ingen sådan medlem"
 
-#: lib/RT/Group_Overlay.pm:963 lib/RT/Queue_Overlay.pm:748
-#: lib/RT/Queue_Overlay.pm:808 lib/RT/Ticket_Overlay.pm:1430
+#: lib/RT/Group_Overlay.pm:963
+#: lib/RT/Queue_Overlay.pm:748
+#: lib/RT/Queue_Overlay.pm:808
+#: lib/RT/Ticket_Overlay.pm:1430
 #: lib/RT/Ticket_Overlay.pm:1510
 msgid "Group not found"
 msgstr "Grupp ej funnen"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:59
-#: html/Admin/Elements/SelectNewGroupMembers:57 html/Admin/Elements/Tabs:56
+#: html/Admin/Elements/SelectNewGroupMembers:57
+#: html/Admin/Elements/Tabs:56
 #: html/Admin/Global/CustomFields/index.html:69
-#: html/Admin/Groups/Members.html:86 html/Admin/Queues/People.html:104
-#: html/Admin/Users/Memberships.html:53 html/Admin/index.html:67
-#: html/User/Groups/Members.html:88 lib/RT/CustomField_Overlay.pm:1210
+#: html/Admin/Groups/Members.html:86
+#: html/Admin/Queues/People.html:104
+#: html/Admin/Users/Memberships.html:53
+#: html/Admin/index.html:67
+#: html/User/Groups/Members.html:88
+#: lib/RT/CustomField_Overlay.pm:1210
 msgid "Groups"
 msgstr "Grupper"
 
@@ -2067,12 +2174,15 @@ msgid "Hello!"
 msgstr "Hej!"
 
 #. ($name)
-#: docs/design_docs/string-extraction-guide.txt:40 lib/RT/StyleGuide.pod:773
+#: docs/design_docs/string-extraction-guide.txt:40
+#: lib/RT/StyleGuide.pod:773
 msgid "Hello, %1"
 msgstr "Hej, %1"
 
-#: html/Admin/Elements/GroupTabs:70 html/Admin/Elements/UserTabs:64
-#: html/Ticket/Elements/ShowHistory:53 html/Ticket/Elements/Tabs:111
+#: html/Admin/Elements/GroupTabs:70
+#: html/Admin/Elements/UserTabs:64
+#: html/Ticket/Elements/ShowHistory:53
+#: html/Ticket/Elements/Tabs:111
 msgid "History"
 msgstr "Historik"
 
@@ -2088,7 +2198,7 @@ msgstr "Historik för användaren %1"
 
 #: html/Elements/Tabs:65
 msgid "Homepage"
-msgstr "Hemsida"
+msgstr "Hemadress"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
@@ -2099,44 +2209,41 @@ msgstr "Timmar"
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Jag har %quant(%1,concrete mixer)."
 
-#: html/Search/Build.html:460 lib/RT/Report/Tickets.pm:415
+#: html/Search/Build.html:460
+#: lib/RT/Report/Tickets.pm:415
 msgid "I'm lost"
 msgstr "Jag är vilse"
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48
+#: lib/RT/Tickets_Overlay.pm:1766
 msgid "Id"
 msgstr "ID"
 
-#: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60
+#: html/Admin/Users/Modify.html:65
+#: html/User/Prefs.html:60
 msgid "Identity"
 msgstr "Identitet"
 
 #: etc/initialdata:429
-msgid ""
-"If an approval is rejected, reject the original and delete pending approvals"
-msgstr ""
-"Om ett godkännande avvisas, avvisa det ursprungliga och radera väntande "
-"godkännanden"
+msgid "If an approval is rejected, reject the original and delete pending approvals"
+msgstr "Om ett godkännande avvisas, avvisa det ursprungliga och radera väntande godkännanden"
 
 #: html/Tools/Offline.html:74
 msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr ""
-"Om ingen rekvirent har specificerats, skapa ärenden med denna rekvirent."
+msgstr "Om ingen rekvirent har specificerats, skapa ärenden med denna rekvirent."
 
 #: html/Tools/Offline.html:65
 msgid "If no queue is specified, create tickets in this queue."
 msgstr "Om ingen kö har specificerats, skapa ärenden i denna kö."
 
 #: bin/rt-crontool:267
-msgid ""
-"If this tool were setgid, a hostile local user could use this tool to gain "
-"administrative access to RT."
-msgstr ""
-"Om detta verktyg var setgid, kunde en fientlig användare använda detta "
-"verktyg för att få administrativ tillgång till RT."
+msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
+msgstr "Om detta verktyg var setgid, kunde en fientlig användare använda detta verktyg för att få administrativ tillgång till RT."
 
-#: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60
-#: html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:60
+#: html/Admin/Queues/People.html:126
+#: html/Ticket/Modify.html:60
+#: html/Ticket/ModifyAll.html:128
+#: html/Ticket/ModifyPeople.html:60
 msgid "If you've updated anything above, be sure to"
 msgstr "Om du har uppdaterat någonting av ovanstående, se till att"
 
@@ -2164,19 +2271,23 @@ msgstr "Ta med deaktiverade användare på lista."
 msgid "Include page"
 msgstr "Inkludera sida"
 
-#: html/Search/Build.html:486 lib/RT/Report/Tickets.pm:441
+#: html/Search/Build.html:486
+#: lib/RT/Report/Tickets.pm:441
 msgid "Incomplete Query"
 msgstr "Ofullständig sökning"
 
-#: html/Search/Build.html:483 lib/RT/Report/Tickets.pm:438
+#: html/Search/Build.html:483
+#: lib/RT/Report/Tickets.pm:438
 msgid "Incomplete query"
 msgstr "Ofullständig sökning"
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148
+#: lib/RT/Tickets_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "Initiell prioritet"
 
-#: lib/RT/Ticket_Overlay.pm:1163 lib/RT/Ticket_Overlay.pm:1165
+#: lib/RT/Ticket_Overlay.pm:1163
+#: lib/RT/Ticket_Overlay.pm:1165
 msgid "InitialPriority"
 msgstr "InitiellPrioritet"
 
@@ -2186,7 +2297,8 @@ msgstr "Inläsningsfel"
 
 #. ($CF->FriendlyPattern)
 #. ($self->FriendlyPattern)
-#: html/Elements/ValidateCustomFields:68 lib/RT/CustomField_Overlay.pm:1021
+#: html/Elements/ValidateCustomFields:68
+#: lib/RT/CustomField_Overlay.pm:1021
 #: lib/RT/CustomField_Overlay.pm:1162
 msgid "Input must match %1"
 msgstr "Inläsning måste matcha %1"
@@ -2213,16 +2325,20 @@ msgid "Invalid data"
 msgstr "Ogiltig data"
 
 #. ($msg)
-#: lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:678
+#: lib/RT/CustomField_Overlay.pm:207
+#: lib/RT/CustomField_Overlay.pm:678
 msgid "Invalid pattern: %1"
 msgstr "Ogiltigt mönster: %1"
 
-#: lib/RT/Scrip_Overlay.pm:157 lib/RT/Template_Overlay.pm:244
+#: lib/RT/Scrip_Overlay.pm:157
+#: lib/RT/Template_Overlay.pm:244
 msgid "Invalid queue"
 msgstr "Ogiltig kö"
 
-#: lib/RT/ACE_Overlay.pm:264 lib/RT/ACE_Overlay.pm:273
-#: lib/RT/ACE_Overlay.pm:279 lib/RT/ACE_Overlay.pm:290
+#: lib/RT/ACE_Overlay.pm:264
+#: lib/RT/ACE_Overlay.pm:273
+#: lib/RT/ACE_Overlay.pm:279
+#: lib/RT/ACE_Overlay.pm:290
 msgid "Invalid right"
 msgstr "Ogiltig rättighet"
 
@@ -2240,20 +2356,12 @@ msgid "Invalid value for status"
 msgstr "Ogiltigt värde för status"
 
 #: bin/rt-crontool:268
-msgid ""
-"It is incredibly important that nonprivileged users not be allowed to run "
-"this tool."
-msgstr ""
-"Det är oerhört viktigt att icke-privilegierade användare inte får lov att "
-"använda detta verktyg."
+msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
+msgstr "Det är oerhört viktigt att icke-privilegierade användare inte får lov att använda detta verktyg."
 
 #: bin/rt-crontool:269
-msgid ""
-"It is suggested that you create a non-privileged unix user with the correct "
-"group membership and RT access to run this tool."
-msgstr ""
-"Det rekommenderas att du skapar en icke-privilegierad unix-användare med "
-"korrekt gruppmedlemskap och RT för att använda detta verktyg."
+msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
+msgstr "Det rekommenderas att du skapar en icke-privilegierad unix-användare med korrekt gruppmedlemskap och RT för att använda detta verktyg."
 
 #: bin/rt-crontool:231
 msgid "It takes several arguments:"
@@ -2283,7 +2391,8 @@ msgstr "Jumbo"
 msgid "Jun."
 msgstr "Juni"
 
-#: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76
+#: html/Admin/Users/Modify.html:94
+#: html/User/Prefs.html:76
 msgid "Language"
 msgstr "Språk"
 
@@ -2295,7 +2404,8 @@ msgstr "Stor"
 msgid "Last"
 msgstr "Senaste"
 
-#: html/Ticket/Elements/EditDates:59 html/Ticket/Elements/ShowDates:60
+#: html/Ticket/Elements/EditDates:59
+#: html/Ticket/Elements/ShowDates:60
 msgid "Last Contact"
 msgstr "Senaste kontakt"
 
@@ -2350,7 +2460,8 @@ msgid "Link not found"
 msgstr "Länk ej funnen"
 
 #. ($Ticket->Id)
-#: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
+#: html/Ticket/ModifyLinks.html:46
+#: html/Ticket/ModifyLinks.html:50
 msgid "Link ticket #%1"
 msgstr "Koppla ärende #%1"
 
@@ -2362,8 +2473,10 @@ msgstr "Koppla värden till"
 msgid "Linking. Permission denied"
 msgstr "Koppling. Tillgång nekas"
 
-#: html/Ticket/Create.html:216 html/Ticket/Elements/ShowSummary:89
-#: html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
+#: html/Ticket/Create.html:216
+#: html/Ticket/Elements/ShowSummary:89
+#: html/Ticket/Elements/Tabs:120
+#: html/Ticket/ModifyAll.html:78
 msgid "Links"
 msgstr "Länkar"
 
@@ -2388,7 +2501,8 @@ msgstr "Inlästa Perl-moduler"
 msgid "Loaded search %1"
 msgstr "Inläst sökning %1"
 
-#: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
+#: html/Admin/Users/Modify.html:138
+#: html/User/Prefs.html:126
 msgid "Location"
 msgstr "Plats"
 
@@ -2397,8 +2511,11 @@ msgstr "Plats"
 msgid "Logged in as %1"
 msgstr "Inloggad som %1"
 
-#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:100
-#: html/Elements/Login:68 html/Elements/Login:84 lib/RT/StyleGuide.pod:797
+#: docs/design_docs/string-extraction-guide.txt:71
+#: html/Elements/Login:100
+#: html/Elements/Login:68
+#: html/Elements/Login:84
+#: lib/RT/StyleGuide.pod:797
 msgid "Login"
 msgstr "Logga in"
 
@@ -2508,7 +2625,8 @@ msgstr "Medlem ej raderad"
 msgid "Member of"
 msgstr "Medlem av"
 
-#: html/Admin/Elements/GroupTabs:63 html/User/Elements/GroupTabs:63
+#: html/Admin/Elements/GroupTabs:63
+#: html/User/Elements/GroupTabs:63
 msgid "Members"
 msgstr "Medlemmar"
 
@@ -2543,7 +2661,8 @@ msgstr "Sammanslagning misslyckades. Kunde inte sätta EffectiveId"
 msgid "Merge failed. Couldn't set Status"
 msgstr "Sammanslagning misslyckades. Kunde inte sätta status"
 
-#: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
+#: html/Elements/EditLinks:131
+#: html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
 msgstr "Slå samman med"
 
@@ -2552,15 +2671,14 @@ msgstr "Slå samman med"
 msgid "Merged into %1"
 msgstr "Sammanslagen med %1"
 
-#: html/Search/Bulk.html:143 html/Ticket/Update.html:118
+#: html/Search/Bulk.html:143
+#: html/Ticket/Update.html:118
 msgid "Message"
 msgstr "Meddelande"
 
 #: html/Ticket/Elements/ShowTransactionAttachments:164
 msgid "Message body not shown because it is too large or is not plain text."
-msgstr ""
-"Meddelande visades inte eftersom det är för omfångsrikt eller består av "
-"annat än vanlig text."
+msgstr "Meddelande visades inte eftersom det är för omfångsrikt eller består av annat än vanlig text."
 
 #: lib/RT/Ticket_Overlay.pm:2451
 msgid "Message could not be recorded"
@@ -2578,7 +2696,8 @@ msgstr "Meddelande om detta ärende kommer inte att skickas till..."
 msgid "Minutes"
 msgstr "Minuter"
 
-#: html/Search/Build.html:490 lib/RT/Report/Tickets.pm:445
+#: html/Search/Build.html:490
+#: lib/RT/Report/Tickets.pm:445
 msgid "Mismatched parentheses"
 msgstr "Icke-matchande paranteser"
 
@@ -2586,7 +2705,8 @@ msgstr "Icke-matchande paranteser"
 msgid "Missing a primary key?: %1"
 msgstr "Saknas en primärnyckel?: %1"
 
-#: html/Admin/Users/Modify.html:193 html/User/Prefs.html:92
+#: html/Admin/Users/Modify.html:193
+#: html/User/Prefs.html:92
 msgid "Mobile"
 msgstr "Mobil"
 
@@ -2610,7 +2730,8 @@ msgstr "Modifiera extrafält som gäller för alla %1"
 msgid "Modify Group Rights"
 msgstr "Modifiera grupprättigheter"
 
-#: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
+#: html/Admin/Groups/Members.html:105
+#: html/User/Groups/Members.html:101
 msgid "Modify Members"
 msgstr "Modifiera medlemmar"
 
@@ -2626,7 +2747,8 @@ msgstr "Modifiera scrip-mallar för denna kö"
 msgid "Modify Scrips for this queue"
 msgstr "Modifiera scrips för denna kö"
 
-#: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76
+#: html/Admin/Global/UserRights.html:75
+#: html/Admin/Groups/UserRights.html:76
 #: html/Admin/Queues/UserRights.html:75
 msgid "Modify User Rights"
 msgstr "Modifiera användarrättigheter"
@@ -2651,7 +2773,8 @@ msgid "Modify associated objects for %1"
 msgstr "Modifiera objekt associerade med %1"
 
 #. ($TicketObj->Id)
-#: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
+#: html/Ticket/ModifyDates.html:46
+#: html/Ticket/ModifyDates.html:50
 msgid "Modify dates for #%1"
 msgstr "Modifiera datum för #%1"
 
@@ -2666,7 +2789,8 @@ msgid "Modify global custom fields"
 msgstr "Modifiera globala extrafält"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:70
-#: html/Admin/Global/GroupRights.html:46 html/Admin/Global/GroupRights.html:49
+#: html/Admin/Global/GroupRights.html:46
+#: html/Admin/Global/GroupRights.html:49
 #: html/Admin/Global/index.html:77
 msgid "Modify global group rights"
 msgstr "Modifiera globala grupprättigheter"
@@ -2675,7 +2799,8 @@ msgstr "Modifiera globala grupprättigheter"
 msgid "Modify global group rights."
 msgstr "Modifiera globala grupprättigheter."
 
-#: html/Admin/Global/UserRights.html:46 html/Admin/Global/UserRights.html:49
+#: html/Admin/Global/UserRights.html:46
+#: html/Admin/Global/UserRights.html:49
 #: html/Admin/Global/index.html:81
 msgid "Modify global user rights"
 msgstr "Modifiera globala användarrättigheter"
@@ -2694,13 +2819,15 @@ msgid "Modify group rights for custom field %1"
 msgstr "Modifiera grupprättigheter för extrafält %1"
 
 #. ($GroupObj->Name)
-#: html/Admin/Groups/GroupRights.html:46 html/Admin/Groups/GroupRights.html:50
+#: html/Admin/Groups/GroupRights.html:46
+#: html/Admin/Groups/GroupRights.html:50
 #: html/Admin/Groups/GroupRights.html:56
 msgid "Modify group rights for group %1"
 msgstr "Modifiera grupprättigheter för grupp %1"
 
 #. ($QueueObj->Name)
-#: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
+#: html/Admin/Queues/GroupRights.html:46
+#: html/Admin/Queues/GroupRights.html:50
 msgid "Modify group rights for queue %1"
 msgstr "Modifiera grupprättigheter för kö %1"
 
@@ -2713,13 +2840,15 @@ msgid "Modify one's own RT account"
 msgstr "Modifiera ens eget RT-konto"
 
 #. ($QueueObj->Name)
-#: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
+#: html/Admin/Queues/People.html:46
+#: html/Admin/Queues/People.html:50
 msgid "Modify people related to queue %1"
 msgstr "Modifiera personer relaterade till kö %1"
 
 #. ($Ticket->id)
 #. ($Ticket->Id)
-#: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50
+#: html/Ticket/ModifyPeople.html:46
+#: html/Ticket/ModifyPeople.html:50
 #: html/Ticket/ModifyPeople.html:57
 msgid "Modify people related to ticket #%1"
 msgstr "Modifiera personer relaterade till ärende #%1"
@@ -2730,14 +2859,17 @@ msgid "Modify scrips for queue %1"
 msgstr "Modifiera scrips för kö %1"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:56
-#: html/Admin/Global/Scrips.html:65 html/Admin/Global/index.html:63
+#: html/Admin/Global/Scrips.html:65
+#: html/Admin/Global/index.html:63
 msgid "Modify scrips which apply to all queues"
 msgstr "Modifiera scrips som gäller för alla köer"
 
 #. (loc($TemplateObj->Name()))
 #. ($TemplateObj->id)
-#: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46
-#: html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
+#: html/Admin/Global/Template.html:102
+#: html/Admin/Global/Template.html:46
+#: html/Admin/Global/Template.html:51
+#: html/Admin/Queues/Template.html:99
 msgid "Modify template %1"
 msgstr "Modifiera mall %1"
 
@@ -2750,7 +2882,8 @@ msgid "Modify the default \"RT at a glance\" view"
 msgstr "Modifiera default \"RT snabbtitt\" -visningen"
 
 #. ($Group->Name)
-#: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
+#: html/Admin/Groups/Modify.html:119
+#: html/User/Groups/Modify.html:107
 msgid "Modify the group %1"
 msgstr "Modifiera gruppen %1"
 
@@ -2769,7 +2902,8 @@ msgid "Modify ticket # %1"
 msgstr "Modifiera ärende # %1"
 
 #. ($TicketObj->Id)
-#: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49
+#: html/Ticket/Modify.html:46
+#: html/Ticket/Modify.html:49
 #: html/Ticket/Modify.html:55
 msgid "Modify ticket #%1"
 msgstr "Modifiera ärende #%1"
@@ -2784,13 +2918,15 @@ msgid "Modify user rights for custom field %1"
 msgstr "Modifiera användarrättigheter för extrafält %1"
 
 #. ($GroupObj->Name)
-#: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50
+#: html/Admin/Groups/UserRights.html:46
+#: html/Admin/Groups/UserRights.html:50
 #: html/Admin/Groups/UserRights.html:56
 msgid "Modify user rights for group %1"
 msgstr "Modifiera användarrättigheter för grupp %1"
 
 #. ($QueueObj->Name)
-#: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
+#: html/Admin/Queues/UserRights.html:46
+#: html/Admin/Queues/UserRights.html:50
 msgid "Modify user rights for queue %1"
 msgstr "Modifiera användarrättigheter för kö %1"
 
@@ -2860,7 +2996,8 @@ msgstr "Mina %1 ärenden"
 msgid "My Day"
 msgstr "Min dag"
 
-#: html/Approvals/index.html:46 html/Approvals/index.html:47
+#: html/Approvals/index.html:46
+#: html/Approvals/index.html:47
 msgid "My approvals"
 msgstr "Mina godkännanden"
 
@@ -2874,8 +3011,10 @@ msgstr "Mina sparade sökningar"
 #: html/Admin/Elements/AddCustomFieldValue:53
 #: html/Admin/Elements/EditCustomField:55
 #: html/Admin/Elements/EditCustomFieldValues:55
-#: html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65
-#: html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
+#: html/Admin/Elements/ModifyTemplate:49
+#: html/Admin/Groups/Modify.html:65
+#: html/Search/Bulk.html:157
+#: html/User/Groups/Modify.html:65
 msgid "Name"
 msgstr "Namn"
 
@@ -2891,7 +3030,8 @@ msgstr "Aldrig"
 msgid "New Links"
 msgstr "Nya länkar"
 
-#: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
+#: html/Admin/Users/Modify.html:119
+#: html/User/Prefs.html:109
 msgid "New Password"
 msgstr "Nytt lösenord"
 
@@ -2908,7 +3048,8 @@ msgstr "Ny sökning"
 msgid "New custom field"
 msgstr "Nytt extrafält"
 
-#: html/Admin/Elements/GroupTabs:77 html/User/Elements/GroupTabs:73
+#: html/Admin/Elements/GroupTabs:77
+#: html/User/Elements/GroupTabs:73
 msgid "New group"
 msgstr "Ny grupp"
 
@@ -2932,17 +3073,22 @@ msgstr "Ny påminnelse:"
 msgid "New rights"
 msgstr "Nya rättigheter"
 
-#: html/Admin/Global/Scrip.html:63 html/Admin/Global/Scrips.html:60
-#: html/Admin/Queues/Scrip.html:71 html/Admin/Queues/Scrips.html:76
+#: html/Admin/Global/Scrip.html:63
+#: html/Admin/Global/Scrips.html:60
+#: html/Admin/Queues/Scrip.html:71
+#: html/Admin/Queues/Scrips.html:76
 msgid "New scrip"
 msgstr "Nytt scrip"
 
-#: html/Admin/Global/Template.html:81 html/Admin/Global/Templates.html:60
-#: html/Admin/Queues/Template.html:79 html/Admin/Queues/Templates.html:71
+#: html/Admin/Global/Template.html:81
+#: html/Admin/Global/Templates.html:60
+#: html/Admin/Queues/Template.html:79
+#: html/Admin/Queues/Templates.html:71
 msgid "New template"
 msgstr "Ny mall"
 
-#: html/SelfService/Elements/Tabs:84 html/SelfService/Elements/Tabs:88
+#: html/SelfService/Elements/Tabs:84
+#: html/SelfService/Elements/Tabs:88
 msgid "New ticket"
 msgstr "Nytt ärende"
 
@@ -2958,11 +3104,13 @@ msgstr "Ny användare"
 msgid "New user called"
 msgstr "Ny användare anropad"
 
-#: html/Admin/Queues/People.html:76 html/Ticket/Elements/EditPeople:50
+#: html/Admin/Queues/People.html:76
+#: html/Ticket/Elements/EditPeople:50
 msgid "New watchers"
 msgstr "Nya observatörer"
 
-#: html/Helpers/CalPopup.html:58 html/Ticket/Elements/Tabs:92
+#: html/Helpers/CalPopup.html:58
+#: html/Ticket/Elements/Tabs:92
 msgid "Next"
 msgstr "Nästa"
 
@@ -2970,7 +3118,8 @@ msgstr "Nästa"
 msgid "Next Page"
 msgstr "Nästa sida"
 
-#: html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
+#: html/Admin/Users/Modify.html:84
+#: html/User/Prefs.html:72
 msgid "Nickname"
 msgstr "Smeknamn"
 
@@ -2987,7 +3136,8 @@ msgstr "Inget extrafält"
 msgid "No CustomField defined"
 msgstr "Inget extrafält definierat"
 
-#: html/Admin/Groups/GroupRights.html:105 html/Admin/Groups/UserRights.html:92
+#: html/Admin/Groups/GroupRights.html:105
+#: html/Admin/Groups/UserRights.html:92
 msgid "No Group defined"
 msgstr "Ingen grupp definierad"
 
@@ -2995,15 +3145,17 @@ msgstr "Ingen grupp definierad"
 msgid "No Query"
 msgstr "Ingen söksträng"
 
-#: html/Admin/Queues/GroupRights.html:118 html/Admin/Queues/UserRights.html:89
+#: html/Admin/Queues/GroupRights.html:118
+#: html/Admin/Queues/UserRights.html:89
 msgid "No Queue defined"
-msgstr "Ingen söksträng definierad"
+msgstr "Ingen kö definierad"
 
 #: bin/rt-crontool:73
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "Ingen RT-användare funnen. Var god kontakta din RT administratör.\\n"
 
-#: html/Admin/Global/Template.html:100 html/Admin/Queues/Template.html:97
+#: html/Admin/Global/Template.html:100
+#: html/Admin/Queues/Template.html:97
 msgid "No Template"
 msgstr "Ingen mall"
 
@@ -3020,8 +3172,10 @@ msgid "No comment entered about this user"
 msgstr "Ingen kommentar inmatad om denna användare"
 
 #. (ref $self)
-#: lib/RT/Action/Generic.pm:185 lib/RT/Condition/Generic.pm:197
-#: lib/RT/Search/ActiveTicketsInQueue.pm:77 lib/RT/Search/Generic.pm:134
+#: lib/RT/Action/Generic.pm:185
+#: lib/RT/Condition/Generic.pm:197
+#: lib/RT/Search/ActiveTicketsInQueue.pm:77
+#: lib/RT/Search/Generic.pm:134
 #: lib/RT/Search/Googleish.pm:78
 msgid "No description for %1"
 msgstr "Ingen beskrivning för %1"
@@ -3067,11 +3221,13 @@ msgstr "Ingen tillåtelse att spara systemomfattande sökningar"
 msgid "No permission to view update ticket"
 msgstr "Ingen tillåtelse att visa uppdatera ärende"
 
-#: lib/RT/Queue_Overlay.pm:795 lib/RT/Ticket_Overlay.pm:1489
+#: lib/RT/Queue_Overlay.pm:795
+#: lib/RT/Ticket_Overlay.pm:1489
 msgid "No principal specified"
 msgstr "Ingen principal specificerad"
 
-#: html/Admin/Queues/People.html:175 html/Admin/Queues/People.html:185
+#: html/Admin/Queues/People.html:175
+#: html/Admin/Queues/People.html:185
 msgid "No principals selected."
 msgstr "Inga principaler valda."
 
@@ -3095,11 +3251,13 @@ msgstr "Ingen sökning inmatad"
 msgid "No search to operate on."
 msgstr "Ingen sökning att arbeta med."
 
-#: html/Elements/RT__Ticket/ColumnMap:137 html/Search/Results.rdf:78
+#: html/Elements/RT__Ticket/ColumnMap:137
+#: html/Search/Results.rdf:78
 msgid "No subject"
 msgstr "Inget ämne"
 
-#: lib/RT/Transaction_Overlay.pm:528 lib/RT/Transaction_Overlay.pm:565
+#: lib/RT/Transaction_Overlay.pm:528
+#: lib/RT/Transaction_Overlay.pm:565
 msgid "No transaction type specified"
 msgstr "Ingen transaktionstyp specificerad"
 
@@ -3119,7 +3277,8 @@ msgstr "Ingen"
 msgid "Nonexistant field?"
 msgstr "Icke-existerande fält?"
 
-#: html/Search/Chart:71 html/Search/Elements/Chart:88
+#: html/Search/Chart:71
+#: html/Search/Elements/Chart:88
 msgid "Not Set"
 msgstr "Ej inställd"
 
@@ -3151,11 +3310,13 @@ msgstr "Meddela Admin.kopia-mottagare"
 msgid "Notify AdminCcs as Comment"
 msgstr "Meddela Admin.kopia-mottagare som kommentar"
 
-#: etc/initialdata:93 etc/upgrade/3.1.17/content:6
+#: etc/initialdata:93
+#: etc/upgrade/3.1.17/content:6
 msgid "Notify Ccs"
 msgstr "Meddela kopia-mottagare"
 
-#: etc/initialdata:89 etc/upgrade/3.1.17/content:2
+#: etc/initialdata:89
+#: etc/upgrade/3.1.17/content:2
 msgid "Notify Ccs as Comment"
 msgstr "Meddela kopia-mottagare som kommentar"
 
@@ -3189,9 +3350,7 @@ msgstr "Meddela ägare om dess ärende har godkänts av någon godkännare"
 
 #: etc/initialdata:334
 msgid "Notify Owners and AdminCcs of new items pending their approval"
-msgstr ""
-"Meddela ägare och Admin.kopia-mottagare om nya ämnen väntar på deras "
-"godkännande"
+msgstr "Meddela ägare och Admin.kopia-mottagare om nya ämnen väntar på deras godkännande"
 
 #: etc/initialdata:77
 msgid "Notify Requestors"
@@ -3211,8 +3370,7 @@ msgstr "Meddela rekvirenter, kopia-mottagare och Admin.kopia-mottagare"
 
 #: etc/initialdata:116
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
-msgstr ""
-"Meddela rekvirenter, kopia-mottagare och Admin.kopia-mottagare som kommentar"
+msgstr "Meddela rekvirenter, kopia-mottagare och Admin.kopia-mottagare som kommentar"
 
 #: lib/RT/Date.pm:451
 msgid "Nov."
@@ -3290,7 +3448,8 @@ msgstr "Vid skapande"
 msgid "On Owner Change"
 msgstr "Vid ägarbyte"
 
-#: etc/initialdata:177 etc/upgrade/3.1.17/content:15
+#: etc/initialdata:177
+#: etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
 msgstr "Vid prioritetsändring"
 
@@ -3348,7 +3507,8 @@ msgstr "Alternativ"
 msgid "Order by"
 msgstr "Sortera efter"
 
-#: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
+#: html/Admin/Users/Modify.html:141
+#: html/User/Prefs.html:129
 msgid "Organization"
 msgstr "Organisation"
 
@@ -3377,12 +3537,18 @@ msgstr "Egna ärenden"
 msgid "OwnTicket"
 msgstr "EgetÄrende"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56
-#: html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72
-#: html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64
-#: html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129
-#: html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62
-#: lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38
+#: html/Elements/QuickCreate:56
+#: html/Search/Elements/PickBasics:101
+#: html/Ticket/Create.html:72
+#: html/Ticket/Elements/EditBasics:61
+#: html/Ticket/Elements/EditPeople:64
+#: html/Ticket/Elements/EditPeople:65
+#: html/Ticket/Elements/Reminders:129
+#: html/Ticket/Elements/ShowPeople:48
+#: html/Ticket/Update.html:62
+#: lib/RT/ACE_Overlay.pm:110
+#: lib/RT/Tickets_Overlay.pm:2006
 msgid "Owner"
 msgstr "Ägare"
 
@@ -3400,17 +3566,21 @@ msgstr "Ägare har godtyckligt ändrats från %1 till %2"
 msgid "Page %1 of %2"
 msgstr "Sida %1 av %2"
 
-#: html/Admin/Users/Modify.html:198 html/User/Prefs.html:96
+#: html/Admin/Users/Modify.html:198
+#: html/User/Prefs.html:96
 msgid "Pager"
 msgstr "Personsökare"
 
-#: html/Elements/EditLinks:144 html/Elements/EditLinks:76
-#: html/Elements/ShowLinks:68 html/Ticket/Create.html:222
+#: html/Elements/EditLinks:144
+#: html/Elements/EditLinks:76
+#: html/Elements/ShowLinks:68
+#: html/Ticket/Create.html:222
 #: html/Ticket/Elements/BulkLinks:60
 msgid "Parents"
 msgstr "Föräldrar"
 
-#: html/Elements/Login:95 html/User/Prefs.html:105
+#: html/Elements/Login:95
+#: html/User/Prefs.html:105
 msgid "Password"
 msgstr "Lösenord"
 
@@ -3418,12 +3588,14 @@ msgstr "Lösenord"
 msgid "Password Reminder"
 msgstr "Lösenordpåminnelse"
 
-#: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
+#: lib/RT/Transaction_Overlay.pm:781
+#: lib/RT/User_Overlay.pm:1045
 msgid "Password changed"
 msgstr "Lösenord ändrat"
 
 #. ($RT::MinimumPasswordLength)
-#: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
+#: lib/RT/User_Overlay.pm:1037
+#: lib/RT/User_Overlay.pm:214
 msgid "Password needs to be at least %1 characters long"
 msgstr "Lösenord måste vara minst %1 tecken långt"
 
@@ -3448,7 +3620,8 @@ msgstr "Lösenord stämmer inte överens."
 msgid "Passwords do not match. Your password has not been changed"
 msgstr "Lösenord stämmer inte överens. Ditt lösenord har inte ändrats"
 
-#: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119
+#: html/Ticket/Elements/ShowSummary:62
+#: html/Ticket/Elements/Tabs:119
 #: html/Ticket/ModifyAll.html:72
 msgid "People"
 msgstr "Personer"
@@ -3461,54 +3634,99 @@ msgstr "Genomför en användardefinierad handling"
 msgid "Perl configuration"
 msgstr "Perl-konfiguration"
 
-#: lib/RT/ACE_Overlay.pm:251 lib/RT/ACE_Overlay.pm:257
-#: lib/RT/ACE_Overlay.pm:580 lib/RT/ACE_Overlay.pm:590
-#: lib/RT/ACE_Overlay.pm:600 lib/RT/ACE_Overlay.pm:665
-#: lib/RT/Attribute_Overlay.pm:158 lib/RT/Attribute_Overlay.pm:164
-#: lib/RT/Attribute_Overlay.pm:405 lib/RT/Attribute_Overlay.pm:414
-#: lib/RT/Attribute_Overlay.pm:427 lib/RT/CurrentUser.pm:116
-#: lib/RT/CurrentUser.pm:125 lib/RT/CustomField_Overlay.pm:1017
-#: lib/RT/CustomField_Overlay.pm:1138 lib/RT/CustomField_Overlay.pm:1281
-#: lib/RT/CustomField_Overlay.pm:172 lib/RT/CustomField_Overlay.pm:189
-#: lib/RT/CustomField_Overlay.pm:200 lib/RT/CustomField_Overlay.pm:374
-#: lib/RT/CustomField_Overlay.pm:403 lib/RT/CustomField_Overlay.pm:763
-#: lib/RT/CustomField_Overlay.pm:936 lib/RT/CustomField_Overlay.pm:971
-#: lib/RT/Group_Overlay.pm:1117 lib/RT/Group_Overlay.pm:1121
-#: lib/RT/Group_Overlay.pm:1130 lib/RT/Group_Overlay.pm:1240
-#: lib/RT/Group_Overlay.pm:1244 lib/RT/Group_Overlay.pm:1250
-#: lib/RT/Group_Overlay.pm:445 lib/RT/Group_Overlay.pm:542
-#: lib/RT/Group_Overlay.pm:620 lib/RT/Group_Overlay.pm:628
-#: lib/RT/Group_Overlay.pm:726 lib/RT/Group_Overlay.pm:730
-#: lib/RT/Group_Overlay.pm:736 lib/RT/Group_Overlay.pm:922
-#: lib/RT/Group_Overlay.pm:926 lib/RT/Group_Overlay.pm:939
-#: lib/RT/Queue_Overlay.pm:1054 lib/RT/Queue_Overlay.pm:140
-#: lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:657
-#: lib/RT/Queue_Overlay.pm:667 lib/RT/Queue_Overlay.pm:681
-#: lib/RT/Queue_Overlay.pm:819 lib/RT/Queue_Overlay.pm:828
-#: lib/RT/Queue_Overlay.pm:841 lib/RT/Scrip_Overlay.pm:149
-#: lib/RT/Scrip_Overlay.pm:160 lib/RT/Scrip_Overlay.pm:224
-#: lib/RT/Scrip_Overlay.pm:538 lib/RT/Template_Overlay.pm:108
-#: lib/RT/Template_Overlay.pm:277 lib/RT/Ticket_Overlay.pm:1357
-#: lib/RT/Ticket_Overlay.pm:1367 lib/RT/Ticket_Overlay.pm:1381
-#: lib/RT/Ticket_Overlay.pm:1522 lib/RT/Ticket_Overlay.pm:1532
-#: lib/RT/Ticket_Overlay.pm:1546 lib/RT/Ticket_Overlay.pm:1663
-#: lib/RT/Ticket_Overlay.pm:1983 lib/RT/Ticket_Overlay.pm:2126
-#: lib/RT/Ticket_Overlay.pm:2296 lib/RT/Ticket_Overlay.pm:2346
-#: lib/RT/Ticket_Overlay.pm:2525 lib/RT/Ticket_Overlay.pm:2538
-#: lib/RT/Ticket_Overlay.pm:2614 lib/RT/Ticket_Overlay.pm:2627
-#: lib/RT/Ticket_Overlay.pm:2748 lib/RT/Ticket_Overlay.pm:2762
-#: lib/RT/Ticket_Overlay.pm:2990 lib/RT/Ticket_Overlay.pm:3000
-#: lib/RT/Ticket_Overlay.pm:3005 lib/RT/Ticket_Overlay.pm:3224
-#: lib/RT/Ticket_Overlay.pm:3228 lib/RT/Ticket_Overlay.pm:3371
-#: lib/RT/Ticket_Overlay.pm:3497 lib/RT/Transaction_Overlay.pm:516
-#: lib/RT/Transaction_Overlay.pm:523 lib/RT/Transaction_Overlay.pm:551
-#: lib/RT/Transaction_Overlay.pm:558 lib/RT/User_Overlay.pm:1176
-#: lib/RT/User_Overlay.pm:1856 lib/RT/User_Overlay.pm:369
-#: lib/RT/User_Overlay.pm:735 lib/RT/User_Overlay.pm:774
+#: lib/RT/ACE_Overlay.pm:251
+#: lib/RT/ACE_Overlay.pm:257
+#: lib/RT/ACE_Overlay.pm:580
+#: lib/RT/ACE_Overlay.pm:590
+#: lib/RT/ACE_Overlay.pm:600
+#: lib/RT/ACE_Overlay.pm:665
+#: lib/RT/Attribute_Overlay.pm:158
+#: lib/RT/Attribute_Overlay.pm:164
+#: lib/RT/Attribute_Overlay.pm:405
+#: lib/RT/Attribute_Overlay.pm:414
+#: lib/RT/Attribute_Overlay.pm:427
+#: lib/RT/CurrentUser.pm:116
+#: lib/RT/CurrentUser.pm:125
+#: lib/RT/CustomField_Overlay.pm:1017
+#: lib/RT/CustomField_Overlay.pm:1138
+#: lib/RT/CustomField_Overlay.pm:1281
+#: lib/RT/CustomField_Overlay.pm:172
+#: lib/RT/CustomField_Overlay.pm:189
+#: lib/RT/CustomField_Overlay.pm:200
+#: lib/RT/CustomField_Overlay.pm:374
+#: lib/RT/CustomField_Overlay.pm:403
+#: lib/RT/CustomField_Overlay.pm:763
+#: lib/RT/CustomField_Overlay.pm:936
+#: lib/RT/CustomField_Overlay.pm:971
+#: lib/RT/Group_Overlay.pm:1117
+#: lib/RT/Group_Overlay.pm:1121
+#: lib/RT/Group_Overlay.pm:1130
+#: lib/RT/Group_Overlay.pm:1240
+#: lib/RT/Group_Overlay.pm:1244
+#: lib/RT/Group_Overlay.pm:1250
+#: lib/RT/Group_Overlay.pm:445
+#: lib/RT/Group_Overlay.pm:542
+#: lib/RT/Group_Overlay.pm:620
+#: lib/RT/Group_Overlay.pm:628
+#: lib/RT/Group_Overlay.pm:726
+#: lib/RT/Group_Overlay.pm:730
+#: lib/RT/Group_Overlay.pm:736
+#: lib/RT/Group_Overlay.pm:922
+#: lib/RT/Group_Overlay.pm:926
+#: lib/RT/Group_Overlay.pm:939
+#: lib/RT/Queue_Overlay.pm:1054
+#: lib/RT/Queue_Overlay.pm:140
+#: lib/RT/Queue_Overlay.pm:158
+#: lib/RT/Queue_Overlay.pm:657
+#: lib/RT/Queue_Overlay.pm:667
+#: lib/RT/Queue_Overlay.pm:681
+#: lib/RT/Queue_Overlay.pm:819
+#: lib/RT/Queue_Overlay.pm:828
+#: lib/RT/Queue_Overlay.pm:841
+#: lib/RT/Scrip_Overlay.pm:149
+#: lib/RT/Scrip_Overlay.pm:160
+#: lib/RT/Scrip_Overlay.pm:224
+#: lib/RT/Scrip_Overlay.pm:538
+#: lib/RT/Template_Overlay.pm:108
+#: lib/RT/Template_Overlay.pm:277
+#: lib/RT/Ticket_Overlay.pm:1357
+#: lib/RT/Ticket_Overlay.pm:1367
+#: lib/RT/Ticket_Overlay.pm:1381
+#: lib/RT/Ticket_Overlay.pm:1522
+#: lib/RT/Ticket_Overlay.pm:1532
+#: lib/RT/Ticket_Overlay.pm:1546
+#: lib/RT/Ticket_Overlay.pm:1663
+#: lib/RT/Ticket_Overlay.pm:1983
+#: lib/RT/Ticket_Overlay.pm:2126
+#: lib/RT/Ticket_Overlay.pm:2296
+#: lib/RT/Ticket_Overlay.pm:2346
+#: lib/RT/Ticket_Overlay.pm:2525
+#: lib/RT/Ticket_Overlay.pm:2538
+#: lib/RT/Ticket_Overlay.pm:2614
+#: lib/RT/Ticket_Overlay.pm:2627
+#: lib/RT/Ticket_Overlay.pm:2748
+#: lib/RT/Ticket_Overlay.pm:2762
+#: lib/RT/Ticket_Overlay.pm:2990
+#: lib/RT/Ticket_Overlay.pm:3000
+#: lib/RT/Ticket_Overlay.pm:3005
+#: lib/RT/Ticket_Overlay.pm:3224
+#: lib/RT/Ticket_Overlay.pm:3228
+#: lib/RT/Ticket_Overlay.pm:3371
+#: lib/RT/Ticket_Overlay.pm:3497
+#: lib/RT/Transaction_Overlay.pm:516
+#: lib/RT/Transaction_Overlay.pm:523
+#: lib/RT/Transaction_Overlay.pm:551
+#: lib/RT/Transaction_Overlay.pm:558
+#: lib/RT/User_Overlay.pm:1176
+#: lib/RT/User_Overlay.pm:1856
+#: lib/RT/User_Overlay.pm:369
+#: lib/RT/User_Overlay.pm:735
+#: lib/RT/User_Overlay.pm:774
 msgid "Permission Denied"
 msgstr "Tillgång nekas"
 
-#: lib/RT/Template_Overlay.pm:238 lib/RT/Template_Overlay.pm:247
+#: lib/RT/Template_Overlay.pm:238
+#: lib/RT/Template_Overlay.pm:247
 msgid "Permission denied"
 msgstr "Tillgång nekas"
 
@@ -3520,7 +3738,8 @@ msgstr "Tillgång nekas"
 msgid "Personal Groups"
 msgstr "Personliga grupper"
 
-#: html/User/Groups/index.html:51 html/User/Groups/index.html:61
+#: html/User/Groups/index.html:51
+#: html/User/Groups/index.html:61
 msgid "Personal groups"
 msgstr "Personliga grupper"
 
@@ -3528,13 +3747,17 @@ msgstr "Personliga grupper"
 msgid "Personal groups:"
 msgstr "Personliga grupper:"
 
-#: html/Admin/Users/Modify.html:180 html/User/Prefs.html:81
+#: html/Admin/Users/Modify.html:180
+#: html/User/Prefs.html:81
 msgid "Phone numbers"
 msgstr "Telefonnummer"
 
-#: html/Elements/Header:93 html/Elements/Tabs:91
-#: html/SelfService/Elements/Tabs:95 html/SelfService/Prefs.html:46
-#: html/User/Prefs.html:46 html/User/Prefs.html:49
+#: html/Elements/Header:93
+#: html/Elements/Tabs:91
+#: html/SelfService/Elements/Tabs:95
+#: html/SelfService/Prefs.html:46
+#: html/User/Prefs.html:46
+#: html/User/Prefs.html:49
 msgid "Preferences"
 msgstr "Preferenser"
 
@@ -3552,7 +3775,8 @@ msgstr "Preferenser har sparats för %1."
 msgid "Prepare Stubbed"
 msgstr "Förbered tömning"
 
-#: html/Helpers/CalPopup.html:56 html/Ticket/Elements/Tabs:84
+#: html/Helpers/CalPopup.html:56
+#: html/Ticket/Elements/Tabs:84
 msgid "Prev"
 msgstr "Föreg."
 
@@ -3561,13 +3785,16 @@ msgid "Previous Page"
 msgstr "Föregående sida"
 
 #. ($args{'PrincipalId'})
-#: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:239
+#: lib/RT/ACE_Overlay.pm:157
+#: lib/RT/ACE_Overlay.pm:239
 #: lib/RT/ACE_Overlay.pm:569
 msgid "Principal %1 not found."
 msgstr "Principal %1 ej funnen."
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181
-#: html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72
+#: html/Search/Elements/PickBasics:147
+#: html/Ticket/Create.html:181
+#: html/Ticket/Elements/EditBasics:92
+#: html/Ticket/Elements/ShowBasics:72
 #: lib/RT/Tickets_Overlay.pm:1790
 msgid "Priority"
 msgstr "Prioritet"
@@ -3585,7 +3812,8 @@ msgid "Privileged"
 msgstr "Privilegierad"
 
 #. (loc_fuzzy($msg))
-#: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
+#: html/Admin/Users/Modify.html:342
+#: html/User/Prefs.html:231
 msgid "Privileged status: %1"
 msgstr "Privilegierad status: %1"
 
@@ -3593,7 +3821,10 @@ msgstr "Privilegierad status: %1"
 msgid "Privileged users"
 msgstr "Privilegierade användare"
 
-#: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
+#: etc/initialdata:23
+#: etc/initialdata:29
+#: etc/initialdata:35
+#: etc/initialdata:59
 msgid "Pseudogroup for internal use"
 msgstr "Pseudogrupp för internt bruk"
 
@@ -3605,21 +3836,27 @@ msgstr "Söksträngsbyggare"
 msgid "Query:"
 msgstr "Söksträng:"
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54
-#: html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54
-#: html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57
+#: html/Elements/QueueSummary:48
+#: html/Elements/QuickCreate:54
+#: html/Search/Elements/PickBasics:71
+#: html/SelfService/Create.html:54
+#: html/Ticket/Create.html:62
+#: html/Ticket/Elements/EditBasics:57
 #: html/Ticket/Elements/ShowBasics:76
 #: html/Tools/Reports/CreatedByDates.html:85
 #: html/Tools/Reports/ResolvedByDates.html:86
 #: html/Tools/Reports/ResolvedByOwner.html:66
-#: html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/User/Elements/DelegateRights:101
+#: lib/RT/Tickets_Overlay.pm:1617
 msgid "Queue"
 msgstr "Kö"
 
 #. ($id)
 #. ($Queue)
-#: html/Admin/Queues/CustomField.html:63 html/Admin/Queues/Scrip.html:61
-#: html/Admin/Queues/Scrips.html:69 html/Admin/Queues/Templates.html:65
+#: html/Admin/Queues/CustomField.html:63
+#: html/Admin/Queues/Scrip.html:61
+#: html/Admin/Queues/Scrips.html:69
+#: html/Admin/Queues/Templates.html:65
 msgid "Queue %1 not found"
 msgstr "Kö %1 ej funnen"
 
@@ -3631,24 +3868,29 @@ msgstr "Könamn"
 msgid "Queue already exists"
 msgstr "Kö finns redan"
 
-#: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
+#: lib/RT/Queue_Overlay.pm:374
+#: lib/RT/Queue_Overlay.pm:380
 msgid "Queue could not be created"
 msgstr "Kö kan ej skapas"
 
-#: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
+#: html/Ticket/Create.html:244
+#: lib/t/regression/01ticket_link_searching.t:17
 msgid "Queue could not be loaded."
 msgstr "Kö kan ej inläsas."
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384
+#: docs/design_docs/string-extraction-guide.txt:83
+#: lib/RT/Queue_Overlay.pm:384
 #: lib/RT/StyleGuide.pod:809
 msgid "Queue created"
 msgstr "Kö har skapats"
 
-#: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
+#: html/SelfService/Display.html:126
+#: lib/RT/CustomField_Overlay.pm:197
 msgid "Queue not found"
 msgstr "Kö ej funnen"
 
-#: html/Admin/Elements/Tabs:59 html/Admin/index.html:72
+#: html/Admin/Elements/Tabs:59
+#: html/Admin/index.html:72
 msgid "Queues"
 msgstr "Köer"
 
@@ -3660,7 +3902,8 @@ msgstr "Köer som jag administrerar"
 msgid "Queues I'm an AdminCc for"
 msgstr "Köer som jag är en Admin.kopia-mottagare för"
 
-#: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58
+#: html/Elements/Quicksearch:47
+#: html/Prefs/Elements/Tabs:58
 #: html/Prefs/Quicksearch.html:70
 msgid "Quick search"
 msgstr "Snabbsökning"
@@ -3674,15 +3917,18 @@ msgid "RSS"
 msgstr "RSS"
 
 #. ($RT::VERSION, $RT::rtname)
-#: docs/design_docs/string-extraction-guide.txt:70 lib/RT/StyleGuide.pod:796
+#: docs/design_docs/string-extraction-guide.txt:70
+#: lib/RT/StyleGuide.pod:796
 msgid "RT %1 for %2"
 msgstr "RT %1 för %2"
 
-#: html/Admin/index.html:46 html/Admin/index.html:47
+#: html/Admin/index.html:46
+#: html/Admin/index.html:47
 msgid "RT Administration"
 msgstr "RT-administration"
 
-#: html/Elements/Error:63 html/SelfService/Error.html:62
+#: html/Elements/Error:63
+#: html/SelfService/Error.html:62
 msgid "RT Error"
 msgstr "RT-fel"
 
@@ -3690,11 +3936,17 @@ msgstr "RT-fel"
 msgid "RT Variables"
 msgstr "RT-variabler"
 
-#: html/Admin/Elements/SystemTabs:71 html/Admin/Elements/UserTabs:67
-#: html/Admin/Global/MyRT.html:1 html/Admin/Global/MyRT.html:12
-#: html/Admin/Global/MyRT.html:4 html/Admin/Global/index.html:84
-#: html/Admin/Users/MyRT.html:21 html/Prefs/MyRT.html:66
-#: html/Prefs/MyRT.html:78 html/User/Elements/Tabs:65 html/index.html:1
+#: html/Admin/Elements/SystemTabs:71
+#: html/Admin/Elements/UserTabs:67
+#: html/Admin/Global/MyRT.html:1
+#: html/Admin/Global/MyRT.html:12
+#: html/Admin/Global/MyRT.html:4
+#: html/Admin/Global/index.html:84
+#: html/Admin/Users/MyRT.html:21
+#: html/Prefs/MyRT.html:66
+#: html/Prefs/MyRT.html:78
+#: html/User/Elements/Tabs:65
+#: html/index.html:1
 #: html/index.html:75
 msgid "RT at a glance"
 msgstr "RT-snabbtitt"
@@ -3705,25 +3957,20 @@ msgid "RT at a glance for the user %1"
 msgstr "RT-snabbtitt för användaren %1"
 
 #: html/Admin/CustomFields/Modify.html:117
-msgid ""
-"RT can include content from another web service when showing this custom "
-"field."
-msgstr ""
-"RT kan innehålla innehåll från annan webbtjänst när detta extrafält visas."
+msgid "RT can include content from another web service when showing this custom field."
+msgstr "RT kan innehålla innehåll från annan webbtjänst när detta extrafält visas."
 
 #: html/Admin/CustomFields/Modify.html:106
-msgid ""
-"RT can make this custom field's values into hyperlinks to another service."
-msgstr ""
-"RT kan göra alternativen för detta extrafält till hyperlänkar till annan "
-"tjänst."
+msgid "RT can make this custom field's values into hyperlinks to another service."
+msgstr "RT kan göra alternativen för detta extrafält till hyperlänkar till annan tjänst."
 
 #: html/Elements/SetupSessionCookie:100
 msgid "RT couldn't store your session."
 msgstr "RT har inte utrymme för din session."
 
 #. ($RT::rtname)
-#: html/Elements/Logo:49 html/Elements/PageLayout:172
+#: html/Elements/Logo:49
+#: html/Elements/PageLayout:172
 msgid "RT for %1"
 msgstr "RT för %1"
 
@@ -3733,14 +3980,11 @@ msgstr "RT kommer att söka efter allt annat som du matar in i ärendeämnen."
 
 #: html/Admin/CustomFields/Modify.html:108
 #: html/Admin/CustomFields/Modify.html:119
-msgid ""
-"RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record "
-"id and custom field value, respectively"
-msgstr ""
-"RT kommer att ersätta <tt>__id__</tt> och <tt>__ExtraFält__</tt> med "
-"register-ID och extrafältvärde respektive"
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT kommer att ersätta <tt>__id__</tt> och <tt>__ExtraFält__</tt> med register-ID och extrafältvärde respektive"
 
-#: html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
+#: html/Admin/Users/Modify.html:79
+#: html/User/Prefs.html:69
 msgid "Real Name"
 msgstr "Fullständigt namn"
 
@@ -3764,15 +4008,20 @@ msgstr "Referens till %1 tillagd"
 msgid "Reference to %1 deleted"
 msgstr "Referens till %1 raderad"
 
-#: html/Elements/EditLinks:103 html/Elements/EditLinks:156
-#: html/Elements/ShowLinks:92 html/Ticket/Create.html:225
+#: html/Elements/EditLinks:103
+#: html/Elements/EditLinks:156
+#: html/Elements/ShowLinks:92
+#: html/Ticket/Create.html:225
 #: html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
 msgstr "Refererad till av"
 
-#: html/Elements/EditLinks:152 html/Elements/EditLinks:94
-#: html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82
-#: html/Ticket/Create.html:224 html/Ticket/Elements/BulkLinks:68
+#: html/Elements/EditLinks:152
+#: html/Elements/EditLinks:94
+#: html/Elements/SelectLinkType:49
+#: html/Elements/ShowLinks:82
+#: html/Ticket/Create.html:224
+#: html/Ticket/Elements/BulkLinks:68
 msgid "Refers to"
 msgstr "Refererar till"
 
@@ -3801,8 +4050,10 @@ msgstr "Påminnelse '%1' öppnad igen"
 msgid "Reminder ticket #%1"
 msgstr "Påminnelse ärende #%1"
 
-#: html/Elements/MyReminders:48 html/Ticket/Elements/ShowSummary:75
-#: html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
+#: html/Elements/MyReminders:48
+#: html/Ticket/Elements/ShowSummary:75
+#: html/Ticket/Elements/Tabs:122
+#: html/Ticket/Reminders.html:52
 msgid "Reminders"
 msgstr "Påminnelser"
 
@@ -3823,7 +4074,8 @@ msgstr "Ta bort kopia"
 msgid "Remove Requestor"
 msgstr "Ta bort rekvirent"
 
-#: html/Ticket/Elements/ShowTransaction:179 html/Ticket/Elements/Tabs:147
+#: html/Ticket/Elements/ShowTransaction:179
+#: html/Ticket/Elements/Tabs:147
 msgid "Reply"
 msgstr "Svar"
 
@@ -3831,7 +4083,8 @@ msgstr "Svar"
 msgid "Reply Address"
 msgstr "Svarsadress"
 
-#: html/Search/Bulk.html:129 html/Ticket/ModifyAll.html:94
+#: html/Search/Bulk.html:129
+#: html/Ticket/ModifyAll.html:94
 #: html/Ticket/Update.html:78
 msgid "Reply to requestors"
 msgstr "Svar till rekvirenter"
@@ -3844,17 +4097,21 @@ msgstr "Svar på ärenden"
 msgid "ReplyToTicket"
 msgstr "SvarTillÄrende"
 
-#: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:46
+#: html/Tools/Elements/Tabs:59
+#: html/Tools/Reports/index.html:46
 #: html/Tools/Reports/index.html:47
 msgid "Reports"
 msgstr "Rapporter"
 
-#: etc/initialdata:44 lib/RT/ACE_Overlay.pm:111
+#: etc/initialdata:44
+#: lib/RT/ACE_Overlay.pm:111
 msgid "Requestor"
 msgstr "Rekvirent"
 
-#: html/SelfService/Create.html:63 html/Ticket/Create.html:80
-#: html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
+#: html/SelfService/Create.html:63
+#: html/Ticket/Create.html:80
+#: html/Ticket/Elements/EditPeople:69
+#: html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
 msgstr "Rekvirenter"
 
@@ -3871,13 +4128,15 @@ msgstr "Nödvändig parameter '%1' ej specificerad"
 msgid "Reset"
 msgstr "Reset"
 
-#: html/Admin/Users/MyRT.html:15 html/Prefs/MyRT.html:60
+#: html/Admin/Users/MyRT.html:15
+#: html/Prefs/MyRT.html:60
 msgid "Reset to default"
 msgstr "Reset till default"
 
-#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:84
+#: html/Admin/Users/Modify.html:183
+#: html/User/Prefs.html:84
 msgid "Residence"
-msgstr "Residens"
+msgstr "Hemma"
 
 #: html/Ticket/Elements/Tabs:156
 msgid "Resolve"
@@ -3888,7 +4147,8 @@ msgstr "Lös"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Lös ärende #%1 (%2)"
 
-#: etc/initialdata:323 html/Elements/SelectDateType:49
+#: etc/initialdata:323
+#: html/Elements/SelectDateType:49
 #: lib/RT/Ticket_Overlay.pm:1172
 msgid "Resolved"
 msgstr "Löst"
@@ -3909,11 +4169,13 @@ msgstr "Lösta ärenden under period, grupperade efter ägare"
 msgid "Resolved tickets, grouped by owner"
 msgstr "Lösta ärenden, grupperade efter ägare"
 
-#: html/Elements/ListActions:46 html/Search/Elements/NewListActions:47
+#: html/Elements/ListActions:46
+#: html/Search/Elements/NewListActions:47
 msgid "Results"
 msgstr "Resultat"
 
-#: html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
+#: html/Admin/Users/Modify.html:126
+#: html/User/Prefs.html:116
 msgid "Retype Password"
 msgstr "Skriv in lösenord igen"
 
@@ -3933,7 +4195,8 @@ msgstr "Rättighet tilldelad"
 msgid "Right Loaded"
 msgstr "Rättighet inläst"
 
-#: lib/RT/ACE_Overlay.pm:695 lib/RT/ACE_Overlay.pm:716
+#: lib/RT/ACE_Overlay.pm:695
+#: lib/RT/ACE_Overlay.pm:716
 msgid "Right could not be revoked"
 msgstr "Rättighet kan inte återkallas"
 
@@ -3941,7 +4204,8 @@ msgstr "Rättighet kan inte återkallas"
 msgid "Right not found"
 msgstr "Rättighet ej funnen"
 
-#: lib/RT/ACE_Overlay.pm:560 lib/RT/ACE_Overlay.pm:655
+#: lib/RT/ACE_Overlay.pm:560
+#: lib/RT/ACE_Overlay.pm:655
 msgid "Right not loaded."
 msgstr "Rättighet ej inläst."
 
@@ -3954,16 +4218,19 @@ msgid "Rights"
 msgstr "Rättigheter"
 
 #. ($object_type)
-#: html/Admin/CustomFields/GroupRights.html:129 lib/RT/Interface/Web.pm:961
+#: html/Admin/CustomFields/GroupRights.html:129
+#: lib/RT/Interface/Web.pm:961
 msgid "Rights could not be granted for %1"
 msgstr "Rättigheter kan inte tilldelas %1"
 
 #. ($object_type)
-#: html/Admin/CustomFields/GroupRights.html:156 lib/RT/Interface/Web.pm:990
+#: html/Admin/CustomFields/GroupRights.html:156
+#: lib/RT/Interface/Web.pm:990
 msgid "Rights could not be revoked for %1"
 msgstr "Rättigheter kan inte återkallas för %1"
 
-#: html/Admin/Global/GroupRights.html:72 html/Admin/Queues/GroupRights.html:74
+#: html/Admin/Global/GroupRights.html:72
+#: html/Admin/Queues/GroupRights.html:74
 msgid "Roles"
 msgstr "Roller"
 
@@ -3979,19 +4246,28 @@ msgstr "Rader per sida"
 msgid "Sat."
 msgstr "Lör."
 
-#: html/Prefs/MyRT.html:72 html/Prefs/Quicksearch.html:64
-#: html/Prefs/Search.html:69 html/Search/Elements/EditSearches:70
+#: html/Prefs/MyRT.html:72
+#: html/Prefs/Quicksearch.html:64
+#: html/Prefs/Search.html:69
+#: html/Search/Elements/EditSearches:70
 #: html/Widgets/SelectionBox:211
 msgid "Save"
 msgstr "Spara"
 
-#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88
-#: html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126
-#: html/Admin/Users/Modify.html:239 html/Prefs/Quicksearch.html:64
-#: html/Prefs/SearchOptions.html:63 html/SelfService/Prefs.html:58
-#: html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127
-#: html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:61
-#: html/Ticket/ModifyPeople.html:60 html/User/Groups/Modify.html:77
+#: html/Admin/Global/Template.html:67
+#: html/Admin/Groups/Modify.html:88
+#: html/Admin/Queues/Modify.html:111
+#: html/Admin/Queues/People.html:126
+#: html/Admin/Users/Modify.html:239
+#: html/Prefs/Quicksearch.html:64
+#: html/Prefs/SearchOptions.html:63
+#: html/SelfService/Prefs.html:58
+#: html/Ticket/Modify.html:60
+#: html/Ticket/ModifyAll.html:127
+#: html/Ticket/ModifyDates.html:60
+#: html/Ticket/ModifyLinks.html:61
+#: html/Ticket/ModifyPeople.html:60
+#: html/User/Groups/Modify.html:77
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
@@ -4010,7 +4286,8 @@ msgstr "Spara sökning %1"
 
 #. ($id)
 #. ($scrip->Id)
-#: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77
+#: html/Admin/Elements/ListGlobalScrips:60
+#: html/Admin/Global/Scrip.html:77
 #: html/Admin/Queues/Scrip.html:84
 msgid "Scrip #%1"
 msgstr "Scrip #%1"
@@ -4027,7 +4304,8 @@ msgstr "Scrip-fält"
 msgid "Scrip deleted"
 msgstr "Scrip har raderats"
 
-#: html/Admin/Elements/QueueTabs:67 html/Admin/Elements/SystemTabs:54
+#: html/Admin/Elements/QueueTabs:67
+#: html/Admin/Elements/SystemTabs:54
 #: html/Admin/Global/index.html:62
 msgid "Scrips"
 msgstr "Scrips"
@@ -4036,11 +4314,13 @@ msgstr "Scrips"
 msgid "Scrips which apply to all queues"
 msgstr "Scrips som gäller alla köer"
 
-#: html/Elements/SimpleSearch:48 html/Search/Simple.html:65
+#: html/Elements/SimpleSearch:48
+#: html/Search/Simple.html:65
 msgid "Search"
 msgstr "Sökning"
 
-#: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
+#: html/Prefs/SearchOptions.html:47
+#: html/Prefs/SearchOptions.html:50
 msgid "Search Preferences"
 msgstr "Sökpreferenser"
 
@@ -4057,19 +4337,11 @@ msgid "Search for tickets"
 msgstr "Sök efter ärenden"
 
 #: NOT FOUND IN SOURCE
-msgid ""
-"Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</"
-"strong> by name"
-msgstr ""
-"Sök efter ärenden. Skriv <strong>id</strong> nummer, <strong>köer</strong> "
-"med namn"
+msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name"
+msgstr "Sök efter ärenden. Skriv <strong>id</strong> nummer, <strong>köer</strong> med namn"
 
 #: html/Search/Simple.html:57
-msgid ""
-"Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</"
-"strong> by name, Owners by <strong>username</strong> and Requestors by "
-"<strong>email address</strong>. RT will look for anything else you enter in "
-"ticket bodies and attachments."
+msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name"
 msgstr ""
 
 #: html/User/Elements/Tabs:62
@@ -4087,14 +4359,8 @@ msgid "Search update: %1"
 msgstr "Sökuppdatering: %1"
 
 #: html/Search/Simple.html:59
-msgid ""
-"Searching the full text of every ticket can take a long time, but if you "
-"need to do it, you can search for any word in full ticket history for any "
-"word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
-"Att söka igenom all text i alla ärenden kan ta lång tid, men om du måste "
-"göra det kan du söka efter vilket ord som helst i hela ärendehistoriken "
-"genom att skriva <b>fulltext:<i>word</i></b>."
+msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
+msgstr "Att söka igenom all text i alla ärenden kan ta lång tid, men om du måste göra det kan du söka efter vilket ord som helst i hela ärendehistoriken genom att skriva <b>fulltext:<i>word</i></b>."
 
 #: bin/rt-crontool:265
 msgid "Security:"
@@ -4132,7 +4398,8 @@ msgstr "SeGrupp"
 msgid "SeeQueue"
 msgstr "SeKö"
 
-#: html/Admin/CustomFields/index.html:46 html/Admin/CustomFields/index.html:49
+#: html/Admin/CustomFields/index.html:46
+#: html/Admin/CustomFields/index.html:49
 msgid "Select a Custom Field"
 msgstr "Välj ett extrafält"
 
@@ -4148,7 +4415,8 @@ msgstr "Välj en kö"
 msgid "Select a queue for your new ticket"
 msgstr "Välj en kö för ditt nya ärende"
 
-#: html/Admin/Users/index.html:46 html/Admin/Users/index.html:49
+#: html/Admin/Users/index.html:46
+#: html/Admin/Users/index.html:49
 #: html/Admin/Users/index.html:52
 msgid "Select a user"
 msgstr "Välj en användare"
@@ -4173,7 +4441,8 @@ msgstr "Välj extrafält för ärenden i alla köer"
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Välj extrafält för transaktioner på alla ärenden i alla köer"
 
-#: html/Admin/Elements/GroupTabs:75 html/User/Elements/GroupTabs:71
+#: html/Admin/Elements/GroupTabs:75
+#: html/User/Elements/GroupTabs:71
 msgid "Select group"
 msgstr "Välj grupp"
 
@@ -4193,13 +4462,17 @@ msgstr "Välj kö"
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr "Välj kö som skall visas på \"RT-snabbtitt\" -sidan"
 
-#: html/Admin/Global/Scrip.html:59 html/Admin/Global/Scrips.html:57
-#: html/Admin/Queues/Scrip.html:67 html/Admin/Queues/Scrips.html:73
+#: html/Admin/Global/Scrip.html:59
+#: html/Admin/Global/Scrips.html:57
+#: html/Admin/Queues/Scrip.html:67
+#: html/Admin/Queues/Scrips.html:73
 msgid "Select scrip"
 msgstr "Välj scrip"
 
-#: html/Admin/Global/Template.html:78 html/Admin/Global/Templates.html:57
-#: html/Admin/Queues/Template.html:76 html/Admin/Queues/Templates.html:68
+#: html/Admin/Global/Template.html:78
+#: html/Admin/Global/Templates.html:57
+#: html/Admin/Queues/Template.html:76
+#: html/Admin/Queues/Templates.html:68
 msgid "Select template"
 msgstr "Välj mall"
 
@@ -4243,16 +4516,18 @@ msgstr "Skicka e-post till rekvirenter och kopia-mottagare som en kommentar"
 msgid "Sends a message to the requestors"
 msgstr "Skicka ett meddelande till rekvirenterna"
 
-#: etc/initialdata:125 etc/initialdata:129
+#: etc/initialdata:125
+#: etc/initialdata:129
 msgid "Sends mail to explicitly listed Ccs and Bccs"
-msgstr ""
-"Skicka e-post till explicita kopia-mottagare och hemlig kopia-mottagare"
+msgstr "Skicka e-post till explicita kopia-mottagare och hemlig kopia-mottagare"
 
-#: etc/initialdata:94 etc/upgrade/3.1.17/content:7
+#: etc/initialdata:94
+#: etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
 msgstr "Skicka e-post till kopia-mottagarna"
 
-#: etc/initialdata:90 etc/upgrade/3.1.17/content:3
+#: etc/initialdata:90
+#: etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
 msgstr "Skicka e-post till kopia-mottagarna som en kommentar"
 
@@ -4264,7 +4539,8 @@ msgstr "Skicka e-post till de administrativa kopia-mottagarna"
 msgid "Sends mail to the administrative Ccs as a comment"
 msgstr "Skicka e-post till de administrativa kopia-mottagarna som en kommentar"
 
-#: etc/initialdata:82 etc/initialdata:86
+#: etc/initialdata:82
+#: etc/initialdata:86
 msgid "Sends mail to the owner"
 msgstr "Skicka e-post till ägaren"
 
@@ -4294,7 +4570,7 @@ msgstr "Visa godkända förfrågningar"
 
 #: html/Ticket/Create.html:316
 msgid "Show basics"
-msgstr "Visa basics"
+msgstr "Visa grunddata"
 
 #: html/Approvals/Elements/PendingMyApproval:65
 msgid "Show denied requests"
@@ -4352,7 +4628,8 @@ msgstr "Registrera som ärenderekvirent eller ärende eller kö-kopia"
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "Registrera som ärende eller kö-Admin.kopia"
 
-#: html/Admin/Users/Modify.html:230 html/User/Prefs.html:168
+#: html/Admin/Users/Modify.html:230
+#: html/User/Prefs.html:168
 msgid "Signature"
 msgstr "Signatur"
 
@@ -4377,11 +4654,8 @@ msgid "Small"
 msgstr "Liten"
 
 #: html/Admin/CustomFields/Modify.html:120
-msgid ""
-"Some browsers may only load content from the same domain as your RT server."
-msgstr ""
-"Vissa webbläsare läser kanske bara in innehåll från samma domän som din RT-"
-"server."
+msgid "Some browsers may only load content from the same domain as your RT server."
+msgstr "Vissa webbläsare läser kanske bara in innehåll från samma domän som din RT-server."
 
 #: html/Admin/Elements/AddCustomFieldValue:49
 #: html/Admin/Elements/EditCustomFieldValues:54
@@ -4392,24 +4666,32 @@ msgstr "Sortera"
 msgid "Stage"
 msgstr "Steg"
 
-#: html/Elements/SelectDateType:48 html/Ticket/Elements/EditDates:53
+#: html/Elements/SelectDateType:48
+#: html/Ticket/Elements/EditDates:53
 #: html/Ticket/Elements/ShowDates:56
 msgid "Started"
 msgstr "Påbörjad"
 
-#: html/Elements/SelectDateType:52 html/Ticket/Create.html:208
-#: html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
+#: html/Elements/SelectDateType:52
+#: html/Ticket/Create.html:208
+#: html/Ticket/Elements/EditDates:48
+#: html/Ticket/Elements/ShowDates:52
 msgid "Starts"
 msgstr "Börjar"
 
-#: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
+#: html/Admin/Users/Modify.html:162
+#: html/User/Prefs.html:145
 msgid "State"
 msgstr "Läge"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57
-#: html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53
-#: html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59
-#: lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87
+#: html/SelfService/Update.html:57
+#: html/Ticket/Create.html:66
+#: html/Ticket/Elements/EditBasics:53
+#: html/Ticket/Elements/ShowBasics:52
+#: html/Ticket/Update.html:59
+#: lib/RT/Ticket_Overlay.pm:1166
+#: lib/RT/Tickets_Overlay.pm:1651
 msgid "Status"
 msgstr "Status"
 
@@ -4442,17 +4724,24 @@ msgstr "Stulen från %1 "
 msgid "Style"
 msgstr "Stil"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47
-#: html/Search/Bulk.html:132 html/SelfService/Create.html:79
-#: html/SelfService/Update.html:65 html/Ticket/Create.html:108
-#: html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125
-#: html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82
-#: lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52
+#: html/Elements/SelectAttachmentField:47
+#: html/Search/Bulk.html:132
+#: html/SelfService/Create.html:79
+#: html/SelfService/Update.html:65
+#: html/Ticket/Create.html:108
+#: html/Ticket/Elements/EditBasics:48
+#: html/Ticket/Elements/Reminders:125
+#: html/Ticket/ModifyAll.html:100
+#: html/Ticket/Update.html:82
+#: lib/RT/Ticket_Overlay.pm:1162
+#: lib/RT/Tickets_Overlay.pm:1733
 msgid "Subject"
 msgstr "Ämne"
 
 #. ($self->Data)
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815
+#: docs/design_docs/string-extraction-guide.txt:89
+#: lib/RT/StyleGuide.pod:815
 #: lib/RT/Transaction_Overlay.pm:700
 msgid "Subject changed to %1"
 msgstr "Ämne ändrat till %1"
@@ -4477,7 +4766,8 @@ msgstr "SuperAnvändare"
 msgid "System"
 msgstr "System"
 
-#: html/Admin/Elements/ToolTabs:54 html/Admin/Tools/Configuration.html:48
+#: html/Admin/Elements/ToolTabs:54
+#: html/Admin/Tools/Configuration.html:48
 msgid "System Configuration"
 msgstr "Systemkonfiguration"
 
@@ -4485,13 +4775,16 @@ msgstr "Systemkonfiguration"
 #: html/Admin/CustomFields/GroupRights.html:155
 #: html/Admin/CustomFields/UserRights.html:128
 #: html/Admin/CustomFields/UserRights.html:98
-#: html/Admin/Elements/SelectRights:106 lib/RT/ACE_Overlay.pm:584
-#: lib/RT/Interface/Web.pm:960 lib/RT/Interface/Web.pm:989
+#: html/Admin/Elements/SelectRights:106
+#: lib/RT/ACE_Overlay.pm:584
+#: lib/RT/Interface/Web.pm:960
+#: lib/RT/Interface/Web.pm:989
 msgid "System Error"
 msgstr "Systemfel"
 
 #. ($msg)
-#: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
+#: lib/RT/Transaction_Overlay.pm:224
+#: lib/RT/Transaction_Overlay.pm:230
 msgid "System Error: %1"
 msgstr "Systemfel: %1"
 
@@ -4503,18 +4796,23 @@ msgstr "Systemverktyg"
 msgid "System error. Right not delegated."
 msgstr "Systemfel. Rättighet inte överlåten."
 
-#: lib/RT/ACE_Overlay.pm:163 lib/RT/ACE_Overlay.pm:228
-#: lib/RT/ACE_Overlay.pm:323 lib/RT/ACE_Overlay.pm:920
+#: lib/RT/ACE_Overlay.pm:163
+#: lib/RT/ACE_Overlay.pm:228
+#: lib/RT/ACE_Overlay.pm:323
+#: lib/RT/ACE_Overlay.pm:920
 msgid "System error. Right not granted."
 msgstr "Systemfel. Rättighet inte tilldelad."
 
 #: html/Admin/CustomFields/GroupRights.html:58
-#: html/Admin/Global/GroupRights.html:56 html/Admin/Groups/GroupRights.html:58
+#: html/Admin/Global/GroupRights.html:56
+#: html/Admin/Groups/GroupRights.html:58
 #: html/Admin/Queues/GroupRights.html:57
 msgid "System groups"
 msgstr "Systemgrupper"
 
-#: etc/initialdata:41 etc/initialdata:47 etc/initialdata:53
+#: etc/initialdata:41
+#: etc/initialdata:47
+#: etc/initialdata:53
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRollgrupp för internt bruk"
 
@@ -4522,7 +4820,8 @@ msgstr "SystemRollgrupp för internt bruk"
 msgid "TEST_STRING"
 msgstr "TEST_STRING"
 
-#: etc/initialdata:603 html/Search/Elements/EditFormat:72
+#: etc/initialdata:603
+#: html/Search/Elements/EditFormat:72
 #: html/Ticket/Elements/Tabs:170
 msgid "Take"
 msgstr "Ta"
@@ -4539,12 +4838,14 @@ msgstr "TaÄrende"
 msgid "Taken"
 msgstr "Taget"
 
-#: html/Admin/Elements/EditScrip:71 html/Tools/Offline.html:78
+#: html/Admin/Elements/EditScrip:71
+#: html/Tools/Offline.html:78
 msgid "Template"
 msgstr "Mall"
 
 #. ($TemplateObj->Id())
-#: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
+#: html/Admin/Global/Template.html:112
+#: html/Admin/Queues/Template.html:113
 msgid "Template #%1"
 msgstr "Mall #%1"
 
@@ -4568,12 +4869,14 @@ msgstr "Mall har parsats"
 msgid "Template parsing error"
 msgstr "Mallparsfel"
 
-#: html/Admin/Elements/QueueTabs:70 html/Admin/Elements/SystemTabs:57
+#: html/Admin/Elements/QueueTabs:70
+#: html/Admin/Elements/SystemTabs:57
 #: html/Admin/Global/index.html:66
 msgid "Templates"
 msgstr "Mallar"
 
-#: lib/RT/CustomField_Overlay.pm:943 lib/RT/Record.pm:945
+#: lib/RT/CustomField_Overlay.pm:943
+#: lib/RT/Record.pm:945
 msgid "That is already the current value"
 msgstr "Det är redan det nuvarande värdet"
 
@@ -4585,7 +4888,8 @@ msgstr "Det är inte ett värde för detta extrafält"
 msgid "That is the same value"
 msgstr "Det är samma värde"
 
-#: lib/RT/ACE_Overlay.pm:305 lib/RT/ACE_Overlay.pm:614
+#: lib/RT/ACE_Overlay.pm:305
+#: lib/RT/ACE_Overlay.pm:614
 msgid "That principal already has that right"
 msgstr "Principalen har redan den rättigheten"
 
@@ -4612,7 +4916,8 @@ msgstr "Kön finns ej"
 msgid "That ticket has unresolved dependencies"
 msgstr "Ärendet har olösta avhängigheter"
 
-#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/CreateTickets.pm:710
+#: lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Ärendet tillhör redan den användaren"
 
@@ -4644,10 +4949,11 @@ msgstr "Användaren äger kanske inte ärenden i den kön"
 msgid "That's not a numerical id"
 msgstr "Det är inte något numeriskt ID"
 
-#: html/SelfService/Display.html:53 html/Ticket/Create.html:177
+#: html/SelfService/Display.html:53
+#: html/Ticket/Create.html:177
 #: html/Ticket/Elements/ShowSummary:49
 msgid "The Basics"
-msgstr "Det grundläggande"
+msgstr "Grunddata"
 
 #: lib/RT/ACE_Overlay.pm:112
 msgid "The CC of a ticket"
@@ -4658,12 +4964,8 @@ msgid "The administrative CC of a ticket"
 msgstr "Adminstrativ kopia för ett ärende"
 
 #: bin/rt-crontool:275
-msgid ""
-"The following command will find all active tickets in the queue 'general' "
-"and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr ""
-"Följande kommando kommer att ta fram alla aktiva ärenden i kön 'general' och "
-"sätta deras prioritet som 99 om de inte rörts på 4 timmar:"
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+msgstr "Följande kommando kommer att ta fram alla aktiva ärenden i kön 'general' och sätta deras prioritet som 99 om de inte rörts på 4 timmar:"
 
 #: lib/RT/Record.pm:948
 msgid "The new value has been set."
@@ -4695,9 +4997,7 @@ msgstr "Meddelandet kommer att skickas till..."
 
 #: bin/rt-crontool:266
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
-msgstr ""
-"Detta verktyg ger användaren möjlighet att köra godtyckliga perl-moduler "
-"inifrån RT."
+msgstr "Detta verktyg ger användaren möjlighet att köra godtyckliga perl-moduler inifrån RT."
 
 #: lib/RT/Transaction_Overlay.pm:301
 msgid "This transaction appears to have no content"
@@ -4713,7 +5013,8 @@ msgid "Thu."
 msgstr "Tor."
 
 #. ($Ticket->Id, $Ticket->Subject)
-#: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
+#: html/Ticket/ModifyAll.html:46
+#: html/Ticket/ModifyAll.html:50
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Ärende #%1 Jumbo uppdatering: %2"
 
@@ -4725,14 +5026,17 @@ msgstr "Ärende #%1: %2"
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
-#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359
-#: lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729
+#: lib/RT/Action/CreateTickets.pm:1350
+#: lib/RT/Action/CreateTickets.pm:1359
+#: lib/RT/Action/CreateTickets.pm:605
+#: lib/RT/Action/CreateTickets.pm:729
 #: lib/RT/Action/CreateTickets.pm:741
 msgid "Ticket %1"
 msgstr "Ärende %1"
 
 #. ($self->Id, $QueueObj->Name)
-#: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
+#: lib/RT/Ticket_Overlay.pm:755
+#: lib/RT/Ticket_Overlay.pm:775
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Ärende %1 har skapats i kö '%2'"
 
@@ -4746,7 +5050,8 @@ msgid "Ticket Custom Fields"
 msgstr "Ärende extrafält"
 
 #. ($Ticket->Id, $Ticket->Subject)
-#: html/Ticket/History.html:46 html/Ticket/History.html:49
+#: html/Ticket/History.html:46
+#: html/Ticket/History.html:49
 msgid "Ticket History # %1 %2"
 msgstr "Ärendehistorik # %1 %2"
 
@@ -4768,8 +5073,10 @@ msgstr "Ärendeinnehåll"
 msgid "Ticket content type"
 msgstr "Ärendeinnehållstyp"
 
-#: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617
-#: lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
+#: lib/RT/Ticket_Overlay.pm:603
+#: lib/RT/Ticket_Overlay.pm:617
+#: lib/RT/Ticket_Overlay.pm:628
+#: lib/RT/Ticket_Overlay.pm:763
 msgid "Ticket could not be created due to an internal error"
 msgstr "Ärende kan inte skapas på grund av ett internt fel"
 
@@ -4787,8 +5094,10 @@ msgid "TicketSQL search module"
 msgstr "ÄrendeSQL sökmodul"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64
-#: html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71
-#: html/Search/Elements/Chart:109 lib/RT/CustomField_Overlay.pm:1206
+#: html/Admin/Global/CustomFields/index.html:75
+#: html/Elements/Tabs:71
+#: html/Search/Elements/Chart:109
+#: lib/RT/CustomField_Overlay.pm:1206
 msgid "Tickets"
 msgstr "Ärenden"
 
@@ -4812,17 +5121,20 @@ msgstr "Ärenden lösta före"
 msgid "Tickets which depend on this approval:"
 msgstr "Ärenden som är beroende av detta godkännande:"
 
-#: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:183
+#: html/Search/Elements/PickBasics:134
+#: html/Ticket/Create.html:183
 #: html/Ticket/Elements/EditBasics:72
 msgid "Time Estimated"
 msgstr "Uppskattad tid"
 
-#: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:196
+#: html/Search/Elements/PickBasics:135
+#: html/Ticket/Create.html:196
 #: html/Ticket/Elements/EditBasics:85
 msgid "Time Left"
 msgstr "Resterande tid"
 
-#: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:189
+#: html/Search/Elements/PickBasics:133
+#: html/Ticket/Create.html:189
 #: html/Ticket/Elements/EditBasics:78
 msgid "Time Worked"
 msgstr "Använd tid"
@@ -4849,19 +5161,18 @@ msgstr "Titel"
 
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 #: html/Elements/Footer:62
-msgid ""
-"To inquire about support, training, custom development or licensing, please "
-"contact %1."
-msgstr ""
-"Förfrågan om support, utbildning, kundutveckling eller licensiering, var god "
-"kontakta %1."
+msgid "To inquire about support, training, custom development or licensing, please contact %1."
+msgstr "Förfrågan om support, utbildning, kundutveckling eller licensiering, var god kontakta %1."
 
 #: lib/RT/Ticket_Overlay.pm:1170
 msgid "Told"
 msgstr "Uppgivet"
 
-#: html/Admin/Elements/Tabs:68 html/Admin/index.html:88 html/Elements/Tabs:74
-#: html/Tools/index.html:46 html/Tools/index.html:49
+#: html/Admin/Elements/Tabs:68
+#: html/Admin/index.html:88
+#: html/Elements/Tabs:74
+#: html/Tools/index.html:46
+#: html/Tools/index.html:49
 msgid "Tools"
 msgstr "Verktyg"
 
@@ -4887,11 +5198,8 @@ msgid "Transaction Custom Fields"
 msgstr "Transaktion extrafält"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid ""
-"Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr ""
-"Transaktion->Skapa gick inte eftersom du inte specificerade en objekttyp och "
-"ID"
+msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgstr "Transaktion->Skapa gick inte eftersom du inte specificerade en objekttyp och ID"
 
 #: lib/RT/Transaction_Overlay.pm:870
 msgid "Transactions are immutable"
@@ -4902,9 +5210,12 @@ msgid "Tue."
 msgstr "Tis."
 
 #: html/Admin/CustomFields/Modify.html:66
-#: html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54
-#: html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75
-#: lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/Elements/EditCustomField:65
+#: html/Ticket/Elements/AddWatchers:54
+#: html/Ticket/Elements/AddWatchers:65
+#: html/Ticket/Elements/AddWatchers:75
+#: lib/RT/Ticket_Overlay.pm:1168
+#: lib/RT/Tickets_Overlay.pm:1705
 msgid "Type"
 msgstr "Typ"
 
@@ -4918,11 +5229,13 @@ msgstr "Unix-inloggning"
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
+#: lib/RT/Attachment_Overlay.pm:289
+#: lib/RT/Record.pm:861
 msgid "Unknown ContentEncoding %1"
 msgstr "Okänd InnehållsKodning %1"
 
-#: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
+#: html/Search/Build.html:455
+#: lib/RT/Report/Tickets.pm:410
 msgid "Unknown field: $key"
 msgstr "Okänt fält: $nyckel"
 
@@ -4950,8 +5263,10 @@ msgstr "Ej valda objekt"
 msgid "Untaken"
 msgstr "Ej tagen"
 
-#: html/Admin/Elements/EditScrip:128 html/Elements/RT__Ticket/ColumnMap:302
-#: html/Search/Bulk.html:193 html/Search/Bulk.html:75
+#: html/Admin/Elements/EditScrip:128
+#: html/Elements/RT__Ticket/ColumnMap:302
+#: html/Search/Bulk.html:193
+#: html/Search/Bulk.html:75
 msgid "Update"
 msgstr "Uppdatera"
 
@@ -4959,16 +5274,19 @@ msgstr "Uppdatera"
 msgid "Update Ticket"
 msgstr "Uppdatera ärende"
 
-#: html/Search/Bulk.html:126 html/Ticket/ModifyAll.html:87
+#: html/Search/Bulk.html:126
+#: html/Ticket/ModifyAll.html:87
 #: html/Ticket/Update.html:72
 msgid "Update Type"
 msgstr "Uppdatera typ"
 
-#: html/Search/Bulk.html:200 html/Search/Results.html:78
+#: html/Search/Bulk.html:200
+#: html/Search/Results.html:78
 msgid "Update multiple tickets"
 msgstr "Uppdatera flera ärenden"
 
-#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/CreateTickets.pm:750
+#: lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Uppdatera icke-inlästa."
 
@@ -4977,7 +5295,8 @@ msgid "Update ticket"
 msgstr "Uppdatera ärende"
 
 #. ($Ticket->id)
-#: html/SelfService/Update.html:112 html/SelfService/Update.html:47
+#: html/SelfService/Update.html:112
+#: html/SelfService/Update.html:47
 msgid "Update ticket #%1"
 msgstr "Uppdatera ärende #%1"
 
@@ -4986,12 +5305,15 @@ msgstr "Uppdatera ärende #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Uppdatera ärende #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/CreateTickets.pm:748
+#: lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Uppdateringstyp är varken korrespondens eller kommentar."
 
-#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72
-#: lib/RT/CustomField_Overlay.pm:1284 lib/RT/Ticket_Overlay.pm:1171
+#: html/Elements/SelectDateType:54
+#: html/Ticket/Elements/ShowDates:72
+#: lib/RT/CustomField_Overlay.pm:1284
+#: lib/RT/Ticket_Overlay.pm:1171
 msgid "Updated"
 msgstr "Uppdaterad"
 
@@ -5036,7 +5358,8 @@ msgstr "Använd annat RT-administrativt verktyg"
 msgid "User '%1' could not be found."
 msgstr "Det gick inte att hitta användare '%1'."
 
-#: etc/initialdata:132 etc/initialdata:206
+#: etc/initialdata:132
+#: etc/initialdata:206
 msgid "User Defined"
 msgstr "Användardefinierad"
 
@@ -5044,8 +5367,10 @@ msgstr "Användardefinierad"
 msgid "User Defined conditions and actions"
 msgstr "Användardefinierade villkor och handlingar"
 
-#: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68
-#: html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68
+#: html/Admin/Elements/CustomFieldTabs:72
+#: html/Admin/Elements/GroupTabs:68
+#: html/Admin/Elements/QueueTabs:85
+#: html/Admin/Elements/SystemTabs:68
 #: html/Admin/Global/index.html:80
 msgid "User Rights"
 msgstr "Användarrättigheter"
@@ -5060,12 +5385,14 @@ msgid "User created"
 msgstr "Användare har skapats"
 
 #: html/Admin/CustomFields/GroupRights.html:74
-#: html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75
+#: html/Admin/Global/GroupRights.html:88
+#: html/Admin/Groups/GroupRights.html:75
 #: html/Admin/Queues/GroupRights.html:90
 msgid "User defined groups"
 msgstr "Användardefinierade grupper"
 
-#: lib/RT/User_Overlay.pm:592 lib/RT/User_Overlay.pm:612
+#: lib/RT/User_Overlay.pm:592
+#: lib/RT/User_Overlay.pm:612
 msgid "User loaded"
 msgstr "Användare har lästs in"
 
@@ -5073,16 +5400,20 @@ msgstr "Användare har lästs in"
 msgid "User-defined groups"
 msgstr "Användardefinierade grupper"
 
-#: html/Admin/Users/Modify.html:69 html/Elements/Login:90
+#: html/Admin/Users/Modify.html:69
+#: html/Elements/Login:90
 #: html/Ticket/Elements/AddWatchers:56
 msgid "Username"
 msgstr "Användarnamn"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:55
-#: html/Admin/Elements/SelectNewGroupMembers:47 html/Admin/Elements/Tabs:53
+#: html/Admin/Elements/SelectNewGroupMembers:47
+#: html/Admin/Elements/Tabs:53
 #: html/Admin/Global/CustomFields/index.html:64
-#: html/Admin/Groups/Members.html:76 html/Admin/Queues/People.html:89
-#: html/Admin/index.html:62 html/User/Groups/Members.html:79
+#: html/Admin/Groups/Members.html:76
+#: html/Admin/Queues/People.html:89
+#: html/Admin/index.html:62
+#: html/User/Groups/Members.html:79
 #: lib/RT/CustomField_Overlay.pm:1208
 msgid "Users"
 msgstr "Användare"
@@ -5130,32 +5461,20 @@ msgid "What I did today"
 msgstr "Vad jag gjorde i dag"
 
 #: etc/initialdata:521
-msgid ""
-"When a ticket has been approved by all approvers, add correspondence to the "
-"original ticket"
-msgstr ""
-"När ett ärende har godkänts av alla godkännare, lägg till korrespondens till "
-"originalärendet"
+msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
+msgstr "När ett ärende har godkänts av alla godkännare, lägg till korrespondens till originalärendet"
 
 #: etc/initialdata:485
-msgid ""
-"When a ticket has been approved by any approver, add correspondence to the "
-"original ticket"
-msgstr ""
-"När ett ärende har godkänts av någon godkännare, lägg till korrespondens "
-"till originalärendet"
+msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
+msgstr "När ett ärende har godkänts av någon godkännare, lägg till korrespondens till originalärendet"
 
 #: etc/initialdata:146
 msgid "When a ticket is created"
 msgstr "När ett ärende har skapats"
 
 #: etc/initialdata:418
-msgid ""
-"When an approval ticket is created, notify the Owner and AdminCc of the item "
-"awaiting their approval"
-msgstr ""
-"När ett godkännandeärende skapas, meddela ägaren och Admin.kopia-mottagare "
-"om delen som väntar på deras godkännande"
+msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgstr "När ett godkännandeärende skapas, meddela ägaren och Admin.kopia-mottagare om delen som väntar på deras godkännande"
 
 #: etc/initialdata:151
 msgid "When anything happens"
@@ -5169,7 +5488,8 @@ msgstr "När ett ärende har lösts"
 msgid "Whenever a ticket's owner changes"
 msgstr "När ett ärendes ägare byts ut"
 
-#: etc/initialdata:178 etc/upgrade/3.1.17/content:16
+#: etc/initialdata:178
+#: etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
 msgstr "När ett ärendes prioritet ändras"
 
@@ -5193,7 +5513,8 @@ msgstr "När det kommer in kommentarer"
 msgid "Whenever correspondence comes in"
 msgstr "När det kommer in korrespondens"
 
-#: html/Admin/Users/Modify.html:188 html/User/Prefs.html:88
+#: html/Admin/Users/Modify.html:188
+#: html/User/Prefs.html:88
 msgid "Work"
 msgstr "Arbete"
 
@@ -5201,7 +5522,8 @@ msgstr "Arbete"
 msgid "Work offline"
 msgstr "Arbeta offline"
 
-#: html/Ticket/Elements/ShowBasics:63 html/Ticket/Update.html:64
+#: html/Ticket/Elements/ShowBasics:63
+#: html/Ticket/Update.html:64
 msgid "Worked"
 msgstr "Arbetat"
 
@@ -5209,7 +5531,8 @@ msgstr "Arbetat"
 msgid "You already own this ticket"
 msgstr "Det här ärendet tillhör redan dig"
 
-#: html/autohandler:214 html/autohandler:222
+#: html/autohandler:214
+#: html/autohandler:222
 msgid "You are not an authorized user"
 msgstr "Du är inte en auktoriserad användare"
 
@@ -5219,15 +5542,15 @@ msgstr "Du kan även redigera själva den fördefinierade sökningen"
 
 #: lib/RT/Ticket_Overlay.pm:3025
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr ""
-"Du kan endast dela ut ärenden som tillhör dig eller som inte tillhör någon"
+msgstr "Du kan endast dela ut ärenden som tillhör dig eller som inte tillhör någon"
 
 #: lib/RT/Ticket_Overlay.pm:3021
 msgid "You can only take tickets that are unowned"
 msgstr "Du kan endast ta ärenden som inte tillhör någon"
 
 #. ($num, $queue)
-#: docs/design_docs/string-extraction-guide.txt:47 lib/RT/StyleGuide.pod:780
+#: docs/design_docs/string-extraction-guide.txt:47
+#: lib/RT/StyleGuide.pod:780
 msgid "You found %1 tickets in queue %2"
 msgstr "Du fann %1 ärenden i kö %2"
 
@@ -5248,11 +5571,8 @@ msgid "You're welcome to login again"
 msgstr "Du är välkommen att logga in igen"
 
 #: etc/initialdata:502
-msgid ""
-"Your request has been approved by %1. Other approvals may still be pending."
-msgstr ""
-"Din förfrågan har godkänts av %1. Andra godkännanden inväntas kanske "
-"fortfarande."
+msgid "Your request has been approved by %1. Other approvals may still be pending."
+msgstr "Din förfrågan har godkänts av %1. Andra godkännanden inväntas kanske fortfarande."
 
 #: etc/initialdata:540
 msgid "Your request has been approved."
@@ -5266,7 +5586,8 @@ msgstr "Din förfrågan avvisades."
 msgid "Your username or password is incorrect"
 msgstr "Ditt användarnamn eller lösenord är inte korrekt"
 
-#: html/Admin/Users/Modify.html:168 html/User/Prefs.html:149
+#: html/Admin/Users/Modify.html:168
+#: html/User/Prefs.html:149
 msgid "Zip"
 msgstr "Zip"
 
@@ -5285,17 +5606,19 @@ msgstr "som givet till %1"
 
 #: html/Search/Results.html:83
 msgid "chart"
-msgstr "tabell"
+msgstr "diagram"
 
 #: html/SelfService/Closed.html:49
 msgid "closed"
 msgstr "stängd"
 
-#: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:55
+#: html/Elements/SelectCustomFieldOperator:59
+#: html/Elements/SelectMatch:55
 msgid "contains"
 msgstr "innehåller"
 
-#: html/Admin/Queues/Modify.html:98 lib/RT/Date.pm:346
+#: html/Admin/Queues/Modify.html:98
+#: lib/RT/Date.pm:346
 msgid "days"
 msgstr "dagar"
 
@@ -5307,7 +5630,8 @@ msgstr "raderad"
 msgid "does not match"
 msgstr "matchar inte"
 
-#: html/Elements/SelectCustomFieldOperator:59 html/Elements/SelectMatch:56
+#: html/Elements/SelectCustomFieldOperator:59
+#: html/Elements/SelectMatch:56
 msgid "doesn't contain"
 msgstr "innehåller inte"
 
@@ -5331,8 +5655,10 @@ msgstr "fel: kan inte flytta upp"
 msgid "error: nothing to delete"
 msgstr "fel: inget att radera"
 
-#: html/Search/Build.html:533 html/Search/Build.html:552
-#: html/Search/Build.html:574 html/Search/Build.html:603
+#: html/Search/Build.html:533
+#: html/Search/Build.html:552
+#: html/Search/Build.html:574
+#: html/Search/Build.html:603
 msgid "error: nothing to move"
 msgstr "fel: inget att flytta"
 
@@ -5363,16 +5689,22 @@ msgstr "timmar"
 msgid "id"
 msgstr "ID"
 
-#: html/Elements/SelectBoolean:53 html/Elements/SelectCustomFieldOperator:59
-#: html/Elements/SelectMatch:57 html/Search/Elements/PickBasics:162
-#: html/Search/Elements/PickBasics:74 html/Search/Elements/PickBasics:90
+#: html/Elements/SelectBoolean:53
+#: html/Elements/SelectCustomFieldOperator:59
+#: html/Elements/SelectMatch:57
+#: html/Search/Elements/PickBasics:162
+#: html/Search/Elements/PickBasics:74
+#: html/Search/Elements/PickBasics:90
 #: html/Search/Elements/PickCFs:53
 msgid "is"
 msgstr "är"
 
-#: html/Elements/SelectBoolean:57 html/Elements/SelectCustomFieldOperator:59
-#: html/Elements/SelectMatch:58 html/Search/Elements/PickBasics:163
-#: html/Search/Elements/PickBasics:75 html/Search/Elements/PickBasics:91
+#: html/Elements/SelectBoolean:57
+#: html/Elements/SelectCustomFieldOperator:59
+#: html/Elements/SelectMatch:58
+#: html/Search/Elements/PickBasics:163
+#: html/Search/Elements/PickBasics:75
+#: html/Search/Elements/PickBasics:91
 #: html/Search/Elements/PickCFs:54
 msgid "isn't"
 msgstr "är inte"
@@ -5398,7 +5730,8 @@ msgstr "månader"
 msgid "new"
 msgstr "ny"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64
+#: html/Admin/Elements/PickObjects:65
 msgid "no name"
 msgstr "inget namn"
 
@@ -5419,7 +5752,8 @@ msgstr "inte lika med"
 msgid "offer"
 msgstr ""
 
-#: html/SelfService/Elements/MyRequests:82 lib/RT/Queue_Overlay.pm:83
+#: html/SelfService/Elements/MyRequests:82
+#: lib/RT/Queue_Overlay.pm:83
 msgid "open"
 msgstr "öppen"
 
@@ -5476,7 +5810,8 @@ msgstr "system %1"
 msgid "system group '%1'"
 msgstr "systemgrupp '%1'"
 
-#: html/Elements/Error:64 html/SelfService/Error.html:63
+#: html/Elements/Error:64
+#: html/SelfService/Error.html:63
 msgid "the calling component did not specify why"
 msgstr "den anropade komponenten specificerade inte varför"
 
@@ -5502,3 +5837,4 @@ msgstr "veckor"
 #: lib/RT/Date.pm:358
 msgid "years"
 msgstr "år"
+

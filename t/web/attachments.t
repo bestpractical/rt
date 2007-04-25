@@ -5,8 +5,7 @@ use Test::More tests => 15;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
-$RT::WebURL ||= 0; # avoid stupid warning
-my $BaseURL = $RT::WebURL;
+my $BaseURL = RT->Config->Get('WebURL');
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 
