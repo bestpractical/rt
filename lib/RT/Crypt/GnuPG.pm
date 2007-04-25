@@ -1252,6 +1252,7 @@ sub ParseStatus {
             my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
                 Operation  => 'Data',
+                Status     => 'ERROR',
                 Message    => "No data has been found. The reason is '$reason'",
                 ReasonCode => $rcode,
                 Reason     => $reason,
