@@ -82,21 +82,6 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
-
-Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
-only during signing, if value is undefined then L</GetPassphrase> called to get it.
-
-Returns a hash with the following keys:
-
-* exit_code
-* error
-* logger
-* status
-* message
-
-=cut
-
 sub _safe_run_child (&) {
     # We need to reopen stdout temporarily, because in FCGI
     # environment, stdout is tied to FCGI::Stream, and the child
@@ -116,6 +101,21 @@ sub _safe_run_child (&) {
     local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
     return shift->();
 }
+
+=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
+
+Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
+only during signing, if value is undefined then L</GetPassphrase> called to get it.
+
+Returns a hash with the following keys:
+
+* exit_code
+* error
+* logger
+* status
+* message
+
+=cut
 
 sub SignEncrypt {
     
