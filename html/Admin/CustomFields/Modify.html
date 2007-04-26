@@ -186,6 +186,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     while ( my $value = $values->Next ) {
         foreach my $attr qw(Name Description SortOrder Category) {
             my $param = "$paramtag-". $value->Id ."-". $attr;
+            next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
             my $mutator = "Set$attr";
