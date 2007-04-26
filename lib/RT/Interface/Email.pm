@@ -356,7 +356,7 @@ sub SendEmail {
         foreach my $argument ( qw(Sign Encrypt) ) {
             if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
                 $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-    } else {
+            } else {
                 $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
             }
         }
