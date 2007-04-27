@@ -101,9 +101,37 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-    my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    my $message = $self->TemplateObj->MIMEObj;
+
+    my $orig_message;
+    if ( RT->Config->Get('RecordOutgoingEmail') ) {
+        # it's hacky, but we should know if we're going to crypt things
+        my $attachment = $self->TransactionObj->Attachments->First;
+
+        my %crypt;
+        foreach my $argument ( qw(Sign Encrypt) ) {
+            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
+                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
+            } else {
+                $crypt{$argument} = $self->TicketObj->QueueObj->$argument();
+            }
+        }
+        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
+            $orig_message = $message->dup;
+        }
+    }
+
+
+    my ($ret) = $self->SendMessage( $message );
     if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
-        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+        if ( $orig_message ) {
+            $message->attach(
+                Type        => 'application/x-rt-original-message',
+                Disposition => 'inline',
+                Data        => $orig_message->as_string,
+            );
+        }
+        $self->RecordOutgoingMailTransaction( $message );
     }
     return (abs $ret);
 }

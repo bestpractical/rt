@@ -409,11 +409,9 @@ You received this message as we have no your public PGP key or we have a problem
 
 You received this message as RT has problems with public keys of the following user:
 {
-    my $res = '';
     foreach my $e ( @BadRecipients ) {
-        $res .= "* ". $e->{'Message'} ."\n";
+        $OUT .= "* ". $e->{'Message'} ."\n";
     }
-    $res
 }}
     },
     {  Queue       => 0,
@@ -427,6 +425,18 @@ but we have no private key it's encrypted to.
 
 Please, check that you encrypt messages with correct keys
 or contact the system administrator.}
+    },
+    {  Queue       => 0,
+       Name        => "Error: bad GnuPG data",    # loc
+       Description =>
+         "Inform user that a message he sent has invalid GnuPG data", # loc
+       Content => q{Subject: We received a message we cannot handle
+
+You sent us a message that we cannot handle due to corrupted GnuPG signature or encrypted block. we get the following error(s):
+{ foreach my $msg ( @Messages ) {
+    $OUT .= "* $msg\n";
+  }
+}}
     },
 );
 # }}}

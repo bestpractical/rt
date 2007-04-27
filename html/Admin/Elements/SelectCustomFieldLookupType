@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
 %for my $option ($cf->LookupTypes) {
-<option value="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyLookupType($option) %></option>
+<option value="<%$option%>" <%$option eq $Default ? "SELECTED" : ''%>><% $cf->FriendlyLookupType($option) %></option>
 %}
 </select>
 <%INIT>
@@ -55,6 +55,6 @@ my $cf = RT::CustomField->new($session{'CurrentUser'});
 
 </%INIT>
 <%ARGS>
-$Default=>undef
+$Default=> ''
 $Name => 'LookupType'
 </%ARGS>

@@ -82,21 +82,6 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, Passphrase => undef ]
-
-Signs and/or encrypts an email message with GnuPG utility. A passphrase is required
-only during signing, if value is undefined then L</GetPassphrase> called to get it.
-
-Returns a hash with the following keys:
-
-* exit_code
-* error
-* logger
-* status
-* message
-
-=cut
-
 sub _safe_run_child (&) {
     # We need to reopen stdout temporarily, because in FCGI
     # environment, stdout is tied to FCGI::Stream, and the child
@@ -117,24 +102,76 @@ sub _safe_run_child (&) {
     return shift->();
 }
 
+=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
+
+Signs and/or encrypts an email message with GnuPG utility.
+
+=over
+
+=item Signing
+
+During signing you can pass C<Signer> argument to set key we sign with this option
+overrides gnupg's C<default-key> option. If C<Signer> argument is not provided
+then address of a message sender is used.
+
+As well you can pass C<Passphrase>, but if value is undefined then L</GetPassphrase>
+called to get it.
+
+=item Encrypting
+
+During encryption you can pass a C<Recipients> array, otherwise C<To>, C<Cc> and
+C<Bcc> fields of the message are used to fetch the list.
+
+=back
+
+Returns a hash with the following keys:
+
+* exit_code
+* error
+* logger
+* status
+* message
+
+=cut
+
 sub SignEncrypt {
+    my %args = (@_);
+
+    my $entity = $args{'Entity'};
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+    }
+    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+        my %seen;
+        $args{'Recipients'} = [
+            grep $_ && !$seen{ $_ }++, map $_->address,
+            map Mail::Address->parse( $entity->head->get( $_ ) ),
+            qw(To Cc Bcc)
+        ];
+    }
     
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return SignEncryptInline( @_ );
+        return SignEncryptInline( %args );
     } else {
-        return SignEncryptRFC3156( @_ );
+        return SignEncryptRFC3156( %args );
     }
 }
 
 sub SignEncryptRFC3156 {
     my %args = (
         Entity => undef,
-        Encrypt => 1,
+
         Sign => 1,
+        Signer => undef,
         Passphrase => undef,
+
+        Encrypt => 1,
+        Recipients => undef,
+
         @_
     );
+
     my $entity = $args{'Entity'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
@@ -144,13 +181,12 @@ sub SignEncryptRFC3156 {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    # address of the queue
-    my $sign_as = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+    $opt{'default_key'} = $args{'Signer'}
+        if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
         meta_interactive => 0,
-        default_key => $sign_as,
     );
 
     my %res;
@@ -275,36 +311,24 @@ sub SignEncryptRFC3156 {
 }
 
 sub SignEncryptInline {
-    my %args = (@_);
+    my %args = ( @_ );
 
     my $entity = $args{'Entity'};
-    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
-    }
-    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
-        my %seen;
-        $args{'Recipients'} = [
-            grep $_ && !$seen{ $_ }++, map $_->address,
-            map Mail::Address->parse( $entity->head->get( $_ ) ),
-            qw(To Cc Bcc)
-        ];
-    }
 
     my %res;
-
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = SignEncryptInline( %args, Entity => $_ );
+            %res = SignEncryptInline( @_, Entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
     }
 
-    return _SignEncryptTextInline( %args )
+    return _SignEncryptTextInline( @_ )
         if $entity->effective_type =~ /^text\//i;
 
-    return _SignEncryptAttachmentInline( %args );
+    return _SignEncryptAttachmentInline( @_ );
 }
 
 sub _SignEncryptTextInline {
@@ -329,25 +353,17 @@ sub _SignEncryptTextInline {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
+    $opt{'default_key'} = $args{'Signer'}
+        if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
         meta_interactive => 0,
-        ( $args{'Sign'} && $args{'Signer'}? (default_key => $args{'Signer'}): () ),
     );
 
-    my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
-        unless ( $args{'Recipients'} ) {
-            my %seen;
-            $gnupg->options->push_recipients( $_ )
-                foreach grep $_ && !$seen{ $_ }++, map $_->address,
-                    map Mail::Address->parse( $entity->head->get( $_ ) ),
-                    qw(To Cc Bcc);
-        } else {
-            $gnupg->options->push_recipients( $_ )
-                foreach @{ $args{'Recipients'} };
-        }
+        $gnupg->options->push_recipients( $_ )
+            foreach @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -366,6 +382,7 @@ sub _SignEncryptTextInline {
     $handles->options( 'stdout'  )->{'direct'} = 1;
     $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
+    my $entity = $args{'Entity'};
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $args{'Sign'} && $args{'Encrypt'}
@@ -420,25 +437,18 @@ sub _SignEncryptAttachmentInline {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
+    $opt{'default_key'} = $args{'Signer'}
+        if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
         armor => 1,
         meta_interactive => 0,
-        ( $args{'Sign'} && $args{'Signer'}? (default_key => $args{'Signer'}): () ),
     );
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
-        unless ( $args{'Recipients'} ) {
-            my %seen;
-            $gnupg->options->push_recipients( $_ )
-                foreach grep $_ && !$seen{ $_ }++, map $_->address,
-                    map Mail::Address->parse( $entity->head->get( $_ ) ),
-                    qw(To Cc Bcc);
-        } else {
-            $gnupg->options->push_recipients( $_ )
-                foreach @{ $args{'Recipients'} };
-        }
+        $gnupg->options->push_recipients( $_ )
+            foreach @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -1242,6 +1252,7 @@ sub ParseStatus {
             my $reason = ReasonCodeToText( $keyword, $rcode );
             push @res, {
                 Operation  => 'Data',
+                Status     => 'ERROR',
                 Message    => "No data has been found. The reason is '$reason'",
                 ReasonCode => $rcode,
                 Reason     => $reason,
