@@ -30,10 +30,15 @@ sub get_rights {
     return @rights;
 };
 
-my $everyone = RT::Group->new( $RT::SystemUser );
-$everyone->LoadSystemInternalGroup('Everyone');
-ok(my $everyone_gid = $everyone->id, "loaded 'everyone' group");
+diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
+my ($everyone, $everyone_gid);
+{
+    $everyone = RT::Group->new( $RT::SystemUser );
+    $everyone->LoadSystemInternalGroup('Everyone');
+    ok($everyone_gid = $everyone->id, "loaded 'everyone' group");
+}
 
+diag "revoke all global rights from Everyone group" if $ENV{'TEST_VERBOSE'};
 my @has = get_rights( $m, $everyone_gid, 'RT::System-1' );
 if ( @has ) {
     $m->form_number(3);
@@ -45,6 +50,7 @@ if ( @has ) {
     ok(1, 'the group has no global rights');
 }
 
+diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
 {
     $m->form_number(3);
     $m->select("GrantRight-$everyone_gid-RT::System-1", ['SuperUser']);
@@ -56,6 +62,7 @@ if ( @has ) {
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
+diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 {
     $m->form_number(3);
     $m->tick("RevokeRight-$everyone_gid-RT::System-1", 'SuperUser');
