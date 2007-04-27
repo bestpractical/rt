@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
+use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 15;
 BEGIN {
     use RT;
     RT::LoadConfig;
@@ -72,5 +73,22 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
     RT::Principal::InvalidateACLCache();
     ok(!$everyone->PrincipalObj->HasRight( Right => 'SuperUser', Object => $RT::System ), 'group has no right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'revoked SuperUser right' );
+}
+
+
+diag "return rights the group had in the beginning" if $ENV{'TEST_VERBOSE'};
+if ( @has ) {
+    $m->form_number(3);
+    $m->select("GrantRight-$everyone_gid-RT::System-1", \@has);
+    $m->submit;
+
+    $m->content_contains('Right Granted', 'got message');
+    is_deeply(
+        [ get_rights( $m, $everyone_gid, 'RT::System-1' ) ],
+        [ @has ],
+        'returned back all rights'
+    );
+} else {
+    ok(1, 'the group had no global rights, so nothing to return');
 }
 
