@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 12;
+use Test::More tests => 13;
 BEGIN {
     use RT;
     RT::LoadConfig;
@@ -41,6 +41,8 @@ if ( @has ) {
     $m->submit;
     
     is_deeply([get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'deleted all rights' );
+} else {
+    ok(1, 'the group has no global rights');
 }
 
 {
