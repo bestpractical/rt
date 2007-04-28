@@ -181,6 +181,47 @@ Read `man gpg` to get list of all options this program support.
 
 =back
 
+=head2 Errors handling
+
+There are several global templates created by default in the DB which are used
+to send error messages to users or RT owner. These templates have 'Error:' or
+'Error to RT owner:' prefix in the name. You can adjust text of the messages
+using the web interface.
+
+Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
+in RT's templates are not available in these templates, but each template
+used for errors reporting has set of available data structures you can use to
+build better messages. See default templates and descriptions below.
+
+=head3 Problems with public keys
+
+Template 'Error: public key' is used to inform user that he has problems with
+public key and couldn't recieve encrypted content. There are several reasons
+why RT couldn't use a key. However, actual reason is not sent to the user, but
+sent to RT owner using 'Error to RT owner: public key'.
+
+Reasons: "Not Found", "Ambigious specification", "Wrong key usage", "Key revoked",
+"Key expired", "No CRL known", "CRL too old", "Policy mismatch", "Not a secret key",
+"Key not trusted" or "No specific reason given".
+
+=head3 Private key doesn't exist
+
+Template 'Error: no private key' used to inform user that he sent an encrypted email,
+but we have no private key to decrypt it.
+
+In this template C<$Message> object of L<MIME::Entity> class available. It's a message
+RT received.
+
+=head3 Invalid data
+
+Template 'Error: bad GnuPG data' used to inform user that a message he sent has
+invalid data and can not be handled.
+
+There are several reasons for this error, but most of them are data corruptions
+or absense of expected information.
+
+In this template C<@Messages> array is available and contains list of error messages.
+
 =head1 FUNCTIONS
 
 =cut
