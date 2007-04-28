@@ -148,6 +148,7 @@
 </td>
 </tr>
 
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
 <td><% loc('Sign')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
@@ -155,6 +156,7 @@
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
+% }
 
 <tr>
 <td colspan="6">
@@ -258,12 +260,14 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
-foreach ( qw(Sign Encrypt) ) {
-    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-        Name => $_,
-        DefaultValue => $QueueObj->$_,
-        Arguments => \%ARGS,
-    );
+if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    foreach ( qw(Sign Encrypt) ) {
+        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+            Name => $_,
+            DefaultValue => $QueueObj->$_,
+            Arguments => \%ARGS,
+        );
+    }
 }
 
 # if no due date has been set explicitly, then use the
