@@ -522,6 +522,10 @@ sub FindProtectedParts {
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
         my $io = $entity->open('r');
+        unless ( $io ) {
+            $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
+            return ();
+        }
         while ( defined($_ = $io->getline) ) {
             next unless /-----BEGIN PGP (SIGNED )?MESSAGE-----/;
             my $type = $1? 'signed': 'encrypted';
