@@ -175,7 +175,7 @@ sub SignEncryptRFC3156 {
     my $entity = $args{'Entity'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -347,7 +347,7 @@ sub _SignEncryptTextInline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -431,7 +431,7 @@ sub _SignEncryptAttachmentInline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -929,8 +929,15 @@ sub DecryptAttachment {
     return %res;
 }
 
+=head2 GetPassphrase [ Address => undef ]
+
+Returns passphrase, called whenever it's required with Address as a named argument.
+
+=cut
+
 sub GetPassphrase {
-    return 'passphrase';
+    my %args = ( Address => undef, @_ );
+    return 'test';
 }
 
 =head2 ParseStatus
