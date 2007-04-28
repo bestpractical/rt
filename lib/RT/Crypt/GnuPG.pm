@@ -54,6 +54,137 @@ use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 
+=head1 NAME
+
+RT::Crypt::GnuPG - encryt/decrypt and sign/verify emails using GnuPG utility
+
+=head1 DESCRIPTION
+
+This module adds support for ecryption and signing of outgoing messages, decryption
+and verification of incoming emails.
+
+=head1 CONFIGURATION
+
+This subsystem can be tuned using the RT config, some options are available
+via the web iinterface, but the config is a place to start.
+
+In the config there are two hashes GnuPG and GnuPGOptions. The first one is
+RT specific options allows you to enable/disable facility or change format of
+messages. The second one is a hash with options of the 'gnupg' utility, you
+can use it set define keyserver, enable auto-retrieving keys and use almost
+any option gnupg program supports on your system.
+
+=head2 %GnuPG
+
+=head3 Enabling GnuPG
+
+Set to true value to enable this subsystem:
+
+    Set( %GnuPG,
+        Enable => 1,
+        ... other options ...
+    );
+
+However, note that you B<have to> add Auth::GnuPGNG email filter to enable
+handling of incoming encrypted/signed messages.
+
+=head3 Format of outgoing messages
+
+Format of outgoing messages can be controlled using 'OutgoingMessagesFormat'
+option in the RT config:
+
+    Set( %GnuPG,
+        ... other options ...
+        OutgoingMessagesFormat => 'RFC',
+        ... other options ...
+    );
+
+or
+
+    Set( %GnuPG,
+        ... other options ...
+        OutgoingMessagesFormat => 'Inline',
+        ... other options ...
+    );
+
+This framework implements two formats of signing and
+encrypting of emails:
+
+=over
+
+=item RFC
+
+This format is also known as GPG/MIME and described in RFC3156 and RFC1847.
+Technique described in these RFCs is well supported by many mail user
+agents (MUA), but some MUAs support only inlined signatures and encryption,
+so it's possible to use inline format (see below).
+
+=item Inline
+
+This format doesn't use advantages of MIME, but some MUAs can not work
+with something else.
+
+We sign text parts using clear signatures. For each attachments another
+attchment with a signature is added with '.sig' extension.
+
+Encryption of text parts implemented using inline format, other parts
+are replaced with attachment with extension '.pgp'.
+
+=back
+
+=head2 %GnuPGOptions
+
+Use this hash to set options of gnupg program. You can define almost any
+option you want and gnupg supports, but never try to set options which
+change output format or gnupg's commands, such as --sign (command),
+--list-options (option) and other.
+
+Some GnuPG's options have value when some have no, like --use-agent.
+For options without specific value use C<undef> as hash value and
+to disable these option just comment it or delete.
+
+    Set(%GnuPGOptions,
+        'option-with-value' => 'value',
+        'enabled-option-without-value' => undef,
+        # 'commented-option' => 'value or undef',
+    );
+
+=over
+
+=item --homedir
+
+GnuPG home directory, by default it's F</opt/rt3/var/data/gpg>.
+
+You can manage this data with gpg utility using GNUPGHOME environment
+variable or --homedir option. Other utilities may be used as well.
+
+In common installation access to this directory should be granted to
+a web server that's running RT's web interface, but if you're running some
+cronjobs or other utilities that access RT directly via API and may generate
+encrypted/signed notifications then users you execute these scrips under
+must have access too. However, granting access to the dir to many users makes
+setup less secure and some features would be not avaiable, such as auto keys
+importing. To enable this features and suppress warnings about permissions on
+the dir use --no-permission-warning.
+
+=item --digest-algo
+
+This option is required in advance when RFC format for outgoung messages is
+used. We can not get default algorith from gpg program so RT uses 'SHA1' by
+default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
+SHA256 or other, however use `gpg --version` command to get information about
+supported algorithms by your gpg. These algoriths are listed as hash-functions.
+
+=item other
+
+Read `man gpg` to get list of all options this program support.
+
+=back
+
+=head1 FUNCTIONS
+
+=cut
+
 # gnupg options supported by GnuPG::Interface
 # other otions should be handled via extra_args argument
 my %supported_opt = map { $_ => 1 } qw(
