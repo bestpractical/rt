@@ -16,7 +16,7 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /Elements/Header, Title => $Title &>
+<& /RTFM/Elements/Header, Title => $Title &>
 <& /Elements/PageLayout,
     current_toptab => 'RTFM/index.html',
     current_tab => $current_toptab,
