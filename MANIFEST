@@ -140,9 +140,6 @@ META.yml
 po/es.po
 po/fr.po
 po/pt_BR.po
-po/RTFM/fr.po
-po/RTFM/ru.po
-po/RTFM/zh_tw.po
 po/ru.po
 po/zh_tw.po
 README
