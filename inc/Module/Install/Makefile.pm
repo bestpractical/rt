@@ -1,21 +1,37 @@
-#line 1 "inc/Module/Install/Makefile.pm - /usr/lib/perl5/site_perl/5.8.7/Module/Install/Makefile.pm"
+#line 1
 package Module::Install::Makefile;
 
-use Module::Install::Base;
-@ISA = qw(Module::Install::Base);
-
-$VERSION = '0.01';
-
 use strict 'vars';
-use vars '$VERSION';
-
+use Module::Install::Base;
 use ExtUtils::MakeMaker ();
+
+use vars qw{$VERSION $ISCORE @ISA};
+BEGIN {
+	$VERSION = '0.64';
+	$ISCORE  = 1;
+	@ISA     = qw{Module::Install::Base};
+}
 
 sub Makefile { $_[0] }
 
-sub prompt { 
+my %seen = ();
+
+sub prompt {
     shift;
-    goto &ExtUtils::MakeMaker::prompt;
+
+    # Infinite loop protection
+    my @c = caller();
+    if ( ++$seen{"$c[1]|$c[2]|$_[0]"} > 3 ) {
+        die "Caught an potential prompt infinite loop ($c[1]|$c[2]|$_[0])";
+    }
+
+    # In automated testing, always use defaults
+    if ( $ENV{AUTOMATED_TESTING} and ! $ENV{PERL_MM_USE_DEFAULT} ) {
+        local $ENV{PERL_MM_USE_DEFAULT} = 1;
+        goto &ExtUtils::MakeMaker::prompt;
+    } else {
+        goto &ExtUtils::MakeMaker::prompt;
+    }
 }
 
 sub makemaker_args {
@@ -25,8 +41,19 @@ sub makemaker_args {
     $args;
 }
 
-sub build_subdirs {
+# For mm args that take multiple space-seperated args,
+# append an argument to the current list.
+sub makemaker_append {
     my $self = shift;
+    my $name = shift;
+    my $args = $self->makemaker_args;
+    $args->{name} = defined $args->{$name}
+    	? join( ' ', $args->{name}, @_ )
+    	: join( ' ', @_ );
+}
+
+sub build_subdirs {
+    my $self    = shift;
     my $subdirs = $self->makemaker_args->{DIR} ||= [];
     for my $subdir (@_) {
         push @$subdirs, $subdir;
@@ -34,17 +61,26 @@ sub build_subdirs {
 }
 
 sub clean_files {
-    my $self = shift;
+    my $self  = shift;
     my $clean = $self->makemaker_args->{clean} ||= {};
     %$clean = (
         %$clean, 
-        FILES => join(" ", grep length, $clean->{FILES}, @_),
+        FILES => join(' ', grep length, $clean->{FILES}, @_),
+    );
+}
+
+sub realclean_files {
+    my $self  = shift;
+    my $realclean = $self->makemaker_args->{realclean} ||= {};
+    %$realclean = (
+        %$realclean, 
+        FILES => join(' ', grep length, $realclean->{FILES}, @_),
     );
 }
 
 sub libs {
     my $self = shift;
-    my $libs = ref $_[0] ? shift : [shift];
+    my $libs = ref $_[0] ? shift : [ shift ];
     $self->makemaker_args( LIBS => $libs );
 }
 
@@ -58,25 +94,26 @@ sub write {
     die "&Makefile->write() takes no arguments\n" if @_;
 
     my $args = $self->makemaker_args;
-
     $args->{DISTNAME} = $self->name;
-    $args->{NAME} = $self->module_name || $self->name || $self->determine_NAME($args);
-    $args->{VERSION} = $self->version || $self->determine_VERSION($args);
-    $args->{NAME} =~ s/-/::/g;
-
-    $args->{test} = {TESTS => $self->tests} if $self->tests;
-
+    $args->{NAME}     = $self->module_name || $self->name || $self->determine_NAME($args);
+    $args->{VERSION}  = $self->version || $self->determine_VERSION($args);
+    $args->{NAME}     =~ s/-/::/g;
+    if ( $self->tests ) {
+        $args->{test} = { TESTS => $self->tests };
+    }
     if ($] >= 5.005) {
         $args->{ABSTRACT} = $self->abstract;
-        $args->{AUTHOR} = $self->author;
+        $args->{AUTHOR}   = $self->author;
     }
     if ( eval($ExtUtils::MakeMaker::VERSION) >= 6.10 ) {
         $args->{NO_META} = 1;
     }
-    if ( eval($ExtUtils::MakeMaker::VERSION) > 6.17 ) {
-        $args->{SIGN} = 1 if $self->sign;
+    if ( eval($ExtUtils::MakeMaker::VERSION) > 6.17 and $self->sign ) {
+        $args->{SIGN} = 1;
     }
-    delete $args->{SIGN} unless $self->is_admin;
+    unless ( $self->is_admin ) {
+        delete $args->{SIGN};
+    }
 
     # merge both kinds of requires into prereq_pm
     my $prereq = ($args->{PREREQ_PM} ||= {});
@@ -93,49 +130,62 @@ sub write {
         }
     }
 
-    if (my $perl_version = $self->perl_version) {
+    if ( my $perl_version = $self->perl_version ) {
         eval "use $perl_version; 1"
-            or die "ERROR: perl: Version $] is installed, ".
-                   "but we need version >= $perl_version";
+            or die "ERROR: perl: Version $] is installed, "
+                . "but we need version >= $perl_version";
     }
 
-    my %args = map {($_ => $args->{$_})} grep {defined($args->{$_})} keys %$args;
-
+    my %args = map { ( $_ => $args->{$_} ) } grep {defined($args->{$_})} keys %$args;
     if ($self->admin->preop) {
         $args{dist} = $self->admin->preop;
     }
 
-    ExtUtils::MakeMaker::WriteMakefile(%args);
-
-    $self->fix_up_makefile();
+    my $mm = ExtUtils::MakeMaker::WriteMakefile(%args);
+    $self->fix_up_makefile($mm->{FIRST_MAKEFILE} || 'Makefile');
 }
 
 sub fix_up_makefile {
-    my $self = shift;
-    my $top_class = ref($self->_top) || '';
-    my $top_version = $self->_top->VERSION || '';
+    my $self          = shift;
+    my $makefile_name = shift;
+    my $top_class     = ref($self->_top) || '';
+    my $top_version   = $self->_top->VERSION || '';
 
     my $preamble = $self->preamble 
-       ? "# Preamble by $top_class $top_version\n" . $self->preamble
-       : '';
-    my $postamble = "# Postamble by $top_class $top_version\n" . 
-                    ($self->postamble || '');
+        ? "# Preamble by $top_class $top_version\n"
+            . $self->preamble
+        : '';
+    my $postamble = "# Postamble by $top_class $top_version\n"
+        . ($self->postamble || '');
 
     local *MAKEFILE;
-    open MAKEFILE, '< Makefile' or die $!;
+    open MAKEFILE, "< $makefile_name" or die "fix_up_makefile: Couldn't open $makefile_name: $!";
     my $makefile = do { local $/; <MAKEFILE> };
-    close MAKEFILE;
+    close MAKEFILE or die $!;
 
     $makefile =~ s/\b(test_harness\(\$\(TEST_VERBOSE\), )/$1'inc', /;
     $makefile =~ s/( -I\$\(INST_ARCHLIB\))/ -Iinc$1/g;
     $makefile =~ s/( "-I\$\(INST_LIB\)")/ "-Iinc"$1/g;
+    $makefile =~ s/^(FULLPERL = .*)/$1 "-Iinc"/m;
+    $makefile =~ s/^(PERL = .*)/$1 "-Iinc"/m;
 
-    $makefile =~ s/^(FULLPERL = .*)/$1 -Iinc/m;
-    $makefile =~ s/^(PERL = .*)/$1 -Iinc/m;
+    # Module::Install will never be used to build the Core Perl
+    # Sometimes PERL_LIB and PERL_ARCHLIB get written anyway, which breaks
+    # PREFIX/PERL5LIB, and thus, install_share. Blank them if they exist
+    $makefile =~ s/^PERL_LIB = .+/PERL_LIB =/m;
+    #$makefile =~ s/^PERL_ARCHLIB = .+/PERL_ARCHLIB =/m;
 
-    open MAKEFILE, '> Makefile' or die $!;
-    print MAKEFILE "$preamble$makefile$postamble";
-    close MAKEFILE;
+    # Perl 5.005 mentions PERL_LIB explicitly, so we have to remove that as well.
+    $makefile =~ s/("?)-I\$\(PERL_LIB\)\1//g;
+
+    # XXX - This is currently unused; not sure if it breaks other MM-users
+    # $makefile =~ s/^pm_to_blib\s+:\s+/pm_to_blib :: /mg;
+
+    open  MAKEFILE, "> $makefile_name" or die "fix_up_makefile: Couldn't open $makefile_name: $!";
+    print MAKEFILE  "$preamble$makefile$postamble" or die $!;
+    close MAKEFILE  or die $!;
+
+    1;
 }
 
 sub preamble {
@@ -146,7 +196,6 @@ sub preamble {
 
 sub postamble {
     my ($self, $text) = @_;
-
     $self->{postamble} ||= $self->admin->postamble;
     $self->{postamble} .= $text if defined $text;
     $self->{postamble}
@@ -156,4 +205,4 @@ sub postamble {
 
 __END__
 
-#line 288
+#line 334

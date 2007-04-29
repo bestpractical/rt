@@ -1,12 +1,15 @@
-#line 1 "inc/Module/Install/Metadata.pm - /usr/lib/perl5/site_perl/5.8.7/Module/Install/Metadata.pm"
+#line 1
 package Module::Install::Metadata;
 
-use Module::Install::Base;
-@ISA = qw{Module::Install::Base};
-
-$VERSION = '0.06';
-
 use strict 'vars';
+use Module::Install::Base;
+
+use vars qw{$VERSION $ISCORE @ISA};
+BEGIN {
+	$VERSION = '0.64';
+	$ISCORE  = 1;
+	@ISA     = qw{Module::Install::Base};
+}
 
 my @scalar_keys = qw{
     name module_name abstract author version license
@@ -60,6 +63,16 @@ sub sign {
     return $self;
 }
 
+sub dynamic_config {
+	my $self = shift;
+	unless ( @_ ) {
+		warn "You MUST provide an explicit true/false value to dynamic_config, skipping\n";
+		return $self;
+	}
+	$self->{'values'}{'dynamic_config'} = $_[0] ? 1 : 0;
+	return $self;
+}
+
 sub all_from {
     my ( $self, $file ) = @_;
 
@@ -110,9 +123,9 @@ sub auto_provides {
 
     require Module::Build;
     my $build = Module::Build->new(
-        dist_name    => $self->{name},
-        dist_version => $self->{version},
-        license      => $self->{license},
+        dist_name    => $self->name,
+        dist_version => $self->version,
+        license      => $self->license,
     );
     $self->provides(%{ $build->find_dist_packages || {} });
 }
@@ -128,8 +141,7 @@ sub feature {
         # The user used ->feature like ->features by passing in the second
         # argument as a reference.  Accomodate for that.
         $mods = $_[0];
-    }
-    else {
+    } else {
         $mods = \@_;
     }
 
@@ -152,7 +164,9 @@ sub features {
     while ( my ( $name, $mods ) = splice( @_, 0, 2 ) ) {
         $self->feature( $name, @$mods );
     }
-    return @{ $self->{values}{features} };
+    return $self->{values}->{features}
+    	? @{ $self->{values}->{features} }
+    	: ();
 }
 
 sub no_index {
@@ -224,11 +238,13 @@ sub perl_version_from {
         ^
         use \s*
         v?
-        ([\d\.]+)
+        ([\d_\.]+)
         \s* ;
     /ixms
       )
     {
+        my $v = $1;
+        $v =~ s{_}{}g;
         $self->perl_version($1);
     }
     else {

@@ -1,5 +1,7 @@
-#line 1 "inc/Module/Install/Base.pm - /usr/lib/perl5/site_perl/5.8.7/Module/Install/Base.pm"
+#line 1
 package Module::Install::Base;
+
+$VERSION = '0.64';
 
 # Suspend handler for "redefined" warnings
 BEGIN {
@@ -7,35 +9,37 @@ BEGIN {
 	$SIG{__WARN__} = sub { $w };
 }
 
-#line 36
+### This is the ONLY module that shouldn't have strict on
+# use strict;
+
+#line 41
 
 sub new {
     my ($class, %args) = @_;
 
-    foreach my $method (qw(call load)) {
+    foreach my $method ( qw(call load) ) {
         *{"$class\::$method"} = sub {
-            +shift->_top->$method(@_);
+            shift()->_top->$method(@_);
         } unless defined &{"$class\::$method"};
     }
 
-    bless(\%args, $class);
+    bless( \%args, $class );
 }
 
-#line 56
+#line 61
 
 sub AUTOLOAD {
     my $self = shift;
-
     local $@;
     my $autoload = eval { $self->_top->autoload } or return;
     goto &$autoload;
 }
 
-#line 72
+#line 76
 
 sub _top { $_[0]->{_top} }
 
-#line 85
+#line 89
 
 sub admin {
     $_[0]->_top->{admin} or Module::Install::Base::FakeAdmin->new;
@@ -63,4 +67,4 @@ BEGIN {
 
 1;
 
-#line 134
+#line 138
