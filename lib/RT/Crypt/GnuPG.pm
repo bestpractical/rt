@@ -56,23 +56,24 @@ use RT::EmailParser ();
 
 =head1 NAME
 
-RT::Crypt::GnuPG - encryt/decrypt and sign/verify emails using GnuPG utility
+RT::Crypt::GnuPG - encryt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
 =head1 DESCRIPTION
 
-This module adds support for ecryption and signing of outgoing messages, decryption
-and verification of incoming emails.
+This module provides support for encryption and signing of outgoing messages, 
+as well as the decryption and verification of incoming email.
 
 =head1 CONFIGURATION
 
-This subsystem can be tuned using the RT config, some options are available
-via the web iinterface, but the config is a place to start.
+You can control the configuration of this subsystem from RT's configuration file.
+Some options are available via the web interface, but to enable this functionality, you
+MUST start in the congiration file.
 
-In the config there are two hashes GnuPG and GnuPGOptions. The first one is
-RT specific options allows you to enable/disable facility or change format of
-messages. The second one is a hash with options of the 'gnupg' utility, you
-can use it set define keyserver, enable auto-retrieving keys and use almost
-any option gnupg program supports on your system.
+There are two hashes, GnuPG and GnuPGOptions in the configuration file. The 
+first one controls RT specific options. It enables you to enable/disable facility 
+or change the format of messages. The second one is a hash with options for the 
+'gnupg' utility. You can use it to define a keyserver, enable auto-retrieval keys 
+and set almost any option 'gnupg' supports on your system.
 
 =head2 %GnuPG
 
@@ -85,12 +86,12 @@ Set to true value to enable this subsystem:
         ... other options ...
     );
 
-However, note that you B<have to> add Auth::GnuPGNG email filter to enable
-handling of incoming encrypted/signed messages.
+However, note that you B<must> add the 'Auth::GnuPGNG' email filter to enable
+the handling of incoming encrypted/signed messages.
 
 =head3 Format of outgoing messages
 
-Format of outgoing messages can be controlled using 'OutgoingMessagesFormat'
+Format of outgoing messages can be controlled using the 'OutgoingMessagesFormat'
 option in the RT config:
 
     Set( %GnuPG,
@@ -107,8 +108,7 @@ or
         ... other options ...
     );
 
-This framework implements two formats of signing and
-encrypting of emails:
+This framework implements two formats of signing and encrypting of email messages:
 
 =over
 
@@ -116,32 +116,32 @@ encrypting of emails:
 
 This format is also known as GPG/MIME and described in RFC3156 and RFC1847.
 Technique described in these RFCs is well supported by many mail user
-agents (MUA), but some MUAs support only inlined signatures and encryption,
+agents (MUA), but some MUAs support only inline signatures and encryption,
 so it's possible to use inline format (see below).
 
 =item Inline
 
-This format doesn't use advantages of MIME, but some MUAs can not work
-with something else.
+This format doesn't take advantage of MIME, but some mail clients do
+not support GPG/MIME.
 
 We sign text parts using clear signatures. For each attachments another
 attchment with a signature is added with '.sig' extension.
 
-Encryption of text parts implemented using inline format, other parts
-are replaced with attachment with extension '.pgp'.
+Encryption of text parts is implemented using inline format, other parts
+are replaced with attachments with the filename extension '.pgp'.
 
 =back
 
 =head2 %GnuPGOptions
 
-Use this hash to set options of gnupg program. You can define almost any
-option you want and gnupg supports, but never try to set options which
+Use this hash to set options of the 'gnupg' program. You can define almost any
+option you want which  gnupg supports, but never try to set options which
 change output format or gnupg's commands, such as --sign (command),
 --list-options (option) and other.
 
-Some GnuPG's options have value when some have no, like --use-agent.
-For options without specific value use C<undef> as hash value and
-to disable these option just comment it or delete.
+Some GnuPG options take arguments while others take none. (Such as  --use-agent).
+For options without specific value use C<undef> as hash value.
+To disable these option just comment them out or delete them from the hash
 
     Set(%GnuPGOptions,
         'option-with-value' => 'value',
@@ -153,18 +153,21 @@ to disable these option just comment it or delete.
 
 =item --homedir
 
-GnuPG home directory, by default it's F</opt/rt3/var/data/gpg>.
+The GnuPG home directory, by default it is set to F</opt/rt3/var/data/gpg>.
 
-You can manage this data with gpg utility using GNUPGHOME environment
-variable or --homedir option. Other utilities may be used as well.
+You can manage this data with the 'gpg' commandline utility 
+using the GNUPGHOME environment variable or --homedir option. 
+Other utilities may be used as well.
 
-In common installation access to this directory should be granted to
-a web server that's running RT's web interface, but if you're running some
+In a standard installation, access to this directory should be granted to
+the web server user which is running RT's web interface, but if you're running
 cronjobs or other utilities that access RT directly via API and may generate
-encrypted/signed notifications then users you execute these scrips under
-must have access too. However, granting access to the dir to many users makes
-setup less secure and some features would be not avaiable, such as auto keys
-importing. To enable this features and suppress warnings about permissions on
+encrypted/signed notifications then  theu sers you execute these scripts under
+must have access too. 
+
+However, granting access to the dir to many users makes your setup less secure,
+some features, such as auto-import of keys, may not be avialable if you do not.
+To enable this features and suppress warnings about permissions on
 the dir use --no-permission-warning.
 
 =item --digest-algo
@@ -184,13 +187,13 @@ Read `man gpg` to get list of all options this program support.
 =head2 Per-queue options
 
 Using the web interface it's possible to enable signing and/or encrypting by
-default. Open Configuration then go to Queues, select a queue. On the page
-you can see information about queue's keys at the bottom and two checkboxes
-to choose default actions.
+default. As an administrative user of RT, open 'Configuration' then 'Queues',
+and select a queue. On the page you can see information about the queue's keys 
+at the bottom and two checkboxes to choose default actions.
 
 =head2 Handling incoming messages
 
-To enable handling of encryped and singed message in the RT you should add
+To enable handling of encryped and signed message in the RT you should add
 'Auth::GnuPGNG' mail plugin.
 
     Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPGNG', ...other filter...);
@@ -199,10 +202,10 @@ See also `perldoc lib/RT/Interface/Email/Auth/GnuPGNG.pm`.
 
 =head2 Errors handling
 
-There are several global templates created by default in the DB which are used
-to send error messages to users or RT owner. These templates have 'Error:' or
-'Error to RT owner:' prefix in the name. You can adjust text of the messages
-using the web interface.
+There are several global templates created in the database by default. RT
+uses these templates to send error messages to users or RT's owner. These 
+templates have 'Error:' or 'Error to RT owner:' prefix in the name. You can 
+adjust the text of the messages using the web interface.
 
 Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
 in RT's templates are not available in these templates, but each template
@@ -211,32 +214,35 @@ build better messages. See default templates and descriptions below.
 
 =head3 Problems with public keys
 
-Template 'Error: public key' is used to inform user that he has problems with
-public key and couldn't recieve encrypted content. There are several reasons
-why RT couldn't use a key. However, actual reason is not sent to the user, but
-sent to RT owner using 'Error to RT owner: public key'.
+Template 'Error: public key' is used to inform the user that RT has problems with
+his public key and won't be able to send him encrypted content. There are several 
+reasons why RT can't use a key. However, the actual reason is not sent to the user, 
+but sent to RT owner using 'Error to RT owner: public key'.
 
-Reasons: "Not Found", "Ambigious specification", "Wrong key usage", "Key revoked",
-"Key expired", "No CRL known", "CRL too old", "Policy mismatch", "Not a secret key",
-"Key not trusted" or "No specific reason given".
+The possible reasons: "Not Found", "Ambigious specification", "Wrong
+key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
+old", "Policy mismatch", "Not a secret key", "Key not trusted" or
+"No specific reason given".
 
 =head3 Private key doesn't exist
 
-Template 'Error: no private key' used to inform user that he sent an encrypted email,
-but we have no private key to decrypt it.
+Template 'Error: no private key' is used to inform the user that
+he sent an encrypted email, but we have no private key to decrypt
+it.
 
-In this template C<$Message> object of L<MIME::Entity> class available. It's a message
-RT received.
+In this template C<$Message> object of L<MIME::Entity> class
+available. It's the message RT received.
 
 =head3 Invalid data
 
-Template 'Error: bad GnuPG data' used to inform user that a message he sent has
-invalid data and can not be handled.
+Template 'Error: bad GnuPG data' used to inform the user that a
+message he sent has invalid data and can not be handled.
 
-There are several reasons for this error, but most of them are data corruptions
-or absense of expected information.
+There are several reasons for this error, but most of them are data
+corruptio or absence of expected information.
 
-In this template C<@Messages> array is available and contains list of error messages.
+In this template C<@Messages> array is available and contains list
+of error messages.
 
 =head1 FUNCTIONS
 
