@@ -285,6 +285,11 @@ Set($RecordOutgoingEmail, 1);
 # }}}
 
 # {{{ GnuPG
+# A full description of the (somewhat extensive) GnuPG integration can be found by 
+# running the command 
+#
+#  perldoc RT::Crypt::GnuPG  (or perldoc lib/RT/Crypt/GnuPG.pm from your RT install directory).
+
 
 Set( %GnuPG,
     Enable => 0,
