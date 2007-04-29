@@ -181,6 +181,22 @@ Read `man gpg` to get list of all options this program support.
 
 =back
 
+=head2 Per-queue options
+
+Using the web interface it's possible to enable signing and/or encrypting by
+default. Open Configuration then go to Queues, select a queue. On the page
+you can see information about queue's keys at the bottom and two checkboxes
+to choose default actions.
+
+=head2 Handling incoming messages
+
+To enable handling of encryped and singed message in the RT you should add
+'Auth::GnuPGNG' mail plugin.
+
+    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPGNG', ...other filter...);
+
+See also `perldoc lib/RT/Interface/Email/Auth/GnuPGNG.pm`.
+
 =head2 Errors handling
 
 There are several global templates created by default in the DB which are used
