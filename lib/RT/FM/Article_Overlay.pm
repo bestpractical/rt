@@ -33,6 +33,7 @@ use RT::Transactions;
 
 # This object takes custom fields
 
+use RT::CustomField;
 RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'RTFM Articles' )
   ;    #loc
 
