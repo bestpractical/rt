@@ -137,9 +137,14 @@ lib/RT/URI/fsck_com_rtfm.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
+po/es.po
+po/fr.po
+po/pt_BR.po
 po/RTFM/fr.po
 po/RTFM/ru.po
 po/RTFM/zh_tw.po
+po/ru.po
+po/zh_tw.po
 README
 sbin/factory
 sbin/migrate-2.0-to-2.1

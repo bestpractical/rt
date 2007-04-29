@@ -1,10 +1,10 @@
 abstract: RT FM Extension
 distribution_type: module
-generated_by: Module::Install version 0.560
+generated_by: Module::Install version 0.64
 license: GPL version 2
 name: RTFM
-no_index:
-  directory:
+no_index: 
+  directory: 
     - bin
     - etc
     - html
@@ -12,7 +12,7 @@ no_index:
     - sbin
     - inc
     - t
-requires:
+requires: 
   HTML::FormatText: 0
   HTML::TreeBuilder: 0
   RT: 3.4.2
@@ -21,4 +21,4 @@ requires:
   Tree::Simple: 0
   YAML: 0
   perl: 5.8.0
-version: 2.2.0RC3
+version: 2.2.0RC6
