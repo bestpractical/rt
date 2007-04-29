@@ -86,7 +86,7 @@ Set to true value to enable this subsystem:
         ... other options ...
     );
 
-However, note that you B<must> add the 'Auth::GnuPGNG' email filter to enable
+However, note that you B<must> add the 'Auth::GnuPG' email filter to enable
 the handling of incoming encrypted/signed messages.
 
 =head3 Format of outgoing messages
@@ -194,11 +194,11 @@ at the bottom and two checkboxes to choose default actions.
 =head2 Handling incoming messages
 
 To enable handling of encryped and signed message in the RT you should add
-'Auth::GnuPGNG' mail plugin.
+'Auth::GnuPG' mail plugin.
 
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPGNG', ...other filter...);
+    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
 
-See also `perldoc lib/RT/Interface/Email/Auth/GnuPGNG.pm`.
+See also `perldoc lib/RT/Interface/Email/Auth/GnuPG.pm`.
 
 =head2 Errors handling
 
