@@ -349,7 +349,7 @@ sub SendEmail {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }
 
-    if ( $args{'Ticket'} && $args{'Transaction'} ) {
+    if ( $args{'Ticket'} && $args{'Transaction'} && RT->Config->Get('GnuPG')->{'Enable'} ) {
         my $attachment = $args{'Transaction'}->Attachments->First;
 
         my %crypt;

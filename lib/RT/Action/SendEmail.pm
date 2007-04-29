@@ -105,7 +105,7 @@ sub Commit {
     my $message = $self->TemplateObj->MIMEObj;
 
     my $orig_message;
-    if ( RT->Config->Get('RecordOutgoingEmail') ) {
+    if ( RT->Config->Get('RecordOutgoingEmail') && RT->Config->Get('GnuPG')->{'Enable'} ) {
         # it's hacky, but we should know if we're going to crypt things
         my $attachment = $self->TransactionObj->Attachments->First;
 
