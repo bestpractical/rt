@@ -84,20 +84,6 @@ my $scheme = "t";
 When handed an t: URI, figures out if it is an RT ticket.  This is an
 alternate short form of specifying a full ticket URI.
 
-=begin testing
-
-use_ok("RT::URI::t");
-my $uri = RT::URI::t->new($RT::SystemUser);
-ok(ref($uri), "URI object exists");
-
-my $uristr = "t:1";
-$uri->ParseURI($uristr);
-is(ref($uri->Object), "RT::Ticket", "Object loaded is a ticket");
-is($uri->Object->Id, 1, "Object loaded has correct ID");
-is($uri->URI, 'fsck.com-rt://'.RT->Config->Get('Organization').'/ticket/1',
-   "URI object has correct URI string");
-
-=end testing
 
 =cut
 

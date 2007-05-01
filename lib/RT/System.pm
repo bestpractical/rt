@@ -101,19 +101,6 @@ foreach my $right ( keys %{$RIGHTS} ) {
 
 Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
 
-=begin testing
-
-my $s = RT::System->new($RT::SystemUser);
-my $rights = $s->AvailableRights;
-ok ($rights, "Rights defined");
-ok ($rights->{'AdminUsers'},"AdminUsers right found");
-ok ($rights->{'CreateTicket'},"CreateTicket right found");
-ok ($rights->{'AdminGroupMembership'},"ModifyGroupMembers right found");
-ok (!$rights->{'CasdasdsreateTicket'},"bogus right not found");
-
-
-
-=end testing
 
 
 =cut
@@ -144,14 +131,6 @@ sub _Init {
 Returns RT::System's id. It's 1. 
 
 
-=begin testing
-
-use RT::System;
-my $sys = RT::System->new();
-is( $sys->Id, 1);
-is ($sys->id, 1);
-
-=end testing
 
 
 =cut

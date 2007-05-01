@@ -62,11 +62,6 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Attachments);
-
-=end testing
 
 =cut
 

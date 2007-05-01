@@ -91,7 +91,7 @@ sub CurrentUser {
     }
 
     unless ( ref( $self->{'user'}) ) {
-        $RT::Logger->err( "$self was created without a CurrentUser\n" . Carp::cluck() );
+        $RT::Logger->err( "$self was created without a CurrentUser\n" . Carp::longmess() );
         return (0);
     }
     return ( $self->{'user'} );
