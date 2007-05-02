@@ -1,0 +1,71 @@
+<%ARGS>
+$Class => 'RT__Ticket'
+$Name
+$Attr  => undef
+</%ARGS>
+<%ONCE>
+
+# This is scary and should totally be refactored -- jesse
+my $COLUMN_MAP = {
+    CheckBox => {
+        title => sub {
+            my $name = $_[1] || 'SelectedTickets';
+            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+
+            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
+                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+        },
+        value => sub {
+            my $id = $_[0]->id;
+
+            my $name = $_[2] || 'SelectedTickets';
+            return \qq{<input type="checkbox" name="$name" value="$id" checked />}
+                if $m->request_args->{ $name . 'All'};
+
+            my $arg = $m->request_args->{ $name };
+            my $checked = '';
+            if ( $arg && ref $arg ) {
+                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+            }
+            elsif ( $arg ) {
+                $checked = 'checked="checked"' if $arg == $id;
+            }
+            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+        },
+    },
+    RadioButton => {
+        title => \'&nbsp;',
+        value => sub {
+            my $id = $_[0]->id;
+
+            my $name = $_[2] || 'SelectedTicket';
+            my $arg = $m->request_args->{ $name };
+            my $checked = '';
+            $checked = 'checked="checked"' if $arg && $arg == $id;
+            return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
+        },
+    },
+};
+
+</%ONCE>
+<%INIT>
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP );
+
+# first deal with class specific things
+my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
+return $class_map if $class_map;
+
+# deal with the simple things from the generic map
+if ( $COLUMN_MAP->{$Name} ) {
+    return ( $COLUMN_MAP->{$Name}->{$Attr} );
+}
+# complex things
+elsif ( (my ($mainkey, $subkey) = $Name =~ /^(.*?)\.{(.+)}$/) && $COLUMN_MAP->{$1} ) {
+    return $COLUMN_MAP->{$mainkey}->{$Attr}
+        unless ref $COLUMN_MAP->{$mainkey}->{$Attr} eq 'CODE';
+
+    return sub { $COLUMN_MAP->{$mainkey}->{$Attr}->( @_, $subkey ) };
+}
+
+</%INIT>
