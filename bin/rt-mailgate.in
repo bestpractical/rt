@@ -52,8 +52,9 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
-
 use strict;
+use warnings;
+
 use Getopt::Long;
 use LWP::UserAgent;
 
@@ -62,7 +63,7 @@ use constant EX_TEMPFAIL => 75;
 my %opts;
 GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s", "timeout=i" );
 
-if ( $opts{help} ) {
+if ( $opts{'help'} ) {
     require Pod::Usage;
     import Pod::Usage;
     pod2usage("RT Mail Gateway\n");
@@ -74,12 +75,12 @@ unless ( $opts{'url'} ) {
     exit 1;
 }
 
-my $ua      = LWP::UserAgent->new();
-$ua->cookie_jar( { file => $opts{jar} } );
+my $ua = new LWP::UserAgent;
+$ua->cookie_jar( { file => $opts{'jar'} } ) if $opts{'jar'};
 
 my %args = (
-    queue   => $opts{queue},
-    action  => $opts{action},
+    queue       => $opts{'queue'},
+    action      => ($opts{'action'} || 'correspond'),
     SessionType => 'REST',    # Surpress login box
 );
 
@@ -94,12 +95,12 @@ if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
     $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
 } elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
     print STDERR "Value of the --extension argument is not action, queue or ticket"
-        .", but environment variable EXTENSION is also defined. The former is ignored.";
+        .", but environment variable EXTENSION is also defined. The former is ignored.\n";
 }
 
 # add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
 if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
-    # prepare value to avoid MIME format brakage
+    # prepare value to avoid MIME format breakage
     # strip trailing newline symbols
     $value =~ s/(\r*\n)+$//;
     # make a correct multiline header field,
@@ -113,22 +114,20 @@ if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
 # Set up cookie here.
 
 my $full_url = $opts{'url'}. "/REST/1.0/NoAuth/mail-gateway";
-warn "Connecting to $full_url" if $opts{'debug'};
+print STDERR "$0: connecting to $full_url\n" if $opts{'debug'};
 
-
-
-$ua->timeout(exists($opts{'timeout'}) ? $opts{'timeout'} : 180);
-my $r = $ua->post( $full_url, {%args} );
+$ua->timeout( exists( $opts{'timeout'} )? $opts{'timeout'}: 180 );
+my $r = $ua->post( $full_url, \%args, Content_Type => 'form-data' );
 check_failure($r);
 
 my $content = $r->content;
-warn $content if ($opts{debug});
+print STDERR $content ."\n" if $opts{'debug'};
 
 if ( $content !~ /^(ok|not ok)/ ) {
 
     # It's not the server's fault if the mail is bogus. We just want to know that
     # *something* came out of the server.
-    warn <<EOF;
+    print STDERR <<EOF;
 RT server error.
 
 The RT server which handled your email did not behave as expected. It
@@ -137,8 +136,7 @@ said:
 $content
 EOF
 
-exit EX_TEMPFAIL;
-
+    exit EX_TEMPFAIL;
 }
 
 exit;
@@ -146,7 +144,7 @@ exit;
 
 sub check_failure {
     my $r = shift;
-    return if $r->is_success();
+    return if $r->is_success;
 
     # This ordinarily oughtn't to be able to happen, suggests a bug in RT.
     # So only load these heavy modules when they're needed.
@@ -154,14 +152,16 @@ sub check_failure {
     require HTML::FormatText;
 
     my $error = $r->error_as_HTML;
-    my $tree  = HTML::TreeBuilder->new->parse($error);
+    my $tree  = HTML::TreeBuilder->new->parse( $error );
     $tree->eof;
 
     # It'll be a cold day in hell before RT sends out bounces in HTML
-    my $formatter = HTML::FormatText->new( leftmargin  => 0,
-                                           rightmargin => 50 );
-    warn $formatter->format($tree);
-    warn "This is $0 exiting because of an undefined server error" if ($opts{debug});
+    my $formatter = HTML::FormatText->new(
+        leftmargin  => 0,
+        rightmargin => 50,
+    );
+    print STDERR $formatter->format( $tree );
+    print STDERR "\n$0: undefined server error\n" if $opts{'debug'};
     exit EX_TEMPFAIL;
 }
 
