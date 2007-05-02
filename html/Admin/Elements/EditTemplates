@@ -127,8 +127,4 @@ foreach my $key (keys %ARGS) {
 </%INIT>
 <%ARGS>
 $id => 0
-$title => undef
-$Move => undef
-$Source => undef
-$Template => undef
 </%ARGS>
