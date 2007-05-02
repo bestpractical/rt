@@ -88,9 +88,10 @@ foreach my $column ( @Format ) {
         my $col = $1;
         unless ( exists $ColumnMap->{ $col } ) {
             $ColumnMap->{ $col } = $m->comp(
-                "/Elements/$Class/ColumnMap",
-                Name => $col,
-                Attr => 'value'
+                "/Elements/ColumnMap",
+                Class => $Class,
+                Name  => $col,
+                Attr  => 'value'
             );
         }
 
