@@ -99,6 +99,7 @@ else {
 
 # Now let callbacks add their extra limits
 $m->callback( %ARGS, Templates => $Templates );
+$Templates->RedoSearch;
 
 # {{{ deal with deleting existing templates
 foreach my $key (keys %ARGS) {
