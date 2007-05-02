@@ -57,8 +57,11 @@ use warnings;
 
 use Getopt::Long;
 use LWP::UserAgent;
+use HTTP::Request::Common qw($DYNAMIC_FILE_UPLOAD);
+$DYNAMIC_FILE_UPLOAD = 1;
 
 use constant EX_TEMPFAIL => 75;
+use constant BUFFER_SIZE => 8192;
 
 my %opts;
 GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s", "timeout=i" );
@@ -84,13 +87,6 @@ my %args = (
     SessionType => 'REST',    # Surpress login box
 );
 
-# Read the message in from STDIN
-$args{'message'} = do { local (@ARGV, $/); <> };
-unless ( $args{message} =~ /\S/ ) {
-    print STDERR "$0: no message passed on STDIN!\n";
-    exit 0;
-}
-
 if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
     $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
 } elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
@@ -106,12 +102,23 @@ if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
     # make a correct multiline header field,
     # with tabs in the beginning of each line
     $value =~ s/(\r*\n)/$1\t/g;
-    $args{'message'} = "X-RT-Mail-Extension: $value\n"
-        . $args{'message'};
-    print $args{'message'};
+    $opts{'headers'} .= "X-RT-Mail-Extension: $value\n";
 }
 
-# Set up cookie here.
+# Read the message in from STDIN
+my %message = write_down_message();
+unless( $message{'filename'} ) {
+    $args{'message'} = [
+        undef, '',
+        'Content-Type' => 'application/octet-stream',
+        Content => ${ $message{'content'} },
+    ];
+} else {
+    $args{'message'} = [
+        $message{'filename'}, '',
+        'Content-Type' => 'application/octet-stream',
+    ];
+}
 
 my $full_url = $opts{'url'}. "/REST/1.0/NoAuth/mail-gateway";
 print STDERR "$0: connecting to $full_url\n" if $opts{'debug'};
@@ -141,6 +148,10 @@ EOF
 
 exit;
 
+END {
+    unlink $message{'filename'} if $message{'filename'};
+}
+
 
 sub check_failure {
     my $r = shift;
@@ -163,6 +174,49 @@ sub check_failure {
     print STDERR $formatter->format( $tree );
     print STDERR "\n$0: undefined server error\n" if $opts{'debug'};
     exit EX_TEMPFAIL;
+}
+
+sub write_down_message {
+    use File::Temp qw(tempfile);
+
+    my ($fh, $filename) = tempfile('rt-mailgate-XXXX', SUFIX => '.bin');
+    unless( $fh ) {
+        print STDERR "$0: couldn't create temp file, using memory\n";
+
+        my $message = \do { local (@ARGV, $/); <> };
+        unless ( $$message =~ /\S/ ) {
+            print STDERR "$0: no message passed on STDIN\n";
+            exit 0;
+        }
+        $$message = $opts{'headers'} . $$message if $opts{'headers'};
+        return ( content => $message );
+    }
+
+    binmode $fh;
+    binmode \*STDIN;
+    
+    print $fh $opts{'headers'} if $opts{'headers'};
+
+    my $buf; my $empty = 1;
+    while(1) {
+        my $status = read \*STDIN, $buf, BUFFER_SIZE;
+        unless ( defined $status ) {
+            print STDERR "$0: couldn't read message: $!\n";
+            exit EX_TEMPFAIL;
+        } elsif ( !$status ) {
+            last;
+        }
+        $empty = 0 if $buf =~ /\S/;
+        print $fh $buf;
+    };
+    close $fh;
+
+    if ( $empty ) {
+        print STDERR "$0: no message passed on STDIN\n";
+        exit 0;
+    }
+    print STDERR "$0: temp file is '$filename'\n" if $opts{'debug'};
+    return (filename => $filename);
 }
 
 
