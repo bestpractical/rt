@@ -106,8 +106,13 @@ foreach my $key (keys %ARGS) {
   # {{{ if we're trying to delete the template
   if ($key =~ /^DeleteTemplate-(\d+)/) {
     my $id = $1;
-    my $TemplateObj = RT::Template->new($session{'CurrentUser'});
-    $TemplateObj->Load($id);
+    my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
+    $TemplateObj->Load( $id );
+    unless ( $TemplateObj->id ) {
+        push @actions, loc("Couldn't load template #[_1]", $id);
+        next;
+    }
+
     my ($retval, $msg) = $TemplateObj->Delete;
     if ($retval) {
       push @actions, loc("Template deleted");
