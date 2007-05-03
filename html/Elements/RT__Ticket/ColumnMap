@@ -102,11 +102,6 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
     },
-    id => {
-        attribute => 'id',
-        align     => 'right',
-        value     => sub { return $_[0]->id }
-    },
     Status => {
         attribute => 'Status',
         value     => sub { return loc($_[0]->Status) }
@@ -196,16 +191,6 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AgeAsString }
     },
-    CreatedRelative => {
-        title     => 'Created',
-        attribute => 'Created',
-        value     => sub { return $_[0]->CreatedObj->AgeAsString }
-    },
-    LastUpdatedRelative => {
-        title     => 'Last Updated',
-        attribute => 'LastUpdated',
-        value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
-    },
     ToldRelative => {
         title     => 'Told',
         attribute => 'Told',
@@ -235,25 +220,6 @@ $TICKET_COLUMN_MAP = {
     Started => {
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AsString }
-    },
-    Created => {
-        attribute => 'Created',
-        value     => sub { return $_[0]->CreatedObj->AsString }
-    },
-    CreatedBy => {
-        attribute => 'CreatedBy',
-        title => 'Created By',
-        value     => sub { return $_[0]->CreatorObj->Name }
-    },
-    LastUpdated => {
-        attribute => 'LastUpdated',
-        title     => 'Last Updated',
-        value     => sub { return $_[0]->LastUpdatedObj->AsString }
-    },
-    LastUpdatedBy => {
-        attribute => 'LastUpdatedBy',
-        title     => 'Last Updated By',
-        value     => sub { return $_[0]->LastUpdatedByObj->Name }
     },
     Told => {
         attribute => 'Told',
