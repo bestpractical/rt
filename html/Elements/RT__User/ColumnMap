@@ -59,7 +59,9 @@ our $USER_COLUMN_MAP = {
     },
 };
 
-foreach my $col(qw(Name RealName)) {
+foreach my $col(qw(Name RealName NickName EmailAddress Organization 
+    HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country))
+{
     $USER_COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 
