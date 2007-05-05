@@ -51,15 +51,36 @@
 
 =head1 SYNOPSIS
 
-  use RT::CurrentUser
+    use RT::CurrentUser;
+
+    # laod
+    my $current_user = new RT::CurrentUser;
+    $current_user->Load(...);
+    # or
+    my $current_user = RT::CurrentUser->new( $user_obj );
+    # or
+    my $current_user = RT::CurrentUser->new( $address || $name || $id );
+
+    # manipulation
+    $current_user->UserObj->SetName('new_name');
 
 
 =head1 DESCRIPTION
 
+B<Read-only> subclass of L<RT::User> class. Used to define the current
+user. You should pass an instance of this class to constructors of
+many RT classes, then the instance used to check ACLs and localize
+strings.
 
 =head1 METHODS
 
+See also L<RT::User> for a list of methods this class has.
 
+=head2 new
+
+Returns new CurrentUser object. Unlike all other classes of RT it takes
+either subclass of C<RT::User> class object or scalar value that is
+passed to Load method.
 
 =cut
 
@@ -100,6 +121,14 @@ sub _Init {
     $self->_BuildTableAttributes;
 
 }
+
+=head2 Create, Delete and Set*
+
+As stated above it's a subclass of L<RT::User>, but this class is read-only
+and calls to these methods are illegal. Return 'permission denied' message
+and log an error.
+
+=cut
 
 sub Create {
     my $self = shift;
