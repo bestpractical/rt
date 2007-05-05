@@ -103,15 +103,21 @@ sub _Init {
 
 sub Create {
     my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
 sub Delete {
     my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
-# }}}
+sub _Set {
+    my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
+    return (0, $self->loc('Permission Denied'));
+}
 
 =head2 UserObj
 
