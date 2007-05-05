@@ -67,12 +67,11 @@
 package RT::CurrentUser;
 
 use RT::I18N;
-use RT::User;
 
 use strict;
-use base qw/RT::User/;
+use warnings;
 
-# {{{ sub _Init 
+use base qw/RT::User/;
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
@@ -101,18 +100,11 @@ sub _Init {
     $self->_BuildTableAttributes;
 
 }
-# }}}
-
-# {{{ sub Create
 
 sub Create {
     my $self = shift;
     return (0, $self->loc('Permission Denied'));
 }
-
-# }}}
-
-# {{{ sub Delete
 
 sub Delete {
     my $self = shift;
@@ -121,11 +113,9 @@ sub Delete {
 
 # }}}
 
-# {{{ sub UserObj
-
 =head2 UserObj
 
-Returns the RT::User object associated with this CurrentUser object.
+Returns the L<RT::User> object associated with this CurrentUser object.
 
 =cut
 
@@ -140,9 +130,6 @@ sub UserObj {
     }
     return $user;
 }
-# }}}
-
-# {{{ sub _Accessible 
 
 sub _CoreAccessible  {
      {
@@ -155,9 +142,6 @@ sub _CoreAccessible  {
      };
   
 }
-# }}}
-
-# {{{ sub LoadByGecos
 
 =head2 LoadByGecos
 
@@ -170,9 +154,6 @@ sub LoadByGecos  {
     my $self = shift;
     return $self->LoadByCol( "Gecos", shift );
 }
-# }}}
-
-# {{{ sub LoadByName
 
 =head2 LoadByName
 
@@ -185,15 +166,11 @@ sub LoadByName {
     my $self = shift;
     return $self->LoadByCol( "Name", shift );
 }
-# }}}
-
-# {{{ Localization
 
 =head2 LanguageHandle
 
 Returns this current user's langauge handle. Should take a language
 specification. but currently doesn't
-
 
 =cut 
 
@@ -244,12 +221,10 @@ sub loc_fuzzy {
 
     return $self->LanguageHandle->maketext_fuzzy( @_ );
 }
-# }}}
-
 
 =head2 CurrentUser
 
-Return  the current currentuser object
+Return the current currentuser object
 
 =cut
 
@@ -298,9 +273,6 @@ sub Authenticate {
 
     return ($password eq $auth_digest);
 }
-
-# }}}
-
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});
