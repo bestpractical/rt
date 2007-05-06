@@ -45,115 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-body {
-    font-family: Verdana, sans-serif;
-    font-size: 76%;
+.ticket-info-cfs .label {
+    vertical-align: top;
+}
+
+.ticket-info-cfs ul {
     margin: 0;
-    background-color: white;
+    padding: 0;
+    margin-left: 0.5em;
+    list-style: none;
 }
-
-.hide, .hidden { display: none !important; }
-
-#body.calpopup {
-    margin-left: 2em;
-}
-
-.calendar {
-    text-align: center;
-    margin: 2em 0 0 0;
-}
-
-.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
-
-.calendar caption .month {
-    padding: 0 1em 0 1em;
-    font-size: 1.5em;
-}
-
-.evenline { background-color: white; }
-.oddline { background-color: #ddd; }
-
-td {
-    padding: 0.1em 0.5em 0.1em 0.5em;
-}
-
-.clear { clear: both; }
-
-ul.action-results {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-
-
-#editsearches {
-    width: 55%;
-    float:right;
-    text-align: left;
-    padding-right: 1em;
-}
-
-#editsearches .titlebox-content {
-    padding: 1em;
-}
-
-
-#editquery {
-    width: 40%;
-    float: left;
-    padding-left: 1em;
-}
-
-#pick-criteria {
-    clear: both;
-}
-
-.shredder-form { line-height: 3em }
-.shredder-form span { margin-left: 1em; margin-right: 1em }
-.shredder-help {
-    background-color: #ffe99d;
-    margin: 1em 2em;
-    padding: 1em;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
-}
-#shredder-select-plugin { border-style: solid; border-color: black; border-width: 1px }
-#shredder-plugin-results { border-style: solid; border-color: black; border-width: 1px; margin-top: 1em; }
-#shredder-plugin-results input { margin-left: 1em; }
-
-.pod-sequence-C { background-color: #eee }
-

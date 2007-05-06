@@ -45,115 +45,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-body {
-    font-family: Verdana, sans-serif;
-    font-size: 76%;
-    margin: 0;
-    background-color: white;
-}
 
-.hide, .hidden { display: none !important; }
-
-#body.calpopup {
-    margin-left: 2em;
-}
-
-.calendar {
-    text-align: center;
-    margin: 2em 0 0 0;
-}
-
-.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
-
-.calendar caption .month {
-    padding: 0 1em 0 1em;
-    font-size: 1.5em;
-}
-
-.evenline { background-color: white; }
-.oddline { background-color: #ddd; }
-
-td {
-    padding: 0.1em 0.5em 0.1em 0.5em;
-}
-
-.clear { clear: both; }
-
-ul.action-results {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-div.autocomplete {
+#quickbar {
     position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
+    right: 0;
+    top: 0;
+    
 }
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
+#quickbar #quick-personal {
+    display: inline;
+    color: #fff;
+    padding: 0.5em 1em 0 0;
+    float: right;
 }
 
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
+#quickbar #quick-personal span {
+    font-weight: bold;
 }
 
+#quickbar #quick-personal :link,
+#quickbar #quick-personal :visited
+{
+    color: #fff;
+    font-weight: bold;
+}
 
+#quickbar #quick-personal :link:hover,
+#quickbar #quick-personal :visited:hover
+{
+    color: black;
+}
 
-#editsearches {
-    width: 55%;
-    float:right;
-    text-align: left;
+#quickbar #topactions {
+    float: right;
+    clear: right;
+
+    font-size: 0.9em;
     padding-right: 1em;
 }
 
-#editsearches .titlebox-content {
-    padding: 1em;
+#quickbar #topactions form {
+    display: inline;
+    margin-left: 1em;
 }
 
-
-#editquery {
-    width: 40%;
-    float: left;
-    padding-left: 1em;
+#quickbar #topactions form .button {
+    padding: 0 2px 0 2px;
+    font-size: 1em;
+    margin: 0;
 }
 
-#pick-criteria {
-    clear: both;
+#quickbar #topactions form .field {
+    padding: 1px;
+    font-size: 0.9em;
 }
 
-.shredder-form { line-height: 3em }
-.shredder-form span { margin-left: 1em; margin-right: 1em }
-.shredder-help {
-    background-color: #ffe99d;
-    margin: 1em 2em;
-    padding: 1em;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
+#quickbar #topactions form input.field {
+    padding: 3px;
 }
-#shredder-select-plugin { border-style: solid; border-color: black; border-width: 1px }
-#shredder-plugin-results { border-style: solid; border-color: black; border-width: 1px; margin-top: 1em; }
-#shredder-plugin-results input { margin-left: 1em; }
-
-.pod-sequence-C { background-color: #eee }
-

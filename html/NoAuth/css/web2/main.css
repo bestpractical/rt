@@ -45,28 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
+@import "yui.css";
+@import "misc.css";
+@import "login.css";
+@import "logo.css";
+@import "quickbar.css";
+@import "body.css";
+@import "approvals.css";
+@import "titlebox.css";
+@import "forms.css";
+@import "ticket.css";
+@import "transactions.css";
+@import "nav.css";
+@import "header.css";
+@import "footer.css";
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-
-
-
-<& PickBasics &>
-<& PickCFs, cfqueues => \%cfqueues &>
-
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-<tr>
-<td class="label"><&|/l&>Aggregator</&>:</td>
-<td class="operator">&nbsp;</td>
-<td class="value"><& SelectAndOr, Name => "AndOr" &></td>
-</tr>
-
-</table>
-
-</&>
-
-<%ARGS>
-$addquery => 0
-$query => undef
-%cfqueues => undef
-</%ARGS>

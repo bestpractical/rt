@@ -45,115 +45,85 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-body {
-    font-family: Verdana, sans-serif;
-    font-size: 76%;
-    margin: 0;
-    background-color: white;
-}
-
-.hide, .hidden { display: none !important; }
-
-#body.calpopup {
-    margin-left: 2em;
-}
-
-.calendar {
-    text-align: center;
-    margin: 2em 0 0 0;
-}
-
-.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
-
-.calendar caption .month {
-    padding: 0 1em 0 1em;
-    font-size: 1.5em;
-}
-
-.evenline { background-color: white; }
-.oddline { background-color: #ddd; }
-
-td {
-    padding: 0.1em 0.5em 0.1em 0.5em;
-}
-
-.clear { clear: both; }
-
-ul.action-results {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
+form input, form select, form .combobox {
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-bottom: 2px solid #999;
+    border-right: 2px solid #999;
+    padding: 0.25em;
+    background: #eee;
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0.5em 0.5em 0 0.5em;
 }
 
 
-
-#editsearches {
-    width: 55%;
-    float:right;
-    text-align: left;
-    padding-right: 1em;
+form input.checkbox, form input.radio {
+    border: none;
+    padding: 0;
 }
 
-#editsearches .titlebox-content {
-    padding: 1em;
+/* form .entry input, form .value input */
+
+.label, form label, .labeltop {
+    font-weight: bold;
 }
 
-
-#editquery {
-    width: 40%;
-    float: left;
-    padding-left: 1em;
+.label-comment {
+    font-weight: normal;
+    font-size: 0.9em;
 }
 
-#pick-criteria {
+.labeltop {
+    vertical-align: top;
+}
+
+.submit {
+    font-weight: bold;
+    color: #a00;
+    font-size: 1.1em;
+    padding: 0.3em 1.5em 0 1.5em;
+    border-top: 1px solid #930;
+    margin: 1.5em 0 2.5em 0;
+}
+
+.submit .buttons { float: right; }
+.submit .extra-buttons { float: left; }
+.submit .button { font-size: 0.9em; }
+.submit .submit-clear { display: none; }
+
+.input-row {
     clear: both;
+    padding: 0.25em;
 }
 
-.shredder-form { line-height: 3em }
-.shredder-form span { margin-left: 1em; margin-right: 1em }
-.shredder-help {
-    background-color: #ffe99d;
-    margin: 1em 2em;
-    padding: 1em;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
+%# ComboBox styles... some properties like height and width must be dynamically
+%# set in the JS (at least for now).
+.comibobox {
+    border: 2px inset #069;
+    padding-left: 0.5em;
+    padding-bottom: 0.1em;
 }
-#shredder-select-plugin { border-style: solid; border-color: black; border-width: 1px }
-#shredder-plugin-results { border-style: solid; border-color: black; border-width: 1px; margin-top: 1em; }
-#shredder-plugin-results input { margin-left: 1em; }
 
-.pod-sequence-C { background-color: #eee }
+.combobox .combo-button {
+    padding: 0 2px 0 2px;
+    margin: 0;
+    background: ButtonFace;
+    color: ButtonText;
+    border: 2px outset ButtonHighlight;
+    cursor: default;
+    font-size: 8pt;
+}
+
+.combobox .combo-text {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.combobox .combo-list {
+    z-index: 200;
+    border: 10px solid red;
+    background: red;
+}
 

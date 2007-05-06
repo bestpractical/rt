@@ -45,115 +45,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-body {
-    font-family: Verdana, sans-serif;
-    font-size: 76%;
-    margin: 0;
-    background-color: white;
+#login-box {
+    width: 50%;
+    margin: 0 auto 4em auto;
 }
 
-.hide, .hidden { display: none !important; }
+%# More rules only IE will recognize (but are still valid!) to correct for
+%# IE's incorrect handling of auto margins and the W3C defined behavior.
+%# text-align will affect a block element in IE, therefore centering it, like
+%# left and right auto margins *should*
 
-#body.calpopup {
-    margin-left: 2em;
+
+#login-box {
+
+    padding-top: 4em;
+
 }
 
-.calendar {
+/*
+
+* html #login-box {
     text-align: center;
-    margin: 2em 0 0 0;
-}
-
-.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
-
-.calendar caption .month {
-    padding: 0 1em 0 1em;
-    font-size: 1.5em;
-}
-
-.evenline { background-color: white; }
-.oddline { background-color: #ddd; }
-
-td {
-    padding: 0.1em 0.5em 0.1em 0.5em;
-}
-
-.clear { clear: both; }
-
-ul.action-results {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
 }
 
 
 
-#editsearches {
-    width: 55%;
-    float:right;
+%# ... and align the text back the way it should be
+* html #login-box .titlebox {
     text-align: left;
-    padding-right: 1em;
 }
 
-#editsearches .titlebox-content {
-    padding: 1em;
+#login-box .input-row {
+    padding: 0.5em;
 }
 
-
-#editquery {
-    width: 40%;
+#login-box .input-row .label {
+    width: 8em;
     float: left;
-    padding-left: 1em;
+    text-align: right;
+    padding: 0.2em 1em 0 0;
 }
 
-#pick-criteria {
+#login-box .input-row .input {
+    float: left;
+}
+
+#login-box .button-row {
     clear: both;
+    padding: 0.5em;
+    float: right;
 }
 
-.shredder-form { line-height: 3em }
-.shredder-form span { margin-left: 1em; margin-right: 1em }
-.shredder-help {
-    background-color: #ffe99d;
-    margin: 1em 2em;
-    padding: 1em;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
-}
-#shredder-select-plugin { border-style: solid; border-color: black; border-width: 1px }
-#shredder-plugin-results { border-style: solid; border-color: black; border-width: 1px; margin-top: 1em; }
-#shredder-plugin-results input { margin-left: 1em; }
-
-.pod-sequence-C { background-color: #eee }
-
+*/
