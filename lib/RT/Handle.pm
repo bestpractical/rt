@@ -278,7 +278,9 @@ END
     print "Dropping $db_type database $db_name.\n";
 
     if ( $db_type eq 'SQLite' ) {
-        unlink $db_name or warn $!;
+	my $path = $db_name;
+	$path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
+        unlink $path or warn $!;
         return;
     }
     $dbh->do("DROP DATABASE ". $db_name) or warn $DBI::errstr;
