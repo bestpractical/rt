@@ -230,7 +230,7 @@ AC_ARG_WITH(my-user-group,
             WEB_GROUP=$my_group)
 
 # Test for valid database names
-AS_IF([ test "$DB_TYPE" == "mysql" ],
+AS_IF([ test "$DB_TYPE" = "mysql" ],
       [ AC_MSG_CHECKING([if database name is valid])
           AS_IF([ echo $DB_DATABASE | $AWK '/-/ { exit 1 }' ],
                 [ AC_MSG_RESULT([yes]) ],
