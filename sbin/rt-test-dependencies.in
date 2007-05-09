@@ -263,7 +263,8 @@ Module::Refresh 0.03
 Test::Expect 0.30
 Pod::Tests
 File::Find
-File::Find
+Test::Deep 0 # needed for 'make test'
+String::ShellQuote 0 # needed for 'make test'
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
