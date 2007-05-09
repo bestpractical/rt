@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -31,8 +33,8 @@ is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't mat
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-@before = ("rt\@example.com", "frt\@example.com");
-@after = ("frt\@example.com");
+my @before = ("rt\@example.com", "frt\@example.com");
+my @after = ("frt\@example.com");
 ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
 
 

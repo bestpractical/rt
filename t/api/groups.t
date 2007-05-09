@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -104,7 +106,7 @@ bless $RTxSysObj, 'RTx::System';
 *RTx::System::id = *RTx::System::Id;
 my $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System', ObjectId  => 1);
 ok ($id, "ACL for RTxSysObj created");
 
@@ -127,7 +129,7 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj using EquivObjects");
 
 $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System::Record', ObjectId  => 5 );
 ok ($id, "ACL for RTxObj created");
 

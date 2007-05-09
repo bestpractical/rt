@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -34,7 +36,7 @@ is ($RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', 
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok(RT::User);
+use_ok('RT::User'); 
 my $user_a = RT::User->new($RT::SystemUser);
 $user_a->Create( Name => 'DelegationA', Privileged => 1);
 ok ($user_a->Id, "Created delegation user a");
@@ -44,7 +46,7 @@ $user_b->Create( Name => 'DelegationB', Privileged => 1);
 ok ($user_b->Id, "Created delegation user b");
 
 
-use_ok(RT::Queue);
+use_ok('RT::Queue');
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Create(Name =>'DelegationTest');
 ok ($q->Id, "Created a delegation test queue");

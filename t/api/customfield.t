@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -8,7 +10,7 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok(RT::CustomField);
+use_ok('RT::CustomField');
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
 ok(my ($id, $msg)=  $cf->Create( Name => 'TestingCF',
                                  Queue => '0',

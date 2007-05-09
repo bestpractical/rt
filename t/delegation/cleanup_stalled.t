@@ -1,4 +1,6 @@
 #!/usr/bin/perl -w
+use strict;
+use warnings;
 
 # Regression test suite for http://rt3.fsck.com/Ticket/Display.html?id=6184
 # and related corner cases related to cleanup of delegated ACEs when

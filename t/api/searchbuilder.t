@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -19,7 +21,7 @@ ok (require RT::SearchBuilder);
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok(RT::Queues);
+use_ok('RT::Queues');
 ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');
 ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
 my $items = $queues->ItemsArrayRef();

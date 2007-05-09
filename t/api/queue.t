@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -84,13 +86,13 @@ ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
 
-ok ((my $add_id, $add_msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (my ($add_id, $add_msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
 $bob->LoadByEmail('bob@fsck.com');
 ok($bob->Id,  "Found the bob rt user");
 ok ($Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queue actually has bob at fsck.com as a requestor");;
-ok ((my $add_id, $add_msg) = $Queue->DeleteWatcher(Type =>'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (($add_id, $add_msg) = $Queue->DeleteWatcher(Type =>'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok (!$Queue->IsWatcher(Type => 'Cc', Principal => $bob->PrincipalId), "The Queue no longer has bob at fsck.com as a requestor");;
 
 

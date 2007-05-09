@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More tests => 8;
 use RT;
 use RT::Test;
@@ -7,12 +9,12 @@ my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 my ($trans);
-($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
+my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
 ok(ref($uri));
 
-ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rt), "It's an RT::URI::fsck_com_rt");
+ok (UNIVERSAL::isa($uri,"RT::URI::fsck_com_rt"), "It's an RT::URI::fsck_com_rt");
 
 ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
 ok ($uri->isa('RT::Base'), "It's an RT::Base");

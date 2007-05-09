@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -42,7 +44,7 @@ ok($id, $msg);
 # Group 2 how has 1, g1->{1, 2,3}
 
 my $group_3 = RT::Group->new($RT::SystemUser);
-ok (($id_3, $msg) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
+ok (my ($id_3, $msg) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
 ok ($id_3 != 0, "Created group 3 ok - $msg");
 ok (($id,$msg) =$group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
 ok($id, $msg);

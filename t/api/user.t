@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -232,13 +234,13 @@ ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight( Object => $q_
 ok($qv, "Granted the right successfully - $qm");
 
 # Add the user as a queue admincc
-ok ((my $add_id, $add_msg) = $q_as_system->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
+ok (my ($add_id, $add_msg) = $q_as_system->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 # Remove the user from the role  group
-ok ((my $del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
+ok (my ($del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -248,14 +250,14 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 # {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the right granted at the _queue_ level
 
 # Add the user as a ticket admincc
-ok ((my $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
+ok (my( $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 
 # Remove the user from the role  group
-ok ((my $del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
+ok (( $del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -306,7 +308,7 @@ ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket
 
 
 # Add the user as a ticket admincc
-ok ((my $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
+ok ( ($uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
@@ -314,7 +316,7 @@ ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User c
 ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket'), "User can not modify tickets in the queue obj being only a ticket admincc");
 
 # Remove the user from the role  group
-ok ((my $del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
+ok ( ($del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without being an admincc");

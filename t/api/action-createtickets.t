@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -9,11 +11,11 @@ use RT::Test;
     undef $main::_STDERR_;
 
 ok (require RT::Action::CreateTickets);
-use_ok(RT::Scrip);
-use_ok(RT::Template);
-use_ok(RT::ScripAction);
-use_ok(RT::ScripCondition);
-use_ok(RT::Ticket);
+use_ok('RT::Scrip');
+use_ok('RT::Template');
+use_ok('RT::ScripAction');
+use_ok('RT::ScripCondition');
+use_ok('RT::Ticket');
 
 my $approvalsq = RT::Queue->new($RT::SystemUser);
 $approvalsq->Create(Name => 'Approvals');

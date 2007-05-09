@@ -1,5 +1,8 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
+use Data::Dumper;
 use RT;
 use RT::Test;
 
@@ -8,11 +11,11 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok ( RT::Queue);
+use_ok ('RT::Queue');
 ok(my $testqueue = RT::Queue->new($RT::SystemUser));
 ok($testqueue->Create( Name => 'ticket tests'));
 ok($testqueue->Id != 0);
-use_ok(RT::CustomField);
+use_ok('RT::CustomField');
 ok(my $testcf = RT::CustomField->new($RT::SystemUser));
 my ($ret, $cmsg) = $testcf->Create( Name => 'selectmulti',
                     Queue => $testqueue->id,
@@ -33,7 +36,7 @@ ok($testcf->AddValue ( Name => 'Value3',
                        
 ok($testcf->Values->Count == 3);
 
-use_ok(RT::Ticket);
+use_ok('RT::Ticket');
 
 my $u = RT::User->new($RT::SystemUser);
 $u->Load("root");
@@ -162,13 +165,13 @@ ok($jesse->Id,  "Found the jesse rt user");
 
 
 ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $jesse->PrincipalId), "The ticket actually has jesse at fsck.com as a requestor");
-ok ((my $add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (my ($add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
 $bob->LoadByEmail('bob@fsck.com');
 ok($bob->Id,  "Found the bob rt user");
 ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
-ok ((my $add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ( ($add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
@@ -195,7 +198,7 @@ ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group h
 my $t = RT::Ticket->new($RT::SystemUser);
 ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
 
-is($#{$t->SquelchMailTo}, -1, "The ticket has no squelched recipients");
+is(scalar $t->SquelchMailTo, 0, "The ticket has no squelched recipients");
 
 my @returned = $t->SquelchMailTo('nobody@example.com');
 

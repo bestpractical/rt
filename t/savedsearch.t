@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use RT;
 use Test::More tests => 26;
 use RT::User;
@@ -5,8 +7,8 @@ use RT::Group;
 use RT::Ticket;
 use RT::Queue;
 
-use_ok(RT::SavedSearch);
-use_ok(RT::SavedSearches);
+use_ok('RT::SavedSearch');
+use_ok('RT::SavedSearches');
 use RT::Test;
 
 # Set up some infrastructure.  These calls are tested elsewhere.

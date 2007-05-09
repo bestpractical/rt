@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -8,7 +10,7 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok (RT::I18N);
+use_ok ('RT::I18N');
 ok(RT::I18N->Init);
 
 

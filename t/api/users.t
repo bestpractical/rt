@@ -1,4 +1,6 @@
 
+use strict;
+use warnings;
 use Test::More qw/no_plan/;
 use RT;
 use RT::Test;
@@ -25,7 +27,7 @@ ok($users->Count == 1, "There is one privileged superuser - Found ". $users->Cou
 # TODO: this wants more testing
 
 my $RTxUser = RT::User->new($RT::SystemUser);
-($id, $msg) = $RTxUser->Create( Name => 'RTxUser', Comments => "RTx extension user", Privileged => 1);
+my ($id, $msg) = $RTxUser->Create( Name => 'RTxUser', Comments => "RTx extension user", Privileged => 1);
 ok ($id,$msg);
 
 my $group = RT::Group->new($RT::SystemUser);
@@ -37,7 +39,7 @@ bless $RTxSysObj, 'RTx::System';
 *RTx::System::id = *RTx::System::Id;
 my $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $group->id, PrincipalType => 'Group', RightName => 'RTxUserRight', ObjectType => 'RTx::System', ObjectId  => 1 );
 ok ($id, "ACL for RTxSysObj created");
 
@@ -60,7 +62,7 @@ is($users->Count, 1, "RTxUserRight found for RTxObj using EquivObjects");
 
 $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $group->id, PrincipalType => 'Group', RightName => 'RTxUserRight', ObjectType => 'RTx::System::Record', ObjectId => 5 );
 ok ($id, "ACL for RTxObj created");
 
