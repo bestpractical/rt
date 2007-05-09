@@ -25,6 +25,8 @@ BEGIN {
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
 Set( \$DatabaseName , "rt3test");
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
 1;
 };
     close $config;
