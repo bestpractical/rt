@@ -546,8 +546,11 @@ sub SetRTSpecialHeaders {
     $self->SetHeader( 'Managed-by',
         "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
-    $self->SetHeader( 'RT-Originator',
-        $self->TransactionObj->CreatorObj->EmailAddress );
+    # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be 
+    #            refactored into user's method.
+    if (my $email = $self->TransactionObj->CreatorObj->EmailAddress) {
+      $self->SetHeader( 'RT-Originator', $email );
+    }
 
 }
 
