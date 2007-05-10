@@ -67,7 +67,6 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__LastUpdatedRelative__</small>\',
 \'<small>__TimeLeft__</small>\'';
 
-my ($ret, $msg);
 my $mysearch = RT::SavedSearch->new($curruser);
 ($ret, $msg) = $mysearch->Save(Privacy => 'RT::User-' . $searchuser->Id,
 			       Type => 'Ticket',

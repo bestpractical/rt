@@ -44,8 +44,8 @@ ok($id, $msg);
 # Group 2 how has 1, g1->{1, 2,3}
 
 my $group_3 = RT::Group->new($RT::SystemUser);
-ok (my ($id_3, $msg) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
-ok ($id_3 != 0, "Created group 3 ok - $msg");
+ok (my ($id_3, $msg_3) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
+ok ($id_3 != 0, "Created group 3 ok - $msg_3");
 ok (($id,$msg) =$group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
 ok($id, $msg);
 
@@ -62,7 +62,7 @@ ok($id, $msg);
 
 # g3 now has 1, g2->{1, g1->{1,2,3}}
 
-ok($group_3->HasMember($principal_2) == undef, "group 3 doesn't have member 2");
+is($group_3->HasMember($principal_2), undef, "group 3 doesn't have member 2");
 ok($group_3->HasMemberRecursively($principal_2), "group 3 has member 2 recursively");
 ok($ng->HasMember($principal_2) , "group ".$ng->Id." has member 2");
 my ($delid , $delmsg) =$ng->DeleteMember($principal_2->Id);
@@ -79,10 +79,10 @@ ok ($delid !=0, "Sucessfully deleted it-".$delid."-".$delmsg);
 # g3 now has  1, g2->{1, g1->{1, 3}}
 
 ok(!$ng->HasMember($principal_2)  , "group ".$ng->Id." no longer has member 2");
-ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 doesn't have member 2");
-ok($group_2->HasMemberRecursively($principal_2) == undef, "group 2 doesn't have member 2");
-ok($ng->HasMember($principal_2) == undef, "group 1 doesn't have member 2");;
-ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 recursively");
+is($group_3->HasMemberRecursively($principal_2), undef, "group 3 doesn't have member 2");
+is($group_2->HasMemberRecursively($principal_2), undef, "group 2 doesn't have member 2");
+is($ng->HasMember($principal_2), undef, "group 1 doesn't have member 2");;
+is($group_3->HasMemberRecursively($principal_2), undef, "group 3 has member 2 recursively");
 
 # }}}
 

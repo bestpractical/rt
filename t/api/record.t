@@ -40,10 +40,10 @@ my ($id, $trans, $msg) = $t1->Create(Subject => 'DepTest1', Queue => 'general');
 ok($id, "Created dep test 1 - $msg");
 
 my $t2 = RT::Ticket->new($RT::SystemUser);
-my ($id2, $trans, $msg2) = $t2->Create(Subject => 'DepTest2', Queue => 'general');
+(my $id2, $trans, my $msg2) = $t2->Create(Subject => 'DepTest2', Queue => 'general');
 ok($id2, "Created dep test 2 - $msg2");
 my $t3 = RT::Ticket->new($RT::SystemUser);
-my ($id3, $trans, $msg3) = $t3->Create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
+(my $id3, $trans, my $msg3) = $t3->Create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
 ok($id3, "Created dep test 3 - $msg3");
 my ($addid, $addmsg);
 ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t2->id));
@@ -52,7 +52,7 @@ ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t3->id));
 
 ok ($addid, $addmsg);
 my $link = RT::Link->new($RT::SystemUser);
-my ($rv, $msg) = $link->Load($addid);
+(my $rv, $msg) = $link->Load($addid);
 ok ($rv, $msg);
 ok ($link->LocalTarget == $t3->id, "Link LocalTarget is correct");
 ok ($link->LocalBase   == $t1->id, "Link LocalBase   is correct");

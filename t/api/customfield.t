@@ -22,7 +22,7 @@ ok ($cf->SingleValue);
 is($cf->Type, 'Select');
 is($cf->MaxValues, 1);
 
-my ($val, $msg) = $cf->SetMaxValues('0');
+(my $val, $msg) = $cf->SetMaxValues('0');
 ok($val, $msg);
 is($cf->Type, 'Select');
 is($cf->MaxValues, 0);

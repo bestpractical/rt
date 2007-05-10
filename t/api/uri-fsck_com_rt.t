@@ -8,7 +8,6 @@ use_ok("RT::URI::fsck_com_rt");
 my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
-my ($trans);
 my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
@@ -24,7 +23,7 @@ is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 $ticket->Load(1);
-my $uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
+$uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
 is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
 
 1;

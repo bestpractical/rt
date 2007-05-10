@@ -5,7 +5,6 @@ use RT;
 use RT::Test;
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
-my ($trans);
 my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
