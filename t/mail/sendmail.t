@@ -255,23 +255,23 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&umlauts_redef_sendmessage;
-
-%args = (message => $content, queue => 1, action => 'correspond');
-RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick = $tickets->First();
-
-ok ($tick->Id, "found ticket ".$tick->Id);
-
-ok (first_txn($tick)->Content =~ /causes Error/, "We recorded the content right as text-plain");
-is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
-
-sub umlauts_redef_sendmessage {
+{
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
+    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+
+    %args = (message => $content, queue => 1, action => 'correspond');
+    RT::Interface::Email::Gateway(\%args);
+    # TODO: following 5 lines should replaced by get_latest_ticket_ok()
+    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+    $tick = $tickets->First();
+
+    ok ($tick->Id, "found ticket ".$tick->Id);
+
+    ok (first_txn($tick)->Content =~ /causes Error/, "We recorded the content right as text-plain");
+    is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
+
 }
 
 # }}}
@@ -444,22 +444,19 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&notes_redef_sendmessage;
-
- %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
-
-ok (first_txn($tick)->Content =~ /from Lotus Notes/, "We recorded the content right");
-is (count_attachs($tick) , 3 , "Has three attachments");
-
-sub notes_redef_sendmessage {
+{
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
+    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+    %args =        (message => $content, queue => 1, action => 'correspond');
+    RT::Interface::Email::Gateway(\%args);
+    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+    $tick= $tickets->First();
+    ok ($tick->Id, "found ticket ".$tick->Id);
+
+    ok (first_txn($tick)->Content =~ /from Lotus Notes/, "We recorded the content right");
+    is (count_attachs($tick) , 3 , "Has three attachments");
 }
 
 # }}}
@@ -472,8 +469,9 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&crashes_redef_sendmessage;
 
+no warnings qw/redefine/;
+local *RT::Action::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
  $tickets = RT::Tickets->new($RT::SystemUser);
@@ -485,10 +483,6 @@ ok ($tick->Id, "found ticket ".$tick->Id);
 ok (first_txn($tick)->Content =~ /FYI/, "We recorded the content right");
 is (count_attachs($tick) , 5 , "Has three attachments");
 
-sub crashes_redef_sendmessage {
-    no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
-}
 
 
 
