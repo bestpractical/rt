@@ -306,7 +306,7 @@ Transaction: {$Transaction->Description}
        Name        => 'Admin Comment',                           # loc
        Description => 'Default admin comment template',          # loc
        Content     =>
-'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
 {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
