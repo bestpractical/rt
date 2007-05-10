@@ -377,7 +377,8 @@ sub _GuessCharset {
     my $fallback = 'iso-8859-1';
     my $charset;
 
-    if ( RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
+    # if $_[0] is null/empty, we don't guess its encoding
+    if ( $_[0] and RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
 	Encode::Guess->set_suspects(RT->Config->Get('EmailInputEncodings'));
 	my $decoder = Encode::Guess->guess( $_[0] );
 
