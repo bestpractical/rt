@@ -353,8 +353,10 @@ sub AddAttachment {
         Type     => $attach->ContentType,
         Charset  => $attach->OriginalEncoding,
         Data     => $attach->OriginalContent,
-        Filename => $self->MIMEEncodeString( $attach->Filename,
-            RT->Config->Get('EmailOutputEncoding') ),
+        Filename => defined ($attach->Filename) ? 
+          $self->MIMEEncodeString( $attach->Filename, RT->Config->Get('EmailOutputEncoding') )
+          :
+          undef,
         'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
         Encoding => '-SUGGEST',
     );
