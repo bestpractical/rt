@@ -177,8 +177,8 @@ TODO: {
 # get attachments from a ticket
 expect_send("show ticket/$ticket_id/attachments", 'Showing ticket attachments...');
 expect_like(qr/id: ticket\/$ticket_id\/attachments/, 'Got our ticket\'s attachments');
-expect_like(qr/Attachments: \d+:\s*\(\S+ \/ \d+\w+\)/, 'Our ticket has an attachment');
-expect_handle->before() =~ /Attachments: (\d+):\s*\((\S+)/;
+expect_like(qr/Attachments: \d+: \(Unnamed\) \(\S+ \/ \d+\w+\)/, 'Our ticket has an attachment');
+expect_handle->before() =~ /Attachments: (\d+): \(Unnamed\) \((\S+)/;
 my $attachment_id = $1;
 my $attachment_type = $2;
 ok($attachment_id, "Got attachment id=$attachment_id $attachment_type");
