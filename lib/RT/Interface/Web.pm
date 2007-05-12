@@ -60,7 +60,6 @@ RT::Interface::Web
 
 
 package RT::Interface::Web;
-use HTTP::Date;
 use URI;
 
 use strict;
@@ -201,12 +200,15 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
+    my $date = RT::Date->new( $RT::SystemUser );
+
     # Expire things in a month.
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = HTTP::Date::time2str( time() + 2592000 );
+    $date->Set( Value => time + 30*24*60*60 );
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
 
     # Last modified at server start time
-    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = HTTP::Date::time2str($^T);
-
+    $date->Set( Value => $^T );
+    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
 
