@@ -60,6 +60,7 @@ RT::Interface::Web
 
 
 package RT::Interface::Web;
+use HTTP::Date;
 
 use strict;
 use warnings;
