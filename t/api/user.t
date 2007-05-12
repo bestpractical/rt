@@ -186,7 +186,7 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 
 # Create a subgroup
 my $subgroup = RT::Group->new($RT::SystemUser);
-$subgroup->CreateUserDefinedGroup(Name => 'Subgrouptest',$$);
+$subgroup->CreateUserDefinedGroup(Name => 'Subgrouptest'.$$);
 ok($subgroup->Id, "Created a new group ".$subgroup->Id."Ok");
 #Add the subgroup as a subgroup of the group
 my ($said, $samsg) =  $group->AddMember($subgroup->PrincipalId);

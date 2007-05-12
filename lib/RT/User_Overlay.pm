@@ -575,7 +575,7 @@ sub ValidateEmailAddress {
     my $TempUser = RT::User->new($RT::SystemUser);
     $TempUser->LoadByEmail($Value);
 
-    if ( $TempUser->id && ( $TempUser->id != $self->id ) )
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
         return (undef);
