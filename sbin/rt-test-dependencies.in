@@ -253,18 +253,15 @@ Term::ReadKey
 .
 
 $deps{'DEV'} = [ text_to_hash( << '.') ];
-Test::Inline 
-Apache::Test
 HTML::Form
 HTML::TokeParser
 WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
-Pod::Tests
 File::Find
-Test::Deep 0 # needed for 'make test'
-String::ShellQuote 0 # needed for 'make test'
+Test::Deep 0 # needed for shredder tests
+String::ShellQuote 0 # needed for gnupg-incoming.t
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
