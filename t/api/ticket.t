@@ -123,30 +123,6 @@ is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Uni
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-my $simple_update = <<EOF;
-Subject: target
-AddRequestor: jesse\@example.com
-EOF
-
-my $ticket = RT::Ticket->new($RT::SystemUser);
-my ($id,$msg) =$ticket->Create(Subject => 'first', Queue => 'general');
-ok($ticket->Id, "Created the test ticket - ".$id ." - ".$msg);
-$ticket->UpdateFrom822($simple_update);
-is($ticket->Subject, 'target', "changed the subject");
-my $jesse = RT::User->new($RT::SystemUser);
-$jesse->LoadByEmail('jesse@example.com');
-ok ($jesse->Id, "There's a user for jesse");
-ok($ticket->Requestors->HasMember( $jesse->PrincipalObj), "It has the jesse principal object as a requestor ");
-
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
-
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(Subject => "Foo",
                 Owner => $RT::SystemUser->Id,
