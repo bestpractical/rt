@@ -1627,6 +1627,7 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
+    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }
