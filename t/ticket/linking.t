@@ -66,7 +66,7 @@ END
 my $Scrips = RT::Scrips->new( $RT::SystemUser );
 $Scrips->UnLimit;
 while ( my $Scrip = $Scrips->Next ) {
-    $Scrip->Delete if $Scrip->Description =~ /Add or Delete Link \d+/;
+    $Scrip->Delete if $Scrip->Description and $Scrip->Description =~ /Add or Delete Link \d+/;
 }
 
 
