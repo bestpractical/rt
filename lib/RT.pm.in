@@ -166,7 +166,7 @@ EOF
         my $filegroup = getgrgid($filegid);
         my $errormessage = sprintf($message, $SITE_CONFIG_FILE,
                                    $fileusername, $filegroup, $filegroup);
-        die ("$message '$CORE_CONFIG_FILE'\n$@") 
+        die ("$errormessage '$CORE_CONFIG_FILE'\n$@") 
     }
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
