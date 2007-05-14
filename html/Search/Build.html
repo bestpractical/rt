@@ -331,6 +331,10 @@ my $ParseQuery = sub {
     my $root       = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $$tree );
     my $parentnode = $root;
 
+    # on new searches, we're passed undef but still need to construct the
+    # RT::Interface::Web::QueryBuilder::Tree.  Quiet warning
+    return unless defined $string;
+
     # get the FIELDS from Tickets_Overlay
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
     my %FIELDS  = %{ $tickets->FIELDS };
