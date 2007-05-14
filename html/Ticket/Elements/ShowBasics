@@ -72,12 +72,10 @@
     <td class="value time left"><& ShowTime, minutes => $Ticket->TimeLeft &></td>
   </tr>
 % }
-% if ($Ticket->Priority) {
   <tr>
     <td class="label priority"><&|/l&>Priority</&>:</td>
-    <td class="value priority"><%$Ticket->Priority%>/<%$Ticket->FinalPriority %></td>
+    <td class="value priority"><%$Ticket->Priority||0%>/<%$Ticket->FinalPriority||0 %></td>
   </tr>
-% }
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>
     <td class="value queue"><%$Ticket->QueueObj->Name%></td>
