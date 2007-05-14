@@ -130,7 +130,7 @@ my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
 if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
     $dba_pass = get_dba_password();
-    chomp $dba_pass;
+    chomp $dba_pass if defined($dba_pass);
 }
 
 print "Working with:\n"
