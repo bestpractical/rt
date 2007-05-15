@@ -7,8 +7,7 @@ RT::LoadConfig;
 RT::Init;
 use Test::WWW::Mechanize;
 
-$RT::WebURL ||= 0; # avoid stupid warning
-my $BaseURL = $RT::WebURL;
+my $BaseURL = RT->Config->Get('WebURL');
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 

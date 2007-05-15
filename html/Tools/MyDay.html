@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -22,7 +22,9 @@
 %# 
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
-%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,6 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Tools/Elements/Tabs, current_tab => "Tools/MyDay.html", Title => $title &>
+
+<& /Elements/ListActions, actions => \@results &>
+
 (displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -75,11 +80,38 @@ cols="60"></textarea></td></tr>
 my $title = loc("What I did today");
 
 my $i = 0;
+my @results;
+foreach my $arg ( keys %ARGS ) {
+    next unless ( $arg =~ /^UpdateStatus-(\d*)$/ );
+    my $id     = $1;
+    my $ticket = LoadTicket($id);
+    next unless ( $ticket->id );
+    if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
+        my ( $val, $msg ) = $ticket->Comment(
+            Content   => $content,
+            TimeTaken => $ARGS{ 'UpdateTimeWorked-' . $id }
+        );
+        push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+    } elsif ( my $worked = $ARGS{ 'UpdateTimeWorked-' . $id } ) {
+        my ( $val, $msg ) = $ticket->SetTimeWorked( $worked + $ticket->TimeWorked );
+            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+    }
+
+    if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
+        if ( $status ne $ticket->Status ) {
+            my ( $val, $msg ) = $ticket->SetStatus($status);
+            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+
+        }
+    }
+
+}
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 $Tickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
 $Tickets->LimitStatus( VALUE => 'open' );
 $Tickets->LimitStatus ( VALUE => 'new');
 $Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
+
 
 </%INIT>

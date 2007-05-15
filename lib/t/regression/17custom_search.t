@@ -13,8 +13,10 @@ use constant BaseURL => RT->Config->Get('WebURL');
 
 # reset preferences for easier test?
 
+
+
 my $t = RT::Ticket->new($RT::SystemUser);
-$t->Create(Subject => 'for custom search', Queue => 'general',
+$t->Create(Subject => 'for custom search'.$$, Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'created ticket for custom search');
 
@@ -23,8 +25,7 @@ isa_ok($m, 'Test::WWW::Mechanize');
 
 $m->get( BaseURL."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
-
-my $t_link = $m->find_link( text => "for custom search" );
+my $t_link = $m->find_link( text => "for custom search".$$ );
 like ($t_link->url, qr/$id/, 'link to the ticket we created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');

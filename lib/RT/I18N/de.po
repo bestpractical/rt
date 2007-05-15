@@ -4152,7 +4152,7 @@ msgstr "Ausgewählte Objekte"
 
 #: html/Widgets/SelectionBox:209
 msgid "Selections modified. Please save your changes"
-msgstr "Auswahl wurde geändert. Bitte speichere Deine Ãnderungen"
+msgstr "Auswahl wurde geändert. Bitte speichere Deine Änderungen"
 
 #: etc/initialdata:121
 msgid "Send mail to all watchers"

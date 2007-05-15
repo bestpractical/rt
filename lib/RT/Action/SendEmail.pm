@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -22,7 +22,9 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
 # 
 # 
 # CONTRIBUTION SUBMISSION POLICY:
@@ -100,9 +102,37 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-    my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
+    my $message = $self->TemplateObj->MIMEObj;
+
+    my $orig_message;
+    if ( RT->Config->Get('RecordOutgoingEmail') && RT->Config->Get('GnuPG')->{'Enable'} ) {
+        # it's hacky, but we should know if we're going to crypt things
+        my $attachment = $self->TransactionObj->Attachments->First;
+
+        my %crypt;
+        foreach my $argument ( qw(Sign Encrypt) ) {
+            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
+                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
+            } else {
+                $crypt{$argument} = $self->TicketObj->QueueObj->$argument();
+            }
+        }
+        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
+            $orig_message = $message->dup;
+        }
+    }
+
+
+    my ($ret) = $self->SendMessage( $message );
     if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
-        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+        if ( $orig_message ) {
+            $message->attach(
+                Type        => 'application/x-rt-original-message',
+                Disposition => 'inline',
+                Data        => $orig_message->as_string,
+            );
+        }
+        $self->RecordOutgoingMailTransaction( $message );
     }
     return (abs $ret);
 }

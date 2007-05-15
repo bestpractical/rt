@@ -42,7 +42,9 @@ sub count_attachs { return first_txn($_[0])->Attachments->Count }
 
 sub file_content
 {
-    open my $fh, "<:raw", $_[0] or die "couldn't open file '$_[0]': $!";
+    my $path = shift;
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
     local $/;
     return scalar <$fh>;
 }

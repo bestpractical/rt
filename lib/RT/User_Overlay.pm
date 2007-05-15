@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -22,7 +22,9 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
 # 
 # 
 # CONTRIBUTION SUBMISSION POLICY:
@@ -43,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::User - RT User object
@@ -76,7 +77,7 @@ use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
-
+use Encode;
 
 # {{{ sub _Accessible 
 
@@ -259,7 +260,7 @@ sub Create {
     #If the create failed.
     unless ($id) {
         $RT::Handle->Rollback();
-        $RT::Logger->error("Could not create a new user - " .join('-'. %args));
+        $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
     }
@@ -1058,7 +1059,7 @@ sub _GeneratePassword {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->hexdigest);
 
 }
@@ -1075,7 +1076,7 @@ sub _GeneratePasswordBase64 {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->b64digest);
 
 }
