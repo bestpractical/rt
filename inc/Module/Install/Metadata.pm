@@ -6,14 +6,14 @@ use Module::Install::Base;
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.64';
+	$VERSION = '0.65';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
 
 my @scalar_keys = qw{
     name module_name abstract author version license
-    distribution_type perl_version tests
+    distribution_type perl_version tests installdirs
 };
 
 my @tuple_keys = qw{
@@ -55,6 +55,11 @@ foreach my $key (@tuple_keys) {
         @rv;
     };
 }
+
+sub install_as_core   { $_[0]->installdirs('perl')   }
+sub install_as_cpan   { $_[0]->installdirs('site')   }
+sub install_as_site   { $_[0]->installdirs('site')   }
+sub install_as_vendor { $_[0]->installdirs('vendor') }
 
 sub sign {
     my $self = shift;
@@ -279,9 +284,11 @@ sub license_from {
 
     if (
         $self->_slurp($file) =~ m/
-        =head \d \s+
-        (?:licen[cs]e|licensing|copyright|legal)\b
-        (.*?)
+        (
+            =head \d \s+
+            (?:licen[cs]e|licensing|copyright|legal)\b
+            .*?
+        )
         (=head\\d.*|=cut.*|)
         \z
     /ixms
@@ -298,6 +305,7 @@ sub license_from {
             'LGPL'                                            => 'lgpl',
             'BSD'                                             => 'bsd',
             'Artistic'                                        => 'artistic',
+            'MIT'                                             => 'MIT',
         );
         while ( my ( $pattern, $license ) = splice( @phrases, 0, 2 ) ) {
             $pattern =~ s{\s+}{\\s+}g;

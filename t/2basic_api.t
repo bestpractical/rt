@@ -2,8 +2,9 @@
 
 use warnings;
 use strict;
-use Test::More tests => 38;
 
+use Test::More tests => 38;
+BEGIN { require 't/utils.pl' }
 
 use_ok('RT');
 RT::LoadConfig();

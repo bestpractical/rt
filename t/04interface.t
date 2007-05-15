@@ -1,6 +1,10 @@
 #!/usr/bin/perl
 
+use strict;
+use warnings;
+
 use Test::More qw(no_plan);
+BEGIN { require 't/utils.pl' }
 
 use lib "/opt/rt3/lib";
 use RT;
@@ -12,9 +16,9 @@ use RT::EmailParser;
 use RT::Queue;
 use RT::Ticket;
 use Test::WWW::Mechanize;
-use_ok(RT::FM::Class);
-use_ok(RT::FM::Topic);
-use_ok(RT::FM::Article);
+use_ok 'RT::FM::Class';
+use_ok 'RT::FM::Topic';
+use_ok 'RT::FM::Article';
 
 # Variables to test return values
 my ($ret, $msg);
