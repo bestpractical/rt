@@ -68,6 +68,7 @@ ok ($groups->First->Id == $g->Id, "it's the right one");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
+    no warnings qw/redefine once/;
 
 my $q = RT::Queue->new($RT::SystemUser);
 my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');
