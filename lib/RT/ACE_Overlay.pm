@@ -911,6 +911,15 @@ sub _CanonicalizePrincipal {
         return ( $princ_obj, undef );
     }
 
+    $princ_type ||= $princ_obj->PrincipalType;
+    unless ( $princ_type eq $princ_obj->PrincipalType ) {
+        $RT::Logger->error(
+            "Principal #$princ_id has type ". $princ_obj->PrincipalType
+            . " when caller says '$princ_type'"
+        );
+        $princ_type = $princ_obj->PrincipalType;
+    }
+
     # Rights never get granted to users. they get granted to their 
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
