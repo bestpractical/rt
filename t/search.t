@@ -1,16 +1,16 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
 
-use Test::More qw(no_plan);
+use Test::More tests => 12;
 BEGIN { require 't/utils.pl' }
 
 use_ok 'RT';
 RT::LoadConfig();
 RT::Init();
 
-my $suffix = '';
+my $suffix = '-'. $$;
 
 my $CurrentUser = $RT::SystemUser;
 
