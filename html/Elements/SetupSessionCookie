@@ -50,12 +50,15 @@ return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 my %cookies    = CGI::Cookie->fetch();
 my $cookiename = "RT_SID_" . $RT::rtname . "." . $ENV{'SERVER_PORT'};
+$SessionCookie ||= $cookies{$cookiename} ? $cookies{$cookiename}->value : undef;
+
 my %backends   = (
     mysql => 'Apache::Session::MySQL',
     Pg    => 'Apache::Session::Postgres',
 
     #    Oracle	=> 'Apache::Session::Oracle',
-) unless $RT::WebSessionClass;
+);
+
 my $session_class = $RT::WebSessionClass
     || $backends{$RT::DatabaseType}
     || 'Apache::Session::File';
@@ -67,33 +70,28 @@ require $pm;
 unless ( $RT::Handle->dbh && $RT::Handle->dbh->ping ) {
     $RT::Handle->Connect();
 }
-eval {
-    tie %session, $session_class,
-        $SessionCookie
-        || ( $cookies{$cookiename} ? $cookies{$cookiename}->value() : undef ),
-        $session_class
-        ? {
-        Handle     => $RT::Handle->dbh,
-        LockHandle => $RT::Handle->dbh,
-        }
-        : {
+
+my $session_properties;
+if ( $session_class eq 'Apache::Session::File' ) {
+    $session_properties = {
         Directory     => $RT::MasonSessionDir,
         LockDirectory => $RT::MasonSessionDir,
-        };
+    };
+} else {
+    $session_properties = {
+        Handle     => $RT::Handle->dbh,
+        LockHandle => $RT::Handle->dbh,
+    };
+}
+
+eval {
+    tie %session, $session_class, $SessionCookie, $session_properties
 };
 if ($@) {
 
     # If the session is invalid, create a new session.
     eval {
-        tie %session, $session_class, undef, $backends{$RT::DatabaseType}
-            ? {
-            Handle     => $RT::Handle->dbh,
-            LockHandle => $RT::Handle->dbh,
-            }
-            : {
-            Directory     => $RT::MasonSessionDir,
-            LockDirectory => $RT::MasonSessionDir,
-            };
+        tie %session, $session_class, undef, $session_properties;
         undef $cookies{$cookiename};
     };
 }
@@ -122,5 +120,5 @@ if ( !$cookies{$cookiename} ) {
 return ();
 </%init>
 <%args>
-$SessionCookie => ''
+$SessionCookie => undef
 </%args>
