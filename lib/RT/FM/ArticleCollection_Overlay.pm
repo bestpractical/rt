@@ -225,7 +225,9 @@ sub LimitCustomField {
     );
 
     my $value = $args{'VALUE'};
-    next unless $value;    #strip out total blank wildcards
+    # XXX: this work in a different way than RT
+    return unless $value;    #strip out total blank wildcards
+
     my $ObjectValuesAlias = $self->Join(
         TYPE   => 'left',
         ALIAS1 => 'main',
@@ -244,7 +246,6 @@ sub LimitCustomField {
     if ( $args{'FIELD'} ) {
 
         my $field_id;
-
         if (UNIVERSAL::isa($args{'FIELD'} ,'RT::CustomField')) {
             $field_id = $args{'FIELD'}->id;
         } elsif($args{'FIELD'} =~ /^\d+$/) {
@@ -253,8 +254,8 @@ sub LimitCustomField {
         if ($field_id) {
             $self->Limit( LEFTJOIN        => $ObjectValuesAlias,
                           FIELD           => 'CustomField',
-                          VALUE           => $args{'FIELD'},
-                          ENTRYAGGREGATOR => 'OR');
+                          VALUE           => $field_id,
+                          ENTRYAGGREGATOR => 'AND');
             # Could convert the above to a non-left join and also enable the thing below
             # $self->SUPER::Limit( ALIAS           => $ObjectValuesAlias,
             #                      FIELD           => 'CustomField',
