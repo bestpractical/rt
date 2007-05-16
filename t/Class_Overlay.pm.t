@@ -1,11 +1,18 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+
+use strict;
+use warnings;
 
 use Test::More 'no_plan';
+BEGIN { require 't/utils.pl' }
 
-use_ok('RT');
+use_ok 'RT';
 RT::LoadConfig();
 RT::Init();
-use_ok(RT::FM::Class);
+
+use_ok 'RT::FM::ArticleCollection';
+use_ok 'RT::FM::ClassCollection';
+use_ok 'RT::FM::Class';
 
 $RT::SystemUser || die ;# just shut up the warning
 $RT::FM::System || die; # just shut up the warning;

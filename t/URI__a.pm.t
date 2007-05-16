@@ -1,8 +1,12 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+
+use strict;
+use warnings;
 
 use Test::More 'no_plan';
+BEGIN { require 't/utils.pl' }
 
-use_ok(RT);
+use_ok 'RT';
 RT::LoadConfig();
 RT::Init();
 

@@ -1,14 +1,18 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+
+use strict;
+use warnings;
 
 use Test::More 'no_plan';
+BEGIN { require 't/utils.pl' }
 
-use_ok(RT);
+use_ok 'RT';
 RT::LoadConfig();
 RT::Init();
 
-use_ok(RT::FM::Article);
-use_ok(RT::FM::ArticleCollection);
-use_ok(RT::FM::Class);
+use_ok 'RT::FM::ArticleCollection';
+use_ok 'RT::FM::ClassCollection';
+use_ok 'RT::FM::Class';
 
 my $CLASS = 'ArticleTest-'.$$;
 
@@ -103,7 +107,7 @@ ok($id,$msg);
 my $refers_to_b = $article_b->ReferredToBy;
 ok($refers_to_b->Count == 1, "Found one thing referring to b");
 my $first = $refers_to_b->First;
-ok ($first->isa(RT::Link), "IT's an RT link - ref ".ref($first) );
+ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
 ok ($first->TargetObj->Id == $article_b->Id, "Its target is B");
 
 ok($refers_to_b->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
@@ -113,7 +117,7 @@ ok($refers_to_b->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
 my $referred_To_by_a = $article_a->RefersTo;
 ok($referred_To_by_a->Count == 1, "Found one thing referring to b ".$referred_To_by_a->Count. "-".$referred_To_by_a->First->id . " - ".$referred_To_by_a->Last->id);
  $first = $referred_To_by_a->First;
-ok ($first->isa(RT::Link), "IT's an RT link - ref ".ref($first) );
+ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
 ok ($first->TargetObj->Id == $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
 ok ($first->BaseObj->Id == $article_a->Id, "Its base is A");
 

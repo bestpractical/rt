@@ -1,12 +1,18 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+
+use strict;
+use warnings;
 
 use Test::More qw/no_plan/;
-use_ok(RT);
+BEGIN { require 't/utils.pl' }
+
+use_ok 'RT';
 RT::LoadConfig();
 RT::Init();
 
-use_ok(RT::FM::ArticleCollection);
-use_ok(RT::FM::ClassCollection);
+use_ok 'RT::FM::ArticleCollection';
+use_ok 'RT::FM::ClassCollection';
+use_ok 'RT::FM::Class';
 
 my $class = RT::FM::Class->new($RT::SystemUser);
 my ( $id, $msg ) = $class->Create( Name => 'CollectionTest-' . $$ );
