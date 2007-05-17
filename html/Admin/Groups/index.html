@@ -106,7 +106,7 @@ else {
 }
 </%INIT>
 <%ARGS>
-$GroupString => undef
+$GroupString => '' unless defined $GroupString
 $GroupOp => '='
 $GroupField => 'Name'
 $FindDisabledGroups => 0

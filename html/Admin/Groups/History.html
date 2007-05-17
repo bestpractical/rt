@@ -64,5 +64,5 @@ $GroupObj->Load($id) || Abort("Couldn't load group '$id'");
 my $title = loc("History of the group [_1]", $GroupObj->Name);
 </%INIT>
 <%ARGS>
-$id => undef
+$id => '' unless defined $id
 </%ARGS>

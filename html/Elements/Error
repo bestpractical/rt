@@ -76,7 +76,7 @@ Encode::_utf8_off($error);
 
 $RT::Logger->error($error);
 
-if ( $session{'SessionType'} eq 'REST' ) {
+if ( defined $session{'SessionType'} and $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');
     $m->out( "Error: " . $Why . "\n" );
     $m->out( $Details . "\n" );
