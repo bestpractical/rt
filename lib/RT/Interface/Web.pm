@@ -636,9 +636,25 @@ sub MakeMIMEEntity {
 
     if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
 
-    my (@content,$buffer);
+
+
+    use File::Temp qw(tempfile tempdir);
+
+    #foreach my $filehandle (@filenames) {
+
+    my ( $fh, $temp_file );
+    for ( 1 .. 10 ) {
+        # on NFS and NTFS, it is possible that tempfile() conflicts
+        # with other processes, causing a race condition. we try to
+        # accommodate this by pausing and retrying.
+        last if ($fh, $temp_file) = eval { tempfile( UNLINK => 1) };
+        sleep 1;
+    }
+
+    binmode $fh;    #thank you, windows
+    my ($buffer);
     while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
-        push @content, $buffer;
+        print $fh $buffer;
     }
 
     my $uploadinfo = $cgi_object->uploadInfo($filehandle);
@@ -649,13 +665,12 @@ sub MakeMIMEEntity {
                    
     $filename =~ s#^.*[\\/]##;
 
-
-    
     $Message->attach(
-        Data    => \@content,
+        Path     => $temp_file,
         Filename => Encode::decode_utf8($filename),
         Type     => $uploadinfo->{'Content-Type'},
     );
+    close($fh);
 
     #   }
 
