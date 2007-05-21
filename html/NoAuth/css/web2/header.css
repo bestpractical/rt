@@ -45,60 +45,68 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
-&>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
 
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
-<br />
-% }
-<%init>
-my @actions;
-
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
-# XXX: put this in savedsearches_to_portlet_items
-for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
-    my ( $desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-    if ( $SearchType eq 'Ticket' ) {
-        push @items, [ "system-$desc", $desc ];
-    } else {
-        my $oid = ref($sys) . '-' . $sys->Id . '-SavedSearch-' . $search->Id;
-        my $type =
-            ( $SearchType eq 'Ticket' )
-            ? 'Saved Search' : $SearchType;    # loc
-        push @items, [ "saved-$oid", loc($type) . ": $desc" ];
-    }
+body {
+ background: #ccc;
+ text-align: left;
+ padding:0;
 }
 
-my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+div#logo { 
+ width: 100%;
+ height: 4em;
+ background-color:#999;
+ 
+}
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
-    items => \@items,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-	$default_portlets->SetContent( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
-    }
-);
+div#logo img {
+ float: left;
+ padding: 0em;
+ border: 0;
+}
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
-    for @panes;
+div#logo span {
+    clear: both;
+    float: left;
+}
 
 
-</%init>
+#header h1 {
+    color: #930;
+    padding-top: 1em;
+    padding-left: .25em;
+    font-weight: bold;
+    text-align: left;
+    font-size: 2em;
+}
+
+#header ul {
+    margin: 0;
+    padding: 0;
+    color: #eee;
+    float: left;
+}
+
+#header :link,
+#header :visited
+{
+    color: white;
+    text-decoration: none;
+}
+
+#header :link.selected,
+#header :visited.selected,
+#header :link:hover,
+#header :visited:hover
+{
+    color: #fc6; /*#ff6;*/
+}
+
+#header :link.selected,
+#header :visited.selected
+{
+    font-weight: bold;
+    text-decoration: underline;
+}
 

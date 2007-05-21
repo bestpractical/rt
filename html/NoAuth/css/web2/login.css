@@ -45,60 +45,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
-&>
-
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
-<br />
-% }
-<%init>
-my @actions;
-
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
-# XXX: put this in savedsearches_to_portlet_items
-for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
-    my ( $desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-    if ( $SearchType eq 'Ticket' ) {
-        push @items, [ "system-$desc", $desc ];
-    } else {
-        my $oid = ref($sys) . '-' . $sys->Id . '-SavedSearch-' . $search->Id;
-        my $type =
-            ( $SearchType eq 'Ticket' )
-            ? 'Saved Search' : $SearchType;    # loc
-        push @items, [ "saved-$oid", loc($type) . ": $desc" ];
-    }
+#login-box {
+    width: 50%;
+    margin: 0 auto 4em auto;
 }
 
-my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
-
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
-    items => \@items,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-	$default_portlets->SetContent( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
-    }
-);
-
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
-    for @panes;
+%# More rules only IE will recognize (but are still valid!) to correct for
+%# IE's incorrect handling of auto margins and the W3C defined behavior.
+%# text-align will affect a block element in IE, therefore centering it, like
+%# left and right auto margins *should*
 
 
-</%init>
+#login-box {
 
+    padding-top: 4em;
+
+}
+
+/*
+
+* html #login-box {
+    text-align: center;
+}
+
+
+
+%# ... and align the text back the way it should be
+* html #login-box .titlebox {
+    text-align: left;
+}
+
+#login-box .input-row {
+    padding: 0.5em;
+}
+
+#login-box .input-row .label {
+    width: 8em;
+    float: left;
+    text-align: right;
+    padding: 0.2em 1em 0 0;
+}
+
+#login-box .input-row .input {
+    float: left;
+}
+
+#login-box .button-row {
+    clear: both;
+    padding: 0.5em;
+    float: right;
+}
+
+*/

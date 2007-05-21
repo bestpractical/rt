@@ -54,6 +54,200 @@ use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 
+=head1 NAME
+
+RT::Crypt::GnuPG - encryt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
+
+=head1 DESCRIPTION
+
+This module provides support for encryption and signing of outgoing messages, 
+as well as the decryption and verification of incoming email.
+
+=head1 CONFIGURATION
+
+You can control the configuration of this subsystem from RT's configuration file.
+Some options are available via the web interface, but to enable this functionality, you
+MUST start in the congiration file.
+
+There are two hashes, GnuPG and GnuPGOptions in the configuration file. The 
+first one controls RT specific options. It enables you to enable/disable facility 
+or change the format of messages. The second one is a hash with options for the 
+'gnupg' utility. You can use it to define a keyserver, enable auto-retrieval keys 
+and set almost any option 'gnupg' supports on your system.
+
+=head2 %GnuPG
+
+=head3 Enabling GnuPG
+
+Set to true value to enable this subsystem:
+
+    Set( %GnuPG,
+        Enable => 1,
+        ... other options ...
+    );
+
+However, note that you B<must> add the 'Auth::GnuPG' email filter to enable
+the handling of incoming encrypted/signed messages.
+
+=head3 Format of outgoing messages
+
+Format of outgoing messages can be controlled using the 'OutgoingMessagesFormat'
+option in the RT config:
+
+    Set( %GnuPG,
+        ... other options ...
+        OutgoingMessagesFormat => 'RFC',
+        ... other options ...
+    );
+
+or
+
+    Set( %GnuPG,
+        ... other options ...
+        OutgoingMessagesFormat => 'Inline',
+        ... other options ...
+    );
+
+This framework implements two formats of signing and encrypting of email messages:
+
+=over
+
+=item RFC
+
+This format is also known as GPG/MIME and described in RFC3156 and RFC1847.
+Technique described in these RFCs is well supported by many mail user
+agents (MUA), but some MUAs support only inline signatures and encryption,
+so it's possible to use inline format (see below).
+
+=item Inline
+
+This format doesn't take advantage of MIME, but some mail clients do
+not support GPG/MIME.
+
+We sign text parts using clear signatures. For each attachments another
+attchment with a signature is added with '.sig' extension.
+
+Encryption of text parts is implemented using inline format, other parts
+are replaced with attachments with the filename extension '.pgp'.
+
+=back
+
+=head2 %GnuPGOptions
+
+Use this hash to set options of the 'gnupg' program. You can define almost any
+option you want which  gnupg supports, but never try to set options which
+change output format or gnupg's commands, such as --sign (command),
+--list-options (option) and other.
+
+Some GnuPG options take arguments while others take none. (Such as  --use-agent).
+For options without specific value use C<undef> as hash value.
+To disable these option just comment them out or delete them from the hash
+
+    Set(%GnuPGOptions,
+        'option-with-value' => 'value',
+        'enabled-option-without-value' => undef,
+        # 'commented-option' => 'value or undef',
+    );
+
+=over
+
+=item --homedir
+
+The GnuPG home directory, by default it is set to F</opt/rt3/var/data/gpg>.
+
+You can manage this data with the 'gpg' commandline utility 
+using the GNUPGHOME environment variable or --homedir option. 
+Other utilities may be used as well.
+
+In a standard installation, access to this directory should be granted to
+the web server user which is running RT's web interface, but if you're running
+cronjobs or other utilities that access RT directly via API and may generate
+encrypted/signed notifications then  theu sers you execute these scripts under
+must have access too. 
+
+However, granting access to the dir to many users makes your setup less secure,
+some features, such as auto-import of keys, may not be avialable if you do not.
+To enable this features and suppress warnings about permissions on
+the dir use --no-permission-warning.
+
+=item --digest-algo
+
+This option is required in advance when RFC format for outgoung messages is
+used. We can not get default algorith from gpg program so RT uses 'SHA1' by
+default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
+SHA256 or other, however use `gpg --version` command to get information about
+supported algorithms by your gpg. These algoriths are listed as hash-functions.
+
+=item other
+
+Read `man gpg` to get list of all options this program support.
+
+=back
+
+=head2 Per-queue options
+
+Using the web interface it's possible to enable signing and/or encrypting by
+default. As an administrative user of RT, open 'Configuration' then 'Queues',
+and select a queue. On the page you can see information about the queue's keys 
+at the bottom and two checkboxes to choose default actions.
+
+=head2 Handling incoming messages
+
+To enable handling of encryped and signed message in the RT you should add
+'Auth::GnuPG' mail plugin.
+
+    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
+
+See also `perldoc lib/RT/Interface/Email/Auth/GnuPG.pm`.
+
+=head2 Errors handling
+
+There are several global templates created in the database by default. RT
+uses these templates to send error messages to users or RT's owner. These 
+templates have 'Error:' or 'Error to RT owner:' prefix in the name. You can 
+adjust the text of the messages using the web interface.
+
+Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
+in RT's templates are not available in these templates, but each template
+used for errors reporting has set of available data structures you can use to
+build better messages. See default templates and descriptions below.
+
+=head3 Problems with public keys
+
+Template 'Error: public key' is used to inform the user that RT has problems with
+his public key and won't be able to send him encrypted content. There are several 
+reasons why RT can't use a key. However, the actual reason is not sent to the user, 
+but sent to RT owner using 'Error to RT owner: public key'.
+
+The possible reasons: "Not Found", "Ambigious specification", "Wrong
+key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
+old", "Policy mismatch", "Not a secret key", "Key not trusted" or
+"No specific reason given".
+
+=head3 Private key doesn't exist
+
+Template 'Error: no private key' is used to inform the user that
+he sent an encrypted email, but we have no private key to decrypt
+it.
+
+In this template C<$Message> object of L<MIME::Entity> class
+available. It's the message RT received.
+
+=head3 Invalid data
+
+Template 'Error: bad GnuPG data' used to inform the user that a
+message he sent has invalid data and can not be handled.
+
+There are several reasons for this error, but most of them are data
+corruptio or absence of expected information.
+
+In this template C<@Messages> array is available and contains list
+of error messages.
+
+=head1 FUNCTIONS
+
+=cut
+
 # gnupg options supported by GnuPG::Interface
 # other otions should be handled via extra_args argument
 my %supported_opt = map { $_ => 1 } qw(
@@ -175,7 +369,7 @@ sub SignEncryptRFC3156 {
     my $entity = $args{'Entity'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -347,7 +541,7 @@ sub _SignEncryptTextInline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -431,7 +625,7 @@ sub _SignEncryptAttachmentInline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase();
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $gnupg = new GnuPG::Interface;
@@ -522,6 +716,10 @@ sub FindProtectedParts {
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
         my $io = $entity->open('r');
+        unless ( $io ) {
+            $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
+            return ();
+        }
         while ( defined($_ = $io->getline) ) {
             next unless /-----BEGIN PGP (SIGNED )?MESSAGE-----/;
             my $type = $1? 'signed': 'encrypted';
@@ -925,8 +1123,15 @@ sub DecryptAttachment {
     return %res;
 }
 
+=head2 GetPassphrase [ Address => undef ]
+
+Returns passphrase, called whenever it's required with Address as a named argument.
+
+=cut
+
 sub GetPassphrase {
-    return 'passphrase';
+    my %args = ( Address => undef, @_ );
+    return 'test';
 }
 
 =head2 ParseStatus

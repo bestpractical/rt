@@ -49,18 +49,17 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 
-<tr><th><&|/l&>Field</&></th><th><&|/l&>Operator</&></th><th><&|/l&>Value</&></th></tr>
 
+
+<& PickBasics &>
+<& PickCFs, cfqueues => \%cfqueues &>
+
+<tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
 <td class="label"><&|/l&>Aggregator</&>:</td>
 <td class="operator">&nbsp;</td>
 <td class="value"><& SelectAndOr, Name => "AndOr" &></td>
 </tr>
-
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-
-<& PickBasics &>
-<& PickCFs, cfqueues => \%cfqueues &>
 
 </table>
 

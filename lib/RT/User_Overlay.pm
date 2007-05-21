@@ -708,38 +708,13 @@ sub ResetPassword {
         return ( 0, "$pass" );
     }
 
-    my $template = RT::Template->new( $self->CurrentUser );
-
-    if ( $self->Privileged ) {
-        $template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
-    }
-    else {
-        $template->LoadGlobalTemplate('RT_PasswordChange_NonPrivileged');
-    }
-
-    unless ( $template->Id ) {
-        $template->LoadGlobalTemplate('RT_PasswordChange');
-    }
-
-    unless ( $template->Id ) {
-        $RT::Logger->crit( "$self tried to send "
-              . $self->Name
-              . " a password reminder "
-              . "but couldn't find a password change template" );
-    }
-
-    my $notification = RT::Action::SendPasswordEmail->new(
-        TemplateObj => $template,
-        Argument    => $pass
-    );
-
-    $notification->SetHeader( 'To', $self->EmailAddress );
-
-    my ($ret);
-    $ret = $notification->Prepare();
-    if ($ret) {
-        $ret = $notification->Commit();
-    }
+    my $ret = RT::Interface::Email::SendEmailUsingTemplate(
+		To        => $self->EmailAddress,
+		Template  => 'PasswordChange',
+		Arguments => {
+		    NewPassword => $pass,
+		},
+	    );
 
     if ($ret) {
         return ( 1, $self->loc('New password notification sent') );

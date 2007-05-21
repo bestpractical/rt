@@ -60,7 +60,7 @@
 
 <div id="header">
 <h1><% $title %></h1>
-
+<div id="page-navigation">
 % my $sep       = 0;
 % my $postsep   = 0;
 % my $count     = 0;
@@ -155,7 +155,7 @@
   </ul>
 % }
 </div>
-
+</div>
 <div id="body">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;

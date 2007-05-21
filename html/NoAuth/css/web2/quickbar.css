@@ -45,60 +45,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
-&>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
-<br />
-% }
-<%init>
-my @actions;
-
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
-# XXX: put this in savedsearches_to_portlet_items
-for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
-    my ( $desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-    if ( $SearchType eq 'Ticket' ) {
-        push @items, [ "system-$desc", $desc ];
-    } else {
-        my $oid = ref($sys) . '-' . $sys->Id . '-SavedSearch-' . $search->Id;
-        my $type =
-            ( $SearchType eq 'Ticket' )
-            ? 'Saved Search' : $SearchType;    # loc
-        push @items, [ "saved-$oid", loc($type) . ": $desc" ];
-    }
+#quickbar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    
+}
+#quickbar #quick-personal {
+    display: inline;
+    color: #fff;
+    padding: 0.5em 1em 0 0;
+    float: right;
 }
 
-my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+#quickbar #quick-personal span {
+    font-weight: bold;
+}
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
-    items => \@items,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-	$default_portlets->SetContent( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
-    }
-);
+#quickbar #quick-personal :link,
+#quickbar #quick-personal :visited
+{
+    color: #fff;
+    font-weight: bold;
+}
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
-    for @panes;
+#quickbar #quick-personal :link:hover,
+#quickbar #quick-personal :visited:hover
+{
+    color: black;
+}
 
+#quickbar #topactions {
+    float: right;
+    clear: right;
 
-</%init>
+    font-size: 0.9em;
+    padding-right: 1em;
+}
 
+#quickbar #topactions form {
+    display: inline;
+    margin-left: 1em;
+}
+
+#quickbar #topactions form .button {
+    padding: 0 2px 0 2px;
+    font-size: 1em;
+    margin: 0;
+}
+
+#quickbar #topactions form .field {
+    padding: 1px;
+    font-size: 0.9em;
+}
+
+#quickbar #topactions form input.field {
+    padding: 3px;
+}

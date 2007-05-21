@@ -45,60 +45,99 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
-&>
-
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
-<br />
-% }
-<%init>
-my @actions;
-
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
-# XXX: put this in savedsearches_to_portlet_items
-for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
-    my ( $desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-    if ( $SearchType eq 'Ticket' ) {
-        push @items, [ "system-$desc", $desc ];
-    } else {
-        my $oid = ref($sys) . '-' . $sys->Id . '-SavedSearch-' . $search->Id;
-        my $type =
-            ( $SearchType eq 'Ticket' )
-            ? 'Saved Search' : $SearchType;    # loc
-        push @items, [ "saved-$oid", loc($type) . ": $desc" ];
-    }
+#nav {
+    float: left;
+    clear: both;
+    height: 4em;
+    width: 100%;
+    background: #999;
+    padding-top: 1em;
 }
 
-my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+#nav ul {
+    float: left;
+    clear: left;
+    color: #eee;
+    font-weight: bold;
+    
+    margin: 0;
+    padding: 0;
+     
+}
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
-    items => \@items,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-	$default_portlets->SetContent( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
-    }
-);
+#nav li ul {
+}
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
-    for @panes;
+/*
+%# We need the extra padding above for browsers where we display the arrows
+%# but those don't work in IE so we don't want as much spacing
+%# 
+%# IE wrongly matches the selector below even though there isn't an element
+%# above <html> in the doc tree
+*/
+* html #nav li ul {
+    margin-top: 0.25em;
+}
+
+#nav li {
+    display: inline;
+    margin-bottom: 1em;
+    padding: 0.2em 0 0.4em 0;
+}
 
 
-</%init>
+#nav ul div div.wrapper {
+    text-align: left;
+    padding: 0.2em 1em 0.4em 0;
+    margin-left:0;
+}
 
+
+#nav :link,
+#nav :visited
+{
+    color: #ececec;
+    text-decoration: none;
+}
+
+#nav :link.selected,
+#nav :visited.selected,
+#nav :link:hover,
+#nav :visited:hover
+{
+    color: #fc6; /*#ff6;*/
+}
+
+#nav :link.selected,
+#nav :visited.selected
+{
+    text-decoration: underline;
+}
+
+
+
+
+#header #page-menu {
+    width: 100%;
+    height: 3em;
+    margin-top: -3.5em;
+    text-align: left;
+    padding-right: 0em;
+    float: left;
+    clear: both;
+    background: #999;
+}
+
+#header ul li {
+    display: inline;
+}
+
+
+
+#actions-menu  div div div{
+    position: relative;
+    right: 0;
+    top: -2em;
+    float: right;
+    margin-right: 2em;
+}

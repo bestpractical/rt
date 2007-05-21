@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
+use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 15;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
@@ -23,10 +24,15 @@ sub get_rights {
     return @rights;
 };
 
-my $everyone = RT::Group->new( $RT::SystemUser );
-$everyone->LoadSystemInternalGroup('Everyone');
-ok(my $everyone_gid = $everyone->id, "loaded 'everyone' group");
+diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
+my ($everyone, $everyone_gid);
+{
+    $everyone = RT::Group->new( $RT::SystemUser );
+    $everyone->LoadSystemInternalGroup('Everyone');
+    ok($everyone_gid = $everyone->id, "loaded 'everyone' group");
+}
 
+diag "revoke all global rights from Everyone group" if $ENV{'TEST_VERBOSE'};
 my @has = get_rights( $m, $everyone_gid, 'RT::System-1' );
 if ( @has ) {
     $m->form_number(3);
@@ -34,8 +40,11 @@ if ( @has ) {
     $m->submit;
     
     is_deeply([get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'deleted all rights' );
+} else {
+    ok(1, 'the group has no global rights');
 }
 
+diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
 {
     $m->form_number(3);
     $m->select("GrantRight-$everyone_gid-RT::System-1", ['SuperUser']);
@@ -47,6 +56,7 @@ if ( @has ) {
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
+diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 {
     $m->form_number(3);
     $m->tick("RevokeRight-$everyone_gid-RT::System-1", 'SuperUser');
@@ -56,5 +66,22 @@ if ( @has ) {
     RT::Principal::InvalidateACLCache();
     ok(!$everyone->PrincipalObj->HasRight( Right => 'SuperUser', Object => $RT::System ), 'group has no right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'revoked SuperUser right' );
+}
+
+
+diag "return rights the group had in the beginning" if $ENV{'TEST_VERBOSE'};
+if ( @has ) {
+    $m->form_number(3);
+    $m->select("GrantRight-$everyone_gid-RT::System-1", \@has);
+    $m->submit;
+
+    $m->content_contains('Right Granted', 'got message');
+    is_deeply(
+        [ get_rights( $m, $everyone_gid, 'RT::System-1' ) ],
+        [ @has ],
+        'returned back all rights'
+    );
+} else {
+    ok(1, 'the group had no global rights, so nothing to return');
 }
 
