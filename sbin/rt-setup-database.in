@@ -184,14 +184,20 @@ sub insert_schema {
     my (@schema);
     print "Creating database schema.\n";
 
-    if ( -f $base_path . "/schema." . $RT::DatabaseType ) {
-        no warnings 'unopened';
+    my $schema_file = $base_path . "/schema." . $RT::DatabaseType;
+    if ( -f $schema_file ) {
+        open( SCHEMA, "<$schema_file"  ) or die "Can't open $schema_file: $!";
+	my @lines = <SCHEMA>;
 
-        open( SCHEMA, "<" . $base_path . "/schema." . $RT::DatabaseType );
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
+	my $local_schema_file = $RT::LocalEtcPath . "/schema." . $RT::DatabaseType;
+	if (-f $local_schema_file) {
+	    open( SCHEMA_LOCAL, "<$local_schema_file" )
+		or die "Can't open $local_schema_file: $!";
+	    push @lines, ';;', <SCHEMA_LOCAL>;
+	}
 
         my $statement = "";
-        foreach my $line (<SCHEMA>, ($_ = ';;'), <SCHEMA_LOCAL>) {
+        foreach my $line (@lines) {
             $line =~ s/\#.*//g;
             $line =~ s/--.*//g;
             $statement .= $line;
