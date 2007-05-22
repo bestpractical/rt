@@ -198,7 +198,7 @@ Text::Quoted 2.02
 Tree::Simple 1.04
 Regexp::Common
 Scalar::Util
-Module::Versions::Report
+Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
