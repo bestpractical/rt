@@ -177,7 +177,7 @@ Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
 Date::Format
-DBIx::SearchBuilder 1.40
+DBIx::SearchBuilder 1.48
 Text::Template
 File::Spec 0.8
 HTML::Entities 
