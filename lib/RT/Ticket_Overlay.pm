@@ -3001,7 +3001,20 @@ sub SetOwner {
     my $NewOwner = shift;
     my $Type     = shift || "Give";
 
+    $RT::Handle->BeginTransaction();
+
+    $self->_SetLastUpdated(); # lock the ticket
+    $self->Load( $self->id ); # in case $self changed while waiting for lock
+
     my $OldOwnerObj = $self->OwnerObj;
+
+    my $NewOwnerObj = RT::User->new( $self->CurrentUser );
+    $NewOwnerObj->Load( $NewOwner );
+    unless ( $NewOwnerObj->Id ) {
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("That user does not exist") );
+    }
+
 
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
@@ -3009,6 +3022,7 @@ sub SetOwner {
     if ( $OldOwnerObj->Id == $RT::Nobody->Id ) {
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('TakeTicket') ) {
+            $RT::Handle->Rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
@@ -3019,27 +3033,24 @@ sub SetOwner {
 
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('StealTicket') ) {
+            $RT::Handle->Rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            $RT::Handle->Rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
 
-    my $NewOwnerObj = RT::User->new( $self->CurrentUser );
-    $NewOwnerObj->Load( $NewOwner );
-    unless ( $NewOwnerObj->Id ) {
-        return ( 0, $self->loc("That user does not exist") );
-    }
-
-    # If we're not stealing and the ticket has an owner and it's not 
+    # If we're not stealing and the ticket has an owner and it's not
     # the current user
     if ( $Type ne 'Steal' and $Type ne 'Force'
          and $OldOwnerObj->Id != $RT::Nobody->Id
          and $OldOwnerObj->Id != $self->CurrentUser->Id )
     {
+        $RT::Handle->Rollback();
         return ( 0, $self->loc("You can only take tickets that are unowned") )
             if $NewOwnerObj->id == $self->CurrentUser->id;
         return (
@@ -3050,16 +3061,16 @@ sub SetOwner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) ) {
+        $RT::Handle->Rollback();
         return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
     # If the ticket has an owner and it's the new owner, we don't need
     # To do anything
     elsif ( $NewOwnerObj->Id == $OldOwnerObj->Id ) {
+        $RT::Handle->Rollback();
         return ( 0, $self->loc("That user already owns that ticket") );
     }
-
-    $RT::Handle->BeginTransaction();
 
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
@@ -3095,8 +3106,6 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    $RT::Handle->Commit();
-
     my $trans;
     ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
                                              Field     => 'Owner',
@@ -3107,9 +3116,14 @@ sub SetOwner {
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
                            $OldOwnerObj->Name, $NewOwnerObj->Name );
-
-        # TODO: make sure the trans committed properly
     }
+    else {
+        $RT::Handle->Rollback();
+        return ( 0, $msg );
+    }
+
+    $RT::Handle->Commit();
+
     return ( $val, $msg );
 }
 
