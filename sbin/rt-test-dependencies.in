@@ -187,7 +187,7 @@ Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
 GnuPG::Interface
-DBIx::SearchBuilder 1.40
+DBIx::SearchBuilder 1.48
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -209,7 +209,7 @@ Tree::Simple 1.04
 UNIVERSAL::require
 Regexp::Common
 Scalar::Util
-Module::Versions::Report
+Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
 XML::Simple
 Calendar::Simple
