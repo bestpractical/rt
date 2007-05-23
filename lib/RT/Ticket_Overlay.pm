@@ -2432,9 +2432,11 @@ sub _RecordNote {
 
     # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
     # as CanonicalizeEmailAddress expect only one address at a time
-    $args{'MIMEObj'}->head->add(
-        'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
-    ) if defined $args{'CcMessageTo'};
+    foreach my $field (qw(Cc Bcc)) {
+        $args{'MIMEObj'}->head->add(
+            "RT-Send-$field" => RT::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
+        ) if defined $args{ $field . 'MessageTo' };
+    }
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->add(
