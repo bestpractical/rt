@@ -120,7 +120,7 @@ if ( $ARGS{'Attach'} ) {    # attachment?
         $ARGS{'Attach'} => $attachment };
 }
 
-if ( $id[0] eq 'new' ) {
+if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 

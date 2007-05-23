@@ -90,7 +90,7 @@ if ($Create) {
     $title = loc("Create a new personal group");
 } 
 else {
-    if ( $id eq 'new' ) {
+    if ( defined ($id) && $id eq 'new' ) {
 
         my ( $id, $msg ) = $Group->CreatePersonalGroup(
                              Name        => "$Name",

@@ -72,7 +72,7 @@
     <td class="value"><input name="RealName" value="<%$UserObj->RealName%>" /></td>  </tr>
   <tr>
     <td class="label"><&|/l&>Nickname</&>:</td>
-    <td class="value"><input name="NickName" value="<%$UserObj->NickName%>" /></td>
+    <td class="value"><input name="NickName" value="<%$UserObj->NickName || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Language</&>:</td>
@@ -84,19 +84,19 @@
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Residence</&>:</td>
-    <td class="value"><input name="HomePhone" value="<%$UserObj->HomePhone%>" size="13" /></td>
+    <td class="value"><input name="HomePhone" value="<%$UserObj->HomePhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Work</&>:</td>
-    <td class="value"><input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size="13" /></td>
+    <td class="value"><input name="WorkPhone" value="<%$UserObj->WorkPhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Mobile</&>:</td>
-    <td class="value"><input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size="13" /></td>
+    <td class="value"><input name="MobilePhone" value="<%$UserObj->MobilePhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Pager</&>:</td>
-    <td class="value"><input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size="13" /></td>
+    <td class="value"><input name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" /></td>
   </tr>
 </table>
 </&>
@@ -129,31 +129,31 @@
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Organization</&>:</td>
-    <td class="value"><input name="Organization" value="<%$UserObj->Organization%>" /></td>
+    <td class="value"><input name="Organization" value="<%$UserObj->Organization || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address1</&>:</td>
-    <td class="value"><input name="Address1" value="<%$UserObj->Address1%>" /></td>
+    <td class="value"><input name="Address1" value="<%$UserObj->Address1 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address2</&>:</td>
-    <td class="value"><input name="Address2" value="<%$UserObj->Address2%>" /></td>
+    <td class="value"><input name="Address2" value="<%$UserObj->Address2 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>City</&>:</td>
-    <td><input name="City" value="<%$UserObj->City%>" size="14" /></td>
+    <td><input name="City" value="<%$UserObj->City || ''%>" size="14" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>State</&>:</td>
-    <td class="value"><input name="State" value="<%$UserObj->State%>" size="3" /></td>
+    <td class="value"><input name="State" value="<%$UserObj->State || ''%>" size="3" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Zip</&>:</td>
-    <td class="value"><input name="Zip" value="<%$UserObj->Zip%>" size="9" /></td>
+    <td class="value"><input name="Zip" value="<%$UserObj->Zip || ''%>" size="9" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Country</&>:</td>
-    <td class="value"><input name="Country" value="<%$UserObj->Country%>" /></td>
+    <td class="value"><input name="Country" value="<%$UserObj->Country || ''%>" /></td>
   </tr>
 </table>
 </&>
@@ -169,7 +169,7 @@
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
 <textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
-<%$UserObj->Signature%></textarea>
+<%$UserObj->Signature || ''%></textarea>
 </&>
 % }
 
