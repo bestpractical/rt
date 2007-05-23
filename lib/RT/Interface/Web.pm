@@ -617,24 +617,19 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    if ( not  $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'}) {
+    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
-                my $var   = ucfirst($1).'MessageTo';
-                my $value = $2;
-                {
-                    if ( $args{$var} ) {
-                        $message_args{$var} .= ", $value";
-                    } else {
-                        $message_args{$var} = $value;
-                    }
-                }
-            }
+            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
+            my $var   = ucfirst($1).'MessageTo';
+            my $value = $2;
+            if ( $message_args{ $var } ) {
+                $message_args{ $var } .= ", $value";
+            } else {
+                $message_args{ $var } = $value;
+            }
         }
     }
-
-
 
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
