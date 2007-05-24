@@ -276,7 +276,22 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
+# DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
+# need them, just pass 'new IO::Handle' and then close it after _safe_run_child.
+# we don't want to leak anything into FCGI/Apache/MP handles, this break things.
+# So code should look like:
+#        my $handles = GnuPG::Handles->new(
+#            stdin  => ($handle{'input'}  = new IO::Handle),
+#            stdout => ($handle{'output'} = new IO::Handle),
+#            stderr => ($handle{'error'}  = new IO::Handle),
+#            ...
+#        );
+
 sub _safe_run_child (&) {
+    local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+
+    return shift->() if $ENV{'MOD_PERL'};
+
     # We need to reopen stdout temporarily, because in FCGI
     # environment, stdout is tied to FCGI::Stream, and the child
     # of the run3 wouldn't be able to reopen STDOUT properly.
@@ -292,7 +307,6 @@ sub _safe_run_child (&) {
     $stderr->fdopen( 2, 'w' );
     local *STDERR = $stderr;
 
-    local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
     return shift->();
 }
 
@@ -1522,6 +1536,7 @@ sub GetKeyInfo {
 
     my %handle;
     my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
         stdout => ($handle{'output'} = new IO::Handle),
         stderr => ($handle{'error'}  = new IO::Handle),
         logger => ($handle{'logger'} = new IO::Handle),
@@ -1532,6 +1547,7 @@ sub GetKeyInfo {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
         my $pid = _safe_run_child { $gnupg->$method( handles => $handles, command_args => [ $email ]  ) };
+        close $handle{'input'};
         waitpid $pid, 0;
     };
 
