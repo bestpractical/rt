@@ -9,6 +9,7 @@ use File::Temp;
 my $config;
 my $port;
 my $existing_server;
+my $mailsent;
 
 BEGIN {
     # TODO: allocate a port dynamically
@@ -34,6 +35,16 @@ Set( \$LogToScreen , "warning");
     use RT;
     RT::LoadConfig;
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+
+    # make it another function
+    $mailsent = 0;
+    my $mailfunc = sub { 
+	my $Entity = shift;
+	$mailsent++;
+	return 1;
+    };
+    RT::Config->Set( 'MailCommand' => $mailfunc);
+
 
 };
 
@@ -136,6 +147,12 @@ sub close_mailgate_ok {
     my $mail  = shift;
     close $mail;
     is ($? >> 8, 0, "The mail gateway exited normally. yay");
+}
+
+sub mailsent_ok {
+    my $class = shift;
+    my $expected  = shift;
+    is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
 }
 
 1;
