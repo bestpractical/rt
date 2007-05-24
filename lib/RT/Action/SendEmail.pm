@@ -768,20 +768,12 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 
 sub SetSubjectToken {
     my $self = shift;
-    my $sub  = $self->TemplateObj->MIMEObj->head->get('Subject');
-    my $id   = $self->TicketObj->id;
 
-    my $token_re = RT->Config->Get('EmailSubjectTagRegex');
-    unless ( $token_re ) {
-        my $rtname = RT->Config->Get('rtname');
-        $token_re = qr/\Q$rtname\E/o;
-    }
-    return if $sub =~ /\[$token_re\s+#$id\]/;
-
-    $sub =~ s/(\r\n|\n|\s)/ /gi;
-    chomp $sub;
     $self->TemplateObj->MIMEObj->head->replace(
-        Subject => "[". RT->Config->Get('rtname') ." #$id] $sub",
+        Subject => RT::Interface::Email::AddSubjectTag(
+            $self->TemplateObj->MIMEObj->head->get('Subject'),
+            $self->TicketObj->id,
+        ),
     );
 }
 

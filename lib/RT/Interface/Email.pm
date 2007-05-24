@@ -844,6 +844,22 @@ sub ParseTicketId {
     }
 }
 
+sub AddSubjectTag {
+    my $subject = shift;
+    my $id      = shift;
+
+    my $tag_re = RT->Config->Get('EmailSubjectTagRegex');
+    unless ( $tag_re ) {
+        my $rtname = RT->Config->Get('rtname');
+        $tag_re = qr/\Q$rtname\E/o;
+    }
+    return $subject if $subject =~ /\[$tag_re\s+#$id\]/;
+
+    $subject =~ s/(\r\n|\n|\s)/ /gi;
+    chomp $subject;
+    return "[". RT->Config->Get('rtname') ." #$id] $subject";
+}
+
 
 =head2 Gateway ARGSREF
 
