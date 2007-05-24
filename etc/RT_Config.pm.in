@@ -282,6 +282,13 @@ Set($NotifyActor, 0);
 
 Set($RecordOutgoingEmail, 1);
 
+# By default, RT forwards a message using queue's address and adds RT's tag into
+# subject of the outgoing message, so recipients' replies go into RT as correspondents.
+# To change this behavior, set $ForwardFromUser to 0 and RT will use address of the
+# current user and leave subject without RT's tag.
+
+Set($ForwardFromUser, 0);
+
 # }}}
 
 # {{{ GnuPG

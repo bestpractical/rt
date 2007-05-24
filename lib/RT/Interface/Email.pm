@@ -529,11 +529,24 @@ sub ForwardTransaction {
         To => $args{'To'},
         Cc => $args{'Cc'},
         Bcc => $args{'Bcc'},
-        Subject => 'Fwd: '. ($txn->Subject || $txn->Object->Subject ),
         Type => 'message/rfc822',
         Encoding => '8bit',
         Data => $entity->as_string,
     );
+
+    my $from;
+    my $subject = $txn->Subject || $txn->Object->Subject;
+    if ( RT->Config->Get('ForwardFromUser') ) {
+        $from = $txn->CurrentUser->UserObj->EmailAddress;
+    } else {
+        # XXX: what if want to forward txn of other object than ticket?
+        $subject = AddSubjectTag( $subject, $txn->ObjectId );
+        $from = $txn->Object->QueueObj->CorrespondAddress
+            || RT->Config->Get('CorrespondAddress');
+    }
+    $mail->head->set( Subject => "Fwd: $subject" );
+    $mail->head->set( From    => $from );
+
     my $status = SendEmail( Entity => $mail, Transaction => $txn );
     return (0, $txn->loc("Couldn't send email")) unless $status;
     return (1, $txn->loc("Send email successfully"));
