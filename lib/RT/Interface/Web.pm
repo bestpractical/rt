@@ -69,6 +69,7 @@ package RT::Interface::Web;
 use strict;
 use warnings;
 
+use URI qw();
 
 use RT::SavedSearches;
 
