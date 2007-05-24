@@ -575,7 +575,10 @@ sub ForwardTransaction {
     $mail->head->set( Subject => "Fwd: $subject" );
     $mail->head->set( From    => $from );
 
-    my $status = SendEmail( Entity => $mail, Transaction => $txn );
+    my $status = RT->Config->Get('ForwardFromUser')
+        # never sign if we forward from User
+        ? SendEmail( Entity => $mail, Transaction => $txn, Sign => 0 )
+        : SendEmail( Entity => $mail, Transaction => $txn );
     return (0, $txn->loc("Couldn't send email")) unless $status;
     return (1, $txn->loc("Send email successfully"));
 }
