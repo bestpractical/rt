@@ -575,13 +575,13 @@ sub SignEncrypt {
         Encrypt => 0,
         @_
     );
-    return 1 unless $args{'Sign'} || $args{'Ecrypt'};
+    return 1 unless $args{'Sign'} || $args{'Encrypt'};
 
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
     $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
-    $RT::Logger->debug("$msgid Encrypting message") if $args{'Ecrypt'};
+    $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
     require RT::Crypt::GnuPG;
     my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
