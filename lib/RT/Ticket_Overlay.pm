@@ -502,6 +502,8 @@ sub Create {
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
+   
+    my $DeferOwner;  
     if (
             ( defined($Owner) )
         and ( $Owner->Id )
@@ -515,20 +517,9 @@ sub Create {
       )
     {
 
-        $RT::Logger->warning( "User "
-              . $Owner->Name . "("
-              . $Owner->id
-              . ") was proposed "
-              . "as a ticket owner but has no rights to own "
-              . "tickets in "
-              . $QueueObj->Name );
-
-        push @non_fatal_errors,
-          $self->loc( "Owner '[_1]' does not have rights to own this ticket.",
-            $Owner->Name
-          );
-
+        $DeferOwner = $Owner;
         $Owner = undef;
+
     }
 
     #If we haven't been handed a valid owner, make it nobody.
@@ -619,14 +610,6 @@ sub Create {
         );
     }
 
-# Set the owner in the Groups table
-# We denormalize it into the Ticket table too because doing otherwise would
-# kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-
-    $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1
-    );
 
     # {{{ Deal with setting up watchers
 
@@ -728,6 +711,28 @@ sub Create {
     }
 
     # }}}
+    # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
+    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
+    if (  defined($DeferOwner) ) { 
+            if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
+    
+        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
+        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
+
+    } else {
+        $Owner = $DeferOwner;
+        $self->__Set(Field => 'Owner', Value => $Owner->id);
+
+    }
+    }
+    # Set the owner in the Groups table
+    # We denormalize it into the Ticket table too because doing otherwise would
+    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+
+    $self->OwnerGroup->_AddMember(
+        PrincipalId       => $Owner->PrincipalId,
+        InsideTransaction => 1
+    );
 
     if ( $args{'_RecordTransaction'} ) {
 
