@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
-use Test::More qw/no_plan/;
+use Test::More; 
+plan tests => 7;
 use RT;
 use RT::Test;
 

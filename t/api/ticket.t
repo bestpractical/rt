@@ -1,7 +1,8 @@
 
 use strict;
 use warnings;
-use Test::More qw/no_plan/;
+use Test::More; 
+plan tests => 85;
 use Data::Dumper;
 use RT;
 use RT::Test;

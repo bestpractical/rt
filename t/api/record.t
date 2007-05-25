@@ -1,7 +1,8 @@
 
 use strict;
 use warnings;
-use Test::More qw/no_plan/;
+use Test::More; 
+plan tests => 22;
 use RT;
 use RT::Test;
 

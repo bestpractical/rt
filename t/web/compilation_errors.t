@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More qw/no_plan/;
+use Test::More;
+plan tests => 387;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
