@@ -452,9 +452,9 @@ sub clear_acls_and_groups {
     }
 
     $acl->RedoSearch();
-    ok( $acl->Count() == 0,
+    is( $acl->Count() , 0,
        "All principals have no rights after clearing ACLs" );
     $members->RedoSearch();
-    ok( $members->Count() == 0,
+    is( $members->Count() , 0,
        "All groups have no members after clearing groups" );
 }

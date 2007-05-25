@@ -137,7 +137,7 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
-    ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
+    is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
 }
 
 diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket" if $ENV{'TEST_VERBOSE'};
@@ -227,7 +227,7 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
-    ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+    isnt ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
     my $u = RT::User->new($RT::SystemUser);
     $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
@@ -259,7 +259,7 @@ EOF
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
-    ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+    is ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
     my $u = RT::User->new( $RT::SystemUser );
     $u->Load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
@@ -452,7 +452,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
-    ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
+    is ($tick->Subject , 'binary attachment test', "Created the ticket - ".$tick->Id);
 
     my $file = `cat $LOGO_FILE`;
     ok ($file, "Read in the logo image");
@@ -508,7 +508,7 @@ EOF
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ". $tick->Id);
     is ($tick->Id, $id, "correct ticket");
-    ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
+    is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
@@ -544,7 +544,7 @@ EOF
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ". $tick->Id);
     is ($tick->Id, $id, "correct ticket");
-    ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
+    is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket");
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
