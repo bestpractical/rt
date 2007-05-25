@@ -71,7 +71,7 @@ my @Format = qq{
    '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
-   '__Requestors__',
+   Requestors,
    OwnerName};
 </%INIT>
 <%ARGS>
