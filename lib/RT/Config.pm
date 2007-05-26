@@ -289,17 +289,8 @@ Takes name of the option as argument and returns its current value.
 
 =cut
 
-sub Get
-{
-    my $self = shift;
-    my $name = shift;
-    my $user = shift;
-    unless ( exists $OPTIONS{ $name } ) {
-        # if don't know anything about option
-        # return empty list, but undef in scalar
-        # context
-        return wantarray? (): undef;
-    }
+sub Get {
+    my ($self, $name, $user) = @_;
 
     my $res;
     if ( $user && $META{ $name }->{'Overridable'} ) {
@@ -308,34 +299,25 @@ sub Get
         $res = $prefs->{ $name } if $prefs;
     }
     $res = $OPTIONS{ $name } unless defined $res;
-    return $res unless wantarray;
-
-    my $type = $META{ $name }->{'Type'} || 'SCALAR';
-    if( $type eq 'ARRAY' ) {
-        return @{ $res };
-    } elsif( $type eq 'HASH' ) {
-        return %{ $res };
-    }
-    return $res;
+    return $self->_ReturnValue($res, $META{ $name }->{'Type'} || 'SCALAR');
 }
 
 =head2 Set
 
 Takes two arguments: name of the option and new value.
-Set option's value to new value.
+Set option's value to new value. Returns old value.
 
 =cut
 
-sub Set
-{
-    my $self = shift;
-    my $name = shift;
-
-    my $type = $META{$name}->{'Type'} || 'SCALAR';
-    if( $type eq 'ARRAY' ) {
+sub Set {
+    my ($self, $name) = (shift, shift);
+    
+    my $old = $OPTIONS{ $name };
+    my $type = $META{ $name }->{'Type'} || 'SCALAR';
+    if ( $type eq 'ARRAY' ) {
         $OPTIONS{$name} = [ @_ ];
         { no strict 'refs';  @{"RT::$name"} = (@_); }
-    } elsif( $type eq 'HASH' ) {
+    } elsif ( $type eq 'HASH' ) {
         $OPTIONS{$name} = { @_ };
         { no strict 'refs';  %{"RT::$name"} = (@_); }
     } else {
@@ -343,9 +325,19 @@ sub Set
         { no strict 'refs';  ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
+    return $self->_ReturnValue($old, $type);
+}
 
+sub _ReturnValue {
+    my ($self, $res, $type) = @_;
+    return $res unless wantarray;
 
-    return 1;
+    if( $type eq 'ARRAY' ) {
+        return @{ $res };
+    } elsif( $type eq 'HASH' ) {
+        return %{ $res };
+    }
+    return $res;
 }
 
 sub SetFromConfig
