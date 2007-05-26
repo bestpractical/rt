@@ -553,12 +553,20 @@ sub ForwardTransaction {
         $entity->add_part( $a->ContentAsMIME );
     }
 
+    my $description = 'This is forward of transaction #'
+        . $txn->id ." of a ticket #". $txn->ObjectId;
+
     my $mail = MIME::Entity->build(
         To => $args{'To'},
         Cc => $args{'Cc'},
         Bcc => $args{'Bcc'},
+        Type => 'text/plain',
+        Data => $description,
+    );
+    $mail->attach(
         Type => 'message/rfc822',
-        Encoding => '8bit',
+        Disposition => 'attachment',
+        Description => 'forwarded message',
         Data => $entity->as_string,
     );
 
