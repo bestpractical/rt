@@ -58,8 +58,8 @@ ok($g->HasMember($u->PrincipalObj),"G has member u");
 my $groups = RT::Groups->new($RT::SystemUser);
 $groups->LimitToUserDefinedGroups();
 $groups->WithMember(PrincipalId => $u->id);
-ok ($groups->Count == 1,"found the 1 group - " . $groups->Count);
-ok ($groups->First->Id == $g->Id, "it's the right one");
+is ($groups->Count , 1,"found the 1 group - " . $groups->Count);
+is ($groups->First->Id , $g->Id, "it's the right one");
 
 
     undef $main::_STDOUT_;

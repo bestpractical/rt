@@ -16,7 +16,7 @@ my ($id, $msg) =  $user->AddAttribute(Name => 'SavedSearch', Content => { Query 
 ok ($id, $msg);
 my $attr = RT::Attribute->new($RT::SystemUser);
 $attr->Load($id);
-ok($attr->Name eq 'SavedSearch');
+is($attr->Name , 'SavedSearch');
 $attr->SetSubValues( Format => 'baz');
 
 my $format = $attr->SubValue('Format');

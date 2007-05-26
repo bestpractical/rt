@@ -15,7 +15,7 @@ use RT::Test;
 use_ok ('RT::Queue');
 ok(my $testqueue = RT::Queue->new($RT::SystemUser));
 ok($testqueue->Create( Name => 'ticket tests'));
-ok($testqueue->Id != 0);
+isnt($testqueue->Id , 0);
 use_ok('RT::CustomField');
 ok(my $testcf = RT::CustomField->new($RT::SystemUser));
 my ($ret, $cmsg) = $testcf->Create( Name => 'selectmulti',
@@ -35,7 +35,7 @@ ok($testcf->AddValue ( Name => 'Value3',
                         SortOrder => '3',
                         Description => 'Yet Another testing value'));
                        
-ok($testcf->Values->Count == 3);
+is($testcf->Values->Count , 3);
 
 use_ok('RT::Ticket');
 
@@ -47,25 +47,25 @@ ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
                Subject => 'Testing',
                Owner => $u->Id
               ));
-ok($id != 0);
-ok ($t->OwnerObj->Id == $u->Id, "Root is the ticket owner");
+isnt($id , 0);
+is ($t->OwnerObj->Id , $u->Id, "Root is the ticket owner");
 ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->Id,
                            Value => 'Value1'));
-ok($cfv != 0, "Custom field creation didn't return an error: $cfm");
-ok($t->CustomFieldValues($testcf->Id)->Count == 1);
+isnt($cfv , 0, "Custom field creation didn't return an error: $cfm");
+is($t->CustomFieldValues($testcf->Id)->Count , 1);
 ok($t->CustomFieldValues($testcf->Id)->First &&
     $t->CustomFieldValues($testcf->Id)->First->Content eq 'Value1');;
 
 ok(my ($cfdv, $cfdm) = $t->DeleteCustomFieldValue(Field => $testcf->Id,
                         Value => 'Value1'));
-ok ($cfdv != 0, "Deleted a custom field value: $cfdm");
-ok($t->CustomFieldValues($testcf->Id)->Count == 0);
+isnt ($cfdv , 0, "Deleted a custom field value: $cfdm");
+is($t->CustomFieldValues($testcf->Id)->Count , 0);
 
 ok(my $t2 = RT::Ticket->new($RT::SystemUser));
 ok($t2->Load($id));
 is($t2->Subject, 'Testing');
 is($t2->QueueObj->Id, $testqueue->id);
-ok($t2->OwnerObj->Id == $u->Id);
+is($t2->OwnerObj->Id, $u->Id);
 
 my $t3 = RT::Ticket->new($RT::SystemUser);
 my ($id3, $msg3) = $t3->Create( Queue => $testqueue->Id,
@@ -73,16 +73,16 @@ my ($id3, $msg3) = $t3->Create( Queue => $testqueue->Id,
                                 Owner => $u->Id);
 my ($cfv1, $cfm1) = $t->AddCustomFieldValue(Field => $testcf->Id,
  Value => 'Value1');
-ok($cfv1 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
+isnt($cfv1 , 0, "Adding a custom field to ticket 1 is successful: $cfm");
 my ($cfv2, $cfm2) = $t3->AddCustomFieldValue(Field => $testcf->Id,
  Value => 'Value2');
-ok($cfv2 != 0, "Adding a custom field to ticket 2 is successful: $cfm");
+isnt($cfv2 , 0, "Adding a custom field to ticket 2 is successful: $cfm");
 my ($cfv3, $cfm3) = $t->AddCustomFieldValue(Field => $testcf->Id,
  Value => 'Value3');
-ok($cfv3 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
-ok($t->CustomFieldValues($testcf->Id)->Count == 2,
+isnt($cfv3 , 0, "Adding a custom field to ticket 1 is successful: $cfm");
+is($t->CustomFieldValues($testcf->Id)->Count , 2,
    "This ticket has 2 custom field values");
-ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
+is($t3->CustomFieldValues($testcf->Id)->Count , 1,
    "This ticket has 1 custom field value");
 
 
@@ -111,8 +111,8 @@ my $t = RT::Ticket->new($RT::SystemUser);
 ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
 
 ok ( my $id = $t->Id, "Got ticket id");
-ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
-ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
+like ($t->RefersTo->First->Target , qr/fsck.com/, "Got refers to");
+like ($t->ReferredToBy->First->Base , qr/cpan.org/, "Got referredtoby");
 is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 
@@ -249,8 +249,8 @@ $txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
 $txns->Limit(FIELD => 'Type', OPERATOR => '!=',  VALUE => 'EmailRecord');
 
 my $steal  = $txns->First;
-ok($steal->OldValue == $root->Id , "Stolen from root");
-ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
+is($steal->OldValue , $root->Id , "Stolen from root");
+is($steal->NewValue , $RT::SystemUser->Id , "Stolen by the systemuser");
 
 
     undef $main::_STDOUT_;

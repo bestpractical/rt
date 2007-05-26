@@ -43,7 +43,7 @@ ok($grantid,$grantmsg);
 
 $agent->reload;
 
-ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
+like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/Admin/",
 		       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
@@ -51,7 +51,7 @@ ok ($revokeid,$revokemsg);
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 ok ($grantid,$grantmsg);
 $agent->reload();
-ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
+like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 		       text => 'Preferences'), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
@@ -66,16 +66,16 @@ ok($agent->{'content'} !~ /Saved searches/i, "No saved searches box");
 ($grantid,$grantmsg) = $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
 ok($grantid,$grantmsg);
 $agent->reload();
-ok($agent->{'content'} =~ /Load saved search/i, "Search loading box exists");
+like($agent->{'content'} , qr/Load saved search/i, "Search loading box exists");
 ok($agent->{'content'} !~ /input\s+type=.submit.\s+name=.Save./i, 
    "Still no saved searches box");
 
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 ok ($grantid,$grantmsg);
 $agent->reload();
-ok($agent->{'content'} =~ /Load saved search/i, 
+like($agent->{'content'} , qr/Load saved search/i, 
    "Search loading box still exists");
-ok($agent->{'content'} =~ /input\s+type=.submit.\s+name=.Save./i, 
+like($agent->{'content'} , qr/input\s+type=.submit.\s+name=.Save./i, 
    "Saved searches box exists");
 
 # Create a group, and a queue, so we can test limited user visibility
@@ -123,13 +123,13 @@ sub login {
     ok( $agent->{form}->find_input('user') );
 
     ok( $agent->{form}->find_input('pass') );
-    ok( $agent->{'content'} =~ /username:/i );
+    like( $agent->{'content'} , qr/username:/i );
     $agent->field( 'user' => $user_obj->Name );
     $agent->field( 'pass' => 'customer' );
 
     # the field isn't named, so we have to click link 0
     $agent->click(0);
     is( $agent->{'status'}, 200, "Fetched the page ok" );
-    ok( $agent->{'content'} =~ /Logout/i, "Found a logout link" );
+    like( $agent->{'content'} , qr/Logout/i, "Found a logout link" );
 }
 1;

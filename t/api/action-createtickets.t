@@ -47,7 +47,7 @@ Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?
 ENDOFCONTENT
 ';
 
-ok ($approvals =~ /Content/, "Read in the approvals template");
+like ($approvals , qr/Content/, "Read in the approvals template");
 
 my $apptemp = RT::Template->new($RT::SystemUser);
 $apptemp->Create( Content => $approvals, Name => "Approvals", Queue => "0");

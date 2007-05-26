@@ -55,8 +55,8 @@ ok ($addid, $addmsg);
 my $link = RT::Link->new($RT::SystemUser);
 (my $rv, $msg) = $link->Load($addid);
 ok ($rv, $msg);
-ok ($link->LocalTarget == $t3->id, "Link LocalTarget is correct");
-ok ($link->LocalBase   == $t1->id, "Link LocalBase   is correct");
+is ($link->LocalTarget , $t3->id, "Link LocalTarget is correct");
+is ($link->LocalBase   , $t1->id, "Link LocalBase   is correct");
 
 ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
 ok (!$t1->HasUnresolvedDependencies( Type => 'blah' ), "Ticket ".$t1->Id." has no unresolved blahs");

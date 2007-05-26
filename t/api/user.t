@@ -82,10 +82,10 @@ ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 ok($user->Privileged, "User 'root' is privileged");
 ok(my ($v,$m) = $user->SetPrivileged(0));
-ok ($v ==1, "Set unprivileged suceeded ($m)");
+is ($v ,1, "Set unprivileged suceeded ($m)");
 ok(!$user->Privileged, "User 'root' is no longer privileged");
 ok(my ($v2,$m2) = $user->SetPrivileged(1));
-ok ($v2 ==1, "Set privileged suceeded ($m2");
+is ($v2 ,1, "Set privileged suceeded ($m2");
 ok($user->Privileged, "User 'root' is privileged again");
 
 
@@ -99,7 +99,7 @@ ok($user->Privileged, "User 'root' is privileged again");
 
 ok(my $u = RT::User->new($RT::SystemUser));
 ok($u->Load(1), "Loaded the first user");
-ok($u->PrincipalObj->ObjectId == 1, "user 1 is the first principal");
+is($u->PrincipalObj->ObjectId , 1, "user 1 is the first principal");
 is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 

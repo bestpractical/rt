@@ -24,7 +24,7 @@ ok(require RT::Users);
 
 ok(my $users = RT::Users->new($RT::SystemUser));
 $users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser');
-ok($users->Count == 1, "There is one privileged superuser - Found ". $users->Count );
+is($users->Count , 1, "There is one privileged superuser - Found ". $users->Count );
 # TODO: this wants more testing
 
 my $RTxUser = RT::User->new($RT::SystemUser);

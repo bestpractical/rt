@@ -42,13 +42,13 @@ is ($agent->{'status'}, 200, "Loaded a page");
 ok($agent->{form}->find_input('user'));
 
 ok($agent->{form}->find_input('pass'));
-ok ($agent->{'content'} =~ /username:/i);
+like ($agent->{'content'} , qr/username:/i);
 $agent->field( 'user' => 'root' );
 $agent->field( 'pass' => 'password' );
 # the field isn't named, so we have to click link 0
 $agent->click(0);
 is($agent->{'status'}, 200, "Fetched the page ok");
-ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
+like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 # }}}
 
