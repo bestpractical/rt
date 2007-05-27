@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More qw(no_plan);
+use Test::More;
 
 BEGIN {
     use RT;
@@ -12,7 +12,9 @@ BEGIN {
 }
 
 my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
-unless ( keys %clicky ) {
+if ( keys %clicky ) {
+    plan 'no_plan';
+} else {
     plan skip_all => 'No active Make Clicky actions';
 }
 
