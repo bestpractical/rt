@@ -1236,7 +1236,7 @@ my %simple_keyword = (
 # keywords we parse
 my %parse_keyword = map { $_ => 1 } qw(
     USERID_HINT
-    SIG_CREATED GOODSIG
+    SIG_CREATED GOODSIG BADSIG ERRSIG
     END_ENCRYPTION
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
