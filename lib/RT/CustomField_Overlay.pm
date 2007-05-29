@@ -202,7 +202,7 @@ sub Create {
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
-    my $rv = $self->SUPER::Create(
+    (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},
         MaxValues   => $args{'MaxValues'},
@@ -217,7 +217,7 @@ sub Create {
         $self->SetValuesClass( $args{'ValuesClass'} );
     }
 
-    return $rv unless exists $args{'Queue'};
+    return ($rv, $msg) unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
     my $OCF = RT::ObjectCustomField->new( $self->CurrentUser );
@@ -226,7 +226,7 @@ sub Create {
         ObjectId => $args{'Queue'},
     );
 
-    return $rv;
+    return ($rv, $msg);
 }
 
 =head2 Load ID/NAME
