@@ -3,27 +3,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-12-20 15:50+0100\n"
+"PO-Revision-Date: 2006-01-23 15:50+0100\n"
 "Last-Translator: Torsten Brumm <tob@brummix.de>\n"
-"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->Description)
-msgid " %1 deleted."
-msgstr ""
-
-#: html/Widgets/SavedSearch:47
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
-msgid " %1 renamed to %2."
-msgstr ""
-
-#: html/Widgets/SavedSearch:60
-#. ($args->{Description})
-msgid " %1 saved."
-msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
@@ -1840,12 +1826,12 @@ msgid "Error"
 msgstr "Fehler"
 
 # Queue->AddWatcher ist ein Code-Teil, nicht übersetzen
-#: lib/RT/Queue_Overlay.pm:672
+#: lib/RT/Queue_Overlay.pm:673
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Fehler in den Parametern zu Queue->AddWatcher"
 
 # Queue->DeleteWatcher ist ein Code-Teil, nicht übersetzen
-#: lib/RT/Queue_Overlay.pm:833
+#: lib/RT/Queue_Overlay.pm:834
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr "Fehler in den Parametern zu Queue->DeleteWatcher"
 

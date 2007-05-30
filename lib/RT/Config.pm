@@ -381,9 +381,9 @@ sub Get {
 Set option's value to new value. Takes name of the option and new value.
 Returns old value.
 
-The new value should scalar, array or hash depending on type of the option.
+The new value should be scalar, array or hash depending on type of the option.
 If the option is not defined in meta or the default RT config then it is of
-sclar type.
+scalar type.
 
 =cut
 
