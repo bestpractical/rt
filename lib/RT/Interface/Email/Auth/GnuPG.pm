@@ -54,7 +54,7 @@ use warnings;
 
 To use the gnupg-secured mail gateway, you need to do the following:
 
-Set up a gnupgp key directory with a pubring containing only the keys
+Set up a GnuPG key directory with a pubring containing only the keys
 you care about and specify the following in your SiteConfig.pm
 
     Set(%GnuPGOptions, homedir => '/opt/rt3/var/data/GnuPG');
@@ -62,17 +62,13 @@ you care about and specify the following in your SiteConfig.pm
 
 =cut
 
+sub ApplyBeforeDecode { return 1 }
+
 use RT::Crypt::GnuPG;
 
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
-        RawMessageRef => undef,
-        CurrentUser   => undef,
-        AuthLevel     => undef,
-        Ticket        => undef,
-        Queue         => undef,
-        Action        => undef,
         @_
     );
 
@@ -83,10 +79,11 @@ sub GetCurrentUser {
     my $msg = $args{'Message'}->dup;
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
-        $args{'Message'}
-            ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
+        $args{'Message'}->head->add(
+            'X-RT-Incoming-Encryption' => 'Not encrypted'
+        );
 
-        return @args{qw(CurrentUser AuthLevel)};
+        return 1;
     }
 
     # FIXME: Check if the message is encrypted to the address of
@@ -95,7 +92,8 @@ sub GetCurrentUser {
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return $args{'CurrentUser'}, -2 if $reject;
+        return (-2, 'rejected because of problems during decrypting and verifying')
+            if $reject;
     }
 
     # attach the original encrypted message
@@ -119,7 +117,8 @@ sub GetCurrentUser {
             }
             if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
                 $args{'Message'}->head->add(
-                    'X-RT-Incoming-Signature' => $_->{UserString} );
+                    'X-RT-Incoming-Signature' => $_->{UserString}
+                );
             }
         }
 
@@ -128,7 +127,7 @@ sub GetCurrentUser {
             : 'Not encrypted' );
     }
 
-    return @args{qw(CurrentUser AuthLevel)};
+    return 1;
 }
 
 sub HandleErrors {

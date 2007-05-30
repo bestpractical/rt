@@ -949,6 +949,33 @@ Returns:
 
 =cut
 
+sub _LoadPlugins {
+    my @mail_plugins = @_;
+
+    my @res;
+    foreach (@mail_plugins) {
+        if ( ref($_) eq "CODE" ) {
+            push @res, $_;
+        } elsif ( !ref $_ ) {
+            my $Class = $_;
+            $Class = "RT::Interface::Email::" . $Class
+                unless $Class =~ /^RT::Interface::Email::/;
+            $Class->require or
+                do { $RT::Logger->error("Couldn't load $Class: $@"); next };
+
+            no strict 'refs';
+            unless ( defined *{ $Class . "::GetCurrentUser" }{CODE} ) {
+                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
+                next;
+            }
+            push @res, $Class;
+        } else {
+            $RT::Logger->crit( "$_ - is not class name or code reference");
+        }
+    }
+    return @res;
+}
+
 sub Gateway {
     my $argsref = shift;
     my %args    = (
@@ -976,9 +1003,9 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'} );
-    my $Message = $parser->Entity();
+    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'}, Decode => 0 );
 
+    my $Message = $parser->Entity();
     unless ($Message) {
         MailError(
             To          => RT->Config->Get('OwnerEmail'),
@@ -992,8 +1019,45 @@ sub Gateway {
         );
     }
 
-    my $head = $Message->head;
+    my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
+    push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
+    @mail_plugins = _LoadPlugins( @mail_plugins );
 
+    my %skip_plugin;
+    foreach my $class( grep !ref, @mail_plugins ) {
+        # check if we should apply filter before decoding
+        my $check_cb = do {
+            no strict 'refs';
+            *{ $class . "::ApplyBeforeDecode" }{CODE};
+        };
+        next unless defined $check_cb;
+        next unless $check_cb->(
+            Message       => $Message,
+            RawMessageRef => \$args{'message'},
+        );
+
+        $skip_plugin{ $class }++;
+
+        my $Code = do {
+            no strict 'refs';
+            *{ $class . "::GetCurrentUser" }{CODE};
+        };
+        my ($status, $msg) = $Code->(
+            Message       => $Message,
+            RawMessageRef => \$args{'message'},
+        );
+        next if $status > 0;
+
+        if ( $status == -2 ) {
+            return (1, $msg, undef);
+        } elsif ( $status == -1 ) {
+            return (0, $msg, undef);
+        }
+    }
+    @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+    $parser->_PostProcessNewEntity;
+
+    my $head = $Message->head;
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
 
     my $MessageId = $head->get('Message-ID')
@@ -1046,9 +1110,6 @@ sub Gateway {
     # Initalize AuthStat so comparisons work correctly
     my $AuthStat = -9999999;
 
-    my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
-    push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
-
     my ( $CurrentUser, $error );
 
     # if plugin returns AuthStat -2 we skip action
@@ -1057,23 +1118,13 @@ sub Gateway {
 
     # Since this needs loading, no matter what
     foreach (@mail_plugins) {
-        my ($Code, $Class, $NewAuthStat);
+        my ($Code, $NewAuthStat);
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         } else {
-            $Class = $_;
-            $Class = "RT::Interface::Email::" . $Class
-                unless $Class =~ /^RT::Interface::Email::/;
-            $Class->require or
-                do { $RT::Logger->error("Couldn't load $Class: $@"); next };
-
             no strict 'refs';
-            unless ( defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
-                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
-                next;
-            }
+            $Code = *{ $_ . "::GetCurrentUser" }{CODE};
         }
-
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
