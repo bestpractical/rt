@@ -80,6 +80,7 @@ else {
 
 my %user_uniq_hash;
 
+$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
 
 foreach my $object (@objects) {
 	my $Users = RT::Users->new($session{CurrentUser});
