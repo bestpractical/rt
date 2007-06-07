@@ -568,6 +568,15 @@ sub Gateway {
     #Pull apart the subject line
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
+    
+    # {{{ Lets check for mail loops of various sorts.
+    my ($message_is_not_machine_generated, $result);
+     ( $message_is_not_machine_generated, $ErrorsTo, $result ) = _HandleMachineGeneratedMail(
+        Message  => $Message,
+        ErrorsTo => $ErrorsTo,
+        Subject  => $Subject,
+        MessageId => $MessageId
+    );
 
     $args{'ticket'} ||= ParseTicketId($Subject);
 
@@ -679,16 +688,8 @@ sub Gateway {
         );
     }
 
-    # {{{ Lets check for mail loops of various sorts.
-    my ($continue, $result);
-     ( $continue, $ErrorsTo, $result ) = _HandleMachineGeneratedMail(
-        Message  => $Message,
-        ErrorsTo => $ErrorsTo,
-        Subject  => $Subject,
-        MessageId => $MessageId
-    );
 
-    unless ($continue) {
+    unless ($message_is_not_machine_generated) {
         return ( 0, $result, undef );
     }
     
@@ -856,6 +857,7 @@ EOT
     );
 
     # Also notify the requestor that his request has been dropped.
+    if ($args{'Requestor'} ne $RT::OwnerEmail) {
     MailError(
         To          => $args{'Requestor'},
         Subject     => "Could not load a valid user",
@@ -867,6 +869,7 @@ EOT
         MIMEObj  => $args{'Message'},
         LogLevel => 'error'
     );
+    }
 }
 
 =head2 _HandleMachineGeneratedMail
