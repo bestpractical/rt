@@ -173,6 +173,8 @@ EOF
     # If the user does that, do what they mean.
     $RT::WebPath = '' if ($RT::WebPath eq '/');
 
+    $ENV{'TZ'} = $RT::Timezone if ($RT::Timezone);
+
     RT::I18N->Init;
 }
 
