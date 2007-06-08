@@ -173,7 +173,7 @@ sub Load {
 
 =head2 LoadGlobalTemplate NAME
 
-Load the global tempalte with the name NAME
+Load the global template with the name NAME
 
 =cut
 
@@ -362,12 +362,12 @@ sub _ParseContent {
     );
 
     no warnings 'redefine';
-    $T::Ticket      = $args{'TicketObj'};
-    $T::Transaction = $args{'TransactionObj'};
-    $T::Argument    = $args{'Argument'};
-    $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
-    $T::rtname      = RT->Config->Get('rtname');
-    *T::loc         = sub { $T::Ticket->loc(@_) };
+    local $T::Ticket      = $args{'TicketObj'};
+    local $T::Transaction = $args{'TransactionObj'};
+    local $T::Argument    = $args{'Argument'};
+    local $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
+    local $T::rtname      = RT->Config->Get('rtname');
+    local *T::loc         = sub { $T::Ticket->loc(@_) };
 
     my $content = $self->Content;
     unless ( defined $content ) {

@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
 % if ($Scrips->Count == 0) {
 
 <p><i><&|/l&>(No scrips)</&></i></p>

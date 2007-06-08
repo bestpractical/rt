@@ -222,7 +222,31 @@ sub _LoadConfig
     };
     if( $@ ) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
-        die ("Couldn't load config file '$args{File}': $@");
+
+        my $username = getpwuid($>);
+        my $group = getgrgid($();
+        my $message = <<EOF;
+
+RT couldn't load RT config file %s as:
+    user: $username 
+    group: $group
+
+The file is owned by user %s and group %s.  
+
+This usually means that the user/group your webserver is running
+as cannot read the file.  Be careful not to make the permissions
+on this file too liberal, because it contains database passwords.
+You may need to put the webserver user in the appropriate group
+(%s) or change permissions be able to run succesfully.
+EOF
+
+        my ($fileuid, $filegid) = (stat $args{'File'})[4,5];
+        my $fileusername = getpwuid($fileuid);
+        my $filegroup = getgrgid($filegid);
+        my $errormessage = sprintf($message,
+            $args{'File'}, $fileusername, $filegroup, $filegroup
+        );
+        die ("$errormessage '$args{File}'\n$@");
     }
     return 1;
 }

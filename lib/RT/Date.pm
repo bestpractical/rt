@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::Date - a simple Object Oriented date.
@@ -270,9 +269,9 @@ sub SetToMidnight {
     my $self = shift;
     my %args = ( Timezone => 'UTC', @_ );
     if ( lc $args{'Timezone'} eq 'server' ) {
-        $self->Unix( timelocal( 0,0,0,(localtime $self->Unix)[3..7] ) );
+        $self->Unix( Time::Local::timelocal( 0,0,0,(localtime $self->Unix)[3..7] ) );
     } else {
-        $self->Unix( timegm( 0,0,0,(gmtime $self->Unix)[3..7] ) );
+        $self->Unix( Time::Local::timegm( 0,0,0,(gmtime $self->Unix)[3..7] ) );
     }
     return ($self->Unix);
 }

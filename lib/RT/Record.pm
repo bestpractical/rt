@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::Record - Base class for RT record objects
@@ -67,14 +66,17 @@ ok (require RT::Record);
 =cut
 
 package RT::Record;
+
+use strict;
+use warnings;
+
 use RT::Date;
 use RT::User;
 use RT::Attributes;
-use RT::Base;
+use Encode qw();
 
-use strict;
+our $_TABLE_ATTR = { };
 
-our $_TABLE_ATTR;
 our @ISA = qw(RT::Base);
 my $base = 'DBIx::SearchBuilder::Record::Cachable';
 if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
@@ -654,11 +656,6 @@ sub SQLType {
 
 
 }
-
-require Encode::compat if $] < 5.007001;
-require Encode;
-
-
 
 
 sub __Value {
@@ -1257,7 +1254,7 @@ sub _Links {
 
 =head2 _AddLink
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
 
 Returns C<link id>, C<message> and C<exist> flag.
 
@@ -1284,13 +1281,11 @@ sub _AddLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	my $class = ref($self);
         $remote_link    = $args{'Base'};
         $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	my $class = ref($self);
         $remote_link  = $args{'Target'};
         $direction    = 'Base';
     }
@@ -1472,7 +1467,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans;
+	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
     }
     return ( $transaction, $msg, $trans );
 }
@@ -1654,7 +1649,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ($new_value_id) {
-            return ( 0, $self->loc( "Could not add new custom field value. [_1] ",, $value_msg));
+            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg) );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
@@ -1694,7 +1689,7 @@ sub _AddCustomFieldValue {
 
     # otherwise, just add a new value and record "new value added"
     else {
-        my ($new_value_id) = $cf->AddValueForObject(
+        my ($new_value_id, $value_msg) = $cf->AddValueForObject(
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
@@ -1702,7 +1697,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ($new_value_id) {
-            return ( 0, $self->loc("Could not add new custom field value. ") );
+            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg) );
         }
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =

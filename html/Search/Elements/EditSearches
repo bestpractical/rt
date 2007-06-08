@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Saved searches') &>
+<&| /Widgets/TitleBox, title => loc($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
@@ -66,7 +66,9 @@
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+% if ($AllowCopy) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
+% }
 </nobr>
 
 % }
@@ -75,7 +77,7 @@
 <br />
 
 <&|/l&>Load saved search:</&>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects&>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $SearchType &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
 
 </&>
@@ -94,27 +96,22 @@ my $Dirty = $m->comp(
     SavedSearch => { Id => $Id, Object => $Object, Description => $Description }
 );
 
-my @Objects;
-push @Objects,  $session{CurrentUser}->UserObj;
-
-my $groups = RT::Groups->new( $session{'CurrentUser'} );
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(
-    PrincipalId => $session{'CurrentUser'}->Id,
-    Recursively => 1,
-);
-
-push @Objects, @{ $groups->ItemsArrayRef };
+use RT::SavedSearches;
+my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-					                      Right => 'SuperUser' );
+                                          Right => 'SuperUser' );
+
 </%INIT>
 
 <%ARGS>
+$SearchType => 'Ticket'
 $Id => 'new'
 $Object => undef
 $Description => ''
 $CurrentSearch => {}
+$AllowCopy => 1
+$Title => 'Saved searches'
 </%ARGS>
 
 <%METHOD Init>

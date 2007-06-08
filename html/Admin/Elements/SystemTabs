@@ -69,7 +69,10 @@
                       },
                 H => { title => loc('User Rights'),
                                 path => 'Admin/Global/UserRights.html',
-                      }
+                      },
+                I => { title => loc('RT at a glance'),
+                                path => 'Admin/Global/MyRT.html',
+                      },
 
 };
 

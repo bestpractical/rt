@@ -47,11 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 my $rows = 10;
+my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
 my $people = $Ticket->Requestors->UserMembersObj;
 while (my $requestor=$people->Next) {
 next if $requestor->Privileged;
 my $name=$requestor->RealName || $requestor->EmailAddress;	
-my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
 
 my $tickets = RT::Tickets->new($session{'CurrentUser'});
 $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );

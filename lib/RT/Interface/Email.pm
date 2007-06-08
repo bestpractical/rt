@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -142,8 +142,11 @@ sub CheckForSuspiciousSender {
 
     my ( $From, $junk ) = ParseSenderAddressFromHead($head);
 
-    if ( $From =~ /^(?:mailer-daemon|postmaster)\@/i ) {
-        return 1;
+    if (   ( $From =~ /^mailer-daemon\@/i )
+        or ( $From =~ /^postmaster\@/i ) )
+    {
+        return (1);
+
     }
 
     return undef;
@@ -215,7 +218,7 @@ Returns the same array with any IsRTAddress()es weeded out.
 =cut
 
 sub CullRTAddresses {
-    return ( grep { IsRTAddress($_) } @_ );
+    return grep !IsRTAddress($_), @_;
 }
 
 # }}}
@@ -238,14 +241,16 @@ sub MailError {
         level   => $args{'LogLevel'},
         message => $args{'Explanation'}
     );
+    # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
         Type                   => "multipart/mixed",
         From                   => $args{'From'},
         Bcc                    => $args{'Bcc'},
         To                     => $args{'To'},
         Subject                => $args{'Subject'},
-        Precedence             => 'bulk',
-        'X-RT-Loop-Prevention' => RT->Config->Get('rtname'),
+        'Precedence:'             => 'bulk',
+        'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
+        'In-Reply-To:'          => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef
     );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
@@ -261,7 +266,7 @@ sub MailError {
 
     }
 
-    SendEmail(entity => $entity, bounce => 1);
+    SendEmail(Entity => $entity, Bounce => 1);
 }
 
 # {{{ SendEmail
@@ -277,15 +282,27 @@ possible.
 
 sub SendEmail {
     my (%args) = (
-                  entity => undef,
-                  bounce => 0,
+                  Entity => undef,
+                  Bounce => 0,
                   @_,
                  );
 
     if ( RT->Config->Get('MailCommand') eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
-        $args .= RT->Config->Get('SendmailBounceArguments') if $args{bounce};
+        $args .= RT->Config->Get('SendmailBounceArguments') if $args{Bounce};
+
+        # VERP
+        if ( $args{'Transaction'} and
+             my $prefix = RT->Config->Get('VERPPrefix') and
+             my $domain = RT->Config->Get('VERPDomain') )
+        {
+            my $from = $args{'Transaction'}->CreatorObj->EmailAddress;
+            $from =~ s/@/=/g;
+            $from =~ s/\s//g;
+            $args .= " -f $prefix$from\@$domain";
+        }
+
         eval {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
@@ -297,7 +314,7 @@ sub SendEmail {
 
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "$path closed pipe" };
-            $args{entity}->print($mail);
+            $args{Entity}->print($mail);
 
             unless ( close $mail ) {
                 die "Close failed: $!" if $!; # system error
@@ -322,7 +339,7 @@ sub SendEmail {
             push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
         }
         elsif ( RT->Config->Get('MailCommand') eq 'smtp' ) {
-            $ENV{MAILADDRESS} = RT->Config->Get('SMTPFrom') || $args{entity}->head->get('From');
+            $ENV{MAILADDRESS} = RT->Config->Get('SMTPFrom') || $args{Entity}->head->get('From');
             push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
             push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
         }
@@ -330,7 +347,7 @@ sub SendEmail {
             push @mailer_args, RT->Config->Get('MailParams');
         }
 
-        unless ( $args{entity}->send(@mailer_args) ) {
+        unless ( $args{Entity}->send(@mailer_args) ) {
             $RT::Logger->crit( "Could not send mail." );
             return (0);
         }
@@ -359,7 +376,6 @@ sub CreateUser {
     unless ($Val) {
 
         # Deal with the race condition of two account creations at once
-        #
         if ($Username) {
             $NewUser->LoadByName($Username);
         }
@@ -504,11 +520,12 @@ Takes an address from $head->get('Line') and returns a tuple: user@host, friendl
 sub ParseAddressFromHeader {
     my $Addr = shift;
 
+    # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
+    $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;                                                                                                                                                  
     my @Addresses = Mail::Address->parse($Addr);
 
-    my $AddrObj = $Addresses[0];
-
-    unless ( ref($AddrObj) ) {
+    my ($AddrObj) = grep ref $_, @Addresses;
+    unless ( $AddrObj ) {
         return ( undef, undef );
     }
 
@@ -631,6 +648,22 @@ sub Gateway {
     #Pull apart the subject line
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
+    
+    # {{{ Lets check for mail loops of various sorts.
+    my ($should_store_machine_generated_message, $IsALoop, $result);
+    ( $should_store_machine_generated_message, $ErrorsTo, $result, $IsALoop ) =
+      _HandleMachineGeneratedMail(
+        Message  => $Message,
+        ErrorsTo => $ErrorsTo,
+        Subject  => $Subject,
+        MessageId => $MessageId
+    );
+
+    # Do not pass loop messages to MailPlugins, to make sure the loop
+    # is broken, unless $RT::StoreLoops is set.
+    if ($IsALoop && !$should_store_machine_generated_message) {
+        return ( 0, $result, undef );
+    }
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
@@ -655,26 +688,24 @@ sub Gateway {
     # 0 - User may not do anything (Not used at the moment)
     # 1 - Normal user
     # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
+    my ( $CurrentUser, $AuthStat, $error );
 
     # Initalize AuthStat so comparisons work correctly
-    my $AuthStat = -9999999;
+    $AuthStat = -9999999;
 
     my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
-
-    my ( $CurrentUser, $error );
-
     # if plugin returns AuthStat -2 we skip action
     # NOTE: this is experimental API and it would be changed
     my %skip_action = ();
 
     # Since this needs loading, no matter what
     foreach (@mail_plugins) {
-        my ($Code, $Class, $NewAuthStat);
+        my ($Code, $NewAuthStat);
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         } else {
-            $Class = $_;
+            my $Class = $_;
             $Class = "RT::Interface::Email::" . $Class
                 unless $Class =~ /^RT::Interface::Email::/;
             $Class->require or
@@ -682,11 +713,10 @@ sub Gateway {
 
             no strict 'refs';
             unless ( defined( $Code = *{ $Class . "::GetCurrentUser" }{CODE} ) ) {
-                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
+                $RT::Logger->crit( "No 'GetCurrentUser' function found in '$Class' module");
                 next;
             }
         }
-
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
@@ -707,6 +737,10 @@ sub Gateway {
             last if $AuthStat == -1;
             $skip_action{$action}++ if $AuthStat == -2;
         }
+
+        # strip actions we should skip
+        @actions = grep !$skip_action{$_}, @actions if $AuthStat == -2;
+        last unless @actions;
 
         last if $AuthStat == -1;
     }
@@ -744,29 +778,17 @@ sub Gateway {
         );
     }
 
-    # {{{ Lets check for mail loops of various sorts.
-    my ($continue, $result);
-     ( $continue, $ErrorsTo, $result ) = _HandleMachineGeneratedMail(
-        Message  => $Message,
-        ErrorsTo => $ErrorsTo,
-        Subject  => $Subject,
-        MessageId => $MessageId
-    );
 
-    unless ($continue) {
+    unless ($should_store_machine_generated_message) {
         return ( 0, $result, undef );
     }
     
-    # strip actions we should skip
-    @actions = grep !$skip_action{$_}, @actions;
-
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
 
     my $Ticket = RT::Ticket->new($CurrentUser);
 
-    if (( !$SystemTicket || !$SystemTicket->Id )
-        && grep /^(comment|correspond)$/, @actions )
+    if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
     {
 
         my @Cc;
@@ -790,31 +812,35 @@ sub Gateway {
         if ( $id == 0 ) {
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Ticket creation failed",
+                Subject     => "Ticket creation failed: $Subject",
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
             return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
         }
 
-# strip comments&corresponds from the actions we don't need to record them if we've created the ticket just now
+        # strip comments&corresponds from the actions we don't need
+        # to record them if we've created the ticket just now
         @actions = grep !/^(comment|correspond)$/, @actions;
         $args{'ticket'} = $id;
 
-    } else {
+    } elsif ( $args{'ticket'} ) {
 
         $Ticket->Load( $args{'ticket'} );
         unless ( $Ticket->Id ) {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Message not recorded",
+                Subject     => "Message not recorded: $Subject",
                 Explanation => $error,
                 MIMEObj     => $Message
             );
 
             return ( 0, $error );
         }
+        $args{'ticket'} = $Ticket->id;
+    } else {
+        return ( 1, "Success", $Ticket );
     }
 
     # }}}
@@ -824,32 +850,28 @@ sub Gateway {
 
         #   If the action is comment, add a comment.
         if ( $action =~ /^(?:comment|correspond)$/i ) {
-            my ( $status, $msg );
-            if ( $action =~ /^correspond$/i ) {
-                ( $status, $msg )
-                    = $Ticket->Correspond( MIMEObj => $Message );
-            } else {
-                ( $status, $msg ) = $Ticket->Comment( MIMEObj => $Message );
-            }
+            my $method = ucfirst lc $action;
+            my ( $status, $msg ) = $Ticket->$method( MIMEObj => $Message );
             unless ($status) {
 
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded",
+                    Subject     => "Message not recorded: $Subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
-                return ( 0, "Message not recorded", $Ticket );
+                return ( 0, "Message not recorded: $msg", $Ticket );
             }
-        } elsif ( $unsafe_actions ) {
-            return _RunUnsafeAction(
+        } elsif ($unsafe_actions) {
+            my ( $status, $msg ) = _RunUnsafeAction(
                 Action      => $action,
                 ErrorsTo    => $ErrorsTo,
                 Message     => $Message,
                 Ticket      => $Ticket,
-                CurrentUser => $CurrentUser
+                CurrentUser => $CurrentUser,
             );
+            return ($status, $msg, $Ticket) unless $status == 1;
         }
     }
     return ( 1, "Success", $Ticket );
@@ -874,7 +896,7 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not taken", $args{'Ticket'} );
+            return ( 0, "Ticket not taken" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
         my ( $status, $msg ) = $args{'Ticket'}->SetStatus('resolved');
@@ -887,10 +909,12 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not resolved", $args{'Ticket'} );
+            return ( 0, "Ticket not resolved" );
         }
+    } else {
+        return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
     }
-    return ( 0, 'Unknown action' );
+    return ( 1, "Success" );
 }
 
 =head2 _NoAuthorizedUserFound
@@ -925,6 +949,7 @@ EOT
     );
 
     # Also notify the requestor that his request has been dropped.
+    if ($args{'Requestor'} ne RT->Config->Get('OwnerEmail')) {
     MailError(
         To          => $args{'Requestor'},
         Subject     => "Could not load a valid user",
@@ -936,6 +961,7 @@ EOT
         MIMEObj  => $args{'Message'},
         LogLevel => 'error'
     );
+    }
 }
 
 =head2 _HandleMachineGeneratedMail
@@ -946,7 +972,8 @@ Takes named params:
     Subject
 
 Checks the message to see if it's a bounce, if it looks like a loop, if it's autogenerated, etc.
-Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message");
+Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message",
+"This message appears to be a loop (boolean)" );
 
 =cut
 
@@ -964,7 +991,7 @@ sub _HandleMachineGeneratedMail {
     my $IsALoop = CheckForLoops($head);
 
     my $SquelchReplies = 0;
-    
+
     my $owner_mail = RT->Config->Get('OwnerEmail');
 
     #If the message is autogenerated, we need to know, so we can not
@@ -976,7 +1003,7 @@ sub _HandleMachineGeneratedMail {
 
     # Warn someone if it's a loop, before we drop it on the ground
     if ($IsALoop) {
-        $RT::Logger->crit("RT Recieved mail (".$args{MessageId}.") from itself.");
+        $RT::Logger->crit("RT Received mail (".$args{MessageId}.") from itself.");
 
         #Should we mail it to RTOwner?
         if ( RT->Config->Get('LoopsToRTOwner') ) {
@@ -989,7 +1016,8 @@ sub _HandleMachineGeneratedMail {
         }
 
         #Do we actually want to store it?
-        return ( 0, $ErrorsTo, "Message Bounced" ) unless RT->Config->Get('StoreLoops');
+        return ( 0, $ErrorsTo, "Message Bounced", $IsALoop )
+            unless RT->Config->Get('StoreLoops');
     }
 
     # Squelch replies if necessary
@@ -1013,7 +1041,7 @@ sub _HandleMachineGeneratedMail {
         $head->add( 'RT-Squelch-Replies-To',    $Sender );
         $head->add( 'RT-DetectedAutoGenerated', 'true' );
     }
-    return ( 1, $ErrorsTo, "Handled machine detection" );
+    return ( 1, $ErrorsTo, "Handled machine detection", $IsALoop );
 }
 
 =head2 IsCorrectAction
@@ -1024,7 +1052,8 @@ Returns a list of valid actions we've found for this message
 
 sub IsCorrectAction {
     my $action = shift;
-    my @actions = split /-/, $action;
+    my @actions = grep $_, split /-/, $action;
+    return ( 0, '(no value)' ) unless @actions;
     foreach ( @actions ) {
         return ( 0, $_ ) unless /^(?:comment|correspond|take|resolve)$/;
     }

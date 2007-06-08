@@ -101,16 +101,16 @@ $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
 
 # Some forms pass in "RowsPerPage" rather than "Rows"
 # We call it RowsPerPage everywhere else.
-if ( !$Rows && $ARGS{'RowsPerPage'} ) {
-    $Rows = $ARGS{'RowsPerPage'};
-}
-elsif ( !$Rows && defined $prefs->{'RowsPerPage'} ) {
-    $Rows = $prefs->{'RowsPerPage'};
-}
-else {
-    $Rows ||= 50;
-}
 
+if ( !defined($Rows) ) {
+    if ( $ARGS{'RowsPerPage'} ) {
+        $Rows = $ARGS{'RowsPerPage'};
+    } elsif ( defined $prefs->{'RowsPerPage'} ) {
+        $Rows = $prefs->{'RowsPerPage'};
+    } else {
+        $Rows = 50;
+    }
+}
 
 my ($title, $ticketcount);
 $session{'i'}++;

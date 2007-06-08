@@ -66,6 +66,9 @@ subtabs => {
 	       History => { title => loc('History'),
 			   path => "Admin/Users/History.html?id=".$id
 			 },
+	       'MyRT' => { title => loc('RT at a glance'),
+			   path => "Admin/Users/MyRT.html?id=".$id
+			 },
 #	       Scrips => { title => loc('Rights'),
 #			   path => "Admin/Users/Rights.html?id=".$id
 #			 }

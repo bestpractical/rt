@@ -48,13 +48,13 @@
 <table border="0" width="100%">
 <tr valign="top">
 
-<td class="boxcontainer" <% $two_columns ? 'width="70%"':'' %>>
-% $show_cb->($_) foreach @{$Portlets->{body}};
+<td class="boxcontainer" width="70%" <% $summary? 'width="70%"': '' %>>
+% $show_cb->($_) foreach @$body;
 </td>
 
-% if( $two_columns ) {
+% if ( $summary ) {
 <td class="boxcontainer">
-% $show_cb->($_) foreach @{$Portlets->{summary}};
+% $show_cb->($_) foreach @$summary;
 </td>
 % }
 
@@ -64,34 +64,37 @@
 # XXX: we don't use this, but should.
 my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
+my $user = $session{'CurrentUser'}->UserObj;
 $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $Portlets = $session{'my_rt_portlets'} =
-                $session{'CurrentUser'}->UserObj->Preferences( 
-                    'HomepageSettings',
-                    $d_portlets->Content,
-                );
+    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    $Portlets = $session{'my_rt_portlets'} = $user->Preferences(
+        HomepageSettings => $default_portlets? $default_portlets->Content: {},
+    );
 }
 
-my $two_columns = $Portlets->{summary} && @{$Portlets->{summary}};
+my ($body, $summary) = @{$Portlets}{qw(body summary)};
+unless( $body && @$body ) {
+    $body = $summary || [];
+    $summary = undef;
+}
+$summary = undef unless $summary && @$summary;
+
+my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
 my $show_cb = sub {
     my $entry = shift;
-    my $type = $entry->{type};
+    my $type  = $entry->{type};
     my $name = $entry->{'name'};
-    if ($type eq 'component') {
-	# XXX: security check etc.
-	$m->comp( $name );
-    }
-    elsif ($type eq 'system') {
-	$m->comp( '/Elements/ShowSearch', Name => $name );
-    }
-    elsif ($type eq 'saved') {
-	$m->comp( '/Elements/ShowSearch', SavedSearch => $name );
-    }
-    else {
-	$RT::Logger->error ("unknown portlet type '$type'");
+    if ( $type eq 'component' ) {
+        # XXX: security check etc.
+        $m->comp( $name, %{ $entry->{arguments} || {} } );
+    } elsif ( $type eq 'system' ) {
+        $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
+    } elsif ( $type eq 'saved' ) {
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
+    } else {
+        $RT::Logger->error("unknown portlet type '$type'");
     }
 };
 

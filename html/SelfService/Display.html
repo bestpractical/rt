@@ -160,15 +160,6 @@ if ( $id[0] eq 'new' ) {
                 Why => loc( "Couldn't load ticket '[_1]'", $id ) );
             $m->abort();
         }
-    }
-
-    # }}}
-
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        $m->comp( 'Error.html',
-            Why => loc("No permission to display that ticket") );
-        $m->abort();
-    }
 
     my ( $code, $msg );
 
@@ -183,11 +174,19 @@ if ( $id[0] eq 'new' ) {
 
     # }}}
 
-    # XXX: review attachment processing because all this had done in the different ways
-    # in the different places.
+    if (
+        $session{'Attachments'}
+        || ( defined $ARGS{'UpdateContent'}
+            && $ARGS{'UpdateContent'} ne ''
+            && $ARGS{'UpdateContent'} ne "-- \n"
+            . $session{'CurrentUser'}->UserObj->Signature )
+      )
+    {
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+    }
     push @results, ProcessUpdateMessage(
-        ARGSRef   => { %ARGS, UpdateAttachments => $session{'Attachments'} },
-        TicketObj => $Ticket,
+        ARGSRef   => \%ARGS,
+        TicketObj => $Ticket
     );
 
     # delete temporary storage entry to make WebUI clean
@@ -199,6 +198,29 @@ if ( $id[0] eq 'new' ) {
     push (@results, @cfupdates);
 
     # }}}
+
+    }
+
+    # This code does automatic redirection if any updates happen.
+
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        $m->comp( 'Error.html',
+            Why => loc("No permission to display that ticket") );
+        # XXX: Why abort? then we loose footer //ruz
+        $m->abort();
+    }
+
+    if (@results) {
+        # We've done something, so we need to clear the decks to avoid
+        # resubmission on refresh.
+        # But we need to store Actions somewhere too, so we don't lose them.
+        $session{"Actions"} = \@results;
+        RT::Interface::Web::Redirect(
+            RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
+        );
+    } else {
+        @results = @{ delete $session{"Actions"} || [] };
+    }
 
     my $Transactions = $Ticket->Transactions;
 

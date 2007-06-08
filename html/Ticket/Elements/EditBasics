@@ -61,9 +61,13 @@
     </tr>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value">
-<& /Elements/SelectOwner, Name => 'Owner', QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $TicketObj->OwnerObj->Id, DefaultValue => 0&>
-    </td>
+      <td class="value"><& /Elements/SelectOwner,
+          Name         => 'Owner',
+          QueueObj     => $TicketObj->QueueObj,
+          TicketObj    => $TicketObj,
+          Default      => $TicketObj->OwnerObj->Id,
+          DefaultValue => 0,
+      &></td>
   </tr>
 
   <tr>
@@ -97,7 +101,6 @@
       <td class="label"><&|/l&>Final Priority</&>:</td>
       <td class="value"><input name="FinalPriority" value="<%$TicketObj->FinalPriority|h%>" size="5" /></td>
     </tr>
-
 
 
 

@@ -131,6 +131,8 @@ Conenct to the database, set up logging.
 
 sub Init {
 
+    CheckPerlRequirements();
+
     #Get a database connection
     ConnectToDatabase();
 
@@ -306,6 +308,40 @@ sub InitLogging {
 # }}}
 
 }
+
+
+sub CheckPerlRequirements {
+    if ($^V < 5.008003) {
+        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
+    }
+
+    local ($@);
+    eval { 
+        my $x = ''; 
+        my $y = \$x;
+        require Scalar::Util; Scalar::Util::weaken($y);
+    };
+    if ($@) {
+        die <<"EOF";
+
+RT requires the Scalar::Util module be built with support for  the 'weaken'
+function. 
+
+It is sometimes the case that operating system upgrades will replace 
+a working Scalar::Util with a non-working one. If your system was working
+correctly up until now, this is likely the cause of the problem.
+
+Please reinstall Scalar::Util, being careful to let it build with your C 
+compiler. Ususally this is as simple as running the following command as
+root.
+
+    perl -MCPAN -e'install Scalar::Util'
+
+EOF
+
+    }
+}
+
 
 =head2 InitClasses
 

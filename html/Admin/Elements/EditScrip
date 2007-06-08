@@ -46,94 +46,79 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@actions &>
-
+  
 <form method="post" action="Scrip.html">
-<input type="hidden" class="hidden" name="id" value="<%$id%>" />
-<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
+
 <&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
 <table>
-<tr>
-<td align="right">
-<&|/l&>Description</&>:
-</td>
-<td>
-<input name="Scrip-<%$id%>-Description" value="<%$scrip->Description%>" />
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Condition</&>:
-</td>
-<td>
-<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-ScripCondition", Default => $scrip->ConditionObj->Id &><br />
-</td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Action</&>:
-</td>
-<td>
-<& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-ScripAction", Default => $scrip->ActionObj->Id &>
-</td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Template</&>: 
-</td>
-<td>
-<& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id, Queue => $Queue &>
-</td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Stage</&>: 
-</td>
-<td>
-<& /Admin/Elements/SelectStage, Name => "Scrip-$id-Stage", Default => $scrip->Stage &>
-</td>
-</tr>
+
+<tr><td align="right"><&|/l&>Description</&>:</td><td>
+<input name="Scrip-<% $id %>-Description" value="<% $ARGS{"Scrip-$id-Description"} || $scrip->Description %>" />
+</td></tr>
+
+<tr><td align="right"><&|/l&>Condition</&>:</td><td>
+<& /Admin/Elements/SelectScripCondition,
+    Name => "Scrip-$id-ScripCondition",
+    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->Id,
+&></td></tr>
+
+<tr><td align="right"><&|/l&>Action</&>:</td><td>
+<& /Admin/Elements/SelectScripAction,
+    Name => "Scrip-$id-ScripAction",
+    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->Id,
+&></td></tr>
+
+<tr><td align="right"><&|/l&>Template</&>:</td><td>
+<& /Admin/Elements/SelectTemplate,
+    Name => "Scrip-$id-Template",
+    Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->Id,
+    Queue => $Queue,
+&></td></tr>
+
+<tr><td align="right"><&|/l&>Stage</&>:</td><td>
+<& /Admin/Elements/SelectStage,
+    Name => "Scrip-$id-Stage",
+    Default => $ARGS{"Scrip-$id-Stage"} || $scrip->Stage,
+&></td></tr>
+
 </table>
 </&>
-<& /Elements/Submit,
-    Caption => loc("Be sure to save your changes"),
-    Label => $SubmitLabel,
-    Reset => 1,
-&>
 
-<br />
+<& /Elements/Submit,
+    Label => $SubmitLabel,
+    Caption => loc("Be sure to save your changes"),
+    Reset => 1,
+&><br />
+
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
 <table>
-<tr>
-<td colspan="2">
+<tr><td colspan="2">
 <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
-</td>
-</tr>
-<tr>
-<td class="labeltop"><&|/l&>Custom condition</&>:</td>
-<td>
-% my $code = $scrip->CustomIsApplicableCode;
+</td></tr>
+
+<tr><td class="labeltop"><&|/l&>Custom condition</&>:</td><td>
+% my $code  = $ARGS{"Scrip-$id-CustomIsApplicableCode"} || $scrip->CustomIsApplicableCode;
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<%$id%>-CustomIsApplicableCode"><% $code %></textarea>
-</td>
-</tr>
-<tr>
-<td class="labeltop"><&|/l&>Custom action preparation code</&>:</td>
-<td>
-% $code = $scrip->CustomPrepareCode;
+</td></tr>
+
+<tr><td class="labeltop"><&|/l&>Custom action preparation code</&>:</td><td>
+% $code  = $ARGS{"Scrip-$id-CustomPrepareCode"} || $scrip->CustomPrepareCode;
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<%$id%>-CustomPrepareCode"><% $code %></textarea>
-</td>
-</tr>
-<tr>
-<td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td>
-<td>
-% $code = $scrip->CustomCommitCode;
+</td></tr>
+
+<tr><td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td><td>
+% $code  = $ARGS{"Scrip-$id-CustomCommitCode"} || $scrip->CustomCommitCode;
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<%$id%>-CustomCommitCode"><% $code %></textarea>
-</td>
-</tr>
+</td></tr>
+
 </table>
 </&>
 
@@ -145,64 +130,25 @@
 
 </form>
 <%init>
-my (@actions);
-my $SubmitLabel;
-my $scrip = new RT::Scrip($session{'CurrentUser'});
 
-if ( $id eq 'new' ) {
+my (@actions, $SubmitLabel);
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 
-    my ( $retval, $msg ) = $scrip->Create(
-            Queue                  => $Queue,
-            ScripAction            => $ARGS{"Scrip-new-ScripAction"},
-            ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
-            Template               => $ARGS{"Scrip-new-Template"},
-            Description            => $ARGS{"Scrip-new-Description"},
-            CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
-            CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
-            CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
-    );
-    if ( defined $retval ) {
-        push @actions, $msg;
-        $id = $scrip->id;
+if ( $id ) {
+    $scrip->Load( $id );
+    unless ( $id = $scrip->id ) {
+        push @actions, loc("Couldn't load scrip #[_1]", $id);
     }
-    else {
-        Abort( $msg);
-    }
-}
-elsif ($id) {
-    my ($val,$msg) =$scrip->Load($id);
-    if  ($val) {
-        $id = $scrip->id;
-    } else {
-       Abort ($msg);
-    }
-    my @attribs = qw (
-      Queue
-      ScripAction
-      ScripCondition
-      Template
-      Stage
-      Description
-      CustomPrepareCode
-      CustomCommitCode
-      CustomIsApplicableCode
-    );
-    my @results = UpdateRecordObject( AttributesRef => \@attribs,
-                                      AttributePrefix => 'Scrip-'.$scrip->Id,
-                                      Object        => $scrip,
-                                      ARGSRef       => \%ARGS );
-    push (@actions, @results);
+    $SubmitLabel = loc('Update');
 }
 
-elsif ($ARGS{'create'}) {
+unless ( $id ) {
     $id = 'new';
     $SubmitLabel = loc('Create');
 }
-$SubmitLabel ||= loc('Save');
 
 my $min_lines = 10;
 
-# }}}
 </%init>
 
 <%ARGS>
@@ -210,3 +156,42 @@ $id => undef
 $title => undef
 $Queue => 0
 </%ARGS>
+
+<%METHOD Process>
+<%ARGS>
+$id => undef
+$Queue => undef
+</%ARGS>
+<%INIT>
+return ($id) unless $id;
+
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+if ( $id eq 'new' ) {
+    return $scrip->Create(
+        Queue                  => $Queue,
+        ScripAction            => $ARGS{"Scrip-new-ScripAction"},
+        ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
+        Template               => $ARGS{"Scrip-new-Template"},
+        Description            => $ARGS{"Scrip-new-Description"},
+        CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
+        CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
+        CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
+    );
+}
+else {
+    $scrip->Load( $id );
+    return (undef, loc("Couldn't load scrip #[_1]", $id))
+        unless $scrip->id;
+
+    my @attribs = qw(Queue ScripAction ScripCondition Template Stage
+        Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
+    my @results = UpdateRecordObject(
+        AttributesRef   => \@attribs,
+        AttributePrefix => 'Scrip-'.$scrip->Id,
+        Object          => $scrip,
+        ARGSRef         => \%ARGS
+    );
+    return ($scrip->id, @results);
+}
+</%INIT>
+</%METHOD>

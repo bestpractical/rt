@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::User - RT User object
@@ -82,7 +81,7 @@ use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
-
+use Encode;
 
 # {{{ sub _Accessible 
 
@@ -265,7 +264,7 @@ sub Create {
     #If the create failed.
     unless ($id) {
         $RT::Handle->Rollback();
-        $RT::Logger->error("Could not create a new user - " .join('-'. %args));
+        $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
     }
@@ -1065,7 +1064,7 @@ sub _GeneratePassword {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->hexdigest);
 
 }
@@ -1082,7 +1081,7 @@ sub _GeneratePasswordBase64 {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->b64digest);
 
 }
@@ -1099,14 +1098,11 @@ Returns true if the user has a valid password, otherwise returns false.
 
 sub HasPassword {
     my $self = shift;
-    my $pass = $self->__Value('Password');
-    if ( !defined $pass || $pass eq '' || $pass eq '*NO-PASSWORD*' ) {
-
-        return undef;
-    }
-
+    my $pwd = $self->__Value('Password');
+    return undef if !defined $pwd
+                    || $pwd eq ''
+                    || $pwd eq '*NO-PASSWORD*';
     return 1;
-
 }
 
 
@@ -1695,6 +1691,77 @@ sub SetPreferences {
 }
 
 # }}}
+
+
+=head2 WatchedQueues ROLE_LIST
+
+Returns a RT::Queues object containing every queue watched by the user.
+
+Takes a list of roles which is some subset of ('Cc', 'AdminCc').  Defaults to:
+
+$user->WatchedQueues('Cc', 'AdminCc');
+
+=cut
+
+sub WatchedQueues {
+
+    my $self = shift;
+    my @roles = @_ || ('Cc', 'AdminCc');
+
+    $RT::Logger->debug('WatcheQueues got user ' . $self->Name);
+
+    my $watched_queues = RT::Queues->new($self->CurrentUser);
+
+    my $group_alias = $watched_queues->Join(
+                                             ALIAS1 => 'main',
+                                             FIELD1 => 'id',
+                                             TABLE2 => 'Groups',
+                                             FIELD2 => 'Instance',
+                                           );
+
+    $watched_queues->Limit( 
+                            ALIAS => $group_alias,
+                            FIELD => 'Domain',
+                            VALUE => 'RT::Queue-Role',
+                            ENTRYAGGREGATOR => 'AND',
+                          );
+    if (grep { $_ eq 'Cc' } @roles) {
+        $watched_queues->Limit(
+                                SUBCLAUSE => 'LimitToWatchers',
+                                ALIAS => $group_alias,
+                                FIELD => 'Type',
+                                VALUE => 'Cc',
+                                ENTRYAGGREGATOR => 'OR',
+                              );
+    }
+    if (grep { $_ eq 'AdminCc' } @roles) {
+        $watched_queues->Limit(
+                                SUBCLAUSE => 'LimitToWatchers',
+                                ALIAS => $group_alias,
+                                FIELD => 'Type',
+                                VALUE => 'AdminCc',
+                                ENTRYAGGREGATOR => 'OR',
+                              );
+    }
+
+    my $queues_alias = $watched_queues->Join(
+                                              ALIAS1 => $group_alias,
+                                              FIELD1 => 'id',
+                                              TABLE2 => 'CachedGroupMembers',
+                                              FIELD2 => 'GroupId',
+                                            );
+    $watched_queues->Limit(
+                            ALIAS => $queues_alias,
+                            FIELD => 'MemberId',
+                            VALUE => $self->PrincipalId,
+                          );
+
+    $RT::Logger->debug("WatchedQueues got " . $watched_queues->Count . " queues");
+    
+    return $watched_queues;
+
+}
+
 
 # {{{ sub _CleanupInvalidDelegations
 

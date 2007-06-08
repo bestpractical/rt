@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 package RT::Interface::Web::Handler;
 
 use CGI qw/-private_tempfiles/;
@@ -56,7 +55,6 @@ use Time::ParseDate;
 use Time::HiRes;
 use HTML::Entities;
 use HTML::Scrubber;
-use Text::Quoted;
 use RT::Interface::Web::Handler;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );

@@ -63,6 +63,7 @@ GetOptions(
     'with-ORACLE',                        'with-FASTCGI',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
+    'with-STANDALONE',
     'download=s',
     'repository=s'
 );
@@ -71,13 +72,20 @@ unless (keys %args) {
     help();
     exit(0);
 }
-
 # Set up defaults
-$args{'with-MASON'} = 1;
-$args{'with-CORE'} = 1;
-$args{'with-DEV'} =1; 
-$args{'with-CLI'} =1; 
-$args{'with-MAILGATE'} =1; 
+my %default = (
+    'with-MASON' => 1,
+    'with-CORE' => 1,
+    'with-CLI' => 1,
+    'with-MAILGATE' => 1, 
+    'with-DEV' => @RT_DEVEL_MODE@, 
+    'with-STANDALONE' => @RT_STANDALONE@,
+);
+$args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
+
+use Data::Dumper;
+print Dumper( \%args );
+
 {
   my $section;
   my %always_show_sections = (
@@ -132,6 +140,7 @@ The following switches will tell the tool to check for specific dependencies
 	--with-sqlite		Database interface and driver for SQLite (unsupported)
 	--with-oracle		Database interface for oracle (unsupported)
 
+	--with-standalone	Libraries needed to support the standalone simple pure perl server
 	--with-fastcgi		Libraries needed to support the fastcgi handler
 	--with-speedycgi	Libraries needed to support the speedycgi handler
 	--with-modperl1		Libraries needed to support the modperl 1 handler
@@ -146,27 +155,33 @@ The "RT_FIX_DEPS_CMD" environment variable, if set, will be used
 instead of the standard CPAN shell by --install to install any
 required modules.  It will be called with the module name, or, if
 "RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
-module name ebcore calling the program.
+module name before calling the program.
 .
 }
 
 
-sub _ {
-    map { /(\S+)\s*(\S*)/; $1 => ($2 ? $2 :'') } split ( /\n/, $_[0] );
+sub text_to_hash {
+    my %hash;
+    for my $line ( split /\n/, $_[0] ) {
+        my($key, $value) = $line =~ /(\S+)\s*(\S*)/;
+        $value ||= '';
+        $hash{$key} = $value;
+    }
+
+    return %hash;
 }
 
-$deps{'CORE'} = [ _( << '.') ];
+$deps{'CORE'} = [ text_to_hash( << '.') ];
 Digest::base
 Digest::MD5 2.27
 DBI 1.37
-Test::Inline
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.39
+Date::Format
+DBIx::SearchBuilder 1.48
 Text::Template
 File::Spec 0.8
 HTML::Entities 
 HTML::Scrubber 0.08
-Net::Domain
 Log::Dispatch 2.0
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
@@ -178,51 +193,54 @@ Text::Wrapper
 Time::ParseDate
 Time::HiRes 
 File::Temp
-Term::ReadKey
 Text::Autoformat
-Text::Quoted 1.3
+Text::Quoted 2.02
 Tree::Simple 1.04
+Regexp::Common
 Scalar::Util
-Module::Versions::Report
+Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
-XML::Simple
+UNIVERSAL::require
 Calendar::Simple
 .
 
-$deps{'MASON'} = [ _( << '.') ];
-Params::Validate 0.02
-Cache::Cache
-Exception::Class 1.14
+$deps{'MASON'} = [ text_to_hash( << '.') ];
 HTML::Mason 1.23
-MLDBM
 Errno
-FreezeThaw
 Digest::MD5 2.27
 CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
 XML::RSS 1.05
-HTTP::Server::Simple 0.07
-HTTP::Server::Simple::Mason 0.09
 GD
 GD::Graph
 GD::Text
 Text::WikiFormat 0.76
 .
 
-$deps{'MAILGATE'} = [ _( << '.') ];
+$deps{'STANDALONE'} = [ text_to_hash( << '.') ];
+HTTP::Server::Simple 0.07
+HTTP::Server::Simple::Mason 0.09
+.
+
+$deps{'MAILGATE'} = [ text_to_hash( << '.') ];
 HTML::TreeBuilder
 HTML::FormatText
 Getopt::Long
 LWP::UserAgent
+Pod::Usage
 .
 
-$deps{'CLI'} = [ _( << '.') ];
+$deps{'CLI'} = [ text_to_hash( << '.') ];
 Getopt::Long 2.24
+LWP
+HTTP::Request::Common
+Text::ParseWords
+Term::ReadLine
+Term::ReadKey
 .
 
-$deps{'DEV'} = [ _( << '.') ];
-Regexp::Common
+$deps{'DEV'} = [ text_to_hash( << '.') ];
 Test::Inline 
 Apache::Test
 HTML::Form
@@ -231,43 +249,45 @@ WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
+XML::Simple
+File::Find
 .
 
-$deps{'FASTCGI'} = [ _( << '.') ];
+$deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 CGI 2.92
 FCGI
 CGI::Fast 
 .
 
-$deps{'SPEEDYCGI'} = [ _( << '.') ];
+$deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
 CGI 2.92
 CGI::SpeedyCGI
 .
 
 
-$deps{'MODPERL1'} = [ _( << '.') ];
+$deps{'MODPERL1'} = [ text_to_hash( << '.') ];
 CGI 2.92
 Apache::Request
 Apache::DBI 0.92
 .
 
-$deps{'MODPERL2'} = [ _( << '.') ];
+$deps{'MODPERL2'} = [ text_to_hash( << '.') ];
 CGI 2.92
 Apache::DBI
 HTML::Mason 1.31
 .
 
-$deps{'MYSQL'} = [ _( << '.') ];
+$deps{'MYSQL'} = [ text_to_hash( << '.') ];
 DBD::mysql 2.1018
 .
-$deps{'ORACLE'} = [ _( << '.') ];
+$deps{'ORACLE'} = [ text_to_hash( << '.') ];
 DBD::Oracle
 .
-$deps{'POSTGRESQL'} = [ _( << '.') ];
+$deps{'POSTGRESQL'} = [ text_to_hash( << '.') ];
 DBD::Pg 1.43
 .
 
-$deps{'SQLITE'} = [ _( << '.') ];
+$deps{'SQLITE'} = [ text_to_hash( << '.') ];
 DBD::SQLite 1.00
 .
 
@@ -282,10 +302,10 @@ check_perl_version();
 check_users();
 
 
-foreach my $type (keys %args) {
+foreach my $type (sort grep $args{$_}, keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
 
-    my $type = $1;
+    $type = $1;
     section("$type dependencies");
 
     my @missing;
@@ -359,21 +379,25 @@ Failed to load module CPAN.
 $@
 ------------------------
 
-Failed to load module CPAN. Module CPAN is distributed with Perl
-and helps install perl modules from http://www.cpan.org. RT uses
-this module to install dependencies, but module's failed to load
-with error above. You have several choices to install dependencies
-in this situatation:
-1) check that you've configured CPAN module, to do this run
-   `@PERL@ -MCPAN -e shell` program from shell, if it fails
-   then you have to update CPAN module (see next suggestion)
-   or use another way to install modules;
-2) try to update module CPAN, get distribution from
-   http://search.cpan.org/dist/CPAN and try again;
-3) use a different tool to install dependencies, see description of
-   the RT_FIX_DEPS_CMD environment variable in the output of
-   the `$0` program;
-4) install modules manually.
+When we tried to start installing RT's perl dependencies, 
+we were unable to load the CPAN client. This module is usually distributed
+with Perl. This usually indicates that your vendor has shipped an unconfigured
+or incorrectly configured CPAN client.
+The error above may (or may not) give you a hint about what went wrong
+
+You have several choices about how to install dependencies in 
+this situatation:
+
+1) use a different tool to install dependencies by running setting the following
+   shell environment variable and rerunning this tool:
+    RT_FIX_DEPS_CMD='@PERL@ -MCPAN -e"install %s"'
+2) Attempt to configure CPAN by running:
+   `@PERL@ -MCPAN -e shell` program from shell.
+   If this fails, you may have to manually upgrade CPAN (see below)
+3) Try to update the CPAN client. Download it from:
+   http://search.cpan.org/dist/CPAN and try again
+4) Install each dependency manually by downloading them one by one from
+   http://search.cpan.org
 
 END
         exit(1);

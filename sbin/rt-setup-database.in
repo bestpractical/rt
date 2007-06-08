@@ -1,41 +1,41 @@
 #!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
-#
+# 
 # COPYRIGHT:
-#
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#  
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
-#
+# 
 # (Except where explicitly superseded by other copyright notices)
-#
-#
+# 
+# 
 # LICENSE:
-#
+# 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-#
+# 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-#
-#
+# 
+# 
 # CONTRIBUTION SUBMISSION POLICY:
-#
+# 
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-#
+# 
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,14 +44,15 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-#
+# 
 # END BPS TAGGED BLOCK }}}
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
   qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips @Attributes @Initial @Final);
 
-use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
 
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its
@@ -180,16 +181,20 @@ sub insert_schema {
     my (@schema);
     print "Creating database schema.\n";
 
-    if ( -f $base_path . "/schema." . $db_type ) {
-        no warnings 'unopened';
+    my $schema_file = $base_path . "/schema." . $db_type;
+    if ( -f $schema_file ) {
+        open( SCHEMA, "<$schema_file"  ) or die "Can't open $schema_file: $!";
+        my @lines = <SCHEMA>;
 
-        open( SCHEMA, "<" . $base_path . "/schema." . $db_type );
-
-        my $has_local = 0;
-        open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $db_type ) and $has_local = 1;
+        my $local_schema_file = $RT::LocalEtcPath . "/schema." . $db_type;
+        if (-f $local_schema_file) {
+            open( SCHEMA_LOCAL, "<$local_schema_file" )
+                or die "Can't open $local_schema_file: $!";
+            push @lines, ';;', <SCHEMA_LOCAL>;
+        }
 
         my $statement = "";
-        foreach my $line (<SCHEMA>, ($_ = ';;'), ($has_local? <SCHEMA_LOCAL>: ()) ) {
+        foreach my $line (@lines) {
             $line =~ s/\#.*//g;
             $line =~ s/--.*//g;
             $statement .= $line;
@@ -512,18 +517,26 @@ sub insert_data {
             my $values    = delete $item->{'Values'};
 
             my @queues;
-            if ( $item->{'Queue'} ) {
-                my $queue_ref = delete $item->{'Queue'};
-                @queues = ref $queue_ref ? @{$queue_ref} : ($queue_ref);
+            if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
                 $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
+                @queues = @{ delete $item->{'Queue'} };
             }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)\n" and next unless $return;
+            unless( $return ) {
+                print "(Error: $msg)\n";
+                next;
+            }
 
             foreach my $value ( @{$values} ) {
-                ( $return, $msg ) = $new_entry->AddValue(%$value);
+                my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 print "(Error: $msg)\n" unless $return;
+            }
+
+            # apply by default
+            if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
+                my $ocf = RT::ObjectCustomField->new($CurrentUser);
+                $ocf->Create( CustomField => $new_entry->Id );
             }
 
             for my $q (@queues) {

@@ -249,6 +249,15 @@ AC_ARG_WITH(apachectl,
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
 
+dnl RT's standalone pure perl server
+AC_ARG_WITH(devel-mode,
+            AC_HELP_STRING([--with-standalone],
+                           [Install modules for pure perl standalone server]),
+
+            RT_STANDALONE="1",
+            RT_STANDALONE="0")
+AC_SUBST(RT_STANDALONE)
+
 dnl RT's "maintainer mode"
 AC_ARG_WITH(devel-mode,
             AC_HELP_STRING([--with-devel-mode],

@@ -46,57 +46,66 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% my $Values = $Object->CustomFieldValues($CustomField->Id);
-  <tr>
+% while ( my $CustomField = $CustomFields->Next ) {
+% my $Values = $Object->CustomFieldValues( $CustomField->Id );
+% my $count = $Values->Count;
+  <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->Name %>:</td>
     <td class="value">
+% unless ( $count ) {
+<i><&|/l&>(no value)</&></i>
+% } elsif ( $count == 1 ) {
+%   $print_value->( $CustomField, $Values->First );
+% } else {
 <ul>
-% while (my $Value = $Values->Next()) {
-<li>
-% if ($CustomField->LinkValueTo) {
-<a href="<%$Value->LinkValueTo|n%>" target="_new">
-% }
-% my $comp = "ShowCustomField".$CustomField->Type;
-% $m->comp('/Elements/Callback', _CallbackName => 'ShowComponentName', Name => \$comp, CustomField => $CustomField, Object => $Object );
-% if ($m->comp_exists($comp)) {
-<& $comp, Object => $Value &>
-%   } else {
-<%$Value->Content%>
-%   }
-% if ($CustomField->LinkValueTo) {
-</a>
-% }
-
-%# This section automatically populates a div with the "IncludeContentForValue" for this custom
-%# field if it's been defined
-% if ($CustomField->IncludeContentForValue) {
-<div
-    class="object_cf_value_include" 
-    id="object_cf_value_<%$Value->id%>" 
-    >
-<&|/l, '<a href="'.$Value->IncludeContentForValue.'">' . $Value->IncludeContentForValue."</a>"&>See also: [_1]</&>
-</div>
-
-<script><!--
-            ahah('<%$Value->IncludeContentForValue%>', 'object_cf_value_<%$Value->id%>');
-        --></script>
-% }
-</li>
-% }
-% unless ($Values->Count()) {
-<li><i><&|/l&>(no value)</&></i></li>
+% while ( my $Value = $Values->Next ) {
+<li><% $print_value->( $CustomField, $Value ) |n %></li>
 % }
 </ul>
+% }
     </td>
   </tr>
 % }
 </table>
 <%INIT>
 my $CustomFields = $Object->CustomFields;
- $m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
+$m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',
                                 CustomFields => $CustomFields);
+
+my $print_value = sub {
+    my ($cf, $value) = @_;
+    my $linked = $cf->LinkValueTo;
+    if ( $linked ) {
+        $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
+    }
+    my $comp = "ShowCustomField". $cf->Type;
+    $m->comp('/Elements/Callback',
+        _CallbackName => 'ShowComponentName',
+        Name          => \$comp,
+        CustomField   => $cf,
+        Object        => $Object
+    );
+    if ( $m->comp_exists( $comp ) ) {
+        $m->comp( $comp, Object => $value );
+    } else {
+        $m->print( $value->Content );
+    }
+    $m->out('</a>') if $linked;
+
+    # This section automatically populates a div with the "IncludeContentForValue" for this custom
+    # field if it's been defined
+    if ( $cf->IncludeContentForValue ) {
+       my $vid = $value->id;
+       $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
+       $m->print( loc("See also:") );
+       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
+       $m->print( $value->IncludeContentForValue );
+       $m->out(   qq{</a></div>\n} );
+       $m->out(   qq{<script><!--\nahah('} );
+       $m->print( $value->IncludeContentForValue );
+       $m->out(   qq{', 'object_cf_value_$vid');\n--></script>\n} );
+    }
+};
 
 </%INIT>
 <%ARGS>

@@ -70,7 +70,7 @@
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
 <option value="<%$field%>"
-% if ($field eq $OrderBy[$o]) {
+% if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
 selected
 % }
 ><&|/l&><%$field%></&></option>
@@ -78,12 +78,12 @@ selected
 </select>
 <select name="Order">
 <option value="ASC"
-% if ($Order[$o] eq "ASC") {
+% unless ( ($Order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
-% if ($Order[$o] eq "DESC") {
+% if ( ($Order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Desc</&></option>
@@ -122,7 +122,11 @@ $fields{'Custom.Ownership'} = 1;
 
 my @Order = split /\|/, $Order;
 my @OrderBy = split /\|/, $OrderBy;
-
+if ($Order =~ /\|/) {
+    @Order = split /\|/, $Order;
+} else {
+    @Order = ( $Order );
+}
 
 </%INIT>
 

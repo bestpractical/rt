@@ -74,7 +74,9 @@
 % if ($Rows && $ShowNavigation) {
 <hr>
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
-<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page [_1] of [_2]</&>
+% my $pages = int($TotalFound/$Rows)+$oddRows;
+% $pages = 1 if $pages < 1;
+<&|/l, $Page, $pages &>Page [_1] of [_2]</&>
 
 <%perl>
 my $prev = $m->comp(
@@ -125,6 +127,7 @@ if ($OrderBy =~ /\|/) {
 }
 
 $Collection->RowsPerPage( $Rows ) if $Rows;
+$Page = 1 unless $Page > 0; # workaround problems with Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # DisplayFormat lets us use a "temporary" format for display, while 

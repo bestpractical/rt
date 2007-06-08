@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 138;
+use Test::More tests => 202;
 
 use RT;
 RT::LoadConfig();
@@ -38,7 +38,7 @@ $ENV{'RTPASSWD'} = 'password';
 $RT::Logger->debug("Connecting to server at $RT::WebBaseURL...");
 $ENV{'RTSERVER'} = $RT::WebBaseURL;
 #    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
-$ENV{'RTDEBUG'} = '3';
+$ENV{'RTDEBUG'} = '1';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the
 #                    configuration file.
 #
@@ -98,13 +98,12 @@ TODO: {
     expect_send("correspond -m 'correspond-$$' $ticket_id", "Adding correspondence...");
     expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
-TODO: {
-    local $TODO = "Adding attachments is broken right now";
+
     # add attachments to a ticket
-    expect_send("comment -m 'attach file' $rt_tool_path $ticket_id", "Adding an attachment");
-    expect_like(qr/Message recorded/, "Added the attachment");
-    ### should test to make sure it actually got added
-}
+    # text attachment
+    check_attachment("$RT::BasePath/lib/t/data/lorem-ipsum");
+    # binary attachment
+    check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
@@ -353,5 +352,64 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     expect_like(qr/Owner changed from fooser$$ to root/, '...and succeeds.');
 }
 # }}}
+
+# {{{ test ticket linking
+    my @link_relns = ( 'DependsOn', 'DependedOnBy', 'RefersTo', 'ReferredToBy',
+                       'MemberOf', 'HasMember', );
+    my %display_relns = map { $_ => $_ } @link_relns;
+    $display_relns{HasMember} = 'Members';
+
+    my $link1_id = ok_create_ticket( "LinkTicket1-$$" );
+    my $link2_id = ok_create_ticket( "LinkTicket2-$$" );
+
+    foreach my $reln (@link_relns) {
+        # create link
+        expect_send("link $link1_id $reln $link2_id", "Link by $reln...");
+        expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
+        expect_send("show ticket/$link1_id/links", "Checking creation of $reln...");
+        expect_like(qr/$display_relns{reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
+
+        # delete link
+        expect_send("link -d $link1_id $reln $link2_id", "Delete $reln...");
+        expect_like(qr/Deleted link $link1_id $reln $link2_id/, 'Deleted');
+        expect_send("show ticket/$link1_id/links", "Checking removal of $reln...");
+        ok( expect_handle->before() !~ /\Q$display_relns{$reln}: \E[\w\d\.\-]+:\/\/[w\d\.]+\/ticket\/$link2_id/, "Removed link $reln" );
+        #expect_unlike(qr/\Q$reln: \E[\w\d\.]+\Q://\E[w\d\.]+\/ticket\/$link2_id/, "Removed link $reln");
+
+    }
+# }}}
+
+
+# helper function
+sub ok_create_ticket {
+    my $subject = shift;
+
+    expect_send("create -t ticket set subject='$subject'", 'Creating ticket...');
+    expect_like(qr/Ticket \d+ created/, "Created ticket '$subject'");
+    expect_handle->before() =~ /Ticket (\d+) created/;
+    my $id = $1;
+    ok($id, "Got ticket id=$id");
+    
+    return $id;
+}
+
+# wrap up all the file handling stuff for attachment testing
+sub check_attachment {
+    my $attachment_path = shift;
+    (my $filename = $attachment_path) =~ s/.*\/(.*?)$/$1/;
+    expect_send("comment -m 'attach file' -a $attachment_path $ticket_id", "Adding an attachment ($filename)");
+    expect_like(qr/Message recorded/, "Added the attachment");
+    expect_send("show ticket/$ticket_id/attachments","Finding Attachment");
+    my $attachment_regex = qr/(\d+):\s+$filename/;
+    expect_like($attachment_regex,"Attachment Uploaded");
+    expect_handle->before() =~ $attachment_regex;
+    my $attachment_id = $1;
+    expect_send("show ticket/$ticket_id/attachments/$attachment_id/content","Fetching Attachment");
+    open (my $fh, $attachment_path) or die "Can't open $attachment_path: $!";
+    my $attachment_content = do { local($/); <$fh> };
+    close $fh;
+    chomp $attachment_content;
+    expect_is($attachment_content,"Attachment contains original text");
+}
 
 1;

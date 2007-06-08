@@ -54,7 +54,7 @@ $Attr => undef
 <%ONCE>
 our ( $COLUMN_MAP );
 
-sub ColumnMap {
+my $ColumnMap = sub {
     my $name = shift;
     my $attr = shift;
 
@@ -79,14 +79,16 @@ sub ColumnMap {
             # For Image custom fields we also show a thumbnail here.
             return sub {
                 my $values = $_[0]->CustomFieldValues($field);
-                return map {
+                my @values =  map {
                     (
                         ($_->CustomFieldObj->Type eq 'Image')
                             ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
                             : $_->Content
                     ),
                     \'<br />',
-                } @{ $values->ItemsArrayRef }
+                } @{ $values->ItemsArrayRef };
+                pop @values; # Remove that last <br />
+                return @values;
             };
         }
     }
@@ -96,9 +98,9 @@ sub ColumnMap {
             return sub { return \$value };
         }
     }
-}
+};
 
-sub LinkCallback {
+my $LinkCallback = sub {
     my $method = shift;
 
     my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
@@ -116,7 +118,7 @@ sub LinkCallback {
             \'</a><br />',
         } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
     }
-}
+};
 
 $COLUMN_MAP = {
     QueueName => {
@@ -297,7 +299,7 @@ $COLUMN_MAP = {
 
     # Everything from LINKTYPEMAP
     (map {
-        $_ => { value => LinkCallback( $_ ) }
+        $_ => { value => $LinkCallback->( $_ ) }
     } keys %RT::Ticket::LINKTYPEMAP),
 
     '_CLASS' => {
@@ -314,5 +316,5 @@ $COLUMN_MAP = {
 </%ONCE>
 <%init>
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
-return ColumnMap($Name, $Attr);
+return $ColumnMap->( $Name, $Attr );
 </%init>

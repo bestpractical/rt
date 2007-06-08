@@ -52,6 +52,7 @@
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket"),
     actions => $actions &>
+<& /Elements/ListActions, actions => \@results &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 <& /Elements/Callback, _CallbackName => 'FormStart', ARGSRef => \%ARGS &>
@@ -206,8 +207,8 @@
 		 color => "#663366" &>
 
 <table>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></td></tr>
+<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
 </table>
 </&>
 <br />

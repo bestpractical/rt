@@ -48,8 +48,8 @@
 %# TODO: Better default handling
 
 <select name="<% $Name %>">
-% foreach my $value (@values) {
-<option value="<% $value %>" <% $value == $Default && 'SELECTED' %>>
+% foreach my $value ( @values ) {
+<option value="<% $value %>" <% $value == $Default? 'selected': '' %>>
 <% shift @labels %>
 </option>
 % }
@@ -58,6 +58,7 @@
 <%INIT>
 my @values = qw(0 10 25 50 100);
 my @labels = (loc('Unlimited'), qw(10 25 50 100));
+$Default = 50 unless defined $Default;
 </%INIT>
 <%ARGS>
 

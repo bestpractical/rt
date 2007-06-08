@@ -47,5 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Closed tickets') &>
 
-<& /SelfService/Elements/MyRequests, status => ['rejected', 'resolved'], friendly_status =>
-loc('closed') &>
+<& /SelfService/Elements/MyRequests, status          => ['rejected', 'resolved'], 
+                                     friendly_status => loc('closed'), 
+				     BaseURL         => $RT::WebPath . "/SelfService/Closed.html?", 
+				     Page            => $Page &>
+<%ARGS>
+$Page => 1
+</%ARGS>

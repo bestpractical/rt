@@ -282,6 +282,14 @@ Set($NotifyActor, 0);
 
 Set($RecordOutgoingEmail, 1);
 
+# VERP support (http://cr.yp.to/proto/verp.txt)
+# uncomment the following two directives to generate envelope senders
+# of the form ${VERPPrefix}${originaladdress}@${VERPDomain}
+# (i.e. rt-jesse=fsck.com@rt.example.com ) This currently only works
+# with sendmail and sendmailppie.
+# Set($VERPPrefix, 'rt-');
+# Set($VERPDomain, $RT::Organization);
+
 # }}}
 
 # {{{ Logging
@@ -355,8 +363,11 @@ Set($WebDefaultStylesheet, '3.5-default');
 # documents.
 
 # If you're putting the web ui somewhere other than at the root of
-# your server
-# $WebPath requires a leading / but no trailing /
+# your server, you should set $WebPath to the path you'll be 
+# serving RT at.
+# $WebPath requires a leading / but no trailing /.
+#
+# In most cases, you should leave $WebPath set to '' (an empty value).
 
 Set($WebPath, "");
 
@@ -459,12 +470,22 @@ Set($AutoCreate, undef);
 
 Set($AutoLogoff, 0);
 
+# By default, RT's session cookie isn't marked as "secure" Some web browsers 
+# will treat secure cookies more carefully than non-secure ones, being careful
+# not to write them to disk, only send them over an SSL secured connection 
+# and so on. To enable this behaviour, set # $WebSecureCookies to a true value. 
+# NOTE: You probably don't want to turn this on _unless_ users are only connecting
+# via SSL encrypted HTTP connections.
+
+Set($WebSecureCookies, 0);
+
+
 # By default, RT clears its database cache after every page view.
 # This ensures that you've always got the most current information 
 # when working in a multi-process (mod_perl or FastCGI) Environment
 # Setting $WebFlushDbCacheEveryRequest to '0' will turn this off,
 # which will speed RT up a bit, at the expense of a tiny bit of data 
-# accuracy
+# accuracy.
 
 Set($WebFlushDbCacheEveryRequest, '1');
 
@@ -476,16 +497,21 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 12000);
 
+# $DefaultSummaryRows is default number of rows displayed in for search
+# results on the frontpage.
+
+Set($DefaultSummaryRows, 10);
+
 # By default, RT shows newest transactions at the bottom of the ticket
 # history page, if you want see them at the top set this to '0'.  This
 # option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, '1');
 
-# $DefaultSummaryRows is default number of rows displayed in for search
-# results on the frontpage.
+# By default, RT shows images attached to incoming (and outgoing) ticket updates
+# inline. Set this variable to 0 if you'd like to disable that behaviour
 
-Set($DefaultSummaryRows, 10);
+Set($ShowTransactionImages, 1);
 
 
 # $HomepageComponents is an arrayref of allowed components on a user's
@@ -516,6 +542,18 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__ToldRelative__</small>',
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
+
+# If $SuppressInlineTextFiles is set to a true value, then uploaded
+# text files (text-type attachments with file names) are prevented
+# from being displayed in-line when viewing a ticket's history.
+
+Set($SuppressInlineTextFiles, undef);
+
+# If $DontSearchFileAttachments is set to a true value, then uploaded
+# files (attachments with file names) are not searched during full-content
+# ticket searches.
+
+Set($DontSearchFileAttachments, undef);
 
 
 # MakeClicky detects various formats of data in headers and email
@@ -583,7 +621,8 @@ Set($AmbiguousDayInPast , 1);
 
 # You can define new statuses and even reorder existing statuses here.
 # WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
-# will break horribly.
+# will break horribly. The statuses you add must be no longer than
+# 10 characters.
 
 Set(@ActiveStatus, qw(new open stalled));
 Set(@InactiveStatus, qw(resolved rejected deleted));

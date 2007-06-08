@@ -1,23 +1,19 @@
 #!/usr/bin/perl -w
+
 use strict;
 use warnings;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 79;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
 use RT::Ticket;
 
-my $q = RT::Queue->new($RT::SystemUser);
-my $queue = 'SearchTests-'.rand(200);
-$q->Create(Name => $queue);
+my $q = RT::Queue->new( $RT::SystemUser );
+my $queue = 'SearchTests-'. rand(200);
+$q->Create( Name => $queue );
 
-my @data = (
-    { Subject => '1', Requestor => 'bravo@example.com' },
-    { Subject => '2', Cc => 'alpha@example.com' },
-);
-
-my $total = 0;
+my ($total, @data, @tickets, %test) = (0, ());
 
 sub add_tix_from_data {
     my @res = ();
@@ -33,102 +29,108 @@ sub add_tix_from_data {
     }
     return @res;
 }
-add_tix_from_data();
 
+sub run_tests {
+    my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
+    foreach my $key ( sort keys %test ) {
+        my $tix = RT::Tickets->new($RT::SystemUser);
+        $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
+
+        my $error = 0;
+
+        my $count = 0;
+        $count++ foreach grep $_, values %{ $test{$key} };
+        is($tix->Count, $count, "found correct number of ticket(s) by '$key'") or $error = 1;
+
+        my $good_tickets = 1;
+        while ( my $ticket = $tix->Next ) {
+            next if $test{$key}->{ $ticket->Subject };
+            diag $ticket->Subject ." ticket has been found when it's not expected";
+            $good_tickets = 0;
+        }
+        ok( $good_tickets, "all tickets are good with '$key'" ) or $error = 1;
+
+        diag "Wrong SQL query for '$key':". $tix->BuildSelectQuery if $error;
+    }
+}
+
+@data = (
+    { Subject => 'xy', Requestor => ['x@example.com', 'y@example.com'] },
+    { Subject => 'x', Requestor => 'x@example.com' },
+    { Subject => 'y', Requestor => 'y@example.com' },
+    { Subject => '-', },
+    { Subject => 'z', Requestor => 'z@example.com' },
+);
+%test = (
+    'Requestor = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    'Requestor != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+
+    'Requestor = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
+    'Requestor != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
+
+    'Requestor LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'Requestor NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+
+    'Requestor IS NULL'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    'Requestor IS NOT NULL'        => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+
+    'Requestor = "x@example.com" AND Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    'Requestor = "x@example.com" OR Requestor = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+
+    'Requestor != "x@example.com" AND Requestor != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+    'Requestor != "x@example.com" OR Requestor != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+
+    'Requestor = "x@example.com" AND Requestor != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
+    'Requestor = "x@example.com" OR Requestor != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
+
+    'Requestor != "x@example.com" AND Requestor = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
+    'Requestor != "x@example.com" OR Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
+);
+@tickets = add_tix_from_data();
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     is($tix->Count, $total, "found $total tickets");
 }
+run_tests();
 
+@data = (
+    { Subject => 'xy', Cc => ['x@example.com'], Requestor => [ 'y@example.com' ] },
+    { Subject => 'x-', Cc => ['x@example.com'], Requestor => [] },
+    { Subject => '-y', Cc => [],                Requestor => [ 'y@example.com' ] },
+    { Subject => '-', },
+    { Subject => 'zz', Cc => ['z@example.com'], Requestor => [ 'z@example.com' ] },
+    { Subject => 'z-', Cc => ['z@example.com'], Requestor => [] },
+    { Subject => '-z', Cc => [],                Requestor => [ 'z@example.com' ] },
+);
+%test = (
+    'Cc = "x@example.com" AND Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
+    'Cc = "x@example.com" OR Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
+
+    'Cc != "x@example.com" AND Requestor = "y@example.com"' =>
+        { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
+    'Cc != "x@example.com" OR Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 1, 'z-' => 1, '-z' => 1 },
+
+    'Cc IS NULL AND Requestor = "y@example.com"' =>
+        { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
+    'Cc IS NULL OR Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 0, 'z-' => 0, '-z' => 1 },
+
+    'Cc IS NOT NULL AND Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
+    'Cc IS NOT NULL OR Requestor = "y@example.com"' =>
+        { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 1, 'z-' => 1, '-z' => 0 },
+);
+@tickets = add_tix_from_data();
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Requestor = 'bravo\@example.com'");
-    is($tix->Count, 1, "found ticket(s)");
-    is($tix->First->RequestorAddresses, 'bravo@example.com',"correct requestor");
+    $tix->FromSQL("Queue = '$queue'");
+    is($tix->Count, $total, "found $total tickets");
 }
-
-{
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Cc = 'alpha\@example.com'");
-    is($tix->Count, 1, "found ticket(s)");
-    is($tix->First->CcAddresses, 'alpha@example.com', "correct Cc");
-}
-
-{
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND (Cc = 'alpha\@example.com' OR Requestor = 'bravo\@example.com')");
-    is($tix->Count, 2, "found ticket(s)");
-    my @mails;
-    while (my $t = $tix->Next) {
-        push @mails, $t->RequestorAddresses;
-        push @mails, $t->CcAddresses;
-    }
-    @mails = sort grep $_, @mails;
-    is_deeply(\@mails, ['alpha@example.com', 'bravo@example.com'], "correct addresses");
-}
-
-{
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND (Cc = 'alpha\@example.com' AND Requestor = 'bravo\@example.com')");
-    is($tix->Count, 0, "found ticket(s)");
-}
-
-{
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Cc != 'alpha\@example.com'");
-    is($tix->Count, 1, "found ticket(s)");
-    is($tix->First->RequestorAddresses, 'bravo@example.com',"correct requestor");
-}
-
-@data = ( { Subject => '3' } );
-add_tix_from_data();
-
-{
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Cc != 'alpha\@example.com'");
-    is($tix->Count, 2, "found ticket(s)");
-    my @mails;
-    while (my $t = $tix->Next) { push @mails, ($t->CcAddresses||'') }
-    is( scalar(grep 'alpha@example.com' eq $_, @mails), 0, "no tickets with non required data");
-}
-
-{
-    # has no requestor search
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Requestor IS NULL");
-    is($tix->Count, 2, "found ticket(s)");
-    my @mails;
-    while (my $t = $tix->Next) { push @mails, ($t->RequestorAddresses||'') }
-    is( scalar(grep $_, @mails), 0, "no tickets with non required data");
-}
-
-{
-    # has at least one requestor search
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND Requestor IS NOT NULL");
-    is($tix->Count, 1, "found ticket(s)");
-    my @mails;
-    while (my $t = $tix->Next) { push @mails, ($t->RequestorAddresses||'') }
-    is( scalar(grep !$_, @mails), 0, "no tickets with non required data");
-}
-
-@data = ( { Subject => '3', Requestor => 'charly@example.com' } );
-add_tix_from_data();
-
-{
-    # has no requestor search
-    my $tix = RT::Tickets->new($RT::SystemUser);
-    $tix->FromSQL("Queue = '$queue' AND
-                   (Requestor = 'bravo\@example.com' OR Requestor = 'charly\@example.com')");
-    is($tix->Count, 2, "found ticket(s)");
-    my @mails;
-    while (my $t = $tix->Next) { push @mails, ($t->RequestorAddresses||'') }
-    is_deeply( [sort @mails],
-               ['bravo@example.com', 'charly@example.com'],
-               "requestor addresses are correct"
-             );
-}
+run_tests();
 
 # owner is special watcher because reference is duplicated in two places,
 # owner was an ENUM field now it's WATCHERFIELD, but should support old
@@ -137,12 +139,12 @@ my $nobody = RT::Nobody();
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Owner = '". $nobody->id ."'");
-    is($tix->Count, 4, "found ticket(s)");
+    ok($tix->Count, "found ticket(s)");
 }
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Owner = '". $nobody->Name ."'");
-    is($tix->Count, 4, "found ticket(s)");
+    ok($tix->Count, "found ticket(s)");
 }
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
@@ -158,7 +160,7 @@ my $nobody = RT::Nobody();
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Owner.Name LIKE 'nob'");
-    is($tix->Count, 4, "found ticket(s)");
+    ok($tix->Count, "found ticket(s)");
 }
 
 {
@@ -176,7 +178,7 @@ my $nobody = RT::Nobody();
 
     my $tix = RT::Tickets->new($RT::SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Owner = 'Nobody'");
-    is($tix->Count, 4, "found ticket(s)");
+    is($tix->Count, $total, "found ticket(s)");
 }
 
 {
@@ -189,7 +191,7 @@ my $nobody = RT::Nobody();
     ok($id, "granted OwnTicket right to Everyone on '$queue'") or diag("error: $msg");
 
     my $u = RT::User->new( $RT::SystemUser );
-    $u->LoadByCols( EmailAddress => 'alpha@example.com' );
+    $u->LoadOrCreateByEmail('alpha@example.com');
     ok($u->id, "loaded user");
     @data = ( { Subject => '4', Owner => $u->id } );
     my($t) = add_tix_from_data();
@@ -197,7 +199,7 @@ my $nobody = RT::Nobody();
     my $u_alpha_id = $u->id;
 
     $u = RT::User->new( $RT::SystemUser );
-    $u->LoadByCols( EmailAddress => 'bravo@example.com' );
+    $u->LoadOrCreateByEmail('bravo@example.com');
     ok($u->id, "loaded user");
     @data = ( { Subject => '5', Owner => $u->id } );
     ($t) = add_tix_from_data();
@@ -211,5 +213,6 @@ my $nobody = RT::Nobody();
                  );
     is($tix->Count, 2, "found ticket(s)");
 }
+
 
 exit(0)

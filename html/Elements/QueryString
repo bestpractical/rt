@@ -56,7 +56,7 @@ while ( my ($key, $value) = each %ARGS ){
     push @params, $key."=".$m->interp->apply_escapes($_, 'u')
       for @{$value};
   } else {
-    push @params, $key."=".$m->interp->apply_escapes($value,'u');
+    push @params, $key."=".$m->interp->apply_escapes($value||"",'u');
   }
     }
 }

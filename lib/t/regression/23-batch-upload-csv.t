@@ -35,6 +35,7 @@ my @results = $action->CreateByTemplate();
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL ("Queue = '". $QUEUE."'");
+$tix->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 ok($tix->Count);
 my $first = $tix->First();
 is($first->Subject(), 'hi'); 

@@ -61,7 +61,9 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         substr($col,-1,1) = "";
     }
 
-    my $colref;
+    my $colref = {
+        title => '',
+    };
 
     if ( $col =~ s!/STYLE:([^/]+)!!io ) {
         $colref->{'style'} = $1;
@@ -90,7 +92,7 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'attribute'} = $col;
     }
     
-    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
+    if ( !$colref->{'title'} && grep { /^__(.+?)__$/io }
         @{ $colref->{'output'} } )
     {   
         $colref->{'title'}     = $1;

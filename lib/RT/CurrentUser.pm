@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::CurrentUser - an RT object representing the current user
@@ -342,7 +341,7 @@ specification. but currently doesn't
 
 ok (my $cu = RT::CurrentUser->new('root'));
 ok (my $lh = $cu->LanguageHandle('en-us'));
-ok ($lh != undef);
+ok (defined $lh);
 ok ($lh->isa('Locale::Maketext'));
 is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
 SKIP: {

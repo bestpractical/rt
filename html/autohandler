@@ -50,6 +50,7 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
+
 if (RT->Config->Get('StatementLog')) {
     $RT::Handle->ClearSQLStatementLog;
     $RT::Handle->LogSQLStatements(1);
@@ -91,13 +92,23 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
         : $_
 } %ARGS;
 
+# Latter in the code we use
+# $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
+# instead of $m->call_next to avoid problems with UTF8 keys in arguments.
+# The call_next method pass through original arguments and if you have
+# an argument with unicode key then in a next component you'll get two
+# records in the args hash: one with key without UTF8 flag and another
+# with the flag, which may result into errors. "{ base_comp => $m->request_comp }"
+# is copied from mason's source to get the same results as we get from
+# call_next method, this feature is not documented, so we just leave it
+# here to avoid possible side effects.
+
 # This code canonicalizes time inputs in hours into minutes
 foreach my $field ( keys %ARGS ) {
     next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{ $1 };
     my $local = $1;
-    $ARGS{$local} =~ s|\b (?: (\d+) \s+ )? (\d+)/(\d+) \b
-                      |$1 + $3 ? $2 / $3 : 0
-                      |xe;
+    $ARGS{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
+                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
     if ( $ARGS{$field} && $ARGS{$field} =~ /hours/i ) {
         $ARGS{$local} *= 60;
     }
@@ -117,7 +128,7 @@ $r->content_type("text/html; charset=utf-8");
 
 # If it's a noauth file, don't ask for auth.
 if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
-    $m->call_next( %ARGS );
+    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
     $m->abort;
 }
 # If RT is configured for external auth, let's go through and get REMOTE_USER
@@ -242,11 +253,13 @@ unless( $session{'CurrentUser'} ) {
             $m->comp( '/Elements/Login', %ARGS,
                       Error => loc('Your username or password is incorrect'),
                     );
+            $m->comp( '/Elements/Callback', %ARGS, _CallbackName => 'FailedLogin' );
             $m->abort;
         }
         $session{'CurrentUser'} = $user_obj;
         $RT::Logger->info(
             "Successful login for $user from $ENV{'REMOTE_ADDR'}");
+        $m->comp( '/Elements/Callback', %ARGS, _CallbackName => 'SuccessfulLogin' );
     }
     # if no credentials then show him login page
     else {
@@ -266,20 +279,20 @@ unless ( $session{'CurrentUser'}->Privileged ) {
     if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html'
          && $ARGS{'id'} )
     {
-        $m->comp("/SelfService/Display.html", %ARGS);
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".$ARGS{'id'});
     }
 
     # otherwise, drop the user at the SelfService default page
     elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
-        $m->comp('/SelfService/index.html');
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/");
     }
     # if user is in SelfService dir let him do anything
     else {
-        $m->call_next(%ARGS);
+        $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
     }
 }
 else {
-    $m->call_next(%ARGS);
+    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
 }
 
 $m->comp( '/Elements/Footer', %ARGS );

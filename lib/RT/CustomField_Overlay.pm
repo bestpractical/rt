@@ -198,7 +198,8 @@ sub Create {
         unless ( $queue->CurrentUserHasRight('AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
+        $args{'LookupType'} = 'RT::Queue-RT::Ticket';
+        $args{'Queue'} = $queue->Id;
     }
 
     my ($ok, $msg) = $self->_IsValidRegex($args{'Pattern'});
@@ -399,7 +400,8 @@ sub AddValue {
         return (0, $self->loc('Permission Denied'));
     }
 
-    unless (length $args{'Name'}) {
+    # allow zero value
+    if ( !defined $args{'Name'} || $args{'Name'} eq '' ) {
         return(0, $self->loc("Can't add a custom field value without a name"));
     }
 
@@ -871,10 +873,10 @@ sub AddToObject {
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
-    my ( $ret, $msg ) =
+    my ( $oid, $msg ) =
       $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
-    return ( $ret, $msg );
+    return ( $oid, $msg );
 }
 
 
@@ -905,9 +907,10 @@ sub RemoveFromObject {
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    my ( $ret, $msg ) = $ObjectCF->Delete;
+    # XXX: Delete doesn't return anything
+    my ( $oid, $msg ) = $ObjectCF->Delete;
 
-    return ( $ret, $msg );
+    return ( $oid, $msg );
 }
 
 # {{{ AddValueForObject

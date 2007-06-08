@@ -47,15 +47,19 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="approval">
   <div class="name">
-    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font>
+    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)
   </div>
 % if ($ShowApproving) {
 %     foreach my $approving ( $ticket->AllDependedOnBy( Type => 'ticket' ) ) {
   <div class="originating-ticket">
     <span class="link"><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a></span>
     <div class="info">
+% if ($ShowCustomFields) {
       <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
+% }
+% if ($ShowHistory) {
       <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+% }
     </div>
   </div>
 %     }
@@ -84,5 +88,7 @@
 </div>
 <%ARGS>
 $ShowApproving => 1
+$ShowCustomFields => 1
+$ShowHistory => 1
 $ticket => undef
 </%ARGS>

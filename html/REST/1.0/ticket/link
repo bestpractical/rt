@@ -74,7 +74,7 @@ my %lfields = (
 
 # http://.../REST/1.0/ticket/link/1
 
-$object =~ s#^/##;
+$object =~ s#^/REST/1.0/ticket/link##;
 if ($id && $object && $id != $object) {
     $output = "Different ids in URL (`$object') and submitted form (`$id').\n";
     $status = "400 Bad Request";
@@ -111,6 +111,9 @@ my $op = $del ? "DeleteLink" : "AddLink";
 ($n, $output) = $ticket->$op(Type => $type, $mode => $to);
 if ($n == 0) {
     $status = "500 Error";
+} else {
+    my $action = $del ? "Deleted" : "Created";
+    $output .= " $action link " . $ticket->Id . " $rel $to";
 }
 
 OUTPUT:
