@@ -62,7 +62,7 @@
 <table>
 % }
 % $i++;
-  <tr>
+  <tr id="CF-<%$CustomField->id%>-EditRow">
     <td class="labeltop">
       <b><%$CustomField->Name%></b><br />
       <i><%$CustomField->FriendlyType%></i>

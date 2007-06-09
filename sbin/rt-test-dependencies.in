@@ -212,7 +212,7 @@ Regexp::Common
 Scalar::Util
 Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
-XML::Simple
+UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
 .
@@ -263,7 +263,7 @@ Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
 Pod::Tests
-File::Find
+XML::Simple
 File::Find
 .
 

@@ -62,19 +62,31 @@ BEGIN {
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-my $field = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-[a-z0-9_ -]+)';
 
+# WARN: this code is duplicated in bin/rt.in,
+# change both functions at once
 sub expand_list {
     my ($list) = @_;
-    my ($elt, @elts, %elts);
 
-    foreach $elt (split /,/, $list) {
-        if ($elt =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
-        else                         { push @elts, $elt }
+    my @elts;
+    foreach (split /,/, $list) {
+        push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
-    @elts{@elts}=();
-    return sort {$a<=>$b} keys %elts;
+    return map $_->[0], # schwartzian transform
+        sort {
+            defined $a->[1] && defined $b->[1]?
+                # both numbers
+                $a->[1] <=> $b->[1]
+                :!defined $a->[1] && !defined $b->[1]?
+                    # both letters
+                    $a->[2] cmp $b->[2]
+                    # mix, number must be first
+                    :defined $a->[1]? -1: 1
+        }
+        map [ $_, (defined( /^(\d+)$/ )? $1: undef), lc($_) ],
+        @elts;
 }
 
 # Returns a reference to an array of parsed forms.

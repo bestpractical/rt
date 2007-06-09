@@ -329,9 +329,19 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
+Ticket links can be set up during create by passing the link type as a hask key and
+the ticket id to be linked to as a value (or a URI when linking to other objects).
+Multiple links of the same type can be created by passing an array ref. For example:
+
+  Parent => 45,
+  DependsOn => [ 15, 22 ],
+  RefersTo => 'http://www.bestpractical.com',
+
+Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
+C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
+C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
-
 
 =begin testing
 
@@ -465,8 +475,8 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug(
-            "Got a $args{'Status'} ticket with no resolved date"
+        $RT::Logger->debug( "Got a ". $args{'Status'}
+            ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->SetToNow;
     }
@@ -1498,7 +1508,7 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -3143,12 +3153,13 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    my $trans;
-    ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
-                                             Field     => 'Owner',
-                                             NewValue  => $NewOwnerObj->Id,
-                                             OldValue  => $OldOwnerObj->Id,
-                                             TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",

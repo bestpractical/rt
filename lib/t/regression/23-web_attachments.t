@@ -21,7 +21,7 @@ $m->content_like(qr/Logout/, 'we did log in');
 
 my $qid;
 {
-    $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msi;
+    $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
     ok( $qid = $1, "found id of the '$queue_name' queue");
 }
 
@@ -31,7 +31,7 @@ $m->submit;
 is($m->status, 200, "request successful");
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
 
-$m->form('TicketCreate');
+$m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 $m->field('Attach',  LogoFile);
 $m->field('Content', 'Some content');
@@ -43,12 +43,12 @@ $m->content_like(qr/Some content/, 'and content');
 $m->content_like(qr/Download bplogo\.gif/, 'page has file name');
 
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
-$m->form('TicketUpdate');
+$m->form_name('TicketUpdate');
 $m->field('Attach',  LogoFile);
 $m->click('AddMoreAttach');
 is($m->status, 200, "request successful");
 
-$m->form('TicketUpdate');
+$m->form_name('TicketUpdate');
 $m->field('Attach',  FaviconFile);
 $m->field('UpdateContent', 'Message');
 $m->click('SubmitTicket');

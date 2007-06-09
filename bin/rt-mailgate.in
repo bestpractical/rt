@@ -54,6 +54,7 @@ rt-mailgate - Mail interface to RT3.
 
 
 use strict;
+use warnings;
 use Getopt::Long;
 use LWP::UserAgent;
 
@@ -78,10 +79,11 @@ my $ua      = LWP::UserAgent->new();
 $ua->cookie_jar( { file => $opts{jar} } );
 
 my %args = (
-    queue   => $opts{queue},
-    action  => $opts{action},
-    SessionType => 'REST',    # Surpress login box
+    SessionType => 'REST', # Surpress login box
 );
+foreach ( qw(queue action) ) {
+    $args{$_} = $opts{$_} if defined $opts{$_};
+};
 
 # Read the message in from STDIN
 $args{'message'} = do { local (@ARGV, $/); <> };

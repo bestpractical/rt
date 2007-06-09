@@ -3,7 +3,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,8 @@ use vars qw($PROMPT $VERSION $Nobody $SystemUser $item);
 use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions
             @Templates @CustomFields @Scrips @Attributes @Initial @Final);
 
-use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
 
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its
@@ -234,50 +235,50 @@ sub insert_acl {
 
 sub insert_schema {
     my $base_path = (shift || $RT::EtcPath);
-    my $file = get_version_file( $base_path . "/schema." . $db_type );
-    unless ( $file ) {
-        die "Couldn't find schema file in '$base_path' dir";
-    }
-    unless ( -f $file || -r $file ) {
-        die "File '$file' doesn't exist or couldn't be read";
-    }
-
     my (@schema);
     print "Creating database schema.\n";
 
-    open my $fh_schema, "<$file";
+    my $schema_file = get_version_file( $base_path . "/schema." . $db_type );
+    if ( -f $schema_file ) {
+        open( SCHEMA, "<$schema_file"  ) or die "Can't open $schema_file: $!";
+        my @lines = <SCHEMA>;
 
-    my $has_local = 0;
-    open my $fh_schema_local, "<" . get_version_file( $RT::LocalEtcPath . "/schema." . $db_type )
-        and $has_local = 1;
-
-    my $statement = "";
-    foreach my $line ( <$fh_schema>, ($_ = ';;'), $has_local? <$fh_schema_local>: () ) {
-        $line =~ s/\#.*//g;
-        $line =~ s/--.*//g;
-        $statement .= $line;
-        if ( $line =~ /;(\s*)$/ ) {
-            $statement =~ s/;(\s*)$//g;
-            push @schema, $statement;
-            $statement = "";
+        my $local_schema_file = get_version_file( $RT::LocalEtcPath . "/schema." . $db_type );
+        if (-f $local_schema_file) {
+            open( SCHEMA_LOCAL, "<$local_schema_file" )
+                or die "Can't open $local_schema_file: $!";
+            push @lines, ';;', <SCHEMA_LOCAL>;
         }
-    }
-    close $fh_schema; close $fh_schema_local;
 
-    local $SIG{__WARN__} = sub {};
-    my $is_local = 0; # local/etc/schema needs to be nonfatal.
-    $dbh->begin_work or die $dbh->errstr;
-    foreach my $statement (@schema) {
-        if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
-
-        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
-        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-        unless ( $sth->execute or $is_local ) {
-            die "Problem with statement:\n$statement\n" . $sth->errstr;
+        my $statement = "";
+        foreach my $line (@lines) {
+            $line =~ s/\#.*//g;
+            $line =~ s/--.*//g;
+            $statement .= $line;
+            if ( $line =~ /;(\s*)$/ ) {
+                $statement =~ s/;(\s*)$//g;
+                push @schema, $statement;
+                $statement = "";
+            }
         }
-    }
-    $dbh->commit or die $dbh->errstr;
 
+        local $SIG{__WARN__} = sub {};
+        my $is_local = 0; # local/etc/schema needs to be nonfatal.
+        $dbh->begin_work or die $dbh->errstr;
+        foreach my $statement (@schema) {
+            if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
+
+            print STDERR "SQL: $statement\n" if defined $args{'debug'};
+            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+            unless ( $sth->execute or $is_local ) {
+                die "Problem with statement:\n $statement\n" . $sth->errstr;
+            }
+        }
+        $dbh->commit or die $dbh->errstr;
+    }
+    else {
+        die "Couldn't find schema file for " . $db_type . "\n";
+    }
     print "Done setting up database schema.\n";
 }
 
@@ -433,10 +434,13 @@ sub insert_data {
             }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)\n" and next unless $return;
+            unless( $return ) {
+                print "(Error: $msg)\n";
+                next;
+            }
 
             foreach my $value ( @{$values} ) {
-                ( $return, $msg ) = $new_entry->AddValue(%$value);
+                my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 print "(Error: $msg)\n" unless $return;
             }
 
@@ -445,7 +449,7 @@ sub insert_data {
                 my $ocf = RT::ObjectCustomField->new( $CurrentUser );
                 $ocf->Create( CustomField => $new_entry->Id );
             }
-       
+
             for my $q (@queues) {
                 my $q_obj = RT::Queue->new($CurrentUser);
                 $q_obj->Load($q);

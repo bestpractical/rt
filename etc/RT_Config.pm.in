@@ -282,6 +282,15 @@ Set($NotifyActor, 0);
 
 Set($RecordOutgoingEmail, 1);
 
+# VERP support (http://cr.yp.to/proto/verp.txt)
+# uncomment the following two directives to generate envelope senders
+# of the form ${VERPPrefix}${originaladdress}@${VERPDomain}
+# (i.e. rt-jesse=fsck.com@rt.example.com ) This currently only works
+# with sendmail and sendmailppie.
+# Set($VERPPrefix, 'rt-');
+# Set($VERPDomain, $RT::Organization);
+
+
 # By default, RT forwards a message using queue's address and adds RT's tag into
 # subject of the outgoing message, so recipients' replies go into RT as correspondents.
 # To change this behavior, set $ForwardFromUser to 0 and RT will use address of the
@@ -529,16 +538,21 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 12000);
 
+# $DefaultSummaryRows is default number of rows displayed in for search
+# results on the frontpage.
+
+Set($DefaultSummaryRows, 10);
+
 # By default, RT shows newest transactions at the bottom of the ticket
 # history page, if you want see them at the top set this to '0'.  This
 # option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, '1');
 
-# $DefaultSummaryRows is default number of rows displayed in for search
-# results on the frontpage.
+# By default, RT shows images attached to incoming (and outgoing) ticket updates
+# inline. Set this variable to 0 if you'd like to disable that behaviour
 
-Set($DefaultSummaryRows, 10);
+Set($ShowTransactionImages, 1);
 
 
 # $HomepageComponents is an arrayref of allowed components on a user's

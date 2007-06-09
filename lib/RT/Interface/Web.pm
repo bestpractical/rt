@@ -64,14 +64,14 @@ use_ok(RT::Interface::Web);
 =cut
 
 
-package RT::Interface::Web;
 
 use strict;
 use warnings;
 
-use URI qw();
+package RT::Interface::Web;
 
 use RT::SavedSearches;
+use URI qw();
 
 # {{{ EscapeUTF8
 
@@ -215,9 +215,6 @@ sub StaticFileHeaders {
 
 
 package HTML::Mason::Commands;
-
-use strict;
-use warnings;
 
 use vars qw/$r $m %session/;
 
@@ -457,7 +454,7 @@ sub CreateTicket {
     }
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
-    unless ( $id && $Trans ) {
+    unless ( $id ) {
         Abort($ErrMsg);
     }
 
@@ -1286,7 +1283,8 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{ $arg } || '';
+            @values = split /\r*\n/, $args{'ARGS'}->{ $arg }
+                if defined $args{'ARGS'}->{ $arg };
         }
         @values = grep $_ ne '',
             map {
@@ -1669,6 +1667,7 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
+    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }

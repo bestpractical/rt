@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -247,6 +247,7 @@ sub CleanSlate {
         _sql_transalias
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
+        _sql_u_watchers_aliases
     );
 }
 
@@ -967,15 +968,24 @@ sub _WatcherLimit {
             );
         }
     } else {
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        my $users = $self->NewAlias('Users');
-        $self->SUPER::Limit(
-            LEFTJOIN      => $group_members,
-            ALIAS         => $group_members,
-            FIELD         => 'MemberId',
-            VALUE         => "$users.id",
-            QUOTEVALUE    => 0,
+        my $group_members = $self->_GroupMembersJoin(
+            GroupsAlias => $groups,
+            New => 0,
         );
+
+        my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
+        unless ( $users ) {
+            $users = $self->{'_sql_u_watchers_aliases'}{$group_members} = 
+                $self->NewAlias('Users');
+            $self->SUPER::Limit(
+                LEFTJOIN      => $group_members,
+                ALIAS         => $group_members,
+                FIELD         => 'MemberId',
+                VALUE         => "$users.id",
+                QUOTEVALUE    => 0,
+            );
+        }
+
         $self->_SQLLimit(
             ALIAS         => $users,
             FIELD         => $rest{SUBKEY},
@@ -1001,13 +1011,13 @@ sub _RoleGroupsJoin {
     return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Type'} } && !$args{'New'};
 
+    # XXX: this has been fixed in DBIx::SB-1.48
     # XXX: if we change this from Join to NewAlias+Limit
-    # then Pg will complain because SB build wrong query.
+    # then Pg and mysql 5.x will complain because SB build wrong query.
     # Query looks like "FROM (Tickets LEFT JOIN CGM ON(Groups.id = CGM.GroupId)), Groups"
     # Pg doesn't like that fact that it doesn't know about Groups table yet when
     # join CGM table into Tickets. Problem is in Join method which doesn't use
     # ALIAS1 argument when build braces.
-    # XXX: this should be fixed in DBIx::SB-1.46
 
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->Join(

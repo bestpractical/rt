@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 148;
+use Test::More tests => 202;
 
 use RT;
 RT::LoadConfig();
@@ -352,6 +352,46 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     expect_like(qr/Owner changed from fooser$$ to root/, '...and succeeds.');
 }
 # }}}
+
+# {{{ test ticket linking
+    my @link_relns = ( 'DependsOn', 'DependedOnBy', 'RefersTo', 'ReferredToBy',
+                       'MemberOf', 'HasMember', );
+    my %display_relns = map { $_ => $_ } @link_relns;
+    $display_relns{HasMember} = 'Members';
+
+    my $link1_id = ok_create_ticket( "LinkTicket1-$$" );
+    my $link2_id = ok_create_ticket( "LinkTicket2-$$" );
+
+    foreach my $reln (@link_relns) {
+        # create link
+        expect_send("link $link1_id $reln $link2_id", "Link by $reln...");
+        expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
+        expect_send("show ticket/$link1_id/links", "Checking creation of $reln...");
+        expect_like(qr/$display_relns{reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
+
+        # delete link
+        expect_send("link -d $link1_id $reln $link2_id", "Delete $reln...");
+        expect_like(qr/Deleted link $link1_id $reln $link2_id/, 'Deleted');
+        expect_send("show ticket/$link1_id/links", "Checking removal of $reln...");
+        ok( expect_handle->before() !~ /\Q$display_relns{$reln}: \E[\w\d\.\-]+:\/\/[w\d\.]+\/ticket\/$link2_id/, "Removed link $reln" );
+        #expect_unlike(qr/\Q$reln: \E[\w\d\.]+\Q://\E[w\d\.]+\/ticket\/$link2_id/, "Removed link $reln");
+
+    }
+# }}}
+
+
+# helper function
+sub ok_create_ticket {
+    my $subject = shift;
+
+    expect_send("create -t ticket set subject='$subject'", 'Creating ticket...');
+    expect_like(qr/Ticket \d+ created/, "Created ticket '$subject'");
+    expect_handle->before() =~ /Ticket (\d+) created/;
+    my $id = $1;
+    ok($id, "Got ticket id=$id");
+    
+    return $id;
+}
 
 # wrap up all the file handling stuff for attachment testing
 sub check_attachment {

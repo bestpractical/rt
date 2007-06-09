@@ -145,17 +145,17 @@ msgstr ""
 #: bin/rt-crontool:247
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr "%1 - Especifica el módulo de accion que quieres usar"
+msgstr "%1 - Especifica el modulo de acción que quieres usar"
 
 #: bin/rt-crontool:241
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr "%1 - Especifica el módulo de condición que quieres usar"
+msgstr "%1 - Especifica el modulo de condición que quieres usar"
 
 #: bin/rt-crontool:234
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr "%1 - Especifica el módulo de búsqueda que quieres usar"
+msgstr "%1 - Especifica el modulo de búsqueda que quieres usar"
 
 #: bin/rt-crontool:259
 #. ("--transaction-type")
@@ -238,15 +238,11 @@ msgstr "%1 borrado"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 grouped by %2"
-
-#: html/Search/Chart:71
-#. ($Query, $PrimaryGroupBy)
-msgid "%1 grouped by %2"
-msgstr ""
+msgstr "%1 agrupado por %2"
 
 #: etc/initialdata:593
 msgid "%1 highest priority tickets I own"
-msgstr "Los %1 tickets de mayor prioridad que poseo..."
+msgstr "%1 casos de mayor prioridad que poseo"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I own..."
@@ -285,7 +281,7 @@ msgstr "%1 min"
 
 #: etc/initialdata:601
 msgid "%1 newest unowned tickets"
-msgstr "Los %1 tickets más recientes sin propietario"
+msgstr "%1 más nuevos casos sin propietario"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 not shown"
@@ -428,7 +424,7 @@ msgstr "(Ninguno)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Envia una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email. <b>NO</b> cambia quien recibirá futuras actualizaciones)"
+msgstr "(Envía una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email. <b>NO</b> cambia quien recibirá futuras actualizaciones)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
@@ -436,35 +432,35 @@ msgstr "(Envía una copia oculta de esta actualización a una lista de direccion
 
 #: html/Ticket/Update.html:90
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(Envía una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email. <strong>No</strong> cambia quien recibirá futuras actualizaciones.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Envia una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email administrativas. Estas personas <b>recibirán</b> las futuras actualizaciones.)"
+msgstr "(Envía una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email administrativas. Estas personas <b>recibirán</b> las futuras actualizaciones.)"
 
 #: html/Ticket/Create.html:103
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Envía una copia de esta actualización a una lista delimitada por comas de direcciones de email administrativas. Estas personas <strong>recibirán</strong> futuras actualizaciones.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Envia una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email.<b>NO</b> cambia quien recibirá futuras actualizaciones."
+msgstr "(Envía una copia oculta de esta actualización a una lista delimitada por comas de direcciones de email.<b>NO</b> cambia quien recibirá futuras actualizaciones."
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "(Manda una copia de esta actualización a una lista de direcciones de correo delimitada por comas. <b>No</b> cambia a quien recibirá futuras actualizaciones.)"
+msgstr "(Envía una copia de esta actualización a una lista de direcciones de correo delimitada por comas. <b>No</b> cambia quien recibirá futuras actualizaciones.)"
 
 #: html/Ticket/Update.html:86
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(Envía una copia de esta actualización a una lista de direcciones de correo delimitada por comas. <strong>No</strong> cambia quien recibirá futuras actualizaciones.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Envia una copia de esta actualización a una lista de direcciones de correo delimitada por comas. Estas personas <b>recibirán</b> actualizaciones futuras."
+msgstr "(Envía una copia de esta actualización a una lista de direcciones de correo delimitada por comas. Estas personas <b>recibirán</b> actualizaciones futuras."
 
 #: html/Ticket/Create.html:93
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Envía una copia de esta actualización a una lista de direcciones de correo delimitada por comas. Estas personas <strong>recibirán</strong> futuras actualizaciones."
 
 #: html/Admin/Elements/EditScrip:96
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -557,7 +553,7 @@ msgstr ""
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nuevo caso en\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -687,7 +683,7 @@ msgstr "Añadir un scrip que se aplicará a todas las colas"
 
 #: html/Search/Build.html:109 html/Search/Build.html:94
 msgid "Add and Search"
-msgstr ""
+msgstr "Añadir y Buscar"
 
 #: html/Search/Bulk.html:124
 msgid "Add comments or replies to selected tickets"
@@ -703,7 +699,7 @@ msgstr "Añadir nuevos observadores"
 
 #: html/Search/Build.html:85
 msgid "Add these terms to your search"
-msgstr ""
+msgstr "Añadir estos términos a tu búsqueda"
 
 #: html/Search/Bulk.html:158
 msgid "Add values"
@@ -711,6 +707,7 @@ msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "Add, delete and modify custom field values for objects"
+msgstr "Añadir, borrar y modificar campo personalizo para objetos"
 
 #: html/Search/Bulk.html:159
 msgid "Add values"
@@ -856,7 +853,7 @@ msgstr "Todas las colas"
 
 #: NOT FOUND IN SOURCE
 msgid "Always sends a message to the requestors independent of message sender"
-msgstr "Siempre envia un mensaje a los solicitantes independientemente del remitente del mensaje"
+msgstr "Siempre envía un mensaje a los solicitantes independientemente del remitente del mensaje"
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
@@ -1104,7 +1101,7 @@ msgstr "No se puede fusionar dentro de un caso ya fusionado. Nunca deberia recib
 #: html/Widgets/SavedSearch:63
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "No se puede grabar esta búsqueda"
 
 #: html/Search/Build.html:290
 msgid "Can't save this search"
@@ -1149,7 +1146,7 @@ msgstr "Hijo"
 
 #: html/NoAuth/js/util.js:201
 msgid "Choose a date"
-msgstr ""
+msgstr "Elije una fecha"
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
@@ -1161,10 +1158,6 @@ msgstr "Borrar Todo"
 
 #: html/Helpers/CalPopup.html:51
 msgid "Close window"
-
-#: html/Helpers/CalPopup.html:6
-msgid "Close window"
-msgstr ""
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1180,10 +1173,6 @@ msgstr "Casos cerrados"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-
-#: lib/RT/CustomField_Overlay.pm:89
-msgid "Combobox: Select or enter multiple values"
-msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
@@ -1726,7 +1715,7 @@ msgstr "Permisos actuales"
 
 #: html/Search/Elements/EditQuery:47
 msgid "Current search"
-msgstr ""
+msgstr "Búsqueda actual"
 
 #: NOT FOUND IN SOURCE
 msgid "Current search criteria"
@@ -2107,10 +2096,7 @@ msgstr "Editar Consulta"
 
 #: html/Ticket/Elements/Tabs:214
 msgid "Edit Search"
-
-#: html/Ticket/Elements/Tabs:207
-msgid "Edit Search"
-msgstr ""
+msgstr "Editar Búsqueda"
 
 #: html/Admin/Queues/Templates.html:63
 #. ($QueueObj->Name)
@@ -2457,7 +2443,7 @@ msgstr "Encabezados completos"
 
 #: html/Tools/Offline.html:85
 msgid "Get template from file"
-msgstr "Obtener plantilla desde fichero"
+msgstr "Obtener plantilla de fichero"
 
 #: NOT FOUND IN SOURCE
 msgid "Getting the current user from a pgp sig\\n"
@@ -2504,7 +2490,7 @@ msgstr "Ir"
 
 #: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:66 html/Admin/Users/index.html:73 html/Elements/RefreshHomepage:48 html/Search/Results.html:74 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57
 msgid "Go!"
-msgstr " Ir "
+msgstr "¡Ir!"
 
 #: NOT FOUND IN SOURCE
 msgid "Good pgp sig from %1\\n"
@@ -2641,11 +2627,11 @@ msgstr "Si una aprobación es rechazada, rechazar la original y borrar las aprob
 
 #: html/Tools/Offline.html:74
 msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr "Si no es especificado un Solicitante, crear tickets con este solicitante."
+msgstr "Si no se especifica ningún Solicitante, crear casos con este solicitante."
 
 #: html/Tools/Offline.html:65
 msgid "If no queue is specified, create tickets in this queue."
-msgstr "Si no es especificada una cola, crear tickets en esta cola."
+msgstr "Si no se especifica ninguna cola, crear casos en esta cola."
 
 #: bin/rt-crontool:267
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -3137,11 +3123,11 @@ msgstr "Mensaje"
 
 #: html/Ticket/Elements/ShowTransactionAttachments:164
 msgid "Message body not shown because it is too large or is not plain text."
-msgstr ""
+msgstr "Cuerpo del mensaje no mostrado porque es muy largo o no es texto plano."
 
 #: lib/RT/Ticket_Overlay.pm:2451
 msgid "Message could not be recorded"
-msgstr "Mensaje no pudo ser grabado"
+msgstr "Mensaje no puedo ser grabado"
 
 #: lib/RT/Ticket_Overlay.pm:2454
 msgid "Message recorded"
@@ -3149,11 +3135,11 @@ msgstr "Mensaje grabado"
 
 #: html/Ticket/Elements/PreviewScrips:122
 msgid "Messages about this ticket will not be sent to..."
-msgstr "Mensajes acerca de este ticket no seran enviados..."
+msgstr "Mensajes acerca de este caso no serán enviados a..."
 
 #: html/Elements/SelectTimeUnits:47
 msgid "Minutes"
-msgstr ""
+msgstr "Minutos"
 
 #: html/Search/Build.html:490 lib/RT/Report/Tickets.pm:445
 msgid "Mismatched parentheses"
@@ -3478,7 +3464,7 @@ msgstr "Mis aprobaciones"
 
 #: html/Search/Elements/SearchPrivacy:50 html/Search/Elements/SelectSearchObject:53 html/Search/Elements/SelectSearchesForObjects:54
 msgid "My saved searches"
-msgstr "Mis búsquedas guardadas"
+msgstr "Mis búsquedas salvadas"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
 msgid "Name"
@@ -3538,7 +3524,7 @@ msgstr "Nueva cola"
 
 #: html/Ticket/Elements/Reminders:118
 msgid "New reminder:"
-msgstr ""
+msgstr "Nuevo recordatorio:"
 
 #: NOT FOUND IN SOURCE
 msgid "New request"
@@ -3740,7 +3726,7 @@ msgstr "No hay búsqueda sobre la que operar"
 
 #: html/Elements/RT__Ticket/ColumnMap:137 html/Search/Results.rdf:78
 msgid "No subject"
-msgstr "No hay asunto"
+msgstr "Sin asunto"
 
 #: NOT FOUND IN SOURCE
 msgid "No ticket id specified"
@@ -4241,7 +4227,7 @@ msgstr "La prioridad empieza en"
 
 #: html/Search/Elements/EditSearches:50
 msgid "Privacy:"
-msgstr ""
+msgstr "Privadas:"
 
 #: etc/initialdata:25
 msgid "Privileged"
@@ -4332,11 +4318,11 @@ msgstr "Colas en las que YO soy AdminCc"
 
 #: html/Elements/Quicksearch:47 html/Prefs/Elements/Tabs:58 html/Prefs/Quicksearch.html:70
 msgid "Quick search"
-msgstr ""
+msgstr "Búsqueda rápida"
 
 #: html/Elements/QuickCreate:47
 msgid "Quick ticket creation"
-msgstr ""
+msgstr "Creación rápida de caso"
 
 #: html/Search/Results.html:81
 msgid "RSS"
@@ -4459,7 +4445,7 @@ msgstr "RT cree que este mensaje puede ser un mensaje rebotado"
 
 #: html/Search/Simple.html:58
 msgid "RT will look for anything else you enter in ticket subjects."
-msgstr ""
+msgstr "RT buscará por cualquier otra cosa en los asuntos de los casos."
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -4548,7 +4534,7 @@ msgstr "Recordatorio caso #%1"
 
 #: html/Elements/MyReminders:48 html/Ticket/Elements/ShowSummary:75 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
 msgid "Reminders"
-msgstr ""
+msgstr "Recordatorios"
 
 #: html/Ticket/Reminders.html:50
 #. ($Ticket->Id)
@@ -4589,7 +4575,7 @@ msgstr "ReplyToTicket"
 
 #: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:46 html/Tools/Reports/index.html:47
 msgid "Reports"
-msgstr ""
+msgstr "Informes"
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:111
 msgid "Requestor"
@@ -4647,19 +4633,19 @@ msgstr "Resuelto"
 
 #: html/Tools/Reports/Elements/Tabs:55
 msgid "Resolved by owner"
-msgstr ""
+msgstr "Resuelto por propietario"
 
 #: html/Tools/Reports/Elements/Tabs:59
 msgid "Resolved in date range"
-msgstr ""
+msgstr "Resuelto en rango de fechas"
 
 #: html/Tools/Reports/ResolvedByDates.html:52
 msgid "Resolved tickets in period, grouped by owner"
-msgstr ""
+msgstr "Casos resueltos en el período, agrupado por propietario"
 
 #: html/Tools/Reports/ResolvedByOwner.html:50
 msgid "Resolved tickets, grouped by owner"
-msgstr ""
+msgstr "Casos resueltos, agrupados por propietario"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -4737,11 +4723,11 @@ msgstr "RootApproval"
 
 #: html/Prefs/MyRT.html:72
 msgid "Rows per box"
-msgstr ""
+msgstr "Filas por caja"
 
 #: html/Search/Elements/DisplayOptions:93
 msgid "Rows per page"
-msgstr ""
+msgstr "Filas por página"
 
 #: lib/RT/Date.pm:422
 msgid "Sat."
@@ -4749,7 +4735,7 @@ msgstr "Sab."
 
 #: html/Prefs/MyRT.html:72 html/Prefs/Quicksearch.html:64 html/Prefs/Search.html:69 html/Prefs/Search.html:69 html/Search/Elements/EditSearches:70 html/Widgets/SelectionBox:211
 msgid "Save"
-msgstr "Grabar"
+msgstr "Guardar"
 
 #: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:88 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:239 html/Prefs/Quicksearch.html:64 html/Prefs/SearchOptions.html:63 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:61 html/Ticket/ModifyPeople.html:60 html/User/Groups/Modify.html:77
 msgid "Save Changes"
@@ -4766,7 +4752,7 @@ msgstr "Guardar cambios"
 #: lib/RT/SavedSearch.pm:173
 #. ($name)
 msgid "Saved search %1"
-msgstr "Búsqueda grabada %1"
+msgstr "Búsquedas guardadas %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Saved searches"
@@ -4824,18 +4810,15 @@ msgstr "Buscar aprobaciones"
 
 #: html/Search/Simple.html:67
 msgid "Search for tickets"
-msgstr ""
+msgstr "Búsqueda de casos"
 
 #: html/Search/Simple.html:55
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
 msgstr "Búsqueda de casos. Entrar números <strong>id</strong>, <strong>colas</strong> por nombre, Propietarios por <strong>usuario</strong> y Solicitantes por <strong>dirección email</strong>. RT buscará por cualquier otra cosa que entres en cuerpos y adjuntos de casos."
 
-Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.
-RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
 #: html/User/Elements/Tabs:62
 msgid "Search options"
-msgstr ""
+msgstr "Opciones de búsqueda"
 
 #: html/Search/Chart.html:56
 #. ($PrimaryGroupBy)
@@ -4849,7 +4832,7 @@ msgstr "Búsqueda actualizada: %1"
 
 #: html/Search/Simple.html:57
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
+msgstr "Las busquedas por texto completo en cada caso puede llevar mucho tiempo, pero si necesita hacerlo, puede buscar por cualquier palabra en el histórico completo de casos para cualquier palabra escribiendo: <b>fulltext:<i>palabra</i></b>."
 
 #: bin/rt-crontool:265
 msgid "Security:"
@@ -4984,9 +4967,6 @@ msgid "Selected objects"
 msgstr "Objetos Seleccionados"
 
 #: html/Widgets/SelectionBox:209
-msgid "Selections modified. Please save your changes"
-
-#: html/Widgets/SelectionBox:210
 msgid "Selections modified. Please save your changes"
 msgstr "Selecciones modificadas. Por favor graba tus cambios"
 
@@ -5144,7 +5124,7 @@ msgstr "Validado como %1"
 
 #: html/Elements/Tabs:68
 msgid "Simple Search"
-msgstr ""
+msgstr "Búsqueda simple"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:47
 msgid "Single"
@@ -5632,7 +5612,7 @@ msgstr "No se pudo crear el ticket debido a un error interno"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket created"
-msgstr "Ticket creado"
+msgstr "Caso creado"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket creation failed"
@@ -5640,7 +5620,7 @@ msgstr "Creación del ticket fallida"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket deleted"
-msgstr "Ticket borrado"
+msgstr "Caso borrado"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket id not found"
@@ -5648,15 +5628,15 @@ msgstr "Id de ticket no encontrada"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket killed"
-msgstr "Ticket matado"
+msgstr "Caso eliminado"
 
 #: html/Ticket/Display.html:55
 msgid "Ticket metadata"
-msgstr ""
+msgstr "Metadata de casos"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket not found"
-msgstr "Ticket no encontrado"
+msgstr "Caso no encontrado"
 
 #: etc/initialdata:310
 msgid "Ticket status changed"
@@ -5664,7 +5644,7 @@ msgstr "Estado del ticket cambiado"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket watchers"
-msgstr "Observadores del ticket"
+msgstr "Observadores del caso"
 
 #: lib/RT/Search/FromSQL.pm:82
 #. (ref $self)
@@ -5673,39 +5653,39 @@ msgstr "Modulo de búsqueda TicketSQL"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:109 lib/RT/CustomField_Overlay.pm:1206
 msgid "Tickets"
-msgstr "Tickets"
+msgstr "Casos"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets %1 %2"
-msgstr "Tickets %1 %2"
+msgstr "Casos %1 %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets %1 by %2"
-msgstr "Tickets %1 por %2"
+msgstr "Casos %1 por %2"
 
 #: html/Tools/Reports/CreatedByDates.html:86
 msgid "Tickets created after"
-msgstr ""
+msgstr "Casos creados despues del"
 
 #: html/Tools/Reports/CreatedByDates.html:88
 msgid "Tickets created before"
-msgstr ""
+msgstr "Casos creados antes del"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets from %1"
-msgstr "Tickets de %1"
+msgstr "Casos de %1"
 
 #: html/Tools/Reports/ResolvedByDates.html:87
 msgid "Tickets resolved after"
-msgstr ""
+msgstr "Casos resueltos despues del"
 
 #: html/Tools/Reports/ResolvedByDates.html:89
 msgid "Tickets resolved before"
-msgstr ""
+msgstr "Casos resueltos antes del"
 
 #: html/Approvals/Elements/ShowDependency:48
 msgid "Tickets which depend on this approval:"
-msgstr "Tickets que dependen de esta aprobación:"
+msgstr "Casos que dependen de esta aprobación:"
 
 #: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:183 html/Ticket/Elements/EditBasics:72
 msgid "Time Estimated"
@@ -5741,7 +5721,7 @@ msgstr "TimeWorked"
 
 #: html/Search/Elements/EditFormat:74
 msgid "Title"
-msgstr "Titulo"
+msgstr "Título"
 
 #: NOT FOUND IN SOURCE
 msgid "To generate a diff of this commit:"
@@ -5765,10 +5745,6 @@ msgid "Tools"
 msgstr "Herramientas"
 
 #: html/Search/Elements/Chart:130
-msgid "Total"
-msgstr ""
-
-#: html/Search/Elements/Chart:73
 msgid "Total"
 msgstr ""
 
@@ -5885,7 +5861,7 @@ msgstr "Actualizar correo"
 
 #: html/Search/Bulk.html:200 html/Search/Results.html:78
 msgid "Update multiple tickets"
-msgstr "Actualizar multiples tickets"
+msgstr "Actualizar múltiples casos"
 
 #: NOT FOUND IN SOURCE
 msgid "Update name"
@@ -6058,10 +6034,6 @@ msgstr "Consulta Valida"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
-
-#: html/Admin/CustomFields/Modify.html:80
-msgid "Validation"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"
@@ -6250,11 +6222,11 @@ msgstr "[sin asunto]"
 
 #: lib/RT/System.pm:87
 msgid "allow creation of saved searches"
-msgstr "permitir creación de búsquedas guardadas"
+msgstr "permitir la creación de búsquedas guardadas"
 
 #: lib/RT/System.pm:86
 msgid "allow loading of saved searches"
-msgstr "permitir carga de búsquedas guardadas"
+msgstr "permitir la carga de búsquedas guardadas"
 
 #: html/User/Elements/DelegateRights:80
 #. ($right->PrincipalObj->Object->SelfDescription)
@@ -6263,7 +6235,7 @@ msgstr "como priviligiado para %1"
 
 #: html/Search/Results.html:83
 msgid "chart"
-msgstr ""
+msgstr "tabla"
 
 #: html/SelfService/Closed.html:49
 msgid "closed"
@@ -6361,7 +6333,7 @@ msgstr "grupo '%1'"
 #: html/Search/Results.html:88
 #. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
-msgstr ""
+msgstr "agrupado por %1"
 
 #: lib/RT/Date.pm:342
 msgid "hours"
@@ -6468,7 +6440,7 @@ msgstr "pendiente"
 #: html/Search/Results.html:89
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
 msgid "style: %1"
-msgstr ""
+msgstr "estilo: %1"
 
 #: html/Prefs/MyRT.html:93
 msgid "summary rows"
