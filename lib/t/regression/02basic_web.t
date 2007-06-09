@@ -44,7 +44,7 @@ ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
 
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
-$agent->form(3);
+$agent->form_number(3);
 # Start with a string containing characters in latin1
 my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
@@ -57,7 +57,7 @@ ok($agent->{redirected_uri}, "Did redirection");
 
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
-$agent->form(3);
+$agent->form_number(3);
 # Start with a string containing characters in latin1
 my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');

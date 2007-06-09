@@ -349,7 +349,7 @@ sub text_html_russian_redef_sendmessage {
                 is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
                 my $content_1251;
                 $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
-                ok ($content_1251 =~ qr{”чeбный ÷eнтp " јƒ–џ ƒ≈Ћќ¬ќ√ќ ћ»–ј" пpиглaшaeт нa тpeнинг:},
+                ok ($content_1251 =~ qr{пњљпњљeпњљпњљпњљпњљ пњљeпњљпњљp "пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљ" пњљpпњљпњљпњљaпњљaeпњљ пњљa пњљpeпњљпњљпњљпњљ:},
 "Content matches drugim in codepage 1251" );
                  }';
 }

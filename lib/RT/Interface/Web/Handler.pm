@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 package RT::Interface::Web::Handler;
 
 use CGI qw/-private_tempfiles/;

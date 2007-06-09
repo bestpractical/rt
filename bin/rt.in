@@ -46,7 +46,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 # Designed and implemented for Best Practical Solutions, LLC by
 # Abhijit Menon-Sen <ams@wiw.org>
 
@@ -1338,17 +1337,29 @@ sub vsplit {
     return \@words;
 }
 
+# WARN: this code is duplicated in lib/RT/Interface/REST.pm
+# change both functions at once
 sub expand_list {
     my ($list) = @_;
-    my ($elt, @elts, %elts);
 
-    foreach $elt (split /,/, $list) {
-        if ($elt =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
-        else                         { push @elts, $elt }
+    my @elts;
+    foreach (split /,/, $list) {
+        push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
-    @elts{@elts}=();
-    return sort {$a<=>$b} keys %elts;
+    return map $_->[0], # schwartzian transform
+        sort {
+            defined $a->[1] && defined $b->[1]?
+                # both numbers
+                $a->[1] <=> $b->[1]
+                :!defined $a->[1] && !defined $b->[1]?
+                    # both letters
+                    $a->[2] cmp $b->[2]
+                    # mix, number must be first
+                    :defined $a->[1]? -1: 1
+        }
+        map [ $_, (defined( /^(\d+)$/ )? $1: undef), lc($_) ],
+        @elts;
 }
 
 sub get_type_argument {

@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::Link - an RT Link object
@@ -270,8 +269,8 @@ sub TargetURI {
 =cut
 
 sub TargetObj {
-  my $self = shift;
-   return $self->TargetURI->Object;
+    my $self = shift;
+    return $self->TargetURI->Object;
 }
 # }}}
 

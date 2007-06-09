@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::Condition::Generic - ;
@@ -53,7 +52,7 @@
 =head1 SYNOPSIS
 
     use RT::Condition::Generic;
-    my $foo = new RT::Condition::IsApplicable( 
+    my $foo = RT::Condition::Generic->new( 
 		TransactionObj => $tr, 
 		TicketObj => $ti, 
 		ScripObj => $scr, 

@@ -113,6 +113,10 @@ if ($ARGS{'id'} eq 'new') {
     # }}}
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
+
+    $m->comp('/Elements/Callback', _CallbackName => 'BeforeProcessArguments',
+         TicketObj => $TicketObj, Tickets => $Tickets, 
+         ActionsRef => \@Actions, ARGSRef => \%ARGS);
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
@@ -121,12 +125,24 @@ if ($ARGS{'id'} eq 'new') {
         }
     }
 
-    # XXX: Most probably we delete atachments here!
-    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-    push @Actions, ProcessUpdateMessage(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
+    if ( $ARGS{'UpdateTimeWorked'} || (
+        defined $ARGS{'UpdateContent'}
+        && $ARGS{'UpdateContent'} ne ''
+	    && $ARGS{'UpdateContent'} ne "-- \n"
+	       . $session{'CurrentUser'}->UserObj->Signature ) )
+    {
+	    $ARGS{UpdateAttachments} = $session{'Attachments'};
+	    push @Actions, ProcessUpdateMessage(
+            ARGSRef   => \%ARGS,
+			Actions   => \@Actions,
+			TicketObj => $TicketObj,
+        );
+	    delete $session{'Attachments'};
+	}
+    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
@@ -143,16 +159,13 @@ $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
 );
 
 # This code does automatic redirection if any updates happen. 
-# It doesn't work for the client.
-
-
 
 if (@Actions) {
     # We've done something, so we need to clear the decks to avoid 
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
     $session{"Actions"} = \@Actions;
-    $m->redirect(RT->Config->Get('WebURL')."Ticket/Display.html?id=".$TicketObj->id);
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };
 }

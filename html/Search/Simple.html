@@ -74,7 +74,10 @@ if ($q) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
     
     $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'ModifyQuery', query => \$q);
-    
+
+    if ($q =~ /^(\d+)$/) {
+        RT::Interface::Web::Redirect($RT::WebURL."/Ticket/Display.html?id=".$q);
+    }
     my $search  = RT::Search::Googleish->new(Argument   => $q,
                                              TicketsObj => $tickets);
 

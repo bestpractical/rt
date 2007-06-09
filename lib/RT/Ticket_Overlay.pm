@@ -329,9 +329,19 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
+Ticket links can be set up during create by passing the link type as a hask key and
+the ticket id to be linked to as a value (or a URI when linking to other objects).
+Multiple links of the same type can be created by passing an array ref. For example:
+
+  Parent => 45,
+  DependsOn => [ 15, 22 ],
+  RefersTo => 'http://www.bestpractical.com',
+
+Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
+C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
+C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
-
 
 =begin testing
 
@@ -465,8 +475,8 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug(
-            "Got a $args{'Status'} ticket with no resolved date"
+        $RT::Logger->debug( "Got a ". $args{'Status'}
+            ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->SetToNow;
     }
@@ -1353,9 +1363,9 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}
+    if ( $self->CurrentUser->PrincipalId == ($args{'PrincipalId'} || 0)
        or    lc( $self->CurrentUser->UserObj->EmailAddress )
-          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) ))
+          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) || '' ) )
     {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -1520,7 +1530,7 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -2431,8 +2441,9 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    unless ($args{'MIMEObj'}->head->get('Message-ID')
-            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
+    unless ( ($args{'MIMEObj'}->head->get('Message-ID') || '')
+            =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org>/ )
+    {
         $args{'MIMEObj'}->head->set( 'RT-Message-ID',
             "<rt-"
             . $RT::VERSION . "-"
@@ -2804,14 +2815,23 @@ sub MergeInto {
         return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
-    my ( $status_val, $status_msg ) = $self->__Set( Field => 'Status', Value => 'resolved');
 
-    unless ($status_val) {
-        $RT::Handle->Rollback();
-        $RT::Logger->error( $self->loc("[_1] couldn't set status to resolved. RT's Database may be inconsistent.", $self) );
-        return ( 0, $self->loc("Merge failed. Couldn't set Status") );
+    if ( $self->__Value('Status') ne 'resolved' ) {
+
+        my ( $status_val, $status_msg )
+            = $self->__Set( Field => 'Status', Value => 'resolved' );
+
+        unless ($status_val) {
+            $RT::Handle->Rollback();
+            $RT::Logger->error(
+                $self->loc(
+                    "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
+                    $self
+                )
+            );
+            return ( 0, $self->loc("Merge failed. Couldn't set Status") );
+        }
     }
-
 
     # update all the links that point to that old ticket
     my $old_links_to = RT::Links->new($self->CurrentUser);
@@ -3108,12 +3128,13 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    my $trans;
-    ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
-                                             Field     => 'Owner',
-                                             NewValue  => $NewOwnerObj->Id,
-                                             OldValue  => $OldOwnerObj->Id,
-                                             TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",

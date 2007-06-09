@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 NAME
 
   RT::User - RT User object
@@ -82,7 +81,7 @@ use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
-
+use Encode;
 
 # {{{ sub _Accessible 
 
@@ -265,7 +264,7 @@ sub Create {
     #If the create failed.
     unless ($id) {
         $RT::Handle->Rollback();
-        $RT::Logger->error("Could not create a new user - " .join('-'. %args));
+        $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
     }
@@ -1065,7 +1064,7 @@ sub _GeneratePassword {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->hexdigest);
 
 }
@@ -1082,7 +1081,7 @@ sub _GeneratePasswordBase64 {
     my $password = shift;
 
     my $md5 = Digest::MD5->new();
-    $md5->add($password);
+    $md5->add(encode_utf8($password));
     return ($md5->b64digest);
 
 }
@@ -1099,14 +1098,11 @@ Returns true if the user has a valid password, otherwise returns false.
 
 sub HasPassword {
     my $self = shift;
-    my $pass = $self->__Value('Password');
-    if ( !defined $pass || $pass eq '' || $pass eq '*NO-PASSWORD*' ) {
-
-        return undef;
-    }
-
+    my $pwd = $self->__Value('Password');
+    return undef if !defined $pwd
+                    || $pwd eq ''
+                    || $pwd eq '*NO-PASSWORD*';
     return 1;
-
 }
 
 

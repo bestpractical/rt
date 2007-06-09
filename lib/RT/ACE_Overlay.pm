@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
 =head1 SYNOPSIS
 
   use RT::ACE;
@@ -918,9 +917,8 @@ sub _CanonicalizePrincipal {
         my $equiv_group = RT::Group->new( $self->CurrentUser );
         $equiv_group->LoadACLEquivalenceGroup($princ_obj);
         unless ( $equiv_group->Id ) {
-            $RT::Logger->crit(
-                 "No ACL equiv group for princ " . $self->__Value('ObjectId') );
-            return ( 0, $self->loc('System error. Right not granted.') );
+            $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
+            return ( RT::Principal->new($RT::SystemUser), undef );
         }
         $princ_obj  = $equiv_group->PrincipalObj();
         $princ_type = 'Group';

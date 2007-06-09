@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-#
+# 
 # COPYRIGHT:
-#
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#  
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 #                                          <jesse@bestpractical.com>
-#
+# 
 # (Except where explicitly superseded by other copyright notices)
-#
-#
+# 
+# 
 # LICENSE:
-#
+# 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-#
+# 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-#
-#
+# 
+# 
 # CONTRIBUTION SUBMISSION POLICY:
-#
+# 
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-#
+# 
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-#
+# 
 # END BPS TAGGED BLOCK }}}
 # Major Changes:
 
@@ -247,6 +247,7 @@ sub CleanSlate {
         _sql_transalias
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
+        _sql_u_watchers_aliases
     );
 }
 
@@ -604,8 +605,20 @@ sub _TransDateLimit {
 
     # See the comments for TransLimit, they apply here too
 
-    $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
-        unless defined $sb->{_sql_transalias};
+    unless ( $sb->{_sql_transalias} ) {
+        $sb->{_sql_transalias} = $sb->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'ObjectId',
+        );
+        $sb->SUPER::Limit(
+            ALIAS           => $sb->{_sql_transalias},
+            FIELD           => 'ObjectType',
+            VALUE           => 'RT::Ticket',
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -656,20 +669,6 @@ sub _TransDateLimit {
         );
     }
 
-    # Join Transactions to Tickets
-    $sb->_SQLJoin(
-        ALIAS1 => 'main',
-        FIELD1 => $sb->{'primary_key'},     # UGH!
-        ALIAS2 => $sb->{_sql_transalias},
-        FIELD2 => 'ObjectId'
-    );
-
-    $sb->SUPER::Limit(
-        ALIAS => $sb->{_sql_transalias},
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Ticket'
-    );
-
     $sb->_CloseParen;
 }
 
@@ -718,10 +717,29 @@ sub _TransLimit {
 
     my ( $self, $field, $op, $value, @rest ) = @_;
 
-    $self->{_sql_transalias} = $self->NewAlias('Transactions')
-        unless defined $self->{_sql_transalias};
-    $self->{_sql_trattachalias} = $self->NewAlias('Attachments')
-        unless defined $self->{_sql_trattachalias};
+    unless ( $self->{_sql_transalias} ) {
+        $self->{_sql_transalias} = $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'ObjectId',
+        );
+        $self->SUPER::Limit(
+            ALIAS           => $self->{_sql_transalias},
+            FIELD           => 'ObjectType',
+            VALUE           => 'RT::Ticket',
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
+    unless ( defined $self->{_sql_trattachalias} ) {
+        $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
+            ALIAS1 => $self->{_sql_transalias},
+            FIELD1 => 'id',
+            TABLE2 => 'Attachments',
+            FIELD2 => 'TransactionId',
+        );
+    }
 
     $self->_OpenParen;
 
@@ -756,28 +774,6 @@ sub _TransLimit {
 			@rest
         );
     }
-
-    $self->_SQLJoin(
-        ALIAS1 => $self->{_sql_trattachalias},
-        FIELD1 => 'TransactionId',
-        ALIAS2 => $self->{_sql_transalias},
-        FIELD2 => 'id'
-    );
-
-    # Join Transactions to Tickets
-    $self->_SQLJoin(
-        ALIAS1 => 'main',
-        FIELD1 => $self->{'primary_key'},     # Why not use "id" here?
-        ALIAS2 => $self->{_sql_transalias},
-        FIELD2 => 'ObjectId'
-    );
-
-    $self->SUPER::Limit(
-        ALIAS           => $self->{_sql_transalias},
-        FIELD           => 'ObjectType',
-        VALUE           => 'RT::Ticket',
-        ENTRYAGGREGATOR => 'AND'
-    );
 
     $self->_CloseParen;
 
@@ -972,15 +968,24 @@ sub _WatcherLimit {
             );
         }
     } else {
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        my $users = $self->NewAlias('Users');
-        $self->SUPER::Limit(
-            LEFTJOIN      => $group_members,
-            ALIAS         => $group_members,
-            FIELD         => 'MemberId',
-            VALUE         => "$users.id",
-            QUOTEVALUE    => 0,
+        my $group_members = $self->_GroupMembersJoin(
+            GroupsAlias => $groups,
+            New => 0,
         );
+
+        my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
+        unless ( $users ) {
+            $users = $self->{'_sql_u_watchers_aliases'}{$group_members} = 
+                $self->NewAlias('Users');
+            $self->SUPER::Limit(
+                LEFTJOIN      => $group_members,
+                ALIAS         => $group_members,
+                FIELD         => 'MemberId',
+                VALUE         => "$users.id",
+                QUOTEVALUE    => 0,
+            );
+        }
+
         $self->_SQLLimit(
             ALIAS         => $users,
             FIELD         => $rest{SUBKEY},
@@ -1006,13 +1011,13 @@ sub _RoleGroupsJoin {
     return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Type'} } && !$args{'New'};
 
+    # XXX: this has been fixed in DBIx::SB-1.48
     # XXX: if we change this from Join to NewAlias+Limit
-    # then Pg will complain because SB build wrong query.
+    # then Pg and mysql 5.x will complain because SB build wrong query.
     # Query looks like "FROM (Tickets LEFT JOIN CGM ON(Groups.id = CGM.GroupId)), Groups"
     # Pg doesn't like that fact that it doesn't know about Groups table yet when
     # join CGM table into Tickets. Problem is in Join method which doesn't use
     # ALIAS1 argument when build braces.
-    # XXX: this should be fixed in DBIx::SB-1.46
 
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->Join(

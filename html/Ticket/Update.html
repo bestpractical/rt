@@ -83,11 +83,11 @@
 </td></tr>
 <tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>" /></td></tr>
 <tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size="60"
-value="<% $ARGS{UpdateCc} %>" /><br />
+value="<%$ARGS{UpdateCc}||""%>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>" /><br />
+<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}||""%>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
 </td></tr>

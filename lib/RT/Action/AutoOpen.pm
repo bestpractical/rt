@@ -69,13 +69,13 @@ sub Prepare {
     # if the ticket is already open or the ticket is new and the message is more mail from the
     # requestor, don't reopen it.
 
-    return undef if $self->TicketObj->Status eq 'open';
-    return undef if $self->TicketObj->Status eq 'new'
-        && $self->TransactionObj->IsInbound;
+    my $status = $self->TicketObj->Status;
+    return undef if $status eq 'open';
+    return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
 
-    my $first = $self->TransactionObj->Message->First;
-    return undef if $first
-        && ($first->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+    if ( my $msg = $self->TransactionObj->Message->First ) {
+        return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+    }
 
     return 1;
 }

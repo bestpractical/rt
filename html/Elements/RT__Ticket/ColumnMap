@@ -87,8 +87,8 @@ my $ColumnMap = sub {
                     ),
                     \'<br />',
                 } @{ $values->ItemsArrayRef };
-            pop @values; # Remove that last <br />
-            return @values;
+                pop @values; # Remove that last <br />
+                return @values;
             };
         }
     }

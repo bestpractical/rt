@@ -59,7 +59,7 @@
     <td class="value date started"><% $Ticket->StartedObj->AsString %></td>
   </tr>
   <tr>
-    <td class="label date told"><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
+    <td class="label date told"><a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
     <td class="value date told"><% $Ticket->ToldObj->AsString %></td>
   </tr>
   <tr>

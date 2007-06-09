@@ -51,7 +51,11 @@
 % if ($User->EmailAddress && $User->EmailAddress ne $User->Name) {
 &lt;<%$User->EmailAddress%>&gt;
 % }
+% if ($Ticket and grep { $_->Content eq $User->EmailAddress } $Ticket->SquelchMailTo)  {
+<b><&|/l&>(Will not be sent email)</&></b>
+% }
 
 <%ARGS>
 $User => undef
+$Ticket => undef
 </%ARGS>

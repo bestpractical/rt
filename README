@@ -278,7 +278,7 @@ FastCgiIpcDir /tmp
 
 FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
 
-<VirtualHost your.ip.address>
+<VirtualHost rt.example.com>
    ServerName your.rt.server.hostname
 
    # Pass through requests to display images
@@ -412,7 +412,7 @@ To report a bug, send email to rt-bugs@fsck.com.
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
 # you are the copyright holder for those contributions and you grant
 # Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual license to use, copy, create derivative
+# royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 

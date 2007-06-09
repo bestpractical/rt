@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
 %# Build up the set of cascading select boxes as "guides"
 %# each one limits the options of the final one a bit
 %# (perhaps by tweaking the .display style?)

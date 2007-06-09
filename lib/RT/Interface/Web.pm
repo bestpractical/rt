@@ -64,13 +64,14 @@ use_ok(RT::Interface::Web);
 =cut
 
 
-package RT::Interface::Web;
 
 use strict;
 use warnings;
 
-
+package RT::Interface::Web;
+use HTTP::Date;
 use RT::SavedSearches;
+use URI;
 
 # {{{ EscapeUTF8
 
@@ -215,7 +216,6 @@ sub StaticFileHeaders {
 
 package HTML::Mason::Commands;
 
-use strict;
 use warnings;
 
 use vars qw/$r $m %session/;
@@ -437,7 +437,7 @@ sub CreateTicket {
   
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
-    unless ( $id && $Trans ) {
+    unless ( $id ) {
         Abort($ErrMsg);
     }
 
@@ -646,7 +646,7 @@ sub MakeMIMEEntity {
             Subject => $args{'Subject'} || "",
             From    => $args{'From'},
             Cc      => $args{'Cc'},
-            Charset => 'utf8',
+            'Charset:' => 'utf8',
             Data    => [ $args{'Body'} ]
         );
     }
@@ -1239,7 +1239,7 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\n/, $args{'ARGS'}->{ $arg } || '';
+            @values = split /\n/, $args{'ARGS'}->{ $arg };
         }
         
         if ( $cf_type eq 'Freeform' || $cf_type =~ /text/i ) {
@@ -1619,6 +1619,7 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
+    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }
