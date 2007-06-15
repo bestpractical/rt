@@ -61,7 +61,7 @@ $m->abort();
 
 <%args>
 $Code => undef
-$Details => undef
+$Details =>''
 $Title => loc("RT Error")
 $Why => loc("the calling component did not specify why")
 </%args>
@@ -77,7 +77,7 @@ if ($] >= 5.007001) {
 
 $RT::Logger->error($error);
 
-if ( $session{'SessionType'} eq 'REST' ) {
+if ( defined ($session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');
     $m->out( "Error: " . $Why . "\n" );
     $m->out( $Details . "\n" );
