@@ -324,6 +324,15 @@ sub LimitCustomField {
     else {
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
+            FIELD           => 'Largecontent',
+            OPERATOR        => $args{'OPERATOR'},
+            VALUE           => $value,
+            QUOTEVALUE      => $args{'QUOTEVALUE'},
+            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            SUBCLAUSE       => $clause,
+        );
+        $self->SUPER::Limit(
+            ALIAS           => $ObjectValuesAlias,
             FIELD           => 'Content',
             OPERATOR        => $args{'OPERATOR'},
             VALUE           => $value,
