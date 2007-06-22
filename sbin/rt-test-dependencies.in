@@ -187,7 +187,8 @@ Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
 GnuPG::Interface
-DBIx::SearchBuilder 1.40
+PerlIO::eol
+DBIx::SearchBuilder 1.48
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -209,9 +210,9 @@ Tree::Simple 1.04
 UNIVERSAL::require
 Regexp::Common
 Scalar::Util
-Module::Versions::Report
+Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
-XML::Simple
+UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
 .
@@ -259,6 +260,7 @@ WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 Test::Expect 0.30
+XML::Simple
 File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t

@@ -243,9 +243,19 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
+Ticket links can be set up during create by passing the link type as a hask key and
+the ticket id to be linked to as a value (or a URI when linking to other objects).
+Multiple links of the same type can be created by passing an array ref. For example:
+
+  Parent => 45,
+  DependsOn => [ 15, 22 ],
+  RefersTo => 'http://www.bestpractical.com',
+
+Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
+C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
+C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
-
 
 
 =cut
@@ -367,8 +377,8 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug(
-            "Got a $args{'Status'} ticket with no resolved date"
+        $RT::Logger->debug( "Got a ". $args{'Status'}
+            ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->SetToNow;
     }
@@ -404,6 +414,8 @@ sub Create {
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
+   
+    my $DeferOwner;  
     if (
             ( defined($Owner) )
         and ( $Owner->Id )
@@ -417,20 +429,9 @@ sub Create {
       )
     {
 
-        $RT::Logger->warning( "User "
-              . $Owner->Name . "("
-              . $Owner->id
-              . ") was proposed "
-              . "as a ticket owner but has no rights to own "
-              . "tickets in "
-              . $QueueObj->Name );
-
-        push @non_fatal_errors,
-          $self->loc( "Owner '[_1]' does not have rights to own this ticket.",
-            $Owner->Name
-          );
-
+        $DeferOwner = $Owner;
         $Owner = undef;
+
     }
 
     #If we haven't been handed a valid owner, make it nobody.
@@ -521,14 +522,6 @@ sub Create {
         );
     }
 
-# Set the owner in the Groups table
-# We denormalize it into the Ticket table too because doing otherwise would
-# kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-
-    $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1
-    );
 
     # {{{ Deal with setting up watchers
 
@@ -630,6 +623,28 @@ sub Create {
     }
 
     # }}}
+    # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
+    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
+    if (  defined($DeferOwner) ) { 
+            if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
+    
+        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
+        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
+
+    } else {
+        $Owner = $DeferOwner;
+        $self->__Set(Field => 'Owner', Value => $Owner->id);
+
+    }
+    }
+    # Set the owner in the Groups table
+    # We denormalize it into the Ticket table too because doing otherwise would
+    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+
+    $self->OwnerGroup->_AddMember(
+        PrincipalId       => $Owner->PrincipalId,
+        InsideTransaction => 1
+    );
 
     if ( $args{'_RecordTransaction'} ) {
 
@@ -1180,7 +1195,7 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -2090,9 +2105,11 @@ sub _RecordNote {
 
     # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
     # as CanonicalizeEmailAddress expect only one address at a time
-    $args{'MIMEObj'}->head->add(
-        'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
-    ) if defined $args{'CcMessageTo'};
+    foreach my $field (qw(Cc Bcc)) {
+        $args{'MIMEObj'}->head->add(
+            "RT-Send-$field" => RT::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
+        ) if defined $args{ $field . 'MessageTo' };
+    }
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->add(
@@ -2752,12 +2769,13 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    my $trans;
-    ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
-                                             Field     => 'Owner',
-                                             NewValue  => $NewOwnerObj->Id,
-                                             OldValue  => $OldOwnerObj->Id,
-                                             TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",

@@ -54,6 +54,7 @@ $action => "correspond"
 $ticket => undef
 </%ARGS>
 <%init>
+$m->comp('/Elements/Callback', _CallbackName => 'Pre', %ARGS);
 use RT::Interface::Email ();    # It's an exporter, but we don't care
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
@@ -61,13 +62,13 @@ my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
 if ( $status == 1 ) {
   $m->out('ok');
   if ( $Ticket->Id ) {
-    $m->out( 'Ticket: ' . $Ticket->Id );
-    $m->out( 'Queue: ' . ($Ticket->QueueObj->Name || '') );
-    $m->out( 'Owner: ' . ($Ticket->OwnerObj->Name || '') );
-    $m->out( 'Status: ' . ($Ticket->Status || '') );
-    $m->out( 'Subject: ' . ($Ticket->Subject || '') );
+    $m->out( 'Ticket: '  . ($Ticket->Id             || '') );
+    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
+    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
+    $m->out( 'Status: '  . ($Ticket->Status         || '') );
+    $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
     $m->out(
-      'Requestor: ' . $Ticket->Requestors->MemberEmailAddressesAsString );
+      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') );
   }
 }
 else {

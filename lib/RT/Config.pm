@@ -285,7 +285,8 @@ sub _LoadConfig
     if( $@ ) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
 
-        my ($our_user, $our_group) = (scalar getpwuid $>, scalar getgrgid $();
+        my $username = getpwuid($>);
+        my $group = getgrgid($();
 
         my ($file_path, $fileuid, $filegid);
         foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
@@ -296,25 +297,32 @@ sub _LoadConfig
                 last;
             }
         }
-
-        my $message;
-        if ( $file_path ) {
-            my ($file_user, $file_group) = (scalar getpwuid $fileuid, scalar getgrgid $filegid);
-            $message = qq{Couldn't load RT config file $file_path as user $our_user / group $our_group.
-The file is owned by user $file_user and group $file_group.
-This usually means that the user/group your webserver/script is running as cannot read the file.
-Be careful not to make the permissions on this file too liberal, because it contains database
-passwords.  You may need to put the webserver user in the appropriate group ($file_group) or change
-permissions be able to run succesfully};
-        } else {
-            $message = qq{Couldn't load RT config file $args{'File'} as user $our_user / group $our_group.
-The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.
-This usually means that the user/group your webserver/script is running as cannot read the file
-or has no access to the dirs. Be careful not to make the permissions on this file too liberal,
-because it contains database passwords.};
+        unless ( $file_path ) {
+            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
+               .qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
         }
 
-        die "$message\n$@";
+        my $message = <<EOF;
+
+RT couldn't load RT config file %s as:
+    user: $username 
+    group: $group
+
+The file is owned by user %s and group %s.  
+
+This usually means that the user/group your webserver is running
+as cannot read the file.  Be careful not to make the permissions
+on this file too liberal, because it contains database passwords.
+You may need to put the webserver user in the appropriate group
+(%s) or change permissions be able to run succesfully.
+EOF
+
+        my $fileusername = getpwuid($fileuid);
+        my $filegroup = getgrgid($filegid);
+        my $errormessage = sprintf($message,
+            $file_path, $fileusername, $filegroup, $filegroup
+        );
+        die "$errormessage\n$@";
     }
     return 1;
 }
@@ -386,9 +394,9 @@ sub Get {
 Set option's value to new value. Takes name of the option and new value.
 Returns old value.
 
-The new value should scalar, array or hash depending on type of the option.
+The new value should be scalar, array or hash depending on type of the option.
 If the option is not defined in meta or the default RT config then it is of
-sclar type.
+scalar type.
 
 =cut
 

@@ -51,7 +51,8 @@ use warnings;
 
 use vars qw($Nobody $SystemUser $item);
 
-use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
 
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its

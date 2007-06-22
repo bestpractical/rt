@@ -336,7 +336,7 @@ sub _GetEquivObjects
 
         # XXX: This should be abstracted into object itself
         if( $args{'Object'}->id ) {
-            push @objects, $args{'Object'}->QueueObj;
+            push @objects, $args{'Object'}->ACLEquivalenceObjects;
         } else {
             push @objects, 'RT::Queue';
         }

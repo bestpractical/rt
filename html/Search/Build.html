@@ -164,7 +164,7 @@ if ( $NewQuery ) {
 }
 
 my $ParseQuery = sub {
-    my ($string, $results) = shift;
+    my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
     @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );

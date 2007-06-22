@@ -255,8 +255,8 @@ sub TargetURI {
 =cut
 
 sub TargetObj {
-  my $self = shift;
-   return $self->TargetURI->Object;
+    my $self = shift;
+    return $self->TargetURI->Object;
 }
 # }}}
 

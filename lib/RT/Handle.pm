@@ -588,10 +588,13 @@ sub InsertData {
             }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)\n" and next unless $return;
+            unless( $return ) {
+                print "(Error: $msg)\n";
+                next;
+            }
 
             foreach my $value ( @{$values} ) {
-                ( $return, $msg ) = $new_entry->AddValue(%$value);
+                my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 print "(Error: $msg)\n" unless $return;
             }
 
