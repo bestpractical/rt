@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select NAME ="<%$Name%>">
 %for my $option ($cf->LookupTypes) {
-<option value="<%$option%>" <%$option eq $Default ? "SELECTED" : ''%>><% $cf->FriendlyLookupType($option) %></option>
+<option value="<%$option%>" <%defined ($Default) && ($option eq $Default) && "SELECTED"%>><% $cf->FriendlyLookupType($option) %></option>
 %}
 </select>
 <%INIT>

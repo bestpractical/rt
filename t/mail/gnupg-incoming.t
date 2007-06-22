@@ -223,7 +223,6 @@ RT::Test->close_mailgate_ok($mail);
 {
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
-    my $attach = $txn->Attachments->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     # XXX: in this case, which credential should we be using?
     is( $msg->GetHeader('X-RT-Incoming-Signature'),

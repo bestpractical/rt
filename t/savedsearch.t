@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use RT;
 use Test::More tests => 26;
 use RT::User;
@@ -5,8 +7,8 @@ use RT::Group;
 use RT::Ticket;
 use RT::Queue;
 
-use_ok(RT::SavedSearch);
-use_ok(RT::SavedSearches);
+use_ok('RT::SavedSearch');
+use_ok('RT::SavedSearches');
 use RT::Test;
 
 # Set up some infrastructure.  These calls are tested elsewhere.
@@ -65,7 +67,6 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__LastUpdatedRelative__</small>\',
 \'<small>__TimeLeft__</small>\'';
 
-my ($ret, $msg);
 my $mysearch = RT::SavedSearch->new($curruser);
 ($ret, $msg) = $mysearch->Save(Privacy => 'RT::User-' . $searchuser->Id,
 			       Type => 'Ticket',

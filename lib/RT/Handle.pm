@@ -278,7 +278,9 @@ END
     print "Dropping $db_type database $db_name.\n";
 
     if ( $db_type eq 'SQLite' ) {
-        unlink $db_name or warn $!;
+	my $path = $db_name;
+	$path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
+        unlink $path or warn $!;
         return;
     }
     $dbh->do("DROP DATABASE ". $db_name) or warn $DBI::errstr;
@@ -586,10 +588,13 @@ sub InsertData {
             }
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)\n" and next unless $return;
+            unless( $return ) {
+                print "(Error: $msg)\n";
+                next;
+            }
 
             foreach my $value ( @{$values} ) {
-                ( $return, $msg ) = $new_entry->AddValue(%$value);
+                my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 print "(Error: $msg)\n" unless $return;
             }
 

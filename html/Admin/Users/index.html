@@ -96,7 +96,7 @@ my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
 $users->{'find_disabled_rows'} = 1 if $FindDisabledUsers;
 
-if ( length $UserString ) {
+if ( defined($UserString) && length $UserString ) {
     $caption = loc("Users matching search criteria");
     if ( $UserField =~ /^CustomField-(\d+)/ ) {
         $users->LimitCustomField(

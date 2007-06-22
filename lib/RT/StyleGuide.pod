@@ -264,20 +264,14 @@ style perfectly; we are trying to fix it without breaking exsiting APIs.
 =head2 Tests
 
 Modules should provide test code, with documentation on how to use
-it. Test::Inline allows tests to be embedded in code. Test::More makes it 
-easy to create tests. Any code you write should have a testsuite.
-Any code you alter should have a test suite. If a patch comes in without
-tests, there is something wrong.
+it.  Test::More makes it easy to create tests. Any code you write
+should have a testsuite.  Any code you alter should have a test
+suite. If a patch comes in without tests, there is something wrong.
 
-When altering code, you must run the test harness before submitting a patch
-or committing code to the repository. 
+When altering code, you must run the test harness before submitting a
+patch or committing code to the repository.
 
-"make regression" will extract inline tests, blow away the system database
-and run the test suite.
-
-"make regression-quiet" will do all that and not print the "ok" lines.
-
-
+"make test" will run the test suite.
 
 =head2 STDIN/STDOUT
 

@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 7;
 use RT;
 use RT::Test;
 
@@ -13,7 +16,7 @@ my ($id, $msg) =  $user->AddAttribute(Name => 'SavedSearch', Content => { Query 
 ok ($id, $msg);
 my $attr = RT::Attribute->new($RT::SystemUser);
 $attr->Load($id);
-ok($attr->Name eq 'SavedSearch');
+is($attr->Name , 'SavedSearch');
 $attr->SetSubValues( Format => 'baz');
 
 my $format = $attr->SubValue('Format');
@@ -34,7 +37,7 @@ $attr2->Load($id);
 is ($attr2->SubValue('Format'), 'This is a format');
 $attr2->Delete;
 my $attr3 = RT::Attribute->new($RT::SystemUser);
-my ($id) = $attr3->Load($id);
+($id) = $attr3->Load($id);
 is ($id, 0);
 
 

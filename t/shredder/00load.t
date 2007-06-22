@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More tests => 11;
 
 BEGIN { require "t/shredder/utils.pl" }

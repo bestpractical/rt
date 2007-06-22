@@ -120,7 +120,7 @@ if ( $ARGS{'Attach'} ) {    # attachment?
         $ARGS{'Attach'} => $attachment };
 }
 
-if ( $id[0] eq 'new' ) {
+if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
@@ -175,11 +175,19 @@ if ( $id[0] eq 'new' ) {
 
     # }}}
 
-    # XXX: review attachment processing because all this had done in the different ways
-    # in the different places.
+    if (
+        $session{'Attachments'}
+        || ( defined $ARGS{'UpdateContent'}
+            && $ARGS{'UpdateContent'} ne ''
+            && $ARGS{'UpdateContent'} ne "-- \n"
+            . $session{'CurrentUser'}->UserObj->Signature )
+      )
+    {
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+    }
     push @results, ProcessUpdateMessage(
-        ARGSRef   => { %ARGS, UpdateAttachments => $session{'Attachments'} },
-        TicketObj => $Ticket,
+        ARGSRef   => \%ARGS,
+        TicketObj => $Ticket
     );
 
     # delete temporary storage entry to make WebUI clean
@@ -199,6 +207,7 @@ if ( $id[0] eq 'new' ) {
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         $m->comp( 'Error.html',
             Why => loc("No permission to display that ticket") );
+        # XXX: Why abort? then we loose footer //ruz
         $m->abort();
     }
 

@@ -27,7 +27,7 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
         my $MIME = shift;
 
         main::_fired_scrip($self->ScripObj);
-        main::ok(ref($MIME) eq 'MIME::Entity', "hey, look. it's a mime entity");
+        main::is(ref($MIME) , 'MIME::Entity', "hey, look. it's a mime entity");
     }
 }
 
@@ -66,7 +66,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick= $tickets->First();
 isa_ok($tick, "RT::Ticket", "got a ticket object");
 ok ($tick->Id, "found ticket ".$tick->Id);
-ok (first_txn($tick)->Content =~ /The original message was received/, "It's the bounce");
+like (first_txn($tick)->Content , qr/The original message was received/, "It's the bounce");
 
 
 # make sure it fires scrips.
@@ -95,7 +95,7 @@ $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject eq 'I18NTest', "failed to create the new ticket from an unprivileged account");
+is ($tick->Subject , 'I18NTest', "failed to create the new ticket from an unprivileged account");
 
 # make sure it fires scrips.
 is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
@@ -127,7 +127,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_txn($tick)->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay");
 
 
 # make sure it fires scrips.
@@ -169,7 +169,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_txn($tick)->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay");
 
 
 # make sure it fires scrips.
@@ -207,17 +207,17 @@ sub utf8_redef_sendmessage {
         ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
-        main::ok( ref($MIME) eq \'MIME::Entity\',
+        main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );
-        main::ok( ref( $MIME->head ) eq \'MIME::Head\',
+        main::is( ref( $MIME->head ) , \'MIME::Head\',
                   "its mime header is a mime header. yay" );
-        main::ok( $MIME->head->get(\'Content-Type\') =~ /utf-8/,
+        main::like( $MIME->head->get(\'Content-Type\') , qr/utf-8/,
                   "Its content type is utf-8" );
         my $message_as_string = $MIME->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode_utf8($message_as_string);
-        main::ok(
-            $message_as_string =~ /H\x{e5}vard/,
+        main::like(
+            $message_as_string , qr/H\x{e5}vard/,
 "The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
 
     }';
@@ -234,17 +234,17 @@ sub iso8859_redef_sendmessage {
         ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
-        main::ok( ref($MIME) eq \'MIME::Entity\',
+        main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );
-        main::ok( ref( $MIME->head ) eq \'MIME::Head\',
+        main::is( ref( $MIME->head ) , \'MIME::Head\',
                   "its mime header is a mime header. yay" );
-        main::ok( $MIME->head->get(\'Content-Type\') =~ /iso-8859-1/,
+        main::like( $MIME->head->get(\'Content-Type\') , qr/iso-8859-1/,
                   "Its content type is iso-8859-1 - " . $MIME->head->get("Content-Type") );
         my $message_as_string = $MIME->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode("iso-8859-1",$message_as_string);
-        main::ok(
-            $message_as_string =~ /H\x{e5}vard/, "The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
+        main::like(
+            $message_as_string , qr/H\x{e5}vard/, "The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
 
     }';
 }
@@ -257,23 +257,23 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&umlauts_redef_sendmessage;
-
-%args = (message => $content, queue => 1, action => 'correspond');
-RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick = $tickets->First();
-
-ok ($tick->Id, "found ticket ".$tick->Id);
-
-ok (first_txn($tick)->Content =~ /causes Error/, "We recorded the content right as text-plain");
-is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
-
-sub umlauts_redef_sendmessage {
+{
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
+    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+
+    %args = (message => $content, queue => 1, action => 'correspond');
+    RT::Interface::Email::Gateway(\%args);
+    # TODO: following 5 lines should replaced by get_latest_ticket_ok()
+    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+    $tick = $tickets->First();
+
+    ok ($tick->Id, "found ticket ".$tick->Id);
+
+    like (first_txn($tick)->Content , qr/causes Error/, "We recorded the content right as text-plain");
+    is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
+
 }
 
 # }}}
@@ -296,8 +296,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_attach($tick)->Content =~ /causes Error/, "We recorded the content as containing 'causes error'") or diag( first_attach($tick)->Content );
-ok (first_attach($tick)->ContentType =~ /text\/html/, "We recorded the content as text/html");
+like (first_attach($tick)->Content , qr/causes Error/, "We recorded the content as containing 'causes error'") or diag( first_attach($tick)->Content );
+like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content as text/html");
 is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 sub text_html_umlauts_redef_sendmessage {
@@ -333,8 +333,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_attach($tick)->ContentType =~ /text\/html/, "We recorded the content right as text-html");
-ok (count_attachs($tick) ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
+like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content right as text-html");
+is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 sub text_html_russian_redef_sendmessage {
     no warnings qw/redefine/;
@@ -349,7 +349,7 @@ sub text_html_russian_redef_sendmessage {
                 is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
                 my $content_1251;
                 $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
-                ok ($content_1251 =~ qr{Ó÷eáíûé Öeíòp "ÊÀÄĞÛ ÄÅËÎÂÎÃÎ ÌÈĞÀ" ïpèãëaøaeò ía òpeíèíã:},
+                like ($content_1251 , qr{Ó÷eáíûé Öeíòp "ÊÀÄĞÛ ÄÅËÎÂÎÃÎ ÌÈĞÀ" ïpèãëaøaeò ía òpeíèíã:},
 "Content matches drugim in codepage 1251" );
                  }';
 }
@@ -375,8 +375,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_attach($tick)->ContentType =~ /text\/plain/, "We recorded the content type right");
-ok (count_attachs($tick) ==1 , "Has one attachment, presumably a text-plain");
+like (first_attach($tick)->ContentType , qr/text\/plain/, "We recorded the content type right");
+is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-plain");
 is ($tick->Subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
 sub text_plain_russian_redef_sendmessage {
     no warnings qw/redefine/;
@@ -417,7 +417,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 is ($tick->Subject, "[Jonas Liljegren] Re: [Para] Niv\x{e5}er?");
-ok (first_attach($tick)->ContentType =~ /multipart\/mixed/, "We recorded the content type right");
+like (first_attach($tick)->ContentType , qr/multipart\/mixed/, "We recorded the content type right");
 is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
@@ -446,22 +446,19 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&notes_redef_sendmessage;
-
- %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
-
-ok (first_txn($tick)->Content =~ /from Lotus Notes/, "We recorded the content right");
-is (count_attachs($tick) , 3 , "Has three attachments");
-
-sub notes_redef_sendmessage {
+{
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
+    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+    %args =        (message => $content, queue => 1, action => 'correspond');
+    RT::Interface::Email::Gateway(\%args);
+    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+    $tick= $tickets->First();
+    ok ($tick->Id, "found ticket ".$tick->Id);
+
+    like (first_txn($tick)->Content , qr/from Lotus Notes/, "We recorded the content right");
+    is (count_attachs($tick) , 3 , "Has three attachments");
 }
 
 # }}}
@@ -474,8 +471,9 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&crashes_redef_sendmessage;
 
+no warnings qw/redefine/;
+local *RT::Action::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
  $tickets = RT::Tickets->new($RT::SystemUser);
@@ -484,13 +482,9 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok (first_txn($tick)->Content =~ /FYI/, "We recorded the content right");
+like (first_txn($tick)->Content , qr/FYI/, "We recorded the content right");
 is (count_attachs($tick) , 5 , "Has three attachments");
 
-sub crashes_redef_sendmessage {
-    no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { }';
-}
 
 
 
@@ -513,11 +507,11 @@ $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 my $cc = first_attach($tick)->GetHeader('RT-Send-Cc');
-ok ($cc =~ /test1/, "Found test 1");
-ok ($cc =~ /test2/, "Found test 2");
-ok ($cc =~ /test3/, "Found test 3");
-ok ($cc =~ /test4/, "Found test 4");
-ok ($cc =~ /test5/, "Found test 5");
+like ($cc , qr/test1/, "Found test 1");
+like ($cc , qr/test2/, "Found test 2");
+like ($cc , qr/test3/, "Found test 3");
+like ($cc , qr/test4/, "Found test 4");
+like ($cc , qr/test5/, "Found test 5");
 
 # }}}
 

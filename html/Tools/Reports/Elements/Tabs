@@ -83,7 +83,7 @@ foreach my $tab ( sort keys %{$tabs} ) {
 
 <%ARGS>
 $subtabs => undef
-$current_tab => undef
+$current_tab => ''
 $current_subtab => undef
 $Title => undef
 </%ARGS>

@@ -1,6 +1,9 @@
 #!/usr/bin/perl -w
 
-use Test::More qw(no_plan);
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 22;
 
 use RT;
 
@@ -126,9 +129,9 @@ sub clear_acls_and_groups {
     }
 
     $acl->RedoSearch();
-    ok( $acl->Count() == 0,
+    is( $acl->Count() , 0,
        "All principals have no rights after clearing ACLs" );
     $members->RedoSearch();
-    ok( $members->Count() == 0,
+    is( $members->Count() , 0,
        "All groups have no members after clearing groups" );
 }

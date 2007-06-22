@@ -9,8 +9,7 @@ use Test::More;
 my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
 if ( keys %clicky ) {
     plan 'no_plan';
-}
-else {
+} else {
     plan skip_all => 'No active Make Clicky actions';
 }
 

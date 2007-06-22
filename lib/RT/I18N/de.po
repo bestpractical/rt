@@ -3930,6 +3930,15 @@ msgid "Sat."
 msgstr "Sa."
 
 #: html/Prefs/MyRT.html:72 html/Prefs/Quicksearch.html:64 html/Prefs/Search.html:69 html/Prefs/Search.html:69 html/Search/Elements/EditSearches:70 html/Widgets/SelectionBox:211
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
+#: html/Widgets/SelectionBox:212
 msgid "Save"
 msgstr "Speichern"
 
@@ -4152,7 +4161,7 @@ msgstr "Ausgewählte Objekte"
 
 #: html/Widgets/SelectionBox:209
 msgid "Selections modified. Please save your changes"
-msgstr "Auswahl wurde geändert. Bitte speichere Deine Änderungen"
+msgstr "Auswahl wurde geändert. Bitte speichere Deine Ãnderungen"
 
 #: etc/initialdata:121
 msgid "Send mail to all watchers"

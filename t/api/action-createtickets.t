@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 49;
 use RT;
 use RT::Test;
 
@@ -9,11 +12,11 @@ use RT::Test;
     undef $main::_STDERR_;
 
 ok (require RT::Action::CreateTickets);
-use_ok(RT::Scrip);
-use_ok(RT::Template);
-use_ok(RT::ScripAction);
-use_ok(RT::ScripCondition);
-use_ok(RT::Ticket);
+use_ok('RT::Scrip');
+use_ok('RT::Template');
+use_ok('RT::ScripAction');
+use_ok('RT::ScripCondition');
+use_ok('RT::Ticket');
 
 my $approvalsq = RT::Queue->new($RT::SystemUser);
 $approvalsq->Create(Name => 'Approvals');
@@ -44,7 +47,7 @@ Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?
 ENDOFCONTENT
 ';
 
-ok ($approvals =~ /Content/, "Read in the approvals template");
+like ($approvals , qr/Content/, "Read in the approvals template");
 
 my $apptemp = RT::Template->new($RT::SystemUser);
 $apptemp->Create( Content => $approvals, Name => "Approvals", Queue => "0");

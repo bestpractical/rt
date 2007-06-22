@@ -94,6 +94,7 @@ foreach my $object (@objects) {
 @users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
 unshift(@users, $RT::Nobody);
 
+$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
 
 
 </%INIT>

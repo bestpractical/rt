@@ -575,7 +575,7 @@ sub ValidateEmailAddress {
     my $TempUser = RT::User->new($RT::SystemUser);
     $TempUser->LoadByEmail($Value);
 
-    if ( $TempUser->id && ( $TempUser->id != $self->id ) )
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
         return (undef);
@@ -1000,14 +1000,11 @@ Returns true if the user has a valid password, otherwise returns false.
 
 sub HasPassword {
     my $self = shift;
-    my $pass = $self->__Value('Password');
-    if ( !defined $pass || $pass eq '' || $pass eq '*NO-PASSWORD*' ) {
-
-        return undef;
-    }
-
+    my $pwd = $self->__Value('Password');
+    return undef if !defined $pwd
+                    || $pwd eq ''
+                    || $pwd eq '*NO-PASSWORD*';
     return 1;
-
 }
 
 

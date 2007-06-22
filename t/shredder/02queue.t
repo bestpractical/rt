@@ -95,7 +95,7 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
 # XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
 #	create_savepoint('clean');
     my $group = RT::Group->new( $RT::SystemUser );
-    my ($id, $msg) = $group->CreateUserDefinedGroup('my group');
+    my ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
     ok($id, 'created group') or diag "error: $msg";
 
 	create_savepoint('bqcreate');

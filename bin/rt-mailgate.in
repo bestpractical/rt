@@ -82,10 +82,11 @@ my $ua = new LWP::UserAgent;
 $ua->cookie_jar( { file => $opts{'jar'} } ) if $opts{'jar'};
 
 my %args = (
-    queue       => $opts{'queue'},
-    action      => ($opts{'action'} || 'correspond'),
-    SessionType => 'REST',    # Surpress login box
+    SessionType => 'REST', # Surpress login box
 );
+foreach ( qw(queue action) ) {
+    $args{$_} = $opts{$_} if defined $opts{$_};
+};
 
 if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
     $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};

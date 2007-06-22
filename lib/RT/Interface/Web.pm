@@ -59,14 +59,15 @@ RT::Interface::Web
 =cut
 
 
-package RT::Interface::Web;
 use URI;
 
 use strict;
 use warnings;
 
+package RT::Interface::Web;
 
 use RT::SavedSearches;
+use URI qw();
 
 # {{{ EscapeUTF8
 
@@ -213,9 +214,6 @@ sub StaticFileHeaders {
 
 
 package HTML::Mason::Commands;
-
-use strict;
-use warnings;
 
 use vars qw/$r $m %session/;
 
@@ -455,7 +453,7 @@ sub CreateTicket {
     }
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
-    unless ( $id && $Trans ) {
+    unless ( $id ) {
         Abort($ErrMsg);
     }
 
@@ -616,24 +614,19 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    if ( not  $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'}) {
+    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
-                my $var   = ucfirst($1).'MessageTo';
-                my $value = $2;
-                {
-                    if ( $args{$var} ) {
-                        $message_args{$var} .= ", $value";
-                    } else {
-                        $message_args{$var} = $value;
-                    }
-                }
-            }
+            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
+            my $var   = ucfirst($1).'MessageTo';
+            my $value = $2;
+            if ( $message_args{ $var } ) {
+                $message_args{ $var } .= ", $value";
+            } else {
+                $message_args{ $var } = $value;
+            }
         }
     }
-
-
 
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
@@ -1289,7 +1282,8 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{ $arg } || '';
+            @values = split /\r*\n/, $args{'ARGS'}->{ $arg }
+                if defined $args{'ARGS'}->{ $arg };
         }
         @values = grep $_ ne '',
             map {
@@ -1672,6 +1666,7 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
+    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }

@@ -1,10 +1,11 @@
+use strict;
+use warnings;
 use Test::More tests => 6;
 use RT;
 use RT::Test;
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
-my ($trans);
-($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
+my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
 use_ok("RT::URI::t");

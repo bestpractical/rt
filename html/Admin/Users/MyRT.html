@@ -83,9 +83,9 @@ if ($ARGS{Reset}) {
 my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
 my $portlets  = $UserObj->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
 
-my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
-my @items;
+my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };
 
+my @items;
 push @items, map {["component-$_", $_]} sort keys %allowed_components;
 
 my $sys = RT::System->new( RT::CurrentUser->new($UserObj) );
@@ -96,17 +96,17 @@ my @actions;
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-	my ($desc, $search) = @$_;
-	my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-	if ($object eq $sys && $SearchType eq 'Ticket') {
-	    push @items, ["system-$desc", $desc];
-	}
-	else {
-	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-	    my $type = ($SearchType eq 'Ticket')
-		? 'Saved Search' : $SearchType; # loc
-	    push @items, ["saved-$oid", loc($type).": $desc"];
-	}
+        my ($desc, $search) = @$_;
+        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            push @items, ["system-$desc", $desc];
+        }
+        else {
+            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+            my $type = ($SearchType eq 'Ticket')
+                ? 'Saved Search' : $SearchType; # loc
+            push @items, ["saved-$oid", loc($type).": $desc"];
+        }
     }
 }
 

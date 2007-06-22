@@ -1,4 +1,6 @@
 #!/usr/bin/perl -w
+use strict;
+use warnings;
 
 # Regression test suite for http://rt3.fsck.com/Ticket/Display.html?id=6184
 # and related corner cases related to cleanup of delegated ACEs when
@@ -10,7 +12,8 @@
 # The case where the "parent" delegated ACE is removed is handled in
 # the embedded regression tests in lib/RT/ACE_Overlay.pm .
 
-use Test::More qw(no_plan);
+use Test::More; 
+plan tests => 98;
 
 use RT;
 
@@ -449,9 +452,9 @@ sub clear_acls_and_groups {
     }
 
     $acl->RedoSearch();
-    ok( $acl->Count() == 0,
+    is( $acl->Count() , 0,
        "All principals have no rights after clearing ACLs" );
     $members->RedoSearch();
-    ok( $members->Count() == 0,
+    is( $members->Count() , 0,
        "All groups have no members after clearing groups" );
 }

@@ -51,7 +51,8 @@ use warnings;
 
 use vars qw($Nobody $SystemUser $item);
 
-use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
 
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its
@@ -130,7 +131,7 @@ my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
 if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
     $dba_pass = get_dba_password();
-    chomp $dba_pass;
+    chomp $dba_pass if defined($dba_pass);
 }
 
 print "Working with:\n"
