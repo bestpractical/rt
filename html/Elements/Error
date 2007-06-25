@@ -77,7 +77,7 @@ if ($] >= 5.007001) {
 
 $RT::Logger->error($error);
 
-if ( defined ($session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
+if ( defined ($session{'SessionType'}) && $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');
     $m->out( "Error: " . $Why . "\n" );
     $m->out( $Details . "\n" );
