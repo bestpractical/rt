@@ -199,20 +199,27 @@ sub check_db_compatibility {
     my $dbh = shift;
     if ( lc $db_type eq "mysql" ) {
         # Check which version we're running
-        my ($version) = $dbh->selectrow_hashref("show variables like 'version'")->{Value} =~ /^(\d\.\d+)/;
+        my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
+        unless ( $version ) {
+            print STDERR "Couldn't get version of the mysql server\n";
+            exit -1;
+        }
+
+        ($version) = $version =~ /^(\d+\.\d+)/;
         if ( $version < 4 ) {
-            print STDERR "*** WARNING: RT is unsupported on MySQL versions before 4.0.x, it's $version\n";
+            print STDERR "RT is unsupported on MySQL versions before 4.0.x, it's $version\n";
+            exit -1;
         }
 
         # MySQL must have InnoDB support
         if ( $args{'action'} =~ /^(init|insert|schema)$/ ) {
             print "Checking that mysql has spport for InnoDB.\n" if $args{'debug'};
-            my $innodb = $dbh->selectrow_hashref("show variables like 'have_innodb'")->{Value};
-            if ( $innodb eq "NO" ) {
+            my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
+            if ( lc $innodb eq "no" ) {
                 print STDERR "RT requires that MySQL be compiled with InnoDB table support.\n".
                   "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
                 exit -1;
-            } elsif ( $innodb eq "DISABLED" ) {
+            } elsif ( lc $innodb eq "disabled" ) {
                 print STDERR "RT requires that MySQL InnoDB table support be enabled.\n".
                   ($version < 4
                    ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
@@ -220,6 +227,7 @@ sub check_db_compatibility {
                 exit -1;
             }
         }
+
         if ( $args{'action'} =~ /^(insert)$/ ) {
             print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
             my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
