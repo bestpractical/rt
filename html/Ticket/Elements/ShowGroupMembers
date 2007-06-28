@@ -47,17 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 
-% my $UserMembers = $Group->UserMembersObj;
-% while (my $member = $UserMembers->Next()) {
-<& /Elements/ShowUser, User => $member, Ticket => $Ticket &><br />
+% my $Users = $Group->UserMembersObj( Recursively => $Recursively );
+% while ( my $user = $Users->Next ) {
+<& /Elements/ShowUser, User => $user, Ticket => $Ticket &><br />
 % }
-% my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->LimitToGroups();
-% while (my $member = $GroupMembers->Next()) {
-<&|/l&>Group</&>: <%$member->MemberObj->Object->Name%><br />
+% my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
+% $Groups->LimitToUserDefinedGroups;
+% while (my $group = $Groups->Next) {
+<&|/l&>Group</&>: <% $group->Name %><br />
 % }
 
 <%ARGS>
-$Group => undef
-$Ticket => undef
+$Group       => undef
+$Recursively => 0,
+$Ticket      => undef
 </%ARGS>
