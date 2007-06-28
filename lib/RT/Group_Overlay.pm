@@ -785,6 +785,12 @@ sub GroupMembersObj {
         OPERATOR => '=',
         VALUE    => $self->PrincipalId,
     );
+    $groups->Limit(
+        ALIAS => $members_alias,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    ) if $args{'Recursively'};
+
     return $groups;
 }
 
