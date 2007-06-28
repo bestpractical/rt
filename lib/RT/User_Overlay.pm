@@ -1593,6 +1593,23 @@ sub _Value {
 
 # }}}
 
+# {{{ sub FriendlyName
+
+=head2 FriendlyName
+
+  Return the friendly name
+
+=cut
+
+sub FriendlyName {
+    my $self = shift;
+    return $self->RealName if defined($self->RealName);
+    return $self->Name if defined($self->Name);
+    return "";
+}
+
+# }}}
+
 sub BasicColumns {
     (
 	[ Name => 'User Id' ],
