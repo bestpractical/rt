@@ -782,7 +782,6 @@ sub GroupMembersObj {
     $groups->Limit(
         ALIAS    => $members_alias,
         FIELD    => 'GroupId',
-        OPERATOR => '=',
         VALUE    => $self->PrincipalId,
     );
     $groups->Limit(
@@ -800,26 +799,38 @@ sub GroupMembersObj {
 
 =head2 UserMembersObj
 
-Returns an RT::Users object of this group's members, including
-all members of subgroups
+Returns an L<RT::Users> object of this group's members, by default
+returns users including all members of subgroups, but could be
+changed with C<Recursively> named argument.
 
 =cut
 
 sub UserMembersObj {
     my $self = shift;
-
-    my $users = RT::Users->new($self->CurrentUser);
+    my %args = ( Recursively => 1, @_ );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
-    my $cached_members = $users->NewAlias('CachedGroupMembers');
-    $users->Join(ALIAS1 => $cached_members, FIELD1 => 'MemberId',
-                 ALIAS2 => $users->PrincipalsAlias, FIELD2 => 'id');
-    $users->Limit(ALIAS => $cached_members, 
-                  FIELD => 'GroupId',
-                  OPERATOR => '=',
-                  VALUE => $self->PrincipalId);
+    my $members_table = $args{'Recursively'}?
+        'CachedGroupMembers': 'GroupMembers';
+
+    my $users = RT::Users->new($self->CurrentUser);
+    my $members_alias = $users->NewAlias( $members_table );
+    $users->Join(
+        ALIAS1 => $members_alias,           FIELD1 => 'MemberId',
+        ALIAS2 => $users->PrincipalsAlias, FIELD2 => 'id',
+    );
+    $users->Limit(
+        ALIAS => $members_alias,
+        FIELD => 'GroupId',
+        VALUE => $self->PrincipalId,
+    );
+    $users->Limit(
+        ALIAS => $members_alias,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    ) if $args{'Recursively'};
 
     return ( $users);
 }
