@@ -442,11 +442,24 @@ sub Create {
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        foreach my $watcher ( grep $_ && !/^\d+$/,
-            ref $args{$type}? @{ $args{$type} } : $args{$type} )
-        {
-            my $user = RT::User->new( $RT::SystemUser );
-            $user->LoadOrCreateByEmail( $watcher )
+        $args{ $type } = [ $args{ $type } ] unless ref $args{ $type };
+        foreach my $watcher ( splice @{ $args{$type} } ) {
+            next unless $watcher;
+            if ( $watcher =~ /^\d+$/ ) {
+                push @{ $args{$type} }, $watcher;
+            } else {
+                my @addresses = Mail::Address->parse( $watcher );
+                foreach my $address( @addresses ) {
+                    my $user = RT::User->new( $RT::SystemUser );
+                    my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
+                    unless ( $uid ) {
+                        push @non_fatal_errors,
+                            $self->loc("Couldn't load or create user: [_1]", $msg);
+                    } else {
+                        push @{ $args{$type} }, $user->id;
+                    }
+                }
+            }
         }
     }
 
@@ -527,17 +540,13 @@ sub Create {
         InsideTransaction => 1
     ) unless $DeferOwner;
 
+
+
     # {{{ Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        foreach my $watcher ( grep $_,
-            ref $args{$type}? @{ $args{$type} } : $args{$type} )
-        {
-
-            # we reason that all-digits number must be a principal id, not email
-            # this is the only way to can add
-            my $field = 'Email';
-            $field = 'PrincipalId' if $watcher =~ /^\d+$/;
+        # we know it's an array ref
+        foreach my $watcher ( @{ $args{$type} } ) {
 
             # Note that we're using AddWatcher, rather than _AddWatcher, as we
             # actually _want_ that ACL check. Otherwise, random ticket creators
@@ -547,7 +556,7 @@ sub Create {
 
             my ($val, $msg) = $self->$method(
                 Type   => $type,
-                $field => $watcher,
+                PrincipalId => $watcher,
                 Silent => 1,
             );
             push @non_fatal_errors, $msg unless $val;

@@ -361,18 +361,9 @@ sub CreateTicket {
 
     my @temp_squelch;
     foreach my $type (qw(Requestors Cc AdminCc)) {
-        my @tmp = Mail::Address->parse( $ARGS{ $type } );
-        push @temp_squelch, map $_->address, @tmp
+        push @temp_squelch, map $_->address, Mail::Address->parse( $ARGS{ $type } )
             if grep $_ eq $type, @{ $ARGS{'SkipNotification'} || [] };
 
-        $create_args{ $type } = [
-            grep $_, map {
-                my $user = RT::User->new( $RT::SystemUser );
-                $user->LoadOrCreateByEmail( $_ );
-                # convert to ids to avoid work later
-                $user->id;
-            } @tmp
-        ];
     }
     # XXX: workaround for name conflict :(
     $create_args{'Requestor'} = delete $create_args{'Requestors'};
