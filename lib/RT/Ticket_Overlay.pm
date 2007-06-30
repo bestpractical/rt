@@ -397,40 +397,37 @@ sub Create {
 
     my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
-        $Owner = $args{'Owner'};
+        if ( $args{'Owner'}->id ) {
+            $Owner = $args{'Owner'};
+        } else {
+            $RT::Logger->error('passed not loaded owner object');
+            push @non_fatal_errors, $self->loc("Invalid owner object");
+            $Owner = undef;
+        }
     }
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
-
-        push( @non_fatal_errors,
+        unless ( $Owner->Id ) {
+            push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
-              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} )
-          )
-          unless ( $Owner->Id );
+              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} );
+            $Owner = undef;
+        }
     }
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
    
     my $DeferOwner;  
-    if (
-            ( defined($Owner) )
-        and ( $Owner->Id )
-        and ( $Owner->Id != $RT::Nobody->Id )
-        and (
-            !$Owner->HasRight(
-                Object => $QueueObj,
-                Right  => 'OwnTicket'
-            )
-        )
-      )
+    if ( $Owner && $Owner->Id != $RT::Nobody->Id 
+        && !$Owner->HasRight( Object => $QueueObj, Right  => 'OwnTicket' ) )
     {
-
         $DeferOwner = $Owner;
         $Owner = undef;
+        $RT::Logger->debug('going to deffer setting owner');
 
     }
 
@@ -632,7 +629,7 @@ sub Create {
     # }}}
     # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
     # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
-    if (  defined($DeferOwner) ) { 
+    if (  $DeferOwner ) { 
             if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
     
         $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
