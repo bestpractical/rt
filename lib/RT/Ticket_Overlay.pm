@@ -643,15 +643,11 @@ sub Create {
         $self->__Set(Field => 'Owner', Value => $Owner->id);
 
     }
+        $self->OwnerGroup->_AddMember(
+            PrincipalId       => $Owner->PrincipalId,
+            InsideTransaction => 1
+        );
     }
-    # Set the owner in the Groups table
-    # We denormalize it into the Ticket table too because doing otherwise would
-    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-
-    $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1
-    );
 
     if ( $args{'_RecordTransaction'} ) {
 
