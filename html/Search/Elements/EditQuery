@@ -71,10 +71,14 @@ $actions => []
 
 <%METHOD Process>
 <%ARGS>
-$Tree => undef,
-$Selected => [],
+$Tree
+$Selected
+@New       => ()
 </%ARGS>
 <%INIT>
+
+my @NewSelection = ();
+
 my @results;
 if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
     if (@$Selected) {
@@ -148,12 +152,34 @@ elsif ( $ARGS{"Right"} ) {
 }
 elsif ( $ARGS{"DeleteClause"} ) {
     if (@$Selected) {
-        while( my $node = shift @$Selected ) {
+        my (@top);
+        my %Selected = map { $_ => 1 } @$Selected;
+        foreach my $node ( @$Selected ) {
+            my $tmp = $node->getParent;
+            while ( !$Selected{ $tmp } && !$tmp->isRoot ) {
+                $tmp = $tmp->getParent;
+            }
+            next if $Selected{ $tmp };
+            push @top, $node;
+        }
+
+        foreach ( @New ) {
+            my $add = $_->clone;
+            foreach my $selected( @top ) {
+                my $newindex = $selected->getIndex + 1;
+                $selected->insertSibling( $newindex, $add );
+            }
+            $add->getParent->setNodeValue( $ARGS{'AndOr'} );
+            push @NewSelection, $add;
+        }
+        @New = ();
+    
+        while( my $node = shift @top ) {
             my $parent = $node->getParent;
-            next unless $parent;
             $parent->removeChild($node);
             $node->DESTROY;
         }
+        @$Selected = ();
     }
     else {
         push( @results, [ loc("error: nothing to delete"), -1 ] );
@@ -161,14 +187,17 @@ elsif ( $ARGS{"DeleteClause"} ) {
 }
 elsif ( $ARGS{"Toggle"} ) {
     if (@$Selected) {
-        foreach my $value (@$Selected) {
-            my $parent = $value->getParent;
+        my %seen;
+        my @unique_nodes = grep !$seen{ $_ + 0 }++,
+            map ref $_->getNodeValue? $_->getParent: $_,
+            @$Selected;
 
-            if ( $parent->getNodeValue eq 'AND' ) {
-                $parent->setNodeValue('OR');
+        foreach my $node ( @unique_nodes ) {
+            if ( $node->getNodeValue eq 'AND' ) {
+                $node->setNodeValue('OR');
             }
             else {
-                $parent->setNodeValue('AND');
+                $node->setNodeValue('AND');
             }
         }
     }
@@ -176,6 +205,29 @@ elsif ( $ARGS{"Toggle"} ) {
         push( @results, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
+
+if ( @New && @$Selected ) {
+    foreach ( @New ) {
+        my $add = $_->clone;
+        foreach my $selected( @$Selected ) {
+            my $newindex = $selected->getIndex + 1;
+            $selected->insertSibling( $newindex, $add );
+        }
+        $add->getParent->setNodeValue( $ARGS{'AndOr'} );
+        push @NewSelection, $add;
+    }
+}
+elsif ( @New ) {
+    foreach ( @New ) {
+        my $add = $_->clone;
+        $Tree->addChild( $add );
+        push @NewSelection, $add;
+    }
+    $Tree->setNodeValue( $ARGS{'AndOr'} );
+}
+$_->DESTROY foreach @New;
+
+push @$Selected, @NewSelection;
 
 $Tree->PruneChildlessAggregators;
 

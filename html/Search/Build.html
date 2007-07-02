@@ -238,20 +238,7 @@ foreach my $arg ( keys %ARGS ) {
             Value => $value
         };
 
-        my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
-        if (@current_values) {
-            foreach my $value (@current_values) {
-                my $newindex = $value->getIndex + 1;
-                $value->insertSibling( $newindex, $newnode );
-                $value = $newnode;
-                push @new_values, $newnode;
-            }
-        }
-        else {
-            $tree->addChild($newnode);
-            push @new_values, $newnode;
-        }
-        $newnode->getParent->setNodeValue( $ARGS{'AndOr'} );
+        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
     }
 }
 
@@ -259,11 +246,10 @@ foreach my $arg ( keys %ARGS ) {
 
 push @actions, $m->comp('Elements/EditQuery:Process',
     %ARGS,
-    Tree => $tree,
+    Tree     => $tree,
     Selected => \@current_values,
+    New      => \@new_values,
 );
-
-push @current_values, @new_values;
 
 # {{{ Rebuild $Query based on the additions / movements
 
