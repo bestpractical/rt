@@ -503,7 +503,7 @@ sub LoadByEmail {
 =head2 LoadOrCreateByEmail ADDRESS
 
 Attempts to find a user who has the provided email address. If that fails, creates an unprivileged user with
-the provided email address and loads them. Address can be provided either as L<Email::Address> object
+the provided email address and loads them. Address can be provided either as L<Mail::Address> object
 or string which is parsed using the module.
 
 Returns a tuple of the user's id and a status message.
