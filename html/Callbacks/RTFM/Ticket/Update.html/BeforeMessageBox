@@ -52,7 +52,9 @@
 <td><input type="submit" value="Go" /></td>
 </tr>
 % }
+% my %dedupe_articles;
 % while (my $article = $articles_content->Next) {
+%   $dedupe_articles{$article->Id}++;
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
@@ -60,6 +62,7 @@
 </tr>
 % }
 % while (my $article = $articles_basics->Next) {
+%   next if $dedupe_articles{$article->Id};
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name || loc('(no name)')%>: <%$article->Summary%></td>
