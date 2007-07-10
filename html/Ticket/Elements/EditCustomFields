@@ -46,22 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table>
-<tr>
-<td valign="top" width="50%">
-<table>
-
 % my $i = 0;
-% my $cfcount = $CustomFields->Count;
-%  $cfcount++ if ($cfcount % 2) ; # if we have an odd number of 
-% #custom fields, fudge it so we know where to put in the table break
-% while (my $CustomField = $CustomFields->Next()) {
-% if ($cfcount == 2 * $i) {
-</table>
-</td>
-<td valign="top" width="50%">
-<table>
-% }
+% while ( my $CustomField = $CustomFields->Next ) {
 % $i++;
+% if ( $i % 2 ) {
+<tr>
+% }
+<td width="50%">
+<table>
   <tr id="CF-<%$CustomField->id%>-EditRow">
     <td class="labeltop">
       <b><%$CustomField->Name%></b><br />
@@ -76,15 +68,25 @@
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
-        <em style="color: red"><% $msg %></em></td>
+        <em style="color: red"><% $msg %></em>
 %  }
+    </td>
   </tr>
-% }
 </table>
 </td>
-</tr>
-</table>
 
+% unless ( $i % 2 ) {
+</tr>
+% }
+
+% }
+
+%# close row if required
+% if ( $i % 2 ) {
+</tr>
+% }
+
+</table>
 <%INIT>
 my $CustomFields;
 my $NamePrefix;
