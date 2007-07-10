@@ -71,8 +71,20 @@ sub Create {
         @_,
     );
 
+    my $cf_id = ref $args{'CustomField'}? $args{'CustomField'}->id: $args{'CustomField'};
+
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->Load( $cf_id );
+    unless ( $cf->id ) {
+        return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));
+    }
+    unless ( $cf->CurrentUserHasRight('AdminCustomField') ) {
+        return (0, $self->loc('Permission denied'));
+    }
+
     my ($id, $msg) = $self->SUPER::Create(
-        map { $_ => $args{$_} } qw(CustomField Name Description SortOrder)
+        CustomField => $cf_id,
+        map { $_ => $args{$_} } qw(Name Description SortOrder)
     );
     return ($id, $msg) unless $id;
 
