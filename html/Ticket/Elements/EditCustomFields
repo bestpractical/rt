@@ -48,6 +48,7 @@
 <table>
 % my $i = 0;
 % while ( my $CustomField = $CustomFields->Next ) {
+% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
 % $i++;
 % if ( $i % 2 ) {
 <tr>
