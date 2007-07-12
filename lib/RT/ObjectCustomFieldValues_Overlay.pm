@@ -95,8 +95,8 @@ sub LimitToObject {
 
 =sub HasEntry VALUE
 
-Returns true if this CustomFieldValues collection
-has an entry with content that eq VALUE
+If this collection has an entry with content that eq VALUE then
+returns the entry, otherwise returns undef.
 
 =cut
 
@@ -107,7 +107,7 @@ sub HasEntry {
 
     #TODO: this could cache and optimize a fair bit.
     foreach my $item ( @{$self->ItemsArrayRef} ) {
-        return 1 if $item->Content eq $value;
+        return $item if $item->Content eq $value;
     }
     return undef;
 }
