@@ -1471,14 +1471,14 @@ sub CustomFieldLookupType {
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
-VALUE should be a string.
-FIELD can be a CustomField object OR a CustomField ID.
+VALUE should be a string. FIELD can be any identifier of a CustomField
+supported by L</LoadCustomFieldByIdentifier> method.
 
-
-Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
-deletes the old value. 
+Adds VALUE as a value of CustomField FIELD. If this is a single-value custom field,
+deletes the old value.
 If VALUE is not a valid value for the custom field, returns 
-(0, 'Error message' ) otherwise, returns (1, 'Success Message')
+(0, 'Error message' ) otherwise, returns ($id, 'Success Message') where
+$id is ID of created L<ObjectCustomFieldValue> object.
 
 =cut
 
@@ -1557,7 +1557,7 @@ sub _AddCustomFieldValue {
         my ( $old_value, $old_content );
         if ( $old_value = $values->First ) {
             $old_content = $old_value->Content;
-            return (1) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
+            return ($old_value->id) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
                           ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '' );
         }
 
@@ -1593,14 +1593,14 @@ sub _AddCustomFieldValue {
 
         my $new_content = $new_value->Content;
         if ( !defined $old_content || $old_content eq '' ) {
-            return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
+            return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
         elsif ( !defined $new_content || $new_content eq '' ) {
-            return ( 1,
+            return ( $new_value_id,
                 $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
         }
         else {
-            return ( 1, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
+            return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
         }
 
     }
@@ -1628,7 +1628,7 @@ sub _AddCustomFieldValue {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
             }
         }
-        return ( 1, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
+        return ( $new_value_id, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
     }
 }
 
