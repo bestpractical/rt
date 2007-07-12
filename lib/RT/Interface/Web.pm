@@ -1325,20 +1325,22 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value ( @values ) {
-                # build up a hash of values that the new set has
-                $values_hash{$value} = 1;
-                next if $cf_values->HasEntry( $value );
+                if ( my $entry = $cf_values->HasEntry( $value ) ) {
+                    $values_hash{ $entry->id } = 1;
+                    next;
+                }
 
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf,
                     Value => $value
                 );
                 push ( @results, $msg );
+                $values_hash{ $val } = 1 if $val;
             }
 
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {
-                next if $values_hash{ $cf_value->Content };
+                next if $values_hash{ $cf_value->id };
 
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
                     Field => $cf,
