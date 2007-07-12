@@ -271,6 +271,7 @@ sub ParseSQL {
         my $clause = { Key => $key, Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
+    $callback{'Error'} = sub { push @results, @_ };
 
     require RT::SQL;
     RT::SQL::Parse($string, \%callback);
