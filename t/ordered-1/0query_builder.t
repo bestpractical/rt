@@ -238,4 +238,26 @@ is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regress
 
 }
 
+# click advanced, enter "C1 OR ( C2 AND C3 )", apply, aggregators should stay the same.
+{
+    my $response = $agent->get( $url."Search/Edit.html" );
+    ok $response->is_success, "Fetched /Search/Edit.html";
+    ok $agent->form_number(3), "found the form";
+    $agent->field("Query", "( Status = 'new' OR Status = 'open' )");
+    $agent->submit;
+    is( getQueryFromForm,
+        "( Status = 'new' OR Status = 'open' )",
+        "query is the same"
+    );
+    $agent->select("clauses", [qw(0 1 2)]);
+    $agent->field( ValueOfid => 10 );
+    $agent->submit;
+
+
+    is( getQueryFromForm,
+        "id < 10",
+        "replaced query successfuly"
+    );
+}
+
 1;
