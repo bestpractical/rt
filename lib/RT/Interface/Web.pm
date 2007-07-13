@@ -347,6 +347,10 @@ sub CreateTicket {
         Type            => $ARGS{'Type'} || 'ticket',
         Queue           => $ARGS{'Queue'},
         Owner           => $ARGS{'Owner'},
+        # note: name change
+        Requestor       => $ARGS{'Requestors'},
+        Cc              => $ARGS{'Cc'},
+        AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
@@ -360,13 +364,11 @@ sub CreateTicket {
     );
 
     my @temp_squelch;
-    foreach my $type (qw(Requestors Cc AdminCc)) {
-        push @temp_squelch, map $_->address, Mail::Address->parse( $ARGS{ $type } )
+    foreach my $type (qw(Requestor Cc AdminCc)) {
+        push @temp_squelch, map $_->address, Mail::Address->parse( $create_args{ $type } )
             if grep $_ eq $type, @{ $ARGS{'SkipNotification'} || [] };
 
     }
-    # XXX: workaround for name conflict :(
-    $create_args{'Requestor'} = delete $create_args{'Requestors'};
 
     if ( @temp_squelch ) {
         require RT::Action::SendEmail;
