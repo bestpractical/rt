@@ -103,9 +103,9 @@ if ($SavedSearch) {
 my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 
-$m->comp(
-    '/Elements/Callback', %ARGS,
-    _CallbackName  => 'ModifySearch',
+$m->callback(
+    %ARGS,
+    CallbackName  => 'ModifySearch',
     OriginalSearch => $SearchArg,
     Search         => $ProcessedSearchArg,
 );

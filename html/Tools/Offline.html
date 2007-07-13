@@ -52,8 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/Callback, Requestor => \$requestoraddress,
-    Queue => \$qname, %ARGS &>
+% $m->callback( Requestor => \$requestoraddress, Queue => \$qname, %ARGS );
 
 <form action="Offline.html" name="TicketUpdate" 
 	method="post" enctype="multipart/form-data">

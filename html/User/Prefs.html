@@ -178,7 +178,7 @@
 </tr>
 </table>
 
-<& /Elements/Callback, _CallbackName => 'FormEnd', UserObj => $UserObj, %ARGS &>
+% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
 
 <& /Elements/Submit, Label => loc('Save Preferences') &>
 </form>
@@ -210,11 +210,13 @@ if ($UserObj->Id) {
 		Address2 City State Zip Country Lang
 		   );
 
-    $m->comp('/Elements/Callback', _CallbackName => 'UpdateLogic',
-                                    fields        => \@fields,
-                                    results       => \@results,
-                                    UserObj       => $UserObj,
-                                    ARGSRef       => \%ARGS);
+    $m->callback(
+        CallbackName => 'UpdateLogic',
+        fields       => \@fields,
+        results      => \@results,
+        UserObj      => $UserObj,
+        ARGSRef      => \%ARGS,
+    );
     
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,

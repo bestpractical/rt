@@ -160,10 +160,11 @@ if ( $QueueObj->Id ) {
     $EnabledChecked = "" if $QueueObj->Disabled;
 
     my @linkresults;
-    $m->comp('/Elements/Callback',
-        results => \@linkresults, 
-	    RecordObj => $QueueObj, ARGSRef => \%ARGS, 
-	    _CallbackName => 'ProcessLinks'
+    $m->callback(
+        results      => \@linkresults,
+        RecordObj    => $QueueObj,
+        ARGSRef      => \%ARGS, 
+        CallbackName => 'ProcessLinks'
     );
     push @results, @linkresults;
 }

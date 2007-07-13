@@ -117,9 +117,9 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
 
-    $m->comp('/Elements/Callback', _CallbackName => 'BeforeProcessArguments',
-         TicketObj => $TicketObj, Tickets => $Tickets, 
-         ActionsRef => \@Actions, ARGSRef => \%ARGS);
+    $m->callback( CallbackName => 'BeforeProcessArguments',
+        TicketObj => $TicketObj, Tickets => $Tickets,
+        ActionsRef => \@Actions, ARGSRef => \%ARGS );
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
