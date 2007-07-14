@@ -1076,7 +1076,7 @@ sub CustomFieldValues {
 
     if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
 
-        unless ( $field =~ /^\d+$/o ) {
+        unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::CustomFields->new( $self->CurrentUser );
              $CFs->Limit( FIELD => 'Name', VALUE => $field);
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
