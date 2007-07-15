@@ -1346,7 +1346,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
                     Field => $cf,
-                    Value => $cf_value->Content
+                    ValueId => $cf_value->id
                 );
                 push ( @results, $msg);
             }
