@@ -104,10 +104,11 @@ returns the entry, otherwise returns undef.
 sub HasEntry {
     my $self = shift;
     my $value = shift;
+    return undef unless defined $value && length $value;
 
     #TODO: this could cache and optimize a fair bit.
     foreach my $item ( @{$self->ItemsArrayRef} ) {
-        return $item if $item->Content eq $value;
+        return $item if lc $item->Content eq lc $value;
     }
     return undef;
 }
