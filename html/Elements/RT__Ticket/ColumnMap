@@ -54,23 +54,6 @@ $Attr => undef
 <%ONCE>
 our ( $TICKET_COLUMN_MAP );
 
-my $ColumnMap = sub {
-    my $name = shift;
-    my $attr = shift;
-
-    # First deal with the simple things from the map
-    if ( $TICKET_COLUMN_MAP->{$name} ) {
-        return ( $TICKET_COLUMN_MAP->{$name}->{$attr} );
-    }
-    elsif ( (my ($mainkey, $subkey) = $name =~ /^(.*?)\.{(.+)}$/) && $TICKET_COLUMN_MAP->{$1} ) {
-        return $TICKET_COLUMN_MAP->{$mainkey}->{$attr}
-            unless ref $TICKET_COLUMN_MAP->{$mainkey}->{$attr} eq 'CODE';
-
-        return sub { $TICKET_COLUMN_MAP->{$mainkey}->{$attr}->( @_, $subkey ) };
-    }
-
-};
-
 my $LinkCallback = sub {
     my $method = shift;
 
@@ -292,5 +275,5 @@ $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 <%init>
 $m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 $m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'ColumnMap' );
-return $ColumnMap->( $Name, $Attr );
+return GetColumnMapEntry( Map => $TICKET_COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

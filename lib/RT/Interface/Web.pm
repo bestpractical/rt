@@ -1641,6 +1641,23 @@ sub _UploadedFile {
     };
 }
 
+sub GetColumnMapEntry {
+    my %args = ( Map => {}, Name => '', Attribute => undef, @_ );
+    # deal with the simplest thing first
+    if ( $args{'Map'}{ $args{'Name'} } ) {
+        return $args{'Map'}{ $args{'Name'} }{ $args{'Attribute'} };
+    }
+    # complex things
+    elsif ( my ($mainkey, $subkey) = $args{'Name'} =~ /^(.*?)\.{(.+)}$/ ) {
+        return undef unless $args{'Map'}->{ $mainkey };
+        return $args{'Map'}{ $mainkey }{ $args{'Attribute'} }
+            unless ref $args{'Map'}{ $mainkey }{ $args{'Attribute'} } eq 'CODE';
+
+        return sub { $args{'Map'}{ $mainkey }{ $args{'Attribute'} }->( @_, $subkey ) };
+    }
+    return undef;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.
