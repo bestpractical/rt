@@ -105,5 +105,6 @@ elsif ( (my ($mainkey, $subkey) = $Name =~ /^(.*?)\.{(.+)}$/) && $COLUMN_MAP->{$
 
     return sub { $COLUMN_MAP->{$mainkey}->{$Attr}->( @_, $subkey ) };
 }
+return undef;
 
 </%INIT>
