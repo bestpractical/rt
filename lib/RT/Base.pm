@@ -72,8 +72,10 @@ RT::Base
 =head2 CurrentUser
 
 If called with an argument, sets the current user to that user object.
-This will affect ACL decisions, etc.  
-Returns the current user
+This will affect ACL decisions, etc. The argument can be either
+L<RT::CurrentUser> or L<RT::User> object.
+
+Returns the current user object of L<RT::CurrentUser> class.
 
 =cut
 
@@ -82,18 +84,30 @@ sub CurrentUser {
 
     if (@_) {
         $self->{'original_user'} = $self->{'user'};
-        $self->{'user'} = shift;
+        my $current_user = $_[0];
+        if ( ref $current_user eq 'RT::User' ) {
+            $self->{'user'} = new RT::CurrentUser;
+            $self->{'user'}->Load( $current_user->id );
+        } else {
+            $self->{'user'} = $current_user;
+        }
         # We need to weaken the CurrentUser ($self->{'user'}) reference
         # if the object in question is the currentuser object.
         # This avoids memory leaks.
-        Scalar::Util::weaken($self->{'user'}) if (ref($self->{'user'}) &&
-                                                    $self->{'user'} == $self );
+        Scalar::Util::weaken($self->{'user'})
+            if ref $self->{'user'} && $self->{'user'} == $self;
     }
 
-    unless ( ref( $self->{'user'}) ) {
-        $RT::Logger->err( "$self was created without a CurrentUser\n" . Carp::cluck() );
-        return (0);
+    unless ( ref $self->{'user'} && $self->{'user'}->isa('RT::CurrentUser') ) {
+        my $msg = "$self was created without a CurrentUser."
+            ." Any RT object which is subclass of RT::Base must be created"
+            ." with a RT::CurrentUser or a RT::User obejct as the first argument.";
+        $msg .= "\n". Carp::cluck() if @_;
+
+        $RT::Logger->err( $msg );
+        return $self->{'user'} = undef;
     }
+
     return ( $self->{'user'} );
 }
 
