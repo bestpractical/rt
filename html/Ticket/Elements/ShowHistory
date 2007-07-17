@@ -77,7 +77,7 @@ if ($ShowDisplayModes or $ShowTitle) {
     }
 </%perl>
 <div class="history">
-<& /Widgets/TitleBoxStart, title => $title, titleright => $titleright &>
+<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 
 <div id="ticket-history">
