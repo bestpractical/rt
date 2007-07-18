@@ -65,17 +65,19 @@ sub LimitToObjectId {
 sub LimitToLookupType {
     my $self = shift;
     my $lookup = shift;
-    unless ($self->{'_cfs_alias'}) {
-        $self->{'_cfs_alias'}  = $self->NewAlias('CustomFields');
-    }
-    $self->Join( ALIAS1 => 'main',
-                FIELD1 => 'CustomField',
-                ALIAS2 => $self->{'_cfs_alias'},
-                FIELD2 => 'id' );
-    $self->Limit( ALIAS           => $self->{'_cfs_alias'},
-                 FIELD           => 'LookupType',
-                 OPERATOR        => '=',
-                 VALUE           => $lookup );
+
+    $self->{'_cfs_alias'} ||= $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'CustomField',
+        TABLE2 => 'CustomFields',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS    => $self->{'_cfs_alias'},
+        FIELD    => 'LookupType',
+        OPERATOR => '=',
+        VALUE    => $lookup,
+    );
 }
 
 sub HasEntryForCustomField {
