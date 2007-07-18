@@ -48,6 +48,7 @@
 package RT::ObjectCustomField;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 sub Create {
@@ -84,7 +85,7 @@ sub Create {
         if ( my $first = $ObjectCFs->First ) {
             $args{'SortOrder'} = $first->SortOrder + 1;
         } else {
-            $args{'SortOrder'}   = 0;
+            $args{'SortOrder'} = 0;
         }
     }
 
