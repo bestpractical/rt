@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 202;
+use Test::More tests => 216;
 
 use RT;
 RT::LoadConfig();
@@ -90,6 +90,18 @@ TODO: {
 
 # }}}
 
+
+# Set up a custom field for editing tests
+my $cf = RT::CustomField->new($RT::SystemUser);
+my ($val,$msg) = $cf->Create(Name => 'MyCF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+ok($val,$msg);
+
+my $othercf = RT::CustomField->new($RT::SystemUser);
+($val,$msg) = $othercf->Create(Name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+ok($val,$msg);
+
+
+
 # add a comment to ticket
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
     expect_like(qr/Message recorded/, "Added the comment");
@@ -135,6 +147,22 @@ expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to none
 expect_like(qr/queue does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
+
+# Test reading and setting custom fields without spaces
+expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
+expect_like(qr/CF-myCF$$:/i, 'Verified initial empty value');
+expect_send("edit ticket/$ticket_id set 'CF-myCF$$=VALUE' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
+expect_like(qr/CF-myCF$$: VALUE/i, 'Verified change');
+# Test reading and setting custom fields with spaces
+expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
+expect_like(qr/my CF$$:/i, 'Verified change');
+expect_send("edit ticket/$ticket_id set 'CF-my CF$$=VALUE' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
+expect_like(qr/my CF$$: VALUE/i, 'Verified change');
+
 # ...
 # change a ticket's ...[other properties]...
 # ...
