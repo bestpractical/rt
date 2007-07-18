@@ -90,20 +90,20 @@
 </table>
 <%INIT>
 my $CustomFields;
-my $NamePrefix;
 
 if ($TicketObj) {
     $CustomFields = $TicketObj->CustomFields();
-    $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
+    $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
     $CustomFields = $QueueObj->TicketCustomFields();
-    $NamePrefix = "Object-RT::Ticket--CustomField-";
+    $NamePrefix .= "Object-RT::Ticket--CustomField-";
 }
 
 $m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>
+$NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
 </%ARGS>
