@@ -331,10 +331,6 @@ sub CreateTicket {
     my $starts = new RT::Date( $session{'CurrentUser'} );
     $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
 
-    my @Requestors = split ( /\s*,\s*/, $ARGS{'Requestors'} );
-    my @Cc         = split ( /\s*,\s*/, $ARGS{'Cc'} );
-    my @AdminCc    = split ( /\s*,\s*/, $ARGS{'AdminCc'} );
-
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
         From                => $ARGS{'From'},
@@ -365,15 +361,32 @@ sub CreateTicket {
         TimeLeft        => $ARGS{'TimeLeft'},
         TimeEstimated        => $ARGS{'TimeEstimated'},
         TimeWorked      => $ARGS{'TimeWorked'},
-        Requestor       => \@Requestors,
-        Cc              => \@Cc,
-        AdminCc         => \@AdminCc,
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
         Due             => $due->ISO,
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
+
+    my @temp_squelch;
+    foreach my $type (qw(Requestors Cc AdminCc)) {
+        my @tmp = map { $_->format } grep { $_->address} Mail::Address->parse( $ARGS{ $type } );
+
+        $create_args{ $type } = [
+            grep $_, map {
+                my $user = RT::User->new( $RT::SystemUser );
+                $user->LoadOrCreateByEmail( $_ );
+                # convert to ids to avoid work later
+                $user->id;
+            } @tmp
+        ];
+        $RT::Logger->debug(
+            "$type got ".join(',',@{$create_args{ $type }}) );
+
+    }
+    # XXX: workaround for name conflict :(
+    $create_args{'Requestor'} = delete $create_args{'Requestors'};
+
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
