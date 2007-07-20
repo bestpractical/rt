@@ -105,10 +105,11 @@ sub import {
 }
 
 sub started_ok {
+    require RT::Test::Web;
     if ($existing_server) {
 	ok(1, "using existing server $existing_server");
 	warn $existing_server;
-	return ($existing_server, Test::WWW::Mechanize->new);
+	return ($existing_server, RT::Test::Web->new);
     }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
@@ -116,7 +117,7 @@ sub started_ok {
     $RT::Handle = new RT::Handle;
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
-    return ($ret, Test::WWW::Mechanize->new);
+    return ($ret, RT::Test::Web->new);
 }
 
 sub _get_dbh {
