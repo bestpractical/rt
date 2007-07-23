@@ -156,4 +156,60 @@ sub mailsent_ok {
     is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
 }
 
+=head1 UTILITIES
+
+=head2 create_user
+
+=cut
+
+sub load_or_create_user {
+    my $self = shift;
+    my %args = ( Privileged => 1, Disabled => 0, @_ );
+    my $obj = RT::User->new( $RT::SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByCols( Name => $args{'Name'} );
+    } elsif ( $args{'EmailAddress'} ) {
+        $obj->LoadByCols( EmailAddress => $args{'EmailAddress'} );
+    } else {
+        die "Name or EmailAddress is required";
+    }
+    if ( $obj->id ) {
+        # cool
+        $obj->SetPrivileged( $args{'Privileged'} || 0 )
+            if ($args{'Privileged'}||0) != ($obj->Privileged||0);
+        $obj->SetDisabled( $args{'Disabled'} || 0 )
+            if ($args{'Disabled'}||0) != ($obj->Disabled||0);
+    } else {
+        my ($val, $msg) = $obj->Create( %args );
+        die "$msg" unless $val;
+    }
+
+    return $obj;
+}
+
+sub set_rights {
+    my $self = shift;
+    my @list = ref $_[0]? @_: { @_ };
+
+    require RT::ACL;
+    my $acl = RT::ACL->new( $RT::SystemUser );
+    $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
+    while ( my $ace = $acl->Next ) {
+        my $principal = $ace->PrincipalObj;
+        if ( $principal->IsUser && $principal->Object->Name eq 'Nobody' ) {
+            next;
+        }
+        $ace->Delete;
+    }
+
+    foreach my $e (@list) {
+        my $principal = delete $e->{'Principal'};
+        my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
+        foreach my $right ( @rights ) {
+            my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
+            warn "$msg";
+        }
+    }
+}
+
 1;
