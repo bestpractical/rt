@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 15;
+use Test::More tests => 16;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -13,44 +13,59 @@ use constant ImageFileContent => do {
     scalar <$fh>;
 };
 
-$m->get( BaseURL."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok $m->login, 'logged in';
 
-$m->follow_link( text => 'Configuration' );
-$m->title_is(q/RT Administration/, 'admin screen');
-$m->follow_link( text => 'Custom Fields' );
-$m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-$m->follow_link( text => 'New custom field' );
-$m->submit_form(
-    form_name => "ModifyCustomField",
-    fields => {
-        TypeComposite => 'Image-0',
-        LookupType => 'RT::Queue-RT::Ticket',
-        Name => 'img',
-        Description => 'img',
+diag "Create a CF" if $ENV{'TEST_VERBOSE'};
+{
+    $m->follow_link( text => 'Configuration' );
+    $m->title_is(q/RT Administration/, 'admin screen');
+    $m->follow_link( text => 'Custom Fields' );
+    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
+    $m->follow_link( text => 'New custom field' );
+    $m->submit_form(
+        form_name => "ModifyCustomField",
+        fields => {
+            TypeComposite => 'Image-0',
+            LookupType => 'RT::Queue-RT::Ticket',
+            Name => 'img',
+            Description => 'img',
+        },
+    );
+}
+
+diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
+my $tcf;
+{
+    $m->title_is(q/Created CustomField img/, 'admin-cf created');
+    $m->follow_link( text => 'Queues' );
+    $m->title_is(q/Admin queues/, 'admin-queues screen');
+    $m->follow_link( text => 'General' );
+    $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
+    $m->follow_link( text => 'Ticket Custom Fields' );
+
+    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general tcf');
+    $m->form_name('EditCustomFields');
+
+    # Sort by numeric IDs in names
+    my @names = map  { $_->[1] }
+                sort { $a->[0] <=> $b->[0] }
+                map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
+                grep defined, map $_->name, $m->current_form->inputs;
+    $tcf = pop(@names);
+    $m->field( $tcf => 1 );         # Associate the new CF with this queue
+    $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
+    $m->submit;
+
+    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+}
+
+my $tester = RT::Test->load_or_create_user( Name => 'tester', Password => '123456' );
+RT::Test->set_rights(
+    { Principal => $tester->PrincipalObj,
+      Right => [qw(SeeQueue ShowTicket CreateTicket ModifyCustomField)],
     },
 );
-$m->title_is(q/Created CustomField img/, 'admin-cf created');
-$m->follow_link( text => 'Queues' );
-$m->title_is(q/Admin queues/, 'admin-queues screen');
-$m->follow_link( text => 'General' );
-$m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
-$m->follow_link( text => 'Ticket Custom Fields' );
-
-$m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general tcf');
-$m->form_name('EditCustomFields');
-
-# Sort by numeric IDs in names
-my @names = map  { $_->[1] }
-            sort { $a->[0] <=> $b->[0] }
-            map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
-            grep defined, map $_->name, $m->current_form->inputs;
-my $tcf = pop(@names);
-$m->field( $tcf => 1 );         # Associate the new CF with this queue
-$m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
-$m->submit;
-
-$m->content_like( qr/Object created/, 'TCF added to the queue' );
+ok $m->login('tester', 123456), 'logged in';
 
 $m->submit_form(
     form_name => "CreateTicketInQueue",
