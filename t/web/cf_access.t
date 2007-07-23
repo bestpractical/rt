@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 16;
+use Test::More tests => 20;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -34,7 +34,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
 }
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
-my $tcf;
+my $cfid;
 {
     $m->title_is(q/Created CustomField img/, 'admin-cf created');
     $m->follow_link( text => 'Queues' );
@@ -43,7 +43,7 @@ my $tcf;
     $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( text => 'Ticket Custom Fields' );
 
-    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general tcf');
+    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
     $m->form_name('EditCustomFields');
 
     # Sort by numeric IDs in names
@@ -51,8 +51,9 @@ my $tcf;
                 sort { $a->[0] <=> $b->[0] }
                 map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
                 grep defined, map $_->name, $m->current_form->inputs;
-    $tcf = pop(@names);
-    $m->field( $tcf => 1 );         # Associate the new CF with this queue
+    $cfid = pop(@names);
+    $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
+    $m->field( $cfid => 1 );         # Associate the new CF with this queue
     $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
     $m->submit;
 
@@ -62,40 +63,84 @@ my $tcf;
 my $tester = RT::Test->load_or_create_user( Name => 'tester', Password => '123456' );
 RT::Test->set_rights(
     { Principal => $tester->PrincipalObj,
-      Right => [qw(SeeQueue ShowTicket CreateTicket ModifyCustomField)],
+      Right => [qw(SeeQueue ShowTicket CreateTicket)],
     },
 );
-ok $m->login('tester', 123456), 'logged in';
+ok $m->login( $tester->Name, 123456), 'logged in';
 
-$m->submit_form(
-    form_name => "CreateTicketInQueue",
-    fields => { Queue => 'General' },
-);
+diag "check that we have no the CF on the create"
+    ." ticket page when user has no SeeCustomField right"
+        if $ENV{'TEST_VERBOSE'};
+{
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields => { Queue => 'General' },
+    );
+    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
-$m->content_like(qr/Upload multiple images/, 'has a upload image field');
+    my $form = $m->form_name("TicketCreate");
+    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    ok !$form->find_input( $upload_field ), 'no form field on the page';
+}
 
-$tcf =~ /(\d+)$/ or die "Hey this is impossible dude";
-my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
-
-$m->submit_form(
-    form_name => "TicketCreate",
-    fields => {
-        $upload_field => ImageFile,
-        Subject => 'testing img cf creation',
+RT::Test->set_rights(
+    { Principal => $tester->PrincipalObj,
+      Right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField)],
     },
 );
 
-$m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
+diag "check that we have no the CF on the create"
+    ." ticket page when user has no ModifyCustomField right"
+        if $ENV{'TEST_VERBOSE'};
+{
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields => { Queue => 'General' },
+    );
+    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
-my $id = $1 if $m->content =~ /Ticket (\d+) created/;
+    my $form = $m->form_name("TicketCreate");
+    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    ok !$form->find_input( $upload_field ), 'no form field on the page';
+}
 
-$m->title_like(qr/testing img cf creation/, "its title is the Subject");
+RT::Test->set_rights(
+    { Principal => $tester->PrincipalObj,
+      Right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField ModifyCustomField)],
+    },
+);
 
-$m->follow_link( text => 'bplogo.gif' );
-$m->content_is(ImageFileContent, "it links to the uploaded image");
+diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
+my $tid;
+{
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields => { Queue => 'General' },
+    );
+    $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 
-$m->get( BaseURL );
+    $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
+    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
 
+    $m->submit_form(
+        form_name => "TicketCreate",
+        fields => {
+            $upload_field => ImageFile,
+            Subject => 'testing img cf creation',
+        },
+    );
+
+    $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
+
+    $tid = $1 if $m->content =~ /Ticket (\d+) created/;
+
+    $m->title_like(qr/testing img cf creation/, "its title is the Subject");
+
+    $m->follow_link( text => 'bplogo.gif' );
+    $m->content_is(ImageFileContent, "it links to the uploaded image");
+}
+
+$m->get( $m->rt_base_url );
 $m->follow_link( text => 'Tickets' );
 $m->follow_link( text => 'New Query' );
 
@@ -104,7 +149,7 @@ $m->submit_form(
     form_name => "BuildQuery",
     fields => {
         idOp => '=',
-        ValueOfid => $id,
+        ValueOfid => $tid,
         ValueOfQueue => 'General',
     },
     button => 'AddClause',
