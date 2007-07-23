@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 20;
+use Test::More tests => 26;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -81,6 +81,16 @@ diag "check that we have no the CF on the create"
     my $form = $m->form_name("TicketCreate");
     my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
+
+    $m->submit_form(
+        form_name => "TicketCreate",
+        fields => { Subject => 'test' },
+    );
+    $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
+
+    $m->content_unlike(qr/img:/, 'has no img field on the page');
+    $m->follow_link( text => 'Custom Fields');
+    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 }
 
 RT::Test->set_rights(
@@ -101,6 +111,19 @@ diag "check that we have no the CF on the create"
 
     my $form = $m->form_name("TicketCreate");
     my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    ok !$form->find_input( $upload_field ), 'no form field on the page';
+
+    $m->submit_form(
+        form_name => "TicketCreate",
+        fields => { Subject => 'test' },
+    );
+    my $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
+    ok $tid, "a ticket is created succesfully";
+
+    $m->follow_link( text => 'Custom Fields' );
+    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $form = $m->form_number(3);
+    $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 }
 
