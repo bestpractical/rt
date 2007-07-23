@@ -16,6 +16,11 @@ sub login {
     
     my $url = $self->rt_base_url;
 
+    $self->get($url);
+    if ( $self->content =~ qr/Logout/i ) {
+        $self->follow_link( text => 'Logout' );
+    }
+
     $self->get($url . "?user=$user;pass=$pass");
     return 0 unless $self->status == 200;
     return 0 unless $self->content =~ qr/Logout/i;
