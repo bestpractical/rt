@@ -18,7 +18,7 @@ sub login {
 
     $self->get($url . "?user=$user;pass=$pass");
     return 0 unless $self->status == 200;
-    return 0 unless $self->content =~ qr/Logout/;
+    return 0 unless $self->content =~ qr/Logout/i;
     return 1;
 }
 
