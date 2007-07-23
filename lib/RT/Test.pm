@@ -14,12 +14,12 @@ my $mailsent;
 BEGIN {
     # TODO: allocate a port dynamically
     if (my $test_server = $ENV{RT_TEST_SERVER}) {
-	my ($host, $test_port) = split(':', $test_server, 2);
-	$port = $test_port || 80;
-	$existing_server = "http://$host:$port";
+        my ($host, $test_port) = split(':', $test_server, 2);
+        $port = $test_port || 80;
+        $existing_server = "http://$host:$port";
     }
     else {
-	$port = 11229;
+        $port = 11229;
     }
     $config = File::Temp->new;
     print $config qq{
@@ -39,9 +39,9 @@ Set( \$LogToScreen , "warning");
     # make it another function
     $mailsent = 0;
     my $mailfunc = sub { 
-	my $Entity = shift;
-	$mailsent++;
-	return 1;
+        my $Entity = shift;
+        $mailsent++;
+        return 1;
     };
     RT::Config->Set( 'MailCommand' => $mailfunc);
 
@@ -61,8 +61,8 @@ sub import {
 
     require RT::Handle;
     if ($existing_server) {
-	RT->Init;
-	return;
+        RT->Init;
+        return;
     }
 
     # bootstrap with dba cred
@@ -107,9 +107,9 @@ sub import {
 sub started_ok {
     require RT::Test::Web;
     if ($existing_server) {
-	ok(1, "using existing server $existing_server");
-	warn $existing_server;
-	return ($existing_server, RT::Test::Web->new);
+        ok(1, "using existing server $existing_server");
+        warn $existing_server;
+        return ($existing_server, RT::Test::Web->new);
     }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
