@@ -168,7 +168,7 @@ if ($ARGS{'id'} eq 'new') {
 			}
 
 		} elsif ( $ARGS{'Lock'} eq 'break' ) {
-			$TicketObj->RT::IR::Ticket::BreakLock();
+			$TicketObj->BreakLock();
 			push @Actions, loc('You have broken the lock on this ticket');
 		}
     }
