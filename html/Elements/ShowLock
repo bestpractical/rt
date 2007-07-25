@@ -16,7 +16,7 @@
 </div>
 %}
 <%init>
-return unless (my $Lock = $Ticket->RT::Ticket::Locked());
+return unless (my $Lock = $Ticket->Locked());
 my $u = RT::User->new($session{'CurrentUser'});
 $u->Load($Lock->Content->{'User'});
 

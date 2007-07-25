@@ -150,7 +150,7 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-$TicketObj->RT::Ticket::Lock() unless $TicketObj->RT::Ticket::Locked();
+$TicketObj->Lock() unless $TicketObj->Locked();
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
