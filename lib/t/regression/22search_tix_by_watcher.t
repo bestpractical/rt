@@ -40,10 +40,7 @@ sub run_tests {
 
         my $count = 0;
         $count++ foreach grep $_, values %{ $test{$key} };
-        TODO: { 
-            local $TODO = "we can't generate this query yet";
-            is($tix->Count, $count, "found correct number of ticket(s) by '$key'") or $error = 1;
-            };
+        is($tix->Count, $count, "found correct number of ticket(s) by '$key'") or $error = 1;
 
         my $good_tickets = 1;
         while ( my $ticket = $tix->Next ) {
@@ -77,7 +74,8 @@ sub run_tests {
     'Requestor IS NULL'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
     'Requestor IS NOT NULL'        => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
 
-    'Requestor = "x@example.com" AND Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+# this test is a todo, we run it later
+#    'Requestor = "x@example.com" AND Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
     'Requestor = "x@example.com" OR Requestor = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
 
     'Requestor != "x@example.com" AND Requestor != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
@@ -96,6 +94,15 @@ sub run_tests {
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
+
+TODO: {
+    local $TODO = "we can't generate this query yet";
+    %test = (
+        'Requestor = "x@example.com" AND Requestor = "y@example.com"'
+            => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    );
+    run_tests();
+}
 
 @data = (
     { Subject => 'xy', Cc => ['x@example.com'], Requestor => [ 'y@example.com' ] },
