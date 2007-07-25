@@ -158,7 +158,7 @@ sub mailsent_ok {
 
 =head1 UTILITIES
 
-=head2 create_user
+=head2 load_or_create_user
 
 =cut
 
@@ -180,6 +180,27 @@ sub load_or_create_user {
         $obj->SetDisabled( $args{'Disabled'} || 0 )
             if ($args{'Disabled'}||0) != ($obj->Disabled||0);
     } else {
+        my ($val, $msg) = $obj->Create( %args );
+        die "$msg" unless $val;
+    }
+
+    return $obj;
+}
+
+=head2 load_or_create_queue
+
+=cut
+
+sub load_or_create_queue {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj = RT::Queue->new( $RT::SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByCols( Name => $args{'Name'} );
+    } else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
     }
