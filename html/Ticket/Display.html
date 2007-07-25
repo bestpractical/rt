@@ -158,10 +158,9 @@ if ($ARGS{'id'} eq 'new') {
 
 			} elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
 				$duration = time() - $lock->Content->{'Timestamp'};
-				my $date = RT::Date->new($session{'CurrentUser'});
-				$duration = $date->DurationAsString($duration);
+				$duration = time() - $lock->Content->{'Timestamp'};
 				$TicketObj->Unlock();
-				push @Actions, loc('You have unlocked this ticket (locked for ' . $duration . ')');
+                push @Actions, loc('You have unlocked this ticket');
 			} else {
 				push @Actions,
 					loc("You can't unlock tickets that you did not lock");
