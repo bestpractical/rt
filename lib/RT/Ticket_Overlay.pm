@@ -559,7 +559,8 @@ sub Create {
                 PrincipalId => $watcher,
                 Silent => 1,
             );
-            push @non_fatal_errors, $msg unless $val;
+            push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
+                unless $val;
         }
     }
 
