@@ -1,0 +1,34 @@
+% if ($u->id == $session{'CurrentUser'}->id) {
+<div class="locked-by-you">
+% if(defined $duration) {
+	<&|/l, $ago &>You had this ticket locked for [_1]. It is now unlocked.</&>.
+% } else {
+	<&|/l, $ago &>You have had this ticket locked for [_1]</&>.
+% 		unless($ARGS{'noUnlock'}) {
+			[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%		}
+% }
+
+</div>
+% } else {
+<div class="locked">
+<&|/l, $u->Name, $ago &>This ticket has been locked by [_1] for [_2]</&>.
+</div>
+%}
+<%init>
+return unless (my $Lock = $Ticket->RT::Ticket::Locked());
+my $u = RT::User->new($session{'CurrentUser'});
+$u->Load($Lock->Content->{'User'});
+
+my $date = RT::Date->new($session{'CurrentUser'});
+my $ago;
+if(defined $duration) {
+	$ago = $date->DurationAsString($duration);
+} else {
+	$ago = $date->DurationAsString(time() - $Lock->Content->{'Timestamp'});
+}
+</%init>
+<%args>
+$Ticket
+$duration => undef
+</%args>

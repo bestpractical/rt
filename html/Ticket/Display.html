@@ -52,6 +52,9 @@
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
+% $duration ||= $ARGS{'duration'};
+<& /Elements/ShowLock, Ticket => $TicketObj, duration => $duration &>
+
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
 
@@ -88,6 +91,7 @@ $Collapsed => undef
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my (@Actions, $Tickets);  
+my $duration;
 
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
@@ -123,9 +127,50 @@ if ($ARGS{'id'} eq 'new') {
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
-            my ($res, $msg) = $TicketObj->$action();
-            push(@Actions, $msg);
+            my $lock = $TicketObj->RT::Ticket::Locked();
+            if($lock && $lock->Content->{'User'} != $session{'CurrentUser'}->id)
+            {
+            	my $u = RT::User->new($session{'CurrentUser'});
+				$u->Load($lock->Content->{'User'});
+            	push @Actions, "Cannot $action: Ticket locked by " . $u->Name . ' and cannot be modified';
+            }
+            elsif(!$lock)
+            {
+            	$TicketObj->RT::Ticket::Lock();
+				my ($res, $msg) = $TicketObj->$action();
+				push(@Actions, $msg);
+			}
         }
+    }
+    
+    if ( defined $ARGS{'Lock'} ) {
+        if ( $ARGS{'Lock'} eq 'add' ) {
+            if ( $TicketObj->RT::Ticket::Lock() ) {
+                push @Actions, loc('You now have a lock on this ticket');
+            } else {
+                push @Actions, loc('Your attempt to lock this ticket failed');
+
+            }
+        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
+            my $lock = $TicketObj->RT::Ticket::Locked();
+            if ( !$lock ) {
+                push @Actions, loc('This ticket was not locked');
+
+			} elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
+				$duration = time() - $lock->Content->{'Timestamp'};
+				my $date = RT::Date->new($session{'CurrentUser'});
+				$duration = $date->DurationAsString($duration);
+				$TicketObj->RT::Ticket::Unlock();
+				push @Actions, loc('You have unlocked this ticket (locked for ' . $duration . ')');
+			} else {
+				push @Actions,
+					loc("You can't unlock tickets that you did not lock");
+			}
+
+		} elsif ( $ARGS{'Lock'} eq 'break' ) {
+			$TicketObj->RT::IR::Ticket::BreakLock();
+			push @Actions, loc('You have broken the lock on this ticket');
+		}
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};

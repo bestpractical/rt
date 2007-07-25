@@ -49,6 +49,8 @@
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     Title=> $title &>
+    
+<& /Elements/ShowLock, Ticket => $TicketObj, noUnlock => 1 &>
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
@@ -148,6 +150,8 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
+$TicketObj->RT::Ticket::Lock() unless $TicketObj->RT::Ticket::Locked();
+
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
@@ -230,6 +234,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
+	$ARGS{'Lock'} = 'remove';
     $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }

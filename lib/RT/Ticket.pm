@@ -227,6 +227,48 @@ sub QueueObj {
 	return($Queue);
 }
 
+
+
+sub Locked {
+    my $ticket =shift;
+    return $ticket->FirstAttribute('RT_Lock');
+}
+
+sub Lock {
+    my $ticket = shift;
+
+    if ( $ticket->RT::Ticket::Locked ) {
+        return undef;
+    } else {
+        $ticket->SetAttribute(
+            Name    => 'RT_Lock',
+            Content => {
+                User      => $ticket->CurrentUser->id,
+                Timestamp => time()
+
+            }
+        );
+    }
+}
+
+
+sub Unlock {
+    my $ticket = shift;
+
+    my $lock = $ticket->RT::Ticket::Locked();
+     return undef unless $lock;
+     return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
+    $ticket->DeleteAttribute('RT_Lock');
+}
+
+
+sub BreakLock {
+    my $ticket = shift;
+    my $lock = $ticket->RT::Ticket::Locked();
+     return undef unless $lock;
+    $ticket->DeleteAttribute('RT_Lock');
+}
+
 =head2 Type
 
 Returns the current value of Type. 
