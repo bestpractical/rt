@@ -417,7 +417,7 @@ sub CreateTicket {
             } else {
                 @values = split /\r*\n/, $ARGS{ $arg } || '';
             }
-            @values = grep $_ ne '',
+            @values = grep length,
                 map {
                     s/\r+\n/\n/g;
                     s/^\s+//;
@@ -1278,7 +1278,7 @@ sub _ProcessObjectCustomFieldUpdates {
             @values = split /\r*\n/, $args{'ARGS'}->{ $arg }
                 if defined $args{'ARGS'}->{ $arg };
         }
-        @values = grep $_ ne '',
+        @values = grep length,
             map {
                 s/\r+\n/\n/g;
                 s/^\s+//;
