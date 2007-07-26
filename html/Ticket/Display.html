@@ -52,8 +52,8 @@
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
-% $duration ||= $ARGS{'duration'};
-<& /Elements/ShowLock, Ticket => $TicketObj, duration => $duration &>
+% $Duration ||= $ARGS{'Duration'};
+<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
@@ -91,7 +91,7 @@ $Collapsed => undef
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my (@Actions, $Tickets);  
-my $duration;
+my $Duration;
 
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
@@ -153,12 +153,11 @@ if ($ARGS{'id'} eq 'new') {
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
             my $lock = $TicketObj->Locked();
-            if ( !$lock ) {
+            unless($lock) {
                 push @Actions, loc('This ticket was not locked');
-
 			} elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-				$duration = time() - $lock->Content->{'Timestamp'};
-				$duration = time() - $lock->Content->{'Timestamp'};
+				$Duration = time() - $lock->Content->{'Timestamp'};
+				$Duration = time() - $lock->Content->{'Timestamp'};
 				$TicketObj->Unlock();
                 push @Actions, loc('You have unlocked this ticket');
 			} else {
