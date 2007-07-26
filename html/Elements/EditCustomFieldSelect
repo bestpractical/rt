@@ -82,6 +82,7 @@ $Rows => undef
 </%ARGS>
 
 <%METHOD options>
+% @Default = grep defined && length, @Default;
 % my $selected;
 % my $CFVs = $CustomField->Values;
 % my @levels;
@@ -106,7 +107,7 @@ $Rows => undef
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
-%       if ( grep( ( $_ || '') eq ( $name || '') , @Default )
+%       if ( ( grep $_ eq $name, @Default )
 %            || ( $Values && $Values->HasEntry( $name ) ) )
 %       {
 %           $$SelectedRef = 1;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 33;
+use Test::More tests => 41;
 use RT::Test;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -132,5 +132,29 @@ diag "check that 0 is ok value of the CF"
     ok $ticket->id, 'loaded the ticket';
     is lc $ticket->FirstCustomFieldValue( $cf_name ),
        '0', 'API returns correct value';
+}
+
+diag "check that we can set empty value when the current is 0"
+    if $ENV{'TEST_VERBOSE'};
+{
+    ok $m->goto_ticket( $tid ), "opened ticket's page";
+    $m->follow_link( text => 'Custom Fields' );
+    $m->title_like(qr/Modify ticket/i, 'modify ticket');
+    $m->content_like(qr/\Q$cf_name/, 'CF on the page');
+
+    my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    is lc $value, '0', 'correct value is selected';
+    $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => '' );
+    $m->submit;
+    $m->content_like(qr/0 is no longer a value for custom field/mi, '0 is no longer a value');
+
+    $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    is $value, '', '(no value) is selected';
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $tid );
+    ok $ticket->id, 'loaded the ticket';
+    is $ticket->FirstCustomFieldValue( $cf_name ),
+       undef, 'API returns correct value';
 }
 
