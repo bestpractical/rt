@@ -1563,8 +1563,26 @@ sub _AddCustomFieldValue {
         my ( $old_value, $old_content );
         if ( $old_value = $values->First ) {
             $old_content = $old_value->Content;
-            return ($old_value->id) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
-                          ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '' );
+            $old_content = undef if defined $old_content && !length $old_content;
+
+            my $is_the_same = 1;
+            if ( defined $args{'Value'} ) {
+                $is_the_same = 0 unless defined $old_content
+                    && lc $old_value eq lc $args{'Value'};
+            } else {
+                $is_the_same = 0 if defined $old_content;
+            }
+            if ( $is_the_same ) {
+                my $old_content = $old_value->LargeContent;
+                if ( defined $args{'LargeContent'} ) {
+                    $is_the_same = 0 unless defined $old_content
+                        && $old_content eq $args{'LargeContent'};
+                } else {
+                    $is_the_same = 0 if defined $old_content;
+                }
+            }
+
+            return $old_value->id if $is_the_same;
         }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
@@ -1598,10 +1616,10 @@ sub _AddCustomFieldValue {
         }
 
         my $new_content = $new_value->Content;
-        if ( !defined $old_content || $old_content eq '' ) {
+        unless ( defined $old_content && length $old_content ) {
             return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
-        elsif ( !defined $new_content || $new_content eq '' ) {
+        elsif ( !defined $new_content || !length $new_content ) {
             return ( $new_value_id,
                 $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
         }
