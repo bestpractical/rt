@@ -1514,6 +1514,12 @@ sub _AddCustomFieldValue {
             )
         );
     }
+
+    # empty string is not correct value of any CF, so undef it
+    foreach ( qw(Value LargeContent) ) {
+        $args{ $_ } = undef if defined $args{ $_ } && !length $args{ $_ };
+    }
+
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
         return ( 0, $self->loc("Invalid value for custom field") );
     }
