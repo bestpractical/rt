@@ -158,7 +158,7 @@ content, try "LargeContent"
 sub Content {
     my $self = shift;
     my $content = $self->SUPER::Content;
-    if ( !$content && $self->ContentType eq 'text/plain' ) {
+    if ( !(defined $content && length $content) && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {
         return $content;
