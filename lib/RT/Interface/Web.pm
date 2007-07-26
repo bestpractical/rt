@@ -1260,7 +1260,8 @@ sub _ProcessObjectCustomFieldUpdates {
         # to fake it
         if ( $arg eq 'Values-Magic' ) {
             # We don't care about the magic, if there's really a values element;
-            next if $args{'ARGS'}->{'Value'} || $args{'ARGS'}->{'Values'};
+            next if defined $args{'ARGS'}->{'Value'} && length $args{'ARGS'}->{'Value'};
+            next if defined $args{'ARGS'}->{'Values'} && length $args{'ARGS'}->{'Values'};
 
             # "Empty" values does not mean anything for Image and Binary fields
             next if $cf_type =~ /^(?:Image|Binary)$/;
