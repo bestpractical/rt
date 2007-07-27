@@ -216,6 +216,7 @@ if ( @New && @$Selected ) {
         $add->getParent->setNodeValue( $ARGS{'AndOr'} );
         push @NewSelection, $add;
     }
+    @$Selected = ();
 }
 elsif ( @New ) {
     foreach ( @New ) {

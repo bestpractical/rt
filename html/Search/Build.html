@@ -229,7 +229,7 @@ foreach my $arg ( keys %ARGS ) {
             $value = "'NULL'";
         }
         else {
-            $value = "'$value'";
+            $value = "'$value'" unless $value =~ /^\d+$/;
         }
 
         my $clause = {

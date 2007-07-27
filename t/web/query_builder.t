@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 44;
+use Test::More tests => 42;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -17,62 +17,16 @@ my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar($cookie_jar);
 
 # create a regression queue if it doesn't exist
-{
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    $queue->Load( 'Regression' );
-    if ( $queue->id ) {
-        ok(1, "queue 'Regression' exists");
-    } else {
-        $queue->Create( Name => 'Regression' );
-        ok($queue->id, "created queue 'Regression'");
-    }
-}
+my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
+ok $queue && $queue->id, 'loaded or created queue';
 
-# get the top page
-my $url = RT->Config->Get('WebURL');
-$agent->get($url);
-
-is ($agent->{'status'}, 200, "Loaded a page");
-
-
-# {{{ test a login
-
-# follow the link marked "Login"
-
-ok($agent->{form}->find_input('user'));
-
-ok($agent->{form}->find_input('pass'));
-like ($agent->{'content'} , qr/username:/i);
-$agent->field( 'user' => 'root' );
-$agent->field( 'pass' => 'password' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
-is($agent->{'status'}, 200, "Fetched the page ok");
-like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
-
-# }}}
+my $url = $agent->rt_base_url;
+ok $agent->login, "logged in";
 
 # {{{ Query Builder tests
 
 my $response = $agent->get($url."Search/Build.html");
-ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
-
-# Adding items
-
-# set the first value
-ok($agent->form_name('BuildQuery'), "found the form once");
-$agent->field("ActorField", "Owner");
-$agent->field("ActorOp", "=");
-$agent->field("ValueOfActor", "Nobody");
-$agent->submit();
-
-# set the next value
-ok($agent->form_name('BuildQuery'), "found the form again");
-$agent->field("QueueOp", "!=");
-$agent->field("ValueOfQueue", "Regression");
-$agent->submit();
-
-ok($agent->form_name('BuildQuery'), "found the form a third time");
+ok $response->is_success, "Fetched ". $url ."Search/Build.html";
 
 sub getQueryFromForm {
     $agent->form_name('BuildQuery');
@@ -84,78 +38,111 @@ sub getQueryFromForm {
     return $q;
 }
 
-is (getQueryFromForm, "Owner = 'Nobody' AND Queue != 'Regression'");
-
-# We're going to delete the owner
-
-$agent->select("clauses", ["0"] );
-
-$agent->click("DeleteClause");
-
-ok($agent->form_name('BuildQuery'), "found the form a fourth time");
-
-is (getQueryFromForm, "Queue != 'Regression'");
-
-$agent->field("AndOr", "OR");
-
-$agent->select("idOp", ">");
-
-$agent->field("ValueOfid" => "1234");
-
-$agent->click("AddClause");
-
-ok($agent->form_name('BuildQuery'), "found the form again");
-TODO: {
-  local $TODO = "query builder incorrectly quotes numbers";
-  is(getQueryFromForm, "Queue != 'Regression' OR id > 1234", "added something as OR, and number not quoted");
-}
-
 sub selectedClauses {
     my @clauses = grep { defined } map { $_->value } $agent->current_form->find_input("clauses");
     return [ @clauses ];
 }
 
 
-is_deeply(selectedClauses, ["1"], 'the id that we just entered is still selected');
+diag "add the first condition" if $ENV{'TEST_VERBOSE'};
+{
+    ok $agent->form_name('BuildQuery'), "found the form once";
+    $agent->field("ActorField", "Owner");
+    $agent->field("ActorOp", "=");
+    $agent->field("ValueOfActor", "Nobody");
+    $agent->submit;
+    is getQueryFromForm, "Owner = 'Nobody'", 'correct query';
+}
 
-# Move the second one up a level
-$agent->click("Up"); 
+diag "set the next condition" if $ENV{'TEST_VERBOSE'};
+{
+    ok($agent->form_name('BuildQuery'), "found the form again");
+    $agent->field("QueueOp", "!=");
+    $agent->field("ValueOfQueue", "Regression");
+    $agent->submit;
+    is getQueryFromForm, "Owner = 'Nobody' AND Queue != 'Regression'",
+        'correct query';
+}
 
-ok($agent->form_name('BuildQuery'), "found the form again");
-is(getQueryFromForm, "id > 1234 OR Queue != 'Regression'", "moved up one");
+diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->select("clauses", ["0"] );
+    $agent->click("DeleteClause");
+    ok $agent->form_name('BuildQuery'), "found the form";
+    is getQueryFromForm, "Queue != 'Regression'", 'correct query';
+}
 
-is_deeply(selectedClauses, ["0"], 'the one we moved up is selected');
+diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->field("AndOr", "OR");
+    $agent->select("idOp", ">");
+    $agent->field("ValueOfid" => "1234");
+    $agent->click("AddClause");
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    is getQueryFromForm, "Queue != 'Regression' OR id > 1234",
+        "added something as OR, and number not quoted";
+    is_deeply selectedClauses, ["1"], 'the id that we just entered is still selected';
 
-$agent->click("Right");
+}
 
-ok($agent->form_name('BuildQuery'), "found the form again");
-is(getQueryFromForm, "Queue != 'Regression' OR ( id > 1234 )", "moved over to the right (and down)");
-is_deeply(selectedClauses, ["2"], 'the one we moved right is selected');
+diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->click("Up");
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    is getQueryFromForm, "id > 1234 OR Queue != 'Regression'", "moved up one";
+    is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
+}
 
-$agent->select("clauses", ["1"]);
+diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->click("Right");
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    is getQueryFromForm, "Queue != 'Regression' OR ( id > 1234 )",
+        "moved over to the right (and down)";
+    is_deeply selectedClauses, ["2"], 'the one we moved right is selected';
+}
 
-$agent->click("Up");
+diag "Move the block up" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->select("clauses", ["1"]);
+    $agent->click("Up");
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    is getQueryFromForm, "( id > 1234 ) OR Queue != 'Regression'", "moved up";
+    is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
+}
 
-ok($agent->form_name('BuildQuery'), "found the form again");
-is(getQueryFromForm, "( id > 1234 ) OR Queue != 'Regression'", "moved up");
 
-$agent->select("clauses", ["0"]); # this is a null clause
-$agent->click("Up");
-ok($agent->form_name('BuildQuery'), "found the form again");
-$agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
+diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->select("clauses", ["0"]);
+    $agent->click("Up");
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
+    is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
+}
 
-$agent->click("Left");
-ok($agent->form_name('BuildQuery'), "found the form again");
-$agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
+diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->click("Left");
+    ok($agent->form_name('BuildQuery'), "found the form again");
+    $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
+    is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
+}
 
-$agent->select("clauses", ["1"]);
-$agent->select("ValueOfStatus" => "stalled");
-$agent->submit;
-ok($agent->form_name('BuildQuery'), "found the form again");
-is_deeply(selectedClauses, ["2"], 'the one we added is selected');
-is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'", "added new one" );
+diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->select("clauses", ["1"]);
+    $agent->select("ValueOfStatus" => "stalled");
+    $agent->submit;
+    ok $agent->form_name('BuildQuery'), "found the form again";
+    is_deeply selectedClauses, ["2"], 'the one we added is only selected';
+    is getQueryFromForm,
+        "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'",
+        "added new one";
+}
 
-# click advanced, enter "C1 OR ( C2 AND C3 )", apply, aggregators should stay the same.
+diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same."
+    if $ENV{'TEST_VERBOSE'};
 {
     my $response = $agent->get($url."Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
@@ -238,7 +225,8 @@ is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regress
 
 }
 
-# click advanced, enter "C1 OR ( C2 AND C3 )", apply, aggregators should stay the same.
+diag "input a condition, select (several conditions), click delete"
+    if $ENV{'TEST_VERBOSE'};
 {
     my $response = $agent->get( $url."Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";
@@ -251,8 +239,7 @@ is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regress
     );
     $agent->select("clauses", [qw(0 1 2)]);
     $agent->field( ValueOfid => 10 );
-    $agent->submit;
-
+    $agent->click("DeleteClause");
 
     is( getQueryFromForm,
         "id < 10",
