@@ -112,7 +112,7 @@ sub bootstrap_db {
 
 sub started_ok {
     require RT::Test::Web;
-    if ($existing_server) {
+    if ( $existing_server ) {
         ok(1, "using existing server $existing_server");
         warn $existing_server;
         return ($existing_server, RT::Test::Web->new);
@@ -134,7 +134,7 @@ sub _get_dbh {
     );
     unless ( $dbh ) {
         my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
-    print STDERR $msg; exit -1;
+        print STDERR $msg; exit -1;
     }
     return $dbh;
 }
@@ -237,6 +237,7 @@ sub set_rights {
             warn "$msg";
         }
     }
+    return 1;
 }
 
 1;
