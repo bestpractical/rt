@@ -7,8 +7,7 @@ use Test::More;
 
 use File::Temp;
 my $config;
-my $port;
-my $existing_server;
+our ($existing_server, $port);
 my $mailsent;
 
 BEGIN {

@@ -5,9 +5,11 @@ use warnings;
 
 use base qw(Test::WWW::Mechanize);
 
+require RT::Test;
 require Test::More;
 
 sub rt_base_url {
+    return $RT::Test::existing_server if $RT::Test::existing_server;
     return "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
 }
 
