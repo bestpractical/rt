@@ -5,8 +5,7 @@ use strict;
 use Test::More tests => 11;
 
 use RT;
-require RT::Test;
-RT::Init();
+use RT::Test nodata => 1;
 
 sub new (*) {
     my $class = shift;
