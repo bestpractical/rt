@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More tests => 9;
 
-use RT::Test 'nodata';
+use RT::Test nodata => 1;
 
 use RT::Interface::Email;
 
