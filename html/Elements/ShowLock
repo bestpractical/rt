@@ -15,8 +15,9 @@
 <&|/l, $u->Name, $ago &>This ticket has been locked by [_1] for [_2]</&>.
 </div>
 %}
-<%init>
+<%INIT>
 my $Lock;
+return unless defined $Ticket;
 return unless defined $Duration || ($Lock = $Ticket->Locked());
 
 my $u = RT::User->new($session{'CurrentUser'});
@@ -31,9 +32,9 @@ if(defined $Duration) {
 } else {
 	return;
 }
-</%init>
-<%args>
+</%INIT>
+<%ARGS>
 $Ticket
 $Duration => undef
 $Unlock => 1;
-</%args>
+</%ARGS>
