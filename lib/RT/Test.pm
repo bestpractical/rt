@@ -13,7 +13,7 @@ my $mailsent;
 
 BEGIN {
     # TODO: allocate a port dynamically
-    if (my $test_server = $ENV{RT_TEST_SERVER}) {
+    if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
         my ($host, $test_port) = split(':', $test_server, 2);
         $port = $test_port || 80;
         $existing_server = "http://$host:$port";
@@ -32,6 +32,7 @@ Set( \$LogToScreen , "warning");
 };
     close $config;
     $ENV{RT_SITE_CONFIG} = $config->filename;
+
     use RT;
     RT::LoadConfig;
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
@@ -44,8 +45,6 @@ Set( \$LogToScreen , "warning");
         return 1;
     };
     RT::Config->Set( 'MailCommand' => $mailfunc);
-
-
 };
 
 use RT::Interface::Web::Standalone;
@@ -58,12 +57,19 @@ my @server;
 
 sub import {
     my $class = shift;
+    my %args = @_;
 
     require RT::Handle;
-    if ($existing_server) {
-        RT->Init;
-        return;
+    unless ( $existing_server ) {
+        $class->bootstrap_db( %args );
     }
+
+    RT->Init;
+}
+
+sub bootstrap_db {
+    my $self = shift;
+    my %args = @_;
 
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
@@ -97,11 +103,10 @@ sub import {
     $RT::Handle->PrintError;
     $RT::Handle->dbh->{PrintError} = 1;
 
-    unless ( ($_[0] || '') eq 'nodata' ) {
+    unless ( $args{'nodata'} ) {
         $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    RT->Init;
 }
 
 sub started_ok {
