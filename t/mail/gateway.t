@@ -71,7 +71,7 @@ use LWP::UserAgent;
 
 require "lib/t/utils.pl";
 
-my $url = join( ':', grep $_, "http://localhost", RT->Config->Get('WebPort') ) . RT->Config->Get('WebPath') ."/";
+my $url = $m->rt_base_url;
 
 sub latest_ticket {
     my $tickets = RT::Tickets->new( $RT::SystemUser );
