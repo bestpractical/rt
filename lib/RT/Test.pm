@@ -20,30 +20,6 @@ BEGIN {
     else {
         $port = 11229;
     }
-    $config = File::Temp->new;
-    print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$DatabaseName , "rt3test");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
-1;
-};
-    close $config;
-    $ENV{RT_SITE_CONFIG} = $config->filename;
-
-    use RT;
-    RT::LoadConfig;
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-
-    # make it another function
-    $mailsent = 0;
-    my $mailfunc = sub { 
-        my $Entity = shift;
-        $mailsent++;
-        return 1;
-    };
-    RT::Config->Set( 'MailCommand' => $mailfunc);
 };
 
 use RT::Interface::Web::Standalone;
@@ -57,6 +33,32 @@ my @server;
 sub import {
     my $class = shift;
     my %args = @_;
+
+    $config = File::Temp->new;
+    print $config qq{
+Set( \$WebPort , $port);
+Set( \$WebBaseURL , "http://localhost:\$WebPort");
+Set( \$DatabaseName , "rt3test");
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
+};
+    print $config $args{'config'} if $args{'config'};
+    print $config "\n1;\n";
+    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    close $config;
+
+    use RT;
+    RT::LoadConfig;
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+
+    # make it another function
+    $mailsent = 0;
+    my $mailfunc = sub { 
+        my $Entity = shift;
+        $mailsent++;
+        return 1;
+    };
+    RT::Config->Set( 'MailCommand' => $mailfunc);
 
     require RT::Handle;
     unless ( $existing_server ) {
