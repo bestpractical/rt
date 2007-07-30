@@ -17,7 +17,6 @@
 %}
 <%INIT>
 my $Lock;
-return unless defined $Ticket;
 return unless defined $Duration || ($Lock = $Ticket->Locked());
 
 my $u = RT::User->new($session{'CurrentUser'});
