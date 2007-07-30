@@ -1,19 +1,16 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 15;
+use Test::More tests => 14;
 use RT::Test;
-my ($baseurl, $m) = RT::Test->started_ok;
 
-my $BaseURL = RT->Config->Get('WebURL');
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 
+my ($baseurl, $m) = RT::Test->started_ok;
+ok $m->login, 'logged in';
+
 my $queue_name = 'General';
-
-$m->get_ok( $BaseURL."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
-
 my $qid;
 {
     $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;

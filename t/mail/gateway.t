@@ -58,7 +58,7 @@ use warnings;
 
 use Test::More tests => 152;
 
-use RT::Test;
+use RT::Test config => 'Set( $UnsafeEmailCommands, 1);';
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
@@ -257,8 +257,11 @@ EOF
 
 diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
-    my ($val, $msg) = $everyone_group->PrincipalObj->GrantRight( Right => 'CreateTicket' );
-    ok ($val, "Granted everybody the right to create tickets") or diag "error: $msg";
+    ok( RT::Test->set_rights(
+        { Principal => $everyone_group->PrincipalObj,
+          Right => [qw(CreateTicket)],
+        },
+    ), "Granted everybody the right to create tickets");
 }
 
 my $ticket_id;
@@ -309,8 +312,11 @@ EOF
 
 diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
-    my ($val,$msg) = $everyone_group->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
-    ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+    ok( RT::Test->set_rights(
+        { Principal => $everyone_group->PrincipalObj,
+          Right => [qw(CreateTicket ReplyToTicket)],
+        },
+    ), "Granted everybody the right to reply to tickets" );
 }
 
 diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
@@ -386,8 +392,11 @@ EOF
 
 diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
-    my ($val,$msg) = $everyone_group->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
-    ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+    ok( RT::Test->set_rights(
+        { Principal => $everyone_group->PrincipalObj,
+          Right => [qw(CreateTicket ReplyToTicket CommentOnTicket)],
+        },
+    ), "Granted everybody the right to comment on tickets");
 }
 
 diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};

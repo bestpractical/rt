@@ -4,11 +4,10 @@ use warnings;
 
 use Test::More tests => 14;
 use RT::Test;
-my ($baseurl, $m) = RT::Test->started_ok;
-use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
 
-$m->get( BaseURL."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+my ($baseurl, $m) = RT::Test->started_ok;
+ok $m->login, "logged in";
+
 $m->follow_link_ok({ text => 'Configuration' });
 $m->follow_link_ok({ text => 'Global' });
 $m->follow_link_ok({ text => 'Group Rights' });

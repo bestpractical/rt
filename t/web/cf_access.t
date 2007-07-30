@@ -5,7 +5,6 @@ use Test::More tests => 26;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use constant BaseURL => RT->Config->Get('WebURL');
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
     local $/;

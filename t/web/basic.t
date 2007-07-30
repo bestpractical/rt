@@ -7,16 +7,12 @@ use HTTP::Cookies;
 use LWP;
 use Encode;
 
-my $cookie_jar = HTTP::Cookies->new;
 use RT::Test;
 my ($baseurl, $agent) = RT::Test->started_ok;
-
-# give the agent a place to stash the cookies
-
-$agent->cookie_jar($cookie_jar);
+$agent->cookie_jar( HTTP::Cookies->new );
 
 # get the top page
-my $url = RT->Config->Get('WebURL');
+my $url = $agent->rt_base_url;
 diag $url;
 $agent->get($url);
 
@@ -76,6 +72,9 @@ like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
 # }}}
 
 # {{{ Query Builder tests
+#
+# XXX: hey-ho, we have these tests in t/web/query-builder
+# TODO: move everything about QB there
 
 my $response = $agent->get($url."Search/Build.html");
 ok( $response->is_success, "Fetched " . $url."Search/Build.html" );

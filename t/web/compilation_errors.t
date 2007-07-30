@@ -17,7 +17,7 @@ my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar($cookie_jar);
 
 # get the top page
-my $url = RT->Config->Get('WebURL');
+my $url = $agent->rt_base_url;
 diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 

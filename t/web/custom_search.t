@@ -4,8 +4,7 @@ use strict;
 use Test::More tests => 10;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
-
-use constant BaseURL => RT->Config->Get('WebURL');
+my $url = $m->rt_base_url;
 
 # reset preferences for easier test?
 
@@ -16,13 +15,13 @@ $t->Create(Subject => 'for custom search'.$$, Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'created ticket for custom search');
 
-$m->get( BaseURL."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok $m->login, 'logged in';
+
 my $t_link = $m->find_link( text => "for custom search".$$ );
 like ($t_link->url, qr/$id/, 'link to the ticket we created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
-$m->get ( BaseURL.'Prefs/MyRT.html' );
+$m->get ( $url.'Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
 my $cus_qs = $m->find_link( text => "Quick search" );
 $m->get ($cus_hp);
@@ -37,7 +36,7 @@ $m->click_button (name => 'AddCol') ;
 $m->form_name ('BuildQuery');
 $m->click_button (name => 'Save');
 
-$m->get( BaseURL );
+$m->get( $url );
 $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 
 
@@ -51,7 +50,7 @@ $m->click_button (name => 'RemoveCol') ;
 $m->form_name ('BuildQuery');
 $m->click_button (name => 'Save');
 
-$m->get( BaseURL );
+$m->get( $url );
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 
 
@@ -67,7 +66,7 @@ $m->form_name ('Preferences');
 $m->untick('Want-General', '1');
 $m->click_button (name => 'Save');
 
-$m->get( BaseURL );
+$m->get( $url );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks - 1,
     'General gone from quicksearch list');
 
@@ -77,6 +76,6 @@ $m->form_name ('Preferences');
 $m->tick('Want-General', '1');
 $m->click_button (name => 'Save');
 
-$m->get( BaseURL );
+$m->get( $url );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks,
     'General back in quicksearch list');
