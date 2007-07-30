@@ -7,7 +7,7 @@ use Test::More;
 use Test::Deep;
 BEGIN { require "t/shredder/utils.pl"; }
 
-plan tests => 10;
+plan tests => 9;
 
 my @ARGS = sort qw(limit status name email replace_relations no_tickets);
 
@@ -24,8 +24,6 @@ use_ok('RT::Shredder::Plugin::Users');
     my ($status, $msg) = $plugin->TestArgs( name => 'r??t*' );
     ok($status, "arg name = 'r??t*'") or diag("error: $msg");
 
-    ($status, $msg) = $plugin->TestArgs( name => '!@#' );
-    ok(!$status, "bad arg name = '!@#'");
     for (qw(any disabled enabled)) {
         my ($status, $msg) = $plugin->TestArgs( status => $_ );
         ok($status, "arg status = '$_'") or diag("error: $msg");
