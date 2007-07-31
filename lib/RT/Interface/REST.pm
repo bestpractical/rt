@@ -62,7 +62,7 @@ BEGIN {
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-[a-z0-9_ -]+)';
+my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ -]|\s)+)';
 
 # WARN: this code is duplicated in bin/rt.in,
 # change both functions at once
@@ -122,7 +122,7 @@ sub form_parse {
                 }
                 $c .= "\n";
             }
-            elsif ($state <= 1 && $line =~ /^($field):(?:\s+(.*))?$/) {
+            elsif ($state <= 1 && $line =~ /^($field):(?:\s+(.*))?$/i) {
                 # Read a field: value specification.
                 my $f  = $1;
                 my @v  = ($2 || ());

@@ -534,7 +534,11 @@ sub insert_data {
 
         for $item (@ScripActions) {
             my $new_entry = RT::ScripAction->new($CurrentUser);
-            my $return    = $new_entry->Create(%$item);
+            my ($return,$msg) = $new_entry->Create(%$item);
+            unless ($return) {
+                print "(Error: $msg)\n";
+                exit;
+            }
             print $return. ".";
         }
 
@@ -546,7 +550,11 @@ sub insert_data {
 
         for $item (@ScripConditions) {
             my $new_entry = RT::ScripCondition->new($CurrentUser);
-            my $return    = $new_entry->Create(%$item);
+            my ($return,$msg) = $new_entry->Create(%$item);
+            unless ($return) {
+                print "(Error: $msg)\n";
+                exit;
+            }
             print $return. ".";
         }
 

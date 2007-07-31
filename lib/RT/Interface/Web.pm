@@ -325,18 +325,6 @@ sub CreateTicket {
     my $starts = new RT::Date( $session{'CurrentUser'} );
     $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
 
-    my @Requestors = split /\s*,\s*/, ( $ARGS{'Requestors'} || '' );
-    my @Cc         = split /\s*,\s*/, ( $ARGS{'Cc'}         || '' );
-    my @AdminCc    = split /\s*,\s*/, ( $ARGS{'AdminCc'}    || '' );
-
-    my @temp_squelch;
-    push @temp_squelch, @Requestors if grep $_ eq 'Requestors', @{ $ARGS{'SkipNotification'} || [] };
-    push @temp_squelch, @Cc         if grep $_ eq 'Cc',         @{ $ARGS{'SkipNotification'} || [] };
-    push @temp_squelch, @AdminCc    if grep $_ eq 'AdminCc',    @{ $ARGS{'SkipNotification'} || [] };
-    if ( @temp_squelch ) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
-    }
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
@@ -368,15 +356,43 @@ sub CreateTicket {
         TimeLeft        => $ARGS{'TimeLeft'},
         TimeEstimated        => $ARGS{'TimeEstimated'},
         TimeWorked      => $ARGS{'TimeWorked'},
-        Requestor       => \@Requestors,
-        Cc              => \@Cc,
-        AdminCc         => \@AdminCc,
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
         Due             => $due->ISO,
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
+
+    my @temp_squelch;
+    foreach my $type (qw(Requestors Cc AdminCc)) {
+        my @tmp = Mail::Address->parse( $ARGS{ $type } );
+        if ( grep $_ eq $type, @{ $ARGS{'SkipNotification'} || [] } ) {
+            push @temp_squelch, grep $_, map $_->address, @tmp;
+        }
+
+        $create_args{ $type } = [
+            grep $_, map {
+                my $user = RT::User->new( $RT::SystemUser );
+                $user->LoadOrCreateByEmail( $_ );
+                # convert to ids to avoid work later
+                $user->id;
+            }
+            map $_->format,
+            grep $_->address,
+            @tmp
+        ];
+        $RT::Logger->debug(
+            "$type got ".join(',',@{$create_args{ $type }}) );
+
+    }
+    # XXX: workaround for name conflict :(
+    $create_args{'Requestor'} = delete $create_args{'Requestors'};
+
+    if ( @temp_squelch ) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
+    }
+
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
