@@ -56,7 +56,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use Test::More tests => 152;
+use Test::More tests => 153;
 
 use RT::Test config => 'Set( $UnsafeEmailCommands, 1);';
 my ($baseurl, $m) = RT::Test->started_ok;
