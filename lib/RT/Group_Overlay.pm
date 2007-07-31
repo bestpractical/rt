@@ -86,6 +86,8 @@ $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
     AdminGroupMembership =>
       'Modify membership roster for this group',                      # loc_pair
+    DelegateRights =>
+        "Delegate specific rights which have been granted to you.",   # loc_pair
     ModifyOwnMembership => 'Join or leave this group',                 # loc_pair
     EditSavedSearches => 'Edit saved searches for this group',        # loc_pair
     ShowSavedSearches => 'Display saved searches for this group',        # loc_pair
