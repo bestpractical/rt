@@ -115,6 +115,8 @@ sub LoadConfig {
     $Config = new RT::Config;
     $Config->LoadConfigs;
     require RT::I18N;
+    $ENV{'TZ'} = $RT::Timezone if ($RT::Timezone);
+
     RT::I18N->Init;
 }
 

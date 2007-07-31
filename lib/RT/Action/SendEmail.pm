@@ -134,6 +134,13 @@ sub Prepare {
 
     $self->RemoveInappropriateRecipients();
 
+    my %seen;
+    foreach my $type qw(To Cc Bcc) {
+        @{ $self->{ $type } } =
+            grep defined && length && !$seen{ lc $_ }++,
+                @{ $self->{ $type } };
+    }
+
     # Go add all the Tos, Ccs and Bccs that we need to to the message to
     # make it happy, but only if we actually have values in those arrays.
 

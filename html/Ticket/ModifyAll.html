@@ -190,6 +190,10 @@ push @results, @dresults;
 push @results, @lresults;
 push @results, @cf_results;
 
+# undef so that TransactionBatch scrips run and update the ticket
+$Ticket = undef;
+$Ticket = LoadTicket($id);
+
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
 

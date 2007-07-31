@@ -1853,7 +1853,7 @@ sub LoadCustomFieldByIdentifier {
     } else {
 
         my $cfs = $self->CustomFields($self->CurrentUser);
-        $cfs->Limit(FIELD => 'Name', VALUE => $field);
+        $cfs->Limit(FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0);
         $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
     }
     return $cf;

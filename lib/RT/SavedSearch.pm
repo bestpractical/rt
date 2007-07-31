@@ -302,7 +302,7 @@ sub _load_privacy_object {
         return RT::System->new($self->CurrentUser);
     }
 
-    RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
+    $RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
     return undef;
 }
 

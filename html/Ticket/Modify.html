@@ -74,6 +74,10 @@ my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 my @cf_results = ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 push (@results, @cf_results);
 
+# undef so that TransactionBatch scrips run and update the ticket
+$TicketObj = undef;
+$TicketObj = LoadTicket($id);
+
 # TODO: display the results, even if we can't display the ticket
 
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
