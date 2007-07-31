@@ -372,7 +372,10 @@ sub CreateTicket {
                 $user->LoadOrCreateByEmail( $_ );
                 # convert to ids to avoid work later
                 $user->id;
-            } @tmp
+            }
+            map $_->format,
+            grep $_->address,
+            @tmp
         ];
     }
     # XXX: workaround for name conflict :(
