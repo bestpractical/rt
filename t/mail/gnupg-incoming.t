@@ -17,7 +17,7 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir );
 
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPGNG' );
+RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
