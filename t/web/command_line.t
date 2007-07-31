@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 202;
+use Test::More tests => 203;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
