@@ -72,7 +72,7 @@ sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
-   unless ($ENV{'RT_DBA_USER'} && $ENV{'RT_DBA_PASSWORD'}) {
+   unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
 	die "RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'";
    }
     # bootstrap with dba cred
