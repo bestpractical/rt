@@ -627,7 +627,7 @@ sub insert_data {
             my ($return,$msg) = $new_entry->Create(%$item);
             unless ($return) {
                 print "(Error: $msg)\n";
-                exit;
+                next;
             }
             print $return. ".";
         }
@@ -643,7 +643,7 @@ sub insert_data {
             my ($return,$msg) = $new_entry->Create(%$item);
             unless ($return) {
                 print "(Error: $msg)\n";
-                exit;
+                next;
             }
             print $return. ".";
         }
