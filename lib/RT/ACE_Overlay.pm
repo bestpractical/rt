@@ -266,7 +266,7 @@ sub Create {
         unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
             $RT::Logger->warning(
                 "Couldn't validate right name '$args{'RightName'}'"
-                ." for object of ". ref $args{'Object'} ." class"
+                ." for object of ". ref( $args{'Object'} ) ." class"
             );
             return ( 0, $self->loc('Invalid right') );
         }
