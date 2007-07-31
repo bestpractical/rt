@@ -237,7 +237,7 @@ sub Locked {
 sub Lock {
     my $ticket = shift;
 
-    if ( $ticket->RT::Ticket::Locked ) {
+    if ( $ticket->Locked() ) {
         return undef;
     } else {
         $ticket->SetAttribute(
@@ -267,6 +267,21 @@ sub BreakLock {
     my $lock = $ticket->RT::Ticket::Locked();
      return undef unless $lock;
     $ticket->DeleteAttribute('RT_Lock');
+}
+
+
+
+sub RemoveUserLocks {
+	my $user = shift;
+
+	return undef unless $user;
+	
+	my $attribs = RT::Attributes->new($user);
+	$attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $user->id(), ENTRYAGGREGATOR => 'AND');
+	my @attributes = $attribs->Named('RT_Lock');
+	foreach my $lock (@attributes) {
+		$lock->Delete();
+	}
 }
 
 =head2 Type

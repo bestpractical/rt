@@ -149,7 +149,6 @@ if ($ARGS{'id'} eq 'new') {
                 push @Actions, loc('You now have a lock on this ticket');
             } else {
                 push @Actions, loc('Your attempt to lock this ticket failed');
-
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
             my $lock = $TicketObj->Locked();
