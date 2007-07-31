@@ -72,9 +72,14 @@ sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
+   unless ($ENV{'RT_DBA_USER'} && $ENV{'RT_DBA_PASSWORD'}) {
+	die "RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'";
+   }
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+
+
     RT::Handle->DropDatabase( $dbh, Force => 1 );
     RT::Handle->CreateDatabase( $dbh );
     $dbh->disconnect;
