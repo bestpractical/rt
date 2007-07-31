@@ -671,11 +671,15 @@ Returns its value as a string, if the user passes an ACL check
 =cut
 
 sub _Value {
-
     my $self  = shift;
+    return undef unless $self->id;
 
     # we need to do the rights check
-    unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
+    unless ( $self->CurrentUserHasRight('SeeCustomField') ) {
+        $RT::Logger->debug(
+            "Permission denied. User #". $self->CurrentUser->id
+            ." has no SeeCustomField right on CF #". $self->id
+        );
         return (undef);
     }
     return $self->__Value( @_ );
