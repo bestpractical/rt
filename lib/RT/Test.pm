@@ -227,8 +227,8 @@ sub set_rights {
     my $acl = RT::ACL->new( $RT::SystemUser );
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
-        my $principal = $ace->PrincipalObj;
-        if ( $principal->IsUser && $principal->Object->Name eq 'Nobody' ) {
+        my $obj = $ace->PrincipalObj->Object;
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
             next;
         }
         $ace->Delete;
