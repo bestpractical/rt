@@ -375,11 +375,14 @@ use Encode::Guess to try to figure it out the string's encoding.
 
 sub _GuessCharset {
     my $fallback = 'iso-8859-1';
-    my $charset;
 
     # if $_[0] is null/empty, we don't guess its encoding
-    if ( $_[0] and RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
-	Encode::Guess->set_suspects(RT->Config->Get('EmailInputEncodings'));
+    return $fallback unless defined $_[0] && length $_[0];
+
+    my $charset;
+    my @encodings = RT->Config->Get('EmailInputEncodings');
+    if ( @encodings and eval { require Encode::Guess; 1 } ) {
+	Encode::Guess->set_suspects( @encodings );
 	my $decoder = Encode::Guess->guess( $_[0] );
 
 	if ( ref $decoder ) {
@@ -402,11 +405,13 @@ sub _GuessCharset {
 	    $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
 	}
     }
-    else {
-	$RT::Logger->warning("Cannot Encode::Guess; fallback to $fallback");
+    elsif ( @encodings && $@ ) {
+        $RT::Logger->error("You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@");
+    } else {
+        $RT::Logger->warning("No EmailInputEncodings set, fallback to $fallback");
     }
 
-    return($charset || $fallback);
+    return ($charset || $fallback);
 }
 
 # }}}
