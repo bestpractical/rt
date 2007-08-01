@@ -2,11 +2,18 @@
 <div class="locked-by-you">
 % if(defined $Duration && !$Lock) {
 	<&|/l, $ago &>You had this ticket locked for [_1]. It is now unlocked</&>.
-% } else {
+% #Do not display time if it is very little time, since such a short time probably 
+% #means the lock was just created.
+% } elsif($ago < 5) {	
+		<&|/l &>You have locked this ticket</&>.
+%	if($Unlock) {
+		[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%	}
+% }	else {
 	<&|/l, $ago &>You have had this ticket locked for [_1]</&>.
-% 		if($Unlock) {
-			[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
-%		}
+% 	if($Unlock) {
+		[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%	}
 % }
 
 </div>
