@@ -61,14 +61,14 @@ $m->abort();
 
 <%args>
 $Code => undef
-$Details => undef
+$Details => ''
 $Title => loc("RT Error")
 $Why => loc("the calling component did not specify why")
 </%args>
 
 <%INIT>
-$Details ||= "No details";
-my $error = "WebRT: $Why ($Details)";
+my $error = "WebRT: $Why";
+$error .= " ($Details)" if defined $Details && length $Details;
 
 # TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
 use Encode ();
@@ -76,10 +76,10 @@ Encode::_utf8_off($error);
 
 $RT::Logger->error($error);
 
-if ( defined $session{'SessionType'} and $session{'SessionType'} eq 'REST' ) {
+if ( defined $session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');
     $m->out( "Error: " . $Why . "\n" );
-    $m->out( $Details . "\n" );
+    $m->out( $Details . "\n" ) if defined $Details && length $Details;
     $m->abort();
 }
 </%INIT>

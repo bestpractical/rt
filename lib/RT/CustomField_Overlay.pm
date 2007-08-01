@@ -286,7 +286,7 @@ sub LoadByName {
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
-    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'} );
+    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'}, CASESENSITIVE => 0);
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
     if ( defined $args{'Queue'} ) {
