@@ -236,6 +236,7 @@ sub Locked {
 
 sub Lock {
     my $ticket = shift;
+    my $hard = shift;
 
     if ( $ticket->Locked() ) {
         return undef;
@@ -244,8 +245,8 @@ sub Lock {
             Name    => 'RT_Lock',
             Content => {
                 User      => $ticket->CurrentUser->id,
-                Timestamp => time()
-
+                Timestamp => time(),
+                Hard => $hard
             }
         );
     }
@@ -254,10 +255,12 @@ sub Lock {
 
 sub Unlock {
     my $ticket = shift;
+    my $hard = shift;
 
     my $lock = $ticket->RT::Ticket::Locked();
-     return undef unless $lock;
-     return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
+    return undef unless $lock;
+    return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
+    return undef if $lock->Content->{'Hard'} && !$hard;
     $ticket->DeleteAttribute('RT_Lock');
 }
 

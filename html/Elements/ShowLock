@@ -1,6 +1,6 @@
 % if ($Duration ||($u->id && $u->id == $session{'CurrentUser'}->id)) {
 <div class="locked-by-you">
-% if(defined $Duration) {
+% if(defined $Duration && !$Lock) {
 	<&|/l, $ago &>You had this ticket locked for [_1]. It is now unlocked</&>.
 % } else {
 	<&|/l, $ago &>You have had this ticket locked for [_1]</&>.
@@ -16,15 +16,15 @@
 </div>
 %}
 <%INIT>
-my $Lock;
-return unless defined $Duration || ($Lock = $Ticket->Locked());
+my $Lock = $Ticket->Locked();
+return unless defined $Duration || $Lock;
 
 my $u = RT::User->new($session{'CurrentUser'});
 $u->Load($Lock->Content->{'User'}) if $Lock;
 
 my $date = RT::Date->new($session{'CurrentUser'});
 my $ago;
-if(defined $Duration) {
+if(defined $Duration && !$Lock) {
 	$ago = $date->DurationAsString($Duration);
 } elsif($Lock) {
 	$ago = $date->DurationAsString(time() - $Lock->Content->{'Timestamp'});
