@@ -3,8 +3,8 @@ RT Locking
 
 - A lock can be initiated manually by clicking the "Lock" link on one of the pages for the ticket (hard lock)
 
-- A lock is created whenever a user performs an action on a ticket that takes multiple steps (e.g., Edit, Resolve,
-  reply, etc., but not Quick Resolve, Quick Reject, etc.) (auto lock)
+- A lock is created whenever a user performs an action on a ticket that takes multiple steps (auto lock) if a 
+  hard lock is not already in place for that ticket
 
      Locking Actions in RT:
      ----------------------
@@ -37,18 +37,12 @@ RT Locking
 
 - An auto lock is removed once the user is done with whatever he was doing on the page (e.g., when he clicks 
   "Save Changes" on the Edit page). It is also removed if the Unlock link is clicked from a page that generated
-  an auto lock (in other words, clicking the Unlock link from any page will remove all locks on that ticket) 
-  (auto unlock)
+  an auto lock. Clicking "Unlock" will also remove the hard lock on the ticket, if there is one.
 
-- A hard lock and an auto lock can stack; that is, if a user hard locks a ticket, then goes to an auto locked page,
-  there will be two locks in place (the hard lock and the auto lock). When the user is done with the auto lock page,
-  the auto lock will disappear as usual, but the hard lock will still be in place.
-
-- Locks are advisory: if a ticket is locked by one user, other users will be given a notification that another user has
-  locked the ticket but they will still be allowed to edit and submit changes on the ticket.
+- Locks are advisory: if a ticket is locked by one user, other users will be given a notification (in red) that another user has locked the ticket but they will still be allowed to edit and submit changes on the ticket.
 
 - Locks will remain in place until
-	a) The user is done editing/replying/etc. (for auto locks)
+	a) The user is done editing/replying/etc. (for auto locks, if there is no hard lock on the ticket)
 	b) The user clicks the Unlock link
 	c) The user logs out
 	d) A configurable expiry period has elapsed
@@ -56,7 +50,7 @@ RT Locking
 - When a user clicks the "Take" link for an RTIR Incident ticket, a lock is added. This lock is a special case, and will
   be removed when the Incident is linked to a new or existing Investigation.
 
-- When a user locks a ticket (auto lock or hard lock), they are given a notification informing them of their lock.
+- When a user locks a ticket (auto lock or hard lock), they are given a notification informing them of their lock (in some other color--currently green).
 
 - When a user unlocks a ticket (auto unlock or hard unlock), they are given a notification informing them that their
   lock has been removed, and how long they had the ticket locked for.
