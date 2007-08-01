@@ -688,11 +688,13 @@ $tick = RT::Ticket->new($RT::SystemUser);
 ($id) = $tick->Create( Queue => $qid, Subject => 'test' );
 ok( $id, 'create new ticket' );
 
+my $rtname = RT->Config->Get('rtname');
+
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
-Subject: [example.com \#$id] test
+Subject: [$rtname \#$id] test
 
 EOF
 close (MAIL);
@@ -710,7 +712,7 @@ $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
-Subject: [example.com \#$id] test
+Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
@@ -725,7 +727,7 @@ $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
-Subject: [example.com \#$id] test
+Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
@@ -766,7 +768,7 @@ $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
-Subject: [example.com \#$id] test
+Subject: [$rtname \#$id] test
 
 take-correspond with reply right granted to owner role
 EOF
