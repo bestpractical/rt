@@ -68,6 +68,7 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 package RT::Date;
 
 use Time::Local;
+use POSIX qw(tzset);
 
 use strict;
 use warnings;
@@ -778,6 +779,9 @@ sub Localtime
         @local = gmtime($unix);
     } else {
         local $ENV{'TZ'} = $tz;
+	## Using POSIX::tzset fixes a bug where the TZ environment variable
+	## is cached.
+	POSIX::tzset();
         @local = localtime($unix);
     }
     $local[5] += 1900; # change year to 4+ digits format
@@ -814,6 +818,9 @@ sub Timelocal {
             return Time::Local::timegm(@_[0..5]);
         } else {
             local $ENV{'TZ'} = $tz;
+	    ## Using POSIX::tzset fixes a bug where the TZ environment variable
+	    ## is cached.
+	    POSIX::tzset();
             return Time::Local::timelocal(@_[0..5]);
         }
     }
