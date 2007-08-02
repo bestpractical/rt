@@ -248,7 +248,7 @@ sub Lock {
 		}
 		return undef if $priority <= $LockPriority;
     } else {
-    	$ticket->Unlock();	#Remove any existing locks (because this one has greater priority)
+    	$ticket->Unlock($type);	#Remove any existing locks (because this one has greater priority)
         $ticket->SetAttribute(
             Name    => 'RT_Lock',
             Content => {
@@ -278,6 +278,7 @@ sub Unlock {
 	}
 	return undef if $priority < $LockPriority;
     $ticket->DeleteAttribute('RT_Lock');
+    return $lock;
 }
 
 
