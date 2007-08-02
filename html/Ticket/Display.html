@@ -128,25 +128,14 @@ if ($ARGS{'id'} eq 'new') {
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
-            my $lock = $TicketObj->Locked();
-            if($lock && $lock->Content->{'User'} != $session{'CurrentUser'}->id)
-            {
-            	my $u = RT::User->new($session{'CurrentUser'});
-				$u->Load($lock->Content->{'User'});
-            	push @Actions, "Cannot $action: Ticket locked by " . $u->Name . ' and cannot be modified';
-            }
-            elsif(!$lock)
-            {
-            	$TicketObj->Lock();
-				my ($res, $msg) = $TicketObj->$action();
-				push(@Actions, $msg);
-			}
+			my ($res, $msg) = $TicketObj->$action();
+			push(@Actions, $msg);
         }
     }
     
     if ( defined $ARGS{'Lock'} ) {
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $TicketObj->Lock(1) ) {
+            if ( $TicketObj->Lock('Hard') ) {
                 push @Actions, loc('You now have a lock on this ticket');
             } else {
                 push @Actions, loc('Your attempt to lock this ticket failed');
@@ -157,7 +146,7 @@ if ($ARGS{'id'} eq 'new') {
                 push @Actions, loc('This ticket was not locked');
 			} elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
 				$Duration = time() - $lock->Content->{'Timestamp'};
-				$TicketObj->Unlock(1);
+				$TicketObj->Unlock('Hard');
                 push @Actions, loc('You have unlocked this ticket');
 			} else {
 				push @Actions,
