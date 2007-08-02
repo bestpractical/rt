@@ -243,8 +243,8 @@ sub Lock {
     	my $priority;
     	my $LockPriority;
 		for(my $i = 0; $i < scalar @Types; $i++) {
-			$priority = $i if $Types[$i] eq $type;
-			$LockPriority = $i if $Types[$i] eq $LockType;
+			$priority = $i if (lc $Types[$i]) eq (lc $type);
+			$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
 		}
 		return undef if $priority <= $LockPriority;
     } else {
@@ -273,8 +273,8 @@ sub Unlock {
     my $priority;
 	my $LockPriority;
 	for(my $i = 0; $i < scalar @Types; $i++) {
-		$priority = $i if $Types[$i] eq $type;
-		$LockPriority = $i if $Types[$i] eq $LockType;
+		$priority = $i if (lc $Types[$i]) eq (lc $type);
+		$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
 	}
 	return undef if $priority < $LockPriority;
     $ticket->DeleteAttribute('RT_Lock');
