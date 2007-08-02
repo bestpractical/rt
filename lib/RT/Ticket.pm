@@ -227,7 +227,7 @@ sub QueueObj {
 	return($Queue);
 }
 
-
+my @Types = qw(Auto Take Hard);
 
 sub Locked {
     my $ticket =shift;
@@ -236,11 +236,19 @@ sub Locked {
 
 sub Lock {
     my $ticket = shift;
-    my $type = shift;
+    my $type = shift || 'Auto';
 
-    if ( $ticket->Locked() ) {
-        return undef;
+    if ( my $lock = $ticket->Locked() ) {
+    	my $LockType = $lock->Content->{'Type'};
+    	my $priority;
+    	my $LockPriority;
+		for(my $i = 0; $i < scalar @Types; $i++) {
+			$priority = $i if $Types[$i] eq $type;
+			$LockPriority = $i if $Types[$i] eq $LockType;
+		}
+		return undef if $priority <= $LockPriority;
     } else {
+    	$ticket->Unlock();	#Remove any existing locks (because this one has greater priority)
         $ticket->SetAttribute(
             Name    => 'RT_Lock',
             Content => {
@@ -255,13 +263,20 @@ sub Lock {
 
 sub Unlock {
     my $ticket = shift;
-    my $type = shift;
+    my $type = shift || 'Auto';
 
     my $lock = $ticket->RT::Ticket::Locked();
     return undef unless $lock;
     return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
-    return undef if $lock->Content->{'Type'} eq 'Hard' && !($type eq 'Hard');
-    return undef if $lock->Content->{'Type'} eq 'IR' && !($type eq 'IR');
+    
+    my $LockType = $lock->Content->{'Type'};
+    my $priority;
+	my $LockPriority;
+	for(my $i = 0; $i < scalar @Types; $i++) {
+		$priority = $i if $Types[$i] eq $type;
+		$LockPriority = $i if $Types[$i] eq $LockType;
+	}
+	return undef if $priority < $LockPriority;
     $ticket->DeleteAttribute('RT_Lock');
 }
 
