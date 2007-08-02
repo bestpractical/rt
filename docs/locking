@@ -1,6 +1,16 @@
 RT Locking
 ----------
 
+- Locks can be of several different types. Current types are:
+	- Hard (manual lock)
+	- Take (results from Taking an Incident Report, removed when linked to an Incident)
+	- Auto (default type, results from going to certain pages listed below)
+
+- Each type is associated with a priority. Current priorities are as follows, from highest priority to lowest:
+	- Hard
+	- Take
+	- Auto
+
 - A lock can be initiated manually by clicking the "Lock" link on one of the pages for the ticket (hard lock)
 
 - A lock is created whenever a user performs an action on a ticket that takes multiple steps (auto lock) if a 
@@ -41,8 +51,8 @@ RT Locking
 	c) The user logs out
 	d) A configurable expiry period has elapsed
 
-- When a user clicks the "Take" link for an RTIR Incident ticket, a lock is added. This lock is a special case, and will
-  be removed when the Incident is linked to a new or existing Investigation.
+- When a user clicks the "Take" link for an RTIR Incident ticket, a Take lock is added. This lock will only be removed
+  when the Incident is linked to a new or existing Investigation.
 
 - When a user locks a ticket (auto lock or hard lock), they are given a notification informing them of their lock (in some other color--currently green).
 
