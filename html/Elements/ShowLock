@@ -33,7 +33,7 @@
 % #means the lock was just created.
 % } elsif($ago < 5) {	
 		<&|/l, $TicketLabel &>You have locked [_1]</&>.
-%	if($Unlock) {
+%	if($Unlock && !$Id) {
 		[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
 %	}
 % }	else {
@@ -45,6 +45,7 @@
 
 </div>
 % } else {
+%	return unless $u->Name;
 % 	$TicketLabel = 'This ticket' if $TicketLabel eq 'this ticket';	
 <div class="locked">
 <&|/l, $TicketLabel, $u->Name, $ago &>[_1] has been locked by [_2] for [_3]</&>.
