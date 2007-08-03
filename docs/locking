@@ -65,6 +65,11 @@ RT Locking
 - When a user accesses a page for a ticket that has been locked by another user, they are given a notification of the
   other user's lock, with the locking user's name and how long they have had it locked for.
 
+- When a locked ticket (hard or Take lock) is merged into another ticket, the ticket being merged into will get the lock
+  type of the ticket being merged from. This lock shift is conditional upon priority, as usual--if the merged from 
+  ticket has a lock of a lower priority than the merged-to ticket, the merged-to ticket will retain its lock. If the 
+  merged-to ticket is locked by a different user, that user will retain the lock. Basically, the merged-to ticket will
+  retain its lock if it is higher priority than the lock on the ticket being merged from.
 
 
 
