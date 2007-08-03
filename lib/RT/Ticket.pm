@@ -239,6 +239,7 @@ sub Lock {
     my $type = shift || 'Auto';
 
     if ( my $lock = $ticket->Locked() ) {
+    	return undef if $lock->Content->{'User'} != $ticket->CurrentUser->id;
     	my $LockType = $lock->Content->{'Type'};
     	my $priority;
     	my $LockPriority;
