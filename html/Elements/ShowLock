@@ -52,25 +52,25 @@
 </div>
 %}
 <%INIT>
-$Ticket = LoadTicket($Id) if $Id;
-my $Lock = $Ticket->Locked();
-return unless defined $Duration || $Lock;
+my $Lock;
+if ( $Id ) {
+    $Ticket = LoadTicket($Id);
+    $Lock = $Ticket->Locked;
+}
+return unless defined $Ticket;
+
+$Duration = time - $Lock->Content->{'Timestamp'}
+    if $Lock && !defined $Duration;
+return unless defined $Duration;
 
 my $u = RT::User->new($session{'CurrentUser'});
 $u->Load($Lock->Content->{'User'}) if $Lock;
 
 my $date = RT::Date->new($session{'CurrentUser'});
-my $ago;
-if(defined $Duration && !$Lock) {
-	$ago = $date->DurationAsString($Duration);
-} elsif($Lock) {
-	$ago = $date->DurationAsString(time() - $Lock->Content->{'Timestamp'});
-} else {
-	return;
-}
+my $ago = $date->DurationAsString($Duration);
 </%INIT>
 <%ARGS>
-$Ticket
+$Ticket => undef
 $Duration => undef
 $Unlock => 1;
 
