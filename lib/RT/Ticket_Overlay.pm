@@ -2410,15 +2410,14 @@ sub _RecordNote {
 # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
 # headers
 
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc', RT::User::CanonicalizeEmailAddress(
-                                                     undef, $args{'CcMessageTo'}
-                                 ) )
-      if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
-                                 RT::User::CanonicalizeEmailAddress(
-                                                    undef, $args{'BccMessageTo'}
-                                 ) )
-      if defined $args{'BccMessageTo'};
+
+    foreach my $type (qw/Cc Bcc/) {
+        if ( defined $args{ $type . 'MessageTo' } ) {
+            
+            my $addresses = join(', ', ( map { RT::User::CanonicalizeEmailAddress( undef, $_->address ) } Mail::Address->parse( $args{ $type . 'MessageTo' } ) ));
+                $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+        }
+    }
 
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
