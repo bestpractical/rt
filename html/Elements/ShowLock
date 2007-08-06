@@ -52,13 +52,10 @@
 </div>
 %}
 <%INIT>
-my $Lock;
-if ( $Id ) {
-    $Ticket = LoadTicket($Id);
-    $Lock = $Ticket->Locked;
-}
+$Ticket = LoadTicket($Id) if $Id;
 return unless defined $Ticket;
 
+my $Lock = $Ticket->Locked;
 $Duration = time - $Lock->Content->{'Timestamp'}
     if $Lock && !defined $Duration;
 return unless defined $Duration;
