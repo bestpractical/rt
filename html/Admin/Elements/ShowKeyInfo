@@ -64,7 +64,7 @@
 % foreach my $uinfo( @{ $res{'info'}{'User'} } ) {
 <tr><th><% loc('User (created - expire)') %>:</th>
 <td><% $uinfo->{'String'} %>\
-(<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - \
+(<% $uinfo->{'Created'}->AsString( Time => 0 ) %> - \
 <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
 </td></tr>
 % }

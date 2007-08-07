@@ -130,8 +130,8 @@
 
 </form>
 <%init>
-
 my (@actions, $SubmitLabel);
+
 my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 
 if ( $id ) {

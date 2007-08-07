@@ -59,7 +59,7 @@ $Class     => 'RT__Ticket'
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column ( @Format ) {
-    if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
+    if ( $column->{title} && $column->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
             $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
             $item++;
@@ -88,10 +88,9 @@ foreach my $column ( @Format ) {
         my $col = $1;
         unless ( exists $ColumnMap->{ $col } ) {
             $ColumnMap->{ $col } = $m->comp(
-                "/Elements/ColumnMap",
-                Class => $Class,
-                Name  => $col,
-                Attr  => 'value'
+                "/Elements/$Class/ColumnMap",
+                Name => $col,
+                Attr => 'value'
             );
         }
 

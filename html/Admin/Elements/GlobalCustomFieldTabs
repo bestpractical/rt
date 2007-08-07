@@ -88,7 +88,7 @@
   
 <%ARGS>
 $id => undef
-$current_tab => ''
+$current_tab => undef
 $subtabs => undef
 $current_subtab => undef
 $Title => undef

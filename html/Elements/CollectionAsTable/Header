@@ -92,10 +92,10 @@ foreach my $col ( @Format ) {
     $m->out('<th class="collection-as-table">');
 
     $title =~ s/^__(.*)__$/$1/o;
-    my $tmp = $m->comp( '/Elements/ColumnMap',
-        Class => $Class,
-        Name  => $title,
-        Attr  => 'title',
+    my $tmp = $m->comp(
+        "/Elements/$Class/ColumnMap",
+        Name => $title,
+        Attr => 'title',
     );
 
     unless( $tmp ) {

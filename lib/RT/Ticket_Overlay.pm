@@ -60,6 +60,82 @@ This module lets you manipulate RT\'s ticket object.
 
 =head1 METHODS
 
+=begin testing
+
+use_ok ( RT::Queue);
+ok(my $testqueue = RT::Queue->new($RT::SystemUser));
+ok($testqueue->Create( Name => 'ticket tests'));
+ok($testqueue->Id != 0);
+use_ok(RT::CustomField);
+ok(my $testcf = RT::CustomField->new($RT::SystemUser));
+my ($ret, $cmsg) = $testcf->Create( Name => 'selectmulti',
+                    Queue => $testqueue->id,
+                               Type => 'SelectMultiple');
+ok($ret,"Created the custom field - ".$cmsg);
+($ret,$cmsg) = $testcf->AddValue ( Name => 'Value1',
+                        SortOrder => '1',
+                        Description => 'A testing value');
+
+ok($ret, "Added a value - ".$cmsg);
+
+ok($testcf->AddValue ( Name => 'Value2',
+                        SortOrder => '2',
+                        Description => 'Another testing value'));
+ok($testcf->AddValue ( Name => 'Value3',
+                        SortOrder => '3',
+                        Description => 'Yet Another testing value'));
+                       
+ok($testcf->Values->Count == 3);
+
+use_ok(RT::Ticket);
+
+my $u = RT::User->new($RT::SystemUser);
+$u->Load("root");
+ok ($u->Id, "Found the root user");
+ok(my $t = RT::Ticket->new($RT::SystemUser));
+ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
+               Subject => 'Testing',
+               Owner => $u->Id
+              ));
+ok($id != 0);
+ok ($t->OwnerObj->Id == $u->Id, "Root is the ticket owner");
+ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->Id,
+                           Value => 'Value1'));
+ok($cfv != 0, "Custom field creation didn't return an error: $cfm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 1);
+ok($t->CustomFieldValues($testcf->Id)->First &&
+    $t->CustomFieldValues($testcf->Id)->First->Content eq 'Value1');;
+
+ok(my ($cfdv, $cfdm) = $t->DeleteCustomFieldValue(Field => $testcf->Id,
+                        Value => 'Value1'));
+ok ($cfdv != 0, "Deleted a custom field value: $cfdm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 0);
+
+ok(my $t2 = RT::Ticket->new($RT::SystemUser));
+ok($t2->Load($id));
+is($t2->Subject, 'Testing');
+is($t2->QueueObj->Id, $testqueue->id);
+ok($t2->OwnerObj->Id == $u->Id);
+
+my $t3 = RT::Ticket->new($RT::SystemUser);
+my ($id3, $msg3) = $t3->Create( Queue => $testqueue->Id,
+                                Subject => 'Testing',
+                                Owner => $u->Id);
+my ($cfv1, $cfm1) = $t->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value1');
+ok($cfv1 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
+my ($cfv2, $cfm2) = $t3->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value2');
+ok($cfv2 != 0, "Adding a custom field to ticket 2 is successful: $cfm");
+my ($cfv3, $cfm3) = $t->AddCustomFieldValue(Field => $testcf->Id,
+ Value => 'Value3');
+ok($cfv3 != 0, "Adding a custom field to ticket 1 is successful: $cfm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 2,
+   "This ticket has 2 custom field values");
+ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
+   "This ticket has 1 custom field value");
+
+=end testing
 
 =cut
 
@@ -82,6 +158,16 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
 
+=begin testing
+
+
+ok(require RT::Ticket, "Loading the RT::Ticket library");
+
+=end testing
+
+=cut
+
+# }}}
 
 # {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
@@ -243,20 +329,22 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
-Ticket links can be set up during create by passing the link type as a hask key and
-the ticket id to be linked to as a value (or a URI when linking to other objects).
-Multiple links of the same type can be created by passing an array ref. For example:
-
-  Parent => 45,
-  DependsOn => [ 15, 22 ],
-  RefersTo => 'http://www.bestpractical.com',
-
-Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
-C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
-C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
 
+
+=begin testing
+
+my $t = RT::Ticket->new($RT::SystemUser);
+
+ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
+
+ok ( my $id = $t->Id, "Got ticket id");
+ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
+ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
+is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
+
+=end testing
 
 =cut
 
@@ -377,8 +465,8 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug( "Got a ". $args{'Status'}
-            ."(inactive) ticket with undefined resolved date. Setting to now."
+        $RT::Logger->debug(
+            "Got a $args{'Status'} ticket with no resolved date"
         );
         $Resolved->SetToNow;
     }
@@ -414,8 +502,6 @@ sub Create {
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
-   
-    my $DeferOwner;  
     if (
             ( defined($Owner) )
         and ( $Owner->Id )
@@ -429,9 +515,20 @@ sub Create {
       )
     {
 
-        $DeferOwner = $Owner;
-        $Owner = undef;
+        $RT::Logger->warning( "User "
+              . $Owner->Name . "("
+              . $Owner->id
+              . ") was proposed "
+              . "as a ticket owner but has no rights to own "
+              . "tickets in "
+              . $QueueObj->Name );
 
+        push @non_fatal_errors,
+          $self->loc( "Owner '[_1]' does not have rights to own this ticket.",
+            $Owner->Name
+          );
+
+        $Owner = undef;
     }
 
     #If we haven't been handed a valid owner, make it nobody.
@@ -522,6 +619,14 @@ sub Create {
         );
     }
 
+# Set the owner in the Groups table
+# We denormalize it into the Ticket table too because doing otherwise would
+# kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+
+    $self->OwnerGroup->_AddMember(
+        PrincipalId       => $Owner->PrincipalId,
+        InsideTransaction => 1
+    );
 
     # {{{ Deal with setting up watchers
 
@@ -623,28 +728,6 @@ sub Create {
     }
 
     # }}}
-    # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
-    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
-    if (  defined($DeferOwner) ) { 
-            if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
-    
-        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
-        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
-
-    } else {
-        $Owner = $DeferOwner;
-        $self->__Set(Field => 'Owner', Value => $Owner->id);
-
-    }
-    }
-    # Set the owner in the Groups table
-    # We denormalize it into the Ticket table too because doing otherwise would
-    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-
-    $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1
-    );
 
     if ( $args{'_RecordTransaction'} ) {
 
@@ -688,6 +771,179 @@ sub Create {
 }
 
 
+# }}}
+
+
+# {{{ UpdateFrom822 
+
+=head2 UpdateFrom822 $MESSAGE
+
+Takes an RFC822 format message as a string and uses it to make a bunch of changes to a ticket.
+Returns an um. ask me again when the code exists
+
+
+=begin testing
+
+my $simple_update = <<EOF;
+Subject: target
+AddRequestor: jesse\@example.com
+EOF
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my ($id,$msg) =$ticket->Create(Subject => 'first', Queue => 'general');
+ok($ticket->Id, "Created the test ticket - ".$id ." - ".$msg);
+$ticket->UpdateFrom822($simple_update);
+is($ticket->Subject, 'target', "changed the subject");
+my $jesse = RT::User->new($RT::SystemUser);
+$jesse->LoadByEmail('jesse@example.com');
+ok ($jesse->Id, "There's a user for jesse");
+ok($ticket->Requestors->HasMember( $jesse->PrincipalObj), "It has the jesse principal object as a requestor ");
+
+=end testing
+
+
+=cut
+
+sub UpdateFrom822 {
+        my $self = shift;
+        my $content = shift;
+        my %args = $self->_Parse822HeadersForAttributes($content);
+
+        
+    my %ticketargs = (
+        Queue           => $args{'queue'},
+        Subject         => $args{'subject'},
+        Status          => $args{'status'},
+        Due             => $args{'due'},
+        Starts          => $args{'starts'},
+        Started         => $args{'started'},
+        Resolved        => $args{'resolved'},
+        Owner           => $args{'owner'},
+        Requestor       => $args{'requestor'},
+        Cc              => $args{'cc'},
+        AdminCc         => $args{'admincc'},
+        TimeWorked      => $args{'timeworked'},
+        TimeEstimated   => $args{'timeestimated'},
+        TimeLeft        => $args{'timeleft'},
+        InitialPriority => $args{'initialpriority'},
+        Priority => $args{'priority'},
+        FinalPriority   => $args{'finalpriority'},
+        Type            => $args{'type'},
+        DependsOn       => $args{'dependson'},
+        DependedOnBy    => $args{'dependedonby'},
+        RefersTo        => $args{'refersto'},
+        ReferredToBy    => $args{'referredtoby'},
+        Members         => $args{'members'},
+        MemberOf        => $args{'memberof'},
+        MIMEObj         => $args{'mimeobj'}
+    );
+
+    foreach my $type qw(Requestor Cc Admincc) {
+
+        foreach my $action ( 'Add', 'Del', '' ) {
+
+            my $lctag = lc($action) . lc($type);
+            foreach my $list ( $args{$lctag}, $args{ $lctag . 's' } ) {
+
+                foreach my $entry ( ref($list) ? @{$list} : ($list) ) {
+                    push @{$ticketargs{ $action . $type }} , split ( /\s*,\s*/, $entry );
+                }
+
+            }
+
+            # Todo: if we're given an explicit list, transmute it into a list of adds/deletes
+
+        }
+    }
+
+    # Add custom field entries to %ticketargs.
+    # TODO: allow named custom fields
+    map {
+        /^customfield-(\d+)$/
+          && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
+    } keys(%args);
+
+# for each ticket we've been told to update, iterate through the set of
+# rfc822 headers and perform that update to the ticket.
+
+
+    # {{{ Set basic fields 
+    my @attribs = qw(
+      Subject
+      FinalPriority
+      Priority
+      TimeEstimated
+      TimeWorked
+      TimeLeft
+      Status
+      Queue
+      Type
+    );
+
+
+    # Resolve the queue from a name to a numeric id.
+    if ( $ticketargs{'Queue'} and ( $ticketargs{'Queue'} !~ /^(\d+)$/ ) ) {
+        my $tempqueue = RT::Queue->new($RT::SystemUser);
+        $tempqueue->Load( $ticketargs{'Queue'} );
+        $ticketargs{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
+    }
+
+    my @results;
+
+    foreach my $attribute (@attribs) {
+        my $value = $ticketargs{$attribute};
+
+        if ( $value ne $self->$attribute() ) {
+
+            my $method = "Set$attribute";
+            my ( $code, $msg ) = $self->$method($value);
+
+            push @results, $self->loc($attribute) . ': ' . $msg;
+
+        }
+    }
+
+    # We special case owner changing, so we can use ForceOwnerChange
+    if ( $ticketargs{'Owner'} && ( $self->Owner != $ticketargs{'Owner'} ) ) {
+        my $ChownType = "Give";
+        $ChownType = "Force" if ( $ticketargs{'ForceOwnerChange'} );
+
+        my ( $val, $msg ) = $self->SetOwner( $ticketargs{'Owner'}, $ChownType );
+        push ( @results, $msg );
+    }
+
+    # }}}
+# Deal with setting watchers
+
+
+# Acceptable arguments:
+#  Requestor
+#  Requestors
+#  AddRequestor
+#  AddRequestors
+#  DelRequestor
+ 
+ foreach my $type qw(Requestor Cc AdminCc) {
+
+        # If we've been given a number of delresses to del, do it.
+                foreach my $address (@{$ticketargs{'Del'.$type}}) {
+                my ($id, $msg) = $self->DeleteWatcher( Type => $type, Email => $address);
+                push (@results, $msg) ;
+                }
+
+        # If we've been given a number of addresses to add, do it.
+                foreach my $address (@{$ticketargs{'Add'.$type}}) {
+                $RT::Logger->debug("Adding $address as a $type");
+                my ($id, $msg) = $self->AddWatcher( Type => $type, Email => $address);
+                push (@results, $msg) ;
+
+        }
+
+
+}
+
+
+}
 # }}}
 
 # {{{ _Parse822HeadersForAttributes Content
@@ -734,7 +990,7 @@ sub _Parse822HeadersForAttributes {
 
     foreach my $date qw(due starts started resolved) {
         my $dateobj = RT::Date->new($RT::SystemUser);
-        if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
+        if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
         }
         else {
@@ -962,6 +1218,48 @@ It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
 
 It will return true on success and undef on failure.
 
+=begin testing
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my ($id, $msg) = $ticket->Create(Subject => "Foo",
+                Owner => $RT::SystemUser->Id,
+                Status => 'open',
+                Requestor => ['jesse@example.com'],
+                Queue => '1'
+                );
+ok ($id, "Ticket $id was created");
+ok(my $group = RT::Group->new($RT::SystemUser));
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Requestor'));
+ok ($group->Id, "Found the requestors object for this ticket");
+
+ok(my $jesse = RT::User->new($RT::SystemUser), "Creating a jesse rt::user");
+$jesse->LoadByEmail('jesse@example.com');
+ok($jesse->Id,  "Found the jesse rt user");
+
+
+ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $jesse->PrincipalId), "The ticket actually has jesse at fsck.com as a requestor");
+ok ((my $add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($add_id, "Add succeeded: ($add_msg)");
+ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
+$bob->LoadByEmail('bob@fsck.com');
+ok($bob->Id,  "Found the bob rt user");
+ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
+ok ((my $add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
+
+
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Cc'));
+ok ($group->Id, "Found the cc object for this ticket");
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'AdminCc'));
+ok ($group->Id, "Found the AdminCc object for this ticket");
+$group = RT::Group->new($RT::SystemUser);
+ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Owner'));
+ok ($group->Id, "Found the Owner object for this ticket");
+ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
+
+=end testing
 
 =cut
 
@@ -1195,7 +1493,7 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
+    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -1278,6 +1576,35 @@ Takes an optional email address to never email about updates to this ticket.
 
 Returns an array of the RT::Attribute objects for this ticket's 'SquelchMailTo' attributes.
 
+=begin testing
+
+my $t = RT::Ticket->new($RT::SystemUser);
+ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
+
+is($#{$t->SquelchMailTo}, -1, "The ticket has no squelched recipients");
+
+my @returned = $t->SquelchMailTo('nobody@example.com');
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+my @names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+@returned = $t->SquelchMailTo('nobody@example.com');
+
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+@names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+
+
+my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+ok($ret, "Removed nobody as a squelched recipient - ".$msg);
+@returned = $t->SquelchMailTo();
+is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
+
+
+=end testing
 
 =cut
 
@@ -2105,11 +2432,9 @@ sub _RecordNote {
 
     # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
     # as CanonicalizeEmailAddress expect only one address at a time
-    foreach my $field (qw(Cc Bcc)) {
-        $args{'MIMEObj'}->head->add(
-            "RT-Send-$field" => RT::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
-        ) if defined $args{ $field . 'MessageTo' };
-    }
+    $args{'MIMEObj'}->head->add(
+        'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
+    ) if defined $args{'CcMessageTo'};
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->add(
@@ -2435,6 +2760,26 @@ sub _AddLink {
 MergeInto take the id of the ticket to merge this ticket into.
 
 
+=begin testing
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+$t1->Create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
+my $t1id = $t1->id;
+my $t2 = RT::Ticket->new($RT::SystemUser);
+$t2->Create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
+my $t2id = $t2->id;
+my ($msg, $val) = $t1->MergeInto($t2->id);
+ok ($msg,$val);
+$t1 = RT::Ticket->new($RT::SystemUser);
+is ($t1->id, undef, "ok. we've got a blank ticket1");
+$t1->Load($t1id);
+
+is ($t1->id, $t2->id);
+
+is ($t1->Requestors->MembersObj->Count, 2);
+
+
+=end testing
 
 =cut
 
@@ -2656,6 +3001,28 @@ Takes two arguments:
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
 
+=begin testing
+
+my $root = RT::User->new($RT::SystemUser);
+$root->Load('root');
+ok ($root->Id, "Loaded the root user");
+my $t = RT::Ticket->new($RT::SystemUser);
+$t->Load(1);
+$t->SetOwner('root');
+is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
+$t->Steal();
+is ($t->OwnerObj->id, $RT::SystemUser->id , "SystemUser owns the ticket");
+my $txns = RT::Transactions->new($RT::SystemUser);
+$txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$txns->Limit(FIELD => 'ObjectId', VALUE => '1');
+$txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
+$txns->Limit(FIELD => 'Type', OPERATOR => '!=',  VALUE => 'EmailRecord');
+
+my $steal  = $txns->First;
+ok($steal->OldValue == $root->Id , "Stolen from root");
+ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
+
+=end testing
 
 =cut
 
@@ -2769,13 +3136,12 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    ($val, $msg) = $self->_NewTransaction(
-        Type      => $Type,
-        Field     => 'Owner',
-        NewValue  => $NewOwnerObj->Id,
-        OldValue  => $OldOwnerObj->Id,
-        TimeTaken => 0,
-    );
+    my $trans;
+    ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
+                                             Field     => 'Owner',
+                                             NewValue  => $NewOwnerObj->Id,
+                                             OldValue  => $OldOwnerObj->Id,
+                                             TimeTaken => 0 );
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
@@ -2883,6 +3249,25 @@ Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, r
 
 Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE).  If FORCE is true, ignore unresolved dependencies and force a status change.
 
+=begin testing
+
+my $tt = RT::Ticket->new($RT::SystemUser);
+my ($id, $tid, $msg)= $tt->Create(Queue => 'general',
+            Subject => 'test');
+ok($id, $msg);
+is($tt->Status, 'new', "New ticket is created as new");
+
+($id, $msg) = $tt->SetStatus('open');
+ok($id, $msg);
+like($msg, qr/open/i, "Status message is correct");
+($id, $msg) = $tt->SetStatus('resolved');
+ok($id, $msg);
+like($msg, qr/resolved/i, "Status message is correct");
+($id, $msg) = $tt->SetStatus('resolved');
+ok(!$id,$msg);
+
+
+=end testing
 
 
 =cut

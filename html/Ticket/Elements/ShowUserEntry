@@ -45,12 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowUser, %ARGS &>
-% if ($Ticket and grep { $_->Content eq $User->EmailAddress } $Ticket->SquelchMailTo)  {
-<b><&|/l&>(Will not be sent email)</&></b>
-% }
-
-<%ARGS>
-$User => undef
-$Ticket => undef
-</%ARGS>
+<%INIT>
+return $m->comp('/Elements/ShowUser', %ARGS);
+</%INIT>

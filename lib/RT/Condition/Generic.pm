@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
     use RT::Condition::Generic;
-    my $foo = RT::Condition::Generic->new( 
+    my $foo = new RT::Condition::IsApplicable( 
 		TransactionObj => $tr, 
 		TicketObj => $ti, 
 		ScripObj => $scr, 
@@ -70,6 +70,11 @@
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::Condition::Generic);
+
+=end testing
 
 
 =cut

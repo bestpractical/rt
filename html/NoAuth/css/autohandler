@@ -46,7 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
-RT::Interface::Web::StaticFileHeaders();
 $r->content_type('text/css');
 $m->call_next();
 return();

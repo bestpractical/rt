@@ -306,7 +306,7 @@ Transaction: {$Transaction->Description}
        Name        => 'Admin Comment',                           # loc
        Description => 'Default admin comment template',          # loc
        Content     =>
-'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $s =~ s/^Re//i; $s;}
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
 {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
@@ -437,20 +437,6 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
     $OUT .= "* $msg\n";
   }
 }}
-    },
-    {  Queue       => 0,
-       Name        => "PasswordChange",    # loc
-       Description =>
-         "Inform user that his password has been reset", # loc
-       Content => q{Subject: [{RT->Config->Get('rtname')}] Password reset
-
-Greetings,
-
-Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->Config->Get('WebURL')}
-
-Your new password is:
-  {$NewPassword}
-}
     },
 );
 # }}}

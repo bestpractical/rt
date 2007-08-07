@@ -79,12 +79,10 @@
   # Now let callbacks add their extra tabs
   $m->callback( %ARGS, tabs => $tabs );
 
-  if ($current_tab) {
-    foreach my $tab (sort keys %{$tabs}) {
-      if ($tabs->{$tab}->{'path'} eq $current_tab) {
-        $tabs->{$tab}->{"subtabs"} = $subtabs;
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-      }
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
     }
   }
 </%INIT>

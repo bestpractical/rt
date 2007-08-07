@@ -77,11 +77,10 @@ my @actions;
 my $title = loc("Customize").' ';
 
 my @fields = qw(Format Order OrderBy RowsPerPage);
-$ARGS{name} ||= '';
 my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
 Abort('No search specified')
-    unless defined $class and $class eq 'RT::Attribute';
+    unless $class eq 'RT::Attribute';
 
 my $search = $class->new ($session{'CurrentUser'});
 $search->LoadById ($id);

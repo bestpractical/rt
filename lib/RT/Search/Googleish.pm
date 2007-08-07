@@ -59,6 +59,11 @@ Use the argument passed in as a "Google-style" set of keywords
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::Search::Generic);
+
+=end testing
 
 
 =cut
@@ -158,9 +163,9 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::Googleish_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Vendor.pm});
-eval "require RT::Search::Googleish_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Local.pm});
+eval "require RT::Search::Googlish_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googlish_Vendor.pm});
+eval "require RT::Search::Googlish_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googlish_Local.pm});
 
 1;

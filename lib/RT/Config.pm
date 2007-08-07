@@ -245,12 +245,7 @@ sub LoadConfig
     my $self = shift;
     my %args = (File => '', @_);
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if ($args{'File'} eq 'RT_SiteConfig.pm' and my $site_config = $ENV{RT_SITE_CONFIG}) {
-        $self->_LoadConfig( %args, File => $site_config );
-    }
-    else {
-        $self->_LoadConfig( %args );
-    }
+    $self->_LoadConfig( %args );
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
     $self->_LoadConfig( %args );
     return 1;
@@ -285,8 +280,7 @@ sub _LoadConfig
     if( $@ ) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
 
-        my $username = getpwuid($>);
-        my $group = getgrgid($();
+        my ($our_user, $our_group) = (scalar getpwuid $>, scalar getgrgid $();
 
         my ($file_path, $fileuid, $filegid);
         foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
@@ -297,40 +291,33 @@ sub _LoadConfig
                 last;
             }
         }
-        unless ( $file_path ) {
-            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
-               .qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+
+        my $message;
+        if ( $file_path ) {
+            my ($file_user, $file_group) = (scalar getpwuid $fileuid, scalar getgrgid $filegid);
+            $message = qq{Couldn't load RT config file $file_path as user $our_user / group $our_group.
+The file is owned by user $file_user and group $file_group.
+This usually means that the user/group your webserver/script is running as cannot read the file.
+Be careful not to make the permissions on this file too liberal, because it contains database
+passwords.  You may need to put the webserver user in the appropriate group ($file_group) or change
+permissions be able to run succesfully};
+        } else {
+            $message = qq{Couldn't load RT config file $args{'File'} as user $our_user / group $our_group.
+The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.
+This usually means that the user/group your webserver/script is running as cannot read the file
+or has no access to the dirs. Be careful not to make the permissions on this file too liberal,
+because it contains database passwords.};
         }
 
-        my $message = <<EOF;
-
-RT couldn't load RT config file %s as:
-    user: $username 
-    group: $group
-
-The file is owned by user %s and group %s.  
-
-This usually means that the user/group your webserver is running
-as cannot read the file.  Be careful not to make the permissions
-on this file too liberal, because it contains database passwords.
-You may need to put the webserver user in the appropriate group
-(%s) or change permissions be able to run succesfully.
-EOF
-
-        my $fileusername = getpwuid($fileuid);
-        my $filegroup = getgrgid($filegid);
-        my $errormessage = sprintf($message,
-            $file_path, $fileusername, $filegroup, $filegroup
-        );
-        die "$errormessage\n$@";
+        die "$message\n$@";
     }
     return 1;
 }
 
 =head2 Configs
 
-Returns list of the top level configs file names. F<RT_Config.pm> is always
-first, other configs are ordered by name.
+Returns list of the configs file names.
+F<RT_Config.pm> is always first, other configs are ordered by name.
 
 =cut
 
@@ -394,9 +381,9 @@ sub Get {
 Set option's value to new value. Takes name of the option and new value.
 Returns old value.
 
-The new value should be scalar, array or hash depending on type of the option.
+The new value should scalar, array or hash depending on type of the option.
 If the option is not defined in meta or the default RT config then it is of
-scalar type.
+sclar type.
 
 =cut
 

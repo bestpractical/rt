@@ -75,7 +75,7 @@
 <input type="submit" name="SavedSearchSave" value="<%loc('Save')%>" class="button" />
 % }
 <br />
-<hr />
+
 <&|/l&>Load saved search:</&>
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
@@ -99,7 +99,7 @@ use RT::SavedSearches;
 my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser' );
+					                      Right => 'SuperUser' );
 
 </%INIT>
 

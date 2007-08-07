@@ -59,6 +59,11 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok (require RT::Transactions);
+
+=end testing
 
 =cut
 

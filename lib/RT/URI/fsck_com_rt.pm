@@ -62,6 +62,21 @@ use vars qw(@ISA);
 
 Returns the prefix for a local URI. 
 
+=begin testing
+
+use_ok("RT::URI::fsck_com_rt");
+my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
+
+ok(ref($uri));
+
+ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rt), "It's an RT::URI::fsck_com_rt");
+
+ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
+ok ($uri->isa('RT::Base'), "It's an RT::Base");
+
+is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
+
+=end testing
 
 
 
@@ -98,13 +113,21 @@ sub ObjectType {
 
 Returns the RT URI for a local RT::Record object
 
+=begin testing
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+$ticket->Load(1);
+my $uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
+is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
+
+=end testing
 
 =cut
 
 sub URIForObject {
     my $self = shift;
     my $obj = shift;
-    return ($self->LocalURIPrefix ."/". $self->ObjectType($obj) ."/". $obj->Id);
+    return ($self->LocalURIPrefix."/".$self->ObjectType($obj)."/". $obj->Id);
 }
 
 
@@ -119,12 +142,12 @@ sub ParseURI {
     my $self = shift;
     my $uri  = shift;
 
-    if ( $uri =~ /^\d+$/ ) {
+    if ( $uri =~ /^(\d+)$/ ) {
         my $ticket = RT::Ticket->new( $self->CurrentUser );
-        $ticket->Load( $uri );
+        $ticket->Load($uri);
         $self->{'uri'} = $ticket->URI;
         $self->{'object'} = $ticket;
-        return ($ticket->id);
+        return($ticket->id);
     }
     else {
         $self->{'uri'} = $uri;
@@ -132,8 +155,9 @@ sub ParseURI {
 
     #If it's a local URI, load the ticket object and return its URI
     if ( $self->IsLocal ) {
+
         my $local_uri_prefix = $self->LocalURIPrefix;
-        if ( $self->{'uri'} =~ /^\Q$local_uri_prefix\E\/(.*?)\/(\d+)$/i ) {
+        if ( $self->{'uri'} =~ /^$local_uri_prefix\/(.*?)\/(\d+)$/i ) {
             my $type = $1;
             my $id   = $2;
 
@@ -167,9 +191,9 @@ Returns undef otherwise.
 
 sub IsLocal {
 	my $self = shift;
-    my $local_uri_prefix = $self->LocalURIPrefix;
-    if ( $self->{'uri'} =~ /^\Q$local_uri_prefix/i ) {
-        return 1;
+        my $local_uri_prefix = $self->LocalURIPrefix;
+	if ($self->{'uri'} =~ /^$local_uri_prefix/i) {
+		return 1;
     }
 	else {
 		return undef;

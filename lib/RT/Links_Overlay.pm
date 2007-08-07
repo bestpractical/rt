@@ -60,6 +60,11 @@
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::Links);
+
+=end testing
 
 =cut
 
@@ -150,17 +155,19 @@ sub Next {
     my $self = shift;
  	
     my $Link = $self->SUPER::Next();
-    return $Link unless $Link && ref $Link;
-
-    # Skip links to local objects thast are deleted
-    if ( $Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
-             and $Link->TargetObj->__Value('status') eq "deleted") {
-        return $self->Next;
-    } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
-             and $Link->BaseObj->__Value('status') eq "deleted") {
-        return $self->Next;
+    if ((defined($Link)) and (ref($Link))) {
+        # Skip links to local objects thast are deleted
+        if      ($Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
+                 and $Link->TargetObj->__Value('status') eq "deleted") {
+            return $self->Next;
+        } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
+                 and $Link->BaseObj->__Value('status') eq "deleted") {
+            return $self->Next;
+        } else {
+            return $Link;
+        }
     } else {
-        return $Link;
+        return undef;
     }
 }
 

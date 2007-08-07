@@ -89,7 +89,7 @@
 <td class="labeltop">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="3"><input name="Cc" size="40" value="<% $ARGS{Cc} || ''%>" /></td>
+<td class="value" colspan="3"><input name="Cc" size="40" value="<% $ARGS{Cc} %>" /></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -98,7 +98,7 @@
 <td class="labeltop">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><input name="AdminCc" size="40" value="<% $ARGS{AdminCc} || ''%>" /></td>
+<td class="value" colspan="3"><input name="AdminCc" size="40" value="<% $ARGS{AdminCc} %>" /></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -189,19 +189,19 @@
 <tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>" /></td></tr>
 <tr><td align="right"><&|/l&>Time Estimated</&>:</td>
 <td>
-<input size="3" name="TimeEstimated" value="<%$ARGS{TimeEstimated} || ''%>" />
+<input size="3" name="TimeEstimated" value="<%$ARGS{TimeEstimated}%>" />
 <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
 
 </td></tr>
 <tr><td align="right"><&|/l&>Time Worked</&>:</td>
 <td>
-<input size="3" name="TimeWorked" value="<%$ARGS{TimeWorked} || ''%>" />
+<input size="3" name="TimeWorked" value="<%$ARGS{TimeWorked}%>" />
 <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
 
 </td></tr>
 <tr>
 <td align="right"><&|/l&>Time Left</&>:</td>
-<td><input size="3" name="TimeLeft" value="<%$ARGS{TimeLeft} || ''%>" />
+<td><input size="3" name="TimeLeft" value="<%$ARGS{TimeLeft}%>" />
 <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
 </td></tr>
 </table>
@@ -212,8 +212,8 @@
 		 color => "#663366" &>
 
 <table>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Value => $ARGS{Starts}, Default => '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Value => $ARGS{Due}, Default => '' &></td></tr>
 </table>
 </&>
 <br />
@@ -224,12 +224,12 @@
 
 <em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
 <table border="0">
-<tr><td align="right"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
+<tr><td align="right"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>" /></td></tr>
+<tr><td align="right"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>" /></td></tr>
+<tr><td align="right"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>" /></td></tr>
+<tr><td align="right"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>" /></td></tr>
+<tr><td align="right"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>" /></td></tr>
+<tr><td align="right"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>" /></td></tr>
 
 
 </table>
@@ -315,7 +315,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new')) { # new ticket?
     if ($ValidCFs) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");

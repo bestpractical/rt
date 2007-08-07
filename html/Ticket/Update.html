@@ -62,7 +62,7 @@
 <td>
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'}||$RT::Nobody->Id &>
+<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>

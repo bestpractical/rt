@@ -51,22 +51,10 @@
 
 .titlebox .titlebox-content {
     margin-top: -1px;
+    padding: 1em 2em 0.5em 2em;
     margin: 0;
     /*margin: 1em 2em 0.5em 2em;*/
 }
-
-.titlebox .titlebox-content .titlebox-content table {
-    margin: 1em 2em 0.5em 2em;
-}
-.titlebox th {
-    font-size: 0.8em;
-
-}
-
-.titlebox .titlebox-content table {
-
-}
-
 
 %# TRS: I wish there was a more elegant way to do this... I essentially need to
 %# select all elements X that do NOT have element Y as a descendant... which I can

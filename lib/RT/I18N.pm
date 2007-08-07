@@ -86,6 +86,12 @@ our %Lexicon = (
 
 Initializes the lexicons used for localization.
 
+=begin testing
+
+use_ok (RT::I18N);
+ok(RT::I18N->Init);
+
+=end testing
 
 =cut
 
@@ -131,6 +137,18 @@ sub Init {
 Returns the encoding of the current lexicon, as yanked out of __ContentType's "charset" field.
 If it can't find anything, it returns 'ISO-8859-1'
 
+=begin testing
+
+ok(my $chinese = RT::I18N->get_handle('zh_tw'));
+ok(UNIVERSAL::can($chinese, 'maketext'));
+ok($chinese->maketext('__Content-Type') =~ /utf-8/i, "Found the utf-8 charset for traditional chinese in the string ".$chinese->maketext('__Content-Type'));
+ok($chinese->encoding eq 'utf-8', "The encoding is 'utf-8' -".$chinese->encoding);
+
+ok(my $en = RT::I18N->get_handle('en'));
+ok(UNIVERSAL::can($en, 'maketext'));
+ok($en->encoding eq 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
+
+=end testing
 
 
 =cut
@@ -377,8 +395,7 @@ sub _GuessCharset {
     my $fallback = 'iso-8859-1';
     my $charset;
 
-    # if $_[0] is null/empty, we don't guess its encoding
-    if ( $_[0] and RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
+    if ( RT->Config->Get('EmailInputEncodings') and eval { require Encode::Guess; 1 } ) {
 	Encode::Guess->set_suspects(RT->Config->Get('EmailInputEncodings'));
 	my $decoder = Encode::Guess->guess( $_[0] );
 

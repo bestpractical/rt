@@ -282,22 +282,6 @@ Set($NotifyActor, 0);
 
 Set($RecordOutgoingEmail, 1);
 
-# VERP support (http://cr.yp.to/proto/verp.txt)
-# uncomment the following two directives to generate envelope senders
-# of the form ${VERPPrefix}${originaladdress}@${VERPDomain}
-# (i.e. rt-jesse=fsck.com@rt.example.com ) This currently only works
-# with sendmail and sendmailppie.
-# Set($VERPPrefix, 'rt-');
-# Set($VERPDomain, $RT::Organization);
-
-
-# By default, RT forwards a message using queue's address and adds RT's tag into
-# subject of the outgoing message, so recipients' replies go into RT as correspondents.
-# To change this behavior, set $ForwardFromUser to 0 and RT will use address of the
-# current user and leave subject without RT's tag.
-
-Set($ForwardFromUser, 0);
-
 # }}}
 
 # {{{ GnuPG
@@ -477,15 +461,6 @@ Set($PreferRichText, undef);
 
 Set($WebExternalAuth , undef);
 
-
-# If $WebOpenIdAuth is enabled, RT will allow OpenID logins. New users who present
-# OpenID Credentials will be created as unprivileged users with their OpenID as their Name.
-# To enable OpenID Support, you need to install LWPx::ParanoidAgent, Cache::FileCache
-# and Net::OpenID::Consumer.
-#
-Set($WebOpenIdAuth, undef);
-
-
 # If $WebFallbackToInternalAuth is undefined, the user is allowed a chance
 # of fallback to the login screen, even if REMOTE_USER failed.
 
@@ -547,21 +522,16 @@ Set($WebFlushDbCacheEveryRequest, '1');
 
 Set($MaxInlineBody, 12000);
 
-# $DefaultSummaryRows is default number of rows displayed in for search
-# results on the frontpage.
-
-Set($DefaultSummaryRows, 10);
-
 # By default, RT shows newest transactions at the bottom of the ticket
 # history page, if you want see them at the top set this to '0'.  This
 # option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, '1');
 
-# By default, RT shows images attached to incoming (and outgoing) ticket updates
-# inline. Set this variable to 0 if you'd like to disable that behaviour
+# $DefaultSummaryRows is default number of rows displayed in for search
+# results on the frontpage.
 
-Set($ShowTransactionImages, 1);
+Set($DefaultSummaryRows, 10);
 
 
 # $HomepageComponents is an arrayref of allowed components on a user's

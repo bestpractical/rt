@@ -74,7 +74,7 @@ my $Object = $ObjectType->new($session{'CurrentUser'});
 
 my $QualifiedType;
 my $FriendlySubTypes;
-if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
+if ($SubType =~/^RT::(.*)$/)  {
     $FriendlySubTypes = RT::CustomField->new($session{'CurrentUser'})->FriendlyLookupType($Object->CustomFieldLookupType);
    $QualifiedType = "$Type-$1"; 
 } else {

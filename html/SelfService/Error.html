@@ -66,6 +66,5 @@ $Why => loc("the calling component did not specify why")
 </%args>
 
 <%INIT>
-$Details ||= "No details";
 $RT::Logger->error("WebRT: $Why ($Details)");
 </%INIT>

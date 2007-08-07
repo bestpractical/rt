@@ -117,30 +117,6 @@ div.autocomplete ul li {
     padding-right: 0.3em;
 }
 
-
-
-#editsearches {
-    width: 55%;
-    float:right;
-    text-align: left;
-    padding-right: 1em;
-}
-
-#editsearches .titlebox-content {
-    padding: 1em;
-}
-
-
-#editquery {
-    width: 40%;
-    float: left;
-    padding-left: 1em;
-}
-
-#pick-criteria {
-    clear: both;
-}
-
 .shredder-form { line-height: 3em }
 .shredder-form span { margin-left: 1em; margin-right: 1em }
 .shredder-help {

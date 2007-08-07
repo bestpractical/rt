@@ -58,6 +58,11 @@ Find all active tickets in the queue named in the argument passed in
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::Search::Generic);
+
+=end testing
 
 
 =cut

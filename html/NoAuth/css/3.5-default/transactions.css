@@ -46,6 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 .ticket-transaction {
+    margin: 1em 0 1em 0;
     border-bottom: 1px solid #ddd;
     border-right: 3px solid #069;
 }
@@ -60,12 +61,11 @@
 
 .ticket-transaction .date {
     font-size: 0.9em;
-    width: 10em;
+    width: 15em;
 }
 
 .ticket-transaction .description {
     font-weight: bold;
-    font-size: 0.9em;
     text-align: left;
 }
 
@@ -76,10 +76,10 @@
 
 .ticket-transaction .type {
     background: #888;
-    width: 1.2em;
+    width: 1.5em;
     color: white;
     text-align: center;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
 #body .ticket-transaction .type :link,

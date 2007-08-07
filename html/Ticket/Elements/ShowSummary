@@ -77,16 +77,10 @@
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
 		title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id, 
 		class => 'ticket-info-reminders' &>
-        <table>
-        <tr>
-        <td>
             <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
 	      <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
               <div align="right"><input type="submit" class="button" value="Save" /></div>
             </form>
-            </td>
-            </tr>
-            </table>
 	  </&>
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id, 

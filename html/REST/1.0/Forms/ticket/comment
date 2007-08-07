@@ -102,7 +102,7 @@ foreach my $att (@atts) {
     if ($fh) {
         my $buf;
         my ($w, $tmp) = tempfile();
-        my $info = $cgi->uploadInfo($fh);
+        my $info = $cgi->uploadInfo();
 
         while (sysread($fh, $buf, 8192)) {
             syswrite($w, $buf);

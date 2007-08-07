@@ -100,6 +100,11 @@ BEGIN {
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::Interface::CLI);
+
+=end testing
 
 =cut
 

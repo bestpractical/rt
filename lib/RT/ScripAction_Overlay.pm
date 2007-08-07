@@ -60,6 +60,11 @@ This module should never be called directly by client code. it's an internal mod
 should only be accessed through exported APIs in other modules.
 
 
+=begin testing
+
+ok (require RT::ScripAction);
+
+=end testing
 
 =head1 METHODS
 

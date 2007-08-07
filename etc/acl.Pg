@@ -51,12 +51,13 @@ sub acl {
     my $db_user = RT->Config->Get('DatabaseUser');
     my $db_pass = RT->Config->Get('DatabasePassword');
 
-    # if there's already an rt_user, use it.
+    # if there's already an rt_user, drop it.
     my @row = $dbh->selectrow_array( "SELECT usename FROM pg_user WHERE usename = '$db_user'" );
-    unless ( $row[0] ) {
-	 push @acls, "CREATE USER $db_user WITH PASSWORD '$db_pass' NOCREATEDB NOCREATEUSER;";
+    if ( $row[0] ) {
+        push @acls, "DROP USER $db_user;";
     }
 
+    push @acls, "CREATE USER $db_user WITH PASSWORD '$db_pass' NOCREATEDB NOCREATEUSER;";
     foreach my $table (@tables) {
         push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO $db_user;"
     }

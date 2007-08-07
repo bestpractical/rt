@@ -58,6 +58,11 @@
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::CustomFields);
+
+=end testing
 
 =cut
 

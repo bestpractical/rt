@@ -55,19 +55,22 @@
 
 RT::Interface::Web
 
+=begin testing
+
+use_ok(RT::Interface::Web);
+
+=end testing
 
 =cut
 
 
-use URI;
+package RT::Interface::Web;
 
 use strict;
 use warnings;
 
-package RT::Interface::Web;
 
 use RT::SavedSearches;
-use URI qw();
 
 # {{{ EscapeUTF8
 
@@ -201,19 +204,19 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new( $RT::SystemUser );
-
     # Expire things in a month.
-    $date->Set( Value => time + 30*24*60*60 );
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = HTTP::Date::time2str( time() + 2592000 );
 
     # Last modified at server start time
-    $date->Set( Value => $^T );
-    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = HTTP::Date::time2str($^T);
+
 }
 
 
 package HTML::Mason::Commands;
+
+use strict;
+use warnings;
 
 use vars qw/$r $m %session/;
 
@@ -453,7 +456,7 @@ sub CreateTicket {
     }
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
-    unless ( $id ) {
+    unless ( $id && $Trans ) {
         Abort($ErrMsg);
     }
 
@@ -614,19 +617,24 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+    if ( not  $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'}) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
-
-            my $var   = ucfirst($1).'MessageTo';
-            my $value = $2;
-            if ( $message_args{ $var } ) {
-                $message_args{ $var } .= ", $value";
-            } else {
-                $message_args{ $var } = $value;
+            if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
+                my $var   = ucfirst($1).'MessageTo';
+                my $value = $2;
+                {
+                    if ( $args{$var} ) {
+                        $message_args{$var} .= ", $value";
+                    } else {
+                        $message_args{$var} = $value;
+                    }
+                }
             }
+
         }
     }
+
+
 
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
@@ -1282,8 +1290,7 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{ $arg }
-                if defined $args{'ARGS'}->{ $arg };
+            @values = split /\r*\n/, $args{'ARGS'}->{ $arg } || '';
         }
         @values = grep $_ ne '',
             map {
@@ -1666,7 +1673,6 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
-    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }

@@ -122,11 +122,6 @@ $fields{'Custom.Ownership'} = 1;
 
 my @Order = split /\|/, $Order;
 my @OrderBy = split /\|/, $OrderBy;
-if ($Order =~ /\|/) {
-    @Order = split /\|/, $Order;
-} else {
-    @Order = ( $Order );
-}
 
 </%INIT>
 

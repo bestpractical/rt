@@ -59,6 +59,11 @@ RT Date is a simple Date Object designed to be speedy and easy for RT to use
 
 The fact that it assumes that a time of 0 means "never" is probably a bug.
 
+=begin testing
+
+ok (require RT::Date);
+
+=end testing
 
 =head1 METHODS
 
@@ -544,7 +549,7 @@ Each method takes several arguments:
 
 Formatters may also add own arguments to the list, for example
 in RFC2822 format day of time in output is optional so it
-understand boolean argument C<DayOfTime>.
+understand argument C<DayOfTime>.
 
 =head3 DefaultFormat
 
@@ -659,12 +664,11 @@ sub W3CDTF {
 };
 
 
-=head3 RFC2822 (MIME)
+=head3 RFC2822
 
-Returns the object's date and time in RFC2822 format,
-for example C<Sun, 06 Nov 1994 08:49:37 +0000>.
+Returns the object's date and time in RFC2822 format.
 Format is locale independand as required by RFC. Time
-part always has timezone offset in digits with sign prefix.
+part always has timezone offset.
 
 Supports arguments: C<Timezone>, C<Date>, C<Time>, C<DayOfWeek>
 and C<Seconds>. See </Output formatters> for description of
@@ -697,45 +701,6 @@ sub RFC2822 {
     }
 
     return join ' ', grep $_, ($date, $time);
-}
-
-=head3 RFC2616 (HTTP)
-
-Returns the object's date and time in RFC2616 (HTTP/1.1) format,
-for example C<Sun, 06 Nov 1994 08:49:37 GMT>. While the RFC describes
-version 1.1 of HTTP, but the same form date can be used in version 1.0.
-
-Format is fixed length, locale independand and always represented in GMT
-what makes it quite useless for users, but any date in HTTP transfers
-must be presented using this format.
-
-    HTTP-date = rfc1123 | ...
-    rfc1123   = wkday "," SP date SP time SP "GMT"
-    date      = 2DIGIT SP month SP 4DIGIT
-                ; day month year (e.g., 02 Jun 1982)
-    time      = 2DIGIT ":" 2DIGIT ":" 2DIGIT
-                ; 00:00:00 - 23:59:59
-    wkday     = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun"
-    month     = "Jan" | "Feb" | "Mar" | "Apr" | "May" | "Jun"
-              | "Jul" | "Aug" | "Sep" | "Oct" | "Nov" | "Dec"
-
-Supports arguments: C<Date> and C<Time>, but you should use them only for
-some personal reasons, RFC2616 doesn't define any optional parts.
-See </Output formatters> for description of arguments.
-
-=cut
-
-sub RFC2616 {
-    my $self = shift;
-    my %args = ( Date => 1, Time => 1,
-                 @_,
-                 Timezone => 'utc',
-                 Seconds => 1, DayOfWeek => 1,
-               );
-
-    my $res = $self->RFC2822( @_ );
-    $res =~ s/\s*[+-]\d\d\d\d$/ GMT/ if $args{'Time'};
-    return $res;
 }
 
 sub _SplitOffset {

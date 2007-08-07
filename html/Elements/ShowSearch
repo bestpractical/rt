@@ -94,8 +94,7 @@ if ($SavedSearch) {
 
     $SearchArg = $user->Preferences( $search, $search->Content );
     $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-        . $m->comp( '/Elements/QueryString',
-            name => ref($search) . '-' . $search->Id );
+        . $m->comp( '/Elements/QueryString', name => ref($search) . '-' . $search->Id );
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use

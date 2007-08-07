@@ -124,12 +124,7 @@ unless (@keys && @values) {
     @values = (0);
 }
 
-my %data;
-foreach my $key (@keys) { $data{$key} = shift @values; }
-my @sorted_keys = sort @keys;
-my @sorted_values = map { $data{$_}} @sorted_keys;
-
-my $plot = $chart->plot( [ [@sorted_keys], [@sorted_values] ] ) or die $chart->error;
+my $plot = $chart->plot( [ [@keys], [@values] ] ) or die $chart->error;
 
 if ( $plot->can('png') ) {
     $r->content_type('image/png');

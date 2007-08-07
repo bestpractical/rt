@@ -48,7 +48,7 @@
 <%ARGS>
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 
-%cfqueues => ()
+%cfqueues => undef
 
 $Face => undef
 $Size => undef
@@ -121,7 +121,6 @@ $m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
 
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 my @format = split( /,\s*/, $Format );
 foreach my $field (@format) {
     my %column = ();

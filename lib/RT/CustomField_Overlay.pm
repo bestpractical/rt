@@ -202,7 +202,7 @@ sub Create {
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
-    (my $rv, $msg) = $self->SUPER::Create(
+    my $rv = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},
         MaxValues   => $args{'MaxValues'},
@@ -217,7 +217,7 @@ sub Create {
         $self->SetValuesClass( $args{'ValuesClass'} );
     }
 
-    return ($rv, $msg) unless exists $args{'Queue'};
+    return $rv unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
     my $OCF = RT::ObjectCustomField->new( $self->CurrentUser );
@@ -226,7 +226,7 @@ sub Create {
         ObjectId => $args{'Queue'},
     );
 
-    return ($rv, $msg);
+    return $rv;
 }
 
 =head2 Load ID/NAME
@@ -306,6 +306,37 @@ sub LoadByName {
 
 # {{{ Dealing with custom field values 
 
+=begin testing
+
+use_ok(RT::CustomField);
+ok(my $cf = RT::CustomField->new($RT::SystemUser));
+ok(my ($id, $msg)=  $cf->Create( Name => 'TestingCF',
+                                 Queue => '0',
+                                 SortOrder => '1',
+                                 Description => 'A Testing custom field',
+                                 Type=> 'SelectSingle'), 'Created a global CustomField');
+ok($id != 0, 'Global custom field correctly created');
+ok ($cf->SingleValue);
+is($cf->Type, 'Select');
+is($cf->MaxValues, 1);
+
+my ($val, $msg) = $cf->SetMaxValues('0');
+ok($val, $msg);
+is($cf->Type, 'Select');
+is($cf->MaxValues, 0);
+ok(!$cf->SingleValue );
+ok(my ($bogus_val, $bogus_msg) = $cf->SetType('BogusType') , "Trying to set a custom field's type to a bogus type");
+ok($bogus_val == 0, "Unable to set a custom field's type to a bogus type");
+
+ok(my $bad_cf = RT::CustomField->new($RT::SystemUser));
+ok(my ($bad_id, $bad_msg)=  $cf->Create( Name => 'TestingCF-bad',
+                                 Queue => '0',
+                                 SortOrder => '1',
+                                 Description => 'A Testing custom field with a bogus Type',
+                                 Type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');
+ok($bad_id == 0, 'Global custom field correctly decided to not create a cf with a bogus type ');
+
+=end testing
 
 =cut
 
@@ -340,6 +371,17 @@ sub Values {
 
 Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
 
+=begin testing
+
+ok(my $cf = RT::CustomField->new($RT::SystemUser));
+$cf->Load(1);
+ok($cf->Id == 1);
+ok(my ($val,$msg)  = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
+ok($val != 0);
+ok (my ($delval, $delmsg) = $cf->DeleteValue($val));
+ok ($delval,"Deleting a cf value: $delmsg");
+
+=end testing
 
 =cut
 
@@ -521,6 +563,14 @@ sub FriendlyTypeComposite {
 Takes a single string. returns true if that string is a value
 type of custom field
 
+=begin testing
+
+ok(my $cf = RT::CustomField->new($RT::SystemUser));
+ok($cf->ValidateType('SelectSingle'));
+ok($cf->ValidateType('SelectMultiple'));
+ok(!$cf->ValidateType('SelectFooMultiple'));
+
+=end testing
 
 =cut
 
@@ -814,10 +864,10 @@ sub AddToObject {
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
-    my ( $oid, $msg ) =
+    my ( $ret, $msg ) =
       $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
-    return ( $oid, $msg );
+    return ( $ret, $msg );
 }
 
 
@@ -848,10 +898,9 @@ sub RemoveFromObject {
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ObjectCF->Delete;
+    my ( $ret, $msg ) = $ObjectCF->Delete;
 
-    return ( $oid, $msg );
+    return ( $ret, $msg );
 }
 
 # {{{ AddValueForObject

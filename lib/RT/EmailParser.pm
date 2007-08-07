@@ -70,6 +70,11 @@ use File::Temp qw/tempdir/;
 =head1 DESCRIPTION
 
 
+=begin testing
+
+ok(require RT::EmailParser);
+
+=end testing
 
 
 =head1 METHODS
@@ -404,6 +409,12 @@ Takes a single parameter, an email address.
 Returns true if that address matches the C<RTAddressRegexp> config option.
 Returns false, otherwise.
 
+=begin testing
+
+is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
+is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+
+=end testing
 
 =cut
 
@@ -430,6 +441,13 @@ sub IsRTAddress {
 Takes a single argument, an array of email addresses.
 Returns the same array with any IsRTAddress()es weeded out.
 
+=begin testing
+
+@before = ("rt\@example.com", "frt\@example.com");
+@after = ("frt\@example.com");
+ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
+
+=end testing
 
 =cut
 

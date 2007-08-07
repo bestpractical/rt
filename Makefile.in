@@ -349,16 +349,13 @@ config-install:
 
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
-TEST_FILES = t/*.t t/*/*.t
-TEST_VERBOSE = 0
-
 test: 
-	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
+	$(PERL) -Ilib lib/t/00smoke.t
 
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
 
-regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms apachectl run-regression
+regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db testify-pods fixperms apachectl run-regression
 
 run-regression:
 	prove -I$(LOCAL_LIB_PATH) -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
@@ -367,9 +364,9 @@ run-cover-regression:
 	PERL5OPT=-MDevel::Cover prove -I$(LOCAL_LIB_PATH) -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
 
 
-regression-noapache: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms start-httpd  run-regression
+regression-noapache: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms start-httpd  run-regression
 
-regression-cover: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms start-httpd  run-cover-regression
+regression-cover: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms start-httpd  run-cover-regression
 
 regression-quiet:
 	$(PERL) sbin/regression_harness
@@ -475,6 +472,18 @@ local-install:
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
+
+
+POD2TEST_EXE = sbin/extract_pod_tests
+
+testify-pods:
+	[ -d lib/t/autogen ] || mkdir lib/t/autogen
+	find lib -name \*pm |grep -v .svn | grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v .svn | grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v .svn | grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v .svn | grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+
+
 
 regenerate-catalogs:
 	$(PERL) sbin/extract-message-catalog

@@ -58,7 +58,7 @@ if ($ShowDisplayModes or $ShowTitle) {
     my $titleright;
 
     if ($ShowDisplayModes) {
-        $titleright = '';
+        $titleright = q[<span style="color: black">] . loc('Display mode') . ':</span> ';
         
         if ($ShowHeaders) {
             $titleright .= qq{<a href="$URIFile?id=} .
@@ -76,8 +76,7 @@ if ($ShowDisplayModes or $ShowTitle) {
         }
     }
 </%perl>
-<div class="history">
-<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
+<& /Widgets/TitleBoxStart, title => $title, titleright => $titleright &>
 % }
 
 <div id="ticket-history">
@@ -126,7 +125,6 @@ $m->flush_buffer();
 % if ($ShowDisplayModes or $ShowTitle) {
 <& /Widgets/TitleBoxEnd &>
 % }
-</div>
 <%INIT>
 my $Transactions = new RT::Transactions($session{'CurrentUser'});
 if ($Tickets) {

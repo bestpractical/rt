@@ -51,36 +51,20 @@
 
 =head1 SYNOPSIS
 
-    use RT::CurrentUser;
-
-    # laod
-    my $current_user = new RT::CurrentUser;
-    $current_user->Load(...);
-    # or
-    my $current_user = RT::CurrentUser->new( $user_obj );
-    # or
-    my $current_user = RT::CurrentUser->new( $address || $name || $id );
-
-    # manipulation
-    $current_user->UserObj->SetName('new_name');
+  use RT::CurrentUser
 
 
 =head1 DESCRIPTION
 
-B<Read-only> subclass of L<RT::User> class. Used to define the current
-user. You should pass an instance of this class to constructors of
-many RT classes, then the instance used to check ACLs and localize
-strings.
 
 =head1 METHODS
 
-See also L<RT::User> for a list of methods this class has.
 
-=head2 new
+=begin testing
 
-Returns new CurrentUser object. Unlike all other classes of RT it takes
-either subclass of C<RT::User> class object or scalar value that is
-passed to Load method.
+ok (require RT::CurrentUser);
+
+=end testing
 
 =cut
 
@@ -88,11 +72,12 @@ passed to Load method.
 package RT::CurrentUser;
 
 use RT::I18N;
+use RT::User;
 
 use strict;
-use warnings;
-
 use base qw/RT::User/;
+
+# {{{ sub _Init 
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
@@ -121,36 +106,31 @@ sub _Init {
     $self->_BuildTableAttributes;
 
 }
+# }}}
 
-=head2 Create, Delete and Set*
-
-As stated above it's a subclass of L<RT::User>, but this class is read-only
-and calls to these methods are illegal. Return 'permission denied' message
-and log an error.
-
-=cut
+# {{{ sub Create
 
 sub Create {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
+
+# }}}
+
+# {{{ sub Delete
 
 sub Delete {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
-sub _Set {
-    my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
-    return (0, $self->loc('Permission Denied'));
-}
+# }}}
+
+# {{{ sub UserObj
 
 =head2 UserObj
 
-Returns the L<RT::User> object associated with this CurrentUser object.
+Returns the RT::User object associated with this CurrentUser object.
 
 =cut
 
@@ -165,6 +145,9 @@ sub UserObj {
     }
     return $user;
 }
+# }}}
+
+# {{{ sub _Accessible 
 
 sub _CoreAccessible  {
      {
@@ -177,6 +160,9 @@ sub _CoreAccessible  {
      };
   
 }
+# }}}
+
+# {{{ sub LoadByGecos
 
 =head2 LoadByGecos
 
@@ -189,6 +175,9 @@ sub LoadByGecos  {
     my $self = shift;
     return $self->LoadByCol( "Gecos", shift );
 }
+# }}}
+
+# {{{ sub LoadByName
 
 =head2 LoadByName
 
@@ -201,11 +190,30 @@ sub LoadByName {
     my $self = shift;
     return $self->LoadByCol( "Name", shift );
 }
+# }}}
+
+# {{{ Localization
 
 =head2 LanguageHandle
 
 Returns this current user's langauge handle. Should take a language
 specification. but currently doesn't
+
+=begin testing
+
+ok (my $cu = RT::CurrentUser->new('root'));
+ok (my $lh = $cu->LanguageHandle('en-us'));
+ok ($lh != undef);
+ok ($lh->isa('Locale::Maketext'));
+is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
+SKIP: {
+    skip "French localization is not enabled", 2
+        unless grep $_ && $_ =~ /^(\*|fr)$/, RT->Config->Get('LexiconLanguages');
+    ok ($lh = $cu->LanguageHandle('fr'));
+    is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into French");
+}
+
+=end testing
 
 =cut 
 
@@ -215,15 +223,13 @@ sub LanguageHandle {
         || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
         || @_ )
     {
-        if (   !$RT::SystemUser
-            || !$RT::SystemUser->id
-            || ( $self->id || 0 ) == $RT::SystemUser->id ) {
+        if ( !$RT::SystemUser or ($self->id || 0) == $RT::SystemUser->id ) {
             @_ = qw(en-US);
         }
+
         elsif ( my $lang = $self->Lang ) {
             push @_, $lang;
         }
-
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
     }
 
@@ -258,10 +264,12 @@ sub loc_fuzzy {
 
     return $self->LanguageHandle->maketext_fuzzy( @_ );
 }
+# }}}
+
 
 =head2 CurrentUser
 
-Return the current currentuser object
+Return  the current currentuser object
 
 =cut
 
@@ -310,6 +318,9 @@ sub Authenticate {
 
     return ($password eq $auth_digest);
 }
+
+# }}}
+
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});

@@ -65,7 +65,7 @@ for my $pane (@$panes) {
         OnSubmit  => sub {
             my $sel = shift;
             $portlets->{$pane} = [
-                map { m/(\w+)-(.*)$/;
+                map { m/(\w+)-(.*)$}/;
                       { type => $1,
                         name => $2 } } @{ $sel->{Current} }
             ];

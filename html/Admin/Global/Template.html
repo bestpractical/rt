@@ -93,7 +93,7 @@ if ($Create) {
 }
 
 else {
-  if (defined ($Template) && $Template eq 'new') {
+  if ($Template eq 'new') {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;

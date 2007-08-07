@@ -83,7 +83,11 @@ sub ParseObject  {
     my $self = shift;
     my $obj = shift;
     $self->{'uri'} = "unknown-object:".ref($obj);
+
+
 }
+
+
 
 sub ParseURI { 
     my $self = shift;

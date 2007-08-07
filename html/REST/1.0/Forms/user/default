@@ -124,7 +124,7 @@ if (%data == 0) {
     foreach my $key (@fields) {
         my $val = $user->$key;
 
-        if ( (defined ($format) && $format eq 'l') || (defined $val && $val ne '')) {
+        if ($format eq 'l' || (defined $val && $val ne '')) {
             $key = "ContactInfo" if $key eq 'FreeformContactInfo';
             push @data, [ $key => $val ];
         }

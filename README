@@ -278,7 +278,7 @@ FastCgiIpcDir /tmp
 
 FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
 
-<VirtualHost rt.example.com>
+<VirtualHost your.ip.address>
    ServerName your.rt.server.hostname
 
    # Pass through requests to display images

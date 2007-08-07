@@ -58,6 +58,45 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok (require RT::Scrip);
+
+
+my $q = RT::Queue->new($RT::SystemUser);
+$q->Create(Name => 'ScripTest');
+ok($q->Id, "Created a scriptest queue");
+
+my $s1 = RT::Scrip->new($RT::SystemUser);
+my ($val, $msg) =$s1->Create( Queue => $q->Id,
+             ScripAction => 'User Defined',
+             ScripCondition => 'User Defined',
+             CustomIsApplicableCode => 'if ($self->TicketObj->Subject =~ /fire/) { return (1);} else { return(0)}',
+             CustomPrepareCode => 'return 1',
+             CustomCommitCode => '$self->TicketObj->SetPriority("87");',
+             Template => 'Blank'
+    );
+ok($val,$msg);
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
+                                    Subject => "hair on fire",
+                                    );
+ok($tv, $tm);
+
+ok ($ticket->Priority == '87', "Ticket priority is set right");
+
+
+my $ticket2 = RT::Ticket->new($RT::SystemUser);
+my ($t2v,$t2tv,$t2m) = $ticket2->Create(Queue => $q->Id,
+                                    Subject => "hair in water",
+                                    );
+ok($t2v, $t2m);
+
+ok ($ticket2->Priority != '87', "Ticket priority is set right");
+
+
+=end testing
 
 =cut
 
@@ -242,16 +281,22 @@ sub ActionObj {
 
 =head2 ConditionObj
 
-Retuns an L<RT::ScripCondition> object with this Scrip's IsApplicable
+Retuns an RT::ScripCondition object with this Scrip's IsApplicable
 
 =cut
 
 sub ConditionObj {
     my $self = shift;
 
-    my $res = RT::ScripCondition->new( $self->CurrentUser );
-    $res->Load( $self->ScripCondition );
-    return $res;
+    unless ( defined $self->{'ScripConditionObj'} ) {
+        require RT::ScripCondition;
+        $self->{'ScripConditionObj'} =
+          RT::ScripCondition->new( $self->CurrentUser );
+        if ( $self->ScripCondition ) {
+            $self->{'ScripConditionObj'}->Load( $self->ScripCondition );
+        }
+    }
+    return ( $self->{'ScripConditionObj'} );
 }
 
 # }}}
@@ -398,7 +443,6 @@ sub IsApplicable {
             }
 	}
     };
-
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
         return (undef);

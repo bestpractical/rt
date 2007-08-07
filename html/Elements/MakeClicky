@@ -150,8 +150,6 @@ while ( $$content =~ /($regexp)/gsio ) {
 }
 substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless $pos == length $$content;
 
-pos($$content) = 0;
-
 </%INIT>
 <%doc>
 

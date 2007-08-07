@@ -75,8 +75,8 @@ if ( !$cookies{$cookiename} ) {
     my $cookie = new CGI::Cookie(
         -name  => $cookiename,
         -value => $session{_session_id},
-        -path  => RT->Config->Get('WebPath'),
-        -secure => (RT->Config->Get('WebSecureCookies') ? 1 :0)
+        -path  => scalar RT->Config->Get('WebPath'),
+        -secure => (scalar RT->Config->Get('WebSecureCookies') ? 1 :0),
     );
     $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
@@ -84,5 +84,5 @@ if ( !$cookies{$cookiename} ) {
 return ();
 </%INIT>
 <%ARGS>
-$SessionCookie => undef
+$SessionCookie => ''
 </%ARGS>

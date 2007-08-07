@@ -260,7 +260,7 @@ sub SetDisabled {
     my $val = shift;
  
     # if it's already disabled, we're good.
-    return (1) if ( $self->__Value('Disabled') == $val);
+    return {1} if ($self->__Value('Disabled') == $val);
     my $err = $self->SUPER::SetDisabled($val);
     my ($retval, $msg) = $err->as_array();
     unless ($retval) {

@@ -58,7 +58,7 @@ foreach my $stanza ( @$Message) {
                   Message => $stanza );
     }
     elsif ( ref $stanza eq "HASH" ) {
-        $para .= ($stanza->{raw}||'') ."\n";
+        $para .= ($stanza->{raw}||'');
     }
 }
 $print_content->( \$para ) if length $para;

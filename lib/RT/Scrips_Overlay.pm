@@ -59,6 +59,11 @@
 =head1 METHODS
 
 
+=begin testing
+
+ok (require RT::Scrips);
+
+=end testing
 
 =cut
 

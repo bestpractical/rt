@@ -73,7 +73,6 @@ sub DefaultHandlerArgs  { (
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     autoflush            => 0,
-    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'brief'),
     request_class        => 'RT::Interface::Web::Request',
 ) };
 
