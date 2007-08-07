@@ -262,30 +262,15 @@ sub Create {
     $args{'RightName'} = $canonic_name;
 
     #check if it's a valid RightName
-    if ( ref ($args{'Object'} eq 'RT::Queue'  )) {
+    if ( $args{'Object'}->can('AvailableRights') ) {
         unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
-            $RT::Logger->warning("Couldn't validate right name". $args{'RightName'});
+            $RT::Logger->warning(
+                "Couldn't validate right name '$args{'RightName'}'"
+                ." for object of ". ref( $args{'Object'} ) ." class"
+            );
             return ( 0, $self->loc('Invalid right') );
         }
     }
-    elsif ( ref ($args{'Object'} eq 'RT::Group'  )) {
-        unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
-            $RT::Logger->warning("Couldn't validate group right name". $args{'RightName'});
-            return ( 0, $self->loc('Invalid right') );
-        }
-    }
-    elsif ( ref ($args{'Object'} eq 'RT::System'  )) {
-        my $q = RT::Queue->new($self->CurrentUser);
-        my $g = RT::Group->new($self->CurrentUser);
-
-        unless (( exists $g->AvailableRights->{ $args{'RightName'} } )
-        || ( exists $g->AvailableRights->{ $args{'RightName'} } )
-        || ( exists $RT::System->AvailableRights->{ $args{'RightName'} } ) ) {
-            $RT::Logger->warning("Couldn't validate system right name - ". $args{'RightName'});
-            return ( 0, $self->loc('Invalid right') );
-        }
-    }
-
     # }}}
 
     # Make sure the right doesn't already exist.
@@ -311,7 +296,7 @@ sub Create {
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     RT::Principal->InvalidateACLCache();
 
-    if ( $id > 0 ) {
+    if ( $id ) {
         return ( $id, $self->loc('Right Granted') );
     }
     else {
@@ -693,9 +678,8 @@ sub _CanonicalizePrincipal {
         my $equiv_group = RT::Group->new( $self->CurrentUser );
         $equiv_group->LoadACLEquivalenceGroup($princ_obj);
         unless ( $equiv_group->Id ) {
-            $RT::Logger->crit(
-                 "No ACL equiv group for princ " . $self->__Value('ObjectId') );
-            return ( 0, $self->loc('System error. Right not granted.') );
+            $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
+            return ( RT::Principal->new($RT::SystemUser), undef );
         }
         $princ_obj  = $equiv_group->PrincipalObj();
         $princ_type = 'Group';

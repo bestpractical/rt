@@ -51,6 +51,7 @@
     current_tab => "Ticket/ModifyDates.html?id=".$TicketObj->Id, 
     Title => loc('Modify dates for #[_1]', $TicketObj->Id) &> 
 
+<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyDates.html">

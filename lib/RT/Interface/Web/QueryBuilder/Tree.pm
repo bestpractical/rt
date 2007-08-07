@@ -254,10 +254,12 @@ sub ParseSQL {
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
 
+        my ($main_key) = split /[.]/, $key;
+
         my $class;
-        if ( exists $lcfield{ lc $key } ) {
-            $key   = $lcfield{ lc $key };
-            $class = $field{$key}->[0];
+        if ( exists $lcfield{ lc $main_key } ) {
+            $class = $field{ $main_key }->[0];
+            $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
         unless( $class ) {
             push @results, [ $args{'CurrentUser'}->loc("Unknown field: $key"), -1 ]
@@ -269,6 +271,7 @@ sub ParseSQL {
         my $clause = { Key => $key, Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
+    $callback{'Error'} = sub { push @results, @_ };
 
     require RT::SQL;
     RT::SQL::Parse($string, \%callback);

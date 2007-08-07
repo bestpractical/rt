@@ -2,11 +2,10 @@
 
 use warnings;
 use strict;
-use Test::More qw(no_plan);
+use Test::More tests => 11;
 
 use RT;
-require RT::Test;
-RT::Init();
+use RT::Test nodata => 1;
 
 sub new (*) {
     my $class = shift;
@@ -33,6 +32,13 @@ isa_ok( $cf, 'RT::CustomField' );
     ok( $cfid, "created cf" );
     is( $cf->ValuesClass, VALUES_CLASS, "right values class" );
     ok( $cf->IsExternalValues, "custom field has external values" );
+}
+
+{
+    # create at least on group for the tests
+    my $group = RT::Group->new( $RT::SystemUser );
+    my ($ret, $msg) = $group->CreateUserDefinedGroup( Name => $q->Name );
+    ok $ret, 'created group' or diag "error: $msg";
 }
 
 {

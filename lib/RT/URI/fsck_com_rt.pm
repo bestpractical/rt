@@ -104,7 +104,7 @@ Returns the RT URI for a local RT::Record object
 sub URIForObject {
     my $self = shift;
     my $obj = shift;
-    return ($self->LocalURIPrefix."/".$self->ObjectType($obj)."/". $obj->Id);
+    return ($self->LocalURIPrefix ."/". $self->ObjectType($obj) ."/". $obj->Id);
 }
 
 
@@ -119,12 +119,12 @@ sub ParseURI {
     my $self = shift;
     my $uri  = shift;
 
-    if ( $uri =~ /^(\d+)$/ ) {
+    if ( $uri =~ /^\d+$/ ) {
         my $ticket = RT::Ticket->new( $self->CurrentUser );
-        $ticket->Load($uri);
+        $ticket->Load( $uri );
         $self->{'uri'} = $ticket->URI;
         $self->{'object'} = $ticket;
-        return($ticket->id);
+        return ($ticket->id);
     }
     else {
         $self->{'uri'} = $uri;
@@ -132,9 +132,8 @@ sub ParseURI {
 
     #If it's a local URI, load the ticket object and return its URI
     if ( $self->IsLocal ) {
-
         my $local_uri_prefix = $self->LocalURIPrefix;
-        if ( $self->{'uri'} =~ /^$local_uri_prefix\/(.*?)\/(\d+)$/i ) {
+        if ( $self->{'uri'} =~ /^\Q$local_uri_prefix\E\/(.*?)\/(\d+)$/i ) {
             my $type = $1;
             my $id   = $2;
 
@@ -168,9 +167,9 @@ Returns undef otherwise.
 
 sub IsLocal {
 	my $self = shift;
-        my $local_uri_prefix = $self->LocalURIPrefix;
-	if ($self->{'uri'} =~ /^$local_uri_prefix/i) {
-		return 1;
+    my $local_uri_prefix = $self->LocalURIPrefix;
+    if ( $self->{'uri'} =~ /^\Q$local_uri_prefix/i ) {
+        return 1;
     }
 	else {
 		return undef;

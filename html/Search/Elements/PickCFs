@@ -62,9 +62,11 @@ foreach my $id (keys %cfqueues) {
     }
     $CustomFields->LimitToQueue($queue->Id);
 }
-$CustomFields->LimitToGlobal();
-  $m->comp('/Elements/Callback', _CallbackName => 'MassageCustomFields',  
-                                  CustomFields => $CustomFields);
+$CustomFields->LimitToGlobal;
+$m->callback(
+    CallbackName => 'MassageCustomFields',
+    CustomFields => $CustomFields,
+);
 
 
 my @lines;

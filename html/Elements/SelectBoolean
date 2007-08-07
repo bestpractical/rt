@@ -60,7 +60,8 @@ $False => loc("isn't")
 </%ARGS>
 
 <%INIT>
-my ($TrueDefault, $FalseDefault) = ('', '');
+my $TrueDefault  = '';
+my $FalseDefault = '';
 if ($Default && $Default !~ /true/i) {
 	$FalseDefault = "selected";
 }

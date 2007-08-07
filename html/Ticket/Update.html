@@ -49,6 +49,8 @@
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     Title=> $title &>
+    
+<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
@@ -62,7 +64,7 @@
 <td>
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'} &>
+<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'}||$RT::Nobody->Id &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
@@ -148,6 +150,8 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
+$TicketObj->Lock();
+
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
@@ -230,7 +234,10 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
+	my $lock = $TicketObj->Locked();
+	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+	$TicketObj->Unlock();
+    $m->comp('Display.html', TicketObj => $TicketObj, Duration => $Duration, %ARGS);
     return;
 }
 

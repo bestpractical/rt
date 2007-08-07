@@ -7,7 +7,7 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.7.2], [rt-bugs@bestpractical.com])
+AC_INIT(RT, [3.7.14], [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -230,7 +230,7 @@ AC_ARG_WITH(my-user-group,
             WEB_GROUP=$my_group)
 
 # Test for valid database names
-AS_IF([ test "$DB_TYPE" == "mysql" ],
+AS_IF([ test "$DB_TYPE" = "mysql" ],
       [ AC_MSG_CHECKING([if database name is valid])
           AS_IF([ echo $DB_DATABASE | $AWK '/-/ { exit 1 }' ],
                 [ AC_MSG_RESULT([yes]) ],

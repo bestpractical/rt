@@ -503,7 +503,8 @@ sub LoadByEmail {
 =head2 LoadOrCreateByEmail ADDRESS
 
 Attempts to find a user who has the provided email address. If that fails, creates an unprivileged user with
-the provided email address. and loads them.
+the provided email address and loads them. Address can be provided either as L<Mail::Address> object
+or string which is parsed using the module.
 
 Returns a tuple of the user's id and a status message.
 0 will be returned in place of the user's id in case of failure.
@@ -575,7 +576,7 @@ sub ValidateEmailAddress {
     my $TempUser = RT::User->new($RT::SystemUser);
     $TempUser->LoadByEmail($Value);
 
-    if ( $TempUser->id && ( $TempUser->id != $self->id ) )
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
         return (undef);
@@ -1000,14 +1001,11 @@ Returns true if the user has a valid password, otherwise returns false.
 
 sub HasPassword {
     my $self = shift;
-    my $pass = $self->__Value('Password');
-    if ( !defined $pass || $pass eq '' || $pass eq '*NO-PASSWORD*' ) {
-
-        return undef;
-    }
-
+    my $pwd = $self->__Value('Password');
+    return undef if !defined $pwd
+                    || $pwd eq ''
+                    || $pwd eq '*NO-PASSWORD*';
     return 1;
-
 }
 
 
@@ -1592,6 +1590,23 @@ sub _Value {
         return (undef);
     }
 
+}
+
+# }}}
+
+# {{{ sub FriendlyName
+
+=head2 FriendlyName
+
+  Return the friendly name
+
+=cut
+
+sub FriendlyName {
+    my $self = shift;
+    return $self->RealName if defined($self->RealName);
+    return $self->Name if defined($self->Name);
+    return "";
 }
 
 # }}}

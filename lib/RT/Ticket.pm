@@ -227,6 +227,84 @@ sub QueueObj {
 	return($Queue);
 }
 
+my @Types = qw(Auto Take Hard);
+
+sub Locked {
+    my $ticket =shift;
+    return $ticket->FirstAttribute('RT_Lock');
+}
+
+sub Lock {
+    my $ticket = shift;
+    my $type = shift || 'Auto';
+
+    if ( my $lock = $ticket->Locked() ) {
+    	return undef if $lock->Content->{'User'} != $ticket->CurrentUser->id;
+    	my $LockType = $lock->Content->{'Type'};
+    	my $priority;
+    	my $LockPriority;
+		for(my $i = 0; $i < scalar @Types; $i++) {
+			$priority = $i if (lc $Types[$i]) eq (lc $type);
+			$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
+		}
+		return undef if $priority <= $LockPriority;
+    } else {
+    	$ticket->Unlock($type);	#Remove any existing locks (because this one has greater priority)
+        $ticket->SetAttribute(
+            Name    => 'RT_Lock',
+            Content => {
+                User      => $ticket->CurrentUser->id,
+                Timestamp => time(),
+                Type => $type
+            }
+        );
+    }
+}
+
+
+sub Unlock {
+    my $ticket = shift;
+    my $type = shift || 'Auto';
+
+    my $lock = $ticket->RT::Ticket::Locked();
+    return undef unless $lock;
+    return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
+    
+    my $LockType = $lock->Content->{'Type'};
+    my $priority;
+	my $LockPriority;
+	for(my $i = 0; $i < scalar @Types; $i++) {
+		$priority = $i if (lc $Types[$i]) eq (lc $type);
+		$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
+	}
+	return undef if $priority < $LockPriority;
+    $ticket->DeleteAttribute('RT_Lock');
+    return $lock;
+}
+
+
+sub BreakLock {
+    my $ticket = shift;
+    my $lock = $ticket->RT::Ticket::Locked();
+     return undef unless $lock;
+    $ticket->DeleteAttribute('RT_Lock');
+}
+
+
+
+sub RemoveUserLocks {
+	my $user = shift;
+
+	return undef unless $user;
+	
+	my $attribs = RT::Attributes->new($user);
+	$attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $user->id(), ENTRYAGGREGATOR => 'AND');
+	my @attributes = $attribs->Named('RT_Lock');
+	foreach my $lock (@attributes) {
+		$lock->Delete();
+	}
+}
+
 =head2 Type
 
 Returns the current value of Type. 

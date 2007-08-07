@@ -3,7 +3,8 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use Test::More qw/no_plan/;
+use Test::More; 
+plan tests => 14;
 
 use_ok('RT');
 use_ok('RT::Transactions');

@@ -50,6 +50,7 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
+
 if (RT->Config->Get('StatementLog')) {
     $RT::Handle->ClearSQLStatementLog;
     $RT::Handle->LogSQLStatements(1);
@@ -192,8 +193,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                     'Zip',                   'Country'
                     )
                 {
-                    $m->comp( '/Elements/Callback', %ARGS,
-                        _CallbackName => 'NewUser' );
+                    $m->callback( %ARGS, CallbackName => 'NewUser' );
 
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} )
@@ -258,11 +258,13 @@ unless( $session{'CurrentUser'} ) {
             $m->comp( '/Elements/Login', %ARGS,
                       Error => loc('Your username or password is incorrect'),
                     );
+            $m->callback( %ARGS, CallbackName => 'FailedLogin' );
             $m->abort;
         }
         $session{'CurrentUser'} = $user_obj;
         $RT::Logger->info(
             "Successful login for $user from $ENV{'REMOTE_ADDR'}");
+        $m->callback( %ARGS, CallbackName => 'SuccessfulLogin' );
     }
     # if no credentials then show him login page
     else {

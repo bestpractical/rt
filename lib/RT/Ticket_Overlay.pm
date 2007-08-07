@@ -243,9 +243,19 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
+Ticket links can be set up during create by passing the link type as a hask key and
+the ticket id to be linked to as a value (or a URI when linking to other objects).
+Multiple links of the same type can be created by passing an array ref. For example:
+
+  Parent => 45,
+  DependsOn => [ 15, 22 ],
+  RefersTo => 'http://www.bestpractical.com',
+
+Supported link types are C<MemberOf>, C<HasMember>, C<RefersTo>, C<ReferredToBy>,
+C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
+C<Members> and C<Children> are aliases for C<HasMember>.
 
 Returns: TICKETID, Transaction Object, Error Message
-
 
 
 =cut
@@ -367,8 +377,8 @@ sub Create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug(
-            "Got a $args{'Status'} ticket with no resolved date"
+        $RT::Logger->debug( "Got a ". $args{'Status'}
+            ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->SetToNow;
     }
@@ -387,50 +397,38 @@ sub Create {
 
     my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
-        $Owner = $args{'Owner'};
+        if ( $args{'Owner'}->id ) {
+            $Owner = $args{'Owner'};
+        } else {
+            $RT::Logger->error('passed not loaded owner object');
+            push @non_fatal_errors, $self->loc("Invalid owner object");
+            $Owner = undef;
+        }
     }
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
-
-        push( @non_fatal_errors,
+        unless ( $Owner->Id ) {
+            push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
-              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} )
-          )
-          unless ( $Owner->Id );
+              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} );
+            $Owner = undef;
+        }
     }
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
-    if (
-            ( defined($Owner) )
-        and ( $Owner->Id )
-        and ( $Owner->Id != $RT::Nobody->Id )
-        and (
-            !$Owner->HasRight(
-                Object => $QueueObj,
-                Right  => 'OwnTicket'
-            )
-        )
-      )
+   
+    my $DeferOwner;  
+    if ( $Owner && $Owner->Id != $RT::Nobody->Id 
+        && !$Owner->HasRight( Object => $QueueObj, Right  => 'OwnTicket' ) )
     {
-
-        $RT::Logger->warning( "User "
-              . $Owner->Name . "("
-              . $Owner->id
-              . ") was proposed "
-              . "as a ticket owner but has no rights to own "
-              . "tickets in "
-              . $QueueObj->Name );
-
-        push @non_fatal_errors,
-          $self->loc( "Owner '[_1]' does not have rights to own this ticket.",
-            $Owner->Name
-          );
-
+        $DeferOwner = $Owner;
         $Owner = undef;
+        $RT::Logger->debug('going to deffer setting owner');
+
     }
 
     #If we haven't been handed a valid owner, make it nobody.
@@ -444,11 +442,24 @@ sub Create {
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        foreach my $watcher ( grep $_ && !/^\d+$/,
-            ref $args{$type}? @{ $args{$type} } : $args{$type} )
-        {
-            my $user = RT::User->new( $RT::SystemUser );
-            $user->LoadOrCreateByEmail( $watcher )
+        $args{ $type } = [ $args{ $type } ] unless ref $args{ $type };
+        foreach my $watcher ( splice @{ $args{$type} } ) {
+            next unless $watcher;
+            if ( $watcher =~ /^\d+$/ ) {
+                push @{ $args{$type} }, $watcher;
+            } else {
+                my @addresses = Mail::Address->parse( $watcher );
+                foreach my $address( @addresses ) {
+                    my $user = RT::User->new( $RT::SystemUser );
+                    my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
+                    unless ( $uid ) {
+                        push @non_fatal_errors,
+                            $self->loc("Couldn't load or create user: [_1]", $msg);
+                    } else {
+                        push @{ $args{$type} }, $user->id;
+                    }
+                }
+            }
         }
     }
 
@@ -521,26 +532,21 @@ sub Create {
         );
     }
 
-# Set the owner in the Groups table
-# We denormalize it into the Ticket table too because doing otherwise would
-# kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-
+    # Set the owner in the Groups table
+    # We denormalize it into the Ticket table too because doing otherwise would
+    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     $self->OwnerGroup->_AddMember(
         PrincipalId       => $Owner->PrincipalId,
         InsideTransaction => 1
-    );
+    ) unless $DeferOwner;
+
+
 
     # {{{ Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        foreach my $watcher ( grep $_,
-            ref $args{$type}? @{ $args{$type} } : $args{$type} )
-        {
-
-            # we reason that all-digits number must be a principal id, not email
-            # this is the only way to can add
-            my $field = 'Email';
-            $field = 'PrincipalId' if $watcher =~ /^\d+$/;
+        # we know it's an array ref
+        foreach my $watcher ( @{ $args{$type} } ) {
 
             # Note that we're using AddWatcher, rather than _AddWatcher, as we
             # actually _want_ that ACL check. Otherwise, random ticket creators
@@ -550,10 +556,11 @@ sub Create {
 
             my ($val, $msg) = $self->$method(
                 Type   => $type,
-                $field => $watcher,
+                PrincipalId => $watcher,
                 Silent => 1,
             );
-            push @non_fatal_errors, $msg unless $val;
+            push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
+                unless $val;
         }
     }
 
@@ -630,6 +637,24 @@ sub Create {
     }
 
     # }}}
+    # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
+    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
+    if (  $DeferOwner ) { 
+            if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
+    
+        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
+        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
+
+    } else {
+        $Owner = $DeferOwner;
+        $self->__Set(Field => 'Owner', Value => $Owner->id);
+
+    }
+        $self->OwnerGroup->_AddMember(
+            PrincipalId       => $Owner->PrincipalId,
+            InsideTransaction => 1
+        );
+    }
 
     if ( $args{'_RecordTransaction'} ) {
 
@@ -673,161 +698,6 @@ sub Create {
 }
 
 
-# }}}
-
-
-# {{{ UpdateFrom822 
-
-=head2 UpdateFrom822 $MESSAGE
-
-Takes an RFC822 format message as a string and uses it to make a bunch of changes to a ticket.
-Returns an um. ask me again when the code exists
-
-
-
-
-=cut
-
-sub UpdateFrom822 {
-        my $self = shift;
-        my $content = shift;
-        my %args = $self->_Parse822HeadersForAttributes($content);
-
-        
-    my %ticketargs = (
-        Queue           => $args{'queue'},
-        Subject         => $args{'subject'},
-        Status          => $args{'status'},
-        Due             => $args{'due'},
-        Starts          => $args{'starts'},
-        Started         => $args{'started'},
-        Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
-        Requestor       => $args{'requestor'},
-        Cc              => $args{'cc'},
-        AdminCc         => $args{'admincc'},
-        TimeWorked      => $args{'timeworked'},
-        TimeEstimated   => $args{'timeestimated'},
-        TimeLeft        => $args{'timeleft'},
-        InitialPriority => $args{'initialpriority'},
-        Priority => $args{'priority'},
-        FinalPriority   => $args{'finalpriority'},
-        Type            => $args{'type'},
-        DependsOn       => $args{'dependson'},
-        DependedOnBy    => $args{'dependedonby'},
-        RefersTo        => $args{'refersto'},
-        ReferredToBy    => $args{'referredtoby'},
-        Members         => $args{'members'},
-        MemberOf        => $args{'memberof'},
-        MIMEObj         => $args{'mimeobj'}
-    );
-
-    foreach my $type qw(Requestor Cc Admincc) {
-
-        foreach my $action ( 'Add', 'Del', '' ) {
-
-            my $lctag = lc($action) . lc($type);
-            foreach my $list ( $args{$lctag}, $args{ $lctag . 's' } ) {
-
-                foreach my $entry ( ref($list) ? @{$list} : ($list) ) {
-                    push @{$ticketargs{ $action . $type }} , split ( /\s*,\s*/, $entry );
-                }
-
-            }
-
-            # Todo: if we're given an explicit list, transmute it into a list of adds/deletes
-
-        }
-    }
-
-    # Add custom field entries to %ticketargs.
-    # TODO: allow named custom fields
-    map {
-        /^customfield-(\d+)$/
-          && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
-    } keys(%args);
-
-# for each ticket we've been told to update, iterate through the set of
-# rfc822 headers and perform that update to the ticket.
-
-
-    # {{{ Set basic fields 
-    my @attribs = qw(
-      Subject
-      FinalPriority
-      Priority
-      TimeEstimated
-      TimeWorked
-      TimeLeft
-      Status
-      Queue
-      Type
-    );
-
-
-    # Resolve the queue from a name to a numeric id.
-    if ( $ticketargs{'Queue'} and ( $ticketargs{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Queue->new($RT::SystemUser);
-        $tempqueue->Load( $ticketargs{'Queue'} );
-        $ticketargs{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
-    }
-
-    my @results;
-
-    foreach my $attribute (@attribs) {
-        my $value = $ticketargs{$attribute};
-
-        if ( $value ne $self->$attribute() ) {
-
-            my $method = "Set$attribute";
-            my ( $code, $msg ) = $self->$method($value);
-
-            push @results, $self->loc($attribute) . ': ' . $msg;
-
-        }
-    }
-
-    # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ticketargs{'Owner'} && ( $self->Owner != $ticketargs{'Owner'} ) ) {
-        my $ChownType = "Give";
-        $ChownType = "Force" if ( $ticketargs{'ForceOwnerChange'} );
-
-        my ( $val, $msg ) = $self->SetOwner( $ticketargs{'Owner'}, $ChownType );
-        push ( @results, $msg );
-    }
-
-    # }}}
-# Deal with setting watchers
-
-
-# Acceptable arguments:
-#  Requestor
-#  Requestors
-#  AddRequestor
-#  AddRequestors
-#  DelRequestor
- 
- foreach my $type qw(Requestor Cc AdminCc) {
-
-        # If we've been given a number of delresses to del, do it.
-                foreach my $address (@{$ticketargs{'Del'.$type}}) {
-                my ($id, $msg) = $self->DeleteWatcher( Type => $type, Email => $address);
-                push (@results, $msg) ;
-                }
-
-        # If we've been given a number of addresses to add, do it.
-                foreach my $address (@{$ticketargs{'Add'.$type}}) {
-                $RT::Logger->debug("Adding $address as a $type");
-                my ($id, $msg) = $self->AddWatcher( Type => $type, Email => $address);
-                push (@results, $msg) ;
-
-        }
-
-
-}
-
-
-}
 # }}}
 
 # {{{ _Parse822HeadersForAttributes Content
@@ -874,7 +744,7 @@ sub _Parse822HeadersForAttributes {
 
     foreach my $date qw(due starts started resolved) {
         my $dateobj = RT::Date->new($RT::SystemUser);
-        if ( $args{$date} =~ /^\d+$/ ) {
+        if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
         }
         else {
@@ -1335,7 +1205,7 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -2245,9 +2115,11 @@ sub _RecordNote {
 
     # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
     # as CanonicalizeEmailAddress expect only one address at a time
-    $args{'MIMEObj'}->head->add(
-        'RT-Send-Cc' => RT::User->CanonicalizeEmailAddress( $args{'CcMessageTo'} )
-    ) if defined $args{'CcMessageTo'};
+    foreach my $field (qw(Cc Bcc)) {
+        $args{'MIMEObj'}->head->add(
+            "RT-Send-$field" => RT::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
+        ) if defined $args{ $field . 'MessageTo' };
+    }
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->add(
@@ -2907,12 +2779,13 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-    my $trans;
-    ($trans, $msg) = $self->_NewTransaction( Type      => $Type,
-                                             Field     => 'Owner',
-                                             NewValue  => $NewOwnerObj->Id,
-                                             OldValue  => $OldOwnerObj->Id,
-                                             TimeTaken => 0 );
+    ($val, $msg) = $self->_NewTransaction(
+        Type      => $Type,
+        Field     => 'Owner',
+        NewValue  => $NewOwnerObj->Id,
+        OldValue  => $OldOwnerObj->Id,
+        TimeTaken => 0,
+    );
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",

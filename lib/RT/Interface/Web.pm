@@ -59,14 +59,15 @@ RT::Interface::Web
 =cut
 
 
-package RT::Interface::Web;
 use URI;
 
 use strict;
 use warnings;
 
+package RT::Interface::Web;
 
 use RT::SavedSearches;
+use URI qw();
 
 # {{{ EscapeUTF8
 
@@ -214,9 +215,6 @@ sub StaticFileHeaders {
 
 package HTML::Mason::Commands;
 
-use strict;
-use warnings;
-
 use vars qw/$r $m %session/;
 
 
@@ -349,6 +347,10 @@ sub CreateTicket {
         Type            => $ARGS{'Type'} || 'ticket',
         Queue           => $ARGS{'Queue'},
         Owner           => $ARGS{'Owner'},
+        # note: name change
+        Requestor       => $ARGS{'Requestors'},
+        Cc              => $ARGS{'Cc'},
+        AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
@@ -362,22 +364,11 @@ sub CreateTicket {
     );
 
     my @temp_squelch;
-    foreach my $type (qw(Requestors Cc AdminCc)) {
-        my @tmp = Mail::Address->parse( $ARGS{ $type } );
-        push @temp_squelch, map $_->address, @tmp
+    foreach my $type (qw(Requestor Cc AdminCc)) {
+        push @temp_squelch, map $_->address, Mail::Address->parse( $create_args{ $type } )
             if grep $_ eq $type, @{ $ARGS{'SkipNotification'} || [] };
 
-        $create_args{ $type } = [
-            grep $_, map {
-                my $user = RT::User->new( $RT::SystemUser );
-                $user->LoadOrCreateByEmail( $_ );
-                # convert to ids to avoid work later
-                $user->id;
-            } @tmp
-        ];
     }
-    # XXX: workaround for name conflict :(
-    $create_args{'Requestor'} = delete $create_args{'Requestors'};
 
     if ( @temp_squelch ) {
         require RT::Action::SendEmail;
@@ -426,7 +417,7 @@ sub CreateTicket {
             } else {
                 @values = split /\r*\n/, $ARGS{ $arg } || '';
             }
-            @values = grep $_ ne '',
+            @values = grep length,
                 map {
                     s/\r+\n/\n/g;
                     s/^\s+//;
@@ -455,7 +446,7 @@ sub CreateTicket {
     }
  
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
-    unless ( $id && $Trans ) {
+    unless ( $id ) {
         Abort($ErrMsg);
     }
 
@@ -616,24 +607,19 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    if ( not  $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'}) {
+    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            if ( $key =~ /^Update(Cc|Bcc)-(.*)$/ ) {
-                my $var   = ucfirst($1).'MessageTo';
-                my $value = $2;
-                {
-                    if ( $args{$var} ) {
-                        $message_args{$var} .= ", $value";
-                    } else {
-                        $message_args{$var} = $value;
-                    }
-                }
-            }
+            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
+            my $var   = ucfirst($1).'MessageTo';
+            my $value = $2;
+            if ( $message_args{ $var } ) {
+                $message_args{ $var } .= ", $value";
+            } else {
+                $message_args{ $var } = $value;
+            }
         }
     }
-
-
 
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
@@ -1274,7 +1260,8 @@ sub _ProcessObjectCustomFieldUpdates {
         # to fake it
         if ( $arg eq 'Values-Magic' ) {
             # We don't care about the magic, if there's really a values element;
-            next if $args{'ARGS'}->{'Value'} || $args{'ARGS'}->{'Values'};
+            next if defined $args{'ARGS'}->{'Value'} && length $args{'ARGS'}->{'Value'};
+            next if defined $args{'ARGS'}->{'Values'} && length $args{'ARGS'}->{'Values'};
 
             # "Empty" values does not mean anything for Image and Binary fields
             next if $cf_type =~ /^(?:Image|Binary)$/;
@@ -1289,9 +1276,10 @@ sub _ProcessObjectCustomFieldUpdates {
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
         } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{ $arg } || '';
+            @values = split /\r*\n/, $args{'ARGS'}->{ $arg }
+                if defined $args{'ARGS'}->{ $arg };
         }
-        @values = grep $_ ne '',
+        @values = grep length,
             map {
                 s/\r+\n/\n/g;
                 s/^\s+//;
@@ -1340,24 +1328,26 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value ( @values ) {
-                # build up a hash of values that the new set has
-                $values_hash{$value} = 1;
-                next if $cf_values->HasEntry( $value );
+                if ( my $entry = $cf_values->HasEntry( $value ) ) {
+                    $values_hash{ $entry->id } = 1;
+                    next;
+                }
 
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf,
                     Value => $value
                 );
                 push ( @results, $msg );
+                $values_hash{ $val } = 1 if $val;
             }
 
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {
-                next if $values_hash{ $cf_value->Content };
+                next if $values_hash{ $cf_value->id };
 
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
                     Field => $cf,
-                    Value => $cf_value->Content
+                    ValueId => $cf_value->id
                 );
                 push ( @results, $msg);
             }
@@ -1652,6 +1642,23 @@ sub _UploadedFile {
     };
 }
 
+sub GetColumnMapEntry {
+    my %args = ( Map => {}, Name => '', Attribute => undef, @_ );
+    # deal with the simplest thing first
+    if ( $args{'Map'}{ $args{'Name'} } ) {
+        return $args{'Map'}{ $args{'Name'} }{ $args{'Attribute'} };
+    }
+    # complex things
+    elsif ( my ($mainkey, $subkey) = $args{'Name'} =~ /^(.*?)\.{(.+)}$/ ) {
+        return undef unless $args{'Map'}->{ $mainkey };
+        return $args{'Map'}{ $mainkey }{ $args{'Attribute'} }
+            unless ref $args{'Map'}{ $mainkey }{ $args{'Attribute'} } eq 'CODE';
+
+        return sub { $args{'Map'}{ $mainkey }{ $args{'Attribute'} }->( @_, $subkey ) };
+    }
+    return undef;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.
@@ -1672,6 +1679,7 @@ container object and the search id.
 
 sub _parse_saved_search {
     my $spec = shift;
+    return unless $spec;
     if ($spec  !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         return;
     }

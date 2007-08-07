@@ -45,10 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($actions[0] ) {
 <b><%loc('Results')%></b><br />
 % foreach my $action (@actions) {
-% next unless ($action);
 % my @item = @$action;
 % if ($item[1] < 0) {
 <font color="red"> 
@@ -59,9 +57,9 @@
 % }
 % }
 <br />
-% }
 <%init>
-@actions = grep (/./,@actions);
+@actions = map ref $_? $_: [$_, 0], grep defined && length, @actions;
+return unless @actions;
 </%init>
 <%ARGS>
 @actions => undef

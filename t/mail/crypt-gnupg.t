@@ -1,11 +1,12 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
 use Test::More;
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 plan tests => 94;
-use RT::Test 'nodata';
+use RT::Test nodata => 1;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );

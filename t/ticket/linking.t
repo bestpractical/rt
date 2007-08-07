@@ -66,7 +66,7 @@ END
 my $Scrips = RT::Scrips->new( $RT::SystemUser );
 $Scrips->UnLimit;
 while ( my $Scrip = $Scrips->Next ) {
-    $Scrip->Delete if $Scrip->Description =~ /Add or Delete Link \d+/;
+    $Scrip->Delete if $Scrip->Description and $Scrip->Description =~ /Add or Delete Link \d+/;
 }
 
 
@@ -224,8 +224,8 @@ is(link_count($filename), 1, "scrips ok");
 my $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
 is( $transactions->Count, 1, "Transaction found in other ticket" );
-ok( $transactions->First->Field eq 'ReferredToBy');
-ok( $transactions->First->NewValue eq $ticket->URI );
+is( $transactions->First->Field , 'ReferredToBy');
+is( $transactions->First->NewValue , $ticket->URI );
 
 ($id,$msg) = $ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
@@ -233,8 +233,8 @@ is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'DeleteLink' );
 is( $transactions->Count, 1, "Transaction found in other ticket" );
-ok( $transactions->First->Field eq 'ReferredToBy');
-ok( $transactions->First->OldValue eq $ticket->URI );
+is( $transactions->First->Field , 'ReferredToBy');
+is( $transactions->First->OldValue , $ticket->URI );
 
 RT->Config->Set( LinkTransactionsRun1Scrip => 0 );
 

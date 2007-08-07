@@ -64,5 +64,5 @@ $UserObj->Load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("History of the user [_1]", $UserObj->Name);
 </%INIT>
 <%ARGS>
-$id => undef
+$id => ''
 </%ARGS>

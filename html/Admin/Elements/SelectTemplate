@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 <option value="" 
-<% $Default eq 'none' && 'SELECTED' %>
+<% defined($Default) && $Default eq 'none' && 'SELECTED' %>
 >-</option>
 %while  (my $Template = $PrimaryTemplates->Next) {
 <option value="<%$Template->Id%>"
@@ -57,7 +57,7 @@
 %}
 %while  (my $Template = $OtherTemplates->Next) {
 <option value="<%$Template->Id%>"
-<% ($Template->Id == $Default)  && 'SELECTED'%>
+<% defined($Default) && ($Template->Id == $Default)  && 'SELECTED'%>
 ><&|/l, loc($Template->Name) &>Global template: [_1]</&>
 </option>
 %}

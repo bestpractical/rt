@@ -50,6 +50,8 @@
     Ticket => $TicketObj, 
     Title  => $Title,
 &>
+
+<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">

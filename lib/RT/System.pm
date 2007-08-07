@@ -99,9 +99,13 @@ foreach my $right ( keys %{$RIGHTS} ) {
 
 =head2 AvailableRights
 
-Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
+Returns a hash of available rights for this object.
+The keys are the right names and the values are a
+description of what the rights do.
 
-
+This method as well returns rights of other RT objects,
+like L<RT::Queue> or L<RT::Group>. To allow users to apply
+those rights globally.
 
 =cut
 
@@ -112,7 +116,7 @@ sub AvailableRights {
     my $group = RT::Group->new($RT::SystemUser);
     my $cf    = RT::CustomField->new($RT::SystemUser);
 
-    my $qr =$queue->AvailableRights();
+    my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
     my $cr = $cf->AvailableRights();
 

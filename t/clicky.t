@@ -9,8 +9,7 @@ use Test::More;
 my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
 if ( keys %clicky ) {
     plan 'no_plan';
-}
-else {
+} else {
     plan skip_all => 'No active Make Clicky actions';
 }
 
@@ -45,12 +44,8 @@ my ($id) = $ticket->Create(
 ok($id, "We created a ticket #$id");
 ok($ticket->Transactions->First->Content, "Has some content");
 
-use constant BaseURL => "http://localhost:".RT->Config->Get('WebPort').RT->Config->Get('WebPath')."/";
-
-$m->get_ok( BaseURL."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
-
-$m->get_ok( BaseURL."Ticket/Display.html?id=$id" );
+ok $m->login, 'logged in';
+ok $m->goto_ticket($id), 'opened diplay page of the ticket';
 
 SKIP: {
     skip "httpurl action disabled", 1 unless $clicky{'httpurl'};

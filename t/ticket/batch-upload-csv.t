@@ -35,7 +35,7 @@ my @results = $action->CreateByTemplate();
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL ("Queue = '". $QUEUE."'");
-$tix->OrderByCols({ Field => 'id',  ORDER => 'ASC' });
+$tix->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 is($tix->Count, 2, '2 tickets');
 
 my $first = $tix->First();

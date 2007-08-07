@@ -1,3 +1,8 @@
+
+use strict;
+use warnings;
+
+use RT::Test nodata => 1;
 use Test::More tests => 32;
 
 require_ok("RT");

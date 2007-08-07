@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 8;
 use RT;
 use RT::Test;
 
@@ -21,7 +24,7 @@ ok (require RT::CurrentUser);
 
 ok (my $cu = RT::CurrentUser->new('root'));
 ok (my $lh = $cu->LanguageHandle('en-us'));
-ok ($lh != undef);
+isnt ($lh, undef, '$lh is defined');
 ok ($lh->isa('Locale::Maketext'));
 is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
 SKIP: {

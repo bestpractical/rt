@@ -4,7 +4,7 @@
 % if (0) {
 %# -->
 <html><head>
-<meta http-equiv="refresh" content="3; url=http://bestpractical.com/rt/rt-broken-install.html">
+<meta http-equiv="refresh" content="30; url=http://bestpractical.com/rt/rt-broken-install.html">
 <title>Almost there!</title></head>
 <body>
 
@@ -17,7 +17,7 @@ You appear to have installed RT's web interface correctly, but haven't yet confi
 server to "run" the RT server which powers the web interface.
 
 The next step is to edit your webserver's configuration file to instruct it to use
-RT's <strong>mod_perl</strong>, <strong>fastcgi</strong> or <strong>speedycgi</strong> handler.
+RT's <strong>mod_perl</strong>, <strong>FastCGI</strong> or <strong>SpeedyCGI</strong> handler.
 
 If you need commercial support, please contact us at sales@bestpractical.com.
 
@@ -96,8 +96,7 @@ if ( $ARGS{'QuickCreate'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    $m->redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
-    $m->abort;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {

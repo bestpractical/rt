@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 16;
 use RT;
 use RT::Test;
 
@@ -12,7 +15,7 @@ ok (require RT::Tickets);
 ok( my $testtickets = RT::Tickets->new( $RT::SystemUser ) );
 ok( $testtickets->LimitStatus( VALUE => 'deleted' ) );
 # Should be zero until 'allow_deleted_search'
-ok( $testtickets->Count == 0 );
+is( $testtickets->Count , 0 );
 
 
     undef $main::_STDOUT_;

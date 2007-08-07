@@ -122,7 +122,9 @@ sub Parse {
         unless ($current && $want & $current) {
             my $tmp = substr($string, 0, pos($string)- length($match));
             $tmp .= '>'. $match .'<--here'. substr($string, pos($string));
-            die "Wrong query, expecting a ", _BitmaskToString($want), " in '$tmp'";
+            my $msg = "Wrong query, expecting a ". _BitmaskToString($want) ." in '$tmp'";
+            return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
+            die $msg;
         }
 
         # State Machine:
@@ -170,20 +172,26 @@ sub Parse {
             $want = AGGREG;
             $want |= CLOSE_PAREN if $depth;
         } else {
-            die "Query parser is lost";
+            my $msg = "Query parser is lost";
+            return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
+            die $msg;
         }
 
         $last = $current;
     } # while
 
     unless( !$last || $last & (CLOSE_PAREN | VALUE) ) {
-        die "Incomplete query, last element (",
-            _BitmaskToString($last),
-            ") is not CLOSE_PAREN or VALUE in '$string'";
+        my $msg = "Incomplete query, last element ("
+            . _BitmaskToString($last)
+            . ") is not CLOSE_PAREN or VALUE in '$string'";
+        return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
+        die $msg;
     }
 
     if( $depth ) {
-        die "Incomplete query, $depth paren(s) isn't closed in '$string'";
+        my $msg = "Incomplete query, $depth paren(s) isn't closed in '$string'";
+        return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
+        die $msg;
     }
 }
 

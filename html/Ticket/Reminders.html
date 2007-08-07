@@ -50,6 +50,9 @@
     Ticket => $Ticket, 
     current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
     Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
+    
+<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
+    
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),
                        title_class=> 'inverse',

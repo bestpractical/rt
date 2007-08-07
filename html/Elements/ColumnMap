@@ -92,18 +92,7 @@ $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
 my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
-return $class_map if $class_map;
-
-# deal with the simple things from the generic map
-if ( $COLUMN_MAP->{$Name} ) {
-    return ( $COLUMN_MAP->{$Name}->{$Attr} );
-}
-# complex things
-elsif ( (my ($mainkey, $subkey) = $Name =~ /^(.*?)\.{(.+)}$/) && $COLUMN_MAP->{$1} ) {
-    return $COLUMN_MAP->{$mainkey}->{$Attr}
-        unless ref $COLUMN_MAP->{$mainkey}->{$Attr} eq 'CODE';
-
-    return sub { $COLUMN_MAP->{$mainkey}->{$Attr}->( @_, $subkey ) };
-}
+return $class_map if defined $class_map;
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 
 </%INIT>

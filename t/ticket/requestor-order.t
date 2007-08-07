@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict; use warnings;
 
-use Test::More qw/no_plan/;
+use Test::More;
+plan tests => 58;
 use_ok('RT');
 use RT::Test;
 
@@ -139,5 +140,6 @@ TODO: {
     is(@mails, 30, "found thirty tickets");
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
+RT::Test->mailsent_ok(25);
 
 # vim:ft=perl:

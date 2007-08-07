@@ -50,8 +50,8 @@ my ($valid, @res) = (1, ());
 $CustomFields->GotoFirstItem;
 while ( my $CF = $CustomFields->Next ) {
     my $field = $NamePrefix . $CF->Id . "-Value";
-    my $value;
 
+    my $value;
     if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
         $value = $ARGSRef->{"${field}s"};
 
@@ -61,14 +61,34 @@ while ( my $CF = $CustomFields->Next ) {
     else {
         $value = $ARGSRef->{$field};
     }
-
     $m->notes(('Field-' . $CF->Id) => $value);
-    next if $CF->MatchPattern($value);
 
-    my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
-    $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-    push @res, $msg;
-    $valid = 0;
+    my @values = ();
+    if ( ref $value eq 'ARRAY' ) {
+        @values = @$value;
+    } elsif ( $CF->Type =~ /text/i ) {
+        @values = ($value);
+    } else {
+        @values = split /\r*\n/, $value;
+    }
+    @values = grep $_ ne '',
+        map {
+            s/\r+\n/\n/g;
+            s/^\s+//;
+            s/\s+$//;
+            $_;
+        }
+        grep defined, @values;
+    @values = ('') unless @values;
+
+    foreach my $value( @values ) {
+        next if $CF->MatchPattern($value);
+
+        my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
+        $m->notes( ('InvalidField-' . $CF->Id) => $msg );
+        push @res, $msg;
+        $valid = 0;
+    }
 }
 $m->notes('ValidFields', $valid);
 return wantarray? ($valid, @res): $valid;

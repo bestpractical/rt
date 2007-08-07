@@ -68,6 +68,13 @@ our $QUEUE_COLUMN_MAP = {
     Address  => {
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
     },
+
+    (map {
+        my $value = RT->Config->Get($_);
+        $_ => { value => sub { return \$value } };
+    
+    } qw(WebPath WebBaseURL WebURL)),
+
 };
 foreach my $col(qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
     $QUEUE_COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
@@ -85,6 +92,6 @@ our $ColumnMap = sub {
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $QUEUE_COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return $ColumnMap->($Name, $Attr);
+return GetColumnMapEntry( Map => $QUEUE_COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%INIT>
 

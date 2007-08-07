@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 28;
 use RT;
 use RT::Test;
 
@@ -55,8 +58,8 @@ ok($g->HasMember($u->PrincipalObj),"G has member u");
 my $groups = RT::Groups->new($RT::SystemUser);
 $groups->LimitToUserDefinedGroups();
 $groups->WithMember(PrincipalId => $u->id);
-ok ($groups->Count == 1,"found the 1 group - " . $groups->Count);
-ok ($groups->First->Id == $g->Id, "it's the right one");
+is ($groups->Count , 1,"found the 1 group - " . $groups->Count);
+is ($groups->First->Id , $g->Id, "it's the right one");
 
 
     undef $main::_STDOUT_;
@@ -66,6 +69,7 @@ ok ($groups->First->Id == $g->Id, "it's the right one");
 {
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
+    no warnings qw/redefine once/;
 
 my $q = RT::Queue->new($RT::SystemUser);
 my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');
@@ -104,7 +108,7 @@ bless $RTxSysObj, 'RTx::System';
 *RTx::System::id = *RTx::System::Id;
 my $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System', ObjectId  => 1);
 ok ($id, "ACL for RTxSysObj created");
 
@@ -127,7 +131,7 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj using EquivObjects");
 
 $ace = RT::Record->new($RT::SystemUser);
 $ace->Table('ACL');
-$ace->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+$ace->_BuildTableAttributes unless ($RT::Record::_TABLE_ATTR->{ref($ace)});
 ($id, $msg) = $ace->Create( PrincipalId => $RTxGroup->id, PrincipalType => 'Group', RightName => 'RTxGroupRight', ObjectType => 'RTx::System::Record', ObjectId  => 5 );
 ok ($id, "ACL for RTxObj created");
 

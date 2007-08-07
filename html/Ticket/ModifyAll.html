@@ -51,6 +51,7 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->Id, 
     Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
+<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
@@ -189,6 +190,10 @@ push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
 push @results, @cf_results;
+
+# undef so that TransactionBatch scrips run and update the ticket
+$Ticket = undef;
+$Ticket = LoadTicket($id);
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.

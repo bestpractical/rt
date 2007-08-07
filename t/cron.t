@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More qw/no_plan/;
+use Test::More; 
+plan tests => 18;
 
 use RT;
 use RT::Test;

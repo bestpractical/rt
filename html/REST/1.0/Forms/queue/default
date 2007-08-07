@@ -68,7 +68,7 @@ if ($id ne 'new') {
     }
 }
 else {
-    if (%data == 0) {
+    if (keys %data == 0) {
         return [
             "# Required: Name",
             [ "id", @fields ],
@@ -112,7 +112,7 @@ else {
         delete $data{id};
         $id = $queue->Id;
         push(@comments, "# Queue $id created.");
-        goto DONE if %data == 0;
+        goto DONE if keys %data == 0;
     }
 }
 

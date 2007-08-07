@@ -1,5 +1,8 @@
 
-use Test::More qw/no_plan/;
+use strict;
+use warnings;
+use Test::More; 
+plan tests => 7;
 use RT;
 use RT::Test;
 
@@ -32,7 +35,7 @@ my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
                                     );
 ok($tv, $tm);
 
-ok ($ticket->Priority == '87', "Ticket priority is set right");
+is ($ticket->Priority , '87', "Ticket priority is set right");
 
 
 my $ticket2 = RT::Ticket->new($RT::SystemUser);
@@ -41,7 +44,7 @@ my ($t2v,$t2tv,$t2m) = $ticket2->Create(Queue => $q->Id,
                                     );
 ok($t2v, $t2m);
 
-ok ($ticket2->Priority != '87', "Ticket priority is set right");
+isnt ($ticket2->Priority , '87', "Ticket priority is set right");
 
 
 

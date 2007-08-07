@@ -1471,14 +1471,14 @@ sub CustomFieldLookupType {
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
-VALUE should be a string.
-FIELD can be a CustomField object OR a CustomField ID.
+VALUE should be a string. FIELD can be any identifier of a CustomField
+supported by L</LoadCustomFieldByIdentifier> method.
 
-
-Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
-deletes the old value. 
+Adds VALUE as a value of CustomField FIELD. If this is a single-value custom field,
+deletes the old value.
 If VALUE is not a valid value for the custom field, returns 
-(0, 'Error message' ) otherwise, returns (1, 'Success Message')
+(0, 'Error message' ) otherwise, returns ($id, 'Success Message') where
+$id is ID of created L<ObjectCustomFieldValue> object.
 
 =cut
 
@@ -1514,6 +1514,12 @@ sub _AddCustomFieldValue {
             )
         );
     }
+
+    # empty string is not correct value of any CF, so undef it
+    foreach ( qw(Value LargeContent) ) {
+        $args{ $_ } = undef if defined $args{ $_ } && !length $args{ $_ };
+    }
+
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
         return ( 0, $self->loc("Invalid value for custom field") );
     }
@@ -1557,8 +1563,26 @@ sub _AddCustomFieldValue {
         my ( $old_value, $old_content );
         if ( $old_value = $values->First ) {
             $old_content = $old_value->Content;
-            return (1) if ( $old_content || '' ) eq ( $args{'Value'} || '' ) &&
-                          ( $old_value->LargeContent || '' ) eq ( $args{'LargeContent'} || '' );
+            $old_content = undef if defined $old_content && !length $old_content;
+
+            my $is_the_same = 1;
+            if ( defined $args{'Value'} ) {
+                $is_the_same = 0 unless defined $old_content
+                    && lc $old_value eq lc $args{'Value'};
+            } else {
+                $is_the_same = 0 if defined $old_content;
+            }
+            if ( $is_the_same ) {
+                my $old_content = $old_value->LargeContent;
+                if ( defined $args{'LargeContent'} ) {
+                    $is_the_same = 0 unless defined $old_content
+                        && $old_content eq $args{'LargeContent'};
+                } else {
+                    $is_the_same = 0 if defined $old_content;
+                }
+            }
+
+            return $old_value->id if $is_the_same;
         }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
@@ -1592,15 +1616,15 @@ sub _AddCustomFieldValue {
         }
 
         my $new_content = $new_value->Content;
-        if ( !defined $old_content || $old_content eq '' ) {
-            return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
+        unless ( defined $old_content && length $old_content ) {
+            return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
-        elsif ( !defined $new_content || $new_content eq '' ) {
-            return ( 1,
+        elsif ( !defined $new_content || !length $new_content ) {
+            return ( $new_value_id,
                 $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
         }
         else {
-            return ( 1, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
+            return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
         }
 
     }
@@ -1628,7 +1652,7 @@ sub _AddCustomFieldValue {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
             }
         }
-        return ( 1, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
+        return ( $new_value_id, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
     }
 }
 
@@ -1766,7 +1790,7 @@ sub LoadCustomFieldByIdentifier {
     } else {
 
         my $cfs = $self->CustomFields($self->CurrentUser);
-        $cfs->Limit(FIELD => 'Name', VALUE => $field);
+        $cfs->Limit(FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0);
         $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
     }
     return $cf;

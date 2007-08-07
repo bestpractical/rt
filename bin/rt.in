@@ -92,7 +92,7 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
 my $name   = '[\w.-]+';
-my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $field  = '(?:[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*)';
 my $label  = '[a-zA-Z0-9@_.+-]+';
 my $labels = "(?:$label,)*$label";
 my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
@@ -1337,17 +1337,29 @@ sub vsplit {
     return \@words;
 }
 
+# WARN: this code is duplicated in lib/RT/Interface/REST.pm
+# change both functions at once
 sub expand_list {
     my ($list) = @_;
-    my ($elt, @elts, %elts);
 
-    foreach $elt (split /,/, $list) {
-        if ($elt =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
-        else                         { push @elts, $elt }
+    my @elts;
+    foreach (split /,/, $list) {
+        push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
-    @elts{@elts}=();
-    return sort {$a<=>$b} keys %elts;
+    return map $_->[0], # schwartzian transform
+        sort {
+            defined $a->[1] && defined $b->[1]?
+                # both numbers
+                $a->[1] <=> $b->[1]
+                :!defined $a->[1] && !defined $b->[1]?
+                    # both letters
+                    $a->[2] cmp $b->[2]
+                    # mix, number must be first
+                    :defined $a->[1]? -1: 1
+        }
+        map [ $_, (defined( /^(\d+)$/ )? $1: undef), lc($_) ],
+        @elts;
 }
 
 sub get_type_argument {

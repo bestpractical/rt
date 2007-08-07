@@ -63,7 +63,7 @@ my $object = $m->dhandler_arg;
 my $name   = qr{[\w.-]+};
 my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 my $label  = '[a-zA-Z0-9@_.+-]+';
-my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
 my $labels = "(?:$label,)*$label";
 
 # We must handle requests such as the following:
@@ -100,20 +100,19 @@ if ($object eq 'show' ||                                # $REST/show
         if (my ($type, $oids, $extra) =
             ($id =~ m#^($name)/($list|$labels)(?:(/.*))?$#o))
         {
+	    $extra ||= '';
+	    my ($attr, $args) = $extra =~ m{^(?:/($name)(?:/(.*))?)?$}o;
+	    my $tids;
+	    if ($attr and $attr eq 'history' and $args) {
+	       	($tids) = $args =~ m#id/(\d.*)#o;
+	    }
+	    # expand transaction and attachment range specifications
+	    # (if applicable)
 	    foreach my $oid (expand_list($oids)) {
-		if ($extra =~ m{^(?:/($name)(?:/(.*))?)?$}o) {
-		    my ($attr, $args) = ($1, $2);
-		    # expand transaction and attachment range specifications
-		    # (if applicable)
-		    my $tids;
-		    if ($attr eq 'history' && $args =~ m#id/(\d.*)#o) {
-			$tids = $1;
-		    }
-		    if ($tids) {
-			push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
-		    } else {
-			push(@objects, "$type/$oid$extra");
-		    }
+		if ($tids) {
+		    push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
+		} else {
+		    push(@objects, "$type/$oid$extra");
 		}
 	    }
 	}
@@ -145,7 +144,7 @@ elsif ($object eq 'edit' ||                             # $REST/edit
             # Look for matching types in the ID, form, and URL.
             $type = exists $k->{type} ? $k->{type} : $utype;
             $type =~ s|^(?:$utype)?|$utype/| if $utype;
-            $type =~ s|/$||;
+            $type =~ s|/$|| if $type;
 
             if (exists $k->{id}) {
                 $id = $k->{id};

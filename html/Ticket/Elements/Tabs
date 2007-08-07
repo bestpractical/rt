@@ -190,8 +190,8 @@ if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
 }
 }
 
-if (   defined $actions->{A} || defined $actions->{B} || defined $actions->{C}
-    && defined $actions->{E} || defined $actions->{F} || defined $actions->{G}) {
+if ( (defined $actions->{A} || defined $actions->{B} || defined $actions->{C})
+    && (defined $actions->{E} || defined $actions->{F} || defined $actions->{G}) ) { 
     
     if    (defined $actions->{C}) { $actions->{C}->{separator} = 1 }
     elsif (defined $actions->{B}) { $actions->{B}->{separator} = 1 }
@@ -235,7 +235,29 @@ if ($args) {
     ($searchtab =~ /^_/) ? $tabs->{"s".$searchtab} = $searchtabs->{$searchtab} : $tabs->{"z_".$searchtab} = $searchtabs->{$searchtab};
   }
 }
+if ($Ticket) {
+	if (my $Lock = $Ticket->Locked()) {
+		if ($Lock->Content->{'User'} == $session{'CurrentUser'}->id) {
+		$actions->{'Lock'} = { 
+						path  => "Ticket/Display.html?Lock=remove&id=" . $Ticket->Id,
+						title => loc('Unlock') 
+						};
+		} else {
+		$actions->{'Lock'} = { 
+						path  => "Ticket/Display.html?Lock=break&id=" . $Ticket->Id,
+						title => loc('Break lock') 
+						};
 
+		}
+	} else {
+		$actions->{'Lock'} = { 
+						path  => "Ticket/Display.html?Lock=add&id=" . $Ticket->Id,
+						title => loc('Lock') 
+						};
+
+
+	}
+}
 
 </%INIT>
 

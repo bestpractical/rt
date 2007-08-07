@@ -133,11 +133,12 @@ sub init_db
 use IPC::Open2;
 sub _init_db
 {
+
+
     foreach ( qw(Type Host Port Name User Password) ) {
         $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
     }
-    my $cmd = 'sbin/rt-setup-database'
-        .' --action init';
+    my $cmd =  "$^X sbin/rt-setup-database --action init";
 
     my ($child_out, $child_in);
     my $pid = open2($child_out, $child_in, $cmd);
