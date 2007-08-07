@@ -1349,7 +1349,7 @@ sub AddWatcher {
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId == ($args{'PrincipalId'} || 0)
        or    lc( $self->CurrentUser->UserObj->EmailAddress )
-          eq lc( RT::User::CanonicalizeEmailAddress(undef, $args{'Email'}) || '' ) )
+          eq lc( RT::User->CanonicalizeEmailAddress( $args{'Email'} ) || '' ) )
     {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -2413,9 +2413,11 @@ sub _RecordNote {
 
     foreach my $type (qw/Cc Bcc/) {
         if ( defined $args{ $type . 'MessageTo' } ) {
-            
-            my $addresses = join(', ', ( map { RT::User::CanonicalizeEmailAddress( undef, $_->address ) } Mail::Address->parse( $args{ $type . 'MessageTo' } ) ));
-                $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+
+            my $addresses = join ', ', (
+                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
+                    Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
+            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
         }
     }
 
