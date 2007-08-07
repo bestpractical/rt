@@ -58,11 +58,6 @@
 
 =head1 METHODS
 
-=begin testing
-
-ok (require RT::Templates);
-
-=end testing
 
 =cut
 

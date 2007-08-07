@@ -67,11 +67,6 @@
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Search::Generic);
-
-=end testing
 
 
 =cut

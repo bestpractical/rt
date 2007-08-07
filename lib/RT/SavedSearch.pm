@@ -61,13 +61,6 @@
 
 =head1 METHODS
 
-=begin testing
-
-use_ok(RT::SavedSearch);
-
-# Real tests are in lib/t/20savedsearch.t
-
-=end testing
 
 =cut
 

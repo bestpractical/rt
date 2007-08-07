@@ -59,11 +59,6 @@ Use the argument passed in as a "Google-style" set of keywords
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Search::Generic);
-
-=end testing
 
 
 =cut

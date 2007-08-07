@@ -59,11 +59,6 @@
 =head1 METHODS
 
 
-=begin testing
-
-ok (require RT::Queues);
-
-=end testing
 
 =cut
 
