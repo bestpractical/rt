@@ -45,67 +45,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-%if ($DefaultValue) {
-<option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
-%}
-%foreach my $User ( @users)  {
-<option <% (defined $Default && $User->Id == $Default) ? "SELECTED" : ''%>
-%if ($ValueAttribute eq 'id') {
-    value="<%$User->id%>"
-%} elsif ($ValueAttribute eq 'Name') {
-    value="<%$User->Name%>"
-%}
-><& /Elements/ShowUser, User => $User &></option>
-%}
-</select>
-<%INIT>
-my @objects;
-my @users;
 
-if ($TicketObj) {
-        @objects = ($TicketObj);
+#quickbar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    
 }
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-	      push( @objects, $queue );
+#quickbar #quick-personal {
+    display: inline;
+    color: #fff;
+    padding: 0.5em 1em 0 0;
+    float: right;
 }
 
-my %user_uniq_hash;
-
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
-
-foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
-                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
-        }
+#quickbar #quick-personal span {
+    font-weight: bold;
 }
 
-@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
-unshift(@users, $RT::Nobody);
+#quickbar #quick-personal :link,
+#quickbar #quick-personal :visited
+{
+    color: #fff;
+    font-weight: bold;
+}
 
+#quickbar #quick-personal :link:hover,
+#quickbar #quick-personal :visited:hover
+{
+    color: black;
+}
 
+#quickbar #topactions {
+    float: right;
+    clear: right;
 
-</%INIT>
+    font-size: 0.9em;
+    padding-right: 1em;
+}
 
-<%ARGS>
-$QueueObj => undef
-$Name => undef
-$Default => 0
-$User => undef
-$TicketObj => undef
-$DefaultValue => 1
-$DefaultLabel => "-"
-$ValueAttribute => 'id'
-$cfqueues => undef
-</%ARGS>
+#quickbar #topactions form {
+    display: inline;
+    margin-left: 1em;
+}
+
+#quickbar #topactions form .button {
+    padding: 0 2px 0 2px;
+    font-size: 1em;
+    margin: 0;
+}
+
+#quickbar #topactions form .field {
+    padding: 1px;
+    font-size: 0.9em;
+}
+
+#quickbar #topactions form input.field {
+    padding: 3px;
+}

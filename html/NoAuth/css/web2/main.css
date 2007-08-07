@@ -45,67 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-%if ($DefaultValue) {
-<option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
-%}
-%foreach my $User ( @users)  {
-<option <% (defined $Default && $User->Id == $Default) ? "SELECTED" : ''%>
-%if ($ValueAttribute eq 'id') {
-    value="<%$User->id%>"
-%} elsif ($ValueAttribute eq 'Name') {
-    value="<%$User->Name%>"
-%}
-><& /Elements/ShowUser, User => $User &></option>
-%}
-</select>
-<%INIT>
-my @objects;
-my @users;
+@import "yui.css";
+@import "misc.css";
+@import "login.css";
+@import "logo.css";
+@import "quickbar.css";
+@import "body.css";
+@import "approvals.css";
+@import "titlebox.css";
+@import "forms.css";
+@import "ticket.css";
+@import "transactions.css";
+@import "nav.css";
+@import "header.css";
+@import "footer.css";
 
-if ($TicketObj) {
-        @objects = ($TicketObj);
-}
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-	      push( @objects, $queue );
-}
-
-my %user_uniq_hash;
-
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
-
-foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
-                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
-        }
-}
-
-@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
-unshift(@users, $RT::Nobody);
-
-
-
-</%INIT>
-
-<%ARGS>
-$QueueObj => undef
-$Name => undef
-$Default => 0
-$User => undef
-$TicketObj => undef
-$DefaultValue => 1
-$DefaultLabel => "-"
-$ValueAttribute => 'id'
-$cfqueues => undef
-</%ARGS>

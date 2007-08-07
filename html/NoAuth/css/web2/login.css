@@ -45,67 +45,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-%if ($DefaultValue) {
-<option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
-%}
-%foreach my $User ( @users)  {
-<option <% (defined $Default && $User->Id == $Default) ? "SELECTED" : ''%>
-%if ($ValueAttribute eq 'id') {
-    value="<%$User->id%>"
-%} elsif ($ValueAttribute eq 'Name') {
-    value="<%$User->Name%>"
-%}
-><& /Elements/ShowUser, User => $User &></option>
-%}
-</select>
-<%INIT>
-my @objects;
-my @users;
-
-if ($TicketObj) {
-        @objects = ($TicketObj);
-}
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-	      push( @objects, $queue );
+#login-box {
+    width: 50%;
+    margin: 0 auto 4em auto;
 }
 
-my %user_uniq_hash;
+%# More rules only IE will recognize (but are still valid!) to correct for
+%# IE's incorrect handling of auto margins and the W3C defined behavior.
+%# text-align will affect a block element in IE, therefore centering it, like
+%# left and right auto margins *should*
 
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
 
-foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
-                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
-        }
+#login-box {
+
+    padding-top: 4em;
+
 }
 
-@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
-unshift(@users, $RT::Nobody);
+/*
+
+* html #login-box {
+    text-align: center;
+}
 
 
 
-</%INIT>
+%# ... and align the text back the way it should be
+* html #login-box .titlebox {
+    text-align: left;
+}
 
-<%ARGS>
-$QueueObj => undef
-$Name => undef
-$Default => 0
-$User => undef
-$TicketObj => undef
-$DefaultValue => 1
-$DefaultLabel => "-"
-$ValueAttribute => 'id'
-$cfqueues => undef
-</%ARGS>
+#login-box .input-row {
+    padding: 0.5em;
+}
+
+#login-box .input-row .label {
+    width: 8em;
+    float: left;
+    text-align: right;
+    padding: 0.2em 1em 0 0;
+}
+
+#login-box .input-row .input {
+    float: left;
+}
+
+#login-box .button-row {
+    clear: both;
+    padding: 0.5em;
+    float: right;
+}
+
+*/

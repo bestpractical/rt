@@ -45,67 +45,99 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-%if ($DefaultValue) {
-<option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
-%}
-%foreach my $User ( @users)  {
-<option <% (defined $Default && $User->Id == $Default) ? "SELECTED" : ''%>
-%if ($ValueAttribute eq 'id') {
-    value="<%$User->id%>"
-%} elsif ($ValueAttribute eq 'Name') {
-    value="<%$User->Name%>"
-%}
-><& /Elements/ShowUser, User => $User &></option>
-%}
-</select>
-<%INIT>
-my @objects;
-my @users;
-
-if ($TicketObj) {
-        @objects = ($TicketObj);
-}
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-	      push( @objects, $queue );
+#nav {
+    float: left;
+    clear: both;
+    height: 4em;
+    width: 100%;
+    background: #999;
+    padding-top: 1em;
 }
 
-my %user_uniq_hash;
-
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
-
-foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
-                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
-        }
+#nav ul {
+    float: left;
+    clear: left;
+    color: #eee;
+    font-weight: bold;
+    
+    margin: 0;
+    padding: 0;
+     
 }
 
-@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
-unshift(@users, $RT::Nobody);
+#nav li ul {
+}
+
+/*
+%# We need the extra padding above for browsers where we display the arrows
+%# but those don't work in IE so we don't want as much spacing
+%# 
+%# IE wrongly matches the selector below even though there isn't an element
+%# above <html> in the doc tree
+*/
+* html #nav li ul {
+    margin-top: 0.25em;
+}
+
+#nav li {
+    display: inline;
+    margin-bottom: 1em;
+    padding: 0.2em 0 0.4em 0;
+}
+
+
+#nav ul div div.wrapper {
+    text-align: left;
+    padding: 0.2em 1em 0.4em 0;
+    margin-left:0;
+}
+
+
+#nav :link,
+#nav :visited
+{
+    color: #ececec;
+    text-decoration: none;
+}
+
+#nav :link.selected,
+#nav :visited.selected,
+#nav :link:hover,
+#nav :visited:hover
+{
+    color: #fc6; /*#ff6;*/
+}
+
+#nav :link.selected,
+#nav :visited.selected
+{
+    text-decoration: underline;
+}
 
 
 
-</%INIT>
 
-<%ARGS>
-$QueueObj => undef
-$Name => undef
-$Default => 0
-$User => undef
-$TicketObj => undef
-$DefaultValue => 1
-$DefaultLabel => "-"
-$ValueAttribute => 'id'
-$cfqueues => undef
-</%ARGS>
+#header #page-menu {
+    width: 100%;
+    height: 3em;
+    margin-top: -3.5em;
+    text-align: left;
+    padding-right: 0em;
+    float: left;
+    clear: both;
+    background: #999;
+}
+
+#header ul li {
+    display: inline;
+}
+
+
+
+#actions-menu  div div div{
+    position: relative;
+    right: 0;
+    top: -2em;
+    float: right;
+    margin-right: 2em;
+}

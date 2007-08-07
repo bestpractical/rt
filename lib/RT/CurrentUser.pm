@@ -51,15 +51,36 @@
 
 =head1 SYNOPSIS
 
-  use RT::CurrentUser
+    use RT::CurrentUser;
+
+    # laod
+    my $current_user = new RT::CurrentUser;
+    $current_user->Load(...);
+    # or
+    my $current_user = RT::CurrentUser->new( $user_obj );
+    # or
+    my $current_user = RT::CurrentUser->new( $address || $name || $id );
+
+    # manipulation
+    $current_user->UserObj->SetName('new_name');
 
 
 =head1 DESCRIPTION
 
+B<Read-only> subclass of L<RT::User> class. Used to define the current
+user. You should pass an instance of this class to constructors of
+many RT classes, then the instance used to check ACLs and localize
+strings.
 
 =head1 METHODS
 
+See also L<RT::User> for a list of methods this class has.
 
+=head2 new
+
+Returns new CurrentUser object. Unlike all other classes of RT it takes
+either subclass of C<RT::User> class object or scalar value that is
+passed to Load method.
 
 =cut
 
@@ -67,12 +88,11 @@
 package RT::CurrentUser;
 
 use RT::I18N;
-use RT::User;
 
 use strict;
-use base qw/RT::User/;
+use warnings;
 
-# {{{ sub _Init 
+use base qw/RT::User/;
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
@@ -101,31 +121,36 @@ sub _Init {
     $self->_BuildTableAttributes;
 
 }
-# }}}
 
-# {{{ sub Create
+=head2 Create, Delete and Set*
+
+As stated above it's a subclass of L<RT::User>, but this class is read-only
+and calls to these methods are illegal. Return 'permission denied' message
+and log an error.
+
+=cut
 
 sub Create {
     my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
-
-# }}}
-
-# {{{ sub Delete
 
 sub Delete {
     my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
-# }}}
-
-# {{{ sub UserObj
+sub _Set {
+    my $self = shift;
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
+    return (0, $self->loc('Permission Denied'));
+}
 
 =head2 UserObj
 
-Returns the RT::User object associated with this CurrentUser object.
+Returns the L<RT::User> object associated with this CurrentUser object.
 
 =cut
 
@@ -140,9 +165,6 @@ sub UserObj {
     }
     return $user;
 }
-# }}}
-
-# {{{ sub _Accessible 
 
 sub _CoreAccessible  {
      {
@@ -155,9 +177,6 @@ sub _CoreAccessible  {
      };
   
 }
-# }}}
-
-# {{{ sub LoadByGecos
 
 =head2 LoadByGecos
 
@@ -170,9 +189,6 @@ sub LoadByGecos  {
     my $self = shift;
     return $self->LoadByCol( "Gecos", shift );
 }
-# }}}
-
-# {{{ sub LoadByName
 
 =head2 LoadByName
 
@@ -185,15 +201,11 @@ sub LoadByName {
     my $self = shift;
     return $self->LoadByCol( "Name", shift );
 }
-# }}}
-
-# {{{ Localization
 
 =head2 LanguageHandle
 
 Returns this current user's langauge handle. Should take a language
 specification. but currently doesn't
-
 
 =cut 
 
@@ -244,12 +256,10 @@ sub loc_fuzzy {
 
     return $self->LanguageHandle->maketext_fuzzy( @_ );
 }
-# }}}
-
 
 =head2 CurrentUser
 
-Return  the current currentuser object
+Return the current currentuser object
 
 =cut
 
@@ -298,9 +308,6 @@ sub Authenticate {
 
     return ($password eq $auth_digest);
 }
-
-# }}}
-
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});

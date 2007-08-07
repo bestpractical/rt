@@ -56,10 +56,11 @@
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
 
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
+<div class="summary">
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
-
+</div>
 <br />
 
 % $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );

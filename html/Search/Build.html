@@ -78,29 +78,29 @@
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 
-<table width="100%" border="0" cellpadding="5">
-<tr valign="top"><td class="boxcontainer" rowspan="2" width="65%">
 
-<& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
-<& /Elements/Submit, Caption => loc('Add these terms to your search'), Label => loc('Add'), Name => 'AddClause'&>
-
-</td><td>
-
+<div id="editquery">
 <& Elements/EditQuery,
     %ARGS,
     actions => \@actions,
     optionlist => $optionlist,
     Description => $saved_search{'Description'},
-&>
-<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
+    &>
+</div>
+<div id="editsearches">
+    <& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
+</div>
 
-</td></tr>
-<tr valign="top"><td>
 
-<& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
+<div id="pick-criteria">
+    <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
+</div>
+<& /Elements/Submit,  Label => loc('Add these terms'), Name => 'AddClause'&>
 
-</td></tr>
-<tr><td colspan="2" class="boxcontainer">
+<& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch'&>
+
+
+
 
 <& Elements/DisplayOptions,
     %ARGS, %query,
@@ -110,7 +110,6 @@
 
 <& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
 
-</td></tr></table>
 </form>
 
 <%INIT>

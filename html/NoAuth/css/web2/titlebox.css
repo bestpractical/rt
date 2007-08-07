@@ -1,0 +1,198 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+.titlebox {
+    margin-bottom: 1em;
+}
+
+.titlebox .titlebox-content {
+    margin-top: -1px;
+    background: #fff;
+    /*padding: 1em 2em 0.5em 2em;*/
+    margin: 0;
+    /*margin: 1em 2em 0.5em 2em;*/
+}
+
+
+
+%# TRS: I wish there was a more elegant way to do this... I essentially need to
+%# select all elements X that do NOT have element Y as a descendant... which I can
+%# fake with the child selector of CSS2, but IE is stupid and does not support that.
+
+
+.titlebox {
+    padding:-right 3px;
+    border-bottom: 3px solid #666;
+    border-right: 3px solid #666;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+
+
+
+.titlebox-content th {
+    background-color: #fff;
+    font-size: 80%;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border: 1px solid #aaa;
+    border-top:0;
+
+}
+
+.titlebox-content td {
+    text-align:left;
+
+}
+
+#login-box .titlebox .titlebox-content .button
+{
+}
+
+
+
+
+.titlebox .titlebox-title {
+    position: relative;
+    font-weight: bold;
+    color: #930;
+    font-size: 1.2em;
+    padding: 0.2em;
+    padding-left: 3em;
+    background-color: #ddd;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
+
+.titlebox .titlebox-title .right {
+    position: absolute;
+    top: 0.25em;
+    right: 0.5em; font-size: 0.8em;
+    color: #888;
+}
+
+.titlebox .titlebox-title .right .selected { color: #930; }
+
+#body .titlebox .titlebox-title .right :link,
+#body .titlebox .titlebox-title .right :visited {
+    color: #888;
+}
+
+#body .titlebox .titlebox-title .right :link:hover,
+#body .titlebox .titlebox-title .right :visited:hover {
+    color: #930;
+}
+
+.titlebox .titlebox-title .widget a {
+  display: block;
+  padding-top: 1em;
+  width: 2em;
+
+  background: url(<%RT->Config->Get('WebImagesURL')%>/css/rollup-arrow.gif) no-repeat center center;
+  
+  margin: 0;
+  text-indent: -9999px;
+
+  position: absolute;
+  top: 0.4em;
+  left: 0.75em;
+  float: left;
+
+%# Basically IE5 will see those crazy backslashes and prematurely end the rule.
+%# This allows values for IE 5's broken box model to be set before the hack and
+%# the real values to be set after.  We also set voice-family back to whatever it
+%# would have been on the off chance it's actually used.
+  /* WIN IE5 hack */
+  height: 7px;
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  height: 0;
+  overflow: hidden;
+}
+
+%# IE also doesn't support the child selector ">", so we can use it to set values
+%# that only other browsers will see (in this case, playing nice with Opera, which
+%# also suffers from the backslash hack above.)
+html>body .titlebox .titlebox-title .widget a {
+    height: 0;
+    overflow: hidden;
+}
+
+%# Compensates for IE's bad box model by hiding this rule from other browsers
+* html .titlebox .titlebox-title .widget a {
+    background-position: center 0.3em;
+    left: -3.5em;
+}
+
+.titlebox.rolled-up .titlebox-title .widget a {
+    background-image: url(<%RT->Config->Get('WebImagesURL')%>/css/rolldown-arrow.gif);
+}
+
+#body .titlebox .titlebox-title :link,
+#body .titlebox .titlebox-title :visited
+{
+    color: #930;
+    text-decoration: none;
+}
+
+#body .titlebox .titlebox-title :link:hover,
+#body .titlebox .titlebox-title :visited:hover
+{
+    text-decoration: underline;
+}
+
+.titlebox .titlebox-content hr.clear {
+    display: none;
+    visibility: hidden;
+}
+.titlebox .titlebox-content table{
+    padding-left: 1em;
+}
+

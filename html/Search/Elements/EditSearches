@@ -75,7 +75,7 @@
 <input type="submit" name="SavedSearchSave" value="<%loc('Save')%>" class="button" />
 % }
 <br />
-
+<hr />
 <&|/l&>Load saved search:</&>
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />

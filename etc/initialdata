@@ -438,6 +438,20 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
   }
 }}
     },
+    {  Queue       => 0,
+       Name        => "PasswordChange",    # loc
+       Description =>
+         "Inform user that his password has been reset", # loc
+       Content => q{Subject: [{RT->Config->Get('rtname')}] Password reset
+
+Greetings,
+
+Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->Config->Get('WebURL')}
+
+Your new password is:
+  {$NewPassword}
+}
+    },
 );
 # }}}
 
