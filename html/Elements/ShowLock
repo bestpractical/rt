@@ -28,34 +28,38 @@
 % if ($Duration ||($u->id && $u->id == $session{'CurrentUser'}->id)) {
 <div class="locked-by-you">
 % if(defined $Duration && !$Lock) {
-	<&|/l, $TicketLabel, $ago &>You had [_1] locked for [_2]. It is now unlocked</&>.
+    <&|/l, $TicketLabel, $ago &>You had [_1] locked for [_2]. It is now unlocked</&>.
 % #Do not display time if it is very little time, since such a short time probably 
 % #means the lock was just created.
-% } elsif($ago < 5) {	
-		<&|/l, $TicketLabel &>You have locked [_1]</&>.
-%	if($Unlock && !$Id) {
-		[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
-%	}
-% }	else {
-	<&|/l, $TicketLabel, $ago &>You have had [_1] locked for [_2]</&>.
-% 	if($Unlock) {
-		[<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
-%	}
+% } elsif($ago < 5) {    
+        <&|/l, $TicketLabel &>You have locked [_1]</&>.
+%    if($Unlock && !$Id) {
+        [<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%    }
+% }    else {
+    <&|/l, $TicketLabel, $ago &>You have had [_1] locked for [_2]</&>.
+%     if($Unlock) {
+        [<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%    }
 % }
 
 </div>
 % } else {
-%	return unless $u->Name;
-% 	$TicketLabel = 'This ticket' if $TicketLabel eq 'this ticket';	
+%    return unless $u->Name;
+%     $TicketLabel = 'This ticket' if $TicketLabel eq 'this ticket';    
 <div class="locked">
 <&|/l, $TicketLabel, $u->Name, $ago &>[_1] has been locked by [_2] for [_3]</&>.
 </div>
 %}
 <%INIT>
-$Ticket = LoadTicket($Id) if $Id;
+if ( $Id ) {
+    $Ticket = LoadTicket($Id);
+}
+
 return unless defined $Ticket;
 
-my $Lock = $Ticket->Locked;
+my $Lock = $Ticket->Locked();
+
 $Duration = time - $Lock->Content->{'Timestamp'}
     if $Lock && !defined $Duration;
 return unless defined $Duration;
