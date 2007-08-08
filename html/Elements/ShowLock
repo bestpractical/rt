@@ -56,19 +56,23 @@ if ( $Id ) {
     $Ticket = LoadTicket($Id);
 }
 
-return unless defined $Ticket;
+my $Lock = $Ticket->Locked() if $Ticket;
 
-my $Lock = $Ticket->Locked();
+return unless (defined $Ticket && defined $Lock) || defined $Duration;
 
-$Duration = time - $Lock->Content->{'Timestamp'}
-    if $Lock && !defined $Duration;
-return unless defined $Duration;
+my $ago;
+my $date = RT::Date->new($session{'CurrentUser'});
+
+if(defined $Duration) {
+    $ago = $date->DurationAsString($Duration);
+}
+elsif($Lock) {
+    $ago = $date->DurationAsString(time() - $Lock->Content->{'Timestamp'});
+}
 
 my $u = RT::User->new($session{'CurrentUser'});
 $u->Load($Lock->Content->{'User'}) if $Lock;
 
-my $date = RT::Date->new($session{'CurrentUser'});
-my $ago = $date->DurationAsString($Duration);
 </%INIT>
 <%ARGS>
 $Ticket => undef
