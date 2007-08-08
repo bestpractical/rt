@@ -505,6 +505,13 @@ Set($SuppressInlineTextFiles, undef);
 
 Set($DontSearchFileAttachments, undef);
 
+# GD module RT uses has a builtin font, however that font has no characters
+# for all languages, you can use $ChartFont option to define absolute path to
+# a true type font, however you must have GD libray with support for true type 
+# fonts to use this option
+
+Set($ChartFont, undef);
+
 
 # }}}
 

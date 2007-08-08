@@ -74,14 +74,25 @@ $tix->GroupBy( FIELD => $PrimaryGroupBy );
 my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
 my $chart = $chart_class->new( 600 => 400 );
+
+my $font = $RT::FontForCharts || ['verdana', 'arial', gdMediumBoldFont];
+$chart->set_title_font( $font, 12 ) if $chart->can('set_title_font');
+$chart->set_legend_font( $font, 12 ) if $chart->can('set_legend_font');
+$chart->set_x_label_font( $font, 10 ) if $chart->can('set_x_label_font');
+$chart->set_y_label_font( $font, 10 ) if $chart->can('set_y_label_font');
+$chart->set_label_font( $font, 10 ) if $chart->can('set_label_font');
+$chart->set_x_axis_font( $font, 9 ) if $chart->can('set_x_axis_font');
+$chart->set_y_axis_font( $font, 9 ) if $chart->can('set_y_axis_font');
+$chart->set_values_font( $font, 9 ) if $chart->can('set_values_font');
+$chart->set_value_font( $font, 9 ) if $chart->can('set_value_font');
+
 if ($chart_class eq "GD::Graph::bars") {
     $chart->set(
         x_label => $tix->Label( $PrimaryGroupBy ),
         x_labels_vertical => 1,
-        y_label => 'Tickets',
+        y_label => loc('Tickets'),
         show_values => 1
     );
-    $chart->set_legend_font( ['verdana', 'arial', gdMediumBoldFont], 12);
 }
 
 my %class = (
