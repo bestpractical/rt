@@ -1979,7 +1979,7 @@ sub LimitTimeWorked {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Time worked'),
+            $self->loc('Time Worked'),
             $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
@@ -2004,7 +2004,7 @@ sub LimitTimeLeft {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Time left'),
+            $self->loc('Time Left'),
             $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
