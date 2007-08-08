@@ -245,4 +245,46 @@ sub set_rights {
     return 1;
 }
 
+sub run_mailgate {
+    my $self = shift;
+
+    require RT::Test::Web;
+    my %args = (
+        url     => RT::Test::Web->rt_base_url,
+        message => '',
+        action  => 'correspond',
+        queue   => 'General',
+        @_
+    );
+    my $message = delete $args{'message'};
+
+    my $cmd = $RT::BinPath .'/rt-mailgate';
+    die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
+
+    $cmd .= ' --debug';
+    while( my ($k,$v) = each %args ) {
+        next unless $v;
+        $cmd .= " --$k '$v'";
+    }
+    $cmd .= ' 2>&1';
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+    require IPC::Open2;
+    my ($child_out, $child_in);
+    my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
+
+    if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
+        $message->print( $child_in );
+    } else {
+        print $child_in $message;
+    }
+    close $child_in;
+
+    my $result = do { local $/; <$child_out> };
+    close $child_out;
+    waitpid $pid, 0;
+    return ($?, $result);
+}
+
 1;
