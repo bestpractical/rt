@@ -23,7 +23,7 @@ RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 my ($baseurl, $m) = RT::Test->started_ok;
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
-$user->SetEmailAddress('recipient@example.com');
+$user->SetEmailAddress('ternus@anduril.mit.edu');
 
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
@@ -62,7 +62,7 @@ sub email_ok {
 
     my $tick = get_latest_ticket_ok();
     is( $tick->Subject,
-        "Email $eid",
+        "test signed message",
         "Created the ticket"
     );
 
@@ -80,23 +80,33 @@ sub email_ok {
         );
 
         #XXX: maybe RT will have already decrypted this for us
-        unlike($msg->Content,
-               qr/body text/,
-               'incoming mail did NOT have original body');
+        unlike( $msg->Content,
+                qr/body text/,
+                'incoming mail did NOT have original body'
+        );
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Not encrypted',
             'recorded incoming mail that is not encrypted'
         );
-        like($msg->Content,
-             qr/body text/,
-             'incoming mail had original body');
+        like( $msg->Content || $attachments[0]->Content,
+              qr/This is a test signed message/,
+              'got original content'
+        );
     }
 
     if ($usage =~ /signed/) {
+        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+            'akjhsd',
+            'recorded incoming mail that is signed'
+        );
     }
     else {
+        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+            undef,
+            'recorded incoming mail that is not signed'
+        );
     }
 
     if ($attachment =~ /attachment/) {
