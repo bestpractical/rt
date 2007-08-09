@@ -65,6 +65,52 @@ sub email_ok
     print $mailgate $mail;
     RT::Test->close_mailgate_ok($mailgate);
 
+    my $tick = get_latest_ticket_ok();
+    is( $tick->Subject,
+        "Email $id",
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+
+    if ($usage =~ /encrypted/)
+    {
+        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+            'Success',
+            'recorded incoming mail that is encrypted'
+        );
+        is( $msg->GetHeader('X-RT-Privacy'),
+            'PGP',
+            'recorded incoming mail that is encrypted'
+        );
+    }
+    else
+    {
+        like(
+            $txn->Attachments->First->Headers,
+            qr/^X-RT-Incoming-Encryption: Not encrypted/m,
+            'recorded incoming mail that is not encrypted'
+        );
+        like( $txn->Attachments->First->Content, qr/!!!/);
+    }
+
+    if ($usage =~ /signed/)
+    {
+    }
+    else
+    {
+    }
+
     return 0;
+}
+
+sub get_latest_ticket_ok {
+    my $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    my $tick = $tickets->First();
+    ok( $tick->Id, "found ticket " . $tick->Id );
+    return $tick;
 }
 
