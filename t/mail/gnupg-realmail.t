@@ -8,8 +8,6 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-require "lib/t/utils.pl";
-
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
 RT->Config->Set( LogToScreen => 'debug' );
@@ -46,6 +44,7 @@ sub get_contents {
 
     open my $mailhandle, '<', $file
         or do { diag "Unable to read $file: $!"; return };
+
     my $mail = do { local $/; <$mailhandle> };
     close $mailhandle;
 
@@ -58,7 +57,7 @@ sub email_ok {
     my $mail = get_contents($eid)
         or return 0;
 
-    my ($status, $id) = create_ticket_via_gate($mail);
+    my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "The mail gateway exited normally");
 
     my $tick = get_latest_ticket_ok();
