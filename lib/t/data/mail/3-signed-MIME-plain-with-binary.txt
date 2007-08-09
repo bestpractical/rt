@@ -1,0 +1,60 @@
+From ternus@mit.edu  Thu Aug  9 15:12:45 2007
+Return-Path: <ternus@mit.edu>
+X-Original-To: ternus@localhost
+Delivered-To: ternus@localhost
+Received: by anduril (Postfix, from userid 1000)
+	id 4B08337F34; Thu,  9 Aug 2007 15:12:45 -0400 (EDT)
+Date: Thu, 9 Aug 2007 15:12:45 -0400
+To: ternus@localhost
+Subject: Test Email ID:3
+Message-ID: <20070809191245.GA17126@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oC1+HKm2/end4ao3"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: ternus@mit.edu (Christian Ternus)
+
+
+--oC1+HKm2/end4ao3
+Content-Type: multipart/mixed; boundary="TB36FDmn/VVEgNH/"
+Content-Disposition: inline
+
+
+--TB36FDmn/VVEgNH/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+This is a test email with binary attachment.
+ID:3
+
+--TB36FDmn/VVEgNH/
+Content-Type: image/png
+Content-Disposition: attachment; filename="favicon.png"
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QAAAAAAAD5Q7t/AAAB
+BElEQVR42u1WWw6DMAwz0+5FbzbvZuZk2cfUritpea77wVIRIBQ7dhsBdIQkM8AMMJImyW6d
+BXweyJ7UAMnUvQFGwHp2bizIJfUTUHZO8j/k1pt8lntvchbdH8ndtqyS+Gj3fyVPAtZAkm3N
+ffCyi/chBIQQ3iqs3cQ0TZCERzbhngDocOS4z94wXTCmu2V45LuQW8hsSWpaP8v9sy+2IRZj
+ZTP5ububbp8Az4ly5W6QqJ33YwKSkIYbZVy5uNMFsOJGLaLTBMRC8Yy7bmR/OD8TUB00DvkW
+AcPSB7FIPoji0AGQBtU4jt+Fh1R6Dcc6B2Znv4HTHTiAJkfXv+ILFy5c8PACgtsiPj7qOgAA
+AAAASUVORK5CYII=
+
+--TB36FDmn/VVEgNH/--
+
+--oC1+HKm2/end4ao3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGu2ct0ygDXYSIHxsRAg+VAJ9ntd+atRt3CqgYiadH34uWiqnbQQCgt83B
+atcwaUrFKo7xQqKATVHyRcM=
+=dqJy
+-----END PGP SIGNATURE-----
+
+--oC1+HKm2/end4ao3--
+
