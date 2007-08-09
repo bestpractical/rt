@@ -28,20 +28,16 @@ ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
 my $eid = 0;
-for my $usage (qw/signed encrypted signed&encrypted/)
-{
-    for my $format (qw/MIME inline/)
-    {
-        for my $attachment (qw/plain text-attachment binary-attachment/)
-        {
+for my $usage (qw/signed encrypted signed&encrypted/) {
+    for my $format (qw/MIME inline/) {
+        for my $attachment (qw/plain text-attachment binary-attachment/) {
             my $ok = email_ok(++$eid, $usage, $format, $attachment);
             ok($ok, "$usage, $attachment email with $format key");
         }
     }
 }
 
-sub get_contents
-{
+sub get_contents {
     my $eid = shift;
 
     my $file = glob("lib/t/data/mail/$eid-*");
@@ -56,12 +52,11 @@ sub get_contents
     return $mail;
 }
 
-sub email_ok
-{
+sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
 
-    my $mail = get_contents($eid);
-#        or return 0;
+    my $mail = get_contents($eid)
+        or return 0;
 
     my ($status, $id) = create_ticket_via_gate($mail);
     is ($status >> 8, 0, "The mail gateway exited normally");
@@ -75,8 +70,7 @@ sub email_ok
     my $txn = $tick->Transactions->First;
     my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
 
-    if ($usage =~ /encrypted/)
-    {
+    if ($usage =~ /encrypted/) {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Success',
             'recorded incoming mail that is encrypted'
@@ -91,8 +85,7 @@ sub email_ok
                qr/body text/,
                'incoming mail did NOT have original body');
     }
-    else
-    {
+    else {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Not encrypted',
             'recorded incoming mail that is not encrypted'
@@ -102,23 +95,20 @@ sub email_ok
              'incoming mail had original body');
     }
 
-    if ($usage =~ /signed/)
-    {
+    if ($usage =~ /signed/) {
     }
-    else
-    {
+    else {
     }
 
-    if ($attachment =~ /attachment/)
-    {
+    if ($attachment =~ /attachment/) {
         my $attachment = $attachments[0];
+        my $file = '';
         ok ($attachment->Id, 'loaded attachment object');
         my $acontent = $attachment->Content;
         is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
         # signed messages should sign each attachment too
-        if ($usage =~ /signed/)
-        {
+        if ($usage =~ /signed/) {
             my $sig = $attachments[1];
             ok ($attachment->Id, 'loaded attachment.sig object');
             my $acontent = $attachment->Content;
