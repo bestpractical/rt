@@ -31,7 +31,7 @@
     <&|/l, $TicketLabel, $ago &>You had [_1] locked for [_2]. It is now unlocked</&>.
 % #Do not display time if it is very little time, since such a short time probably 
 % #means the lock was just created.
-% } elsif($ago < 5) {    
+% } elsif($timePassed < 5) {    
         <&|/l, $TicketLabel &>You have locked [_1]</&>.
 %    if($Unlock && !$Id) {
         [<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
@@ -60,15 +60,17 @@ my $Lock = $Ticket->Locked() if $Ticket;
 
 return unless (defined $Ticket && defined $Lock) || defined $Duration;
 
-my $ago;
+my $timePassed;
 my $date = RT::Date->new($session{'CurrentUser'});
 
 if(defined $Duration) {
-    $ago = $date->DurationAsString($Duration);
+    $timePassed = $Duration;
 }
 elsif($Lock) {
-    $ago = $date->DurationAsString(time() - $Lock->Content->{'Timestamp'});
+    $timePassed = time() - $Lock->Content->{'Timestamp'};
 }
+
+my $ago = $date->DurationAsString($timePassed);
 
 my $u = RT::User->new($session{'CurrentUser'});
 $u->Load($Lock->Content->{'User'}) if $Lock;
