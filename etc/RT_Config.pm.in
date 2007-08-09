@@ -35,11 +35,11 @@ Set($rtname , "example.com");
 # token matching and that you should use only "non-capturing" parenthesis
 # grouping. For example:
 #
-# 	Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );
+#     Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );
 #
 # and NOT
 # 
-# 	Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );
+#     Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );
 #
 # This setting would make RT behave exactly as it does without the 
 # setting enabled.
@@ -691,6 +691,20 @@ Set($StrictLinkACL, 1);
 # custom field values from external sources at runtime.
 
 # }}}
+
+
+
+# {{{ Ticket Locking
+#
+# RT can be configured to use advisory locks on tickets, so that a user
+# can be notified if another user is making changes to a particular ticket.
+#
+# Locks have a maximum duration, which can be defined here (in seconds).
+
+Set($LockExpiry, 300);
+
+#}}}
+
 
 
 # {{{ Development Mode
