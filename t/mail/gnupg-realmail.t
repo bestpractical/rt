@@ -8,8 +8,6 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-require "lib/t/utils.pl";
-
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
 RT->Config->Set( LogToScreen => 'debug' );
@@ -27,22 +25,26 @@ ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
-my $eid = 0;
-for my $usage (qw/signed encrypted signed&encrypted/) {
-    for my $format (qw/MIME inline/) {
-        for my $attachment (qw/plain text-attachment binary-attachment/) {
-            my $ok = email_ok(++$eid, $usage, $format, $attachment);
+my $id = 0;
+for my $usage (qw/signed encrypted signed&encrypted/)
+{
+    for my $format (qw/MIME inline/)
+    {
+        for my $attachment (qw/plain text-attachment binary-attachment/)
+        {
+            my $ok = email_ok(++$id, $usage, $format, $attachment);
             ok($ok, "$usage, $attachment email with $format key");
         }
     }
 }
 
-sub get_contents {
-    my $eid = shift;
+sub get_contents
+{
+    my $id = shift;
 
-    my $file = glob("lib/t/data/mail/$eid-*");
+    my $file = glob("lib/t/data/mail/$id-*");
     defined $file
-        or do { diag "Unable to find lib/t/data/mail/$eid-*"; return };
+        or do { diag "Unable to find lib/t/data/mail/$id-*"; return };
 
     open my $mailhandle, '<', $file
         or do { diag "Unable to read $file: $!"; return };
@@ -52,25 +54,28 @@ sub get_contents {
     return $mail;
 }
 
-sub email_ok {
-    my ($eid, $usage, $format, $attachment) = @_;
+sub email_ok
+{
+    my ($id, $usage, $format, $attachment) = @_;
 
-    my $mail = get_contents($eid)
+    my $mail = get_contents($id)
         or return 0;
 
-    my ($status, $id) = create_ticket_via_gate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
+    my $mailgate = RT::Test->open_mailgate_ok($baseurl);
+    print $mailgate $mail;
+    RT::Test->close_mailgate_ok($mailgate);
 
     my $tick = get_latest_ticket_ok();
     is( $tick->Subject,
-        "Email $eid",
+        "Email $id",
         "Created the ticket"
     );
 
     my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
 
-    if ($usage =~ /encrypted/) {
+    if ($usage =~ /encrypted/)
+    {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Success',
             'recorded incoming mail that is encrypted'
@@ -79,40 +84,22 @@ sub email_ok {
             'PGP',
             'recorded incoming mail that is encrypted'
         );
-
-        #XXX: maybe RT will have already decrypted this for us
-        unlike($msg->Content,
-               qr/body text/,
-               'incoming mail did NOT have original body');
     }
-    else {
-        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
-            'Not encrypted',
+    else
+    {
+        like(
+            $txn->Attachments->First->Headers,
+            qr/^X-RT-Incoming-Encryption: Not encrypted/m,
             'recorded incoming mail that is not encrypted'
         );
-        like($msg->Content,
-             qr/body text/,
-             'incoming mail had original body');
+        like( $txn->Attachments->First->Content, qr/!!!/);
     }
 
-    if ($usage =~ /signed/) {
+    if ($usage =~ /signed/)
+    {
     }
-    else {
-    }
-
-    if ($attachment =~ /attachment/) {
-        my $attachment = $attachments[0];
-        my $file = '';
-        ok ($attachment->Id, 'loaded attachment object');
-        my $acontent = $attachment->Content;
-        is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
-
-        # signed messages should sign each attachment too
-        if ($usage =~ /signed/) {
-            my $sig = $attachments[1];
-            ok ($attachment->Id, 'loaded attachment.sig object');
-            my $acontent = $attachment->Content;
-        }
+    else
+    {
     }
 
     return 0;
