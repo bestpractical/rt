@@ -1,13 +1,3 @@
-*** ENVELOPE RECORDS 19FD037F61 ***
-message_size:            1954             219               1               0
-message_arrival_time: Fri Aug 10 16:03:35 2007
-create_time: Fri Aug 10 16:03:35 2007
-named_attribute: rewrite_context=local
-sender_fullname: Christian Ternus
-sender: ternus@mit.edu
-original_recipient: rt-recipient@example.com
-recipient: rt-recipient@example.com
-*** MESSAGE CONTENTS 19FD037F61 ***
 Received: by anduril (Postfix, from userid 1000)
 	id 19FD037F61; Fri, 10 Aug 2007 16:03:35 -0400 (EDT)
 Date: Fri, 10 Aug 2007 16:03:35 -0400
@@ -57,5 +47,3 @@ L51c
 -----END PGP MESSAGE-----
 
 --+nBD6E3TurpgldQp--
-*** HEADER EXTRACTED 19FD037F61 ***
-*** MESSAGE FILE END 19FD037F61 ***
