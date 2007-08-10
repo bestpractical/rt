@@ -106,39 +106,12 @@ diag "no signature of attachment" if $ENV{TEST_VERBOSE};
     my $tick = get_latest_ticket_ok();
 }
 
-diag "revoked key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('revoked-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "expired key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('expired-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "unknown algorithm" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unknown-algorithm');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
 sub get_contents {
     my $pattern = shift;
 
     my $file = glob("lib/t/data/mail/*$pattern*");
     defined $file
-        or do { diag "Unable to find lib/t/data/mail/*$pattern*"; return };
+        or do { diag "Unable to find lib/t/data/mail/*$pattern-*"; return };
 
     open my $mailhandle, '<', $file
         or do { diag "Unable to read $file: $!"; return };
