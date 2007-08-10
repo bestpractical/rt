@@ -48,7 +48,7 @@
 
 package RT::Ticket;
 
-my @Types = qw(Auto Take Hard);
+my @LockTypes = qw(Auto Take Hard);
 
 sub Locked {
     my $ticket = shift;
@@ -56,9 +56,11 @@ sub Locked {
     if($lock) {
         my $duration = time() - $lock->Content->{'Timestamp'};
         my $expiry = RT->Config->Get('LockExpiry');
-        unless($duration < $expiry) {
-            $ticket->DeleteAttribute('RT_Lock');
-            undef $lock;
+        if($expiry) {
+            unless($duration < $expiry) {
+                $ticket->DeleteAttribute('RT_Lock');
+                undef $lock;
+            }
         }
     }
     return $lock;
@@ -73,22 +75,22 @@ sub Lock {
         my $LockType = $lock->Content->{'Type'};
         my $priority;
         my $LockPriority;
-        for(my $i = 0; $i < scalar @Types; $i++) {
-            $priority = $i if (lc $Types[$i]) eq (lc $type);
-            $LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
+        for(my $i = 0; $i < scalar @LockTypes; $i++) {
+            $priority = $i if (lc $LockTypes[$i]) eq (lc $type);
+            $LockPriority = $i if (lc $LockTypes[$i]) eq (lc $LockType);
         }
         return undef if $priority <= $LockPriority;
-    } else {
-        $ticket->Unlock($type);    #Remove any existing locks (because this one has greater priority)
-        $ticket->SetAttribute(
-            Name    => 'RT_Lock',
-            Content => {
-                User      => $ticket->CurrentUser->id,
-                Timestamp => time(),
-                Type => $type
-            }
-        );
     }
+    $ticket->Unlock($type);    #Remove any existing locks (because this one has greater priority)
+    $ticket->SetAttribute(
+        Name    => 'RT_Lock',
+        Content => {
+            User      => $ticket->CurrentUser->id,
+            Timestamp => time(),
+            Type => $type,
+            Ticket => $ticket->id
+        }
+    );
 }
 
 
@@ -97,40 +99,26 @@ sub Unlock {
     my $type = shift || 'Auto';
 
     my $lock = $ticket->RT::Ticket::Locked();
-    return undef unless $lock;
-    return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
+    return (undef, "This ticket was not locked.") unless $lock;
+    return (undef, "You cannot unlock a ticket locked by another user.") unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
     
     my $LockType = $lock->Content->{'Type'};
     my $priority;
     my $LockPriority;
-    for(my $i = 0; $i < scalar @Types; $i++) {
-        $priority = $i if (lc $Types[$i]) eq (lc $type);
-        $LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
+    for(my $i = 0; $i < scalar @LockTypes; $i++) {
+        $priority = $i if (lc $LockTypes[$i]) eq (lc $type);
+        $LockPriority = $i if (lc $LockTypes[$i]) eq (lc $LockType);
     }
-    return undef if $priority < $LockPriority;
+    return (undef, "There is a lock with a higher priority on this ticket.") if $priority < $LockPriority;
+    my $duration = time() - $lock->Content->{'Timestamp'};
     $ticket->DeleteAttribute('RT_Lock');
-    return $lock;
+    return ($duration, "You have unlocked this ticket.");
 }
 
 
 sub BreakLock {
     my $ticket = shift;
-    my $lock = $ticket->RT::Ticket::Locked();
-     return undef unless $lock;
-    $ticket->DeleteAttribute('RT_Lock');
+    return $ticket->DeleteAttribute('RT_Lock');
 }
 
 
-
-sub RemoveUserLocks {
-    my $user = shift;
-
-    return undef unless $user;
-    
-    my $attribs = RT::Attributes->new($user);
-    $attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $user->id(), ENTRYAGGREGATOR => 'AND');
-    my @attributes = $attribs->Named('RT_Lock');
-    foreach my $lock (@attributes) {
-        $lock->Delete();
-    }
-}

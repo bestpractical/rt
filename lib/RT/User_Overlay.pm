@@ -264,7 +264,7 @@ sub Create {
 
 
     if ( $record_transaction ) {
-	$self->_NewTransaction( Type => "Create" );
+    $self->_NewTransaction( Type => "Create" );
     }
 
     $RT::Handle->Commit;
@@ -519,14 +519,14 @@ sub LoadOrCreateByEmail {
     if ( UNIVERSAL::isa( $email => 'Mail::Address' ) ) {
         ($email, $name) = ($email->address, $email->phrase);
     } else {
-	    ($email, $name) = RT::Interface::Email::ParseAddressFromHeader( $email );
+        ($email, $name) = RT::Interface::Email::ParseAddressFromHeader( $email );
     }
 
     $self->LoadByEmail( $email );
-	$self->Load( $email ) unless $self->Id;
+    $self->Load( $email ) unless $self->Id;
     $message = $self->loc('User loaded');
 
-	unless( $self->Id ) {
+    unless( $self->Id ) {
         my $val;
         ($val, $message) = $self->Create(
             Name         => $email,
@@ -710,12 +710,12 @@ sub ResetPassword {
     }
 
     my $ret = RT::Interface::Email::SendEmailUsingTemplate(
-		To        => $self->EmailAddress,
-		Template  => 'PasswordChange',
-		Arguments => {
-		    NewPassword => $pass,
-		},
-	    );
+        To        => $self->EmailAddress,
+        Template  => 'PasswordChange',
+        Arguments => {
+            NewPassword => $pass,
+        },
+        );
 
     if ($ret) {
         return ( 1, $self->loc('New password notification sent') );
@@ -1198,7 +1198,7 @@ sub OwnGroups {
     my $groups = RT::Groups->new($self->CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(PrincipalId => $self->Id, 
-			Recursively => 1);
+            Recursively => 1);
     return $groups;
 }
 
@@ -1452,45 +1452,45 @@ and logs an internal error if the deletion fails (should not happen).
 sub _CleanupInvalidDelegations {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
-		  @_ );
+          @_ );
 
     unless ( $self->Id ) {
-	$RT::Logger->warning("User not loaded.");
-	return (undef);
+    $RT::Logger->warning("User not loaded.");
+    return (undef);
     }
 
     my $in_trans = $args{InsideTransaction};
 
     return(1) if ($self->HasRight(Right => 'DelegateRights',
-				  Object => $RT::System));
+                  Object => $RT::System));
 
     # Look up all delegation rights currently posessed by this user.
     my $deleg_acl = RT::ACL->new($RT::SystemUser);
     $deleg_acl->LimitToPrincipal(Type => 'User',
-				 Id => $self->PrincipalId,
-				 IncludeGroupMembership => 1);
+                 Id => $self->PrincipalId,
+                 IncludeGroupMembership => 1);
     $deleg_acl->Limit( FIELD => 'RightName',
-		       OPERATOR => '=',
-		       VALUE => 'DelegateRights' );
+               OPERATOR => '=',
+               VALUE => 'DelegateRights' );
     my @allowed_deleg_objects = map {$_->Object()}
-	@{$deleg_acl->ItemsArrayRef()};
+    @{$deleg_acl->ItemsArrayRef()};
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
     my $acl_to_del = RT::ACL->new($RT::SystemUser);
     $acl_to_del->DelegatedBy(Id => $self->Id);
     foreach (@allowed_deleg_objects) {
-	$acl_to_del->LimitNotObject($_);
+    $acl_to_del->LimitNotObject($_);
     }
 
     # Delete all disallowed delegations
     while ( my $ace = $acl_to_del->Next() ) {
-	my $ret = $ace->_Delete(InsideTransaction => 1);
-	unless ($ret) {
-	    $RT::Handle->Rollback() unless $in_trans;
-	    $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->Id);
-	    return (undef);
-	}
+    my $ret = $ace->_Delete(InsideTransaction => 1);
+    unless ($ret) {
+        $RT::Handle->Rollback() unless $in_trans;
+        $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->Id);
+        return (undef);
+    }
     }
 
     $RT::Handle->Commit() unless $in_trans;
@@ -1507,8 +1507,8 @@ sub _Set {
     my %args = (
         Field => undef,
         Value => undef,
-	TransactionType   => 'Set',
-	RecordTransaction => 1,
+    TransactionType   => 'Set',
+    RecordTransaction => 1,
         @_
     );
 
@@ -1525,7 +1525,7 @@ sub _Set {
     my $Old = $self->SUPER::_Value("$args{'Field'}");
     
     my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
-					  Value => $args{'Value'} );
+                      Value => $args{'Value'} );
     
     #If we can't actually set the field to the value, don't record
     # a transaction. instead, get out of here.
@@ -1613,11 +1613,46 @@ sub FriendlyName {
 
 sub BasicColumns {
     (
-	[ Name => 'User Id' ],
-	[ EmailAddress => 'Email' ],
-	[ RealName => 'Name' ],
-	[ Organization => 'Organization' ],
+    [ Name => 'User Id' ],
+    [ EmailAddress => 'Email' ],
+    [ RealName => 'Name' ],
+    [ Organization => 'Organization' ],
     );
+}
+
+
+
+sub GetLocks {
+    my $self = shift;
+    
+    my $attribs = RT::Attributes->new($self);
+    $attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $self->id(), ENTRYAGGREGATOR => 'AND');
+    
+    my $expiry = RT->Config->Get('LockExpiry');
+    return $attribs->Named('RT_Lock') unless $expiry;
+    my @locks;
+    
+    foreach my $lock ($attribs->Named('RT_Lock')) {
+        my $duration = time() - $lock->Content->{'Timestamp'};
+        if($duration < $expiry) {
+            push @locks, $lock;
+        }
+        else {
+            $lock->Delete();
+        }
+    }
+    return @locks;
+}
+
+sub RemoveLocks {
+    my $self = shift;
+    
+    my $attribs = RT::Attributes->new($self);
+    $attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $self->id(), ENTRYAGGREGATOR => 'AND');
+    my @attributes = $attribs->Named('RT_Lock');
+    foreach my $lock (@attributes) {
+        $lock->Delete();
+    }
 }
 
 1;
