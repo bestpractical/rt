@@ -1,13 +1,3 @@
-*** ENVELOPE RECORDS CEA9137F51 ***
-message_size:            1825             219               1               0
-message_arrival_time: Fri Aug 10 15:27:49 2007
-create_time: Fri Aug 10 15:27:49 2007
-named_attribute: rewrite_context=local
-sender_fullname: Christian Ternus
-sender: ternus@mit.edu
-original_recipient: rt-recipient@example.com
-recipient: rt-recipient@example.com
-*** MESSAGE CONTENTS CEA9137F51 ***
 Received: by anduril (Postfix, from userid 1000)
 	id CEA9137F51; Fri, 10 Aug 2007 15:27:49 -0400 (EDT)
 Date: Fri, 10 Aug 2007 15:27:49 -0400
@@ -55,5 +45,3 @@ S32K6lg=
 -----END PGP MESSAGE-----
 
 --YiEDa0DAkWCtVeE4--
-*** HEADER EXTRACTED CEA9137F51 ***
-*** MESSAGE FILE END CEA9137F51 ***
