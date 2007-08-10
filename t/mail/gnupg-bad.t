@@ -8,7 +8,7 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
+my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
