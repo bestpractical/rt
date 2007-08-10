@@ -45,18 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-@import "misc.css";
-@import "login.css";
-@import "logo.css";
-@import "quickbar.css";
-@import "body.css";
-@import "approvals.css";
-@import "titlebox.css";
-@import "forms.css";
-@import "ticket.css";
-@import "transactions.css";
-@import "nav.css";
-@import "header.css";
-@import "footer.css";
-@import "local.css";
+
+%# This is the file you want to override in local/html for adding
+%# custom css.
 
