@@ -8,7 +8,7 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-mail) );
+my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
@@ -16,14 +16,24 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 passphrase => 'rt-test');
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
+
+$m->get( $baseurl."?user=root;pass=password" );
+$m->content_like(qr/Logout/, 'we did log in');
+$m->get( $baseurl.'/Admin/Queues/');
+$m->follow_link_ok( {text => 'General'} );
+$m->submit_form( form_number => 3,
+         fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
+$m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
+
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
-$user->SetEmailAddress('rt-test@example.com');
+$user->SetEmailAddress('ternus@mit.edu');
 
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
