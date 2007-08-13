@@ -705,14 +705,14 @@ sub _SignEncryptAttachmentInline {
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         $entity->make_multipart;
         $entity->attach(
-            Type     => 'application/octeat-stream',
+            Type     => 'application/octet-stream',
             Path     => $tmp_fn,
             Filename => "$filename.sig",
             Disposition => 'attachment',
         );
     } else {
         $entity->bodyhandle( new MIME::Body::File $tmp_fn );
-        $entity->effective_type('application/octeat-stream');
+        $entity->effective_type('application/octet-stream');
         $args{'Data'}->head->mime_attr( $_ => "$filename.pgp" )
             foreach (qw(Content-Type.name Content-Disposition.filename));
 
