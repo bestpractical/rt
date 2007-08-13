@@ -1,12 +1,13 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 160;
+use Test::More tests => 158;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
+use Digest::MD5 qw(md5_base64);
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
 
@@ -35,14 +36,15 @@ ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('ternus@mit.edu');
 
+my %body = (1 => qr/This is a test email with MIME signature./);
+
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
     for my $format (qw/MIME inline/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
             diag "Email $eid: $usage, $attachment email with $format key" if $ENV{TEST_VERBOSE};
-            my $ok = eval { email_ok($eid, $usage, $format, $attachment) };
-            ok($ok, "$usage, $attachment email with $format key");
+            eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
 }
@@ -93,7 +95,7 @@ sub email_ok {
 
         #XXX: maybe RT will have already decrypted this for us
         unlike( $msg->Content,
-                qr/ID:$eid/,
+                ($body{$eid} || qr/ID:$eid/),
                 'incoming mail did NOT have original body'
         );
     }
@@ -103,7 +105,7 @@ sub email_ok {
             'recorded incoming mail that is not encrypted'
         );
         like( $msg->Content || $attachments[0]->Content,
-              qr/ID:$eid/,
+              ($body{$eid} || qr/ID:$eid/),
               'got original content'
         );
     }
@@ -122,18 +124,26 @@ sub email_ok {
     }
 
     if ($attachment =~ /attachment/) {
-        my $attachment = $attachments[0];
-        my $file = '';
-        ok ($attachment->Id, 'loaded attachment object');
-        my $acontent = $attachment->Content;
-        is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
-
         # signed messages should sign each attachment too
         if ($usage =~ /signed/) {
-            my $sig = $attachments[1];
-            ok ($attachment->Id, 'loaded attachment.sig object');
-            my $acontent = $attachment->Content;
+            my $sig = pop @attachments;
+            ok ($sig->Id, 'loaded attachment.sig object');
+            my $acontent = $sig->Content;
         }
+
+        my $a = pop @attachments;
+        my $file = '';
+        ok ($a->Id, 'loaded attachment object');
+        my $acontent = $a->Content;
+        if ($attachment =~ /binary/)
+        {
+            is(md5_base64($acontent), '', "The binary attachment's md5sum matches");
+        }
+        else
+        {
+            like($acontent, qr/zanzibar/, 'The attachment isn\'t screwed up in the database.');
+        }
+
     }
 
     return 0;
