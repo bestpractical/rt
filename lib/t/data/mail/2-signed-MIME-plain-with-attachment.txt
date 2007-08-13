@@ -1,42 +1,38 @@
-From ternus@mit.edu  Thu Aug  9 14:56:34 2007
-Return-Path: <ternus@mit.edu>
-X-Original-To: ternus@localhost
-Delivered-To: ternus@localhost
 Received: by anduril (Postfix, from userid 1000)
-        id 59C1A37F20; Thu,  9 Aug 2007 14:56:34 -0400 (EDT)
-Date: Thu, 9 Aug 2007 14:56:34 -0400
-From: Foo Bar <rt-test@example.com>
-To: ternus@localhost
+	id 74BF637F75; Mon, 13 Aug 2007 15:23:57 -0400 (EDT)
+Date: Mon, 13 Aug 2007 15:23:57 -0400
+To: rt-recipient@example.com
 Subject: Test Email ID:2
-Message-ID: <20070809185634.GA16522@mit.edu>
+Message-ID: <20070813192357.GB6392@mit.edu>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="cvVnyQ+4j833TQvp"
+	protocol="application/pgp-signature"; boundary="bKyqfOwhbdpXa4YI"
 Content-Disposition: inline
 User-Agent: Mutt/1.5.13 (2006-08-11)
+From: ternus@mit.edu (Christian Ternus)
 
 
---cvVnyQ+4j833TQvp
-Content-Type: multipart/mixed; boundary="mP3DRpeJDSE+ciuQ"
+--bKyqfOwhbdpXa4YI
+Content-Type: multipart/mixed; boundary="DKU6Jbt7q3WqK7+M"
 Content-Disposition: inline
 
 
---mP3DRpeJDSE+ciuQ
+--DKU6Jbt7q3WqK7+M
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-This is an email with a text attachment.
+This is a test email with a text attachment.
 ID:2
 
---mP3DRpeJDSE+ciuQ
+--DKU6Jbt7q3WqK7+M
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment; filename=text-attachment
 
 This is a test attachment.  The magic word is:  zanzibar.
 
---mP3DRpeJDSE+ciuQ--
+--DKU6Jbt7q3WqK7+M--
 
---cvVnyQ+4j833TQvp
+--bKyqfOwhbdpXa4YI
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 Content-Disposition: inline
@@ -44,10 +40,9 @@ Content-Disposition: inline
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.6 (GNU/Linux)
 
-iD8DBQFGu2Ni0ygDXYSIHxsRAkd8AKC15lmDhikpri9AYaHp0DPvEeXS4gCaA562
-npXFejWfCumWrpzaUB9DidE=
-=o6hg
+iD8DBQFGwK/N0ygDXYSIHxsRAlbuAJ4wxUVCNerg6dLm+w7llCj51YYbFACgvNJR
+ajbUy9MMkljajl6Of3IlqRA=
+=R6Gi
 -----END PGP SIGNATURE-----
 
---cvVnyQ+4j833TQvp--
-
+--bKyqfOwhbdpXa4YI--
