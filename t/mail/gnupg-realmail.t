@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 59;
+use Test::More tests => 160;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -31,7 +31,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
             diag "Email $eid: $usage, $attachment email with $format key" if $ENV{TEST_VERBOSE};
-            my $ok = email_ok($eid, $usage, $format, $attachment);
+            my $ok = eval { email_ok($eid, $usage, $format, $attachment) };
             ok($ok, "$usage, $attachment email with $format key");
         }
     }
@@ -40,7 +40,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
 sub get_contents {
     my $eid = shift;
 
-    my $file = glob("lib/t/data/mail/$eid-*");
+    my ($file) = glob("lib/t/data/mail/$eid-*");
     defined $file
         or do { diag "Unable to find lib/t/data/mail/$eid-*"; return };
 
