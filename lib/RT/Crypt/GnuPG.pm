@@ -380,12 +380,6 @@ sub SignEncryptRFC3156 {
         @_
     );
 
-    my $entity = $args{'Entity'};
-
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -396,6 +390,15 @@ sub SignEncryptRFC3156 {
         armor => 1,
         meta_interactive => 0,
     );
+
+    my $entity = $args{'Entity'};
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my %res;
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
@@ -554,10 +557,6 @@ sub _SignEncryptTextInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -568,6 +567,13 @@ sub _SignEncryptTextInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ )
@@ -638,10 +644,6 @@ sub _SignEncryptAttachmentInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -652,6 +654,13 @@ sub _SignEncryptAttachmentInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
@@ -1006,6 +1015,9 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
@@ -1072,6 +1084,9 @@ sub DecryptInline {
         _PrepareGnuPGOptions( %opt ),
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
