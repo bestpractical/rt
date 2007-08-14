@@ -7,7 +7,7 @@ use RT::Test;
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
-use Digest::MD5 qw(md5_base64);
+use Digest::MD5 qw(md5_hex);
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
 
@@ -137,7 +137,7 @@ sub email_ok {
         my $acontent = $a->Content;
         if ($attachment =~ /binary/)
         {
-            is(md5_base64($acontent), '', "The binary attachment's md5sum matches");
+            is(md5_hex($acontent), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "The binary attachment's md5sum matches");
         }
         else
         {
