@@ -128,8 +128,8 @@ if ($ARGS{'id'} eq 'new') {
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
-			my ($res, $msg) = $TicketObj->$action();
-			push(@Actions, $msg);
+            my ($res, $msg) = $TicketObj->$action();
+            push(@Actions, $msg);
         }
     }
     
@@ -141,39 +141,30 @@ if ($ARGS{'id'} eq 'new') {
                 push @Actions, loc('Your attempt to lock this ticket failed');
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $TicketObj->Locked();
-            unless($lock) {
-                push @Actions, loc('This ticket was not locked');
-			} elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-				$Duration = time() - $lock->Content->{'Timestamp'};
-				$TicketObj->Unlock('Hard');
-                push @Actions, loc('You have unlocked this ticket');
-			} else {
-				push @Actions,
-					loc("You can't unlock tickets that you did not lock");
-			}
-
-		} elsif ( $ARGS{'Lock'} eq 'break' ) {
-			$TicketObj->BreakLock();
-			push @Actions, loc('You have broken the lock on this ticket');
-		}
+            my $msg;
+            ($Duration, $msg) = $TicketObj->Unlock('Hard');
+            push @Actions, loc($msg);
+        } elsif ( $ARGS{'Lock'} eq 'break' ) {
+            $TicketObj->BreakLock();
+            push @Actions, loc('You have broken the lock on this ticket');
+        }
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
     if ( $ARGS{'UpdateTimeWorked'} || (
         defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
-	    && $ARGS{'UpdateContent'} ne "-- \n"
-	       . $session{'CurrentUser'}->UserObj->Signature ) )
+        && $ARGS{'UpdateContent'} ne "-- \n"
+           . $session{'CurrentUser'}->UserObj->Signature ) )
     {
-	    $ARGS{UpdateAttachments} = $session{'Attachments'};
-	    push @Actions, ProcessUpdateMessage(
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+        push @Actions, ProcessUpdateMessage(
             ARGSRef   => \%ARGS,
-			Actions   => \@Actions,
-			TicketObj => $TicketObj,
+            Actions   => \@Actions,
+            TicketObj => $TicketObj,
         );
-	    delete $session{'Attachments'};
-	}
+        delete $session{'Attachments'};
+    }
     push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, TicketObj => $TicketObj );
@@ -194,7 +185,7 @@ if ($ARGS{'id'} eq 'new') {
 
 $m->callback(
     CallbackName => 'BeforeDisplay',
-	TicketObj => \$TicketObj,
+    TicketObj => \$TicketObj,
     Tickets => \$Tickets,
     Actions => \@Actions,
     ARGSRef => \%ARGS,

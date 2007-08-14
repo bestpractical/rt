@@ -22,7 +22,6 @@ use_ok('RT::Date');
 }
 
 my $current_user;
-
 {
     my $user = RT::User->new($RT::SystemUser);
     my($uid, $msg) = $user->Create(
@@ -32,7 +31,9 @@ my $current_user;
     );
     ok($uid, "user was created") or diag("error: $msg");
     $current_user = RT::CurrentUser->new($user);
+}
 
+{
     my $date = RT::Date->new( $current_user );
     is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'), 'UTC', "dropped all timzones to UTC");

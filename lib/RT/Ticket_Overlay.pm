@@ -81,6 +81,7 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
+use RT::TicketLocking;
 
 
 # {{{ LINKTYPEMAP
@@ -91,11 +92,11 @@ our %LINKTYPEMAP = (
     MemberOf => { Type => 'MemberOf',
                   Mode => 'Target', },
     Parents => { Type => 'MemberOf',
-		 Mode => 'Target', },
+         Mode => 'Target', },
     Members => { Type => 'MemberOf',
                  Mode => 'Base', },
     Children => { Type => 'MemberOf',
-		  Mode => 'Base', },
+          Mode => 'Base', },
     HasMember => { Type => 'MemberOf',
                    Mode => 'Base', },
     RefersTo => { Type => 'RefersTo',
@@ -904,18 +905,18 @@ sub Import {
         EffectiveId     => $EffectiveId,
         Queue           => $QueueObj->Id,
         Owner           => $Owner->Id,
-        Subject         => $args{'Subject'},		# loc
-        InitialPriority => $args{'InitialPriority'},	# loc
-        FinalPriority   => $args{'FinalPriority'},	# loc
-        Priority        => $args{'InitialPriority'},	# loc
-        Status          => $args{'Status'},		# loc
-        TimeWorked      => $args{'TimeWorked'},		# loc
-        Type            => $args{'Type'},		# loc
-        Created         => $args{'Created'},		# loc
-        Told            => $args{'Told'},		# loc
-        LastUpdated     => $args{'Updated'},		# loc
-        Resolved        => $args{'Resolved'},		# loc
-        Due             => $args{'Due'},		# loc
+        Subject         => $args{'Subject'},        # loc
+        InitialPriority => $args{'InitialPriority'},    # loc
+        FinalPriority   => $args{'FinalPriority'},    # loc
+        Priority        => $args{'InitialPriority'},    # loc
+        Status          => $args{'Status'},        # loc
+        TimeWorked      => $args{'TimeWorked'},        # loc
+        Type            => $args{'Type'},        # loc
+        Created         => $args{'Created'},        # loc
+        Told            => $args{'Told'},        # loc
+        LastUpdated     => $args{'Updated'},        # loc
+        Resolved        => $args{'Resolved'},        # loc
+        Due             => $args{'Due'},        # loc
     );
 
     # If the ticket didn't have an id
@@ -1588,8 +1589,8 @@ sub IsOwner {
 
     # no ACL check since this is used in acl decisions
     # unless ($self->CurrentUserHasRight('ShowTicket')) {
-    #	return(undef);
-    #   }	
+    #    return(undef);
+    #   }    
 
     #Tickets won't yet have owners when they're being created.
     unless ( $self->OwnerObj->id ) {
@@ -2366,7 +2367,7 @@ sub __GetTicketFromURI {
     $uri_obj->FromURI( $args{'URI'} );
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-	    my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
+        my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
         $RT::Logger->warning( "$msg\n" );
         return( 0, $msg );
     }
@@ -2902,10 +2903,10 @@ sub SetStatus {
     my %args;
 
     if (@_ == 1) {
-	$args{Status} = shift;
+    $args{Status} = shift;
     }
     else {
-	%args = (@_);
+    %args = (@_);
     }
 
     #Check ACL
@@ -3034,7 +3035,7 @@ sub Resolve {
 
 # }}}
 
-	
+    
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub SetTold and _SetTold
@@ -3146,10 +3147,10 @@ sub DESTROY {
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
-	Stage		=> 'TransactionBatch',
-	TicketObj	=> $self,
-	TransactionObj	=> $batch->[0],
-	Type		=> join(',', (map { $_->Type } @{$batch}) )
+    Stage        => 'TransactionBatch',
+    TicketObj    => $self,
+    TransactionObj    => $batch->[0],
+    Type        => join(',', (map { $_->Type } @{$batch}) )
     );
 }
 

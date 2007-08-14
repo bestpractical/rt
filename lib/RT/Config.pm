@@ -475,12 +475,18 @@ sub SetFromConfig
     return 1;
 }
 
+{ my $last_pack = '';
 sub __GetNameByRef
 {
     my $self = shift;
     my $ref = shift;
-    my $pack = shift || 'main::';
-    $pack .= '::' unless $pack =~ /::$/;
+    my $pack = shift;
+    if ( !$pack && $last_pack ) {
+        my $tmp = $self->__GetNameByRef( $ref, $last_pack );
+        return $tmp if $tmp;
+    }
+    $pack ||= 'main::';
+    $pack .= '::' unless substr($pack, -2) eq '::';
 
     my %ref_sym = (
         SCALAR => '$',
@@ -497,7 +503,7 @@ sub __GetNameByRef
 
         # if entry has trailing '::' then
         # it is link to other name space
-        if( $k =~ /::$/ ) {
+        if ( $k =~ /::$/ ) {
             $name = $self->__GetNameByRef($ref, $k);
             return $name if $name;
         }
@@ -514,11 +520,12 @@ sub __GetNameByRef
 
         # if references are equal then we've found
         if( $entry_ref == $ref ) {
+            $last_pack = $pack;
             return ($ref_sym{ref($ref)} || '*') . $pack . $k;
         }
     }
     return '';
-}
+} }
 
 =head2 Metadata
 

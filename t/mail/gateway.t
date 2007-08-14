@@ -69,8 +69,6 @@ use LWP::UserAgent;
 
 # TODO: --extension queue
 
-require "lib/t/utils.pl";
-
 my $url = $m->rt_base_url;
 
 sub latest_ticket {
@@ -90,7 +88,7 @@ Subject: This is a test of new ticket creation
 
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, url => undef);
+    my ($status, $id) = RT::Test->send_via_mailgate($text, url => undef);
     is ($status >> 8, 1, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
 }
@@ -104,7 +102,7 @@ Subject: This is a test of new ticket creation
 
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, url => 'http://this.test.for.non-connection.is.expected.to.generate.an.error');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, url => 'http://this.test.for.non-connection.is.expected.to.generate.an.error');
     is ($status >> 8, 75, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id");
 }
@@ -132,7 +130,7 @@ Blah!
 Foob!
 EOF
 
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket");
 
@@ -152,7 +150,7 @@ Blah!
 Foob!
 EOF
     local $ENV{'EXTENSION'} = "bad value with\nnewlines\n";
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
@@ -187,7 +185,7 @@ Subject: This is a test of new ticket creation
 
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, extension => 'some-extension-arg' );
+    my ($status, $id) = RT::Test->send_via_mailgate($text, extension => 'some-extension-arg' );
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
@@ -221,7 +219,7 @@ Subject: using mailgate without --action arg
 Blah!
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, extension => 'some-extension-arg' );
+    my ($status, $id) = RT::Test->send_via_mailgate($text, extension => 'some-extension-arg' );
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
@@ -241,7 +239,7 @@ Subject: This is a test of new ticket creation as an unknown user
 Blah!
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no ticket created");
 
@@ -275,7 +273,7 @@ Subject: This is a test of new ticket creation as an unknown user
 Blah!
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "ticket created");
 
@@ -301,7 +299,7 @@ Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply 
 Blah!  (Should not work.)
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to reply to the ticket");
 
@@ -329,7 +327,7 @@ Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply 
 Blah!
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
@@ -349,7 +347,7 @@ Blah!
 Foob!
 EOF
     local $ENV{'EXTENSION'} = $ticket_id;
-    my ($status, $id) = create_ticket_via_gate($text, extension => 'ticket');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, extension => 'ticket');
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
@@ -380,7 +378,7 @@ Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a commen
 Blah!  (Should not work.)
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, action => 'comment');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, action => 'comment');
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to comment on the ticket");
 
@@ -409,7 +407,7 @@ Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a commen
 Blah!
 Foob!
 EOF
-    my ($status, $id) = create_ticket_via_gate($text, action => 'comment');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, action => 'comment');
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
@@ -429,7 +427,7 @@ Blah!
 Foob!
 EOF
     local $ENV{'EXTENSION'} = 'comment';
-    my ($status, $id) = create_ticket_via_gate($text, extension => 'action');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, extension => 'action');
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "added comment to the ticket");
 
@@ -474,7 +472,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
         Encoding => 'base64',
     );
     # Create a ticket with a binary attachment
-    my ($status, $id) = create_ticket_via_gate($entity);
+    my ($status, $id) = RT::Test->send_via_mailgate($entity);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
@@ -530,7 +528,7 @@ Content-Type: text/plain; charset="utf-8"
 \303\241\303\251\303\255\303\263\303\272
 bye
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
@@ -566,7 +564,7 @@ Content-Type: text/plain; charset="utf-8"
 \303\241\303\251\303\255\303\263\303\272
 bye
 EOF
-    my ($status, $id) = create_ticket_via_gate($text);
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 

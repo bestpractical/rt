@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -32,7 +32,7 @@ $m->click_button (name => 'SavedSearchSave');
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->content_like (qr/stupid tickets/, 'saved search listed in rt at a glance items');
 
-$m->login, 'we did log in as root';
+ok $m->login, 'we did log in as root';
 
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->form_name ('SelectionBox-body');

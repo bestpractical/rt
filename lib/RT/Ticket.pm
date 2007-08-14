@@ -140,7 +140,7 @@ sub Create {
                 Resolved => '',
                 Disabled => '0',
 
-		  @_);
+          @_);
     $self->SUPER::Create(
                          EffectiveId => $args{'EffectiveId'},
                          Queue => $args{'Queue'},
@@ -221,89 +221,13 @@ Returns the Queue Object which has the id returned by Queue
 =cut
 
 sub QueueObj {
-	my $self = shift;
-	my $Queue =  RT::Queue->new($self->CurrentUser);
-	$Queue->Load($self->__Value('Queue'));
-	return($Queue);
-}
-
-my @Types = qw(Auto Take Hard);
-
-sub Locked {
-    my $ticket =shift;
-    return $ticket->FirstAttribute('RT_Lock');
-}
-
-sub Lock {
-    my $ticket = shift;
-    my $type = shift || 'Auto';
-
-    if ( my $lock = $ticket->Locked() ) {
-    	return undef if $lock->Content->{'User'} != $ticket->CurrentUser->id;
-    	my $LockType = $lock->Content->{'Type'};
-    	my $priority;
-    	my $LockPriority;
-		for(my $i = 0; $i < scalar @Types; $i++) {
-			$priority = $i if (lc $Types[$i]) eq (lc $type);
-			$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
-		}
-		return undef if $priority <= $LockPriority;
-    } else {
-    	$ticket->Unlock($type);	#Remove any existing locks (because this one has greater priority)
-        $ticket->SetAttribute(
-            Name    => 'RT_Lock',
-            Content => {
-                User      => $ticket->CurrentUser->id,
-                Timestamp => time(),
-                Type => $type
-            }
-        );
-    }
+    my $self = shift;
+    my $Queue =  RT::Queue->new($self->CurrentUser);
+    $Queue->Load($self->__Value('Queue'));
+    return($Queue);
 }
 
 
-sub Unlock {
-    my $ticket = shift;
-    my $type = shift || 'Auto';
-
-    my $lock = $ticket->RT::Ticket::Locked();
-    return undef unless $lock;
-    return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
-    
-    my $LockType = $lock->Content->{'Type'};
-    my $priority;
-	my $LockPriority;
-	for(my $i = 0; $i < scalar @Types; $i++) {
-		$priority = $i if (lc $Types[$i]) eq (lc $type);
-		$LockPriority = $i if (lc $Types[$i]) eq (lc $LockType);
-	}
-	return undef if $priority < $LockPriority;
-    $ticket->DeleteAttribute('RT_Lock');
-    return $lock;
-}
-
-
-sub BreakLock {
-    my $ticket = shift;
-    my $lock = $ticket->RT::Ticket::Locked();
-     return undef unless $lock;
-    $ticket->DeleteAttribute('RT_Lock');
-}
-
-
-
-sub RemoveUserLocks {
-	my $user = shift;
-
-	return undef unless $user;
-	
-	my $attribs = RT::Attributes->new($user);
-	$attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $user->id(), ENTRYAGGREGATOR => 'AND');
-	my @attributes = $attribs->Named('RT_Lock');
-	foreach my $lock (@attributes) {
-		$lock->Delete();
-	}
-}
 
 =head2 Type
 
@@ -670,55 +594,55 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         EffectiveId => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Queue => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Type => 
-		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         IssueStatement => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Resolution => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Owner => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Subject => 
-		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => '[no subject]'},
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => '[no subject]'},
         InitialPriority => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         FinalPriority => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Priority => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeEstimated => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeWorked => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Status => 
-		{read => 1, write => 1, sql_type => 12, length => 10,  is_blob => 0,  is_numeric => 0,  type => 'varchar(10)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 10,  is_blob => 0,  is_numeric => 0,  type => 'varchar(10)', default => ''},
         TimeLeft => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Told => 
-		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Starts => 
-		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Started => 
-		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Due => 
-		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Resolved => 
-		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated => 
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Creator => 
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Disabled => 
-		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
  }
 };

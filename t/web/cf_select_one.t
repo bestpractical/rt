@@ -80,7 +80,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
 
     # we use lc as we really don't care about case
-    # so if we later we'll add canonicalization of value
+    # so if later we'll add canonicalization of value
     # test should work
     is lc $ticket->FirstCustomFieldValue( $cf_name ),
        'asd', 'assigned value of the CF';
