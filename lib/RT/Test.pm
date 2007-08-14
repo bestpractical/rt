@@ -219,6 +219,46 @@ sub load_or_create_queue {
     return $obj;
 }
 
+sub store_rights {
+    my $self = shift;
+
+    require RT::ACE;
+    # fake construction
+    RT::ACE->new( $RT::SystemUser );
+    my @fields = keys %{ RT::ACE->_ClassAccessible };
+
+    require RT::ACL;
+    my $acl = RT::ACL->new( $RT::SystemUser );
+    $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
+
+    my @res;
+    while ( my $ace = $acl->Next ) {
+        my $obj = $ace->PrincipalObj->Object;
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+            next;
+        }
+
+        my %tmp = ();
+        foreach my $field( @fields ) {
+            $tmp{ $field } = $ace->__Value( $field );
+        }
+        push @res, \%tmp;
+    }
+    return @res;
+}
+
+sub restore_rights {
+    my $self = shift;
+    my @entries = @_;
+    foreach my $entry ( @entries ) {
+        my $ace = RT::ACE->new( $RT::SystemUser );
+        my ($status, $msg) = $ace->RT::Record::Create( %$entry );
+        unless ( $status ) {
+            diag "couldn't create a record: $msg";
+        }
+    }
+}
+
 sub set_rights {
     my $self = shift;
     my @list = ref $_[0]? @_: @_? { @_ }: ();
