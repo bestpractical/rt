@@ -221,7 +221,7 @@ sub load_or_create_queue {
 
 sub set_rights {
     my $self = shift;
-    my @list = ref $_[0]? @_: { @_ };
+    my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::ACL;
     my $acl = RT::ACL->new( $RT::SystemUser );
