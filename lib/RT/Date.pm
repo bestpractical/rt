@@ -778,11 +778,14 @@ sub Localtime
     if ($tz eq 'UTC') {
         @local = gmtime($unix);
     } else {
-        local $ENV{'TZ'} = $tz;
-	## Using POSIX::tzset fixes a bug where the TZ environment variable
-	## is cached.
-	POSIX::tzset();
-        @local = localtime($unix);
+        {
+            local $ENV{'TZ'} = $tz;
+            ## Using POSIX::tzset fixes a bug where the TZ environment variable
+            ## is cached.
+            POSIX::tzset();
+            @local = localtime($unix);
+        }
+        POSIX::tzset(); # return back previouse value
     }
     $local[5] += 1900; # change year to 4+ digits format
     my $offset = Time::Local::timegm_nocheck(@local) - $unix;
@@ -814,14 +817,19 @@ sub Timelocal {
         return timegm(@_[0..5]) - $_[9];
     } else {
         $tz = $self->Timezone( $tz );
-        if ($tz eq 'UTC') {
+        if ( $tz eq 'UTC' ) {
             return Time::Local::timegm(@_[0..5]);
         } else {
-            local $ENV{'TZ'} = $tz;
-	    ## Using POSIX::tzset fixes a bug where the TZ environment variable
-	    ## is cached.
-	    POSIX::tzset();
-            return Time::Local::timelocal(@_[0..5]);
+            my $rv;
+            {
+                local $ENV{'TZ'} = $tz;
+                ## Using POSIX::tzset fixes a bug where the TZ environment variable
+                ## is cached.
+                POSIX::tzset();
+                $rv = Time::Local::timelocal(@_[0..5]);
+            };
+            POSIX::tzset(); # switch back to previouse value
+            return $rv;
         }
     }
 }
