@@ -1621,40 +1621,6 @@ sub BasicColumns {
 }
 
 
-
-sub GetLocks {
-    my $self = shift;
-    
-    my $attribs = RT::Attributes->new($self);
-    $attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $self->id(), ENTRYAGGREGATOR => 'AND');
-    
-    my $expiry = RT->Config->Get('LockExpiry');
-    return $attribs->Named('RT_Lock') unless $expiry;
-    my @locks;
-    
-    foreach my $lock ($attribs->Named('RT_Lock')) {
-        my $duration = time() - $lock->Content->{'Timestamp'};
-        if($duration < $expiry) {
-            push @locks, $lock;
-        }
-        else {
-            $lock->Delete();
-        }
-    }
-    return @locks;
-}
-
-sub RemoveLocks {
-    my $self = shift;
-    
-    my $attribs = RT::Attributes->new($self);
-    $attribs->Limit(FIELD => 'Creator', OPERATOR=> '=', VALUE => $self->id(), ENTRYAGGREGATOR => 'AND');
-    my @attributes = $attribs->Named('RT_Lock');
-    foreach my $lock (@attributes) {
-        $lock->Delete();
-    }
-}
-
 1;
 
 

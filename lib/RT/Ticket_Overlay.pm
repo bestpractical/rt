@@ -81,7 +81,6 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
-use RT::TicketLocking;
 
 
 # {{{ LINKTYPEMAP
