@@ -1,0 +1,66 @@
+Return-Path: <mailnull@example.com>
+Date: Sat, 23 Aug 2003 00:15:18 +0800 (SGT)
+From: Mail Delivery Subsystem <MAILER-DAEMON@other.example.com>
+Message-Id: <200308221615.CGA36111@mailbox.other.example.com>
+To: support@example.com
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="CGA36111.1061568918/mailbox.other.example.com"
+Subject: Returned mail: User unknown
+Auto-Submitted: auto-generated (failure)
+
+This is a MIME-encapsulated message
+
+--CGA36111.1061568918/mailbox.other.example.com
+
+The original message was received at Sat, 23 Aug 2003 00:15:18 +0800 (SGT)
+from mx12.mcis.other.example.com [10.1.1.232]
+
+   ----- The following addresses had permanent delivery errors -----
+<jesmund>
+
+
+--CGA36111.1061568918/mailbox.other.example.com
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; mailbox.other.example.com
+Arrival-Date: Sat, 23 Aug 2003 00:15:18 +0800 (SGT)
+
+Final-Recipient: RFC822; jesmund@mailbox.other.example.com
+Action: failed
+Status: 5.1.1
+Remote-MTA: DNS; mail.mcis.other.example.com
+Diagnostic-Code: SMTP; 550 5.1.1 <jesmund>... User unknown
+Last-Attempt-Date: Sat, 23 Aug 2003 00:15:18 +0800 (SGT)
+
+--CGA36111.1061568918/mailbox.other.example.com
+Content-Type: message/rfc822
+
+Return-Path: <support@example.com>
+Received: from mx12.other.example.com (mx12.mcis.other.example.com [10.1.1.232])
+	by mailbox.other.example.com (Mirapoint Messaging Server MOS 3.3.3-GR)
+	with ESMTP id CGA36101;
+	Sat, 23 Aug 2003 00:15:17 +0800 (SGT)
+Received: from STATION13 (rhala.dsl.pe.net [64.38.69.104])
+	by mx12.other.example.com (8.12.9/8.12.9) with ESMTP id h7MGFGac020135
+	for <jesmund@other.example.com>; Sat, 23 Aug 2003 00:15:17 +0800
+Message-Id: <200308221615.h7MGFGac020135@mx12.other.example.com>
+From: <support@example.com>
+To: <jesmund@other.example.com>
+Subject: Thank you!
+Date: Fri, 22 Aug 2003 9:15:19 --0700
+X-MailScanner: Found to be clean
+Importance: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MSMail-Priority: Normal
+X-Priority: 3 (Normal)
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="_NextPart_000_05684DA4"
+
+
+
+--_NextPart_000_05684DA4--
+
+--CGA36111.1061568918/mailbox.other.example.com--
+

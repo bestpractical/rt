@@ -1,0 +1,80 @@
+<& /Elements/ListActions, actions => \@actions &>
+
+<form method="get" action="Templates.html">
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
+% unless ( $Templates->Count ) {
+<p><i><&|/l&>(No templates)</&></i></p>
+% } else {
+
+<i><&|/l&>(Check box to delete)</&></i>
+
+<& /Elements/CollectionList,
+    OrderBy       => 'id',
+    Order         => 'ASC',
+    BaseURL       => 'Templates.html?',
+    %ARGS,
+    DisplayFormat => '__CheckBox.{DeleteTemplates}__,'. $Format,
+    Format        => $Format,
+    Collection    => $Templates,
+    AllowSorting  => 1,
+    PassArguments => [qw(Format Rows Page Order OrderBy FindDisabledQueues)],
+&>
+% }
+
+<& /Elements/Submit, Label => loc('Delete Template') &>
+</form>
+
+<%INIT>
+my $dir_path = $m->request_comp->dir_path;
+$Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__id__</a>/TITLE:#'}
+    .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__Name__</a>/TITLE:Name'}
+    .qq{,'__Description__'};
+
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj->Load( $id ) if $id;
+
+my $Templates = RT::Templates->new($session{'CurrentUser'});
+if ( $QueueObj->id ) {
+    $Templates->LimitToQueue( $id );
+}
+else {
+    $Templates->LimitToGlobal;
+}
+
+# Now let callbacks add their extra limits
+$m->callback( %ARGS, Templates => $Templates );
+$Templates->RedoSearch;
+
+# deal with deleting existing templates
+my @actions;
+# backwards compatibility, use DeleteTemplates array for this
+foreach my $key (keys %ARGS) {
+    next unless $key =~ /^DeleteTemplate-(\d+)/;
+    push @DeleteTemplates, $1;
+}
+
+foreach my $id( @DeleteTemplates ) {
+    my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
+    $TemplateObj->Load( $id );
+    unless ( $TemplateObj->id ) {
+        push @actions, loc("Couldn't load template #[_1]", $id);
+        next;
+    }
+
+    my ($retval, $msg) = $TemplateObj->Delete;
+    if ( $retval ) {
+        push @actions, loc("Template #[_1] deleted", $id);
+    }
+    else {
+        push @actions, $msg;
+    }
+}
+</%INIT>
+<%ARGS>
+$id => 0
+
+$Format => undef
+
+@DeleteTemplates => ()
+</%ARGS>
