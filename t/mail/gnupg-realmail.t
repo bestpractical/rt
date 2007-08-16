@@ -9,7 +9,7 @@ use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 use Digest::MD5 qw(md5_hex);
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
+my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-2) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
