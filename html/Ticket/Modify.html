@@ -50,7 +50,7 @@
     Ticket => $TicketObj, current_subtab => "Ticket/Modify.html?id=".$TicketObj->Id, 
     Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">

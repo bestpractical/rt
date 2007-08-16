@@ -50,7 +50,7 @@
     Ticket => $TicketObj, 
     Title=> $title &>
     
-% $m->callback(CallbackName => 'ShowLock', Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $TicketObj);
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">

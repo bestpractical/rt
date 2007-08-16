@@ -51,7 +51,7 @@
     Title  => $Title,
 &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">
