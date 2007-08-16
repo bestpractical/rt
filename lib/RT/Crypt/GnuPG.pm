@@ -853,12 +853,13 @@ sub FindProtectedParts {
     return @res;
 }
 
-=head2 VerifyDecrypt Entity => undef, [ Detach => 1, Passphrase => undef ]
+=head2 VerifyDecrypt Entity => undef, [ OutEntity => undef, Detach => 1, Passphrase => undef ]
 
 =cut
 
 sub VerifyDecrypt {
-    my %args = ( Entity => undef, Detach => 1, @_ );
+    my %args = ( Entity => undef, OutEntity => undef, Detach => 1, @_ );
+    $args{'OutEntity'} ||= $args{'Entity'};
     my @protected = FindProtectedParts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures

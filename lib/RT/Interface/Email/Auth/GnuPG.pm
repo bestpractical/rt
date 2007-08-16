@@ -91,7 +91,7 @@ sub GetCurrentUser {
     );
     my $raw_msg = $parser->Entity();
 
-    my ($status, @res) = VerifyDecrypt( Entity => $raw_msg );
+    my ($status, @res) = VerifyDecrypt( Entity => $raw_msg, OutEntity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
@@ -225,6 +225,7 @@ sub CheckBadData {
 sub VerifyDecrypt {
     my %args = (
         Entity => undef,
+        OutEntity => undef,
         @_
     );
 
