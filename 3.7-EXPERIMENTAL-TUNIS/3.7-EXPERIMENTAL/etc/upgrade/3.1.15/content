@@ -1,7 +1,0 @@
-@Scrips = (
-    {  ScripCondition => 'On Owner Change',
-       ScripAction    => 'Notify Owner',
-       Template       => 'Transaction' },
-);
-
-1;
