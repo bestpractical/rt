@@ -214,6 +214,17 @@ sub load_or_create_queue {
     unless ( $obj->id ) {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
+    } else {
+        my @fields = qw(CorrespondAddress CommentAddress);
+        foreach my $field ( @fields ) {
+            next unless exists $args{ $field };
+            
+            no warnings 'uninitialized';
+            my $method = 'Set'. $field;
+            my ($val, $msg) = $obj->$method( $args{ $field } )
+                unless $args{ $field } eq $obj->$field;
+            die "$msg" unless $val;
+        }
     }
 
     return $obj;
