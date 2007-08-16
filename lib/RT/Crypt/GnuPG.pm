@@ -817,14 +817,17 @@ sub FindProtectedParts {
         $skip{"$sig_part"}++;
         my $sig_name = $sig_part->head->recommended_filename;
         my ($file_name) = $sig_name =~ /^(.*?)(?:.sig)?$/;
-        my ($data_part_in) =
-            grep $file_name eq ($_->head->recommended_filename||''),
-            grep $_ ne $sig_part,
-            $entity->parts;
-        unless ( $data_part_in ) {
+
+        my ($data_part_idx) =
+            grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
+            grep $sig_part  ne  $entity->parts($_),
+                0 .. $entity->parts - 1;
+        unless ( defined $data_part_idx ) {
             $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
             next;
         }
+        my $data_part_in = $entity->parts($data_part_idx);
+        my $data_part_out = $out_entity->parts($data_part_idx);
 
         $skip{"$data_part_in"}++;
         $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
@@ -834,17 +837,18 @@ sub FindProtectedParts {
             TopIn     => $entity,
             TopOut    => $out_entity,
             DataIn    => $data_part_in,
+            DataOut   => $data_part_out,
             Signature => $sig_part,
         };
     }
 
     # attachments with inline encryption
-    my @encrypted_files =
-        grep $_->head->recommended_filename
-            && $_->head->recommended_filename =~ /\.pgp$/,
-        $entity->parts;
+    my @encrypted_indices =
+        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.pgp$/}
+            0 .. $entity->parts - 1;
 
-    foreach my $part ( @encrypted_files ) {
+    foreach my $i ( @encrypted_indices ) {
+        my $part = $entity->parts($i);
         $skip{"$part"}++;
         $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
         push @res, {
@@ -853,6 +857,7 @@ sub FindProtectedParts {
             TopIn     => $entity,
             TopOut    => $out_entity,
             DataIn    => $part,
+            DataOut   => $out_entity->parts($i),
         };
     }
 
@@ -912,12 +917,12 @@ sub VerifyDecrypt {
 }
 
 sub VerifyInline {
-    my %args = ( DataIn => undef, TopIn => undef, TopOut => undef, @_ );
+    my %args = ( DataIn => undef, DataOut => undef,  TopIn => undef, TopOut => undef, @_ );
     return DecryptInline( %args );
 }
 
 sub VerifyAttachment {
-    my %args = ( DataIn => undef, Signature => undef, TopIn => undef, TopOut => undef, @_ );
+    my %args = ( DataIn => undef, DataOut => undef, Signature => undef, TopIn => undef, TopOut => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
@@ -966,7 +971,7 @@ sub VerifyAttachment {
 }
 
 sub VerifyRFC3156 {
-    my %args = ( DataIn => undef, Signature => undef, TopIn => undef, TopOut => undef, @_ );
+    my %args = ( DataIn => undef, DataOut => undef, Signature => undef, TopIn => undef, TopOut => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
@@ -1093,6 +1098,7 @@ sub DecryptRFC3156 {
 sub DecryptInline {
     my %args = (
         DataIn => undef,
+        DataOut => undef,
         Passphrase => undef,
         @_
     );
@@ -1151,6 +1157,8 @@ sub DecryptInline {
     seek $tmp_fh, 0, 0;
     $args{'DataIn'}->bodyhandle( new MIME::Body::File $tmp_fn );
     $args{'DataIn'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    $args{'DataOut'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'DataOut'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
     return %res;
 }
 
@@ -1159,15 +1167,16 @@ sub DecryptAttachment {
         TopIn  => undef,
         TopOut => undef,
         DataIn => undef,
+        DataOut => undef,
         Passphrase => undef,
         @_
     );
     my %res = DecryptInline( %args );
     return %res if $res{'exit_code'};
 
-    my $filename = $args{'DataIn'}->head->recommended_filename;
+    my $filename = $args{'DataOut'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
-    $args{'DataIn'}->head->mime_attr( $_ => $filename )
+    $args{'DataOut'}->head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;
