@@ -750,7 +750,7 @@ sub FindProtectedParts {
             return {
                 Type   => $type,
                 Format => 'Inline',
-                Data   => $entity,
+                DataIn => $entity,
             };
         }
         $io->close;
@@ -780,7 +780,7 @@ sub FindProtectedParts {
                 Type   => 'encrypted',
                 Format => 'RFC3156',
                 Top    => $entity,
-                Data   => $entity->parts(1),
+                DataIn => $entity->parts(1),
                 Info   => $entity->parts(0),
             };
         } else {
@@ -793,7 +793,7 @@ sub FindProtectedParts {
                 Type      => 'signed',
                 Format    => 'RFC3156',
                 Top       => $entity,
-                Data      => $entity->parts(0),
+                DataIn    => $entity->parts(0),
                 Signature => $entity->parts(1),
             };
         }
@@ -825,7 +825,7 @@ sub FindProtectedParts {
             Type      => 'signed',
             Format    => 'Attachment',
             Top       => $entity,
-            Data      => $data_part,
+            DataIn    => $data_part,
             Signature => $sig_part,
         };
     }
@@ -843,7 +843,7 @@ sub FindProtectedParts {
             Type      => 'encrypted',
             Format    => 'Attachment',
             Top       => $entity,
-            Data      => $part,
+            DataIn    => $part,
         };
     }
 
@@ -867,7 +867,7 @@ sub VerifyDecrypt {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { VerifyRFC3156( %$item ) };
             if ( $args{'Detach'} ) {
-                $item->{'Top'}->parts( [ $item->{'Data'} ] );
+                $item->{'Top'}->parts( [ $item->{'DataIn'} ] );
                 $item->{'Top'}->make_singlepart;
             }
         } elsif ( $item->{'Format'} eq 'Inline' ) {
@@ -897,12 +897,12 @@ sub VerifyDecrypt {
 }
 
 sub VerifyInline {
-    my %args = ( Data => undef, Top => undef, @_ );
+    my %args = ( DataIn => undef, Top => undef, @_ );
     return DecryptInline( %args );
 }
 
 sub VerifyAttachment {
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( DataIn => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
@@ -914,7 +914,7 @@ sub VerifyAttachment {
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
-    $args{'Data'}->bodyhandle->print( $tmp_fh );
+    $args{'DataIn'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
 
     my %handle;
@@ -951,7 +951,7 @@ sub VerifyAttachment {
 }
 
 sub VerifyRFC3156 {
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( DataIn => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
@@ -963,7 +963,7 @@ sub VerifyRFC3156 {
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw:eol(CRLF?)';
-    $args{'Data'}->print( $tmp_fh );
+    $args{'DataIn'}->print( $tmp_fh );
     $tmp_fh->flush;
 
     my %handle;
@@ -1001,7 +1001,7 @@ sub VerifyRFC3156 {
 
 sub DecryptRFC3156 {
     my %args = (
-        Data => undef,
+        DataIn => undef,
         Info => undef,
         Top => undef,
         Passphrase => undef,
@@ -1040,7 +1040,7 @@ sub DecryptRFC3156 {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        $args{'DataIn'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1073,7 +1073,7 @@ sub DecryptRFC3156 {
 
 sub DecryptInline {
     my %args = (
-        Data => undef,
+        DataIn => undef,
         Passphrase => undef,
         @_
     );
@@ -1110,7 +1110,7 @@ sub DecryptInline {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        $args{'DataIn'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1130,24 +1130,24 @@ sub DecryptInline {
     }
 
     seek $tmp_fh, 0, 0;
-    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
-    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    $args{'DataIn'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'DataIn'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
     return %res;
 }
 
 sub DecryptAttachment {
     my %args = (
         Top  => undef,
-        Data => undef,
+        DataIn => undef,
         Passphrase => undef,
         @_
     );
     my %res = DecryptInline( %args );
     return %res if $res{'exit_code'};
 
-    my $filename = $args{'Data'}->head->recommended_filename;
+    my $filename = $args{'DataIn'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
-    $args{'Data'}->head->mime_attr( $_ => $filename )
+    $args{'DataIn'}->head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;
