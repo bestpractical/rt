@@ -65,10 +65,12 @@ you care about and specify the following in your SiteConfig.pm
 sub ApplyBeforeDecode { return 1 }
 
 use RT::Crypt::GnuPG;
+use RT::EmailParser ();
 
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
+        RawMessageRef => undef,
         @_
     );
 
@@ -76,7 +78,19 @@ sub GetCurrentUser {
         for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
                X-RT-Incoming-Signature X-RT-Privacy);
 
-    my $msg = $args{'Message'}->dup;
+    my $decoded = $args{'Message'};
+
+    # GPG needs an exact copy of the message to properly verify signatures
+    # whitespace changes introduced by decoding and re-encoding means we're 
+    # rejecting some properly signed emails, specifically on binary attachments
+    my $parser = RT::EmailParser->new();
+    $parser->SmartParseMIMEEntityFromScalar(
+        Message => ${$args{'RawMessageRef'}},
+        Decode => 0,
+        Exact => 1,
+    );
+    $args{'Message'} = $parser->Entity();
+
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
@@ -100,7 +114,7 @@ sub GetCurrentUser {
     $args{'Message'}->attach(
         Type        => 'application/x-rt-original-message',
         Disposition => 'inline',
-        Data        => $msg->as_string,
+        Data        => $decoded->as_string,
     );
 
     $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
