@@ -1,0 +1,62 @@
+Return-Path: <gst@example.com>
+Delivered-To: j@pallas.eruditorum.org
+Received: from vis.example.com (vis.example.com [212.68.68.251])
+	by pallas.eruditorum.org (Postfix) with SMTP id 59236111C3
+	for <jesse@example.com>; Thu, 12 Jun 2003 02:14:44 -0400 (EDT)
+Received: (qmail 29541 invoked by uid 502); 12 Jun 2003 06:14:42 -0000
+Received: from sivd.example.com (HELO example.com) (192.168.42.1)
+  by 192.168.42.42 with SMTP; 12 Jun 2003 06:14:42 -0000
+Received: received from 172.20.72.174 by odie.example.com; Thu, 12 Jun 2003 08:14:27 +0200
+Received: by mailserver.example.com with Internet Mail Service (5.5.2653.19) id <LJSB7T54>; Thu, 12 Jun 2003 08:14:39 +0200
+Message-ID: <50362EC956CBD411A339009027F6257E013DD495@mailserver.example.com>
+Date: Thu, 12 Jun 2003 08:14:39 +0200
+From: "Stever, Gregor" <gst@example.com>
+MIME-Version: 1.0
+X-Mailer: Internet Mail Service (5.5.2653.19)
+To: "'jesse@example.com'" <jesse@example.com>
+Subject: RE: [rt-users] HTML-encoded mails with umlaute
+Date: Thu, 12 Jun 2003 08:14:39 +0200
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C330A9.E7BDD590"
+X-Spam-Status: No, hits=0.0 required=5.0
+	tests=AWL,HTML_50_60,HTML_MESSAGE,INVALID_DATE
+	version=2.55
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin 2.55 (1.174.2.19-2003-05-19-exp)
+
+------_=_NextPart_001_01C330A9.E7BDD590
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+ist this kind of Messages, that causes rt to crash.=20
+
+Mit freundlichen Gr=FC=DFen
+Gregor Stever      ^^causes Error!!
+
+
+------_=_NextPart_001_01C330A9.E7BDD590
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Diso-8859-=
+1">
+
+
+<META content=3D"MSHTML 6.00.2800.1170" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial><FONT size=3D2>Hello,<BR><BR>ist this kind of Messa=
+ges, that=20
+causes rt to crash.<BR><BR>Mit freundlichen Gr=FC=DFen<BR>Gregor=20
+Stever&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^^causes Error<SPAN=20
+class=3D975501206-12062003>!!</SPAN></FONT></FONT></DIV></BODY></HTML>
+
+
+------_=_NextPart_001_01C330A9.E7BDD590--
+
+

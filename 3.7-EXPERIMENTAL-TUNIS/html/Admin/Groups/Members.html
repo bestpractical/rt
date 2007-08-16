@@ -1,0 +1,158 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
+<& /Admin/Elements/GroupTabs, GroupObj => $Group, 
+    current_tab => 'Admin/Groups/Members.html?id='.$id, 
+    Title => "RT/Admin/Edit the group ". $Group->Name &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+<&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Name) &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Members.html" method="post">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+<table width="100%">
+<tr>
+<td>
+<h3><&|/l&>Current members</&></h3>
+</td>
+<td>
+<h3><&|/l&>Add members</&></h3>
+</td>
+</tr>
+
+<tr>
+<td valign="top">
+
+% if ($Group->MembersObj->Count == 0 ) {
+<em><&|/l&>(No members)</&></em>
+% } else {
+<em><&|/l&>(Check box to delete)</&></em>
+<br />
+<br />
+<&|/l&>Users</&>
+% my $Users = $Group->UserMembersObj;
+% $Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
+<ul>
+% while ( my $user = $Users->Next ) {
+% $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
+<li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
+<& '/Elements/ShowUser', User => $user &></li>
+% }
+</ul>
+<&|/l&>Groups</&>
+<ul>
+% my $GroupMembers = $Group->MembersObj;
+% $GroupMembers->LimitToGroups();
+% while ( my $member = $GroupMembers->Next ) {
+% $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
+<li><input type="checkbox" class="checkbox" name="DeleteMember-<% $member->MemberId %>" value="1" />
+<% $member->MemberObj->Object->Name %>
+% }
+% }
+</ul>
+</td>
+<td valign="top">
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
+    SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
+</td>
+</tr>
+</table>
+</&>
+<& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
+</form>
+
+
+<%INIT>
+
+my $Group = new RT::Group($session{'CurrentUser'});
+$Group->Load($id) || Abort(loc('Could not load group'));
+
+my (%UsersSeen, %GroupsSeen);
+$GroupsSeen{ $Group->id } = 1; # can't be a member of ourself
+
+my (@results);
+
+# XXX: safe member id in value instead of name
+foreach my $key (keys %ARGS) {
+    next unless $key =~ /^DeleteMember-(\d+)$/;
+
+    my ($val,$msg) = $Group->DeleteMember($1);
+    push (@results, $msg);
+}
+
+foreach my $member (grep $_, @AddMembersUsers, @AddMembersGroups) {
+
+    my $principal;
+
+    if ($member =~ /^Group-(\d+)$/) {
+        $principal = RT::Group->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } elsif ($member =~ /^User-(\d+)$/) {
+        $principal = RT::User->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } else {
+        next;
+    }
+
+
+    my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
+    push (@results, $msg);
+}
+
+</%INIT>
+
+<%ARGS>
+@AddMembersUsers  => ()
+@AddMembersGroups => ()
+$id => undef
+$UserOrderBy => 'Name'
+$UserOrder => 'ASC'
+$SkipSeenUsers => 1
+$SkipSeenGroups => 1
+</%ARGS>

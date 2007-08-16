@@ -1,0 +1,155 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+
+use Getopt::Long;
+my %opt;
+GetOptions( \%opt, "older=s", "debug", "help");
+
+
+if ( $opt{help} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage({ -message => "RT Session cleanup tool\n", verbose => 1 });
+    exit 1;    
+}
+
+
+if( $opt{'older'} ) {
+    unless( $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
+        print STDERR "wrong format of the 'older' argumnet\n";
+        exit(1);
+    }
+    my ($num,$unit) = ($1, uc($2 ||'D'));
+    my %factor = ( H => 60*60 );
+    $factor{'D'} = $factor{'H'}*24;
+    $factor{'M'} = $factor{'D'}*31;
+    $factor{'Y'} = $factor{'D'}*365;
+    $opt{'older'} = $num * $factor{ $unit };
+}
+
+require RT;
+RT::LoadConfig();
+
+if( $opt{'debug'} ) {
+    RT->Config->Set( LogToScreen => 'debug' );
+} else {
+    RT->Config->Set( LogToScreen => undef );
+}
+
+RT::ConnectToDatabase();
+RT::InitLogging();
+
+require RT::Interface::Web::Session;
+
+if( $opt{'older'} or my $alogoff = int RT->Config->Get('AutoLogoff') ) {
+    my $min;
+    foreach ($alogoff*60, $opt{'older'}) {
+        next unless $_;
+        $min = $_ unless $min;
+        $min = $_ if $_ < $min;
+    }
+
+    RT::Interface::Web::Session->ClearOld( $min );
+}
+
+RT::Interface::Web::Session->ClearByUser;
+
+exit(0);
+
+__END__
+
+=head1 NAME
+
+rt-clean-sessions - clean old and duplicate RT sessions
+
+=head1 SYNOPSIS
+
+    rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
+
+    rt-clean sessions
+    rt-clean sessions --debug
+    rt-clean sessions --older 10D
+    rt-clean sessions --debug --older 1M
+
+=head1 DESCRIPTION
+
+Script cleans RT sessions from DB or dir with sessions data.
+Leaves in DB only one session per RT user and sessions that aren't older
+than specified(see options).
+
+Script is safe because data in the sessions is temporary and can be deleted.
+
+=head1 OPTIONS
+
+=head2 older
+
+Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
+H(our), M(onth) and Y(ear) are also supported.
+
+For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
+older than 1 month.
+
+=head2 debug
+
+Turn on debug output.
+
+=head1 NOTES
+
+Functionality similar to this is implemented in
+html/Elements/SetupSessionCookie ; however, that does not guarantee
+that a session will be removed from disk and database soon after the
+timeout expires.  This script, if run from a cron job, will ensure
+that the timed out sessions are actually removed from disk; the Mason
+component just ensures that the old sessions are not reusable before
+the cron job gets to them.
+
+=cut

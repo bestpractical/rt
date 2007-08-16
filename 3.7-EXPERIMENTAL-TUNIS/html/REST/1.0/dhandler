@@ -1,0 +1,315 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+%# REST/1.0/dhandler
+%#
+<%ARGS>
+@id => ()
+$fields => undef
+$format => undef
+$content => undef
+</%ARGS>
+<%INIT>
+use RT::Interface::REST;
+
+my $output = "";
+my $status = "200 Ok";
+my $object = $m->dhandler_arg;
+
+my $name   = qr{[\w.-]+};
+my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
+my $label  = '[a-zA-Z0-9@_.+-]+';
+my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
+my $labels = "(?:$label,)*$label";
+
+# We must handle requests such as the following:
+#
+# 1. http://.../REST/1.0/show (with a list of object specifications).
+# 2. http://.../REST/1.0/edit (with a self-contained list of forms).
+# 3. http://.../REST/1.0/ticket/show (implicit type specification).
+#    http://.../REST/1.0/ticket/edit
+# 4. http://.../REST/1.0/ticket/nn (all possibly with a single form).
+#    http://.../REST/1.0/ticket/nn/history
+#    http://.../REST/1.0/ticket/nn/comment
+#    http://.../REST/1.0/ticket/nn/attachment/1
+#
+# Objects are specified by their type, and either a unique numeric ID,
+# or a unique name (e.g. ticket/1, queue/foo). Multiple objects of the
+# same type may be specified by a comma-separated list of identifiers
+# (e.g., user/ams,rai or ticket/1-3,5-7).
+#
+# Ultimately, we want a list of object specifications to operate upon.
+# The URLs in (4) provide enough information to identify an object. We
+# will assemble submitted information into that format in other cases.
+#
+my (@objects, $forms);
+my $utype;
+
+if ($object eq 'show' ||                                # $REST/show
+    (($utype) = ($object =~ m{^($name)/show$})))        # $REST/ticket/show
+{
+    # We'll convert type/range specifications ("ticket/1-3,7-9/history")
+    # into a list of singular object specifications ("ticket/1/history").
+    # If the URL specifies a type, we'll accept only that one.
+    foreach my $id (@id) {
+        $id =~ s|^(?:$utype/)?|$utype/| if $utype;
+        if (my ($type, $oids, $extra) =
+            ($id =~ m#^($name)/($list|$labels)(?:(/.*))?$#o))
+        {
+	    $extra ||= '';
+	    my ($attr, $args) = $extra =~ m{^(?:/($name)(?:/(.*))?)?$}o;
+	    my $tids;
+	    if ($attr and $attr eq 'history' and $args) {
+	       	($tids) = $args =~ m#id/(\d.*)#o;
+	    }
+	    # expand transaction and attachment range specifications
+	    # (if applicable)
+	    foreach my $oid (expand_list($oids)) {
+		if ($tids) {
+		    push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
+		} else {
+		    push(@objects, "$type/$oid$extra");
+		}
+	    }
+	}
+        else {
+            $status = "400 Bad Request";
+            $output = "Invalid object ID specified: '$id'";
+            goto OUTPUT;
+        }
+    }
+}
+elsif ($object eq 'edit' ||                             # $REST/edit
+    (($utype) = ($object =~ m{^($name)/edit$})))        # $REST/ticket/edit
+{
+    # We'll make sure each of the submitted forms is syntactically valid
+    # and sufficiently identifies an object to operate upon, then add to
+    # the object list as above.
+    my @output;
+
+    $forms = form_parse($content);
+    foreach my $form (@$forms) {
+        my ($c, $o, $k, $e) = @$form;
+
+        if ($e) {
+            push @output, [ "# Syntax error.", $o, $k, $e ];
+        }
+        else {
+            my ($type, $id);
+
+            # Look for matching types in the ID, form, and URL.
+            $type = exists $k->{type} ? $k->{type} : $utype;
+            $type =~ s|^(?:$utype)?|$utype/| if $utype;
+            $type =~ s|/$|| if $type;
+
+            if (exists $k->{id}) {
+                $id = $k->{id};
+                $id =~ s|^(?:$type/)?|$type/| if $type;
+
+                if ($id =~ m#^$name/(?:$label|\d+)(?:/.*)?#o) {
+                    push @objects, $id;
+                }
+                else {
+                    push @output, [ "# Invalid object ID: '$id'", $o, $k, $e ];
+                }
+            }
+            else {
+                push @output, [ "# No object ID specified.", $o, $k, $e ];
+            }
+        }
+    }
+    # If we saw any errors at this stage, we won't process any part of
+    # the submitted data.
+    if (@output) {
+        unshift @output, [ "# Please resubmit with errors corrected." ];
+        $status = "409 Syntax Error";
+        $output = form_compose(\@output);
+        goto OUTPUT;
+    }
+}
+else {
+    # We'll assume that this is in the correct format already. Otherwise
+    # it will be caught by the loop below.
+    push @objects, $object;
+
+    if ($content) {
+        $forms = form_parse($content);
+
+        if (@$forms > 1) {
+            $status = "400 Bad Request";
+            $output = "You may submit only one form to this object.";
+            goto OUTPUT;
+        }
+
+        my ($c, $o, $k, $e) = @{ $forms->[0] };
+        if ($e) {
+            $status = "409 Syntax Error";
+            $output = form_compose([ ["# Syntax error.", $o, $k, $e] ]);
+            goto OUTPUT;
+        }
+    }
+}
+
+# Make sure we have something to do.
+unless (@objects) {
+    $status = "400 Bad Request";
+    $output = "No objects specified.";
+    goto OUTPUT;
+}
+
+# Parse and validate any field specifications.
+my (%fields, @fields);
+if ($fields) {
+    unless ($fields =~ /^(?:$field,)*$field$/) {
+        $status = "400 Bad Request";
+        $output = "Invalid field specification: $fields";
+        goto OUTPUT;
+    }
+    @fields = map lc, split /,/, $fields;
+    @fields{@fields} = ();
+    unless (exists $fields{id}) {
+        unshift @fields, "id";
+        $fields{id} = ();
+    }
+}
+
+my (@comments, @output);
+
+foreach $object (@objects) {
+    my ($handler, $type, $id, $attr, $args);
+    my ($c, $o, $k, $e) = ("", ["id"], {id => $object}, 0);
+
+    my $i = 0;
+    if ($object =~ m{^($name)/(\d+|$label)(?:/($name)(?:/(.*))?)?$}o ||
+        $object =~ m{^($name)/(new)$}o)
+    {
+        ($type, $id, $attr, $args) = ($1, $2, ($3 || 'default'), $4);
+        $handler = "Forms/$type/$attr";
+
+        unless ($m->comp_exists($handler)) {
+            $args = "$attr/$args";
+            $handler = "Forms/$type/default";
+
+            unless ($m->comp_exists($handler)) {
+                $i = 2;
+                $c = "# Unknown object type: $type";
+            }
+        }
+        elsif ($id ne 'new' && $id !~ /^\d+$/) {
+            my $ns = "Forms/$type/ns";
+
+            # Can we resolve named objects?
+            unless ($m->comp_exists($ns)) {
+                $i = 3;
+                $c = "# Objects of type $type must be specified by numeric id.";
+            }
+            else {
+                my ($n, $s) = $m->comp("Forms/$type/ns", id => $id);
+                if ($n <= 0) { $i = 4; $c = "# $s"; }
+                else         { $i = 0; $id = $n;    }
+            }
+        }
+        else {
+            $i = 0;
+        }
+    }
+    else {
+        $i = 1;
+        $c = "# Invalid object specification: '$object'";
+    }
+
+    if ($i != 0) {
+        if ($content) {
+            (undef, $o, $k, $e) = @{ shift @$forms };
+        }
+        push @output, [ $c, $o, $k ];
+        next;
+    }
+
+    unless ($content) {
+        my $d = $m->comp($handler, id => $id, args => $args, format => $format, fields => \%fields);
+        my ($c, $o, $k, $e) = @$d;
+
+        if (!$e && @$o && keys %fields) {
+            my %lk = map { lc $_ => $_ } keys %$k;
+            @$o = map { $lk{$_} } @fields;
+            foreach my $key (keys %$k) {
+                delete $k->{$key} unless exists $fields{lc $key};
+            }
+        }
+        push(@output, [ $c, $o, $k ]) if ($c || @$o || keys %$k);
+    }
+    else {
+        my ($c, $o, $k, $e) = @{ shift @$forms };
+        my $d = $m->comp($handler, id => $id, args => $args, format => $format,
+                         changes => $k);
+        ($c, $o, $k, $e) = @$d;
+
+        # We won't pass $e through to compose, trusting instead that the
+        # handler added suitable comments for the user.
+        if ($e) {
+            if (@$o) {
+                $status = "409 Syntax Error";
+            } 
+            else {
+                $status = "400 Bad Request";
+            }
+            push @output, [ $c, $o, $k ];
+        }
+        else {
+            push @comments, $c;
+        }
+    }
+}
+
+unshift(@output, [ join "\n", @comments ]) if @comments;
+$output = form_compose(\@output);
+
+OUTPUT:
+$m->out("RT/".$RT::VERSION ." ".$status ."\n\n$output\n") if ($output || $status != 200);
+return;
+</%INIT>

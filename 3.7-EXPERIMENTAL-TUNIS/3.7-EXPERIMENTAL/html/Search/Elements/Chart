@@ -1,0 +1,139 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$Query => "id > 0"
+$PrimaryGroupBy => 'Queue'
+$SecondaryGroupBy => undef
+$ChartStyle => 'bars'
+</%args>
+<%init>
+use RT::Report::Tickets;
+my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+$tix->FromSQL( $Query );
+my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
+$tix->GroupBy( FIELD => $PrimaryGroupBy );
+my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
+
+my %class = (
+    Queue => 'RT::Queue',
+    Owner => 'RT::User',
+);
+my $class = $class{ $PrimaryGroupBy };
+
+my (@keys, @values);
+while ( my $entry = $tix->Next ) {
+    if ($class) {
+        my $q = $class->new( $session{'CurrentUser'} );
+        $q->Load( $entry->__Value( $value_name ) );
+        push @keys, $q->Name;
+    }
+    else {
+        push @keys, $entry->__Value( $value_name );
+    }
+    $keys[-1] ||= loc('(no value)');
+    push @values, $entry->__Value( $count_name );
+}
+
+# XXX: Convert 1970-01-01 date to the 'Not Set'
+# this code should be generalized!!!
+if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
+    my $re;
+    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
+    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
+    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
+    foreach (@keys) {
+        s/^$re/loc('Not Set')/e;
+    }
+}
+
+my %data;
+foreach my $key (@keys) { $data{$key} = shift @values; }
+my @sorted_keys = sort @keys;
+my @sorted_values = map { $data{$_}} @sorted_keys;
+
+
+my $query_string = $m->comp('/Elements/QueryString', %ARGS);
+</%init>
+
+<% loc('Query:') %>&nbsp;<% $Query %><br />
+
+<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
+
+<table class="collection-as-table">
+<tr>
+<th class="collection-as-table"><% $tix->Label($PrimaryGroupBy) %>
+</th>
+<th class="collection-as-table"><&|/l&>Tickets</&>
+</th>
+</tr>
+% my ($i,$total);
+% while (my $key = shift @sorted_keys) {
+% $i++;
+% my $value = shift @sorted_values;
+% $total += $value;
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
+<td class="label collection-as-table">
+<%$key%>
+</td>
+<td class="value collection-as-table">
+<%$value%>
+</td>
+</tr>
+% }
+
+%$i++;
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
+<td class="label collection-as-table">
+<%loc('Total')%>
+</td>
+<td class="value collection-as-table">
+<%$total%>
+</td>
+</tr>
+
+</table>

@@ -1,0 +1,36 @@
+@Attributes = (
+    { Name => 'Search - My Tickets',
+      Description => '[_1] highest priority tickets I own',
+      Content     =>
+      { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus},
+        Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
+        OrderBy => 'Priority',
+        Order   => 'DESC' },
+    },
+    { Name => 'Search - Unowned Tickets',
+      Description => '[_1] newest unowned tickets',
+      Content     =>
+      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
+        Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
+        OrderBy => 'Created',
+        Order   => 'DESC' },
+    },
+    { Name => 'HomepageSettings',
+      Description => 'HomepageSettings',
+      Content =>
+      { 'body' =>
+	[ { type => 'system', name => 'My Tickets' },
+	  { type => 'system', name => 'Unowned Tickets' },
+	  { type => 'component',  name => 'QuickCreate'},
+	],
+        'summary' =>
+	[ 
+	  { type => 'component', name => 'MyReminders' },
+          { type => 'component', name => 'Quicksearch' },
+	  { type => 'component', name => 'RefreshHomepage' },
+	]
+    },
+}
+);
+
+1;

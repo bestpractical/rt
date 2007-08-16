@@ -1,0 +1,65 @@
+alter Table Transactions ADD ObjectType VARCHAR2(64);
+UPDATE Transactions set ObjectType = 'RT::Ticket';
+ALTER TABLE Transactions modify ObjectType NOT NULL;
+ALTER TABLE Transactions drop column EffectiveTicket;
+ALTER TABLE Transactions ADD ReferenceType VARCHAR2(255) NULL;
+ALTER TABLE Transactions ADD OldReference NUMBER(11,0) NULL;      
+ALTER TABLE Transactions ADD NewReference NUMBER(11,0) NULL;
+DROP INDEX transactions1;            
+ALTER TABLE Transactions rename column Ticket to ObjectId;
+CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+
+ALTER TABLE TicketCustomFieldValues rename to ObjectCustomFieldValues;
+ALTER TABLE ObjectCustomFieldValues  rename column Ticket to ObjectId;
+ALTER TABLE ObjectCustomFieldValues ADD ObjectType VARCHAR2(255);
+UPDATE ObjectCustomFieldValues set ObjectType = 'RT::Ticket';
+ALTER TABLE ObjectCustomFieldValues MODIFY ObjectType NOT NULL;
+ALTER TABLE ObjectCustomFieldValues ADD Disabled NUMBER(11,0);
+ALTER TABLE ObjectCustomFieldValues MODIFY Disabled  default 0;  
+UPDATE ObjectCustomFieldValues SET Disabled = 0;
+ALTER TABLE ObjectCustomFieldValues MODIFY Disabled NOT NULL;
+ALTER TABLE ObjectCustomFieldValues ADD LargeContent CLOB NULL;
+ALTER TABLE ObjectCustomFieldValues ADD ContentType VARCHAR2(80) NULL;
+ALTER TABLE ObjectCustomFieldValues ADD ContentEncoding VARCHAR2(80) NULL;
+ALTER TABLE ObjectCustomFieldValues ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
+
+
+
+CREATE INDEX ObjectCustomFieldValues1 on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
+CREATE INDEX ObjectCustomFieldValues2  on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+
+
+
+CREATE SEQUENCE OBJECTCUSTOMFIELDS_seq;
+CREATE TABLE ObjectCustomFields (
+        id              NUMBER(11,0)
+                 CONSTRAINT ObjectCustomFields_Key PRIMARY KEY,
+        CustomField       NUMBER(11,0)  NOT NULL,
+        ObjectId              NUMBER(11,0)  NOT NULL,
+        SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Created         DATE,
+        LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
+        LastUpdated     DATE
+);
+
+
+INSERT into ObjectCustomFields (id, CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  objectcustomfields_seq.nextval, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+
+ALTER TABLE CustomFields ADD LookupType VARCHAR2(255);
+ALTER TABLE CustomFields ADD Repeated NUMBER(11,0);
+ALTER TABLE CustomFields ADD Pattern VARCHAR2(255) NULL;
+ALTER TABLE CustomFields ADD MaxValues NUMBER(11,0);
+
+UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
+UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
+UPDATE CustomFields SET Type = 'Select' WHERE Type LIKE 'Select%';
+UPDATE CustomFields SET Type = 'Freeform' WHERE Type LIKE 'Freeform%';
+UPDATE CustomFields Set LookupType = 'RT::Queue-RT::Ticket';
+ALTER TABLE CustomFields MODIFY LookupType NOT NULL;
+UPDATE CustomFields Set Repeated = 0;
+ALTER TABLE CustomFields MODIFY Repeated DEFAULT 0;
+ALTER TABLE CustomFields MODIFY Repeated  NOT NULL;
+ALTER TABLE CustomFields drop column Queue; 
+
+

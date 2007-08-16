@@ -1,0 +1,11 @@
+ALTER TABLE ObjectCustomFieldValues ADD COLUMN SortOrder INTEGER;
+UPDATE ObjectCustomFieldValues SET SortOrder = 0;
+ALTER TABLE ObjectCustomFieldValues ALTER COLUMN SortOrder SET DEFAULT 0;
+ALTER TABLE ObjectCustomFieldValues ALTER COLUMN SortOrder SET NOT NULL;
+ALTER TABLE ObjectCustomFieldValues ADD COLUMN Disabled INTEGER;
+UPDATE ObjectCustomFieldValues SET Disabled = 1 WHERE Current = 0;
+UPDATE ObjectCustomFieldValues SET Disabled = 0 WHERE Current != 0;
+ALTER TABLE ObjectCustomFieldValues ALTER COLUMN Disabled SET DEFAULT 0;
+ALTER TABLE ObjectCustomFieldValues ALTER COLUMN Disabled SET NOT NULL;
+
+ALTER TABLE ObjectCustomFieldValues DROP COLUMN Current;
