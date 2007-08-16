@@ -52,6 +52,7 @@
 </div>
 %}
 <%INIT>
+return;
 if ( $Id ) {
     $Ticket = LoadTicket($Id);
 }

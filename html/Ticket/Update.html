@@ -150,7 +150,7 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-$TicketObj->Lock();
+#$TicketObj->Lock();
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -234,10 +234,10 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-	my $lock = $TicketObj->Locked();
-	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-	$TicketObj->Unlock();
-    $m->comp('Display.html', TicketObj => $TicketObj, Duration => $Duration, %ARGS);
+#	my $lock = $TicketObj->Locked();
+#	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+#	$TicketObj->Unlock();
+    $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }
 
