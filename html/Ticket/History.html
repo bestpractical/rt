@@ -50,7 +50,7 @@
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
 
-<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
+% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);
 
 <br />
       
@@ -74,7 +74,7 @@ $id => undef
 my $Ticket = LoadTicket ($id);
 
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-	Abort("No permission to view ticket");
+    Abort("No permission to view ticket");
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);

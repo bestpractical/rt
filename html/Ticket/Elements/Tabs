@@ -60,7 +60,7 @@ my $searchtabs = {};
 my $actions;
 
 if ( $Ticket) {
-	
+    
 my $id   = $Ticket->id();
 
 if ( defined $session{'tickets'} ) {
@@ -72,7 +72,7 @@ if ( defined $session{'tickets'} ) {
 
         if ($updatesession) {
                 $session{'i'}++;
-		$session{'tickets'}->PrepForSerialization();
+        $session{'tickets'}->PrepForSerialization();
         }
 
         # Don't display prev links if we're on the first ticket

@@ -52,8 +52,7 @@
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
-% $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
+% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
@@ -91,8 +90,6 @@ $Collapsed => undef
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my (@Actions, $Tickets);  
-my $Duration;
-my $time;
 
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
@@ -132,6 +129,12 @@ if ($ARGS{'id'} eq 'new') {
             push(@Actions, $msg);
         }
     }
+
+    $m->callback(CallbackName => 'ProcessLockArgument', 
+                Ticket => $TicketObj, 
+                ARGSref => \%ARGS, 
+                Actions => \@Actions);
+
     
 #    if ( defined $ARGS{'Lock'} ) {
 #        if ( $ARGS{'Lock'} eq 'add' ) {
