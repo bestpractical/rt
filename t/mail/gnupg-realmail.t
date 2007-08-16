@@ -72,12 +72,12 @@ sub email_ok {
         or return 0;
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($status >> 8, 0, "$eid: The mail gateway exited normally");
 
     my $tick = get_latest_ticket_ok();
     is( $tick->Subject,
         "Test Email ID:$eid",
-        "Created the ticket"
+        "$eid: Created the ticket"
     );
 
     my $txn = $tick->Transactions->First;
@@ -86,40 +86,40 @@ sub email_ok {
     if ($usage =~ /encrypted/) {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Success',
-            'recorded incoming mail that is encrypted'
+            "$eid: recorded incoming mail that is encrypted"
         );
         is( $msg->GetHeader('X-RT-Privacy'),
             'PGP',
-            'recorded incoming mail that is encrypted'
+            "$eid: recorded incoming mail that is encrypted"
         );
 
         #XXX: maybe RT will have already decrypted this for us
         unlike( $msg->Content,
                 ($body{$eid} || qr/ID:$eid/),
-                'incoming mail did NOT have original body'
+                "$eid: incoming mail did NOT have original body"
         );
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Not encrypted',
-            'recorded incoming mail that is not encrypted'
+            "$eid: recorded incoming mail that is not encrypted"
         );
         like( $msg->Content || $attachments[0]->Content,
               ($body{$eid} || qr/ID:$eid/),
-              'got original content'
+              "$eid: got original content"
         );
     }
 
     if ($usage =~ /signed/) {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
             'RT Test <rt-test@example.com>',
-            'recorded incoming mail that is signed'
+            "$eid: recorded incoming mail that is signed"
         );
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
             undef,
-            'recorded incoming mail that is not signed'
+            "$eid: recorded incoming mail that is not signed"
         );
     }
 
@@ -127,21 +127,21 @@ sub email_ok {
         # signed messages should sign each attachment too
         if ($usage =~ /signed/) {
             my $sig = pop @attachments;
-            ok ($sig->Id, 'loaded attachment.sig object');
+            ok ($sig->Id, "$eid: loaded attachment.sig object");
             my $acontent = $sig->Content;
         }
 
         my $a = pop @attachments;
         my $file = '';
-        ok ($a->Id, 'loaded attachment object');
+        ok ($a->Id, "$eid: loaded attachment object");
         my $acontent = $a->Content;
         if ($attachment =~ /binary/)
         {
-            is(md5_hex($acontent), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "The binary attachment's md5sum matches");
+            is(md5_hex($acontent), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "$eid: The binary attachment's md5sum matches");
         }
         else
         {
-            like($acontent, qr/zanzibar/, 'The attachment isn\'t screwed up in the database.');
+            like($acontent, qr/zanzibar/, "$eid: The attachment isn't screwed up in the database.");
         }
 
     }
