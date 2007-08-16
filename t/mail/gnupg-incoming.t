@@ -15,7 +15,8 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 

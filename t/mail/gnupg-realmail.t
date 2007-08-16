@@ -18,7 +18,8 @@ RT->Config->Set( 'GnuPG',
 
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
-                 passphrase => 'rt-test');
+                 passphrase => 'rt-test',
+                 'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
