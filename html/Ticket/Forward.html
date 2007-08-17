@@ -51,7 +51,7 @@
     Title  => $Title,
 &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">

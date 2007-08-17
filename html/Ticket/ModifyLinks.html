@@ -51,7 +51,7 @@
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->Id, 
     Title => loc("Link ticket #[_1]", $Ticket->Id) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
