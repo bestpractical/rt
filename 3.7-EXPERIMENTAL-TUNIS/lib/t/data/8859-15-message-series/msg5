@@ -1,0 +1,35 @@
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 28578 invoked by uid 9804); 26 May 2003 18:13:20 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:13:15 +0200
+Received: (Qmail 28534 invoked from network); 26 May 2003 18:13:14 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:13:14 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKb1-0000Ze-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:13:11 +0200
+Received: (qmail 28516 invoked by uid 9804); 26 May 2003 18:13:11 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:13:08 +0200
+Received: (Qmail 28479 invoked from network); 26 May 2003 18:13:07 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:13:07 +0200
+Date: Mon, 26 May 2003 18:13:27 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972807@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [28540] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4

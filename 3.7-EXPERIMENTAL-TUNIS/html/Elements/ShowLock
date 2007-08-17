@@ -1,0 +1,89 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+
+% my $TicketLabel = $Id ? "Ticket #$Id" : 'this ticket';
+
+% if ($Duration ||($u->id && $u->id == $session{'CurrentUser'}->id)) {
+<div class="locked-by-you">
+% if(defined $Duration && !$Lock) {
+    <&|/l, $TicketLabel, $ago &>You had [_1] locked for [_2]. It is now unlocked</&>.
+% #Do not display time if it is very little time, since such a short time probably 
+% #means the lock was just created.
+% } elsif($timePassed < 5) {    
+        <&|/l, $TicketLabel &>You have locked [_1]</&>.
+%    if($Unlock && !$Id) {
+        [<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%    }
+% }    else {
+    <&|/l, $TicketLabel, $ago &>You have had [_1] locked for [_2]</&>.
+%     if($Unlock) {
+        [<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->id%>&Lock=remove"><&|/l&>Unlock</&></a>]
+%    }
+% }
+
+</div>
+% } else {
+%    return unless $u->Name;
+%     $TicketLabel = 'This ticket' if $TicketLabel eq 'this ticket';    
+<div class="locked">
+<&|/l, $TicketLabel, $u->Name, $ago &>[_1] has been locked by [_2] for [_3]</&>.
+</div>
+%}
+<%INIT>
+return;
+if ( $Id ) {
+    $Ticket = LoadTicket($Id);
+}
+
+my $Lock = $Ticket->Locked() if $Ticket;
+
+return unless (defined $Ticket && defined $Lock) || defined $Duration;
+
+my $timePassed;
+my $date = RT::Date->new($session{'CurrentUser'});
+
+if(defined $Duration) {
+    $timePassed = $Duration;
+}
+elsif($Lock) {
+    $timePassed = time() - $Lock->Content->{'Timestamp'};
+}
+
+my $ago = $date->DurationAsString($timePassed);
+
+my $u = RT::User->new($session{'CurrentUser'});
+$u->Load($Lock->Content->{'User'}) if $Lock;
+
+</%INIT>
+<%ARGS>
+$Ticket => undef
+$Duration => undef
+$Unlock => 1;
+
+# To enable display of information about a ticket other than the one displayed
+# (e.g., Split shows the Display page for the new ticket, so this allows us to
+# display the Split-from ticket's lock information)
+$Id => 0;
+</%ARGS>

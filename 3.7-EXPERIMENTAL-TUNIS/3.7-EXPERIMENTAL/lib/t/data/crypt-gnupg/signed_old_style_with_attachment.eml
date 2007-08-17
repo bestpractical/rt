@@ -1,0 +1,48 @@
+Message-ID: <45A10003.1090705@bestpractical.com>
+Date: Sun, 07 Jan 2007 17:13:23 +0300
+From: "Ruslan U. Zakirov" <ruz@bestpractical.com>
+User-Agent: Thunderbird 1.5.0.9 (X11/20061221)
+MIME-Version: 1.0
+To:  rt@example.com
+Subject: test
+X-Enigmail-Version: 0.94.1.0
+Content-Type: multipart/mixed;
+ boundary="------------030903040907010006050500"
+
+This is a multi-part message in MIME format.
+--------------030903040907010006050500
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFoQADtaRiGUNF96URAmHSAKCDdVnRJ2gb1idhE1ZXEg1JARalsQCgkaU8
+74cnNxVyp/0XwBA73qzkvx0=
+=UmxP
+-----END PGP SIGNATURE-----
+
+--------------030903040907010006050500
+Content-Type: text/plain;
+ name="test.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="test.txt"
+
+YXR0YWNobWVudAo=
+--------------030903040907010006050500
+Content-Type: application/pgp-signature;
+ name="test.txt.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="test.txt.sig"
+
+iD8DBQBFoQADtaRiGUNF96URAqmBAJ42zyr06nK6R4dNpZD5067DNDgjRwCgkR+SKgz7OdAq
+p11D7PQGCR1Wuvg=
+--------------030903040907010006050500--

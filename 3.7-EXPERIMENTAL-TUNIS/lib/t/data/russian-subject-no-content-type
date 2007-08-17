@@ -1,0 +1,42 @@
+Return-Path: <mitya@fling-wing.example.com>
+X-Real-To: <mitya@second.example.com>
+Received: from [194.87.5.31] (HELO sinbin.example.com)
+  by cgp.second.example.com (CommuniGate Pro SMTP 4.0.5/D)
+  with ESMTP-TLS id 69661026 for mitya@second.example.com; Wed, 18 Jun 2003 11:14:49 +0400
+Received: (from daemon@localhost)
+	by sinbin.example.com (8.12.8/8.11.6) id h5I7EfOj096595
+	for mitya@second.example.com; Wed, 18 Jun 2003 11:14:41 +0400 (MSD)
+	(envelope-from mitya@fling-wing.example.com)
+Received: from example.com by sinbin.example.com with ESMTP id h5I7Ee8K096580;
+	(8.12.9/D) Wed, 18 Jun 2003 11:14:40 +0400 (MSD)
+X-Real-To: <mitya@second.example.com>
+Received: from [194.87.0.31] (HELO mail.example.com)
+  by example.com (CommuniGate Pro SMTP 4.1b7/D)
+  with ESMTP id 76217696 for mitya@example.com; Wed, 18 Jun 2003 11:14:40 +0400
+Received: by mail.example.com (CommuniGate Pro PIPE 4.1b7/D)
+  with PIPE id 63920083; Wed, 18 Jun 2003 11:14:40 +0400
+Received: from [194.87.5.69] (HELO fling-wing.example.com)
+  by mail.example.com (CommuniGate Pro SMTP 4.1b7/D)
+  with ESMTP-TLS id 63920055 for mitya@example.com; Wed, 18 Jun 2003 11:14:38 +0400
+Received: from fling-wing.example.com (localhost [127.0.0.1])
+	by fling-wing.example.com (8.12.9/8.12.6) with ESMTP id h5I7Ec5R000153
+	for <mitya@example.com>; Wed, 18 Jun 2003 11:14:38 +0400 (MSD)
+	(envelope-from mitya@fling-wing.example.com)
+Received: (from mitya@localhost)
+	by fling-wing.example.com (8.12.9/8.12.6/Submit) id h5I7Ec0J000152
+	for mitya@example.com; Wed, 18 Jun 2003 11:14:38 +0400 (MSD)
+Date: Wed, 18 Jun 2003 11:14:38 +0400 (MSD)
+From: "Dmitry S. Sivachenko" <mitya@fling-wing.example.com>
+Message-Id: <200306180714.h5I7Ec0J000152@fling-wing.example.com>
+To: mitya@example.com
+Subject: тест тест
+X-Spam-Checker-Version: SpamAssassin 2.60-cvs-mail.demos (1.193-2003-06-13-exp)
+X-Spam-Level: +
+X-Spam-Status: No, hits=1.0 required=5.0 tests=SUBJ_ILLEGAL_CHARS autolearn=no
+	version=2.60-cvs-mail.demos
+X-Spam-Report: * SUBJ_ILLEGAL_CHARS  1.0 (Subject contains too many raw illegal characters)
+	
+Content-Length: 6
+
+ТЕСТ
+

@@ -1,0 +1,147 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/CustomFieldTabs,
+    id => $id,
+    current_tab => "Admin/CustomFields/Objects.html?id=".$id,
+    Title => $title
+    &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="Objects.html" method="post">
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="UpdateObjs" value="1" />
+
+<h2><&|/l&>Selected objects</&></h2>
+<& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>
+<h2><&|/l&>Unselected objects</&></h2>
+<& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
+
+<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
+</form>
+
+<%INIT>
+my $CF = RT::CustomField->new($session{'CurrentUser'});
+$CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
+my $LookupType = $CF->LookupType || '';
+$LookupType =~ /^(.*?)-/ ||
+     Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
+
+my $Class = $1;
+my $CollectionClass;
+if (UNIVERSAL::can($Class.'Collection', 'new') ) {
+$CollectionClass = $Class.'Collection';
+
+} elsif (UNIVERSAL::can($Class.'es', 'new') ) {
+    $CollectionClass = $Class.'es';
+
+} elsif (UNIVERSAL::can($Class.'s', 'new') ) {
+    $CollectionClass = $Class.'s';
+
+} else {
+    Abort(loc("Can't find a collection class for '[_1]'", $Class));
+}
+
+
+my $title = loc('Modify associated objects for [_1]', $CF->Name);
+
+my $Objects = $CollectionClass->new($session{'CurrentUser'});
+my (@results);
+my (@AssignedObjs, @UnassignedObjs);
+
+$Objects->UnLimit;
+$Objects->OrderBy( FIELD => 'Name' );
+
+
+my $ObjectCFs;
+$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->UnLimit;
+$ObjectCFs->LimitToCustomField($id);
+
+my %seen;
+while (my $OCF = $ObjectCFs->Next) {
+    $seen{$OCF->ObjectId}++;
+}
+
+while (my $obj = $Objects->Next) { 
+    my $obj_id = $obj->Id;
+
+    if ($UpdateObjs) {
+	# Go through and delete all the custom field relationships that this object
+	# no longer has
+	my $key = "Object-$obj_id-CF-$id";
+	if ($ARGS{$key}) {
+	    if (!$seen{$obj_id}) {
+		my ($val, $msg) = $CF->AddToObject($obj);
+		push (@results, $msg);
+		push @UnassignedObjs, $obj if !$val;
+	    }
+	}
+	else {
+	    push @UnassignedObjs, $obj;
+	    if ($seen{$obj_id}) {
+		my ($val, $msg) = $CF->RemoveFromObject($obj);
+		push (@results, $msg);
+		pop @UnassignedObjs if !$val;
+	    }
+	}
+    }
+    elsif (!$seen{$obj_id}) {
+	push @UnassignedObjs, $obj;
+    }
+    next if @UnassignedObjs and $UnassignedObjs[-1] == $obj;
+    push @AssignedObjs, $obj;
+}
+
+</%INIT>
+<%ARGS>
+$id => undef
+$FindDisabledObjects => 0
+$UpdateObjs => 0
+</%ARGS>

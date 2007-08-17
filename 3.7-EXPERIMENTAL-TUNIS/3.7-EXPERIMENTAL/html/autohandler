@@ -1,0 +1,332 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+
+# Roll back any dangling transactions from a previous failed connection
+$RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+
+
+if (RT->Config->Get('StatementLog')) {
+    $RT::Handle->ClearSQLStatementLog;
+    $RT::Handle->LogSQLStatements(1);
+}
+
+# avoid reentrancy, as suggested by masonbook
+local *session unless $m->is_subrequest;
+
+# Disable AutoFlush using an attribute
+if ( $m->request_comp->attr_exists('AutoFlush') ) {
+    $m->autoflush( $m->request_comp->attr('AutoFlush') );
+}
+
+# XXX: on a cold server (just after restart) people could have a principal object
+# in the session, as we deserialize it so we never call constructor of the principal
+# class, so the list of accessible fields is empty and we die with "Method xxx is
+# not implemented in RT::Principal"
+{ my $tmp = RT::Principal->new( $RT::SystemUser ) }
+
+%ARGS = map {
+
+    # if they've passed multiple values, they'll be an array. if they've
+    # passed just one, a scalar whatever they are, mark them as utf8
+    my $type = ref($_);
+    ( !$type )
+        ? Encode::is_utf8($_)
+        ? $_
+        : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+        : ( $type eq 'ARRAY' )
+        ? [
+        map {
+            ( ref($_) or Encode::is_utf8($_) )
+                ? $_
+                : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+            } @$_
+        ]
+        : ( $type eq 'HASH' )
+        ? {
+        map {
+            ( ref($_) or Encode::is_utf8($_) )
+                ? $_
+                : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+            } %$_
+        }
+        : $_
+} %ARGS;
+
+# Latter in the code we use
+# $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
+# instead of $m->call_next to avoid problems with UTF8 keys in arguments.
+# The call_next method pass through original arguments and if you have
+# an argument with unicode key then in a next component you'll get two
+# records in the args hash: one with key without UTF8 flag and another
+# with the flag, which may result into errors. "{ base_comp => $m->request_comp }"
+# is copied from mason's source to get the same results as we get from
+# call_next method, this feature is not documented, so we just leave it
+# here to avoid possible side effects.
+
+# This code canonicalizes time inputs in hours into minutes
+foreach my $field ( keys %ARGS ) {
+    next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{ $1 };
+    my $local = $1;
+    $ARGS{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
+                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+    if ( $ARGS{$field} && $ARGS{$field} =~ /hours/i ) {
+        $ARGS{$local} *= 60;
+    }
+    delete $ARGS{$field};
+}
+
+$m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
+
+$m->comp( '/Elements/SetupSessionCookie', %ARGS );
+
+unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
+    $session{'CurrentUser'} = RT::CurrentUser->new;
+}
+
+# Set the proper encoding for the current language handle
+$r->content_type("text/html; charset=utf-8");
+
+# If it's a noauth file, don't ask for auth.
+if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
+    $m->abort;
+}
+# If RT is configured for external auth, let's go through and get REMOTE_USER
+elsif ( RT->Config->Get('WebExternalAuth') ) {
+
+    # do we actually have a REMOTE_USER equivlent?
+    if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
+
+        my $orig_user = $user;
+
+        $user = RT::Interface::Web::WebCanonicalizeInfo();
+        $session{'CurrentUser'} = RT::CurrentUser->new();
+        my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
+
+        if ( $^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos') ) {
+            my $NodeName = Win32::NodeName();
+            $user =~ s/^\Q$NodeName\E\\//i;
+        }
+
+        $session{'CurrentUser'} = RT::CurrentUser->new();
+        $session{'CurrentUser'}->$load_method($user);
+
+        if ( RT->Config->Get('WebExternalAuto') && !$session{'CurrentUser'}->Id ) {
+
+            # Create users on-the-fly
+
+            my $UserObj = RT::User->new( $RT::SystemUser );
+            my ($val, $msg) = $UserObj->Create(
+                %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
+                Name  => $user,
+                Gecos => $user,
+            );
+
+            if ( $val ) {
+
+                # now get user specific information, to better create our user.
+                my $new_user_info
+                    = RT::Interface::Web::WebExternalAutoInfo($user);
+                
+                # set the attributes that have been defined.
+                # FIXME: this is a horrible kludge. I'm sure there's something cleaner
+                foreach my $attribute (
+                    'Name',                  'Comments',
+                    'Signature',             'EmailAddress',
+                    'PagerEmailAddress',     'FreeformContactInfo',
+                    'Organization',          'Disabled',
+                    'Privileged',            'RealName',
+                    'NickName',              'Lang',
+                    'EmailEncoding',         'WebEncoding',
+                    'ExternalContactInfoId', 'ContactInfoSystem',
+                    'ExternalAuthId',        'Gecos',
+                    'HomePhone',             'WorkPhone',
+                    'MobilePhone',           'PagerPhone',
+                    'Address1',              'Address2',
+                    'City',                  'State',
+                    'Zip',                   'Country'
+                    )
+                {
+                    $m->callback( %ARGS, CallbackName => 'NewUser' );
+
+                    my $method = "Set$attribute";
+                    $UserObj->$method( $new_user_info->{$attribute} )
+                        if defined $new_user_info->{$attribute};
+                }
+                $session{'CurrentUser'}->Load($user);
+            }
+            else {
+
+                # we failed to successfully create the user. abort abort abort.
+                delete $session{'CurrentUser'};
+                $m->abort unless RT->Config->Get('WebFallbackToInternalAuth');
+                $m->comp( '/Elements/Login', %ARGS,
+                    Error => loc( 'Cannot create user: [_1]', $msg ) );
+            }
+        }
+
+        unless ( $session{'CurrentUser'}->Id ) {
+            delete $session{'CurrentUser'};
+            $user = $orig_user;
+
+            if ( RT->Config->Get('WebExternalOnly') ) {
+                $m->comp( '/Elements/Login', %ARGS,
+                    Error => loc('You are not an authorized user') );
+                $m->abort();
+            }
+        }
+    }
+    elsif (RT->Config->Get('WebFallbackToInternalAuth')) {
+        unless ( defined $session{'CurrentUser'} ) {
+            $m->comp( '/Elements/Login', %ARGS,
+                Error => loc('You are not an authorized user') );
+            $m->abort();
+        }
+    }
+    else {
+
+        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
+        # XXX: we must return AUTH_REQUIRED status or we fallback to
+        # internal auth here too.
+        delete $session{'CurrentUser'} if defined $session{'CurrentUser'};
+    }
+}
+
+delete $session{'CurrentUser'}
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+
+# Process per-page authentication callbacks
+$m->callback( %ARGS, CallbackName => 'Auth' );
+
+delete $session{'CurrentUser'}
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+
+unless( $session{'CurrentUser'} ) {
+    # If the user is logging in, let's authenticate
+    if( defined $user && defined $pass ) {
+        my $user_obj = RT::CurrentUser->new;
+        $user_obj->Load( $user );
+
+        unless ( $user_obj->id && $user_obj->IsPassword( $pass ) ) {
+            $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
+            $m->comp( '/Elements/Login', %ARGS,
+                      Error => loc('Your username or password is incorrect'),
+                    );
+            $m->callback( %ARGS, CallbackName => 'FailedLogin' );
+            $m->abort;
+        }
+        $session{'CurrentUser'} = $user_obj;
+        $RT::Logger->info(
+            "Successful login for $user from $ENV{'REMOTE_ADDR'}");
+        $m->callback( %ARGS, CallbackName => 'SuccessfulLogin' );
+    }
+    # if no credentials then show him login page
+    else {
+        $m->comp( '/Elements/Login', %ARGS );
+        $m->abort;
+    }
+}
+
+# we've got credentials, let's serve the file up.
+# Process per-page global callbacks
+$m->callback( %ARGS );
+
+# If the user isn't privileged, they can only see SelfService
+unless ( $session{'CurrentUser'}->Privileged ) {
+
+    # if the user is trying to access a ticket, redirect them
+    if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html'
+         && $ARGS{'id'} )
+    {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".$ARGS{'id'});
+    }
+
+    # otherwise, drop the user at the SelfService default page
+    elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/" );
+    }
+    # if user is in SelfService dir let him do anything
+    else {
+        $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
+    }
+}
+else {
+    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
+}
+
+$m->comp( '/Elements/Footer', %ARGS );
+
+if (RT->Config->Get('StatementLog')) {
+    my @log = $RT::Handle->SQLStatementLog;
+    $RT::Handle->ClearSQLStatementLog;
+    for my $stmt (@log) {
+        my ( $time, $sql, $bind, $duration ) = @{$stmt};
+        my @bind;
+        if ( ref $bind ) {
+            @bind = @{$bind};
+        }
+        else {
+
+            # Older DBIx-SB
+            $duration = $bind;
+        }
+        $RT::Logger->log(
+            level => RT->Config->Get('StatementLog'),
+            message => "SQL(" . sprintf( "%.2f", $duration ) . "s): $sql;"
+                . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
+        );
+    }
+}
+
+</%INIT>
+<%ARGS>
+$user => undef
+$pass => undef
+$menu => undef
+</%ARGS>

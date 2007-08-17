@@ -1,0 +1,193 @@
+X-Real-To: <mitya@example.com>
+Received: from [194.87.5.31] (HELO sinbin.d-s.example.com)
+  by cgp.example.com (CommuniGate Pro SMTP 4.0.6/D4)
+  with ESMTP-TLS id 125035761 for mitya@example.com; Thu, 11 Dec 2003 15:17:46 +0300
+Received: (from daemon@localhost)
+	by sinbin.d-s.example.com (8.12.9p1/8.11.6) id hBBCHjN0031595
+	for mitya@example.com; Thu, 11 Dec 2003 15:17:45 +0300 (MSK)
+	(envelope-from noc@rt3.mx.example.com)
+Received: from d-s.example.com by sinbin.d-s.example.com with ESMTP id hBBCHjar031575;
+	(8.12.9p2/D) Thu, 11 Dec 2003 15:17:45 +0300 (MSK)
+X-Real-To: <mitya@example.com>
+Sender: <noc@rt3.mx.example.com> (Network Operation Center)
+To: mitya@example.com
+Date: Thu, 11 Dec 2003 15:17:45 +0300
+Message-ID: <redirect-137509289@d-s.example.com>
+X-Original-Return-Path: <vox19@b92.d-s.example.com>
+Received: from [194.87.0.16] (HELO mail.d-s.example.com)
+  by d-s.example.com (CommuniGate Pro SMTP 4.1.5/D1)
+  with ESMTP id 120757484 for noc@rt3.mx.example.com; Mon, 27 Oct 2003 09:40:53 +0300
+Received: from [194.87.0.22] (HELO moscvax.d-s.example.com)
+  by mail.d-s.example.com (CommuniGate Pro SMTP 4.1.5/D)
+  with ESMTP-TLS id 107945800 for noc@rt3.mx.example.com; Mon, 27 Oct 2003 09:40:53 +0300
+Received: from d-s.example.com (mx.d-s.example.com [194.87.0.32])
+	by moscvax.d-s.example.com (8.12.9/8.12.9) with ESMTP id h9R6erFm062621
+	for <security@d.example.com>; Mon, 27 Oct 2003 09:40:53 +0300 (MSK)
+	(envelope-from vox19@b92.d-s.example.com)
+Received: by d-s.example.com (CommuniGate Pro PIPE 4.1.5/D1)
+  with PIPE id 120757490; Mon, 27 Oct 2003 09:40:53 +0300
+Received: from [194.87.2.108] (HELO b92.d-s.example.com)
+  by d-s.example.com (CommuniGate Pro SMTP 4.1.5/D1)
+  with ESMTP-TLS id 120757480 for security@d.example.com; Mon, 27 Oct 2003 09:40:52 +0300
+Received: from b92.d-s.example.com (localhost [127.0.0.1])
+	by b92.d-s.example.com (8.12.8p1/8.12.3) with ESMTP id h9R6eqIe014669
+	for <security@d.example.com>; Mon, 27 Oct 2003 09:40:52 +0300 (MSK)
+	(envelope-from vox19@b92.d-s.example.com)
+Received: from localhost (localhost [[UNIX: localhost]])
+	by b92.d-s.example.com (8.12.8p1/8.12.3/Submit) id h9R6epst014668
+	for security@d.example.com; Mon, 27 Oct 2003 09:40:51 +0300 (MSK)
+From: "Stanislav" <drstas@d.example.com>
+Subject: Fwd: scanning my ports
+X-Original-Date: Mon, 27 Oct 2003 10:40:51 +0400
+User-Agent: KMail/1.5.4
+X-Original-To: security@d.example.com
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_z3Ln/tUeUBipHgx"
+X-Original-Message-Id: <200310270940.51758.vox19@d.example.com>
+X-Spam-Checker-Version: SpamAssassin 2.60-jumbo.demos (1.212-2003-09-23-exp)
+X-Spam-Level: 
+X-Spam-Status: No, hits=-6.8 required=5.0 tests=BAYES_00,FROM_ENDS_IN_NUMS,
+	HTML_MESSAGE,SUBJECT_RT autolearn=ham version=2.60-jumbo.demos
+X-Spam-Report: -6.8 points, 5.0 required;
+	* -3.0 SUBJECT_RT Tracking system
+	*  1.0 FROM_ENDS_IN_NUMS From: ends in numbers
+	*  0.1 HTML_MESSAGE BODY: HTML included in message
+	* -4.9 BAYES_00 BODY: Bayesian spam probability is 0 to 1%
+	*      [score: 0.0000]
+
+
+--Boundary-00=_z3Ln/tUeUBipHgx
+Content-Type: text/plain;
+  charset="koi8-r"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+FYI
+
+
+----------  Forwarded Message  ----------
+
+Subject: [DEMOS #12148] scanning my ports
+Date: Sunday 26 October 2003 20:19
+From: 1stwizard@isp.example.com
+To: no-reply@d-r.example.com
+
+This transaction appears to have no content
+
+-------------------------------------------------------
+
+
+
+-- 
+best wishes,
+
+Stanislav A. Mushkat			
+http://www.di.example.com
+
+--Boundary-00=_z3Ln/tUeUBipHgx
+Content-Type: text/plain;
+  charset="iso-8859-1";
+  name=" "
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Somebody at IP 127.0.0.1 scanned my ports. 
+--Boundary-00=_z3Ln/tUeUBipHgx
+Content-Type: text/html;
+  charset="iso-8859-1";
+  name=" "
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<HTML><HEAD>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="IncrediMail 1.0" name=GENERATOR>
+<!--IncrdiXMLRemarkStart>
+<IncrdiX-Info>
+<X-FID>BA285063-5BCE-11D4-AF8D-0050DAC67E11</X-FID>
+<X-FVER>2.0</X-FVER>
+<X-FIT>Letter</X-FIT>
+<X-FCOL>Elegant Paper</X-FCOL>
+<X-FCAT>Stationery</X-FCAT>
+<X-FDIS>Rice Fields</X-FDIS>
+<X-Extensions>SU1CTDEsNDEsgUmBSTAkkcGNgZmVTY0wNCxNhYUoiU0kOMEoTYGBjYEoJDSZnSyFhUksSU1CTDIsMCwsSU1CTDMsMCwsVHlwZVZlcnNpb24sMywxLjAs</X-Extensions>
+<X-BG>8E549F43-079D-11D8-B0F9-00B0D0B65B96</X-BG>
+<X-BGT>repeat</X-BGT>
+<X-BGC>#eff3f7</X-BGC>
+<X-BGPX>left</X-BGPX>
+<X-BGPY>0px</X-BGPY>
+<X-ASN>ANIM3D00-NONE-0000-0000-000000000000</X-ASN>
+<X-ASNF>0</X-ASNF>
+<X-ASH>ANIM3D00-NONE-0000-0000-000000000000</X-ASH>
+<X-ASHF>1</X-ASHF>
+<X-AN>6486DDE0-3EFD-11D4-BA3D-0050DAC68030</X-AN>
+<X-ANF>0</X-ANF>
+<X-AP>6486DDE0-3EFD-11D4-BA3D-0050DAC68030</X-AP>
+<X-APF>1</X-APF>
+<X-AD>C3C52140-4147-11D4-BA3D-0050DAC68030</X-AD>
+<X-ADF>0</X-ADF>
+<X-AUTO>X-ASN,X-ASH,X-AN,X-AP,X-AD</X-AUTO>
+<X-CNT>;</X-CNT>
+</IncrdiX-Info>
+<IncrdiXMLRemarkEnd-->
+</HEAD>
+<BODY style="BACKGROUND-POSITION: left 0px; FONT-SIZE: 12pt; MARGIN: 0px 10px 10px; COLOR: #00005b; BACKGROUND-REPEAT: repeat; FONT-FAMILY: Arial" text=#00005b bgColor=#eff3f7 background=cid:8E549F43-079D-11D8-B0F9-00B0D0B65B96 scroll=yes SIGCOLOR="0" X-ADF="0" X-AD="C3C52140-4147-11D4-BA3D-0050DAC68030" X-APF="1" X-AP="6486DDE0-3EFD-11D4-BA3D-0050DAC68030" X-ANF="0" X-AN="6486DDE0-3EFD-11D4-BA3D-0050DAC68030" X-ASHF="1" X-ASH="ANIM3D00-NONE-0000-0000-000000000000" X-ASNF="0" X-ASN="ANIM3D00-NONE-0000-0000-000000000000" X-FVER="2.0" X-FID="BA285063-5BCE-11D4-AF8D-0050DAC67E11" X-FIT="Letter" X-FCOL="Elegant Paper" X-FCAT="Elegant Paper" X-FDIS="Rice Fields" ORGYPOS="0">
+<TABLE id=INCREDIMAINTABLE cellSpacing=0 cellPadding=2 width="100%" border=0>
+<TBODY>
+<TR>
+<TD id=INCREDITEXTREGION style="PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FONT-SIZE: 12pt; PADDING-BOTTOM: 0px; CURSOR: auto; PADDING-TOP: 0px" vAlign=top width="100%">
+<DIV>Somebody at IP 127.0.0.1 scanned my ports. </DIV>
+<DIV>&nbsp;</DIV>
+<DIV>&nbsp;</DIV></TD></TR>
+<TR>
+<TD id=INCREDIFOOTER width="100%">
+<TABLE cellSpacing=0 cellPadding=0 width="100%">
+<TBODY>
+<TR>
+<TD width="100%"></TD>
+<TD id=INCREDISOUND vAlign=bottom align=middle></TD>
+<TD id=INCREDIANIM vAlign=bottom align=middle></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></BODY></HTML>
+--Boundary-00=_z3Ln/tUeUBipHgx
+Content-Type: image/jpeg;
+  charset="iso-8859-1";
+  name="BackGrnd.jpg"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename="BackGrnd.jpg"
+
+/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAHgAA/+4AIUFk
+b2JlAGTAAAAAAQMAEAMCAwYAAAHbAAAC1gAABZX/2wCEABALCwsMCxAMDBAX
+Dw0PFxsUEBAUGx8XFxcXFx8eFxoaGhoXHh4jJSclIx4vLzMzLy9AQEBAQEBA
+QEBAQEBAQEABEQ8PERMRFRISFRQRFBEUGhQWFhQaJhoaHBoaJjAjHh4eHiMw
+Ky4nJycuKzU1MDA1NUBAP0BAQEBAQEBAQEBAQP/CABEIAGUAcwMBIgACEQED
+EQH/xACAAAEBAQEAAAAAAAAAAAAAAAAAAQIGAQEBAAAAAAAAAAAAAAAAAAAA
+ARABAAICAwEAAgMAAAAAAAAAAQARIQIxQRIiQDIQMFARAAICAgIBBAIDAQEA
+AAAAAAERACExQVFhcYGRobECEsHhMtHxEgEAAAAAAAAAAAAAAAAAAABQ/9oA
+DAMBAAIRAxEAAADtRZYE1ASghQFgUZoCkKSwLmhcllAEqkSkqFAlhUomoAS3
+IoJqFlDNpFEAQFE1AIVYAWIVKAJRNZpYCwVmmshKACA0CBAUCBYGwf/aAAgB
+AgABBQD8B/yP/9oACAEDAAEFAPz6/or8H//aAAgBAQABBQC2+ZeHjbD+saX6
+hwXeDW1Rg4xLLTa+m7ZiIEsI1MTiHP1dYpvFADiFM1/X6nq9byuwdPPz5oFo
+fWlEMQ9ULKrWq2ppG9Y2J6INQma9lVTRdlUKgHzXXSEECw1SYu5WsGoJPkis
+ZYpx31GvXZQ/JM3VwShzVTsp1EZbBI8LcaUSih86+s2Zl4Wp6+lAZnVsDkjd
+ku5m+lJTdXDG2SHM9M2wKX1YxsaZTTwmoVrYnqsMrM652yjs01K0mtbGAz6Y
+5dpfqNz06qpq5QNjiIjiZtbhtceNuf0jyeqGgu6rXMvI4omPWbPMYzEfMI+a
+xHnFvOP4/9oACAECAgY/AGP/2gAIAQMCBj8AY//aAAgBAQEGPwB72Yucb1Bf
+IhFEaeZ+xRXFQELN+HEUQdjU0Xn4g9gRCQcpw1yajGYsP/kFvUzvjUBWrIMF
+HI2OJQNEAjiEEFdTmfG/MTHq5RFOnpTV3kzCBx7x4YOD1AV5uYJvnqMA0hep
+jfwpYCwC4Bx3q55zeZRBCw9TkoIuHw78RdczSNH2mgqcLpRC+RASAkA3B13m
+cYd5mR84c/yOx4lWtRAZ6mGDhiP9WgXVyhWA+xDgMOWGMsTg/wBTz8SjjXrP
+8hHIlX1MZ6mDzgc/cIV/iyN1GBR0MQMKjnEzvvMz8mUkErKlfqU63iV+IKNH
+7mNZBLFQEpEDeDOV32IVn8WR4caoywqI2p695mbZzNUQIcKfk0bo+0NpCqn7
+CiQiNGXkdQen1DpjGeZ7WNw3pK+I93maCPc16+Zkf6XxMCsFwAkaiIB57vc/
+IAhZ/HqZBBbB0ZokAEOGxsYqBgPp8agQBu4VSMJdqx6SwDsGBrTmAR93uZGX
+6KePowEADAIjoX8gw459CICaW/MLGvodQfkDW71zBxRHtB3j3jC4PMIYoAgK
+NfPMCQNN7jCzvlzXPopzhQvNZY3CRya9ZrEFfRE0iCB5mscZuVYfKmAi94uE
+3Q8qfytQ7xD0svmFcmaxNPI8iMjh3pmF2HbzqeUi+YkiD/MrOl5LmbwPuWVf
+mXpv3hDH8qAjPpiZHXkRnSd6ZhB53mejzKV6US0K9TCCLyCeIhtETX5MsHBG
+JkD/ANiFkMCE2qGoCdZ8Q8AMGpYFqEhdhRIYH3CF3d1M/Mexma+4CwdQ2Ddc
+x0exAlmj04QUQd8QWLB/iB5GxmEg5TENVZqPYzFV8eHAy9T/AEc8a4n3Ov6g
+/VwvE6lpQ4VNysXzhS8esOO8w/rlF/rypjV3B5H1Knr8T//Z
+
+--Boundary-00=_z3Ln/tUeUBipHgx--
+

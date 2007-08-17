@@ -1,0 +1,113 @@
+=head1 Using widgets F<html/Widgets/Form*>
+
+This widgets was implemented to address several common issues in handling
+request arguments and allow developers to avoid reinventing the wheel.
+
+=head2 General info
+
+Each component shows widget by default and has two methods: Process and 
+InputOnly. The first one method process arguments and return new value
+of a parametr. The second one is helper that shows only form elements
+with minimum of required text labels.
+
+So you show a widget with:
+    <& /Widgets/Form/Integer,
+        Name => 'NameOfInputElement',
+        Description => 'Input integer',
+    &>
+
+You can show only C<input> box using:
+    <& /Widgets/Form/Integer:InputOnly,
+        Name => 'NameOfInputElement',
+    &>
+
+In such a simple case you even can avoid processing. Yeah, most probably
+you want to check if value is really integer, but these widgets don't
+do validation for you, but they are more about fetching values from
+hash of arguments, showing these values to user and preserving state
+of value between form reloads (see below).
+
+=head2 Processing
+
+Processing is required when you use L<extended features|/Extendent features>,
+such as Default, Multiple or Alternative.
+
+To process arguments of a request you have to do the following:
+    $ARGS{'NameOfInputElement'} = $m->comp(
+        '/Widgets/Form/Integer:Process',
+        Arguments => \%ARGS,
+        Name      => 'NameOfInputElement',
+    );
+
+The method returns processed value in canonical form. For different widgets
+a canonical form is different and depends on activated features, so you must
+always activate the same features during showing a widget and processing
+results.
+
+=head2 Extendent features
+
+=head3 Default value
+
+If C<Default> argument is true then widgets expect that there is some
+default value for argument if user fills nothing. 'Nothing' in each
+widget is different, for example in select box it's special option
+which is always the first one, in integer box string '' means empty
+value, but boolean box uses radio buttons in this case with three
+options: Yes, No and Default.
+
+Each widget that supports C<Default> feature as well has C<DefaultLabel> and
+C<DefaultValue> arguments.
+
+=head4 Processing and showing with activated Default feature
+
+When this option is activated then C<Process> method returns undef
+value if user selected default value. So for integer box it's empty
+string and so on.
+
+As well when you show a widget you should pass undef as C<CurrentValue>
+to inform widget that the current value is default one.
+
+As all methods of a widget are consistent in this behaviour so you
+shouldn't care much about that, but this allows you to implement
+custom actions if processing returned undef, for example delete user's
+preference record instead of updating it (default value may change later to).
+
+=head4 C<DefaultValue> when C<Default> is not active
+
+DefaultValue argument is still actual in the Process method even if
+C<Default> is not true. This argument defines intial value. If value
+of a key in Arguments is not defined then it's treated as intial state
+and the method returns default value.
+
+=head3 Multiple and Alternative
+
+These options are only supported by the select widget.
+
+TODO: Add more info
+
+=head2 Implementation details
+
+=head3 Boolean widget
+
+This widget a little bit tricky. When you use Default option then
+things are simple and you see three radio buttons, but in other
+case we use a checkbox. But as you know browsers don't pass unchecked
+boxes to server, so arguments of a request has no entry for them.
+
+In the latter case it's hard to figure out case when user unselected
+value. Imagine form with a checkbox, you want show it checked by
+default and as well form is reloadable (like Reply forms that have
+"Add Another File" buttons). User uncheck the box and then upload
+file, in this case you want to show user's choice instead of default,
+but browser doesn't send any value and you can not figure out if
+it's initial state or page reload. To solve this problem we use magic
+hidden input field with the same name as the box and value equal to
+zero (0). Mason folds arguments with the same name into array refs, so
+we get 0 if box is unchecked and [0, 1] if box is checked. An array
+reference is true value and 0 is defined value so we know that it's
+not initial state and avoid switching back to default. As well this
+trick works good in a case when you want show a link to a page and
+define default choice for some boolean argument, you don't need
+to set argument twice, you just set it to true value (for ex. 1) and
+things just work.
+

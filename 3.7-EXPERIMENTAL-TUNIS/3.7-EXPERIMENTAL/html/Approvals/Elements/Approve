@@ -1,0 +1,94 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<div class="approval">
+  <div class="name">
+    <a href="<%RT->Config->Get('WebPath')%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)
+  </div>
+% if ($ShowApproving) {
+%     foreach my $approving ( $ticket->AllDependedOnBy( Type => 'ticket' ) ) {
+  <div class="originating-ticket">
+    <span class="link"><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a></span>
+    <div class="info">
+% if ($ShowCustomFields) {
+      <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
+% }
+% if ($ShowHistory) {
+      <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+% }
+    </div>
+  </div>
+%     }
+% }
+  <div class="form">
+    <div class="action">
+      <div>
+        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-approve" name="Approval-<%$ticket->Id%>-Action" value="approve" />
+        <label for="Approval-<%$ticket->Id%>-Action-approve"><&|/l&>Approve</&></label>
+      </div>
+      <div>
+        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-deny" name="Approval-<%$ticket->Id%>-Action" value="deny" />
+        <label for="Approval-<%$ticket->Id%>-Action-deny"><&|/l&>Deny</&></label>
+      </div>
+      <div>
+        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-none" name="Approval-<%$ticket->Id%>-Action" value="none" checked="checked" />
+        <label for="Approval-<%$ticket->Id%>-Action-none"><&|/l&>No action</&></label>
+      </div>
+    </div>
+    <div class="notes">
+      <label for="Approval-<%$ticket->Id%>-Notes"><&|/l&>Notes</&></label>
+      <textarea name="Approval-<%$ticket->Id%>-Notes" id="Approval-<%$ticket->Id%>-Notes" rows="2" cols="70"></textarea>
+    </div>
+    <div class="clear"></div>
+  </div>
+</div>
+<%ARGS>
+$ShowApproving => 1
+$ShowCustomFields => 1
+$ShowHistory => 1
+$ticket => undef
+</%ARGS>

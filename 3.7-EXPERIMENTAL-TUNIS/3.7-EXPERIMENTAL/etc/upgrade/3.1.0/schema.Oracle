@@ -1,0 +1,17 @@
+CREATE SEQUENCE ATTRIBUTES_seq;
+CREATE TABLE Attributes (
+	id 			NUMBER(11,0) PRIMARY KEY,
+	Name 			VARCHAR2(255) NOT NULL,
+	Description 		VARCHAR2(255),
+  	Content 	CLOB,
+    ContentType VARCHAR(16),
+	ObjectType	VARCHAR2(25) NOT NULL,
+	ObjectId	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created 		DATE,
+	LastUpdatedBy 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated		DATE
+);
+
+CREATE INDEX Attributes1 on Attributes(Name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);

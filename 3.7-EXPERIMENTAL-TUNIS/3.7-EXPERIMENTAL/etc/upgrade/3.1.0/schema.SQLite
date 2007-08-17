@@ -1,0 +1,21 @@
+--- {{{ Attributes
+CREATE TABLE Attributes (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(255) NOT NULL  ,
+  Description varchar(255) NULL  ,
+  Content LONGTEXT NULL  ,
+  ContentType varchar(16),
+  ObjectType varchar(25) NOT NULL  ,
+  ObjectId INTEGER default 0,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+ 
+) ;
+
+CREATE INDEX Attributes1 on Attributes(Name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+
+--- }}}
+

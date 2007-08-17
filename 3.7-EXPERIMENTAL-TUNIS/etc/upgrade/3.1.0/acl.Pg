@@ -1,0 +1,19 @@
+sub acl {
+    my $dbh = shift;
+
+    my @acls;
+
+    my @tables = qw (
+      attributes_id_seq
+      attributes
+    );
+
+    foreach my $table (@tables) {
+        push @acls,
+          "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "
+          . RT->Config->Get('DatabaseUser') . ";";
+
+    }
+    return (@acls);
+}
+1;

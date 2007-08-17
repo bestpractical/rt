@@ -1,0 +1,74 @@
+alter Table Transactions ADD Column ObjectType varchar(64);
+update Transactions set ObjectType = 'RT::Ticket';
+ALTER TABLE Transactions ALTER COLUMN ObjectType SET NOT NULL;
+alter table Transactions drop column EffectiveTicket;
+alter table Transactions add column ReferenceType varchar(255) NULL;
+alter table Transactions add column OldReference integer NULL;      
+alter table Transactions add column NewReference integer NULL;
+drop index transactions1;            
+alter table Transactions rename column Ticket to ObjectId;
+
+
+CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+
+alter table TicketCustomFieldValues rename to ObjectCustomFieldValues;
+
+alter table ObjectCustomFieldValues  rename column Ticket to ObjectId;
+
+alter table objectcustomfieldvalues add column ObjectType varchar(255);
+
+update objectcustomfieldvalues set ObjectType = 'RT::Ticket';
+
+ALTER TABLE objectcustomfieldvalues ALTER COLUMN ObjectType SET NOT NULL;
+
+alter table objectcustomfieldvalues add column Current int;
+
+alter table objectcustomfieldvalues alter column Current SET  default 1;  
+
+UPDATE objectcustomfieldvalues SET Current = 1;
+
+alter table objectcustomfieldvalues add column LargeContent TEXT NULL;
+
+alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
+
+alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
+
+create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,ObjectId,Content); 
+
+create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,ObjectId); 
+
+
+CREATE SEQUENCE objectcustomfields_id_s;
+
+CREATE TABLE ObjectCustomFields (
+  id INTEGER DEFAULT nextval('objectcustomfields_id_s'),
+  CustomField integer NOT NULL,
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  PRIMARY KEY (id)
+
+);
+
+
+INSERT into ObjectCustomFields (CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+
+alter table CustomFields add column LookupType varchar(255);
+alter table CustomFields add column Repeated int2;
+alter table CustomFields add column Pattern varchar(255) NULL;
+alter table CustomFields add column MaxValues integer;
+
+UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
+UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
+UPDATE CustomFields SET Type = 'Select' WHERE Type LIKE 'Select%';
+UPDATE CustomFields SET Type = 'Freeform' WHERE Type LIKE 'Freeform%';
+UPDATE CustomFields Set LookupType = 'RT::Queue-RT::Ticket';
+ALTER TABLE CustomFields ALTER COLUMN LookupType SET NOT NULL;
+UPDATE CustomFields Set Repeated = 0;
+ALTER TABLE CustomFields ALTER COLUMN Repeated SET DEFAULT 0;
+ALTER TABLE CustomFields ALTER COLUMN Repeated SET NOT NULL;
+alter table CustomFields drop column Queue; 

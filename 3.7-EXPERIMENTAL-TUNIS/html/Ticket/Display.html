@@ -1,0 +1,209 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, 
+    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+<& /Ticket/Elements/Tabs, 
+    Ticket => $TicketObj, 
+    current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
+    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+
+% $Duration ||= $ARGS{'Duration'};
+<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
+
+<& /Elements/ListActions, actions => \@Actions &>
+<& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
+
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
+<div class="summary">
+<&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
+</&>
+</div>
+<br />
+
+% $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
+
+<& /Ticket/Elements/ShowHistory , 
+      Ticket => $TicketObj, 
+      Tickets => $Tickets, 
+      Collapsed => $ARGS{'Collapsed'}, 
+      ShowHeaders => $ARGS{'ShowHeaders'},
+      Attachments => $attachments,
+      AttachmentContent => $attachment_content
+&> 
+
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'AfterShowHistory' );
+
+<%ARGS>
+$id => undef
+$TicketObj => undef
+$ShowHeaders => 0
+$Collapsed => undef
+</%ARGS>
+
+<%INIT>
+
+$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+
+my (@Actions, $Tickets);  
+my $Duration;
+my $time;
+
+unless ($id || $TicketObj) {
+    Abort('No ticket specified');
+}
+
+if ($ARGS{'id'} eq 'new') {
+    # {{{ Create a new ticket
+
+    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    $Queue->Load($ARGS{'Queue'});
+    unless ( $Queue->id ) {
+        Abort('Queue not found');
+    }
+
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort('You have no permission to create tickets in that queue.');
+    }
+
+    ($TicketObj, @Actions) = CreateTicket(
+        Attachments => delete $session{'Attachments'},
+        %ARGS,
+    );
+    unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
+        Abort("No permission to view newly created ticket #".$TicketObj->id.".");
+    }
+    # }}}
+} else { 
+    $TicketObj ||= LoadTicket($ARGS{'id'});
+
+    $m->callback( CallbackName => 'BeforeProcessArguments',
+        TicketObj => $TicketObj, Tickets => $Tickets,
+        ActionsRef => \@Actions, ARGSRef => \%ARGS );
+    if ( defined $ARGS{'Action'} ) {
+        if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+            my $action = $1;
+            my ($res, $msg) = $TicketObj->$action();
+            push(@Actions, $msg);
+        }
+    }
+    
+#    if ( defined $ARGS{'Lock'} ) {
+#        if ( $ARGS{'Lock'} eq 'add' ) {
+#            if ( $TicketObj->Lock('Hard') ) {
+#                push @Actions, loc('You now have a lock on this ticket');
+#            } else {
+#                push @Actions, loc('Your attempt to lock this ticket failed');
+#            }
+#        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
+#            my $msg;
+#            ($Duration, $msg) = $TicketObj->Unlock('Hard');
+#            push @Actions, loc($msg);
+#        } elsif ( $ARGS{'Lock'} eq 'break' ) {
+#            $TicketObj->BreakLock();
+#            push @Actions, loc('You have broken the lock on this ticket');
+#        }
+#    }
+
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
+    if ( $ARGS{'UpdateTimeWorked'} || (
+        defined $ARGS{'UpdateContent'}
+        && $ARGS{'UpdateContent'} ne ''
+        && $ARGS{'UpdateContent'} ne "-- \n"
+           . $session{'CurrentUser'}->UserObj->Signature ) )
+    {
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+        push @Actions, ProcessUpdateMessage(
+            ARGSRef   => \%ARGS,
+            Actions   => \@Actions,
+            TicketObj => $TicketObj,
+        );
+        delete $session{'Attachments'};
+    }
+    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, TicketObj => $TicketObj );
+
+    # XXX: we shouldn't block actions here if user has no right to see the ticket,
+    # but we should allow him to see actions he has done
+    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+        Abort("No permission to view ticket");
+    }
+    if ( $ARGS{'MarkAsSeen'} ) {
+        $TicketObj->SetAttribute(
+            Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
+            Content => $TicketObj->LastUpdated,
+        );
+        push @Actions, loc('Marked all messages as seen');
+    }
+}
+
+$m->callback(
+    CallbackName => 'BeforeDisplay',
+    TicketObj => \$TicketObj,
+    Tickets => \$Tickets,
+    Actions => \@Actions,
+    ARGSRef => \%ARGS,
+);
+
+# This code does automatic redirection if any updates happen. 
+
+if (@Actions) {
+    # We've done something, so we need to clear the decks to avoid 
+    # resubmission on refresh.
+    # But we need to store Actions somewhere too, so we don't lose them.
+    $session{"Actions"} = \@Actions;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
+} else {
+    @Actions = @{ delete $session{"Actions"} || [] };
+}
+
+my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
+
+</%INIT>

@@ -1,0 +1,170 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title  &>
+
+<& /Admin/Elements/GroupTabs, 
+    GroupObj => $Group, 
+    current_tab => $current_tab, 
+    Title => $title &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
+
+%unless ($Group->Id) {
+<input type="hidden" class="hidden" name="id" value="new" />
+% } else {
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+% }
+<table>
+<tr><td align="right">
+<&|/l&>Name</&>:
+</td>
+<td><input name="Name" value="<%$Group->Name%>" /></td>
+</tr>
+<tr>
+<td align="right">
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
+</tr>
+% my $CFs = $Group->CustomFields;
+% while (my $CF = $CFs->Next) {
+<tr valign="top"><td align="right">
+<% $CF->Name %>:
+</td><td>
+<& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
+</td></tr>
+% }
+<tr>
+<td colspan="2">
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
+</tr>
+% $m->callback( %ARGS, GroupObj => $Group, results => \@results );
+</table>
+<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+</form>
+<%INIT>
+
+my $current_tab;
+my  ($title, @results, $Disabled, $EnabledChecked);
+
+my $Group = RT::Group->new($session{'CurrentUser'});
+
+if ($Create) {
+    $current_tab = 'Admin/Groups/Modify.html?Create=1';
+    $title = loc("Create a new group");
+} 
+
+else {
+    $current_tab = 'Admin/Groups/Modify.html?id='.$id;
+    if ($id eq 'new' ) {
+	
+	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name =>
+    "$Name");
+        unless ($create_id) {
+            Abort (loc("Group could not be created: [_1]", $create_msg));
+     }
+	$id = $Group->Id;
+    }
+    else {
+	$Group->Load($id) || Abort('Could not load group');
+    }
+
+
+    if ($id) {
+	$title = loc("Modify the group [_1]", $Group->Name);
+
+    }	
+
+    # If the create failed
+    else {
+	$title = loc("Create a new group");
+	$Create = 1;
+    }    
+    
+}
+
+if ($id) {
+    
+    my @fields = qw(Description Name );
+    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+					    Object => $Group,
+					    ARGSRef => \%ARGS );
+    push (@results,@fieldresults);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Group );
+}
+
+#we're asking about enabled on the web page but really care about disabled.
+if ($Enabled == 1) {
+    $Disabled = 0;
+}	
+else {
+    $Disabled = 1;
+}
+if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
+    my  ($code, $msg) = $Group->SetDisabled($Disabled);
+    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+}
+
+unless ($Group->Disabled()) {
+    $EnabledChecked ="CHECKED";
+}
+
+
+</%INIT>
+
+
+<%ARGS>
+$Create => undef
+$Name => undef
+$Description => undef
+$SetEnabled => undef
+$Enabled => undef
+$id => '' unless defined $id
+</%ARGS>

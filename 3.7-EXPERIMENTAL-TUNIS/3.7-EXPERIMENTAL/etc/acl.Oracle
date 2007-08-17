@@ -1,0 +1,15 @@
+
+sub acl {
+    my $db_user = RT->Config->Get('DatabaseUser');
+    my $db_pass = RT->Config->Get('DatabasePassword');
+
+    return (
+        "CREATE USER $db_name IDENTIFIED BY $db_pass"
+            . " default tablespace USERS"
+            . " temporary tablespace TEMP"
+            . " quota unlimited on USERS",
+        "grant connect, resource to $db_user",
+    );
+}
+
+1;
