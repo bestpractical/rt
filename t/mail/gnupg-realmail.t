@@ -68,15 +68,20 @@ sub get_contents {
 
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
+    diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
     my $mail = get_contents($eid)
         or return 0;
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
+    ok ($id, 'got id of a newly created ticket');
 
-    my $tick = get_latest_ticket_ok();
-    is( $tick->Subject,
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, 'loaded ticket');
+
+    is ($tick->Subject,
         "Test Email ID:$eid",
         "$eid: Created the ticket"
     );
@@ -148,14 +153,5 @@ sub email_ok {
     }
 
     return 0;
-}
-
-sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    return $tick;
 }
 
