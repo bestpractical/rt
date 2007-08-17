@@ -92,11 +92,6 @@ $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initi
 my (@Actions, $Tickets);  
 
 
-$m->callback(CallbackName => 'ProcessArguments', 
-            Ticket => $TicketObj, 
-            ARGSref => \%ARGS, 
-            Actions => \@Actions);
-
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
 }
@@ -136,7 +131,6 @@ if ($ARGS{'id'} eq 'new') {
         }
     }
 
-    
 #    if ( defined $ARGS{'Lock'} ) {
 #        if ( $ARGS{'Lock'} eq 'add' ) {
 #            if ( $TicketObj->Lock('Hard') ) {
@@ -154,6 +148,11 @@ if ($ARGS{'id'} eq 'new') {
 #        }
 #    }
 
+    $m->callback(CallbackName => 'ProcessArguments', 
+            Ticket => $TicketObj, 
+            ARGSref => \%ARGS, 
+            Actions => \@Actions);
+    
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
     if ( $ARGS{'UpdateTimeWorked'} || (
         defined $ARGS{'UpdateContent'}
