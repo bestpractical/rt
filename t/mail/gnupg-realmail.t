@@ -137,9 +137,9 @@ sub email_ok {
             my $acontent = $sig->Content;
         }
 
-        my $a = pop @attachments;
-        my $file = '';
-        ok ($a->Id, "$eid: loaded attachment object");
+        my $a = grep $_->Filename, @attachments;
+        ok ($a && $a->Id, "$eid: found attachment with filename");
+
         my $acontent = $a->Content;
         if ($attachment =~ /binary/)
         {
