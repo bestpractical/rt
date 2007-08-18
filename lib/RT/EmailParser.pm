@@ -89,8 +89,6 @@ sub new  {
 }
 
 
-# {{{ sub SmartParseMIMEEntityFromScalar
-
 =head2 SmartParseMIMEEntityFromScalar { Message => SCALAR_REF, Decode => BOOL, [Exact => BOOL] }
 
 Parse a message stored in a scalar from scalar_ref
@@ -139,9 +137,6 @@ sub SmartParseMIMEEntityFromScalar {
 
 }
 
-# }}}
-
-# {{{ sub ParseMIMEEntityFromSTDIN
 
 =head2 ParseMIMEEntityFromSTDIN
 
@@ -156,9 +151,7 @@ sub ParseMIMEEntityFromSTDIN {
     return $self->ParseMIMEEntityFromFileHandle(\*STDIN, $postprocess, $exact);
 }
 
-# }}}
 
-# {{{ ParseMIMEEntityFromScalar
 
 =head2 ParseMIMEEntityFromScalar  $message
 
@@ -178,9 +171,6 @@ sub ParseMIMEEntityFromScalar {
     $self->_ParseMIMEEntity($message,'parse_data',$postprocess,$exact);
 }
 
-# }}}
-
-# {{{ ParseMIMEEntityFromFilehandle *FH
 
 =head2 ParseMIMEEntityFromFilehandle *FH
 
@@ -196,9 +186,7 @@ sub ParseMIMEEntityFromFileHandle {
     $self->_ParseMIMEEntity($filehandle,'parse', $postprocess, $exact);
 }
 
-# }}}
 
-# {{{ ParseMIMEEntityFromFile
 
 =head2 ParseMIMEEntityFromFile 
 
@@ -214,9 +202,7 @@ sub ParseMIMEEntityFromFile {
     $self->_ParseMIMEEntity($file,'parse_open',$postprocess,$exact);
 }
 
-# }}}
 
-# {{{ _ParseMIMEEntity
 sub _ParseMIMEEntity {
     my $self = shift;
     my $message = shift;
@@ -246,9 +232,7 @@ sub _ParseMIMEEntity {
 
 }
 
-# }}}
 
-# {{{ _PostProcessNewEntity 
 
 =head2 _PostProcessNewEntity
 
@@ -276,9 +260,7 @@ sub _PostProcessNewEntity {
 
 }
 
-# }}}
 
-# {{{ ParseCcAddressesFromHead 
 
 =head2 ParseCcAddressesFromHead HASHREF
 
@@ -318,9 +300,7 @@ sub ParseCcAddressesFromHead {
     return (@Addresses);
 }
 
-# }}}
 
-# {{{ ParseSenderAdddressFromHead
 
 =head2 ParseSenderAddressFromHead
 
@@ -339,9 +319,7 @@ sub ParseSenderAddressFromHead {
     return ( $self->ParseAddressFromHeader($From) );
 }
 
-# }}}
 
-# {{{ ParseErrorsToAdddressFromHead
 
 =head2 ParseErrorsToAddressFromHead
 
@@ -368,9 +346,7 @@ sub ParseErrorsToAddressFromHead {
     }
 }
 
-# }}}
 
-# {{{ ParseAddressFromHeader
 
 =head2 ParseAddressFromHeader ADDRESS
 
@@ -400,9 +376,7 @@ sub ParseAddressFromHeader {
     return ( $Address, $Name );
 }
 
-# }}}
 
-# {{{ IsRTAddress
 
 =head2 IsRTaddress ADDRESS
 
@@ -426,10 +400,8 @@ sub IsRTAddress {
     return undef;
 }
 
-# }}}
 
 
-# {{{ CullRTAddresses
 
 =head2 CullRTAddresses ARRAY
 
@@ -453,10 +425,8 @@ sub CullRTAddresses {
     return (@addrlist);
 }
 
-# }}}
 
 
-# {{{ LookupExternalUserInfo
 
 
 # LookupExternalUserInfo is a site-definable method for synchronizing
@@ -518,10 +488,6 @@ sub LookupExternalUserInfo {
   return ($FoundInExternalDatabase, %params);
 }
 
-# }}}
-
-# {{{ Accessor methods for parsed email messages
-
 =head2 Head
 
 Return the parsed head from this message
@@ -544,9 +510,7 @@ sub Entity {
     return $self->{'entity'};
 }
 
-# }}}
 
-# {{{ _SetupMIMEParser 
 
 =head2 _SetupMIMEParser $parser
 
@@ -594,7 +558,6 @@ sub _SetupMIMEParser {
 
 }
 
-# }}}
 
 sub DESTROY {
     my $self = shift;
