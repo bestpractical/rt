@@ -250,7 +250,7 @@ sub _DecodeBody {
     { 
         local $@;
         eval { $decoder->decode($source, $destination) };
-        $RT::Logger->error($@);
+        $RT::Logger->error($@) if $@;
     }
     $source->close or die "can't close: $!";
     $destination->close or die "can't close: $!";
