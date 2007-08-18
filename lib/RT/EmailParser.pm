@@ -215,7 +215,48 @@ sub _ParseMIMEEntity {
     return $self->{'entity'};
 }
 
+sub _DecodeBodies {
+    my $self = shift;
+    return unless $self->{'entity'};
+    
+    my @parts = $self->{'entity'}->parts_DFS;
+    $self->_DecodeBody($_) foreach @parts;
+}
 
+sub _DecodeBody {
+    my $self = shift;
+    my $entity = shift;
+
+    my $old = $entity->bodyhandle or return;
+    return unless $old->is_encoded;
+
+    require MIME::Decoder;
+    my $encoding = $entity->head->mime_encoding;
+    my $decoder = new MIME::Decoder $encoding;
+    unless ( $decoder ) {
+        $RT::Logger->error("Couldn't find decoder for '$encoding', switching to binary");
+        $old->is_encoded(0);
+        return;
+    }
+
+    require MIME::Body;
+    # XXX: use InCore for now, but later must switch to files
+    my $new = new MIME::Body::InCore;
+    $new->binmode(1);
+    $new->is_encoded(0);
+
+    my $source = $old->open('r') or die "couldn't open body: $!";
+    my $destination = $new->open('w') or die "couldn't open body: $!";
+    { 
+        local $@;
+        eval { $decoder->decode($source, $destination) };
+        $RT::Logger->error($@);
+    }
+    $source->close or die "can't close: $!";
+    $destination->close or die "can't close: $!";
+
+    $entity->bodyhandle( $new );
+}
 
 =head2 _PostProcessNewEntity
 
@@ -231,9 +272,7 @@ sub _PostProcessNewEntity {
     # Unfold headers that are have embedded newlines
     #  Better do this before conversion or it will break
     #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
-    
     $self->Head->unfold;
-
 
     # try to convert text parts into utf-8 charset
     RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
