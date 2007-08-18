@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 158;
+use Test::More tests => 176;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -137,7 +137,7 @@ sub email_ok {
             my $acontent = $sig->Content;
         }
 
-        my $a = grep $_->Filename, @attachments;
+        my ($a) = grep $_->Filename, @attachments;
         ok ($a && $a->Id, "$eid: found attachment with filename");
 
         my $acontent = $a->Content;
