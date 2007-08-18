@@ -244,7 +244,16 @@ corruptio or absence of expected information.
 In this template C<@Messages> array is available and contains list
 of error messages.
 
-=head1 FUNCTIONS
+=head1 FOR DEVELOPERS
+
+=head2 Documentation and references
+
+* RFC1847 - Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
+Describes generic MIME security framework, "mulitpart/signed" and "multipart/encrypted"
+MIME types.
+
+* RFC3156 - MIME Security with Pretty Good Privacy (PGP),
+updates RFC2015.
 
 =cut
 
