@@ -80,18 +80,7 @@ sub GetCurrentUser {
 
     my $msg = $args{'Message'}->dup;
 
-    # GPG needs an exact copy of the message to properly verify signatures
-    # whitespace changes introduced by decoding and re-encoding means we're 
-    # rejecting some properly signed emails, specifically on binary attachments
-    my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar(
-        Message => ${$args{'RawMessageRef'}},
-        Decode => 0,
-        Exact => 1,
-    );
-    my $raw_msg = $parser->Entity();
-
-    my ($status, @res) = VerifyDecrypt( Entity => $raw_msg, OutEntity => $args{'Message'} );
+    my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
@@ -105,7 +94,7 @@ sub GetCurrentUser {
 
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
-        my $reject = HandleErrors( Message => $raw_msg, Result => \@res );
+        my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return (-2, 'rejected because of problems during decrypting and verifying')
             if $reject;
     }
@@ -225,7 +214,6 @@ sub CheckBadData {
 sub VerifyDecrypt {
     my %args = (
         Entity => undef,
-        OutEntity => undef,
         @_
     );
 
