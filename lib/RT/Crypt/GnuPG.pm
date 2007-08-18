@@ -1027,6 +1027,11 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
     # handling passphrase in GnupGOptions
     $args{'Passphrase'} ||= delete $opt{'passphrase'};
 
@@ -1096,6 +1101,12 @@ sub DecryptInline {
         _PrepareGnuPGOptions( %opt ),
         meta_interactive => 0,
     );
+
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        $RT::Logger->crit('data is encoded');
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
 
     # handling passphrase in GnupGOptions
     $args{'Passphrase'} ||= delete $opt{'passphrase'};
