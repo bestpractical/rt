@@ -1103,7 +1103,6 @@ sub DecryptInline {
     );
 
     if ( $args{'Data'}->bodyhandle->is_encoded ) {
-        $RT::Logger->crit('data is encoded');
         require RT::EmailParser;
         RT::EmailParser->_DecodeBody($args{'Data'});
     }
