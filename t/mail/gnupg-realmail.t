@@ -44,7 +44,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     for my $format (qw/MIME inline/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
-            diag "Email $eid: $usage, $attachment email with $format key" if $ENV{TEST_VERBOSE};
+            diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
             eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
@@ -75,11 +75,11 @@ sub email_ok {
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
-    ok ($id, 'got id of a newly created ticket');
+    ok ($id, "$eid: got id of a newly created ticket - $id");
 
     my $tick = RT::Ticket->new( $RT::SystemUser );
     $tick->Load( $id );
-    ok ($tick->id, 'loaded ticket');
+    ok ($tick->id, "$eid: loaded ticket #$id");
 
     is ($tick->Subject,
         "Test Email ID:$eid",
