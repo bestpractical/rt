@@ -1003,7 +1003,11 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'}, Decode => 0 );
+    $parser->SmartParseMIMEEntityFromScalar(
+        Message => $args{'message'},
+        Decode => 0,
+        Exact => 1,
+    );
 
     my $Message = $parser->Entity();
     unless ($Message) {
@@ -1055,6 +1059,7 @@ sub Gateway {
         }
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+    $parser->_DecodeBodies;
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;
