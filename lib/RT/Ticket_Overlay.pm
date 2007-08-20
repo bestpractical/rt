@@ -2445,12 +2445,15 @@ sub _RecordNote {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
-    # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
-    # as CanonicalizeEmailAddress expect only one address at a time
-    foreach my $field (qw(Cc Bcc)) {
-        $args{'MIMEObj'}->head->add(
-            "RT-Send-$field" => RT::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
-        ) if defined $args{ $field . 'MessageTo' };
+
+    foreach my $type (qw/Cc Bcc/) {
+        if ( defined $args{ $type . 'MessageTo' } ) {
+
+            my $addresses = join ', ', (
+                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
+                    Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
+            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+        }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
