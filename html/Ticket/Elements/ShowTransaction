@@ -65,7 +65,7 @@
   <tr>
     <td colspan="4" class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
-    <& ShowGnuPGStatus, Attachment => $Attachments->[0] &>
+    <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
 % }
 % if ( $Transaction->CustomFieldValues->Count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
@@ -92,6 +92,7 @@ $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1
 $LastTransaction => 0
+$WarnUnsigned => undef
 </%ARGS>
 <%ONCE>
 
