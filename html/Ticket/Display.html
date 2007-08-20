@@ -131,23 +131,6 @@ if ($ARGS{'id'} eq 'new') {
         }
     }
 
-#    if ( defined $ARGS{'Lock'} ) {
-#        if ( $ARGS{'Lock'} eq 'add' ) {
-#            if ( $TicketObj->Lock('Hard') ) {
-#                push @Actions, loc('You now have a lock on this ticket');
-#            } else {
-#                push @Actions, loc('Your attempt to lock this ticket failed');
-#            }
-#        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-#            my $msg;
-#            ($Duration, $msg) = $TicketObj->Unlock('Hard');
-#            push @Actions, loc($msg);
-#        } elsif ( $ARGS{'Lock'} eq 'break' ) {
-#            $TicketObj->BreakLock();
-#            push @Actions, loc('You have broken the lock on this ticket');
-#        }
-#    }
-
     $m->callback(CallbackName => 'ProcessArguments', 
             Ticket => $TicketObj, 
             ARGSref => \%ARGS, 
