@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
+
 use Test::More tests => 39;
 use Test::WWW::Mechanize;
 use HTTP::Request::Common;
@@ -24,7 +26,7 @@ RT::Init();
     my $queue = RT::Queue->new( $RT::SystemUser );
     $queue->Load( 'Regression' );
     if ( $queue->id ) {
-        ok(1, "queue 'Regression' exists");
+        ok(1, "queue 'Regression' exists - #". $queue->id );
     } else {
         $queue->Create( Name => 'Regression' );
         ok($queue->id, "created queue 'Regression'");

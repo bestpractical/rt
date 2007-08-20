@@ -882,6 +882,21 @@ use vars '%LINKDIRMAP';
 
 );
 
+=head2 Update  ARGSHASH
+
+Updates fields on an object for you using the proper Set methods,
+skipping unchanged values.
+
+ ARGSRef => a hashref of attributes => value for the update
+ AttributesRef => an arrayref of keys in ARGSRef that should be updated
+ AttributePrefix => a prefix that should be added to the attributes in AttributesRef
+                    when looking up values in ARGSRef
+                    Bare attributes are tried before prefixed attributes
+
+Returns a list of localized results of the update
+
+=cut
+
 sub Update {
     my $self = shift;
 
