@@ -287,6 +287,11 @@ sub set_rights {
 
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
+        unless ( $principal->isa('RT::Principal') ) {
+            if ( $principal->can('PrincipalObj') ) {
+                $principal = $principal->PrincipalObj;
+            }
+        }
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
