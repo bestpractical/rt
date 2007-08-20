@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % my $name = $NamePrefix . $CustomField->Id . '-Value';
 % if ($Multiple) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" ><%$Default%></textarea>
+<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" ><% $Default || '' %></textarea>
 % } else {
 <input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" value="<%$Default ? $Default : ''%>" />
 % }

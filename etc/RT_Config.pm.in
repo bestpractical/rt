@@ -323,10 +323,11 @@ Set($LogToFile      , undef);
 Set($LogDir, '@RT_LOG_PATH@');
 Set($LogToFileNamed , "rt.log");    #log to rt.log
 
-# If set to true, any file and screen logging will include stack
-# traces; syslog never includes stack traces.
+# If set to a log level then logging will include stack
+# traces for messages with level equal to or greater than
+# specified.
 
-Set($LogStackTraces , 0);
+Set($LogStackTraces , '');
 
 # On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
 # override any other options RT passes to Log::Dispatch::Syslog.

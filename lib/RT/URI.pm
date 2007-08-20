@@ -136,7 +136,7 @@ sub FromURI {
 	$scheme = $1;
     }
     else {
-        $RT::Logger->warning("$self Could not determine a URI scheme for $uri");
+        $RT::Logger->warning("Could not determine a URI scheme for $uri");
         return (undef);
     }
      

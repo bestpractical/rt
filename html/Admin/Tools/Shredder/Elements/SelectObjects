@@ -1,0 +1,20 @@
+<%ARGS>
+@Objects => ()
+</%ARGS>
+<div id="shredder-plugin-results">
+% unless( @Objects ) {
+<& /Elements/ListActions, actions => ["Objects list is empty"] &>
+% } else {
+<div class="shredder-form">
+<input id="shredder-select-all-objects-checkbox" type="checkbox" name="SelectAllObjects" onclick="checkAllObjects()" />
+<span>click to check/uncheck all objects at once</span>
+<hr>
+% foreach my $o( @Objects ) {
+<& ObjectCheckBox, Object => $o &>
+% }
+</div>
+<& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
+% }
+</div>
+<%INIT>
+</%INIT>

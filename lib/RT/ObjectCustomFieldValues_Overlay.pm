@@ -61,10 +61,10 @@ Limits the returned set to values for the custom field with Id FIELD
 sub LimitToCustomField {
     my $self = shift;
     my $cf = shift;
-    return ($self->Limit( FIELD => 'CustomField',
-			  VALUE => $cf,
-			  OPERATOR => '='));
-
+    return $self->Limit(
+        FIELD => 'CustomField',
+        VALUE => $cf,
+    );
 }
 
 # }}}
@@ -80,12 +80,14 @@ Limits the returned set to values for the given OBJECT
 sub LimitToObject {
     my $self = shift;
     my $object = shift;
-    $self->Limit( FIELD => 'ObjectType',
-		  VALUE => ref($object),
-		  OPERATOR => '=');
-    return ($self->Limit( FIELD => 'ObjectId',
-			  VALUE => $object->Id,
-			  OPERATOR => '='));
+    $self->Limit(
+        FIELD => 'ObjectType',
+        VALUE => ref($object),
+    );
+    return $self->Limit(
+        FIELD => 'ObjectId',
+        VALUE => $object->Id,
+    );
 
 }
 
@@ -93,7 +95,8 @@ sub LimitToObject {
 
 =sub HasEntry VALUE
 
-Returns true if this CustomFieldValues collection has an entry with content that eq VALUE
+Returns true if this CustomFieldValues collection
+has an entry with content that eq VALUE
 
 =cut
 
@@ -103,35 +106,34 @@ sub HasEntry {
     my $value = shift;
 
     #TODO: this could cache and optimize a fair bit.
-    foreach my $item (@{$self->ItemsArrayRef}) {
-        return(1) if ($item->Content eq $value);  
+    foreach my $item ( @{$self->ItemsArrayRef} ) {
+        return 1 if $item->Content eq $value;
     }
     return undef;
-
 }
 
 sub _DoSearch {
     my $self = shift;
     
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_expired_rows'}) {
+    # unless we really want to find disabled rows,
+    # make sure we\'re only finding enabled ones.
+    unless ( $self->{'find_expired_rows'} ) {
         $self->LimitToEnabled();
     }
     
-    return($self->SUPER::_DoSearch(@_));
-    
+    return $self->SUPER::_DoSearch(@_);
 }
 
 sub _DoCount {
     my $self = shift;
     
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_expired_rows'}) {
+    # unless we really want to find disabled rows,
+    # make sure we\'re only finding enabled ones.
+    unless ( $self->{'find_expired_rows'} ) {
         $self->LimitToEnabled();
     }
     
-    return($self->SUPER::_DoCount(@_));
-    
+    return $self->SUPER::_DoCount(@_);
 }
 
 1;

@@ -92,7 +92,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Name'.
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
-  varchar(255) 'Pattern'.
+  longtext 'Pattern'.
   smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
@@ -203,7 +203,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Pattern
 
 Returns the current value of Pattern. 
-(In the database, Pattern is stored as varchar(255).)
+(In the database, Pattern is stored as longtext.)
 
 
 
@@ -212,7 +212,7 @@ Returns the current value of Pattern.
 
 Set Pattern to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Pattern will be stored as a varchar(255).)
+(In the database, Pattern will be stored as a longtext.)
 
 
 =cut
@@ -357,7 +357,7 @@ sub _CoreAccessible {
         MaxValues => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
         Repeated => 
 		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Description => 

@@ -82,6 +82,8 @@ ok (require RT::Condition::Generic);
 package RT::Condition::Generic;
 
 use strict;
+use warnings;
+
 use base qw/RT::Base/;
 
 # {{{ sub new 

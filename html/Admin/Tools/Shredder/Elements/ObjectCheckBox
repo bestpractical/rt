@@ -1,0 +1,19 @@
+<%ARGS>
+$Object => undef
+</%ARGS>
+<input type="checkbox" name="WipeoutObject" value="<% $Object->_AsString %>" />
+<span>
+% if( $m->comp_exists( $path ) ) {
+% $m->comp( $path, Object => $Object );
+% } else {
+<% $Object->_AsString %>
+% }
+</span><br />
+<%ONCE>
+require File::Spec;
+</%ONCE>
+<%INIT>
+my $path = ref $Object;
+$path =~ s/:/-/g;
+$path = File::Spec->catfile( 'Object', $path );
+</%INIT>

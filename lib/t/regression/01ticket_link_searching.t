@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use Test::More tests => 30;
+use Test::More tests => 63;
 use strict;
 use RT;
 
@@ -155,5 +155,93 @@ while (my $t = $Collection->Next) {
 }
 ok( $has{$parentid}, "The collection has our parent - $parentid");
 ok( !$has{$childid}, "The collection doesn't have our child - $childid");
+
+my $grand_child_ticket = new RT::Ticket( $CurrentUser );
+my ($grand_childid) = $child_ticket->Create(
+    Subject => 'test child',
+    Queue   => $queue->Id,
+    MemberOf => $childid,
+);
+ok($childid, "We created a grand child ticket");
+
+my $unlinked_ticket = new RT::Ticket( $CurrentUser );
+my ($unlinked_id) = $child_ticket->Create(
+    Subject => 'test unlinked',
+    Queue   => $queue->Id,
+);
+ok($unlinked_id, "We created a grand child ticket");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedTo = $childid" );
+is($Collection->Count,1, "We found only one result");
+ok($Collection->First);
+is($Collection->First->id, $grand_childid, "We found all tickets linked to ticket #$childid");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedFrom = $childid" );
+is($Collection->Count,1, "We found only one result");
+ok($Collection->First);
+is($Collection->First->id, $parentid, "We found all tickets linked from ticket #$childid");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedTo IS NULL" );
+ok($Collection->Count, "Result is set is not empty");
+%has = ();
+while (my $t = $Collection->Next) {
+    ++$has{$t->id};
+}
+ok( $has{$parentid}, "parent is in collection");
+ok( $has{$unlinked_id}, "unlinked is in collection");
+ok( !$has{$childid}, "child is NOT in collection");
+ok( !$has{$grand_childid}, "grand child too is not in collection");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedTo IS NOT NULL" );
+ok($Collection->Count, "Result set is not empty");
+%has = ();
+while (my $t = $Collection->Next) {
+    ++$has{$t->id};
+}
+ok( !$has{$parentid}, "The collection has no our parent - $parentid");
+ok( !$has{$unlinked_id}, "unlinked is not in collection");
+ok( $has{$childid}, "The collection have our child - $childid");
+ok( $has{$grand_childid}, "The collection have our grand child - $grand_childid");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedFrom IS NULL" );
+ok($Collection->Count, "Result is set is not empty");
+%has = ();
+while (my $t = $Collection->Next) {
+    ++$has{$t->id};
+}
+ok( !$has{$parentid}, "parent is NOT in collection");
+ok( !$has{$childid}, "child is NOT in collection");
+ok( $has{$grand_childid}, "grand child is in collection");
+ok( $has{$unlinked_id}, "unlinked is in collection");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "LinkedFrom IS NOT NULL" );
+ok($Collection->Count, "Result set is not empty");
+%has = ();
+while (my $t = $Collection->Next) {
+    ++$has{$t->id};
+}
+ok( $has{$parentid}, "The collection has our parent - $parentid");
+ok( $has{$childid}, "The collection have our child - $childid");
+ok( !$has{$grand_childid}, "The collection have no our grand child - $grand_childid");
+ok( !$has{$unlinked_id}, "unlinked is not in collection");
+
+$Collection = RT::Tickets->new($CurrentUser);
+$Collection->FromSQL( "Linked = $childid" );
+is($Collection->Count, 2, "We found two tickets: parent and child");
+%has = ();
+while (my $t = $Collection->Next) {
+    ++$has{$t->id};
+}
+ok( !$has{$childid}, "Ticket is not linked to itself");
+ok( $has{$parentid}, "The collection has our parent");
+ok( $has{$grand_childid}, "The collection have our child");
+ok( !$has{$unlinked_id}, "unlinked is not in collection");
+
 
 1;

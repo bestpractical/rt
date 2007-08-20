@@ -292,7 +292,7 @@ sub LoadByURI {
 
     # FIXME: there is no TicketBaseURI option in config
     my $base_uri = RT->Config->Get('TicketBaseURI');
-    if ( $uri =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
         return $self->Load($id);
     }
@@ -352,7 +352,7 @@ ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->Id, "Got ticket id");
 ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
 ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
-ok ($t->ResolvedObj->Unix == -1, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
+is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 =end testing
 
@@ -387,23 +387,21 @@ sub Create {
         @_
     );
 
-    my ( $ErrStr, $Owner, $resolved );
-    my (@non_fatal_errors);
+    my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Queue->new($RT::SystemUser);
-
-    if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj->Load( $args{'Queue'} );
-    }
-    elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
+    my $QueueObj = RT::Queue->new( $RT::SystemUser );
+    if ( ref $args{'Queue'} eq 'RT::Queue' ) {
         $QueueObj->Load( $args{'Queue'}->Id );
+    }
+    elsif ( $args{'Queue'} ) {
+        $QueueObj->Load( $args{'Queue'} );
     }
     else {
         $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
-    unless ( defined($QueueObj) && $QueueObj->Id ) {
+    unless ( $QueueObj->Id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
         return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
     }
@@ -426,21 +424,21 @@ sub Create {
     }
 
     #Since we have a queue, we can set queue defaults
-    #Initial Priority
 
+    #Initial Priority
     # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'InitialPriority'} = ( $QueueObj->InitialPriority || 0 )
-      unless ( $args{'InitialPriority'} );
+    $args{'InitialPriority'} = $QueueObj->InitialPriority || 0
+        unless defined $args{'InitialPriority'};
 
     #Final priority
-
     # If there's no queue default final priority and it's not set, set it to 0
-    $args{'FinalPriority'} = ( $QueueObj->FinalPriority || 0 )
-      unless ( $args{'FinalPriority'} );
+    $args{'FinalPriority'} = $QueueObj->FinalPriority || 0
+        unless defined $args{'FinalPriority'};
 
     # Priority may have changed from InitialPriority, for the case
     # where we're importing tickets (eg, from an older RT version.)
-    my $priority = $args{'Priority'} || $args{'InitialPriority'};
+    $args{'Priority'} = $args{'InitialPriority'}
+        unless defined $args{'Priority'};
 
     # {{{ Dates
     #TODO we should see what sort of due date we're getting, rather +
@@ -448,8 +446,7 @@ sub Create {
 
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $Due = new RT::Date( $self->CurrentUser );
-
-    if ( $args{'Due'} ) {
+    if ( defined $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
     elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
@@ -466,6 +463,9 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
+    elsif ( $args{'Status'} ne 'new' ) {
+        $Started->SetToNow;
+    }
 
     my $Resolved = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Resolved'} ) {
@@ -473,10 +473,10 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    if ( $QueueObj->IsInactiveStatus( $args{'Status'} ) && !$args{'Resolved'} )
+    elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
-            ." ticket with undefined resolved date. Setting to now."
+            ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->SetToNow;
     }
@@ -493,6 +493,7 @@ sub Create {
 
     # {{{ Deal with setting the owner
 
+    my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
         $Owner = $args{'Owner'};
     }
@@ -569,7 +570,7 @@ sub Create {
         Subject         => $args{'Subject'},
         InitialPriority => $args{'InitialPriority'},
         FinalPriority   => $args{'FinalPriority'},
-        Priority        => $priority,
+        Priority        => $args{'Priority'},
         Status          => $args{'Status'},
         TimeWorked      => $args{'TimeWorked'},
         TimeEstimated   => $args{'TimeEstimated'},
@@ -595,8 +596,8 @@ sub Create {
 
     # Delete the time worked if we're counting it in the transaction
     delete $params{TimeWorked} if $args{'_RecordTransaction'};
-    
-    my ($id,$ticket_message) = $self->SUPER::Create( %params);
+
+    my ($id,$ticket_message) = $self->SUPER::Create( %params );
     unless ($id) {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         $RT::Handle->Rollback();
@@ -682,7 +683,45 @@ sub Create {
     }
 
     # }}}
+
+    # {{{ Add all the custom fields
+
+    foreach my $arg ( keys %args ) {
+        next unless $arg =~ /^CustomField-(\d+)$/i;
+        my $cfid = $1;
+
+        foreach my $value (
+            UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+        {
+            next unless defined $value && length $value;
+
+            # Allow passing in uploaded LargeContent etc by hash reference
+            my ($status, $msg) = $self->_AddCustomFieldValue(
+                (UNIVERSAL::isa( $value => 'HASH' )
+                    ? %$value
+                    : (Value => $value)
+                ),
+                Field             => $cfid,
+                RecordTransaction => 0,
+            );
+            push @non_fatal_errors, $msg unless $status;
+        }
+    }
+
+    # }}}
+
     # {{{ Deal with setting up links
+
+    # TODO: Adding link may fire scrips on other end and those scrips
+    # could create transactions on this ticket before 'Create' transaction.
+    #
+    # We should implement different schema: record 'Create' transaction,
+    # create links and only then fire create transaction's scrips.
+    #
+    # Ideal variant: add all links without firing scrips, record create
+    # transaction and only then fire scrips on the other ends of links.
+    #
+    # //RUZ
 
     foreach my $type ( keys %LINKTYPEMAP ) {
         next unless ( defined $args{$type} );
@@ -712,30 +751,6 @@ sub Create {
             );
 
             push @non_fatal_errors, $wmsg unless ($wval);
-        }
-    }
-
-    # }}}
-
-    # {{{ Add all the custom fields
-
-    foreach my $arg ( keys %args ) {
-        next unless ( $arg =~ /^CustomField-(\d+)$/i );
-        my $cfid = $1;
-        foreach
-          my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
-        {
-            next unless ( length($value) );
-
-            # Allow passing in uploaded LargeContent etc by hash reference
-            $self->_AddCustomFieldValue(
-                (UNIVERSAL::isa( $value => 'HASH' )
-                    ? %$value
-                    : (Value => $value)
-                ),
-                Field             => $cfid,
-                RecordTransaction => 0,
-            );
         }
     }
 
@@ -3114,7 +3129,6 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
-
     ($val, $msg) = $self->_NewTransaction(
         Type      => $Type,
         Field     => 'Owner',
@@ -3282,7 +3296,7 @@ sub SetStatus {
     $now->SetToNow();
 
     #If we're changing the status from new, record that we've started
-    if ( ( $self->Status =~ /new/ ) && ( $args{Status} ne 'new' ) ) {
+    if ( $self->Status eq 'new' && $args{Status} ne 'new' ) {
 
         #Set the Started time to "now"
         $self->_Set( Field             => 'Started',
@@ -3689,7 +3703,7 @@ sub HasRight {
 
     unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
     {
-        Carp::cluck;
+        Carp::cluck("Principal attrib undefined for Ticket::HasRight");
         $RT::Logger->crit("Principal attrib undefined for Ticket::HasRight");
         return(undef);
     }
@@ -3746,11 +3760,13 @@ sub Transactions {
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "Comment"
             );
             $transactions->Limit(
+                SUBCLAUSE => 'acl',
                 FIELD    => 'Type',
                 OPERATOR => '!=',
                 VALUE    => "CommentEmailRecord",

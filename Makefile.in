@@ -372,8 +372,7 @@ regression-instruct:
 
 # {{{ database-installation
 
-regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
+regression-reset-db: force-dropdb
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initdb :: initialize-database
@@ -383,6 +382,9 @@ initialize-database:
 
 dropdb: 
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
+
+force-dropdb: 
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 
 insert-approval-data: 
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
@@ -427,12 +429,14 @@ sbin-install:
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
-		sbin/rt-clean-sessions
+		sbin/rt-clean-sessions \
+		sbin/rt-shredder
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		sbin/rt-clean-sessions \
+		sbin/rt-shredder \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}

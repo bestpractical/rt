@@ -54,39 +54,76 @@ rt-mailgate - Mail interface to RT3.
 =cut
 
 use strict;
-use Test::More tests => 109;
+use warnings;
+
+use Test::More tests => 152;
 
 use RT;
 RT::LoadConfig();
 RT::Init();
-use RT::I18N;
-use Digest::MD5 qw(md5_base64);
+use RT::Tickets;
 
-no warnings 'once';
+use MIME::Entity;
+use Digest::MD5 qw(md5_base64);
+use LWP::UserAgent;
+
+# TODO: --extension queue
+
+require "lib/t/utils.pl";
+
 my $url = join( ':', grep $_, "http://localhost", RT->Config->Get('WebPort') ) . RT->Config->Get('WebPath') ."/";
 
-# Make sure that when we call the mailgate wrong, it tempfails
+sub latest_ticket {
+    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    $tickets->RowsPerPage( 1 );
+    return $tickets->First;
+}
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://this.test.for.non-connection.is.expected.to.generate.an.error"), "Opened the mailgate - The error below is expected - $@");
-print MAIL <<EOF;
+diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: root\@localhost
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of new ticket creation
 
 Foob!
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text, url => undef);
+    is ($status >> 8, 1, "The mail gateway exited with a failure");
+    ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
+}
 
-# Check the return value
-is ( $? >> 8, 75, "The error message above is expected The mail gateway exited with a failure. yay");
+diag "Make sure that when we call the mailgate with wrong URL, it tempfails" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of new ticket creation
 
+Foob!
+EOF
+    my ($status, $id) = create_ticket_via_gate($text, url => 'http://this.test.for.non-connection.is.expected.to.generate.an.error');
+    is ($status >> 8, 75, "The mail gateway exited with a failure");
+    ok (!$id, "No ticket id");
+}
 
-# {{{ Test new ticket creation by root who is privileged and superuser
+my $everyone_group;
+diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
+{
+    $everyone_group = RT::Group->new( $RT::SystemUser );
+    $everyone_group->LoadSystemInternalGroup( 'Everyone' );
+    ok ($everyone_group->Id, "Found group 'everyone'");
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate  --debug --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+    foreach( qw(CreateTicket ReplyToTicket CommentOnTicket) ) {
+        $everyone_group->PrincipalObj->RevokeRight(Right => $_);
+    }
+}
+
+diag "Test new ticket creation by root who is privileged and superuser" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: root\@localhost
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of new ticket creation
@@ -94,27 +131,89 @@ Subject: This is a test of new ticket creation
 Blah!
 Foob!
 EOF
-close (MAIL);
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket");
 
-use RT::Tickets;
-my $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
-ok (UNIVERSAL::isa($tick,'RT::Ticket'));
-ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    is ($tick->Id, $id, "correct ticket id");
+    ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
+}
 
-# }}}
+diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of the X-RT-Mail-Extension field
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = "bad value with\nnewlines\n";
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket #$id");
 
-# {{{ Test new ticket creation without --action argument
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    is ($tick->Id, $id, "correct ticket id");
+    is ($tick->Subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --debug --url $url --queue general"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Create', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    # XXX: We eat all newlines in header, that's not what RFC's suggesting
+    is (
+        $attachment->GetHeader('X-RT-Mail-Extension'),
+        "bad value with newlines",
+        'header is in place, without trailing newline char'
+    );
+}
+
+diag "Make sure that not standard --extension is passed" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of new ticket creation
+
+Foob!
+EOF
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'some-extension-arg' );
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket #$id");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    is ($tick->Id, $id, "correct ticket id");
+
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Create', "correct type");
+
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is (
+        $attachment->GetHeader('X-RT-Mail-Extension'),
+        'some-extension-arg',
+        'header is in place'
+    );
+}
+
+diag "Test new ticket creation without --action argument" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: root\@localhost
 To: rt\@$RT::rtname
 Subject: using mailgate without --action arg
@@ -122,26 +221,19 @@ Subject: using mailgate without --action arg
 Blah!
 Foob!
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'some-extension-arg' );
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket #$id");
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    is ($tick->Id, $id, "correct ticket id");
+    is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
+}
 
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
-$tick = $tickets->First;
-isa_ok ($tick,'RT::Ticket');
-ok ($tick->Id, "found ticket ".$tick->Id);
-is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
-
-# }}}
-
-# {{{This is a test of new ticket creation as an unknown user
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+diag "This is a test of new ticket creation as an unknown user" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of new ticket creation as an unknown user
@@ -149,36 +241,30 @@ Subject: This is a test of new ticket creation as an unknown user
 Blah!
 Foob!
 EOF
-close (MAIL);
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok (!$id, "no ticket created");
 
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
-my $u = RT::User->new($RT::SystemUser);
-$u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
-ok( !$u->Id, " user does not exist and was not created by failed ticket submission");
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
+    ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
+}
 
-# }}}
+diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
+{
+    my ($val, $msg) = $everyone_group->PrincipalObj->GrantRight( Right => 'CreateTicket' );
+    ok ($val, "Granted everybody the right to create tickets") or diag "error: $msg";
+}
 
-# {{{ now everybody can create tickets.  can a random unkown user create tickets?
-
-my $g = RT::Group->new($RT::SystemUser);
-$g->LoadSystemInternalGroup('Everyone');
-ok( $g->Id, "Found 'everybody'");
-
-my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
-ok ($val, "Granted everybody the right to create tickets - $msg");
-
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+my $ticket_id;
+diag "now everybody can create tickets. can a random unkown user create tickets?" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of new ticket creation as an unknown user
@@ -186,213 +272,245 @@ Subject: This is a test of new ticket creation as an unknown user
 Blah!
 Foob!
 EOF
-close (MAIL);
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "ticket created");
 
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
+    ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
- $u = RT::User->new($RT::SystemUser);
-$u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
-ok( $u->Id != 0, " user does not exist and was created by ticket submission");
+    my $u = RT::User->new( $RT::SystemUser );
+    $u->Load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
+    ok ($u->Id, "user does not exist and was created by ticket submission");
+    $ticket_id = $id;
+}
 
-# }}}
-
-
-# {{{  can another random reply to a ticket without being granted privs? answer should be no.
-
-
-#($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
-#ok ($val, "Granted everybody the right to create tickets - $msg");
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+diag "can another random reply to a ticket without being granted privs? answer should be no." if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #@{[$tick->Id]}] This is a test of a reply as an unknown user
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
 
 Blah!  (Should not work.)
 Foob!
 EOF
-close (MAIL);
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok (!$id, "no way to reply to the ticket");
 
-$u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
-ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
-# }}}
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
+}
 
+diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
+{
+    my ($val,$msg) = $everyone_group->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
+    ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+}
 
-# {{{  can another random reply to a ticket after being granted privs? answer should be yes
-
-
-($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
-ok ($val, "Granted everybody the right to reply to  tickets - $msg");
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #@{[$tick->Id]}] This is a test of a reply as an unknown user
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
 
 Blah!
 Foob!
 EOF
-close (MAIL);
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "replied to the ticket");
 
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    ok ($u->Id, "user exists and was created by ticket correspondence submission");
+}
 
-$u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
-ok( $u->Id != 0, " user exists and was created by ticket correspondence submission");
+diag "add a reply to the ticket using '--extension ticket' feature" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: This is a test of a reply as an unknown user
 
-# }}}
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = $ticket_id;
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'ticket');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "replied to the ticket");
 
-# {{{  can another random comment on a ticket without being granted privs? answer should be no.
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
 
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Correspond', "correct type");
 
-#($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
-#ok ($val, "Granted everybody the right to create tickets - $msg");
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
+}
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+diag "can another random comment on a ticket without being granted privs? answer should be no" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #@{[$tick->Id]}] This is a test of a comment as an unknown user
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
 
 Blah!  (Should not work.)
 Foob!
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text, action => 'comment');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok (!$id, "no way to comment on the ticket");
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
-
-$u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
-ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
-
-# }}}
-# {{{  can another random reply to a ticket after being granted privs? answer should be yes
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
+}
 
 
-($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
-ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
+{
+    my ($val,$msg) = $everyone_group->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
+    ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+}
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action comment"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
 To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #@{[$tick->Id]}] This is a test of a comment as an unknown user
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
 
 Blah!
 Foob!
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text, action => 'comment');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "replied to the ticket");
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    ok ($u->Id, " user exists and was created by ticket comment submission");
+}
 
-$u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
-ok( $u->Id != 0, " user exists and was created by ticket comment submission");
+diag "add comment to the ticket using '--extension action' feature" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment via '--extension action'
 
-# }}}
+Blah!
+Foob!
+EOF
+    local $ENV{'EXTENSION'} = 'comment';
+    my ($status, $id) = create_ticket_via_gate($text, extension => 'action');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticket_id, "added comment to the ticket");
 
-# {{{ Testing preservation of binary attachments
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
 
-# Get a binary blob (Best Practical logo) 
+    my $transactions = $tick->Transactions;
+    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
+    $transactions->Limit(
+        FIELD => 'Type',
+        OPERATOR => 'NOT ENDSWITH',
+        VALUE => 'EmailRecord',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    my $txn = $transactions->First;
+    isa_ok ($txn, 'RT::Transaction');
+    is ($txn->Type, 'Comment', "correct type");
 
-# Create a mime entity with an attachment
+    my $attachment = $txn->Attachments->First;
+    isa_ok ($attachment, 'RT::Attachment');
+    is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
+}
 
-use MIME::Entity;
-my $entity = MIME::Entity->build( From => 'root@localhost',
-                                 To => 'rt@localhost',
-                                Subject => 'binary attachment test',
-                                Data => ['This is a test of a binary attachment']);
+diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
+{
+    # Get a binary blob (Best Practical logo) 
+    my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 
-# currently in lib/t/autogen
+    # Create a mime entity with an attachment
+    my $entity = MIME::Entity->build(
+        From    => 'root@localhost',
+        To      => 'rt@localhost',
+        Subject => 'binary attachment test',
+        Data    => ['This is a test of a binary attachment'],
+    );
 
-my $LOGO_FILE = $RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif';
+    $entity->attach(
+        Path     => $LOGO_FILE,
+        Type     => 'image/gif',
+        Encoding => 'base64',
+    );
+    # Create a ticket with a binary attachment
+    my ($status, $id) = create_ticket_via_gate($entity);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
 
-$entity->attach(Path => $LOGO_FILE,
-                Type => 'image/gif',
-                Encoding => 'base64');
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ".$tick->Id);
+    is ($tick->Id, $id, "correct ticket id");
+    ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
 
-# Create a ticket with a binary attachment
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
+    my $file = `cat $LOGO_FILE`;
+    ok ($file, "Read in the logo image");
+    diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file) if $ENV{'TEST_VERBOSE'};
 
-$entity->print(\*MAIL);
+    # Verify that the binary attachment is valid in the database
+    my $attachments = RT::Attachments->new($RT::SystemUser);
+    $attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
+    my $txn_alias = $attachments->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'TransactionId',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'id',
+    );
+    $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+    $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectId', VALUE => $id );
+    is ($attachments->Count, 1, 'Found only one gif attached to the ticket');
+    my $attachment = $attachments->First;
+    ok ($attachment->Id, 'loaded attachment object');
+    my $acontent = $attachment->Content;
 
-close (MAIL);
+    diag "coming from the database, md5 hex is ".Digest::MD5::md5_hex($acontent) if $ENV{'TEST_VERBOSE'};
+    is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    # Grab the binary attachment via the web ui
+    my $ua = new LWP::UserAgent;
+    my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
+        ."/". $attachment->id. "/bplogo.gif?&user=root&pass=password";
+    my $r = $ua->get( $full_url );
 
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok (UNIVERSAL::isa($tick,'RT::Ticket'));
-ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
+    # Verify that the downloaded attachment is the same as what we uploaded.
+    is ($file, $r->content, 'The attachment isn\'t screwed up in download');
+}
 
-my $file = `cat $LOGO_FILE`;
-ok ($file, "Read in the logo image");
-
-
-diag( "for the raw file the content is ". md5_base64($file) );
-
-
-
-# Verify that the binary attachment is valid in the database
-my $attachments = RT::Attachments->new($RT::SystemUser);
-$attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
-ok ($attachments->Count == 1, 'Found only one gif in the database');
-my $attachment = $attachments->First;
-ok($attachment->Id);
-my $acontent = $attachment->Content;
-
-diag( "coming from the database, the content is ". md5_base64($acontent) );
-
-is( $acontent, $file, 'The attachment isn\'t screwed up in the database.');
-# Log in as root
-use Getopt::Long;
-use LWP::UserAgent;
-
-
-# Grab the binary attachment via the web ui
-my $ua      = LWP::UserAgent->new();
-
-my $full_url = "$url/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/bplogo.gif?&user=root&pass=password";
-my $r = $ua->get( $full_url);
-
-
-# Verify that the downloaded attachment is the same as what we uploaded.
-is($file, $r->content, 'The attachment isn\'t screwed up in download');
-
-
-
-# }}}
-
-# {{{ Simple I18N testing
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-                                                                         
-print MAIL <<EOF;
+diag "Simple I18N testing" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: root\@localhost
 To: rtemail\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of I18N ticket creation
@@ -403,31 +521,32 @@ Content-Type: text/plain; charset="utf-8"
 \303\241\303\251\303\255\303\263\303\272
 bye
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ". $tick->Id);
+    is ($tick->Id, $id, "correct ticket");
+    ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
 
-my $unitickets = RT::Tickets->new($RT::SystemUser);
-$unitickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$unitickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
-my $unitick = $unitickets->First();
-ok (UNIVERSAL::isa($unitick,'RT::Ticket'));
-ok ($unitick->Id, "found ticket ".$unitick->Id);
-ok ($unitick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket - ". $unitick->Subject);
+    my $unistring = "\303\241\303\251\303\255\303\263\303\272";
+    Encode::_utf8_on($unistring);
+    is (
+        $tick->Transactions->First->Content,
+        $tick->Transactions->First->Attachments->First->Content,
+        "Content is ". $tick->Transactions->First->Attachments->First->Content
+    );
+    ok (
+        $tick->Transactions->First->Content =~ /$unistring/i,
+        $tick->Id." appears to be unicode ". $tick->Transactions->First->Attachments->First->Id
+    );
+}
 
-
-
-my $unistring = "\303\241\303\251\303\255\303\263\303\272";
-Encode::_utf8_on($unistring);
-is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attachments->First->Content, "Content is ". $unitick->Transactions->First->Attachments->First->Content);
-ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
-# supposedly I18N fails on the second message sent in.
-
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue general --action correspond"), "Opened the mailgate - $!");
-                                                                         
-print MAIL <<EOF;
+diag "supposedly I18N fails on the second message sent in." if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
 From: root\@localhost
 To: rtemail\@@{[RT->Config->Get('rtname')]}
 Subject: This is a test of I18N ticket creation
@@ -438,38 +557,34 @@ Content-Type: text/plain; charset="utf-8"
 \303\241\303\251\303\255\303\263\303\272
 bye
 EOF
-close (MAIL);
+    my ($status, $id) = create_ticket_via_gate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
 
-#Check the return value
-is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Ticket');
+    ok ($tick->Id, "found ticket ". $tick->Id);
+    is ($tick->Id, $id, "correct ticket");
+    ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
 
-my $tickets2 = RT::Tickets->new($RT::SystemUser);
-$tickets2->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets2->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
-my $tick2 = $tickets2->First();
-ok (UNIVERSAL::isa($tick2,'RT::Ticket'));
-ok ($tick2->Id, "found ticket ".$tick2->Id);
-ok ($tick2->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
+    my $unistring = "\303\241\303\251\303\255\303\263\303\272";
+    Encode::_utf8_on($unistring);
 
-
-
-$unistring = "\303\241\303\251\303\255\303\263\303\272";
-Encode::_utf8_on($unistring);
-
-ok ($tick2->Transactions->First->Content =~ $unistring, "It appears to be unicode - ".$tick2->Transactions->First->Content);
-
-# }}}
+    ok (
+        $tick->Transactions->First->Content =~ $unistring,
+        "It appears to be unicode - ". $tick->Transactions->First->Content
+    );
+}
 
 
-($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
+my ($val,$msg) = $everyone_group->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
-##=for later
-
 SKIP: {
-skip "Advanced mailgate actions require an unsafe configuration", 47 unless $RT::UnsafeEmailCommands;
+skip "Advanced mailgate actions require an unsafe configuration", 47
+    unless RT->Config->Get('UnsafeEmailCommands');
 
-#create new queue to be shure we don't mess with rights
+# create new queue to be shure we don't mess with rights
 use RT::Queue;
 my $queue = RT::Queue->new($RT::SystemUser);
 my ($qid) = $queue->Create( Name => 'ext-mailgate');
@@ -479,7 +594,7 @@ ok( $qid, 'queue created for ext-mailgate tests' );
 
 # create ticket that is owned by nobody
 use RT::Ticket;
-$tick = RT::Ticket->new($RT::SystemUser);
+my $tick = RT::Ticket->new($RT::SystemUser);
 my ($id) = $tick->Create( Queue => 'ext-mailgate', Subject => 'test');
 ok( $id, 'new ticket created' );
 is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );

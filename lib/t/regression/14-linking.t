@@ -252,7 +252,7 @@ is(link_count($filename), 0, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
-    is( $transactions->Count, 5, "Still five txns on the base" );
+    is( $transactions->Count, 2, "Still two txns on the base" );
 
     $transactions = $ticket2->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
@@ -269,7 +269,7 @@ is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
-    is( $transactions->Count, 5, "still five txn on the base" );
+    is( $transactions->Count, 2, "still five txn on the base" );
 
     $transactions = $ticket2->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
@@ -286,7 +286,7 @@ is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
-    is( $transactions->Count, 6, "+1 txn on the base" );
+    is( $transactions->Count, 3, "+1 txn on the base" );
 
     $transactions = $ticket2->Transactions;
     $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );

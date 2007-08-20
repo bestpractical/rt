@@ -97,7 +97,7 @@ use DBIx::SearchBuilder::Unique;
 # FIELD_METADATA is a mapping of searchable Field name, to Type, and other
 # metadata.
 
-my %FIELD_METADATA = (
+our %FIELD_METADATA = (
     Status          => [ 'ENUM', ],
     Queue           => [ 'ENUM' => 'Queue', ],
     Type            => [ 'ENUM', ],
@@ -112,6 +112,10 @@ my %FIELD_METADATA = (
     TimeLeft        => [ 'INT', ],
     TimeWorked      => [ 'INT', ],
     TimeEstimated   => [ 'INT', ],
+
+    Linked          => [ 'LINK' ],
+    LinkedTo        => [ 'LINK' => 'To' ],
+    LinkedFrom      => [ 'LINK' => 'From' ],
     MemberOf        => [ 'LINK' => To => 'MemberOf', ],
     DependsOn       => [ 'LINK' => To => 'DependsOn', ],
     RefersTo        => [ 'LINK' => To => 'RefersTo', ],
@@ -136,7 +140,7 @@ my %FIELD_METADATA = (
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
     Watcher          => [ 'WATCHERFIELD', ],
-    LinkedTo         => [ 'LINKFIELD', ],
+
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -148,7 +152,7 @@ my %FIELD_METADATA = (
 );
 
 # Mapping of Field Type to Function
-my %dispatch = (
+our %dispatch = (
     ENUM            => \&_EnumLimit,
     INT             => \&_IntLimit,
     LINK            => \&_LinkLimit,
@@ -158,10 +162,9 @@ my %dispatch = (
     TRANSDATE       => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
-    LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
 );
-my %can_bundle = (); # WATCHERFIELD => "yes", );
+our %can_bundle = ();# WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
@@ -342,27 +345,18 @@ sub _LinkLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     my $meta = $FIELD_METADATA{$field};
-    die "Incorrect Metadata for $field"
-        unless defined $meta->[1] && defined $meta->[2];
-
     die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS|IS NOT)$/io;
 
-    my $direction = $meta->[1];
-
-    my $matchfield;
-    my $linkfield;
+    my $direction = $meta->[1] || '';
+    my ($matchfield, $linkfield) = ('', '');
     if ( $direction eq 'To' ) {
-        $matchfield = "Target";
-        $linkfield  = "Base";
-
+        ($matchfield, $linkfield) = ("Target", "Base");
     }
     elsif ( $direction eq 'From' ) {
-        $linkfield  = "Target";
-        $matchfield = "Base";
-
+        ($matchfield, $linkfield) = ("Base", "Target");
     }
-    else {
-        die "Invalid link direction '$meta->[1]' for $field\n";
+    elsif ( $direction ) {
+        die "Invalid link direction '$direction' for $field\n";
     }
 
     my ($is_local, $is_null) = (1, 0);
@@ -370,7 +364,7 @@ sub _LinkLimit {
         $is_null = 1;
         $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
     }
-    elsif ( $value =~ /\D/o ) {
+    elsif ( $value =~ /\D/ ) {
         $is_local = 0;
     }
     $matchfield = "Local$matchfield" if $is_local;
@@ -387,7 +381,7 @@ sub _LinkLimit {
 #                                      AND(main.id = Links_1.LocalTarget))
 #        WHERE Links_1.LocalBase IS NULL;
 
-    if ($is_null) {
+    if ( $is_null ) {
         my $linkalias = $sb->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
@@ -400,7 +394,7 @@ sub _LinkLimit {
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
+        ) if $meta->[2];
         $sb->_SQLLimit(
             @rest,
             ALIAS      => $linkalias,
@@ -423,7 +417,7 @@ sub _LinkLimit {
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
+        ) if $meta->[2];
         $sb->SUPER::Limit(
             LEFTJOIN => $linkalias,
             FIELD    => $matchfield,
@@ -441,30 +435,68 @@ sub _LinkLimit {
     }
     else {
         my $linkalias = $sb->NewAlias('Links');
-        $sb->_OpenParen();
+        $sb->_OpenParen;
+
         $sb->_SQLLimit(
             @rest,
             ALIAS    => $linkalias,
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
-        );
-        $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            FIELD           => 'Local' . $linkfield,
-            OPERATOR        => '=',
-            VALUE           => 'main.id',
-            QUOTEVALUE      => 0,
-            ENTRYAGGREGATOR => 'AND',
-        );
-        $sb->_SQLLimit(
-            ALIAS           => $linkalias,
-            FIELD           => $matchfield,
-            OPERATOR        => $op,
-            VALUE           => $value,
-            ENTRYAGGREGATOR => 'AND',
-        );
-        $sb->_CloseParen();
+        ) if $meta->[2];
+
+        $sb->_OpenParen;
+        if ( $direction ) {
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'Local' . $linkfield,
+                OPERATOR        => '=',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield,
+                OPERATOR        => '=',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        } else {
+            $sb->_OpenParen;
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'LocalBase',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield .'Target',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_CloseParen;
+
+            $sb->_OpenParen;
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => 'LocalTarget',
+                VALUE           => 'main.id',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'OR',
+            );
+            $sb->_SQLLimit(
+                ALIAS           => $linkalias,
+                FIELD           => $matchfield .'Base',
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $sb->_CloseParen;
+        }
+        $sb->_CloseParen;
+        $sb->_CloseParen;
     }
 }
 
@@ -712,7 +744,7 @@ sub _TransLimit {
     $self->_OpenParen;
 
     #Search for the right field
-    if ($field eq 'Content' and $RT::DontSearchFileAttachments) {
+    if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
        $self->_SQLLimit(
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => 'Filename',
@@ -740,7 +772,7 @@ sub _TransLimit {
 			CASESENSITIVE => 0,
 			ENTRYAGGREGATOR => 'AND',
 			@rest
-		);
+        );
     }
 
     $self->_CloseParen;
@@ -1217,83 +1249,6 @@ sub _WatcherMembershipLimit {
 
 }
 
-sub _LinkFieldLimit {
-    my $restriction;
-    my $self;
-    my $LinkAlias;
-    my %args;
-    if ( $restriction->{'TYPE'} ) {
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'Type',
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'TYPE'}
-        );
-    }
-
-    #If we're trying to limit it to things that are target of
-    if ( $restriction->{'TARGET'} ) {
-
-        # If the TARGET is an integer that means that we want to look at
-        # the LocalTarget field. otherwise, we want to look at the
-        # "Target" field
-        my ($matchfield);
-        if ( $restriction->{'TARGET'} =~ /^(\d+)$/ ) {
-            $matchfield = "LocalTarget";
-        }
-        else {
-            $matchfield = "Target";
-        }
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'TARGET'}
-        );
-
-        #If we're searching on target, join the base to ticket.id
-        $self->_SQLJoin(
-            ALIAS1 => 'main',
-            FIELD1 => $self->{'primary_key'},
-            ALIAS2 => $LinkAlias,
-            FIELD2 => 'LocalBase'
-        );
-    }
-
-    #If we're trying to limit it to things that are base of
-    elsif ( $restriction->{'BASE'} ) {
-
-        # If we're trying to match a numeric link, we want to look at
-        # LocalBase, otherwise we want to look at "Base"
-        my ($matchfield);
-        if ( $restriction->{'BASE'} =~ /^(\d+)$/ ) {
-            $matchfield = "LocalBase";
-        }
-        else {
-            $matchfield = "Base";
-        }
-
-        $self->SUPER::Limit(
-            ALIAS           => $LinkAlias,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => $matchfield,
-            OPERATOR        => '=',
-            VALUE           => $restriction->{'BASE'}
-        );
-
-        #If we're searching on base, join the target to ticket.id
-        $self->_SQLJoin(
-            ALIAS1 => 'main',
-            FIELD1 => $self->{'primary_key'},
-            ALIAS2 => $LinkAlias,
-            FIELD2 => 'LocalTarget'
-        );
-    }
-}
-
-
 =head2 _CustomFieldDecipher
 
 Try and turn a CF descriptor into (cfid, cfname) object pair.
@@ -1301,18 +1256,16 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 =cut
 
 sub _CustomFieldDecipher {
-    my ($self, $field) = @_;
- 
-    my $queue = 0;
-    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-        ($queue, $field) = ($1, $2);
-    }
-    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+    my ($self, $string) = @_;
+
+    my ($queue, $field, $column) =
+        ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/);
+    $field ||= ($string =~ /^{(.*?)}$/)[0] || $string;
 
     my $cfid;
     if ( $queue ) {
         my $q = RT::Queue->new( $self->CurrentUser );
-        $q->Load( $queue ) if $queue;
+        $q->Load( $queue );
 
         my $cf;
         if ( $q->id ) {
@@ -1320,14 +1273,19 @@ sub _CustomFieldDecipher {
             $cf = $q->CustomField( $field );
         }
         else {
-            $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByNameAndQueue( Queue => 0, Name => $field );
+            $RT::Logger->warning("Queue '$queue' doesn't exists, parsed from '$string'");
+            $queue = 0;
         }
-        $cfid = $cf->id if $cf;
+
+        if ( $cf and my $id = $cf->id ) {
+            $cfid = $cf->id;
+            $field = $cf->Name;
+        }
+    } else {
+        $queue = 0;
     }
  
-    return ($queue, $field, $cfid);
- 
+    return ($queue, $field, $cfid, $column);
 }
  
 =head2 _CustomFieldJoin
@@ -1427,15 +1385,14 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-    my ( $self, $_field, $op, $value, @rest ) = @_;
+    my ( $self, $_field, $op, $value, %rest ) = @_;
 
-    my %rest  = @rest;
-    my $field = $rest{SUBKEY} || die "No field specified";
+    my $field = $rest{'SUBKEY'} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
 
-    my ($queue, $cfid);
-    ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $field );
+    my ($queue, $cfid, $column);
+    ($queue, $field, $cfid, $column) = $self->_CustomFieldDecipher( $field );
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that
@@ -1465,17 +1422,17 @@ sub _CustomFieldLimit {
 
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
-        FIELD      => 'Content',
+        FIELD      => $column || 'Content',
         OPERATOR   => $op,
         VALUE      => $value,
         QUOTEVALUE => 1,
-        @rest
+        %rest
     );
 
-    if ($null_columns_ok) {
+    if ( $null_columns_ok ) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
-            FIELD           => 'Content',
+            FIELD           => $column || 'Content',
             OPERATOR        => 'IS',
             VALUE           => 'NULL',
             QUOTEVALUE      => 0,
@@ -3031,6 +2988,8 @@ ok( $unlimittickets->UnLimit );
 ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
 
 =end testing
+
+=cut
 
 1;
 

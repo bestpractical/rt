@@ -104,9 +104,8 @@ sub Commit {
     my $self = shift;
 
     my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
-    if ( $ret > 0 ) {
+    if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
         $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
-            if ($RT::RecordOutgoingEmail);
     }
     return (abs $ret);
 }
@@ -291,8 +290,6 @@ sub SendMessage {
 }
 
 
-
-# }}}
 
 # {{{ AddAttachments 
 
@@ -724,16 +721,18 @@ sub SetSubjectToken {
     my $self = shift;
     my $sub  = $self->TemplateObj->MIMEObj->head->get('Subject');
     my $id   = $self->TicketObj->id;
-    my $rtname = RT->Config->Get('rtname');
 
     my $token_re = RT->Config->Get('EmailSubjectTagRegex');
-    $token_re = qr/\Q$rtname\E/o unless $token_re;
+    unless ( $token_re ) {
+        my $rtname = RT->Config->Get('rtname');
+        $token_re = qr/\Q$rtname\E/o;
+    }
     return if $sub =~ /\[$token_re\s+#$id\]/;
 
     $sub =~ s/(\r\n|\n|\s)/ /gi;
     chomp $sub;
     $self->TemplateObj->MIMEObj->head->replace(
-        Subject => "[$rtname #$id] $sub",
+        Subject => "[". RT->Config->Get('rtname') ." #$id] $sub",
     );
 }
 

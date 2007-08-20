@@ -46,27 +46,23 @@
 # 
 # END BPS TAGGED BLOCK }}}
 # This Action will open the BASE if a dependent is resolved.
-
 package RT::Action::AutoOpen;
-require RT::Action::Generic;
 
 use strict;
-use vars qw/@ISA/;
-@ISA=qw(RT::Action::Generic);
+use warnings;
 
-#Do what we need to do and send it out.
+use base qw(RT::Action::Generic);
 
-#What does this type of Action does
+=head1 DESCRIPTION
 
-# {{{ sub Describe 
-sub Describe  {
-  my $self = shift;
-  return (ref $self );
-}
-# }}}
+Opens a ticket unless it's allready open, but only unless transaction
+L<RT::Transaction/IsInbound is inbound>.
 
+Doesn't open a ticket if message's head has field C<RT-Control> with
+C<no-autoopen> substring.
 
-# {{{ sub Prepare 
+=cut
+
 sub Prepare {
     my $self = shift;
 
@@ -83,22 +79,21 @@ sub Prepare {
 
     return 1;
 }
-# }}}
 
 sub Commit {
     my $self = shift;
-      my $oldstatus = $self->TicketObj->Status();
-        $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
-        $self->TicketObj->_NewTransaction(
-                         Type     => 'Status',
-                         Field    => 'Status',
-                         OldValue => $oldstatus,
-                         NewValue => 'open',
-                         Data => 'Ticket auto-opened on incoming correspondence'
-        );
 
+    my $oldstatus = $self->TicketObj->Status;
+    $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
+    $self->TicketObj->_NewTransaction(
+        Type     => 'Status',
+        Field    => 'Status',
+        OldValue => $oldstatus,
+        NewValue => 'open',
+        Data     => 'Ticket auto-opened on incoming correspondence'
+    );
 
-    return(1);
+    return 1;
 }
 
 eval "require RT::Action::AutoOpen_Vendor";

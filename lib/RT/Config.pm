@@ -225,6 +225,21 @@ sub _LoadConfig
 
         my $username = getpwuid($>);
         my $group = getgrgid($();
+
+        my ($file_path, $fileuid, $filegid);
+        foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
+            my $tmp = File::Spec->catfile( $_, $args{File} );
+            ($fileuid,$filegid) = (stat( $tmp ))[4,5];
+            if ( defined $fileuid ) {
+                $file_path = $tmp;
+                last;
+            }
+        }
+        unless ( $file_path ) {
+            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
+               .qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+        }
+
         my $message = <<EOF;
 
 RT couldn't load RT config file %s as:
@@ -240,13 +255,12 @@ You may need to put the webserver user in the appropriate group
 (%s) or change permissions be able to run succesfully.
 EOF
 
-        my ($fileuid, $filegid) = (stat $args{'File'})[4,5];
         my $fileusername = getpwuid($fileuid);
         my $filegroup = getgrgid($filegid);
         my $errormessage = sprintf($message,
-            $args{'File'}, $fileusername, $filegroup, $filegroup
+            $file_path, $fileusername, $filegroup, $filegroup
         );
-        die ("$errormessage '$args{File}'\n$@");
+        die "$errormessage\n$@";
     }
     return 1;
 }
@@ -381,6 +395,7 @@ sub __GetNameByRef
     my $ref = shift;
     my $pack = shift || 'main::';
     $pack .= '::' unless $pack =~ /::$/;
+
     my %ref_sym = (
         SCALAR => '$',
         ARRAY => '@',
@@ -405,6 +420,7 @@ sub __GetNameByRef
         # SCALAR, ARRAY... and other types with
         # the same name
         my $entry = ${$pack}{$k};
+        next unless $entry;
 
         # get entry for type we are looking for
         my $entry_ref = *{$entry}{ref($ref)};

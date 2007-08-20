@@ -11,7 +11,7 @@ use File::Find;
 find( {
     no_chdir => 1,
     wanted   => sub {
-        return if /\.(?:jpe?g|png|gif|rej|\~)$/i;
+        return if /(?:\.(?:jpe?g|png|gif|rej)|\~)$/i;
 	if (m!/\.svn$!) {
 	    $File::Find::prune = 1;
 	    return;

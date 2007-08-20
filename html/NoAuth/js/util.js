@@ -248,3 +248,60 @@ function setCheckbox(form, name, val) {
     }
 }
 
+/* apply callback to nodes or elements */
+
+function walkChildNodes(parent, callback)
+{
+	if( !parent || !parent.childNodes ) return;
+	var list = parent.childNodes;
+	for( var i = 0; i < list.length; i++ ) {
+		callback( list[i] );
+	}
+}
+
+function walkChildElements(parent, callback)
+{
+	walkChildNodes( parent, function(node) {
+		if( node.nodeType != 1 ) return;
+		return callback( node );
+	} );
+}
+
+/* shredder things */
+
+function showShredderPluginTab( plugin )
+{
+	var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
+	var root = $('shredder-plugin-tabs');
+	walkChildElements( root, function(node) {
+		if( node.id == plugin_tab_id ) {
+			show( node );
+		} else {
+			hide( node );
+		}
+	} );
+	if( plugin ) {
+		show('shredder-submit-button');
+	} else {
+		hide('shredder-submit-button');
+	}
+}
+
+function checkAllObjects()
+{
+	var check = $('shredder-select-all-objects-checkbox').checked;
+	var elements = $('shredder-search-form').elements;
+	for( var i = 0; i < elements.length; i++ ) {
+		if( elements[i].name != 'WipeoutObject' ) {
+			continue;
+		}
+		if( elements[i].type != 'checkbox' ) {
+			continue;
+		}
+		if( check ) {
+			elements[i].checked = true;
+		} else {
+			elements[i].checked = false;
+		}
+	}
+}

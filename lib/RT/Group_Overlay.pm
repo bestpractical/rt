@@ -810,6 +810,65 @@ sub DeepMembersObj {
 
 # }}}
 
+# {{{ MembersObj
+
+=head2 MembersObj
+
+Returns an RT::GroupMembers object of this group's direct members.
+
+=cut
+
+sub MembersObj {
+    my $self = shift;
+    my $members_obj = RT::GroupMembers->new( $self->CurrentUser );
+
+    #If we don't have rights, don't include any results
+    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+
+    return ( $members_obj );
+
+}
+
+# }}}
+
+# {{{ GroupMembersObj
+
+=head2 GroupMembersObj [Recursively => 1]
+
+Returns an L<RT::Groups> object of this group's members.
+By default returns groups including all subgroups, but
+could be changed with C<Recursively> named argument.
+
+B<Note> that groups are not filtered by type and result
+may contain as well system groups, personal and other.
+
+=cut
+
+sub GroupMembersObj {
+    my $self = shift;
+    my %args = ( Recursively => 1, @_ );
+
+    my $groups = RT::Groups->new( $self->CurrentUser );
+    my $members_table = $args{'Recursively'}?
+        'CachedGroupMembers': 'GroupMembers';
+
+    my $members_alias = $groups->NewAlias( $members_table );
+    $groups->Join(
+        ALIAS1 => $members_alias,           FIELD1 => 'MemberId',
+        ALIAS2 => $groups->PrincipalsAlias, FIELD2 => 'id',
+    );
+    $groups->Limit(
+        ALIAS    => $members_alias,
+        FIELD    => 'GroupId',
+        OPERATOR => '=',
+        VALUE    => $self->PrincipalId,
+    );
+    return $groups;
+}
+
+# }}}
+
 # {{{ UserMembersObj
 
 =head2 UserMembersObj
@@ -836,29 +895,6 @@ sub UserMembersObj {
                   VALUE => $self->PrincipalId);
 
     return ( $users);
-
-}
-
-# }}}
-
-# {{{ MembersObj
-
-=head2 MembersObj
-
-Returns an RT::GroupMembers object of this group's direct members.
-
-=cut
-
-sub MembersObj {
-    my $self = shift;
-    my $members_obj = RT::GroupMembers->new( $self->CurrentUser );
-
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
-
-    return ( $members_obj );
-
 }
 
 # }}}

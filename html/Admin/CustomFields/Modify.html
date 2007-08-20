@@ -54,15 +54,15 @@
 
 
 <form method="post" action="Modify.html" name="ModifyCustomField">
-<input type="hidden" class="hidden" name="id" value="<%$id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
 <table>
-<tr>
-<td class="label"><&|/l&>Name</&></td>
+
+<tr><td class="label"><&|/l&>Name</&></td>
 <td><input name="Name" value="<% $CustomFieldObj->Name %>" size="20" /></td></tr>
-<tr>
-<td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td>
-</tr>
+
+<tr><td class="label"><&|/l&>Description</&></td>
+<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
@@ -80,12 +80,10 @@
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         Name => "LookupType", 
         Default => $CustomFieldObj->LookupType, &>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Validation</&></td>
-<td>
-<& /Widgets/ComboBox,
+</td></tr>
+
+<tr><td class="label"><&|/l&>Validation</&></td>
+<td><& /Widgets/ComboBox,
     Name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
     Size    => 20,
@@ -94,130 +92,122 @@
         '(?#Digits)^[\d.]+$',
         '(?#Year)^[12]\d{3}$',
     ],
-&>
-</td></tr>
-</tr>
-<tr>
-<td class="label">&nbsp;</td>
-<td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Link values to</&></td>
-</td>
-<td><input size="60" name="LinkValueTo"  value="<%$CustomFieldObj->LinkValueTo%>" />
+&></td></tr>
+
+<tr><td class="label"><&|/l&>Link values to</&></td><td>
+<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
 <&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
-</div>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Include page</&></td>
-</td>
-<td><input size="60" name="IncludeContentForValue"  value="<%$CustomFieldObj->IncludeContentForValue%>" />
+</div></td></tr>
+
+<tr><td class="label"><&|/l&>Include page</&></td><td>
+<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>
 <&|/l&>RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively</&>
 <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
-</div>
-</td>
-</tr>
+</div></td></tr>
 
-
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked %> />
+<&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+</td></tr>
 
 </table>
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
-% unless ( $CustomFieldObj->IsExternalValues ) {
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </div>
 % }
-% }
-<&/Elements/Submit, Name => 'Update' &>
-</form>
 
+<& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
+
+</form>
 <%INIT>
+my ($title, @results, $Disabled);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-my ( $title, @results, $EnabledChecked, $Disabled);
-$EnabledChecked = "checked";
+my $current_tab = 'Admin/CustomFields/Modify.html';
 
-if ( !$id ) {
+unless ( $id ) {
     $title = loc("Create a CustomField");
     $id    = 'new';
+    $current_tab .= '?Create=1';
 }
 else {
-
     if ( $id eq 'new' ) {
-        my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
-                                                    TypeComposite => $TypeComposite,
-                                                    LookupType => $LookupType,
-                                                    Description => $Description,
-                                                    Pattern => $Pattern,);
-        $m->comp("/Elements/Error", Why =>  loc( "Could not create CustomField", $msg ) ) unless ($val);
+        my ( $val, $msg ) = $CustomFieldObj->Create(
+            Name          => $Name,
+            TypeComposite => $TypeComposite,
+            LookupType    => $LookupType,
+            Description   => $Description,
+            Pattern       => $Pattern,
+        );
+        $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
     } else {
-        $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why =>  loc('No CustomField') );
+        $CustomFieldObj->Load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
+    $current_tab .= "?id=$id";
+}
 
-    if( $ARGS{'Update'} ) {
+if ( $ARGS{'Update'} && $id ne 'new' ) {
 
-        #we're asking about enabled on the web page but really care about disabled.
-        $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
+    #we're asking about enabled on the web page but really care about disabled.
+    $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
 
-        my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
-        push @results, UpdateRecordObject( AttributesRef => \@attribs,
-                                           Object        => $CustomFieldObj,
-                                           ARGSRef       => \%ARGS );
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
+    push @results, UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $CustomFieldObj,
+        ARGSRef       => \%ARGS
+    );
+    $CustomFieldObj->SetValuesClass( $ValuesClass );
 
-        $CustomFieldObj->SetValuesClass( $ValuesClass );
+    my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
+    # Delete any fields that want to be deleted
+    foreach my $key ( keys %ARGS ) {
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
+        my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
+        push (@results, $msg);
     }
 
-    $id = $CustomFieldObj->id;
-    $EnabledChecked = '' if $CustomFieldObj->Disabled;
-}
+    # Update any existing values
+    my $values = $CustomFieldObj->ValuesObj;
+    while ( my $value = $values->Next ) {
+        foreach my $attr qw(Name Description SortOrder Category) {
+            my $param = "$paramtag-". $value->Id ."-". $attr;
+            next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
-my $paramtag = "CustomField-".$CustomFieldObj->Id."-Value-";
-# Delete any fields that want to be deleted
-foreach my $key (keys %ARGS) {
-    next unless ($key =~ /^Delete-$paramtag(\d+)$/);
-    my ($val, $msg) = $CustomFieldObj->DeleteValue($1);
-    push (@results, $msg);
-}
-
-# Update any existing values
-my $values = $CustomFieldObj->ValuesObj;
-while (my $value = $values->Next) {
-    foreach my $attr qw(Name Description SortOrder Category) {
-    my $param = $paramtag.$value->Id."-".$attr;
-
-    if ( $ARGS{$param} && ($value->$attr() ne $ARGS{$param}))  {
-        my $mutator = "Set$attr";
-        my ($id, $msg) = $value->$mutator($ARGS{$param});
-        push (@results, $msg);
+            my $mutator = "Set$attr";
+            my ($id, $msg) = $value->$mutator( $ARGS{$param} );
+            push (@results, $msg);
         }
     }
+
+    # Add any new values
+    if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
+        my ($id, $msg) = $CustomFieldObj->AddValue(
+            map { $_ => $ARGS{ $paramtag ."-new-$_" } }
+                qw( Name Description SortOrder Category )
+        );
+        push (@results, $msg);
+    }
 }
 
-# Add any new values
-if ($ARGS{$paramtag."new-Name"}) {
-    my ($id, $msg) = $CustomFieldObj->AddValue(
-        map { $_ => $ARGS{$paramtag."new-$_"} } qw( Name Description SortOrder Category )
-    );
-    push (@results, $msg);
-}
+$id = $CustomFieldObj->id if $CustomFieldObj->id;
 
-my $current_tab = 'Admin/CustomFields/Modify.html';
-$current_tab .= $ARGS{'Create'}? '?Create=1': "?id=$id";
+my $EnabledChecked = "checked";
+$EnabledChecked = '' if $CustomFieldObj->Disabled;
 
 </%INIT>
 <%ARGS>

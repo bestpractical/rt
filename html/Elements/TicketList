@@ -127,7 +127,7 @@ if ($OrderBy =~ /\|/) {
 }
 
 $Collection->RowsPerPage( $Rows ) if $Rows;
-$Page = 1 unless $Page > 0; # workaround problems with Page = '' or undef
+$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # DisplayFormat lets us use a "temporary" format for display, while 

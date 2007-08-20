@@ -76,15 +76,18 @@ package RT::Attachments;
 use strict;
 no warnings qw(redefine);
 
+use RT::Attachment;
+
 # {{{ sub _Init  
 sub _Init   {
-  my $self = shift;
- 
-  $self->{'table'} = "Attachments";
-  $self->{'primary_key'} = "id";
-  $self->OrderBy ( FIELD => 'id',
-                   ORDER => 'ASC');
-  return ( $self->SUPER::_Init(@_));
+    my $self = shift;
+    $self->{'table'} = "Attachments";
+    $self->{'primary_key'} = "id";
+    $self->OrderBy(
+        FIELD => 'id',
+        ORDER => 'ASC',
+    );
+    return $self->SUPER::_Init( @_ );
 }
 # }}}
 
@@ -122,52 +125,39 @@ Limit result set to children of Attachment ID
 
 
 sub ChildrenOf  {
-  my $self = shift;
-  my $attachment = shift;
-  $self->Limit ( FIELD => 'Parent',
-		 VALUE => $attachment);
+    my $self = shift;
+    my $attachment = shift;
+    return $self->Limit(
+        FIELD => 'Parent',
+        VALUE => $attachment
+    );
 }
 # }}}
 
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-
-  use RT::Attachment;
-  my $item = new RT::Attachment($self->CurrentUser);
-  return($item);
+  return RT::Attachment->new( $self->CurrentUser );
 }
 # }}}
 
 # {{{ sub Next
 sub Next {
     my $self = shift;
- 	
-    my $Attachment = $self->SUPER::Next();
-    if ((defined($Attachment)) and (ref($Attachment))) {
-	if ($Attachment->TransactionObj->__Value('Type') =~ /^Comment/ && 
-	    $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
-	    return($Attachment);
-	} elsif ($Attachment->TransactionObj->__Value('Type') !~ /^Comment/ && 
-		 $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket')) {
-	    return($Attachment);
-	}
 
-	#If the user doesn't have the right to show this ticket
-	else {	
-	    return($self->Next());
-	}
+    my $Attachment = $self->SUPER::Next;
+    return $Attachment unless $Attachment;
+
+    my $txn = $Attachment->TransactionObj;
+    if ( $txn->__Value('Type') eq 'Comment' ) {
+        return $Attachment if $txn->CurrentUserHasRight('ShowTicketComments');
+    } elsif ( $txn->CurrentUserHasRight('ShowTicket') ) {
+        return $Attachment;
     }
 
-    #if there never was any ticket
-    else {
-	return(undef);
-    }	
+    # If the user doesn't have the right to show this ticket
+    return $self->Next;
 }
 # }}}
 
-  1;
-
-
-
-
+1;

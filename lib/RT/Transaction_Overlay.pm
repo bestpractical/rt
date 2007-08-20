@@ -243,8 +243,8 @@ sub Delete {
 
 =head2 Message
 
-  Returns the RT::Attachments Object which contains the "top-level"object
-  attachment for this transaction
+Returns the L<RT::Attachments> Object which contains the "top-level" object
+attachment for this transaction.
 
 =cut
 
@@ -289,13 +289,15 @@ sub Content {
     );
 
     my $content;
-    if (my $content_obj = $self->ContentObj) {
+    if ( my $content_obj = $self->ContentObj ) {
         $content = $content_obj->Content;
 
-	if ($content_obj->ContentType =~ m{^text/html$}i) {
-        $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
-
-	}
+        if ( lc $content_obj->ContentType eq 'text/html' ) {
+            $content = HTML::FormatText->new(
+                leftmargin  => 0,
+                rightmargin => 78,
+            )->format( HTML::TreeBuilder->new_from_content( $content ) );
+        }
     }
 
     # If all else fails, return a message that we couldn't find any content
@@ -311,7 +313,7 @@ sub Content {
         # What's the longest line like?
         my $max = 0;
         foreach ( split ( /\n/, $content ) ) {
-            $max = length if ( length > $max );
+            $max = length if length > $max;
         }
 
         if ( $max > 76 ) {
@@ -325,7 +327,7 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString(), $self->CreatorObj->Name())
+        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
           . "\n$content\n\n";
     }
 
@@ -344,48 +346,50 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 
 sub ContentObj {
-
     my $self = shift;
 
-    # If we don\'t have any content, return undef now.
-    unless ( $self->Attachments->First ) {
-        return (undef);
-    }
-
+    # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
-    my $Attachment = $self->Attachments->First();
+    return undef unless my $Attachment = $self->Attachments->First;
 
     # If it's a message or a plain part, just return the
     # body.
-    if ( $Attachment->ContentType() =~ '^(?:text/plain$|text/html|message/)' ) {
+    if ( $Attachment->ContentType =~ '^(?:text/plain$|text/html|message/)' ) {
         return ($Attachment);
     }
 
     # If it's a multipart object, first try returning the first
     # text/plain part.
 
-    elsif ( $Attachment->ContentType() =~ '^multipart/' ) {
-        my $plain_parts = $Attachment->Children();
+    elsif ( $Attachment->ContentType =~ '^multipart/' ) {
+        my $plain_parts = $Attachment->Children;
         $plain_parts->ContentType( VALUE => 'text/plain' );
+        $plain_parts->Limit(
+            FIELD => 'Content',
+            OPERATOR => 'IS NOT',
+            VALUE => 'NULL',
+            QUOTEVALUE => 0,
+        );
+        $plain_parts->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD => 'Content',
+            OPERATOR => '!=',
+            VALUE => '',
+        );
 
         # If we actully found a part, return its content
-        if ( $plain_parts->First && $plain_parts->First->Content ne '' ) {
-            return ( $plain_parts->First );
+        if ( my $first = $plain_parts->First ) {
+            return $first;
         }
 
-
-        # If that fails, return the  first text/plain or message/ part
+        # If that fails, return the first text/plain or message/... part
         # which has some content.
-
-        else {
-            my $all_parts = $self->Attachments();
-            while ( my $part = $all_parts->Next ) {
-                if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
-                    return ($part);
-                }
-            }
+        my $all_parts = $self->Attachments;
+        while ( my $part = $all_parts->Next ) {
+            next unless $part->ContentType =~ '^(text/plain$|message/)'
+                        && $part->Content;
+            return $part;
         }
-
     }
 
     # We found no content. suck
@@ -405,12 +409,8 @@ Otherwise, returns null
 
 sub Subject {
     my $self = shift;
-    if ( $self->Attachments->First ) {
-        return ( $self->Attachments->First->Subject );
-    }
-    else {
-        return (undef);
-    }
+    return undef unless my $first = $self->Attachments->First;
+    return $first->Subject;
 }
 
 # }}}
@@ -428,38 +428,36 @@ a ContentType that Attachments should be restricted to.
 sub Attachments {
     my $self = shift;
 
-    unless ( $self->{'attachments'} ) {
-        $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
-
-        #If it's a comment, return an empty object if they don't have the right to see it
-        if ( $self->Type eq 'Comment' ) {
-            unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-                return ( $self->{'attachments'} );
-            }
-        }
-
-        #if they ain't got rights to see, return an empty object
-        elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
-            unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-                return ( $self->{'attachments'} );
-            }
-        }
-
-        $self->{'attachments'}->Limit( FIELD => 'TransactionId',
-                                       VALUE => $self->Id );
-
-        # Get the self->{'attachments'} in the order they're put into
-        # the database.  Arguably, we should be returning a tree
-        # of self->{'attachments'}, not a set...but no current app seems to need
-        # it.
-
-        $self->{'attachments'}->OrderBy( ALIAS => 'main',
-                                         FIELD => 'id',
-                                         ORDER => 'asc' );
-
+    if ( $self->{'attachments'} ) {
+        $self->{'attachments'}->GotoFirstItem;
+        return $self->{'attachments'};
     }
-    return ( $self->{'attachments'} );
 
+    $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
+
+    # if it's a comment, return an empty object if they don't have the right to see it
+    if ( $self->__Value('Type') eq 'Comment' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            return $self->{'attachments'};
+        }
+    }
+    # if they ain't got rights to see, return an empty object
+    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
+        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+            return $self->{'attachments'};
+        }
+    }
+
+    $self->{'attachments'}->Limit( FIELD => 'TransactionId', VALUE => $self->Id );
+
+    # Get the self->{'attachments'} in the order they're put into
+    # the database.  Arguably, we should be returning a tree
+    # of self->{'attachments'}, not a set...but no current app seems to need
+    # it.
+
+    $self->{'attachments'}->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+
+    return $self->{'attachments'};
 }
 
 # }}}
@@ -476,20 +474,17 @@ sub _Attach {
     my $self       = shift;
     my $MIMEObject = shift;
 
-    if ( !defined($MIMEObject) ) {
-        $RT::Logger->error(
-"$self _Attach: We can't attach a mime object if you don't give us one.\n"
-        );
+    unless ( defined $MIMEObject ) {
+        $RT::Logger->error("We can't attach a mime object if you don't give us one.");
         return ( 0, $self->loc("[_1]: no attachment specified", $self) );
     }
 
-    my $Attachment = new RT::Attachment( $self->CurrentUser );
+    my $Attachment = RT::Attachment->new( $self->CurrentUser );
     my ($id, $msg) = $Attachment->Create(
         TransactionId => $self->Id,
         Attachment    => $MIMEObject
     );
     return ( $Attachment, $msg || $self->loc("Attachment created") );
-
 }
 
 # }}}
@@ -526,11 +521,11 @@ sub Description {
         }
     }
 
-    if ( !defined( $self->Type ) ) {
+    unless ( defined $self->Type ) {
         return ( $self->loc("No transaction type specified"));
     }
 
-    return ( $self->loc("[_1] by [_2]",$self->BriefDescription , $self->CreatorObj->Name ));
+    return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
 }
 
 # }}}
@@ -563,7 +558,7 @@ sub BriefDescription {
 
     my $type = $self->Type;    #cache this, rather than calling it 30 times
 
-    if ( !defined($type) ) {
+    unless ( defined $type ) {
         return $self->loc("No transaction type specified");
     }
 
@@ -884,43 +879,38 @@ Returns its value as a string, if the user passes an ACL check
 =cut
 
 sub _Value {
-
     my $self  = shift;
     my $field = shift;
 
     #if the field is public, return it.
     if ( $self->_Accessible( $field, 'public' ) ) {
-        return ( $self->__Value($field) );
-
+        return $self->SUPER::_Value( $field );
     }
 
     #If it's a comment, we need to be extra special careful
-    if ( $self->__Value('Type') eq 'Comment' ) {
+    my $type = $self->__Value('Type');
+    if ( $type eq 'Comment' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
             return (undef);
         }
     }
-    elsif ( $self->__Value('Type') eq 'CommentEmailRecord' ) {
+    elsif ( $type eq 'CommentEmailRecord' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments')
             && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
             return (undef);
         }
-
     }
-    elsif ( $self->__Value('Type') eq 'EmailRecord' ) {
+    elsif ( $type eq 'EmailRecord' ) {
         unless ( $self->CurrentUserHasRight('ShowOutgoingEmail')) {
             return (undef);
         }
-
     }
     # Make sure the user can see the custom field before showing that it changed
-    elsif ( ( $self->__Value('Type') eq 'CustomField' ) && $self->__Value('Field') ) {
+    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->Load( $self->__Value('Field') );
-        return (undef) unless ( $cf->CurrentUserHasRight('SeeCustomField') );
+        $cf->Load( $cf_id );
+        return undef unless $cf->CurrentUserHasRight('SeeCustomField');
     }
-
-
     #if they ain't got rights to see, don't let em
     elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
@@ -928,8 +918,7 @@ sub _Value {
         }
     }
 
-    return ( $self->__Value($field) );
-
+    return $self->SUPER::_Value( $field );
 }
 
 # }}}
@@ -946,11 +935,9 @@ passed in here.
 sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
-    return (
-        $self->CurrentUser->HasRight(
-            Right     => "$right",
-            Object => $self->TicketObj
-          )
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $self->Object
     );
 }
 
@@ -1028,7 +1015,6 @@ sub UpdateCustomFields {
     # value "ARGSRef", which was a reference to a hash of arguments.
     # This was insane. The next few lines of code preserve that API
     # while giving us something saner.
-       
 
     # TODO: 3.6: DEPRECATE OLD API
 

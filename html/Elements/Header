@@ -84,7 +84,7 @@
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
-<& /Elements/Logo &>
+<& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
   <div id="quick-personal">

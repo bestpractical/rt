@@ -4,9 +4,9 @@ msgstr ""
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2007-03-16 13:02+0100\n"
 "Last-Translator: Heidi Senderovitz\n"
-"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. ($self->{CurrentSearch}{Object}->Description)
@@ -4820,7 +4820,7 @@ msgstr "RT er &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com
 msgid "RT thinks this message may be a bounce"
 msgstr "RT tror, at denne besked er en afvisning"
 
-#: html/Search/Simple.html:60
+#: html/Search/Simple.html:58
 msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "RT vil kigge efter alt andet, som du indtaster i sagsemnerne."
 
@@ -5234,7 +5234,7 @@ msgstr "Indlæsningsfejl på søgeegenskab"
 msgid "Search for approvals"
 msgstr "Søg efter godkendelser"
 
-#: html/Search/Simple.html:69
+#: html/Search/Simple.html:67
 msgid "Search for tickets"
 msgstr "Søg efter sager"
 
@@ -5256,7 +5256,7 @@ msgstr "Søgeresultater fordelt pr. %1"
 msgid "Search update: %1"
 msgstr "Søgeopdatering: %1"
 
-#: html/Search/Simple.html:59
+#: html/Search/Simple.html:57
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
 msgstr "Det kan tage lang tid at søge på den fulde tekst i hver sag, men hvis det er nødvendigt at gøre det, kan du søge efter hvilket som helst ord i den komplette sagshistorik ved at taste <b>fulltext:<i>ord</i></b>."
 

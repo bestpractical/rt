@@ -327,7 +327,7 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     ok($steal_queue->id, "queue obj has id");
     my $status;
     ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'ShowTicket', Object => $steal_queue );
-    ok($status, "Gave 'SeeTicket' to our user? $msg");
+    ok($status, "Gave 'ShowTicket' to our user? $msg");
     ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $steal_queue );
     ok($status, "Gave 'OwnTicket' to our user? $msg");
     ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'StealTicket', Object => $steal_queue );

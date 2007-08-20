@@ -62,21 +62,28 @@ from being integers.
 
 sub Create {
     my $self = shift;
-    my %args = @_;
-    (defined $args{$_} or delete $args{$_}) for keys %args;
-    %args = ((CustomField => '0',
-              Name => '',
-              Description => '',
-              SortOrder => '0',
-              Category => ''), %args);
+    my %args = (
+        CustomField => 0,
+        Name        => '',
+        Description => '',
+        SortOrder   => 0,
+        Category    => '',
+        @_,
+    );
 
     my ($id, $msg) = $self->SUPER::Create(
-        map {$_ => $args{$_}} qw(CustomField Name Description SortOrder)
+        map { $_ => $args{$_} } qw(CustomField Name Description SortOrder)
     );
-    if ($id and length $args{Category}) {
+    return ($id, $msg) unless $id;
+
+    if ( defined $args{'Category'} && length $args{'Category'} ) {
         # $self would be loaded at this stage
-        $self->SetCategory($args{Category});
+        my ($status, $msg) = $self->SetCategory( $args{'Category'} );
+        unless ( $status ) {
+            $RT::Logger->error("Couldn't set category: $msg");
+        }
     }
+
     return ($id, $msg);
 }
 
@@ -89,9 +96,24 @@ sub Category {
 sub SetCategory {
     my $self = shift;
     my $category = shift;
-    $self->SetAttribute(Name => 'Category', Content => $category);
+    if ( defined $category && length $category ) {
+        return $self->SetAttribute(
+            Name    => 'Category',
+            Content => $category,
+        );
+    }
+    else {
+        my ($status, $msg) = $self->DeleteAttribute( 'Category' );
+        unless ( $status ) {
+            $RT::Logger->warning("Couldn't delete atribute: $msg");
+        }
+        # return true even if there was no category
+        return (1, $self->loc('Category unset'));
+    }
 }
 
-sub ValidateName { 1 };
+sub ValidateName {
+    return defined $_[1] && length $_[1];
+};
 
 1;

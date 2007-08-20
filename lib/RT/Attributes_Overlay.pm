@@ -154,19 +154,22 @@ the matching name.
 
 sub DeleteEntry {
     my $self = shift;
-    my %args = ( Name => undef,
-                 Content => undef,
-                 id => undef,
-                 @_);
+    my %args = (
+        Name    => undef,
+        Content => undef,
+        id      => undef,
+        @_
+    );
     my $found = 0;
-    foreach my $attr ($self->Named($args{'Name'})){ 
-      if ((!defined $args{'id'} and !defined $args{'Content'})
-          or (defined $args{'id'} and $attr->id eq $args{'id'})
-          or (defined $args{'Content'} and $attr->Content eq $args{'Content'})) {
-        my ($id, $msg) = $attr->Delete;
-        return ($id, $msg) unless $id;
-        $found = 1;
-      }
+    foreach my $attr ( $self->Named( $args{'Name'} ) ) {
+        if ( ( !defined $args{'id'} and !defined $args{'Content'} )
+             or ( defined $args{'id'} and $attr->id eq $args{'id'} )
+             or ( defined $args{'Content'} and $attr->Content eq $args{'Content'} ) )
+        {
+            my ($id, $msg) = $attr->Delete;
+            return ($id, $msg) unless $id;
+            $found = 1;
+        }
     }
     return (0, "No entry found") unless $found;
     $self->_DoSearch();

@@ -1,23 +1,44 @@
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/prototype.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/effects.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/controls.js"></script>
-<input type="text" id="<% $name %>-Values" name="<% $name %>-Values" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+% if ( $Multiple ) {
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" ><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
     "<% $name %>-Values",
     "<% $name %>-Choices",
     "/Helpers/Autocomplete/CustomFieldValues",
+    { tokens: [ '\n' ] }
+);
+% } else {
+<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+<script type="text/javascript">
+new Ajax.Autocompleter(
+    "<% $name %>-Value",
+    "<% $name %>-Choices",
+    "/Helpers/Autocomplete/CustomFieldValues",
     {}
 );
+% }
 </script>
 <%INIT>
 my $name = $NamePrefix . $CustomField->Id;
+if ( $Default && !$Multiple ) {
+    $Default =~ s/\s*\r*\n\s*/ /g;
+}
+if ( $Multiple and $Values ) {
+    $Default = '';
+    while (my $value = $Values->Next ) {
+        $Default .= $value->Content ."\n";
+    }
+}
 </%INIT>
 <%ARGS>
-$Object      => undef
 $CustomField => undef
 $NamePrefix  => undef
 $Default     => undef
 $Values      => undef
-$MaxValues   => undef
+$Multiple    => undef
+$Rows        => undef
+$Cols        => undef
 </%ARGS>

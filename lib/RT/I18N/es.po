@@ -1101,7 +1101,7 @@ msgstr "No se puede fusionar dentro de un caso ya fusionado. Nunca deberia recib
 #: html/Widgets/SavedSearch:63
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr "No se puede guardar esta búsqueda"
+msgstr "No se puede grabar esta búsqueda"
 
 #: html/Search/Build.html:290
 msgid "Can't save this search"
@@ -1158,7 +1158,6 @@ msgstr "Borrar Todo"
 
 #: html/Helpers/CalPopup.html:51
 msgid "Close window"
-msgstr ""
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1174,7 +1173,6 @@ msgstr "Casos cerrados"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
@@ -6036,7 +6034,6 @@ msgstr "Consulta Valida"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"

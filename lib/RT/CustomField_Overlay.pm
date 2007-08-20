@@ -50,57 +50,55 @@ package RT::CustomField;
 use strict;
 no warnings qw(redefine);
 
-use vars qw(%FieldTypes $RIGHTS %FRIENDLY_OBJECT_TYPES);
-
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
 
 
-%FieldTypes = (
+our %FieldTypes = (
     Select => [
-        'Select multiple values',	# loc
-        'Select one value',		# loc
-        'Select up to [_1] values',	# loc
+        'Select multiple values',    # loc
+        'Select one value',        # loc
+        'Select up to [_1] values',    # loc
     ],
     Freeform => [
-        'Enter multiple values',	# loc
-        'Enter one value',		# loc
-        'Enter up to [_1] values',	# loc
+        'Enter multiple values',    # loc
+        'Enter one value',        # loc
+        'Enter up to [_1] values',    # loc
     ],
     Text => [
-        'Fill in multiple text areas',	# loc
-        'Fill in one text area',	# loc
+        'Fill in multiple text areas',    # loc
+        'Fill in one text area',    # loc
         'Fill in up to [_1] text areas',# loc
     ],
     Wikitext => [
-        'Fill in multiple wikitext areas',	# loc
-        'Fill in one wikitext area',	# loc
+        'Fill in multiple wikitext areas',    # loc
+        'Fill in one wikitext area',    # loc
         'Fill in up to [_1] wikitext areas',# loc
     ],
     Image => [
-        'Upload multiple images',	# loc
-        'Upload one image',		# loc
-        'Upload up to [_1] images',	# loc
+        'Upload multiple images',    # loc
+        'Upload one image',        # loc
+        'Upload up to [_1] images',    # loc
     ],
     Binary => [
-        'Upload multiple files',	# loc
-        'Upload one file',		# loc
-        'Upload up to [_1] files',	# loc
+        'Upload multiple files',    # loc
+        'Upload one file',        # loc
+        'Upload up to [_1] files',    # loc
     ],
     Combobox => [
-        'Combobox: Select or enter multiple values',	# loc
-        'Combobox: Select or enter one value',		# loc
-        'Combobox: Select or enter up to [_1] values',	# loc
+        'Combobox: Select or enter multiple values',    # loc
+        'Combobox: Select or enter one value',        # loc
+        'Combobox: Select or enter up to [_1] values',    # loc
     ],
     Autocomplete => [
-        'Enter multiple values with autocompletion',	# loc
-        'Enter one value with autocompletion',	        # loc
-        'Enter up to [_1] values with autocompletion',	# loc
+        'Enter multiple values with autocompletion',    # loc
+        'Enter one value with autocompletion',            # loc
+        'Enter up to [_1] values with autocompletion',    # loc
     ],
 );
 
 
-%FRIENDLY_OBJECT_TYPES =  ();
+our %FRIENDLY_OBJECT_TYPES =  ();
 
 RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
 RT::CustomField->_ForObjectType(
@@ -108,7 +106,7 @@ RT::CustomField->_ForObjectType(
 RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
-$RIGHTS = {
+our $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
     AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
     ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
@@ -123,7 +121,7 @@ foreach my $right ( keys %{$RIGHTS} ) {
 
 sub AvailableRights {
     my $self = shift;
-    return($RIGHTS);
+    return $RIGHTS;
 }
 
 =head1 NAME
@@ -155,39 +153,38 @@ C<RT::Ticket->CustomFieldLookupType> or C<RT::Transaction->CustomFieldLookupType
 
 sub Create {
     my $self = shift;
-    my %args = ( 
-                Name => '',
-                Type => '',
-		MaxValues => '0',
-		Pattern  => '',
-                Description => '',
-                Disabled => '0',
-		LookupType  => '',
-		Repeated  => '0',
-	        @_,
-               );
+    my %args = (
+        Name        => '',
+        Type        => '',
+        MaxValues   => 0,
+        Pattern     => '',
+        Description => '',
+        Disabled    => 0,
+        LookupType  => '',
+        Repeated    => 0,
+        @_,
+    );
 
-    unless ($self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomField')) {
+    unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomField') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
-
-    if ($args{TypeComposite}) {
-	@args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
+    if ( $args{TypeComposite} ) {
+        @args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
     }
-    elsif ($args{Type} =~ s/(?:(Single)|Multiple)$//) {
-	# old style Type string
-	$args{'MaxValues'} = $1 ? 1 : 0;
+    elsif ( $args{Type} =~ s/(?:(Single)|Multiple)$// ) {
+        # old style Type string
+        $args{'MaxValues'} = $1 ? 1 : 0;
     }
     
     if ( !exists $args{'Queue'}) {
-	# do nothing -- things below are strictly backward compat
+    # do nothing -- things below are strictly backward compat
     }
     elsif (  ! $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
+        $args{'LookupType'} = 'RT::Queue-RT::Ticket';
     }
     else {
         my $queue = RT::Queue->new($self->CurrentUser);
@@ -202,21 +199,19 @@ sub Create {
         $args{'Queue'} = $queue->Id;
     }
 
-    my ($ok, $msg) = $self->_IsValidRegex($args{'Pattern'});
-    if (!$ok) {
-        return (0, $self->loc("Invalid pattern: [_1]", $msg));
-    }
+    my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
+    return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
     my $rv = $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Type => $args{'Type'},
-                         MaxValues => $args{'MaxValues'},
-                         Pattern  => $args{'Pattern'},
-                         Description => $args{'Description'},
-                         Disabled => $args{'Disabled'},
-			 LookupType => $args{'LookupType'},
-			 Repeated => $args{'Repeated'},
-);
+        Name        => $args{'Name'},
+        Type        => $args{'Type'},
+        MaxValues   => $args{'MaxValues'},
+        Pattern     => $args{'Pattern'},
+        Description => $args{'Description'},
+        Disabled    => $args{'Disabled'},
+        LookupType  => $args{'LookupType'},
+        Repeated    => $args{'Repeated'},
+    );
 
     if ( exists $args{'ValuesClass'} ) {
         $self->SetValuesClass( $args{'ValuesClass'} );
@@ -225,10 +220,10 @@ sub Create {
     return $rv unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
-    my $OCF = RT::ObjectCustomField->new($self->CurrentUser);
+    my $OCF = RT::ObjectCustomField->new( $self->CurrentUser );
     $OCF->Create(
-	CustomField => $self->Id,
-	ObjectId => $args{'Queue'},
+        CustomField => $self->Id,
+        ObjectId => $args{'Queue'},
     );
 
     return $rv;
@@ -244,10 +239,10 @@ sub Load {
     my $self = shift;
     my $id = shift;
 
-    if ($id =~ /^\d+$/) {
-        return ($self->SUPER::Load($id));
+    if ( $id =~ /^\d+$/ ) {
+        return $self->SUPER::Load( $id );
     } else {
-        return($self->LoadByName(Name => $id));
+        return $self->LoadByName( Name => $id );
     }
 }
 
@@ -303,10 +298,8 @@ sub LoadByName {
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
-    unless ( $CFs->First ) {
-        return 0;
-    }
-    return($self->Load($CFs->First->id));
+    return (0, $self->loc("Not found")) unless my $first = $CFs->First;
+    return $self->LoadById( $first->id );
 }
 
 # }}}
@@ -366,7 +359,7 @@ sub Values {
     eval "require $class" or die "$@";
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
-    if ($self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
+    if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField( $self->Id );
     }
     return ($cf_values);
@@ -402,11 +395,11 @@ sub AddValue {
 
     # allow zero value
     if ( !defined $args{'Name'} || $args{'Name'} eq '' ) {
-        return(0, $self->loc("Can't add a custom field value without a name"));
+        return (0, $self->loc("Can't add a custom field value without a name"));
     }
 
-    my $newval = RT::CustomFieldValue->new($self->CurrentUser);
-    return($newval->Create(%args, CustomField => $self->Id));
+    my $newval = RT::CustomFieldValue->new( $self->CurrentUser );
+    return $newval->Create( %args, CustomField => $self->Id );
 }
 
 
@@ -416,7 +409,7 @@ sub AddValue {
 
 =head3 DeleteValue ID
 
-Deletes a value from this custom field by id. 
+Deletes a value from this custom field by id.
 
 Does not remove this value for any article which has had it selected
 
@@ -425,13 +418,13 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
     my $self = shift;
     my $id = shift;
-    unless ($self->CurrentUserHasRight('AdminCustomField')) {
+    unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
     my $val_to_del = RT::CustomFieldValue->new( $self->CurrentUser );
     $val_to_del->Load( $id );
-    unless ($val_to_del->Id) {
+    unless ( $val_to_del->Id ) {
         return (0, $self->loc("Couldn't find that value"));
     }
     unless ( $val_to_del->CustomField == $self->Id ) {
@@ -440,7 +433,7 @@ sub DeleteValue {
 
     my $retval = $val_to_del->Delete;
     unless ( $retval ) {
-        return(0, $self->loc("Custom field value could not be deleted"));
+        return (0, $self->loc("Custom field value could not be deleted"));
     }
     return ($retval, $self->loc("Custom field value deleted"));
 }
@@ -478,7 +471,7 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub Types {
-	return (keys %FieldTypes);
+    return (keys %FieldTypes);
 }
 
 # }}}
@@ -585,11 +578,11 @@ sub ValidateType {
     my $self = shift;
     my $type = shift;
 
-    if ($type =~ s/(?:Single|Multiple)$//) {
+    if ( $type =~ s/(?:Single|Multiple)$// ) {
         $RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
     }
 
-    if( $FieldTypes{$type}) {
+    if ( $FieldTypes{$type} ) {
         return 1;
     }
     else {
@@ -640,8 +633,8 @@ sub _IsValidRegex {
     my $regex = shift or return (1, 'valid');
 
     local $^W; local $@;
-    $SIG{__DIE__} = sub { 1 };
-    $SIG{__WARN__} = sub { 1 };
+    local $SIG{__DIE__} = sub { 1 };
+    local $SIG{__WARN__} = sub { 1 };
 
     if (eval { qr/$regex/; 1 }) {
         return (1, 'valid');
@@ -712,7 +705,7 @@ sub _Set {
     unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
-    return ( $self->SUPER::_Set(@_) );
+    return $self->SUPER::_Set( @_ );
 
 }
 
@@ -730,14 +723,12 @@ Returns its value as a string, if the user passes an ACL check
 sub _Value {
 
     my $self  = shift;
-    my $field = shift;
 
     # we need to do the rights check
-    unless ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
+    unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
         return (undef);
     }
-    return ( $self->__Value($field) );
-
+    return $self->__Value( @_ );
 }
 
 # }}}
@@ -746,8 +737,8 @@ sub _Value {
 =head2 SetDisabled
 
 Takes a boolean.
-1 will cause this custom field to no longer be avaialble for tickets.
-0 will re-enable this queue
+1 will cause this custom field to no longer be avaialble for objects.
+0 will re-enable this field.
 
 =cut
 
@@ -777,13 +768,13 @@ Autrijus: care to doc how LookupTypes work?
 sub SetLookupType {
     my $self = shift;
     my $lookup = shift;
-    if ($lookup ne $self->LookupType) {
+    if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
         my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
         $ObjectCustomFields->LimitToCustomField($self->Id);
         $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
     }
-    $self->SUPER::SetLookupType($lookup);
+    return $self->SUPER::SetLookupType($lookup);
 }
 
 =head2 TypeComposite
@@ -822,8 +813,8 @@ sub LookupTypes {
 }
 
 my @FriendlyObjectTypes = (
-    "[_1] objects",		    # loc
-    "[_1]'s [_2] objects",	    # loc
+    "[_1] objects",            # loc
+    "[_1]'s [_2] objects",        # loc
     "[_1]'s [_2]'s [_3] objects",   # loc
 );
 
@@ -836,7 +827,7 @@ sub FriendlyLookupType {
     my $lookup = shift || $self->LookupType;
    
     return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
-      	           if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
+                     if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
 
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
       grep { defined and length }
@@ -861,7 +852,7 @@ sub AddToObject {
     my $id = $object->Id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
-    	return ( 0, $self->loc('Lookup type mismatch') );
+        return ( 0, $self->loc('Lookup type mismatch') );
     }
 
     unless ( $object->CurrentUserHasRight('AssignCustomFields') ) {
@@ -941,21 +932,20 @@ sub AddValueForObject {
         ContentType  => undef,
         @_
     );
-    my $obj = $args{'Object'} or return;
+    my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
     unless ( $self->CurrentUserHasRight('ModifyCustomField') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    unless ( $self->MatchPattern($args{Content}) ) {
+    unless ( $self->MatchPattern($args{'Content'}) ) {
         return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
     $RT::Handle->BeginTransaction;
 
-    my $current_values = $self->ValuesForObject($obj);
-
     if ( $self->MaxValues ) {
+        my $current_values = $self->ValuesForObject($obj);
         my $extra_values = ( $current_values->Count + 1 ) - $self->MaxValues;
 
         # (The +1 is for the new value we're adding)
@@ -966,17 +956,14 @@ sub AddValueForObject {
 
         while ($extra_values) {
             my $extra_item = $current_values->Next;
-
             unless ( $extra_item->id ) {
-                $RT::Logger->crit(
-"We were just asked to delete a custom fieldvalue that doesn't exist!"
-                );
+                $RT::Logger->crit( "We were just asked to delete "
+                    ."a custom field value that doesn't exist!" );
                 $RT::Handle->Rollback();
                 return (undef);
             }
             $extra_item->Delete;
             $extra_values--;
-
         }
     }
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
@@ -991,7 +978,7 @@ sub AddValueForObject {
 
     unless ($val) {
         $RT::Handle->Rollback();
-        return ($val);
+        return ($val, $self->loc("Couldn't create record"));
     }
 
     $RT::Handle->Commit();
@@ -1014,7 +1001,7 @@ sub MatchPattern {
     my $self = shift;
     my $regex = $self->Pattern;
 
-    return 1 if !length($regex);
+    return 1 unless length $regex;
     return ($_[0] =~ $regex);
 }
 
@@ -1034,8 +1021,8 @@ sub FriendlyPattern {
     my $self = shift;
     my $regex = $self->Pattern;
 
-    return '' if !length($regex);
-    if ($regex =~ /\(\?#([^)]*)\)/) {
+    return '' unless length $regex;
+    if ( $regex =~ /\(\?#([^)]*)\)/ ) {
         return '[' . $self->loc($1) . ']';
     }
     else {
@@ -1061,7 +1048,7 @@ sub DeleteValueForObject {
     my %args = ( Object => undef,
                  Content => undef,
                  Id => undef,
-		     @_ );
+             @_ );
 
 
     unless ($self->CurrentUserHasRight('ModifyCustomField')) {
@@ -1104,26 +1091,26 @@ sub DeleteValueForObject {
 
 =head2 ValuesForObject OBJECT
 
-Return an RT::ObjectCustomFieldValues object containing all of this custom field's values for OBJECT 
+Return an L<RT::ObjectCustomFieldValues> object containing all of this custom field's values for OBJECT 
 
 =cut
 
 sub ValuesForObject {
-	my $self = shift;
+    my $self = shift;
     my $object = shift;
 
-	my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
-	unless ($self->CurrentUserHasRight('SeeCustomField')) {
+    my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
+    unless ($self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);
     }
-	
-	
-	$values->LimitToCustomField($self->Id);
-	$values->LimitToEnabled();
+    
+    
+    $values->LimitToCustomField($self->Id);
+    $values->LimitToEnabled();
     $values->LimitToObject($object);
 
-	return ($values);
+    return ($values);
 }
 
 
@@ -1133,10 +1120,10 @@ Tell RT that a certain object accepts custom fields
 
 Examples:
 
-    'RT::Queue-RT::Ticket'                 => "Tickets",		# loc
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",	# loc
-    'RT::User'                             => "Users",			# loc
-    'RT::Group'                            => "Groups",			# loc
+    'RT::Queue-RT::Ticket'                 => "Tickets",                # loc
+    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",    # loc
+    'RT::User'                             => "Users",                  # loc
+    'RT::Group'                            => "Groups",                 # loc
 
 This is a class method. 
 
@@ -1224,4 +1211,5 @@ sub _URLTemplate {
 
     }
 }
+
 1;

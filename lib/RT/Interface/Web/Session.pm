@@ -220,16 +220,13 @@ sub TIEHASH {
 
     local $@;
     eval { tie %session, $class, $id, $attrs };
-    if( $@ ) {
-        if ( $@ =~ /Object does not/i ) {
-            tie %session, $class, undef, $attrs;
-        } else {
-            die loc("RT couldn't store your session.") . "\n"
-              . loc("This may mean that that the directory '[_1]' isn't writable or a database table is missing or corrupt.",
-                $RT::MasonSessionDir)
-              . "\n\n"
-              . $@;
-        }
+    eval { tie %session, $class, undef, $attrs } if $@;
+    if ( $@ ) {
+        die loc("RT couldn't store your session.") . "\n"
+          . loc("This may mean that that the directory '[_1]' isn't writable or a database table is missing or corrupt.",
+            $RT::MasonSessionDir)
+          . "\n\n"
+          . $@;
     }
 
     return tied %session;

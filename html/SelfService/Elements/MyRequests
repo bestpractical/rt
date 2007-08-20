@@ -68,8 +68,8 @@ if ( @status ) {
 my $Order = "ASC";
 my $OrderBy = "Created";
 my @Format = qq{
-   '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="$RT::WebPath/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    Requestors,
    OwnerName};

@@ -57,7 +57,7 @@
 
 <form method="post" action="MyRT.html">
 <input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<%loc('Reset to default')%>">
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
 </form>
 
 <br />
@@ -103,7 +103,7 @@ if ($ARGS{Reset}) {
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    my $portlets  = $default_portlets ? $default_portlets->Content  : {};
+    my $portlets = $default_portlets ? $default_portlets->Content : {};
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 my $portlets = $session{'my_rt_portlets'};

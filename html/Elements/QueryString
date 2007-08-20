@@ -45,20 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%init>
+<%INIT>
 my @params;
-while ( my ($key, $value) = each %ARGS ){
+while ( my ($key, $value) = each %ARGS ) {
     next unless defined $value;
+    $key = $m->interp->apply_escapes( $key, 'u' );
     if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
-	push @params, map $key."=".$m->interp->apply_escapes($_,'u'), @$value;
+        push @params,
+            map $key ."=". $m->interp->apply_escapes( $_, 'u' ),
+                @$value;
     } else {
-  if (ref $value eq "ARRAY") {
-    push @params, $key."=".$m->interp->apply_escapes($_, 'u')
-      for @{$value};
-  } else {
-    push @params, $key."=".$m->interp->apply_escapes($value||"",'u');
-  }
+        push @params, $key ."=". $m->interp->apply_escapes($value, 'u');
     }
 }
-return(join('&',@params));
-</%init>
+return join '&', @params;
+</%INIT>

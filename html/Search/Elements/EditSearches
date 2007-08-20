@@ -66,7 +66,7 @@
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
-% if ($AllowCopy) {
+% if ( $AllowCopy ) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
 % }
 </nobr>
@@ -77,19 +77,18 @@
 <br />
 
 <&|/l&>Load saved search:</&>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $SearchType &>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
 
 </&>
 
 <%INIT>
-
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',
     Object => $RT::System,
 );
 
-# If we're modifying an old query, check if it has changed
+# If we're modifying an old query, check if it's been changed
 my $Dirty = $m->comp(
     'EditSearches:IsDirty',
     Query => $CurrentSearch,
@@ -105,9 +104,9 @@ push @Objects, RT::System->new( $session{'CurrentUser'} )
 </%INIT>
 
 <%ARGS>
-$SearchType => 'Ticket'
 $Id => 'new'
 $Object => undef
+$Type => 'Ticket'
 $Description => ''
 $CurrentSearch => {}
 $AllowCopy => 1
@@ -192,43 +191,26 @@ if ( $obj && $obj->id ) {
     $obj->SetSubValues( %$Query );
     $obj->SetDescription( $desc );
 }
-elsif ( $id eq 'new' && $ARGS{'SavedSearchOwner'} =~ /^(.*?)-(\d+)$/ ) {
-    # We're saving a new search
-    my $obj_type = $1;
-    my $obj_id   = $2;
+elsif ( $id eq 'new' ) {
+    my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    my ($status, $msg) = $saved_search->Save(
+        Privacy      => $ARGS{'SavedSearchOwner'},
+        Name         => $desc,
+        SearchParams => $Query,
+    );
 
-    # Find out if we're saving on the user, or a group
-    my $container_object = _load_container_object ($obj_type, $obj_id);
-
-    if ( $container_object->id ) {
-        # permission check
-        if ( $container_object->isa('RT::System') ) {
-            unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-                push @results, [ loc("No permission to save system-wide searches"), 0 ];
-                return @results;
-            }
-        }
-
-        my $name = $obj_type eq 'RT::System' ? "Search - $desc" : 'SavedSearch';
-        # If we got one or the other, add the saerch
-        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-            Name        => $name,
-            Description => $desc,
-            Content     => $Query,
-        );
-        unless ( $search_id ) {
-            push @results, [ loc("Can't find a saved search to work with").': '.loc($search_msg), 0 ];
-            return @results;
-        }
-
+    if ( $status ) {
         $SavedSearch->{'Object'} =
-            $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+            $session{'CurrentUser'}->UserObj->Attributes->WithId( $saved_search->Id );
         # Build new SearchId
         $SavedSearch->{'Id'} =
-            ref( $session{'CurrentUser'}->UserObj ) . '-'
-                . $session{'CurrentUser'}->UserObj->Id
-                . '-SavedSearch-'
-                . $SavedSearch->{'Object'}->Id;
+                ref( $session{'CurrentUser'}->UserObj ) . '-'
+                    . $session{'CurrentUser'}->UserObj->Id
+                    . '-SavedSearch-'
+                    . $SavedSearch->{'Object'}->Id;
+    }
+    else {
+        push @results, [ loc("Can't find a saved search to work with").': '.loc($msg), 0 ];
     }
 }
 else {

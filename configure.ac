@@ -7,7 +7,7 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.7.HEAD], [rt-bugs@bestpractical.com])
+AC_INIT(RT, [3.7.5], [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -304,6 +304,8 @@ AC_CONFIG_FILES([
 		 sbin/rt-setup-database
 		 sbin/rt-test-dependencies
          sbin/rt-clean-sessions
+         sbin/rt-shredder
+         sbin/rt-validator
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd

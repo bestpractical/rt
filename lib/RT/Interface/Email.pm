@@ -271,7 +271,7 @@ sub MailError {
 
 # {{{ SendEmail
 
-=head2 SendEmail entity => ENTITY, [bounce => BOUNCE]
+=head2 SendEmail Entity => ENTITY, [Bounce => BOUNCE]
 
 Sends an email (passed as a L<MIME::Entity> object C<ENTITY>) using
 RT's outgoing mail configuration.  If C<BOUNCE> is passed, and is a
@@ -282,15 +282,31 @@ possible.
 
 sub SendEmail {
     my (%args) = (
-                  Entity => undef,
-                  Bounce => 0,
-                  @_,
-                 );
+        Entity => undef,
+        Bounce => 0,
+        @_,
+    );
+    unless ( $args{'Entity'} ) {
+        $RT::Logger->crit( "Could not send mail without 'Entity' object" );
+        return 0;
+    }
 
-    if ( RT->Config->Get('MailCommand') eq 'sendmailpipe' ) {
+    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
+    chomp $msgid;
+
+    unless ( $args{'Entity'}->head->get('Date') ) {
+        require RT::Date;
+        my $date = RT::Date->new( $RT::SystemUser );
+        $date->SetToNow;
+        $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+    }
+
+    my $mail_command = RT->Config->Get('MailCommand');
+
+    if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
-        $args .= RT->Config->Get('SendmailBounceArguments') if $args{Bounce};
+        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
         # VERP
         if ( $args{'Transaction'} and
@@ -307,39 +323,36 @@ sub SendEmail {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
-            my $mail;
-            unless( open $mail, "|$path $args" ) {
-                die "Couldn't run $path: $!";
-            }
+            open my $mail, "|$path $args" or die "couldn't execute program: $!";
 
             # if something wrong with $mail->print we will get PIPE signal, handle it
-            local $SIG{'PIPE'} = sub { die "$path closed pipe" };
-            $args{Entity}->print($mail);
+            local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
+            $args{'Entity'}->print($mail);
 
             unless ( close $mail ) {
-                die "Close failed: $!" if $!; # system error
+                die "close pipe failed: $!" if $!; # system error
                 # sendmail exit statuses mostly errors with data not software
                 # TODO: status parsing: core dump, exit on signal or EX_*
-                $RT::Logger->warning( "$path exitted with status $?" );
+                my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
+                $msg = ", interrupted by signal ". ($?&127) if $?&127;
+                $RT::Logger->error( $msg );
             }
         };
-        if ($@) {
-            $RT::Logger->crit( "Could not send mail: " . $@ );
+        if ( $@ ) {
+            $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
             return 0;
         }
     }
     else {
-        my @mailer_args = (RT->Config->Get('MailCommand'));
+        local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
 
-        local $ENV{MAILADDRESS};
-        local $ENV{PERL_MAILERS};
-
-        if ( RT->Config->Get('MailCommand') eq 'sendmail' ) {
-            $ENV{PERL_MAILERS} = RT->Config->Get('SendmailPath');
+        my @mailer_args = ($mail_command);
+        if ( $mail_command eq 'sendmail' ) {
+            $ENV{'PERL_MAILERS'} = RT->Config->Get('SendmailPath');
             push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
         }
-        elsif ( RT->Config->Get('MailCommand') eq 'smtp' ) {
-            $ENV{MAILADDRESS} = RT->Config->Get('SMTPFrom') || $args{Entity}->head->get('From');
+        elsif ( $mail_command eq 'smtp' ) {
+            $ENV{'MAILADDRESS'} = RT->Config->Get('SMTPFrom') || $args{'Entity'}->head->get('From');
             push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
             push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
         }
@@ -347,9 +360,9 @@ sub SendEmail {
             push @mailer_args, RT->Config->Get('MailParams');
         }
 
-        unless ( $args{Entity}->send(@mailer_args) ) {
-            $RT::Logger->crit( "Could not send mail." );
-            return (0);
+        unless ( $args{'Entity'}->send( @mailer_args ) ) {
+            $RT::Logger->crit( "$msgid: Could not send mail." );
+            return 0;
         }
     }
     return 1;
@@ -934,7 +947,7 @@ sub _NoAuthorizedUserFound {
 
     # Notify the RT Admin of the failure.
     MailError(
-        To          => $RT::OwnerEmail,
+        To          => scalar RT->Config->Get('OwnerEmail'),
         Subject     => "Could not load a valid user",
         Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow

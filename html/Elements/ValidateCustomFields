@@ -46,10 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $valid = 1;
+my ($valid, @res) = (1, ());
 $CustomFields->GotoFirstItem;
-while (my $CF = $CustomFields->Next) {
-    my $pattern = $CF->Pattern;
+while ( my $CF = $CustomFields->Next ) {
     my $field = $NamePrefix . $CF->Id . "-Value";
     my $value;
 
@@ -65,14 +64,14 @@ while (my $CF = $CustomFields->Next) {
 
     $m->notes(('Field-' . $CF->Id) => $value);
     next if $CF->MatchPattern($value);
-    $m->notes(
-        ('InvalidField-' . $CF->Id)
-            => (loc("Input must match [_1]", $CF->FriendlyPattern))
-    );
+
+    my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
+    $m->notes( ('InvalidField-' . $CF->Id) => $msg );
+    push @res, $msg;
     $valid = 0;
 }
 $m->notes('ValidFields', $valid);
-return $valid;
+return wantarray? ($valid, @res): $valid;
 </%INIT>
 <%ARGS>
 $CustomFields

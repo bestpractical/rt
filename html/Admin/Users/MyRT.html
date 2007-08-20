@@ -83,7 +83,7 @@ if ($ARGS{Reset}) {
 my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
 my $portlets  = $UserObj->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
 
-my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
+my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };
 my @items;
 
 push @items, map {["component-$_", $_]} sort keys %allowed_components;

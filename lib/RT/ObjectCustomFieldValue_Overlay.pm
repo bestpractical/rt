@@ -48,60 +48,59 @@
 package RT::ObjectCustomFieldValue;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
-
 
 sub Create {
     my $self = shift;
     my %args = (
-                CustomField => '0',
-                ObjectType => '',
-                ObjectId => '0',
-                Disabled => '0',
-                Content => '',
-                LargeContent => '',
-                ContentType => '',
-                ContentEncoding => '',
+        CustomField     => 0,
+        ObjectType      => '',
+        ObjectId        => 0,
+        Disabled        => 0,
+        Content         => '',
+        LargeContent    => undef,
+        ContentType     => '',
+        ContentEncoding => '',
+        @_,
+    );
 
-          @_);
-
-   
-    if( $args{'Content'} && length($args{'Content'}) > 255 && !$args{'LargeContent'} ) {
-
-        $args{'LargeContent'} = $args{'Content'};
-        $args{'Content'} = '';
-        $args{'ContentType'} = 'text/plain';
+    if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
+        if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
+            $RT::Logger->error("Content is longer than 255 and LargeContent specified");
+        }
+        else {
+            $args{'LargeContent'} = $args{'Content'};
+            $args{'Content'} = '';
+            $args{'ContentType'} ||= 'text/plain';
+        }
     }
 
     ( $args{'ContentEncoding'}, $args{'LargeContent'} ) =
-      $self->_EncodeLOB( $args{'LargeContent'}, $args{'ContentType'} )
-      if ( $args{'LargeContent'} );
+        $self->_EncodeLOB( $args{'LargeContent'}, $args{'ContentType'} )
+            if defined $args{'LargeContent'};
 
-    $self->SUPER::Create(
-                         CustomField => $args{'CustomField'},
-                         ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
-                         Disabled => $args{'Disabled'},
-                         Content => $args{'Content'},
-                         LargeContent => $args{'LargeContent'},
-                         ContentType => $args{'ContentType'},
-                         ContentEncoding => $args{'ContentEncoding'},
-);
-
-
-
+    return $self->SUPER::Create(
+        CustomField     => $args{'CustomField'},
+        ObjectType      => $args{'ObjectType'},
+        ObjectId        => $args{'ObjectId'},
+        Disabled        => $args{'Disabled'},
+        Content         => $args{'Content'},
+        LargeContent    => $args{'LargeContent'},
+        ContentType     => $args{'ContentType'},
+        ContentEncoding => $args{'ContentEncoding'},
+    );
 }
 
 
 sub LargeContent {
     my $self = shift;
-    $self->_DecodeLOB( $self->ContentType, $self->ContentEncoding,
-        $self->_Value( 'LargeContent', decode_utf8 => 0 ) );
-
+    return $self->_DecodeLOB(
+        $self->ContentType,
+        $self->ContentEncoding,
+        $self->_Value( 'LargeContent', decode_utf8 => 0 )
+    );
 }
-
-
-
 
 =head2 LoadByTicketContentAndCustomField { Ticket => TICKET, CustomField => CUSTOMFIELD, Content => CONTENT }
 
@@ -112,40 +111,40 @@ Loads a custom field value by Ticket, Content and which CustomField it's tied to
 
 sub LoadByTicketContentAndCustomField {
     my $self = shift;
-    my %args = ( Ticket => undef,
-                CustomField => undef,
-                Content => undef,
-                @_
-                );
+    my %args = (
+        Ticket => undef,
+        CustomField => undef,
+        Content => undef,
+        @_
+    );
 
-
-    $self->LoadByCols( Content => $args{'Content'},
-                         CustomField => $args{'CustomField'},
-                         ObjectType => 'RT::Ticket',
-                         ObjectId => $args{'Ticket'},
-			 Disabled => 0
-			 );
-
-    
+    return $self->LoadByCols(
+        Content => $args{'Content'},
+        CustomField => $args{'CustomField'},
+        ObjectType => 'RT::Ticket',
+        ObjectId => $args{'Ticket'},
+        Disabled => 0
+    );
 }
 
 sub LoadByObjectContentAndCustomField {
     my $self = shift;
-    my %args = ( Object => undef,
-                CustomField => undef,
-                Content => undef,
-                @_
-                );
+    my %args = (
+        Object => undef,
+        CustomField => undef,
+        Content => undef,
+        @_
+    );
 
     my $obj = $args{'Object'} or return;
 
-    $self->LoadByCols( Content => $args{'Content'},
-                         CustomField => $args{'CustomField'},
-                         ObjectType => ref($obj),
-                         ObjectId => $obj->Id,
-			 Disabled => 0
-			 );
-
+    return $self->LoadByCols(
+        Content => $args{'Content'},
+        CustomField => $args{'CustomField'},
+        ObjectType => ref($obj),
+        ObjectId => $obj->Id,
+        Disabled => 0
+    );
 }
 
 
@@ -156,17 +155,15 @@ content, try "LargeContent"
 
 =cut
 
-
 sub Content {
     my $self = shift;
     my $content = $self->SUPER::Content;
-    if (!$content && $self->ContentType eq 'text/plain') {
-       return $self->LargeContent(); 
+    if ( !$content && $self->ContentType eq 'text/plain' ) {
+        return $self->LargeContent;
     } else {
         return $content;
     }
 }
-
 
 =head2 Object
 
@@ -176,9 +173,9 @@ Returns the object this value applies to
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
-    $Object->Load($self->__Value('ObjectId'));
-    return($Object);
+    my $Object = $self->__Value('ObjectType')->new( $self->CurrentUser );
+    $Object->LoadById( $self->__Value('ObjectId') );
+    return $Object;
 }
 
 
@@ -191,7 +188,7 @@ Disable this value. Used to remove "current" values from records while leaving t
 
 sub Delete {
     my $self = shift;
-    $self->SetDisabled(1);
+    return $self->SetDisabled(1);
 }
 
 =head2 _FillInTemplateURL URL
@@ -255,8 +252,5 @@ sub IncludeContentForValue {
     my $self = shift;
     return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
 }
-
-
-
 
 1;

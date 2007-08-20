@@ -62,7 +62,7 @@ sub GetCurrentUser {
 
     # We don't need to do any external lookups
     my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
-    unless ($Address) {
+    unless ( $Address ) {
         return ( $args{'CurrentUser'}, -1 );
     }
 

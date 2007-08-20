@@ -70,8 +70,9 @@ if ( $opts{help} ) {
     exit 1;    # Don't want to succeed if this is really an email!
 }
 
-for (qw(url)) {
-    die "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n" unless $opts{$_};
+unless ( $opts{'url'} ) {
+    print STDERR "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
+    exit 1;
 }
 
 my $ua      = LWP::UserAgent->new();
@@ -86,14 +87,29 @@ foreach ( qw(queue action) ) {
 
 # Read the message in from STDIN
 $args{'message'} = do { local (@ARGV, $/); <> };
-
 unless ( $args{message} =~ /\S/ ) {
     print STDERR "$0: no message passed on STDIN!\n";
     exit 0;
 }
 
-if ($opts{'extension'}) {
-        $args{$opts{'extension'}} = $ENV{'EXTENSION'};
+if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
+    $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
+} elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
+    print STDERR "Value of the --extension argument is not action, queue or ticket"
+        .", but environment variable EXTENSION is also defined. The former is ignored.";
+}
+
+# add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
+if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
+    # prepare value to avoid MIME format brakage
+    # strip trailing newline symbols
+    $value =~ s/(\r*\n)+$//;
+    # make a correct multiline header field,
+    # with tabs in the beginning of each line
+    $value =~ s/(\r*\n)/$1\t/g;
+    $args{'message'} = "X-RT-Mail-Extension: $value\n"
+        . $args{'message'};
+    print $args{'message'};
 }
 
 # Set up cookie here.
@@ -318,6 +334,23 @@ to communicate with RT at all, (a "permission denied" error is mailed to
 the correspondent) or one, which is the normal mode of operation.
 Additionally, if C<-1> is returned, then the processing of the plug-ins
 stops immediately and the message is ignored.
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item EXTENSION
+
+Some MTAs will route mail sent to user-foo@host or user+foo@host to user@host
+and present "foo" in the environment variable C<EXTENSION>. Mailgate adds value
+of this variable to message in the C<X-RT-Mail-Extension> field of the message
+header.
+
+See also C<--extension> option. Note that value of the environment variable is
+always added to the message header when it's not empty even if C<--extension>
+option is not provided.
+
+=back 4
 
 =cut
 

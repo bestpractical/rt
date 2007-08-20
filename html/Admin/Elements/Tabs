@@ -75,10 +75,12 @@
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+  if( defined $current_tab ) {
+    foreach my $tab (keys %{$tabs}) {
+      if ($tabs->{$tab}->{'path'} eq $current_tab) {
+        $tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+      }
     }
   }
 

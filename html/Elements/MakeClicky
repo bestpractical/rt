@@ -62,9 +62,7 @@ $active{$_}++ for RT->Config->Get('Active_MakeClicky');
 @types = grep $active{$_->{name}}, @types;
 
 # Build up the whole match
-my $regexp = join "|",
-             map '\b'. $_->{regex} .'\b',
-             @types;
+my $regexp = join "|", map $_->{regex}, @types;
 
 # Make sure we have a default
 $actions{default} ||= sub {};

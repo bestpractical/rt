@@ -216,11 +216,18 @@ PARAMS is a parameter hash with the following elements:
 
 sub Create {
     my $self = shift;
-    my %args = ( PrincipalId   => undef,
-                 PrincipalType => undef,
-                 RightName     => undef,
-                 Object        => undef,
-                 @_ );
+    my %args = (
+        PrincipalId   => undef,
+        PrincipalType => undef,
+        RightName     => undef,
+        Object        => undef,
+        @_
+    );
+
+    unless ( $args{'RightName'} ) {
+        return ( 0, $self->loc('No right specified') );
+    }
+
     #if we haven't specified any sort of right, we're talking about a global right
     if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
         $args{'Object'} = $RT::System;
@@ -262,11 +269,11 @@ sub Create {
     # }}}
 
     # {{{ Canonicalize and check the right name
-    unless ( $args{'RightName'} ) {
-        return ( 0, $self->loc('Invalid right') );
+    my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
+    unless ( $canonic_name ) {
+        return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '$args{'RightName'}'") );
     }
-
-    $args{'RightName'} = $self->CanonicalizeRightName( $args{'RightName'} );
+    $args{'RightName'} = $canonic_name;
 
     #check if it's a valid RightName
     if ( ref ($args{'Object'} eq 'RT::Queue'  )) {
@@ -771,14 +778,7 @@ the correct case. If it's not found, will return undef.
 
 sub CanonicalizeRightName {
     my $self  = shift;
-    my $right = shift;
-    $right = lc $right;
-    if ( exists $LOWERCASERIGHTNAMES{"$right"} ) {
-        return ( $LOWERCASERIGHTNAMES{"$right"} );
-    }
-    else {
-        return (undef);
-    }
+    return $LOWERCASERIGHTNAMES{ lc shift };
 }
 
 # }}}
