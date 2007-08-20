@@ -8,6 +8,15 @@ use base qw(Test::WWW::Mechanize);
 require RT::Test;
 require Test::More;
 
+sub get_ok {
+    my $self = shift;
+    my $url = shift;
+    if ( $url =~ m{^/} ) {
+        $url = $self->rt_base_url . $url;
+    }
+    return $self->SUPER::get_ok($url, @_);
+}
+
 sub rt_base_url {
     return $RT::Test::existing_server if $RT::Test::existing_server;
     return "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
