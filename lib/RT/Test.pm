@@ -176,6 +176,11 @@ sub mailsent_ok {
 sub load_or_create_user {
     my $self = shift;
     my %args = ( Privileged => 1, Disabled => 0, @_ );
+    
+    my $MemberOf = delete $args{'MemberOf'};
+    $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
+    $MemberOf ||= [];
+
     my $obj = RT::User->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
@@ -193,6 +198,28 @@ sub load_or_create_user {
     } else {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
+    }
+
+    # clean group membership
+    {
+        require RT::GroupMembers;
+        my $gms = RT::GroupMembers->new( $RT::SystemUser );
+        my $groups_alias = $gms->Join(
+            FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
+        );
+        $gms->Limit( ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined' );
+        $gms->Limit( FIELD => 'MemberId', VALUE => $obj->id );
+        while ( my $group_member_record = $gms->Next ) {
+            $group_member_record->Delete;
+        }
+    }
+
+    # add new user to groups
+    foreach ( @$MemberOf ) {
+        my $group = RT::Group->new( RT::SystemUser() );
+        $group->LoadUserDefinedGroup( $_ );
+        die "couldn't load group '$_'" unless $group->id;
+        $group->AddMember( $obj->id );
     }
 
     return $obj;
