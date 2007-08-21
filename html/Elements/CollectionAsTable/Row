@@ -55,6 +55,7 @@ $Warning => undef
 </%ARGS>
 
 <%PERL>
+use HTML::Entities;
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column (@Format) {
@@ -71,7 +72,9 @@ foreach my $column (@Format) {
         next;
     }
     $item++;
-    $m->out('<td class="collection-as-table" ');
+    my $class = $column->{class}
+	? encode_entities($column->{class}, q{'"&<>}) : 'collection-as-table';
+    $m->out(qq{<td class="$class" });
     $m->out( 'align="' . $column->{align} . '"' ) if ( $column->{align} );
     $m->out( 'style="' . $column->{style} . '"' ) if ( $column->{style} );
     $m->out('>');
