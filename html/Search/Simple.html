@@ -79,7 +79,7 @@ if ($q) {
     $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
 
     if ($q =~ /^(\d+)$/) {
-        RT::Interface::Web::Redirect($RT::WebURL."/Ticket/Display.html?id=".$q);
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);
     }
     my $search  = RT::Search::Googleish->new(Argument   => $q,
                                              TicketsObj => $tickets);
