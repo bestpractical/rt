@@ -75,6 +75,7 @@
 
 </table>
 
+<& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
 <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
 </form>
 <%INIT>
@@ -90,10 +91,19 @@ Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
     unless $txn->id;
 
 my @results;
-if ( $ARGS{'Forward'} ) {
+if ( $Forward || $ForwardAndReturn ) {
     require RT::Interface::Email;
     my ($status, $msg) = RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
     push @results, $msg;
+
+    if ( $ForwardAndReturn ) {
+        $session{'i'}++;
+        $session{"Actions"} ||= [];
+        push @{ $session{"Actions"} }, @results;
+        RT::Interface::Web::Redirect(
+            RT->Config->Get('WebURL') ."/Ticket/Display.html?id=". $id
+        );
+    }
 }
 
 my $Title = loc('Forward message');
@@ -103,4 +113,6 @@ my $Title = loc('Forward message');
 <%ARGS>
 $id => undef
 $QuoteTransaction => undef
+$ForwardAndReturn => 0,
+$Forward          => $ForwardAndReturn,
 </%ARGS>
