@@ -468,6 +468,31 @@ sub SendEmail {
     return 1;
 }
 
+=head2 PrepareEmailUsingTemplate Template => '', Arguments => {}
+
+Loads a template and parses it using arguments. Returns a L<MIME::Entity>
+object or undef on errors.
+
+=cut
+
+sub PrepareEmailUsingTemplate {
+    my %args = (
+        Template => '',
+        Arguments => {},
+        @_
+    );
+
+    my $template = RT::Template->new( $RT::SystemUser );
+    $template->LoadGlobalTemplate( $args{'Template'} );
+    unless ( $template->id ) {
+        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
+        return (undef);
+    }
+    $template->Parse( %{ $args{'Arguments'} } );
+
+    return $template->MIMEObj;
+}
+
 =head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
@@ -484,16 +509,7 @@ sub SendEmailUsingTemplate {
         @_
     );
 
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->LoadGlobalTemplate( $args{'Template'} );
-    unless ( $template->id ) {
-        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
-        return 0;
-    }
-    $template->Parse( %{ $args{'Arguments'} } );
-
-    my $msg = $template->MIMEObj;
-    # template parsing error
+    my $msg = PrepareEmailUsingTemplate( %args );
     return 0 unless $msg;
 
     $msg->head->set( $_ => $args{ $_ } )
