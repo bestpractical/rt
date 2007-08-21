@@ -570,16 +570,27 @@ sub ForwardTransaction {
         $entity->add_part( $a->ContentAsMIME );
     }
 
-    my $description = 'This is forward of transaction #'
-        . $txn->id ." of a ticket #". $txn->ObjectId;
-
-    my $mail = MIME::Entity->build(
-        To => $args{'To'},
-        Cc => $args{'Cc'},
-        Bcc => $args{'Bcc'},
-        Type => 'text/plain',
-        Data => $description,
+    my $mail = PrepareEmailUsingTemplate(
+        Template  => 'Forward',
+        Arguments => {
+            Transaction => $txn,
+            Ticket      => $txn->Object,
+        },
     );
+    unless ( $mail ) {
+        $RT::Logger->warning("Couldn't generate email using template 'Forward'");
+
+        my $description = 'This is forward of transaction #'
+            . $txn->id ." of a ticket #". $txn->ObjectId;
+        $mail = MIME::Entity->build(
+            Type => 'text/plain',
+            Data => $description,
+        );
+    }
+
+    $mail->head->set( $_ => $args{ $_ } )
+        foreach grep defined $args{$_}, qw(To Cc Bcc);
+
     $mail->attach(
         Type => 'message/rfc822',
         Disposition => 'attachment',
