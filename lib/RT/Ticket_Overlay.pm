@@ -3146,10 +3146,10 @@ sub DESTROY {
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
-    Stage        => 'TransactionBatch',
-    TicketObj    => $self,
-    TransactionObj    => $batch->[0],
-    Type        => join(',', (map { $_->Type } @{$batch}) )
+        Stage          => 'TransactionBatch',
+        TicketObj      => $self,
+        TransactionObj => $batch->[0],
+        Type           => join( ',', map $_->Type, grep defined, @{$batch} )
     );
 }
 
