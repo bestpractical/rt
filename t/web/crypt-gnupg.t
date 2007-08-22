@@ -3,9 +3,7 @@ use strict;
 
 use Test::More tests => 11;
 use RT::Test;
-
-use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
-use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
+use RT::Action::SendEmail;
 
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
@@ -27,6 +25,19 @@ RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'rt-test',
                  'no-permission-warning' => undef);
+
+# catch any outgoing emails
+our @outgoing;
+is (__PACKAGE__, 'main', "We're operating in the main package");
+{
+    no warnings qw/redefine/;
+    sub RT::Action::SendEmail::SendMessage {
+        my $self = shift;
+        my $MIME = shift;
+
+        main::unlike($MIME->body, qr/Some content/, "content was encrypted");
+    }
+}
 
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -61,3 +72,4 @@ ok(!$m->value('Sign', 2), "sign tick box is unchecked");
 $m->submit;
 is($m->status, 200, "request successful");
 
+$m->get("$baseurl"); # make sure the server has handled all mail
