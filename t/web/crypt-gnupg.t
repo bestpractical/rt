@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 21;
+use Test::More tests => 29;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -83,6 +83,38 @@ my @mail = grep {/\S/} split /%% split me! %%/, $mail;
 ok(@mail, "got some mail");
 for (@mail) {
     unlike $_, qr/Some content/, "outgoing mail was encrypted";
+    my ($content_type) = /(Content-Type: .*)/;
+    $_ = strip_headers($_);
+    $_ = << "MAIL";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: This is just RT's response fed back into RT
+$content_type
+
+$_
+MAIL
+
+    my ($status, $id) = RT::Test->send_via_mailgate($_);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "got id of a newly created ticket - $id");
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok($tick->id, "loaded ticket #$id");
+
+    is($tick->Subject, "This is just RT's response fed back into RT");
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+
+    is($msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
+        "RT's outgoing mail was indeed encrypted");
+    is($msg->GetHeader('X-RT-Privacy'),
+        'PGP');
+
+    like($attachments[0]->Content, qr/Some content/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->Content, qr/\@$RT::rtname/, "RT's mail includes this instance's name");
+
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -96,6 +128,8 @@ $m->field('Queue', $qid);
 $m->submit;
 is($m->status, 200, "request successful");
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
+
+unlink "t/mailbox";
 
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Signing test');
@@ -126,3 +160,11 @@ sub file_content_unlink
     unlink $path;
     return $content;
 }
+
+sub strip_headers
+{
+    my $mail = shift;
+    $mail =~ s/^.*?\n\n//s;
+    return $mail;
+}
+
