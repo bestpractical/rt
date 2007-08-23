@@ -40,8 +40,9 @@ RT->Config->Set( 'GnuPG',
 
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
-                 passphrase => 'rt-test',
                  'no-permission-warning' => undef);
+
+RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -84,12 +85,16 @@ ok(@mail, "got some mail");
 for (@mail) {
     unlike $_, qr/Some content/, "outgoing mail was encrypted";
     my ($content_type) = /(Content-Type: .*)/;
+    my ($mime_version) = /(MIME-Version: .*)/;
     $_ = strip_headers($_);
+
     $_ = << "MAIL";
 From: recipient\@example.com
 To: general\@$RT::rtname
 Subject: This is just RT's response fed back into RT
+$mime_version
 $content_type
+
 
 $_
 MAIL
@@ -114,7 +119,6 @@ MAIL
 
     like($attachments[0]->Content, qr/Some content/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/\@$RT::rtname/, "RT's mail includes this instance's name");
-
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
