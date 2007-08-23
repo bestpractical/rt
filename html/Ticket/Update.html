@@ -234,8 +234,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
-    return;
+    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS );
+    return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
 
 
