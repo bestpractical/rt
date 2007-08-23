@@ -1,11 +1,29 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 11;
+use Test::More tests => 14;
 use RT::Test;
 use RT::Action::SendEmail;
 
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
+
+# catch any outgoing emails
+unlink "t/mailbox";
+
+is (__PACKAGE__, 'main', "We're operating in the main package");
+{
+    no warnings qw/redefine/;
+    sub RT::Action::SendEmail::SendMessage {
+        my $self = shift;
+        my $MIME = shift;
+
+        open my $handle, '>>', 't/mailbox'
+            or die "Unable to open t/mailbox for appending: $!";
+
+        print $handle map {"$_\n"} @{$MIME->body};
+        print $handle "%% split me! %%\n";
+    }
+}
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );
@@ -25,19 +43,6 @@ RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'rt-test',
                  'no-permission-warning' => undef);
-
-# catch any outgoing emails
-our @outgoing;
-is (__PACKAGE__, 'main', "We're operating in the main package");
-{
-    no warnings qw/redefine/;
-    sub RT::Action::SendEmail::SendMessage {
-        my $self = shift;
-        my $MIME = shift;
-
-        main::unlike($MIME->body, qr/Some content/, "content was encrypted");
-    }
-}
 
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -72,4 +77,21 @@ ok(!$m->value('Sign', 2), "sign tick box is unchecked");
 $m->submit;
 is($m->status, 200, "request successful");
 
-$m->get("$baseurl"); # make sure the server has handled all mail
+$m->get($baseurl); # ensure that the mail has been processed
+
+my $mail = file_content('t/mailbox');
+my @mail = split /\n%% split me! %%\n/, $mail;
+pop @mail;
+ok(@mail, "got some mail");
+for (@mail) {
+    unlike $_, qr/Some content/, "outgoing mail was encrypted";
+}
+
+sub file_content
+{
+    my $path = shift;
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
+    local $/;
+    return scalar <$fh>;
+}
