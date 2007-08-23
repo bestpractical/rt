@@ -51,7 +51,7 @@
     current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
     Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
     
-% $m->callback(CallbackName => 'BeforeActionList', ARGSref => \%ARGS, Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
     
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),

@@ -52,7 +52,7 @@
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
     Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSref => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
@@ -133,7 +133,7 @@ if ($ARGS{'id'} eq 'new') {
 
     $m->callback(CallbackName => 'ProcessArguments', 
             Ticket => $TicketObj, 
-            ARGSref => \%ARGS, 
+            ARGSRef => \%ARGS, 
             Actions => \@Actions);
     
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
