@@ -99,8 +99,7 @@ sub email_ok {
             "$eid: recorded incoming mail that is encrypted"
         );
 
-        #XXX: maybe RT will have already decrypted this for us
-        unlike( $msg->Content,
+        like( $attachments[0]->Content,
                 ($body{$eid} || qr/ID:$eid/),
                 "$eid: incoming mail did NOT have original body"
         );
