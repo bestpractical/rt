@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 13;
+use Test::More tests => 21;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -69,7 +69,7 @@ is($m->status, 200, "request successful");
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
 
 $m->form_name('TicketCreate');
-$m->field('Subject', 'Attachments test');
+$m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok(!$m->value('Sign', 2), "sign tick box is unchecked");
@@ -78,18 +78,51 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-my $mail = file_content('t/mailbox');
+my $mail = file_content_unlink('t/mailbox');
 my @mail = grep {/\S/} split /%% split me! %%/, $mail;
 ok(@mail, "got some mail");
 for (@mail) {
     unlike $_, qr/Some content/, "outgoing mail was encrypted";
 }
 
-sub file_content
+$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
+$m->form_with_fields('Sign', 'Encrypt');
+$m->field(Encrypt => undef);
+$m->field(Sign => 1);
+$m->submit;
+
+$m->form_name('CreateTicketInQueue');
+$m->field('Queue', $qid);
+$m->submit;
+is($m->status, 200, "request successful");
+$m->content_like(qr/Create a new ticket/, 'ticket create page');
+
+$m->form_name('TicketCreate');
+$m->field('Subject', 'Signing test');
+$m->field('Content', 'Some other content');
+ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
+ok($m->value('Sign', 2), "sign tick box is checked");
+$m->submit;
+is($m->status, 200, "request successful");
+
+$m->get($baseurl); # ensure that the mail has been processed
+
+$mail = file_content_unlink('t/mailbox');
+@mail = grep {/\S/} split /%% split me! %%/, $mail;
+ok(@mail, "got some mail");
+for (@mail) {
+    like $_, qr/Some other content/, "outgoing mail was not encrypted";
+    like $_, qr/-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/, "data has some kind of signature";
+}
+
+sub file_content_unlink
 {
     my $path = shift;
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
     open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
     local $/;
-    return scalar <$fh>;
+    my $content = <$fh>;
+    close $fh;
+    unlink $path;
+    return $content;
 }
