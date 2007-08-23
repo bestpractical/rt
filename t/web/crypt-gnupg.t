@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 14;
+use Test::More tests => 13;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -10,23 +10,22 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 # catch any outgoing emails
 unlink "t/mailbox";
 
-is (__PACKAGE__, 'main', "We're operating in the main package");
-{
-    no warnings qw/redefine/;
-    sub RT::Action::SendEmail::SendMessage {
-        my $self = shift;
-        my $MIME = shift;
+sub capture_mail {
+    my $MIME = shift;
 
-        open my $handle, '>>', 't/mailbox'
-            or die "Unable to open t/mailbox for appending: $!";
+    open my $handle, '>>', 't/mailbox'
+        or die "Unable to open t/mailbox for appending: $!";
 
-        print $handle map {"$_\n"} @{$MIME->body};
-        print $handle "%% split me! %%\n";
-    }
+    $MIME->print($handle);
+    print $handle "%% split me! %%\n";
+    close $handle;
 }
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );
+RT->Config->Set( CommentAddress => 'general@example.com');
+RT->Config->Set( CorrespondAddress => 'general@example.com');
+RT->Config->Set( MailCommand => \&capture_mail);
 
 use File::Spec ();
 use Cwd;
@@ -80,8 +79,7 @@ is($m->status, 200, "request successful");
 $m->get($baseurl); # ensure that the mail has been processed
 
 my $mail = file_content('t/mailbox');
-my @mail = split /\n%% split me! %%\n/, $mail;
-pop @mail;
+my @mail = grep {/\S/} split /%% split me! %%/, $mail;
 ok(@mail, "got some mail");
 for (@mail) {
     unlike $_, qr/Some content/, "outgoing mail was encrypted";
