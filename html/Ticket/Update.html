@@ -150,7 +150,7 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-#$TicketObj->Lock();
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -234,7 +234,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS );
+    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
 
