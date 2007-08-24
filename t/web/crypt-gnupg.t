@@ -117,12 +117,12 @@ MAIL
     my $txn = $tick->Transactions->First;
     my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
 
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
-        'Success',
-        "RT's outgoing mail looks encrypted"
-    );
     is( $msg->GetHeader('X-RT-Privacy'),
         'PGP',
+        "RT's outgoing mail has crypto"
+    );
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
         "RT's outgoing mail looks encrypted"
     );
 
@@ -166,7 +166,7 @@ for my $mail (@mail) {
     my $body = strip_headers($mail);
 
     $mail = << "MAIL";
-Subject: RT mail sent back into RT
+Subject: More RT mail sent back into RT
 From: general\@example.com
 To: recipient\@example.com
 $mime_version
@@ -184,7 +184,7 @@ MAIL
     ok ($tick->id, "loaded ticket #$id");
 
     is ($tick->Subject,
-        "RT mail sent back into RT",
+        "More RT mail sent back into RT",
         "Correct subject"
     );
 
@@ -201,7 +201,7 @@ MAIL
     );
     is( $msg->GetHeader('X-RT-Incoming-Signature'),
         'general <general@example.com>',
-        "recorded incoming mail that is signed"
+        "RT's outgoing mail looks signed"
     );
 
     like($attachments[0]->Content, qr/Some other content/, "RT's mail includes copy of ticket text");
