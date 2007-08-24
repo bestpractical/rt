@@ -78,9 +78,11 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-my $mail = file_content_unlink('t/mailbox');
-my @mail = grep {/\S/} split /%% split me! %%/, $mail;
+my $mails = file_content_unlink('t/mailbox');
+my @mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
+
+$user->SetEmailAddress('general@example.com');
 for my $mail (@mail) {
     unlike $mail, qr/Some content/, "outgoing mail was encrypted";
 
@@ -97,7 +99,7 @@ $content_type
 
 $body
 MAIL
-    
+ 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
@@ -124,7 +126,7 @@ MAIL
     );
 
     like($attachments[0]->Content, qr/Some content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->Content, qr/\@$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -151,8 +153,8 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mail = file_content_unlink('t/mailbox');
-@mail = grep {/\S/} split /%% split me! %%/, $mail;
+$mails = file_content_unlink('t/mailbox');
+@mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
 for (@mail) {
     like $_, qr/Some other content/, "outgoing mail was not encrypted";
