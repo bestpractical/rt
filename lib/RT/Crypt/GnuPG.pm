@@ -403,7 +403,8 @@ sub SignEncryptRFC3156 {
     my $entity = $args{'Entity'};
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined $args{'Passphrase'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -578,7 +579,8 @@ sub _SignEncryptTextInline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -665,7 +667,8 @@ sub _SignEncryptAttachmentInline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -1033,7 +1036,8 @@ sub DecryptRFC3156 {
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
@@ -1106,7 +1110,8 @@ sub DecryptInline {
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
