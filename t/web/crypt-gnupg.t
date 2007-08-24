@@ -41,6 +41,7 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  'no-permission-warning' => undef);
+RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -82,8 +83,52 @@ $m->get($baseurl); # ensure that the mail has been processed
 my $mail = file_content_unlink('t/mailbox');
 my @mail = grep {/\S/} split /%% split me! %%/, $mail;
 ok(@mail, "got some mail");
-for (@mail) {
-    unlike $_, qr/Some content/, "outgoing mail was encrypted";
+for my $mail (@mail) {
+    unlike $mail, qr/Some content/, "outgoing mail was encrypted";
+
+    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
+    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my $body = strip_headers($mail);
+
+    $mail = << "MAIL";
+Subject: RT mail sent back into RT
+From: general\@example.com
+To: recipient\@example.com
+$mime_version
+$content_type
+
+$body
+MAIL
+    
+    my ($status, $id) = RT::Test->send_via_mailgate($mail);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "got id of a newly created ticket - $id");
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    is ($tick->Subject,
+        "RT mail sent back into RT",
+        "Correct subject"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
+        "RT's outgoing mail looks encrypted"
+    );
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'PGP',
+        "RT's outgoing mail looks encrypted"
+    );
+
+    like( $msg->Content,
+            qr/Some content/,
+            "incoming mail did NOT have original body"
+    );
     my ($content_type) = /(Content-Type: .*)/;
     my ($mime_version) = /(MIME-Version: .*)/;
     $_ = strip_headers($_);
@@ -168,7 +213,6 @@ sub file_content_unlink
 sub strip_headers
 {
     my $mail = shift;
-    $mail =~ s/^.*?\n\n//s;
+    $mail =~ s/.*?\n\n//s;
     return $mail;
 }
-
