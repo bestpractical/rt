@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 54;
+use Test::More tests => 70;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -282,6 +282,78 @@ MAIL
     );
 
     like($attachments[0]->Content, qr/Some final\? content/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+}
+
+$m->form_name('CreateTicketInQueue');
+$m->field('Queue', $qid);
+$m->submit;
+is($m->status, 200, "request successful");
+$m->content_like(qr/Create a new ticket/, 'ticket create page');
+
+unlink "t/mailbox";
+
+$m->form_name('TicketCreate');
+$m->field('Subject', 'Test crypt-off on encrypted queue');
+$m->field('Content', 'Thought you had me figured out didya');
+$m->field(Encrypt => undef, 2); # turn off encryption
+ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
+ok($m->value('Sign', 2), "sign tick box is still checked");
+$m->submit;
+is($m->status, 200, "request successful");
+
+$m->get($baseurl); # ensure that the mail has been processed
+
+$mails = file_content_unlink('t/mailbox');
+@mail = grep {/\S/} split /%% split me! %%/, $mails;
+ok(@mail, "got some mail");
+for my $mail (@mail) {
+    like $mail, qr/Thought you had me figured out didya/, "outgoing mail was unencrypted";
+
+    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
+    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my $body = strip_headers($mail);
+
+    $mail = << "MAIL";
+Subject: Post-final! RT mail sent back into RT
+From: general\@example.com
+To: recipient\@example.com
+$mime_version
+$content_type
+
+$body
+MAIL
+ 
+    my ($status, $id) = RT::Test->send_via_mailgate($mail);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "got id of a newly created ticket - $id");
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    is ($tick->Subject,
+        "Post-final! RT mail sent back into RT",
+        "Correct subject"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'PGP',
+        "RT's outgoing mail has crypto"
+    );
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Not encrypted',
+        "RT's outgoing mail looks unencrypted"
+    );
+    is( $msg->GetHeader('X-RT-Incoming-Signature'),
+        'general <general@example.com>',
+        "RT's outgoing mail looks signed"
+    );
+
+    like($attachments[0]->Content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
