@@ -225,7 +225,7 @@ $TICKET_COLUMN_MAP = {
                 $_[0]->loc('New'), \'</a>';
         },
     },
-    RequestorsKey => {
+    KeyRequestors => {
         title     => 'Requestors',
         attribute => 'Requestor.EmailAddress',
         value => sub {
@@ -241,19 +241,17 @@ $TICKET_COLUMN_MAP = {
             return join ', ', @requestors;
         }
     },
-    OwnerNameKey => {
+    KeyOwnerName => {
         title     => 'Owner',
         attribute => 'Owner',
         value     => sub {
             my $t = shift;
-            my $email = $t->OwnerObj->EmailAddress;
-            return $email if $email eq '';
-
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+            my $name = $t->OwnerObj->Name;
+            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
             if (!defined $key{'info'}) {
-                $email .= " (no pubkey!)";
+                $name .= " (no pubkey!)";
             }
-            return $email;
+            return $name;
         }
     },
 
@@ -302,16 +300,15 @@ $TICKET_COLUMN_MAP = {
 
 $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
-# if no GPG support, then OwnerNameKey and RequestorsKey fall back to the regular
+# if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
 if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $TICKET_COLUMN_MAP->{OwnerNameKey} = $TICKET_COLUMN_MAP->{OwnerName};
-    $TICKET_COLUMN_MAP->{RequestorsKey} = $TICKET_COLUMN_MAP->{Requestors};
+    $TICKET_COLUMN_MAP->{KeyOwnerName} = $TICKET_COLUMN_MAP->{OwnerName};
+    $TICKET_COLUMN_MAP->{KeyRequestors} = $TICKET_COLUMN_MAP->{Requestors};
 }
-
 </%ONCE>
 <%init>
 $m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
