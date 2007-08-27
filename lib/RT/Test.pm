@@ -245,11 +245,11 @@ sub load_or_create_queue {
         my @fields = qw(CorrespondAddress CommentAddress);
         foreach my $field ( @fields ) {
             next unless exists $args{ $field };
+            next if $args{ $field } eq $obj->$field;
             
             no warnings 'uninitialized';
             my $method = 'Set'. $field;
-            my ($val, $msg) = $obj->$method( $args{ $field } )
-                unless $args{ $field } eq $obj->$field;
+            my ($val, $msg) = $obj->$method( $args{ $field } );
             die "$msg" unless $val;
         }
     }
