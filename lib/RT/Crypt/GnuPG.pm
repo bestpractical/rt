@@ -1624,7 +1624,7 @@ sub ParseKeysInfo {
         if ( $tag eq 'pub' ) {
             my %info;
             @info{ qw(
-                Trust KeyLenght Algorithm Key
+                Trust KeyLength Algorithm Key
                 Created Expire Empty OwnerTrust
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
@@ -1637,7 +1637,7 @@ sub ParseKeysInfo {
         elsif ( $tag eq 'sec' ) {
             my %info;
             @info{ qw(
-                Empty KeyLenght Algorithm Key
+                Empty KeyLength Algorithm Key
                 Created Expire Empty OwnerTrust
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
