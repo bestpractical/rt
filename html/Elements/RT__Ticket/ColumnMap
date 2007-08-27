@@ -225,6 +225,37 @@ $TICKET_COLUMN_MAP = {
                 $_[0]->loc('New'), \'</a>';
         },
     },
+    RequestorsKey => {
+        title     => 'Requestors',
+        attribute => 'Requestor.EmailAddress',
+        value => sub {
+            my $t = shift;
+            my @requestors = $t->Requestors->MemberEmailAddresses;
+            for my $email (@requestors)
+            {
+                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+                if (!defined $key{'info'}) {
+                    $email .= " (no pubkey!)";
+                }
+            }
+            return join ', ', @requestors;
+        }
+    },
+    OwnerNameKey => {
+        title     => 'Owner',
+        attribute => 'Owner',
+        value     => sub {
+            my $t = shift;
+            my $email = $t->OwnerObj->EmailAddress;
+            return $email if $email eq '';
+
+            my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+            if (!defined $key{'info'}) {
+                $email .= " (no pubkey!)";
+            }
+            return $email;
+        }
+    },
 
     # Everything from LINKTYPEMAP
     (map {
@@ -270,6 +301,16 @@ $TICKET_COLUMN_MAP = {
 };
 
 $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
+
+# if no GPG support, then OwnerNameKey and RequestorsKey fall back to the regular
+# versions
+if ("GPG support") {
+    require RT::Crypt::GnuPG;
+}
+else {
+    $TICKET_COLUMN_MAP->{OwnerNameKey} = $TICKET_COLUMN_MAP->{OwnerName};
+    $TICKET_COLUMN_MAP->{RequestorsKey} = $TICKET_COLUMN_MAP->{Requestors};
+}
 
 </%ONCE>
 <%init>
