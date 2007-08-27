@@ -304,7 +304,7 @@ $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
 # if no GPG support, then OwnerNameKey and RequestorsKey fall back to the regular
 # versions
-if ("GPG support") {
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
