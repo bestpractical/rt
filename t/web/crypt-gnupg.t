@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 86;
+use Test::More tests => 87;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -390,11 +390,6 @@ my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'noke
 $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
-my $everyone_group = RT::Group->new( $RT::SystemUser );
-$everyone_group->LoadSystemInternalGroup( 'Everyone' );
-ok($everyone_group->Id, "Found group 'everyone'");
-$everyone_group->PrincipalObj->GrantRight(Right => 'CreateTicket');
-
 my $tick = RT::Ticket->new( $RT::SystemUser );
 $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
               Owner => $nokey);
@@ -406,8 +401,8 @@ $tick->Create(Subject => 'owner has pubkey', Queue => 'general',
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
 
 my $mail = << "MAIL";
-Subject: Keyless requestor
-From: keyless\@example.com
+Subject: Nokey requestor
+From: nokey\@example.com
 To: general\@example.com
 
 hello
@@ -422,7 +417,7 @@ $tick->Load( $id );
 ok ($tick->id, "loaded ticket #$id");
 
 is ($tick->Subject,
-    "Keyless requestor",
+    "Nokey requestor",
     "Correct subject"
 );
 
@@ -437,7 +432,7 @@ like($content, qr/OO-nokey-O/, "original OwnerName untouched");
 like($content, qr/OO-root-O/, "original OwnerName untouched");
 
 like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
-#like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
+like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
 
 like($content, qr/KO-root-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
 like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for root");
@@ -445,5 +440,5 @@ like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey wa
 
 like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
 like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
-#like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
+like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
