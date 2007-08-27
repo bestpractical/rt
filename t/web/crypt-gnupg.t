@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 70;
+use Test::More tests => 86;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -26,6 +26,14 @@ RT->Config->Set( LogStackTraces => 'error' );
 RT->Config->Set( CommentAddress => 'general@example.com');
 RT->Config->Set( CorrespondAddress => 'general@example.com');
 RT->Config->Set( MailCommand => \&capture_mail);
+RT->Config->Set( DefaultSearchResultFormat => qq{
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   'OO-__OwnerName__-O',
+   'OR-__Requestors__-O',
+   'KO-__KeyOwnerName__-K',
+   'KR-__KeyRequestors__-K',
+   Status});
 
 use File::Spec ();
 use Cwd;
@@ -375,3 +383,67 @@ sub strip_headers
     $mail =~ s/.*?\n\n//s;
     return $mail;
 }
+
+# now test the OwnerNameKey and RequestorsKey fields
+
+my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'nokey@example.com');
+$nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
+$nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
+
+my $everyone_group = RT::Group->new( $RT::SystemUser );
+$everyone_group->LoadSystemInternalGroup( 'Everyone' );
+ok($everyone_group->Id, "Found group 'everyone'");
+$everyone_group->PrincipalObj->GrantRight(Right => 'CreateTicket');
+
+my $tick = RT::Ticket->new( $RT::SystemUser );
+$tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
+              Owner => $nokey);
+ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
+
+$tick = RT::Ticket->new( $RT::SystemUser );
+$tick->Create(Subject => 'owner has pubkey', Queue => 'general',
+              Owner => 'root');
+ok($id = $tick->id, 'created ticket for owner-with-pubkey');
+
+my $mail = << "MAIL";
+Subject: Keyless requestor
+From: keyless\@example.com
+To: general\@example.com
+
+hello
+MAIL
+ 
+((my $status), $id) = RT::Test->send_via_mailgate($mail);
+is ($status >> 8, 0, "The mail gateway exited normally");
+ok ($id, "got id of a newly created ticket - $id");
+
+$tick = RT::Ticket->new( $RT::SystemUser );
+$tick->Load( $id );
+ok ($tick->id, "loaded ticket #$id");
+
+is ($tick->Subject,
+    "Keyless requestor",
+    "Correct subject"
+);
+
+# test that the new fields work
+$m->get("$baseurl/Search/Simple.html?q=General");
+my $content = $m->content;
+$content =~ s/&#40;/(/g;
+$content =~ s/&#41;/)/g;
+
+like($content, qr/OO-Nobody-O/, "original OwnerName untouched");
+like($content, qr/OO-nokey-O/, "original OwnerName untouched");
+like($content, qr/OO-root-O/, "original OwnerName untouched");
+
+like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
+#like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
+
+like($content, qr/KO-root-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
+like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for root");
+like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for nobody");
+
+like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
+like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
+#like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
+
