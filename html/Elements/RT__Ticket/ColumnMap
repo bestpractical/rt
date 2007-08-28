@@ -235,10 +235,10 @@ $TICKET_COLUMN_MAP = {
             {
                 my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
                 if (!defined $key{'info'}) {
-                    $email .= " (no pubkey!)";
+                    $email .= loc(" (no pubkey!)");
                 }
                 elsif ($key{'info'}{'TrustLevel'} == 0) {
-                    $email .= " (untrusted!)";
+                    $email .= loc(" (untrusted!)");
                 }
             }
             return join ', ', @requestors;
@@ -252,10 +252,10 @@ $TICKET_COLUMN_MAP = {
             my $name = $t->OwnerObj->Name;
             my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
             if (!defined $key{'info'}) {
-                $name .= " (no pubkey!)";
+                $name .= loc(" (no pubkey!)");
             }
             elsif ($key{'info'}{'TrustLevel'} == 0) {
-                $name .= " (untrusted!)";
+                $name .= loc(" (untrusted!)");
             }
 
             return $name;
