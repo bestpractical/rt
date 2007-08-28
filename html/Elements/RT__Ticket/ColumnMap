@@ -237,6 +237,9 @@ $TICKET_COLUMN_MAP = {
                 if (!defined $key{'info'}) {
                     $email .= " (no pubkey!)";
                 }
+                elsif ($key{'info'}{'TrustLevel'} == 0) {
+                    $email .= " (untrusted!)";
+                }
             }
             return join ', ', @requestors;
         }
@@ -251,6 +254,10 @@ $TICKET_COLUMN_MAP = {
             if (!defined $key{'info'}) {
                 $name .= " (no pubkey!)";
             }
+            elsif ($key{'info'}{'TrustLevel'} == 0) {
+                $name .= " (untrusted!)";
+            }
+
             return $name;
         }
     },
