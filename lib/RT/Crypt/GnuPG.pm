@@ -1612,12 +1612,12 @@ sub ParseKeysInfo {
         if ( $tag eq 'pub' ) {
             my %info;
             @info{ qw(
-                Trust KeyLength Algorithm Key
-                Created Expire Empty OwnerTrust
+                TrustChar KeyLength Algorithm Key
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1626,10 +1626,10 @@ sub ParseKeysInfo {
             my %info;
             @info{ qw(
                 Empty KeyLength Algorithm Key
-                Created Expire Empty OwnerTrust
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
