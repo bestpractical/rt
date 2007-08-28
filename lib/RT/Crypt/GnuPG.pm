@@ -1618,6 +1618,8 @@ sub ParseKeysInfo {
             ) } = split /:/, $line, 12;
             $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1630,6 +1632,7 @@ sub ParseKeysInfo {
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1664,12 +1667,37 @@ sub ParseKeysInfo {
         f   => "The key is fully trusted", #loc
         u   => "The key is ultimately trusted", #loc
     );
+
+    my %level = (
+        d   => 0,
+        r   => 0,
+        e   => 0,
+        n   => 0,
+
+        # err on the side of caution
+        o   => 0,
+        '-' => 0,
+        q   => 0,
+
+        m   => 2,
+        f   => 3,
+        u   => 4,
+    );
+
     sub _ConvertTrustChar {
         my $value = shift;
         return $mapping{'-'} unless $value;
 
         $value = substr $value, 0, 1;
         return $mapping{ $value } || $mapping{'o'};
+    }
+
+    sub _ConvertTrustLevel {
+        my $value = shift;
+        return $level{'-'} unless $value;
+
+        $value = substr $value, 0, 1;
+        return $level{ $value } || $level{'o'};
     }
 }
 
