@@ -94,7 +94,7 @@ foreach my $run ( @runs ) {
     }
 }
 
-push @messages, 'Warning! This is NOT signed!'
+push @messages, loc('Warning! This is NOT signed!')
     if $needs_unsigned_warning;
 return unless @messages;
 
