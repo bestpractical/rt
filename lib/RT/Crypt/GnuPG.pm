@@ -1280,7 +1280,6 @@ my %parse_keyword = map { $_ => 1 } qw(
     END_ENCRYPTION
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
-    ENC_TO
     NO_SECKEY NO_PUBKEY
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
@@ -1290,7 +1289,7 @@ my %parse_keyword = map { $_ => 1 } qw(
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
-    BEGIN_DECRYPTION END_DECRYPTION GOODMDC
+    ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
@@ -1368,33 +1367,28 @@ sub ParseStatus {
             }
             push @res, \%res;
         }
-        elsif ( $keyword eq 'DECRYPTION_FAILED' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'ERROR',
-                Message   => 'Decryption failed',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'DECRYPTION_OKAY' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => 'Decryption process succeeded',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'ENC_TO' ) {
-            my ($key, $alg, $key_length) = split /\s+/, $args;
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => "The message is encrypted to '0x$key'",
-                Key       => $key,
-                KeyLength => $key_length,
-                Algorithm => $alg,
-            );
-            $res{'User'} = ( $user_hint{ $key } ||= {} );
+        elsif ( $keyword eq 'DECRYPTION_FAILED' || $keyword eq 'DECRYPTION_OKAY' ) {
+            my %res = ( Operation => 'Decrypt' );
+            @res{'Status', 'Message'} = 
+                $keyword eq 'DECRYPTION_FAILED'
+                ? ('ERROR', 'Decryption failed')
+                : ('DONE',  'Decryption process succeeded');
+
+            foreach my $line ( reverse @status[ 0 .. $i-1 ] ) {
+                next unless $line =~ /^ENC_TO\s+(\S+)\s+(\S+)\s+(\S+)/;
+                my ($key, $alg, $key_length) = ($1, $2, $3);
+
+                my %encrypted_to = (
+                    Message   => "The message is encrypted to '0x$key'",
+                    User      => ( $user_hint{ $key } ||= {} ),
+                    Key       => $key,
+                    KeyLength => $key_length,
+                    Algorithm => $alg,
+                );
+
+                push @{ $res{'EncryptedTo'} ||= [] }, \%encrypted_to;
+            }
+
             push @res, \%res;
         }
         elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
@@ -1408,13 +1402,7 @@ sub ParseStatus {
                 KeyType   => $type,
             );
             $res{'User'} = ( $user_hint{ $key } ||= {} );
-            if ( $type eq 'secret' ) {
-                foreach ( reverse @res ) {
-                    next unless $_->{'Keyword'} eq 'ENC_TO' && $_->{'Key'} eq $key;
-                    $_->{'KeyMissing'} = 1;
-                    last;
-                }
-            }
+            $res{'User'}{ ucfirst( $type ). 'KeyMissing' } = 1;
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*

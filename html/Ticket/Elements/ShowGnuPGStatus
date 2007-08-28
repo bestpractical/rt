@@ -82,7 +82,6 @@ foreach my $run ( @runs ) {
             push @messages, loc( $line->{'Message'} );
         }
         elsif ( $line->{'Operation'} eq 'Decrypt' ) {
-            next if $line->{'Keyword'} eq 'ENC_TO';
             push @messages, loc( $line->{'Message'} );
         }
         elsif ( $line->{'Operation'} eq 'Verify' ) {

@@ -165,9 +165,14 @@ sub CheckNoPrivateKey {
     my %args = (Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 
-    my @encrypted_to = grep $_->{'Keyword'} eq 'ENC_TO', @status;
-    return 1 unless @encrypted_to;
-    return 1 if grep !$_->{'KeyMissing'}, @encrypted_to;
+    my @decrypts = grep $_->{'Operation'} eq 'Decrypt', @status;
+    return 1 unless @decrypts;
+    foreach my $action ( @decrypts ) {
+        # if at least one secrete key exist then it's another error
+        return 1 if
+            grep !$_->{'User'}{'SecretKeyMissing'},
+                @{ $action->{'EncryptedTo'} };
+    }
 
     $RT::Logger->error("Couldn't decrypt a message: have no private key");
 
