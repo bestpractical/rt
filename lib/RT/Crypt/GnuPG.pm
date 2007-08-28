@@ -1546,6 +1546,12 @@ sub GetPrivateKeyInfo {
 }
 
 sub GetKeyInfo {
+    my %res = GetKeysInfo(@_);
+    $res{'info'} = $res{'info'}->[0];
+    return %res;
+}
+
+sub GetKeysInfo {
     my $email = shift;
     my $type = shift || 'public';
 
@@ -1597,7 +1603,7 @@ sub GetKeyInfo {
     }
 
     @info = ParseKeysInfo( @info );
-    $res{'info'} = $info[0];
+    $res{'info'} = \@info;
     return %res;
 }
 
