@@ -403,7 +403,8 @@ sub SignEncryptRFC3156 {
     my $entity = $args{'Entity'};
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined $args{'Passphrase'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -578,7 +579,8 @@ sub _SignEncryptTextInline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -665,7 +667,8 @@ sub _SignEncryptAttachmentInline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
@@ -1033,7 +1036,8 @@ sub DecryptRFC3156 {
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
@@ -1106,7 +1110,8 @@ sub DecryptInline {
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
@@ -1275,7 +1280,6 @@ my %parse_keyword = map { $_ => 1 } qw(
     END_ENCRYPTION
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
-    ENC_TO
     NO_SECKEY NO_PUBKEY
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
@@ -1285,7 +1289,7 @@ my %parse_keyword = map { $_ => 1 } qw(
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
-    BEGIN_DECRYPTION END_DECRYPTION GOODMDC
+    ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
@@ -1363,33 +1367,28 @@ sub ParseStatus {
             }
             push @res, \%res;
         }
-        elsif ( $keyword eq 'DECRYPTION_FAILED' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'ERROR',
-                Message   => 'Decryption failed',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'DECRYPTION_OKAY' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => 'Decryption process succeeded',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'ENC_TO' ) {
-            my ($key, $alg, $key_length) = split /\s+/, $args;
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => "The message is encrypted to '0x$key'",
-                Key       => $key,
-                KeyLength => $key_length,
-                Algorithm => $alg,
-            );
-            $res{'User'} = ( $user_hint{ $key } ||= {} );
+        elsif ( $keyword eq 'DECRYPTION_FAILED' || $keyword eq 'DECRYPTION_OKAY' ) {
+            my %res = ( Operation => 'Decrypt' );
+            @res{'Status', 'Message'} = 
+                $keyword eq 'DECRYPTION_FAILED'
+                ? ('ERROR', 'Decryption failed')
+                : ('DONE',  'Decryption process succeeded');
+
+            foreach my $line ( reverse @status[ 0 .. $i-1 ] ) {
+                next unless $line =~ /^ENC_TO\s+(\S+)\s+(\S+)\s+(\S+)/;
+                my ($key, $alg, $key_length) = ($1, $2, $3);
+
+                my %encrypted_to = (
+                    Message   => "The message is encrypted to '0x$key'",
+                    User      => ( $user_hint{ $key } ||= {} ),
+                    Key       => $key,
+                    KeyLength => $key_length,
+                    Algorithm => $alg,
+                );
+
+                push @{ $res{'EncryptedTo'} ||= [] }, \%encrypted_to;
+            }
+
             push @res, \%res;
         }
         elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
@@ -1403,13 +1402,7 @@ sub ParseStatus {
                 KeyType   => $type,
             );
             $res{'User'} = ( $user_hint{ $key } ||= {} );
-            if ( $type eq 'secret' ) {
-                foreach ( reverse @res ) {
-                    next unless $_->{'Keyword'} eq 'ENC_TO' && $_->{'Key'} eq $key;
-                    $_->{'KeyMissing'} = 1;
-                    last;
-                }
-            }
+            $res{'User'}{ ucfirst( $type ). 'KeyMissing' } = 1;
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
@@ -1553,6 +1546,12 @@ sub GetPrivateKeyInfo {
 }
 
 sub GetKeyInfo {
+    my %res = GetKeysInfo(@_);
+    $res{'info'} = $res{'info'}->[0];
+    return %res;
+}
+
+sub GetKeysInfo {
     my $email = shift;
     my $type = shift || 'public';
 
@@ -1604,7 +1603,7 @@ sub GetKeyInfo {
     }
 
     @info = ParseKeysInfo( @info );
-    $res{'info'} = $info[0];
+    $res{'info'} = \@info;
     return %res;
 }
 
@@ -1619,12 +1618,14 @@ sub ParseKeysInfo {
         if ( $tag eq 'pub' ) {
             my %info;
             @info{ qw(
-                Trust KeyLenght Algorithm Key
-                Created Expire Empty OwnerTrust
+                TrustChar KeyLength Algorithm Key
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1632,11 +1633,12 @@ sub ParseKeysInfo {
         elsif ( $tag eq 'sec' ) {
             my %info;
             @info{ qw(
-                Empty KeyLenght Algorithm Key
-                Created Expire Empty OwnerTrust
+                Empty KeyLength Algorithm Key
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1671,12 +1673,37 @@ sub ParseKeysInfo {
         f   => "The key is fully trusted", #loc
         u   => "The key is ultimately trusted", #loc
     );
+
+    my %level = (
+        d   => 0,
+        r   => 0,
+        e   => 0,
+        n   => 0,
+
+        # err on the side of caution
+        o   => 0,
+        '-' => 0,
+        q   => 0,
+
+        m   => 2,
+        f   => 3,
+        u   => 4,
+    );
+
     sub _ConvertTrustChar {
         my $value = shift;
         return $mapping{'-'} unless $value;
 
         $value = substr $value, 0, 1;
         return $mapping{ $value } || $mapping{'o'};
+    }
+
+    sub _ConvertTrustLevel {
+        my $value = shift;
+        return $level{'-'} unless $value;
+
+        $value = substr $value, 0, 1;
+        return $level{ $value } || $level{'o'};
     }
 }
 
