@@ -1130,15 +1130,15 @@ sub HasRight {
         Principal => $self->CurrentUser,
         @_
     );
-    unless ( defined $args{'Principal'} ) {
-        $RT::Logger->debug("Principal undefined in Queue::HasRight");
-
+    my $principal = delete $args{'Principal'};
+    unless ( $principal ) {
+        $RT::Logger->error("Principal undefined in Queue::HasRight");
+        return undef;
     }
-    return (
-        $args{'Principal'}->HasRight(
-            Object => $self->Id ? $self : $RT::System,
-            Right    => $args{'Right'}
-          )
+
+    return $principal->HasRight(
+        %args,
+        Object => ($self->Id ? $self : $RT::System),
     );
 }
 

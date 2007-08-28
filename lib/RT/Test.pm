@@ -176,6 +176,11 @@ sub mailsent_ok {
 sub load_or_create_user {
     my $self = shift;
     my %args = ( Privileged => 1, Disabled => 0, @_ );
+    
+    my $MemberOf = delete $args{'MemberOf'};
+    $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
+    $MemberOf ||= [];
+
     my $obj = RT::User->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
@@ -193,6 +198,28 @@ sub load_or_create_user {
     } else {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
+    }
+
+    # clean group membership
+    {
+        require RT::GroupMembers;
+        my $gms = RT::GroupMembers->new( $RT::SystemUser );
+        my $groups_alias = $gms->Join(
+            FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
+        );
+        $gms->Limit( ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined' );
+        $gms->Limit( FIELD => 'MemberId', VALUE => $obj->id );
+        while ( my $group_member_record = $gms->Next ) {
+            $group_member_record->Delete;
+        }
+    }
+
+    # add new user to groups
+    foreach ( @$MemberOf ) {
+        my $group = RT::Group->new( RT::SystemUser() );
+        $group->LoadUserDefinedGroup( $_ );
+        die "couldn't load group '$_'" unless $group->id;
+        $group->AddMember( $obj->id );
     }
 
     return $obj;
@@ -214,14 +241,65 @@ sub load_or_create_queue {
     unless ( $obj->id ) {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
+    } else {
+        my @fields = qw(CorrespondAddress CommentAddress);
+        foreach my $field ( @fields ) {
+            next unless exists $args{ $field };
+            
+            no warnings 'uninitialized';
+            my $method = 'Set'. $field;
+            my ($val, $msg) = $obj->$method( $args{ $field } )
+                unless $args{ $field } eq $obj->$field;
+            die "$msg" unless $val;
+        }
     }
 
     return $obj;
 }
 
+sub store_rights {
+    my $self = shift;
+
+    require RT::ACE;
+    # fake construction
+    RT::ACE->new( $RT::SystemUser );
+    my @fields = keys %{ RT::ACE->_ClassAccessible };
+
+    require RT::ACL;
+    my $acl = RT::ACL->new( $RT::SystemUser );
+    $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
+
+    my @res;
+    while ( my $ace = $acl->Next ) {
+        my $obj = $ace->PrincipalObj->Object;
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+            next;
+        }
+
+        my %tmp = ();
+        foreach my $field( @fields ) {
+            $tmp{ $field } = $ace->__Value( $field );
+        }
+        push @res, \%tmp;
+    }
+    return @res;
+}
+
+sub restore_rights {
+    my $self = shift;
+    my @entries = @_;
+    foreach my $entry ( @entries ) {
+        my $ace = RT::ACE->new( $RT::SystemUser );
+        my ($status, $msg) = $ace->RT::Record::Create( %$entry );
+        unless ( $status ) {
+            diag "couldn't create a record: $msg";
+        }
+    }
+}
+
 sub set_rights {
     my $self = shift;
-    my @list = ref $_[0]? @_: { @_ };
+    my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::ACL;
     my $acl = RT::ACL->new( $RT::SystemUser );
@@ -236,6 +314,11 @@ sub set_rights {
 
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
+        unless ( $principal->isa('RT::Principal') ) {
+            if ( $principal->can('PrincipalObj') ) {
+                $principal = $principal->PrincipalObj;
+            }
+        }
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );

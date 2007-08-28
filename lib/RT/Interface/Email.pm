@@ -468,6 +468,31 @@ sub SendEmail {
     return 1;
 }
 
+=head2 PrepareEmailUsingTemplate Template => '', Arguments => {}
+
+Loads a template and parses it using arguments. Returns a L<MIME::Entity>
+object or undef on errors.
+
+=cut
+
+sub PrepareEmailUsingTemplate {
+    my %args = (
+        Template => '',
+        Arguments => {},
+        @_
+    );
+
+    my $template = RT::Template->new( $RT::SystemUser );
+    $template->LoadGlobalTemplate( $args{'Template'} );
+    unless ( $template->id ) {
+        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
+        return (undef);
+    }
+    $template->Parse( %{ $args{'Arguments'} } );
+
+    return $template->MIMEObj;
+}
+
 =head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
@@ -484,16 +509,7 @@ sub SendEmailUsingTemplate {
         @_
     );
 
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->LoadGlobalTemplate( $args{'Template'} );
-    unless ( $template->id ) {
-        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
-        return 0;
-    }
-    $template->Parse( %{ $args{'Arguments'} } );
-
-    my $msg = $template->MIMEObj;
-    # template parsing error
+    my $msg = PrepareEmailUsingTemplate( %args );
     return 0 unless $msg;
 
     $msg->head->set( $_ => $args{ $_ } )
@@ -554,16 +570,27 @@ sub ForwardTransaction {
         $entity->add_part( $a->ContentAsMIME );
     }
 
-    my $description = 'This is forward of transaction #'
-        . $txn->id ." of a ticket #". $txn->ObjectId;
-
-    my $mail = MIME::Entity->build(
-        To => $args{'To'},
-        Cc => $args{'Cc'},
-        Bcc => $args{'Bcc'},
-        Type => 'text/plain',
-        Data => $description,
+    my $mail = PrepareEmailUsingTemplate(
+        Template  => 'Forward',
+        Arguments => {
+            Transaction => $txn,
+            Ticket      => $txn->Object,
+        },
     );
+    unless ( $mail ) {
+        $RT::Logger->warning("Couldn't generate email using template 'Forward'");
+
+        my $description = 'This is forward of transaction #'
+            . $txn->id ." of a ticket #". $txn->ObjectId;
+        $mail = MIME::Entity->build(
+            Type => 'text/plain',
+            Data => $description,
+        );
+    }
+
+    $mail->head->set( $_ => $args{ $_ } )
+        foreach grep defined $args{$_}, qw(To Cc Bcc);
+
     $mail->attach(
         Type => 'message/rfc822',
         Disposition => 'attachment',
@@ -1003,7 +1030,11 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'}, Decode => 0 );
+    $parser->SmartParseMIMEEntityFromScalar(
+        Message => $args{'message'},
+        Decode => 0,
+        Exact => 1,
+    );
 
     my $Message = $parser->Entity();
     unless ($Message) {
@@ -1055,6 +1086,7 @@ sub Gateway {
         }
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+    $parser->_DecodeBodies;
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;

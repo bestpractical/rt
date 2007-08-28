@@ -694,19 +694,6 @@ Set($StrictLinkACL, 1);
 
 
 
-# {{{ Ticket Locking
-#
-# RT can be configured to use advisory locks on tickets, so that a user
-# can be notified if another user is making changes to a particular ticket.
-#
-# Locks have a maximum duration, which can be defined here (in seconds).
-
-Set($LockExpiry, 300);
-
-#}}}
-
-
-
 # {{{ Development Mode
 #
 # RT comes with a "Development mode" setting. 

@@ -56,16 +56,21 @@
 </table>
 <%ARGS>
 $Attachment
+$WarnUnsigned => undef
 </%ARGS>
 <%INIT>
 my @runs;
-foreach ( $Attachment->SplitHeaders ) {
-    next unless s/^X-RT-GnuPG-Status:\s*//i;
+my $needs_unsigned_warning = $WarnUnsigned;
 
-    require RT::Crypt::GnuPG;
-    push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+foreach ( $Attachment->SplitHeaders ) {
+    if ( s/^X-RT-GnuPG-Status:\s*//i ) {
+        require RT::Crypt::GnuPG;
+        push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+    }
+    $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
 }
-return unless @runs;
+
+return unless @runs or $needs_unsigned_warning;
 
 my @messages;
 foreach my $run ( @runs ) {
@@ -89,6 +94,9 @@ foreach my $run ( @runs ) {
         }
     }
 }
+
+push @messages, 'Warning! This is NOT signed!'
+    if $needs_unsigned_warning;
 return unless @messages;
 
 my %seen;

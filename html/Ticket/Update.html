@@ -50,7 +50,7 @@
     Ticket => $TicketObj, 
     Title=> $title &>
     
-<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
@@ -150,7 +150,7 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-$TicketObj->Lock();
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -200,14 +200,14 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+    delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
 # }}}
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ($ARGS{'Attach'}) {            # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     my $subject = "$ARGS{'Attach'}";
@@ -223,7 +223,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+                $ARGS{'Attach'} => $attachment };
 }
 # }}}
 
@@ -234,11 +234,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-	my $lock = $TicketObj->Locked();
-	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-	$TicketObj->Unlock();
-    $m->comp('Display.html', TicketObj => $TicketObj, Duration => $Duration, %ARGS);
-    return;
+    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
+    return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
 
 

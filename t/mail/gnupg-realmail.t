@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 158;
+use Test::More tests => 176;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
-use Digest::MD5 qw(md5_base64);
+use Digest::MD5 qw(md5_hex);
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-realmail) );
+my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-2) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
@@ -18,7 +18,8 @@ RT->Config->Set( 'GnuPG',
 
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
-                 passphrase => 'rt-test');
+                 passphrase => 'rt-test',
+                 'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -43,7 +44,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     for my $format (qw/MIME inline/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
-            diag "Email $eid: $usage, $attachment email with $format key" if $ENV{TEST_VERBOSE};
+            diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
             eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
@@ -67,17 +68,22 @@ sub get_contents {
 
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
+    diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
     my $mail = get_contents($eid)
         or return 0;
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($status >> 8, 0, "$eid: The mail gateway exited normally");
+    ok ($id, "$eid: got id of a newly created ticket - $id");
 
-    my $tick = get_latest_ticket_ok();
-    is( $tick->Subject,
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "$eid: loaded ticket #$id");
+
+    is ($tick->Subject,
         "Test Email ID:$eid",
-        "Created the ticket"
+        "$eid: Created the ticket"
     );
 
     my $txn = $tick->Transactions->First;
@@ -86,40 +92,39 @@ sub email_ok {
     if ($usage =~ /encrypted/) {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Success',
-            'recorded incoming mail that is encrypted'
+            "$eid: recorded incoming mail that is encrypted"
         );
         is( $msg->GetHeader('X-RT-Privacy'),
             'PGP',
-            'recorded incoming mail that is encrypted'
+            "$eid: recorded incoming mail that is encrypted"
         );
 
-        #XXX: maybe RT will have already decrypted this for us
-        unlike( $msg->Content,
+        like( $attachments[0]->Content,
                 ($body{$eid} || qr/ID:$eid/),
-                'incoming mail did NOT have original body'
+                "$eid: incoming mail did NOT have original body"
         );
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Encryption'),
             'Not encrypted',
-            'recorded incoming mail that is not encrypted'
+            "$eid: recorded incoming mail that is not encrypted"
         );
         like( $msg->Content || $attachments[0]->Content,
               ($body{$eid} || qr/ID:$eid/),
-              'got original content'
+              "$eid: got original content"
         );
     }
 
     if ($usage =~ /signed/) {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
             'RT Test <rt-test@example.com>',
-            'recorded incoming mail that is signed'
+            "$eid: recorded incoming mail that is signed"
         );
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
             undef,
-            'recorded incoming mail that is not signed'
+            "$eid: recorded incoming mail that is not signed"
         );
     }
 
@@ -127,34 +132,25 @@ sub email_ok {
         # signed messages should sign each attachment too
         if ($usage =~ /signed/) {
             my $sig = pop @attachments;
-            ok ($sig->Id, 'loaded attachment.sig object');
+            ok ($sig->Id, "$eid: loaded attachment.sig object");
             my $acontent = $sig->Content;
         }
 
-        my $a = pop @attachments;
-        my $file = '';
-        ok ($a->Id, 'loaded attachment object');
+        my ($a) = grep $_->Filename, @attachments;
+        ok ($a && $a->Id, "$eid: found attachment with filename");
+
         my $acontent = $a->Content;
         if ($attachment =~ /binary/)
         {
-            is(md5_base64($acontent), '', "The binary attachment's md5sum matches");
+            is(md5_hex($acontent), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "$eid: The binary attachment's md5sum matches");
         }
         else
         {
-            like($acontent, qr/zanzibar/, 'The attachment isn\'t screwed up in the database.');
+            like($acontent, qr/zanzibar/, "$eid: The attachment isn't screwed up in the database.");
         }
 
     }
 
     return 0;
-}
-
-sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    return $tick;
 }
 

@@ -160,4 +160,5 @@ $AttachmentContent => undef
 $ShowHeaders => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
+$WarnUnsigned => undef
 </%ARGS>

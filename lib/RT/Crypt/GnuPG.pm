@@ -244,7 +244,16 @@ corruptio or absence of expected information.
 In this template C<@Messages> array is available and contains list
 of error messages.
 
-=head1 FUNCTIONS
+=head1 FOR DEVELOPERS
+
+=head2 Documentation and references
+
+* RFC1847 - Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
+Describes generic MIME security framework, "mulitpart/signed" and "multipart/encrypted"
+MIME types.
+
+* RFC3156 - MIME Security with Pretty Good Privacy (PGP),
+updates RFC2015.
 
 =cut
 
@@ -380,12 +389,6 @@ sub SignEncryptRFC3156 {
         @_
     );
 
-    my $entity = $args{'Entity'};
-
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -396,6 +399,15 @@ sub SignEncryptRFC3156 {
         armor => 1,
         meta_interactive => 0,
     );
+
+    my $entity = $args{'Entity'};
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my %res;
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
@@ -554,10 +566,6 @@ sub _SignEncryptTextInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -568,6 +576,13 @@ sub _SignEncryptTextInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ )
@@ -638,10 +653,6 @@ sub _SignEncryptAttachmentInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -652,6 +663,13 @@ sub _SignEncryptAttachmentInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
@@ -739,9 +757,9 @@ sub FindProtectedParts {
             my $type = $1? 'signed': 'encrypted';
             $RT::Logger->debug("Found $type inline part");
             return {
-                Type   => $type,
-                Format => 'Inline',
-                Data   => $entity,
+                Type    => $type,
+                Format  => 'Inline',
+                Data  => $entity,
             };
         }
         $io->close;
@@ -768,11 +786,11 @@ sub FindProtectedParts {
             }
             $RT::Logger->debug("Found encrypted according to RFC3156 part");
             return {
-                Type   => 'encrypted',
-                Format => 'RFC3156',
-                Top    => $entity,
-                Data   => $entity->parts(1),
-                Info   => $entity->parts(0),
+                Type    => 'encrypted',
+                Format  => 'RFC3156',
+                Top   => $entity,
+                Data  => $entity->parts(1),
+                Info    => $entity->parts(0),
             };
         } else {
             unless ( $protocol eq 'application/pgp-signature' ) {
@@ -783,58 +801,61 @@ sub FindProtectedParts {
             return {
                 Type      => 'signed',
                 Format    => 'RFC3156',
-                Top       => $entity,
-                Data      => $entity->parts(0),
+                Top     => $entity,
+                Data    => $entity->parts(0),
                 Signature => $entity->parts(1),
             };
         }
     }
 
     # attachments signed with signature in another part
-    my @file_signatures =
-        grep $_->head->recommended_filename,
-        grep $_->effective_type eq 'application/pgp-signature',
-        $entity->parts;
+    my @file_indices =
+        grep {$entity->parts($_)->head->recommended_filename}
+        grep {$entity->parts($_)->effective_type eq 'application/pgp-signature'}
+            0 .. $entity->parts - 1;
 
     my (@res, %skip);
-    foreach my $sig_part ( @file_signatures ) {
+    foreach my $i ( @file_indices ) {
+        my $sig_part = $entity->parts($i);
         $skip{"$sig_part"}++;
         my $sig_name = $sig_part->head->recommended_filename;
         my ($file_name) = $sig_name =~ /^(.*?)(?:.sig)?$/;
-        my ($data_part) =
-            grep $file_name eq ($_->head->recommended_filename||''),
-            grep $_ ne $sig_part,
-            $entity->parts;
-        unless ( $data_part ) {
+
+        my ($data_part_idx) =
+            grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
+            grep $sig_part  ne  $entity->parts($_),
+                0 .. $entity->parts - 1;
+        unless ( defined $data_part_idx ) {
             $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
             next;
         }
+        my $data_part_in = $entity->parts($data_part_idx);
 
-        $skip{"$data_part"}++;
+        $skip{"$data_part_in"}++;
         $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
         push @res, {
             Type      => 'signed',
             Format    => 'Attachment',
-            Top       => $entity,
-            Data      => $data_part,
+            Top     => $entity,
+            Data    => $data_part_in,
             Signature => $sig_part,
         };
     }
 
     # attachments with inline encryption
-    my @encrypted_files =
-        grep $_->head->recommended_filename
-            && $_->head->recommended_filename =~ /\.pgp$/,
-        $entity->parts;
+    my @encrypted_indices =
+        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.pgp$/}
+            0 .. $entity->parts - 1;
 
-    foreach my $part ( @encrypted_files ) {
+    foreach my $i ( @encrypted_indices ) {
+        my $part = $entity->parts($i);
         $skip{"$part"}++;
         $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
         push @res, {
             Type      => 'encrypted',
             Format    => 'Attachment',
-            Top       => $entity,
-            Data      => $part,
+            Top     => $entity,
+            Data    => $part,
         };
     }
 
@@ -1006,6 +1027,14 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
+
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
@@ -1047,11 +1076,9 @@ sub DecryptRFC3156 {
     }
 
     seek $tmp_fh, 0, 0;
-    my $parser = new MIME::Parser;
-    my $rt_parser = new RT::EmailParser;
-    $rt_parser->_SetupMIMEParser( $parser );
-    my $decrypted = $parser->parse( $tmp_fh );
-    $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $rt_parser;
+    my $parser = new RT::EmailParser;
+    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
+    $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
     $args{'Top'}->parts( [] );
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
@@ -1072,6 +1099,14 @@ sub DecryptInline {
         _PrepareGnuPGOptions( %opt ),
         meta_interactive => 0,
     );
+
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} ||= delete $opt{'passphrase'};
 
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};

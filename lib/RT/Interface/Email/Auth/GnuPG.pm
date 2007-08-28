@@ -65,10 +65,12 @@ you care about and specify the following in your SiteConfig.pm
 sub ApplyBeforeDecode { return 1 }
 
 use RT::Crypt::GnuPG;
+use RT::EmailParser ();
 
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
+        RawMessageRef => undef,
         @_
     );
 
@@ -77,6 +79,7 @@ sub GetCurrentUser {
                X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'Message'}->dup;
+
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
