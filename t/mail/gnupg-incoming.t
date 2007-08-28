@@ -266,7 +266,7 @@ $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
 To: general\@$RT::rtname
-Subject: signed message for queue
+Subject: encrypted message for queue
 
 $buf
 EOF
@@ -294,12 +294,14 @@ run3(
     \*STDOUT
 );
 
+$buf =~ s/PGP MESSAGE/SCREWED UP/g;
+
 unlink 't/mailbox';
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
 To: general\@$RT::rtname
-Subject: signed message for queue
+Subject: encrypted message for queue
 
 $buf
 EOF
@@ -313,7 +315,7 @@ is(@mail, 1, 'caught outgoing mail.');
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
-    unlike( $attach->Content, qr'really should not be there either');
+    unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
 }
 
 sub get_latest_ticket_ok {
