@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 59;
+use Test::More skip_all => "Not fleshed out yet";
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
