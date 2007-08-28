@@ -9,6 +9,21 @@ use IPC::Run3 'run3';
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
+# catch any outgoing emails
+unlink "t/mailbox";
+
+sub capture_mail {
+    my $MIME = shift;
+
+    open my $handle, '>>', 't/mailbox'
+        or die "Unable to open t/mailbox for appending: $!";
+
+    $MIME->print($handle);
+    print $handle "%% split me! %%\n";
+    close $handle;
+}
+
+
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
@@ -17,6 +32,7 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  'no-permission-warning' => undef);
+RT->Config->Set( MailCommand => \&capture_mail);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -265,14 +281,6 @@ RT::Test->close_mailgate_ok($mail);
 
 # test for badly encrypted mail
 {
-my $outgoing_mail = 0;
-local *RT::Action::SendEmail::OutputMIMEObject = sub {
-    my ($self, $mime_obj) = @_;
-    diag $mime_obj->as_string;
-    ++$outgoing_mail;
-    # XXX: check signature as wel
-};
-
 $buf = '';
 
 run3(
@@ -285,6 +293,8 @@ run3(
     \$buf,
     \*STDOUT
 );
+
+unlink 't/mailbox';
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
@@ -294,7 +304,9 @@ Subject: signed message for queue
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
-ok($outgoing_mail, 'got rejection mail.');
+my $mails = file_content_unlink('t/mailbox');
+my @mail = grep {/\S/} split /%% split me! %%/, $mails;
+is(@mail, 1, 'caught outgoing mail.');
 }
 
 {
@@ -313,3 +325,14 @@ sub get_latest_ticket_ok {
     return $tick;
 }
 
+sub file_content_unlink
+{
+    my $path = shift;
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
+    local $/;
+    my $content = <$fh>;
+    close $fh;
+    unlink $path;
+    return $content;
+}
