@@ -103,7 +103,7 @@ sub GetCurrentUser {
     $args{'Message'}->attach(
         Type        => 'application/x-rt-original-message',
         Disposition => 'inline',
-        Data        => $msg->as_string,
+        Data        => ${ $args{'RawMessageRef'} },
     );
 
     $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
