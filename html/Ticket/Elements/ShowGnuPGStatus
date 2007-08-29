@@ -127,7 +127,6 @@ foreach my $run ( @runs ) {
     foreach my $line ( @$run ) {
         if ( $line->{'Operation'} eq 'KeyCheck' ) {
             next unless $Reverify;
-            use Data::Dumper; $RT::Logger->crit(Dumper($line));
             # if a public key was missing during verification then we want try again
             next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
