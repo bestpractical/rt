@@ -244,8 +244,9 @@ attachment for this transaction.
 =cut
 
 sub Message {
-
     my $self = shift;
+
+    # XXX: Where is ACL check?
     
     if ( !defined( $self->{'message'} ) ) {
 
