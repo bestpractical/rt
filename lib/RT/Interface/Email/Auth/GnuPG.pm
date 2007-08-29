@@ -184,6 +184,7 @@ sub CheckNoPrivateKey {
             Message   => $args{'Message'},
             TicketObj => $args{'Ticket'},
         },
+        InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
         $RT::Logger->error("Couldn't send 'Error: no private key'");
@@ -209,6 +210,7 @@ sub CheckBadData {
             Messages  => [ @bad_data_messages ],
             TicketObj => $args{'Ticket'},
         },
+        InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
         $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
