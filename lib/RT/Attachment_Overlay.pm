@@ -510,6 +510,43 @@ sub GetHeader {
     return undef;
 }
 
+=head DelHeader $TAG
+
+Delete a field from the attachment's headers.
+
+=cut
+
+sub DelHeader {
+    my $self = shift;
+    my $tag = shift;
+
+    my $newheader = '';
+    foreach my $line ($self->_SplitHeaders) {
+        next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
+	$newheader .= "$line\n";
+    }
+    return $self->__Set( Field => 'Headers', Value => $newheader);
+}
+
+=head AddHeader $TAG, $VALUE, ...
+
+Add one or many fields to the attachment's headers.
+
+=cut
+
+sub AddHeader {
+    my $self = shift;
+
+    my $newheader = $self->__Value( 'Headers' );
+    while ( my ($tag, $value) = splice @_, 0, 2 ) {
+        $value = '' unless defined $value;
+        $value =~ s/\s+$//s;
+        $value =~ s/\r+\n/\n /g;
+	$newheader .= "$tag: $value\n";
+    }
+    return $self->__Set( Field => 'Headers', Value => $newheader);
+}
+
 =head2 SetHeader ( 'Tag', 'Value' )
 
 Replace or add a Header to the attachment's headers.
@@ -519,8 +556,8 @@ Replace or add a Header to the attachment's headers.
 sub SetHeader {
     my $self = shift;
     my $tag = shift;
-    my $newheader = '';
 
+    my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
         if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
 	    $newheader .= "$tag: $_[0]\n";
