@@ -52,11 +52,11 @@
 % foreach my $msg( @messages ) {
 <tr><td><% $msg %></td></tr>
 % }
-
 </table>
 <%ARGS>
 $Attachment
 $WarnUnsigned => undef
+$Reverify     => 1
 </%ARGS>
 <%INIT>
 my @runs;
@@ -72,12 +72,80 @@ foreach ( $Attachment->SplitHeaders ) {
 
 return unless @runs or $needs_unsigned_warning;
 
+my $reverify_cb = sub {
+    my $top = shift;
+
+    my $txn = $top->TransactionObj;
+    unless ( $txn && $txn->id ) {
+        return (0, "Couldn't get transaction of attachment #". $top->id);
+    }
+
+    my $attachments = $txn->Attachments->Clone;
+    $attachments->Limit( FIELD => 'ContentType', VALUE => 'application/x-rt-original-message' );
+    my $original = $attachments->First;
+    unless ( $original ) {
+        return (0, "Couldn't find attachment with original email of transaction #". $txn->id);
+    }
+
+    my $parser = RT::EmailParser->new();
+    $parser->SmartParseMIMEEntityFromScalar(
+        Message => $original->Content,
+        Decode => 0,
+        Exact => 1,
+    );
+    my $entity = $parser->Entity;
+    unless ( $entity ) {
+        return (0, "Couldn't parse content of attachment #". $original->id);
+    }
+
+    use RT::Interface::Email::Auth::GnuPG;
+    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::VerifyDecrypt( Entity => $entity );
+    if ( $status && !@res ) {
+        # imposible in this situation
+        return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
+    }
+    elsif ( @res ) {
+        require RT::Crypt::GnuPG;
+
+        $top->DelHeader('X-RT-GnuPG-Status');
+        $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
+        $top->SetHeader('X-RT-Privacy' => 'PGP' );
+        $top->DelHeader('X-RT-Incoming-Signature');
+
+        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
+        for ( @status ) {
+            if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
+                $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
+            }
+        }
+    }
+    return (1, "Reverified original message");
+};
+
 my @messages;
 foreach my $run ( @runs ) {
     foreach my $line ( @$run ) {
-        next if $line->{'Operation'} eq 'KeyCheck';
+        if ( $line->{'Operation'} eq 'KeyCheck' ) {
+            next unless $Reverify;
+            use Data::Dumper; $RT::Logger->crit(Dumper($line));
+            # if a public key was missing during verification then we want try again
+            next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
-        if ( $line->{'Operation'} eq 'PassphraseCheck' ) {
+            # but only if we have key
+            my %key = RT::Crypt::GnuPG::GetPublicKeyInfo( $line->{'Key'} );
+            if ( $key{'info'} ) {
+                my ($status, $msg) = $reverify_cb->($Attachment);
+                unless ($status) {
+                    $RT::Logger->error($msg);
+                } else {
+                    return $m->comp('SELF', %ARGS, Reverify => 0);
+                }
+            }
+            else {
+                push @messages, loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} );
+            }
+        }
+        elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {
             next if $line->{'Status'} eq 'DONE';
             push @messages, loc( $line->{'Message'} );
         }
