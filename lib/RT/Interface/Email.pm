@@ -506,6 +506,7 @@ sub SendEmailUsingTemplate {
         To => undef,
         Cc => undef,
         Bcc => undef,
+        InReplyTo => undef,
         @_
     );
 
@@ -514,6 +515,24 @@ sub SendEmailUsingTemplate {
 
     $msg->head->set( $_ => $args{ $_ } )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
+
+    if ( $args{'InReplyTo'} ) {
+        my @id = $args{'InReplyTo'}->head->get('Message-ID');
+        my @in_reply_to = $args{'InReplyTo'}->head->get('In-Reply-To');
+        my @references = $args{'InReplyTo'}->head->get('References');
+
+        $msg->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
+        my @new_references;
+        if ( @references ) {
+            @new_references = (@references, @id);
+        } else {
+            @new_references = (@in_reply_to, @id);
+        }
+        @new_references = splice @new_references, 4, -6
+            if @new_references > 10;
+
+        $msg->head->set( 'References' => join ' ', @new_references );
+    }
 
     return SendEmail( Entity => $msg );
 }
