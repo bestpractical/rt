@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 176;
+use Test::More tests => 177;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -24,20 +24,26 @@ RT->Config->Set( 'GnuPGOptions',
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
-
-$m->get( $baseurl."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
-$m->get( $baseurl.'/Admin/Queues/');
+ok $m->login, 'we did log in';
+$m->get_ok( '/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
          fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::User->new($RT::SystemUser));
-ok($user->Load('root'), "Loaded user 'root'");
-$user->SetEmailAddress('ternus@mit.edu');
+diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
+my $everyone;
+{
+    $everyone = RT::Group->new( $RT::SystemUser );
+    $everyone->LoadSystemInternalGroup('Everyone');
+    ok $everyone->id, "loaded 'everyone' group";
+}
 
-my %body = (1 => qr/This is a test email with MIME signature./);
+RT::Test->set_rights(
+    Principal => $everyone,
+    Right => ['CreateTicket'],
+);
+
 
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
@@ -99,8 +105,7 @@ sub email_ok {
             "$eid: recorded incoming mail that is encrypted"
         );
 
-        like( $attachments[0]->Content,
-                ($body{$eid} || qr/ID:$eid/),
+        like( $attachments[0]->Content, qr/ID:$eid/,
                 "$eid: incoming mail did NOT have original body"
         );
     }
@@ -109,8 +114,7 @@ sub email_ok {
             'Not encrypted',
             "$eid: recorded incoming mail that is not encrypted"
         );
-        like( $msg->Content || $attachments[0]->Content,
-              ($body{$eid} || qr/ID:$eid/),
+        like( $msg->Content || $attachments[0]->Content, qr/ID:$eid/,
               "$eid: got original content"
         );
     }
