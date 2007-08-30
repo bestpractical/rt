@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 99;
+use Test::More tests => 111;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
@@ -43,6 +43,8 @@ ok $m->login, 'we get log in';
 
 delete_key('rt-test@example.com');
 
+my @ticket_ids;
+
 my @files = glob("lib/t/data/mail/*-signed-*");
 foreach my $file ( @files ) {
     diag "testing $file" if $ENV{'TEST_VERBOSE'};
@@ -68,6 +70,21 @@ foreach my $file ( @files ) {
         "$eid: signature is not verified",
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
+
+    push @ticket_ids, $id;
+}
+
+diag "import key into keyring" if $ENV{'TEST_VERBOSE'};
+import_key('rt-test@example.com');
+
+foreach my $id ( @ticket_ids ) {
+    diag "testing ticket #$id" if $ENV{'TEST_VERBOSE'};
+
+    $m->goto_ticket( $id );
+    $m->content_like(
+        qr/The signature is good/is,
+        "signature is re-verified and now good",
+    );
 }
 
 sub get_contents {
@@ -113,6 +130,69 @@ sub delete_key {
         );
         close $handle{'input'};
         while ( my $str = readline $handle{'status'} ) {
+            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
+                print { $handle{'command'} } "y\n";
+            }
+        }
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
+sub import_key {
+    my $key = shift;
+    my $type = shift || 'secret';
+    $key =~ s/\@/-at-/g;
+    $key .= ".$type.key";
+    $key = 't/data/mail/gnupg/keys/'. $key;
+
+    my %res;
+
+    my %handle; 
+    require GnuPG::Handles; require IO::Handle;
+    open my $key_fh, '<:raw', $key or die "couldn't open '$key': $!";
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = $key_fh),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+    $handles->options('stdin')->{'direct'} = 1;
+
+    require GnuPG::Interface; require RT::Crypt::GnuPG;
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
+        armor => 1,
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--import'],
+        );
+        while ( my $str = readline $handle{'status'} ) {
+            diag $str;
             if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
                 print { $handle{'command'} } "y\n";
             }
