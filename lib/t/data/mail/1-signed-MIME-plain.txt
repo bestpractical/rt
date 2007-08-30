@@ -1,34 +1,38 @@
-Received: by anduril (Postfix, from userid 1000)
-	id 6283437F58; Mon, 13 Aug 2007 13:27:39 -0400 (EDT)
-Date: Mon, 13 Aug 2007 13:27:39 -0400
-To: rt-recipient@example.com
-Subject: Test Email ID:1
-Message-ID: <20070813172739.GA6392@mit.edu>
+Message-ID: <46D7309C.9040804@example.com>
+Date: Fri, 31 Aug 2007 01:03:24 +0400
+From: rt-test@example.com
+User-Agent: Thunderbird 2.0.0.6 (X11/20070804)
 MIME-Version: 1.0
+To:  rt-recipient@example.com
+Subject: Test Email ID:1
+X-Enigmail-Version: 0.95.3
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
-Content-Disposition: inline
-User-Agent: Mutt/1.5.13 (2006-08-11)
-From: ternus@mit.edu (Christian Ternus)
+ protocol="application/pgp-signature";
+ boundary="------------enigF67974ED650702891ACEBB10"
 
-
---Nq2Wo0NMKNjxTN9z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF67974ED650702891ACEBB10
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
 This is a test email with MIME signature.
+ID:1
 
---Nq2Wo0NMKNjxTN9z
+
+
+--------------enigF67974ED650702891ACEBB10
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
+Version: GnuPG v1.4.7 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGwJSL0ygDXYSIHxsRAvSfAKCytRVnWCntQYKSNKvSaKWfjk37mACgnmg8
-9HqloCVBFmpgxE9WbMINac0=
-=MdIm
+iD8DBQFG1zCi0ygDXYSIHxsRAqEmAJ9mKiEdoWg9IFGlUlhPrzo9+1tKSwCfdqRG
++HKnj+81jWpBEhj6D00uNrQ=
+=ZFav
 -----END PGP SIGNATURE-----
 
---Nq2Wo0NMKNjxTN9z--
+--------------enigF67974ED650702891ACEBB10--
+
