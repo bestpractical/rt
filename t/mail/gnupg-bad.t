@@ -1,12 +1,13 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More skip_all => "Not fleshed out yet";
+use Test::More tests => 10;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
+use Digest::MD5 qw(md5_hex);
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
@@ -16,129 +17,57 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 passphrase => 'test',
+                 'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
+
+$m->get( $baseurl."?user=root;pass=password" );
+$m->content_like(qr/Logout/, 'we did log in');
+$m->get( $baseurl.'/Admin/Queues/');
+$m->follow_link_ok( {text => 'General'} );
+$m->submit_form( form_number => 3,
+         fields      => { CorrespondAddress => 'rt@example.com' } );
+$m->content_like(qr/rt\@example.com.* - never/, 'has key info.');
+
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
-$user->SetEmailAddress('recipient@example.com');
+$user->SetEmailAddress('rt@example.com');
 
-diag "no signature" if $ENV{TEST_VERBOSE};
+diag "good encryption, unknown signer" if $ENV{TEST_VERBOSE};
 {
-    my $mail = get_contents('no-sig');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
+    email_ok(glob => "encrypted-badsig.txt",
+             subject => "test",
+             encrypted => 1,
+             content => qr/test/,
+    );
 }
 
-diag "no encryption on encrypted queue" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unencrypted');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "mismatched signature" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('bad-sig');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "unknown public key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unk-pub-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "unknown private key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unk-priv-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "signer != sender" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('signer-not-sender');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "encryption to user whose pubkey is not signed" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unsigned-pub-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "no encryption of attachment on encrypted queue" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unencrypted-attachment');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "no signature of attachment" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unsigged-attachment');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "revoked key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('revoked-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "expired key" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('expired-key');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
-}
-
-diag "unknown algorithm" if $ENV{TEST_VERBOSE};
-{
-    my $mail = get_contents('unknown-algorithm');
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-
-    my $tick = get_latest_ticket_ok();
+if (0) {
+    # XXX: need to generate these mails
+    diag "no signature" if $ENV{TEST_VERBOSE};
+    diag "no encryption on encrypted queue" if $ENV{TEST_VERBOSE};
+    diag "mismatched signature" if $ENV{TEST_VERBOSE};
+    diag "unknown public key" if $ENV{TEST_VERBOSE};
+    diag "unknown private key" if $ENV{TEST_VERBOSE};
+    diag "signer != sender" if $ENV{TEST_VERBOSE};
+    diag "encryption to user whose pubkey is not signed" if $ENV{TEST_VERBOSE};
+    diag "no encryption of attachment on encrypted queue" if $ENV{TEST_VERBOSE};
+    diag "no signature of attachment" if $ENV{TEST_VERBOSE};
+    diag "revoked key" if $ENV{TEST_VERBOSE};
+    diag "expired key" if $ENV{TEST_VERBOSE};
+    diag "unknown algorithm" if $ENV{TEST_VERBOSE};
 }
 
 sub get_contents {
-    my $pattern = shift;
+    my $glob = shift;
 
-    my $file = glob("lib/t/data/mail/*$pattern*");
+    my ($file) = glob("lib/t/data/mail/$glob");
     defined $file
-        or do { diag "Unable to find lib/t/data/mail/*$pattern*"; return };
+        or do { diag "Unable to find lib/t/data/mail/$glob"; return };
 
     open my $mailhandle, '<', $file
         or do { diag "Unable to read $file: $!"; return };
@@ -149,12 +78,66 @@ sub get_contents {
     return $mail;
 }
 
-sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    return $tick;
-}
+sub email_ok {
+    my %ARGS = @_;
 
+    my $mail = get_contents($ARGS{glob})
+        or return 0;
+
+    my ($status, $id) = RT::Test->send_via_mailgate($mail);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "got id of a newly created ticket - $id");
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    is ($tick->Subject,
+        $ARGS{subject},
+        "Correct subject"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+
+    if ($ARGS{encrypted}) {
+        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+            'Success',
+            "recorded incoming mail that is encrypted"
+        );
+        is( $msg->GetHeader('X-RT-Privacy'),
+            'PGP',
+            "recorded incoming mail that is encrypted"
+        );
+
+        like( $attachments[0]->Content,
+                $ARGS{content},
+                "incoming mail did NOT have original body"
+        );
+    }
+    else {
+        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+            'Not encrypted',
+            "recorded incoming mail that is not encrypted"
+        );
+        like( $msg->Content || $attachments[0]->Content,
+                $ARGS{content},
+                "got original content"
+        );
+    }
+
+    if (defined $ARGS{signer}) {
+        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+            $ARGS{signer},
+            "recorded incoming mail that is signed"
+        );
+    }
+    else {
+        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+            undef,
+            "recorded incoming mail that is not signed"
+        );
+    }
+
+    return 0;
+}
