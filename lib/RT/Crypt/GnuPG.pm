@@ -1465,7 +1465,7 @@ sub ParseStatus {
                 = split /\s+/, $args, 7;
 
             $res{'Reason'} = ReasonCodeToText( $keyword, $res{'ReasonCode'} );
-            $res{'Message'} .= ", the reasion is ". $res{'Reason'};
+            $res{'Message'} .= ", the reason is ". $res{'Reason'};
 
             push @res, \%res;
         }
