@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 177;
+use Test::More tests => 176;
 use File::Temp;
 use RT::Test;
 use Cwd 'getcwd';
