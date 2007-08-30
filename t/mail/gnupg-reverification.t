@@ -51,23 +51,23 @@ foreach my $file ( @files ) {
     ok $eid, 'figured id of a file';
 
     my $email_content = get_contents( $file );
-    ok $email_content, 'got content of email';
+    ok $email_content, "$eid: got content of email";
 
     my ($status, $id) = RT::Test->send_via_mailgate( $email_content );
-    is $status >> 8, 0, "The mail gateway exited normally";
-    ok $id, "got id of a newly created ticket - $id";
+    is $status >> 8, 0, "$eid: the mail gateway exited normally";
+    ok $id, "$eid: got id of a newly created ticket - $id";
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
-    ok $ticket->id, "loaded ticket #$id";
-    is $ticket->Subject, "Test Email ID:$eid", "loaded ticket #$id";
+    ok $ticket->id, "$eid: loaded ticket #$id";
+    is $ticket->Subject, "Test Email ID:$eid", "$eid: correct subject";
 
     $m->goto_ticket( $id );
     $m->content_like(
         qr/Not possible to check the signature, the reason is missing public key/is,
-        'signature is not verified',
+        "$eid: signature is not verified",
     );
-    $m->content_like(qr/This is .*ID:$eid/ims, 'content is there and message is decrypted');
+    $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
 }
 
 sub get_contents {
