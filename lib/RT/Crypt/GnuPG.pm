@@ -1074,9 +1074,14 @@ sub DecryptRFC3156 {
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'error'} ) if $res{'error'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $@ || $? ) {
-        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-        return %res;
+
+    # if the encryption is fine but the signature is bad, then without this
+    # status check we lose the decrypted text
+    if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
+        if ( $@ || $? ) {
+            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            return %res;
+        }
     }
 
     seek $tmp_fh, 0, 0;

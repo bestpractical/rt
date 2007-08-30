@@ -1,13 +1,9 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 10;
-use File::Temp;
+use Test::More tests => 14;
 use RT::Test;
 use Cwd 'getcwd';
-use String::ShellQuote 'shell_quote';
-use IPC::Run3 'run3';
-use Digest::MD5 qw(md5_hex);
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
@@ -39,6 +35,9 @@ $user->SetEmailAddress('rt@example.com');
 
 diag "good encryption, unknown signer" if $ENV{TEST_VERBOSE};
 {
+    my $signer = RT::Test->load_or_create_user(EmailAddress => 'ruz@bestpractical.com');
+    $signer->PrincipalObj->GrantRight(Right => 'CreateTicket');
+
     email_ok(glob => "encrypted-badsig.txt",
              subject => "test",
              encrypted => 1,
