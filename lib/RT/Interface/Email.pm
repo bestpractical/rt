@@ -470,8 +470,11 @@ sub SendEmail {
 
 =head2 PrepareEmailUsingTemplate Template => '', Arguments => {}
 
-Loads a template and parses it using arguments. Returns a L<MIME::Entity>
-object or undef on errors.
+Loads a template. Parses it using arguments if it's not empty.
+Returns a tuple (L<RT::Template> object, error message).
+
+Note that even if a template object is returned MIMEObj method
+may return undef for empty templates.
 
 =cut
 
@@ -485,12 +488,14 @@ sub PrepareEmailUsingTemplate {
     my $template = RT::Template->new( $RT::SystemUser );
     $template->LoadGlobalTemplate( $args{'Template'} );
     unless ( $template->id ) {
-        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
-        return (undef);
+        return (undef, "Couldn't load template '". $args{'Template'} ."'");
     }
-    $template->Parse( %{ $args{'Arguments'} } );
+    return $template if $template->IsEmpty;
 
-    return $template->MIMEObj;
+    my ($status, $msg) = $template->Parse( %{ $args{'Arguments'} } );
+    return (undef, $msg) unless $status;
+
+    return $template;
 }
 
 =head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
