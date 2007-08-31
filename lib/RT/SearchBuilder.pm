@@ -319,8 +319,6 @@ it.
 
 sub ItemsArrayRef {
     my $self = shift;
-    my @items;
-    
     return $self->ItemsOrderBy($self->SUPER::ItemsArrayRef());
 }
 
