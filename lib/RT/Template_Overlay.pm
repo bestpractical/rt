@@ -67,12 +67,12 @@
 package RT::Template;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use Text::Template;
 use MIME::Entity;
 use MIME::Parser;
-use File::Temp qw /tempdir/;
 
 sub _Accessible {
     my $self = shift;
@@ -148,14 +148,28 @@ Load the global template with the name NAME
 
 sub LoadGlobalTemplate {
     my $self = shift;
-    my $id   = shift;
+    my $name = shift;
 
-    return ( $self->LoadQueueTemplate( Queue => 0, Name => $id ) );
+    return ( $self->LoadQueueTemplate( Queue => 0, Name => $name ) );
 }
 
 =head2 LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
 
 Loads the Queue template named NAME for Queue QUEUE.
+
+Note that this method doesn't load a global template with the same name
+if template in the queue doesn't exist. THe following code can be used:
+
+    $template->LoadQueueTemplate( Queue => $queue_id, Name => $template_name );
+    unless ( $template->id ) {
+        $template->LoadGlobalTemplate( $template_name );
+        unless ( $template->id ) {
+            # no template
+            ...
+        }
+    }
+    # ok, template either queue's or global
+    ...
 
 =cut
 
@@ -238,6 +252,13 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
+=head2 MIMEObj
+
+Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
+undef if last call to L</Parse> failed or never be called.
+
+=cut
+
 sub MIMEObj {
     my $self = shift;
     return ( $self->{'MIMEObj'} );
@@ -246,9 +267,11 @@ sub MIMEObj {
 =head2 Parse
 
 This routine performs L<Text::Template> parsing on the template and then
-imports the results into a L<MIME::Entity> so we can really use it.
+imports the results into a L<MIME::Entity> so we can really use it. Use
+L</MIMEObj> method to get the L<MIME::Entity> object.
 
-Takes a hash containing Argument, TicketObj, and TransactionObj.
+Takes a hash containing Argument, TicketObj, and TransactionObj and other
+arguments that will be available in the template's code.
 
 It returns a tuple of (val, message). If val is false, the message contains
 an error message.
@@ -257,6 +280,9 @@ an error message.
 
 sub Parse {
     my $self = shift;
+
+    # clear prev MIME object
+    $self->{'MIMEObj'} = undef;
 
     #We're passing in whatever we were passed. it's destined for _ParseContent
     my ($content, $msg) = $self->_ParseContent(@_);
