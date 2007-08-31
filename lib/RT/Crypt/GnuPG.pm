@@ -212,6 +212,10 @@ in RT's templates are not available in these templates, but each template
 used for errors reporting has set of available data structures you can use to
 build better messages. See default templates and descriptions below.
 
+As well, you can disable particular notification by deleting content of
+a template. You can delete a template too, but in this case you'll see
+error messages in the logs when RT can not load template you've deleted.
+
 =head3 Problems with public keys
 
 Template 'Error: public key' is used to inform the user that RT has problems with
