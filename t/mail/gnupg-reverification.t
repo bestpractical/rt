@@ -159,7 +159,7 @@ sub import_key {
     my $type = shift || 'secret';
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
-    $key = 't/data/mail/gnupg/keys/'. $key;
+    $key = 't/data/gnupg/keys/'. $key;
 
     my %res;
 
