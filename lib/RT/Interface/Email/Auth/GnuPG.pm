@@ -177,7 +177,7 @@ sub CheckNoPrivateKey {
     $RT::Logger->error("Couldn't decrypt a message: have no private key");
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my $status = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: no private key',
         Arguments => {
@@ -203,7 +203,7 @@ sub CheckBadData {
     $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my $status = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: bad GnuPG data',
         Arguments => {
