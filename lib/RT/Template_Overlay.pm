@@ -74,9 +74,6 @@ use MIME::Entity;
 use MIME::Parser;
 use File::Temp qw /tempdir/;
 
-
-# {{{ sub _Accessible 
-
 sub _Accessible {
     my $self = shift;
     my %Cols = (
@@ -94,10 +91,6 @@ sub _Accessible {
     return $self->SUPER::_Accessible( @_, %Cols );
 }
 
-# }}}
-
-# {{{ sub _Set
-
 sub _Set {
     my $self = shift;
     
@@ -107,18 +100,10 @@ sub _Set {
     return $self->SUPER::_Set( @_ );
 }
 
-# }}}
-
-# {{{ sub _Value 
-
 =head2 _Value
 
-Takes the name of a table column.
-Returns its value as a string, if the user passes an ACL check
-
-
-
-
+Takes the name of a table column. Returns its value as a string,
+if the user passes an ACL check, otherwise returns undef.
 
 =cut
 
@@ -132,13 +117,9 @@ sub _Value {
 
 }
 
-# }}}
-
-# {{{ sub Load
-
 =head2 Load <identifer>
 
-Load a template, either by number or by name
+Load a template, either by number or by name.
 
 =cut
 
@@ -153,10 +134,6 @@ sub Load {
     return $self->LoadById( $identifier );
 }
 
-# }}}
-
-# {{{ sub LoadGlobalTemplate
-
 =head2 LoadGlobalTemplate NAME
 
 Load the global template with the name NAME
@@ -170,11 +147,7 @@ sub LoadGlobalTemplate {
     return ( $self->LoadQueueTemplate( Queue => 0, Name => $id ) );
 }
 
-# }}}
-
-# {{{ sub LoadQueueTemplate
-
-=head2  LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
+=head2 LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
 
 Loads the Queue template named NAME for Queue QUEUE.
 
@@ -192,10 +165,6 @@ sub LoadQueueTemplate {
 
 }
 
-# }}}
-
-# {{{ sub Create
-
 =head2 Create
 
 Takes a paramhash of Content, Queue, Name and Description.
@@ -206,7 +175,6 @@ template.
 
 Returns the Template's id # if the create was successful. Returns undef for
 unknown database failure.
-
 
 =cut
 
@@ -248,10 +216,6 @@ sub Create {
 
 }
 
-# }}}
-
-# {{{ sub Delete
-
 =head2 Delete
 
 Delete this template.
@@ -268,27 +232,20 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
-# }}}
-
-# {{{ sub MIMEObj
 sub MIMEObj {
     my $self = shift;
     return ( $self->{'MIMEObj'} );
 }
 
-# }}}
-
-# {{{ sub Parse 
-
 =head2 Parse
 
- This routine performs Text::Template parsing on the template and then
- imports the results into a MIME::Entity so we can really use it
+This routine performs L<Text::Template> parsing on the template and then
+imports the results into a L<MIME::Entity> so we can really use it.
 
- Takes a hash containing Argument, TicketObj, and TransactionObj.
+Takes a hash containing Argument, TicketObj, and TransactionObj.
 
- It returns a tuple of (val, message)
- If val is 0, the message contains an error message
+It returns a tuple of (val, message). If val is false, the message contains
+an error message.
 
 =cut
 
@@ -331,10 +288,6 @@ sub Parse {
     return ( 1, $self->loc("Template parsed") );
 
 }
-
-# }}}
-
-# {{{ sub _ParseContent
 
 # Perform Template substitutions on the template
 
@@ -399,10 +352,6 @@ sub _ParseContent {
     return ($retval);
 }
 
-# }}}
-
-# {{{ sub CurrentUserHasQueueRight
-
 =head2 CurrentUserHasQueueRight
 
 Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
@@ -413,7 +362,5 @@ sub CurrentUserHasQueueRight {
     my $self = shift;
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
 }
-
-# }}}
 
 1;
