@@ -600,13 +600,19 @@ sub ForwardTransaction {
         $entity->add_part( $a->ContentAsMIME );
     }
 
-    my $mail = PrepareEmailUsingTemplate(
+    my ($template, $msg) = PrepareEmailUsingTemplate(
         Template  => 'Forward',
         Arguments => {
             Transaction => $txn,
             Ticket      => $txn->Object,
         },
     );
+    my $mail;
+    if ( $template ) {
+        $mail = $template->MIMEObj;
+    } else {
+        $RT::Logger->warning($msg);
+    }
     unless ( $mail ) {
         $RT::Logger->warning("Couldn't generate email using template 'Forward'");
 
