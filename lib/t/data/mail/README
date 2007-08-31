@@ -22,4 +22,7 @@ Name of a file may contain the following parts separated by dash:
 * with-attachment - text plain attachment
 * with-binary     - binary attachment
 
+In total 18 emails using all possible combinations.
+18 = 3 (signed/encrypted/both) * 2 (MIME/inline)
+    * 3 (no/text/binary)
 
