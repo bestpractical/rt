@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 6;
 use RT::Test;
 use Cwd 'getcwd';
 
@@ -32,18 +32,6 @@ $m->content_like(qr/rt\@example.com.* - never/, 'has key info.');
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('rt@example.com');
-
-diag "good encryption, unknown signer" if $ENV{TEST_VERBOSE};
-{
-    my $signer = RT::Test->load_or_create_user(EmailAddress => 'ruz@bestpractical.com');
-    $signer->PrincipalObj->GrantRight(Right => 'CreateTicket');
-
-    email_ok(glob => "encrypted-badsig.txt",
-             subject => "test",
-             encrypted => 1,
-             content => qr/test/,
-    );
-}
 
 if (0) {
     # XXX: need to generate these mails
