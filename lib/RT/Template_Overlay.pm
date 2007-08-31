@@ -121,6 +121,12 @@ sub _Value {
 
 Load a template, either by number or by name.
 
+Note that loading templates by name using this method B<is
+ambiguous>. Several queues may have template with the same name
+and as well global template with the same name may exist.
+Use L</LoadGlobalTemplate> and/or L<LoadQueueTemplate> to get
+precise result.
+
 =cut
 
 sub Load {
