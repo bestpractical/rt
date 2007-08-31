@@ -59,9 +59,9 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
 sub get_contents {
     my $eid = shift;
 
-    my ($file) = glob("lib/t/data/mail/$eid-*");
+    my ($file) = glob("t/data/mails/gnupg-basic-set/$eid-*");
     defined $file
-        or do { diag "Unable to find lib/t/data/mail/$eid-*"; return };
+        or do { diag "Unable to find t/data/mails/gnupg-basic-set/$eid-*"; return };
 
     open my $mailhandle, '<', $file
         or do { diag "Unable to read $file: $!"; return };

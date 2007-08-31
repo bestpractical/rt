@@ -45,7 +45,7 @@ delete_key('rt-test@example.com');
 
 my @ticket_ids;
 
-my @files = glob("lib/t/data/mail/*-signed-*");
+my @files = glob("t/data/mails/gnupg-basic-set/*-signed-*");
 foreach my $file ( @files ) {
     diag "testing $file" if $ENV{'TEST_VERBOSE'};
 
