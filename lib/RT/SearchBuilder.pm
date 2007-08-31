@@ -67,10 +67,10 @@ use RT::Base;
 use DBIx::SearchBuilder "1.40";
 
 use strict;
-use vars qw(@ISA);
-@ISA = qw(DBIx::SearchBuilder RT::Base);
+use warnings;
 
-# {{{ sub _Init 
+use base qw(DBIx::SearchBuilder RT::Base);
+
 sub _Init  {
     my $self = shift;
     
@@ -83,13 +83,10 @@ sub _Init  {
     }
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
-# }}}
-
-# {{{ sub LimitToEnabled
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 
@@ -100,9 +97,6 @@ sub LimitToEnabled {
 		  VALUE => '0',
 		  OPERATOR => '=' );
 }
-# }}}
-
-# {{{ sub LimitToDisabled
 
 =head2 LimitToDeleted
 
@@ -119,9 +113,6 @@ sub LimitToDeleted {
 		  VALUE => '1'
 		);
 }
-# }}}
-
-# {{{ sub LimitAttribute
 
 =head2 LimitAttribute PARAMHASH
 
@@ -212,9 +203,6 @@ sub LimitAttribute {
 	VALUE      => 'NULL',
     ) if $args{NULL};
 }
-# }}}
-
-# {{{ sub LimitCustomField
 
 =head2 LimitCustomField
 
@@ -273,8 +261,6 @@ sub LimitCustomField {
     );
 }
 
-# {{{ sub FindAllRows
-
 =head2 FindAllRows
 
 Find all matching rows, regardless of whether they are disabled or not
@@ -284,8 +270,6 @@ Find all matching rows, regardless of whether they are disabled or not
 sub FindAllRows {
     shift->{'find_disabled_rows'} = 1;
 }
-
-# {{{ sub Limit 
 
 =head2 Limit PARAMHASH
 
@@ -302,10 +286,6 @@ sub Limit {
 
     return $self->SUPER::Limit(%args);
 }
-
-# }}}
-
-# {{{ sub ItemsOrderBy
 
 =head2 ItemsOrderBy
 
@@ -330,15 +310,10 @@ sub ItemsOrderBy {
     return $items;
 }
 
-# }}}
-
-# {{{ sub ItemsArrayRef
-
 =head2 ItemsArrayRef
 
 Return this object's ItemsArray, in the order that ItemsOrderBy sorts
 it.
-
 
 =cut
 
@@ -349,13 +324,9 @@ sub ItemsArrayRef {
     return $self->ItemsOrderBy($self->SUPER::ItemsArrayRef());
 }
 
-# }}}
-
 eval "require RT::SearchBuilder_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Vendor.pm});
 eval "require RT::SearchBuilder_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Local.pm});
 
 1;
-
-
