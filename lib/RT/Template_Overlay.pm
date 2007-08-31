@@ -252,6 +252,20 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
+=head2 IsEmpty
+
+Returns true value if content of the template is empty, otherwise
+returns false.
+
+=cut
+
+sub IsEmpty {
+    my $self = shift;
+    my $content = $self->Content;
+    return 0 if defined $content && length $content;
+    return 1;
+}
+
 =head2 MIMEObj
 
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
@@ -336,11 +350,11 @@ sub _ParseContent {
         return (undef, $self->loc("Permissions denied"));
     }
 
-    my $content = $self->SUPER::_Value('Content');
-    unless ( defined $content && length $content ) {
-        return ( '', $self->loc("Template is empty") );
+    if ( $self->IsEmpty ) {
+        return ( undef, $self->loc("Template is empty") );
     }
 
+    my $content = $self->SUPER::_Value('Content');
     # We need to untaint the content of the template, since we'll be working
     # with it
     $content =~ s/^(.*)$/$1/;
