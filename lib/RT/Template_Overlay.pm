@@ -297,7 +297,7 @@ sub Parse {
 
     #We're passing in whatever we were passed. it's destined for _ParseContent
     my ($content, $msg) = $self->_ParseContent(@_);
-    return ( 0, $msg ) unless defined $content;
+    return ( 0, $msg ) unless defined $content && length $content;
 
     #Lets build our mime Entity
 
@@ -347,9 +347,13 @@ sub _ParseContent {
         @_
     );
 
-    my $content = $self->Content;
-    unless ( defined $content ) {
-        return ( undef, $self->loc("Permissions denied") );
+    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+        return (undef, $self->loc("Permissions denied"));
+    }
+
+    my $content = $self->SUPER::_Value('Content');
+    unless ( defined $content && length $content ) {
+        return ( '', $self->loc("Template is empty") );
     }
 
     # We need to untaint the content of the template, since we'll be working
