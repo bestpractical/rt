@@ -515,10 +515,16 @@ sub SendEmailUsingTemplate {
         @_
     );
 
-    my $msg = PrepareEmailUsingTemplate( %args );
-    return 0 unless $msg;
+    my ($template, $msg) = PrepareEmailUsingTemplate( %args );
+    return (0, $msg) unless $template;
 
-    $msg->head->set( $_ => $args{ $_ } )
+    my $mail = $template->MIMEObj;
+    unless ( $mail ) {
+        $RT::Logger->info("Message is not sent as template #". $template->id ." is empty");
+        return -1;
+    }
+
+    $mail->head->set( $_ => $args{ $_ } )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
 
     if ( $args{'InReplyTo'} ) {
@@ -526,7 +532,7 @@ sub SendEmailUsingTemplate {
         my @in_reply_to = $args{'InReplyTo'}->head->get('In-Reply-To');
         my @references = $args{'InReplyTo'}->head->get('References');
 
-        $msg->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
+        $mail->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
         my @new_references;
         if ( @references ) {
             @new_references = (@references, @id);
@@ -536,10 +542,10 @@ sub SendEmailUsingTemplate {
         @new_references = splice @new_references, 4, -6
             if @new_references > 10;
 
-        $msg->head->set( 'References' => join ' ', @new_references );
+        $mail->head->set( 'References' => join ' ', @new_references );
     }
 
-    return SendEmail( Entity => $msg );
+    return SendEmail( Entity => $mail );
 }
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
