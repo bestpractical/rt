@@ -389,4 +389,18 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+sub import_gnupg_key {
+    my $self = shift;
+    my $key = shift;
+    my $type = shift || 'secret';
+
+    $key =~ s/\@/-at-/g;
+    $key .= ".$type.key";
+    $key = 't/data/gnupg/keys/'. $key;
+    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
+
+    require RT::Crypt::GnuPG;
+    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
+}
+
 1;
