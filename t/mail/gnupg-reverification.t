@@ -38,7 +38,7 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';
 
-import_key('rt-recipient@example.com');
+RT::Test->import_gnupg_key('rt-recipient@example.com');
 
 my @ticket_ids;
 
@@ -72,7 +72,7 @@ foreach my $file ( @files ) {
 }
 
 diag "import key into keyring" if $ENV{'TEST_VERBOSE'};
-import_key('rt-test@example.com', 'public');
+RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 
 foreach my $id ( @ticket_ids ) {
     diag "testing ticket #$id" if $ENV{'TEST_VERBOSE'};
@@ -93,20 +93,3 @@ sub get_contents {
     return do { local $/; <$mailhandle> };
 }
 
-sub delete_key {
-    require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::DeleteKey( shift );
-}
-
-sub import_key {
-    my $key = shift;
-    my $type = shift || 'secret';
-
-    $key =~ s/\@/-at-/g;
-    $key .= ".$type.key";
-    $key = 't/data/gnupg/keys/'. $key;
-    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
-
-    require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
-}
