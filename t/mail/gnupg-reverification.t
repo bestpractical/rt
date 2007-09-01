@@ -1,15 +1,12 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 111;
-use File::Temp;
-use RT::Test;
-use Cwd 'getcwd';
-use String::ShellQuote 'shell_quote';
-use IPC::Run3 'run3';
-use Digest::MD5 qw(md5_hex);
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg-2) );
+use Test::More tests => 111;
+use RT::Test;
+
+use File::Temp qw(tempdir);
+my $homedir = tempdir( CLEANUP => 1 );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
@@ -41,7 +38,7 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';
 
-delete_key('rt-test@example.com');
+import_key('rt-recipient@example.com');
 
 my @ticket_ids;
 
@@ -75,7 +72,7 @@ foreach my $file ( @files ) {
 }
 
 diag "import key into keyring" if $ENV{'TEST_VERBOSE'};
-import_key('rt-test@example.com');
+import_key('rt-test@example.com', 'public');
 
 foreach my $id ( @ticket_ids ) {
     diag "testing ticket #$id" if $ENV{'TEST_VERBOSE'};
