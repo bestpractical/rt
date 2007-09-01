@@ -1739,6 +1739,111 @@ sub _ParseDate {
     return $obj;
 }
 
+sub DeleteKey {
+    my $key = shift;
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = _safe_run_child { $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--delete-secret-and-public-key'],
+            command_args => [$key],
+        ) };
+        close $handle{'input'};
+        while ( my $str = readline $handle{'status'} ) {
+            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
+                print { $handle{'command'} } "y\n";
+            }
+        }
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
+sub ImportKey {
+    my $key = shift;
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = _safe_run_child { $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--import'],
+        ) };
+        print { $handle{'input'} } $key;
+        close $handle{'input'};
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
 1;
 
 # helper package to avoid using temp file

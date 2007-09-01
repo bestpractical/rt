@@ -94,123 +94,19 @@ sub get_contents {
 }
 
 sub delete_key {
-    my $key = shift;
-
-    my %res;
-
-    my %handle; 
-    require GnuPG::Handles; require IO::Handle;
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
-    );
-
-    require GnuPG::Interface; require RT::Crypt::GnuPG;
-    my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
-        armor => 1,
-    );
-
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-        my $pid = $gnupg->wrap_call(
-            handles => $handles,
-            commands => ['--delete-secret-and-public-key'],
-            command_args => [$key],
-        );
-        close $handle{'input'};
-        while ( my $str = readline $handle{'status'} ) {
-            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
-                print { $handle{'command'} } "y\n";
-            }
-        }
-        waitpid $pid, 0;
-    };
-    my $err = $@;
-    close $handle{'output'};
-
-    $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+    require RT::Crypt::GnuPG;
+    return RT::Crypt::GnuPG::DeleteKey( shift );
 }
 
 sub import_key {
     my $key = shift;
     my $type = shift || 'secret';
+
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
     $key = 't/data/gnupg/keys/'. $key;
+    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
 
-    my %res;
-
-    my %handle; 
-    require GnuPG::Handles; require IO::Handle;
-    open my $key_fh, '<:raw', $key or die "couldn't open '$key': $!";
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = $key_fh),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
-    );
-    $handles->options('stdin')->{'direct'} = 1;
-
-    require GnuPG::Interface; require RT::Crypt::GnuPG;
-    my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
-        armor => 1,
-    );
-
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-        my $pid = $gnupg->wrap_call(
-            handles => $handles,
-            commands => ['--import'],
-        );
-        while ( my $str = readline $handle{'status'} ) {
-            diag $str;
-            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
-                print { $handle{'command'} } "y\n";
-            }
-        }
-        waitpid $pid, 0;
-    };
-    my $err = $@;
-    close $handle{'output'};
-
-    $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+    require RT::Crypt::GnuPG;
+    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
 }
-
