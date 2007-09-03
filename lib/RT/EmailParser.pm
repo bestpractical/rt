@@ -570,7 +570,7 @@ sub _SetupMIMEParser {
     # Turns out that the default is to recycle tempfiles
     # Temp files should never be recycled, especially when running under perl taint checking
     
-    $parser->tmp_recycling(0);
+    $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
 
 }
 
