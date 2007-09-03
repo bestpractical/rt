@@ -56,7 +56,6 @@
   <div class="titlebox-content <% $bodyclass %>" id="<% $tid %>">
 
 <%ARGS>
-$width => undef
 $class => ''
 $bodyclass => ''
 $title_href => ''
@@ -65,8 +64,6 @@ $title_class => ''
 $titleright_href => ''
 $titleright => ''
 $titleright_raw => ''
-$contentbg => "#dddddd"
-$color => "#336699"
 $id => ''
 $hideable => 1
 </%ARGS>
