@@ -61,7 +61,7 @@ while ( my $requestor = $people->Next ) {
 
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
-    title => loc("More about [_1]", $name),
+    title_raw => loc("More about [_1]", $name),
 &>
 
 %# Additional information about this user.  Empty by default.
