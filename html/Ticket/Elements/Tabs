@@ -164,21 +164,17 @@ if ( $can{'ModifyTicket'} ) {
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-    if ( $Ticket->OwnerObj->Id == $RT::Nobody->id
-         and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('TakeTicket') ) )
-    {
+    if ( $Ticket->OwnerObj->Id == $RT::Nobody->id ) {
         $actions->{'B'} = {
             path => "Ticket/Display.html?Action=Take&id=" . $id,
             title => loc('Take'),
-        };
+        } if $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('TakeTicket');
     }
-    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id 
-            and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('StealTicket') ) )
-    {
+    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
         $actions->{'C'} = {
             path => "Ticket/Display.html?Action=Steal&id=" . $id,
             title => loc('Steal'),
-        };
+        } if $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('StealTicket');
     }
 }
 
