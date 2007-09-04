@@ -28,22 +28,6 @@ use base qw/RT::URI::base/;
 
 Returns the prefix for a local article URI
 
-=begin testing
-
-use_ok("RT::URI::fsck_com_rtfm");
-my $uri = RT::URI::fsck_com_rtfm->new($RT::SystemUser);
-
-ok(ref($uri));
-
-ok (UNIVERSAL::isa($uri,RT::URI::fsck_com_rtfm), "It's an RT::URI::fsck_com_rtfm");
-
-ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
-ok ($uri->isa('RT::Base'), "It's an RT::Base");
-
-is ($uri->LocalURIPrefix , 'fsck.com-rtfm://example.com/article/');
-
-=end testing
-
 =cut
 
 sub LocalURIPrefix {
@@ -55,15 +39,6 @@ sub LocalURIPrefix {
 =head2 URIForObject RT::article
 
 Returns the RT URI for a local RT::article object
-
-=begin testing
-
-my $article = RT::FM::Article->new($RT::SystemUser);
-$article->Load(1);
-my $uri = RT::URI::fsck_com_rtfm->new($article->CurrentUser);
-is($uri->LocalURIPrefix . "1" , $uri->URIForObject($article));
-
-=end testing
 
 =cut
 
