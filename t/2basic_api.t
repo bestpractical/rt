@@ -3,12 +3,17 @@
 use warnings;
 use strict;
 
-use Test::More tests => 38;
+use Test::More tests => 41;
 BEGIN { require 't/utils.pl' }
 
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
+
+use_ok 'RT::FM::System';
+my $sys = new RT::FM::System;
+isa_ok $sys, 'RT::FM::System';
+is $sys->Id, 1;
 
 use_ok('RT::FM::Class');
 
