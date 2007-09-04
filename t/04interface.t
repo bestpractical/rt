@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More qw(no_plan);
+use Test::More tests => 39;
 BEGIN { require 't/utils.pl' }
 
 use lib "/opt/rt3/lib";
@@ -144,8 +144,6 @@ Subject: test ticket for articles
 This is some form of new request.
 May as well say something about Africa.');
 
-my $queue = RT::Queue->new($RT::SystemUser);
-$queue->Create('ArticleQueue'.$$);
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my $obj;
 ($ret, $obj, $msg) = $ticket->Create(Queue => 'General',
@@ -162,11 +160,11 @@ isa_ok($m, 'Test::WWW::Mechanize');
 ok(1, "Connecting to ".$url);
 $m->get( $url."?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
-$m->follow_link(text => 'RTFM');
+$m->follow_link_ok({text => 'RTFM'}, 'UI -> RTFM');
 $m->content_contains($article3->Name);
-$m->follow_link(text => $article3->Name);
+$m->follow_link_ok( {text => $article3->Name}, 'RTFM -> '. $article3->Name );
 $m->title_is("Article #" . $article3->Id . ": " . $article3->Name);
-$m->follow_link(text => 'Modify');
+$m->follow_link_ok( { text => 'Modify'}, 'Article -> Modify' );
 $m->content_like(qr/Refers to/, "found links edit box");
 my $turi = 't:'.$ticket->Id;
 my $a1uri = 'a:'.$article1->Id;
@@ -181,16 +179,20 @@ $m->content_like(qr/Link created.*$a1uri/, "Article linkfrom was created");
 $m->get_ok($url."Ticket/Display.html?id=".$ticket->Id, 
 	   "Loaded ticket display");
 $m->content_like(qr/Extract Article/, "Article extraction link shows up");
-$m->follow_link(text => 'Extract Article');
+$m->follow_link_ok( { text => 'Extract Article' }, '-> Extract Article' );
 $m->content_contains($class->Name);
-$m->follow_link(text => $class->Name);
+$m->follow_link_ok( { text => $class->Name }, 'Extract Article -> '. $class->Name );
+$m->content_like(qr/Select topics for this article/i, 'selecting topic');
+$m->form_number(2);
+$m->set_visible([option => $topic1->Name]);
+$m->submit;
 $m->form_number(2);
 $m->set_visible([option => $answerCF->Name]);
 $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
 $m->submit_form(form_name => 'EditArticle');
 $m->title_like(qr/Modify article/);
-$m->follow_link(text => 'Display');
+$m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");
 $m->content_contains($ticket->Subject,
 		     "Article references originating ticket");
