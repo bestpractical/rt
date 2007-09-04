@@ -17,14 +17,13 @@
 # END LICENSE BLOCK
 
 package RT::FM;
-use strict;
-use vars qw/$System/;
-use RT::FM::System;
 
+use strict;
+use warnings;
 
 our $VERSION = '2.2.0RC6';
 
 # Create a system object for RTFM
-$RT::FM::System = RT::FM::System->new($RT::SystemUser);
-
+use RT::FM::System;
+our $RT::FM::System = RT::FM::System->new( $RT::SystemUser );
 
