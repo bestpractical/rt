@@ -6,7 +6,7 @@ use Module::Install::Base;
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.65';
+	$VERSION = '0.67';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
@@ -56,14 +56,23 @@ foreach my $key (@tuple_keys) {
     };
 }
 
-sub install_as_core   { $_[0]->installdirs('perl')   }
-sub install_as_cpan   { $_[0]->installdirs('site')   }
-sub install_as_site   { $_[0]->installdirs('site')   }
-sub install_as_vendor { $_[0]->installdirs('vendor') }
+# configure_requires is currently a null-op
+sub configure_requires { 1 }
+
+# Aliases for build_requires that will have alternative
+# meanings in some future version of META.yml.
+sub test_requires      { shift->build_requires(@_)  }
+sub install_requires   { shift->build_requires(@_)  }
+
+# Aliases for installdirs options
+sub install_as_core    { $_[0]->installdirs('perl')   }
+sub install_as_cpan    { $_[0]->installdirs('site')   }
+sub install_as_site    { $_[0]->installdirs('site')   }
+sub install_as_vendor  { $_[0]->installdirs('vendor') }
 
 sub sign {
     my $self = shift;
-    return $self->{'values'}{'sign'} if defined wantarray and !@_;
+    return $self->{'values'}{'sign'} if defined wantarray and ! @_;
     $self->{'values'}{'sign'} = ( @_ ? $_[0] : 1 );
     return $self;
 }
@@ -296,20 +305,24 @@ sub license_from {
     {
         my $license_text = $1;
         my @phrases      = (
-            'under the same (?:terms|license) as perl itself' => 'perl',
-            'GNU public license'                              => 'gpl',
-            'GNU lesser public license'                       => 'gpl',
-            'BSD license'                                     => 'bsd',
-            'Artistic license'                                => 'artistic',
-            'GPL'                                             => 'gpl',
-            'LGPL'                                            => 'lgpl',
-            'BSD'                                             => 'bsd',
-            'Artistic'                                        => 'artistic',
-            'MIT'                                             => 'MIT',
+            'under the same (?:terms|license) as perl itself' => 'perl',        1,
+            'GNU public license'                              => 'gpl',         1,
+            'GNU lesser public license'                       => 'gpl',         1,
+            'BSD license'                                     => 'bsd',         1,
+            'Artistic license'                                => 'artistic',    1,
+            'GPL'                                             => 'gpl',         1,
+            'LGPL'                                            => 'lgpl',        1,
+            'BSD'                                             => 'bsd',         1,
+            'Artistic'                                        => 'artistic',    1,
+            'MIT'                                             => 'mit',         1,
+            'proprietary'                                     => 'proprietary', 0,
         );
-        while ( my ( $pattern, $license ) = splice( @phrases, 0, 2 ) ) {
+        while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
             $pattern =~ s{\s+}{\\s+}g;
             if ( $license_text =~ /\b$pattern\b/i ) {
+                if ( $osi and $license_text =~ /All rights reserved/i ) {
+                        warn "LEGAL WARNING: 'All rights reserved' may invalidate Open Source licenses. Consider removing it.";
+		}
                 $self->license($license);
                 return 1;
             }
