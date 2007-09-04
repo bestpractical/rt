@@ -31,6 +31,6 @@ my ($id, $msg) = $article->Create(
 );
 ok($id,$msg);
 
-my $uri = RT::URI::fsck_com_rtfm->new( $article->CurrentUser );
+$uri = RT::URI::fsck_com_rtfm->new( $article->CurrentUser );
 is $uri->LocalURIPrefix . $article->id, $uri->URIForObject( $article );
 

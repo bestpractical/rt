@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More test => 31;
+use Test::More tests => 31;
 BEGIN { require 't/utils.pl' }
 
 use_ok 'RT';
