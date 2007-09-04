@@ -18,15 +18,11 @@
 
 package RT::URI::fsck_com_rtfm;
 
+use strict;
+use warnings;
+
 use RT::FM::Article;
-
-use RT::URI::base;
-
-use vars qw (@ISA);
-@ISA = qw/RT::URI::base/;
-
-
-
+use base qw/RT::URI::base/;
 
 =head2 LocalURIPrefix 
 
@@ -48,8 +44,6 @@ is ($uri->LocalURIPrefix , 'fsck.com-rtfm://example.com/article/');
 
 =end testing
 
-
-
 =cut
 
 sub LocalURIPrefix {
@@ -57,10 +51,6 @@ sub LocalURIPrefix {
     my $prefix = $self->Scheme. "://$RT::Organization/article/";
     return ($prefix);
 }
-
-
-
-
 
 =head2 URIForObject RT::article
 
@@ -88,12 +78,9 @@ sub URIForObject {
 
 =head2 ParseObject $ArticleObj
 
-When handed an RT::FM::Article object, figure out its URI
-
+When handed an L<RT::FM::Article> object, figure out its URI
 
 =cut
-
-
 
 =head2 ParseURI URI
 
@@ -101,7 +88,6 @@ When handed an fsck.com-rtfm: URI, figures out things like whether its a local a
 and what its ID is
 
 =cut
-
 
 sub ParseURI { 
     my $self = shift;
@@ -117,8 +103,6 @@ sub ParseURI {
  	else {
 	    $self->{'uri'} = $uri;
  	}
- 
- 
  
        #If it's a local URI, load the article object and return its URI
     if ( $self->IsLocal) {
@@ -148,8 +132,6 @@ sub ParseURI {
 
 Returns true if this URI is for a local article.
 Returns undef otherwise.
-
-
 
 =cut
 
@@ -184,7 +166,6 @@ Return the URI scheme for RT articles
 
 =cut
 
-
 sub Scheme {
     my $self = shift;
 	return "fsck.com-rtfm";
@@ -197,7 +178,6 @@ Otherwise, return its URI
 
 =cut
 
-
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
@@ -207,7 +187,6 @@ sub HREF {
         return ($self->URI);
     }
 }
-
 
 =head2 AsString
 

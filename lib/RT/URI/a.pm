@@ -23,9 +23,10 @@
 # END LICENSE BLOCK
 package RT::URI::a;
 
-use RT::FM::Article;
-
 use strict;
+use warnings;
+
+use RT::FM::Article;
 use base qw/RT::URI::fsck_com_rtfm/;
 
 my $scheme = "a";
