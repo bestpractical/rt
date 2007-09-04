@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 14;
 BEGIN { require 't/utils.pl' }
 
 BEGIN {
