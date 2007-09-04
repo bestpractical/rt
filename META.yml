@@ -1,7 +1,7 @@
 --- 
 abstract: RT FM Extension
 distribution_type: module
-generated_by: Module::Install version 0.65
+generated_by: Module::Install version 0.67
 license: GPL version 2
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
