@@ -18,8 +18,9 @@
 
 package RT::FM::Class;
 
-no warnings qw/redefine/;
 use strict;
+use warnings;
+no warnings qw/redefine/;
 
 use RT::FM::System;
 use RT::CustomFields;
