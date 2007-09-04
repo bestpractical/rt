@@ -25,5 +25,5 @@ our $VERSION = '2.2.0RC7';
 
 # Create a system object for RTFM
 use RT::FM::System;
-our $RT::FM::System = RT::FM::System->new( $RT::SystemUser );
+our $System = RT::FM::System->new( $RT::SystemUser );
 
