@@ -6,11 +6,7 @@ use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
-use constant ImageFileContent => do {
-    local $/;
-    open my $fh, '<:raw', ImageFile or die $!;
-    scalar <$fh>;
-};
+use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';
 

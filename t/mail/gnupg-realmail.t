@@ -65,13 +65,7 @@ sub get_contents {
     defined $file
         or do { diag "Unable to find t/data/mails/gnupg-basic-set/$eid-*"; return };
 
-    open my $mailhandle, '<', $file
-        or do { diag "Unable to read $file: $!"; return };
-
-    my $mail = do { local $/; <$mailhandle> };
-    close $mailhandle;
-
-    return $mail;
+    return RT::Test->file_content( $file );
 }
 
 sub email_ok {
