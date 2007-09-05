@@ -314,6 +314,14 @@ sub set_rights {
 
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
+        unless ( ref $principal ) {
+            if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
+                $principal = RT::Group->new( $RT::SystemUser );
+                $principal->LoadSystemInternalGroup($1);
+            } else {
+                die "principal is not an object, but also is not name of a system group";
+            }
+        }
         unless ( $principal->isa('RT::Principal') ) {
             if ( $principal->can('PrincipalObj') ) {
                 $principal = $principal->PrincipalObj;
