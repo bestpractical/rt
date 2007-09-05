@@ -343,6 +343,12 @@ sub CreateTicket {
         }
     }
 
+    foreach my $argument (qw(Encrypt Sign)) {
+        $MIMEObj->head->add(
+            "X-RT-$argument" => $ARGS{ $argument }
+        ) if defined $ARGS{ $argument };
+    }
+
     my %create_args = (
         Type            => $ARGS{'Type'} || 'ticket',
         Queue           => $ARGS{'Queue'},
