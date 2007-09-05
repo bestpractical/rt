@@ -49,7 +49,7 @@ foreach my $file ( @files ) {
     my ($eid) = ($file =~ m{(\d+)[^/\\]+$});
     ok $eid, 'figured id of a file';
 
-    my $email_content = get_contents( $file );
+    my $email_content = RT::Test->file_content( $file );
     ok $email_content, "$eid: got content of email";
 
     my ($status, $id) = RT::Test->send_via_mailgate( $email_content );
@@ -82,14 +82,5 @@ foreach my $id ( @ticket_ids ) {
         qr/The signature is good/is,
         "signature is re-verified and now good",
     );
-}
-
-sub get_contents {
-    my $file = shift;
-
-    open my $mailhandle, '<', $file
-        or do { diag "Unable to read $file: $!"; return };
-
-    return do { local $/; <$mailhandle> };
 }
 

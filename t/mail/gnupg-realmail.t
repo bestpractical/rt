@@ -58,22 +58,11 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     }
 }
 
-sub get_contents {
-    my $eid = shift;
-
-    my ($file) = glob("t/data/mails/gnupg-basic-set/$eid-*");
-    defined $file
-        or do { diag "Unable to find t/data/mails/gnupg-basic-set/$eid-*"; return };
-
-    return RT::Test->file_content( $file );
-}
-
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
     diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
-    my $mail = get_contents($eid)
-        or return 0;
+    my $mail = RT::Test->file_content($eid);
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
