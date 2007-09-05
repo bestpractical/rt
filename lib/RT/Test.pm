@@ -389,6 +389,25 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+sub file_content {
+    my $self = shift;
+    my $path = shift;
+    my %args = @_;
+
+    $path = File::Spec->catfile( @$path ) if ref $path;
+
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+
+    open my $fh, "<:raw", $path
+        or die "couldn't open file '$path': $!";
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    unlink $path if $args{'unlink'};
+
+    return $content;
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
