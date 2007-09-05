@@ -64,7 +64,21 @@ sub goto_ticket {
         return 0;
     }
     return 1;
+}
 
+sub goto_create_ticket {
+    my $self = shift;
+    my $queue = shift;
+    unless ( ref $queue ) {
+        die "not yet implemented";
+    }
+
+    $self->get('/');
+    $self->form_name('CreateTicketInQueue');
+    $self->select( 'Queue', $queue->id );
+    $self->submit;
+
+    return 1;
 }
 
 1;
