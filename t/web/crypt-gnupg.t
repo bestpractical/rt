@@ -10,22 +10,12 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 # catch any outgoing emails
 unlink "t/mailbox";
 
-sub capture_mail {
-    my $MIME = shift;
-
-    open my $handle, '>>', 't/mailbox'
-        or die "Unable to open t/mailbox for appending: $!";
-
-    $MIME->print($handle);
-    print $handle "%% split me! %%\n";
-    close $handle;
-}
+RT::Test->set_mail_catcher;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );
 RT->Config->Set( CommentAddress => 'general@example.com');
 RT->Config->Set( CorrespondAddress => 'general@example.com');
-RT->Config->Set( MailCommand => \&capture_mail);
 RT->Config->Set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
@@ -87,8 +77,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-my $mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
-my @mail = grep {/\S/} split /%% split me! %%/, $mails;
+my @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 
 $user->SetEmailAddress('general@example.com');
@@ -162,8 +151,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
-@mail = grep {/\S/} split /%% split me! %%/, $mails;
+@mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
     like $mail, qr/Some other content/, "outgoing mail was not encrypted";
@@ -240,8 +228,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
-@mail = grep {/\S/} split /%% split me! %%/, $mails;
+@mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
     unlike $mail, qr/Some other content/, "outgoing mail was encrypted";
@@ -312,8 +299,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
-@mail = grep {/\S/} split /%% split me! %%/, $mails;
+@mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
     like $mail, qr/Thought you had me figured out didya/, "outgoing mail was unencrypted";

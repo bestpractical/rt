@@ -397,6 +397,27 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+sub set_mail_catcher {
+    my $self = shift;
+    my $catcher = sub {
+        my $MIME = shift;
+
+        open my $handle, '>>', 't/mailbox'
+            or die "Unable to open t/mailbox for appending: $!";
+
+        $MIME->print($handle);
+        print $handle "%% split me! %%\n";
+        close $handle;
+    };
+    RT->Config->Set( MailCommand => $catcher );
+}
+
+sub fetch_caught_mails {
+    my $self = shift;
+    return grep /\S/, split /%% split me! %%/,
+        RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
+}
+
 sub file_content {
     my $self = shift;
     my $path = shift;
