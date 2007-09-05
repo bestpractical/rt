@@ -68,7 +68,7 @@ my $subtabs = {
     },
 };
 
-my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+my $scrip = RT::Model::Scrip->new( $session{'CurrentUser'} );
 my ($id, @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 my ($title, $current_subtab);

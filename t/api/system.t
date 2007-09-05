@@ -32,7 +32,7 @@ ok (!$rights->{'CasdasdsreateTicket'},"bogus right not found");
 
 use RT::System;
 my $sys = RT::System->new();
-is( $sys->Id, 1);
+is( $sys->id, 1);
 is ($sys->id, 1);
 
 

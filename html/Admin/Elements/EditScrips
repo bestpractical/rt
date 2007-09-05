@@ -51,19 +51,19 @@
 <input type="hidden" class="hidden" name="id" value="<%$id%>" />
 
 <h2><&|/l&>Current Scrips</&></h2>
-% if ($Scrips->Count == 0 ) {
+% if ($Scrips->count == 0 ) {
 <p><i><&|/l&>(No scrips)</&></i></p>
 % } else {
 <table>
 <p><i><&|/l&>(Check box to delete)</&></i></p>
 
-%   while (my $scrip = $Scrips->Next ) {
+%   while (my $scrip = $Scrips->next ) {
 <tr>
 <td>
-<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->Id%>" value="1" />
+<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->id%>" value="1" />
 </td>
 <td>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
+<a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
 <small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
 </td>
 </tr>
@@ -80,12 +80,12 @@
 <%init>
 my (@actions);
 
-my $Scrips = RT::Scrips->new($session{'CurrentUser'});
+my $Scrips = RT::Model::Scrips->new($session{'CurrentUser'});
 
 
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my $QueueObj = RT::Model::Queue->new($session{'CurrentUser'});
 if ($id)  {
-        $QueueObj->Load($id);                        
+        $QueueObj->load($id);                        
 }
 
 if ($QueueObj->id) {                         
@@ -95,7 +95,7 @@ else {
         $Scrips->LimitToGlobal();
 }                                           
 
-$Scrips->OrderBy( FIELD => 'description' );
+$Scrips->order_by( column => 'description' );
 
 
 
@@ -104,9 +104,9 @@ foreach my $key (keys %ARGS) {
   # {{{ if we're trying to delete the scrip
   if ($key =~ /^DeleteScrip-(\d+)/) {
     my $id = $1;
-    my $scrip = new RT::Scrip($session{'CurrentUser'});
-    $scrip->Load($id);
-    my ($retval, $msg) = $scrip->Delete;
+    my $scrip = new RT::Model::Scrip($session{'CurrentUser'});
+    $scrip->load($id);
+    my ($retval, $msg) = $scrip->delete;
     if ($retval) {
       push @actions, loc("Scrip deleted");
     }

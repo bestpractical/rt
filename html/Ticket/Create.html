@@ -74,7 +74,7 @@
 <&|/l&>Owner</&>:
 </td>
 <td class="value">
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
+<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
@@ -116,12 +116,12 @@
 <& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
 </td>
 </tr>
-% if ($TxnCFs->Count) {
-% while (my $CF = $TxnCFs->Next()) {
+% if ($TxnCFs->count) {
+% while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % }
 % }
@@ -151,9 +151,9 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', Currentvalue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', Currentvalue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
 % }
@@ -246,8 +246,8 @@
 <%INIT>
 
 my @results;
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+$QueueObj->load($Queue) || Abort(loc("Queue could not be loaded."));
 
 $m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
@@ -274,7 +274,7 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new($session{'CurrentUser'});
-    $default_due->SetToNow();
+    $default_due->set_to_now();
     $default_due->AddDays($QueueObj->DefaultDueIn);
     $ARGS{'Due'} = $default_due->ISO();
 }
@@ -323,8 +323,8 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
     }
     else {
         # Invalid CFs
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+        while (my $CF = $CFs->next) {
+            my $msg = $m->notes('InvalidField-' . $CF->id) or next;
             push @results, $CF->Name . ': ' . $msg;
         }
     }

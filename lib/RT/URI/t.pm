@@ -70,7 +70,7 @@
 # END LICENSE BLOCK
 package RT::URI::t;
 
-use RT::Ticket;
+use RT::Model::Ticket;
 use RT::URI::base;
 
 use strict;

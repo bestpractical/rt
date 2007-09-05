@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::CachedGroupMember ();
-package RT::CachedGroupMember;
+use RT::Model::CachedGroupMember ();
+package RT::Model::CachedGroupMember;
 
 use strict;
 use warnings;
@@ -69,25 +69,25 @@ sub __DependsOn
     my $list = [];
 
 # deep memebership
-    my $objs = RT::CachedGroupMembers->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Via', VALUE => $self->Id );
-    $objs->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
+    my $objs = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    $objs->limit( column => 'Via', value => $self->id );
+    $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
 # principal lost group membership and lost some rights which he could delegate to
 # some body
 
-# XXX: Here is problem cause HasMemberRecursively would return true allways
+# XXX: Here is problem cause has_member_recursively would return true allways
 # cause we didn't delete anything yet. :(
     # if pricipal is not member anymore(could be via other groups) then proceed
-    if( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
-        my $acl = RT::ACL->new( $self->CurrentUser );
+    if( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
+        my $acl = RT::Model::ACL->new( $self->CurrentUser );
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
         # look into all rights that have group
-        while( my $ace = $acl->Next ) {
-            my $delegations = RT::ACL->new( $self->CurrentUser );
-            $delegations->DelegatedFrom( Id => $ace->Id );
+        while( my $ace = $acl->next ) {
+            my $delegations = RT::Model::ACL->new( $self->CurrentUser );
+            $delegations->DelegatedFrom( Id => $ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
             push( @$list, $delegations );
         }

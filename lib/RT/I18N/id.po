@@ -28,9 +28,9 @@ msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -44,7 +44,7 @@ msgid "$prefix %1"
 msgstr "$Awalan %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -153,7 +153,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Hak Cipta 1996-%3 %4."
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "%1 Memanggil AksiScrip"
 
@@ -197,7 +197,7 @@ msgstr "%1 tidak dapat mengatur status untuk diselesaikan. Database RT's mungkin
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "%1 sudah dibuat"
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -466,7 +466,7 @@ msgid "ACE not found"
 msgstr "ACE tidak ditemukan"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACE hanya dapat dibuat dan dihapus."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -689,19 +689,19 @@ msgid "Approval"
 msgstr "Izin"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Izin #%1: %2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Izin #%1: Catatan yang tidak dicatat karena kesalahan sistem"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Izin #%1: Catatan yang dicatat"
 
@@ -759,7 +759,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "Lampiran '%1' tidak dapat dipanggil"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Lampiran dibuat"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1167,7 +1167,7 @@ msgid "Couldn't find that value"
 msgstr "Tidak dapat menemukan nilai tersebut"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Tidak dapat memanggil %1 dari database pengguna.\\n"
 
@@ -1182,7 +1182,7 @@ msgid "Couldn't load CustomField %1"
 msgstr "Tidak dapat memanggil Kolom Kustom %1"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
@@ -1233,7 +1233,7 @@ msgstr ""
 msgid "Country"
 msgstr "Negara"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Dibuat"
 
@@ -1279,7 +1279,7 @@ msgstr "Buat scrip untuk antrian %1"
 msgid "Create a template"
 msgstr "Buat template"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Buat Tiket"
 
@@ -1837,7 +1837,7 @@ msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Kesalahan di dalam parameter Ke Antrian->Hapus Pengamat"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
 msgstr "Kesalahan di dalam parameter ke Antrian->Hapus Pengamat"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -1849,7 +1849,7 @@ msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Kesalahan di dalam parameter ke Tiket->Hapus Pengamat"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
 msgstr "Kesalahan di dalam parameter ke Ticket->Hapus Pengamat"
 
 #: bin/rt-crontool:285
@@ -2064,11 +2064,11 @@ msgstr "Grup sudah memiliki anggota"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "Grup tidak dapat dibuat: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Grup sudah dibuat"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2289,7 +2289,7 @@ msgid "Jan."
 msgstr "Jan."
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "Bergabung atau tinggalkan grup ini"
 
 #: lib/RT/Date.pm:447
@@ -2361,12 +2361,12 @@ msgid "Link already exists"
 msgstr "Link sudah ada"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Link tidak dapat dibuat"
 
 #: lib/RT/Record.pm:1326
 #. ($TransString)
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Link sudah dibuat (%1)"
 
 #: lib/RT/Record.pm:1387
@@ -2379,7 +2379,7 @@ msgid "Link not found"
 msgstr "Link tidak ditemukan"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "Link tiket #%1"
 
@@ -2685,12 +2685,12 @@ msgid "Modify associated objects for %1"
 msgstr "Mengubah objek-objek yang berhubungan untuk %1"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "Mengubah tanggal untuk #%1"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "Mengubah tanggal untuk tiket # %1"
 
@@ -2748,7 +2748,7 @@ msgstr "Mengubah orang-orang yang berhubungan dengan antrian %1"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "Mengubah orang-orang yang berhubungan dengan tiket #%1"
 
@@ -2790,12 +2790,12 @@ msgid "Modify the user %1"
 msgstr "Mengubah pengguna %1"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "Mengubah tiket # %1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "Mengubah tiket #%1"
 
@@ -2984,7 +2984,7 @@ msgstr "Tidak ada Tiket baru"
 msgid "New user"
 msgstr "Pengguna Baru"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "Pengguna Baru disebut"
 
@@ -3151,8 +3151,8 @@ msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT
 msgstr "Tidak ada pengguna RT yang valid ditemukan. RT cvs handler dilepaskan. Silakan berkonsultasi dengan administrator RT anda.\\n"
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
-msgstr "Tidak ada nilai yang dikirim ke _Set!\\n"
+msgid "No value sent to _set!\\n"
+msgstr "Tidak ada nilai yang dikirim ke _set!\\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -3263,7 +3263,7 @@ msgid "OR"
 msgstr "ATAU"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Objek tidak dapat dibuat"
 
 #: lib/RT/Record.pm:123
@@ -3271,7 +3271,7 @@ msgid "Object could not be deleted"
 msgstr "Objek tidak dapat dihapus"
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Object sudah dibuat"
 
 #: lib/RT/Record.pm:120
@@ -3350,13 +3350,13 @@ msgid "On Transaction"
 msgstr "Pada Transaksi"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "Hanya menampilkan izin untuk permintaan yang dibuat sesudah %1"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr "Hanya menampilkan izin untuk permintaan yang dibuat sebelum %1"
 
 #: html/Admin/CustomFields/index.html:75
@@ -3408,7 +3408,7 @@ msgid "Organization"
 msgstr "Organisasi"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Tiket Awal: #%1"
 
@@ -3643,7 +3643,7 @@ msgid "Queue already exists"
 msgstr "Antrian sudah ada"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "Antrian tidak dapat dibuat"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -3651,7 +3651,7 @@ msgid "Queue could not be loaded."
 msgstr "Antrian tidak dapat dipanggil."
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "Antrian sudah dibuat"
 
 #: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
@@ -3802,7 +3802,7 @@ msgid "Reminder '%1' reopened"
 msgstr ""
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr ""
 
@@ -3811,7 +3811,7 @@ msgid "Reminders"
 msgstr ""
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr ""
 
@@ -4013,7 +4013,7 @@ msgid "Saved searches"
 msgstr "Simpan pencarian"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr "Scrip #%1"
@@ -4136,7 +4136,7 @@ msgstr "Pilih grup"
 msgid "Select a queue"
 msgstr "Pilih antrian"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Pilih antrian untuk tiket baru anda"
 
@@ -4520,7 +4520,7 @@ msgid "Template"
 msgstr "Template"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "Template #%1"
 
@@ -4689,25 +4689,25 @@ msgid "Thu."
 msgstr "Kms."
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Tiket #%1 Perbaharui Jumbo: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Tiket #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "Tiket %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "Tiket %1 sudah dibuat di dalam antrian '%2'"
 
 #: NOT FOUND IN SOURCE
@@ -4715,7 +4715,7 @@ msgid "Ticket %1 loaded\\n"
 msgstr "Tiket %1 sudah dipanggil\\n"
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "Tiket %1: %2"
 
@@ -4724,7 +4724,7 @@ msgid "Ticket Custom Fields"
 msgstr "Tiket Kolom Kustom"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Historis Tiket # %1 %2"
 
@@ -4749,7 +4749,7 @@ msgid "Ticket content type"
 msgstr "Tipe isi Tiket"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "Tiket tidak dapat dibuat karena ada kesalahan internal"
 
 #: html/Ticket/Display.html:55
@@ -4760,7 +4760,7 @@ msgstr "Metadata Tiket"
 msgid "Ticket status changed"
 msgstr "Status tiket sudah diubah"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr "Pencarian modul Tiket SQL"
@@ -4778,11 +4778,11 @@ msgid "Tickets %1 by %2"
 msgstr "Tiket %1 oleh %2"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr ""
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -4876,7 +4876,7 @@ msgid "Transaction Custom Fields"
 msgstr "Kolom Kustom Transaksi"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
 msgstr "Transaksi->Tidak dapat dibuat, karena anda tidak menentukan tipe objek dan id"
 
 #: lib/RT/Transaction_Overlay.pm:870
@@ -4914,7 +4914,7 @@ msgid "Unknown field: $key"
 msgstr "Kolom tidak dikenali: $key"
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "Tidak terbatas"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -5074,11 +5074,11 @@ msgstr "Pengguna akan ditanya mengenai tipe pembaharuan yang tidak dikenal untuk
 
 #: html/Admin/Users/Modify.html:301
 #. ($msg)
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "Pengguna tidak dapat dibuat: %1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Pengguna sudah dibuat"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -5159,11 +5159,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "Kalau tiket sudah disetujui oleh beberapa pemberi persetujuan, tambahkan korespondensi ke tiket yang asli"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "Kalau tiket sudah dibuat"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Kalau tiket persetujuan sudah dibuat, beritahukan pemilik dan AdminCc dari item yang sedang ditunggu persetujuannya"
 
 #: etc/initialdata:151
@@ -5501,7 +5501,7 @@ msgid "ticket #%1 %2"
 msgstr "tiket #%1 %2"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr "grup yang belum dijelaskan %1"
 

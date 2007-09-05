@@ -61,15 +61,15 @@ use File::Spec ();
     # get config object
     use RT::Config;
     my $config = new RT::Config;
-    $config->LoadConfigs;
+    $config->load_configs;
 
     # get or set option
     my $rt_web_path = $config->Get('WebPath');
-    $config->Set(EmailOutputEncoding => 'latin1');
+    $config->set(EmailOutputEncoding => 'latin1');
 
     # get config object from RT package
     use RT;
-    RT->LoadConfig;
+    RT->load_config;
     my $config = RT->Config;
 
 =head1 DESCRIPTION
@@ -187,11 +187,11 @@ sub new
     my $proto = shift;
     my $class = ref($proto)? ref($proto): $proto;
     my $self = bless {}, $class;
-    $self->_Init(@_);
+    $self->_init(@_);
     return $self;
 }
 
-sub _Init
+sub _init
 {
     return;
 }
@@ -208,7 +208,7 @@ sub InitConfig
     return 1;
 }
 
-=head2 LoadConfigs
+=head2 load_configs
 
 Load all configs. First of all load RT's config then load
 extensions' config files in alphabetical order.
@@ -216,16 +216,16 @@ Takes no arguments.
 
 =cut
 
-sub LoadConfigs
+sub load_configs
 {
     my $self = shift;
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
-    $self->LoadConfig( File => $_ ) foreach @configs;
+    $self->load_config( File => $_ ) foreach @configs;
     return;
 }
 
-=head1 LoadConfig
+=head1 load_config
 
 Takes param hash with C<File> field.
 First, the site configuration file is loaded, in order to establish
@@ -240,23 +240,23 @@ overriding you have to copy original value from core config file.
 
 =cut
 
-sub LoadConfig
+sub load_config
 {
     my $self = shift;
     my %args = (File => '', @_);
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
     if ($args{'File'} eq 'RT_SiteConfig.pm' and my $site_config = $ENV{RT_SITE_CONFIG}) {
-        $self->_LoadConfig( %args, File => $site_config );
+        $self->_load_config( %args, File => $site_config );
     }
     else {
-        $self->_LoadConfig( %args );
+        $self->_load_config( %args );
     }
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
-    $self->_LoadConfig( %args );
+    $self->_load_config( %args );
     return 1;
 }
 
-sub _LoadConfig
+sub _load_config
 {
     my $self = shift;
     my %args = (File => '', @_);
@@ -269,7 +269,7 @@ sub _LoadConfig
         local *Set = sub(\[$@%]@) {
             my ($opt_ref, @args) = @_;
             my ($pack, $file, $line) = caller;
-            return $self->SetFromConfig(
+            return $self->set_from_config(
                 Option     => $opt_ref,
                 Value      => [@args],
                 Package    => $pack,
@@ -403,7 +403,7 @@ scalar type.
 
 =cut
 
-sub Set {
+sub set {
     my ($self, $name) = (shift, shift);
     
     my $old = $OPTIONS{ $name };
@@ -434,12 +434,12 @@ sub _ReturnValue {
     return $res;
 }
 
-sub SetFromConfig
+sub set_from_config
 {
     my $self = shift;
     my %args = (
         Option => undef,
-        Value => [],
+        value => [],
         Package => 'RT',
         File => '',
         Line => 0,
@@ -470,7 +470,7 @@ sub SetFromConfig
     foreach ( qw(Package File Line SiteConfig Extension) ) {
         $META{ $name }->{'Source'}->{$_} = $args{$_};
     }
-    $self->Set( $name, @{ $args{'Value'} } );
+    $self->set( $name, @{ $args{'Value'} } );
 
     return 1;
 }

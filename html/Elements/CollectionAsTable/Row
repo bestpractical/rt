@@ -53,7 +53,7 @@ $maxitems => undef
 $Depth => undef
 $Warning => undef
 $ColumnMap => {}
-$Class     => 'RT__Ticket'
+$Class     => 'RT__Model__Ticket'
 </%ARGS>
 <%init>
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );

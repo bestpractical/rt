@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/User/Prefs.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$UserObj->id%>" />
 
 <table width="100%" border="0">
 <tr>
@@ -186,14 +186,14 @@
 
 <%INIT>
 
-my $UserObj = new RT::User($session{'CurrentUser'});
+my $UserObj = new RT::Model::User($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);
 
 
-	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
-	$val = $UserObj->Id();
+	$UserObj->load($id) || $UserObj->load($Name) || Abort("Couldn't load user '$Name'");
+	$val = $UserObj->id();
     
 
 
@@ -201,7 +201,7 @@ my ($val, $msg);
 
 
 # If we have a user to modify, lets try. 
-if ($UserObj->Id) {
+if ($UserObj->id) {
     
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
@@ -231,7 +231,7 @@ if ($UserObj->Id) {
 
 # {{{ Deal with special fields: Privileged, Enabled and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
-my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
+my  ($code, $msg) = $UserObj->set_Privileged($Privileged);
      push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
 }
 
@@ -240,7 +240,7 @@ my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
 #TODO: make this report errors properly
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
     my ($code, $msg);
-    ($code, $msg) = $UserObj->SetPassword($Pass1);
+    ($code, $msg) = $UserObj->set_Password($Pass1);
     push @results, loc('Password: [_1]', loc_fuzzy($msg));
 } elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
     push @results, loc("Passwords do not match. Your password has not been changed");
@@ -254,7 +254,7 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
 
 
 <%ARGS>
-$id => $session{'CurrentUser'}->Id
+$id => $session{'CurrentUser'}->id
 $Name  => undef
 $Comments  => undef
 $Signature  => undef

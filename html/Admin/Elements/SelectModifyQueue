@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%while ( $queue = $queues->Next) {
+%while ( $queue = $queues->next) {
 <a href="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->Name%></a><br />
 %}
 <%INIT>
 my ($queue);
-my $queues = new RT::Queues($session{'CurrentUser'});
-$queues->UnLimit;
+my $queues = new RT::Model::Queues($session{'CurrentUser'});
+$queues->find_all_rows;
 </%INIT>
 <%ARGS>
 </%ARGS>

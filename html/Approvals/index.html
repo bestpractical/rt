@@ -62,28 +62,28 @@ foreach my $arg ( keys %ARGS ) {
 
     my ( $notesval, $notesmsg );
 
-    my $ticket = LoadTicket($1);
+    my $ticket = load_ticket($1);
 
-    if ( $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ) {
+    if ( $ARGS{ "Approval-" . $ticket->id . "-Notes" } ) {
         my $notes = MIME::Entity->build(
-	    Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
+	    Data => [ $ARGS{ "Approval-" . $ticket->id . "-Notes" } ]
 	);
-	RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+	RT::I18N::set_mime_entity_to_utf8($notes); # convert text parts into utf-8
 
         my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
         if ($notesval) {
-                push ( @actions, loc("Approval #[_1]: Notes recorded",$ticket->Id ));
+                push ( @actions, loc("Approval #[_1]: Notes recorded",$ticket->id ));
         } else {
-                push ( @actions, loc("Approval #[_1]: Notes not recorded due to a system error",$ticket->Id ));
+                push ( @actions, loc("Approval #[_1]: Notes not recorded due to a system error",$ticket->id ));
         }
     }
 
     my ($val, $msg);
     if ( $ARGS{$arg} eq 'deny' ) {
-         ( $val, $msg ) = $ticket->SetStatus('rejected');
+         ( $val, $msg ) = $ticket->set_Status('rejected');
     }
     elsif ( $ARGS{$arg} eq 'approve' ) {
-         ( $val, $msg ) = $ticket->SetStatus('resolved');
+         ( $val, $msg ) = $ticket->set_Status('resolved');
     }
     push ( @actions, loc("Approval #[_1]: [_2]",$ticket->id, $msg )) if ($msg);
 }

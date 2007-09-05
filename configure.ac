@@ -128,8 +128,8 @@ fi
 
 dnl DATABASE_ENV_PREF
 if test "$DB_TYPE" = 'Sybase'; then
-	test "x$SYBASE" = 'x' && AC_MSG_ERROR([Please declare the SYBASE_HOME environment variable])
-	DATABASE_ENV_PREF="\$ENV{'SYBASE'} = '$SYBASE';"
+	test "x$SYbase" = 'x' && AC_MSG_ERROR([Please declare the SYbase_HOME environment variable])
+	DATABASE_ENV_PREF="\$ENV{'SYbase'} = '$SYbase';"
 fi
 AC_SUBST(DATABASE_ENV_PREF)
 

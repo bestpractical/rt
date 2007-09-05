@@ -1,5 +1,5 @@
 <%ARGS>
-$Class => 'RT__Ticket'
+$Class => 'RT__Model__Ticket'
 $Name
 $Attr  => undef
 </%ARGS>

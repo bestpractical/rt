@@ -70,8 +70,8 @@ sub Ticket {
 sub TicketObj {
     my $self = shift;
     unless ($self->{'_ticketobj'}) {
-        $self->{'_ticketobj'} = RT::Ticket->new($self->CurrentUser);
-        $self->{'_ticketobj'}->Load($self->Ticket);
+        $self->{'_ticketobj'} = RT::Model::Ticket->new($self->CurrentUser);
+        $self->{'_ticketobj'}->load($self->Ticket);
     }
         return $self->{'_ticketobj'};
 }
@@ -79,18 +79,18 @@ sub TicketObj {
 
 =head2 Collection
 
-Returns an RT::Tickets object containing reminders for this object's "Ticket"
+Returns an RT::Model::Tickets object containing reminders for this object's "Ticket"
 
 =cut
 
 sub Collection {
     my $self = shift;
-    my $col = RT::Tickets->new($self->CurrentUser);
+    my $col = RT::Model::Tickets->new($self->CurrentUser);
 
      my $query =     'Queue = "'. $self->TicketObj->QueueObj->Name .'" AND Type = "reminder"';
     $query .= ' AND RefersTo = "'.$self->Ticket.'"';
    
-    $col->FromSQL($query);
+    $col->from_sql($query);
     
     return($col);
 }
@@ -116,8 +116,8 @@ sub Add {
                  Due => undef,
                  @_);
 
-    my $reminder = RT::Ticket->new($self->CurrentUser);
-    $reminder->Create( Subject => $args{'Subject'},
+    my $reminder = RT::Model::Ticket->new($self->CurrentUser);
+    $reminder->create( Subject => $args{'Subject'},
                        Owner => $args{'Owner'},
                        Due => $args{'Due'},
                        RefersTo => $self->Ticket,
@@ -126,7 +126,7 @@ sub Add {
                    
                    );
     $self->TicketObj->_NewTransaction(Type => 'AddReminder',
-                                    Field => 'RT::Ticket',
+                                    column => 'RT::Model::Ticket',
                                    NewValue => $reminder->id);
 
 
@@ -137,9 +137,9 @@ sub Open {
     my $self = shift;
     my $reminder = shift; 
 
-    $reminder->SetStatus('open');
+    $reminder->set_Status('open');
     $self->TicketObj->_NewTransaction(Type => 'OpenReminder',
-                                    Field => 'RT::Ticket',
+                                    column => 'RT::Model::Ticket',
                                    NewValue => $reminder->id);
 }
 
@@ -147,9 +147,9 @@ sub Open {
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
-    $reminder->SetStatus('resolved');
+    $reminder->set_Status('resolved');
     $self->TicketObj->_NewTransaction(Type => 'ResolveReminder',
-                                    Field => 'RT::Ticket',
+                                    column => 'RT::Model::Ticket',
                                    NewValue => $reminder->id);
 }
 

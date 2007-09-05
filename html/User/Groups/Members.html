@@ -55,7 +55,7 @@
 
 
 <form action="<%RT->Config->Get('WebPath')%>/User/Groups/Members.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 <table width="100%">
 <tr>
 <td>
@@ -72,7 +72,7 @@
 </td>
 <td valign="top">
 
-% if ($Group->MembersObj->Count == 0 ) {
+% if ($Group->MembersObj->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <em><&|/l&>(Check box to delete)</&></em>
@@ -82,8 +82,8 @@
 % my $UserMembers = $Group->MembersObj;
 % $UserMembers->LimitToUsers();
 <ul>
-% while (my $member = $UserMembers->Next()) {
-<li><input type="checkbox" class="checkbox" name="DeleteMember-<%$member->MemberId%>" value="1" />
+% while (my $member = $UserMembers->next()) {
+<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
 <& /Elements/ShowUser, User => $member->MemberObj->Object &>
 % }
 </ul>
@@ -91,8 +91,8 @@
 <ul>
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
-% while (my $member = $GroupMembers->Next()) {
-<li><input type="checkbox" class="checkbox" name="DeleteMember-<%$member->MemberId%>" value="1" />
+% while (my $member = $GroupMembers->next()) {
+<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
 <%$member->MemberObj->Object->Name%>
 % }
 % }
@@ -106,8 +106,8 @@
 
 <%INIT>
 
-my $Group = new RT::Group($session{'CurrentUser'});
-$Group->Load($id) ;
+my $Group = new RT::Model::Group($session{'CurrentUser'});
+$Group->load($id) ;
 
 unless ($Group->id) {
     Abort(loc('Could not load group'));
@@ -117,9 +117,9 @@ my (@results);
 
 foreach my $key (keys %ARGS) {
 
-if ($key =~ /^DeleteMember-(\d+)$/) {
+if ($key =~ /^delete_member-(\d+)$/) {
     my $mem_id = $1; 
-    my ($val,$msg) = $Group->DeleteMember($mem_id);
+    my ($val,$msg) = $Group->delete_member($mem_id);
     push (@results, $msg);
 }
 }
@@ -134,11 +134,11 @@ foreach my $member (@AddMembersUsers, @AddMembersGroups) {
     my $principal;
 
     if ($member =~ /^Group-(\d+)$/) {
-        $principal = RT::Group->new($session{'CurrentUser'});
-        $principal->Load($1);
+        $principal = RT::Model::Group->new($session{'CurrentUser'});
+        $principal->load($1);
     } elsif ($member =~ /^User-(\d+)$/) {
-        $principal = RT::User->new($session{'CurrentUser'});
-        $principal->Load($1);
+        $principal = RT::Model::User->new($session{'CurrentUser'});
+        $principal->load($1);
     } else {
         next;
     }

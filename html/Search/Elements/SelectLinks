@@ -55,7 +55,7 @@ $Name => 'LinksField'
 </%ARGS>
 
 <%INIT>
-my @fields = ('HasMember',
+my @fields = ('has_member',
 	      'MemberOf',
 	      'DependsOn',
 	      'DependedOnBy',

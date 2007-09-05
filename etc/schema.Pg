@@ -481,7 +481,7 @@ CREATE TABLE Templates (
 
 
 --
--- Sequences for table TICKETCUSTOMFIELDVALUES
+-- Sequences for table TICKETcustomfieldvalueS
 --
 
 CREATE SEQUENCE objectcustomfieldvalues_id_s;
@@ -517,7 +517,7 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 
 
 --
--- Sequences for table CUSTOMFIELDS
+-- Sequences for table customfields
 --
 
 CREATE SEQUENCE customfields_id_seq;
@@ -569,7 +569,7 @@ CREATE TABLE ObjectCustomFields (
 
 
 --
--- Sequences for table CUSTOMFIELDVALUES
+-- Sequences for table customfieldvalueS
 --
 
 CREATE SEQUENCE customfieldvalues_id_seq;

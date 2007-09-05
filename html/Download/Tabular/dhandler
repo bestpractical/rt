@@ -66,7 +66,7 @@ $m->clear_buffer();
 $m->out(join("\t", "Id", map $_->[1], @cols), "\n");
 foreach my $id (@ids) {
     my $obj = $class->new;
-    $obj->Load($id) or next;
+    $obj->load($id) or next;
     $m->out(join("\t", map $obj->$_, "Id", map $_->[0], @cols), "\n");
 }
 $m->abort; 

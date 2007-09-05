@@ -77,7 +77,7 @@ User and Principal, User and its ACL equivalence group.
 =head2 VARIABLE
 
 This flag is used to mark dependencies that can be resolved with changing
-value in target object. For example ticket can be created by user we can
+value in target object. For example ticket can be Created by user we can
 change this reference when we delete user.
 
 =head2 RELATES

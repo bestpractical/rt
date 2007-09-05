@@ -52,11 +52,11 @@
 =head1 SYNOPSIS
 
     use RT::Search::Generic;
-    my $tickets = RT::Tickets->new($CurrentUser);
+    my $tickets = RT::Model::Tickets->new($CurrentUser);
     my $foo = RT::Search::Generic->new(Argument => $arg,
                                        TicketsObj => $tickets);
-    $foo->Prepare();
-    while ( my $ticket = $foo->Next ) {
+    $foo->prepare();
+    while ( my $ticket = $foo->next ) {
         # Do something with each ticket we've found
     }
 
@@ -81,13 +81,13 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->_Init(@_);
+  $self->_init(@_);
   return $self;
 }
 # }}}
 
-# {{{ sub _Init 
-sub _Init  {
+# {{{ sub _init 
+sub _init  {
   my $self = shift;
   my %args = ( 
            TicketsObj => undef,
@@ -132,8 +132,8 @@ sub Describe  {
 }
 # }}}
 
-# {{{ sub Prepare
-sub Prepare  {
+# {{{ sub prepare
+sub prepare  {
   my $self = shift;
   return(1);
 }

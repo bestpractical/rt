@@ -13,12 +13,12 @@ plan tests => 7;
 diag 'global template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Template->new( $RT::SystemUser );
-    my ($id, $msg) = $template->Create(
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    my ($id, $msg) = $template->create(
         Name => 'my template',
         Content => "\nsome content",
     );
-    ok($id, 'created template') or diag "error: $msg";
+    ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $template );
@@ -29,13 +29,13 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
 diag 'local template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Template->new( $RT::SystemUser );
-    my ($id, $msg) = $template->Create(
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    my ($id, $msg) = $template->create(
         Name => 'my template',
         Queue => 'General',
         Content => "\nsome content",
     );
-    ok($id, 'created template') or diag "error: $msg";
+    ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $template );
@@ -46,23 +46,23 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
 diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Template->new( $RT::SystemUser );
-    my ($id, $msg) = $template->Create(
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    my ($id, $msg) = $template->create(
         Name => 'my template',
         Queue => 'General',
         Content => "\nsome content",
     );
-    ok($id, 'created template') or diag "error: $msg";
+    ok($id, 'Created template') or diag "error: $msg";
 
-    my $scrip = RT::Scrip->new( $RT::SystemUser );
-    ($id, $msg) = $scrip->Create(
+    my $scrip = RT::Model::Scrip->new( $RT::SystemUser );
+    ($id, $msg) = $scrip->create(
         Description    => 'my scrip',
         Queue          => 'General',
         ScripCondition => 'On Create',
         ScripAction    => 'Open Tickets',
         Template       => $template->id,
     );
-    ok($id, 'created scrip') or diag "error: $msg";
+    ok($id, 'Created scrip') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $template );

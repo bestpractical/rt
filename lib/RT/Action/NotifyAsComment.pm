@@ -53,21 +53,21 @@ use vars qw/@ISA/;
 @ISA = qw(RT::Action::Notify);
 
 
-=head2 SetReturnAddress
+=head2 set_ReturnAddress
 
 Tell SendEmail that this message should come out as a comment. 
-Calls SUPER::SetReturnAddress.
+Calls SUPER::set_ReturnAddress.
 
 =cut
 
-sub SetReturnAddress {
+sub set_ReturnAddress {
 	my $self = shift;
 	
 	# Tell RT::Action::SendEmail that this should come 
 	# from the relevant comment email address.
 	$self->{'comment'} = 1;
 	
-	return($self->SUPER::SetReturnAddress(is_comment => 1));
+	return($self->SUPER::set_ReturnAddress(is_comment => 1));
 }
 
 eval "require RT::Action::NotifyAsComment_Vendor";

@@ -62,7 +62,7 @@ $Name
 
 $Description  => undef,
 
-$CurrentValue => '',
+$Currentvalue => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
@@ -73,7 +73,7 @@ $DefaultLabel   => loc( 'Leaving this empty will default to the system default o
 <input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
 <%ARGS>
 $Name
-$CurrentValue => '',
+$Currentvalue => '',
 </%ARGS>
 </%METHOD>
 

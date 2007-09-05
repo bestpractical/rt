@@ -64,14 +64,14 @@
 <td>
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'}||$RT::Nobody->Id &>
+<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'}||$RT::Nobody->id &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->id%>" /><br />
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -89,11 +89,11 @@
 
 
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
-%    while (my $CF = $TxnCFs->Next()) {
+%    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </tr>
 %    } # end if while
 % } # end of if
@@ -115,9 +115,9 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td><table>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', Currentvalue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', Currentvalue => $ARGS{'Encrypt'} &></td>
 </table></td></tr>
 % }
 
@@ -139,7 +139,7 @@
 
 
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
-% if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
+% if ($TicketObj->current_user_has_right('ShowOutgoingEmail')) {
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 % }
 </form>
@@ -148,7 +148,7 @@ my $CanRespond = 0;
 my $CanComment = 0;
 my $title;
 
-my $TicketObj = LoadTicket($id);
+my $TicketObj = load_ticket($id);
 
 $TicketObj->Lock();
 
@@ -190,11 +190,11 @@ if ($Action ne 'Respond') {
 
 
 
-$CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
-                     $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
+$CanRespond = 1 if ( $TicketObj->current_user_has_right('ReplyToTicket') or
+                     $TicketObj->current_user_has_right('ModifyTicket') ); 
 
-$CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
-                     $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
+$CanComment = 1 if ( $TicketObj->current_user_has_right('CommentOnTicket') or
+                     $TicketObj->current_user_has_right('ModifyTicket') ); 
 
 
 # {{{ deal with deleting uploaded attachments

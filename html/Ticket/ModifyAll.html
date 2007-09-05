@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Header, Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyAll.html?id=".$Ticket->Id, 
-    Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->Id, $Ticket->Subject) &>
+    current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
+    Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->id, $Ticket->Subject) &>
 
 <& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
+<&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->id) &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
@@ -73,7 +73,7 @@
 
 
 <&| /Widgets/TitleBox, title => loc('People') &>
-<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& Elements/EditPeople, Ticket => $Ticket, Usercolumn => $UserField, UserString => $UserString, UserOp => $UserOp &>
 </&>
 
 <br />
@@ -104,12 +104,12 @@
     <td class="entry"><input name="UpdateSubject" size="60" value="<%$Ticket->Subject%>" /></td>
   </tr>
 % if (my $TxnCFs = $Ticket->TransactionCustomFields) {
-%    while (my $CF = $TxnCFs->Next()) {
+%    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td class="label"><% $CF->Name %>:</td>
 <td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
-    NamePrefix => "Object-RT::Transaction--CustomField-"
+    NamePrefix => "Object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 %    } # end if while
@@ -135,17 +135,17 @@
 
 
 
-my $Ticket = LoadTicket($id);
+my $Ticket = load_ticket($id);
 
 my $CanRespond = 0;
 my $CanComment = 0;
 
 
-$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+$CanRespond = 1 if ( $Ticket->current_user_has_right('ReplyToTicket') or
+                     $Ticket->current_user_has_right('ModifyTicket') ); 
 
-$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+$CanComment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
+                     $Ticket->current_user_has_right('ModifyTicket') );
 
 
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -193,12 +193,12 @@ push @results, @cf_results;
 
 # undef so that TransactionBatch scrips run and update the ticket
 $Ticket = undef;
-$Ticket = LoadTicket($id);
+$Ticket = load_ticket($id);
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
 
-unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+unless ($Ticket->current_user_has_right('ShowTicket')) {
    Abort("No permission to view ticket");
 }
 
@@ -209,7 +209,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 
 <%ARGS>
 $OnlySearchForPeople => undef
-$UserField => undef
+$Usercolumn => undef
 $UserOp => undef
 $UserString => undef
 $id => undef

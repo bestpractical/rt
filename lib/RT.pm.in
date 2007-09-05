@@ -97,7 +97,7 @@ A fully featured request tracker package
 
 =head2 INITIALIZATION
 
-=head2 LoadConfig
+=head2 load_config
 
 Load RT's config file.  First, the site configuration file
 (F<RT_SiteConfig.pm>) is loaded, in order to establish overall site
@@ -112,10 +112,10 @@ have not been set already.
 
 =cut
 
-sub LoadConfig {
+sub load_config {
     require RT::Config;
     $Config = new RT::Config;
-    $Config->LoadConfigs;
+    $Config->load_configs;
     require RT::I18N;
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
@@ -266,7 +266,7 @@ sub InitLogging {
 
             unless ( -d $logdir && ( ( -f $filename && -w $filename ) || -w $logdir ) ) {
                 # localizing here would be hard when we don't have a current user yet
-                die "Log file '$filename' couldn't be written or created.\n RT can't run.";
+                die "Log file '$filename' couldn't be written or Created.\n RT can't run.";
             }
 
             require Log::Dispatch::File;
@@ -324,7 +324,7 @@ sub InitLogging {
         # if we are not in eval and perl is not parsing code
         # then rollback transactions and log RT error
         unless ($^S || !defined $^S ) {
-            $RT::Handle->Rollback(1) if $RT::Handle;
+            $RT::Handle->rollback(1) if $RT::Handle;
             $RT::Logger->crit("$_[0]") if $RT::Logger;
         }
         die $_[0];
@@ -372,21 +372,21 @@ Load all modules that define base classes.
 =cut
 
 sub InitClasses {
-    require RT::Tickets;
-    require RT::Transactions;
-    require RT::Users;
+    require RT::Model::Tickets;
+    require RT::Model::Transactions;
+    require RT::Model::Users;
     require RT::CurrentUser;
-    require RT::Templates;
-    require RT::Queues;
-    require RT::ScripActions;
-    require RT::ScripConditions;
-    require RT::Scrips;
-    require RT::Groups;
-    require RT::GroupMembers;
-    require RT::CustomFields;
-    require RT::CustomFieldValues;
-    require RT::ObjectCustomFields;
-    require RT::ObjectCustomFieldValues;
+    require RT::Model::Templates;
+    require RT::Model::Queues;
+    require RT::Model::ScripActions;
+    require RT::Model::ScripConditions;
+    require RT::Model::Scrips;
+    require RT::Model::Groups;
+    require RT::Model::GroupMembers;
+    require RT::Model::CustomFields;
+    require RT::Model::CustomFieldValues;
+    require RT::Model::ObjectCustomFields;
+    require RT::Model::ObjectCustomFieldValues;
 }
 
 =head2 InitSystemObjects
@@ -401,11 +401,11 @@ sub InitSystemObjects {
     #RT's system user is a genuine database user. its id lives here
     require RT::CurrentUser;
     $SystemUser = new RT::CurrentUser;
-    $SystemUser->LoadByName('RT_System');
+    $SystemUser->load_by_name('RT_System');
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
     $Nobody = new RT::CurrentUser;
-    $Nobody->LoadByName('Nobody');
+    $Nobody->load_by_name('Nobody');
 
     require RT::System;
     $System = new RT::System;
@@ -416,7 +416,7 @@ sub InitSystemObjects {
 =head2 Config
 
 Returns the current L<config object RT::Config>, but note that
-you must L<load config /LoadConfig> first otherwise this method
+you must L<load config /load_config> first otherwise this method
 returns undef.
 
 Method can be called as class method.
@@ -482,7 +482,7 @@ If you're not sure what's going on, report them rt-devel@lists.bestpractical.com
 =head1 SEE ALSO
 
 L<RT::StyleGuide>
-L<DBIx::SearchBuilder>
+L<Jifty::DBI>
 
 
 =cut

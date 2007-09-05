@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <ul>
-% while( my $value = $values->Next ) {
+% while( my $value = $values->next ) {
 % my $desc = $value->Description || '';
 % $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
 <li><% $value->Name %><% $desc |n %></li>
@@ -61,21 +61,21 @@ while( my($k, $v) = each %ARGS ) {
     last;
 }
 $m->abort unless $CustomField;
-my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
+my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
+$CustomFieldObj->load( $CustomField );
 my $values = $CustomFieldObj->Values;
-$values->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
+$values->limit(
+    column           => 'Name',
+    operator        => 'LIKE',
+    value           => $Value,
+    subclause       => 'autcomplete',
 );
-$values->Limit(
-    ENTRYAGGREGATOR => 'OR',
-    FIELD           => 'Description',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
+$values->limit(
+    entry_aggregator => 'OR',
+    column           => 'Description',
+    operator        => 'LIKE',
+    value           => $Value,
+    subclause       => 'autcomplete',
 );
 
 </%INIT>

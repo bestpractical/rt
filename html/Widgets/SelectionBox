@@ -70,7 +70,7 @@
 %# and in html:
 %# <& /Widgets/SelectionBox:sow, self => $sel &>
 %#
-%# if the SelectionBox is created with AutoSave option, OnSubmit will be called
+%# if the SelectionBox is Created with AutoSave option, OnSubmit will be called
 %# on every button clicked in non-js mode.
 <%method header>
 % unless ($nojs) {
@@ -203,7 +203,7 @@ selected="selected"
 </select>
  <input name="moveup" type="submit" class="button" value=" &uarr; " />
  <input name="movedown" type="submit" class="button" value=" &darr; " />
- <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
+ <input name="remove" type="submit" class="button" value="<&|/l&>delete</&>" />
 
 % my $caption = "";
 % unless ($self->{'AutoSave'}) {

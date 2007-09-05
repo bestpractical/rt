@@ -46,19 +46,19 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <table>
-% while ( my $CustomField = $CustomFields->Next ) {
-% my $Values = $Object->CustomFieldValues( $CustomField->Id );
-% my $count = $Values->Count;
+% while ( my $CustomField = $CustomFields->next ) {
+% my $Values = $Object->CustomFieldValues( $CustomField->id );
+% my $count = $Values->count;
   <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->Name %>:</td>
     <td class="value">
 % unless ( $count ) {
 <i><&|/l&>(no value)</&></i>
 % } elsif ( $count == 1 ) {
-%   $print_value->( $CustomField, $Values->First );
+%   $print_value->( $CustomField, $Values->first );
 % } else {
 <ul>
-% while ( my $Value = $Values->Next ) {
+% while ( my $Value = $Values->next ) {
 <li><% $print_value->( $CustomField, $Value ) |n %></li>
 % }
 </ul>

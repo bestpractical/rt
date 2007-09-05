@@ -125,7 +125,7 @@ if [ x"$dir_arg" != x ]; then
 else
 
 # Waiting for this to be detected by the "$instcmd $src $dsttmp" command
-# might cause directories to be created, which would be especially bad 
+# might cause directories to be Created, which would be especially bad 
 # if $src (and thus $dsttmp) contains '*'.
 
 	if [ -f "$src" ] || [ -d "$src" ]

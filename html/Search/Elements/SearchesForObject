@@ -52,7 +52,7 @@ $Object => undef
 # Returns an array of search objects associated on $Object,
 # in the form of [Description, searchObj]
 my @result;
-while (my $search = $Object->Attributes->Next) {
+while (my $search = $Object->attributes->next) {
     my $desc;
     if ($search->Name eq 'SavedSearch') {
 	push @result, [$search->Description, $search];

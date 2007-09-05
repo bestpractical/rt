@@ -54,16 +54,16 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, "");
 
-$ticket->Load($id);
-unless ($ticket->Id) {
+$ticket->load($id);
+unless ($ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
 my $trans = $ticket->Transactions();
-my $total = $trans->Count();
+my $total = $trans->count();
 
 chomp $args;
 my @arglist = split('/', $args);
@@ -81,36 +81,36 @@ if ($type) {
     # Create, Set, Status, Correspond, Comment, Give, Steal, Take, Told
     # CustomField, AddLink, DeleteLink, AddWatcher, DelWatcher
     if ($args =~ /^links?$/) {
-        $trans->Limit(FIELD => 'Type', OPERATOR => 'LIKE', VALUE => '%Link');
+        $trans->limit(column => 'Type', operator => 'LIKE', value => '%Link');
     }
     elsif ($args =~ /^watchers?$/) {
-        $trans->Limit(FIELD => 'Type', OPERATOR => 'LIKE', VALUE => '%Watcher');
+        $trans->limit(column => 'Type', operator => 'LIKE', value => '%Watcher');
     }
     else {
-        $trans->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => $type);
+        $trans->limit(column => 'Type', operator => '=', value => $type);
     }
 } elsif ($tid) {
-    $trans->Limit(FIELD => 'Id', OPERATOR => '=', VALUE => $tid);
+    $trans->limit(column => 'Id', operator => '=', value => $tid);
 }
 
 if ($tid) {
     my @data;
-    my $t = new RT::Transaction $session{CurrentUser};
+    my $t = new RT::Model::Transaction $session{CurrentUser};
     
     # this paragraph limits the transaction ID query to transactions on this ticket. 
     # Otherwise you can query any transaction from any ticket, which makes no sense.
     my $Transactions = $ticket->Transactions;
     my $tok=0;
-    while (my $T = $Transactions->Next()) {
-    	$tok=1 if ($T->Id == $tid)
+    while (my $T = $Transactions->next()) {
+    	$tok=1 if ($T->id == $tid)
     }
     if ($tok) {
-    	$t->Load($tid);
+    	$t->load($tid);
     } else {
     	return [ "# Transaction $tid is not related to Ticket $id", [], {}, 1 ];
     }
 
-    push @data, [ id    => $t->Id   ];
+    push @data, [ id    => $t->id   ];
     push @data, [ Ticket    => $t->Ticket   ]
 	if (!%$fields || exists $fields->{lc 'Ticket'});
     push @data, [ TimeTaken    => $t->TimeTaken   ]
@@ -132,8 +132,8 @@ if ($tid) {
 
 
     if (!%$fields || exists $fields->{lc 'Content'}) {    
-	my $creator = new RT::User $session{CurrentUser};
-	$creator->Load($t->Creator);
+	my $creator = new RT::Model::User $session{CurrentUser};
+	$creator->load($t->Creator);
 	push @data, [ Creator    => $creator->Name   ];
     }
     push @data, [ Created    => $t->Created   ]
@@ -142,11 +142,11 @@ if ($tid) {
     if (!%$fields || exists $fields->{lc 'Attachments'}) {
 	my $attachlist;
 	my $attachments = $t->Attachments;
-	while (my $a = $attachments->Next) {
+	while (my $a = $attachments->next) {
 	    my $size = length($a->Content);
 	    if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
 	    else              { $size .= "b" }
-	    $attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
+	    $attachlist .= "\n" . $a->id.": ".($a->Filename || "untitled")." (".$size.")";
 	}
 	
 	push @data, [Attachments => $attachlist];
@@ -161,8 +161,8 @@ if ($tid) {
     $format ||= "s";
     $format = "l" if (%$fields);
 
-    while (my $t = $trans->Next) {
-	my $tid = $t->Id;
+    while (my $t = $trans->next) {
+	my $tid = $t->id;
 
 	if ($format eq "l") {
 	    $tids .= "," if $tids;
@@ -191,7 +191,7 @@ if ($tid) {
 }
 
 if (!$c) {
-    my $sub = $trans->Count();
+    my $sub = $trans->count();
     $c = "# $sub/$total ($args/total)";
 }
 

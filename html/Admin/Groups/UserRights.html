@@ -57,12 +57,12 @@
       
 <&| /Widgets/TitleBox, title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
 <table>
-% while ( my $Member = $Users->Next ) {
+% while ( my $Member = $Users->next ) {
 % my $UserObj = $Member->MemberObj->Object;
   <tr align="right">
     <td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
     <td><& /Admin/Elements/SelectRights,
-        PrincipalId => $Member->MemberObj->Id,
+        PrincipalId => $Member->MemberObj->id,
         PrincipalType => 'User',
         Object => $GroupObj,
     &></td>
@@ -90,12 +90,12 @@ if (!defined $id) {
     Abort(loc("No Group defined"));
 }
 
-my $GroupObj = RT::Group->new($session{'CurrentUser'});
-$GroupObj->Load($id) || Abort(loc("Couldn't load group [_1]",$id));
+my $GroupObj = RT::Model::Group->new($session{'CurrentUser'});
+$GroupObj->load($id) || Abort(loc("Couldn't load group [_1]",$id));
 
 # Find out which users we want to display ACL selects for
-my $Privileged = RT::Group->new($session{'CurrentUser'});
-$Privileged->LoadSystemInternalGroup('Privileged');
+my $Privileged = RT::Model::Group->new($session{'CurrentUser'});
+$Privileged->load_system_internal_group('Privileged');
 my $Users = $Privileged->MembersObj();
 
     
@@ -108,5 +108,5 @@ my $Users = $Privileged->MembersObj();
 $id => undef
 $UserString => undef
 $UserOp => undef
-$UserField => undef
+$Usercolumn => undef
 </%ARGS>

@@ -76,10 +76,10 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $dbh->quote_identifier( $self->Table );
+    my $res = "INSERT INTO ". $dbh->quote_identifier( $self->table );
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
-    $res .= " VALUES";
+    $res .= " valueS";
     $res .= "(". join( ",", map { $dbh->quote( $values->{$_} ) } sort keys %$values ) .")";
     $res .= ";";
 
@@ -134,29 +134,29 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Object attributes
-    $objs = $self->Attributes;
+    $objs = $self->attributes;
     push( @$list, $objs );
 
 # Transactions
-    $objs = RT::Transactions->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'ObjectType', VALUE => ref $self );
-    $objs->Limit( FIELD => 'ObjectId', VALUE => $self->id );
+    $objs = RT::Model::Transactions->new( $self->CurrentUser );
+    $objs->limit( column => 'ObjectType', value => ref $self );
+    $objs->limit( column => 'ObjectId', value => $self->id );
     push( @$list, $objs );
 
 # Links
     if ( $self->can('_Links') ) {
-        # XXX: We don't use Links->Next as it's dies when object
+        # XXX: We don't use Links->next as it's dies when object
         #      is linked to object that doesn't exist
-        #      also, ->Next skip links to deleted tickets :(
+        #      also, ->next skip links to deleted tickets :(
         foreach ( qw(Base Target) ) {
             my $objs = $self->_Links( $_ );
-            $objs->_DoSearch;
-            push @$list, $objs->ItemsArrayRef;
+            $objs->_do_search;
+            push @$list, $objs->items_array_ref;
         }
     }
 
 # ACE records
-    $objs = RT::ACL->new( $self->CurrentUser );
+    $objs = RT::Model::ACL->new( $self->CurrentUser );
     $objs->LimitToObject( $self );
     push( @$list, $objs );
 
@@ -180,9 +180,9 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    if( $self->_Accessible( 'Creator', 'read' ) ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->Load( $self->Creator );
+    if( $self->can('Creator')) {
+        my $obj = RT::Model::Principal->new( $self->CurrentUser );
+        $obj->load( $self->Creator );
 
         if( $obj && defined $obj->id ) {
             push( @$list, $obj );
@@ -195,9 +195,9 @@ sub __Relates
         }
     }
 
-    if( $self->_Accessible( 'LastUpdatedBy', 'read' ) ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->Load( $self->LastUpdatedBy );
+    if( $self->can( 'LastUpdatedBy') ) {
+        my $obj = RT::Model::Principal->new( $self->CurrentUser );
+        $obj->load( $self->LastUpdatedBy );
 
         if( $obj && defined $obj->id ) {
             push( @$list, $obj );
@@ -231,12 +231,12 @@ sub __Wipeout
 {
     my $self = shift;
     my $msg = $self->_AsString ." wiped out";
-    $self->SUPER::Delete;
+    $self->SUPER::delete;
     $RT::Logger->warning( $msg );
     return;
 }
 
-sub ValidateRelations
+sub validate_Relations
 {
     my $self = shift;
     my %args = (
@@ -264,7 +264,7 @@ sub _ValidateRelations
 
     my $deps = $self->Dependencies( %args );
 
-    $deps->ValidateRelations( %args );
+    $deps->validate_Relations( %args );
 
     return;
 }

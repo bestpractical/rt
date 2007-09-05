@@ -47,16 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 %# Print out a placeholder if there are none.
-% unless ( $Members->Count ) {
+% unless ( $Members->count ) {
 <li><i><&|/l&>none</&></i></li>
 % }
 
 
-% while ( my $watcher = $Members->Next ) {
+% while ( my $watcher = $Members->next ) {
 % my $member = $watcher->MemberObj->Object;
 <li>
 <input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Type %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
-% if ( $member->isa( 'RT::User' ) ) { 
+% if ( $member->isa( 'RT::Model::User' ) ) { 
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
 <& /Elements/ShowUser, User => $member &></a>
 % if ($TicketObj and grep { $_->Content eq $member->EmailAddress } $TicketObj->SquelchMailTo)  {

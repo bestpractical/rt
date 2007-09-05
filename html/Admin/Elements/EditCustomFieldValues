@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% unless ( $values->Count ) {
+% unless ( $values->count ) {
 <p><em><&|/l&>(no values)</&></em></p>
 %    return;
 % }
@@ -63,8 +63,8 @@
 % }
 </tr>
 
-% while ( my $value = $values->Next ) {
-% my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
+% while ( my $value = $values->next ) {
+% my $paramtag = "CustomField-". $CustomField->id ."-Value-". $value->id;
 <tr>
 <td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
 <td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" /></td>

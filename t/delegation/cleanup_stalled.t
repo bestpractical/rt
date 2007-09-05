@@ -26,45 +26,45 @@ my ($u1, $u2, $g1, $g2, $g3, $pg1, $pg2, $ace, @groups, @users, @principals);
 
 my($ret, $msg);
 
-$u1 = RT::User->new($RT::SystemUser);
-( $ret, $msg ) = $u1->LoadOrCreateByEmail('delegtest1@example.com');
+$u1 = RT::Model::User->new($RT::SystemUser);
+( $ret, $msg ) = $u1->load_or_create_by_email('delegtest1@example.com');
 ok( $ret, "Load / Create test user 1: $msg" );
-$u1->SetPrivileged(1);
-$u2 = RT::User->new($RT::SystemUser);
-( $ret, $msg ) = $u2->LoadOrCreateByEmail('delegtest2@example.com');
+$u1->set_Privileged(1);
+$u2 = RT::Model::User->new($RT::SystemUser);
+( $ret, $msg ) = $u2->load_or_create_by_email('delegtest2@example.com');
 ok( $ret, "Load / Create test user 2: $msg" );
-$u2->SetPrivileged(1);
-$g1 = RT::Group->new($RT::SystemUser);
-( $ret, $msg) = $g1->LoadUserDefinedGroup('dg1');
+$u2->set_Privileged(1);
+$g1 = RT::Model::Group->new($RT::SystemUser);
+( $ret, $msg) = $g1->loadUserDefinedGroup('dg1');
 unless ($ret) {
-    ( $ret, $msg ) = $g1->CreateUserDefinedGroup( Name => 'dg1' );
+    ( $ret, $msg ) = $g1->create_userDefinedGroup( Name => 'dg1' );
 }
 ok( $ret, "Load / Create test group 1: $msg" );
-$g2 = RT::Group->new($RT::SystemUser);
-( $ret, $msg) = $g2->LoadUserDefinedGroup('dg2');
+$g2 = RT::Model::Group->new($RT::SystemUser);
+( $ret, $msg) = $g2->loadUserDefinedGroup('dg2');
 unless ($ret) {
-    ( $ret, $msg ) = $g2->CreateUserDefinedGroup( Name => 'dg2' );
+    ( $ret, $msg ) = $g2->create_userDefinedGroup( Name => 'dg2' );
 }
 ok( $ret, "Load / Create test group 2: $msg" );
-$g3 = RT::Group->new($RT::SystemUser);
-( $ret, $msg) = $g3->LoadUserDefinedGroup('dg3');
+$g3 = RT::Model::Group->new($RT::SystemUser);
+( $ret, $msg) = $g3->loadUserDefinedGroup('dg3');
 unless ($ret) {
-    ( $ret, $msg ) = $g3->CreateUserDefinedGroup( Name => 'dg3' );
+    ( $ret, $msg ) = $g3->create_userDefinedGroup( Name => 'dg3' );
 }
 ok( $ret, "Load / Create test group 3: $msg" );
-$pg1 = RT::Group->new($RT::SystemUser);
-( $ret, $msg ) = $pg1->LoadPersonalGroup( Name => 'dpg1',
+$pg1 = RT::Model::Group->new($RT::SystemUser);
+( $ret, $msg ) = $pg1->loadPersonalGroup( Name => 'dpg1',
 					  User => $u1->PrincipalId );
 unless ($ret) {
-    ( $ret, $msg ) = $pg1->CreatePersonalGroup( Name => 'dpg1',
+    ( $ret, $msg ) = $pg1->createPersonalGroup( Name => 'dpg1',
 						PrincipalId => $u1->PrincipalId );
 }
 ok( $ret, "Load / Create test personal group 1: $msg" );
-$pg2 = RT::Group->new($RT::SystemUser);
-( $ret, $msg ) = $pg2->LoadPersonalGroup( Name => 'dpg2',
+$pg2 = RT::Model::Group->new($RT::SystemUser);
+( $ret, $msg ) = $pg2->loadPersonalGroup( Name => 'dpg2',
 					  User => $u2->PrincipalId );
 unless ($ret) {
-    ( $ret, $msg ) = $pg2->CreatePersonalGroup( Name => 'dpg2',
+    ( $ret, $msg ) = $pg2->createPersonalGroup( Name => 'dpg2',
 						PrincipalId => $u2->PrincipalId );
 }
 ok( $ret, "Load / Create test personal group 2: $msg" );
@@ -83,7 +83,7 @@ ok( $ret, "Grant ShowConfigTab to g2: $msg" );
 ( $ret, $msg ) = $g1->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ok(
-    $u1->PrincipalObj->HasRight(
+    $u1->PrincipalObj->has_right(
         Right  => 'DelegateRights',
         Object => $RT::System
     ),
@@ -92,15 +92,15 @@ ok(
 ( $ret, $msg ) = $g2->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g2: $msg" );
 ok(
-    $u1->PrincipalObj->HasRight(
+    $u1->PrincipalObj->has_right(
         Right  => 'ShowConfigTab',
         Object => $RT::System
     ),
     "test user 1 has ShowConfigTab after joining g2"
 );
 
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'ShowConfigTab',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -110,18 +110,18 @@ ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ok(
-    $pg1->PrincipalObj->HasRight(
+    $pg1->PrincipalObj->has_right(
         Right  => 'ShowConfigTab',
         Object => $RT::System
     ),
     "Test personal group 1 has ShowConfigTab right after delegation"
 );
 
-( $ret, $msg ) = $g1->DeleteMember( $u1->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $u1->PrincipalId );
 ok( $ret, "Delete test user 1 from g1: $msg" );
 ok(
     not(
-        $pg1->PrincipalObj->HasRight(
+        $pg1->PrincipalObj->has_right(
             Right  => 'ShowConfigTab',
             Object => $RT::System
         )
@@ -137,10 +137,10 @@ ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ( $ret, $msg ) = $g1->PrincipalObj->RevokeRight( Right => 'DelegateRights' );
-ok( $ret, "Revoke DelegateRights from g1: $msg" );
+ok( $ret, "Revoke DelegateRights from g1 (".$g1->id."): $msg" );
 ok(
     not(
-        $pg1->PrincipalObj->HasRight(
+        $pg1->PrincipalObj->has_right(
             Right  => 'ShowConfigTab',
             Object => $RT::System
         )
@@ -166,16 +166,16 @@ ok( $ret, "Grant AdminGroup on pg1 to g2: $msg" );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $g2->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g2: $msg" );
-ok( $u1->PrincipalObj->HasRight(
+ok( $u1->PrincipalObj->has_right(
         Right  => 'DelegateRights',
         Object => $pg1 ),
     "test user 1 has DelegateRights on pg1 after joining g1" );
-ok( not( $u1->PrincipalObj->HasRight(
+ok( not( $u1->PrincipalObj->has_right(
             Right  => 'DelegateRights',
             Object => $RT::System )),
     "Test personal group 1 lacks global DelegateRights after joining g1" );
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'AdminGroup',
     Object        => $pg1,
     PrincipalType => 'Group',
@@ -184,14 +184,14 @@ $ace = RT::ACE->new($u1);
 ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate AdminGroup on pg1 to pg1: $msg" );
-ok( $pg1->PrincipalObj->HasRight(
+ok( $pg1->PrincipalObj->has_right(
         Right  => 'AdminGroup',
         Object => $pg1 ),
     "Test personal group 1 has AdminGroup right on pg1 after delegation" );
 ( $ret, $msg ) = $g1->PrincipalObj->RevokeRight ( Right => 'DelegateRights',
 						  Object => $pg1 );
 ok( $ret, "Revoke DelegateRights on pg1 from g1: $msg" );
-ok( not( $pg1->PrincipalObj->HasRight(
+ok( not( $pg1->PrincipalObj->has_right(
             Right  => 'AdminGroup',
             Object => $pg1 )),
     "Test personal group 1 lacks AdminGroup right on pg1 after DelegateRights revoked from g1" );
@@ -204,13 +204,13 @@ ok( not( $pg1->PrincipalObj->HasRight(
 ok( $ret, "Grant DelegateRights on pg1 to g1: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate AdminGroup on pg1 to pg1: $msg" );
-ok( $pg1->PrincipalObj->HasRight(
+ok( $pg1->PrincipalObj->has_right(
         Right  => 'AdminGroup',
         Object => $pg1 ),
     "Test personal group 1 has AdminGroup right on pg1 after delegation" );
-( $ret, $msg ) = $g1->DeleteMember( $u1->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $u1->PrincipalId );
 ok( $ret, "Delete test user 1 from g1: $msg" );
-ok( not( $pg1->PrincipalObj->HasRight(
+ok( not( $pg1->PrincipalObj->has_right(
             Right  => 'AdminGroup',
             Object => $pg1 )),
     "Test personal group 1 lacks AdminGroup right on pg1 after user removed from g1" );
@@ -238,8 +238,8 @@ ok( $ret, "Grant DelegateRights to user: $msg" );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $g2->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g2: $msg" );
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'AdminGroup',
     Object        => $pg1,
     PrincipalType => 'Group',
@@ -248,14 +248,14 @@ $ace = RT::ACE->new($u1);
 ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate AdminGroup on pg1 to pg1: $msg" );
-( $ret, $msg ) = $g1->DeleteMember( $u1->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $u1->PrincipalId );
 ok( $ret, "Delete test user 1 from g1: $msg" );
-ok( $pg1->PrincipalObj->HasRight(Right  => 'AdminGroup',
+ok( $pg1->PrincipalObj->has_right(Right  => 'AdminGroup',
 				Object => $pg1),
     "Test personal group 1 retains AdminGroup right on pg1 after user removed from g1" );
 ( $ret, $msg ) = $u1->PrincipalObj->RevokeRight( Right => 'DelegateRights',
 						Object => $RT::System );
-ok( not ($pg1->PrincipalObj->HasRight(Right  => 'AdminGroup',
+ok( not ($pg1->PrincipalObj->has_right(Right  => 'AdminGroup',
 				     Object => $pg1)),
     "Test personal group 1 lacks AdminGroup right on pg1 after DelegateRights revoked");
 
@@ -278,17 +278,17 @@ ok( $ret, "Grant DelegateRights on g2 to user: $msg" );
 ok( $ret, "Delegate AdminGroup on pg1 to pg1: $msg" );
 ( $ret, $msg ) = $u1->PrincipalObj->RevokeRight( Right => 'DelegateRights',
 						Object => $RT::System );
-ok( $pg1->PrincipalObj->HasRight(Right  => 'AdminGroup',
+ok( $pg1->PrincipalObj->has_right(Right  => 'AdminGroup',
 				Object => $pg1),
     "Test personal group 1 retains AdminGroup right on pg1 after global DelegateRights revoked" );
 ( $ret, $msg ) = $u1->PrincipalObj->RevokeRight( Right => 'DelegateRights',
 						Object => $g2 );
-ok( $pg1->PrincipalObj->HasRight(Right  => 'AdminGroup',
+ok( $pg1->PrincipalObj->has_right(Right  => 'AdminGroup',
 				Object => $pg1),
     "Test personal group 1 retains AdminGroup right on pg1 after DelegateRights on g2 revoked" );
-( $ret, $msg ) = $g1->DeleteMember( $u1->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $u1->PrincipalId );
 ok( $ret, "Delete test user 1 from g1: $msg" );
-ok( not ($pg1->PrincipalObj->HasRight(Right  => 'AdminGroup',
+ok( not ($pg1->PrincipalObj->has_right(Right  => 'AdminGroup',
 				     Object => $pg1)),
     "Test personal group 1 lacks AdminGroup right on pg1 after user removed from g1");
 
@@ -311,8 +311,8 @@ ok( $ret, "Add test user 1 to g3: $msg" );
 ( $ret, $msg ) = $g2->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g2: $msg" );
 
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'ShowConfigTab',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -322,9 +322,9 @@ ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 
-( $ret, $msg ) = $g1->DeleteMember( $g3->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $g3->PrincipalId );
 ok( $ret, "Delete g3 from g1: $msg" );
-ok( not ($pg1->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
+ok( not ($pg1->PrincipalObj->has_right(Right  => 'ShowConfigTab',
 				     Object => $RT::System)),
 	 "Test personal group 1 lacks ShowConfigTab right after g3 removed from g1");
 
@@ -339,7 +339,7 @@ ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ( $ret, $msg ) = $g1->PrincipalObj->RevokeRight ( Right => 'DelegateRights' );
 ok( $ret, "Revoke DelegateRights from g1: $msg" );
 
-ok( not ($pg1->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
+ok( not ($pg1->PrincipalObj->has_right(Right  => 'ShowConfigTab',
 				     Object => $RT::System)),
 	 "Test personal group 1 lacks ShowConfigTab right after DelegateRights revoked from g1");
 
@@ -357,8 +357,8 @@ ok( $ret, "Grant DelegateRights to g1: $msg" );
 ok( $ret, "Grant ShowConfigTab to g2: $msg" );
 ( $ret, $msg ) = $g1->AddMember( $u1->PrincipalId );
 ok( $ret, "Add test user 1 to g1: $msg" );
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'DelegateRights',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -372,8 +372,8 @@ ok( $ret, "Delegate DelegateRights to pg1: $msg" );
 ok( $ret, "Add test user 2 to pg1: $msg" );
 ( $ret, $msg ) = $g2->AddMember( $u2->PrincipalId );
 ok( $ret, "Add test user 2 to g2: $msg" );
-$ace = RT::ACE->new($u2);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u2);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'ShowConfigTab',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -383,12 +383,12 @@ ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg2->PrincipalId );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
-ok( $pg2->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
+ok( $pg2->PrincipalObj->has_right(Right  => 'ShowConfigTab',
 				 Object => $RT::System),
     "Test personal group 2 has ShowConfigTab right after delegation");
-( $ret, $msg ) = $g1->DeleteMember( $u1->PrincipalId );
+( $ret, $msg ) = $g1->delete_member( $u1->PrincipalId );
 ok( $ret, "Delete u1 from g1: $msg" );
-ok( not ($pg2->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
+ok( not ($pg2->PrincipalObj->has_right(Right  => 'ShowConfigTab',
 				      Object => $RT::System)),
 	 "Test personal group 2 lacks ShowConfigTab right after u1 removed from g1");
 
@@ -399,8 +399,8 @@ ok( not ($pg2->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
 
 ( $ret, $msg ) = $g1->AddMember( $u1->PrincipalId );
 ok( $ret, "Add u1 to g1: $msg" );
-$ace = RT::ACE->new($u1);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u1);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'DelegateRights',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -409,8 +409,8 @@ $ace = RT::ACE->new($u1);
 ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( PrincipalId => $pg1->PrincipalId );
 ok( $ret, "Delegate DelegateRights to pg1: $msg" );
-$ace = RT::ACE->new($u2);
-( $ret, $msg ) = $ace->LoadByValues(
+$ace = RT::Model::ACE->new($u2);
+( $ret, $msg ) = $ace->load_by_values(
     RightName     => 'ShowConfigTab',
     Object        => $RT::System,
     PrincipalType => 'Group',
@@ -422,7 +422,7 @@ ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
 ( $ret, $msg ) = $g1->PrincipalObj->RevokeRight ( Right => 'DelegateRights' );
 ok( $ret, "Revoke DelegateRights from g1: $msg" );
-ok( not ($pg2->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
+ok( not ($pg2->PrincipalObj->has_right(Right  => 'ShowConfigTab',
 				      Object => $RT::System)),
 	 "Test personal group 2 lacks ShowConfigTab right after DelegateRights revoked from g1");
 
@@ -433,28 +433,28 @@ ok( not ($pg2->PrincipalObj->HasRight(Right  => 'ShowConfigTab',
 
 sub clear_acls_and_groups {
     # Revoke all rights granted to our cast
-    my $acl = RT::ACL->new($RT::SystemUser);
+    my $acl = RT::Model::ACL->new($RT::SystemUser);
     foreach (@principals) {
 	$acl->LimitToPrincipal(Type => $$_->PrincipalObj->PrincipalType,
-			       Id => $$_->PrincipalObj->Id);
+			       Id => $$_->PrincipalObj->id);
     }
-    while (my $ace = $acl->Next()) {
-	$ace->Delete();
+    while (my $ace = $acl->next()) {
+	$ace->delete();
     }
 
     # Remove all group memberships
-    my $members = RT::GroupMembers->new($RT::SystemUser);
+    my $members = RT::Model::GroupMembers->new($RT::SystemUser);
     foreach (@groups) {
 	$members->LimitToMembersOfGroup( $$_->PrincipalId );
     }
-    while (my $member = $members->Next()) {
-	$member->Delete();
+    while (my $member = $members->next()) {
+	$member->delete();
     }
 
-    $acl->RedoSearch();
-    is( $acl->Count() , 0,
+    $acl->redo_search();
+    is( $acl->count() , 0,
        "All principals have no rights after clearing ACLs" );
-    $members->RedoSearch();
-    is( $members->Count() , 0,
+    $members->redo_search();
+    is( $members->count() , 0,
        "All groups have no members after clearing groups" );
 }

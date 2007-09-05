@@ -53,7 +53,7 @@
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-% if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+% if ($session{'CurrentUser'}->has_right( Object=> $RT::System, Right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
@@ -76,25 +76,25 @@
 my @actions;
 my $title = loc("Customize").' ';
 
-my @fields = qw(Format Order OrderBy RowsPerPage);
+my @fields = qw(Format Order order_by rows_per_page);
 $ARGS{name} ||= '';
 my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
 Abort('No search specified')
-    unless defined $class and $class eq 'RT::Attribute';
+    unless defined $class and $class eq 'RT::Model::Attribute';
 
 my $search = $class->new ($session{'CurrentUser'});
-$search->LoadById ($id);
+$search->load_by_id ($id);
 $title .= loc ($search->Description, loc ('"N"'));
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg = $user->Preferences($search, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
-$ARGS{OrderBy}     = (ref $ARGS{OrderBy} ? join('|',grep {/\S/} @{$ARGS{OrderBy}}) : $ARGS{OrderBy});
+$ARGS{order_by}     = (ref $ARGS{order_by} ? join('|',grep {/\S/} @{$ARGS{order_by}}) : $ARGS{order_by});
 for (@fields) {
     $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
 }
 $ARGS{'Order'} = join '|', grep defined && /\S/, (ref $ARGS{'Order'})? @{$ARGS{'Order'}}: $ARGS{'Order'};
-$ARGS{'OrderBy'} = join '|', grep defined && /\S/, (ref $ARGS{'OrderBy'})? @{$ARGS{'OrderBy'}}: $ARGS{'OrderBy'};
+$ARGS{'order_by'} = join '|', grep defined && /\S/, (ref $ARGS{'order_by'})? @{$ARGS{'order_by'}}: $ARGS{'order_by'};
 
 my ( $AvailableColumns, $CurrentFormat );
 ( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
@@ -104,7 +104,7 @@ my ( $AvailableColumns, $CurrentFormat );
 
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my $pref = $user->SetPreferences ($search, $hash);
+    my $pref = $user->set_Preferences ($search, $hash);
     push @actions, loc ('Preferences saved.');
 }
 

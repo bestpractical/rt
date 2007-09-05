@@ -61,19 +61,19 @@
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
 <& /Admin/Elements/SelectScripCondition,
     Name => "Scrip-$id-ScripCondition",
-    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->Id,
+    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Action</&>:</td><td>
 <& /Admin/Elements/SelectScripAction,
     Name => "Scrip-$id-ScripAction",
-    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->Id,
+    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Template</&>:</td><td>
 <& /Admin/Elements/SelectTemplate,
     Name => "Scrip-$id-Template",
-    Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->Id,
+    Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->id,
     Queue => $Queue,
 &></td></tr>
 
@@ -132,10 +132,10 @@
 <%init>
 
 my (@actions, $SubmitLabel);
-my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+my $scrip = RT::Model::Scrip->new( $session{'CurrentUser'} );
 
 if ( $id ) {
-    $scrip->Load( $id );
+    $scrip->load( $id );
     unless ( $id = $scrip->id ) {
         push @actions, loc("Couldn't load scrip #[_1]", $id);
     }
@@ -165,9 +165,9 @@ $Queue => undef
 <%INIT>
 return ($id) unless $id;
 
-my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+my $scrip = RT::Model::Scrip->new( $session{'CurrentUser'} );
 if ( $id eq 'new' ) {
-    return $scrip->Create(
+    return $scrip->create(
         Queue                  => $Queue,
         ScripAction            => $ARGS{"Scrip-new-ScripAction"},
         ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
@@ -179,7 +179,7 @@ if ( $id eq 'new' ) {
     );
 }
 else {
-    $scrip->Load( $id );
+    $scrip->load( $id );
     return (undef, loc("Couldn't load scrip #[_1]", $id))
         unless $scrip->id;
 
@@ -187,7 +187,7 @@ else {
         Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
     my @results = UpdateRecordObject(
         AttributesRef   => \@attribs,
-        AttributePrefix => 'Scrip-'.$scrip->Id,
+        AttributePrefix => 'Scrip-'.$scrip->id,
         Object          => $scrip,
         ARGSRef         => \%ARGS
     );

@@ -12,32 +12,32 @@ use RT::Test;
     undef $main::_STDERR_;
 
 my $user = $RT::SystemUser;
-my ($id, $msg) =  $user->AddAttribute(Name => 'SavedSearch', Content => { Query => 'Foo'} );
+my ($id, $msg) =  $user->add_attribute(Name => 'SavedSearch', Content => { Query => 'Foo'} );
 ok ($id, $msg);
-my $attr = RT::Attribute->new($RT::SystemUser);
-$attr->Load($id);
+my $attr = RT::Model::Attribute->new($RT::SystemUser);
+$attr->load($id);
 is($attr->Name , 'SavedSearch');
-$attr->SetSubValues( Format => 'baz');
+$attr->set_SubValues( Format => 'baz');
 
 my $format = $attr->SubValue('Format');
 is ($format , 'baz');
 
-$attr->SetSubValues( Format => 'bar');
+$attr->set_SubValues( Format => 'bar');
 $format = $attr->SubValue('Format');
 is ($format , 'bar');
 
-$attr->DeleteAllSubValues();
+$attr->deleteAllSubValues();
 $format = $attr->SubValue('Format');
 is ($format, undef);
 
-$attr->SetSubValues(Format => 'This is a format');
+$attr->set_SubValues(Format => 'This is a format');
 
-my $attr2 = RT::Attribute->new($RT::SystemUser);
-$attr2->Load($id);
+my $attr2 = RT::Model::Attribute->new($RT::SystemUser);
+$attr2->load($id);
 is ($attr2->SubValue('Format'), 'This is a format');
-$attr2->Delete;
-my $attr3 = RT::Attribute->new($RT::SystemUser);
-($id) = $attr3->Load($id);
+$attr2->delete;
+my $attr3 = RT::Model::Attribute->new($RT::SystemUser);
+($id) = $attr3->load($id);
 is ($id, 0);
 
 

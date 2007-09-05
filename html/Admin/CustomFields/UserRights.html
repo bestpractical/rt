@@ -57,10 +57,10 @@ Title => $title, &>
       
 <table>
         
-%	while (my $Member = $Users->Next()) {
+%	while (my $Member = $Users->next()) {
 % my $UserObj = $Member->MemberObj->Object();
-% my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup($Member->MemberObj);
+% my $group = RT::Model::Group->new($session{'CurrentUser'});
+% $group->load_acl_equivalence_group($Member->MemberObj);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
 	  <td>
@@ -88,12 +88,12 @@ if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No Class defined"));
 }
 
-my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-$CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
+my $CustomFieldObj = RT::Model::CustomField->new($session{'CurrentUser'});
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
 # Find out which users we want to display ACL selects for
-my $Privileged = RT::Group->new($session{'CurrentUser'});
-$Privileged->LoadSystemInternalGroup('Privileged');
+my $Privileged = RT::Model::Group->new($session{'CurrentUser'});
+$Privileged->load_system_internal_group('Privileged');
 my $Users = $Privileged->MembersObj();
 
 my $title = loc('Modify user rights for custom field [_1]', $CustomFieldObj->Name);
@@ -106,5 +106,5 @@ my $title = loc('Modify user rights for custom field [_1]', $CustomFieldObj->Nam
 $id => undef
 $UserString => undef
 $UserOp => undef
-$UserField => undef
+$Usercolumn => undef
 </%ARGS>

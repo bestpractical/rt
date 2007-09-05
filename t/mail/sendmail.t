@@ -6,15 +6,15 @@ use Test::More tests => 143;
 use RT::Test;
 
 use RT::EmailParser;
-use RT::Tickets;
+use RT::Model::Tickets;
 use RT::Action::SendEmail;
 
 my @_outgoing_messages;
 my @scrips_fired;
 
 #We're not testing acls here.
-my $everyone = RT::Group->new($RT::SystemUser);
-$everyone->LoadSystemInternalGroup('Everyone');
+my $everyone = RT::Model::Group->new($RT::SystemUser);
+$everyone->load_system_internal_group('Everyone');
 $everyone->PrincipalObj->GrantRight( Right =>'SuperUser' );
 
 
@@ -32,11 +32,11 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
 }
 
 # some utils
-sub first_txn    { return $_[0]->Transactions->First }
-sub first_attach { return first_txn($_[0])->Attachments->First }
+sub first_txn    { return $_[0]->Transactions->first }
+sub first_attach { return first_txn($_[0])->Attachments->first }
 
-sub count_txns { return $_[0]->Transactions->Count }
-sub count_attachs { return first_txn($_[0])->Attachments->Count }
+sub count_txns { return $_[0]->Transactions->count }
+sub count_attachs { return first_txn($_[0])->Attachments->count }
 
 sub file_content
 {
@@ -60,12 +60,12 @@ use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');
 my ($status, $msg) = RT::Interface::Email::Gateway(\%args);
 ok($status, "successfuly used Email::Gateway interface") or diag("error: $msg");
-my $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick= $tickets->First();
-isa_ok($tick, "RT::Ticket", "got a ticket object");
-ok ($tick->Id, "found ticket ".$tick->Id);
+my $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+my $tick= $tickets->first();
+isa_ok($tick, "RT::Model::Ticket", "got a ticket object");
+ok ($tick->id, "found ticket ".$tick->id);
 like (first_txn($tick)->Content , qr/The original message was received/, "It's the bounce");
 
 
@@ -87,14 +87,14 @@ Foob!');
                                   
 use Data::Dumper;
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-my  ($id,  undef, $create_msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
+my $ticket = RT::Model::Ticket->new($RT::SystemUser);
+my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
 ok ($id,$create_msg);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+$tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+ $tick = $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 is ($tick->Subject , 'I18NTest', "failed to create the new ticket from an unprivileged account");
 
 # make sure it fires scrips.
@@ -121,11 +121,11 @@ use RT::Interface::Email;
                            
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+ $tick = $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay");
 
@@ -153,7 +153,7 @@ ok ($id, $msg);
 
 # we need to swap out SendMessage to test the new things we care about;
 &iso8859_redef_sendmessage;
-RT->Config->Set( EmailOutputEncoding => 'iso-8859-1' );
+RT->Config->set( EmailOutputEncoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
@@ -163,11 +163,11 @@ use RT::Interface::Email;
                                   
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+$tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+ $tick = $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay");
 
@@ -264,12 +264,12 @@ $parser->ParseMIMEEntityFromScalar($content);
     %args = (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
     # TODO: following 5 lines should replaced by get_latest_ticket_ok()
-    $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-    $tick = $tickets->First();
+    $tickets = RT::Model::Tickets->new($RT::SystemUser);
+    $tickets->order_by({column => 'id', order => 'DESC'});
+    $tickets->limit(column => 'id' ,operator => '>', value => '0');
+    $tick = $tickets->first();
 
-    ok ($tick->Id, "found ticket ".$tick->Id);
+    ok ($tick->id, "found ticket ".$tick->id);
 
     like (first_txn($tick)->Content , qr/causes Error/, "We recorded the content right as text-plain");
     is (count_attachs($tick) , 3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
@@ -290,11 +290,11 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+ $tick = $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_attach($tick)->Content , qr/causes Error/, "We recorded the content as containing 'causes error'") or diag( first_attach($tick)->Content );
 like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content as text/html");
@@ -305,7 +305,7 @@ sub text_html_umlauts_redef_sendmessage {
     eval 'sub RT::Action::SendEmail::SendMessage { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
                 is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -327,11 +327,11 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
- $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+ $tick = $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content right as text-html");
 is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a multipart alternative");
@@ -342,7 +342,7 @@ sub text_html_russian_redef_sendmessage {
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
                 ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -358,8 +358,8 @@ sub text_html_russian_redef_sendmessage {
 
 # {{{ test a message containing a russian subject and NO content type
 
-RT->Config->Set( EmailInputEncodings => 'koi8-r', RT->Config->Get('EmailInputEncodings') );
-RT->Config->Set( EmailOutputEncoding => 'koi8-r' );
+RT->Config->set( EmailInputEncodings => 'koi8-r', RT->Config->Get('EmailInputEncodings') );
+RT->Config->set( EmailOutputEncoding => 'koi8-r' );
 $content =  file_content("$RT::BasePath/lib/t/data/russian-subject-no-content-type");
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -369,11 +369,11 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_russian_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+$tick= $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_attach($tick)->ContentType , qr/text\/plain/, "We recorded the content type right");
 is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-plain");
@@ -383,7 +383,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::Action::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -394,8 +394,8 @@ sub text_plain_russian_redef_sendmessage {
 
 my @input_encodings = RT->Config->Get( 'EmailInputEncodings' );
 shift @input_encodings;
-RT->Config->Set(EmailInputEncodings => @input_encodings );
-RT->Config->Set(EmailOutputEncoding => 'utf-8');
+RT->Config->set(EmailInputEncodings => @input_encodings );
+RT->Config->set(EmailOutputEncoding => 'utf-8');
 # }}}
 
 
@@ -411,11 +411,11 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_nested_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+$tick= $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 is ($tick->Subject, "[Jonas Liljegren] Re: [Para] Niv\x{e5}er?");
 like (first_attach($tick)->ContentType , qr/multipart\/mixed/, "We recorded the content type right");
 is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
@@ -424,7 +424,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::Action::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);
@@ -451,11 +451,11 @@ $parser->ParseMIMEEntityFromScalar($content);
     local *RT::Action::SendEmail::SendMessage = sub { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
-    $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-    $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-    $tick= $tickets->First();
-    ok ($tick->Id, "found ticket ".$tick->Id);
+    $tickets = RT::Model::Tickets->new($RT::SystemUser);
+    $tickets->order_by({column => 'id', order => 'DESC'});
+    $tickets->limit(column => 'id' ,operator => '>', value => '0');
+    $tick= $tickets->first();
+    ok ($tick->id, "found ticket ".$tick->id);
 
     like (first_txn($tick)->Content , qr/from Lotus Notes/, "We recorded the content right");
     is (count_attachs($tick) , 3 , "Has three attachments");
@@ -476,11 +476,11 @@ no warnings qw/redefine/;
 local *RT::Action::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+$tick= $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 like (first_txn($tick)->Content , qr/FYI/, "We recorded the content right");
 is (count_attachs($tick) , 5 , "Has three attachments");
@@ -500,11 +500,11 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-$tick= $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+ $tickets = RT::Model::Tickets->new($RT::SystemUser);
+$tickets->order_by({column => 'id', order => 'DESC'});
+$tickets->limit(column => 'id' ,operator => '>', value => '0');
+$tick= $tickets->first();
+ok ($tick->id, "found ticket ".$tick->id);
 
 my $cc = first_attach($tick)->GetHeader('RT-Send-Cc');
 like ($cc , qr/test1/, "Found test 1");
@@ -521,7 +521,7 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );
-    ok ($status, 'created ticket') or diag "error: $msg";
+    ok ($status, 'Created ticket') or diag "error: $msg";
     ok ($ticket->id, "found ticket ". $ticket->id);
     is ($ticket->Subject, 'test', 'correct subject');
 }
@@ -532,7 +532,7 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );
-    ok ($status, 'created ticket') or diag "error: $msg";
+    ok ($status, 'Created ticket') or diag "error: $msg";
     ok ($ticket->id, "found ticket ". $ticket->id);
     is ($ticket->Subject, '0123456789'x20, 'correct subject');
 }

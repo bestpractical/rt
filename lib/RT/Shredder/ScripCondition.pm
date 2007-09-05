@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::ScripCondition ();
-package RT::ScripCondition;
+use RT::Model::ScripCondition ();
+package RT::Model::ScripCondition;
 
 use strict;
 use warnings;
@@ -68,8 +68,8 @@ sub __DependsOn
     my $list = [];
 
 # Scrips
-    my $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'ScripCondition', VALUE => $self->Id );
+    my $objs = RT::Model::Scrips->new( $self->CurrentUser );
+    $objs->limit( column => 'ScripCondition', value => $self->id );
     $deps->_PushDependencies(
             BaseObject => $self,
             Flags => DEPENDS_ON,

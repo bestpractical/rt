@@ -51,12 +51,12 @@
 $id
 </%ARGS>
 <%perl>
-use RT::Queues;
+use RT::Model::Queues;
 
-my $queues = new RT::Queues $session{CurrentUser};
-$queues->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $id);
-if ($queues->Count == 0) {
+my $queues = new RT::Model::Queues $session{CurrentUser};
+$queues->limit(column => 'Name', operator => '=', value => $id);
+if ($queues->count == 0) {
     return (0, "No queue named $id exists.");
 }
-return $queues->Next->Id;
+return $queues->next->id;
 </%perl>

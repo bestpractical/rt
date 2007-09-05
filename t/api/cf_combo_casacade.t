@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 use RT::Test;
 
@@ -13,18 +13,18 @@ sub new (*) {
     return $class->new($RT::SystemUser);
 }
 
-my $q = new(RT::Queue);
-works($q->Create(Name => "CF-Pattern-".$$));
+my $q = new(RT::Model::Queue);
+works($q->create(Name => "CF-Pattern-".$$));
 
-my $cf = new(RT::CustomField);
+my $cf = new(RT::Model::CustomField);
 my @cf_args = (Name => $q->Name, Type => 'Combobox', Queue => $q->id);
 
-works($cf->Create(@cf_args));
+works($cf->create(@cf_args));
 
 # Set some CFVs with Category markers
 
-my $t = new(RT::Ticket);
-my ($id,undef,$msg) = $t->Create(Queue => $q->id, Subject => 'CF Test');
+my $t = new(RT::Model::Ticket);
+my ($id,undef,$msg) = $t->create(Queue => $q->id, Subject => 'CF Test');
 works($id,$msg);
 
 sub add_works {
@@ -39,9 +39,11 @@ add_works('value3', '1.1. A-sub one');
 add_works('value4', '1.2. A-sub two');
 add_works('value5', '');
 
-my $cfv = $cf->Values->First;
+my $cfv = $cf->Values->first;
+is ($cf->Values->count,5, "got 5 values");
+is($cfv->Name, 'value1', "We got the first value");
 is($cfv->Category, '1. Category A');
-works($cfv->SetCategory('1. Category AAA'));
+works($cfv->set_Category('1. Category AAA'));
 is($cfv->Category, '1. Category AAA');
 
 1;

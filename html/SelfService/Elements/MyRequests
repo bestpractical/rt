@@ -50,7 +50,7 @@
 			 Format  => @Format, 
 			 Query   => $Query, 
 			 Order   => $Order, 
-			 OrderBy => $OrderBy,
+			 order_by => $order_by,
 			 BaseURL => $BaseURL,
 			 Page    => $Page &>
 </&>
@@ -66,7 +66,7 @@ if ( @status ) {
         . " )";
 }
 my $Order = "ASC";
-my $OrderBy = "Created";
+my $order_by = "Created";
 my @Format = qq{
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',

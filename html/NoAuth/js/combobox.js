@@ -222,18 +222,18 @@ function ComboBox_ShowList(e) {
         this.style.width = ( this.Container.offsetWidth ) + "px";
         this.style.top = ( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
         this.style.left = ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
-        ComboBox_SetVisibility(this,true);
+        ComboBox_setVisibility(this,true);
         this.focus();
         this.IsShowing = true;
     }
 }
 function ComboBox_HideList(e) {
     if( this.IsShowing ) {
-                    ComboBox_SetVisibility(this,false);
+                    ComboBox_setVisibility(this,false);
         this.IsShowing = false;
     }
 }
-function ComboBox_SetVisibility(theList, isVisible) {
+function ComboBox_setVisibility(theList, isVisible) {
     setVisibility(theList, isVisible);
 }
 function ComboBox_RecursiveOffsetTop(thisObject,isFirst) {

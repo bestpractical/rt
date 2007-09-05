@@ -30,7 +30,7 @@
 % if(defined $Duration && !$Lock) {
     <&|/l, $TicketLabel, $ago &>You had [_1] locked for [_2]. It is now unlocked</&>.
 % #Do not display time if it is very little time, since such a short time probably 
-% #means the lock was just created.
+% #means the lock was just Created.
 % } elsif($timePassed < 5) {    
         <&|/l, $TicketLabel &>You have locked [_1]</&>.
 %    if($Unlock && !$Id) {
@@ -53,7 +53,7 @@
 %}
 <%INIT>
 if ( $Id ) {
-    $Ticket = LoadTicket($Id);
+    $Ticket = load_ticket($Id);
 }
 
 my $Lock = $Ticket->Locked() if $Ticket;
@@ -72,8 +72,8 @@ elsif($Lock) {
 
 my $ago = $date->DurationAsString($timePassed);
 
-my $u = RT::User->new($session{'CurrentUser'});
-$u->Load($Lock->Content->{'User'}) if $Lock;
+my $u = RT::Model::User->new($session{'CurrentUser'});
+$u->load($Lock->Content->{'User'}) if $Lock;
 
 </%INIT>
 <%ARGS>

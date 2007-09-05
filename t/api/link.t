@@ -12,15 +12,15 @@ use RT::Test;
     undef $main::_STDERR_;
 
 
-use RT::Link;
-my $link = RT::Link->new($RT::SystemUser);
+use RT::Model::Link;
+my $link = RT::Model::Link->new($RT::SystemUser);
 
 
 ok (ref $link);
-ok (UNIVERSAL::isa($link, 'RT::Link'));
+ok (UNIVERSAL::isa($link, 'RT::Model::Link'));
 ok (UNIVERSAL::isa($link, 'RT::Base'));
 ok (UNIVERSAL::isa($link, 'RT::Record'));
-ok (UNIVERSAL::isa($link, 'DBIx::SearchBuilder::Record'));
+ok (UNIVERSAL::isa($link, 'Jifty::DBI::Record'));
 
 
     undef $main::_STDOUT_;

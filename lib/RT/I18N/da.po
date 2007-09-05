@@ -32,9 +32,9 @@ msgstr "#"
 msgid "#%1"
 msgstr "#%1"
 
-#. ($TicketObj->Id, $TicketObj->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
 #. ($Ticket->id, $Ticket->Subject)
 #: html/Approvals/Elements/Approve:48
 #: html/Approvals/Elements/ShowDependency:71
@@ -53,7 +53,7 @@ msgstr "$1"
 msgid "$prefix %1"
 msgstr "$præfiks %1"
 
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 #: lib/RT/URI/fsck_com_rt.pm:256
 msgid "%1 #%2"
 msgstr "%1 #%2"
@@ -183,7 +183,7 @@ msgstr "%1 - Angiv typen på den transaktion, du vil bruge"
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
 
-#. ($self->Id)
+#. ($self->id)
 #: lib/RT/ScripAction_Overlay.pm:150
 msgid "%1 ScripAction loaded"
 msgstr "%1 Scrip-handling indlæst"
@@ -244,7 +244,7 @@ msgstr "%1 kunne ikke sætte status til afsluttet. Der er muligvis inkonsekvens 
 
 #. ($obj_type)
 #: lib/RT/Transaction_Overlay.pm:571
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "%1 oprettet"
 
 #. ($obj_type)
@@ -327,8 +327,8 @@ msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 vil løse alle medlemmer af en løst gruppesag."
 
 #: NOT FOUND IN SOURCE
-msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
-msgstr "%1 vil sætte en [lokal] BASE i bero, hvis den er afhængig [eller medlem] af en tilknyttet sag."
+msgid "%1 will stall a [local] base if it's dependent [or member] of a linked up request."
+msgstr "%1 vil sætte en [lokal] base i bero, hvis den er afhængig [eller medlem] af en tilknyttet sag."
 
 #: lib/RT/CustomField_Overlay.pm:894
 msgid "%1's %2 objects"
@@ -595,7 +595,7 @@ msgid "ACE not found"
 msgstr "ACE ikke fundet"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACE'er kan kun oprettes og slettes."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -886,20 +886,20 @@ msgid "Approval"
 msgstr "Godkendelse"
 
 #. ($ticket->id, $msg)
-#. ($Ticket->Id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($Ticket->id, $Ticket->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 #: html/Approvals/Display.html:65
 #: html/Approvals/Elements/ShowDependency:63
 #: html/Approvals/index.html:86
 msgid "Approval #%1: %2"
 msgstr "Godkendelse #%1: %2"
 
-#. ($ticket->Id)
+#. ($ticket->id)
 #: html/Approvals/index.html:75
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Godkendelse #%1: Noter ikke gemt på grund af en systemfejl"
 
-#. ($ticket->Id)
+#. ($ticket->id)
 #: html/Approvals/index.html:73
 msgid "Approval #%1: Notes recorded"
 msgstr "Godkendelse #%1: Noter blev gemt"
@@ -974,7 +974,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "Vedhæftede fil '%1' kunne ikke indlæses"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Vedhæftet fil oprettet"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1512,7 +1512,7 @@ msgstr "Kunne ikke finde den værdi"
 msgid "Couldn't find user\\n"
 msgstr "Kunne ikke finde bruger\\n"
 
-#. ($self->Id)
+#. ($self->id)
 #: lib/RT/CurrentUser.pm:145
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Kunne ikke indlæse %1 fra brugerdatabase.\\n"
@@ -1535,7 +1535,7 @@ msgstr "Kunne ikke indlæse RT-konfigurationsfil '%1' %2"
 msgid "Couldn't load Scrips."
 msgstr "Kunne ikke indlæse scrips."
 
-#. ($self->Id)
+#. ($self->id)
 #: lib/RT/Ticket_Overlay.pm:2016
 msgid "Couldn't load copy of ticket #%1."
 msgstr "Kunne ikke indlæse kopi af sag #%1."
@@ -1604,7 +1604,7 @@ msgstr "Kunne ikke konvertere '%1' til en URL."
 msgid "Country"
 msgstr "Land"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 #: html/Admin/Elements/EditCustomField:84
 #: html/Admin/Elements/EditScrip:133
 #: html/Admin/Queues/Template.html:66
@@ -1696,7 +1696,7 @@ msgid "Create a template"
 msgstr "Opret en skabelon"
 
 #: html/SelfService/Create.html:46
-#: html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Opret en sag"
 
@@ -2366,7 +2366,7 @@ msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Fejl i parametre til Kø->SletObservatør"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
 msgstr "Fejl i parametre til Kø->SletObservatør"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -2378,7 +2378,7 @@ msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Fejl i parametre til Sag->SletObservatør"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
 msgstr "Fejl i parametre til Sag->SletObservatør"
 
 #: bin/rt-crontool:285
@@ -2667,11 +2667,11 @@ msgstr "Gruppe har allerede medlem"
 
 #. ($create_msg)
 #: html/Admin/Groups/Modify.html:109
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "Gruppe kunne ikke oprettes: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Gruppe oprettet"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2950,7 +2950,7 @@ msgid "Jan."
 msgstr "Jan."
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "Tilmeld dig eller forlad denne gruppe"
 
 #: lib/RT/Date.pm:447
@@ -3036,12 +3036,12 @@ msgid "Link already exists"
 msgstr "Reference eksisterer allerede"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Reference kunne ikke oprettes"
 
 #. ($TransString)
 #: lib/RT/Record.pm:1326
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Reference oprettet (%1)"
 
 #. ($TransString)
@@ -3053,7 +3053,7 @@ msgstr "Reference slettet (%1)"
 msgid "Link not found"
 msgstr "Reference ikke fundet"
 
-#. ($Ticket->Id)
+#. ($Ticket->id)
 #: html/Ticket/ModifyLinks.html:46
 #: html/Ticket/ModifyLinks.html:50
 msgid "Link ticket #%1"
@@ -3394,13 +3394,13 @@ msgstr "Rediger et scrip, der gælder for alle køer"
 msgid "Modify associated objects for %1"
 msgstr "Rediger tilhørende objekter til %1"
 
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 #: html/Ticket/ModifyDates.html:46
 #: html/Ticket/ModifyDates.html:50
 msgid "Modify dates for #%1"
 msgstr "Rediger datoer for #%1"
 
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 #: html/Ticket/ModifyDates.html:57
 msgid "Modify dates for ticket # %1"
 msgstr "Rediger datoer for sag # %1"
@@ -3472,7 +3472,7 @@ msgid "Modify people related to queue %1"
 msgstr "Rediger personer, der tilhører kø %1"
 
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 #: html/Ticket/ModifyPeople.html:46
 #: html/Ticket/ModifyPeople.html:50
 #: html/Ticket/ModifyPeople.html:57
@@ -3522,12 +3522,12 @@ msgstr "Rediger observatører for køen"
 msgid "Modify the user %1"
 msgstr "Rediger brugeren %1"
 
-#. ($Ticket->Id)
+#. ($Ticket->id)
 #: html/Ticket/ModifyAll.html:58
 msgid "Modify ticket # %1"
 msgstr "Rediger sag # %1"
 
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 #: html/Ticket/Modify.html:46
 #: html/Ticket/Modify.html:49
 #: html/Ticket/Modify.html:55
@@ -3754,7 +3754,7 @@ msgstr "Ny sag eksisterer ikke"
 msgid "New user"
 msgstr "Ny bruger"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "Ny bruger ved navn"
 
@@ -3960,8 +3960,8 @@ msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT
 msgstr "Ingen gyldig RT-bruger fundet. RT CVS-administrator frakoblet. Kontakt venligst din RT-administrator.\\n"
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
-msgstr "Ingen værdi sendt til _Set!\\n"
+msgid "No value sent to _set!\\n"
+msgstr "Ingen værdi sendt til _set!\\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -4083,7 +4083,7 @@ msgid "OR"
 msgstr "ELLER"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Objekt kunne ikke oprettes"
 
 #: lib/RT/Record.pm:123
@@ -4091,7 +4091,7 @@ msgid "Object could not be deleted"
 msgstr "Objekt kunne ikke slettes"
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Objekt oprettet"
 
 #: lib/RT/Record.pm:120
@@ -4171,14 +4171,14 @@ msgstr "Ved statusændring"
 msgid "On Transaction"
 msgstr "Ved transaktion"
 
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 #: html/Approvals/Elements/PendingMyApproval:70
-msgid "Only show approvals for requests created after %1"
+msgid "Only show approvals for requests Created after %1"
 msgstr "Vis kun godkendelser for sager oprettet efter %1"
 
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 #: html/Approvals/Elements/PendingMyApproval:68
-msgid "Only show approvals for requests created before %1"
+msgid "Only show approvals for requests Created before %1"
 msgstr "Vis kun godkendelser for sager oprettet før %1"
 
 #: html/Admin/CustomFields/index.html:75
@@ -4234,7 +4234,7 @@ msgstr "Sortering"
 msgid "Organization"
 msgstr "Organisation"
 
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 #: html/Approvals/Elements/Approve:53
 msgid "Originating ticket: #%1"
 msgstr "Oprindelig sag: #%1"
@@ -4644,7 +4644,7 @@ msgstr "Kø eksisterer allerede"
 
 #: lib/RT/Queue_Overlay.pm:374
 #: lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "Kø kunne ikke oprettes"
 
 #: html/Ticket/Create.html:244
@@ -4655,7 +4655,7 @@ msgstr "Kø kunne ikke indlæses."
 #: docs/design_docs/string-extraction-guide.txt:83
 #: lib/RT/Queue_Overlay.pm:384
 #: lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "Kø oprettet"
 
 #: NOT FOUND IN SOURCE
@@ -4911,7 +4911,7 @@ msgstr "Påmindelse '%1' afsluttet"
 msgid "Reminder '%1' reopened"
 msgstr "Påmindelse '%1' genåbnet"
 
-#. ($Ticket->Id)
+#. ($Ticket->id)
 #: html/Ticket/Reminders.html:46
 msgid "Reminder ticket #%1"
 msgstr "Påmindelse for sag #%1"
@@ -4923,7 +4923,7 @@ msgstr "Påmindelse for sag #%1"
 msgid "Reminders"
 msgstr "Påmindelser"
 
-#. ($Ticket->Id)
+#. ($Ticket->id)
 #: html/Ticket/Reminders.html:50
 msgid "Reminders for ticket #%1"
 msgstr "Påmindelser for sag #%1"
@@ -5179,7 +5179,7 @@ msgid "Saved searches"
 msgstr "Gemte søgninger"
 
 #. ($id)
-#. ($scrip->Id)
+#. ($scrip->id)
 #: html/Admin/Elements/ListGlobalScrips:60
 #: html/Admin/Global/Scrip.html:77
 #: html/Admin/Queues/Scrip.html:84
@@ -5313,7 +5313,7 @@ msgstr "Vælg en gruppe"
 msgid "Select a queue"
 msgstr "Vælg en kø"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Vælg en kø til din nye sag"
 
@@ -5809,7 +5809,7 @@ msgstr "Taget"
 msgid "Template"
 msgstr "Skabelon"
 
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 #: html/Admin/Global/Template.html:112
 #: html/Admin/Queues/Template.html:113
 msgid "Template #%1"
@@ -6022,20 +6022,20 @@ msgstr "Tors."
 msgid "Ticket # %1  %2"
 msgstr "Sag # %1 %2"
 
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #: html/Ticket/ModifyAll.html:46
 #: html/Ticket/ModifyAll.html:50
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Sag #%1 Jumbo-opdatering: %2"
 
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 #: html/Approvals/Elements/ShowDependency:67
 msgid "Ticket #%1: %2"
 msgstr "Sag #%1: %2"
 
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 #: lib/RT/Action/CreateTickets.pm:1350
 #: lib/RT/Action/CreateTickets.pm:1359
 #: lib/RT/Action/CreateTickets.pm:605
@@ -6044,17 +6044,17 @@ msgstr "Sag #%1: %2"
 msgid "Ticket %1"
 msgstr "Sag %1"
 
-#. ($self->Id, $QueueObj->Name)
+#. ($self->id, $QueueObj->Name)
 #: lib/RT/Ticket_Overlay.pm:755
 #: lib/RT/Ticket_Overlay.pm:775
-msgid "Ticket %1 created in queue '%2'"
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "Sag %1 oprettet i kø '%2'"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket %1 loaded\\n"
 msgstr "Sag %1 indlæst\\n"
 
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 #: html/Search/Bulk.html:377
 msgid "Ticket %1: %2"
 msgstr "Sag %1 : %2"
@@ -6063,7 +6063,7 @@ msgstr "Sag %1 : %2"
 msgid "Ticket Custom Fields"
 msgstr "Sagens ekstrafelter"
 
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #: html/Ticket/History.html:46
 #: html/Ticket/History.html:49
 msgid "Ticket History # %1 %2"
@@ -6099,11 +6099,11 @@ msgstr "Sagsindholdstype"
 #: lib/RT/Ticket_Overlay.pm:617
 #: lib/RT/Ticket_Overlay.pm:628
 #: lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "Sag kunne ikke oprettes på grund af en intern fejl"
 
 #: NOT FOUND IN SOURCE
-msgid "Ticket created"
+msgid "Ticket Created"
 msgstr "Sag oprettet"
 
 #: NOT FOUND IN SOURCE
@@ -6135,7 +6135,7 @@ msgid "Ticket watchers"
 msgstr "Sagsobservatører"
 
 #. (ref $self)
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 msgid "TicketSQL search module"
 msgstr "SagSQL søgemodul"
 
@@ -6156,11 +6156,11 @@ msgid "Tickets %1 by %2"
 msgstr "Sager %1 af %2"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr "Sager oprettet efter"
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr "Sager oprettet før"
 
 #: NOT FOUND IN SOURCE
@@ -6264,11 +6264,11 @@ msgid "Transaction Custom Fields"
 msgstr "Transaktions-ekstrafelter"
 
 #: NOT FOUND IN SOURCE
-msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
+msgid "Transaction->create couldn't, as you didn't specify a ticket id"
 msgstr "Transaktion->Kunne ikke oprette, fordi du ikke angav et sagsnummer"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
 msgstr "Transaktion->Kunne ikke oprette, fordi ikke angav en objekttype og et ID"
 
 #: lib/RT/Transaction_Overlay.pm:870
@@ -6318,7 +6318,7 @@ msgid "Unknown field: $key"
 msgstr "Ukendt felt: $key"
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "Ubegrænset"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -6515,11 +6515,11 @@ msgstr "Bruger bad om en ukendt opdateringstype for ekstrafelt %1 til %1 objekt 
 
 #. ($msg)
 #: html/Admin/Users/Modify.html:301
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "Bruger kunne ikke oprettes: %1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Bruger oprettet"
 
 #: html/Admin/CustomFields/GroupRights.html:74
@@ -6623,11 +6623,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "Når en sag er blevet godkendt af hvilken som helst godkender, tilføj korrespondance til den oprindelige sag"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "Når en sag oprettes"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Når en godkendelsessag oprettes, giv besked til ejeren og AdminCc om det punkt, der afventer deres godkendelse"
 
 #: etc/initialdata:151
@@ -7046,7 +7046,7 @@ msgstr "sag #%1"
 msgid "ticket #%1 %2"
 msgstr "sag #%1 %2"
 
-#. ($self->Id)
+#. ($self->id)
 #: lib/RT/Group_Overlay.pm:236
 msgid "undescribed group %1"
 msgstr "ubeskrevet gruppe %1"

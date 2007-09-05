@@ -62,13 +62,13 @@
     %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
     Name         => $option,
     DefaultValue => scalar RT->Config->Get( $option ),
-    CurrentValue => $preferences->{ $option },
+    Currentvalue => $preferences->{ $option },
 &>
 % }
 </&>
 % }
 
-<& /Elements/Submit, Name => 'Update', Value => loc('Save changes') &>
+<& /Elements/Submit, Name => 'Update', value => loc('Save changes') &>
 </form>
 <%INIT>
 my @results;
@@ -93,7 +93,7 @@ if ( $Update ) {
             delete $preferences->{ $option };
         }
     }
-    $UserObj->SetPreferences( $RT::System, $preferences );
+    $UserObj->set_Preferences( $RT::System, $preferences );
 }
 my $localize_meta = sub {
     my %meta = %{ shift() };

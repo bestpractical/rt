@@ -56,7 +56,7 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->id %>" />
 
 <table>
 <tr><td align="right"><&|/l&>Queue Name</&>:</td>
@@ -115,8 +115,8 @@
 
 <%INIT>
 my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( $id ) if !$id || $id eq 'new';
+my $QueueObj = RT::Model::Queue->new( $session{'CurrentUser'} );
+$QueueObj->load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = "checked";
 
@@ -125,19 +125,19 @@ if ($Create) {
     $title = loc("Create a queue");
 } else {
     if ( $id eq 'new' ) {
-        my ($val, $msg) = $QueueObj->Create( Name => $Name );
+        my ($val, $msg) = $QueueObj->create( Name => $Name );
         Abort("$msg") unless $val;
         delete $session{'create_in_queues'};
 		push @results, $msg;
     }
     else {
-        $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
+        $QueueObj->load($id) || $QueueObj->load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
     $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
-if ( $QueueObj->Id ) {
+if ( $QueueObj->id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt Disabled);

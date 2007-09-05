@@ -128,10 +128,10 @@ EOF
 * Mon Sep 24 2001 Jesse Vincent <jesse@bestpractical.com>
   Switch to rt DESTDIR support
 * Fri Sep 14 2001 Cris Bailiff <c.bailiff@devsecure.com>
-  Fix permissions on created /var/log/rt2 and roll in 2.0.7
+  Fix permissions on Created /var/log/rt2 and roll in 2.0.7
 * Tue Sep 4 2001 Cris Bailiff <c.bailiff@devsecure.com>
-- created initial spec file
+- Created initial spec file
 * Tue Sep 4 2001 Cris Bailiff <c.bailiff@devsecure.com>
-- created initial spec file
+- Created initial spec file
 * Tue Sep 4 2001 Cris Bailiff <c.bailiff@devsecure.com>
-- created initial spec file
+- Created initial spec file

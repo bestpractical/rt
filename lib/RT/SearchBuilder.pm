@@ -64,24 +64,36 @@
 package RT::SearchBuilder;
 
 use RT::Base;
-use DBIx::SearchBuilder "1.40";
 
 use strict;
-use vars qw(@ISA);
-@ISA = qw(DBIx::SearchBuilder RT::Base);
+use base qw/RT::Base/;
+use base qw/Jifty::DBI::Collection/;
+use UNIVERSAL::require;
 
-# {{{ sub _Init 
-sub _Init  {
+sub new {
+    my $self = shift->SUPER::new();
+    $self->_set_current_user(@_);
+    $self->_init();
+    return $self;
+}
+
+sub _handle {
+
+    return RT->DatabaseHandle;
+}
+
+# {{{ sub _init 
+sub _set_current_user  {
     my $self = shift;
     
     $self->{'user'} = shift;
     unless(defined($self->CurrentUser)) {
 	use Carp;
-	Carp::confess("$self was created without a CurrentUser");
-	$RT::Logger->err("$self was created without a CurrentUser");
+	Carp::confess("$self was Created without a CurrentUser");
+	$RT::Logger->err("$self was Created without a CurrentUser");
 	return(0);
     }
-    $self->SUPER::_Init( 'Handle' => $RT::Handle);
+    $self->SUPER::_init( 'handle' => $RT::Handle);
 }
 # }}}
 
@@ -96,9 +108,9 @@ Only find items that haven\'t been disabled
 sub LimitToEnabled {
     my $self = shift;
     
-    $self->Limit( FIELD => 'Disabled',
-		  VALUE => '0',
-		  OPERATOR => '=' );
+    $self->limit( column => 'Disabled',
+		  value => '0',
+		  operator => '=' );
 }
 # }}}
 
@@ -114,9 +126,9 @@ sub LimitToDeleted {
     my $self = shift;
     
     $self->{'find_disabled_rows'} = 1;
-    $self->Limit( FIELD => 'Disabled',
-		  OPERATOR => '=',
-		  VALUE => '1'
+    $self->limit( column => 'Disabled',
+		  operator => '=',
+		  value => '1'
 		);
 }
 # }}}
@@ -125,7 +137,7 @@ sub LimitToDeleted {
 
 =head2 LimitAttribute PARAMHASH
 
-Takes NAME, OPERATOR and VALUE to find records that has the
+Takes NAME, operator and value to find records that has the
 matching Attribute.
 
 If EMPTY is set, also select rows with an empty string as
@@ -150,66 +162,66 @@ my %Negate = qw(
 
 sub LimitAttribute {
     my ($self, %args) = @_;
-    my $clause = 'ALIAS';
-    my $operator = ($args{OPERATOR} || '=');
+    my $clause = 'alias';
+    my $operator = ($args{operator} || '=');
     
-    if ($args{NULL} and exists $args{VALUE}) {
-	$clause = 'LEFTJOIN';
+    if ($args{NULL} and exists $args{value}) {
+	$clause = 'leftjoin';
 	$operator = $Negate{$operator};
     }
     elsif ($args{NEGATE}) {
 	$operator = $Negate{$operator};
     }
     
-    my $alias = $self->Join(
-	TYPE   => 'left',
-	ALIAS1 => $args{ALIAS} || 'main',
-	FIELD1 => 'id',
-	TABLE2 => 'Attributes',
-	FIELD2 => 'ObjectId'
+    my $alias = $self->join(
+	type => 'left',
+	alias1 => $args{alias} || 'main',
+	column1 => 'id',
+	table2 => 'Attributes',
+	column2 => 'ObjectId'
     );
 
     my $type = ref($self);
     $type =~ s/(?:s|Collection)$//; # XXX - Hack!
 
-    $self->Limit(
+    $self->limit(
 	$clause	   => $alias,
-	FIELD      => 'ObjectType',
-	OPERATOR   => '=',
-	VALUE      => $type,
+	column      => 'ObjectType',
+	operator   => '=',
+	value      => $type,
     );
-    $self->Limit(
+    $self->limit(
 	$clause	   => $alias,
-	FIELD      => 'Name',
-	OPERATOR   => '=',
-	VALUE      => $args{NAME},
+	column      => 'Name',
+	operator   => '=',
+	value      => $args{NAME},
     ) if exists $args{NAME};
 
-    return unless exists $args{VALUE};
+    return unless exists $args{value};
 
-    $self->Limit(
+    $self->limit(
 	$clause	   => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => $operator,
-	VALUE      => $args{VALUE},
+	column      => 'Content',
+	operator   => $operator,
+	value      => $args{value},
     );
 
     # Capture rows with the attribute defined as an empty string.
-    $self->Limit(
+    $self->limit(
 	$clause    => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => '=',
-	VALUE      => '',
-	ENTRYAGGREGATOR => $args{NULL} ? 'AND' : 'OR',
+	column      => 'Content',
+	operator   => '=',
+	value      => '',
+	entry_aggregator => $args{NULL} ? 'AND' : 'OR',
     ) if $args{EMPTY};
 
     # Capture rows without the attribute defined
-    $self->Limit(
+    $self->limit(
 	%args,
-	ALIAS      => $alias,
-	FIELD	   => 'id',
-	OPERATOR   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
-	VALUE      => 'NULL',
+	alias      => $alias,
+	column	   => 'id',
+	operator   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
+	value      => 'NULL',
     ) if $args{NULL};
 }
 # }}}
@@ -222,11 +234,11 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
-=item CUSTOMFIELD - CustomField id. Optional
+=item customfield - CustomField id. Optional
 
-=item OPERATOR - The usual Limit operators
+=item operator - The usual Limit operators
 
-=item VALUE - The value to compare against
+=item value - The value to compare against
 
 =back
 
@@ -241,35 +253,35 @@ sub _SingularClass {
 
 sub LimitCustomField {
     my $self = shift;
-    my %args = ( VALUE        => undef,
-                 CUSTOMFIELD  => undef,
-                 OPERATOR     => '=',
+    my %args = ( value        => undef,
+                 customfield  => undef,
+                 operator     => '=',
                  @_ );
 
-    my $alias = $self->Join(
-	TYPE       => 'left',
-	ALIAS1     => 'main',
-	FIELD1     => 'id',
-	TABLE2     => 'ObjectCustomFieldValues',
-	FIELD2     => 'ObjectId'
+    my $alias = $self->join(
+	type => 'left',
+	alias1     => 'main',
+	column1     => 'id',
+	table2     => 'ObjectCustomFieldValues',
+	column2     => 'ObjectId'
     );
-    $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'CustomField',
-	OPERATOR   => '=',
-	VALUE      => $args{'CUSTOMFIELD'},
-    ) if ($args{'CUSTOMFIELD'});
-    $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'ObjectType',
-	OPERATOR   => '=',
-	VALUE      => $self->_SingularClass,
+    $self->limit(
+	alias      => $alias,
+	column      => 'CustomField',
+	operator   => '=',
+	value      => $args{'customfield'},
+    ) if ($args{'customfield'});
+    $self->limit(
+	alias      => $alias,
+	column      => 'ObjectType',
+	operator   => '=',
+	value      => $self->_SingularClass,
     );
-    $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => $args{'OPERATOR'},
-	VALUE      => $args{'VALUE'},
+    $self->limit(
+	alias      => $alias,
+	column      => 'Content',
+	operator   => $args{'operator'},
+	value      => $args{'value'},
     );
 }
 
@@ -289,25 +301,24 @@ sub FindAllRows {
 
 =head2 Limit PARAMHASH
 
-This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 1, thus
+This Limit sub calls SUPER::limit, but defaults "case_sensitive" to 1, thus
 making sure that by default lots of things don't do extra work trying to 
 match lower(colname) agaist lc($val);
 
 =cut
 
-sub Limit {
+sub limit {
     my $self = shift;
-    my %args = ( CASESENSITIVE => 1,
-                 @_ );
-
-    return $self->SUPER::Limit(%args);
+    my %args = (operator => '=',@_);
+    $args{'operator'} =~ s/like/matches/i;
+    return $self->SUPER::limit(case_sensitive => 1, %args);
 }
 
 # }}}
 
-# {{{ sub ItemsOrderBy
+# {{{ sub items_order_by
 
-=head2 ItemsOrderBy
+=head2 items_order_by
 
 If it has a SortOrder attribute, sort the array by SortOrder.
 Otherwise, if it has a "Name" attribute, sort alphabetically by Name
@@ -316,14 +327,14 @@ db.
 
 =cut
 
-sub ItemsOrderBy {
+sub items_order_by {
     my $self = shift;
     my $items = shift;
   
-    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+    if ($self->new_item()->can('SortOrder')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }
-    elsif ($self->NewItem()->_Accessible('Name','read')) {
+    elsif ($self->new_item()->can('Name')) {
         $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
     }
 
@@ -332,29 +343,34 @@ sub ItemsOrderBy {
 
 # }}}
 
-# {{{ sub ItemsArrayRef
+# {{{ sub items_array_ref
 
-=head2 ItemsArrayRef
+=head2 items_array_ref
 
-Return this object's ItemsArray, in the order that ItemsOrderBy sorts
+Return this object's ItemsArray, in the order that items_order_by sorts
 it.
 
 
 =cut
 
-sub ItemsArrayRef {
+sub items_array_ref {
     my $self = shift;
     my @items;
     
-    return $self->ItemsOrderBy($self->SUPER::ItemsArrayRef());
+    return $self->items_order_by($self->SUPER::items_array_ref());
 }
 
 # }}}
 
-eval "require RT::SearchBuilder_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Vendor.pm});
-eval "require RT::SearchBuilder_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Local.pm});
+sub new_item {
+    my $self  = shift;
+    my $class = $self->record_class();
+
+    die "Jifty::DBI::Collection needs to be subclassed; override new_item\n"
+        unless $class;
+    $class->require();
+    return $class->new( $self->CurrentUser);
+}
 
 1;
 

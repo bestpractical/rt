@@ -58,7 +58,7 @@
 %if ($Create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
+<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->id%>" />
 % }
 
 %# hang onto the queue id
@@ -71,7 +71,7 @@ $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 <%INIT>
 
-my $TemplateObj = new RT::Template($session{'CurrentUser'});
+my $TemplateObj = new RT::Model::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
@@ -91,19 +91,19 @@ if ($Create) {
 
 else {
   if ($Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
+      my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $TemplateObj->Load($Template) || Abort(loc('No Template'));
+       $TemplateObj->load($Template) || Abort(loc('No Template'));
     }
      $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
   
     
 }
 my $QueueObj;
-if ($TemplateObj->Id()) {
+if ($TemplateObj->id()) {
   $Queue = $TemplateObj->Queue;
   $QueueObj = $TemplateObj->QueueObj;
 
@@ -111,14 +111,14 @@ if ($TemplateObj->Id()) {
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id();
-  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
-  		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id(),
+  $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id();
+  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->id()),
+  		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id(),
 			};
   push @results, @aresults;
 } else {
-  $QueueObj = RT::Queue->new($session{'CurrentUser'});
-  $QueueObj->Load($Queue);
+  $QueueObj = RT::Model::Queue->new($session{'CurrentUser'});
+  $QueueObj->load($Queue);
 }
 
 </%INIT>

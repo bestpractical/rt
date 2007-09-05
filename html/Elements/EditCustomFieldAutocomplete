@@ -69,13 +69,13 @@ new Ajax.Autocompleter(
 % }
 </script>
 <%INIT>
-my $name = $NamePrefix . $CustomField->Id;
+my $name = $NamePrefix . $CustomField->id;
 if ( $Default && !$Multiple ) {
     $Default =~ s/\s*\r*\n\s*/ /g;
 }
 if ( $Multiple and $Values ) {
     $Default = '';
-    while (my $value = $Values->Next ) {
+    while (my $value = $Values->next ) {
         $Default .= $value->Content ."\n";
     }
 }

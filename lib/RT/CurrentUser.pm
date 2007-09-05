@@ -55,31 +55,31 @@
 
     # laod
     my $current_user = new RT::CurrentUser;
-    $current_user->Load(...);
+    $current_user->load(...);
     # or
     my $current_user = RT::CurrentUser->new( $user_obj );
     # or
     my $current_user = RT::CurrentUser->new( $address || $name || $id );
 
     # manipulation
-    $current_user->UserObj->SetName('new_name');
+    $current_user->UserObj->set_Name('new_name');
 
 
 =head1 DESCRIPTION
 
-B<Read-only> subclass of L<RT::User> class. Used to define the current
+B<Read-only> subclass of L<RT::Model::User> class. Used to define the current
 user. You should pass an instance of this class to constructors of
 many RT classes, then the instance used to check ACLs and localize
 strings.
 
 =head1 METHODS
 
-See also L<RT::User> for a list of methods this class has.
+See also L<RT::Model::User> for a list of methods this class has.
 
 =head2 new
 
 Returns new CurrentUser object. Unlike all other classes of RT it takes
-either subclass of C<RT::User> class object or scalar value that is
+either subclass of C<RT::Model::User> class object or scalar value that is
 passed to Load method.
 
 =cut
@@ -92,91 +92,77 @@ use RT::I18N;
 use strict;
 use warnings;
 
-use base qw/RT::User/;
+use base qw/RT::Model::User/;
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
 # the CurrentUser object
-
-sub _Init {
-    my $self = shift;
+sub new {
+    my $self = shift->SUPER::new(@_);
     my $User = shift;
 
-    $self->{'table'} = "Users";
 
     if ( defined $User ) {
 
-        if ( UNIVERSAL::isa( $User, 'RT::User' ) ) {
-            $self->LoadById( $User->id );
+        if ( UNIVERSAL::isa( $User, 'RT::Model::User' ) ) {
+            $self->load_by_id( $User->id );
         }
         elsif ( ref $User ) {
             $RT::Logger->crit(
                 "RT::CurrentUser->new() called with a bogus argument: $User");
         }
         else {
-            $self->Load( $User );
+            $self->load( $User );
         }
     }
 
-    $self->_BuildTableAttributes;
-
+    return $self;
 }
 
 =head2 Create, Delete and Set*
 
-As stated above it's a subclass of L<RT::User>, but this class is read-only
+As stated above it's a subclass of L<RT::Model::User>, but this class is read-only
 and calls to these methods are illegal. Return 'permission denied' message
 and log an error.
 
 =cut
 
-sub Create {
+sub create {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
-sub Delete {
+sub delete {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
-sub _Set {
+sub _set {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::User for manipulation');
+    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, $self->loc('Permission Denied'));
 }
 
 =head2 UserObj
 
-Returns the L<RT::User> object associated with this CurrentUser object.
+Returns the L<RT::Model::User> object associated with this CurrentUser object.
 
 =cut
 
 sub UserObj {
     my $self = shift;
 
-    my $user = RT::User->new( $self );
-    unless ( $user->LoadById( $self->Id ) ) {
+    my $user = RT::Model::User->new( $self );
+    unless ( $user->load_by_id( $self->id ) ) {
         $RT::Logger->error(
-            $self->loc("Couldn't load [_1] from the users database.\n", $self->Id)
+            $self->loc("Couldn't load [_1] from the users database.\n", $self->id)
         );
     }
     return $user;
 }
 
-sub _CoreAccessible  {
-     {
-         Name           => { 'read' => 1 },
-           Gecos        => { 'read' => 1 },
-           RealName     => { 'read' => 1 },
-           Lang     => { 'read' => 1 },
-           Password     => { 'read' => 0, 'write' => 0 },
-          EmailAddress => { 'read' => 1, 'write' => 0 }
-     };
-  
-}
 
 =head2 LoadByGecos
 
@@ -185,21 +171,21 @@ Takes a unix username as its only argument.
 
 =cut
 
-sub LoadByGecos  {
+sub loadByGecos  {
     my $self = shift;
-    return $self->LoadByCol( "Gecos", shift );
+    return $self->load_by_cols( "Gecos", shift );
 }
 
-=head2 LoadByName
+=head2 load_by_name
 
 Loads a User into this CurrentUser object.
 Takes a Name.
 
 =cut
 
-sub LoadByName {
+sub load_by_name {
     my $self = shift;
-    return $self->LoadByCol( "Name", shift );
+    return $self->load_by_cols( "Name", shift );
 }
 
 =head2 LanguageHandle
@@ -220,8 +206,8 @@ sub LanguageHandle {
             || ( $self->id || 0 ) == $RT::SystemUser->id ) {
             @_ = qw(en-US);
         }
-        elsif ( my $lang = $self->Lang ) {
-            push @_, $lang;
+        elsif ( $self->id && $self->Lang ) {
+            push @_, $self->Lang;
         }
 
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
@@ -273,35 +259,35 @@ sub CurrentUser {
 
 =head2 Authenticate
 
-Takes $password, $created and $nonce, and returns a boolean value
+Takes $password, $Created and $nonce, and returns a boolean value
 representing whether the authentication succeeded.
 
-If both $nonce and $created are specified, validate $password against:
+If both $nonce and $Created are specified, validate $password against:
 
     encode_base64(sha1(
         $nonce .
-        $created .
+        $Created .
         sha1_hex( "$username:$realm:$server_pass" )
     ))
 
 where $server_pass is the md5_hex(password) digest stored in the
-database, $created is in ISO time format, and $nonce is a random
+database, $Created is in ISO time format, and $nonce is a random
 string no longer than 32 bytes.
 
 =cut
 
 sub Authenticate { 
-    my ($self, $password, $created, $nonce, $realm) = @_;
+    my ($self, $password, $Created, $nonce, $realm) = @_;
 
     require Digest::MD5;
     require Digest::SHA1;
     require MIME::Base64;
 
     my $username = $self->UserObj->Name or return;
-    my $server_pass = $self->UserObj->__Value('Password') or return;
+    my $server_pass = $self->UserObj->__value('Password') or return;
     my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
         $nonce .
-        $created .
+        $Created .
         Digest::MD5::md5_hex("$username:$realm:$server_pass")
     ));
 

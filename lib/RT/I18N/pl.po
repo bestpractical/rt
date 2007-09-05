@@ -32,9 +32,9 @@ msgstr "Nr"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -48,7 +48,7 @@ msgid "$prefix %1"
 msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 nr%2"
 
@@ -169,7 +169,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Wszelkie prawa zastrzeżone 1996-%3 %4"
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "Skrypt %1 został załadowany"
 
@@ -230,7 +230,7 @@ msgstr "%1 nie udało się ustawić statusu na zamknięty. Baza danych RT może 
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -324,7 +324,7 @@ msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 zamknie wszystkie części zamykanego zgłoszenia grupowego."
 
 #: NOT FOUND IN SOURCE
-msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
+msgid "%1 will stall a [local] base if it's dependent [or member] of a linked up request."
 msgstr "%1 zamknie bazę lokalną, jeśli jest powiązana z podłączonym zgłoszeniem (lub jest jego częścią)"
 
 #: lib/RT/CustomField_Overlay.pm:894
@@ -591,7 +591,7 @@ msgid "ACE not found"
 msgstr "Nie udało się odnaleźć ACE"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACE mogą być tylko utworzone lub usunięte."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -886,19 +886,19 @@ msgid "Approval"
 msgstr "Potwierdzenia"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Potwierdzenie #%1: %2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Potwierdzenie #%1: Uwagi nie zostały zapisane z powodu błędu systemu"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Potwierdzenie #%1: Uwagi zostały zapisane"
 
@@ -988,7 +988,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "Nie udało się dodać załącznika '%1'"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Załącznik został utworzony"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1500,7 +1500,7 @@ msgid "Couldn't find user\\n"
 msgstr "Nie udało się wyszukać użytkownika\\n"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Nie udało się załadować %1 z bazy użytkowników.\\n"
 
@@ -1523,7 +1523,7 @@ msgid "Couldn't load Scrips."
 msgstr "Nie udało się załadować skryptów"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
@@ -1582,7 +1582,7 @@ msgstr ""
 msgid "Country"
 msgstr "Kraj"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Utwórz"
 
@@ -1668,7 +1668,7 @@ msgstr "Utwórz skrypt dla kolejki %1"
 msgid "Create a template"
 msgstr "Utwórz szablon"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Utwórz zgłoszenie"
 
@@ -2322,7 +2322,7 @@ msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Błąd w określeniu parametrów kolejki -> Usuń Obserwatora"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
 msgstr "Błąd w określeniu parametrów kolejki -> Usuń Obserwatora"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -2334,7 +2334,7 @@ msgid "Error in parameters to Ticket->DelWatcher"
 msgstr " Błąd w określeniu parametrów zgłoszenia -> Usuń Obserwatora"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
 msgstr "Błąd w określeniu parametrów Zgłoszenia-> Usuń Obserwatora"
 
 #: bin/rt-crontool:285
@@ -2614,11 +2614,11 @@ msgstr "Grupa ma już członka"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "Nie udało się utworzyć grupy: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Grupa została utworzona"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2879,7 +2879,7 @@ msgid "January"
 msgstr "Styczeń"
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "Dołącz albo opuść tę grupę"
 
 #: lib/RT/Date.pm:447
@@ -2975,12 +2975,12 @@ msgid "Link already exists"
 msgstr "Połączenie już istnieje"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Nie udało się utworzyć połączenia"
 
 #: lib/RT/Record.pm:1326
 #. ($TransString)
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Połączenie zostało utworzone (%1)"
 
 #: lib/RT/Record.pm:1387
@@ -2993,7 +2993,7 @@ msgid "Link not found"
 msgstr "Połączenie nie zostało odnalezione"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "Powiąż zgłoszenie #%1"
 
@@ -3339,12 +3339,12 @@ msgid "Modify associated objects for %1"
 msgstr ""
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "Modyfikuj daty dla #%1"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "Modyfikuj daty dla zgłoszenia # %1"
 
@@ -3414,7 +3414,7 @@ msgstr "Modyfikuj użytkowników powiązanych z kolejką %1"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "Modyfikuj użytkowników powiązanych ze zgłoszeniem %1"
 
@@ -3456,12 +3456,12 @@ msgid "Modify the user %1"
 msgstr "Modyfikuj użytkownika %1"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "Modyfikuj zgłoszenie %1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "Modyfikuj zgłoszenie %1"
 
@@ -3678,7 +3678,7 @@ msgstr "Nowe zgłoszenie nie istnieje"
 msgid "New user"
 msgstr "Nowy użytkownik"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "Nowy użytkownik został nazwany"
 
@@ -3869,7 +3869,7 @@ msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT
 msgstr "Brak aktualnego użytkownika RT. Proszę skontaktować się z administratorem RT.\\n"
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
+msgid "No value sent to _set!\\n"
 msgstr "Nie wysłano wartości do zestawu!\\n"
 
 #: html/Elements/QuickCreate:59
@@ -3993,7 +3993,7 @@ msgid "OR"
 msgstr ""
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Nie udało się utworzyć obiektu"
 
 #: lib/RT/Record.pm:123
@@ -4001,7 +4001,7 @@ msgid "Object could not be deleted"
 msgstr ""
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Obiekt został utworzony"
 
 #: lib/RT/Record.pm:120
@@ -4084,13 +4084,13 @@ msgid "On Transaction"
 msgstr "w przypadku transakcji"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "Wyświetl tylko potwierdzenia dotyczące zgłoszeń zarejestrowanych po %1"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr "Wyświetl tylko potwierdzenia dotyczące zgłoszeń zarejestrowanych przed %1"
 
 #: html/Admin/CustomFields/index.html:75
@@ -4146,7 +4146,7 @@ msgid "Organization"
 msgstr "Firma"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Zgłoszenie źródłowe: #%1"
 
@@ -4413,7 +4413,7 @@ msgid "Queue already exists"
 msgstr "Kolejka już istnieje"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "Nie udało się utworzyć kolejki"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -4421,7 +4421,7 @@ msgid "Queue could not be loaded."
 msgstr "Nie udało się załadować kolejki"
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "Kolejka została utworzona"
 
 #: NOT FOUND IN SOURCE
@@ -4664,7 +4664,7 @@ msgid "Reminder '%1' reopened"
 msgstr ""
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr ""
 
@@ -4673,7 +4673,7 @@ msgid "Reminders"
 msgstr ""
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr ""
 
@@ -4895,7 +4895,7 @@ msgid "Saved searches"
 msgstr "Zapisane zapytania"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr "Skrypt #%1"
@@ -5035,7 +5035,7 @@ msgstr "Wybierz grupę"
 msgid "Select a queue"
 msgstr "Wybierz kolejkę"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -5507,7 +5507,7 @@ msgid "Template"
 msgstr "Szablon"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "Szablon #%1"
 
@@ -5716,25 +5716,25 @@ msgid "Ticket # %1 Jumbo update: %2"
 msgstr "Ticket nÂ°%1 Jumbo update: %2"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Pełna aktualizacja: %2 zgłoszenia nr %1"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Zgłoszenie nr %1  %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "Zgłoszenie %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "Zgłoszenie %1 zostało utworzone w kolejce '%2'"
 
 #: NOT FOUND IN SOURCE
@@ -5742,7 +5742,7 @@ msgid "Ticket %1 loaded\\n"
 msgstr "Zgłoszenie %1 zostało załadowane\\n"
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "Zgłoszenie %1:  %2"
 
@@ -5751,7 +5751,7 @@ msgid "Ticket Custom Fields"
 msgstr ""
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Historia zgłoszenia nr %1  %2"
 
@@ -5780,11 +5780,11 @@ msgid "Ticket content type"
 msgstr "Typ zawartości zgłoszenia"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "Nie udało się utworzyć zgłoszenia z powodu wewnętrznego błędu"
 
 #: NOT FOUND IN SOURCE
-msgid "Ticket created"
+msgid "Ticket Created"
 msgstr "Zgłoszenie zostało utworzone"
 
 #: NOT FOUND IN SOURCE
@@ -5815,7 +5815,7 @@ msgstr "Zmienił się status zgłoszenia"
 msgid "Ticket watchers"
 msgstr "Obserwatorzy zgłoszenia"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr ""
@@ -5833,11 +5833,11 @@ msgid "Tickets %1 by %2"
 msgstr "Zgłoszenia %1 do %2"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr ""
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -5935,11 +5935,11 @@ msgid "Transaction Custom Fields"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
+msgid "Transaction->create couldn't, as you didn't specify a ticket id"
 msgstr "Transakcja-> Nie udało się utworzyć, ponieważ nie określono numeru zgłoszenia"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:870
@@ -5985,7 +5985,7 @@ msgid "Unknown field: $key"
 msgstr ""
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "Nieograniczona"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -6169,11 +6169,11 @@ msgstr "Uprawnienia użytkowników"
 
 #: html/Admin/Users/Modify.html:301
 #. ($msg)
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "Nie udało się utworzyć użytkownika: %1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Użytkownik został utworzony"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -6262,11 +6262,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "Po zatwierdzeniu zgłoszenia przez któregokolwiek z zatwierdzających, dodaj korespondencję do oryginalnego zgłoszenia"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "Po utworzeniu zgłoszenia"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Po utworzeniu zgłoszenia podlegającego zatwierdzeniu, powiadom właściciela i osoby o uprawnieniach AdminCc o zadaniu oczekującym zatwierdzenie przez nich"
 
 #: etc/initialdata:151
@@ -6688,7 +6688,7 @@ msgid "true"
 msgstr "vrai"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr "nieopisana grupa %1"
 

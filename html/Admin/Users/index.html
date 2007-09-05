@@ -52,12 +52,12 @@
 
 <h1><% $caption %></h1>
 <p><&|/l&>Select a user</&>:</p>
-% unless ( $users->Count ) {
+% unless ( $users->count ) {
 <li><em><&|/l&>No users matching search criteria found.</&></em></li>
 % } else {
 
 <& /Elements/CollectionList,
-    OrderBy => 'Name',
+    order_by => 'Name',
     Order => 'ASC',
     Rows  => 100,
     BaseURL => RT->Config->Get('WebPath') .'/Admin/Users/index.html?',
@@ -65,10 +65,10 @@
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField IdLike EmailLike FindDisabledUsers)],
+    PassArguments => [qw(Format Rows Page Order order_by UserString UserOp UserField IdLike EmailLike FindDisabledUsers)],
 &>
 
-% my $ids = join ',', map $_->id, @{ $users->ItemsArrayRef };
+% my $ids = join ',', map $_->id, @{ $users->items_array_ref };
 % if ( $ids ) {
 <div align="right"><em>
 (<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
@@ -80,7 +80,7 @@
 % }
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
-% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+% foreach my $field( qw(Format Rows Page Order order_by) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
@@ -93,23 +93,23 @@
 
 <%INIT>
 my $caption;
-my $users = RT::Users->new( $session{'CurrentUser'} );
+my $users = RT::Model::Users->new( $session{'CurrentUser'} );
 $users->{'find_disabled_rows'} = 1 if $FindDisabledUsers;
 
 if ( defined($UserString) && length $UserString ) {
     $caption = loc("Users matching search criteria");
     if ( $UserField =~ /^CustomField-(\d+)/ ) {
         $users->LimitCustomField(
-            CUSTOMFIELD => $1,
-            OPERATOR => $UserOp,
-            VALUE => $UserString,
+            customfield => $1,
+            operator => $UserOp,
+            value => $UserString,
         ); 
     }
     else {
-        $users->Limit(
-            FIELD => $UserField,
-            OPERATOR => $UserOp,
-            VALUE => $UserString,
+        $users->limit(
+            column => $UserField,
+            operator => $UserOp,
+            value => $UserString,
         ); 
     }
 }
@@ -128,7 +128,7 @@ $Format => undef,
 
 $UserString => undef
 $UserOp => '='
-$UserField => 'Name'
+$Usercolumn => 'Name'
 $IdLike => undef
 $EmailLike => undef
 

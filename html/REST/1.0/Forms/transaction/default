@@ -54,21 +54,21 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $trans = new RT::Transactions $session{CurrentUser};
+my $trans = new RT::Model::Transactions $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {} , "");
 
 chomp $args;
 my @arglist = split('/', $args);
 my $tid = $id;
 
-$trans->Limit(FIELD => 'Id', OPERATOR => '=', VALUE => $tid);
+$trans->limit(column => 'Id', operator => '=', value => $tid);
 
 if ($tid) {
     my @data;
-    my $t = new RT::Transaction $session{CurrentUser};
-    $t->Load($tid);
+    my $t = new RT::Model::Transaction $session{CurrentUser};
+    $t->load($tid);
     if ($format eq "l") {
-      push @data, [ id    => $t->Id   ];
+      push @data, [ id    => $t->id   ];
       push @data, [ Ticket    => $t->Ticket   ]
   	    if (!%$fields || exists $fields->{lc 'Ticket'});
       push @data, [ TimeTaken    => $t->TimeTaken   ]
@@ -89,8 +89,8 @@ if ($tid) {
        	if (!%$fields || exists $fields->{lc 'Content'});
       
       if (!%$fields || exists $fields->{lc 'Content'}) {    
-  	    my $creator = new RT::User $session{CurrentUser};
-  	    $creator->Load($t->Creator);
+  	    my $creator = new RT::Model::User $session{CurrentUser};
+  	    $creator->load($t->Creator);
   	    push @data, [ Creator    => $creator->Name   ];
       }
       push @data, [ Created    => $t->Created   ]
@@ -99,7 +99,7 @@ if ($tid) {
       if (!%$fields || exists $fields->{lc 'Attachments'}) {
   	    my $attachlist;
   	    my $attachments = $t->Attachments;
-  	    while (my $a = $attachments->Next) {
+  	    while (my $a = $attachments->next) {
   	      my $size = length($a->Content);
   	      if ($size > 1024) {
   	        $size  = int($size/102.4)/10 . "k";
@@ -107,13 +107,13 @@ if ($tid) {
   	      else {
   	        $size .= "b";
   	      }
-  	      $attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
+  	      $attachlist .= "\n" . $a->id.": ".($a->Filename || "untitled")." (".$size.")";
   	    }
   	    push @data, [Attachments => $attachlist];
       }
       
     } else {
-      push @data, [ id    => $t->Id   ];
+      push @data, [ id    => $t->id   ];
       push @data, [ Description    => $t->Description   ];
     }
 
@@ -126,8 +126,8 @@ if ($tid) {
 #    $format ||= "s";
 #    $format = "l" if (%$fields);
 #
-#    while (my $t = $trans->Next) {
-#	    my $tid = $t->Id;
+#    while (my $t = $trans->next) {
+#	    my $tid = $t->id;
 #	    if ($format eq "l") {
 #	      $tids .= "," if $tids;
 #	      $tids .= $tid;

@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::User ();
-package RT::User;
+use RT::Model::User ();
+package RT::Model::User;
 
 use strict;
 use warnings;
@@ -96,15 +96,15 @@ sub __DependsOn
         );
 
 # ACL equivalence group
-# don't use LoadACLEquivalenceGroup cause it may not exists any more
-    my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
-    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+# don't use load_acl_equivalence_group cause it may not exists any more
+    my $objs = RT::Model::Groups->new( $self->CurrentUser );
+    $objs->limit( column => 'Domain', value => 'ACLEquivalence' );
+    $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 # Cleanup user's membership
-    $objs = RT::GroupMembers->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'MemberId', VALUE => $self->Id );
+    $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    $objs->limit( column => 'MemberId', value => $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
@@ -118,11 +118,11 @@ sub __DependsOn
 # which are references on users(Principal actualy)
     my @var_objs;
     foreach( @OBJECTS ) {
-        my $class = "RT::$_";
+        my $class = "RT::Model::$_";
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
             my $objs = $class->new( $self->CurrentUser );
-            next unless $objs->NewItem->_Accessible( $method => 'read' );
-            $objs->Limit( FIELD => $method, VALUE => $self->id );
+            next unless $objs->new_item->can($method);
+            $objs->limit( column => $method, value => $self->id );
             push @var_objs, $objs;
         }
     }
@@ -158,8 +158,8 @@ sub __Relates
         $rec->{'Description'} = "Have no related ACL equivalence Group object";
     }
 
-    $obj = RT::Group->new( $RT::SystemUser );
-    $obj->LoadACLEquivalenceGroup( $self->PrincipalObj );
+    $obj = RT::Model::Group->new( $RT::SystemUser );
+    $obj->load_acl_equivalence_group( $self->PrincipalObj );
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {

@@ -54,7 +54,7 @@
     Format       => \@Format,
     FormatString => $Format,
     Order        => \@Order,
-    OrderBy      => \@OrderBy,
+    order_by      => \@order_by,
     Rows         => $Rows,
     Page         => $Page,
     AllowSorting => $AllowSorting, 
@@ -65,7 +65,7 @@
 
 <%PERL>
 my $i = 0;
-while ( my $record = $Collection->Next ) {
+while ( my $record = $Collection->next ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
     $m->comp('/Elements/CollectionAsTable/Row',
@@ -94,26 +94,26 @@ my $next = $m->comp( '/Elements/QueryString', %query_args, Page => $Page + 1 );
 <a href="<% $BaseURL %><% $prev %>"><&|/l&>Previous Page</&></a>
 % }
 % if ( ($Page * $Rows) < $TotalFound ) {
-<a href="<% $BaseURL %><% $next %>"><&|/l&>Next Page</&></a>
+<a href="<% $BaseURL %><% $next %>"><&|/l&>next Page</&></a>
 % }
 % }
 <%INIT>
-my $TotalFound = $Collection->CountAll;
+my $TotalFound = $Collection->count_all;
 return '' if !$TotalFound && !$ShowEmpty;
 
-if ( @OrderBy ) {
-    if ( $OrderBy[0] =~ /\|/ ) {
-        @OrderBy = split /\|/, $OrderBy[0];
+if ( @order_by ) {
+    if ( $order_by[0] =~ /\|/ ) {
+        @order_by = split /\|/, $order_by[0];
         @Order = split /\|/,$Order[0];
     }
-    $Collection->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
+    $Collection->order_by(
+        map { { column => $order_by[$_], order => $Order[$_] } }
+        ( 0 .. $#order_by )
     );
 }
 
-$Collection->RowsPerPage( $Rows ) if $Rows;
-$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
+$Collection->set_page_info($Rows ? ( per_page => $Rows) : (per_page => 25), current_page => $Page);
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
@@ -151,14 +151,14 @@ $Format        => undef
 $DisplayFormat => undef
 
 @Order         => ()
-@OrderBy       => ()
+@order_by       => ()
 
 $Rows          => undef
 $Page          => 1
 
 $Title         => loc('Ticket Search')
 $BaseURL       => undef
-@PassArguments => qw(Query Format Rows Page Order OrderBy)
+@PassArguments => qw(Query Format Rows Page Order order_by)
 
 $AllowSorting   => 0
 $ShowNavigation => 1

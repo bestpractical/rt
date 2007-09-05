@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Link ();
-package RT::Link;
+use RT::Model::Link ();
+package RT::Model::Link;
 
 use strict;
 use warnings;
@@ -71,23 +71,23 @@ sub __DependsOn
     my $list = [];
 
 # AddLink transactions
-    my $map = RT::Ticket->LINKTYPEMAP;
+    my $map = RT::Model::Ticket->LINKTYPEMAP;
     my $link_meta = $map->{ $self->Type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
         RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );
     }
     if ( $self->BaseURI->IsLocal ) {
         my $objs = $self->BaseObj->Transactions;
-        $objs->Limit(
-            FIELD    => 'Type',
-            OPERATOR => '=',
-            VALUE    => 'AddLink',
+        $objs->limit(
+            column    => 'Type',
+            operator => '=',
+            value    => 'AddLink',
         );
-        $objs->Limit( FIELD => 'NewValue', VALUE => $self->Target );
+        $objs->limit( column => 'NewValue', value => $self->Target );
         while ( my ($k, $v) = each %$map ) {
             next unless $v->{'Type'} eq $link_meta->{'Type'};
             next unless $v->{'Mode'} eq $link_meta->{'Mode'};
-            $objs->Limit( FIELD => 'Field', VALUE => $k );
+            $objs->limit( column => 'Field', value => $k );
         }
         push( @$list, $objs );
     }
@@ -95,16 +95,16 @@ sub __DependsOn
     my %reverse = ( Base => 'Target', Target => 'Base' );
     if ( $self->TargetURI->IsLocal ) {
         my $objs = $self->TargetObj->Transactions;
-        $objs->Limit(
-            FIELD    => 'Type',
-            OPERATOR => '=',
-            VALUE    => 'AddLink',
+        $objs->limit(
+            column    => 'Type',
+            operator => '=',
+            value    => 'AddLink',
         );
-        $objs->Limit( FIELD => 'NewValue', VALUE => $self->Base );
+        $objs->limit( column => 'NewValue', value => $self->Base );
         while ( my ($k, $v) = each %$map ) {
             next unless $v->{'Type'} eq $link_meta->{'Type'};
             next unless $v->{'Mode'} eq $reverse{ $link_meta->{'Mode'} };
-            $objs->Limit( FIELD => 'Field', VALUE => $k );
+            $objs->limit( column => 'Field', value => $k );
         }
         push( @$list, $objs );
     }

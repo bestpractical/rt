@@ -77,12 +77,12 @@ if( $opt{'older'} ) {
 }
 
 require RT;
-RT::LoadConfig();
+RT::load_config();
 
 if( $opt{'debug'} ) {
-    RT->Config->Set( LogToScreen => 'debug' );
+    RT->Config->set( LogToScreen => 'debug' );
 } else {
-    RT->Config->Set( LogToScreen => undef );
+    RT->Config->set( LogToScreen => undef );
 }
 
 RT::ConnectToDatabase();

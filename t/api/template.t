@@ -11,7 +11,7 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-ok(require RT::Template);
+ok(require RT::Model::Template);
 
 
     undef $main::_STDOUT_;
@@ -22,10 +22,10 @@ ok(require RT::Template);
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-my $t = RT::Template->new($RT::SystemUser);
-$t->Create(Name => "Foo", Queue => 1);
-my $t2 = RT::Template->new($RT::Nobody);
-$t2->Load($t->Id);
+my $t = RT::Model::Template->new($RT::SystemUser);
+$t->create(Name => "Foo", Queue => 1);
+my $t2 = RT::Model::Template->new($RT::Nobody);
+$t2->load($t->id);
 ok($t2->QueueObj->id, "Got the template's queue objet");
 
 

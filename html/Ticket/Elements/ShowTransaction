@@ -49,7 +49,7 @@
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td rowspan="2" valign="top" class="type">
-      <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
+      <a name="txn-<% $Transaction->id %>" href="<% $DisplayPath %>#txn-<% $Transaction->id %>">#</a>
       <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
     </td>
     <td class="date"><% $transdate|n %></td>
@@ -67,7 +67,7 @@
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
     <& ShowGnuPGStatus, Attachment => $Attachments->[0] &>
 % }
-% if ( $Transaction->CustomFieldValues->Count ) {
+% if ( $Transaction->CustomFieldValues->count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
@@ -109,7 +109,7 @@ my %class = (
     Give       => 'people',
 
     AddLink    => 'links',
-    DeleteLink => 'links',
+    delete_link => 'links',
 );
 
 </%ONCE>
@@ -139,7 +139,7 @@ unless ( $type_class ) {
 }
 
 my $TicketString = '';
-if ( $Ticket->Id != $Transaction->Ticket ) {
+if ( $Ticket->id != $Transaction->Ticket ) {
     $TicketString = "Ticket " . $Transaction->Ticket . ": ";
 }
 
@@ -149,8 +149,8 @@ $TimeTaken = $Transaction->TimeTaken . " min"
 
 unless ($Attachments) { 
     my $attachments = $Transaction->Attachments;
-    $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
-    $Attachments = $attachments->ItemsArrayRef();
+    $attachments->columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $Attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '&nbsp;';
 
@@ -165,7 +165,7 @@ if ( $type =~ /EmailRecord$/ ) {
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
       . $Transaction->Ticket
       . "&Transaction="
-      . $Transaction->Id
+      . $Transaction->id
       . "&Attachment="
       . ( $Attachments->[0] && $Attachments->[0]->id )
       . '">' . loc('Show') . "</a>]&nbsp;";
@@ -181,30 +181,30 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        my $can_modify = $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket');
-        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
+        my $can_modify = $Transaction->TicketObj->current_user_has_right('ModifyTicket');
+        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->Ticket
-              . "&QuoteTransaction=" . $Transaction->Id
+              . "&QuoteTransaction=" . $Transaction->id
               . "&Action=Respond\">"
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
+        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
               . "&QuoteTransaction="
-              . $Transaction->Id
+              . $Transaction->id
               . "&Action=Comment\">"
               . loc('Comment') . "</a>]";
         }
-        if ( $Transaction->TicketObj->CurrentUserHasRight('ForwardMessage') ) {
+        if ( $Transaction->TicketObj->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket
-              . "&QuoteTransaction=". $Transaction->Id
+              . "&QuoteTransaction=". $Transaction->id
               . "\">". loc('Forward') . "</a>]";
         }
     }

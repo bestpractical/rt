@@ -65,7 +65,7 @@ $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
 
-$CurrentValue => undef,
+$Currentvalue => undef,
 </%ARGS>
 % unless ( $Default ) {
 <input type="hidden" name="<% $Name %>" value="0" />\

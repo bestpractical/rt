@@ -54,13 +54,13 @@
     Title => $title
     &>
 
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::User' &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Model::User' &>
 <%INIT>
-my $Object = RT::User->new( $session{'CurrentUser'} );
+my $Object = RT::Model::User->new( $session{'CurrentUser'} );
 
-$Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
+$Object->load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 my $FriendlySubTypes =
-  RT::CustomField->new( $session{'CurrentUser'} )
+  RT::Model::CustomField->new( $session{'CurrentUser'} )
   ->FriendlyLookupType( $Object->CustomFieldLookupType );
 
 my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );

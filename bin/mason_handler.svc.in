@@ -152,7 +152,7 @@ BEGIN {
 	} );
     
 	if ($rv) {
-	    warn "Service 'RTFastCGI' successfully created.\n";
+	    warn "Service 'RTFastCGI' successfully Created.\n";
 	}
 	else {
 	    warn "Failed to add service: " . Win32::FormatMessage(

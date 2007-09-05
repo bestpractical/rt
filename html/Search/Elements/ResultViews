@@ -50,7 +50,7 @@ $QueryString => undef
 $Query => undef
 $Format => undef
 $Rows => undef
-$OrderBy => undef
+$order_by => undef
 $Order => undef
 $RSSFeedURL => undef
 $ShortQueryString => undef
@@ -63,7 +63,7 @@ $ShortQueryString => undef
 <a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
 
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
+% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
@@ -73,7 +73,7 @@ $ShortQueryString => undef
 </form>
 
 <%PERL>
-if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
+if ( $session{'CurrentUser'}->has_right( Right => 'SuperUser', Object => $RT::System ) ) {
     my $query_string = $m->comp('/Elements/QueryString',
         Search => 1,
         Plugin => 'Tickets',

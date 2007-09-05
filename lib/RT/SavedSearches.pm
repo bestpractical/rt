@@ -56,7 +56,7 @@
 =head1 DESCRIPTION
 
   SavedSearches is an object consisting of a number of SavedSearch objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
+  It works more or less like a Jifty::DBI collection, although it
   is not.
 
 =head1 METHODS
@@ -102,10 +102,10 @@ sub LimitToPrivacy {
 
     if ($object) {
 	$self->{'objects'} = [];
-	my @search_atts = $object->Attributes->Named('SavedSearch');
+	my @search_atts = $object->attributes->Named('SavedSearch');
 	foreach my $att (@search_atts) {
 	    my $search = RT::SavedSearch->new($self->CurrentUser);
-	    $search->Load($privacy, $att->Id);
+	    $search->load($privacy, $att->id);
 	    next if $type && $search->Type ne $type;
 	    push(@{$self->{'objects'}}, $search);
 	}
@@ -140,7 +140,7 @@ Returns the number of search objects found.
 
 =cut
 
-sub Count {
+sub count {
     my $self = shift;
     return scalar @{$self->{'objects'}};
 }
@@ -165,12 +165,12 @@ sub _PrivacyObjects {
     my $self        = shift;
     my $CurrentUser = $self->CurrentUser;
 
-    my $groups = RT::Groups->new($CurrentUser);
+    my $groups = RT::Model::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $CurrentUser->Id,
+    $groups->WithMember( PrincipalId => $CurrentUser->id,
                          Recursively => 1 );
 
-    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+    return ( $CurrentUser->UserObj, @{ $groups->items_array_ref() } );
 }
 
 eval "require RT::SavedSearches_Vendor";

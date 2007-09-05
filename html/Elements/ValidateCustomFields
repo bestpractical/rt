@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my ($valid, @res) = (1, ());
-$CustomFields->GotoFirstItem;
-while ( my $CF = $CustomFields->Next ) {
-    my $field = $NamePrefix . $CF->Id . "-Value";
+$CustomFields->goto_first_item;
+while ( my $CF = $CustomFields->next ) {
+    my $field = $NamePrefix . $CF->id . "-Value";
 
     my $value;
     if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
@@ -61,7 +61,7 @@ while ( my $CF = $CustomFields->Next ) {
     else {
         $value = $ARGSRef->{$field};
     }
-    $m->notes(('Field-' . $CF->Id) => $value);
+    $m->notes(('Field-' . $CF->id) => $value);
 
     my @values = ();
     if ( ref $value eq 'ARRAY' ) {
@@ -85,7 +85,7 @@ while ( my $CF = $CustomFields->Next ) {
         next if $CF->MatchPattern($value);
 
         my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
-        $m->notes( ('InvalidField-' . $CF->Id) => $msg );
+        $m->notes( ('InvalidField-' . $CF->id) => $msg );
         push @res, $msg;
         $valid = 0;
     }
@@ -96,5 +96,5 @@ return wantarray? ($valid, @res): $valid;
 <%ARGS>
 $CustomFields
 $ARGSRef
-$NamePrefix => "Object-RT::Ticket--CustomField-"
+$NamePrefix => "Object-RT::Model::Ticket--CustomField-"
 </%ARGS>

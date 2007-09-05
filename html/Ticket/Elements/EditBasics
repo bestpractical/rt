@@ -65,7 +65,7 @@
           Name         => 'Owner',
           QueueObj     => $TicketObj->QueueObj,
           TicketObj    => $TicketObj,
-          Default      => $TicketObj->OwnerObj->Id,
+          Default      => $TicketObj->OwnerObj->id,
           DefaultValue => 0,
       &></td>
   </tr>
@@ -110,7 +110,7 @@
 <%INIT>
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
 my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->Id);
+my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->id);
 
 </%INIT>
 <%ARGS>

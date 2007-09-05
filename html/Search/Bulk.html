@@ -52,12 +52,12 @@
     Format => $ARGS{'Format'}, # we don't want the locally modified one
     Query => $Query,
     Rows => $Rows,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order => $Order &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
-% foreach my $var qw(Query Format OrderBy Order Rows Page) {
+% foreach my $var qw(Query Format order_by Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
 <& /Elements/TicketList, Query => $Query,
@@ -65,7 +65,7 @@
     Format => $ARGS{'Format'},
     Verbatim => 1,
     AllowSorting => 1,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
@@ -132,12 +132,12 @@
 </select> 
 </td></tr>
 <tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="" /></td></tr>
-% while (my $CF = $TxnCFs->Next()) {
+% while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, 
     CustomField => $CF, 
-    NamePrefix => "Object-RT::Transaction--CustomField-"
+    NamePrefix => "Object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % } # end if while
@@ -150,7 +150,7 @@
 </&>
 <&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
 <%perl>
-my $cfs = RT::CustomFields->new($session{'CurrentUser'});
+my $cfs = RT::Model::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
@@ -158,9 +158,9 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 <tr>
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Add values</&></th>
-<th><&|/l&>Delete values</&></th>
+<th><&|/l&>delete values</&></th>
 </tr>
-% while (my $cf = $cfs->Next()) {
+% while (my $cf = $cfs->next()) {
 <tr>
 <td class="label"><%$cf->Name%><br />
 <em>(<%$cf->FriendlyType%>)</em></td>
@@ -213,23 +213,23 @@ $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 # inject _CHECKBOX to the first field.
 $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
-my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$Tickets->FromSQL($Query);
-if ( $OrderBy =~ /\|/ ) {
+my $Tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+$Tickets->from_sql($Query);
+if ( $order_by =~ /\|/ ) {
 
   # Multiple Sorts
-  my @OrderBy = split /\|/, $OrderBy;
+  my @order_by = split /\|/, $order_by;
   my @Order   = split /\|/, $Order;
-  $Tickets->OrderByCols(
-    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-      ( 0 .. $#OrderBy ) );
+  $Tickets->order_by(
+    map { { column => $order_by[$_], order => $Order[$_] } }
+      ( 0 .. $#order_by ) );
 }
 else {
-  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+  $Tickets->order_by( column => $order_by, order => $Order );
 }
 
-$Tickets->RowsPerPage($Rows) if ($Rows);
-$Tickets->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
+$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
+$Tickets->set_page_info(per_page => $Rows, current_page => $Page);
 
 Abort( loc("No search to operate on.") ) unless ($Tickets);
 
@@ -238,11 +238,11 @@ Abort( loc("No search to operate on.") ) unless ($Tickets);
 
 my $fields      = {};
 my $seen_queues = {};
-while ( my $ticket = $Tickets->Next ) {
+while ( my $ticket = $Tickets->next ) {
     next if $seen_queues->{ $ticket->Queue }++;
 
     my $custom_fields = $ticket->QueueObj->TicketCustomFields;
-    while ( my $field = $custom_fields->Next ) {
+    while ( my $field = $custom_fields->next ) {
         $fields->{ $field->id } = $field;
     }
 }
@@ -251,7 +251,7 @@ while ( my $ticket = $Tickets->Next ) {
 my @linkresults;
 my %queues;
 
-$Tickets->RedoSearch();
+$Tickets->redo_search();
 
 # pull out the labels for any custom fields we want to update
 
@@ -261,12 +261,12 @@ my $cf_add_keys;
 @$cf_add_keys = grep { /^Bulk-Add-CustomField/ } keys %ARGS;
 
 
-while ( my $Ticket = $Tickets->Next ) {
-    next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
+while ( my $Ticket = $Tickets->next ) {
+    next unless ( $ARGS{ "UpdateTicket" . $Ticket->id } );
 
     #Update the links
     $ARGS{'id'} = $Ticket->id;
-    $queues{ $Ticket->QueueObj->Id }++;
+    $queues{ $Ticket->QueueObj->id }++;
 
     my @updateresults, ProcessUpdateMessage(
             TicketObj => $Ticket,
@@ -319,8 +319,8 @@ while ( my $Ticket = $Tickets->Next ) {
             my ( $cfid, $cf );
             if ( $key =~ /CustomField-(\d+)-/ ) {
                 $cfid = $1;
-                $cf   = RT::CustomField->new( $session{'CurrentUser'} );
-                $cf->Load($cfid);
+                $cf   = RT::Model::CustomField->new( $session{'CurrentUser'} );
+                $cf->load($cfid);
             }
             else {next}
             my @values =
@@ -335,17 +335,17 @@ while ( my $Ticket = $Tickets->Next ) {
             my $current_values = $Ticket->CustomFieldValues($cfid);
             foreach my $value (@values) {
                 if ( $op eq 'del' && $current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
+                    my ( $id, $msg ) = $Ticket->delete_custom_field_value(
+                        column => $cfid,
+                        value => $value
                     );
                     push @cfresults, $msg;
                 }
 
                 elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
                     my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
+                        column => $cfid,
+                        value => $value
                     );
                     push @cfresults, $msg;
                 }
@@ -358,13 +358,13 @@ while ( my $Ticket = $Tickets->Next ) {
     );
 
     @tempresults =
-      map { loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
+      map { loc( "Ticket [_1]: [_2]", $Ticket->id, $_ ) } @tempresults;
 
     @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
-$TxnCFs->LimitToLookupType( RT::Transaction->CustomFieldLookupType );
+my $TxnCFs = RT::Model::CustomFields->new( $session{CurrentUser} );
+$TxnCFs->LimitToLookupType( RT::Model::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 
 </%INIT>
@@ -373,6 +373,6 @@ $Format => undef
 $Page => 1
 $Rows => undef
 $Order => 'ASC'
-$OrderBy => 'id'
+$order_by => 'id'
 $Query => undef
 </%args>

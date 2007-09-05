@@ -95,7 +95,7 @@ my ( $field, @results );
 # to deal
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
-my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+my $Ticket = new RT::Model::Ticket( $session{'CurrentUser'} );
 
 # store the uploaded attachment in session
 if ( $ARGS{'Attach'} ) {    # attachment?
@@ -124,13 +124,13 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
-    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
+    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    unless ( $Queue->load( $ARGS{'Queue'} ) ) {
         $m->comp( 'Error.html', Why => loc('Queue not found') );
         $m->abort;
     }
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('CreateTicket') ) {
         $m->comp( 'Error.html',
             Why =>
               loc('You have no permission to create tickets in that queue.') );
@@ -156,7 +156,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # }}}
     }
     else {
-        unless ( $Ticket->Load( $id[0] ) ) {
+        unless ( $Ticket->load( $id[0] ) ) {
             $m->comp( 'Error.html',
                 Why => loc( "Couldn't load ticket '[_1]'", $id ) );
             $m->abort();
@@ -169,7 +169,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         and $ARGS{'Status'}
         and ( $ARGS{'Status'} ne $Ticket->Status ) )
     {
-        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        ( $code, $msg ) = $Ticket->set_Status( $ARGS{'Status'} );
         push @results, "$msg";
     }
 
@@ -204,7 +204,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # This code does automatic redirection if any updates happen.
 
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    unless ( $Ticket->current_user_has_right('ShowTicket') ) {
         $m->comp( 'Error.html',
             Why => loc("No permission to display that ticket") );
         # XXX: Why abort? then we loose footer //ruz

@@ -82,10 +82,10 @@ if ($ShowDisplayModes or $ShowTitle) {
 
 <div id="ticket-history">
 <%perl>
-my @attachments = @{$Attachments->ItemsArrayRef()};
-my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
+my @attachments = @{$Attachments->items_array_ref()};
+my @attachment_content = @{$AttachmentContent->items_array_ref()};
 
-while ( my $Transaction = $Transactions->Next ) {
+while ( my $Transaction = $Transactions->next ) {
     my $skip = 0;
     $m->callback(
         %ARGS,
@@ -97,10 +97,10 @@ while ( my $Transaction = $Transactions->Next ) {
 
     $i++;
 
-    my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
+    my @trans_attachments = grep { $_->TransactionId == $Transaction->id } @attachments;
 
     my $trans_content = {};
-    grep { ($_->TransactionId == $Transaction->Id ) && ($trans_content->{$_->Id} = $_)  } @attachment_content;
+    grep { ($_->TransactionId == $Transaction->id ) && ($trans_content->{$_->id} = $_)  } @attachment_content;
 
    
     #Args is first because we're clobbering the "Attachments" parameter 
@@ -113,7 +113,7 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               Attachments          => \@trans_attachments,
               AttachmentContent    => $trans_content,
-              LastTransaction      => $Transactions->IsLast
+              LastTransaction      => $Transactions->is_last
  );
 
 # manually flush the content buffer after each txn, so the user sees
@@ -128,9 +128,9 @@ $m->flush_buffer();
 % }
 </div>
 <%INIT>
-my $Transactions = new RT::Transactions($session{'CurrentUser'});
+my $Transactions = new RT::Model::Transactions($session{'CurrentUser'});
 if ($Tickets) {
-    while (my $t = $Tickets->Next) {
+    while (my $t = $Tickets->next) {
         $Transactions->LimitToTicket($t->id);
     }
 } else {
@@ -140,10 +140,10 @@ if ($Tickets) {
 
 my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
 $OldestFirst = $OldestFirst? 'ASC': 'DESC';
-$Transactions->OrderByCols( { FIELD => 'Created',
-                              ORDER => $OldestFirst },
-                            { FIELD => 'id',
-                              ORDER => $OldestFirst },
+$Transactions->order_by( { column => 'Created',
+                              order => $OldestFirst },
+                            { column => 'id',
+                              order => $OldestFirst },
                           );
 
 my $i;

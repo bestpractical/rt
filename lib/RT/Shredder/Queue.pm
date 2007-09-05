@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Queue ();
-package RT::Queue;
+use RT::Model::Queue ();
+package RT::Model::Queue;
 
 use strict;
 use warnings;
@@ -68,19 +68,19 @@ sub __DependsOn
     my $list = [];
 
 # Tickets
-    my $objs = RT::Tickets->new( $self->CurrentUser );
+    my $objs = RT::Model::Tickets->new( $self->CurrentUser );
     $objs->{'allow_deleted_search'} = 1;
-    $objs->Limit( FIELD => 'Queue', VALUE => $self->Id );
+    $objs->limit( column => 'Queue', value => $self->id );
     push( @$list, $objs );
 
 # Queue role groups( Cc, AdminCc )
-    $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
-    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $objs = RT::Model::Groups->new( $self->CurrentUser );
+    $objs->limit( column => 'Domain', value => 'RT::Model::Queue-Role' );
+    $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 # Scrips
-    $objs = RT::Scrips->new( $self->CurrentUser );
+    $objs = RT::Model::Scrips->new( $self->CurrentUser );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 
@@ -89,7 +89,7 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Custom Fields
-    $objs = RT::CustomFields->new( $self->CurrentUser );
+    $objs = RT::Model::CustomFields->new( $self->CurrentUser );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 

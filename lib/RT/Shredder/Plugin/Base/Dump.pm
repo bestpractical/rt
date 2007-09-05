@@ -64,6 +64,6 @@ sub SupportArgs { return () }
 
 sub PushMark { return 1 }
 sub PopMark { return 1 }
-sub RollbackTo { return 1 }
+sub rollbackTo { return 1 }
 
 1;

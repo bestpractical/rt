@@ -52,13 +52,13 @@
 
 <&|/l&>Personal groups</&>:<br />
 <ul>
-%while ( my $Group = $Groups->Next) {
+%while ( my $Group = $Groups->next) {
 <li><a href="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br />
 %}
 </ul>
 
 <%INIT>
-my $Groups = RT::Groups->new($session{'CurrentUser'});
+my $Groups = RT::Model::Groups->new($session{'CurrentUser'});
 $Groups->LimitToPersonalGroupsFor($session{'CurrentUser'}->PrincipalId());
 my $title = loc('Personal groups');
 

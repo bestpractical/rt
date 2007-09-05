@@ -62,9 +62,9 @@
 <& Elements/ShowDependency, Ticket => $Ticket &>
 
 <%init>
-my $Ticket = LoadTicket($id);
+my $Ticket = load_ticket($id);
 
-my $title = loc("Approval #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+my $title = loc("Approval #[_1]: [_2]", $Ticket->id, $Ticket->Subject);
 
 </%init>
 <%ARGS>

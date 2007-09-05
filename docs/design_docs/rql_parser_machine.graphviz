@@ -16,10 +16,10 @@ digraph G {
 
     KEYWORD -> OP;
 
-    OP -> VALUE;
+    OP -> value;
 
-    VALUE -> PAREN;
-    VALUE -> AGGREG;
+    value -> PAREN;
+    value -> AGGREG;
 
 /*
     Blue lines represent added complexity of q[IN (x,y,z)] support.
@@ -28,8 +28,8 @@ digraph G {
 */
     KEYWORD -> IN [color=blue];
     IN -> PAREN [color=blue];
-    PAREN -> VALUE [color=blue];
-    VALUE -> COMMA [color=blue];
-    COMMA -> VALUE [color=blue]; 
-    VALUE -> PAREN [color=blue];
+    PAREN -> value [color=blue];
+    value -> COMMA [color=blue];
+    COMMA -> value [color=blue]; 
+    value -> PAREN [color=blue];
 }

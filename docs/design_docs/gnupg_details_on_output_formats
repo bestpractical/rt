@@ -161,7 +161,7 @@ The "tru" trust database records have the fields:
     GnuPG before version 1.4 used the classic trust model by default.
     GnuPG 1.4 and later uses the PGP trust model by default.
 
- 4: Date trustdb was created in seconds since 1/1/1970.
+ 4: Date trustdb was Created in seconds since 1/1/1970.
  5: Date trustdb will expire in seconds since 1/1/1970.
 
 The "spk" signature subpacket records have the fields:
@@ -256,7 +256,7 @@ more arguments in future versions.
 	and may be used in applications to detect replay attacks
 	of signed messages.  Note that only DLP algorithms give
 	unique ids - others may yield duplicated ones when they
-	have been created in the same second.
+	have been Created in the same second.
 
         Note, that SIG-TIMESTAMP may either be a number with seconds
         since epoch or an ISO 8601 string which can be detected by the
@@ -458,8 +458,8 @@ more arguments in future versions.
                           running as a daemon.
 
         
-    SIG_CREATED <type> <pubkey algo> <hash algo> <class> <timestamp> <key fpr>
-	A signature has been created using these parameters.
+    SIG_createD <type> <pubkey algo> <hash algo> <class> <timestamp> <key fpr>
+	A signature has been Created using these parameters.
 	    type:  'D' = detached
 		   'C' = cleartext
 		   'S' = standard
@@ -470,8 +470,8 @@ more arguments in future versions.
         epoch or an ISO 8601 string which can be detected by the
         presence of the letter 'T' inside.
         
-    KEY_CREATED <type> <fingerprint> [<handle>]
-        A key has been created
+    KEY_createD <type> <fingerprint> [<handle>]
+        A key has been Created
             type: 'B' = primary and subkey
                   'P' = primary
                   'S' = subkey
@@ -480,8 +480,8 @@ more arguments in future versions.
         non-whitespace string used to match key parameters from batch
         key creation run.
 
-    KEY_NOT_CREATED [<handle>]
-        The key from batch run has not been created due to errors.
+    KEY_NOT_createD [<handle>]
+        The key from batch run has not been Created due to errors.
 
 
     SESSION_KEY  <algo>:<hexdigits>
@@ -602,8 +602,8 @@ more arguments in future versions.
         for certain operation and is mostly useful to check whether a
         PIN change really worked.
 
-    BACKUP_KEY_CREATED fingerprint fname
-        A backup key named FNAME has been created for the key with
+    BACKUP_KEY_createD fingerprint fname
+        A backup key named FNAME has been Created for the key with
         KEYID.
 
 
@@ -751,7 +751,7 @@ The format of this file is as follows:
 	is ignored, the last filename before a commit is used.
 	The filename is used until a new filename is used (at commit points)
 	and all keys are written to that file.	If a new filename is given,
-	this file is created (and overwrites an existing one).
+	this file is Created (and overwrites an existing one).
 	Both control statements must be given.
    o The order of the parameters does not matter except for "Key-Type"
      which must be the first parameter.  The parameters are only for the
@@ -787,7 +787,7 @@ The format of this file is as follows:
      Name-Comment: <string>
      Name-Email: <string>
 	The 3 parts of a key. Remember to use UTF-8 here.
-	If you don't give any of them, no user ID is created.
+	If you don't give any of them, no user ID is Created.
      Expire-Date: <iso-date>|(<number>[d|w|m|y])
 	Set the expiration date for the key (and the subkey).  It
 	may either be entered in ISO date format (2000-08-15) or as
@@ -806,7 +806,7 @@ The format of this file is as follows:
 	designated revokers.
      Handle: <string>
         This is an optional parameter only used with the status lines
-        KEY_CREATED and KEY_NOT_CREATED.  STRING may be up to 100
+        KEY_createD and KEY_NOT_createD.  STRING may be up to 100
         characters and should not contain spaces.  It is useful for
         batch key generation to associate a key parameter block with a
         status line.

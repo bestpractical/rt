@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Ticket ();
-package RT::Ticket;
+use RT::Model::Ticket ();
+package RT::Model::Ticket;
 
 use strict;
 use warnings;
@@ -68,16 +68,16 @@ sub __DependsOn
     my $list = [];
 
 # Tickets which were merged in
-    my $objs = RT::Tickets->new( $self->CurrentUser );
+    my $objs = RT::Model::Tickets->new( $self->CurrentUser );
     $objs->{'allow_deleted_search'} = 1;
-    $objs->Limit( FIELD => 'EffectiveId', VALUE => $self->Id );
-    $objs->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
+    $objs->limit( column => 'EffectiveId', value => $self->id );
+    $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
 # Ticket role groups( Owner, Requestors, Cc, AdminCc )
-    $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Ticket-Role' );
-    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $objs = RT::Model::Groups->new( $self->CurrentUser );
+    $objs->limit( column => 'Domain', value => 'RT::Model::Ticket-Role' );
+    $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 #TODO: Users, Queues if we wish export tool

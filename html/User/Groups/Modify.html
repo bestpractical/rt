@@ -57,10 +57,10 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/User/Groups/Modify.html" method="post">
 
-%unless ($Group->Id) {
+%unless ($Group->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 % }
 <table>
 <tr><td align="right">
@@ -83,7 +83,7 @@
 my $current_tab;
 my  ($title, @results, $Disabled, $EnabledChecked);
 
-my $Group = RT::Group->new($session{'CurrentUser'});
+my $Group = RT::Model::Group->new($session{'CurrentUser'});
 
 if ($Create) {
     $current_tab = 'User/Groups/Modify.html?Create=1';
@@ -92,17 +92,17 @@ if ($Create) {
 else {
     if ( defined ($id) && $id eq 'new' ) {
 
-        my ( $id, $msg ) = $Group->CreatePersonalGroup(
+        my ( $id, $msg ) = $Group->createPersonalGroup(
                              Name        => "$Name",
                              PrincipalId => $session{'CurrentUser'}->PrincipalId
         );
         unless ($id) {
             Abort( loc("Could not create group") );
         }
-        $id = $Group->Id;
+        $id = $Group->id;
     }
     else {
-        $Group->Load($id) || Abort( loc('Could not load group') );
+        $Group->load($id) || Abort( loc('Could not load group') );
     }
 
     if ($id) {
@@ -116,7 +116,7 @@ else {
         $Create = 1;
     }
 
-    $current_tab = 'User/Groups/Modify.html?id=' . $Group->Id;
+    $current_tab = 'User/Groups/Modify.html?id=' . $Group->id;
 }
 
 if ($id) {
@@ -136,7 +136,7 @@ else {
     $Disabled = 1;
 }
 if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
-    my  ($code, $msg) = $Group->SetDisabled($Disabled);
+    my  ($code, $msg) = $Group->set_Disabled($Disabled);
     push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
 }
 

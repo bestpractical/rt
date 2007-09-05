@@ -56,14 +56,14 @@ package RT;
 use Getopt::Long;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
-use RT::Tickets;
-use RT::Template;
+use RT::Model::Tickets;
+use RT::Model::Template;
 
 #Clean out all the nasties from the environment
 CleanEnv();
 
 # Load the config file
-RT::LoadConfig();
+RT::load_config();
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
@@ -71,7 +71,7 @@ RT::Init();
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
-unless ( $CurrentUser->Id ) {
+unless ( $CurrentUser->id ) {
     print loc("No RT user found. Please consult your RT administrator.\n");
     exit(1);
 }
@@ -107,30 +107,30 @@ load_module($condition) if ($condition);
 # load template if specified
 my $template_obj;
 if ($template_id) {
-    $template_obj = RT::Template->new($CurrentUser);
-    $template_obj->Load($template_id);
+    $template_obj = RT::Model::Template->new($CurrentUser);
+    $template_obj->load($template_id);
 }
-my $void_scrip = RT::Scrip->new( $CurrentUser );
-my $void_scrip_action = RT::ScripAction->new( $CurrentUser );
+my $void_scrip = RT::Model::Scrip->new( $CurrentUser );
+my $void_scrip_action = RT::Model::ScripAction->new( $CurrentUser );
 
 #At the appointed time:
 
 #find a bunch of tickets
-my $tickets = RT::Tickets->new($CurrentUser);
+my $tickets = RT::Model::Tickets->new($CurrentUser);
 my $search  = $search->new(
     TicketsObj  => $tickets,
     Argument    => $search_arg,
     CurrentUser => $CurrentUser
 );
 
-$search->Prepare();
+$search->prepare();
 
-# TicketsFound is an RT::Tickets object
+# TicketsFound is an RT::Model::Tickets object
 my $tickets = $search->TicketsObj;
 
 #for each ticket we've found
-while ( my $ticket = $tickets->Next() ) {
-    print $ticket->Id() . ": " if ($verbose);
+while ( my $ticket = $tickets->next() ) {
+    print $ticket->id() . ": " if ($verbose);
 
     my $transaction = get_transaction($ticket);
     print loc("Using transaction #[_1]...", $transaction->id)
@@ -165,11 +165,11 @@ while ( my $ticket = $tickets->Next() ) {
     );
 
     #if our preparation, move onto the next ticket
-    next unless ( $action_obj->Prepare );
+    next unless ( $action_obj->prepare );
     print loc("Action prepared...") if ($verbose);
 
     #commit our action.
-    next unless ( $action_obj->Commit );
+    next unless ( $action_obj->commit );
     print loc("Action committed.\n") if ($verbose);
 }
 
@@ -183,14 +183,14 @@ line arguments C<--transaction> and <--transaction-type>.
 sub get_transaction {
     my $ticket = shift;
     my $txns = $ticket->Transactions;
-    $txns->OrderByCols(
-        { FIELD => 'Created', ORDER => $transaction },
-        { FIELD => 'id', ORDER => $transaction },
+    $txns->order_by(
+        { column => 'Created', order => $transaction },
+        { column => 'id', order => $transaction },
     );
-    $txns->Limit( FIELD => 'Type', VALUE => $transaction_type )
+    $txns->limit( column => 'Type', value => $transaction_type )
         if $transaction_type;
-    $txns->RowsPerPage(1);
-    return $txns->First;
+    $txns->rows_per_page(1);
+    return $txns->first;
 }
 
 # {{{ load_module 

@@ -57,7 +57,7 @@
 return unless $CustomField->IsSelectionType;
 
 my @sources;
-foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSources') ) {
+foreach my $class( 'RT::Model::CustomFieldValues', RT->Config->Get('CustomFieldValuesSources') ) {
     next unless $class;
 
     local $@;
@@ -70,11 +70,11 @@ foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSo
     my %res = ( Class => $class );
     $res{'Description'} = $class->SourceDescription if $class->can('SourceDescription');
     $res{'Description'} ||= $class;
-    $res{'Description'} = 'Provide list of values below' if $class eq 'RT::CustomFieldValues';
+    $res{'Description'} = 'Provide list of values below' if $class eq 'RT::Model::CustomFieldValues';
     push @sources, \%res;
 }
 
-return unless grep $_->{'Class'} ne 'RT::CustomFieldValues', @sources;
+return unless grep $_->{'Class'} ne 'RT::Model::CustomFieldValues', @sources;
 
 </%INIT>
 <%ARGS>

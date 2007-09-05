@@ -143,7 +143,7 @@
 
 @ScripConditions = (
     { Name                 => 'On Create',                                # loc
-      Description          => 'When a ticket is created',                 # loc
+      Description          => 'When a ticket is Created',                 # loc
       ApplicableTransTypes => 'Create',
       ExecModule           => 'AnyTransaction', },
 
@@ -486,7 +486,7 @@ Your new password is:
     {  ScripCondition => 'On Resolve',
        ScripAction    => 'Notify Requestors',
        Template       => 'Resolved' },
-    {  Description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
+    {  Description => "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
        Queue          => '___Approvals',
        ScripCondition => 'User Defined',
        CustomIsApplicableCode => q[
@@ -508,14 +508,14 @@ return(0) unless ( lc($self->TransactionObj->NewValue) eq "rejected" or
 
 my $rejected = 0;
 my $links = $self->TicketObj->DependedOnBy;
-foreach my $link (@{ $links->ItemsArrayRef }) {
+foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->BaseObj;
     if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
 	if ($obj->Type eq 'ticket') {
 	    $obj->Comment(
 		Content	=> $self->loc("Your request was rejected."),
 	    );
-	    $obj->SetStatus(
+	    $obj->set_Status(
 		Status	=> 'rejected',
 		Force	=> 1,
 	    );
@@ -525,7 +525,7 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
 	    $rejected = 1;
 	}
 	else {
-	    $obj->SetStatus(
+	    $obj->set_Status(
 		Status	=> 'deleted',
 		Force	=> 1,
 	    );
@@ -534,10 +534,10 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
 }
 
 $links = $self->TicketObj->DependsOn;
-foreach my $link (@{ $links->ItemsArrayRef }) {
+foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->TargetObj;
     if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
-	$obj->SetStatus(
+	$obj->set_Status(
 	    Status	=> 'deleted',
 	    Force	=> 1,
 	);
@@ -546,7 +546,7 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
+$self->{Argument} = 'Requestor'; $self->prepare;
 
 return $rejected;
 # ------------------------------------------------------------------- #
@@ -563,7 +563,7 @@ return(0) unless ($self->TicketObj->Type eq 'approval');
 
 my $note;
 my $t = $self->TicketObj->Transactions;
-while (my $o = $t->Next) {
+while (my $o = $t->next) {
     $note .= $o->Content . "\n" if $o->ContentObj
 	    and $o->Content !~ /Default Approval/;
 }
@@ -582,7 +582,7 @@ foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
+$self->{Argument} = 'Requestor'; $self->prepare;
 
 return 1;
 # ------------------------------------------------------------------- #
@@ -602,9 +602,9 @@ my @TOP    = $Ticket->AllDependedOnBy( Type => 'ticket' );
 my $links  = $Ticket->DependedOnBy;
 my $passed = 0;
 
-while (my $link = $links->Next) {
+while (my $link = $links->next) {
     my $obj = $link->BaseObj;
-    next if ($obj->HasUnresolvedDependencies( Type => 'approval' ));
+    next if ($obj->has_unresolved_dependencies( Type => 'approval' ));
 
     if ($obj->Type eq 'ticket') {
 	$obj->Comment(
@@ -615,11 +615,11 @@ while (my $link = $links->Next) {
 	$passed = 1;
     }
     elsif ($obj->Type eq 'approval') {
-	$obj->SetStatus( Status => 'open', Force => 1 );
+	$obj->set_Status( Status => 'open', Force => 1 );
     }
     elsif (RT->Config->Get('UseCodeTickets') and $obj->Type eq 'code') {
         #XXX: RT->Config->Get('UseCodeTickets') used only once here!!!
-	my $code = $obj->Transactions->First->Content;
+	my $code = $obj->Transactions->first->Content;
 	my $rv;
 
 	foreach my $TOP (@TOP) {
@@ -629,17 +629,17 @@ while (my $link = $links->Next) {
 	}
 
 	if ($rv or !@TOP) {
-	    $obj->SetStatus( Status	=> 'resolved', Force	=> 1,);
+	    $obj->set_Status( Status	=> 'resolved', Force	=> 1,);
 	}
 	else {
-	    $obj->SetStatus( Status	=> 'rejected', Force	=> 1,);
+	    $obj->set_Status( Status	=> 'rejected', Force	=> 1,);
 	}
     }
 }
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
+$self->{Argument} = 'Requestor'; $self->prepare;
 
 return 0; # ignore $passed;
 # ------------------------------------------------------------------- #
@@ -668,7 +668,7 @@ return 0; # ignore $passed;
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                  . q{Priority, QueueName, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
-        OrderBy => 'Priority',
+        order_by => 'Priority',
         Order   => 'DESC'
       },
     },
@@ -681,7 +681,7 @@ return 0; # ignore $passed;
                  . q{QueueName, ExtendedStatus, CreatedRelative, }
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">__loc(Take)__</a>/TITLE:NBSP'},
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
-        OrderBy => 'Created',
+        order_by => 'Created',
         Order   => 'DESC'
       },
     },

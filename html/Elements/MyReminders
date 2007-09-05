@@ -50,10 +50,10 @@
     title => loc("Reminders") &>
 <table width="100%">
 % my $i =0;
-% while (my $reminder = $reminders->Next) {
+% while (my $reminder = $reminders->next) {
 % $i++;
-% if ($reminder->RefersTo->First) {
-% my $ticket= $reminder->RefersTo->First->TargetObj;
+% if ($reminder->RefersTo->first) {
+% my $ticket= $reminder->RefersTo->first->TargetObj;
 <tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
@@ -66,8 +66,8 @@
 </&>
 
 <%init>
-my $reminders = RT::Tickets->new($session{'CurrentUser'});
-$reminders->FromSQL('(Owner = "Nobody" OR Owner = "'.$session{'CurrentUser'}->Name.'")' .
+my $reminders = RT::Model::Tickets->new($session{'CurrentUser'});
+$reminders->from_sql('(Owner = "Nobody" OR Owner = "'.$session{'CurrentUser'}->Name.'")' .
     ' AND Type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
-$reminders->OrderBy(FIELD => 'Due', ORDER => 'DESC');
+$reminders->order_by(column => 'Due', order => 'DESC');
 </%init>

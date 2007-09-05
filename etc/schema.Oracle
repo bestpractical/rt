@@ -298,7 +298,7 @@ CREATE TABLE Templates (
 );
 
 
-CREATE SEQUENCE OBJECTCUSTOMFIELDS_seq;
+CREATE SEQUENCE OBJECTcustomfields_seq;
 CREATE TABLE ObjectCustomFields (
 	id		NUMBER(11,0)
                  CONSTRAINT ObjectCustomFields_Key PRIMARY KEY,
@@ -312,7 +312,7 @@ CREATE TABLE ObjectCustomFields (
 );
 
 
-CREATE SEQUENCE OBJECTCUSTOMFIELDVALUES_seq;
+CREATE SEQUENCE OBJECTcustomfieldvalueS_seq;
 CREATE TABLE ObjectCustomFieldValues (
 	id		NUMBER(11,0) 
 		CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
@@ -334,7 +334,7 @@ CREATE TABLE ObjectCustomFieldValues (
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
-CREATE SEQUENCE CUSTOMFIELDS_seq;
+CREATE SEQUENCE customfields_seq;
 CREATE TABLE CustomFields (
 	id		NUMBER(11,0) 
 		CONSTRAINT CustomFields_Key PRIMARY KEY,
@@ -354,7 +354,7 @@ CREATE TABLE CustomFields (
 );
 
 
-CREATE SEQUENCE CUSTOMFIELDVALUES_seq;
+CREATE SEQUENCE customfieldvalueS_seq;
 CREATE TABLE CustomFieldValues (
 	id		NUMBER(11,0) 
 		CONSTRAINT CustomFieldValues_Key PRIMARY KEY,

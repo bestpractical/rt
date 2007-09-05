@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::ScripAction ();
-package RT::ScripAction;
+use RT::Model::ScripAction ();
+package RT::Model::ScripAction;
 
 use strict;
 use warnings;
@@ -68,8 +68,8 @@ sub __DependsOn
     my $list = [];
 
 # Scrips
-    my $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'ScripAction', VALUE => $self->Id );
+    my $objs = RT::Model::Scrips->new( $self->CurrentUser );
+    $objs->limit( column => 'ScripAction', value => $self->id );
     $deps->_PushDependencies(
             BaseObject => $self,
             Flags => DEPENDS_ON,

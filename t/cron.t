@@ -2,7 +2,7 @@
 
 use strict;
 use Test::More; 
-plan tests => 18;
+plan tests => 22;
 
 use RT;
 use RT::Test;
@@ -11,12 +11,16 @@ use RT::Test;
 ### Set up some testing data.  Test the testing data because why not?
 
 # Create a user with rights, a queue, and some tickets.
-my $user_obj = RT::User->new($RT::SystemUser);
-my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('tara@example.com');
+my $user_obj = RT::Model::User->new($RT::SystemUser);
+my ($ret, $msg) = $user_obj->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
-$user_obj->SetName('tara');
-$user_obj->PrincipalObj->GrantRight(Right => 'SuperUser');
+($ret,$msg) =$user_obj->set_Name('tara');
+ok($ret,$msg);
+($ret,$msg) =$user_obj->PrincipalObj->GrantRight(Right => 'SuperUser');
+ok($ret,$msg);
 my $CurrentUser = RT::CurrentUser->new('tara');
+is($user_obj->Name,'tara');
+is ($user_obj->id, $CurrentUser->id);
 
 # Create our template, which will be used for tests of RT::Action::Record*.
 
@@ -25,8 +29,8 @@ RT-Send-Bcc: jesse@example.com
 
 This is a content string with no content.';
 
-my $template_obj = RT::Template->new($CurrentUser);
-$template_obj->Create(Queue       => '0',
+my $template_obj = RT::Model::Template->new($CurrentUser);
+$template_obj->create(Queue       => '0',
 		      Name        => 'recordtest',
 		      Description => 'testing Record actions',
 		      Content     => $template_content,
@@ -34,19 +38,19 @@ $template_obj->Create(Queue       => '0',
 
 # Create a queue and some tickets.
 
-my $queue_obj = RT::Queue->new($CurrentUser);
-($ret, $msg) = $queue_obj->Create(Name => 'recordtest', Description => 'queue for Action::Record testing');
+my $queue_obj = RT::Model::Queue->new($CurrentUser);
+($ret, $msg) = $queue_obj->create(Name => 'recordtest', Description => 'queue for Action::Record testing');
 ok($ret, 'record test queue creation');
 
-my $ticket1 = RT::Ticket->new($CurrentUser);
-my ($id, $tobj, $msg2) = $ticket1->Create(Queue    => $queue_obj,
+my $ticket1 = RT::Model::Ticket->new($CurrentUser);
+my ($id, $tobj, $msg2) = $ticket1->create(Queue    => $queue_obj,
 					 Requestor => ['tara@example.com'],
 					 Subject   => 'bork bork bork',
 					 Priority  => 22,
 					);
 ok($id, 'record test ticket creation 1');
-my $ticket2 = RT::Ticket->new($CurrentUser);
-($id, $tobj, $msg2) = $ticket2->Create(Queue     => $queue_obj,
+my $ticket2 = RT::Model::Ticket->new($CurrentUser);
+($id, $tobj, $msg2) = $ticket2->create(Queue     => $queue_obj,
 				      Requestor => ['root@localhost'],
 				      Subject   => 'hurdy gurdy'
 				      );
@@ -60,16 +64,16 @@ ok($id, 'record test ticket creation 2');
 ok(require RT::Search::FromSQL, "Search::FromSQL loaded");
 my $ticketsqlstr = "Requestor.EmailAddress = '" . $CurrentUser->EmailAddress .
     "' AND Priority > '20'";
-my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Tickets->new($CurrentUser),
+my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::Tickets->new($CurrentUser),
 				      );
-is(ref($search), 'RT::Search::FromSQL', "search created");
-ok($search->Prepare(), "fromsql search run");
+is(ref($search), 'RT::Search::FromSQL', "search Created");
+ok($search->prepare(), "from_sql search run");
 my $counter = 0;
-while(my $t = $search->TicketsObj->Next() ) {
-    is($t->Id(), $ticket1->Id(), "fromsql search results 1");
+while(my $t = $search->TicketsObj->next() ) {
+    is($t->id(), $ticket1->id(), "from_sql search results 1");
     $counter++;
 }
-is ($counter, 1, "fromsql search results 2");
+is ($counter, 1, "from_sql search results 2");
 
 # Right.  Now test the actions.
 
@@ -77,16 +81,16 @@ ok(require RT::Action::RecordComment);
 ok(require RT::Action::RecordCorrespondence);
 
 my ($comment_act, $correspond_act);
-ok($comment_act = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment created");
-ok($correspond_act = RT::Action::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence created");
-ok($comment_act->Prepare(), "Comment prepared");
-ok($correspond_act->Prepare(), "Correspond prepared");
-ok($comment_act->Commit(), "Comment committed");
-ok($correspond_act->Commit(), "Correspondence committed");
+ok($comment_act = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
+ok($correspond_act = RT::Action::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
+ok($comment_act->prepare(), "Comment prepared");
+ok($correspond_act->prepare(), "Correspond prepared");
+ok($comment_act->commit(), "Comment committed");
+ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
 my ($trans, $desc, $transaction) = $ticket2->Comment(MIMEObj => $template_obj->MIMEObj);
 my $bogus_action = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
-ok(!$bogus_action->Prepare(), "Comment aborted to prevent loop");
+ok(!$bogus_action->prepare(), "Comment aborted to prevent loop");
 
 1;

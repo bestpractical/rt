@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % my $approving = $Ticket->DependedOnBy();
-% if ($approving->Count) {
+% if ($approving->count) {
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
 <table width="100%">
@@ -54,23 +54,23 @@
 <td width="25" bgcolor="#999999">&nbsp;</td><td>
 <%PERL>
 my %show;
-while (my $link = $approving->Next()) {
+while (my $link = $approving->next()) {
     next unless ($link->BaseURI->IsLocal());
-    my $text = '<a name="' . $link->BaseObj->Id . '">';
+    my $text = '<a name="' . $link->BaseObj->id . '">';
     my $head = '';
     my $type = $link->BaseObj->Type;
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
 
     if ($type eq 'approval') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
     } elsif ($type eq 'ticket') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
     } else {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
     }
 
@@ -80,7 +80,7 @@ while (my $link = $approving->Next()) {
     $text .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $dep;
     $text .= '</a>';
-    $show{$link->BaseObj->Id} = {
+    $show{$link->BaseObj->id} = {
 	text => $text,
 	head => $head,
     };

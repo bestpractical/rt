@@ -96,7 +96,6 @@ $agent->field("AttachmentField", "Subject");
 $agent->field("AttachmentOp", "LIKE");
 $agent->field("ValueOfAttachment", "bbb");
 $agent->submit("AddClause");
-
 ok($agent->form_name('BuildQuery'));
 
 # get the query

@@ -70,7 +70,7 @@ if ($size) {
 </%PERL>
 
 <li><font size="-2">
-<a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->id%>/<%$rev->Filename | u%>">
 <&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
 </a>
 </font></li>
@@ -91,7 +91,7 @@ if ($size) {
 $Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
 
 my %documents;
-while ( my $attach = $Attachments->Next() ) {
+while ( my $attach = $Attachments->next() ) {
     next unless ($attach->Filename());
    unshift( @{ $documents{ $attach->Filename } }, $attach );
 }

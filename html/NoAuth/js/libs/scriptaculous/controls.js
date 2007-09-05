@@ -182,7 +182,7 @@ Autocompleter.Base.prototype = {
          this.active = false;
          Event.stop(event);
          return;
-       case Event.KEY_LEFT:
+       case Event.KEY_left:
        case Event.KEY_RIGHT:
          return;
        case Event.KEY_UP:

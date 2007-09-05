@@ -1,0 +1,38 @@
+Message-ID: <46D7309C.9040804@example.com>
+Date: Fri, 31 Aug 2007 01:03:24 +0400
+From: rt-test@example.com
+User-Agent: Thunderbird 2.0.0.6 (X11/20070804)
+MIME-Version: 1.0
+To:  rt-recipient@example.com
+Subject: Test Email ID:1
+X-Enigmail-Version: 0.95.3
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="------------enigF67974ED650702891ACEBB10"
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF67974ED650702891ACEBB10
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test email with MIME signature.
+ID:1
+
+
+
+--------------enigF67974ED650702891ACEBB10
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFG1zCi0ygDXYSIHxsRAqEmAJ9mKiEdoWg9IFGlUlhPrzo9+1tKSwCfdqRG
++HKnj+81jWpBEhj6D00uNrQ=
+=ZFav
+-----END PGP SIGNATURE-----
+
+--------------enigF67974ED650702891ACEBB10--
+

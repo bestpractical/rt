@@ -75,14 +75,14 @@ my $Object = $ObjectType->new($session{'CurrentUser'});
 my $QualifiedType;
 my $FriendlySubTypes;
 if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = RT::CustomField->new($session{'CurrentUser'})->FriendlyLookupType($Object->CustomFieldLookupType);
+    $FriendlySubTypes = RT::Model::CustomField->new($session{'CurrentUser'})->FriendlyLookupType($Object->CustomFieldLookupType);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;
 }
 
 if ($id) { 
-    $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id));
+    $Object->load($id) || Abort(loc("Couldn't load object [_1]", $id));
     $ObjectTabs = "/Admin/Elements/${Type}Tabs";
 } else {
     $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";

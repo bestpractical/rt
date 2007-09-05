@@ -57,8 +57,8 @@
 <& /Elements/ShowMemberships, UserObj => $UserObj &>
 
 <%INIT>
-my $UserObj = RT::User->new($session{'CurrentUser'});
-$UserObj->Load($id) || Abort("Couldn't load user '$id'");
+my $UserObj = RT::Model::User->new($session{'CurrentUser'});
+$UserObj->load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("Memberships of the user [_1]", $UserObj->Name);
 my $current_tab = 'Admin/Users/Memberships.html?id='.$id;
 </%INIT>

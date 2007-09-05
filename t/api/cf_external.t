@@ -12,46 +12,46 @@ sub new (*) {
     return $class->new($RT::SystemUser);
 }
 
-use constant VALUES_CLASS => 'RT::CustomFieldValues::Groups';
+use constant VALUES_CLASS => 'RT::Model::CustomFieldValues::Groups';
 
-my $q = new( RT::Queue );
-isa_ok( $q, 'RT::Queue' );
-my ($qid) = $q->Create( Name => "CF-External-". $$ );
-ok( $qid, "created queue" );
+my $q = new( RT::Model::Queue );
+isa_ok( $q, 'RT::Model::Queue' );
+my ($qid) = $q->create( Name => "CF-External-". $$ );
+ok( $qid, "Created queue" );
 my %arg = ( Name        => $q->Name,
             Type        => 'Select',
             Queue       => $q->id,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );
 
-my $cf = new( RT::CustomField );
-isa_ok( $cf, 'RT::CustomField' );
+my $cf = new( RT::Model::CustomField );
+isa_ok( $cf, 'RT::Model::CustomField' );
 
 {
-    my ($cfid) = $cf->Create( %arg );
-    ok( $cfid, "created cf" );
+    my ($cfid) = $cf->create( %arg );
+    ok( $cfid, "Created cf" );
     is( $cf->ValuesClass, VALUES_CLASS, "right values class" );
     ok( $cf->IsExternalValues, "custom field has external values" );
 }
 
 {
     # create at least on group for the tests
-    my $group = RT::Group->new( $RT::SystemUser );
-    my ($ret, $msg) = $group->CreateUserDefinedGroup( Name => $q->Name );
-    ok $ret, 'created group' or diag "error: $msg";
+    my $group = RT::Model::Group->new( $RT::SystemUser );
+    my ($ret, $msg) = $group->create_userDefinedGroup( Name => $q->Name );
+    ok $ret, 'Created group' or diag "error: $msg";
 }
 
 {
     my $values = $cf->Values;
     isa_ok( $values, VALUES_CLASS );
-    ok( $values->Count, "we have values" );
+    ok( $values->count, "we have values" );
     my ($failure, $count) = (0, 0);
-    while( my $value = $values->Next ) {
+    while( my $value = $values->next ) {
         $count++;
         $failure = 1 unless $value->Name;
     }
     ok( !$failure, "all values have name" );
-    is( $values->Count, $count, "count is correct" );
+    is( $values->count, $count, "count is correct" );
 }
 
 exit(0);

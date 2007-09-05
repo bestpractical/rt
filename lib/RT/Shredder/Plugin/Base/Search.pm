@@ -98,7 +98,7 @@ sub TestArgs
     return $self->SUPER::TestArgs( %args );
 }
 
-sub SetResolvers { return 1 }
+sub set_Resolvers { return 1 }
 
 
 =head2 FetchNext $collection [, $init]
@@ -123,18 +123,19 @@ Example:
 =cut
 
 use constant PAGE_SIZE => 100;
+my $page = 1;
 sub FetchNext {
     my ($self, $objs, $init) = @_;
     if ( $init ) {
-        $objs->RowsPerPage( PAGE_SIZE );
-        $objs->FirstPage;
+        $objs->set_page_info(per_page => PAGE_SIZE, current_page => $page++);
         return;
     }
 
-    my $obj = $objs->Next;
+    my $obj = $objs->next;
     return $obj if $obj;
-    $objs->NextPage;
-    return $objs->Next;
+    #$objs->set_page_info( current_page => $page++, per_page => PAGE_SIZE);
+    #    $objs->{must_redo_search} =1;
+    #return $objs->next;
 }
 
 1;

@@ -12,15 +12,15 @@ use RT::Test;
     undef $main::_STDERR_;
 
 ok (require RT::Action::CreateTickets);
-use_ok('RT::Scrip');
-use_ok('RT::Template');
-use_ok('RT::ScripAction');
-use_ok('RT::ScripCondition');
-use_ok('RT::Ticket');
+use_ok('RT::Model::Scrip');
+use_ok('RT::Model::Template');
+use_ok('RT::Model::ScripAction');
+use_ok('RT::Model::ScripCondition');
+use_ok('RT::Model::Ticket');
 
-my $approvalsq = RT::Queue->new($RT::SystemUser);
-$approvalsq->Create(Name => 'Approvals');
-ok ($approvalsq->Id, "Created Approvals test queue");
+my $approvalsq = RT::Model::Queue->new($RT::SystemUser);
+$approvalsq->create(Name => 'Approvals');
+ok ($approvalsq->id, "Created Approvals test queue");
 
 
 my $approvals = 
@@ -28,12 +28,12 @@ my $approvals =
 Queue: ___Approvals
 Type: approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
-Depended-On-By: {$Tickets{"TOP"}->Id}
+Depended-On-By: {$Tickets{"TOP"}->id}
 Refers-To: TOP 
-Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
+Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
-Content: Your approval is requested for the ticket {$Tickets{"TOP"}->Id}: {$Tickets{"TOP"}->Subject}
+Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->Subject}
 Blah
 Blah
 ENDOFCONTENT
@@ -43,46 +43,46 @@ Depended-On-By: approval
 Queue: ___Approvals
 Content-Type: text/plain
 Content: 
-Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?
+Your minion approved ticket {$Tickets{"TOP"}->id}. you ok with that?
 ENDOFCONTENT
 ';
 
 like ($approvals , qr/Content/, "Read in the approvals template");
 
-my $apptemp = RT::Template->new($RT::SystemUser);
-$apptemp->Create( Content => $approvals, Name => "Approvals", Queue => "0");
+my $apptemp = RT::Model::Template->new($RT::SystemUser);
+$apptemp->create( Content => $approvals, Name => "Approvals", Queue => "0");
 
-ok ($apptemp->Id);
+ok ($apptemp->id);
 
-my $q = RT::Queue->new($RT::SystemUser);
-$q->Create(Name => 'WorkflowTest');
-ok ($q->Id, "Created workflow test queue");
+my $q = RT::Model::Queue->new($RT::SystemUser);
+$q->create(Name => 'WorkflowTest');
+ok ($q->id, "Created workflow test queue");
 
-my $scrip = RT::Scrip->new($RT::SystemUser);
-my ($sval, $smsg) =$scrip->Create( ScripCondition => 'On Transaction',
+my $scrip = RT::Model::Scrip->new($RT::SystemUser);
+my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Transaction',
                 ScripAction => 'Create Tickets',
                 Template => 'Approvals',
-                Queue => $q->Id);
+                Queue => $q->id);
 ok ($sval, $smsg);
-ok ($scrip->Id, "Created the scrip");
-ok ($scrip->TemplateObj->Id, "Created the scrip template");
-ok ($scrip->ConditionObj->Id, "Created the scrip condition");
-ok ($scrip->ActionObj->Id, "Created the scrip action");
+ok ($scrip->id, "Created the scrip");
+ok ($scrip->TemplateObj->id, "Created the scrip template");
+ok ($scrip->ConditionObj->id, "Created the scrip condition");
+ok ($scrip->ActionObj->id, "Created the scrip action");
 
-my $t = RT::Ticket->new($RT::SystemUser);
-my($tid, $ttrans, $tmsg) = $t->Create(Subject => "Sample workflow test",
+my $t = RT::Model::Ticket->new($RT::SystemUser);
+my($tid, $ttrans, $tmsg) = $t->create(Subject => "Sample workflow test",
            Owner => "root",
-           Queue => $q->Id);
+           Queue => $q->id);
 
 ok ($tid,$tmsg);
 
 my $deps = $t->DependsOn;
-is ($deps->Count, 1, "The ticket we created depends on one other ticket");
-my $dependson= $deps->First->TargetObj;
-ok ($dependson->Id, "It depends on a real ticket");
+is ($deps->count, 1, "The ticket we Created depends on one other ticket");
+my $dependson= $deps->first->TargetObj;
+ok ($dependson->id, "It depends on a real ticket");
 unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
-is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
-is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
+is ($t->ReferredToBy->count,1, "It's only referred to by one other ticket");
+is ($t->ReferredToBy->first->BaseObj->id,$t->DependsOn->first->TargetObj->id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
 my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);;
 
@@ -229,7 +229,7 @@ $action->Parse(Content =>$sparse_commas);
 $action->Parse(Content => $tabs);
 
 my %got;
-foreach (@{ $action->{'create_tickets'} }) {
+foreach (@{ $action->{'CreateTickets'} }) {
   $got{$_} = $action->{'templates'}->{$_};
 }
 

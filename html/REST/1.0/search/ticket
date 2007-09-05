@@ -50,13 +50,13 @@
 <%ARGS>
 $query
 $format => undef
-$orderby => undef
+$order_by => undef
 $fields => undef
 </%ARGS>
 <%INIT>
 my $output = "";
 my $status = "200 Ok";
-my $tickets = new RT::Tickets $session{CurrentUser};
+my $tickets = new RT::Model::Tickets $session{CurrentUser};
 
 # Parse and validate any field specifications.
 my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
@@ -85,25 +85,25 @@ if ($format !~ /^[isl]$/) {
 
 my ($n, $s);
 eval {
-    ($n, $s) = $tickets->FromSQL($query);
+    ($n, $s) = $tickets->from_sql($query);
 };
 my $sortstring = "";
-if ($orderby) {
-    $sortstring = 'FIELD => ';
-    my $order = substr($orderby, 0, 1);
+if ($order_by) {
+    $sortstring = 'column => ';
+    my $order = substr($order_by, 0, 1);
     if ($order eq '+' || $order eq '-') {
-	$sortstring .= 'substr($orderby, 1)';
+	$sortstring .= 'substr($order_by, 1)';
 	if ($order eq '+') {
-	    $sortstring .= ", ORDER => 'ASC'";
+	    $sortstring .= ", order => 'ASC'";
 	} elsif ($order eq '-') {
-	    $sortstring .= ", ORDER => 'DESC'";
+	    $sortstring .= ", order => 'DESC'";
 	}
     } else {
-	$sortstring .= '$orderby';
+	$sortstring .= '$order_by';
     }
-    my $foo = 'FIELD => ';
-    $foo .= '$orderby';
-    $tickets->OrderBy(eval $sortstring);
+    my $foo = 'column => ';
+    $foo .= '$order_by';
+    $tickets->order_by(eval $sortstring);
 }
 if ($@ || $n == 0) {
     $s ||= $@;
@@ -114,10 +114,10 @@ if ($@ || $n == 0) {
 
 $n = 0;
 my @output;
-while (my $ticket = $tickets->Next) {
+while (my $ticket = $tickets->next) {
     $n++;
 
-	my $id = $ticket->Id;
+	my $id = $ticket->id;
     if ($format eq "i") {
         $output .= "ticket/" . $id . "\n";
     }
@@ -135,7 +135,7 @@ while (my $ticket = $tickets->Next) {
 	
 
 	} else {	
-        	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+        	$output .= $ticket->id . ": ". $ticket->Subject . "\n";
 	}
     }
     else {

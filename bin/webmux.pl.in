@@ -73,7 +73,7 @@ use vars qw($Nobody $SystemUser $Handler $r);
 
 #This drags in RT's config.pm
 BEGIN {
-    RT::LoadConfig();
+    RT::load_config();
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 }
 

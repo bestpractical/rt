@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($Lite) {
-%     my $d = new RT::Queue($session{'CurrentUser'});
-%     $d->Load($Default);
+%     my $d = new RT::Model::Queue($session{'CurrentUser'});
+%     $d->load($Default);
 <input name="<%$Name%>" size="25" value="<%$d->Name%>" />
 % }
 % else {
@@ -77,17 +77,17 @@ $Lite => 0
 </%args>
 <%init>
 my $cache_key = "SelectQueue---"
-                . $session{'CurrentUser'}->Id
+                . $session{'CurrentUser'}->id
                 . "---$CheckQueueRight---$ShowAllQueues";
 
 if (not defined $session{$cache_key} and not $Lite) {
-    my $q = new RT::Queues($session{'CurrentUser'});
-    $q->UnLimit;
+    my $q = new RT::Model::Queues($session{'CurrentUser'});
+    $q->find_all_rows;
     
-    while (my $queue = $q->Next) {
-        if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
+    while (my $queue = $q->next) {
+        if ($ShowAllQueues || $queue->current_user_has_right($CheckQueueRight)) {
             push @{$session{$cache_key}}, {
-                Id          => $queue->Id,
+                Id          => $queue->id,
                 Name        => $queue->Name,
                 Description => $queue->Description,
             };

@@ -52,7 +52,7 @@ use strict;
 BEGIN {
     use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
     use RT;
-    RT::LoadConfig();
+    RT::load_config();
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 }
 

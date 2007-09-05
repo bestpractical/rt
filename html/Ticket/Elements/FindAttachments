@@ -53,36 +53,36 @@ my %documents;
 
 # We force the cache of ticket transactions to get populated up front. otherwise, the 
 # code that looks at attachments will look at each one in turn.
-my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
+my $attachments = RT::Model::Attachments->new( $session{'CurrentUser'} );
 
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId Created));
+$attachments->columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId Created));
 
-my $transactions = $attachments->NewAlias('Transactions');
-$attachments->Join( ALIAS1 => 'main',
-		    FIELD1 => 'TransactionId',
-		    ALIAS2 => $transactions,
-		    FIELD2 => 'id' );
+my $transactions = $attachments->new_alias('Transactions');
+$attachments->join( alias1 => 'main',
+		    column1 => 'TransactionId',
+		    alias2 => $transactions,
+		    column2 => 'id' );
     
-my $tickets = $attachments->NewAlias('Tickets');
+my $tickets = $attachments->new_alias('Tickets');
 
-  $attachments->Join( ALIAS1 => $transactions,                         
-                        FIELD1 => 'ObjectId',
-                        ALIAS2 => $tickets,
-                        FIELD2 => 'id' );
+  $attachments->join( alias1 => $transactions,                         
+                        column1 => 'ObjectId',
+                        alias2 => $tickets,
+                        column2 => 'id' );
     
-    $attachments->Limit( ALIAS => $transactions,
-                         FIELD => 'ObjectType',
-                        VALUE => 'RT::Ticket');
+    $attachments->limit( alias => $transactions,
+                         column => 'ObjectType',
+                        value => 'RT::Model::Ticket');
 if ($Tickets) {
-    while ($Ticket = $Tickets->Next) {
-	$attachments->Limit( ALIAS => $tickets,
-			     FIELD => 'EffectiveId',
-			     VALUE => $Ticket->id() );
+    while ($Ticket = $Tickets->next) {
+	$attachments->limit( alias => $tickets,
+			     column => 'EffectiveId',
+			     value => $Ticket->id() );
     }
 } else {
-    $attachments->Limit( ALIAS => $tickets,
-			 FIELD => 'EffectiveId',
-			 VALUE => $Ticket->id() );
+    $attachments->limit( alias => $tickets,
+			 column => 'EffectiveId',
+			 value => $Ticket->id() );
 }
 
 

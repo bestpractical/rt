@@ -240,17 +240,17 @@ sub ParseSQL {
 
     my @results;
 
-    my %field = %{ RT::Tickets->new( $args{'CurrentUser'} )->FIELDS };
+    my %field = %{ RT::Model::Tickets->new( $args{'CurrentUser'} )->columns };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node =  $self;
 
     my %callback;
-    $callback{'OpenParen'} = sub {
+    $callback{'open_paren'} = sub {
         $node = __PACKAGE__->new( 'AND', $node );
     };
-    $callback{'CloseParen'} = sub { $node = $node->getParent };
-    $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
+    $callback{'close_paren'} = sub { $node = $node->getParent };
+    $callback{'entry_aggregator'} = sub { $node->setNodeValue( $_[0] ) };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
 

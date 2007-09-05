@@ -133,7 +133,7 @@ SQL commands to re-insert your objects into the RT database.
     mysql -u your_rt_user -p your_rt_database < /path/to/rt/var/data/shredder/dump.sql
 
 That's it.i This will restore everything you'd deleted during a
-shredding session when the file had been created.
+shredding session when the file had been Created.
 
 =head1 CONFIGURATION
 
@@ -175,11 +175,11 @@ example from L</SYNOPSIS>:
 
   use RT::Shredder;
   RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Tickets->new( $RT::SystemUser );
+  my $deleted = RT::Model::Tickets->new( $RT::SystemUser );
   $deleted->{'allow_deleted_search'} = 1;
-  $deleted->LimitQueue( VALUE => 'general' );
-  $deleted->LimitStatus( VALUE => 'deleted' );
-  while( my $t = $deleted->Next ) {
+  $deleted->LimitQueue( value => 'general' );
+  $deleted->LimitStatus( value => 'deleted' );
+  while( my $t = $deleted->next ) {
       $t->Wipeout;
   }
 
@@ -269,7 +269,7 @@ our %opt = ();
 sub Init
 {
     %opt = @_;
-    RT::LoadConfig();
+    RT::load_config();
     RT::Init();
 }
 
@@ -287,11 +287,11 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
+    $self->_init( @_ );
     return $self;
 }
 
-sub _Init
+sub _init
 {
     my $self = shift;
     $self->{'opt'}          = { %opt, @_ };
@@ -315,9 +315,9 @@ For example:
 
     my @objs = $shredder->CastObjectsToRecords(
         Objects => [             # ARRAY reference
-            'RT::Attachment-10', # SCALAR or SCALAR reference
-            $tickets,            # RT::Tickets object (isa RT::SearchBuilder)
-            $user,               # RT::User object (isa RT::Record)
+            'RT::Model::Attachment-10', # SCALAR or SCALAR reference
+            $tickets,            # RT::Model::Tickets object (isa RT::SearchBuilder)
+            $user,               # RT::Model::User object (isa RT::Record)
         ],
     );
 
@@ -335,10 +335,10 @@ sub CastObjectsToRecords
     }
 
     if( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
-        #XXX: try to use ->_DoSearch + ->ItemsArrayRef in feature
+        #XXX: try to use ->_do_search + ->items_array_ref in feature
         #     like we do in Record with links, but change only when
         #     more tests would be available
-        while( my $tmp = $targets->Next ) { push @res, $tmp };
+        while( my $tmp = $targets->next ) { push @res, $tmp };
     } elsif ( UNIVERSAL::isa( $targets, 'RT::Record' ) ) {
         push @res, $targets;
     } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
@@ -353,7 +353,7 @@ sub CastObjectsToRecords
         die "Couldn't load '$class' module" if $@;
         my $obj = $class->new( $RT::SystemUser );
         die "Couldn't construct new '$class' object" unless $obj;
-        $obj->Load( $id );
+        $obj->load( $id );
         unless ( $obj->id ) {
             $RT::Logger->error( "Couldn't load '$class' object with id '$id'" );
             RT::Shredder::Exception::Info->throw( 'CouldntLoadObject' );
@@ -545,15 +545,15 @@ sub Wipeout
     my $self = shift;
     my $mark;
     eval {
-        die "Couldn't begin transaction" unless $RT::Handle->BeginTransaction;
+        die "Couldn't begin transaction" unless $RT::Handle->begin_transaction;
         $mark = $self->PushDumpMark or die "Couldn't get dump mark";
         $self->_Wipeout( @_ );
         $self->PopDumpMark( Mark => $mark );
-        die "Couldn't commit transaction" unless $RT::Handle->Commit;
+        die "Couldn't commit transaction" unless $RT::Handle->commit;
     };
     if( $@ ) {
-        $RT::Handle->Rollback('force');
-        $self->RollbackDumpTo( Mark => $mark ) if $mark;
+        $RT::Handle->rollback('force');
+        $self->rollbackDumpTo( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";
     }
@@ -605,14 +605,14 @@ sub _Wipeout
     return;
 }
 
-sub ValidateRelations
+sub validate_Relations
 {
     my $self = shift;
     my %args = ( @_ );
 
     foreach my $record( values %{ $self->{'cache'} } ) {
         next if( $record->{'State'} & VALID );
-        $record->{'Object'}->ValidateRelations( Shredder => $self );
+        $record->{'Object'}->validate_Relations( Shredder => $self );
     }
 }
 
@@ -735,7 +735,7 @@ sub AddDumpPlugin {
     unless ( $plugin ) {
         require RT::Shredder::Plugin;
         $plugin = RT::Shredder::Plugin->new;
-        my( $status, $msg ) = $plugin->LoadByName( $args{'Name'} );
+        my( $status, $msg ) = $plugin->load_by_name( $args{'Name'} );
         die "Couldn't load dump plugin: $msg\n" unless $status;
     }
     die "Plugin is not of correct type" unless lc $plugin->Type eq 'dump';
@@ -784,10 +784,10 @@ sub PopDumpMark {
         die "Couldn't pop mark: $msg" unless $state;
     }
 }
-sub RollbackDumpTo {
+sub rollbackDumpTo {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->RollbackTo( @_ );
+        my ($state, $msg) = $_->rollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
 }

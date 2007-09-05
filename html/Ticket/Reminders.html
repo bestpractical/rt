@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Reminder ticket #[_1]", $Ticket->Id) &>
+<& /Elements/Header, Title => loc("Reminder ticket #[_1]", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "Ticket/Reminders.html?id=".$Ticket->Id, 
-    Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
+    current_tab => "Ticket/Reminders.html?id=".$Ticket->id, 
+    Title => loc("Reminders for ticket #[_1]", $Ticket->id) &>
     
 <& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
     
@@ -66,7 +66,7 @@
 
 <%INIT>
   
-my $Ticket = LoadTicket($id);
+my $Ticket = load_ticket($id);
     
 </%INIT>
 <%ARGS>

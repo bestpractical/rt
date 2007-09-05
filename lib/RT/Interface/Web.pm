@@ -204,11 +204,11 @@ sub StaticFileHeaders {
     my $date = RT::Date->new( $RT::SystemUser );
 
     # Expire things in a month.
-    $date->Set( Value => time + 30*24*60*60 );
+    $date->set( value => time + 30*24*60*60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
 
     # Last modified at server start time
-    $date->Set( Value => $^T );
+    $date->set( value => $^T );
     $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
@@ -235,7 +235,7 @@ sub loc {
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
-    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser->Id) } ) {
+    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser->id) } ) {
         return ($u->loc(@_));
     }
     else {
@@ -267,7 +267,7 @@ sub loc_fuzzy {
         return($session{'CurrentUser'}->loc_fuzzy($msg));
     }
     else  {
-        my $u = RT::CurrentUser->new($RT::SystemUser->Id);
+        my $u = RT::CurrentUser->new($RT::SystemUser->id);
         return ($u->loc_fuzzy($msg));
     }
 }
@@ -306,21 +306,21 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+    my $Ticket = new RT::Model::Ticket( $session{'CurrentUser'} );
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
-    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
+    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    unless ( $Queue->load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('CreateTicket') ) {
         Abort('You have no permission to create tickets in that queue.');
     }
 
     my $due = new RT::Date( $session{'CurrentUser'} );
-    $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
+    $due->set( Format => 'unknown', value => $ARGS{'Due'} );
     my $starts = new RT::Date( $session{'CurrentUser'} );
-    $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
+    $starts->set( Format => 'unknown', value => $ARGS{'Starts'} );
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
@@ -388,15 +388,15 @@ sub CreateTicket {
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
-        if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
+        if ($arg =~ /^Object-RT::Model::Transaction--CustomField-/) {
             $create_args{$arg} = $ARGS{$arg};
         }
-        # Object-RT::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/ ) {
+        # Object-RT::Model::Ticket--CustomField-3-Values
+        elsif ( $arg =~ /^Object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1;
 
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->Load( $cfid );
+            my $cf = RT::Model::CustomField->new( $session{'CurrentUser'} );
+            $cf->load( $cfid );
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #". $cfid );
                 next;
@@ -445,14 +445,14 @@ sub CreateTicket {
         
     }
  
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->create(%create_args);
     unless ( $id ) {
         Abort($ErrMsg);
     }
 
     push ( @Actions, split("\n", $ErrMsg) );
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        Abort( "No permission to view newly created ticket #"
+    unless ( $Ticket->current_user_has_right('ShowTicket') ) {
+        Abort( "No permission to view newly Created ticket #"
             . $Ticket->id . "." );
     }
     return ( $Ticket, @Actions );
@@ -461,18 +461,18 @@ sub CreateTicket {
 
 # }}}
 
-# {{{ sub LoadTicket - loads a ticket
+# {{{ sub load_ticket - loads a ticket
 
-=head2  LoadTicket id
+=head2  load_ticket id
 
 Takes a ticket id as its only variable. if it's handed an array, it takes
 the first value.
 
-Returns an RT::Ticket object as the current user.
+Returns an RT::Model::Ticket object as the current user.
 
 =cut
 
-sub LoadTicket {
+sub load_ticket {
     my $id = shift;
 
     if ( ref($id) eq "ARRAY" ) {
@@ -483,8 +483,8 @@ sub LoadTicket {
         Abort("No ticket specified");
     }
 
-    my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
-    $Ticket->Load($id);
+    my $Ticket = RT::Model::Ticket->new( $session{'CurrentUser'} );
+    $Ticket->load($id);
     unless ( $Ticket->id ) {
         Abort("Could not load ticket $id");
     }
@@ -560,15 +560,15 @@ sub ProcessUpdateMessage {
           . "0" . "@"  # Email sent
               . RT->Config->Get('Organization')
           . ">" );
-    my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
+    my $old_txn = RT::Model::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
-        $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
+        $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
     }
     else {
-        $old_txn = $args{TicketObj}->Transactions->First();
+        $old_txn = $args{TicketObj}->Transactions->first();
     }
 
-    if ( $old_txn->Message and my $msg = $old_txn->Message->First ) {
+    if ( $old_txn->Message and my $msg = $old_txn->Message->first ) {
         my @in_reply_to = split(/\s+/m, $msg->GetHeader('In-Reply-To') || '');  
         my @references = split(/\s+/m, $msg->GetHeader('References') || '' );  
         my @msgid = split(/\s+/m, $msg->GetHeader('Message-ID') || '');
@@ -717,7 +717,7 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart;
-    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
+    RT::I18N::set_mime_entity_to_utf8($Message); # convert text parts into utf-8
 
     return ($Message);
 
@@ -729,7 +729,7 @@ sub MakeMIMEEntity {
 
 =head2 ProcessSearchQuery
 
-  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Tickets can understand.
+  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Model::Tickets can understand.
 
 TODO Doc exactly what comes in the paramhash
 
@@ -747,12 +747,12 @@ sub ProcessSearchQuery {
     if ( defined $session{'tickets'} ) {
 
         # Reset the old search
-        $session{'tickets'}->GotoFirstItem;
+        $session{'tickets'}->goto_first_item;
     }
     else {
 
         # Init a new search
-        $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+        $session{'tickets'} = RT::Model::Tickets->new( $session{'CurrentUser'} );
     }
 
     #Import a bookmarked search if we have one
@@ -761,14 +761,15 @@ sub ProcessSearchQuery {
     }
 
     # {{{ Goto next/prev page
-    if ( $args{ARGS}->{'GotoPage'} eq 'Next' ) {
-        $session{'tickets'}->NextPage;
+    if ( $args{ARGS}->{'goto_page'} eq 'Next' ) {
+        $session{'tickets'}->nextPage;
     }
-    elsif ( $args{ARGS}->{'GotoPage'} eq 'Prev' ) {
+    elsif ( $args{ARGS}->{'goto_page'} eq 'Prev' ) {
         $session{'tickets'}->PrevPage;
     }
-    elsif ( $args{ARGS}->{'GotoPage'} > 0 ) {
-        $session{'tickets'}->GotoPage( $args{ARGS}->{GotoPage} - 1 );
+    elsif ( $args{ARGS}->{'goto_page'} > 0 ) {
+
+        $session{'tickets'}->set_page_info( current_page => $args{ARGS}->{goto_page}  );
     }
 
     # }}}
@@ -783,29 +784,29 @@ sub ProcessSearchQuery {
     if ( $args{ARGS}->{'TicketsSortBy'} ) {
         $session{'tickets_sort_by'}    = $args{ARGS}->{'TicketsSortBy'};
         $session{'tickets_sort_order'} = $args{ARGS}->{'TicketsSortOrder'};
-        $session{'tickets'}->OrderBy(
-            FIELD => $args{ARGS}->{'TicketsSortBy'},
-            ORDER => $args{ARGS}->{'TicketsSortOrder'}
+        $session{'tickets'}->order_by(
+            column => $args{ARGS}->{'TicketsSortBy'},
+            order => $args{ARGS}->{'TicketsSortOrder'}
         );
     }
 
     # }}}
 
     # {{{ Set the query limit
-    if ( defined $args{ARGS}->{'RowsPerPage'} ) {
+    if ( defined $args{ARGS}->{'rows_per_page'} ) {
         $RT::Logger->debug(
-            "limiting to " . $args{ARGS}->{'RowsPerPage'} . " rows" );
+            "limiting to " . $args{ARGS}->{'rows_per_page'} . " rows" );
 
-        $session{'tickets_rows_per_page'} = $args{ARGS}->{'RowsPerPage'};
-        $session{'tickets'}->RowsPerPage( $args{ARGS}->{'RowsPerPage'} );
+        $session{'tickets_rows_per_page'} = $args{ARGS}->{'rows_per_page'};
+        $session{'tickets'}->rows_per_page( $args{ARGS}->{'rows_per_page'} );
     }
 
     # }}}
     # {{{ Limit priority
     if ( $args{ARGS}->{'ValueOfPriority'} ne '' ) {
         $session{'tickets'}->LimitPriority(
-            VALUE    => $args{ARGS}->{'ValueOfPriority'},
-            OPERATOR => $args{ARGS}->{'PriorityOp'}
+            value    => $args{ARGS}->{'ValueOfPriority'},
+            operator => $args{ARGS}->{'PriorityOp'}
         );
     }
 
@@ -813,8 +814,8 @@ sub ProcessSearchQuery {
     # {{{ Limit owner
     if ( $args{ARGS}->{'ValueOfOwner'} ne '' ) {
         $session{'tickets'}->LimitOwner(
-            VALUE    => $args{ARGS}->{'ValueOfOwner'},
-            OPERATOR => $args{ARGS}->{'OwnerOp'}
+            value    => $args{ARGS}->{'ValueOfOwner'},
+            operator => $args{ARGS}->{'OwnerOp'}
         );
     }
 
@@ -822,9 +823,9 @@ sub ProcessSearchQuery {
     # {{{ Limit requestor email
      if ( $args{ARGS}->{'ValueOfWatcherRole'} ne '' ) {
          $session{'tickets'}->LimitWatcher(
-             TYPE     => $args{ARGS}->{'WatcherRole'},
-             VALUE    => $args{ARGS}->{'ValueOfWatcherRole'},
-             OPERATOR => $args{ARGS}->{'WatcherRoleOp'},
+             type => $args{ARGS}->{'WatcherRole'},
+             value    => $args{ARGS}->{'ValueOfWatcherRole'},
+             operator => $args{ARGS}->{'WatcherRoleOp'},
 
         );
     }
@@ -833,8 +834,8 @@ sub ProcessSearchQuery {
     # {{{ Limit Queue
     if ( $args{ARGS}->{'ValueOfQueue'} ne '' ) {
         $session{'tickets'}->LimitQueue(
-            VALUE    => $args{ARGS}->{'ValueOfQueue'},
-            OPERATOR => $args{ARGS}->{'QueueOp'}
+            value    => $args{ARGS}->{'ValueOfQueue'},
+            operator => $args{ARGS}->{'QueueOp'}
         );
     }
 
@@ -844,15 +845,15 @@ sub ProcessSearchQuery {
         if ( ref( $args{ARGS}->{'ValueOfStatus'} ) ) {
             foreach my $value ( @{ $args{ARGS}->{'ValueOfStatus'} } ) {
                 $session{'tickets'}->LimitStatus(
-                    VALUE    => $value,
-                    OPERATOR => $args{ARGS}->{'StatusOp'},
+                    value    => $value,
+                    operator => $args{ARGS}->{'StatusOp'},
                 );
             }
         }
         else {
             $session{'tickets'}->LimitStatus(
-                VALUE    => $args{ARGS}->{'ValueOfStatus'},
-                OPERATOR => $args{ARGS}->{'StatusOp'},
+                value    => $args{ARGS}->{'ValueOfStatus'},
+                operator => $args{ARGS}->{'StatusOp'},
             );
         }
 
@@ -866,8 +867,8 @@ sub ProcessSearchQuery {
             $val = "%".$val."%";
         }
         $session{'tickets'}->LimitSubject(
-            VALUE    => $val,
-            OPERATOR => $args{ARGS}->{'SubjectOp'},
+            value    => $val,
+            operator => $args{ARGS}->{'SubjectOp'},
         );
     }
 
@@ -879,15 +880,15 @@ sub ProcessSearchQuery {
 
         if ( $args{ARGS}->{'DateType'} eq 'Updated' ) {
             $session{'tickets'}->LimitTransactionDate(
-                VALUE    => $date,
-                OPERATOR => $args{ARGS}->{'DateOp'},
+                value    => $date,
+                operator => $args{ARGS}->{'DateOp'},
             );
         }
         else {
             $session{'tickets'}->LimitDate(
-                FIELD => $args{ARGS}->{'DateType'},
-                VALUE => $date,
-                OPERATOR => $args{ARGS}->{'DateOp'},
+                column => $args{ARGS}->{'DateType'},
+                value => $date,
+                operator => $args{ARGS}->{'DateOp'},
             );
         }
     }
@@ -899,10 +900,10 @@ sub ProcessSearchQuery {
         if ($args{ARGS}->{'AttachmentFieldOp'} =~ /like/) {
             $val = "%".$val."%";
         }
-        $session{'tickets'}->Limit(
-            FIELD   => $args{ARGS}->{'AttachmentField'},
-            VALUE    => $val,
-            OPERATOR => $args{ARGS}->{'AttachmentFieldOp'},
+        $session{'tickets'}->limit(
+            column   => $args{ARGS}->{'AttachmentField'},
+            value    => $val,
+            operator => $args{ARGS}->{'AttachmentFieldOp'},
         );
     }
 
@@ -932,10 +933,10 @@ sub ProcessSearchQuery {
                 $oper = 'IS NOT' if $oper eq '!=';
             }
             $session{'tickets'}->LimitCustomField(
-                CUSTOMFIELD => $id,
-                OPERATOR    => $oper,
-                QUOTEVALUE  => $quote,
-                VALUE       => $value,
+                customfield => $id,
+                operator    => $oper,
+                quote_value  => $quote,
+                value       => $value,
             );
         }
     }
@@ -959,7 +960,7 @@ sub ParseDateToISO {
     my $date = shift;
 
     my $date_obj = RT::Date->new($session{'CurrentUser'});
-    $date_obj->Set(
+    $date_obj->set(
         Format => 'unknown',
         Value  => $date
     );
@@ -991,15 +992,15 @@ sub ProcessACLChanges {
         @rights = grep $_, @rights;
         next unless @rights;
 
-        my $principal = RT::Principal->new( $session{'CurrentUser'} );
-        $principal->Load( $principal_id );
+        my $principal = RT::Model::Principal->new( $session{'CurrentUser'} );
+        $principal->load( $principal_id );
 
         my $obj;
         if ($object_type eq 'RT::System') {
             $obj = $RT::System;
-        } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
+        } elsif ($RT::Model::ACE::OBJECT_TYPES{$object_type}) {
             $obj = $object_type->new($session{'CurrentUser'});
-            $obj->Load($object_id);
+            $obj->load($object_id);
             unless( $obj->id ) {
                 $RT::Logger->error("couldn't load $object_type #$object_id");
                 next;
@@ -1072,7 +1073,7 @@ sub ProcessCustomFieldUpdates {
         ARGSRef       => $ARGSRef
     );
 
-    my $prefix = "CustomField-" . $Object->Id;
+    my $prefix = "CustomField-" . $Object->id;
     if ( $ARGSRef->{ "$prefix-AddValue-Name" } ) {
         my ( $addval, $addmsg ) = $Object->AddValue(
             Name        => $ARGSRef->{ "$prefix-AddValue-Name" },
@@ -1089,15 +1090,15 @@ sub ProcessCustomFieldUpdates {
 
     foreach my $id (@delete_values) {
         next unless defined $id;
-        my ( $err, $msg ) = $Object->DeleteValue($id);
+        my ( $err, $msg ) = $Object->deleteValue($id);
         push ( @results, $msg );
     }
 
     my $vals = $Object->Values();
-    while (my $cfv = $vals->Next()) {
-        if (my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->Id }) {
+    while (my $cfv = $vals->next()) {
+        if (my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->id }) {
             if ($cfv->SortOrder != $so) {
-                my ( $err, $msg ) = $cfv->SetSortOrder($so);
+                my ( $err, $msg ) = $cfv->set_SortOrder($so);
                 push ( @results, $msg );
             }
         }
@@ -1142,8 +1143,8 @@ sub ProcessTicketBasics {
 
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Queue->new($RT::SystemUser);
-        $tempqueue->Load( $ARGSRef->{'Queue'} );
+        my $tempqueue = RT::Model::Queue->new($RT::SystemUser);
+        $tempqueue->load( $ARGSRef->{'Queue'} );
         if ( $tempqueue->id ) {
             $ARGSRef->{'Queue'} = $tempqueue->id;
         }
@@ -1171,7 +1172,7 @@ sub ProcessTicketBasics {
         }
 
         my ( $val, $msg ) =
-            $TicketObj->SetOwner( $ARGSRef->{'Owner'}, $ChownType );
+            $TicketObj->set_Owner( $ARGSRef->{'Owner'}, $ChownType );
         push ( @results, $msg );
     }
 
@@ -1191,10 +1192,10 @@ sub ProcessTicketCustomFieldUpdates {
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
         if ( $arg =~ /^Ticket-(\d+-.*)/) {
-            $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
+            $ARGSRef->{"Object-RT::Model::Ticket-$1"} = delete $ARGSRef->{$arg};
         }
         elsif ( $arg =~ /^CustomField-(\d+-.*)/) {
-            $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
+            $ARGSRef->{"Object-RT::Model::Ticket--$1"} = delete $ARGSRef->{$arg};
         }
     }
 
@@ -1223,15 +1224,15 @@ sub ProcessObjectCustomFieldUpdates {
             $Object = $class->new( $session{'CurrentUser'} )
                 unless $Object && ref $Object eq $class;
 
-            $Object->Load( $id ) unless ($Object->id || 0) == $id;
+            $Object->load( $id ) unless ($Object->id || 0) == $id;
             unless ( $Object->id ) {
                 $RT::Logger->warning("Couldn't load object $class #$id");
                 next;
             }
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{ $class }{ $id } } ) {
-                my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-                $CustomFieldObj->LoadById( $cf );
+                my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
+                $CustomFieldObj->load_by_id( $cf );
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$id");
                     next;
@@ -1307,7 +1308,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
         elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value ( @values ) {
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->delete_custom_field_value(
                     Field => $cf,
                     Value => $value,
                 );
@@ -1316,7 +1317,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
         elsif ( $arg eq 'DeleteValueIds' ) {
             foreach my $value ( @values ) {
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->delete_custom_field_value(
                     Field   => $cf,
                     ValueId => $value,
                 );
@@ -1341,11 +1342,11 @@ sub _ProcessObjectCustomFieldUpdates {
                 $values_hash{ $val } = 1 if $val;
             }
 
-            $cf_values->RedoSearch;
-            while ( my $cf_value = $cf_values->Next ) {
+            $cf_values->redo_search;
+            while ( my $cf_value = $cf_values->next ) {
                 next if $values_hash{ $cf_value->id };
 
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->delete_custom_field_value(
                     Field => $cf,
                     ValueId => $cf_value->id
                 );
@@ -1357,14 +1358,14 @@ sub _ProcessObjectCustomFieldUpdates {
 
             # keep everything up to the point of difference, delete the rest
             my $delete_flag;
-            foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
+            foreach my $old_cf (@{$cf_values->items_array_ref}) {
                 if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
                     shift @values;
                     next;
                 }
 
                 $delete_flag ||= 1;
-                $old_cf->Delete;
+                $old_cf->delete;
             }
 
             # now add/replace extra things, if any
@@ -1411,7 +1412,7 @@ sub ProcessTicketWatchers {
 
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher(
+            my ( $code, $msg ) = $Ticket->deleteWatcher(
                 PrincipalId => $2,
                 Type        => $1
             );
@@ -1420,7 +1421,7 @@ sub ProcessTicketWatchers {
 
         # Delete watchers in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher(
+            my ( $code, $msg ) = $Ticket->deleteWatcher(
                 Email => $ARGSRef->{$key},
                 Type  => $1
             );
@@ -1507,7 +1508,7 @@ sub ProcessTicketDates {
         my ( $code, $msg );
 
         my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-        $DateObj->Set(
+        $DateObj->set(
             Format => 'unknown',
             Value  => $ARGSRef->{ $field . '_Date' }
         );
@@ -1516,7 +1517,7 @@ sub ProcessTicketDates {
         if ( ( defined $DateObj->Unix )
             and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
         {
-            my $method = "Set$field";
+            my $method = "set_$field";
             my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
             push @results, "$msg";
         }
@@ -1548,9 +1549,9 @@ sub ProcessTicketLinks {
     my (@results) = ProcessRecordLinks(RecordObj => $Ticket, ARGSRef => $ARGSRef);
 
     #Merge if we need to
-    if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
+    if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
         my ( $val, $msg ) =
-          $Ticket->MergeInto( $ARGSRef->{ $Ticket->Id . "-MergeInto" } );
+          $Ticket->MergeInto( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
         push @results, $msg;
     }
 
@@ -1571,7 +1572,7 @@ sub ProcessRecordLinks {
 
     # Delete links that are gone gone gone.
     foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /DeleteLink-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ ) {
+        if ( $arg =~ /delete_link-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ ) {
             my $base   = $1;
             my $type   = $2;
             my $target = $3;
@@ -1579,7 +1580,7 @@ sub ProcessRecordLinks {
             push @results,
                 loc( "Trying to delete: Base: [_1] Target: [_2] Type: [_3]",
                                               $base,       $target,   $type );
-            my ( $val, $msg ) = $Record->DeleteLink( Base   => $base,
+            my ( $val, $msg ) = $Record->delete_link( Base   => $base,
                                                      Type   => $type,
                                                      Target => $target );
 
@@ -1592,17 +1593,17 @@ sub ProcessRecordLinks {
     my @linktypes = qw( DependsOn MemberOf RefersTo );
 
     foreach my $linktype (@linktypes) {
-        if ( $ARGSRef->{ $Record->Id . "-$linktype" } ) {
-            for my $luri ( split ( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
+        if ( $ARGSRef->{ $Record->id . "-$linktype" } ) {
+            for my $luri ( split ( / /, $ARGSRef->{ $Record->id . "-$linktype" } ) ) {
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink( Target => $luri,
                                                       Type   => $linktype );
                 push @results, $msg;
             }
         }
-        if ( $ARGSRef->{ "$linktype-" . $Record->Id } ) {
+        if ( $ARGSRef->{ "$linktype-" . $Record->id } ) {
 
-            for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Record->Id } ) ) {
+            for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Record->id } ) ) {
                 my ( $val, $msg ) = $Record->AddLink( Base => $luri,
                                                       Type => $linktype );
 
@@ -1619,7 +1620,7 @@ sub ProcessRecordLinks {
 
 Takes a CGI parameter name; if a file is uploaded under that name,
 return a hash reference suitable for AddCustomFieldValue's use:
-C<( Value => $filename, LargeContent => $content, ContentType => $type )>.
+C<( value => $filename, LargeContent => $content, ContentType => $type )>.
 
 Returns C<undef> if no files were uploaded in the C<$arg> field.
 
@@ -1636,7 +1637,7 @@ sub _UploadedFile {
     binmode($fh);
 
     return {
-        Value => $filename,
+        value => $filename,
         LargeContent => do { local $/; scalar <$fh> },
         ContentType => $upload_info->{'Content-Type'},
     };

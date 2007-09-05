@@ -48,7 +48,7 @@
 <%init>
 require  Module::Versions::Report;
 my $title = loc('System Configuration');
-unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+unless ($session{'CurrentUser'}->has_right( Object=> $RT::System, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));
 } 
 
@@ -62,7 +62,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
 
 
-<h2><&|/l&>Loaded perl modules</&></h2>
+<h2><&|/l&>loaded perl modules</&></h2>
 % my $report = Module::Versions::Report::report();
 % my @report = grep /v\d/, split("\n",$report);
 <pre>

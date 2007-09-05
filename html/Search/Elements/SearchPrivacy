@@ -48,7 +48,7 @@
 <%args>
 $Object => undef
 </%args>
-% if (ref($Object) eq 'RT::User' && $Object->id == $session{'CurrentUser'}->Id) {
+% if (ref($Object) eq 'RT::Model::User' && $Object->id == $session{'CurrentUser'}->id) {
 <&|/l&>My saved searches</&>
 % } else {
 <&|/l, $Object->Name&>[_1]'s saved searches</&>

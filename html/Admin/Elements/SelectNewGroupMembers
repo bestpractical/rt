@@ -48,7 +48,7 @@
 % if ( $Show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
 <select multiple name="<% $Name %>Users" size="10">
-% while ( my $user = $users->Next ) {
+% while ( my $user = $users->next ) {
 % next if $SkipUsers->{ $user->id };
 <option value="User-<% $user->id %>"><& /Elements/ShowUser, User => $user &></option>
 % }
@@ -59,7 +59,7 @@
 % if ( $Show ne 'Users' ) {
 <b><&|/l&>Groups</&></b>
 <select multiple name="<% $Name %>Groups" size="10">
-% while ( my $group = $groups->Next ) {
+% while ( my $group = $groups->next ) {
 % next if $SkipGroups->{ $group->id };
 <option value="Group-<% $group->id %>"><% $group->Name %></option>
 % }
@@ -67,27 +67,27 @@
 % }
 
 <%INIT>
-my $users = new RT::Users($session{'CurrentUser'});
+my $users = new RT::Model::Users($session{'CurrentUser'});
 
-$users->Limit(
-    FIELD           => 'id',
-    VALUE           => $RT::SystemUser->id,
-    OPERATOR        => '!=',
-    ENTRYAGGREGATOR => 'AND'
+$users->limit(
+    column           => 'id',
+    value           => $RT::SystemUser->id,
+    operator        => '!=',
+    entry_aggregator => 'AND'
 );
-$users->Limit(
-    FIELD           => 'id',
-    VALUE           => $RT::Nobody->id,
-    OPERATOR        => '!=',
-    ENTRYAGGREGATOR => 'AND'
+$users->limit(
+    column           => 'id',
+    value           => $RT::Nobody->id,
+    operator        => '!=',
+    entry_aggregator => 'AND'
 );
 $users->LimitToPrivileged();
 
-my $groups = new RT::Groups($session{'CurrentUser'});
+my $groups = new RT::Model::Groups($session{'CurrentUser'});
 
 # self-recursive group membership considered harmful!
-$groups->Limit(FIELD => 'id', VALUE => $Group->id, OPERATOR => '!=' );
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+$groups->limit(column => 'id', value => $Group->id, operator => '!=' );
+$groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
 
 
 </%INIT>

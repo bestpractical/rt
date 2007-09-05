@@ -7,8 +7,8 @@ use RT::Test;
 use_ok("RT::URI::fsck_com_rt");
 my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);
 
-my $t1 = RT::Ticket->new($RT::SystemUser);
-my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
+my $t1 = RT::Model::Ticket->new($RT::SystemUser);
+my ($id,$trans,$msg) =$t1->create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
 ok(ref($uri));
@@ -21,8 +21,8 @@ ok ($uri->isa('RT::Base'), "It's an RT::Base");
 is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-$ticket->Load(1);
+my $ticket = RT::Model::Ticket->new($RT::SystemUser);
+$ticket->load(1);
 $uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
 is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
 

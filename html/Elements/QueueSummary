@@ -60,8 +60,8 @@
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
 %   for my $condition (@$conditions) {
-%       $Tickets->FromSQL( "Queue = $queue->{id} AND ". $condition->{cond} );
-<td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->Count %></a></td>
+%       $Tickets->from_sql( "Queue = $queue->{id} AND ". $condition->{cond} );
+<td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
 %   }
 </tr>
 % }
@@ -73,14 +73,14 @@ if ($cache && exists $session{$cache}) {
     @queues = @{$session{$cache}};
 }
 else {
-    my $Queues = RT::Queues->new($session{'CurrentUser'});
-    $Queues->UnLimit();
-    @queues = grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
+    my $Queues = RT::Model::Queues->new($session{'CurrentUser'});
+    $Queues->find_all_rows();
+    @queues = grep $queue_filter->($_), @{$Queues->items_array_ref};
 
     $m->callback( CallbackName => 'Filter', Queues => \@queues );
 
     @queues = map { {
-        id          => $_->Id,
+        id          => $_->id,
         Name        => $_->Name,
         Description => $_->Description,
     } } grep $_, @queues;
@@ -89,7 +89,7 @@ else {
 }
 
 
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+my $Tickets = RT::Model::Tickets->new($session{'CurrentUser'});
 </%INIT>
 <%ARGS>
 $cache => undef

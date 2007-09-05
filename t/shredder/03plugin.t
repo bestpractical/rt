@@ -21,21 +21,21 @@ use_ok('RT::Shredder::Plugin');
     my %plugins = RT::Shredder::Plugin->List;
     cmp_deeply( [sort keys %plugins], [@PLUGINS], "correct plugins" );
 }
-{ # reblessing on LoadByName
+{ # reblessing on load_by_name
     foreach (@PLUGINS) {
         my $plugin = new RT::Shredder::Plugin;
         isa_ok($plugin, 'RT::Shredder::Plugin');
-        my ($status, $msg) = $plugin->LoadByName( $_ );
+        my ($status, $msg) = $plugin->load_by_name( $_ );
         ok($status, "loaded plugin by name") or diag("error: $msg");
         isa_ok($plugin, "RT::Shredder::Plugin::$_" );
     }
 }
-{ # error checking in LoadByName
+{ # error checking in load_by_name
     my $plugin = new RT::Shredder::Plugin;
     isa_ok($plugin, 'RT::Shredder::Plugin');
-    my ($status, $msg) = $plugin->LoadByName;
+    my ($status, $msg) = $plugin->load_by_name;
     ok(!$status, "not loaded plugin - empty name");
-    ($status, $msg) = $plugin->LoadByName('Foo');
+    ($status, $msg) = $plugin->load_by_name('Foo');
     ok(!$status, "not loaded plugin - not exist");
 }
 

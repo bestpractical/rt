@@ -63,8 +63,8 @@ my $action_obj = RT::Action::RecordCorrespondence->new(
 			'TicketObj'   => $ticket_obj,
 			'TemplateObj' => $template_obj,
 			);
-my $result = $action_obj->Prepare();
-$action_obj->Commit() if $result;
+my $result = $action_obj->prepare();
+$action_obj->commit() if $result;
 
 =head1 METHODS
 
@@ -77,7 +77,7 @@ will give us a loop.
 =cut
 
 
-sub Prepare {
+sub prepare {
     my $self = shift;
     if (defined $self->{'TransactionObj'} &&
 	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
@@ -95,12 +95,12 @@ be used by the scrips that actually send the email.
 
 =cut
 
-sub Commit {
+sub commit {
     my $self = shift;
-    $self->CreateTransaction();
+    $self->createTransaction();
 }
 
-sub CreateTransaction {
+sub createTransaction {
     my $self = shift;
 
     my ($result, $msg) = $self->{'TemplateObj'}->Parse(

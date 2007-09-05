@@ -64,7 +64,7 @@ for my $search (@$Searches) {
     $tabs->{ $search->[0] } = {
         title => $search->[0],
         path  => "Prefs/Search.html?"
-                 .$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id),
+                 .$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->id),
     };
 }
 </%INIT>

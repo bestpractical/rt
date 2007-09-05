@@ -19,17 +19,17 @@ use_ok('RT::Shredder::Plugin::Tickets');
 
 init_db();
 create_savepoint('clean');
-use_ok('RT::Ticket');
-use_ok('RT::Tickets');
+use_ok('RT::Model::Ticket');
+use_ok('RT::Model::Tickets');
 
 { # create parent and child and check functionality of 'with_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
-    my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
-    ok( $pid, "created new ticket" );
+    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($pid) = $parent->create( Subject => 'parent', Queue => 1 );
+    ok( $pid, "Created new ticket" );
 
-    my $child = RT::Ticket->new( $RT::SystemUser );
-    my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
-    ok( $cid, "created new ticket" );
+    my $child = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($cid) = $child->create( Subject => 'child', Queue => 1, MemberOf => $pid );
+    ok( $cid, "Created new ticket" );
 
     my $plugin = new RT::Shredder::Plugin::Tickets;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
@@ -62,13 +62,13 @@ use_ok('RT::Tickets');
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and link them reqursively to check that we don't hang
-    my $parent = RT::Ticket->new( $RT::SystemUser );
-    my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
-    ok( $pid, "created new ticket" );
+    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($pid) = $parent->create( Subject => 'parent', Queue => 1 );
+    ok( $pid, "Created new ticket" );
 
-    my $child = RT::Ticket->new( $RT::SystemUser );
-    my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
-    ok( $cid, "created new ticket" );
+    my $child = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($cid) = $child->create( Subject => 'child', Queue => 1, MemberOf => $pid );
+    ok( $cid, "Created new ticket" );
 
     my ($status, $msg) = $child->AddLink( Target => $pid, Type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
@@ -104,16 +104,16 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and check functionality of 'apply_query_to_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
-    my ($pid) = $parent->Create( Subject => 'parent', Queue => 1, Status => 'resolved' );
-    ok( $pid, "created new ticket" );
+    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($pid) = $parent->create( Subject => 'parent', Queue => 1, Status => 'resolved' );
+    ok( $pid, "Created new ticket" );
 
-    my $child1 = RT::Ticket->new( $RT::SystemUser );
-    my ($cid1) = $child1->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
-    ok( $cid1, "created new ticket" );
-    my $child2 = RT::Ticket->new( $RT::SystemUser );
-    my ($cid2) = $child2->Create( Subject => 'child', Queue => 1, MemberOf => $pid, Status => 'resolved' );
-    ok( $cid2, "created new ticket" );
+    my $child1 = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($cid1) = $child1->create( Subject => 'child', Queue => 1, MemberOf => $pid );
+    ok( $cid1, "Created new ticket" );
+    my $child2 = RT::Model::Ticket->new( $RT::SystemUser );
+    my ($cid2) = $child2->create( Subject => 'child', Queue => 1, MemberOf => $pid, Status => 'resolved' );
+    ok( $cid2, "Created new ticket" );
 
     my $plugin = new RT::Shredder::Plugin::Tickets;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
@@ -135,8 +135,8 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $cid1 );
+    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    $ticket->load( $cid1 );
     is($ticket->id, $cid1, 'loaded ticket');
 
     $shredder->PutObjects( Objects => $ticket );

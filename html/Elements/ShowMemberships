@@ -46,41 +46,41 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <ul>
-% while ( my $GroupMember = $GroupMembers->Next ) {
-%    my $Group = RT::Group->new($session{'CurrentUser'});
-%    $Group->Load($GroupMember->GroupId) or next;
+% while ( my $GroupMember = $GroupMembers->next ) {
+%    my $Group = RT::Model::Group->new($session{'CurrentUser'});
+%    $Group->load($GroupMember->GroupId) or next;
 %    if ($Group->Domain eq 'UserDefined') {
-<li><a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->Id %>"><% $Group->Name %></a></li>
+<li><a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->id %>"><% $Group->Name %></a></li>
 %    } elsif ($Group->Domain eq 'SystemInternal') {
 <li><em><% loc($Group->Type) %></em></li>
 %    }
 % }
 </ul>
 <%INIT>
-my $GroupMembers = RT::GroupMembers->new($session{'CurrentUser'});
-$GroupMembers->Limit( FIELD => 'MemberId', VALUE => $UserObj->Id );
-my $alias = $GroupMembers->Join(
-    TYPE       => 'left',
-    ALIAS1     => 'main',
-    FIELD1     => 'GroupId',
-    TABLE2     => 'Groups',
-    FIELD2     => 'id'
+my $GroupMembers = RT::Model::GroupMembers->new($session{'CurrentUser'});
+$GroupMembers->limit( column => 'MemberId', value => $UserObj->id );
+my $alias = $GroupMembers->join(
+    type => 'left',
+    alias1     => 'main',
+    column1     => 'GroupId',
+    table2     => 'Groups',
+    column2     => 'id'
 );
-$GroupMembers->Limit(
-    ALIAS      => $alias,
-    FIELD      => 'Domain',
-    OPERATOR   => '=',
-    VALUE      => 'SystemInternal',
+$GroupMembers->limit(
+    alias      => $alias,
+    column      => 'Domain',
+    operator   => '=',
+    value      => 'SystemInternal',
 );
-$GroupMembers->Limit(
-    ALIAS      => $alias,
-    FIELD      => 'Domain',
-    OPERATOR   => '=',
-    VALUE      => 'UserDefined',
+$GroupMembers->limit(
+    alias      => $alias,
+    column      => 'Domain',
+    operator   => '=',
+    value      => 'UserDefined',
 );
-$GroupMembers->OrderByCols(
-    { ALIAS => $alias, FIELD => 'Domain' },
-    { ALIAS => $alias, FIELD => 'Name' },
+$GroupMembers->order_by(
+    { alias => $alias, column => 'Domain' },
+    { alias => $alias, column => 'Name' },
 );
 </%INIT>
 <%ARGS>

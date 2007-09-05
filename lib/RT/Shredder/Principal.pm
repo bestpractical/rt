@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Principal ();
-package RT::Principal;
+use RT::Model::Principal ();
+package RT::Model::Principal;
 
 use strict;
 use warnings;
@@ -76,11 +76,11 @@ sub __DependsOn
     }
 
 # Access Control List
-    my $objs = RT::ACL->new( $self->CurrentUser );
-    $objs->Limit(
-            FIELD => 'PrincipalId',
-            OPERATOR        => '=',
-            VALUE           => $self->Id
+    my $objs = RT::Model::ACL->new( $self->CurrentUser );
+    $objs->limit(
+            column => 'PrincipalId',
+            operator        => '=',
+            value           => $self->id
            );
     push( @$list, $objs );
 

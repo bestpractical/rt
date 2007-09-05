@@ -68,7 +68,7 @@ package RT::System;
 use base qw /RT::Record/;
 use strict;
 
-use RT::ACL;
+use RT::Model::ACL;
 use vars qw/ $RIGHTS/;
 
 # System rights are rights granted to the whole system
@@ -89,11 +89,11 @@ $RIGHTS = {
     CreateSavedSearch => "allow creation of saved searches",      # loc_pair
 };
 
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
+# Tell RT::Model::ACE that this sort of object can get acls granted
+$RT::Model::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
 
@@ -104,7 +104,7 @@ The keys are the right names and the values are a
 description of what the rights do.
 
 This method as well returns rights of other RT objects,
-like L<RT::Queue> or L<RT::Group>. To allow users to apply
+like L<RT::Model::Queue> or L<RT::Model::Group>. To allow users to apply
 those rights globally.
 
 =cut
@@ -112,9 +112,9 @@ those rights globally.
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Queue->new($RT::SystemUser);
-    my $group = RT::Group->new($RT::SystemUser);
-    my $cf    = RT::CustomField->new($RT::SystemUser);
+    my $queue = RT::Model::Queue->new($RT::SystemUser);
+    my $group = RT::Model::Group->new($RT::SystemUser);
+    my $cf    = RT::Model::CustomField->new($RT::SystemUser);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
@@ -125,9 +125,9 @@ sub AvailableRights {
     return(\%rights);
 }
 
-sub _Init {
+sub _init {
     my $self = shift;
-    $self->SUPER::_Init (@_) if @_ && $_[0];
+    $self->SUPER::_init (@_) if @_ && $_[0];
 }
 
 =head2 id
@@ -152,7 +152,7 @@ It does nothing
 
 =cut
 
-sub Load {
+sub load {
 	return (1);
 }
 
@@ -160,14 +160,10 @@ sub Name {
     return 'RT System';
 }
 
-sub __Set { 0 }
-sub __Value { 0 }
-sub Create { 0 }
-sub Delete { 0 }
+sub __set { 0 }
+sub __value { 0 }
+sub create { 0 }
+sub delete { 0 }
 
-eval "require RT::System_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Vendor.pm});
-eval "require RT::System_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Local.pm});
 
 1;

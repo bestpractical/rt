@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 package RT::Report::Tickets;
 
-use base qw/RT::Tickets/;
+use base qw/RT::Model::Tickets/;
 use RT::Report::Tickets::Entry;
 
 use strict;
@@ -91,20 +91,20 @@ sub Groupings {
     }
 
     if ( $queues ) {
-        my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
+        my $CustomFields = RT::Model::CustomFields->new( $self->CurrentUser );
         foreach my $id (keys %$queues) {
-            my $queue = RT::Queue->new( $self->CurrentUser );
-            $queue->Load($id);
+            my $queue = RT::Model::Queue->new( $self->CurrentUser );
+            $queue->load($id);
             unless ($queue->id) {
                 # XXX TODO: This ancient code dates from a former developer
                 # we have no idea what it means or why cfqueues are so encoded.
                 $id =~ s/^.'*(.*).'*$/$1/;
-                $queue->Load($id);
+                $queue->load($id);
             }
-            $CustomFields->LimitToQueue($queue->Id);
+            $CustomFields->LimitToQueue($queue->id);
         }
         $CustomFields->LimitToGlobal;
-        while ( my $CustomField = $CustomFields->Next ) {
+        while ( my $CustomField = $CustomFields->next ) {
             push @fields, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
         }
     }
@@ -117,8 +117,8 @@ sub Label {
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
         return $self->CurrentUser->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::CustomField->new( $self->CurrentUser );
-        $obj->Load( $cf );
+        my $obj = RT::Model::CustomField->new( $self->CurrentUser );
+        $obj->load( $cf );
         return $self->CurrentUser->loc( "Custom field '[_1]'", $obj->Name );
     }
     return $self->CurrentUser->loc($field);
@@ -128,7 +128,7 @@ sub GroupBy {
     my $self = shift;
     my %args = ref $_[0]? %{ $_[0] }: (@_);
 
-    $self->{'_group_by_field'} = $args{'FIELD'};
+    $self->{'_group_by_field'} = $args{'column'};
     %args = $self->_FieldToFunction( %args );
 
     $self->SUPER::GroupBy( \%args );
@@ -138,27 +138,27 @@ sub Column {
     my $self = shift;
     my %args = (@_);
 
-    if ( $args{'FIELD'} && !$args{'FUNCTION'} ) {
+    if ( $args{'column'} && !$args{'FUNCTION'} ) {
         %args = $self->_FieldToFunction( %args );
     }
 
     return $self->SUPER::Column( %args );
 }
 
-=head2 _DoSearch
+=head2 _do_search
 
-Subclass _DoSearch from our parent so we can go through and add in empty 
+Subclass _do_search from our parent so we can go through and add in empty 
 columns if it makes sense 
 
 =cut
 
-sub _DoSearch {
+sub _do_search {
     my $self = shift;
-    $self->SUPER::_DoSearch( @_ );
+    $self->SUPER::_do_search( @_ );
     $self->AddEmptyRows;
 }
 
-=head2 _FieldToFunction FIELD
+=head2 _FieldToFunction column
 
 Returns a tuple of the field or a database function to allow grouping on that 
 field.
@@ -169,7 +169,7 @@ sub _FieldToFunction {
     my $self = shift;
     my %args = (@_);
 
-    my $field = $args{'FIELD'};
+    my $field = $args{'column'};
 
     if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
@@ -184,22 +184,22 @@ sub _FieldToFunction {
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
-        my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->Load($cf_name);
+        my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+        $cf->load($cf_name);
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load CustomField #$cf_name");
         } else {
-            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf->id, $cf_name);
-            @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
+            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldjoin($cf->id, $cf->id, $cf_name);
+            @args{qw(alias column)} = ($ticket_cf_alias, 'Content');
         }
     }
     return %args;
 }
 
 
-# Override the AddRecord from DBI::SearchBuilder::Unique. id isn't id here
+# Override the add_record from DBI::SearchBuilder::Unique. id isn't id here
 # wedon't want to disambiguate all the items with a count of 1.
-sub AddRecord {
+sub add_record {
     my $self = shift;
     my $record = shift;
     push @{$self->{'items'}}, $record;
@@ -210,7 +210,7 @@ sub AddRecord {
 
 
 
-# Gotta skip over RT::Tickets->Next, since it does all sorts of crazy magic we 
+# Gotta skip over RT::Model::Tickets->next, since it does all sorts of crazy magic we 
 # don't want.
 sub Next {
     my $self = shift;
@@ -218,7 +218,7 @@ sub Next {
 
 }
 
-sub NewItem {
+sub new_item {
     my $self = shift;
     return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->CurrentUser);
 }
@@ -234,16 +234,16 @@ for, do that.
 sub AddEmptyRows {
     my $self = shift;
     if ( $self->{'_group_by_field'} eq 'Status' ) {
-        my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
+        my %has = map { $_->__value('Status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new($self->CurrentUser)->StatusArray ) {
 
-            my $record = $self->NewItem;
-            $record->LoadFromHash( {
+            my $record = $self->new_item;
+            $record->load_from_hash( {
                 id     => 0,
                 status => $status
             } );
-            $self->AddRecord($record);
+            $self->add_record($record);
         }
     }
 }

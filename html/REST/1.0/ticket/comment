@@ -56,7 +56,7 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 my $object = $r->path_info;
 my $status = "200 Ok";
 my $output;
@@ -141,17 +141,17 @@ foreach my $att (@atts) {
     $i++;
 }
 
-$ticket->Load($object);
-unless ($ticket->Id) {
+$ticket->load($object);
+unless ($ticket->id) {
     $output = "Couldn't load ticket id: `$object'.\n";
     $status = "404 Ticket not found";
     goto OUTPUT;
 }
-unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
+unless ($ticket->current_user_has_right('ModifyTicket') ||
         ($action eq "Comment" &&
-         $ticket->CurrentUserHasRight("CommentOnTicket")) ||
+         $ticket->current_user_has_right("CommentOnTicket")) ||
         ($action eq "Correspond" &&
-         $ticket->CurrentUserHasRight("ReplyToTicket")))
+         $ticket->current_user_has_right("ReplyToTicket")))
 {
     $output = "You are not allowed to $action on ticket $object.\n";
     $status = "403 Permission denied";
@@ -166,7 +166,7 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                TimeTaken => $k->{TimeWorked} || 0);
 $output = $s;
 if ($k->{Status}) {
-   my  ($status_n, $status_s) = $ticket->SetStatus($k->{'Status'} );   
+   my  ($status_n, $status_s) = $ticket->set_Status($k->{'Status'} );   
   $output .= "\n".$status_s;
 }
 

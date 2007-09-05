@@ -51,9 +51,9 @@
 --></script>
 % my %done;
 % foreach ($tickets, $group_tickets) {
-%   while (my $ticket = $_->Next() ) {
-%     next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies( Type => 'approval' );
-%     next if $done{$ticket->Id}++; # don't show duplicate tickets
+%   while (my $ticket = $_->next() ) {
+%     next if !$ARGS{'ShowDependent'} and $ticket->has_unresolved_dependencies( Type => 'approval' );
+%     next if $done{$ticket->id}++; # don't show duplicate tickets
 <& Approve, ticket => $ticket &>
 %   }
 % }
@@ -67,44 +67,44 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && "checked"%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && "checked"%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
+<&|/l,"<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before [_1]</&><br />
 
-<&|/l, "<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
+<&|/l, "<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after [_1]</&>
 </&>
 
 <%init>
-my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
+my $tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+$tickets->LimitOwner( value => $session{'CurrentUser'}->id );
 
 # also consider AdminCcs as potential approvers.
-my $group_tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$group_tickets->LimitWatcher( VALUE => $session{'CurrentUser'}->UserObj->EmailAddress, TYPE => 'AdminCc' );
+my $group_tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+$group_tickets->LimitWatcher( value => $session{'CurrentUser'}->UserObj->EmailAddress, type => 'AdminCc' );
 
-my $created_before = RT::Date->new( $session{'CurrentUser'} );
-my $created_after = RT::Date->new( $session{'CurrentUser'} );
+my $Created_before = RT::Date->new( $session{'CurrentUser'} );
+my $Created_after = RT::Date->new( $session{'CurrentUser'} );
 
 foreach ($tickets, $group_tickets) {
-    $_->Limit( FIELD      => 'Type', VALUE => 'approval' );
+    $_->limit( column      => 'Type', value => 'approval' );
 
     if ( $ARGS{'ShowResolved'} ) {
-	$_->LimitStatus( VALUE => 'resolved' );
+	$_->LimitStatus( value => 'resolved' );
     }
     if ( $ARGS{'ShowRejected'} ) {
-	$_->LimitStatus( VALUE => 'rejected' );
+	$_->LimitStatus( value => 'rejected' );
     }
     if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
-	$_->LimitStatus( VALUE => 'open' );
-	$_->LimitStatus( VALUE => 'new' );
-	$_->LimitStatus( VALUE => 'stalled' );
+	$_->LimitStatus( value => 'open' );
+	$_->LimitStatus( value => 'new' );
+	$_->LimitStatus( value => 'stalled' );
     }
 
     if ( $ARGS{'CreatedBefore'} ) {
-	$created_before->Set( Format => 'unknown', Value => $ARGS{'CreatedBefore'} );
-	$_->LimitCreated( OPERATOR => "<=", VALUE => $created_before->ISO );
+	$Created_before->set( Format => 'unknown', value => $ARGS{'CreatedBefore'} );
+	$_->LimitCreated( operator => "<=", value => $Created_before->ISO );
     }
     if ( $ARGS{'CreatedAfter'} ) {
-	$created_after->Set( Format => 'unknown', Value => $ARGS{'CreatedAfter'} );
-	$_->LimitCreated( OPERATOR => ">=", VALUE => $created_after->ISO );
+	$Created_after->set( Format => 'unknown', value => $ARGS{'CreatedAfter'} );
+	$_->LimitCreated( operator => ">=", value => $Created_after->ISO );
     }
 }
 

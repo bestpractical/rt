@@ -70,7 +70,7 @@ $show = sub {
     $m->out( "\n\n" );
     if ( $attach->ContentType =~ m{^multipart/}i ) {
         my $children = $attach->Children;
-        while ( my $child = $children->Next ) {
+        while ( my $child = $children->next ) {
             $show->( $child );
         }
     } else {
@@ -79,8 +79,8 @@ $show = sub {
     $m->out( '</pre>' );
 };
 
-my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
-$AttachmentObj->Load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
+my $AttachmentObj = new RT::Model::Attachment($session{'CurrentUser'});
+$AttachmentObj->load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
 unless ( $AttachmentObj->id ) {
     Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
 }

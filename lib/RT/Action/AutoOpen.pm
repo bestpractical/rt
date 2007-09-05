@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-# This Action will open the BASE if a dependent is resolved.
+# This Action will open the base if a dependent is resolved.
 package RT::Action::AutoOpen;
 
 use strict;
@@ -56,14 +56,14 @@ use base qw(RT::Action::Generic);
 =head1 DESCRIPTION
 
 Opens a ticket unless it's allready open, but only unless transaction
-L<RT::Transaction/IsInbound is inbound>.
+L<RT::Model::Transaction/IsInbound is inbound>.
 
 Doesn't open a ticket if message's head has field C<RT-Control> with
 C<no-autoopen> substring.
 
 =cut
 
-sub Prepare {
+sub prepare {
     my $self = shift;
 
     # if the ticket is already open or the ticket is new and the message is more mail from the
@@ -73,18 +73,18 @@ sub Prepare {
     return undef if $status eq 'open';
     return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
 
-    if ( my $msg = $self->TransactionObj->Message->First ) {
+    if ( my $msg = $self->TransactionObj->Message->first ) {
         return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
     return 1;
 }
 
-sub Commit {
+sub commit {
     my $self = shift;
 
     my $oldstatus = $self->TicketObj->Status;
-    $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
+    $self->TicketObj->__set( column => 'Status', value => 'open' );
     $self->TicketObj->_NewTransaction(
         Type     => 'Status',
         Field    => 'Status',

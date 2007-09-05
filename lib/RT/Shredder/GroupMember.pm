@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::GroupMember ();
-package RT::GroupMember;
+use RT::Model::GroupMember ();
+package RT::Model::GroupMember;
 
 use strict;
 use warnings;
@@ -69,9 +69,9 @@ sub __DependsOn
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $objs = RT::CachedGroupMembers->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'MemberId', VALUE => $self->MemberId );
-    $objs->Limit( FIELD => 'ImmediateParentId', VALUE => $self->GroupId );
+    my $objs = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    $objs->limit( column => 'MemberId', value => $self->MemberId );
+    $objs->limit( column => 'ImmediateParentId', value => $self->GroupId );
     push( @$list, $objs );
 
     # XXX: right delegations should be cleaned here
@@ -87,7 +87,7 @@ sub __DependsOn
     # XXX: If we delete member of the ticket owner role group then we should also
     # fix ticket object, but only if we don't plan to delete group itself!
     unless( ($group->Type || '') eq 'Owner' &&
-        ($group->Domain || '') eq 'RT::Ticket-Role' ) {
+        ($group->Domain || '') eq 'RT::Model::Ticket-Role' ) {
         return $self->SUPER::__DependsOn( %args );
     }
 
@@ -106,9 +106,9 @@ sub __DependsOn
                 my $group = $args{'TargetObject'};
                 return if $args{'Shredder'}->GetState( Object => $group ) & (WIPED|IN_WIPING);
                 return unless ($group->Type || '') eq 'Owner';
-                return unless ($group->Domain || '') eq 'RT::Ticket-Role';
+                return unless ($group->Domain || '') eq 'RT::Model::Ticket-Role';
 
-                return if $group->MembersObj->Count > 1;
+                return if $group->MembersObj->count > 1;
 
                 my $group_member = $args{'BaseObject'};
 
@@ -119,12 +119,12 @@ sub __DependsOn
                 my( $status, $msg ) = $group->AddMember( $RT::Nobody->id );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 
-                my $ticket = RT::Ticket->new( $group->CurrentUser );
-                $ticket->Load( $group->Instance );
+                my $ticket = RT::Model::Ticket->new( $group->CurrentUser );
+                $ticket->load( $group->Instance );
                 RT::Shredder::Exception->throw( "Couldn't load ticket" ) unless $ticket->id;
 
-                ( $status, $msg ) = $ticket->_Set( Field => 'Owner',
-                                   Value => $RT::Nobody->id,
+                ( $status, $msg ) = $ticket->_set( column => 'Owner',
+                                   value => $RT::Nobody->id,
                                  );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 

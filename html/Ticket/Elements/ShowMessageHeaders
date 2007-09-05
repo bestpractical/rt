@@ -58,7 +58,7 @@ my @headers;
 foreach my $field( $Message->SplitHeaders ) {
     my ($tag, $value) = split /:/, $field, 2;
     next unless $tag && $value;
-    push @headers, { Tag => $tag, Value => $value };
+    push @headers, { Tag => $tag, value => $value };
 }
 
 my %display_headers = map { lc($_) => 1 } @DisplayHeaders;

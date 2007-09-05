@@ -39,9 +39,9 @@ with i.e.  $Ticket->Correspond when $TransactionName is 'Correspond'
 (AUTOLOAD should call the do-sub if exists
 RT->Config->Get('TransactionTypes')->{$TransactionName})
 
-The RT::Ticket::AddTransaction will create a new transaction of the
+The RT::Model::Ticket::AddTransaction will create a new transaction of the
 right TransactionClass (maybe via a sub
-RT::TransactionTypes::NewTransaction).  Then $Transaction->do is
+RT::Model::TransactionTypes::NewTransaction).  Then $Transaction->do is
 called.
 
 TransactionType->do initializes a new object of the right TransactionClass, and 

@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Link ticket #[_1]", $Ticket->Id) &>
+<& /Elements/Header, Title => loc("Link ticket #[_1]", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->Id, 
-    Title => loc("Link ticket #[_1]", $Ticket->Id) &>
+    current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
+    Title => loc("Link ticket #[_1]", $Ticket->id) &>
 
 <& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
@@ -68,7 +68,7 @@
 
 <%INIT>
   
-my $Ticket = LoadTicket($id);
+my $Ticket = load_ticket($id);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
     

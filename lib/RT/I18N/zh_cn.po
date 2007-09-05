@@ -34,9 +34,9 @@ msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -62,7 +62,7 @@ msgid "%*(%1,unresolved ticket)"
 msgstr "%*(%1) 件尚未解决的申请单"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -183,7 +183,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 版，%4 版权所有，1996-%3。"
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "加载手续 %1"
 
@@ -247,7 +247,7 @@ msgstr "%1 无法将现况设成已解决。RT 数据库内容可能不一致。
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "已建立 %1"
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -340,7 +340,7 @@ msgid "%1 type unknown for %2"
 msgstr "不知道 %2 的 %1 类别"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 was created without a CurrentUser\\n"
+msgid "%1 was Created without a CurrentUser\\n"
 msgstr "%1 新增时未指定现行使用者"
 
 #: lib/RT/Action/ResolveMembers.pm:63
@@ -349,7 +349,7 @@ msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 会解决在已解决群组里成员的申请单。"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
+msgid "%1 will stall a [local] base if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申请单依赖于某个链接，或是某个链接的成员，它将会被延宕。"
 
 #: lib/RT/CustomField_Overlay.pm:894
@@ -644,7 +644,7 @@ msgid "ACE not found"
 msgstr "找不到 ACE 设定"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "祇能新增或删除 ACE 设定。"
 
 #: NOT FOUND IN SOURCE
@@ -1051,19 +1051,19 @@ msgid "Approval"
 msgstr "签核"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "签核单 #%1：%2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "签核单 #%1：系统错误，记录失败"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "签核单 #%1：记录完毕"
 
@@ -1169,7 +1169,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "无法加载附件 '%1'"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "附件新增完毕"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1817,7 +1817,7 @@ msgid "Couldn't find user\\n"
 msgstr "找不到使用者\\n"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "无法从使用者数据库加载 %1。\\n"
 
@@ -1844,7 +1844,7 @@ msgid "Couldn't load Scrips."
 msgstr "无法加载手续。"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
@@ -1903,7 +1903,7 @@ msgstr ""
 msgid "Country"
 msgstr "国家"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "新增"
 
@@ -1997,7 +1997,7 @@ msgstr "为 %1 表单新增手续"
 msgid "Create a template"
 msgstr "新增模板"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "提出申请单"
 
@@ -2939,7 +2939,7 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "表单->新增视察员的参数有误"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
 msgstr "表单->删除视察员的参数有误"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -2947,7 +2947,7 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申请单->新增视察员的参数有误"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
 msgstr "申请单->删除视察员的参数有误"
 
 #: bin/rt-crontool:285
@@ -2987,7 +2987,7 @@ msgid "ExternalContactInfoId"
 msgstr "外部联络方式帐号"
 
 #: NOT FOUND IN SOURCE
-msgid "ExternalDatabaseDSN"
+msgid "ExternalDatabasedsn"
 msgstr "外部数据库连结字符串"
 
 #: NOT FOUND IN SOURCE
@@ -3397,20 +3397,20 @@ msgid "Group already has member"
 msgstr "群组内已有此成员"
 
 #: NOT FOUND IN SOURCE
-msgid "Group could not be created."
+msgid "Group could not be Created."
 msgstr "无法新增群组"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "无法新增群组：%1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "群组新增完毕"
 
 #: NOT FOUND IN SOURCE
-msgid "Group created: %1"
+msgid "Group Created: %1"
 msgstr "群组 %1 新增完毕"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -3751,7 +3751,7 @@ msgid "Job"
 msgstr "职称"
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "加入或离开此群组"
 
 #: NOT FOUND IN SOURCE
@@ -3875,12 +3875,12 @@ msgid "Link already exists"
 msgstr "此链接已存在"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "无法新增链接"
 
 #: lib/RT/Record.pm:1326
 #. ($TransString)
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "链接(%1)新增完毕"
 
 #: lib/RT/Record.pm:1387
@@ -3893,7 +3893,7 @@ msgid "Link not found"
 msgstr "找不到链接"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "链接申请单 #%1"
 
@@ -4283,12 +4283,12 @@ msgid "Modify dates for # %1"
 msgstr "更改 # %1 的日期"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "更改 #%1 的日期"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "更改申请单 # %1 的日期"
 
@@ -4358,7 +4358,7 @@ msgstr "更改链接到表单 %1 的人员"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "更改申请单 #%1 链接到的人员"
 
@@ -4400,12 +4400,12 @@ msgid "Modify the user %1"
 msgstr "更改使用者 %1"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "更改申请单 # %1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "更改申请单 # %1"
 
@@ -4654,7 +4654,7 @@ msgstr "没有新申请单"
 msgid "New user"
 msgstr "新增使用者"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "新使用者名字"
 
@@ -4865,8 +4865,8 @@ msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT
 msgstr "找不到合格的 RT 使用者。RT cvs 处理器已停用。请向 RT 管理者询问。\\n"
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
-msgstr "_Set 没有收到任何值!\\n"
+msgid "No value sent to _set!\\n"
+msgstr "_set 没有收到任何值!\\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -5017,7 +5017,7 @@ msgid "OR"
 msgstr ""
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "无法新增对象"
 
 #: lib/RT/Record.pm:123
@@ -5025,7 +5025,7 @@ msgid "Object could not be deleted"
 msgstr ""
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "对象新增完毕"
 
 #: lib/RT/Record.pm:120
@@ -5124,13 +5124,13 @@ msgid "On Transaction"
 msgstr "发生更动时"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "仅显示 %1 之后新增的申请单"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr "仅显示 %1 之前新增的申请单"
 
 #: html/Admin/CustomFields/index.html:75
@@ -5202,7 +5202,7 @@ msgid "Organization:"
 msgstr "组织："
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "原申请单：#%1"
 
@@ -5677,7 +5677,7 @@ msgid "Queue already exists"
 msgstr "表单已存在"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "无法新增表单"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -5685,7 +5685,7 @@ msgid "Queue could not be loaded."
 msgstr "无法加载表单"
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "表单新增完毕"
 
 #: NOT FOUND IN SOURCE
@@ -5860,7 +5860,7 @@ msgid "RT's email command mode requires PGP authentication.  Either you didn't s
 msgstr "RT 的电子邮件命令模式须要 PGP 认证。您可能没有签章，或是您的签章无法辨识。"
 
 #: NOT FOUND IN SOURCE
-msgid "RT::Queue-Role"
+msgid "RT::Model::Queue-Role"
 msgstr "表单运行角色"
 
 #: NOT FOUND IN SOURCE
@@ -5868,7 +5868,7 @@ msgid "RT::System-Role"
 msgstr "系统运行角色"
 
 #: NOT FOUND IN SOURCE
-msgid "RT::Ticket-Role"
+msgid "RT::Model::Ticket-Role"
 msgstr "申请单运行角色"
 
 #: NOT FOUND IN SOURCE
@@ -5956,7 +5956,7 @@ msgid "Reminder '%1' reopened"
 msgstr ""
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr ""
 
@@ -5965,7 +5965,7 @@ msgid "Reminders"
 msgstr ""
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr ""
 
@@ -6247,7 +6247,7 @@ msgid "Saved searches"
 msgstr "已储存的查询"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr "手续 #%1"
@@ -6406,7 +6406,7 @@ msgstr "选择群组"
 msgid "Select a queue"
 msgstr "选择表单"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -6938,7 +6938,7 @@ msgid "Template"
 msgstr "模板"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "模板 #%1"
 
@@ -7175,25 +7175,25 @@ msgid "Ticket # %1 Jumbo update: %2"
 msgstr "更新申请单 # %1 的全部信息：%2"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "更新申请单 #%1 的全部信息：%2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "申请单 %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "申请单 #%1 成功新增于 '%2' 表单"
 
 #: NOT FOUND IN SOURCE
@@ -7201,7 +7201,7 @@ msgid "Ticket %1 loaded\\n"
 msgstr "加载申请单 %1\\n"
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "申请单 %1：%2"
 
@@ -7214,7 +7214,7 @@ msgid "Ticket Due"
 msgstr "表单处理期限"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "申请单处理纪录 # %1 %2"
 
@@ -7255,11 +7255,11 @@ msgid "Ticket content type"
 msgstr "申请单内容类别"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "内部错误，无法新增申请单"
 
 #: NOT FOUND IN SOURCE
-msgid "Ticket created"
+msgid "Ticket Created"
 msgstr "申请单新增完毕"
 
 #: NOT FOUND IN SOURCE
@@ -7294,7 +7294,7 @@ msgstr "申请单现况已改变"
 msgid "Ticket watchers"
 msgstr "申请单视察员"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr ""
@@ -7320,11 +7320,11 @@ msgid "Tickets I requested"
 msgstr "送出的申请单"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr ""
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -7426,11 +7426,11 @@ msgid "Transaction Custom Fields"
 msgstr "更动的自订字段"
 
 #: NOT FOUND IN SOURCE
-msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
+msgid "Transaction->create couldn't, as you didn't specify a ticket id"
 msgstr "未指定申请单编号，无法新增更动"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
 msgstr "未指定对象类别及编号，无法新增更动"
 
 #: NOT FOUND IN SOURCE
@@ -7488,7 +7488,7 @@ msgid "Unknown field: $key"
 msgstr ""
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "全数显示"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -7692,19 +7692,19 @@ msgstr "使用者试图在 %2 对象 #%3 的自订字段 %1 上执行未知的�
 
 #: html/Admin/Users/Modify.html:301
 #. ($msg)
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "无法新增使用者：%1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "使用者新增完毕"
 
 #: NOT FOUND IN SOURCE
-msgid "User created: %1"
+msgid "User Created: %1"
 msgstr "使用者 %1 新增完毕"
 
 #: NOT FOUND IN SOURCE
-msgid "User created: %1 (%2)"
+msgid "User Created: %1 (%2)"
 msgstr "使用者 %1 (%2) 新增完毕"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -7813,11 +7813,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "当申请单通过某项签核后，将此讯息回复到原申请单"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "新增申请单时"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "签核单新增之后，通知应受理的承办人及管理员副本收件人"
 
 #: etc/initialdata:151
@@ -8315,7 +8315,7 @@ msgid "true"
 msgstr "真"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr "没有描述的群组 %1"
 

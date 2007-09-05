@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%while ( $Group = $Groups->Next) {
+%while ( $Group = $Groups->next) {
 <a href="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><br />
 %}
 <%INIT>
 my ($Group);
-my $Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->UnLimit;
+my $Groups = new RT::Model::Groups($session{'CurrentUser'});
+$Groups->find_all_rows;
 </%INIT>
 <%ARGS>
 </%ARGS>

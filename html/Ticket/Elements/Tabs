@@ -76,21 +76,21 @@ if ( defined $session{'tickets'} ) {
         }
 
         # Don't display prev links if we're on the first ticket
-        if ($item_map->{$Ticket->Id}->{prev}) {
+        if ($item_map->{$Ticket->id}->{prev}) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
                             path => "Ticket/Display.html?id=" . $item_map->{first},
                             title => '<< ' . loc('First') };
                 $searchtabs->{"_b"} = { class => "nav",
-                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->Id}->{prev},
+                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{prev},
                                   title => '< ' . loc('Prev') };
        } 
 
 
         # Don't display next links if we're on the last ticket
-        if ($item_map->{$Ticket->Id}->{next}) {
+        if ($item_map->{$Ticket->id}->{next}) {
             $searchtabs->{'d'} = { class => "nav",
-                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->Id}->{next},
+                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{next},
                              title => loc('Next') . ' >' };
             $searchtabs->{'e'} = {
                            class => "nav",
@@ -141,10 +141,10 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 $current_tab = "Ticket/Display.html?id=" . $id;
 
 my %can = (
-    ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'),
+    ModifyTicket => $Ticket->current_user_has_right('ModifyTicket'),
 );
 
-if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
+if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) {
     $actions->{'F'} = {
         title => loc('Reply'),
         path  => "Ticket/Update.html?Action=Respond&id=" . $id,
@@ -163,9 +163,9 @@ if ( $can{'ModifyTicket'} ) {
     }
 }
 
-if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-    if ( $Ticket->OwnerObj->Id == $RT::Nobody->id
-         and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('TakeTicket') ) )
+if ( $Ticket->current_user_has_right('OwnTicket') ) {
+    if ( $Ticket->OwnerObj->id == $RT::Nobody->id
+         and ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket') ) )
     {
         $actions->{'B'} = {
             path => "Ticket/Display.html?Action=Take&id=" . $id,
@@ -173,7 +173,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
         };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id 
-            and ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('StealTicket') ) )
+            and ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket') ) )
     {
         $actions->{'C'} = {
             path => "Ticket/Display.html?Action=Steal&id=" . $id,
@@ -182,7 +182,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     }
 }
 
-if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
+if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('CommentOnTicket') ) {
     $actions->{'E'} = {
         title => loc('Comment'),
         path  => "Ticket/Update.html?Action=Comment&id=" . $id,
@@ -204,7 +204,7 @@ $args= "?" . $m->comp(
     SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
     Query         => $ARGS{'Query'}         || $session{'CurrentSearchHash'}->{'Query'},
     Format        => $ARGS{'Format'}        || $session{'CurrentSearchHash'}->{'Format'},
-    OrderBy       => $ARGS{'OrderBy'}       || $session{'CurrentSearchHash'}->{'OrderBy'},
+    order_by       => $ARGS{'order_by'}       || $session{'CurrentSearchHash'}->{'order_by'},
     Order         => $ARGS{'Order'}         || $session{'CurrentSearchHash'}->{'Order'},
     Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},
     Rows          => $ARGS{'Rows'},
@@ -239,19 +239,19 @@ if ($Ticket) {
 	if (my $Lock = $Ticket->Locked()) {
 		if ($Lock->Content->{'User'} == $session{'CurrentUser'}->id) {
 		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=remove&id=" . $Ticket->Id,
+						path  => "Ticket/Display.html?Lock=remove&id=" . $Ticket->id,
 						title => loc('Unlock') 
 						};
 		} else {
 		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=break&id=" . $Ticket->Id,
+						path  => "Ticket/Display.html?Lock=break&id=" . $Ticket->id,
 						title => loc('Break lock') 
 						};
 
 		}
 	} else {
 		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=add&id=" . $Ticket->Id,
+						path  => "Ticket/Display.html?Lock=add&id=" . $Ticket->id,
 						title => loc('Lock') 
 						};
 

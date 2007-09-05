@@ -57,6 +57,6 @@ $Plugin => ''
 <%INIT>
 use RT::Shredder::Plugin;
 my $plugin_obj = new RT::Shredder::Plugin;
-my ($status, $msg) = $plugin_obj->LoadByName( $Plugin );
+my ($status, $msg) = $plugin_obj->load_by_name( $Plugin );
 die $msg unless $status;
 </%INIT>

@@ -120,7 +120,7 @@ sub Run
     return (0, "At least one condition should be provided" ) unless @conditions;
     my $query = "SELECT id FROM Attachments WHERE ". join ' AND ', @conditions;
     if( $self->{'opt'}{'limit'} ) {
-        $RT::Handle->ApplyLimits( \$query, $self->{'opt'}{'limit'} );
+        $RT::Handle->apply_limits( \$query, $self->{'opt'}{'limit'} );
     }
     my $sth = $RT::Handle->SimpleQuery( $query, @values );
     return (0, "Internal error: '$sth'. Please send bug report.") unless $sth;
@@ -131,7 +131,7 @@ sub Run
     }
     return (0, "Internal error: '". $sth->err ."'. Please send bug report.") if $sth->err;
 
-    map { $_ = "RT::Attachment-$_" } @objs;
+    map { $_ = "RT::Model::Attachment-$_" } @objs;
 
     return (1, @objs);
 }

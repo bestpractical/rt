@@ -73,9 +73,9 @@ my $title = loc("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = $session{'CurrentUser'}->UserObj;
 my $unwanted = $user->Preferences('QuickSearch', {});
-my $Queues = RT::Queues->new($session{'CurrentUser'});
-$Queues->UnLimit;
-my @queues = grep {$_->CurrentUserHasRight('ShowTicket')} @{$Queues->ItemsArrayRef};
+my $Queues = RT::Model::Queues->new($session{'CurrentUser'});
+$Queues->find_all_rows;
+my @queues = grep {$_->current_user_has_right('ShowTicket')} @{$Queues->items_array_ref};
 
 if ($ARGS{'Save'}) {
     for my $queue (@queues) {
@@ -87,7 +87,7 @@ if ($ARGS{'Save'}) {
         }
     }
 
-    $user->SetPreferences('QuickSearch', $unwanted);
+    $user->set_Preferences('QuickSearch', $unwanted);
     push @actions, loc ('Preferences saved.');
     # Let QueueSummary rebuild the cache
     delete $session{'quick_search_queues'};

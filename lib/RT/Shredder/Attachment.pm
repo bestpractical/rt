@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Attachment ();
-package RT::Attachment;
+use RT::Model::Attachment ();
+package RT::Model::Attachment;
 
 use strict;
 use warnings;
@@ -68,16 +68,16 @@ sub __DependsOn
     my $list = [];
 
 # Nested attachments
-    my $objs = RT::Attachments->new( $self->CurrentUser );
-    $objs->Limit(
-            FIELD => 'Parent',
-            OPERATOR        => '=',
-            VALUE           => $self->Id
+    my $objs = RT::Model::Attachments->new( $self->CurrentUser );
+    $objs->limit(
+            column => 'Parent',
+            operator        => '=',
+            value           => $self->id
            );
-    $objs->Limit(
-            FIELD => 'id',
-            OPERATOR        => '!=',
-            VALUE           => $self->Id
+    $objs->limit(
+            column => 'id',
+            operator        => '!=',
+            value           => $self->id
            );
     push( @$list, $objs );
 

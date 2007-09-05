@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::CustomField ();
-package RT::CustomField;
+use RT::Model::CustomField ();
+package RT::Model::CustomField;
 
 use strict;
 use warnings;
@@ -73,8 +73,8 @@ sub __DependsOn
     push( @$list, $self->Values );
 
 # Ticket custom field values
-    my $objs = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
-    $objs->LimitToCustomField( $self->Id );
+    my $objs = RT::Model::ObjectCustomFieldValues->new( $self->CurrentUser );
+    $objs->limit_to_custom_field( $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
@@ -102,7 +102,7 @@ sub __Relates
 # Queue
 # Skip if it's global CF
     if( $self->Queue ) {
-        if( $self->QueueObj && $self->QueueObj->Id ) {
+        if( $self->QueueObj && $self->QueueObj->id ) {
             push( @$list, $obj );
         } else {
             my $rec = $args{'Shredder'}->GetRecord( Object => $self );

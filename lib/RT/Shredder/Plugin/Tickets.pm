@@ -91,9 +91,9 @@ sub TestArgs
     my %args = @_;
     my $queue;
     if( $args{'query'} ) {
-        my $objs = RT::Tickets->new( $RT::SystemUser );
+        my $objs = RT::Model::Tickets->new( $RT::SystemUser );
         $objs->{'allow_deleted_search'} = 1;
-        my ($status, $msg) = $objs->FromSQL( $args{'query'} );
+        my ($status, $msg) = $objs->from_sql( $args{'query'} );
         return( 0, "Bad query argument, error: $msg" ) unless $status;
         $self->{'opt'}{'objects'} = $objs;
     }
@@ -108,10 +108,10 @@ sub Run
     my $objs = $self->{'opt'}{'objects'}
         or return (1, undef);
 
-    $objs->OrderByCols( { FIELD => 'id', ORDER => 'ASC' } );
+    $objs->order_by( { column => 'id', order => 'ASC' } );
     unless ( $self->{'opt'}{'with_linked'} ) {
         if( $self->{'opt'}{'limit'} ) {
-            $objs->RowsPerPage( $self->{'opt'}{'limit'} );
+            $objs->rows_per_page( $self->{'opt'}{'limit'} );
         }
         return (1, $objs);
     }
@@ -137,9 +137,9 @@ sub GetLinked
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( ". $self->{'opt'}{'query'} ." )";
     }
-    my $objs = RT::Tickets->new( $RT::SystemUser );
+    my $objs = RT::Model::Tickets->new( $RT::SystemUser );
     $objs->{'allow_deleted_search'} = 1;
-    $objs->FromSQL( $query );
+    $objs->from_sql( $query );
     $self->FetchNext( $objs, 1 );
     while ( my $linked_obj = $self->FetchNext( $objs ) ) {
         next if $arg{'Seen'}->{ $linked_obj->id }++;

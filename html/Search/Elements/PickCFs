@@ -49,18 +49,18 @@
 <& ConditionRow, Condition => $_ &>
 % }
 <%INIT>
-my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %cfqueues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
+    my $queue = RT::Model::Queue->new($session{'CurrentUser'});
+    $queue->load($id);
     unless ($queue->id) {
         # XXX TODO: This ancient code dates from a former developer
         # we have no idea what it means or why cfqueues are so encoded.
         $id =~ s/^.'*(.*).'*$/$1/;
-        $queue->Load($id);
+        $queue->load($id);
     }
-    $CustomFields->LimitToQueue($queue->Id);
+    $CustomFields->LimitToQueue($queue->id);
 }
 $CustomFields->LimitToGlobal;
 $m->callback(
@@ -70,7 +70,7 @@ $m->callback(
 
 
 my @lines;
-while ( my $CustomField = $CustomFields->Next ) {
+while ( my $CustomField = $CustomFields->next ) {
     my %line;
     $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
     $line{'Field'} = $CustomField->Name;

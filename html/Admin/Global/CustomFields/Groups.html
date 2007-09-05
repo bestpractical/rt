@@ -51,8 +51,8 @@
     current_subtab => "Admin/Global/CustomFields/Groups.html",
     Title => $title
     &>
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Group', Object=> $object &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Model::Group', Object=> $object &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for all groups');
-  my $object = RT::Group->new($session{'CurrentUser'});
+  my $object = RT::Model::Group->new($session{'CurrentUser'});
 </%INIT>

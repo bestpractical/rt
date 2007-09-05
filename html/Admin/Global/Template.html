@@ -58,7 +58,7 @@
 %if ($Create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
+<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->id%>" />
 % }
 
 %# hang onto the queue id
@@ -73,7 +73,7 @@
 
 <%INIT>
 
-my $TemplateObj = new RT::Template($session{'CurrentUser'});
+my $TemplateObj = new RT::Model::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
@@ -94,25 +94,25 @@ if ($Create) {
 
 else {
   if (defined ($Template) && $Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
+      my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $TemplateObj->Load($Template) || Abort(loc('No Template'));
+       $TemplateObj->load($Template) || Abort(loc('No Template'));
     }
       $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
   
     
 }
-if ($TemplateObj->Id()) {
+if ($TemplateObj->id()) {
   my @attribs = qw( Description Content Queue Name);
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id();
-  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
-  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id(),
+  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id();
+  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->id()),
+  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id(),
 			};
   push @results, @aresults;
 }

@@ -22,13 +22,13 @@ ok (require RT::SearchBuilder);
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use_ok('RT::Queues');
-ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');
-ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
-my $items = $queues->ItemsArrayRef();
+use_ok('RT::Model::Queues');
+ok(my $queues = RT::Model::Queues->new($RT::SystemUser), 'Created a queues object');
+ok( $queues->find_all_rows(),'unlimited the result set of the queues object');
+my $items = $queues->items_array_ref();
 my @items = @{$items};
 
-ok($queues->NewItem->_Accessible('Name','read'));
+ok($queues->new_item->can('Name'));
 my @sorted = sort {lc($a->Name) cmp lc($b->Name)} @items;
 ok (@sorted, "We have an array of queues, sorted". join(',',map {$_->Name} @sorted));
 
@@ -39,7 +39,7 @@ my @items_ids = map {$_->id } @items;
 is ($#sorted, $#items);
 is ($sorted[0]->Name, $items[0]->Name);
 is ($sorted[-1]->Name, $items[-1]->Name);
-is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name");;
+is_deeply(\@items_ids, \@sorted_ids, "items_array_ref sorts alphabetically by name");;
 
 
 

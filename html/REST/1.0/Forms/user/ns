@@ -51,15 +51,15 @@
 $id
 </%ARGS>
 <%perl>
-use RT::Users;
+use RT::Model::Users;
 
 my $field = "Name";
 $field = "EmailAddress" if $id =~ /\@/;
 
-my $users = new RT::Users $session{CurrentUser};
-$users->Limit(FIELD => $field, OPERATOR => '=', VALUE => $id);
-if ($users->Count == 0) {
+my $users = new RT::Model::Users $session{CurrentUser};
+$users->limit(column => $field, operator => '=', value => $id);
+if ($users->count == 0) {
     return (0, "No user named $id exists.");
 }
-return $users->Next->Id;
+return $users->next->id;
 </%perl>

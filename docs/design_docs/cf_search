@@ -10,59 +10,59 @@ find all tickets where:
 LimitCustomFieldValues {
         my %args = ( CustomField => undef, 
                      ClauseId => 'CustomFields',
-                     OPERATOR => undef,
-                     ENTRYAGGREGATOR => undef,
-                     VALUES => undef,
+                     operator => undef,
+                     entry_aggregator => undef,
+                     valueS => undef,
                      @_) ;
 
         unless ( $self->{'TicketAliases'}{$args{'ClauseId'}}{'CustomField'} ) {
-        $self->{'TicketAliases'}{$args{'ClauseId'}}{'CustomField'} = $self->NewAlias('CustomFields');
-        $self->Join(TABLE1 =>$self->{'TicketAliases'}{$args{'ClauseId'}}{'CustomField' },  
-                    FIELD1 => 'QueueId',
-                    TABLE2 => 'main', FIELD2 => 'QueueId');
+        $self->{'TicketAliases'}{$args{'ClauseId'}}{'CustomField'} = $self->new_alias('CustomFields');
+        $self->join(table1 =>$self->{'TicketAliases'}{$args{'ClauseId'}}{'CustomField' },  
+                    column1 => 'QueueId',
+                    table2 => 'main', column2 => 'QueueId');
 
-        if ($args{'OPERATOR'} =~ /!=|IS/i) {
+        if ($args{'operator'} =~ /!=|IS/i) {
         }
         else {
         }
 
 }
         # {{{ if it's a keyword
-        elsif ( $TYPES{ $restriction->{'FIELD'} } eq 'CUSTOMFIELD' ) {
+        elsif ( $TYPES{ $restriction->{'column'} } eq 'customfield' ) {
 
             my $null_columns_ok;
-            my $TicketCFs = $self->Join( TYPE   => 'left',
-                                                ALIAS1 => 'main',
-                                                FIELD1 => 'id',
-                                                TABLE2 => 'TicketCustomFieldValues',
-                                                FIELD2 => 'Ticket' );
+            my $TicketCFs = $self->join( type => 'left',
+                                                alias1 => 'main',
+                                                column1 => 'id',
+                                                table2 => 'TicketCustomFieldValues',
+                                                column2 => 'Ticket' );
 
-            foreach my $value ( @{ $restriction->{'VALUES'} } ) {
-                $self->SUPER::Limit( ALIAS      => $TicketCFs,
-                                     FIELD      => 'Content',
-                                     OPERATOR   => $restriction->{'OPERATOR'},
-                                     VALUE      => $value,
-                                     QUOTEVALUE => $restriction->{'QUOTEVALUE'},
-                                     ENTRYAGGREGATOR => 'AND', );
+            foreach my $value ( @{ $restriction->{'valueS'} } ) {
+                $self->SUPER::limit( alias      => $TicketCFs,
+                                     column      => 'Content',
+                                     operator   => $restriction->{'operator'},
+                                     value      => $value,
+                                     quote_value => $restriction->{'quote_value'},
+                                     entry_aggregator => 'AND', );
             }
-            if (    ( $restriction->{'OPERATOR'} =~ /^IS$/i ) or ( $restriction->{'OPERATOR'} eq '!=' ) ) {
+            if (    ( $restriction->{'operator'} =~ /^IS$/i ) or ( $restriction->{'operator'} eq '!=' ) ) {
                 $null_columns_ok = 1;
             }
 
             #If we're trying to find tickets where the keyword isn't somethng, also check ones where it _IS_ null
-            if ( $restriction->{'OPERATOR'} eq '!=' ) {
-                $self->SUPER::Limit( ALIAS           => $TicketCFs,
-                                     FIELD           => 'Content',
-                                     OPERATOR        => 'IS',
-                                     VALUE           => 'NULL',
-                                     QUOTEVALUE      => 0,
-                                     ENTRYAGGREGATOR => 'OR', );
+            if ( $restriction->{'operator'} eq '!=' ) {
+                $self->SUPER::limit( alias           => $TicketCFs,
+                                     column           => 'Content',
+                                     operator        => 'IS',
+                                     value           => 'NULL',
+                                     quote_value      => 0,
+                                     entry_aggregator => 'OR', );
             }
 
-            $self->SUPER::Limit( LEFTJOIN => $TicketCFs,
-                                 FIELD    => 'CustomField',
-                                 VALUE    => $restriction->{'CUSTOMFIELD'},
-                                 ENTRYAGGREGATOR => 'OR' );
+            $self->SUPER::limit( leftjoin => $TicketCFs,
+                                 column    => 'CustomField',
+                                 value    => $restriction->{'customfield'},
+                                 entry_aggregator => 'OR' );
 
         }
 

@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
+<& /Elements/Header, Title => loc('Modify ticket #[_1]', $TicketObj->id) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, current_subtab => "Ticket/Modify.html?id=".$TicketObj->Id, 
-    Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
+    Ticket => $TicketObj, current_subtab => "Ticket/Modify.html?id=".$TicketObj->id, 
+    Title => loc('Modify ticket #[_1]', $TicketObj->id) &>
 
 <& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id) &>
+<&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>
 </&>
@@ -65,7 +65,7 @@
 </form>
 <%INIT>
   
-my $TicketObj = LoadTicket($id);
+my $TicketObj = load_ticket($id);
 my $CustomFields = $TicketObj->QueueObj->TicketCustomFields();
 
 # Now let callbacks have a chance at editing %ARGS
@@ -77,11 +77,11 @@ push (@results, @cf_results);
 
 # undef so that TransactionBatch scrips run and update the ticket
 $TicketObj = undef;
-$TicketObj = LoadTicket($id);
+$TicketObj = load_ticket($id);
 
 # TODO: display the results, even if we can't display the ticket
 
-unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+unless ($TicketObj->current_user_has_right('ShowTicket')) {
     Abort("No permission to view ticket");
 } 
 

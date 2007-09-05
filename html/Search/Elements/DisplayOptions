@@ -55,7 +55,7 @@
 <table valign="top">
 
 % for my $o (0..3) {
-% $Order[$o] ||= ''; $OrderBy[$o] ||= '';
+% $Order[$o] ||= ''; $order_by[$o] ||= '';
 <tr>
 <td class="label">
 % if ($o == 0) {
@@ -63,14 +63,14 @@
 % }
 </td>
 <td class="value">
-<select name="OrderBy">
+<select name="order_by">
 % if ($o > 0) {
 <option value="">[none]</option>
 % }
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
 <option value="<%$field%>"
-% if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
+% if (defined $order_by[$o] and $field eq $order_by[$o]) {
 selected
 % }
 ><&|/l&><%$field%></&></option>
@@ -96,8 +96,8 @@ selected
 <&|/l&>Rows per page</&>:
 </td><td class="value">
 <& /Elements/SelectResultsPerPage, 
-    Name => "RowsPerPage", 
-    Default => $RowsPerPage &>
+    Name => "rows_per_page", 
+    Default => $rows_per_page &>
 </td>
 </tr>
 </table>
@@ -107,8 +107,8 @@ selected
 </&>
 
 <%INIT>
-my $tickets = new RT::Tickets($session{'CurrentUser'});
-my %fields = %{$tickets->FIELDS};
+my $tickets = new RT::Model::Tickets($session{'CurrentUser'});
+my %fields = %{$tickets->columns};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};
 $fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
@@ -121,7 +121,7 @@ $fields{$_}=1 for @cfs;
 $fields{'Custom.Ownership'} = 1;
 
 my @Order = split /\|/, $Order;
-my @OrderBy = split /\|/, $OrderBy;
+my @order_by = split /\|/, $order_by;
 if ($Order =~ /\|/) {
     @Order = split /\|/, $Order;
 } else {
@@ -132,8 +132,8 @@ if ($Order =~ /\|/) {
 
 <%ARGS>
 $Order => undef
-$OrderBy => undef
-$RowsPerPage => undef
+$order_by => undef
+$rows_per_page => undef
 $Format => undef
 $GroupBy => 'id'
 </%ARGS>

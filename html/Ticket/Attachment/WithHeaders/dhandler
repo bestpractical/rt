@@ -53,8 +53,8 @@
         Abort("Corrupted attachment URL");
     }
 
-    my $AttachmentObj = new RT::Attachment( $session{'CurrentUser'} );
-    $AttachmentObj->Load( $id );
+    my $AttachmentObj = new RT::Model::Attachment( $session{'CurrentUser'} );
+    $AttachmentObj->load( $id );
     unless ( $AttachmentObj->id ) {
         Abort("Couldn't load attachment #$id");
     }

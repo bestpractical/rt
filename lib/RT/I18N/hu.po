@@ -27,9 +27,9 @@ msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -43,7 +43,7 @@ msgid "$prefix %1"
 msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "ScripAction %1 betöltve"
 
@@ -199,7 +199,7 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "%1 létrehozva"
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -436,7 +436,7 @@ msgid "ACE not found"
 msgstr "ACE nem található"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACE-k csak létrehozhatók és törölhetõk."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -651,19 +651,19 @@ msgid "Approval"
 msgstr "Lezárás"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Engedélyezés #%1: %2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Engedélyezés #%1: A megjegyzés rendszerhiba miatt nem rögzíthetõ"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Engedélyezés #%1: Megjegyzés rögzítve"
 
@@ -721,7 +721,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "A csatolt '%1' nem betölthetõ"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Csatolt fájl létrehozva"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1095,7 +1095,7 @@ msgid "Couldn't find that value"
 msgstr "Az érték nem található"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr ""
 
@@ -1110,7 +1110,7 @@ msgid "Couldn't load CustomField %1"
 msgstr "A(z) %1 egyéni mezõ nem betölthetõ"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
@@ -1157,7 +1157,7 @@ msgstr ""
 msgid "Country"
 msgstr "Ország"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Felvesz"
 
@@ -1203,7 +1203,7 @@ msgstr "Hozzon létre egy scrip-et a(z) %1 sorhoz!"
 msgid "Create a template"
 msgstr "Hozzon létre egy sablont!"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Új probléma"
 
@@ -1706,7 +1706,7 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Hiba a sor paraméterezésében ->AddWatcher"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
 msgstr "Hiba a sor paraméterezésében->DelWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -1714,7 +1714,7 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Hiba a probléma paraméterezésében -> AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
 msgstr "Hiba a probléma paraméterezésében->DelWatcher"
 
 #: bin/rt-crontool:285
@@ -1909,11 +1909,11 @@ msgstr "Csoportnak már vannak tagjai"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "A csoportot nem lehetett létrehozni: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Csoport létrehozva"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2131,7 +2131,7 @@ msgid "Jan."
 msgstr "jan."
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr ""
 
 #: lib/RT/Date.pm:447
@@ -2195,12 +2195,12 @@ msgid "Link already exists"
 msgstr "Kapcsolat már létezik"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Kapcsolat nem hozható létre"
 
 #: lib/RT/Record.pm:1326
 #. ($TransString)
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Kapcsolat létrehozva (%1)"
 
 #: lib/RT/Record.pm:1387
@@ -2213,7 +2213,7 @@ msgid "Link not found"
 msgstr "Kapcsolat nem található"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "%1. számú probléma kapcsolatainak módosítása"
 
@@ -2512,12 +2512,12 @@ msgid "Modify associated objects for %1"
 msgstr ""
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "%1. számú probléma idõadatainak módosítása"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "%1. számú probléma idõadatainak módosítása"
 
@@ -2575,7 +2575,7 @@ msgstr "Változtassa meg a %1 sorhoz tarozó részvevõket!"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "A %1. számú problémában érintett személyek változtatása"
 
@@ -2617,12 +2617,12 @@ msgid "Modify the user %1"
 msgstr "%1 felhasználó módosítása"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "%1. számú probléma adatainak módosítása"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "%1. számú probléma alapadatainak módosítása"
 
@@ -2803,7 +2803,7 @@ msgstr "Az új probléma nem létezik"
 msgid "New user"
 msgstr "Új felhasználó"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr ""
 
@@ -2956,7 +2956,7 @@ msgid "No users matching search criteria found."
 msgstr "Nincs a keresési feltételeknek megfeleõ felhasználó."
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
+msgid "No value sent to _set!\\n"
 msgstr ""
 
 #: html/Elements/QuickCreate:59
@@ -3068,7 +3068,7 @@ msgid "OR"
 msgstr "VAGY"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Objekum nem hozható létre"
 
 #: lib/RT/Record.pm:123
@@ -3076,7 +3076,7 @@ msgid "Object could not be deleted"
 msgstr "Az objekumot nem sikerült törölni"
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Objektum létehozva"
 
 #: lib/RT/Record.pm:120
@@ -3155,13 +3155,13 @@ msgid "On Transaction"
 msgstr "Tranzakciónál"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "Csak a(z) %1 után létrejött poblémák engedélyezései legyenek láthatóak"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr ""
 "Csak a(z) %1 elõtt létrejött problémák engedélyezései legyenek láthatóak"
 
@@ -3202,7 +3202,7 @@ msgid "Organization"
 msgstr "Cég, szervezet"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr ""
 
@@ -3425,7 +3425,7 @@ msgid "Queue already exists"
 msgstr "Sor már létezik"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "A sor nem hozható létre"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -3433,7 +3433,7 @@ msgid "Queue could not be loaded."
 msgstr "a sor nem tölthetõ be."
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "A sor létrehozva"
 
 #: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
@@ -3572,7 +3572,7 @@ msgid "Reminder '%1' reopened"
 msgstr ""
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr ""
 
@@ -3581,7 +3581,7 @@ msgid "Reminders"
 msgstr ""
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr ""
 
@@ -3775,7 +3775,7 @@ msgid "Saved searches"
 msgstr "Elmentett lekérdezés"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr ""
@@ -3890,7 +3890,7 @@ msgstr "Válasszon csoportot!"
 msgid "Select a queue"
 msgstr ""
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -4266,7 +4266,7 @@ msgid "Template"
 msgstr "Sablon"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "Sablon #%1"
 
@@ -4431,29 +4431,29 @@ msgid "Thu."
 msgstr "Cs"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "%1. számú (%2) probléma jellemzõinek módosítása"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Probléma. %1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "%1. probléma"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr ""
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "Probléma %1: %2"
 
@@ -4462,7 +4462,7 @@ msgid "Ticket Custom Fields"
 msgstr "Probléma egyéni mezõi"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr ""
 
@@ -4483,7 +4483,7 @@ msgid "Ticket content type"
 msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr ""
 
 #: html/Ticket/Display.html:55
@@ -4494,7 +4494,7 @@ msgstr "Probléma metadata"
 msgid "Ticket status changed"
 msgstr ""
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr ""
@@ -4504,11 +4504,11 @@ msgid "Tickets"
 msgstr "Problémák"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr ""
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr ""
 
 #: html/Tools/Reports/ResolvedByDates.html:87
@@ -4590,7 +4590,7 @@ msgid "Transaction Custom Fields"
 msgstr "Tranzakció egyéni mezõi"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:870
@@ -4624,7 +4624,7 @@ msgid "Unknown field: $key"
 msgstr ""
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "korlátlan"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -4752,11 +4752,11 @@ msgstr "Felhasználói jogok"
 
 #: html/Admin/Users/Modify.html:301
 #. ($msg)
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Felhasználó létrehozva"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -4829,11 +4829,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr ""
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr ""
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr ""
 
 #: etc/initialdata:151
@@ -5151,7 +5151,7 @@ msgid "ticket #%1 %2"
 msgstr "probléma #%1 %2"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr ""
 

@@ -89,21 +89,18 @@ sub new  {
 }
 
 
-# {{{ sub SmartParseMIMEEntityFromScalar
+=head2 SmartParseMIMEEntityFromScalar Message => SCALAR_REF [, Decode => BOOL, Exact => BOOL ] }
 
-=head2 SmartParseMIMEEntityFromScalar { Message => SCALAR_REF, Decode => BOOL }
-
-Parse a message stored in a scalar from scalar_ref
+Parse a message stored in a scalar from scalar_ref.
 
 =cut
 
 sub SmartParseMIMEEntityFromScalar {
     my $self = shift;
-    my %args = ( Message => undef, Decode => 1, @_ );
+    my %args = ( Message => undef, Decode => 1, Exact => 0, @_ );
 
-    my ( $fh, $temp_file );
     eval {
-
+        my ( $fh, $temp_file );
         for ( 1 .. 10 ) {
 
             # on NFS and NTFS, it is possible that tempfile() conflicts
@@ -125,8 +122,9 @@ sub SmartParseMIMEEntityFromScalar {
 
                 # We have to trust the temp file's name -- untaint it
                 $temp_file =~ /(.*)/;
-                $self->ParseMIMEEntityFromFile( $1, $args{'Decode'} );
+                my $entity = $self->ParseMIMEEntityFromFile( $1, $args{'Decode'}, $args{'Exact'} );
                 unlink($1);
+                return $entity;
             }
         }
     };
@@ -134,14 +132,11 @@ sub SmartParseMIMEEntityFromScalar {
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->Entity ) {
-        $self->ParseMIMEEntityFromScalar( $args{'Message'}, $args{'Decode'} );
+        return $self->ParseMIMEEntityFromScalar( $args{'Message'}, $args{'Decode'}, $args{'Exact'} );
     }
 
 }
 
-# }}}
-
-# {{{ sub ParseMIMEEntityFromSTDIN
 
 =head2 ParseMIMEEntityFromSTDIN
 
@@ -151,13 +146,8 @@ Parse a message from standard input
 
 sub ParseMIMEEntityFromSTDIN {
     my $self = shift;
-    my $postprocess = (@_ ? shift : 1);
-    return $self->ParseMIMEEntityFromFileHandle(\*STDIN, $postprocess);
+    return $self->ParseMIMEEntityFromFileHandle(\*STDIN, @_);
 }
-
-# }}}
-
-# {{{ ParseMIMEEntityFromScalar
 
 =head2 ParseMIMEEntityFromScalar  $message
 
@@ -171,14 +161,8 @@ Returns false if it loses.
 
 sub ParseMIMEEntityFromScalar {
     my $self = shift;
-    my $message = shift;
-    my $postprocess = (@_ ? shift : 1);
-    $self->_ParseMIMEEntity($message,'parse_data', $postprocess);
+    return $self->_ParseMIMEEntity( shift, 'parse_data', @_ );
 }
-
-# }}}
-
-# {{{ ParseMIMEEntityFromFilehandle *FH
 
 =head2 ParseMIMEEntityFromFilehandle *FH
 
@@ -188,14 +172,8 @@ Parses a mime entity from a filehandle passed in as an argument
 
 sub ParseMIMEEntityFromFileHandle {
     my $self = shift;
-    my $filehandle = shift;
-    my $postprocess = (@_ ? shift : 1);
-    $self->_ParseMIMEEntity($filehandle,'parse', $postprocess);
+    return $self->_ParseMIMEEntity( shift, 'parse', @_ );
 }
-
-# }}}
-
-# {{{ ParseMIMEEntityFromFile
 
 =head2 ParseMIMEEntityFromFile 
 
@@ -205,24 +183,21 @@ Parses a mime entity from a filename passed in as an argument
 
 sub ParseMIMEEntityFromFile {
     my $self = shift;
-    my $file = shift;
-    my $postprocess = (@_ ? shift : 1);
-    $self->_ParseMIMEEntity($file,'parse_open',$postprocess);
+    return $self->_ParseMIMEEntity( shift, 'parse_open', @_ );
 }
 
-# }}}
 
-# {{{ _ParseMIMEEntity
 sub _ParseMIMEEntity {
     my $self = shift;
     my $message = shift;
     my $method = shift;
-    my $postprocess = shift;
-    # Create a new parser object:
+    my $postprocess = (@_ ? shift : 1);
+    my $exact = shift;
 
+    # Create a new parser object:
     my $parser = MIME::Parser->new();
     $self->_SetupMIMEParser($parser);
-
+    $parser->decode_bodies(0) if $exact;
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
     unless ( $self->{'entity'} = $parser->$method($message) ) {
@@ -234,15 +209,54 @@ sub _ParseMIMEEntity {
             return ( undef);
         }
     }
-    if ($postprocess) {
-    $self->_PostProcessNewEntity() ;
-    }
 
+    $self->_PostProcessNewEntity if $postprocess;
+
+    return $self->{'entity'};
 }
 
-# }}}
+sub _DecodeBodies {
+    my $self = shift;
+    return unless $self->{'entity'};
+    
+    my @parts = $self->{'entity'}->parts_DFS;
+    $self->_DecodeBody($_) foreach @parts;
+}
 
-# {{{ _PostProcessNewEntity 
+sub _DecodeBody {
+    my $self = shift;
+    my $entity = shift;
+
+    my $old = $entity->bodyhandle or return;
+    return unless $old->is_encoded;
+
+    require MIME::Decoder;
+    my $encoding = $entity->head->mime_encoding;
+    my $decoder = new MIME::Decoder $encoding;
+    unless ( $decoder ) {
+        $RT::Logger->error("Couldn't find decoder for '$encoding', switching to binary");
+        $old->is_encoded(0);
+        return;
+    }
+
+    require MIME::Body;
+    # XXX: use InCore for now, but later must switch to files
+    my $new = new MIME::Body::InCore;
+    $new->binmode(1);
+    $new->is_encoded(0);
+
+    my $source = $old->open('r') or die "couldn't open body: $!";
+    my $destination = $new->open('w') or die "couldn't open body: $!";
+    { 
+        local $@;
+        eval { $decoder->decode($source, $destination) };
+        $RT::Logger->error($@) if $@;
+    }
+    $source->close or die "can't close: $!";
+    $destination->close or die "can't close: $!";
+
+    $entity->bodyhandle( $new );
+}
 
 =head2 _PostProcessNewEntity
 
@@ -258,21 +272,11 @@ sub _PostProcessNewEntity {
     # Unfold headers that are have embedded newlines
     #  Better do this before conversion or it will break
     #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
-    
     $self->Head->unfold;
 
-
     # try to convert text parts into utf-8 charset
-    RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
-
-
-
-
+    RT::I18N::set_mime_entity_to_encoding($self->{'entity'}, 'utf-8');
 }
-
-# }}}
-
-# {{{ ParseCcAddressesFromHead 
 
 =head2 ParseCcAddressesFromHead HASHREF
 
@@ -300,7 +304,7 @@ sub ParseCcAddressesFromHead {
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
-        my $user = RT::User->new($RT::SystemUser);
+        my $user = RT::Model::User->new($RT::SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
         next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
         next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
@@ -312,9 +316,7 @@ sub ParseCcAddressesFromHead {
     return (@Addresses);
 }
 
-# }}}
 
-# {{{ ParseSenderAdddressFromHead
 
 =head2 ParseSenderAddressFromHead
 
@@ -333,9 +335,7 @@ sub ParseSenderAddressFromHead {
     return ( $self->ParseAddressFromHeader($From) );
 }
 
-# }}}
 
-# {{{ ParseErrorsToAdddressFromHead
 
 =head2 ParseErrorsToAddressFromHead
 
@@ -362,9 +362,7 @@ sub ParseErrorsToAddressFromHead {
     }
 }
 
-# }}}
 
-# {{{ ParseAddressFromHeader
 
 =head2 ParseAddressFromHeader ADDRESS
 
@@ -394,9 +392,7 @@ sub ParseAddressFromHeader {
     return ( $Address, $Name );
 }
 
-# }}}
 
-# {{{ IsRTAddress
 
 =head2 IsRTaddress ADDRESS
 
@@ -420,10 +416,8 @@ sub IsRTAddress {
     return undef;
 }
 
-# }}}
 
 
-# {{{ CullRTAddresses
 
 =head2 CullRTAddresses ARRAY
 
@@ -447,10 +441,8 @@ sub CullRTAddresses {
     return (@addrlist);
 }
 
-# }}}
 
 
-# {{{ LookupExternalUserInfo
 
 
 # LookupExternalUserInfo is a site-definable method for synchronizing
@@ -512,10 +504,6 @@ sub LookupExternalUserInfo {
   return ($FoundInExternalDatabase, %params);
 }
 
-# }}}
-
-# {{{ Accessor methods for parsed email messages
-
 =head2 Head
 
 Return the parsed head from this message
@@ -538,9 +526,7 @@ sub Entity {
     return $self->{'entity'};
 }
 
-# }}}
 
-# {{{ _SetupMIMEParser 
 
 =head2 _SetupMIMEParser $parser
 
@@ -584,11 +570,10 @@ sub _SetupMIMEParser {
     # Turns out that the default is to recycle tempfiles
     # Temp files should never be recycled, especially when running under perl taint checking
     
-    $parser->tmp_recycling(0);
+    $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
 
 }
 
-# }}}
 
 sub DESTROY {
     my $self = shift;

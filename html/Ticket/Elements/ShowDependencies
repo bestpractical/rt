@@ -46,16 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/l&>Depends on</&>:<br />
-% while (my $Link = $Ticket->DependsOn->Next) {
+% while (my $Link = $Ticket->DependsOn->next) {
 % my $member = $Link->TargetObj;
-<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->id%>"><%$member->id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
  <br />
 % }
 <&|/l&>Depended on by</&>:<br />
-% while (my $Link = $Ticket->DependedOnBy->Next) {
+% while (my $Link = $Ticket->DependedOnBy->next) {
 % my $member = $Link->TargetObj;
-<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->id%>"><%$member->id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
 [<%$member->Status%>]
  <br />
 % }

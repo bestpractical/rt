@@ -54,8 +54,8 @@
 my $tabs;
 
 if ($id) {
-    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-    $cf->Load($id);
+    my $cf = RT::Model::CustomField->new( $session{'CurrentUser'} );
+    $cf->load($id);
     $tabs = {
         this => {
             title => $cf->Name,
@@ -80,7 +80,7 @@ if ($id) {
     };
 
 
-    if ($cf->LookupType =~ /^RT::Queue/io) {
+    if ($cf->LookupType =~ /^RT::Model::Queue/io) {
 	$tabs->{'this'}->{subtabs}->{D} = {
 	title => loc('Applies to'),
 	    path  => "Admin/CustomFields/Objects.html?id=" . $id,
@@ -88,7 +88,7 @@ if ($id) {
     }
 }
 
-if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
+if ($session{'CurrentUser'}->has_right( Object => $RT::System, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => loc('Select custom field'),
                         path => "Admin/CustomFields/",
                            };

@@ -54,8 +54,8 @@
 
 <form method="post">
 <& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::System' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Queue' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Group' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Model::Queue' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Model::Group' &>
 
 <& /Elements/Submit, Label => loc('Modify Rights') &>
 </form>
@@ -68,9 +68,9 @@ foreach $arg (keys %ARGS) {
        my $principal = $2;
        my $delegation = $3;
        unless ($ARGS{"Delegate-ACE-$1-to-$2"}) {
-            my $ace_to_del = RT::ACE->new($session{'CurrentUser'});
-            $ace_to_del->Load($delegation);
-            my ($delval, $delmsg) = $ace_to_del->Delete();
+            my $ace_to_del = RT::Model::ACE->new($session{'CurrentUser'});
+            $ace_to_del->load($delegation);
+            my ($delval, $delmsg) = $ace_to_del->delete();
             push (@results, $delmsg);
        }
 }
@@ -81,9 +81,9 @@ foreach $arg (keys %ARGS) {
     my $principal = $2;
     # if we already delegate it, we just don't care
     next if (grep /^Delegate-Existing-ACE-$parent-to-$principal-/, keys %ARGS);
-    my $ace = RT::ACE->new($session{'CurrentUser'});
-    $ace->Load($1);
-    unless ($ace->Id) {
+    my $ace = RT::Model::ACE->new($session{'CurrentUser'});
+    $ace->load($1);
+    unless ($ace->id) {
         push (@results, loc('Right not found'));
         next;
     }
@@ -91,17 +91,17 @@ foreach $arg (keys %ARGS) {
     push (@results, $delmsg);
 }
 
-my $personalgroups = RT::Groups->new($session{'CurrentUser'});
+my $personalgroups = RT::Model::Groups->new($session{'CurrentUser'});
 $personalgroups->LimitToPersonalGroupsFor($session{'CurrentUser'}->PrincipalId);
 
 my $objects;
-my $acl = RT::ACL->new ($session{'CurrentUser'});
+my $acl = RT::Model::ACL->new ($session{'CurrentUser'});
 $acl->ExcludeDelegatedRights();
 $acl->LimitToPrincipal(Id => $session{'CurrentUser'}->PrincipalId, 
                        IncludeGroupMembership => 1
                        );
 
-while(my $right = $acl->Next) {
+while(my $right = $acl->next) {
        push @{$objects->{$right->ObjectType}{$right->ObjectId}},$right;
 }
 </%INIT>

@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % my $i = 0;
-% while ( my $CustomField = $CustomFields->Next ) {
-% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
+% while ( my $CustomField = $CustomFields->next ) {
+% next unless $CustomField->current_user_has_right('ModifyCustomField');
 % $i++;
 % if ( $i % 2 ) {
 <tr>
@@ -65,9 +65,9 @@
           Object => $TicketObj,
           CustomField => $CustomField,
           NamePrefix => $NamePrefix,
-          Default => $m->notes('Field-' . $CustomField->Id),
+          Default => $m->notes('Field-' . $CustomField->id),
       &>
-%  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
+%  if (my $msg = $m->notes('InvalidField-' . $CustomField->id)) {
         <br />
         <em style="color: red"><% $msg %></em>
 %  }
@@ -93,10 +93,10 @@ my $CustomFields;
 
 if ($TicketObj) {
     $CustomFields = $TicketObj->CustomFields();
-    $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
+    $NamePrefix .= "Object-RT::Model::Ticket-".$TicketObj->id."-CustomField-";
 } else {
     $CustomFields = $QueueObj->TicketCustomFields();
-    $NamePrefix .= "Object-RT::Ticket--CustomField-";
+    $NamePrefix .= "Object-RT::Model::Ticket--CustomField-";
 }
 
 $m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );

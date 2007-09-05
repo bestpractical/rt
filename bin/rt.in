@@ -75,7 +75,7 @@ my %config = (
         passwd  => undef,
         server  => 'http://localhost/',
         query   => undef,
-        orderby => undef,
+        order_by => undef,
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
@@ -234,10 +234,10 @@ sub help {
 
 sub list {
     my ($q, $type, %data);
-    my $orderby = $config{orderby};
+    my $order_by = $config{order_by};
     
-    if ($config{orderby}) {
-         $data{orderby} = $config{orderby};
+    if ($config{order_by}) {
+         $data{order_by} = $config{order_by};
     } 
     my $bad = 0;
 
@@ -251,7 +251,7 @@ sub list {
             $bad = 1, last unless get_var_argument(\%data);
         }
         elsif (/^-o$/) {
-            $data{'orderby'} = shift @ARGV;
+            $data{'order_by'} = shift @ARGV;
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
@@ -720,7 +720,7 @@ sub merge {
 sub link {
     my ($bad, $del, %data) = (0, 0, ());
     my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
-                                        ReferredToBy HasMember MemberOf);
+                                        ReferredToBy has_member MemberOf);
 
     while (@ARGV && $ARGV[0] =~ /^-/) {
         $_ = shift @ARGV;
@@ -1199,7 +1199,7 @@ sub Form::compose {
 sub config_from_env {
     my %env;
 
-    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "ORDERBY") {
+    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "order_by") {
         if (exists $ENV{"RT$k"}) {
             $env{lc $k} = $ENV{"RT$k"};
         }
@@ -1251,7 +1251,7 @@ sub parse_config_file {
             chomp;
             next if (/^#/ || /^\s*$/);
 
-            if (/^(user|passwd|server|query|orderby)\s+(.*)\s?$/) {
+            if (/^(user|passwd|server|query|order_by)\s+(.*)\s?$/) {
                 $cfg{$1} = $2;
             }
             else {
@@ -1510,7 +1510,7 @@ Text:
         - user <username>       RT username.
         - passwd <passwd>       RT user's password.
         - query <RT Query>      Default RT Query for list action
-        - orderby <order>       Default RT order for list action
+        - order_by <order>       Default RT order for list action
 
         Blank and #-commented lines are ignored.
 
@@ -1526,7 +1526,7 @@ Text:
         - RTCONFIG      Specifies a name other than ".rtrc" for the
                         configuration file.
         - RTQUERY       Default RT Query for rt list
-        - RTORDERBY     Default order for rt list
+        - RTorder_by     Default order for rt list
 
 --
 
@@ -1796,7 +1796,7 @@ Text:
     Edits information corresponding to the specified objects.
 
     If, instead of "edit", an action of "new" or "create" is specified,
-    then a new object is created. In this case, no numeric object IDs
+    then a new object is Created. In this case, no numeric object IDs
     may be specified, but the syntax and behaviour remain otherwise
     unchanged.
 
@@ -1900,7 +1900,7 @@ Text:
 
         DependsOn/DependedOnBy:     A depends upon B (or vice versa).
         RefersTo/ReferredToBy:      A refers to B (or vice versa).
-        MemberOf/HasMember:         A is a member of B (or vice versa).
+        MemberOf/has_member:         A is a member of B (or vice versa).
 
     To view a ticket's links, use "rt show ticket/3/links". (See
     "rt help ticket" and "rt help show".)
@@ -2009,7 +2009,7 @@ Text:
     Example:
         $ rt shell
         rt> create -t ticket set subject='new' add cc=foo@example.com
-        # Ticket 8 created.
+        # Ticket 8 Created.
         rt> quit
         $
 
@@ -2036,7 +2036,7 @@ Text:
 
     Example:
         alice$ rt create -t ticket set subject="New ticket"
-        # Ticket 7 created.
+        # Ticket 7 Created.
         alice$ rt take 7
         # Owner changed from Nobody to alice
         alice$ su bob

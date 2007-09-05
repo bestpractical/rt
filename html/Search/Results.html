@@ -53,12 +53,12 @@
     Format => $Format,
     Query => $Query,
     Rows => $Rows,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order => $Order &>
 <& /Elements/TicketList, 
     Query => $Query,
     AllowSorting => 1,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
@@ -66,7 +66,7 @@
     BaseURL => RT->Config->Get('WebPath')."/Search/Results.html?"
 
    &>
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -82,7 +82,7 @@
     Query => $Query,
     Format => $Format,
     Rows => $Rows,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order => $Order,
     RSSFeedURL => $RSSFeedURL,
     ShortQueryString => $ShortQueryString,
@@ -97,16 +97,16 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 # where we give sane defaults.
 $Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
 $Order       ||= $prefs->{'Order'} || 'ASC';
-$OrderBy     ||= $prefs->{'OrderBy'} || 'id';
+$order_by     ||= $prefs->{'order_by'} || 'id';
 
-# Some forms pass in "RowsPerPage" rather than "Rows"
-# We call it RowsPerPage everywhere else.
+# Some forms pass in "rows_per_page" rather than "Rows"
+# We call it rows_per_page everywhere else.
 
 if ( !defined($Rows) ) {
-    if ( $ARGS{'RowsPerPage'} ) {
-        $Rows = $ARGS{'RowsPerPage'};
-    } elsif ( defined $prefs->{'RowsPerPage'} ) {
-        $Rows = $prefs->{'RowsPerPage'};
+    if ( $ARGS{'rows_per_page'} ) {
+        $Rows = $ARGS{'rows_per_page'};
+    } elsif ( defined $prefs->{'rows_per_page'} ) {
+        $Rows = $prefs->{'rows_per_page'};
     } else {
         $Rows = 50;
     }
@@ -114,18 +114,18 @@ if ( !defined($Rows) ) {
 
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
-$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'} = RT::Model::Tickets->new($session{'CurrentUser'}) ;
+$session{'tickets'}->from_sql($Query) if ($Query);
 
-if ($OrderBy =~ /\|/) {
+if ($order_by =~ /\|/) {
     # Multiple Sorts
-    my @OrderBy = split /\|/,$OrderBy;
+    my @order_by = split /\|/,$order_by;
     my @Order = split /\|/,$Order;
-    $session{'tickets'}->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
-        .. $#OrderBy ) );; 
+    $session{'tickets'}->order_by(
+        map { { column => $order_by[$_], order => $Order[$_] } } ( 0
+        .. $#order_by ) );; 
 } else {
-    $session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+    $session{'tickets'}->order_by(column => $order_by, order => $Order); 
 }
 
 $session{'CurrentSearchHash'} = {
@@ -133,13 +133,13 @@ $session{'CurrentSearchHash'} = {
     Query       => $Query,
     Page       => $Page,
     Order       => $Order,
-    OrderBy     => $OrderBy,
-    RowsPerPage => $Rows
+    order_by     => $order_by,
+    rows_per_page => $Rows
     };
 
 
 if ( $session{'tickets'}->Query()) {
-    $ticketcount = $session{tickets}->CountAll();
+    $ticketcount = $session{tickets}->count_all();
     $title = loc('Found [quant,_1,ticket]', $ticketcount);
 } else {
     $title = loc("Find tickets");
@@ -149,7 +149,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Query => $Query,
                                Format => $Format,
                                Rows => $Rows,
-                               OrderBy => $OrderBy,
+                               order_by => $order_by,
                                Order => $Order,
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
@@ -168,6 +168,6 @@ $Format => undef
 $HideResults => 0
 $Rows => undef
 $Page => 1
-$OrderBy => undef
+$order_by => undef
 $Order => undef
 </%ARGS>

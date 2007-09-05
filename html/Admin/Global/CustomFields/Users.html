@@ -51,8 +51,8 @@
     current_subtab => "Admin/Global/CustomFields/Users.html",
     Title => $title
     &>
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::User', Object=> $object &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Model::User', Object=> $object &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for all users');
-  my $object = RT::User->new($session{'CurrentUser'});
+  my $object = RT::Model::User->new($session{'CurrentUser'});
 </%INIT>

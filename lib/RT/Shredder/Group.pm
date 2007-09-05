@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Group ();
-package RT::Group;
+use RT::Model::Group ();
+package RT::Model::Group;
 
 use strict;
 use warnings;
@@ -72,8 +72,8 @@ sub __DependsOn
     if( $self->Domain eq 'ACLEquivalence' ) {
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::User->new($self->CurrentUser);
-        $objs->Load( $self->Instance );
+        my $objs = RT::Model::User->new($self->CurrentUser);
+        $objs->load( $self->Instance );
         $deps->_PushDependency(
                 BaseObject => $self,
                 Flags => DEPENDS_ON | WIPE_AFTER,
@@ -91,17 +91,17 @@ sub __DependsOn
         );
 
 # Group members records
-    my $objs = RT::GroupMembers->new( $self->CurrentUser );
+    my $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
     $objs->LimitToMembersOfGroup( $self->PrincipalId );
     push( @$list, $objs );
 
 # Group member records group belongs to
-    $objs = RT::GroupMembers->new( $self->CurrentUser );
-    $objs->Limit(
-            VALUE => $self->PrincipalId,
-            FIELD => 'MemberId',
-            ENTRYAGGREGATOR => 'OR',
-            QUOTEVALUE => 0
+    $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    $objs->limit(
+            value => $self->PrincipalId,
+            column => 'MemberId',
+            entry_aggregator => 'OR',
+            quote_value => 0
             );
     push( @$list, $objs );
 
@@ -109,12 +109,12 @@ sub __DependsOn
     push( @$list, $self->DeepMembersObj );
 
 # Cached group member records group belongs to
-    $objs = RT::GroupMembers->new( $self->CurrentUser );
-    $objs->Limit(
-            VALUE => $self->PrincipalId,
-            FIELD => 'MemberId',
-            ENTRYAGGREGATOR => 'OR',
-            QUOTEVALUE => 0
+    $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    $objs->limit(
+            value => $self->PrincipalId,
+            column => 'MemberId',
+            entry_aggregator => 'OR',
+            quote_value => 0
             );
     push( @$list, $objs );
 
@@ -140,8 +140,8 @@ sub __Relates
 
 # Equivalence group id inconsistent without User
     if( $self->Domain eq 'ACLEquivalence' ) {
-        my $obj = RT::User->new($self->CurrentUser);
-        $obj->Load( $self->Instance );
+        my $obj = RT::Model::User->new($self->CurrentUser);
+        $obj->load( $self->Instance );
         if( $obj->id ) {
             push( @$list, $obj );
         } else {

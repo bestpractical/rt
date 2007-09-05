@@ -143,7 +143,7 @@ Use only lexical variables, except for special global variables
 for regular use are never appropriate.  When necessary, "declare"
 globals with "use vars" or "our()".
 
-A lexical variable is created with my().  A global variable is
+A lexical variable is Created with my().  A global variable is
 pre-existing (if it is a special variable), or it pops into existence
 when it is used.  local() is used to tell perl to assign a temporary
 value to a variable.  This should only be used with special variables,
@@ -424,8 +424,8 @@ the data to be returned.
 
 
 	Load();		# good
-	LoadByName();	# good
-	LoadById();		# good
+	load_by_name();	# good
+	load_by_id();		# good
 
 Subroutines beginning with C<_> are special: they are not to be used
 outside the current object.  There is not to be enforced by the code
@@ -458,10 +458,10 @@ careful that the last-tested file is what you think it is, though.
 Package names begin with a capital letter in each word, followed by
 lower case letters (for the most part).  Multiple words should be StudlyCapped.
 
-	RT::User			# good
+	RT::Model::User			# good
 	RT::Database::MySQL		# proper name
 	RT::Display::Provider	        # good
-	RT::CustomField			# not so good, but OK
+	RT::Model::CustomField			# not so good, but OK
 
 Plugin modules should begin with "RTx::", followed by the name
 of the plugin.  
@@ -513,7 +513,7 @@ An example:
 		my $obj = new Constructor;
 		my($var1, $var2);
 
-		$obj->SetFoo($val);
+		$obj->set_Foo($val);
 		$var1 = $obj->Foo();
 
 
@@ -798,9 +798,9 @@ should become 	<& /Elements/TitleBoxStart,
 
 Within RT's core code, every module has a localization handle available through the 'loc' method:
 
-The code 	return ( $id, "Queue created" );
+The code 	return ( $id, "Queue Created" );
 
-should become 	return ( $id, $self->loc("Queue created") );	
+should become 	return ( $id, $self->loc("Queue Created") );	
 
 When returning or localizing a single string, the "extra" set of parenthesis () should be omitted.
 
@@ -896,7 +896,7 @@ but new tables are expected to be consistent.
 
 =head1 TO DO
 
-Talk about DBIx::SearchBuilder
+Talk about Jifty::DBI
 
 Talk about mason
         component style

@@ -50,7 +50,7 @@
 <option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
 %}
 %foreach my $User ( @users)  {
-<option <% (defined $Default && $User->Id == $Default) ? "SELECTED" : ''%>
+<option <% (defined $Default && $User->id == $Default) ? "SELECTED" : ''%>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($ValueAttribute eq 'Name') {
@@ -74,7 +74,7 @@ elsif ($cfqueues) {
 }
 else {
     # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
+    my $queue = RT::Model::Queue->new($session{'CurrentUser'});
 	      push( @objects, $queue );
 }
 
@@ -83,11 +83,11 @@ my %user_uniq_hash;
 $m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
 
 foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
+	my $Users = RT::Model::Users->new($session{CurrentUser});
         $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
+        while (my $User = $Users->next()) {
                 next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
+	      $user_uniq_hash{$User->id()} = $User;
         }
 }
 

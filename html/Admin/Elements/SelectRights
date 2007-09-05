@@ -51,11 +51,11 @@
 <td valign="top" width="180" align="left"> 
 %  my %current_rights;
 <h3><&|/l&>Current rights</&></h3>
-% if ($ACLObj->Count() == 0) {
+% if ($ACLObj->count() == 0) {
 <i><&|/l&>No rights granted.</&></i> <br />    
 % } else {
 <i>(<&|/l&>Check box to revoke right</&>)</i> <br />
-% while (my $right = $ACLObj->Next()) {
+% while (my $right = $ACLObj->next()) {
 % if ($right->RightName) {
 % $current_rights{$right->RightName} = 1;
 <input type="checkbox" class="checkbox" value="<% $right->RightName %>" name="RevokeRight-<%$ACLDesc%>" /> <% loc($right->RightName) %><br />
@@ -83,22 +83,22 @@
     # to their ACL equivalence group. The machinations we're going through
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
-    my $princ = RT::Principal->new($RT::SystemUser);
-    $princ->Load($PrincipalId);
+    my $princ = RT::Model::Principal->new($RT::SystemUser);
+    $princ->load($PrincipalId);
     if ($princ->PrincipalType eq 'User') {
-    my $group = RT::Group->new($RT::SystemUser);
-        $group->LoadACLEquivalenceGroup($princ);
+    my $group = RT::Model::Group->new($RT::SystemUser);
+        $group->load_acl_equivalence_group($princ);
         $PrincipalId = $group->PrincipalId;
     }
 
 
-    my $ACLObj = new RT::ACL($session{'CurrentUser'});
-    my $ACE = new RT::ACE($session{'CurrentUser'});
+    my $ACLObj = new RT::Model::ACL($session{'CurrentUser'});
+    my $ACE = new RT::Model::ACE($session{'CurrentUser'});
 
 
     $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
-    $ACLObj->OrderBy(FIELD=>'RightName'); 
+    $ACLObj->order_by(column=>'RightName'); 
 
     if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
         %Rights = %{$Object->AvailableRights};
@@ -108,7 +108,7 @@
                 %Rights = ( loc('System Error') => loc("No rights found") );
         }
         
-    $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;
+    $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->id;
 </%INIT>
     
 <%ARGS>

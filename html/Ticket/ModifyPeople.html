@@ -48,17 +48,17 @@
 <& /Elements/Header, Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->Id, 
+    current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->id, 
     Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
 
 <& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyPeople.html">
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399" &>
-<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
+<&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->id),   width => "100%", color=> "#333399" &>
+<& Elements/EditPeople, Ticket => $Ticket, Usercolumn => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, Groupcolumn => $GroupField &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
@@ -67,7 +67,7 @@
 
 my (@results, @wresults);
 
-my $Ticket = LoadTicket($id);
+my $Ticket = load_ticket($id);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 # if we're trying to search for watchers and nothing else
@@ -84,10 +84,10 @@ push @results, @wresults;
 <%ARGS>
 $OnlySearchForPeople => undef
 $OnlySearchForGroup => undef
-$UserField => undef
+$Usercolumn => undef
 $UserOp => undef
 $UserString => undef
-$GroupField => undef
+$Groupcolumn => undef
 $GroupOp => undef
 $GroupString => undef
 $id => undef

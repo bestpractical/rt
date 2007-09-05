@@ -10,15 +10,14 @@ my $url = $m->rt_base_url;
 
 
 
-my $t = RT::Ticket->new($RT::SystemUser);
-$t->Create(Subject => 'for custom search'.$$, Queue => 'general',
+my $t = RT::Model::Ticket->new($RT::SystemUser);
+$t->create(Subject => 'for custom search'.$$, Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
-ok(my $id = $t->id, 'created ticket for custom search');
+ok(my $id = $t->id, 'Created ticket for custom search');
 
 ok $m->login, 'logged in';
-
 my $t_link = $m->find_link( text => "for custom search".$$ );
-like ($t_link->url, qr/$id/, 'link to the ticket we created');
+like ($t_link->url, qr/$id/, 'link to the ticket we Created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 $m->get ( $url.'Prefs/MyRT.html' );

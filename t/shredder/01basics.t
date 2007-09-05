@@ -12,13 +12,13 @@ plan tests => 3;
 
 create_savepoint();
 
-use RT::Tickets;
-my $ticket = RT::Ticket->new( $RT::SystemUser );
-my ($id) = $ticket->Create( Subject => 'test', Queue => 1 );
-ok( $id, "created new ticket" );
+use RT::Model::Tickets;
+my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+my ($id,undef,$cmsg) = $ticket->create( Subject => 'test', Queue => 1 );
+ok( $id, "Created new ticket $cmsg " );
 
-$ticket = RT::Ticket->new( $RT::SystemUser );
-my ($status, $msg) = $ticket->Load( $id );
+$ticket = RT::Model::Ticket->new( $RT::SystemUser );
+my ($status, $msg) = $ticket->load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 
 my $shredder = shredder_new();

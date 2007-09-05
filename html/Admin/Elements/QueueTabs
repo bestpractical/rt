@@ -74,11 +74,11 @@ if ($id) {
 			      },
 
                  G1 => { title => loc('Ticket Custom Fields'),
-                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket&id='.$id,
+                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket&id='.$id,
                         },
 
                  G2 => { title => loc('Transaction Custom Fields'),
-                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id,
+                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket-RT::Model::Transaction&id='.$id,
                         },
 
 		 H => { title => loc('Group Rights'),
@@ -90,7 +90,7 @@ if ($id) {
         }
         };
 }
-if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
+if ($session{'CurrentUser'}->has_right( Object => $RT::System, Right => 'AdminQueue')) {
   $tabs->{"A"} = { title => loc('Select queue'),
   		     	path => "Admin/Queues/",
 			   };

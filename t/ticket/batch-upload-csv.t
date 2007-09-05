@@ -9,16 +9,16 @@ use_ok('RT::Action::CreateTickets');
 
 my $QUEUE = 'uploadtest-'.$$;
 
-my $queue_obj = RT::Queue->new($RT::SystemUser);
-$queue_obj->Create(Name => $QUEUE);
+my $queue_obj = RT::Model::Queue->new($RT::SystemUser);
+$queue_obj->create(Name => $QUEUE);
 
-my $cf = RT::CustomField->new($RT::SystemUser);
-my ($val,$msg)  = $cf->Create(Name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Ticket->CustomFieldLookupType, MaxValues => 1);
+my $cf = RT::Model::CustomField->new($RT::SystemUser);
+my ($val,$msg)  = $cf->create(Name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->CustomFieldLookupType, MaxValues => 1);
 ok($cf->id);
 ok($val,$msg);
 ($val, $msg) = $cf->AddToObject($queue_obj);
 ok($val,$msg);
-ok($queue_obj->TicketCustomFields()->Count, "We have a custom field, at least");
+ok($queue_obj->TicketCustomFields()->count, "We have a custom field, at least");
 
 
 my $data = <<EOF;
@@ -31,19 +31,19 @@ my $action = RT::Action::CreateTickets->new(CurrentUser => RT::CurrentUser->new(
 ok ($action->CurrentUser->id , "WE have a current user");
  
 $action->Parse(Content => $data);
-my @results = $action->CreateByTemplate();
+my @results = $action->createByTemplate();
 
-my $tix = RT::Tickets->new($RT::SystemUser);
-$tix->FromSQL ("Queue = '". $QUEUE."'");
-$tix->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-is($tix->Count, 2, '2 tickets');
+my $tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix->from_sql ("Queue = '". $QUEUE."'");
+$tix->order_by( column => 'id', order => 'ASC' );
+is($tix->count, 2, '2 tickets');
 
-my $first = $tix->First();
+my $first = $tix->first();
 
 is($first->Subject(), 'hi'); 
-is($first->FirstCustomFieldValue($cf->id), '2.0');
+is($first->first_custom_field_value($cf->id), '2.0');
 
-my $second = $tix->Next;
+my $second = $tix->next;
 is($second->Subject(), 'hello'); 
-is($second->FirstCustomFieldValue($cf->id), '3.0');
+is($second->first_custom_field_value($cf->id), '3.0');
 1;

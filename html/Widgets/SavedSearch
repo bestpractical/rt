@@ -57,13 +57,13 @@ return \%ARGS;
 my @actions;
 my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+    if $session{'CurrentUser'}->has_right( Object=> $RT::System,
                                           Right => 'SuperUser');
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
 if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSavedSearch'} ) ) {
-    my $search = $container_object->Attributes->WithId($search_id);
+    my $search = $container_object->attributes->WithId($search_id);
     # We have a $search and now; import the others
     $self->{SearchId} = $args->{'LoadSavedSearch'};
     $self->{CurrentSearch}{Object} = $search;
@@ -81,7 +81,7 @@ if ($self->{SearchId} eq 'new') {
             if ( Dumper( $search->Content ) eq
                  Dumper( { %$SearchParams, SearchType => $self->{SearchType} } ) ) {
                 $self->{CurrentSearch}{Object}      = $search;
-                $self->{SearchId}                   = $search->Id;
+                $self->{SearchId}                   = $search->id;
             }
         }
     }
@@ -90,7 +90,7 @@ if ($self->{SearchId} eq 'new') {
 if ( $args->{Save} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
-        $search->SetDescription( $args->{Description} );
+        $search->set_Description( $args->{Description} );
 	push @actions, loc($self->{SearchType}).loc( ' [_1] renamed to [_2].', $self->{CurrentSearch}{Description}, $args->{Description} );
     }
     else {
@@ -113,7 +113,7 @@ if ( $args->{Save} ) {
 }
 
 if ( $args->{Delete} && $self->{CurrentSearch}{Object} ) {
-    my ($ok, $msg) = $self->{CurrentSearch}{Object}->Delete;
+    my ($ok, $msg) = $self->{CurrentSearch}{Object}->delete;
     push @actions, $ok ? loc($self->{SearchType}).loc( ' [_1] deleted.', $self->{CurrentSearch}{Object}->Description ) : $msg;
     delete $self->{CurrentSearch}{Object};
     delete $self->{SearchId};

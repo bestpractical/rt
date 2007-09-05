@@ -49,15 +49,16 @@
 %#
 <%ARGS>
 $id
-$format => 's'
+$format => undef
 $changes => undef
 </%ARGS>
 <%INIT>
 my @data;
-my $ticket = new RT::Ticket $session{CurrentUser};
+$format ||= 's';
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 
-$ticket->Load($id);
-if (!$ticket->Id) {
+$ticket->load($id);
+if (!$ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
@@ -89,7 +90,7 @@ if ($changes) {
 
             my %old;
             my $field = $lfields{$key}->{Mode};
-            while (my $link = $ticket->$key->Next) {
+            while (my $link = $ticket->$key->next) {
                 $old{$link->$field} = 1;
             }
 
@@ -97,9 +98,9 @@ if ($changes) {
             foreach my $nkey (@{vsplit($val)}) {
                 if ($nkey =~ /^\d+$/) {
                     my $uri = new RT::URI $session{CurrentUser};
-                    my $tick = new RT::Ticket $session{CurrentUser};
-                    $tick->Load($nkey);
-                    if ($tick->Id) {
+                    my $tick = new RT::Model::Ticket $session{CurrentUser};
+                    $tick->load($nkey);
+                    if ($tick->id) {
                         $nkey = $uri->FromObject($tick);
                     }
                     else {
@@ -118,7 +119,7 @@ if ($changes) {
                 else {
                     my $type = $lfields{$key}->{Type};
                     my $mode = $lfields{$key}->{Mode};
-                    ($n, $s) = $ticket->DeleteLink(Type => $type, $mode => $u);
+                    ($n, $s) = $ticket->delete_link(Type => $type, $mode => $u);
                     goto SET;
                 }
             }
@@ -151,12 +152,12 @@ if ($changes) {
 else {
     my @data;
 
-    push @data, [ id => "ticket/".$ticket->Id."/links" ];
+    push @data, [ id => "ticket/".$ticket->id."/links" ];
     foreach my $key (@fields) {
         my @val;
 
         my $field = $lfields{$key}->{Mode};
-        while (my $link = $ticket->$key->Next) {
+        while (my $link = $ticket->$key->next) {
             push @val, $link->$field;
         }
         push(@val, "") if (@val == 0 && $format eq 'l');

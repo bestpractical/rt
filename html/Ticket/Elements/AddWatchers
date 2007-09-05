@@ -48,24 +48,24 @@
 <&|/l&>Add new watchers</&>:<br />
 
 <table>
-% if ($Users and $Users->Count) {
+% if ($Users and $Users->count) {
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
 <&|/l&>Username</&>
 </td></tr>
-% while (my $u = $Users->Next ) {
+% while (my $u = $Users->next ) {
 <tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td><td><& '/Elements/ShowUser', User => $u &></td></tr>
 % }
 % }
 
-% if ($Groups and $Groups->Count) {
+% if ($Groups and $Groups->count) {
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
 <&|/l&>Group</&>
 </td></tr>
-% while (my $g = $Groups->Next ) {
+% while (my $g = $Groups->next ) {
 <tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId, Scope => 'queue' &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
 % }
 % }
@@ -96,24 +96,24 @@
 my ($Users, $Groups);
 
 if ($UserString) {
-    $Users = RT::Users->new($session{'CurrentUser'});
-    $Users->Limit(FIELD => $UserField, VALUE => $UserString, OPERATOR => $UserOp);
+    $Users = RT::Model::Users->new($session{'CurrentUser'});
+    $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
     $Users->LimitToPrivileged if $PrivilegedOnly;
      }
 
 if ($GroupString) {
-    $Groups = RT::Groups->new($session{'CurrentUser'});
-    $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-    $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp);
+    $Groups = RT::Model::Groups->new($session{'CurrentUser'});
+    $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
+    $Groups->limit(column => $GroupField, value => $GroupString, operator => $GroupOp);
      }
 
 </%INIT>
 
 <%ARGS>
-$UserField => 'Name'
+$Usercolumn => 'Name'
 $UserOp => '='
 $UserString => undef
-$GroupField => 'Name'
+$Groupcolumn => 'Name'
 $GroupOp => '='
 $GroupString => undef
 $PrivilegedOnly => undef

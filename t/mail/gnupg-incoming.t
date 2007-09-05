@@ -9,15 +9,32 @@ use IPC::Run3 'run3';
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
-RT->Config->Set( LogToScreen => 'debug' );
-RT->Config->Set( 'GnuPG',
+# catch any outgoing emails
+unlink "t/mailbox";
+
+sub capture_mail {
+    my $MIME = shift;
+
+    open my $handle, '>>', 't/mailbox'
+        or die "Unable to open t/mailbox for appending: $!";
+
+    $MIME->print($handle);
+    print $handle "%% split me! %%\n";
+    close $handle;
+}
+
+
+RT->Config->set( LogToScreen => 'debug' );
+RT->Config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+RT->Config->set( 'GnuPGOptions',
+                 homedir => $homedir,
+                 'no-permission-warning' => undef);
+RT->Config->set( MailCommand => \&capture_mail);
 
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -30,9 +47,9 @@ $m->submit_form( form_number => 3,
 		 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::User->new($RT::SystemUser));
-ok($user->Load('root'), "Loaded user 'root'");
-$user->SetEmailAddress('recipient@example.com');
+ok(my $user = RT::Model::User->new($RT::SystemUser));
+ok($user->load('root'), "Loaded user 'root'");
+$user->set_EmailAddress('recipient@example.com');
 
 # test simple mail.  supposedly this should fail when
 # 1. the queue requires signature
@@ -54,13 +71,13 @@ RT::Test->close_mailgate_ok($mail);
         'This is a test of new ticket creation as root',
         "Created the ticket"
     );
-    my $txn = $tick->Transactions->First;
+    my $txn = $tick->Transactions->first;
     like(
-        $txn->Attachments->First->Headers,
+        $txn->Attachments->first->Headers,
         qr/^X-RT-Incoming-Encryption: Not encrypted/m,
         'recorded incoming mail that is not encrypted'
     );
-    like( $txn->Attachments->First->Content, qr'Blah');
+    like( $txn->Attachments->first->Content, qr'Blah');
 }
 
 # test for signed mail
@@ -94,8 +111,8 @@ RT::Test->close_mailgate_ok($mail);
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
 
     is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
@@ -136,8 +153,8 @@ RT::Test->close_mailgate_ok($mail);
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
     is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
@@ -178,8 +195,8 @@ RT::Test->close_mailgate_ok($mail);
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach, $orig) = @{$txn->Attachments->items_array_ref};
 
     is( $msg->GetHeader('X-RT-Incoming-Encryption'),
         'Success',
@@ -222,8 +239,8 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
     # XXX: in this case, which credential should we be using?
     is( $msg->GetHeader('X-RT-Incoming-Signature'),
         'Test User <rt@example.com>',
@@ -249,7 +266,7 @@ $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
 To: general\@$RT::rtname
-Subject: signed message for queue
+Subject: encrypted message for queue
 
 $buf
 EOF
@@ -257,21 +274,13 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
     unlike( $attach->Content, qr'should not be there either');
 }
 
 # test for badly encrypted mail
 {
-my $outgoing_mail = 0;
-local *RT::Action::SendEmail::OutputMIMEObject = sub {
-    my ($self, $mime_obj) = @_;
-    diag $mime_obj->as_string;
-    ++$outgoing_mail;
-    # XXX: check signature as wel
-};
-
 $buf = '';
 
 run3(
@@ -284,31 +293,48 @@ run3(
     \$buf,
     \*STDOUT
 );
+
+$buf =~ s/PGP MESSAGE/SCREWED UP/g;
+
+unlink 't/mailbox';
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
 To: general\@$RT::rtname
-Subject: signed message for queue
+Subject: encrypted message for queue
 
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
-ok($outgoing_mail, 'got rejection mail.');
+my $mails = file_content_unlink('t/mailbox');
+my @mail = grep {/\S/} split /%% split me! %%/, $mails;
+is(@mail, 1, 'caught outgoing mail.');
 }
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
-    unlike( $attach->Content, qr'really should not be there either');
+    my $txn = $tick->Transactions->first;
+    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
+    unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
 }
 
 sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
+    my $tickets = RT::Model::Tickets->new($RT::SystemUser);
+    $tickets->order_by( column => 'id', order => 'DESC' );
+    $tickets->limit( column => 'id', operator => '>', value => '0' );
+    my $tick = $tickets->first();
     ok( $tick->Id, "found ticket " . $tick->Id );
     return $tick;
 }
 
+sub file_content_unlink
+{
+    my $path = shift;
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
+    local $/;
+    my $content = <$fh>;
+    close $fh;
+    unlink $path;
+    return $content;
+}

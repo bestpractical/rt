@@ -62,8 +62,8 @@ my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
-    $search = $container_object->Attributes->WithId($search_id);
-    unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+    $search = $container_object->attributes->WithId($search_id);
+    unless ( $search->id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
         $m->out("Saved Search $SavedSearch not found");
         return;
     }
@@ -80,9 +80,9 @@ if ($SavedSearch) {
             LoadSavedSearch => $SavedSearch );
     }
 } else {
-    ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
-    unless ( $search && $search->Id ) {
-        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
+    ($search) = RT::System->new( $session{'CurrentUser'} ) ->attributes->Named( 'Search - ' . $Name );
+    unless ( $search && $search->id ) {
+        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->attributes->Named('SavedSearch');
         foreach my $custom (@custom_searches) {
             if ($custom->Description eq $Name) { $search = $custom; last }
         }
@@ -95,7 +95,7 @@ if ($SavedSearch) {
     $SearchArg = $user->Preferences( $search, $search->Content );
     $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
         . $m->comp( '/Elements/QueryString',
-            name => ref($search) . '-' . $search->Id );
+            name => ref($search) . '-' . $search->id );
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use
@@ -111,7 +111,7 @@ $m->callback(
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
+    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->id/ge;
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 }

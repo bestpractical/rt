@@ -10,75 +10,75 @@ my $runid = rand(200);
 
 my $attribute = "squelch-$runid";
 
-ok(require RT::Attributes);
+ok(require RT::Model::Attributes);
 
-my $user = RT::User->new($RT::SystemUser);
-ok (UNIVERSAL::isa($user, 'RT::User'));
-my ($id,$msg)  = $user->Create(Name => 'attrtest-'.$runid);
+my $user = RT::Model::User->new($RT::SystemUser);
+ok (UNIVERSAL::isa($user, 'RT::Model::User'));
+my ($id,$msg)  = $user->create(Name => 'attrtest-'.$runid);
 ok ($id, $msg);
 ok($user->id, "Created a test user");
 
-ok(1, $user->Attributes->BuildSelectQuery);
-my $attr = $user->Attributes;
+ok(1, $user->attributes->build_select_query);
+my $attr = $user->attributes;
 # XXX: Order by id as some tests depend on it
-$attr->OrderByCols({ FIELD => 'id' });
+$attr->order_by({ column => 'id' });
 
-ok(1, $attr->BuildSelectQuery);
+ok(1, $attr->build_select_query);
 
 
-ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
+ok (UNIVERSAL::isa($attr,'RT::Model::Attributes'), 'got the attributes object');
 
-($id, $msg) =  $user->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content'); 
+($id, $msg) =  $user->add_attribute(Name => 'TestAttr', Content => 'The attribute has content'); 
 ok ($id, $msg);
-is ($attr->Count,1, " One attr after adidng a first one");
+is ($attr->count,1, " One attr after adidng a first one");
 
-my $first_attr = $user->FirstAttribute('TestAttr');
+my $first_attr = $user->first_attribute('TestAttr');
 ok($first_attr, "got some sort of attribute");
-isa_ok($first_attr, 'RT::Attribute');
+isa_ok($first_attr, 'RT::Model::Attribute');
 is($first_attr->Content, 'The attribute has content', "got the right content back");
 
-($id, $msg) = $attr->DeleteEntry(Name => $runid);
+($id, $msg) = $attr->delete_entry(Name => $runid);
 ok(!$id, "Deleted non-existant entry  - $msg");
-is ($attr->Count,1, "1 attr after deleting an empty attr");
+is ($attr->count,1, "1 attr after deleting an empty attr");
 
 my @names = $attr->Names;
 is ("@names", "TestAttr");
 
 
-($id, $msg) = $user->AddAttribute(Name => $runid, Content => "First");
+($id, $msg) = $user->add_attribute(Name => $runid, Content => "First");
 ok($id, $msg);
 
-my $runid_attr = $user->FirstAttribute($runid);
+my $runid_attr = $user->first_attribute($runid);
 ok($runid_attr, "got some sort of attribute");
-isa_ok($runid_attr, 'RT::Attribute');
+isa_ok($runid_attr, 'RT::Model::Attribute');
 is($runid_attr->Content, 'First', "got the right content back");
 
-is ($attr->Count,2, " Two attrs after adding an attribute named $runid");
-($id, $msg) = $user->AddAttribute(Name => $runid, Content => "Second");
+is ($attr->count,2, " Two attrs after adding an attribute named $runid");
+($id, $msg) = $user->add_attribute(Name => $runid, Content => "Second");
 ok($id, $msg);
 
-$runid_attr = $user->FirstAttribute($runid);
+$runid_attr = $user->first_attribute($runid);
 ok($runid_attr, "got some sort of attribute");
-isa_ok($runid_attr, 'RT::Attribute');
+isa_ok($runid_attr, 'RT::Model::Attribute');
 is($runid_attr->Content, 'First', "got the first content back still");
 
-is ($attr->Count,3, " Three attrs after adding a secondvalue to $runid");
-($id, $msg) = $attr->DeleteEntry(Name => $runid, Content => "First");
+is ($attr->count,3, " Three attrs after adding a secondvalue to $runid");
+($id, $msg) = $attr->delete_entry(Name => $runid, Content => "First");
 ok($id, $msg);
-is ($attr->Count,2);
+is ($attr->count,2);
 
-#$attr->_DoSearch();
-($id, $msg) = $attr->DeleteEntry(Name => $runid, Content => "Second");
+#$attr->_do_search();
+($id, $msg) = $attr->delete_entry(Name => $runid, Content => "Second");
 ok($id, $msg);
-is ($attr->Count,1);
+is ($attr->count,1);
 
-#$attr->_DoSearch();
-ok(1, $attr->BuildSelectQuery);
-($id, $msg) = $attr->DeleteEntry(Name => "moose");
+#$attr->_do_search();
+ok(1, $attr->build_select_query);
+($id, $msg) = $attr->delete_entry(Name => "moose");
 ok(!$id, "Deleted non-existant entry - $msg");
-is ($attr->Count,1);
+is ($attr->count,1);
 
-ok(1, $attr->BuildSelectQuery);
+ok(1, $attr->build_select_query);
 @names = $attr->Names;
 is("@names", "TestAttr");
 

@@ -1,5 +1,5 @@
 alter Table Transactions ADD Column (ObjectType varchar(64) not null);
-update Transactions set ObjectType = 'RT::Ticket';
+update Transactions set ObjectType = 'RT::Model::Ticket';
 alter table Transactions drop column EffectiveTicket;
 alter table Transactions add column ReferenceType varchar(255) NULL;
 alter table Transactions add column OldReference integer NULL;      
@@ -15,7 +15,7 @@ alter table ObjectCustomFieldValues  change Ticket ObjectId integer NOT NULL DEF
 
 alter table ObjectCustomFieldValues add column ObjectType varchar(255) not null;
 
-update ObjectCustomFieldValues set ObjectType = 'RT::Ticket';
+update ObjectCustomFieldValues set ObjectType = 'RT::Model::Ticket';
 
 alter table ObjectCustomFieldValues add column Current bool default 1;  
 
@@ -61,5 +61,5 @@ UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
 UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
 UPDATE CustomFields SET Type = 'Select' WHERE Type LIKE 'Select%';
 UPDATE CustomFields SET Type = 'Freeform' WHERE Type LIKE 'Freeform%';
-UPDATE CustomFields Set LookupType = 'RT::Queue-RT::Ticket';
+UPDATE CustomFields Set LookupType = 'RT::Model::Queue-RT::Model::Ticket';
 alter table CustomFields drop column Queue; 

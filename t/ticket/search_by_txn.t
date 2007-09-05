@@ -11,26 +11,26 @@ use RT::Test;
 
 my $SUBJECT = "Search test - ".$$;
 
-use_ok('RT::Tickets');
-my $tix = RT::Tickets->new($RT::SystemUser);
-can_ok($tix, 'FromSQL');
-$tix->FromSQL('Updated = "2005-08-05" AND Subject = "$SUBJECT"');
+use_ok('RT::Model::Tickets');
+my $tix = RT::Model::Tickets->new($RT::SystemUser);
+can_ok($tix, 'from_sql');
+$tix->from_sql('Updated = "2005-08-05" AND Subject = "$SUBJECT"');
 
-ok(! $tix->Count, "Searching for tickets updated on a random date finds nothing" . $tix->Count);
+ok(! $tix->count, "Searching for tickets updated on a random date finds nothing" . $tix->count);
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-$ticket->Create(Queue => 'General', Subject => $SUBJECT);
-ok ($ticket->id, "We created a ticket");
+my $ticket = RT::Model::Ticket->new($RT::SystemUser);
+$ticket->create(Queue => 'General', Subject => $SUBJECT);
+ok ($ticket->id, "We Created a ticket");
 my ($id, $txnid, $txnobj) =  $ticket->Comment( Content => 'A comment that happend on 2004-01-01');
 
-isa_ok($txnobj, 'RT::Transaction');
+isa_ok($txnobj, 'RT::Model::Transaction');
 
 ok($txnobj->CreatedObj->ISO);
-my ( $sid,$smsg) = $txnobj->__Set(Field => 'Created', Value => '2005-08-05 20:00:56');
+my ( $sid,$smsg) = $txnobj->__set(column => 'Created', value => '2005-08-05 20:00:56');
 ok($sid,$smsg);
 is($txnobj->Created,'2005-08-05 20:00:56');
 is($txnobj->CreatedObj->ISO,'2005-08-05 20:00:56');
 
-$tix->FromSQL(qq{Updated = "2005-08-05" AND Subject = "$SUBJECT"});
-is( $tix->Count, 1);
+$tix->from_sql(qq{Updated = "2005-08-05" AND Subject = "$SUBJECT"});
+is( $tix->count, 1);
 

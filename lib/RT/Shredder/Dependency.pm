@@ -62,11 +62,11 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->Set( @_ );
+    $self->set( @_ );
     return $self;
 }
 
-sub Set
+sub set
 {
     my $self = shift;
     my %args = ( Flags => DEPENDS_ON, @_ );

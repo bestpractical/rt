@@ -54,14 +54,14 @@
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
-my $queues = RT::Queues->new($session{'CurrentUser'});
-$queues->UnLimit;
+my $queues = RT::Model::Queues->new($session{'CurrentUser'});
+$queues->find_all_rows;
 
 my $queue_count = 0;
 my $queue_id = 1;
 
-while (my $queue = $queues->Next) {
-  next unless $queue->CurrentUserHasRight('CreateTicket');
+while (my $queue = $queues->next) {
+  next unless $queue->current_user_has_right('CreateTicket');
   $queue_id = $queue->id;
   $queue_count++;
   last if ($queue_count > 1);
@@ -84,7 +84,7 @@ my $tabs = { A  => { title => loc('Open tickets'),
 
 if ($queue_count > 1) {
         $tabs->{C} = { title => loc('New ticket'),
-                       path => 'SelfService/CreateTicketInQueue.html'
+                       path => 'SelfService/CreateTicket_in_queue.html'
                        };
 } else {
         $tabs->{C} = { title => loc('New ticket'),
@@ -92,7 +92,7 @@ if ($queue_count > 1) {
                        };
 }
 
-if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf',
+if ($session{'CurrentUser'}->has_right( Right => 'ModifySelf',
 				       Object => $RT::System )) {
 	$tabs->{Z} = { title => loc('Preferences'),
 		       path => 'SelfService/Prefs.html'

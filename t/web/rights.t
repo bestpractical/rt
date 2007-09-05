@@ -26,8 +26,8 @@ sub get_rights {
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my ($everyone, $everyone_gid);
 {
-    $everyone = RT::Group->new( $RT::SystemUser );
-    $everyone->LoadSystemInternalGroup('Everyone');
+    $everyone = RT::Model::Group->new( $RT::SystemUser );
+    $everyone->load_system_internal_group('Everyone');
     ok($everyone_gid = $everyone->id, "loaded 'everyone' group");
 }
 
@@ -50,8 +50,8 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
     $m->submit;
 
     $m->content_contains('Right Granted', 'got message');
-    RT::Principal::InvalidateACLCache();
-    ok($everyone->PrincipalObj->HasRight( Right => 'SuperUser', Object => $RT::System ), 'group has right');
+    RT::Model::Principal::invalidate_acl_cache();
+    ok($everyone->PrincipalObj->has_right( Right => 'SuperUser', Object => $RT::System ), 'group has right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
@@ -62,8 +62,8 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
     $m->submit;
 
     $m->content_contains('Right revoked', 'got message');
-    RT::Principal::InvalidateACLCache();
-    ok(!$everyone->PrincipalObj->HasRight( Right => 'SuperUser', Object => $RT::System ), 'group has no right');
+    RT::Model::Principal::invalidate_acl_cache();
+    ok(!$everyone->PrincipalObj->has_right( Right => 'SuperUser', Object => $RT::System ), 'group has no right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'revoked SuperUser right' );
 }
 

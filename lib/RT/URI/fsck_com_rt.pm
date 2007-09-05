@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 package RT::URI::fsck_com_rt;
 
-use RT::Ticket;
+use RT::Model::Ticket;
 
 use RT::URI::base;
 
@@ -84,7 +84,7 @@ sub ObjectType {
     my $object = shift || $self->Object;
 
     my $type = 'ticket';
-    if (ref($object) && (ref($object) ne 'RT::Ticket')) {
+    if (ref($object) && (ref($object) ne 'RT::Model::Ticket')) {
             $type = ref($object);
     }
 
@@ -104,7 +104,7 @@ Returns the RT URI for a local RT::Record object
 sub URIForObject {
     my $self = shift;
     my $obj = shift;
-    return ($self->LocalURIPrefix ."/". $self->ObjectType($obj) ."/". $obj->Id);
+    return ($self->LocalURIPrefix ."/". $self->ObjectType($obj) ."/". $obj->id);
 }
 
 
@@ -120,8 +120,8 @@ sub ParseURI {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
-        my $ticket = RT::Ticket->new( $self->CurrentUser );
-        $ticket->Load( $uri );
+        my $ticket = RT::Model::Ticket->new( $self->CurrentUser );
+        $ticket->load( $uri );
         $self->{'uri'} = $ticket->URI;
         $self->{'object'} = $ticket;
         return ($ticket->id);
@@ -137,17 +137,17 @@ sub ParseURI {
             my $type = $1;
             my $id   = $2;
 
-            if ( $type eq 'ticket' ) { $type = 'RT::Ticket' }
+            if ( $type eq 'ticket' ) { $type = 'RT::Model::Ticket' }
 
             # We can instantiate any RT::Record subtype. but not anything else
 
             if ( UNIVERSAL::isa( $type, 'RT::Record' ) ) {
                 my $record = $type->new( $self->CurrentUser );
-                $record->Load($id);
+                $record->load($id);
 
-                if ( $record->Id ) {
+                if ( $record->id ) {
                     $self->{'object'} = $record;
-                    return ( $record->Id );
+                    return ( $record->id );
                 }
             }
 
@@ -213,7 +213,7 @@ Otherwise, return its URI
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object && ($self->ObjectType eq 'ticket')) {
-        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->Id);
+        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->id);
     }   
     else {
         return ($self->URI);
@@ -229,7 +229,7 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
+	    return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->id);
     }
     else {
 	    return $self->URI;

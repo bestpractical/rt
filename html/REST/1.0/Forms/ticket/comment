@@ -60,12 +60,12 @@ use File::Temp qw(tempfile);
 $RT::Logger->debug("Got ticket id=$id for comment");
 $RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/comment
-$ticket->Load($id);
-if (!$ticket->Id) {
+$ticket->load($id);
+if (!$ticket->id) {
     $e = 1;
     $c = "# Ticket $id does not exist.";
     goto OUTPUT;
@@ -124,11 +124,11 @@ foreach my $att (@atts) {
     $i++;
 }
 
-unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
+unless ($ticket->current_user_has_right('ModifyTicket') ||
         ($action eq "Comment" &&
-         $ticket->CurrentUserHasRight("CommentOnTicket")) ||
+         $ticket->current_user_has_right("CommentOnTicket")) ||
         ($action eq "Correspond" &&
-         $ticket->CurrentUserHasRight("ReplyToTicket")))
+         $ticket->current_user_has_right("ReplyToTicket")))
 {
     $e = 1;
     $c = "# You are not allowed to $action on ticket $id.";
@@ -143,7 +143,7 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                TimeTaken => $changes{TimeWorked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
-   my  ($status_n, $status_s) = $ticket->SetStatus($changes{'Status'} );   
+   my  ($status_n, $status_s) = $ticket->set_Status($changes{'Status'} );   
   $c .= "\n# ".$status_s;
 }
 

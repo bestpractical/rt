@@ -20,8 +20,8 @@ use_ok('MIME::Entity');
 
 my $CurrentUser = $RT::SystemUser;
 
-my $queue = new RT::Queue($CurrentUser);
-$queue->Load('General') || Abort(loc("Queue could not be loaded."));
+my $queue = new RT::Model::Queue($CurrentUser);
+$queue->load('General') || Abort(loc("Queue could not be loaded."));
 
 my $message = MIME::Entity->build(
     Subject => 'test',
@@ -35,14 +35,14 @@ Best regards. BestPractical Team.
 END
 );
 
-my $ticket = new RT::Ticket( $CurrentUser );
-my ($id) = $ticket->Create(
+my $ticket = new RT::Model::Ticket( $CurrentUser );
+my ($id) = $ticket->create(
     Subject => 'test',
-    Queue => $queue->Id,
+    Queue => $queue->id,
     MIMEObj => $message,
 );
-ok($id, "We created a ticket #$id");
-ok($ticket->Transactions->First->Content, "Has some content");
+ok($id, "We Created a ticket #$id");
+ok($ticket->Transactions->first->Content, "Has some content");
 
 ok $m->login, 'logged in';
 ok $m->goto_ticket($id), 'opened diplay page of the ticket';

@@ -59,7 +59,7 @@ use MIME::Entity;
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
@@ -74,12 +74,12 @@ my %simple = map {lc $_ => $_} @simple;
 
 # Are we dealing with an existing ticket?
 if ($id ne 'new') {
-    $ticket->Load($id);
-    if (!$ticket->Id) {
+    $ticket->load($id);
+    if (!$ticket->id) {
         return [ "# Ticket $id does not exist.", [], {}, 1 ];
     }
-    elsif (!$ticket->CurrentUserHasRight('ShowTicket') ||
-           (%data && !$ticket->CurrentUserHasRight('ModifyTicket')))
+    elsif (!$ticket->current_user_has_right('ShowTicket') ||
+           (%data && !$ticket->current_user_has_right('ModifyTicket')))
     {
         my $act = %data ? "modify" : "display";
         return [ "# You are not allowed to $act ticket $id.", [], {}, 1 ];
@@ -90,12 +90,12 @@ else {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
         my $due = new RT::Date $session{CurrentUser};
-        my $queue = new RT::Queue $session{CurrentUser};
+        my $queue = new RT::Model::Queue $session{CurrentUser};
         my $starts = new RT::Date $session{CurrentUser};
-        $queue->Load(1);
-        $due->SetToNow;
+        $queue->load(1);
+        $due->set_to_now;
         $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
-        $starts->SetToNow;
+        $starts->set_to_now;
 
         return [
             "# Required: id, Queue",
@@ -132,15 +132,15 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^CF-/i) {
-                my $cf = RT::CustomField->new( $RT::SystemUser );
+                my $cf = RT::Model::CustomField->new( $RT::SystemUser );
                 my $cfk = $k;
                 $cfk =~ s/^CF-//i;
-                unless($cf->LoadByName( Name => $cfk )) {
+                unless($cf->load_by_name( Name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
                     delete $data{$k};
                     next;
                 }
-                $v{"CustomField-".$cf->Id()} = delete $data{$k};
+                $v{"CustomField-".$cf->id()} = delete $data{$k};
             }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
@@ -159,7 +159,7 @@ else {
                 );
         }
 
-        my($tid,$trid,$terr) = $ticket->Create(%v);    
+        my($tid,$trid,$terr) = $ticket->create(%v);    
         unless ($tid) {
             push(@comments, "# Could not create ticket.");
             push(@comments, "# " . $terr);
@@ -167,8 +167,8 @@ else {
         }
 
         delete $data{id};
-        $id = $ticket->Id;
-        push(@comments, "# Ticket $id created.");
+        $id = $ticket->id;
+        push(@comments, "# Ticket $id Created.");
         # see if the hash is empty
         goto DONE if ! keys(%data);
     }
@@ -178,7 +178,7 @@ else {
 if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
-    push @data, [ id    => "ticket/".$ticket->Id   ];
+    push @data, [ id    => "ticket/".$ticket->id   ];
     push @data, [ Queue => $ticket->QueueObj->Name ] 
 	if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ Owner => $ticket->OwnerObj->Name ]
@@ -199,7 +199,7 @@ if (!keys(%data)) {
     $time = new RT::Date ($session{CurrentUser});
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
-        $time->Set(Format => 'sql', Value => $ticket->$key);
+        $time->set(Format => 'sql', value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
@@ -213,11 +213,11 @@ if (!keys(%data)) {
 
     # Display custom fields
     my $CustomFields = $ticket->QueueObj->TicketCustomFields();
-    while (my $cf = $CustomFields->Next()) {
+    while (my $cf = $CustomFields->next()) {
 	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->Name}));
-        my $vals = $ticket->CustomFieldValues($cf->Id());
+        my $vals = $ticket->CustomFieldValues($cf->id());
         my @out = ();
-        while (my $v = $vals->Next()) {
+        while (my $v = $vals->next()) {
             push @out, $v->Content;
         }
         push @data, [ 'CF-' . $cf->Name => join ',', @out ];
@@ -229,8 +229,9 @@ if (!keys(%data)) {
 }
 else {
     my ($get, $set, $key, $val, $n, $s);
-
+    delete $data{id};
     foreach $key (keys %data) {
+
         $val = $data{$key};
         $key = lc $key;
         $n = 1;
@@ -245,25 +246,25 @@ else {
 
         if ($key =~ /^queue$/i) {
             next if $val eq $ticket->QueueObj->Name;
-            ($n, $s) = $ticket->SetQueue($val);
+            ($n, $s) = $ticket->set_Queue($val);
         }
         elsif ($key =~ /^owner$/i) {
             next if $val eq $ticket->OwnerObj->Name;
-            ($n, $s) = $ticket->SetOwner($val);
+            ($n, $s) = $ticket->set_Owner($val);
         }
         elsif (exists $simple{$key}) {
             $key = $simple{$key};
-            $set = "Set$key";
+            $set = "set_$key";
 
             next if (($val eq $ticket->$key)|| ($ticket->$key =~ /^\d+$/ && $val == $ticket->$key));
             ($n, $s) = $ticket->$set("$val");
         }
         elsif (exists $dates{$key}) {
             $key = $dates{$key};
-            $set = "Set$key";
+            $set = "set_$key";
 
             my $time = new RT::Date $session{CurrentUser};
-            $time->Set(Format => 'sql', Value => $ticket->$key);
+            $time->set(Format => 'sql', value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->AsString);
             ($n, $s) = $ticket->$set($val);
         }
@@ -277,7 +278,7 @@ else {
 
             foreach $p (keys %old) {
                 unless (exists $new{$p}) {
-                    ($s, $n) = $ticket->DeleteWatcher(Type => $type,
+                    ($s, $n) = $ticket->deleteWatcher(Type => $type,
                                                       Email => $p);
                     push @msgs, [ $s, $n ];
                 }
@@ -306,15 +307,15 @@ else {
         }
         # Set custom field
         elsif ($key =~ /^CF-/i) {
-            my $cf = RT::CustomField->new( $RT::SystemUser );
+            my $cf = RT::Model::CustomField->new( $RT::SystemUser );
             $key =~ s/^CF-//i;
-            if (not $cf->LoadByName( Name => $key )) {
+            if (not $cf->load_by_name( Name => $key )) {
                 $n = 0;
                 $s = "Unknown custom field.";
             }
             else {
                 ($n, $s) = $ticket->AddCustomFieldValue(
-                             Field => $cf, Value => $val );
+                             column => $cf, value => $val );
                 $s =~ s/^# // if defined $s;
             }
         }
@@ -322,7 +323,6 @@ else {
             $n = 0;
             $s = "Unknown field.";
         }
-
     SET:
         if ($n == 0) {
             $e = 1;

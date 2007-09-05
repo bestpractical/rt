@@ -54,10 +54,10 @@ $args => undef
 <%INIT>
 my @data;
 my ($c, $o, $k, $e) = ("", [], {}, "");
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 
-$ticket->Load($id);
-unless ($ticket->Id) {
+$ticket->load($id);
+unless ($ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
@@ -76,9 +76,9 @@ if ($aid) {
     unless ($aid =~ /^\d+$/) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
-    my $attachment = new RT::Attachment $session{CurrentUser};
-    $attachment->Load($aid);
-    unless ($attachment->Id eq $aid) {
+    my $attachment = new RT::Model::Attachment $session{CurrentUser};
+    $attachment->load($aid);
+    unless ($attachment->id eq $aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
     if ($content) {
@@ -90,7 +90,7 @@ if ($aid) {
         }
     } else {
 	my @data;
-	push @data, [ id    => $attachment->Id   ];
+	push @data, [ id    => $attachment->id   ];
 	push @data, [ Subject    => $attachment->Subject   ];
 	push @data, [ Creator    => $attachment->Creator   ];
 	push @data, [ Created    => $attachment->Created   ];
@@ -112,20 +112,20 @@ if ($aid) {
 else {
     my @attachments;
     my $transactions = $ticket->Transactions;
-    while (my $t = $transactions->Next) {
+    while (my $t = $transactions->next) {
         my $attachments = $t->Attachments;
-        while (my $a = $attachments->Next) {
+        while (my $a = $attachments->next) {
             my $size = length($a->Content);
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
-            push @attachments, $a->Id.": ".($a->Filename || '(Unnamed)')." (".$a->ContentType . " / ".$size.")";
+            push @attachments, $a->id.": ".($a->Filename || '(Unnamed)')." (".$a->ContentType . " / ".$size.")";
         }
     }
 
     if (@attachments) {
         $o = [ "id", "Attachments" ];
         $k = {
-            id => "ticket/".$ticket->Id."/attachments",
+            id => "ticket/".$ticket->id."/attachments",
             Attachments => \@attachments
         };
     }

@@ -48,8 +48,8 @@
 <a href="<%$URI->Resolver->HREF%>">
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;
-% if (UNIVERSAL::isa($member, "RT::Ticket")) {
-<%$member->Id%>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]
+% if (UNIVERSAL::isa($member, "RT::Model::Ticket")) {
+<%$member->id%>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]
 % } elsif ( UNIVERSAL::can($member, 'Name')) {
 <%$URI->Resolver->AsString%>: <%$member->Name%>
 % } else {

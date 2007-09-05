@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Class        => 'RT__Ticket'
+$Class        => 'RT__Model__Ticket'
 
 @Format       => undef
 $FormatString => undef
-@OrderBy      => ()
+@order_by      => ()
 @Order        => ()
 $Query        => undef
 $Rows         => undef
@@ -60,7 +60,7 @@ $maxitems     => undef
 
 $AllowSorting  => undef
 $BaseURL       => undef
-@PassArguments => qw(Query Format Rows Page Order OrderBy)
+@PassArguments => qw(Query Format Rows Page Order order_by)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>
@@ -126,13 +126,13 @@ foreach my $col ( @Format ) {
     {
         my $new_order = 'ASC';
         $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
-            if $OrderBy[0] && $OrderBy[0] eq $attr;
+            if $order_by[0] && $order_by[0] eq $attr;
 
         $m->out(
             '<a href="' . $BaseURL
             . $m->comp( '/Elements/QueryString',
                 %generic_query_args,
-                OrderBy => $attr, Order => $new_order
+                order_by => $attr, Order => $new_order
             )
             . '">'. $title .'</a>'
         );

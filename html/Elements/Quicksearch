@@ -50,7 +50,7 @@
    titleright => loc("Edit"), titleright_href => RT->Config->Get('WebPath').'/Prefs/Quicksearch.html' &>
 <& /Elements/QueueSummary,
    cache => 'quick_search_queues',
-   queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
+   queue_filter => sub { $_->current_user_has_right('ShowTicket') && !exists $unwanted->{$_->Name} },
    conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
 		   {cond => "Status = 'open'", name => loc ('open') },
 		   {cond => "Status = 'stalled'", name => loc ('stalled') }] &>

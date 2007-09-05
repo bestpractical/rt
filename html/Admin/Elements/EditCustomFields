@@ -48,12 +48,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
-<input type="hidden" class="hidden" name="id" value="<% $Object->Id || ''%>" />
+<input type="hidden" class="hidden" name="id" value="<% $Object->id || ''%>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
 <input type="hidden" class="hidden" name="SubType" value="<% $SubType %>" />
 <input type="hidden" class="hidden" name="UpdateCFs" value="1" />
 
-% if ($Object->Id) {
+% if ($Object->id) {
 <h2><&|/l&>Global Custom Fields</&></h2>
 <& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1, id => $id, SubType => $SubType &>
 % }
@@ -67,12 +67,12 @@
 
 
 <%INIT>
-my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFields->new($session{'CurrentUser'});
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
-my $id = $Object->Id;
-if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
+my $id = $Object->id;
+if ($id and !$Object->current_user_has_right('AssignCustomFields')) {
     $m->out('<p><i>', loc('(No custom fields)'), '</i></p>');
     return;
 }
@@ -81,37 +81,37 @@ my $lookup = $ObjectType;
 $lookup .= "-$SubType" if $SubType;
 
 $CustomFields->LimitToLookupType($lookup);
-$CustomFields->OrderBy( FIELD => 'Name' );
+$CustomFields->order_by( column => 'Name' );
 
 
 my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
+$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToObjectId($id);
 $ObjectCFs->LimitToLookupType($lookup);
 
 # Check sanity of SortOrders
 my %SortOrders;
 $SortOrders{ $_->SortOrder }++
-  while ($_ = $ObjectCFs->Next);
+  while ($_ = $ObjectCFs->next);
 
 # If there are duplicates, run though and squash them
 if (grep $_ > 1, values %SortOrders) {
     my $i = 1;
-    while ( my $ObjectCF = $ObjectCFs->Next ) {
-        $ObjectCF->SetSortOrder( $i++ );
+    while ( my $ObjectCF = $ObjectCFs->next ) {
+        $ObjectCF->set_SortOrder( $i++ );
     }
-    $ObjectCFs->GotoFirstItem;
+    $ObjectCFs->goto_first_item;
 }
 
 # {{{ deal with moving sortorder of custom fields
 if ($CustomField and $Move) {
-    my $SourceObj = RT::ObjectCustomField->new($session{'CurrentUser'});
-    $SourceObj->LoadByCols( ObjectId => $id, CustomField => $CustomField );
+    my $SourceObj = RT::Model::ObjectCustomField->new($session{'CurrentUser'});
+    $SourceObj->load_by_cols( ObjectId => $id, CustomField => $CustomField );
 
     my $TargetObj;
     my $target_order = $SourceObj->SortOrder + $Move;
-    while (my $ObjectCF = $ObjectCFs->Next) { 
+    while (my $ObjectCF = $ObjectCFs->next) { 
 	my $this_order = $ObjectCF->SortOrder;
 
 	# if we have an exact match, finish the loop now
@@ -135,23 +135,23 @@ if ($CustomField and $Move) {
     if ($TargetObj) {
 	# swap their sort order
 	my ($s, $t) = ($SourceObj->SortOrder, $TargetObj->SortOrder);
-	$TargetObj->SetSortOrder($s);
-	$SourceObj->SetSortOrder($t);
+	$TargetObj->set_SortOrder($s);
+	$SourceObj->set_SortOrder($t);
 	# because order changed, we must redo search for subsequent uses
     }
 
-    $ObjectCFs->GotoFirstItem;
+    $ObjectCFs->goto_first_item;
 }
 # }}}
 
 if ($id) {
-    $GlobalCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+    $GlobalCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
     $GlobalCFs->LimitToObjectId(0);
     $GlobalCFs->LimitToLookupType($lookup);
 }
 
-while (my $cf = $CustomFields->Next) { 
-    my $cf_id = $cf->Id;
+while (my $cf = $CustomFields->next) { 
+    my $cf_id = $cf->id;
 
     if ($GlobalCFs and $GlobalCFs->HasEntryForCustomField($cf_id)) {
 	push @GlobalCFs, $cf;
@@ -186,8 +186,8 @@ while (my $cf = $CustomFields->Next) {
 }
 
 # redo search...
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
+$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToObjectId($id);
 $ObjectCFs->LimitToLookupType($lookup);
 

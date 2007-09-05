@@ -138,24 +138,24 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 sub encoding { 'utf-8' }
 
-# {{{ SetMIMEEntityToUTF8
+# {{{ set_mime_entity_to_utf8
 
-=head2 SetMIMEEntityToUTF8 $entity
+=head2 set_mime_entity_to_utf8 $entity
 
 An utility method which will try to convert entity body into utf8.
-It's now a wrap-up of SetMIMEEntityToEncoding($entity, 'utf-8').
+It's now a wrap-up of set_mime_entity_to_encoding($entity, 'utf-8').
 
 =cut
 
-sub SetMIMEEntityToUTF8 {
-    RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
+sub set_mime_entity_to_utf8 {
+    RT::I18N::set_mime_entity_to_encoding(shift, 'utf-8');
 }
 
 # }}}
 
-# {{{ SetMIMEEntityToEncoding
+# {{{ set_mime_entity_to_encoding
 
-=head2 SetMIMEEntityToEncoding $entity, $encoding
+=head2 set_mime_entity_to_encoding $entity, $encoding
 
 An utility method which will try to convert entity body into specified
 charset encoding (encoded as octets, *not* unicode-strings).  It will
@@ -166,18 +166,18 @@ This method doesn't return anything meaningful.
 
 =cut
 
-sub SetMIMEEntityToEncoding {
+sub set_mime_entity_to_encoding {
     my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
 
     # do the same for parts first of all
-    SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
+    set_mime_entity_to_encoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
     my $charset = _FindOrGuessCharset($entity) or return;
     # one and only normalization
     $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
     $enc     = 'utf-8' if $enc     =~ /^utf-?8$/i;
 
-    SetMIMEHeadToEncoding(
+    set_mime_ehead_to_encoding(
 	$entity->head,
 	_FindOrGuessCharset($entity, 1) => $enc,
 	$preserve_words
@@ -416,9 +416,9 @@ sub _GuessCharset {
 
 # }}}
 
-# {{{ SetMIMEHeadToEncoding
+# {{{ set_mime_ehead_to_encoding
 
-=head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
+=head2 set_mime_ehead_to_encoding HEAD OLD_CHARSET NEW_CHARSET
 
 Converts a MIME Head from one encoding to another. This totally violates the RFC.
 We should never need this. But, Surprise!, MUAs are badly broken and do this kind of stuff
@@ -427,7 +427,7 @@ all the time
 
 =cut
 
-sub SetMIMEHeadToEncoding {
+sub set_mime_ehead_to_encoding {
     my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
 
     $charset = 'utf-8' if $charset eq 'utf8';

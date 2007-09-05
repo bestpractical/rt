@@ -61,7 +61,7 @@ RT::URI
 =head1 DESCRIPTION
 
 This class provides a base class for URIs, such as those handled
-by RT::Link objects.  
+by RT::Model::Link objects.  
 
 =head1 API
 
@@ -96,7 +96,7 @@ sub new {
 
 =head2 FromObject <Object>
 
-Given a local object, such as an RT::Ticket or an RT::FM::Article, this routine will return a URI for
+Given a local object, such as an RT::Model::Ticket or an RT::FM::Article, this routine will return a URI for
 the local object
 
 =cut
@@ -222,7 +222,7 @@ sub URI {
 
 =head2 Object
 
-Returns a local object for this content. This will usually be an RT::Ticket or somesuch
+Returns a local object for this content. This will usually be an RT::Model::Ticket or somesuch
 
 =cut
 
@@ -240,7 +240,7 @@ sub Object {
 
 =head2 IsLocal
 
-Returns a local object for this content. This will usually be an RT::Ticket or somesuch
+Returns a local object for this content. This will usually be an RT::Model::Ticket or somesuch
 
 =cut
 

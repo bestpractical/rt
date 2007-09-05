@@ -51,7 +51,7 @@
 <select name="<%$Name%>">
 <option value="" selected>-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
-% while (my $value = $values->Next) {
+% while (my $value = $values->next) {
 <option value="<%$value->Name%>"><%$value->Name%></option>
 % }
 </select>

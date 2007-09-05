@@ -12,16 +12,16 @@ use RT::Test;
 
 # This tiny little test script triggers an interaction bug between DBD::Oracle 1.16, SB 1.15 and RT 3.4
 
-use_ok('RT::Template');
-my $template = RT::Template->new($RT::SystemUser);
+use_ok('RT::Model::Template');
+my $template = RT::Model::Template->new($RT::SystemUser);
 
-isa_ok($template, 'RT::Template');
-my ($val,$msg) = $template->Create(Queue => 1,
+isa_ok($template, 'RT::Model::Template');
+my ($val,$msg) = $template->create(Queue => 1,
                   Name => 'InsertTest',
                   Content => 'This is template content');
 ok($val,$msg);
 is($template->Name, 'InsertTest');
-is($template->Content, 'This is template content', "We created the object right");
-($val, $msg) = $template->SetContent( 'This is new template content');
+is($template->Content, 'This is template content', "We Created the object right");
+($val, $msg) = $template->set_Content( 'This is new template content');
 ok($val,$msg);
-is($template->Content, 'This is new template content', "We managed to _Set_ the content");
+is($template->Content, 'This is new template content', "We managed to _set_ the content");

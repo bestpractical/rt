@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% while ($Values and my $value = $Values->Next ) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $value->Content %></textarea><br />
+% while ($Values and my $value = $Values->next ) {
+<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->id%>-Values"><% $value->Content %></textarea><br />
 % }
-% if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $Default %></textarea>
+% if (!$MaxValues or !$Values or $Values->count < $MaxValues) {
+<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->id%>-Values"><% $Default %></textarea>
 % }
 <%INIT>
 # XXX - MultiValue textarea is for now outlawed.

@@ -48,7 +48,7 @@
 <%INIT>
 
 # Roll back any dangling transactions from a previous failed connection
-$RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+$RT::Handle->Forcerollback() if $RT::Handle->transaction_depth;
 
 
 if (RT->Config->Get('StatementLog')) {
@@ -67,8 +67,8 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
 # XXX: on a cold server (just after restart) people could have a principal object
 # in the session, as we deserialize it so we never call constructor of the principal
 # class, so the list of accessible fields is empty and we die with "Method xxx is
-# not implemented in RT::Principal"
-{ my $tmp = RT::Principal->new( $RT::SystemUser ) }
+# not implemented in RT::Model::Principal"
+{ my $tmp = RT::Model::Principal->new( $RT::SystemUser ) }
 
 %ARGS = map {
 
@@ -125,7 +125,7 @@ $m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 
 $m->comp( '/Elements/SetupSessionCookie', %ARGS );
 
-unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
+unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->id ) {
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 
@@ -157,12 +157,12 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
         $session{'CurrentUser'} = RT::CurrentUser->new();
         $session{'CurrentUser'}->$load_method($user);
 
-        if ( RT->Config->Get('WebExternalAuto') && !$session{'CurrentUser'}->Id ) {
+        if ( RT->Config->Get('WebExternalAuto') && !$session{'CurrentUser'}->id ) {
 
             # Create users on-the-fly
 
-            my $UserObj = RT::User->new( $RT::SystemUser );
-            my ($val, $msg) = $UserObj->Create(
+            my $UserObj = RT::Model::User->new( $RT::SystemUser );
+            my ($val, $msg) = $UserObj->create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
                 Name  => $user,
                 Gecos => $user,
@@ -195,11 +195,11 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                 {
                     $m->callback( %ARGS, CallbackName => 'NewUser' );
 
-                    my $method = "Set$attribute";
+                    my $method = "set_$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} )
                         if defined $new_user_info->{$attribute};
                 }
-                $session{'CurrentUser'}->Load($user);
+                $session{'CurrentUser'}->load($user);
             }
             else {
 
@@ -211,7 +211,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
             }
         }
 
-        unless ( $session{'CurrentUser'}->Id ) {
+        unless ( $session{'CurrentUser'}->id ) {
             delete $session{'CurrentUser'};
             $user = $orig_user;
 
@@ -239,19 +239,19 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
 }
 
 delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->id;
 
 # Process per-page authentication callbacks
 $m->callback( %ARGS, CallbackName => 'Auth' );
 
 delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+    unless $session{'CurrentUser'} && $session{'CurrentUser'}->id;
 
 unless( $session{'CurrentUser'} ) {
     # If the user is logging in, let's authenticate
     if( defined $user && defined $pass ) {
         my $user_obj = RT::CurrentUser->new;
-        $user_obj->Load( $user );
+        $user_obj->load( $user );
 
         unless ( $user_obj->id && $user_obj->IsPassword( $pass ) ) {
             $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");

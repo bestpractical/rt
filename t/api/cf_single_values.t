@@ -8,12 +8,12 @@ use RT::Test;
 
 
 
-my $q = RT::Queue->new($RT::SystemUser);
-my ($id,$msg) =$q->Create(Name => "CF-Single-".$$);
+my $q = RT::Model::Queue->new($RT::SystemUser);
+my ($id,$msg) =$q->create(Name => "CF-Single-".$$);
 ok($id,$msg);
 
-my $cf = RT::CustomField->new($RT::SystemUser);
-($id,$msg) = $cf->Create(Name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
+my $cf = RT::Model::CustomField->new($RT::SystemUser);
+($id,$msg) = $cf->create(Name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
 ok($id,$msg);
 
 
@@ -24,16 +24,16 @@ ok($id,$msg);
 ok($id,$msg);
 
 
-my $t = RT::Ticket->new($RT::SystemUser);
-($id,undef,$msg) = $t->Create(Queue => $q->id,
+my $t = RT::Model::Ticket->new($RT::SystemUser);
+($id,undef,$msg) = $t->create(Queue => $q->id,
           Subject => 'CF Test');
 
 ok($id,$msg);
-is($t->CustomFieldValues($cf->id)->Count, 0, "No values yet");
-$t->AddCustomFieldValue(Field => $cf->id, Value => 'First');
-is($t->CustomFieldValues($cf->id)->Count, 1, "One now");
+is($t->CustomFieldValues($cf->id)->count, 0, "No values yet");
+$t->AddCustomFieldValue(Field => $cf->id, value => 'First');
+is($t->CustomFieldValues($cf->id)->count, 1, "One now");
 
-$t->AddCustomFieldValue(Field => $cf->id, Value => 'Second');
-is($t->CustomFieldValues($cf->id)->Count, 1, "Still one");
+$t->AddCustomFieldValue(Field => $cf->id, value => 'Second');
+is($t->CustomFieldValues($cf->id)->count, 1, "Still one");
 
 1;

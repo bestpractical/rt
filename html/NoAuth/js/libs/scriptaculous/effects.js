@@ -89,7 +89,7 @@ Element.collectTextNodesIgnoreClass = function(element, className) {
   }).flatten().join('');
 }
 
-Element.setContentZoom = function(element, percent) {
+Element.set_contentZoom = function(element, percent) {
   element = $(element);  
   element.setStyle({fontSize: (percent/100) + 'em'});   
   if(navigator.appVersion.indexOf('AppleWebKit')>0) window.scrollBy(0,0);
@@ -1122,7 +1122,7 @@ Element.morph = function(element, style) {
   return element;
 };
 
-['setOpacity','getOpacity','getInlineOpacity','forceRerendering','setContentZoom',
+['setOpacity','getOpacity','getInlineOpacity','forceRerendering','set_contentZoom',
  'collectTextNodes','collectTextNodesIgnoreClass','morph'].each( 
   function(f) { Element.Methods[f] = Element[f]; }
 );

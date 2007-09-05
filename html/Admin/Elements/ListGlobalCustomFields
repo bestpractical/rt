@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %   my $count = 0;
-%   while (my $CustomFieldObj = $CustomFields->Next) { 
+%   while (my $CustomFieldObj = $CustomFields->next) { 
 %   $count++;
 <font size="-1"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></font>
 <br />
@@ -56,6 +56,6 @@
 %   }
 
 <%init>
-my $CustomFields = new RT::CustomFields ($session{'CurrentUser'});
+my $CustomFields = new RT::Model::CustomFields ($session{'CurrentUser'});
 $CustomFields->LimitToGlobal();
 </%INIT>

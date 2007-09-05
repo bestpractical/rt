@@ -66,29 +66,56 @@ use strict;
 use warnings;
 
 use RT::Date;
-use RT::User;
-use RT::Attributes;
+use RT::Model::User;
+use RT::Model::Attributes;
+use RT::Model::Attribute;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
+use base qw(RT::Base);
+use base qw(Jifty::DBI::Record::Cachable);
 
-use RT::Base;
-our @ISA = qw(RT::Base);
-my $base = 'DBIx::SearchBuilder::Record::Cachable';
-if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
-    $base = 'DBIx::SearchBuilder::Record';
-}
-eval "require $base" or die $@;
-push @ISA, $base;
+# {{{ sub _init 
 
-# {{{ sub _Init 
-
-sub _Init {
-    my $self = shift;
-    $self->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
+sub new {
+    my $class = shift;
+    my $self = $class->SUPER::new(handle => $RT::Handle);
     $self->CurrentUser(@_);
+    $self->_init(@_);
+    return $self;
 }
 
+
+
+sub table { my $class = shift; 
+
+$class = ref($class) || $class;
+$class =~ s/^(.*):://g;
+return $class;
+}
+
+sub _init {
+    my $self = shift;
+}
+
+sub __set {
+    my $self = shift;
+    my %args = (@_);
+
+    unless (defined $args{'value'} ) {
+        $args{'value'} ||= delete $args{'Value'};
+    }
+
+    unless (defined $args{'column'} ) {
+    $args{'column'} ||= delete $args{'Field'};
+    }
+    $self->SUPER::__set( %args);
+
+}
+
+sub Id {
+    shift->id(@_);
+}
 # }}}
 
 # {{{ _PrimaryKeys
@@ -109,9 +136,9 @@ Delete this record object from the database.
 
 =cut
 
-sub Delete {
+sub delete {
     my $self = shift;
-    my ($rv) = $self->SUPER::Delete;
+    my ($rv) = $self->SUPER::delete;
     if ($rv) {
         return ($rv, $self->loc("Object deleted"));
     } else {
@@ -139,15 +166,15 @@ sub ObjectTypeStr {
 
 =head2 Attributes
 
-Return this object's attributes as an RT::Attributes object
+Return this object's attributes as an RT::Model::Attributes object
 
 =cut
 
-sub Attributes {
+sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);     
+        $self->{'attributes'} = RT::Model::Attributes->new($self->CurrentUser);     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 
@@ -155,76 +182,76 @@ sub Attributes {
 }
 
 
-=head2 AddAttribute { Name, Description, Content }
+=head2 add_attribute { Name, Description, Content }
 
 Adds a new attribute for this object.
 
 =cut
 
-sub AddAttribute {
+sub add_attribute {
     my $self = shift;
     my %args = ( Name        => undef,
                  Description => undef,
                  Content     => undef,
                  @_ );
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    my ( $id, $msg ) = $attr->Create( 
+    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
+    my ( $id, $msg ) = $attr->create( 
                                       Object    => $self,
                                       Name        => $args{'Name'},
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );
 
 
-    # XXX TODO: Why won't RedoSearch work here?                                     
-    $self->Attributes->_DoSearch;
+    # XXX TODO: Why won't redo_search work here?                                     
+    $self->attributes->_do_search;
     
     return ($id, $msg);
 }
 
 
-=head2 SetAttribute { Name, Description, Content }
+=head2 Set_Attribute { Name, Description, Content }
 
-Like AddAttribute, but replaces all existing attributes with the same Name.
+Like add_attribute, but replaces all existing attributes with the same Name.
 
 =cut
 
-sub SetAttribute {
+sub set_Attribute {
     my $self = shift;
     my %args = ( Name        => undef,
                  Description => undef,
                  Content     => undef,
                  @_ );
 
-    my @AttributeObjs = $self->Attributes->Named( $args{'Name'} )
-        or return $self->AddAttribute( %args );
+    my @AttributeObjs = $self->attributes->Named( $args{'Name'} )
+        or return $self->add_attribute( %args );
 
     my $AttributeObj = pop( @AttributeObjs );
-    $_->Delete foreach @AttributeObjs;
+    $_->delete foreach @AttributeObjs;
 
-    $AttributeObj->SetDescription( $args{'Description'} );
-    $AttributeObj->SetContent( $args{'Content'} );
+    $AttributeObj->set_Description( $args{'Description'} );
+    $AttributeObj->set_Content( $args{'Content'} );
 
-    $self->Attributes->RedoSearch;
+    $self->attributes->redo_search;
     return 1;
 }
 
-=head2 DeleteAttribute NAME
+=head2 delete_attribute NAME
 
 Deletes all attributes with the matching name for this object.
 
 =cut
 
-sub DeleteAttribute {
+sub delete_attribute {
     my $self = shift;
     my $name = shift;
-    return $self->Attributes->DeleteEntry( Name => $name );
+    return $self->attributes->delete_entry( Name => $name );
 }
 
-=head2 FirstAttribute NAME
+=head2 first_attribute NAME
 
 Returns the first attribute with the matching name for this object (as an
-L<RT::Attribute> object), or C<undef> if no such attributes exist.
+L<RT::Model::Attribute> object), or C<undef> if no such attributes exist.
 
 Note that if there is more than one attribute with the matching name on the
 object, the choice of which one to return is basically arbitrary.  This may be
@@ -232,19 +259,20 @@ made well-defined in the future.
 
 =cut
 
-sub FirstAttribute {
+sub first_attribute {
     my $self = shift;
     my $name = shift;
-    return ($self->Attributes->Named( $name ))[0];
+    return ($self->attributes->Named( $name ))[0];
 }
 
 
 # {{{ sub _Handle 
 sub _Handle { return $RT::Handle }
+sub _handle { return $RT::Handle }
 
 # }}}
 
-# {{{ sub Create 
+# {{{ sub create 
 
 =head2  Create PARAMHASH
 
@@ -258,12 +286,13 @@ If this object's table has any of the following atetributes defined as
 
 =cut
 
-sub Create {
+sub create {
     my $self    = shift;
     my %attribs = (@_);
     foreach my $key ( keys %attribs ) {
-        my $method = "Validate$key";
-        unless ( $self->$method( $attribs{$key} ) ) {
+        my $method = $self->can("validate_$key");
+        if ($method) { 
+        unless (  $method->($self, $attribs{$key} ) ) {
             if (wantarray) {
                 return ( 0, $self->loc('Invalid value for [_1]', $key) );
             }
@@ -272,20 +301,15 @@ sub Create {
             }
         }
     }
-    my $now = RT::Date->new( $self->CurrentUser );
-    $now->Set( Format => 'unix', Value => time );
-    $attribs{'Created'} = $now->ISO() if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
-
-    if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'}) {
-         $attribs{'Creator'} = $self->CurrentUser->id || '0'; 
     }
-    $attribs{'LastUpdated'} = $now->ISO()
-      if ( $self->_Accessible( 'LastUpdated', 'auto' ) && !$attribs{'LastUpdated'});
 
-    $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
-      if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
-    my $id = $self->SUPER::Create(%attribs);
+    $attribs{'Creator'} ||= $self->CurrentUser->id if $self->can('Creator');
+
+    my $now = RT::Date->new( $self->CurrentUser );
+    $now->set( Format => 'unix', value => time );
+
+    my $id = $self->SUPER::create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
             if (wantarray) {
@@ -297,14 +321,14 @@ sub Create {
             }
         }
     }
-    # If the object was created in the database, 
+    # If the object was Created in the database, 
     # load it up now, so we're sure we get what the database 
     # has.  Arguably, this should not be necessary, but there
     # isn't much we can do about it.
 
    unless ($id) { 
     if (wantarray) {
-        return ( $id, $self->loc('Object could not be created') );
+        return ( $id, $self->loc('Object could not be Created') );
     }
     else {
         return ($id);
@@ -313,17 +337,16 @@ sub Create {
    }
 
     if  (UNIVERSAL::isa('errno',$id)) {
-        exit(0);
-       warn "It's here!";
+        die "it's an errno";
         return(undef);
     }
 
-    $self->Load($id) if ($id);
+    $self->load($id) if ($id);
 
 
 
     if (wantarray) {
-        return ( $id, $self->loc('Object created') );
+        return ( $id, $self->loc('Object Created') );
     }
     else {
         return ($id);
@@ -333,22 +356,24 @@ sub Create {
 
 # }}}
 
-# {{{ sub LoadByCols
+# {{{ sub load_by_cols
 
-=head2 LoadByCols
+=head2 load_by_cols
 
-Override DBIx::SearchBuilder::LoadByCols to do case-insensitive loads if the 
+Override Jifty::DBI::load_by_cols to do case-insensitive loads if the 
 DB is case sensitive
 
 =cut
 
-sub LoadByCols {
+sub load_by_id { shift->load_by_cols( id => shift) }
+
+sub load_by_cols {
     my $self = shift;
 
     # We don't want to hang onto this
     delete $self->{'attributes'};
 
-    return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
+    return $self->SUPER::load_by_cols( @_ );# unless $self->_Handle->case_sensitive;
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -360,13 +385,13 @@ sub LoadByCols {
         if ( $key ne 'id' && defined $hash{ $key } && $hash{ $key } !~ /^\d+$/ ) {
             my ($op, $val, $func);
             ($key, $op, $val, $func) =
-                $self->_Handle->_MakeClauseCaseInsensitive( $key, '=', delete $hash{ $key } );
+                $self->_Handle->_make_clause_case_insensitive( $key, '=', delete $hash{ $key } );
             $hash{$key}->{operator} = $op;
             $hash{$key}->{value}    = $val;
             $hash{$key}->{function} = $func;
         }
     }
-    return $self->SUPER::LoadByCols( %hash );
+    return $self->SUPER::load_by_cols( %hash );
 }
 
 # }}}
@@ -381,7 +406,7 @@ sub LastUpdatedObj {
     my $self = shift;
     my $obj  = new RT::Date( $self->CurrentUser );
 
-    $obj->Set( Format => 'sql', Value => $self->LastUpdated );
+    $obj->set( Format => 'sql', value => $self->LastUpdated );
     return $obj;
 }
 
@@ -393,7 +418,7 @@ sub CreatedObj {
     my $self = shift;
     my $obj  = new RT::Date( $self->CurrentUser );
 
-    $obj->Set( Format => 'sql', Value => $self->Created );
+    $obj->set( Format => 'sql', value => $self->Created );
 
     return $obj;
 }
@@ -459,45 +484,47 @@ sub LongSinceUpdateAsString {
 
 # }}} Datehandling
 
-# {{{ sub _Set 
+# {{{ sub _set 
 #
-sub _Set {
+sub _set {
     my $self = shift;
 
     my %args = (
-        Field => undef,
-        Value => undef,
-        IsSQL => undef,
+        column => undef,
+        value => undef,
+        is_sql_function => undef,
         @_
     );
+
+    unless ($args{'column'}) { Carp::confess("Field not converted to column") }
 
     #if the user is trying to modify the record
     # TODO: document _why_ this code is here
 
-    if ( ( !defined( $args{'Field'} ) ) || ( !defined( $args{'Value'} ) ) ) {
-        $args{'Value'} = 0;
+    if ( ( !defined( $args{'column'} ) ) || ( !defined( $args{'value'} ) ) ) {
+        $args{'value'} = 0;
     }
 
-    my $old_val = $self->__Value($args{'Field'});
-     $self->_SetLastUpdated();
-    my $ret = $self->SUPER::_Set(
-        Field => $args{'Field'},
-        Value => $args{'Value'},
-        IsSQL => $args{'IsSQL'}
+    my $old_val = $self->__value($args{'column'});
+     $self->_setLastUpdated();
+    my $ret = $self->SUPER::_set(
+        column => $args{'column'},
+        value => $args{'value'},
+        is_sql_function => $args{'is_sql_function'}
     );
         my ($status, $msg) =  $ret->as_array();
 
         # @values has two values, a status code and a message.
 
-    # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
+    # $ret is a Class::Returnvalue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
     if ($status) {
         $msg =
           $self->loc(
             "[_1] changed from [_2] to [_3]",
-            $args{'Field'},
+            $args{'column'},
             ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
-            '"' . $self->__Value( $args{'Field'}) . '"' 
+            '"' . ($self->__value( $args{'column'}) ||'weird undefined value'). '"' 
           );
       } else {
 
@@ -509,33 +536,29 @@ sub _Set {
 
 # }}}
 
-# {{{ sub _SetLastUpdated
+# {{{ sub _setLastUpdated
 
-=head2 _SetLastUpdated
+=head2 _setLastUpdated
 
 This routine updates the LastUpdated and LastUpdatedBy columns of the row in question
 It takes no options. Arguably, this is a bug
 
 =cut
 
-sub _SetLastUpdated {
+sub _setLastUpdated {
     my $self = shift;
     use RT::Date;
     my $now = new RT::Date( $self->CurrentUser );
-    $now->SetToNow();
+    $now->set_to_now();
 
-    if ( $self->_Accessible( 'LastUpdated', 'auto' ) ) {
-        my ( $msg, $val ) = $self->__Set(
-            Field => 'LastUpdated',
-            Value => $now->ISO
+        my ( $msg, $val ) = $self->__set(
+            column => 'LastUpdated',
+            value => $now->ISO
         );
-    }
-    if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) ) {
-        my ( $msg, $val ) = $self->__Set(
-            Field => 'LastUpdatedBy',
-            Value => $self->CurrentUser->id
+        ( $msg, $val ) = $self->__set(
+            column => 'LastUpdatedBy',
+            value => $self->CurrentUser->id
         );
-    }
 }
 
 # }}}
@@ -544,7 +567,7 @@ sub _SetLastUpdated {
 
 =head2 CreatorObj
 
-Returns an RT::User object with the RT account of the creator of this row
+Returns an RT::Model::User object with the RT account of the creator of this row
 
 =cut
 
@@ -552,8 +575,8 @@ sub CreatorObj {
     my $self = shift;
     unless ( exists $self->{'CreatorObj'} ) {
 
-        $self->{'CreatorObj'} = RT::User->new( $self->CurrentUser );
-        $self->{'CreatorObj'}->Load( $self->Creator );
+        $self->{'CreatorObj'} = RT::Model::User->new( $self->CurrentUser );
+        $self->{'CreatorObj'}->load( $self->Creator );
     }
     return ( $self->{'CreatorObj'} );
 }
@@ -564,15 +587,15 @@ sub CreatorObj {
 
 =head2 LastUpdatedByObj
 
-  Returns an RT::User object of the last user to touch this object
+  Returns an RT::Model::User object of the last user to touch this object
 
 =cut
 
 sub LastUpdatedByObj {
     my $self = shift;
     unless ( exists $self->{LastUpdatedByObj} ) {
-        $self->{'LastUpdatedByObj'} = RT::User->new( $self->CurrentUser );
-        $self->{'LastUpdatedByObj'}->Load( $self->LastUpdatedBy );
+        $self->{'LastUpdatedByObj'} = RT::Model::User->new( $self->CurrentUser );
+        $self->{'LastUpdatedByObj'}->load( $self->LastUpdatedBy );
     }
     return $self->{'LastUpdatedByObj'};
 }
@@ -601,7 +624,7 @@ Validate the name of the record we're creating. Mostly, just make sure it's not 
 
 =cut
 
-sub ValidateName {
+sub validate_Name {
     my $self = shift;
     my $value = shift;
     if ($value && $value=~ /^\d+$/) {
@@ -613,31 +636,18 @@ sub ValidateName {
 
 
 
-=head2 SQLType attribute
 
-return the SQL type for the attribute 'attribute' as stored in _ClassAccessible
-
-=cut
-
-sub SQLType {
-    my $self = shift;
-    my $field = shift;
-
-    return ($self->_Accessible($field, 'type'));
-
-
-}
-
-sub __Value {
+sub __value {
     my $self  = shift;
     my $field = shift;
     my %args = ( decode_utf8 => 1, @_ );
 
     unless ( $field ) {
-        $RT::Logger->error("__Value called with undef field");
+        Carp::cluck;
+        $RT::Logger->error("__value called with undef field");
     }
 
-    my $value = $self->SUPER::__Value( $field );
+    my $value = $self->SUPER::__value( $field );
     if( $args{'decode_utf8'} ) {
         return Encode::decode_utf8( $value ) unless Encode::is_utf8( $value );
     } else {
@@ -646,91 +656,6 @@ sub __Value {
     return $value;
 }
 
-# Set up defaults for DBIx::SearchBuilder::Record::Cachable
-
-sub _CacheConfig {
-  {
-     'cache_p'        => 1,
-     'cache_for_sec'  => 30,
-  }
-}
-
-
-
-sub _BuildTableAttributes {
-    my $self = shift;
-
-    my $attributes;
-    if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
-       $attributes = $self->_CoreAccessible();
-    } elsif ( UNIVERSAL::can( $self, '_ClassAccessible' ) ) {
-       $attributes = $self->_ClassAccessible();
-
-    }
-
-    foreach my $column (%$attributes) {
-        foreach my $attr ( %{ $attributes->{$column} } ) {
-            $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-        }
-    }
-    if ( UNIVERSAL::can( $self, '_OverlayAccessible' ) ) {
-        $attributes = $self->_OverlayAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-    if ( UNIVERSAL::can( $self, '_VendorAccessible' ) ) {
-        $attributes = $self->_VendorAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-    if ( UNIVERSAL::can( $self, '_LocalAccessible' ) ) {
-        $attributes = $self->_LocalAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-
-}
-
-
-=head2 _ClassAccessible 
-
-Overrides the "core" _ClassAccessible using $_TABLE_ATTR. Behaves identical to the version in
-DBIx::SearchBuilder::Record
-
-=cut
-
-sub _ClassAccessible {
-    my $self = shift;
-    return $_TABLE_ATTR->{ref($self)};
-}
-
-=head2 _Accessible COLUMN ATTRIBUTE
-
-returns the value of ATTRIBUTE for COLUMN
-
-
-=cut 
-
-sub _Accessible  {
-  my $self = shift;
-  my $column = shift;
-  my $attribute = lc(shift);
-  return 0 unless defined ($_TABLE_ATTR->{ref($self)}->{$column});
-  return $_TABLE_ATTR->{ref($self)}->{$column}->{$attribute} || 0;
-
-}
 
 =head2 _EncodeLOB BODY MIME_TYPE
 
@@ -751,8 +676,7 @@ sub _EncodeLOB {
         #if the current attachment contains nulls and the
         #database doesn't support embedded nulls
 
-        if ( RT->Config->Get('AlwaysUseBase64') or
-             ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+        if ( RT->Config->Get('AlwaysUseBase64')) {
 
             # set a flag telling us to mimencode the attachment
             $ContentEncoding = 'base64';
@@ -761,7 +685,7 @@ sub _EncodeLOB {
             $RT::Logger->debug("Max size is $MaxSize\n");
             $MaxSize = $MaxSize * 3 / 4;
         # Some databases (postgres) can't handle non-utf8 data
-        } elsif (    !$RT::Handle->BinarySafeBLOBs
+        } elsif (  0 #   !$RT::Handle->binary_safe_blobs
                   && $MIMEType !~ /text\/plain/gi
                   && !Encode::is_utf8( $Body, 1 ) ) {
               $ContentEncoding = 'quoted-printable';
@@ -836,7 +760,7 @@ use vars '%LINKDIRMAP';
 
 %LINKDIRMAP = (
     MemberOf => { Base => 'MemberOf',
-                  Target => 'HasMember', },
+                  Target => 'has_member', },
     RefersTo => { Base => 'RefersTo',
                 Target => 'ReferredToBy', },
     DependsOn => { Base => 'DependsOn',
@@ -885,14 +809,14 @@ sub Update {
         # the object.
 
         # This is in an eval block because $object might not exist.
-        # and might not have a Name method. But "can" won't find autoloaded
-        # items. If it fails, we don't care
+        # and might not have a Name method. 
+        # If it fails, we don't care
         eval {
             my $object = $attribute . "Obj";
-            next if ($self->$object->Name eq $value);
+            next if ($self->can($object) && $self->$object->Name eq $value);
         };
         next if ( $value eq $self->$attribute() );
-        my $method = "Set$attribute";
+        my $method = "set_$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
 
@@ -905,7 +829,7 @@ sub Update {
 
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
-                                   "No value sent to _Set!\n",             # loc
+                                   "No value sent to _set!\n",             # loc
                                    "Illegal value for [_1]",               # loc
                                    "The new value has been set.",          # loc
                                    "No column specified",                  # loc
@@ -931,7 +855,7 @@ sub Update {
 
 =head2 Members
 
-  This returns an RT::Links object which references all the tickets 
+  This returns an RT::Model::Links object which references all the tickets 
 which are 'MembersOf' this ticket
 
 =cut
@@ -947,7 +871,7 @@ sub Members {
 
 =head2 MemberOf
 
-  This returns an RT::Links object which references all the tickets that this
+  This returns an RT::Model::Links object which references all the tickets that this
 ticket is a 'MemberOf'
 
 =cut
@@ -963,7 +887,7 @@ sub MemberOf {
 
 =head2 RefersTo
 
-  This returns an RT::Links object which shows all references for which this ticket is a base
+  This returns an RT::Model::Links object which shows all references for which this ticket is a base
 
 =cut
 
@@ -978,7 +902,7 @@ sub RefersTo {
 
 =head2 ReferredToBy
 
-  This returns an RT::Links object which shows all references for which this ticket is a target
+  This returns an RT::Model::Links object which shows all references for which this ticket is a target
 
 =cut
 
@@ -993,7 +917,7 @@ sub ReferredToBy {
 
 =head2 DependedOnBy
 
-  This returns an RT::Links object which references all the tickets that depend on this one
+  This returns an RT::Model::Links object which references all the tickets that depend on this one
 
 =cut
 
@@ -1006,35 +930,35 @@ sub DependedOnBy {
 
 
 
-=head2 HasUnresolvedDependencies
+=head2 has_unresolved_dependencies
 
   Takes a paramhash of Type (default to '__any').  Returns true if
-$self->UnresolvedDependencies returns an object with one or more members
+$self->unresolved_dependencies returns an object with one or more members
 of that type.  Returns false otherwise
 
 
 
 =cut
 
-sub HasUnresolvedDependencies {
+sub has_unresolved_dependencies {
     my $self = shift;
     my %args = (
         Type   => undef,
         @_
     );
 
-    my $deps = $self->UnresolvedDependencies;
+    my $deps = $self->unresolved_dependencies;
 
     if ($args{Type}) {
-        $deps->Limit( FIELD => 'Type', 
-              OPERATOR => '=',
-              VALUE => $args{Type}); 
+        $deps->limit( column => 'Type', 
+              operator => '=',
+              value => $args{Type}); 
     }
     else {
 	    $deps->IgnoreType;
     }
 
-    if ($deps->Count > 0) {
+    if ($deps->count > 0) {
         return 1;
     }
     else {
@@ -1043,26 +967,26 @@ sub HasUnresolvedDependencies {
 }
 
 
-# {{{ UnresolvedDependencies 
+# {{{ unresolved_dependencies 
 
-=head2 UnresolvedDependencies
+=head2 unresolved_dependencies
 
-Returns an RT::Tickets object of tickets which this ticket depends on
+Returns an RT::Model::Tickets object of tickets which this ticket depends on
 and which have a status of new, open or stalled. (That list comes from
-RT::Queue->ActiveStatusArray
+RT::Model::Queue->ActiveStatusArray
 
 =cut
 
 
-sub UnresolvedDependencies {
+sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Tickets->new($self->CurrentUser);
+    my $deps = RT::Model::Tickets->new($self->CurrentUser);
 
-    my @live_statuses = RT::Queue->ActiveStatusArray();
+    my @live_statuses = RT::Model::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
-        $deps->LimitStatus(VALUE => $status);
+        $deps->LimitStatus(value => $status);
     }
-    $deps->LimitDependedOnBy($self->Id);
+    $deps->limit_depended_on_by($self->id);
 
     return($deps);
 
@@ -1074,7 +998,7 @@ sub UnresolvedDependencies {
 
 =head2 AllDependedOnBy
 
-Returns an array of RT::Ticket objects which (directly or indirectly)
+Returns an array of RT::Model::Ticket objects which (directly or indirectly)
 depends on this ticket; takes an optional 'Type' argument in the param
 hash, which will limit returned tickets to that type, as well as cause
 tickets with that type to serve as 'leaf' nodes that stops the recursive
@@ -1092,16 +1016,16 @@ sub AllDependedOnBy {
         @_
     );
 
-    while (my $link = $dep->Next()) {
+    while (my $link = $dep->next()) {
 	next unless ($link->BaseURI->IsLocal());
-	next if $args{_found}{$link->BaseObj->Id};
+	next if $args{_found}{$link->BaseObj->id};
 
 	if (!$args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
+	    $args{_found}{$link->BaseObj->id} = $link->BaseObj;
 	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
 	}
 	elsif ($link->BaseObj->Type eq $args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
+	    $args{_found}{$link->BaseObj->id} = $link->BaseObj;
 	}
 	else {
 	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
@@ -1122,7 +1046,7 @@ sub AllDependedOnBy {
 
 =head2 DependsOn
 
-  This returns an RT::Links object which references all the tickets that this ticket depends on
+  This returns an RT::Model::Links object which references all the tickets that this ticket depends on
 
 =cut
 
@@ -1155,13 +1079,13 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
+        $self->{"$field$type"} = RT::Model::Links->new( $self->CurrentUser );
             # at least to myself
-            $self->{"$field$type"}->Limit( FIELD => $field,
-                                           VALUE => $self->URI,
-                                           ENTRYAGGREGATOR => 'OR' );
-            $self->{"$field$type"}->Limit( FIELD => 'Type',
-                                           VALUE => $type )
+            $self->{"$field$type"}->limit( column => $field,
+                                           value => $self->URI,
+                                           entry_aggregator => 'OR' );
+            $self->{"$field$type"}->limit( column => 'Type',
+                                           value => $type )
               if ($type);
     }
     return ( $self->{"$field$type"} );
@@ -1215,12 +1139,12 @@ sub _AddLink {
     }
 
     # {{{ Check if the link already exists - we don't want duplicates
-    use RT::Link;
-    my $old_link = RT::Link->new( $self->CurrentUser );
-    $old_link->LoadByParams( Base   => $args{'Base'},
+    use RT::Model::Link;
+    my $old_link = RT::Model::Link->new( $self->CurrentUser );
+    $old_link->loadByParams( Base   => $args{'Base'},
                              Type   => $args{'Type'},
                              Target => $args{'Target'} );
-    if ( $old_link->Id ) {
+    if ( $old_link->id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
@@ -1229,27 +1153,27 @@ sub _AddLink {
 
 
     # Storing the link in the DB.
-    my $link = RT::Link->new( $self->CurrentUser );
-    my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
+    my $link = RT::Model::Link->new( $self->CurrentUser );
+    my ($linkid, $linkmsg) = $link->create( Target => $args{Target},
                                   Base   => $args{Base},
                                   Type   => $args{Type} );
 
     unless ($linkid) {
-        $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created") );
+        $RT::Logger->error("Link could not be Created: ".$linkmsg);
+        return ( 0, $self->loc("Link could not be Created") );
     }
 
     my $TransString =
       "Record $args{'Base'} $args{Type} record $args{'Target'}.";
 
-    return ( $linkid, $self->loc( "Link created ([_1])", $TransString ) );
+    return ( $linkid, $self->loc( "Link Created ([_1])", $TransString ) );
 }
 
 # }}}
 
-# {{{ sub _DeleteLink 
+# {{{ sub _delete_link 
 
-=head2 _DeleteLink
+=head2 _delete_link
 
 Delete a link. takes a paramhash of Base, Target and Type.
 Either Base or Target must be null. The null value will 
@@ -1257,7 +1181,7 @@ be replaced with this ticket\'s id
 
 =cut 
 
-sub _DeleteLink {
+sub _delete_link {
     my $self = shift;
     my %args = (
         Base   => undef,
@@ -1273,7 +1197,7 @@ sub _DeleteLink {
     my $remote_link;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
+        $RT::Logger->debug("$self ->_delete_link. got both Base and Target\n");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -1291,16 +1215,16 @@ sub _DeleteLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $link = new RT::Link( $self->CurrentUser );
+    my $link = new RT::Model::Link( $self->CurrentUser );
     $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
 
-    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
+    $link->loadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
     #it's a real link. 
     if ( $link->id ) {
 
         my $linkid = $link->id;
-        $link->Delete();
+        $link->delete();
 
         my $TransString = "Record $args{'Base'} no longer $args{Type} record $args{'Target'}.";
         return ( 1, $self->loc("Link deleted ([_1])", $TransString));
@@ -1323,7 +1247,7 @@ sub _DeleteLink {
 
 =head2 _NewTransaction  PARAMHASH
 
-Private function to create a new RT::Transaction object for this ticket update
+Private function to create a new RT::Model::Transaction object for this ticket update
 
 =cut
 
@@ -1354,14 +1278,14 @@ sub _NewTransaction {
 	    $RT::Logger->error("Reference type not specified for transaction");
 	    return;
 	}
-	$old_ref = $old_ref->Id if ref($old_ref);
-	$new_ref = $new_ref->Id if ref($new_ref);
+	$old_ref = $old_ref->id if ref($old_ref);
+	$new_ref = $new_ref->id if ref($new_ref);
     }
 
-    require RT::Transaction;
-    my $trans = new RT::Transaction( $self->CurrentUser );
-    my ( $transaction, $msg ) = $trans->Create(
-	ObjectId  => $self->Id,
+    require RT::Model::Transaction;
+    my $trans = new RT::Model::Transaction( $self->CurrentUser );
+    my ( $transaction, $msg ) = $trans->create(
+	ObjectId  => $self->id,
 	ObjectType => ref($self),
         TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
@@ -1377,12 +1301,14 @@ sub _NewTransaction {
         CommitScrips => $args{'CommitScrips'},
     );
 
+
+    warn $transaction unless $msg;
     # Rationalize the object since we may have done things to it during the caching.
-    $self->Load($self->Id);
+    $self->load($self->id);
 
     $RT::Logger->warning($msg) unless $transaction;
 
-    $self->_SetLastUpdated;
+    $self->_setLastUpdated;
 
     if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken')) {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
@@ -1399,24 +1325,24 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all transactions on this record object
+  Returns an RT::Model::Transactions object of all transactions on this record object
 
 =cut
 
 sub Transactions {
     my $self = shift;
 
-    use RT::Transactions;
-    my $transactions = RT::Transactions->new( $self->CurrentUser );
+    use RT::Model::Transactions;
+    my $transactions = RT::Model::Transactions->new( $self->CurrentUser );
 
     #If the user has no rights, return an empty object
-    $transactions->Limit(
-        FIELD => 'ObjectId',
-        VALUE => $self->id,
+    $transactions->limit(
+        column => 'ObjectId',
+        value => $self->id,
     );
-    $transactions->Limit(
-        FIELD => 'ObjectType',
-        VALUE => ref($self),
+    $transactions->limit(
+        column => 'ObjectType',
+        value => ref($self),
     );
 
     return ($transactions);
@@ -1429,7 +1355,7 @@ sub Transactions {
 
 sub CustomFields {
     my $self = shift;
-    my $cfs  = RT::CustomFields->new( $self->CurrentUser );
+    my $cfs  = RT::Model::CustomFields->new( $self->CurrentUser );
 
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
@@ -1444,7 +1370,7 @@ sub CustomFields {
 sub _LookupId {
     my $self = shift;
     my $lookup = shift;
-    my @classes = ($lookup =~ /RT::(\w+)-/g);
+    my @classes = ($lookup =~ /RT::Model::(\w+)-/g);
 
     my $object = $self;
     foreach my $class (reverse @classes) {
@@ -1452,7 +1378,7 @@ sub _LookupId {
 	$object = $object->$method;
     }
 
-    return $object->Id;
+    return $object->id;
 }
 
 
@@ -1469,16 +1395,16 @@ sub CustomFieldLookupType {
 
 # {{{ AddCustomFieldValue
 
-=head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
+=head2 AddCustomFieldValue { Field => column, value => value }
 
-VALUE should be a string. FIELD can be any identifier of a CustomField
+value should be a string. column can be any identifier of a CustomField
 supported by L</LoadCustomFieldByIdentifier> method.
 
-Adds VALUE as a value of CustomField FIELD. If this is a single-value custom field,
+Adds value as a value of CustomField column. If this is a single-value custom field,
 deletes the old value.
-If VALUE is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns 
 (0, 'Error message' ) otherwise, returns ($id, 'Success Message') where
-$id is ID of created L<ObjectCustomFieldValue> object.
+$id is ID of Created L<ObjectCustomFieldValue> object.
 
 =cut
 
@@ -1497,15 +1423,28 @@ sub _AddCustomFieldValue {
         RecordTransaction => 1,
         @_
     );
+    if (!defined $args{'Field'}) {
+    $args{'Field'} ||= $args{'column'};
+    unless ($args{'Field'}) {
+        Carp::cluck("Field argument missing. maybe a mistaken s// changed Field to Column?");
 
-    my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
-    unless ( $cf->Id ) {
+    }
+    }
+
+    if (!defined $args{'Value'}) {
+    $args{'Value'} ||= delete $args{'value'};
+    unless ($args{'Value'} ) {
+        Carp::cluck("Value argument missing. maybe i'ts written as 'value'?");
+    }
+    }
+    my $cf = $self->load_custom_field_by_identifier($args{'Field'});
+    unless ( $cf->id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
 
     my $OCFs = $self->CustomFields;
-    $OCFs->Limit( FIELD => 'id', VALUE => $cf->Id );
-    unless ( $OCFs->Count ) {
+    $OCFs->limit( column => 'id', value => $cf->id );
+    unless ( $OCFs->count ) {
         return (
             0,
             $self->loc(
@@ -1520,13 +1459,11 @@ sub _AddCustomFieldValue {
         $args{ $_ } = undef if defined $args{ $_ } && !length $args{ $_ };
     }
 
-    unless ( $cf->ValidateValue( $args{'Value'} ) ) {
-        return ( 0, $self->loc("Invalid value for custom field") );
-    }
 
+    if ($cf->can('validate_Value')) { unless ( $cf->validate_Value( $args{'Value'} ) ) { return ( 0, $self->loc("Invalid value for custom field") ); } }
     # If the custom field only accepts a certain # of values, delete the existing
     # value and record a "changed from foo to bar" transaction
-    unless ( $cf->UnlimitedValues ) {
+    unless ( $cf->unlimitedValues ) {
 
         # Load up a ObjectCustomFieldValues object for this custom field and this ticket
         my $values = $cf->ValuesForObject($self);
@@ -1534,15 +1471,15 @@ sub _AddCustomFieldValue {
         # We need to whack any old values here.  In most cases, the custom field should
         # only have one value to delete.  In the pathalogical case, this custom field
         # used to be a multiple and we have many values to whack....
-        my $cf_values = $values->Count;
+        my $cf_values = $values->count;
 
         if ( $cf_values > $cf->MaxValues ) {
             my $i = 0;   #We want to delete all but the max we can currently have , so we can then
                  # execute the same code to "change" the value from old to new
-            while ( my $value = $values->Next ) {
+            while ( my $value = $values->next ) {
                 $i++;
                 if ( $i < $cf_values ) {
-                    my ( $val, $msg ) = $cf->DeleteValueForObject(
+                    my ( $val, $msg ) = $cf->deleteValueForObject(
                         Object  => $self,
                         Content => $value->Content
                     );
@@ -1552,16 +1489,16 @@ sub _AddCustomFieldValue {
                     my ( $TransactionId, $Msg, $TransactionObj ) =
                       $self->_NewTransaction(
                         Type         => 'CustomField',
-                        Field        => $cf->Id,
+                        Field        => $cf->id,
                         OldReference => $value,
                       );
                 }
             }
-            $values->RedoSearch if $i; # redo search if have deleted at least one value
+            $values->redo_search if $i; # redo search if have deleted at least one value
         }
 
         my ( $old_value, $old_content );
-        if ( $old_value = $values->First ) {
+        if ( $old_value = $values->first ) {
             $old_content = $old_value->Content;
             $old_content = undef if defined $old_content && !length $old_content;
 
@@ -1596,12 +1533,12 @@ sub _AddCustomFieldValue {
             return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
         }
 
-        my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load( $new_value_id );
+        my $new_value = RT::Model::ObjectCustomFieldValue->new( $self->CurrentUser );
+        $new_value->load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one
         if ( $old_value ) {
-            my ( $val, $msg ) = $old_value->Delete();
+            my ( $val, $msg ) = $old_value->delete();
             return ( 0, $msg ) unless $val;
         }
 
@@ -1609,7 +1546,7 @@ sub _AddCustomFieldValue {
             my ( $TransactionId, $Msg, $TransactionObj ) =
               $self->_NewTransaction(
                 Type         => 'CustomField',
-                Field        => $cf->Id,
+                Field        => $cf->id,
                 OldReference => $old_value,
                 NewReference => $new_value,
               );
@@ -1644,9 +1581,9 @@ sub _AddCustomFieldValue {
         if ( $args{'RecordTransaction'} ) {
             my ( $tid, $msg ) = $self->_NewTransaction(
                 Type          => 'CustomField',
-                Field         => $cf->Id,
+                Field         => $cf->id,
                 NewReference  => $new_value_id,
-                ReferenceType => 'RT::ObjectCustomFieldValue',
+                ReferenceType => 'RT::Model::ObjectCustomFieldValue',
             );
             unless ( $tid ) {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
@@ -1660,18 +1597,18 @@ sub _AddCustomFieldValue {
 
 # {{{ DeleteCustomFieldValue
 
-=head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
+=head2 DeleteCustomFieldValue { Field => column, value => value }
 
-Deletes VALUE as a value of CustomField FIELD. 
+Deletes value as a value of CustomField column. 
 
-VALUE can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
+value can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
 
-If VALUE is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns 
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
 
 =cut
 
-sub DeleteCustomFieldValue {
+sub delete_custom_field_value {
     my $self = shift;
     my %args = (
         Field   => undef,
@@ -1680,12 +1617,12 @@ sub DeleteCustomFieldValue {
         @_
     );
 
-    my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
-    unless ( $cf->Id ) {
+    my $cf = $self->load_custom_field_by_identifier($args{'Field'});
+    unless ( $cf->id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
 
-    my ( $val, $msg ) = $cf->DeleteValueForObject(
+    my ( $val, $msg ) = $cf->deleteValueForObject(
         Object  => $self,
         Id      => $args{'ValueId'},
         Content => $args{'Value'},
@@ -1696,9 +1633,9 @@ sub DeleteCustomFieldValue {
 
     my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
         Type          => 'CustomField',
-        Field         => $cf->Id,
+        Field         => $cf->id,
         OldReference  => $val,
-        ReferenceType => 'RT::ObjectCustomFieldValue',
+        ReferenceType => 'RT::Model::ObjectCustomFieldValue',
     );
     unless ($TransactionId) {
         return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
@@ -1715,21 +1652,20 @@ sub DeleteCustomFieldValue {
 
 # }}}
 
-# {{{ FirstCustomFieldValue
+# {{{ first_custom_field_value
 
-=head2 FirstCustomFieldValue FIELD
+=head2 first_custom_field_value column
 
-Return the content of the first value of CustomField FIELD for this ticket
+Return the content of the first value of CustomField column for this ticket
 Takes a field id or name
 
 =cut
 
-sub FirstCustomFieldValue {
+sub first_custom_field_value {
     my $self = shift;
     my $field = shift;
-
     my $values = $self->CustomFieldValues( $field );
-    return undef unless my $first = $values->First;
+    return undef unless my $first = $values->first;
     return $first->Content;
 }
 
@@ -1737,12 +1673,12 @@ sub FirstCustomFieldValue {
 
 # {{{ CustomFieldValues
 
-=head2 CustomFieldValues FIELD
+=head2 CustomFieldValues column
 
 Return a ObjectCustomFieldValues object of all values of the CustomField whose 
-id or Name is FIELD for this record.
+id or Name is column for this record.
 
-Returns an RT::ObjectCustomFieldValues object
+Returns an RT::Model::ObjectCustomFieldValues object
 
 =cut
 
@@ -1751,18 +1687,17 @@ sub CustomFieldValues {
     my $field = shift;
 
     if ( $field ) {
-        my $cf = $self->LoadCustomFieldByIdentifier( $field );
+        my $cf = $self->load_custom_field_by_identifier( $field );
 
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
-            return RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+            return RT::Model::ObjectCustomFieldValues->new( $self->CurrentUser );
         }
         return ( $cf->ValuesForObject($self) );
     }
-
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+    my $ocfs = RT::Model::ObjectCustomFieldValues->new( $self->CurrentUser );
     $ocfs->LimitToObject( $self );
     return $ocfs;
 }
@@ -1771,27 +1706,30 @@ sub CustomFieldValues {
 
 Find the custom field has id or name IDENTIFIER for this object.
 
-If no valid field is found, returns an empty RT::CustomField object.
+If no valid field is found, returns an empty RT::Model::CustomField object.
 
 =cut
 
-sub LoadCustomFieldByIdentifier {
+sub load_custom_field_by_identifier {
     my $self = shift;
     my $field = shift;
-    
-    my $cf = RT::CustomField->new($self->CurrentUser);
+   
+    unless (defined $field) {
+        Carp::confess;
+    }
+    my $cf = RT::Model::CustomField->new($self->CurrentUser);
 
-    if ( UNIVERSAL::isa( $field, "RT::CustomField" ) ) {
-        $cf->LoadById( $field->id );
+    if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
+        $cf->load_by_id( $field->id );
     }
     elsif ($field =~ /^\d+$/) {
-        $cf = RT::CustomField->new($self->CurrentUser);
-        $cf->LoadById($field);
+        $cf = RT::Model::CustomField->new($self->CurrentUser);
+        $cf->load_by_id($field);
     } else {
 
         my $cfs = $self->CustomFields($self->CurrentUser);
-        $cfs->Limit(FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0);
-        $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
+        $cfs->limit(column => 'Name', value => $field, case_sensitive => 0);
+        $cf = $cfs->first || RT::Model::CustomField->new($self->CurrentUser);
     }
     return $cf;
 }
@@ -1810,9 +1748,9 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
-eval "require RT::Record_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});
-eval "require RT::Record_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Local.pm});
+sub DESTROY {}
+sub Table { warn(" deprecated Table call discarded")}
+use vars qw/$AUTOLOAD/;
+sub AUTOLOAD { Carp::cluck $AUTOLOAD . " not found"}
 
 1;

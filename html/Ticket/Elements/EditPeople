@@ -59,12 +59,12 @@
 <input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, UserField => $UserField,
+        UserOp => $UserOp, Usercolumn => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
-	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
+	Groupcolumn => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
 </td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
-<&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
+<&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
 <&|/l&>(Check box to delete)</&><br />
 
@@ -82,10 +82,10 @@
 </table>
 
 <%ARGS>
-$UserField => undef
+$Usercolumn => undef
 $UserOp => undef
 $UserString => undef
-$GroupField => undef
+$Groupcolumn => undef
 $GroupOp => undef
 $GroupString => undef
 $PrivilegedOnly => undef

@@ -76,7 +76,7 @@
 </table>
 
 <p>
-% if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
+% if ($CustomFieldObj->id and $CustomFieldObj->Type =~ /Select/) {
 <h2><&|/l&>Values</&></h2>
 <font size="-1">
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -90,7 +90,7 @@
 
 <%INIT>
 
-my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+my $CustomFieldObj = RT::Model::CustomField->new($session{'CurrentUser'});
 my $EnabledChecked = "CHECKED";
 my (@results);
 
@@ -100,7 +100,7 @@ if (! $CustomField ) {
 } else {
 
     if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, 
+      my ($val, $msg) =  $CustomFieldObj->create(Queue => $Queue, 
                                                  Name => $Name, 
                                                  Type => $Type,
                                                  Description => $Description,
@@ -115,10 +115,10 @@ if (! $CustomField ) {
 	  Abort(loc("Could not create CustomField: [_1]", $msg));
       }
       push @results, $msg;
-      $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
+      $CustomFieldObj->set_SortOrder($CustomFieldObj->id);
       $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
-      $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
+      $CustomFieldObj->load($CustomField) || Abort(loc('No CustomField'));
       $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
@@ -134,7 +134,7 @@ $id = $CustomFieldObj->id;
   my $Disabled = ($Enabled ? 0 : 1);
 
   if  ( ($SetEnabled) and ( $Disabled != $CustomFieldObj->Disabled) ) { 
-      my  ($code, $msg) = $CustomFieldObj->SetDisabled($Disabled);
+      my  ($code, $msg) = $CustomFieldObj->set_Disabled($Disabled);
       push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
   }
   

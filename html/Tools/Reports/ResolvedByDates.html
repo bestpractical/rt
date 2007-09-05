@@ -52,23 +52,23 @@ $ResolvedAfter => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets in period, grouped by owner");
-my $q = RT::Queue->new($session{'CurrentUser'});
+my $q = RT::Model::Queue->new($session{'CurrentUser'});
 my $before = RT::Date->new($session{'CurrentUser'});
 my $after = RT::Date->new($session{'CurrentUser'});
 my $query = '';
 
 
 if ($ResolvedAfter) {
-    $after->Set(Format => 'unknown', Value => $ResolvedAfter);
+    $after->set(Format => 'unknown', value => $ResolvedAfter);
     $ResolvedAfter = $after->AsString;
 }
 if ($ResolvedBefore) {
-    $before->Set(Format => 'unknown', Value => $ResolvedBefore);
+    $before->set(Format => 'unknown', value => $ResolvedBefore);
     $ResolvedBefore = $before->AsString;
 }
 
 
-$q->LoadByCols(Name => $Queue);
+$q->load_by_cols(Name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>

@@ -3,7 +3,7 @@
 use Test::More qw(no_plan);
 
 use RT;
-ok(RT::LoadConfig);
+ok(RT::load_config);
 ok(RT::Init, "Basic initialization and DB connectivity");
 
 use File::Find;

@@ -11,14 +11,14 @@ Group ACLs
         AdminGroupMembers
                 * Add ad delete members of this group
         ModifyOwnMembership
-                * Join and quit this group
+                * join and quit this group
 
 
         the primitives:
        
 In user.pm
 
-=item HasRight  { Right => 'somerightname', ObjectType => 'Group', ObjectId => 'GroupId'
+=item has_right  { Right => 'somerightname', ObjectType => 'Group', ObjectId => 'GroupId'
 
         Returns true if this user has the right 'somerightname' for
 the group with id 'Id'

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
-    id => $CustomFieldObj->Id ,
+    id => $CustomFieldObj->id ,
     current_tab => $current_tab,
     Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
@@ -70,7 +70,7 @@
         Default => $CustomFieldObj->TypeComposite, &>
 </td></tr>
 
-% if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') ) {
+% if ( $CustomFieldObj->id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
 </td></tr>
@@ -119,7 +119,7 @@
 
 </table>
 
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+% if ( $CustomFieldObj->id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -133,7 +133,7 @@
 <%INIT>
 my ($title, @results, $Disabled);
 
-my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
 my $current_tab = 'Admin/CustomFields/Modify.html';
 
 unless ( $id ) {
@@ -143,7 +143,7 @@ unless ( $id ) {
 }
 else {
     if ( $id eq 'new' ) {
-        my ( $val, $msg ) = $CustomFieldObj->Create(
+        my ( $val, $msg ) = $CustomFieldObj->create(
             Name          => $Name,
             TypeComposite => $TypeComposite,
             LookupType    => $LookupType,
@@ -154,7 +154,7 @@ else {
         push @results, $msg;
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
     } else {
-        $CustomFieldObj->Load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
+        $CustomFieldObj->load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
     $current_tab .= "?id=$id";
@@ -171,25 +171,25 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         Object        => $CustomFieldObj,
         ARGSRef       => \%ARGS
     );
-    $CustomFieldObj->SetValuesClass( $ValuesClass );
+    $CustomFieldObj->set_ValuesClass( $ValuesClass );
 
-    my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
+    my $paramtag = "CustomField-". $CustomFieldObj->id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
         next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
-        my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
+        my ($val, $msg) = $CustomFieldObj->deleteValue( $1 );
         push (@results, $msg);
     }
 
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
-    while ( my $value = $values->Next ) {
+    while ( my $value = $values->next ) {
         foreach my $attr qw(Name Description SortOrder Category) {
-            my $param = "$paramtag-". $value->Id ."-". $attr;
+            my $param = "$paramtag-". $value->id ."-". $attr;
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
-            my $mutator = "Set$attr";
+            my $mutator = "set_$attr";
             my ($id, $msg) = $value->$mutator( $ARGS{$param} );
             push (@results, $msg);
         }
@@ -222,5 +222,5 @@ $Pattern => undef
 $Name => undef
 $SetEnabled => undef
 $Enabled => 0
-$ValuesClass => 'RT::CustomFieldValues'
+$ValuesClass => 'RT::Model::CustomFieldValues'
 </%ARGS>

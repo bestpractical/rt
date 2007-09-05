@@ -8,8 +8,8 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 plan tests => 94;
 use RT::Test nodata => 1;
 
-RT->Config->Set( LogToScreen => 'debug' );
-RT->Config->Set( LogStackTraces => 'error' );
+RT->Config->set( LogToScreen => 'debug' );
+RT->Config->set( LogStackTraces => 'error' );
 use Data::Dumper;
 
 use File::Spec ();
@@ -20,11 +20,11 @@ mkdir $homedir;
 use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
-RT->Config->Set( 'GnuPG',
+RT->Config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->Set( 'GnuPGOptions',
+RT->Config->set( 'GnuPGOptions',
                  homedir => $homedir );
 
 

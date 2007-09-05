@@ -52,8 +52,8 @@
 
 % my @types;
 % my $prev_lookup = '';
-% while (my $CustomFieldObj = $CustomFields->Next) {
-%    next unless $CustomFieldObj->CurrentUserHasRight('AdminCustomField');
+% while (my $CustomFieldObj = $CustomFields->next) {
+%    next unless $CustomFieldObj->current_user_has_right('AdminCustomField');
 %    my $lookup = $CustomFieldObj->FriendlyLookupType;
 %    if ($lookup ne $prev_lookup) {
 %        if ($prev_lookup) {
@@ -100,9 +100,9 @@ if ( !$Type && $ARGS{'type'} ) {
     $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
 }
 
-my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
-$CustomFields->UnLimit;
+my $CustomFields = RT::Model::CustomFields->new($session{'CurrentUser'});
+$CustomFields->find_all_rows;
 $CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
-$CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
+$CustomFields->order_by( { column => 'LookupType' }, { column => 'Name' } );
 </%INIT>

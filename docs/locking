@@ -13,7 +13,7 @@ RT Locking
 
 - A lock can be initiated manually by clicking the "Lock" link on one of the pages for the ticket (hard lock)
 
-- A lock is created whenever a user performs an action on a ticket that takes multiple steps (auto lock) if a 
+- A lock is Created whenever a user performs an action on a ticket that takes multiple steps (auto lock) if a 
   hard lock is not already in place for that ticket
 
      Locking Actions in RT:

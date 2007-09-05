@@ -45,8 +45,8 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use RT::Template ();
-package RT::Template;
+use RT::Model::Template ();
+package RT::Model::Template;
 
 use strict;
 use warnings;
@@ -69,8 +69,8 @@ sub __DependsOn
     my $list = [];
 
 # Scrips
-    my $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Template', VALUE => $self->Id );
+    my $objs = RT::Model::Scrips->new( $self->CurrentUser );
+    $objs->limit( column => 'Template', value => $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(

@@ -117,8 +117,8 @@ sub TestArgs
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
         # XXX: it's possible that SystemUser is not available
-        my $user = RT::User->new( $RT::SystemUser );
-        $user->Load( $uid );
+        my $user = RT::Model::User->new( $RT::SystemUser );
+        $user->load( $uid );
         unless( $user->id ) {
             return (0, "Couldn't load user '$uid'" );
         }
@@ -131,36 +131,36 @@ sub Run
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
-    my $objs = RT::Users->new( $RT::SystemUser );
+    my $objs = RT::Model::Users->new( $RT::SystemUser );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
-    # $objs->Columns(qw(id Name EmailAddress Lang Timezone
+    # $objs->columns(qw(id Name EmailAddress Lang Timezone
     #                   Creator Created LastUpdated LastUpdatedBy));
     if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {
             $objs->{'find_disabled_rows'} = 1;
         } elsif( $s eq 'disabled' ) {
             $objs->{'find_disabled_rows'} = 1;
-            $objs->Limit(
-                ALIAS => $objs->PrincipalsAlias,
-                FIELD    => 'Disabled',
-                OPERATOR => '!=',
-                VALUE    => '0',
+            $objs->limit(
+                alias => $objs->PrincipalsAlias,
+                column    => 'Disabled',
+                operator => '!=',
+                value    => '0',
             );
         } else {
             $objs->LimitToEnabled;
         }
     }
     if( $self->{'opt'}{'email'} ) {
-        $objs->Limit( FIELD => 'EmailAddress',
-                  OPERATOR => 'MATCHES',
-                  VALUE => $self->{'opt'}{'email'},
+        $objs->limit( column => 'EmailAddress',
+                  operator => 'MATCHES',
+                  value => $self->{'opt'}{'email'},
                 );
     }
     if( $self->{'opt'}{'name'} ) {
-        $objs->Limit( FIELD => 'Name',
-                  OPERATOR => 'MATCHES',
-                  VALUE => $self->{'opt'}{'name'},
+        $objs->limit( column => 'Name',
+                  operator => 'MATCHES',
+                  value => $self->{'opt'}{'name'},
                 );
     }
 
@@ -171,13 +171,13 @@ sub Run
         );
     } else {
         if( $self->{'opt'}{'limit'} ) {
-            $objs->RowsPerPage( $self->{'opt'}{'limit'} );
+            $objs->rows_per_page( $self->{'opt'}{'limit'} );
         }
     }
     return (1, $objs);
 }
 
-sub SetResolvers
+sub set_Resolvers
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
@@ -189,10 +189,10 @@ sub SetResolvers
             my $t =    $args{'TargetObject'};
             foreach my $method ( qw(Creator LastUpdatedBy) ) {
                 next unless $t->_Accessible( $method => 'read' );
-                $t->__Set( Field => $method, Value => $uid );
+                $t->__set( column => $method, value => $uid );
             }
         };
-        $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );
+        $args{'Shredder'}->PutResolver( BaseClass => 'RT::Model::User', Code => $resolver );
     }
     return (1);
 }
@@ -217,13 +217,13 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
-    $tickets->FromSQL( 'Watcher.id = '. $user->id );
+    my $tickets = RT::Model::Tickets->new( $RT::SystemUser );
+    $tickets->from_sql( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that
     # at least one record exist, so we fetch first row only
-    $tickets->RowsPerPage(1);
-    return !$tickets->First;
+    $tickets->rows_per_page(1);
+    return !$tickets->first;
 }
 
 1;

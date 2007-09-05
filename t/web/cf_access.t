@@ -25,7 +25,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         form_name => "ModifyCustomField",
         fields => {
             TypeComposite => 'Image-0',
-            LookupType => 'RT::Queue-RT::Ticket',
+            LookupType => 'RT::Model::Queue-RT::Model::Ticket',
             Name => 'img',
             Description => 'img',
         },
@@ -35,7 +35,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
 my $cfid;
 {
-    $m->title_is(q/Created CustomField img/, 'admin-cf created');
+    $m->title_is(q/Created CustomField img/, 'admin-cf Created');
     $m->follow_link( text => 'Queues' );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
     $m->follow_link( text => 'General' );
@@ -56,7 +56,7 @@ my $cfid;
     $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
     $m->submit;
 
-    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+    $m->content_like( qr/Object Created/, 'TCF added to the queue' );
 }
 
 my $tester = RT::Test->load_or_create_user( Name => 'tester', Password => '123456' );
@@ -72,20 +72,20 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "CreateTicket_in_queue",
         fields => { Queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
     );
-    $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
+    $m->content_like(qr/Ticket \d+ Created/, "a ticket is Created succesfully");
 
     $m->content_unlike(qr/img:/, 'has no img field on the page');
     $m->follow_link( text => 'Custom Fields');
@@ -103,26 +103,26 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "CreateTicket_in_queue",
         fields => { Queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
     );
-    my $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
-    ok $tid, "a ticket is created succesfully";
+    my $tid = $1 if $m->content =~ /Ticket (\d+) Created/i;
+    ok $tid, "a ticket is Created succesfully";
 
     $m->follow_link( text => 'Custom Fields' );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
     $form = $m->form_number(3);
-    $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";
+    $upload_field = "Object-RT::Model::Ticket-$tid-CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 }
 
@@ -136,13 +136,13 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 my $tid;
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "CreateTicket_in_queue",
         fields => { Queue => 'General' },
     );
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 
     $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
-    my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";
+    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
 
     $m->submit_form(
         form_name => "TicketCreate",
@@ -152,9 +152,9 @@ my $tid;
         },
     );
 
-    $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
+    $m->content_like(qr/Ticket \d+ Created/, "a ticket is Created succesfully");
 
-    $tid = $1 if $m->content =~ /Ticket (\d+) created/;
+    $tid = $1 if $m->content =~ /Ticket (\d+) Created/;
 
     $m->title_like(qr/testing img cf creation/, "its title is the Subject");
 

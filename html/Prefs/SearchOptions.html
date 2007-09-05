@@ -57,8 +57,8 @@
             Format=> $Format, 
             AvailableColumns => $AvailableColumns,  
             CurrentFormat => $CurrentFormat, 
-            RowsPerPage => $RowsPerPage, 
-            OrderBy => $OrderBy, 
+            rows_per_page => $rows_per_page, 
+            order_by => $order_by, 
             Order => $Order &>
 
 <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
@@ -67,17 +67,17 @@
 
 # {{{ If we're saving search preferences, do that now
 $Order = join '|', grep defined && /\S/, (ref $Order)? @{$Order}: $Order;
-$OrderBy = join '|', grep defined && /\S/, (ref $OrderBy)? @{$OrderBy}: $OrderBy;
+$order_by = join '|', grep defined && /\S/, (ref $order_by)? @{$order_by}: $order_by;
 
 $Order       = (ref $Order   ? join('|',grep {/\S/} @{$Order})   : $Order);
-$OrderBy     = (ref $OrderBy ? join('|',grep {/\S/} @{$OrderBy}) : $OrderBy);
+$order_by     = (ref $order_by ? join('|',grep {/\S/} @{$order_by}) : $order_by);
 if ($ARGS{'SavePreferences'}) {
-    $session{'CurrentUser'}->UserObj->SetPreferences("SearchDisplay",
+    $session{'CurrentUser'}->UserObj->set_Preferences("SearchDisplay",
     {
        Format      => $Format,
        Order       => $Order,
-       OrderBy     => $OrderBy,
-       RowsPerPage => $RowsPerPage,
+       order_by     => $order_by,
+       rows_per_page => $rows_per_page,
     });
 }
 
@@ -88,8 +88,8 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 
 $Format      ||= $prefs->{'Format'};
 $Order       ||= ($prefs->{'Order'} || 'ASC');
-$OrderBy     ||= ($prefs->{'OrderBy'} || 'id');
-($RowsPerPage =  defined( $prefs->{'RowsPerPage'} ) ? $prefs->{'RowsPerPage'}  : 50) unless defined ($RowsPerPage);
+$order_by     ||= ($prefs->{'order_by'} || 'id');
+($rows_per_page =  defined( $prefs->{'rows_per_page'} ) ? $prefs->{'rows_per_page'}  : 50) unless defined ($rows_per_page);
 
 my ( $AvailableColumns, $CurrentFormat );
 ( $Format, $AvailableColumns, $CurrentFormat ) = $m->comp(
@@ -102,7 +102,7 @@ my ( $AvailableColumns, $CurrentFormat );
 $Format => undef
 $Description => undef
 $Order => undef
-$OrderBy => undef
-$RowsPerPage => undef
+$order_by => undef
+$rows_per_page => undef
 </%ARGS>
 

@@ -55,7 +55,7 @@
 
  
 <form method="post" action="People.html">
-<input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$QueueObj->id%>" />
 
 <table width="100%">
 <tr>
@@ -94,7 +94,7 @@
 <em><%$user_msg%></em>
 % } elsif ($Users) {
 <ul>
-% while (my $u = $Users->Next ) {
+% while (my $u = $Users->next ) {
 <li><& /Elements/SelectWatcherType,
     Scope => 'queue',
     Name => "Queue-AddWatcher-Principal-". $u->PrincipalId,
@@ -112,7 +112,7 @@
 <em><%$group_msg%></em>
 % } elsif ($Groups) {
 <ul>
-% while (my $g = $Groups->Next ) {
+% while (my $g = $Groups->next ) {
 <li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
 "Queue-AddWatcher-Principal-".$g->PrincipalId &> <%$g->Name%>
 (<%$g->Description%>)
@@ -142,17 +142,17 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
+my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+$QueueObj->load($id) || Abort(loc("Couldn't load queue", $id));
 # }}}
 
 # {{{ Delete deletable watchers
 
 foreach my $key (keys %ARGS) {
-        my $id = $QueueObj->Id;
+        my $id = $QueueObj->id;
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
-	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
+	    my ($code, $msg) = $QueueObj->deleteWatcher(Type => $1,
                                                     PrincipalId => $2);
 	    push @results, $msg;
     }
@@ -179,31 +179,31 @@ if (!length $ARGS{'UserString'}) {
 $user_msg = loc("No principals selected.");
  }
 else {
-    $Users = new RT::Users($session{'CurrentUser'});
-    $Users->Limit(FIELD => $ARGS{'UserField'},
-                 VALUE => $ARGS{'UserString'},
-                 OPERATOR => $ARGS{'UserOp'});
+    $Users = new RT::Model::Users($session{'CurrentUser'});
+    $Users->limit(column => $ARGS{'UserField'},
+                 value => $ARGS{'UserString'},
+                 operator => $ARGS{'UserOp'});
      }
 
 if (!length $ARGS{'GroupString'}) {
 $group_msg = loc("No principals selected.");
  }
 else {
-$Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-$Groups->Limit(FIELD => $ARGS{'GroupField'},
-		VALUE => $ARGS{'GroupString'},
-		OPERATOR => $ARGS{'GroupOp'});
+$Groups = new RT::Model::Groups($session{'CurrentUser'});
+$Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
+$Groups->limit(column => $ARGS{'GroupField'},
+		value => $ARGS{'GroupString'},
+		operator => $ARGS{'GroupOp'});
      }
 
 $current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 </%INIT>
 
 <%ARGS>
-$UserField => 'Name'
+$Usercolumn => 'Name'
 $UserOp => '='
 $UserString => undef
-$GroupField => 'Name'
+$Groupcolumn => 'Name'
 $GroupOp => '='
 $GroupString => undef
 $Type => undef

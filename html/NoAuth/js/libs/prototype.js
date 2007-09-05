@@ -1125,7 +1125,7 @@ if (Prototype.BrowserFeatures.XPath) {
   document._getElementsByXPath = function(expression, parentElement) {
     var results = [];
     var query = document.evaluate(expression, $(parentElement) || document,
-      null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+      null, XPathResult.orderED_NODE_SNAPSHOT_TYPE, null);
     for (var i = 0, length = query.snapshotLength; i < length; i++)
       results.push(query.snapshotItem(i));
     return results;
@@ -2230,7 +2230,7 @@ Object.extend(Event, {
   KEY_TAB:       9,
   KEY_RETURN:   13,
   KEY_ESC:      27,
-  KEY_LEFT:     37,
+  KEY_left:     37,
   KEY_UP:       38,
   KEY_RIGHT:    39,
   KEY_DOWN:     40,

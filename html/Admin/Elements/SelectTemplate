@@ -49,15 +49,15 @@
 <option value="" 
 <% defined($Default) && $Default eq 'none' && 'SELECTED' %>
 >-</option>
-%while  (my $Template = $PrimaryTemplates->Next) {
-<option value="<%$Template->Id%>"
-<% ($Template->Id == $Default) && 'SELECTED' %>
+%while  (my $Template = $PrimaryTemplates->next) {
+<option value="<%$Template->id%>"
+<% ($Template->id == $Default) && 'SELECTED' %>
 ><% loc($Template->Name) %>
 </option>
 %}
-%while  (my $Template = $OtherTemplates->Next) {
-<option value="<%$Template->Id%>"
-<% defined($Default) && ($Template->Id == $Default)  && 'SELECTED'%>
+%while  (my $Template = $OtherTemplates->next) {
+<option value="<%$Template->id%>"
+<% defined($Default) && ($Template->id == $Default)  && 'SELECTED'%>
 ><&|/l, loc($Template->Name) &>Global template: [_1]</&>
 </option>
 %}
@@ -66,12 +66,12 @@
 <%INIT>
 
 
-my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
+my $PrimaryTemplates = RT::Model::Templates->new($session{'CurrentUser'});
 if ($Queue != 0) {
 $PrimaryTemplates->LimitToQueue($Queue);
 }
 
-my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
+my $OtherTemplates = RT::Model::Templates->new($session{'CurrentUser'});
 $OtherTemplates->LimitToGlobal($DefaultQueue);
 
 </%INIT>

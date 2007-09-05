@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select multiple name="<%$Name%>"  size="10">
-%while (my $group = $groups->Next) {
+%while (my $group = $groups->next) {
 <option value="<%$group->id%>"><%$group->Name%>
 %}
 </select>
 
 <%INIT>
-my $groups = new RT::Groups($session{'CurrentUser'});
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
+my $groups = new RT::Model::Groups($session{'CurrentUser'});
+$groups->limit(column => 'Domain', operator => '=', value => $Domain);
 
 </%INIT>
 <%ARGS>

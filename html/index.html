@@ -84,8 +84,8 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 my @results;
 
 if ( $ARGS{'QuickCreate'} ) {
-    my $ticket = RT::Ticket->new($session{'CurrentUser'});
-    my ($tid, $trans, $tmsg) = $ticket->Create(Queue => $ARGS{'Queue'},
+    my $ticket = RT::Model::Ticket->new($session{'CurrentUser'});
+    my ($tid, $trans, $tmsg) = $ticket->create(Queue => $ARGS{'Queue'},
                     Owner => $ARGS{'Owner'},
                     Requestor => $session{'CurrentUser'}->id,
                     Subject => $ARGS{'Subject'});
@@ -104,7 +104,7 @@ if ($ARGS{'HomeRefreshInterval'}) {
 }
 
 my $actions;
-if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
+if ($session{'CurrentUser'}->has_right(Right => 'ModifySelf', Object => $RT::System)) {
     $actions = {
         A => { title => loc('Edit'),
                path  => 'Prefs/MyRT.html',

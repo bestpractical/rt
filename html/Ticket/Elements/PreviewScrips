@@ -51,7 +51,7 @@ $TicketObj => undef
 </%args>
 <%init>
 
-my $arg = 'Ticket-'.$TicketObj->Id.'-SquelchMailTo';
+my $arg = 'Ticket-'.$TicketObj->id.'-SquelchMailTo';
 my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@squelchto) {
@@ -59,7 +59,7 @@ foreach my $address (@squelchto) {
 }
 
 
-$arg = 'Ticket-'.$TicketObj->Id.'-UnsquelchMailTo';
+$arg = 'Ticket-'.$TicketObj->id.'-UnsquelchMailTo';
 my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@unsquelchto) {
@@ -100,7 +100,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 % if ( $Object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
-% foreach my $scrip (@{$Object->Scrips->Prepared}) {
+% foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
 <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
 <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
@@ -131,4 +131,4 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <% $recipient->Content %>
 % }
 </ul>
-<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>  
+<& /Elements/Submit, value => 'UpdatePreview', Label => loc('Save changes')&>  

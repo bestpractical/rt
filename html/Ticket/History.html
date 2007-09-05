@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Header, Title => loc("Ticket History # [_1] [_2]", $Ticket->id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
-    Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
+    Title => loc("Ticket History # [_1] [_2]", $Ticket->id, $Ticket->Subject) &>
 
 <& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
 
@@ -71,9 +71,9 @@ $id => undef
 
   
 
-my $Ticket = LoadTicket ($id);
+my $Ticket = load_ticket ($id);
 
-unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+unless ($Ticket->current_user_has_right('ShowTicket')) {
 	Abort("No permission to view ticket");
 }
 

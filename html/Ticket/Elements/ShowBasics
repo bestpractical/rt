@@ -48,7 +48,7 @@
 <table>
   <tr>
     <td class="label id"><&|/l&>Id</&>:</td>
-    <td class="value id"><%$Ticket->Id %></td>
+    <td class="value id"><%$Ticket->id %></td>
   </tr>
   <tr>
     <td class="label status"><&|/l&>Status</&>:</td>

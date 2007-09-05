@@ -53,8 +53,8 @@
 my $message = '';
 
 if ( $QuoteTransaction ) {
-    my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
-    $transaction->Load( $QuoteTransaction );
+    my $transaction = RT::Model::Transaction->new( $session{'CurrentUser'} );
+    $transaction->load( $QuoteTransaction );
     $message = $transaction->Content( Quote => 1 );
 }
 

@@ -112,6 +112,6 @@
 $Queue => undef
 </%args>
 <%init>
-my $queue_obj = RT::Queue->new($session{'CurrentUser'});
-$queue_obj->Load($Queue);
+my $queue_obj = RT::Model::Queue->new($session{'CurrentUser'});
+$queue_obj->load($Queue);
 </%init>

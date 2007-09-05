@@ -13,9 +13,9 @@ plan tests => 16;
 diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
+    my $queue = RT::Model::Queue->new( $RT::SystemUser );
+    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    ok($id, 'Created queue') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $queue );
@@ -26,19 +26,19 @@ diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
+    my $queue = RT::Model::Queue->new( $RT::SystemUser );
+    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    ok($id, 'Created queue') or diag "error: $msg";
 
-    my $scrip = RT::Scrip->new( $RT::SystemUser );
-    ($id, $msg) = $scrip->Create(
+    my $scrip = RT::Model::Scrip->new( $RT::SystemUser );
+    ($id, $msg) = $scrip->create(
         Description    => 'my scrip',
         Queue          => $queue->id,
         ScripCondition => 'On Create',
         ScripAction    => 'Open Tickets',
         Template       => 'Blank',
     );
-    ok($id, 'created scrip') or diag "error: $msg";
+    ok($id, 'Created scrip') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $queue );
@@ -49,17 +49,17 @@ diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
 diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
+    my $queue = RT::Model::Queue->new( $RT::SystemUser );
+    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    ok($id, 'Created queue') or diag "error: $msg";
 
-    my $template = RT::Template->new( $RT::SystemUser );
-    ($id, $msg) = $template->Create(
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    ($id, $msg) = $template->create(
         Name => 'my template',
         Queue => $queue->id,
         Content => "\nsome content",
     );
-    ok($id, 'created template') or diag "error: $msg";
+    ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
 	$shredder->PutObjects( Objects => $queue );
@@ -70,12 +70,12 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
+    my $queue = RT::Model::Queue->new( $RT::SystemUser );
+    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    ok($id, 'Created queue') or diag "error: $msg";
 
-    my $group = RT::Group->new( $RT::SystemUser );
-    $group->LoadSystemInternalGroup('Everyone');
+    my $group = RT::Model::Group->new( $RT::SystemUser );
+    $group->load_system_internal_group('Everyone');
     ok($group->id, 'loaded group');
 
     ($id, $msg) = $group->PrincipalObj->GrantRight(
@@ -94,14 +94,14 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
 {
 # XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
 #	create_savepoint('clean');
-    my $group = RT::Group->new( $RT::SystemUser );
-    my ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
-    ok($id, 'created group') or diag "error: $msg";
+    my $group = RT::Model::Group->new( $RT::SystemUser );
+    my ($id, $msg) = $group->create_userDefinedGroup(Name => 'my group');
+    ok($id, 'Created group') or diag "error: $msg";
 
 	create_savepoint('bqcreate');
-    my $queue = RT::Queue->new( $RT::SystemUser );
-    ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
+    my $queue = RT::Model::Queue->new( $RT::SystemUser );
+    ($id, $msg) = $queue->create( Name => 'my queue' );
+    ok($id, 'Created queue') or diag "error: $msg";
 
     ($id, $msg) = $queue->AddWatcher(
         Type   => 'Cc',

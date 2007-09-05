@@ -78,9 +78,9 @@ should become 	<& /Elements/TitleBoxStart,
 
 Within RT's core code, every module has a localization handle available through the 'loc' method:
 
-The code 	return ( $id, "Queue created" );
+The code 	return ( $id, "Queue Created" );
 
-should become 	return ( $id, $self->loc("Queue created") );	
+should become 	return ( $id, $self->loc("Queue Created") );	
 
 When returning or localizing a single string, the "extra" set of parenthesis () should be omitted.
 

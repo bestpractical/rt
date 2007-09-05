@@ -89,8 +89,8 @@ sub Describe  {
 # }}}
 	
 
-# {{{ sub Prepare 
-sub Prepare  {
+# {{{ sub prepare 
+sub prepare  {
     my $self = shift;
     
     if ($self->TicketObj->Priority() == $self->TicketObj->FinalPriority()) {
@@ -150,9 +150,9 @@ sub Prepare  {
 }
 # }}}
 
-sub Commit {
+sub commit {
     my $self = shift;
-   my ($val, $msg) = $self->TicketObj->SetPriority($self->{'prio'});
+   my ($val, $msg) = $self->TicketObj->set_Priority($self->{'prio'});
 
    unless ($val) {
 	$RT::Logger->debug($self . " $msg\n"); 

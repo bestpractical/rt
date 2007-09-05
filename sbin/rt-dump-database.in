@@ -54,7 +54,7 @@ use lib "@RT_LIB_PATH@";
 use RT;
 use XML::Simple;
 
-RT::LoadConfig();
+RT::load_config();
 RT::Init();
 
 my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
@@ -69,7 +69,7 @@ my %Ignore = (
     )],
 );
 
-my $SystemUserId = $RT::SystemUser->Id;
+my $SystemUserId = $RT::SystemUser->id;
 my @classes = qw(
     Users Groups Queues ScripActions ScripConditions
     Templates Scrips ACL CustomFields
@@ -78,31 +78,31 @@ foreach my $class (@classes) {
     require "RT/$class.pm";
     my $objects = "RT::$class"->new($RT::SystemUser);
     $objects->{find_disabled_rows} = 1;
-    $objects->UnLimit;
+    $objects->find_all_rows;
 
     if ($class eq 'CustomFields') {
-        $objects->OrderByCols(
-            { FIELD => 'LookupType' },
-            { FIELD => 'SortOrder' },
-            { FIELD => 'Id' },
+        $objects->order_by(
+            { column => 'LookupType' },
+            { column => 'SortOrder' },
+            { column => 'Id' },
         );
     }
     else {
-        $objects->OrderBy( FIELD => 'Id' );
+        $objects->order_by( column => 'Id' );
     }
 
     if ($LocalOnly) {
         next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
-	$objects->Limit( FIELD => 'LastUpdatedBy', OPERATOR => '!=', VALUE => $SystemUserId )
+	$objects->limit( column => 'LastUpdatedBy', operator => '!=', value => $SystemUserId )
 	    unless $class eq 'Groups';
-	$objects->Limit( FIELD => 'Id', OPERATOR => '!=', VALUE => $SystemUserId )
+	$objects->limit( column => 'Id', operator => '!=', value => $SystemUserId )
 	    if $class eq 'Users';
-	$objects->Limit( FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined' )
+	$objects->limit( column => 'Domain', operator => '=', value => 'UserDefined' )
 	    if $class eq 'Groups';
     }
 
     my %fields;
-    while (my $obj = $objects->Next) {
+    while (my $obj = $objects->next) {
 	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $SystemUserId;
 
 	if (!%fields) {
@@ -116,7 +116,7 @@ foreach my $class (@classes) {
 	my $rv;
 	# next if $obj-> # skip default names
 	foreach my $field (sort keys %fields) {
-	    my $value = $obj->__Value($field);
+	    my $value = $obj->__value($field);
 	    $rv->{$field} = $value if length($value);
 	}
 	delete $rv->{Disabled} unless $rv->{Disabled};
@@ -126,8 +126,8 @@ foreach my $class (@classes) {
 		next unless exists $rv->{$key};
 		my $id = $rv->{$key} or next;
 		my $obj = "RT::$record"->new($RT::SystemUser);
-		$obj->LoadByCols( Id => $id ) or next;
-		$rv->{$key} = $obj->__Value('Name') || 0;
+		$obj->load_by_cols( Id => $id ) or next;
+		$rv->{$key} = $obj->__value('Name') || 0;
 	    }
 	}
 
@@ -136,18 +136,18 @@ foreach my $class (@classes) {
 	}
 	elsif ($class eq 'CustomFields') {
 	    my $values = $obj->Values;
-	    while (my $value = $values->Next) {
+	    while (my $value = $values->next) {
 		push @{$rv->{Values}}, {
-		    map { ($_ => $value->__Value($_)) } qw(
+		    map { ($_ => $value->__value($_)) } qw(
 			Name Description SortOrder
 		    ),
 		};
 	    }
 	}
 
-	if (eval { require RT::Attributes; 1 }) {
-	    my $attributes = $obj->Attributes;
-	    while (my $attribute = $attributes->Next) {
+	if (eval { require RT::Model::Attributes; 1 }) {
+	    my $attributes = $obj->attributes;
+	    while (my $attribute = $attributes->next) {
 		my $content = $attribute->Content;
 		$rv->{Attributes}{$attribute->Name} = $content if length($content);
 	    }

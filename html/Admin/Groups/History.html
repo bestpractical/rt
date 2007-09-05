@@ -59,8 +59,8 @@
 
 <%INIT>
 my $current_tab = 'Admin/Groups/History.html?id='.$id;
-my $GroupObj = new RT::Group($session{'CurrentUser'});
-$GroupObj->Load($id) || Abort("Couldn't load group '$id'");
+my $GroupObj = new RT::Model::Group($session{'CurrentUser'});
+$GroupObj->load($id) || Abort("Couldn't load group '$id'");
 my $title = loc("History of the group [_1]", $GroupObj->Name);
 </%INIT>
 <%ARGS>

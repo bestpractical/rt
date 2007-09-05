@@ -27,9 +27,9 @@ msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -52,7 +52,7 @@ msgid "$prefix %1"
 msgstr "$prefix %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -157,7 +157,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Alle Rechte vorbehalten 1996-%3 %4."
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "ScripAction %1 geladen"
 
@@ -228,7 +228,7 @@ msgstr "%1 konnte den Status nicht auf erledigt setzen. Die RT-Datenbank könnte
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "%1 erstellt"
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -469,7 +469,7 @@ msgid "ACE not found"
 msgstr "ACE nicht gefunden"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACEs können nur erstellt und gelöscht werden."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -693,19 +693,19 @@ msgid "Approval"
 msgstr "Freigabe"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Freigabe #%1: %2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Freigabe #%1: Notiz wurde aufgrund eines Systemfehlers nicht gespeichert"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Freigabe #%1: Notiz gespeichert"
 
@@ -763,7 +763,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "Anhang '%1' konnte nicht geladen werden"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Anhang erstellt"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1175,7 +1175,7 @@ msgid "Couldn't find that value"
 msgstr "Konnte diesen Wert nicht finden"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Konnte %1 nicht aus der Benutzerdatenbank laden.\\n"
 
@@ -1190,7 +1190,7 @@ msgid "Couldn't load CustomField %1"
 msgstr "Konnte das benutzerdefinierte Feld %1 nicht laden"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
@@ -1263,7 +1263,7 @@ msgstr "Ziel '%1' kann nicht zu einer URI aufgelöst werden."
 msgid "Country"
 msgstr "Land"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Erstellen"
 
@@ -1309,7 +1309,7 @@ msgstr "Erstelle ein Scrip für den Bereich %1"
 msgid "Create a template"
 msgstr "Erstelle eine Vorlage"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Neue Anfrage"
 
@@ -1844,18 +1844,18 @@ msgstr "Fehler"
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Fehler in den Parametern zu Queue->AddWatcher"
 
-# Queue->DeleteWatcher ist ein Code-Teil, nicht übersetzen
+# Queue->deleteWatcher ist ein Code-Teil, nicht übersetzen
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Fehler in den Parametern zu Queue->DeleteWatcher"
+msgid "Error in parameters to Queue->deleteWatcher"
+msgstr "Fehler in den Parametern zu Queue->deleteWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Fehler in den Parametern zu Ticket->AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr "Fehler in den Parametern zu Ticket->DeleteWatcher"
+msgid "Error in parameters to Ticket->deleteWatcher"
+msgstr "Fehler in den Parametern zu Ticket->deleteWatcher"
 
 #: bin/rt-crontool:285
 msgid "Escalate tickets"
@@ -2062,11 +2062,11 @@ msgstr "Gruppe hat bereits Mitglieder"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "Gruppe konnte nicht erstellt werden: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Gruppe angelegt"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2283,7 +2283,7 @@ msgid "Jan."
 msgstr "Jan."
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "Betrete oder verlasse diese Gruppe"
 
 #: lib/RT/Date.pm:447
@@ -2347,7 +2347,7 @@ msgid "Link already exists"
 msgstr "Beziehung existiert bereits"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Beziehung konnte nicht erstellt werden"
 
 #: lib/RT/Record.pm:1326
@@ -2361,7 +2361,7 @@ msgstr "Beziehung konnte nicht erstellt werden"
 #: lib/RT/Record.pm:1316
 #: lib/RT/Record.pm:1316
 #: lib/RT/Record.pm:1316
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Beziehung erstellt (%1)"
 
 #: lib/RT/Record.pm:1387
@@ -2383,7 +2383,7 @@ msgid "Link not found"
 msgstr "Beziehung nicht gefunden"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "Verweise auf Anfrage #%1"
 
@@ -2677,12 +2677,12 @@ msgid "Modify associated objects for %1"
 msgstr "Ändern der assoziierte Objekte von %1"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "Ändere Datumsangaben für #%1"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "Ändere Datumsangaben für Anfrage #%1"
 
@@ -2740,7 +2740,7 @@ msgstr "Ändere Personen im Zusammenhang mit diesem Bereich %1"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "Ändere Personen der Anfragen #%1"
 
@@ -2782,12 +2782,12 @@ msgid "Modify the user %1"
 msgstr "Ändere Benutzer %1"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "Ändere Anfrage #%1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "Ändere Anfrage #%1"
 
@@ -2977,7 +2977,7 @@ msgstr "Neue Anfrage existiert nicht"
 msgid "New user"
 msgstr "Neuer Benutzer"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "Neuer Benutzer aufgerufen"
 
@@ -3128,8 +3128,8 @@ msgid "No users matching search criteria found."
 msgstr "Keine auf die Suchkriterien passende Benutzer gefunden"
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
-msgstr "Kein Wert an _Set geschickt!\\n"
+msgid "No value sent to _set!\\n"
+msgstr "Kein Wert an _set geschickt!\\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -3240,7 +3240,7 @@ msgid "OR"
 msgstr "Oder"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Objekt konnte nicht erstellt werden"
 
 #: lib/RT/Record.pm:123
@@ -3248,7 +3248,7 @@ msgid "Object could not be deleted"
 msgstr "Objekt konnte nicht gelöscht werden"
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Objekt erstellt"
 
 #: lib/RT/Record.pm:120
@@ -3327,13 +3327,13 @@ msgid "On Transaction"
 msgstr "Bei einer Transaktion"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "Zeige nur Freigaben für nach dem %1 erstelle Anfragen"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr "Zeige nur Freigaben für vor dem %1 erstellte Anfragen"
 
 #: html/Admin/CustomFields/index.html:75
@@ -3373,7 +3373,7 @@ msgid "Organization"
 msgstr "Organisation"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Ursprüngliche Anfrage: #%1"
 
@@ -3596,7 +3596,7 @@ msgid "Queue already exists"
 msgstr "Bereich existiert bereits"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "Bereich konnte nicht angelegt werden"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -3604,7 +3604,7 @@ msgid "Queue could not be loaded."
 msgstr "Bereich konnte nicht geladen werden"
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "Bereich angelegt"
 
 #: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
@@ -3743,7 +3743,7 @@ msgid "Reminder '%1' reopened"
 msgstr "Wiedervorlage '%1' erneut geöffnet"
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr "Wiedervorlage Anfrage #%1"
 
@@ -3752,7 +3752,7 @@ msgid "Reminders"
 msgstr "Wiedervorlage"
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr "Wiedervorlage für Anfrage #%1"
 
@@ -3964,7 +3964,7 @@ msgid "Saved searches"
 msgstr "Gespeicherte Suchanfragen"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr "Scrip #%1"
@@ -4087,7 +4087,7 @@ msgstr "Wählen Sie eine Gruppe aus"
 msgid "Select a queue"
 msgstr "Stapel auswählen"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Wählen Sie einen Bereich für Ihre neue Anfrage"
 
@@ -4459,7 +4459,7 @@ msgid "Template"
 msgstr "Vorlage"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "Vorlage #%1"
 
@@ -4642,29 +4642,29 @@ msgid "Thu."
 msgstr "Do."
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Anfrage #%1 Alles aktualisieren: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Anfrage #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "Anfrage %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "Anfrage %1 wurde im Bereich '%2' angelegt"
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "Anfrage %1: %2"
 
@@ -4673,7 +4673,7 @@ msgid "Ticket Custom Fields"
 msgstr "Benutzerdefinierte Anfrage Felder"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Geschichte von Anfrage #%1 %2"
 
@@ -4694,7 +4694,7 @@ msgid "Ticket content type"
 msgstr "Art des Inhalts der Anfrage"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "Anfrage konnte aufgrund eines internen Fehlers nicht angelegt werden"
 
 #: html/Ticket/Display.html:55
@@ -4705,7 +4705,7 @@ msgstr "Anfrage Metadaten"
 msgid "Ticket status changed"
 msgstr "Status der Anfrage geändert"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr "TicketSQL Suchmodul"
@@ -4715,11 +4715,11 @@ msgid "Tickets"
 msgstr "Anfragen"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr "Anfragen erstellt nach"
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr "Anfragen erstellt vor"
 
 #: html/Tools/Reports/ResolvedByDates.html:87
@@ -4810,8 +4810,8 @@ msgid "Transaction Custom Fields"
 msgstr "Benutzerdefinierte Felder bei Transaktionen"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transaction->Create fehlgeschlagen, da Objekttyp und ID nicht angegeben wurden"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
+msgstr "Transaction->create fehlgeschlagen, da Objekttyp und ID nicht angegeben wurden"
 
 #: lib/RT/Transaction_Overlay.pm:870
 msgid "Transactions are immutable"
@@ -4844,7 +4844,7 @@ msgid "Unknown field: $key"
 msgstr "Unbekanntes Feld: $key"
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "unbegrenzt"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -4994,11 +4994,11 @@ msgstr "Benutzer hat einen unbekannten Aktualisierungstyp für das benutzerdefin
 #: html/Admin/Users/Modify.html:292
 #: html/Admin/Users/Modify.html:292
 #: html/Admin/Users/Modify.html:292
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "Benutzer konnte nicht angelegt werden: %1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Benutzer angelegt"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -5071,11 +5071,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "Wenn das Ticket freigegeben wurde von einer involvierten Personen, füge die Korrespondenz dem original Ticket hinzu"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "Wenn eine Anfrage erstellt wird"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Wenn ein freizugebendes Ticket erstellt wurde, informiere den Besitzer und den AdminCc des Tickets über die anstehende Freigabe"
 
 #: etc/initialdata:151
@@ -5401,7 +5401,7 @@ msgid "ticket #%1 %2"
 msgstr "Anfrage #%1 %2"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr "unbeschriebene Gruppe %1"
 

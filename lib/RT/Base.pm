@@ -73,7 +73,7 @@ RT::Base
 
 If called with an argument, sets the current user to that user object.
 This will affect ACL decisions, etc. The argument can be either
-L<RT::CurrentUser> or L<RT::User> object.
+L<RT::CurrentUser> or L<RT::Model::User> object.
 
 Returns the current user object of L<RT::CurrentUser> class.
 
@@ -81,34 +81,13 @@ Returns the current user object of L<RT::CurrentUser> class.
 
 sub CurrentUser {
     my $self = shift;
-
     if (@_) {
-        $self->{'original_user'} = $self->{'user'};
-        my $current_user = $_[0];
-        if ( ref $current_user eq 'RT::User' ) {
-            $self->{'user'} = new RT::CurrentUser;
-            $self->{'user'}->Load( $current_user->id );
-        } else {
-            $self->{'user'} = $current_user;
-        }
-        # We need to weaken the CurrentUser ($self->{'user'}) reference
-        # if the object in question is the currentuser object.
-        # This avoids memory leaks.
-        Scalar::Util::weaken($self->{'user'})
-            if ref $self->{'user'} && $self->{'user'} == $self;
+        $self->{'user'} = shift @_;
+
     }
+    return $self->{'user'};
 
-    unless ( ref $self->{'user'} && $self->{'user'}->isa('RT::CurrentUser') ) {
-        my $msg = "$self was created without a CurrentUser."
-            ." Any RT object which is subclass of RT::Base must be created"
-            ." with a RT::CurrentUser or a RT::User obejct as the first argument.";
-        $msg .= "\n". Carp::cluck() if @_;
 
-        $RT::Logger->err( $msg );
-        return $self->{'user'} = undef;
-    }
-
-    return ( $self->{'user'} );
 }
 
 # }}}
@@ -146,9 +125,8 @@ sub loc {
         return $user->loc(@_);
     }
     else {
-        require Carp;
-        Carp::confess("No currentuser");
-        return ("Critical error:$self has no CurrentUser", $self);
+        return $self->CurrentUser->loc(@_);
+
     }
 }
 
@@ -163,11 +141,5 @@ sub loc_fuzzy {
         return ("Critical error:$self has no CurrentUser", $self);
     }
 }
-
-eval "require RT::Base_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
-eval "require RT::Base_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
-
 
 1;

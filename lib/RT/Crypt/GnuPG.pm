@@ -79,9 +79,9 @@ and set almost any option 'gnupg' supports on your system.
 
 =head3 Enabling GnuPG
 
-Set to true value to enable this subsystem:
+set to true value to enable this subsystem:
 
-    Set( %GnuPG,
+    set( %GnuPG,
         Enable => 1,
         ... other options ...
     );
@@ -94,7 +94,7 @@ the handling of incoming encrypted/signed messages.
 Format of outgoing messages can be controlled using the 'OutgoingMessagesFormat'
 option in the RT config:
 
-    Set( %GnuPG,
+    set( %GnuPG,
         ... other options ...
         OutgoingMessagesFormat => 'RFC',
         ... other options ...
@@ -102,7 +102,7 @@ option in the RT config:
 
 or
 
-    Set( %GnuPG,
+    set( %GnuPG,
         ... other options ...
         OutgoingMessagesFormat => 'Inline',
         ... other options ...
@@ -143,7 +143,7 @@ Some GnuPG options take arguments while others take none. (Such as  --use-agent)
 For options without specific value use C<undef> as hash value.
 To disable these option just comment them out or delete them from the hash
 
-    Set(%GnuPGOptions,
+    set(%GnuPGOptions,
         'option-with-value' => 'value',
         'enabled-option-without-value' => undef,
         # 'commented-option' => 'value or undef',
@@ -196,7 +196,7 @@ at the bottom and two checkboxes to choose default actions.
 To enable handling of encryped and signed message in the RT you should add
 'Auth::GnuPG' mail plugin.
 
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
+    set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
 
 See also `perldoc lib/RT/Interface/Email/Auth/GnuPG.pm`.
 
@@ -211,6 +211,10 @@ Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
 in RT's templates are not available in these templates, but each template
 used for errors reporting has set of available data structures you can use to
 build better messages. See default templates and descriptions below.
+
+As well, you can disable particular notification by deleting content of
+a template. You can delete a template too, but in this case you'll see
+error messages in the logs when RT can not load template you've deleted.
 
 =head3 Problems with public keys
 
@@ -244,7 +248,16 @@ corruptio or absence of expected information.
 In this template C<@Messages> array is available and contains list
 of error messages.
 
-=head1 FUNCTIONS
+=head1 FOR DEVELOPERS
+
+=head2 Documentation and references
+
+* RFC1847 - Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
+Describes generic MIME security framework, "mulitpart/signed" and "multipart/encrypted"
+MIME types.
+
+* RFC3156 - MIME Security with Pretty Good Privacy (PGP),
+updates RFC2015.
 
 =cut
 
@@ -380,12 +393,6 @@ sub SignEncryptRFC3156 {
         @_
     );
 
-    my $entity = $args{'Entity'};
-
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -396,6 +403,16 @@ sub SignEncryptRFC3156 {
         armor => 1,
         meta_interactive => 0,
     );
+
+    my $entity = $args{'Entity'};
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined $args{'Passphrase'};
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my %res;
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
@@ -554,10 +571,6 @@ sub _SignEncryptTextInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -568,6 +581,14 @@ sub _SignEncryptTextInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ )
@@ -638,10 +659,6 @@ sub _SignEncryptAttachmentInline {
     );
     return unless $args{'Sign'} || $args{'Encrypt'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
-    }
-
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
@@ -652,6 +669,14 @@ sub _SignEncryptAttachmentInline {
         armor => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
@@ -739,9 +764,9 @@ sub FindProtectedParts {
             my $type = $1? 'signed': 'encrypted';
             $RT::Logger->debug("Found $type inline part");
             return {
-                Type   => $type,
-                Format => 'Inline',
-                Data   => $entity,
+                Type    => $type,
+                Format  => 'Inline',
+                Data  => $entity,
             };
         }
         $io->close;
@@ -768,11 +793,11 @@ sub FindProtectedParts {
             }
             $RT::Logger->debug("Found encrypted according to RFC3156 part");
             return {
-                Type   => 'encrypted',
-                Format => 'RFC3156',
-                Top    => $entity,
-                Data   => $entity->parts(1),
-                Info   => $entity->parts(0),
+                Type    => 'encrypted',
+                Format  => 'RFC3156',
+                Top   => $entity,
+                Data  => $entity->parts(1),
+                Info    => $entity->parts(0),
             };
         } else {
             unless ( $protocol eq 'application/pgp-signature' ) {
@@ -783,58 +808,61 @@ sub FindProtectedParts {
             return {
                 Type      => 'signed',
                 Format    => 'RFC3156',
-                Top       => $entity,
-                Data      => $entity->parts(0),
+                Top     => $entity,
+                Data    => $entity->parts(0),
                 Signature => $entity->parts(1),
             };
         }
     }
 
     # attachments signed with signature in another part
-    my @file_signatures =
-        grep $_->head->recommended_filename,
-        grep $_->effective_type eq 'application/pgp-signature',
-        $entity->parts;
+    my @file_indices =
+        grep {$entity->parts($_)->head->recommended_filename}
+        grep {$entity->parts($_)->effective_type eq 'application/pgp-signature'}
+            0 .. $entity->parts - 1;
 
     my (@res, %skip);
-    foreach my $sig_part ( @file_signatures ) {
+    foreach my $i ( @file_indices ) {
+        my $sig_part = $entity->parts($i);
         $skip{"$sig_part"}++;
         my $sig_name = $sig_part->head->recommended_filename;
         my ($file_name) = $sig_name =~ /^(.*?)(?:.sig)?$/;
-        my ($data_part) =
-            grep $file_name eq ($_->head->recommended_filename||''),
-            grep $_ ne $sig_part,
-            $entity->parts;
-        unless ( $data_part ) {
+
+        my ($data_part_idx) =
+            grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
+            grep $sig_part  ne  $entity->parts($_),
+                0 .. $entity->parts - 1;
+        unless ( defined $data_part_idx ) {
             $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
             next;
         }
+        my $data_part_in = $entity->parts($data_part_idx);
 
-        $skip{"$data_part"}++;
+        $skip{"$data_part_in"}++;
         $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
         push @res, {
             Type      => 'signed',
             Format    => 'Attachment',
-            Top       => $entity,
-            Data      => $data_part,
+            Top     => $entity,
+            Data    => $data_part_in,
             Signature => $sig_part,
         };
     }
 
     # attachments with inline encryption
-    my @encrypted_files =
-        grep $_->head->recommended_filename
-            && $_->head->recommended_filename =~ /\.pgp$/,
-        $entity->parts;
+    my @encrypted_indices =
+        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.pgp$/}
+            0 .. $entity->parts - 1;
 
-    foreach my $part ( @encrypted_files ) {
+    foreach my $i ( @encrypted_indices ) {
+        my $part = $entity->parts($i);
         $skip{"$part"}++;
         $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
         push @res, {
             Type      => 'encrypted',
             Format    => 'Attachment',
-            Top       => $entity,
-            Data      => $part,
+            Top     => $entity,
+            Data    => $part,
         };
     }
 
@@ -1006,6 +1034,15 @@ sub DecryptRFC3156 {
         meta_interactive => 0,
     );
 
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
@@ -1041,17 +1078,22 @@ sub DecryptRFC3156 {
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'error'} ) if $res{'error'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $@ || $? ) {
-        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-        return %res;
+
+    # if the decryption is fine but the signature is bad, then without this
+    # status check we lose the decrypted text
+    # XXX: add argument to the function to control this check
+    if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
+        if ( $@ || $? ) {
+            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            return %res;
+        }
     }
 
     seek $tmp_fh, 0, 0;
-    my $parser = new MIME::Parser;
-    my $rt_parser = new RT::EmailParser;
-    $rt_parser->_SetupMIMEParser( $parser );
-    my $decrypted = $parser->parse( $tmp_fh );
-    $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $rt_parser;
+    my $parser =  RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
+    my $decrypted =$parser->Entity;
+    $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
     $args{'Top'}->parts( [] );
     $args{'Top'}->add_part( $decrypted );
     $args{'Top'}->make_singlepart;
@@ -1073,6 +1115,15 @@ sub DecryptInline {
         meta_interactive => 0,
     );
 
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
@@ -1108,9 +1159,15 @@ sub DecryptInline {
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'error'} ) if $res{'error'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $@ || $? ) {
-        $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-        return %res;
+
+    # if the decryption is fine but the signature is bad, then without this
+    # status check we lose the decrypted text
+    # XXX: add argument to the function to control this check
+    if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
+        if ( $@ || $? ) {
+            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            return %res;
+        }
     }
 
     seek $tmp_fh, 0, 0;
@@ -1240,7 +1297,6 @@ my %parse_keyword = map { $_ => 1 } qw(
     END_ENCRYPTION
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
-    ENC_TO
     NO_SECKEY NO_PUBKEY
     NO_RECP INV_RECP NODATA UNEXPECTED
 );
@@ -1250,7 +1306,7 @@ my %parse_keyword = map { $_ => 1 } qw(
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
-    BEGIN_DECRYPTION END_DECRYPTION GOODMDC
+    ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
@@ -1328,33 +1384,28 @@ sub ParseStatus {
             }
             push @res, \%res;
         }
-        elsif ( $keyword eq 'DECRYPTION_FAILED' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'ERROR',
-                Message   => 'Decryption failed',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'DECRYPTION_OKAY' ) {
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => 'Decryption process succeeded',
-            );
-            push @res, \%res;
-        }
-        elsif ( $keyword eq 'ENC_TO' ) {
-            my ($key, $alg, $key_length) = split /\s+/, $args;
-            my %res = (
-                Operation => 'Decrypt',
-                Status    => 'DONE',
-                Message   => "The message is encrypted to '0x$key'",
-                Key       => $key,
-                KeyLength => $key_length,
-                Algorithm => $alg,
-            );
-            $res{'User'} = ( $user_hint{ $key } ||= {} );
+        elsif ( $keyword eq 'DECRYPTION_FAILED' || $keyword eq 'DECRYPTION_OKAY' ) {
+            my %res = ( Operation => 'Decrypt' );
+            @res{'Status', 'Message'} = 
+                $keyword eq 'DECRYPTION_FAILED'
+                ? ('ERROR', 'Decryption failed')
+                : ('DONE',  'Decryption process succeeded');
+
+            foreach my $line ( reverse @status[ 0 .. $i-1 ] ) {
+                next unless $line =~ /^ENC_TO\s+(\S+)\s+(\S+)\s+(\S+)/;
+                my ($key, $alg, $key_length) = ($1, $2, $3);
+
+                my %encrypted_to = (
+                    Message   => "The message is encrypted to '0x$key'",
+                    User      => ( $user_hint{ $key } ||= {} ),
+                    Key       => $key,
+                    KeyLength => $key_length,
+                    Algorithm => $alg,
+                );
+
+                push @{ $res{'EncryptedTo'} ||= [] }, \%encrypted_to;
+            }
+
             push @res, \%res;
         }
         elsif ( $keyword eq 'NO_SECKEY' || $keyword eq 'NO_PUBKEY' ) {
@@ -1368,13 +1419,7 @@ sub ParseStatus {
                 KeyType   => $type,
             );
             $res{'User'} = ( $user_hint{ $key } ||= {} );
-            if ( $type eq 'secret' ) {
-                foreach ( reverse @res ) {
-                    next unless $_->{'Keyword'} eq 'ENC_TO' && $_->{'Key'} eq $key;
-                    $_->{'KeyMissing'} = 1;
-                    last;
-                }
-            }
+            $res{'User'}{ ucfirst( $type ). 'KeyMissing' } = 1;
             push @res, \%res;
         }
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
@@ -1432,7 +1477,7 @@ sub ParseStatus {
                 = split /\s+/, $args, 7;
 
             $res{'Reason'} = ReasonCodeToText( $keyword, $res{'ReasonCode'} );
-            $res{'Message'} .= ", the reasion is ". $res{'Reason'};
+            $res{'Message'} .= ", the reason is ". $res{'Reason'};
 
             push @res, \%res;
         }
@@ -1518,6 +1563,12 @@ sub GetPrivateKeyInfo {
 }
 
 sub GetKeyInfo {
+    my %res = GetKeysInfo(@_);
+    $res{'info'} = $res{'info'}->[0];
+    return %res;
+}
+
+sub GetKeysInfo {
     my $email = shift;
     my $type = shift || 'public';
 
@@ -1569,7 +1620,7 @@ sub GetKeyInfo {
     }
 
     @info = ParseKeysInfo( @info );
-    $res{'info'} = $info[0];
+    $res{'info'} = \@info;
     return %res;
 }
 
@@ -1584,12 +1635,14 @@ sub ParseKeysInfo {
         if ( $tag eq 'pub' ) {
             my %info;
             @info{ qw(
-                Trust KeyLenght Algorithm Key
-                Created Expire Empty OwnerTrust
+                TrustChar KeyLength Algorithm Key
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'Trust'} = _ConvertTrustChar( $info{'Trust'} );
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1597,11 +1650,12 @@ sub ParseKeysInfo {
         elsif ( $tag eq 'sec' ) {
             my %info;
             @info{ qw(
-                Empty KeyLenght Algorithm Key
-                Created Expire Empty OwnerTrust
+                Empty KeyLength Algorithm Key
+                Created Expire Empty OwnerTrustChar
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrust'} );
+            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1636,12 +1690,37 @@ sub ParseKeysInfo {
         f   => "The key is fully trusted", #loc
         u   => "The key is ultimately trusted", #loc
     );
+
+    my %level = (
+        d   => 0,
+        r   => 0,
+        e   => 0,
+        n   => 0,
+
+        # err on the side of caution
+        o   => 0,
+        '-' => 0,
+        q   => 0,
+
+        m   => 2,
+        f   => 3,
+        u   => 4,
+    );
+
     sub _ConvertTrustChar {
         my $value = shift;
         return $mapping{'-'} unless $value;
 
         $value = substr $value, 0, 1;
         return $mapping{ $value } || $mapping{'o'};
+    }
+
+    sub _ConvertTrustLevel {
+        my $value = shift;
+        return $level{'-'} unless $value;
+
+        $value = substr $value, 0, 1;
+        return $level{ $value } || $level{'o'};
     }
 }
 
@@ -1654,11 +1733,116 @@ sub _ParseDate {
     my $obj = RT::Date->new( $RT::SystemUser );
     # unix time
     if ( $value =~ /^\d+$/ ) {
-        $obj->Set( Value => $value );
+        $obj->set( value => $value );
     } else {
-        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
+        $obj->set( Format => 'unknown', value => $value, Timezone => 'utc' );
     }
     return $obj;
+}
+
+sub DeleteKey {
+    my $key = shift;
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = _safe_run_child { $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--delete-secret-and-public-key'],
+            command_args => [$key],
+        ) };
+        close $handle{'input'};
+        while ( my $str = readline $handle{'status'} ) {
+            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
+                print { $handle{'command'} } "y\n";
+            }
+        }
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
+sub ImportKey {
+    my $key = shift;
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = _safe_run_child { $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--import'],
+        ) };
+        print { $handle{'input'} } $key;
+        close $handle{'input'};
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
 }
 
 1;

@@ -49,7 +49,7 @@
 
 package RT::Action::ResolveMembers;
 require RT::Action::Generic;
-require RT::Links;
+require RT::Model::Links;
 
 use strict;
 use vars qw/@ISA/;
@@ -67,26 +67,26 @@ sub Describe  {
 # }}}
 
 
-# {{{ sub Prepare 
-sub Prepare  {
+# {{{ sub prepare 
+sub prepare  {
     # nothing to prepare
     return 1;
 }
 # }}}
 
-sub Commit {
+sub commit {
     my $self = shift;
 
-    my $Links=RT::Links->new($RT::SystemUser);
-    $Links->Limit(FIELD => 'Type', VALUE => 'MemberOf');
-    $Links->Limit(FIELD => 'Target', VALUE => $self->TicketObj->id);
+    my $Links=RT::Model::Links->new($RT::SystemUser);
+    $Links->limit(column => 'Type', value => 'MemberOf');
+    $Links->limit(column => 'Target', value => $self->TicketObj->id);
 
-    while (my $Link=$Links->Next()) {
+    while (my $Link=$Links->next()) {
 	# Todo: Try to deal with remote URIs as well
 	next unless $Link->BaseURI->IsLocal;
-	my $base=RT::Ticket->new($self->TicketObj->CurrentUser);
+	my $base=RT::Model::Ticket->new($self->TicketObj->CurrentUser);
 	# Todo: Only work if Base is a plain ticket num:
-	$base->Load($Link->Base);
+	$base->load($Link->Base);
 	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
         $base->Resolve;
     }

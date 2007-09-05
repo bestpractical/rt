@@ -64,7 +64,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 
   # load plugin by name
   my $plugin = new RT::Shredder::Plugin;
-  my( $status, $msg ) = $plugin->LoadByName( 'Tickets' );
+  my( $status, $msg ) = $plugin->load_by_name( 'Tickets' );
   unless( $status ) {
       print STDERR "Couldn't load plugin 'Tickets': $msg\n";
       exit(1);
@@ -72,7 +72,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 
   # load plugin by preformatted string
   my $plugin = new RT::Shredder::Plugin;
-  my( $status, $msg ) = $plugin->LoadByString( 'Tickets=status,deleted' );
+  my( $status, $msg ) = $plugin->loadByString( 'Tickets=status,deleted' );
   unless( $status ) {
       print STDERR "Couldn't load plugin: $msg\n";
       exit(1);
@@ -93,11 +93,11 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
+    $self->_init( @_ );
     return $self;
 }
 
-sub _Init
+sub _init
 {
     my $self = shift;
     my %args = ( @_ );
@@ -144,7 +144,7 @@ sub List
     return %res;
 }
 
-=head2 LoadByName
+=head2 load_by_name
 
 Takes name of the plugin as first argument, loads plugin,
 creates new plugin object and reblesses self into plugin
@@ -159,7 +159,7 @@ is C<false> value.
 
 =cut
 
-sub LoadByName
+sub load_by_name
 {
     my $self = shift;
     my $name = shift or return (0, "Name not specified");
@@ -187,7 +187,7 @@ load plugin. The format of the string is
 exactly like in the L<rt-shredder> script. All other
 arguments are sent to the plugins constructor.
 
-Method does the same things as C<LoadByName>, but also
+Method does the same things as C<load_by_name>, but also
 checks if the plugin supports arguments and values are correct,
 so you can C<Run> specified plugin immediatly.
 
@@ -196,12 +196,12 @@ is C<false>.
 
 =cut
 
-sub LoadByString
+sub loadByString
 {
     my $self = shift;
     my ($plugin, $args) = split /=/, ( shift || '' ), 2;
 
-    my ($status, $msg) = $self->LoadByName( $plugin, @_ );
+    my ($status, $msg) = $self->load_by_name( $plugin, @_ );
     return( $status, $msg ) unless $status;
 
     my %args;

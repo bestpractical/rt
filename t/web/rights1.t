@@ -2,17 +2,19 @@
 use strict;
 use HTTP::Cookies;
 
-use Test::More tests => 35;
+use Test::More tests => 37;
 use RT::Test;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 # Create a user with basically no rights, to start.
-my $user_obj = RT::User->new($RT::SystemUser);
-my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer-'.$$.'@example.com');
+my $user_obj = RT::Model::User->new($RT::SystemUser);
+my ($ret, $msg) = $user_obj->load_or_create_by_email('customer-'.$$.'@example.com');
 ok($ret, 'ACL test user creation');
-$user_obj->SetName('customer-'.$$);
-$user_obj->SetPrivileged(1);
-($ret, $msg) = $user_obj->SetPassword('customer');
+($ret,$msg) =$user_obj->set_Name('customer-'.$$);
+ok($ret,$msg);
+($ret,$msg) = $user_obj->set_Privileged(1);
+ok($ret,$msg);
+($ret, $msg) = $user_obj->set_Password('customer');
 ok($ret, "ACL test password set. $msg");
 
 # Now test the web interface, making sure objects come and go as
@@ -81,17 +83,17 @@ like($agent->{'content'} , qr/input\s+type=.submit.\s+name=.Save./i,
 # Create a group, and a queue, so we can test limited user visibility
 # via SelectOwner.
 
-my $queue_obj = RT::Queue->new($RT::SystemUser);
-($ret, $msg) = $queue_obj->Create(Name => 'CustomerQueue-'.$$, 
+my $queue_obj = RT::Model::Queue->new($RT::SystemUser);
+($ret, $msg) = $queue_obj->create(Name => 'CustomerQueue-'.$$, 
 				  Description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
-my $group_obj = RT::Group->new($RT::SystemUser);
-($ret, $msg) = $group_obj->CreateUserDefinedGroup(Name => 'CustomerGroup-'.$$,
+my $group_obj = RT::Model::Group->new($RT::SystemUser);
+($ret, $msg) = $group_obj->create_userDefinedGroup(Name => 'CustomerGroup-'.$$,
 			      Description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");
 
 # Add our customer to the customer group, and give it queue rights.
-($ret, $msg) = $group_obj->AddMember($user_obj->PrincipalObj->Id());
+($ret, $msg) = $group_obj->AddMember($user_obj->PrincipalObj->id());
 ok($ret, "Added customer to its group. $msg");
 ($grantid,$grantmsg) =$group_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',
 				     Object => $queue_obj);

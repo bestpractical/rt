@@ -54,8 +54,8 @@ if ($arg =~ /^(\d+)\//) {
 else {
     Abort("Corrupted customfieldvalue URL.");
 }
-my $OCFV = RT::ObjectCustomFieldValue->new($session{'CurrentUser'});
-$OCFV->Load($id) || Abort("OCFV '$id' could not be loaded");
+my $OCFV = RT::Model::ObjectCustomFieldValue->new($session{'CurrentUser'});
+$OCFV->load($id) || Abort("OCFV '$id' could not be loaded");
 
 unless ($OCFV->id) {
     Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");

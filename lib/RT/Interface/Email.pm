@@ -66,7 +66,7 @@ BEGIN {
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(
-        &CreateUser
+        &create_user
         &GetMessageContent
         &CheckForLoops
         &CheckForSuspiciousSender
@@ -90,7 +90,7 @@ BEGIN {
   use lib "!!RT_LIB_PATH!!";
   use lib "!!RT_ETC_PATH!!";
 
-  use RT::Interface::Email  qw(Gateway CreateUser);
+  use RT::Interface::Email  qw(Gateway create_user);
 
 =head1 DESCRIPTION
 
@@ -365,7 +365,7 @@ sub SendEmail {
     }
 
     if ( $args{'Transaction'} && !$args{'Ticket'}
-        && $args{'Transaction'}->ObjectType eq 'RT::Ticket' )
+        && $args{'Transaction'}->ObjectType eq 'RT::Model::Ticket' )
     {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }
@@ -374,7 +374,7 @@ sub SendEmail {
         my %crypt;
 
         my $attachment;
-        $attachment = $args{'Transaction'}->Attachments->First
+        $attachment = $args{'Transaction'}->Attachments->first
             if $args{'Transaction'};
 
         foreach my $argument ( qw(Sign Encrypt) ) {
@@ -394,7 +394,7 @@ sub SendEmail {
     unless ( $args{'Entity'}->head->get('Date') ) {
         require RT::Date;
         my $date = RT::Date->new( $RT::SystemUser );
-        $date->SetToNow;
+        $date->set_to_now;
         $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
 
@@ -484,8 +484,8 @@ sub SendEmailUsingTemplate {
         @_
     );
 
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->LoadGlobalTemplate( $args{'Template'} );
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    $template->loadGlobalTemplate( $args{'Template'} );
     unless ( $template->id ) {
         $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
         return 0;
@@ -518,13 +518,13 @@ sub ForwardTransaction {
     if ( $main_content->Parent ) {
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
-        my $attachments = RT::Attachments->new( $txn->CurrentUser );
-        $attachments->Columns(qw(id Parent TransactionId Headers));
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-        my $tmp = $attachments->First;
+        my $attachments = RT::Model::Attachments->new( $txn->CurrentUser );
+        $attachments->columns(qw(id Parent TransactionId Headers));
+        $attachments->limit( column => 'TransactionId', value => $txn->id );
+        $attachments->limit( column => 'Parent', value => 0 );
+        $attachments->limit( column => 'Parent', operator => 'IS', value => 'NULL', quote_value => 0 );
+        $attachments->order_by( column => 'id', order => 'ASC' );
+        my $tmp = $attachments->first;
         if ( $tmp && $tmp->id ne $main_content->id ) {
             $entity->make_multipart;
             $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
@@ -532,24 +532,24 @@ sub ForwardTransaction {
         }
     }
 
-    my $attachments = RT::Attachments->new( $txn->CurrentUser );
-    $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => $main_content->id,
+    my $attachments = RT::Model::Attachments->new( $txn->CurrentUser );
+    $attachments->limit( column => 'TransactionId', value => $txn->id );
+    $attachments->limit(
+        column => 'id',
+        operator => '!=',
+        value => $main_content->id,
     );
-    $attachments->Limit(
-        FIELD => 'ContentType',
-        OPERATOR => 'NOT STARTSWITH',
-        VALUE => 'multipart/',
+    $attachments->limit(
+        column => 'ContentType',
+        operator => 'NOT STARTSWITH',
+        value => 'multipart/',
     );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
+    $attachments->limit(
+        column => 'Content',
+        operator => '!=',
+        value => '',
     );
-    while ( my $a = $attachments->Next ) {
+    while ( my $a = $attachments->next ) {
         $entity->make_multipart unless $entity->is_multipart;
         $entity->add_part( $a->ContentAsMIME );
     }
@@ -690,35 +690,35 @@ sub SignEncrypt {
 }
 
 
-sub CreateUser {
+sub create_user {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
 
-    my $NewUser = RT::User->new( $RT::SystemUser );
+    my $NewUser = RT::Model::User->new( $RT::SystemUser );
 
-    my ( $Val, $Message ) = $NewUser->Create(
+    my ( $Val, $Message ) = $NewUser->create(
         Name => ( $Username || $Address ),
         EmailAddress => $Address,
         RealName     => $Name,
         Password     => undef,
         Privileged   => 0,
-        Comments     => 'Autocreated on ticket submission',
+        Comments     => 'AutoCreated on ticket submission',
     );
 
     unless ($Val) {
 
         # Deal with the race condition of two account creations at once
         if ($Username) {
-            $NewUser->LoadByName($Username);
+            $NewUser->load_by_name($Username);
         }
 
-        unless ( $NewUser->Id ) {
-            $NewUser->LoadByEmail($Address);
+        unless ( $NewUser->id ) {
+            $NewUser->load_by_email($Address);
         }
 
-        unless ( $NewUser->Id ) {
+        unless ( $NewUser->id ) {
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "User could not be created",
+                Subject     => "User could not be Created",
                 Explanation =>
                     "User creation failed in mailgateway: $Message",
                 MIMEObj  => $entity,
@@ -729,7 +729,7 @@ sub CreateUser {
 
     #Load the new user object
     my $CurrentUser = new RT::CurrentUser;
-    $CurrentUser->LoadByEmail( $Address );
+    $CurrentUser->load_by_email( $Address );
 
     unless ( $CurrentUser->id ) {
         $RT::Logger->warning(
@@ -866,7 +866,7 @@ Deletes addresses from To, Cc or Bcc fields.
 
 =cut
 
-sub DeleteRecipientsFromHead {
+sub deleteRecipientsFromHead {
     my $head = shift;
     my %skip = map { lc $_ => 1 } @_;
 
@@ -1085,8 +1085,8 @@ sub Gateway {
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
-    $SystemTicket = RT::Ticket->new( $RT::SystemUser );
-    $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
+    $SystemTicket = RT::Model::Ticket->new( $RT::SystemUser );
+    $SystemTicket->load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
         $Right = 'ReplyToTicket';
     } else {
@@ -1094,8 +1094,8 @@ sub Gateway {
     }
 
     #Set up a queue object
-    my $SystemQueueObj = RT::Queue->new( $RT::SystemUser );
-    $SystemQueueObj->Load( $args{'queue'} );
+    my $SystemQueueObj = RT::Model::Queue->new( $RT::SystemUser );
+    $SystemQueueObj->load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $SystemTicket->id || $SystemQueueObj->id ) {
@@ -1151,7 +1151,7 @@ sub Gateway {
 
         last if $AuthStat == -1;
     }
-    # {{{ If authentication fails and no new user was created, get out.
+    # {{{ If authentication fails and no new user was Created, get out.
     if ( !$CurrentUser || !$CurrentUser->id || $AuthStat == -1 ) {
 
         # If the plugins refused to create one, they lose.
@@ -1191,9 +1191,9 @@ sub Gateway {
     }
 
     # if plugin's updated SystemTicket then update arguments
-    $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
+    $args{'ticket'} = $SystemTicket->id if $SystemTicket && $SystemTicket->id;
 
-    my $Ticket = RT::Ticket->new($CurrentUser);
+    my $Ticket = RT::Model::Ticket->new($CurrentUser);
 
     if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
     {
@@ -1209,8 +1209,8 @@ sub Gateway {
             );
         }
 
-        my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
-            Queue     => $SystemQueueObj->Id,
+        my ( $id, $Transaction, $ErrStr ) = $Ticket->create(
+            Queue     => $SystemQueueObj->id,
             Subject   => $Subject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
@@ -1227,14 +1227,14 @@ sub Gateway {
         }
 
         # strip comments&corresponds from the actions we don't need
-        # to record them if we've created the ticket just now
+        # to record them if we've Created the ticket just now
         @actions = grep !/^(comment|correspond)$/, @actions;
         $args{'ticket'} = $id;
 
     } elsif ( $args{'ticket'} ) {
 
-        $Ticket->Load( $args{'ticket'} );
-        unless ( $Ticket->Id ) {
+        $Ticket->load( $args{'ticket'} );
+        unless ( $Ticket->id ) {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             MailError(
                 To          => $ErrorsTo,
@@ -1295,7 +1295,7 @@ sub _RunUnsafeAction {
     );
 
     if ( $args{'Action'} =~ /^take$/i ) {
-        my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{'CurrentUser'}->id );
+        my ( $status, $msg ) = $args{'Ticket'}->set_Owner( $args{'CurrentUser'}->id );
         unless ($status) {
             MailError(
                 To          => $args{'ErrorsTo'},
@@ -1306,7 +1306,7 @@ sub _RunUnsafeAction {
             return ( 0, "Ticket not taken" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
-        my ( $status, $msg ) = $args{'Ticket'}->SetStatus('resolved');
+        my ( $status, $msg ) = $args{'Ticket'}->set_Status('resolved');
         unless ($status) {
 
             #Warn the sender that we couldn't actually submit the comment.

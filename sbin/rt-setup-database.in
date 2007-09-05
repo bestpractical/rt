@@ -59,7 +59,7 @@ use lib "@RT_LIB_PATH@";
 # inheritance
 BEGIN {
     use RT;
-    RT::LoadConfig();
+    RT::load_config();
     RT::InitClasses();
 }
 
@@ -109,7 +109,7 @@ if ( $actions[0] eq 'init' ) {
 foreach my $key(qw(Type Host Name User Password)) {
     next unless exists $ENV{ 'RT_DB_'. uc $key };
     print "Using Database$key from RT_DB_". uc($key) ." environment variable.\n";
-    RT->Config->Set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
+    RT->Config->set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
 }
 
 my $db_type = RT->Config->Get('DatabaseType') || '';
@@ -123,7 +123,7 @@ require RT::Handle;
 
 if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name);
-    RT->Config->Set( DatabaseName => $db_name );
+    RT->Config->set( DatabaseName => $db_name );
 }
 
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
@@ -143,7 +143,7 @@ foreach my $action ( @actions ) {
         my $dbh = get_system_dbh();
         print "Now creating a database for RT.\n";
         if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-            RT::Handle->CreateDatabase( $dbh );
+            RT::Handle->createDatabase( $dbh );
         } else {
             print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
         }
@@ -267,16 +267,16 @@ sub get_dba_password {
 
 Returns L<DBI> database handle connected to B<system> with DBA credentials.
 
-See also L<RT::Handle/SystemDSN>.
+See also L<RT::Handle/system_dsn>.
 
 =cut
 
 sub get_system_dbh {
-    return _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
+    return _get_dbh( RT::Handle->system_dsn, $dba_user, $dba_pass );
 }
 
 sub get_admin_dbh {
-    return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+    return _get_dbh( RT::Handle->dsn, $dba_user, $dba_pass );
 }
 
 =head2 get_rt_dbh [USER, PASSWORD]
@@ -288,7 +288,7 @@ with. By default connects with credentials from RT config.
 =cut
 
 sub get_rt_dbh {
-    return _get_dbh( RT::Handle->DSN, $db_user, $db_pass );
+    return _get_dbh( RT::Handle->dsn, $db_user, $db_pass );
 }
 
 sub _get_dbh {

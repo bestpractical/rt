@@ -4,7 +4,7 @@ use strict;
 use Test::More qw/no_plan/;
 use Text::Lorem;
 use RT;
-RT::LoadConfig;
+RT::load_config;
 RT::Init;
 
 #### Generate some number of RT accounts.  Come up with random
@@ -21,7 +21,7 @@ exist, and places them in the specified group.  It also creates the
 group if it needs to.  Returns a ref to a list containing the user
 objects.
 
-If a list of names is specified, users with those names are created.
+If a list of names is specified, users with those names are Created.
 Otherwise, it will make names up, checking to be sure that a user with
 the random name does not yet exist.  Each user will have an email
 address in "example.com".
@@ -65,18 +65,18 @@ sub create_users {
     $domain = $ARGS{'subdomain'} . ".$domain" if $ARGS{'subdomain'};
 
     foreach my $user (@usernames) {
-	my $user_obj = RT::User->new($RT::SystemUser);
-	$user_obj->Load($user);
-	if ($user_obj->Id() && !$anon) {
+	my $user_obj = RT::Model::User->new($RT::SystemUser);
+	$user_obj->load($user);
+	if ($user_obj->id() && !$anon) {
 	    # Use this user; assume we know what we're doing.  Don't
 	    # modify it, other than adding it to any group specified.
 	    push(@users_returned, $user_obj);
-	} elsif ($user_obj->Id()) {
+	} elsif ($user_obj->id()) {
 	    # Oops.  Get a different username and stick it on the back
 	    # of the list.
 	    append(@users, $lorem->words(1));
 	} else {
-	    $user_obj->Create(Name => $user,
+	    $user_obj->create(Name => $user,
 			      Password => $user."pass",
 			      EmailAddress => $user.'@'.$domain,
 			      RealName => "$user ipsum",
@@ -92,17 +92,17 @@ sub create_users {
     if ($ARGS{'groups'}) {
 	my @groups = @{$ARGS{'groups'}};
 	foreach my $group (@groups) {
-	    my $group_obj = RT::Group->new();
-	    $group_obj->LoadUserDefinedGroup($group);
-	    unless ($group_obj->Id()) {
+	    my $group_obj = RT::Model::Group->new();
+	    $group_obj->loadUserDefinedGroup($group);
+	    unless ($group_obj->id()) {
 		# Create it.
-		$group_obj->CreateUserDefinedGroup(
+		$group_obj->create_userDefinedGroup(
 				Name => $group,
 				Description => "lorem defined group $group",
 						   );
 	    }
 	    foreach (@users_returned) {
-		$group_obj->AddMember($_->Id);
+		$group_obj->AddMember($_->id);
 	    }
 	}
     }
@@ -112,7 +112,7 @@ sub create_users {
 	foreach my $attrib (@{$ARGS{'attributes'}}) {
 	    my %attr_args = %{$attrib};
 	    foreach (@users_returned) {
-		$_->AddAttribute(%attr_args);
+		$_->add_attribute(%attr_args);
 	    }
 	}
     }

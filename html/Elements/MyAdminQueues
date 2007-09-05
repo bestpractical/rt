@@ -48,7 +48,7 @@
 <&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
 <& /Elements/QueueSummary,
    cache => 'my_admin_queues',
-   queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
+   queue_filter => sub { $_->current_user_has_right('AdminQueue') },
    conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
 		   {cond => "Status = 'open'", name => loc ('open') }] &>
 </&>

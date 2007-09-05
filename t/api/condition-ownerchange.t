@@ -11,32 +11,32 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-my $q = RT::Queue->new($RT::SystemUser);
-$q->Create(Name =>'ownerChangeTest');
+my $q = RT::Model::Queue->new($RT::SystemUser);
+$q->create(Name =>'ownerChangeTest');
 
-ok($q->Id, "Created a scriptest queue");
+ok($q->id, "Created a scriptest queue");
 
-my $s1 = RT::Scrip->new($RT::SystemUser);
-my ($val, $msg) =$s1->Create( Queue => $q->Id,
+my $s1 = RT::Model::Scrip->new($RT::SystemUser);
+my ($val, $msg) =$s1->create( Queue => $q->id,
              ScripAction => 'User Defined',
              ScripCondition => 'On Owner Change',
              CustomIsApplicableCode => '',
              CustomPrepareCode => 'return 1',
              CustomCommitCode => '
-                    $self->TicketObj->SetPriority($self->TicketObj->Priority+1);
+                    $self->TicketObj->set_Priority($self->TicketObj->Priority+1);
                 return(1);
             ',
              Template => 'Blank'
     );
 ok($val,$msg);
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
+my $ticket = RT::Model::Ticket->new($RT::SystemUser);
+my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     Subject => "hair on fire",
                                     InitialPriority => '20'
                                     );
 ok($tv, $tm);
-ok($ticket->SetOwner('root'));
+ok($ticket->set_Owner('root'));
 is ($ticket->Priority , '21', "Ticket priority is set right");
 ok($ticket->Steal);
 is ($ticket->Priority , '22', "Ticket priority is set right");

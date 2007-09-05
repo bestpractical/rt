@@ -117,7 +117,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     }
     $template =~ s/\r\n/\n/gs;
     $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
-    foreach ( @{ $action->{'create_tickets'} } ) {
+    foreach ( @{ $action->{'CreateTickets'} } ) {
         my $id = $_;
         $id =~ s/^create\-//;
         $string .= "===Create-Ticket: $id\n";
@@ -133,15 +133,15 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
 } elsif ($ARGS{'UpdateTickets'}) {
     $action->Parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
-    push @results, $action->CreateByTemplate();
+    push @results, $action->createByTemplate();
     push @results, $action->UpdateByTemplate();
 } else {
     if ($ARGS{'Query'}) {
-	my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-	$Tickets->FromSQL($ARGS{'Query'});
+	my $Tickets = RT::Model::Tickets->new($session{'CurrentUser'});
+	$Tickets->from_sql($ARGS{'Query'});
 	
-	while (my $t = $Tickets->Next) {
-	    $string .= "===Update-Ticket: " . $t->Id . "\n";
+	while (my $t = $Tickets->next) {
+	    $string .= "===Update-Ticket: " . $t->id . "\n";
 	    $string .= $action->GetUpdateTemplate($t);
 	    $string .= "" . "\n";
 	}
@@ -150,9 +150,9 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	$string .= "===# DO NOT EDIT BELOW THIS LINE#===\n";
 	$string .= "" . "\n";
 	
-	while (my $t = $Tickets->Next) {
+	while (my $t = $Tickets->next) {
 	    $string .= "===# DO NOT EDIT #===\n";
-		$string .= "===Base-Ticket: " . $t->Id . "\n";
+		$string .= "===Base-Ticket: " . $t->id . "\n";
 	    $string .= $action->GetBaseTemplate($t);
 	    $string .= "===# DO NOT EDIT #===\n";
 		$string .= "" . "\n";

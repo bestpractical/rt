@@ -85,7 +85,7 @@ BEGIN {
   use RT;
 
   #Load RT's config file
-  RT::LoadConfig();
+  RT::load_config();
 
   # Connect to the database. set up loggign
   RT::Init();
@@ -146,9 +146,9 @@ sub GetCurrentUser  {
     #is that of the currentuser.
 
     $CurrentUser = new RT::CurrentUser();
-    $CurrentUser->LoadByGecos($Gecos);
+    $CurrentUser->loadByGecos($Gecos);
     
-    unless ($CurrentUser->Id) {
+    unless ($CurrentUser->id) {
 	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
     }
 

@@ -67,8 +67,8 @@
 </form>
 
 <%INIT>
-my $CF = RT::CustomField->new($session{'CurrentUser'});
-$CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
+my $CF = RT::Model::CustomField->new($session{'CurrentUser'});
+$CF->load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
 my $LookupType = $CF->LookupType || '';
 $LookupType =~ /^(.*?)-/ ||
      Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
@@ -95,22 +95,22 @@ my $Objects = $CollectionClass->new($session{'CurrentUser'});
 my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
-$Objects->UnLimit;
-$Objects->OrderBy( FIELD => 'Name' );
+$Objects->find_all_rows;
+$Objects->order_by( column => 'Name' );
 
 
 my $ObjectCFs;
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
-$ObjectCFs->LimitToCustomField($id);
+$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->find_all_rows;
+$ObjectCFs->limit_to_custom_field($id);
 
 my %seen;
-while (my $OCF = $ObjectCFs->Next) {
+while (my $OCF = $ObjectCFs->next) {
     $seen{$OCF->ObjectId}++;
 }
 
-while (my $obj = $Objects->Next) { 
-    my $obj_id = $obj->Id;
+while (my $obj = $Objects->next) { 
+    my $obj_id = $obj->id;
 
     if ($UpdateObjs) {
 	# Go through and delete all the custom field relationships that this object

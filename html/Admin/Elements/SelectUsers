@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select multiple name="<% $Name %>"  size="10">
-% while ( my $user = $users->Next ) {
+% while ( my $user = $users->next ) {
 <option value="<% $user->id %>">\
 <& /Elements/ShowUser, User => $user &>\
 </option>
@@ -54,10 +54,10 @@
 </select>
 
 <%INIT>
-my $users = new RT::Users($session{'CurrentUser'});
+my $users = new RT::Model::Users($session{'CurrentUser'});
 
-$users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=' );
-$users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
+$users->limit(column => 'id', value => $RT::SystemUser->id, operator => '!=' );
+$users->limit(column => 'id', value => $RT::Nobody->id, operator => '!=' );
 $users->LimitToPrivileged();
 
 </%INIT>

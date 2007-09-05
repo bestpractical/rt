@@ -100,7 +100,7 @@ sub new {
 
 sub InitSessionDir {
     # Activate the following if running httpd as root (the normal case).
-    # Resets ownership of all files created by Mason at startup.
+    # Resets ownership of all files Created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
     unless ( RT->Config->Get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
 
@@ -167,7 +167,7 @@ sub NewHandler {
 
 =head2 CleanupRequest
 
-Rollback any uncommitted transaction.
+rollback any uncommitted transaction.
 Flush the ACL cache
 Flush the searchbuilder query cache
 
@@ -175,8 +175,8 @@ Flush the searchbuilder query cache
 
 sub CleanupRequest {
 
-    if ( $RT::Handle->TransactionDepth ) {
-        $RT::Handle->ForceRollback;
+    if ( $RT::Handle->transaction_depth ) {
+        $RT::Handle->Forcerollback;
         $RT::Logger->crit(
             "Transaction not committed. Usually indicates a software fault."
             . "Data loss may have occurred" );
@@ -184,15 +184,15 @@ sub CleanupRequest {
 
     # Clean out the ACL cache. the performance impact should be marginal.
     # Consistency is imprived, too.
-    RT::Principal->InvalidateACLCache();
-    DBIx::SearchBuilder::Record::Cachable->FlushCache
+    RT::Model::Principal->invalidate_acl_cache();
+    Jifty::DBI::Record::Cachable->flush_cache
       if ( RT->Config->Get('WebFlushDbCacheEveryRequest')
         and UNIVERSAL::can(
-            'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache' ) );
+            'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
     # cleanup global squelching of the mails
     require RT::Action::SendEmail;
-    RT::Action::SendEmail->CleanSlate;
+    RT::Action::SendEmail->clean_slate;
 }
 # }}}
 

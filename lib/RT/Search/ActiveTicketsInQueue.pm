@@ -75,14 +75,14 @@ sub Describe  {
 }
 # }}}
 
-# {{{ sub Prepare
-sub Prepare  {
+# {{{ sub prepare
+sub prepare  {
   my $self = shift;
 
-  $self->TicketsObj->LimitQueue(VALUE => $self->Argument);
+  $self->TicketsObj->LimitQueue(value => $self->Argument);
 
-  foreach my $status (RT::Queue->ActiveStatusArray()) {
-        $self->TicketsObj->LimitStatus(VALUE => $status);
+  foreach my $status (RT::Model::Queue->ActiveStatusArray()) {
+        $self->TicketsObj->LimitStatus(value => $status);
   }
 
   return(1);

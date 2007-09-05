@@ -126,7 +126,7 @@ sub new {
 
 =head2 Set
 
-Takes a param hash with the fields C<Format>, C<Value> and C<Timezone>.
+Takes a param hash with the fields C<Format>, C<value> and C<Timezone>.
 
 If $args->{'Format'} is 'unix', takes the number of seconds since the epoch.
 
@@ -137,31 +137,31 @@ things out. This is a heavyweight operation that should never be called from
 within RT's core. But it's really useful for something like the textbox date
 entry where we let the user do whatever they want.
 
-If $args->{'Value'} is 0, assumes you mean never.
+If $args->{'value'} is 0, assumes you mean never.
 
 =cut
 
-sub Set {
+sub set {
     my $self = shift;
     my %args = (
         Format   => 'unix',
-        Value    => time,
+        value    => time,
         Timezone => 'user',
         @_
     );
 
-    return $self->Unix(0) unless $args{'Value'};
+    return $self->Unix(0) unless $args{'value'};
 
     if ( $args{'Format'} =~ /^unix$/i ) {
-        return $self->Unix( $args{'Value'} );
+        return $self->Unix( $args{'value'} );
     }
     elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
-        $args{'Value'} =~ s!/!-!g;
+        $args{'value'} =~ s!/!-!g;
 
-        if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
-            || ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'Value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'Value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
+        if (   ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
+            || ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
           ) {
 
             my ($year, $mon, $mday, $hours, $min, $sec)  = ($1, $2, $3, $4, $5, $6);
@@ -182,7 +182,7 @@ sub Set {
         }
         else {
             $RT::Logger->warning(
-                "Couldn't parse date '$args{'Value'}' as a $args{'Format'} format"
+                "Couldn't parse date '$args{'value'}' as a $args{'Format'} format"
             );
             return $self->Unix(0);
         }
@@ -192,7 +192,7 @@ sub Set {
         # the module supports only legacy timezones like PDT or EST...
         # so we parse date as GMT and later apply offset
         my $date = Time::ParseDate::parsedate(
-            $args{'Value'},
+            $args{'value'},
             GMT           => 1,
             UK            => RT->Config->Get('DateDayBeforeMonth'),
             PREFER_PAST   => RT->Config->Get('AmbiguousDayInPast'),
@@ -202,10 +202,10 @@ sub Set {
         $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
 
         $RT::Logger->debug(
-            "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
+            "RT::Date used Time::ParseDate to make '$args{'value'}' $date\n"
         );
 
-        return $self->Set( Format => 'unix', Value => $date);
+        return $self->set( Format => 'unix', value => $date);
     }
     else {
         $RT::Logger->error(
@@ -217,14 +217,14 @@ sub Set {
     return $self->Unix;
 }
 
-=head2 SetToNow
+=head2 set_to_now
 
 Set the object's time to the current time. Takes no arguments
 and returns unix time.
 
 =cut
 
-sub SetToNow {
+sub set_to_now {
     return $_[0]->Unix(time);
 }
 
@@ -245,7 +245,7 @@ Timezone context C<user>, C<server> or C<UTC>. See also L</Timezone>.
 
 =cut
 
-sub SetToMidnight {
+sub set_ToMidnight {
     my $self = shift;
     my %args = ( Timezone => '', @_ );
     my $new = $self->Timelocal(
@@ -430,7 +430,7 @@ sub AddSeconds {
     my $self = shift;
     my $delta = shift or return $self->Unix;
     
-    $self->Set(Format => 'unix', Value => ($self->Unix + $delta));
+    $self->set(Format => 'unix', value => ($self->Unix + $delta));
  
     return ($self->Unix);
 }

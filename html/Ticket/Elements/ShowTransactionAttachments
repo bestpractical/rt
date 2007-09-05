@@ -48,7 +48,7 @@
 <%PERL>
 # Find all the attachments which have parent $Parent
 # For each of these attachments
-foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
+foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
     $m->comp( 'ShowMessageHeaders',
               Message        => $message,
               DisplayHeaders => \@DisplayHeaders,
@@ -58,9 +58,9 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
 % if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
- / <a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
+ / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% loc('with headers') %></a>
 % }
 <br/>
 <span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
@@ -134,8 +134,8 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
     elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
         $m->out('<img src="'
               . $AttachPath . '/'
-              . $Transaction->Id . '/'
-              . $message->Id
+              . $Transaction->id . '/'
+              . $message->id
               . '/" />' );
     }
     elsif ( $message->ContentLength > 0 ) {

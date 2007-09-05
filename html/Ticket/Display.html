@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+    Title => loc("#[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
-    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+    Title => loc("#[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
 
 % $Duration ||= $ARGS{'Duration'};
 <& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
@@ -101,13 +101,13 @@ unless ($id || $TicketObj) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
-    $Queue->Load($ARGS{'Queue'});
+    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    $Queue->load($ARGS{'Queue'});
     unless ( $Queue->id ) {
         Abort('Queue not found');
     }
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('CreateTicket') ) {
         Abort('You have no permission to create tickets in that queue.');
     }
 
@@ -115,12 +115,12 @@ if ($ARGS{'id'} eq 'new') {
         Attachments => delete $session{'Attachments'},
         %ARGS,
     );
-    unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
-        Abort("No permission to view newly created ticket #".$TicketObj->id.".");
+    unless ( $TicketObj->current_user_has_right('ShowTicket') ) {
+        Abort("No permission to view newly Created ticket #".$TicketObj->id.".");
     }
     # }}}
 } else { 
-    $TicketObj ||= LoadTicket($ARGS{'id'});
+    $TicketObj ||= load_ticket($ARGS{'id'});
 
     $m->callback( CallbackName => 'BeforeProcessArguments',
         TicketObj => $TicketObj, Tickets => $Tickets,
@@ -171,11 +171,11 @@ if ($ARGS{'id'} eq 'new') {
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
-    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+    unless ($TicketObj->current_user_has_right('ShowTicket')) {
         Abort("No permission to view ticket");
     }
     if ( $ARGS{'MarkAsSeen'} ) {
-        $TicketObj->SetAttribute(
+        $TicketObj->set_Attribute(
             Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
             Content => $TicketObj->LastUpdated,
         );

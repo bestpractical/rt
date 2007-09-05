@@ -1,0 +1,12 @@
+my %data = %{ _CoreAccessible()};
+    print "use base qw/RT::Record/;\n";
+    print "sub table { '' }\n";
+    print "use Jifty::DBI::Schema;\nuse Jifty::DBI::Record schema {\n";
+foreach my $key (keys %data) {
+    print "    column $key =>  type is '@{[$data{$key}->{'type'}]}', max_length is @{[$data{$key}->{length}]}, default is '@{[$data{$key}->{'default'}]}';\n";
+}
+    print "\n};\n\n";
+
+1;
+
+

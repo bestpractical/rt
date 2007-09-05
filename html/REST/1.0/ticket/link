@@ -58,13 +58,13 @@ use RT::Interface::REST;
 
 my $output;
 my $status = "200 Ok";
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
 my $object = $r->path_info;
 
-my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy HasMember MemberOf);
+my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy has_member MemberOf);
 my %fields = map { lc $_ => $_ } @fields;
 my %lfields = (
-    HasMember    => { Type => 'MemberOf',  Mode => 'Base'   },
+    has_member    => { Type => 'MemberOf',  Mode => 'Base'   },
     ReferredToBy => { Type => 'RefersTo',  Mode => 'Base'   },
     DependedOnBy => { Type => 'DependsOn', Mode => 'Base'   },
     MemberOf     => { Type => 'MemberOf',  Mode => 'Target' },
@@ -95,8 +95,8 @@ unless (exists $fields{lc $rel}) {
 }
 $rel = $fields{lc $rel};
 
-$ticket->Load($id);
-unless ($ticket->Id) {
+$ticket->load($id);
+unless ($ticket->id) {
     $output = "Couldn't load ticket id: '$id'.\n";
     $status = "404 Ticket not found";
     goto OUTPUT;
@@ -106,14 +106,14 @@ my $type = $lfields{$rel}->{Type};
 my $mode = $lfields{$rel}->{Mode};
 
 my $n = 1;
-my $op = $del ? "DeleteLink" : "AddLink";
+my $op = $del ? "delete_link" : "AddLink";
 
 ($n, $output) = $ticket->$op(Type => $type, $mode => $to);
 if ($n == 0) {
     $status = "500 Error";
 } else {
     my $action = $del ? "Deleted" : "Created";
-    $output .= " $action link " . $ticket->Id . " $rel $to";
+    $output .= " $action link " . $ticket->id . " $rel $to";
 }
 
 OUTPUT:

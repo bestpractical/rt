@@ -62,10 +62,10 @@ Set up the relevant recipients, then call our parent.
 =cut
 
 
-sub Prepare {
+sub prepare {
     my $self = shift;
-    $self->SetRecipients();
-    $self->SUPER::Prepare();
+    $self->set_Recipients();
+    $self->SUPER::prepare();
 }
 
 =head2 SetRecipients
@@ -75,7 +75,7 @@ Explicitly B<does not> notify the creator of the transaction by default
 
 =cut
 
-sub SetRecipients {
+sub set_Recipients {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
@@ -87,7 +87,7 @@ sub SetRecipients {
 
 
     if ( $arg =~ /\bOtherRecipients\b/ ) {
-        if ( my $attachment = $self->TransactionObj->Attachments->First ) {
+        if ( my $attachment = $self->TransactionObj->Attachments->first ) {
             push @Cc, map { $_->address } Mail::Address->parse(
                 $attachment->GetHeader('RT-Send-Cc')
             );

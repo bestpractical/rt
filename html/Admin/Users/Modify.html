@@ -58,7 +58,7 @@
 %if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$UserObj->id%>" />
 % }
 <table width="100%" border="0">
 <tr>
@@ -207,14 +207,14 @@
 <&| /Widgets/TitleBox, title => loc('Custom Fields') &>
 <table>
 % my $CFs = $UserObj->CustomFields;
-% while (my $CF = $CFs->Next) {
+% while (my $CF = $CFs->next) {
 <tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>
 % if ($UserObj->id) {
 <& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
 % } else {
-<& /Elements/EditCustomField, %ARGS, NamePrefix => 'Object-RT::User-new-CustomField-', CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, NamePrefix => 'Object-RT::Model::User-new-CustomField-', CustomField => $CF &>
 % }
 </td></tr>
 % }
@@ -248,7 +248,7 @@
 <%INIT>
 
 my $current_tab;
-my $UserObj = new RT::User($session{'CurrentUser'});
+my $UserObj = new RT::Model::User($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);
@@ -261,7 +261,7 @@ else {
 
     $current_tab = 'Admin/Users/Modify.html?id='.$id;
     if ($id eq 'new') {
-	( $val, $msg ) = $UserObj->Create(
+	( $val, $msg ) = $UserObj->create(
 	    Name                  => $Name,
 	    EmailAddress          => $ARGS{'EmailAddress'},
 	    Name                  => $ARGS{'Name'},
@@ -297,18 +297,18 @@ else {
 	if ($val) {
 		push @results, $msg;
         foreach my $key ( keys %ARGS) {
-            # Convert custom fields on the "new" object to custom fields on the one we've just created
-            if ($key =~ /^Object-RT::User-new-CustomField-(.*)$/) {
-            $ARGS{'Object-RT::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
+            # Convert custom fields on the "new" object to custom fields on the one we've just Created
+            if ($key =~ /^Object-RT::Model::User-new-CustomField-(.*)$/) {
+            $ARGS{'Object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
             }
         }
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 	} else {
-		push @results, loc('User could not be created: [_1]', $msg);
+		push @results, loc('User could not be Created: [_1]', $msg);
 	}
     } else {
-	    $UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
-        $val = $UserObj->Id();
+	    $UserObj->load($id) || $UserObj->load($Name) || Abort("Couldn't load user '$Name'");
+        $val = $UserObj->id();
     }
 
     if ($val) {
@@ -326,7 +326,7 @@ else {
 
 
 # If we have a user to modify, lets try. 
-if ($UserObj->Id && $id ne 'new') {
+if ($UserObj->id && $id ne 'new') {
 
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
@@ -344,7 +344,7 @@ if ($UserObj->Id && $id ne 'new') {
 
     # {{{ Deal with special fields: Privileged, Enabled
     if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
-         my ($code, $msg) = $UserObj->SetPrivileged($Privileged);
+         my ($code, $msg) = $UserObj->set_Privileged($Privileged);
          push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
     }
 
@@ -352,7 +352,7 @@ if ($UserObj->Id && $id ne 'new') {
     $Disabled = $Enabled ? 0 : 1;
 
     if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
-        my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
+        my  ($code, $msg) = $UserObj->set_Disabled($Disabled);
         push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
     }
 
@@ -360,7 +360,7 @@ if ($UserObj->Id && $id ne 'new') {
     # }}}
 }
 
-if ( $UserObj->Id ) {
+if ( $UserObj->id ) {
     my $password_not_set;
     # Deal with Password field
     if ( !$Pass1 and !$Pass2 ) {
@@ -369,7 +369,7 @@ if ( $UserObj->Id ) {
 	$password_not_set = 1;
         push @results, loc("Passwords do not match.");
     } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
-        my ($code, $msg) = $UserObj->SetPassword($Pass1);
+        my ($code, $msg) = $UserObj->set_Password($Pass1);
         push @results, loc_fuzzy($msg);
 	$password_not_set = 1 unless $code;
     }
@@ -390,7 +390,7 @@ if ($UserObj->Privileged()) {
 
 # set the id, so the the menu will have the right info, this needs to
 # be done here to avoid creating and then modifying a user
-$id = $UserObj->Id;
+$id = $UserObj->id;
 
 </%INIT>
 

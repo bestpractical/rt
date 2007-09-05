@@ -64,16 +64,18 @@ sub Describe  {
 # }}}
 
 
-# {{{ sub Prepare 
-sub Prepare  {
+# {{{ sub prepare 
+sub prepare  {
     # nothing to prepare
+    # warn "preparing";
     return 1;
 }
 # }}}
 
-sub Commit {
+sub commit {
     my $self = shift;
-    $self->TicketObj->SetPriority($self->Argument);
+    warn "Committing the setprio";
+    $self->TicketObj->set_Priority($self->Argument);
 
 }
 

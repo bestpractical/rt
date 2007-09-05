@@ -4,7 +4,7 @@ use Test::More tests => 164;
 
 use warnings; use strict;
 use RT::Test;
-use RT::User;
+use RT::Model::User;
 
 use_ok('RT::Date');
 {
@@ -16,20 +16,20 @@ use_ok('RT::Date');
 
 {
     # set timezone in all places to UTC
-    $RT::SystemUser->UserObj->__Set(Field => 'Timezone', Value => 'UTC')
+    $RT::SystemUser->UserObj->__set(column => 'Timezone', value => 'UTC')
                                 if $RT::SystemUser->UserObj->Timezone;
-    RT->Config->Set( Timezone => 'UTC' );
+    RT->Config->set( Timezone => 'UTC' );
 }
 
 my $current_user;
 {
-    my $user = RT::User->new($RT::SystemUser);
-    my($uid, $msg) = $user->Create(
+    my $user = RT::Model::User->new($RT::SystemUser);
+    my($uid, $msg) = $user->create(
         Name       => "date_api". rand(200),
         Lang       => 'en',
         Privileged => 1,
     );
-    ok($uid, "user was created") or diag("error: $msg");
+    ok($uid, "user was Created") or diag("error: $msg");
     $current_user = RT::CurrentUser->new($user);
 }
 
@@ -40,7 +40,7 @@ my $current_user;
     is($date->Timezone('server'), 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('unknown'), 'UTC', "with wrong context returns UTC");
 
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'Europe/Moscow');
     is($current_user->UserObj->Timezone,
        'Europe/Moscow',
        "successfuly changed user's timezone");
@@ -50,7 +50,7 @@ my $current_user;
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
     is($date->Timezone('server'), 'UTC', "wasn't changed");
 
-    RT->Config->Set( Timezone => 'Africa/Ouagadougou' );
+    RT->Config->set( Timezone => 'Africa/Ouagadougou' );
     is($date->Timezone('server'),
        'Africa/Ouagadougou',
        "timezone of the RT server was changed");
@@ -59,7 +59,7 @@ my $current_user;
        "in user context still returns user's timezone");
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
     
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => '');
+    $current_user->UserObj->__set( column => 'Timezone', value => '');
     is($current_user->UserObj->Timezone,
        '',
        "successfuly changed user's timezone");
@@ -68,12 +68,12 @@ my $current_user;
        "in user context returns timezone of the server if user's one is not defined");
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
 
-    RT->Config->Set( Timezone => 'GMT' );
+    RT->Config->set( Timezone => 'GMT' );
     is($date->Timezone('server'),
        'UTC',
        "timezone is GMT which one is alias for UTC");
 
-    RT->Config->Set( Timezone => '' );
+    RT->Config->set( Timezone => '' );
     is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'),
        'UTC',
@@ -82,7 +82,7 @@ my $current_user;
        'UTC',
        "timezone of the server is not defined so UTC");
 
-    RT->Config->Set( Timezone => 'UTC' );
+    RT->Config->set( Timezone => 'UTC' );
 }
 
 {
@@ -184,32 +184,32 @@ my $current_user;
 
 
 { # positive timezone
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'Europe/Moscow');
     my $date = RT::Date->new( $current_user );
-    $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
+    $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
 
     # DST
     $date = RT::Date->new( $current_user );
-    $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-07-01 15:10:00' );
+    $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 1 Jul 2005 19:10:00 +0400', "RFC2822");
 }
 
 { # negative timezone
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'America/New_York');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'America/New_York');
     my $date = RT::Date->new( $current_user );
-    $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
+    $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
     $date = RT::Date->new( $current_user );
-    $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-07-01 15:10:00' );
+    $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
@@ -217,7 +217,7 @@ my $current_user;
 
 { # bad format
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set( Format => 'bad' );
+    $date->set( Format => 'bad' );
     is($date->Unix, 0, "bad format");
 }
 
@@ -230,7 +230,7 @@ my $current_user;
         $date->Unix(1);
         is($date->ISO, '1970-01-01 00:00:01', "correct value");
 
-        $date->Set(Format => 'unix', Value => $_);
+        $date->set(Format => 'unix', value => $_);
         is($date->ISO, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
         is($date->Unix, 0, "unix is 0 => unset");
     }
@@ -240,129 +240,129 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+ISO format
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'ISO', Value => 'weird date');
+    $date->set(Format => 'ISO', value => 'weird date');
     is($date->Unix, 0, "date was wrong => unix == 0");
 
     # XXX: ISO format has more feature than we suport
     # http://www.cl.cam.ac.uk/~mgk25/iso-time.html
 
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00+00');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00+00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss+00");
 
-    $date->Set(Format => 'ISO', Value => '11-28 15:10:00');
+    $date->set(Format => 'ISO', value => '11-28 15:10:00');
     is($date->ISO, $year .'-11-28 15:10:00', "DD-MM hh:mm:ss");
 
-    $date->Set(Format => 'ISO', Value => '11-28 15:10:00+00');
+    $date->set(Format => 'ISO', value => '11-28 15:10:00+00');
     is($date->ISO, $year .'-11-28 15:10:00', "DD-MM hh:mm:ss+00");
 
-    $date->Set(Format => 'ISO', Value => '20051128151000');
+    $date->set(Format => 'ISO', value => '20051128151000');
     is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMhhmmss");
 
-    $date->Set(Format => 'ISO', Value => '1128151000');
+    $date->set(Format => 'ISO', value => '1128151000');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhhmmss");
 
-    $date->Set(Format => 'ISO', Value => '2005112815:10:00');
+    $date->set(Format => 'ISO', value => '2005112815:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMhh:mm:ss");
 
-    $date->Set(Format => 'ISO', Value => '112815:10:00');
+    $date->set(Format => 'ISO', value => '112815:10:00');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhh:mm:ss");
 
-    $date->Set(Format => 'ISO', Value => '2005-13-28 15:10:00');
+    $date->set(Format => 'ISO', value => '2005-13-28 15:10:00');
     is($date->Unix, 0, "wrong month value");
 
-    $date->Set(Format => 'ISO', Value => '2005-00-28 15:10:00');
+    $date->set(Format => 'ISO', value => '2005-00-28 15:10:00');
     is($date->Unix, 0, "wrong month value");
 
-    $date->Set(Format => 'ISO', Value => '1960-01-28 15:10:00');
+    $date->set(Format => 'ISO', value => '1960-01-28 15:10:00');
     is($date->Unix, 0, "too old, we don't support");
 }
 
 { # set+datemanip format(Time::ParseDate)
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
+    $date->set(Format => 'unknown', value => 'weird date');
     is($date->Unix, 0, "date was wrong");
 
-    RT->Config->Set( Timezone => 'Europe/Moscow' );
-    $date->Set(Format => 'datemanip', Value => '2005-11-28 15:10:00');
+    RT->Config->set( Timezone => 'Europe/Moscow' );
+    $date->set(Format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    RT->Config->Set( Timezone => 'UTC' );
-    $date->Set(Format => 'datemanip', Value => '2005-11-28 15:10:00');
+    RT->Config->set( Timezone => 'UTC' );
+    $date->set(Format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'Europe/Moscow');
     $date = RT::Date->new( $current_user );
-    $date->Set(Format => 'datemanip', Value => '2005-11-28 15:10:00');
+    $date->set(Format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
 { # set+unknown format(Time::ParseDate)
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
+    $date->set(Format => 'unknown', value => 'weird date');
     is($date->Unix, 0, "date was wrong");
 
-    RT->Config->Set( Timezone => 'Europe/Moscow' );
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00');
+    RT->Config->set( Timezone => 'Europe/Moscow' );
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00', Timezone => 'utc' );
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00', Timezone => 'utc' );
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    RT->Config->Set( Timezone => 'UTC' );
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00');
+    RT->Config->set( Timezone => 'UTC' );
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'Europe/Moscow');
     $date = RT::Date->new( $current_user );
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00');
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00', Timezone => 'server' );
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00', Timezone => 'server' );
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
-    $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00', Timezone => 'utc' );
+    $date->set(Format => 'unknown', value => '2005-11-28 15:10:00', Timezone => 'utc' );
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
 { # SetToMidnight
     my $date = RT::Date->new($RT::SystemUser);
 
-    RT->Config->Set( Timezone => 'Europe/Moscow' );
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight;
+    RT->Config->set( Timezone => 'Europe/Moscow' );
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight;
     is($date->ISO, '2005-11-28 00:00:00', "default is utc");
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight(Timezone => 'utc');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight(Timezone => 'utc');
     is($date->ISO, '2005-11-28 00:00:00', "utc context");
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight(Timezone => 'user');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight(Timezone => 'user');
     is($date->ISO, '2005-11-27 21:00:00', "user context, user has no preference, fallback to server");
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight(Timezone => 'server');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight(Timezone => 'server');
     is($date->ISO, '2005-11-27 21:00:00', "server context");
 
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+    $current_user->UserObj->__set( column => 'Timezone', value => 'Europe/Moscow');
     $date = RT::Date->new( $current_user );
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight;
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight;
     is($date->ISO, '2005-11-28 00:00:00', "default is utc");
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight(Timezone => 'utc');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight(Timezone => 'utc');
     is($date->ISO, '2005-11-28 00:00:00', "utc context");
-    $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
-    $date->SetToMidnight(Timezone => 'user');
+    $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
+    $date->set_ToMidnight(Timezone => 'user');
     is($date->ISO, '2005-11-27 21:00:00', "user context");
-    $date->SetToMidnight(Timezone => 'server');
+    $date->set_ToMidnight(Timezone => 'server');
     is($date->ISO, '2005-11-27 21:00:00', "server context");
 
-    RT->Config->Set( Timezone => 'UTC' );
+    RT->Config->set( Timezone => 'UTC' );
 }
 
-{ # SetToNow
+{ # set_to_now
     my $date = RT::Date->new($RT::SystemUser);
     my $time = time;
-    $date->SetToNow;
+    $date->set_to_now;
     ok($date->Unix >= $time, 'close enough');
     ok($date->Unix < $time+5, 'difference is less than five seconds');
 }
@@ -407,22 +407,22 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 {
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => '');
+    $current_user->UserObj->__set( column => 'Timezone', value => '');
     my $date = RT::Date->new( $current_user );
     is($date->AsString, "Not set", "AsString returns 'Not set'");
 
-    RT->Config->Set( DateTimeFormat => '');
+    RT->Config->set( DateTimeFormat => '');
     $date->Unix(1);
     is($date->AsString, 'Thu Jan 01 00:00:01 1970', "correct string");
     is($date->AsString(Date => 0), '00:00:01', "correct string");
     is($date->AsString(Time => 0), 'Thu Jan 01 1970', "correct string");
     is($date->AsString(Date => 0, Time => 0), 'Thu Jan 01 00:00:01 1970', "invalid input");
 
-    RT->Config->Set( DateTimeFormat => 'RFC2822' );
+    RT->Config->set( DateTimeFormat => 'RFC2822' );
     $date->Unix(1);
     is($date->AsString, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
 
-    RT->Config->Set( DateTimeFormat => { Format => 'RFC2822', Seconds => 0 } );
+    RT->Config->set( DateTimeFormat => { Format => 'RFC2822', Seconds => 0 } );
     $date->Unix(1);
     is($date->AsString, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
     is($date->AsString(Seconds => 1), 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
@@ -469,7 +469,7 @@ my $year = (localtime(time))[5] + 1900;
 
 { # Diff
     my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
+    $date->set_to_now;
     my $diff = $date->Diff;
     ok($diff <= 0, 'close enought');
     ok($diff > -5, 'close enought');
@@ -477,7 +477,7 @@ my $year = (localtime(time))[5] + 1900;
 
 { # AgeAsString
     my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
+    $date->set_to_now;
     my $diff = $date->AgeAsString;
     like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
 }

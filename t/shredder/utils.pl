@@ -51,7 +51,7 @@ All tests runs by next algorithm:
   create_savepoint('mysp'); # create DB savepoint
   # create data you want delete with shredder
   # ...
-  # run shredder on the objects you've created
+  # run shredder on the objects you've Created
   # ...
   # check that shredder deletes things you want
   # this command will compare savepoint DB with current
@@ -66,7 +66,7 @@ Savepoints are named and you can create two or more savepoints.
 
 =head3 rewrite_rtconfig
 
-Call this sub after C<RT::LoadConfig>. Function changes
+Call this sub after C<RT::load_config>. Function changes
 RT config option to switch to local SQLite database.
 
 =cut
@@ -101,7 +101,7 @@ sub rewrite_rtconfig
 sub config_set {
     my $opt = shift;
     $opt =~ s/^[\$\%\@]//;
-    RT->Config->Set($opt, @_)
+    RT->Config->set($opt, @_)
 }
 
 =head2 DATABASES
@@ -118,7 +118,7 @@ in common situation.
 
 sub init_db
 {
-    RT::LoadConfig();
+    RT::load_config();
     rewrite_rtconfig();
     cleanup_tmp();
     RT::InitLogging();
@@ -274,8 +274,8 @@ sub __cp_db
     $RT::Handle->dbh->disconnect;
     # DIRTY HACK: undef Handles to force reconnect
     $RT::Handle = undef;
-    %DBIx::SearchBuilder::DBIHandle = ();
-    $DBIx::SearchBuilder::PrevHandle = undef;
+    %Jifty::DBI::DBIHandle = ();
+    $Jifty::DBI::PrevHandle = undef;
 
     File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
     RT::ConnectToDatabase();

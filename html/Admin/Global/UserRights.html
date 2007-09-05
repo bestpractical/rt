@@ -56,10 +56,10 @@
 <&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
 <table>
 
-% while ( my $Member = $Users->Next ) {
+% while ( my $Member = $Users->next ) {
 % my $UserObj = $Member->MemberObj->Object;
-% my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup( $Member->MemberObj );
+% my $group = RT::Model::Group->new($session{'CurrentUser'});
+% $group->load_acl_equivalence_group( $Member->MemberObj );
   <tr align="right">
 	<td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
 	<td><& /Admin/Elements/SelectRights,
@@ -83,8 +83,8 @@
 
 
 # Find out which users we want to display ACL selects for
-my $Privileged = RT::Group->new($session{'CurrentUser'});
-$Privileged->LoadSystemInternalGroup('Privileged');
+my $Privileged = RT::Model::Group->new($session{'CurrentUser'});
+$Privileged->load_system_internal_group('Privileged');
 my $Users = $Privileged->MembersObj();
 
     

@@ -61,7 +61,7 @@ use Test::More tests => 153;
 use RT::Test config => 'Set( $UnsafeEmailCommands, 1);';
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use RT::Tickets;
+use RT::Model::Tickets;
 
 use MIME::Entity;
 use Digest::MD5 qw(md5_base64);
@@ -72,11 +72,11 @@ use LWP::UserAgent;
 my $url = $m->rt_base_url;
 
 sub latest_ticket {
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    $tickets->RowsPerPage( 1 );
-    return $tickets->First;
+    my $tickets = RT::Model::Tickets->new( $RT::SystemUser );
+    $tickets->order_by( { column => 'id', order => 'DESC'} );
+    $tickets->limit( column => 'id', operator => '>', value => '0' );
+    $tickets->rows_per_page( 1 );
+    return $tickets->first;
 }
 
 diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'TEST_VERBOSE'};
@@ -110,9 +110,9 @@ EOF
 my $everyone_group;
 diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
 {
-    $everyone_group = RT::Group->new( $RT::SystemUser );
-    $everyone_group->LoadSystemInternalGroup( 'Everyone' );
-    ok ($everyone_group->Id, "Found group 'everyone'");
+    $everyone_group = RT::Model::Group->new( $RT::SystemUser );
+    $everyone_group->load_system_internal_group( 'Everyone' );
+    ok ($everyone_group->id, "Found group 'everyone'");
 
     foreach( qw(CreateTicket ReplyToTicket CommentOnTicket) ) {
         $everyone_group->PrincipalObj->RevokeRight(Right => $_);
@@ -135,8 +135,8 @@ EOF
     ok ($id, "Created ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    is ($tick->id, $id, "correct ticket id");
     is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
 }
 
@@ -155,19 +155,19 @@ EOF
     ok ($id, "Created ticket #$id");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    is ($tick->id, $id, "correct ticket id");
     is ($tick->Subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
 
     my $transactions = $tick->Transactions;
-    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
-    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
-    my $txn = $transactions->First;
-    isa_ok ($txn, 'RT::Transaction');
+    $transactions->order_by({ column => 'id', order => 'DESC' });
+    $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
+    my $txn = $transactions->first;
+    isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->Type, 'Create', "correct type");
 
-    my $attachment = $txn->Attachments->First;
-    isa_ok ($attachment, 'RT::Attachment');
+    my $attachment = $txn->Attachments->first;
+    isa_ok ($attachment, 'RT::Model::Attachment');
     # XXX: We eat all newlines in header, that's not what RFC's suggesting
     is (
         $attachment->GetHeader('X-RT-Mail-Extension'),
@@ -190,18 +190,18 @@ EOF
     ok ($id, "Created ticket #$id");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    is ($tick->id, $id, "correct ticket id");
 
     my $transactions = $tick->Transactions;
-    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
-    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
-    my $txn = $transactions->First;
-    isa_ok ($txn, 'RT::Transaction');
+    $transactions->order_by({ column => 'id', order => 'DESC' });
+    $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
+    my $txn = $transactions->first;
+    isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->Type, 'Create', "correct type");
 
-    my $attachment = $txn->Attachments->First;
-    isa_ok ($attachment, 'RT::Attachment');
+    my $attachment = $txn->Attachments->first;
+    isa_ok ($attachment, 'RT::Model::Attachment');
     is (
         $attachment->GetHeader('X-RT-Mail-Extension'),
         'some-extension-arg',
@@ -224,8 +224,8 @@ EOF
     ok ($id, "Created ticket #$id");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    is ($tick->id, $id, "correct ticket id");
     is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
 }
 
@@ -241,16 +241,16 @@ Foob!
 EOF
     my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
-    ok (!$id, "no ticket created");
+    ok (!$id, "no ticket Created");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ".$tick->Id);
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ".$tick->id);
     isnt ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
-    my $u = RT::User->new($RT::SystemUser);
-    $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
-    ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
+    my $u = RT::Model::User->new($RT::SystemUser);
+    $u->load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
+    ok( !$u->id, "user does not exist and was not Created by failed ticket submission");
 }
 
 diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
@@ -275,17 +275,17 @@ Foob!
 EOF
     my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "ticket created");
+    ok ($id, "ticket Created");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ".$tick->Id);
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ".$tick->id);
+    is ($tick->id, $id, "correct ticket id");
     is ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
-    my $u = RT::User->new( $RT::SystemUser );
-    $u->Load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
-    ok ($u->Id, "user does not exist and was created by ticket submission");
+    my $u = RT::Model::User->new( $RT::SystemUser );
+    $u->load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
+    ok ($u->id, "user does not exist and was Created by ticket submission");
     $ticket_id = $id;
 }
 
@@ -303,9 +303,9 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to reply to the ticket");
 
-    my $u = RT::User->new($RT::SystemUser);
-    $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
-    ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
+    my $u = RT::Model::User->new($RT::SystemUser);
+    $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    ok( !$u->id, " user does not exist and was not Created by ticket correspondence submission");
 }
 
 diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
@@ -331,9 +331,9 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
-    my $u = RT::User->new($RT::SystemUser);
-    $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
-    ok ($u->Id, "user exists and was created by ticket correspondence submission");
+    my $u = RT::Model::User->new($RT::SystemUser);
+    $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    ok ($u->id, "user exists and was Created by ticket correspondence submission");
 }
 
 diag "add a reply to the ticket using '--extension ticket' feature" if $ENV{'TEST_VERBOSE'};
@@ -352,19 +352,19 @@ EOF
     is ($id, $ticket_id, "replied to the ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ".$tick->Id);
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ".$tick->id);
+    is ($tick->id, $id, "correct ticket id");
 
     my $transactions = $tick->Transactions;
-    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
-    $transactions->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'EmailRecord');
-    my $txn = $transactions->First;
-    isa_ok ($txn, 'RT::Transaction');
+    $transactions->order_by({ column => 'id', order => 'DESC' });
+    $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
+    my $txn = $transactions->first;
+    isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->Type, 'Correspond', "correct type");
 
-    my $attachment = $txn->Attachments->First;
-    isa_ok ($attachment, 'RT::Attachment');
+    my $attachment = $txn->Attachments->first;
+    isa_ok ($attachment, 'RT::Model::Attachment');
     is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
 }
 
@@ -382,9 +382,9 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to comment on the ticket");
 
-    my $u = RT::User->new($RT::SystemUser);
-    $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
-    ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
+    my $u = RT::Model::User->new($RT::SystemUser);
+    $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    ok( !$u->id, " user does not exist and was not Created by ticket comment submission");
 }
 
 
@@ -411,9 +411,9 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
-    my $u = RT::User->new($RT::SystemUser);
-    $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
-    ok ($u->Id, " user exists and was created by ticket comment submission");
+    my $u = RT::Model::User->new($RT::SystemUser);
+    $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    ok ($u->id, " user exists and was Created by ticket comment submission");
 }
 
 diag "add comment to the ticket using '--extension action' feature" if $ENV{'TEST_VERBOSE'};
@@ -432,24 +432,24 @@ EOF
     is ($id, $ticket_id, "added comment to the ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ".$tick->Id);
-    is ($tick->Id, $id, "correct ticket id");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ".$tick->id);
+    is ($tick->id, $id, "correct ticket id");
 
     my $transactions = $tick->Transactions;
-    $transactions->OrderByCols({ FIELD => 'id', ORDER => 'DESC' });
-    $transactions->Limit(
-        FIELD => 'Type',
-        OPERATOR => 'NOT ENDSWITH',
-        VALUE => 'EmailRecord',
-        ENTRYAGGREGATOR => 'AND',
+    $transactions->order_by({ column => 'id', order => 'DESC' });
+    $transactions->limit(
+        column => 'Type',
+        operator => 'NOT ENDSWITH',
+        value => 'EmailRecord',
+        entry_aggregator => 'AND',
     );
-    my $txn = $transactions->First;
-    isa_ok ($txn, 'RT::Transaction');
+    my $txn = $transactions->first;
+    isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->Type, 'Comment', "correct type");
 
-    my $attachment = $txn->Attachments->First;
-    isa_ok ($attachment, 'RT::Attachment');
+    my $attachment = $txn->Attachments->first;
+    isa_ok ($attachment, 'RT::Model::Attachment');
     is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
 }
 
@@ -474,32 +474,32 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     # Create a ticket with a binary attachment
     my ($status, $id) = RT::Test->send_via_mailgate($entity);
     is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "created ticket");
+    ok ($id, "Created ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ".$tick->Id);
-    is ($tick->Id, $id, "correct ticket id");
-    is ($tick->Subject , 'binary attachment test', "Created the ticket - ".$tick->Id);
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ".$tick->id);
+    is ($tick->id, $id, "correct ticket id");
+    is ($tick->Subject , 'binary attachment test', "Created the ticket - ".$tick->id);
 
     my $file = `cat $LOGO_FILE`;
     ok ($file, "Read in the logo image");
     diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file) if $ENV{'TEST_VERBOSE'};
 
     # Verify that the binary attachment is valid in the database
-    my $attachments = RT::Attachments->new($RT::SystemUser);
-    $attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
-    my $txn_alias = $attachments->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'TransactionId',
-        TABLE2 => 'Transactions',
-        FIELD2 => 'id',
+    my $attachments = RT::Model::Attachments->new($RT::SystemUser);
+    $attachments->limit(column => 'ContentType', value => 'image/gif');
+    my $txn_alias = $attachments->join(
+        alias1 => 'main',
+        column1 => 'TransactionId',
+        table2 => 'Transactions',
+        column2 => 'id',
     );
-    $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
-    $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectId', VALUE => $id );
-    is ($attachments->Count, 1, 'Found only one gif attached to the ticket');
-    my $attachment = $attachments->First;
-    ok ($attachment->Id, 'loaded attachment object');
+    $attachments->limit( alias => $txn_alias, column => 'ObjectType', value => 'RT::Model::Ticket' );
+    $attachments->limit( alias => $txn_alias, column => 'ObjectId', value => $id );
+    is ($attachments->count, 1, 'Found only one gif attached to the ticket');
+    my $attachment = $attachments->first;
+    ok ($attachment->id, 'loaded attachment object');
     my $acontent = $attachment->Content;
 
     diag "coming from the database, md5 hex is ".Digest::MD5::md5_hex($acontent) if $ENV{'TEST_VERBOSE'};
@@ -530,24 +530,24 @@ bye
 EOF
     my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "created ticket");
+    ok ($id, "Created ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ". $tick->Id);
-    is ($tick->Id, $id, "correct ticket");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ". $tick->id);
+    is ($tick->id, $id, "correct ticket");
     is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
     is (
-        $tick->Transactions->First->Content,
-        $tick->Transactions->First->Attachments->First->Content,
-        "Content is ". $tick->Transactions->First->Attachments->First->Content
+        $tick->Transactions->first->Content,
+        $tick->Transactions->first->Attachments->first->Content,
+        "Content is ". $tick->Transactions->first->Attachments->first->Content
     );
     ok (
-        $tick->Transactions->First->Content =~ /$unistring/i,
-        $tick->Id." appears to be unicode ". $tick->Transactions->First->Attachments->First->Id
+        $tick->Transactions->first->Content =~ /$unistring/i,
+        $tick->id." appears to be unicode ". $tick->Transactions->first->Attachments->first->id
     );
 }
 
@@ -566,20 +566,20 @@ bye
 EOF
     my ($status, $id) = RT::Test->send_via_mailgate($text);
     is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "created ticket");
+    ok ($id, "Created ticket");
 
     my $tick = latest_ticket();
-    isa_ok ($tick, 'RT::Ticket');
-    ok ($tick->Id, "found ticket ". $tick->Id);
-    is ($tick->Id, $id, "correct ticket");
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ". $tick->id);
+    is ($tick->id, $id, "correct ticket");
     is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket");
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
 
     ok (
-        $tick->Transactions->First->Content =~ $unistring,
-        "It appears to be unicode - ". $tick->Transactions->First->Content
+        $tick->Transactions->first->Content =~ $unistring,
+        "It appears to be unicode - ". $tick->Transactions->first->Content
     );
 }
 
@@ -592,19 +592,19 @@ skip "Advanced mailgate actions require an unsafe configuration", 47
     unless RT->Config->Get('UnsafeEmailCommands');
 
 # create new queue to be shure we don't mess with rights
-use RT::Queue;
-my $queue = RT::Queue->new($RT::SystemUser);
-my ($qid) = $queue->Create( Name => 'ext-mailgate');
-ok( $qid, 'queue created for ext-mailgate tests' );
+use RT::Model::Queue;
+my $queue = RT::Model::Queue->new($RT::SystemUser);
+my ($qid) = $queue->create( Name => 'ext-mailgate');
+ok( $qid, 'queue Created for ext-mailgate tests' );
 
 # {{{ Check take and resolve actions
 
 # create ticket that is owned by nobody
-use RT::Ticket;
-my $tick = RT::Ticket->new($RT::SystemUser);
-my ($id) = $tick->Create( Queue => 'ext-mailgate', Subject => 'test');
-ok( $id, 'new ticket created' );
-is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
+use RT::Model::Ticket;
+my $tick = RT::Model::Ticket->new($RT::SystemUser);
+my ($id) = $tick->create( Queue => 'ext-mailgate', Subject => 'test');
+ok( $id, 'new ticket Created' );
+is( $tick->Owner, $RT::Nobody->id, 'owner of the new ticket is nobody' );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
@@ -616,18 +616,18 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
-$tick = RT::Ticket->new($RT::SystemUser);
-$tick->Load( $id );
-is( $tick->Id, $id, 'load correct ticket');
+$tick = RT::Model::Ticket->new($RT::SystemUser);
+$tick->load( $id );
+is( $tick->id, $id, 'load correct ticket');
 is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
 
 # check that there is no text transactions writen
-is( $tick->Transactions->Count, 2, 'no superfluous transactions');
+is( $tick->Transactions->count, 2, 'no superfluous transactions');
 
 my $status;
-($status, $msg) = $tick->SetOwner( $RT::Nobody->Id, 'Force' );
+($status, $msg) = $tick->set_Owner( $RT::Nobody->id, 'Force' );
 ok( $status, 'successfuly changed owner: '. ($msg||'') );
-is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
+is( $tick->Owner, $RT::Nobody->id, 'set owner back to nobody');
 
 
 $! = 0;
@@ -641,18 +641,18 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
-$tick = RT::Ticket->new($RT::SystemUser);
-$tick->Load( $id );
-is( $tick->Id, $id, "load correct ticket #$id");
+$tick = RT::Model::Ticket->new($RT::SystemUser);
+$tick->load( $id );
+is( $tick->id, $id, "load correct ticket #$id");
 is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
 my $txns = $tick->Transactions;
-$txns->Limit( FIELD => 'Type', VALUE => 'Correspond');
-$txns->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+$txns->limit( column => 'Type', value => 'Correspond');
+$txns->order_by( column => 'id', order => 'DESC' );
 # +1 because of auto open
-is( $tick->Transactions->Count, 6, 'no superfluous transactions');
-is( $txns->First->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
+is( $tick->Transactions->count, 6, 'no superfluous transactions');
+is( $txns->first->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve --debug"), "Opened the mailgate - $!");
@@ -664,26 +664,26 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
-$tick = RT::Ticket->new($RT::SystemUser);
-$tick->Load( $id );
-is( $tick->Id, $id, 'load correct ticket');
+$tick = RT::Model::Ticket->new($RT::SystemUser);
+$tick->load( $id );
+is( $tick->id, $id, 'load correct ticket');
 is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
-is( $tick->Transactions->Count, 7, 'no superfluous transactions');
+is( $tick->Transactions->count, 7, 'no superfluous transactions');
 
-use RT::User;
-my $user = RT::User->new( $RT::SystemUser );
-my ($uid) = $user->Create( Name => 'ext-mailgate',
+use RT::Model::User;
+my $user = RT::Model::User->new( $RT::SystemUser );
+my ($uid) = $user->create( Name => 'ext-mailgate',
 			   EmailAddress => 'ext-mailgate@localhost',
 			   Privileged => 1,
 			   Password => 'qwe123',
 			 );
-ok( $uid, 'user created for ext-mailgate tests' );
-ok( !$user->HasRight( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
+ok( $uid, 'user Created for ext-mailgate tests' );
+ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
 
-$tick = RT::Ticket->new($RT::SystemUser);
-($id) = $tick->Create( Queue => $qid, Subject => 'test' );
+$tick = RT::Model::Ticket->new($RT::SystemUser);
+($id) = $tick->create( Queue => $qid, Subject => 'test' );
 ok( $id, 'create new ticket' );
 
 my $rtname = RT->Config->Get('rtname');
@@ -697,14 +697,14 @@ Subject: [$rtname \#$id] test
 EOF
 close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 
 ($status, $msg) = $user->PrincipalObj->GrantRight( Object => $queue, Right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
-ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
+ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
@@ -716,10 +716,10 @@ correspond-take
 EOF
 close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
-is( $tick->Transactions->Count, 3, "one transactions added" );
+is( $tick->Transactions->count, 3, "one transactions added" );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
@@ -731,29 +731,29 @@ correspond-take
 EOF
 close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
-is( $tick->Transactions->Count, 3, "no transactions added, user can't take ticket first" );
+is( $tick->Transactions->count, 3, "no transactions added, user can't take ticket first" );
 
 # revoke ReplyToTicket right
-use RT::ACE;
-my $ace = RT::ACE->new($RT::SystemUser);
-$ace->Load( $ace_id );
-$ace->Delete;
-my $acl = RT::ACL->new($RT::SystemUser);
-$acl->Limit( FIELD => 'RightName', VALUE => 'ReplyToTicket' );
+use RT::Model::ACE;
+my $ace = RT::Model::ACE->new($RT::SystemUser);
+$ace->load( $ace_id );
+$ace->delete;
+my $acl = RT::Model::ACL->new($RT::SystemUser);
+$acl->limit( column => 'RightName', value => 'ReplyToTicket' );
 $acl->LimitToObject( $RT::System );
-while( my $ace = $acl->Next ) {
-	$ace->Delete;
+while( my $ace = $acl->next ) {
+	$ace->delete;
 }
 
-ok( !$user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
+ok( !$user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
 
 
-my $group = RT::Group->new( $RT::SystemUser );
-ok( $group->LoadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
-$ace = RT::ACE->new( $RT::SystemUser );
+my $group = RT::Model::Group->new( $RT::SystemUser );
+ok( $group->loadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+$ace = RT::Model::ACE->new( $RT::SystemUser );
 ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 
@@ -772,13 +772,16 @@ take-correspond with reply right granted to owner role
 EOF
 close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
+Jifty::DBI::Record::Cachable->flush_cache;
 
-$tick->Load( $id );
+$tick->load( $id );
 is( $tick->Owner, $user->id, "we changed owner" );
-ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
-is( $tick->Transactions->Count, 5, "transactions added" );
-
+ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
+is( $tick->Transactions->count, 5, "transactions added" );
+my $txns = $tick->Transactions;
+while (my $t = $txns->next) {
+    diag( $t->id, $t->Description."\n");
+}
 
 # }}}
 };

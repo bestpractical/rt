@@ -48,12 +48,12 @@
 %# Released under the terms of version 2 of the GNU Public License
 
 % my $Users = $Group->UserMembersObj( Recursively => $Recursively );
-% while ( my $user = $Users->Next ) {
+% while ( my $user = $Users->next ) {
 <& /Elements/ShowUser, User => $user, Ticket => $Ticket &><br />
 % }
 % my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
 % $Groups->LimitToUserDefinedGroups;
-% while (my $group = $Groups->Next) {
+% while (my $group = $Groups->next) {
 <&|/l&>Group</&>: <% $group->Name %><br />
 % }
 

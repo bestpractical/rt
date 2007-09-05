@@ -46,24 +46,24 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$OrderBy => 'id'
+$order_by => 'id'
 $Order => 'ASC'
 </%ARGS>
 <%INIT>
 
-my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$Tickets->FromSQL( $ARGS{'Query'} );
-if ( $OrderBy =~ /\|/ ) {
+my $Tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+$Tickets->from_sql( $ARGS{'Query'} );
+if ( $order_by =~ /\|/ ) {
 
   # Multiple Sorts
-  my @OrderBy = split /\|/, $OrderBy;
+  my @order_by = split /\|/, $order_by;
   my @Order   = split /\|/, $Order;
-  $Tickets->OrderByCols(
-    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-      ( 0 .. $#OrderBy ) );
+  $Tickets->order_by(
+    map { { column => $order_by[$_], order => $Order[$_] } }
+      ( 0 .. $#order_by ) );
 }
 else {
-  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+  $Tickets->order_by( column => $order_by, order => $Order );
 }
 
 my @rows;
@@ -74,7 +74,7 @@ my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLe
                 DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
 
 $r->content_type('application/vnd.ms-excel');
-while ( my $Ticket = $Tickets->Next()) {
+while ( my $Ticket = $Tickets->next()) {
     my $row;
     foreach my $attr (@attrs) {
         if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
@@ -87,14 +87,14 @@ while ( my $Ticket = $Tickets->Next()) {
     }
 
     my $cfs = $Ticket->QueueObj->TicketCustomFields();
-    while (my $cf = $cfs->Next) {
-        $known_cfs{$cf->Id} = $cf->Name;
+    while (my $cf = $cfs->next) {
+        $known_cfs{$cf->id} = $cf->Name;
         my @content;
-        my $values = $Ticket->CustomFieldValues($cf->Id);
-        while (my $value = $values->Next) {
+        my $values = $Ticket->CustomFieldValues($cf->id);
+        while (my $value = $values->next) {
             push @content, $value->Content;
         }
-        $row->{'CustomField-'.$cf->Id} = join(', ',@content);
+        $row->{'CustomField-'.$cf->id} = join(', ',@content);
     }
     push @rows, $row;
 }

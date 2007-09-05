@@ -54,29 +54,29 @@ $ChartStyle => 'bars'
 <%init>
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
-$tix->FromSQL( $Query );
-my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->GroupBy( FIELD => $PrimaryGroupBy );
-my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
+$tix->from_sql( $Query );
+my $count_name = $tix->Column( FUNCTION => 'COUNT', column => 'id' );
+$tix->GroupBy( column => $PrimaryGroupBy );
+my $value_name = $tix->Column( column => $PrimaryGroupBy );
 
 my %class = (
-    Queue => 'RT::Queue',
-    Owner => 'RT::User',
+    Queue => 'RT::Model::Queue',
+    Owner => 'RT::Model::User',
 );
 my $class = $class{ $PrimaryGroupBy };
 
 my (@keys, @values);
-while ( my $entry = $tix->Next ) {
+while ( my $entry = $tix->next ) {
     if ($class) {
         my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->__Value( $value_name ) );
+        $q->load( $entry->__value( $value_name ) );
         push @keys, $q->Name;
     }
     else {
-        push @keys, $entry->__Value( $value_name );
+        push @keys, $entry->__value( $value_name );
     }
     $keys[-1] ||= loc('(no value)');
-    push @values, $entry->__Value( $count_name );
+    push @values, $entry->__value( $count_name );
 }
 
 # XXX: Convert 1970-01-01 date to the 'Not Set'

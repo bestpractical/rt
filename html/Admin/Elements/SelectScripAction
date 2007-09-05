@@ -49,17 +49,17 @@
 <option value="" 
 <% ! defined $Default && 'SELECTED' %>
 >-</option>
-%while  (my $ScripAction = $ScripActions->Next) {
-<option value="<%$ScripAction->Id%>"
-<% defined $Default && $ScripAction->Id == $Default && 'SELECTED' %>
+%while  (my $ScripAction = $ScripActions->next) {
+<option value="<%$ScripAction->id%>"
+<% defined $Default && $ScripAction->id == $Default && 'SELECTED' %>
 ><% loc($ScripAction->Name) %>
 </option>
 %}
 </select>
 
 <%INIT>
-my $ScripActions = RT::ScripActions->new($session{'CurrentUser'});
-$ScripActions->UnLimit;
+my $ScripActions = RT::Model::ScripActions->new($session{'CurrentUser'});
+$ScripActions->find_all_rows;
 
 
 

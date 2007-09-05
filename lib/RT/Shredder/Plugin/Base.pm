@@ -60,11 +60,11 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
+    $self->_init( @_ );
     return $self;
 }
 
-sub _Init
+sub _init
 {
     my $self = shift;
     $self->{'opt'} = { @_ };

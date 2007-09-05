@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use RT;
-RT::LoadConfig();
+RT::load_config();
 
 warn "lib/t/utils.pl has been deprecated. Use RT::Test module instead";
 

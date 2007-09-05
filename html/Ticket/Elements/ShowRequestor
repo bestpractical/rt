@@ -47,16 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 my $rows = 10;
-my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
+my $has_right_adminusers = $session{'CurrentUser'}->has_right(Object => $RT::System, Right => 'AdminUsers');
 my $people = $Ticket->Requestors->UserMembersObj;
-while ( my $requestor = $people->Next ) {
+while ( my $requestor = $people->next ) {
     next if $requestor->Privileged;
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
-    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
-    $tickets->RowsPerPage( $rows );
-    $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
+    my $tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+    $tickets->from_sql( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
+    $tickets->rows_per_page( $rows );
+    $tickets->order_by( column => 'Priority', order => 'DESC' );
 </%PERL>
 
 <&| /Widgets/TitleBox,
@@ -72,8 +72,8 @@ while ( my $requestor = $people->Next ) {
 
 <&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
 <ul>
-%while (my $w=$tickets->Next) {
-<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
+%while (my $w=$tickets->next) {
+<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </ul>
 

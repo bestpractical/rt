@@ -50,8 +50,8 @@ $Queue => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets, grouped by owner");
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->LoadByCols(Name => $Queue);
+my $q = RT::Model::Queue->new($session{'CurrentUser'});
+$q->load_by_cols(Name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', Title => $title &>

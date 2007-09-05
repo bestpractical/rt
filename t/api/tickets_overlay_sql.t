@@ -9,23 +9,23 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use RT::Tickets;
+use RT::Model::Tickets;
 use strict;
 
-my $tix = RT::Tickets->new($RT::SystemUser);
+my $tix = RT::Model::Tickets->new($RT::SystemUser);
 {
     my $query = "Status = 'open'";
-    my ($status, $msg)  = $tix->FromSQL($query);
+    my ($status, $msg)  = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 }
 
 
-my (@created,%created);
+my (@Created,%Created);
 my $string = 'subject/content SQL test';
 {
-    my $t = RT::Ticket->new($RT::SystemUser);
-    ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
-    $created{ $t->Id }++; push @created, $t->Id;
+    my $t = RT::Model::Ticket->new($RT::SystemUser);
+    ok( $t->create(Queue => 'General', Subject => $string), "Ticket Created");
+    $Created{ $t->id }++; push @Created, $t->id;
 }
 
 {
@@ -35,39 +35,39 @@ my $string = 'subject/content SQL test';
                      Data        => [ $string ],
             );
 
-    my $t = RT::Ticket->new($RT::SystemUser);
-    ok( $t->Create( Queue => 'General',
+    my $t = RT::Model::Ticket->new($RT::SystemUser);
+    ok( $t->create( Queue => 'General',
                     Subject => 'another ticket',
                     MIMEObj => $Message,
-                    MemberOf => $created[0]
+                    MemberOf => $Created[0]
                   ),
         "Ticket Created"
     );
-    $created{ $t->Id }++; push @created, $t->Id;
+    $Created{ $t->id }++; push @Created, $t->id;
 }
 
 {
     my $query = ("Subject LIKE '$string' OR Content LIKE '$string'");
-    my ($status, $msg) = $tix->FromSQL($query);
+    my ($status, $msg) = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 
     my $count = 0;
-    while (my $tick = $tix->Next) {
-        $count++ if $created{ $tick->id };
+    while (my $tick = $tix->next) {
+        $count++ if $Created{ $tick->id };
     }
-    is ($count, scalar @created, "number of returned tickets same as entered");
+    is ($count, scalar @Created, "number of returned tickets same as entered");
 }
 
 {
-    my $query = "id = $created[0] OR MemberOf = $created[0]";
-    my ($status, $msg) = $tix->FromSQL($query);
+    my $query = "id = $Created[0] OR MemberOf = $Created[0]";
+    my ($status, $msg) = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 
     my $count = 0;
-    while (my $tick = $tix->Next) {
-        $count++ if $created{ $tick->id };
+    while (my $tick = $tix->next) {
+        $count++ if $Created{ $tick->id };
     }
-    is ($count, scalar @created, "number of returned tickets same as entered");
+    is ($count, scalar @Created, "number of returned tickets same as entered");
 }
 
 

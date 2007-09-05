@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-$Tickets->FromSQL($ARGS{'Query'});
+my $Tickets = RT::Model::Tickets->new($session{'CurrentUser'});
+$Tickets->from_sql($ARGS{'Query'});
 $r->content_type('application/rss+xml');
 
 
@@ -70,13 +70,13 @@ $r->content_type('application/rss+xml');
         );
 
 
-    while ( my $Ticket = $Tickets->Next()) {
+    while ( my $Ticket = $Tickets->next()) {
         my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->CreatorObj);
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->Subject,
           link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
-          description => $Ticket->Transactions->First->Content,
+          description => $Ticket->Transactions->first->Content,
           dc => {
             subject  => ($Ticket->Subject  || loc('No subject')),
             creator  => $creator_str,

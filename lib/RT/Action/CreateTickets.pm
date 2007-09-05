@@ -67,7 +67,7 @@ Create one or more tickets according to an externally supplied template.
  ===Create-Ticket codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
  Depended-On-By: TOP
- Content: Someone has created a ticket. you should review and approve it,
+ Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
  ENDOFCONTENT
 
@@ -75,7 +75,7 @@ Create one or more tickets according to an externally supplied template.
 
 
 Using the "CreateTickets" ScripAction and mandatory dependencies, RT now has 
-the ability to model complex workflow. When a ticket is created in a queue
+the ability to model complex workflow. When a ticket is Created in a queue
 that has a "CreateTickets" scripaction, that ScripAction parses its "Template"
 
 
@@ -105,7 +105,7 @@ Text::Template object, which means that you can embed snippets
 of perl inside the Text::Template using {} delimiters, but that 
 such sections absolutely can not span a ===Create-Ticket boundary.
 
-After each ticket is created, it's stuffed into a hash called %Tickets
+After each ticket is Created, it's stuffed into a hash called %Tickets
 so as to be available during the creation of other tickets during the same 
 ScripAction.  The hash is prepopulated with the ticket which triggered the 
 ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
@@ -116,7 +116,7 @@ A simple example:
  ===Create-Ticket: codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
  Depended-On-By: TOP
- Content: Someone has created a ticket. you should review and approve it,
+ Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
  ENDOFCONTENT
 
@@ -129,24 +129,24 @@ A convoluted example
    # of which the creator of this ticket is a member
     my $name = "HR";
    
-    my $groups = RT::Groups->new($RT::SystemUser);
+    my $groups = RT::Model::Groups->new($RT::SystemUser);
     $groups->LimitToUserDefinedGroups();
-    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
-    $groups->WithMember($TransactionObj->CreatorObj->Id);
+    $groups->limit(column => "Name", operator => "=", value => "$name");
+    $groups->WithMember($TransactionObj->CreatorObj->id);
  
-    my $groupid = $groups->First->Id;
+    my $groupid = $groups->first->id;
  
-    my $adminccs = RT::Users->new($RT::SystemUser);
+    my $adminccs = RT::Model::Users->new($RT::SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
-	Object =>$groups->First,
+	Object =>$groups->first,
 	IncludeSystemRights => undef,
 	IncludeSuperusers => 0,
 	IncludeSubgroupMembers => 0,
     );
  
      my @admins;
-     while (my $admin = $adminccs->Next) {
+     while (my $admin = $adminccs->next) {
          push (@admins, $admin->EmailAddress); 
      }
  }
@@ -155,17 +155,17 @@ A convoluted example
  AdminCc: {join ("\nAdminCc: ",@admins) }
  Depended-On-By: TOP
  Refers-To: TOP
- Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
+ Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->Subject}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {$Tickets{"TOP"}->Id}: {$Tickets{"TOP"}->Subject}
+ Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->Subject}
  Blah
  Blah
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
  Depended-On-By: TOP
- Refers-On: {$Tickets{"approval"}->Id}
+ Refers-On: {$Tickets{"approval"}->id}
  Queue: ___Approvals
  Content-Type: text/plain
  Content: 
@@ -226,7 +226,7 @@ Fields marked with a + may have multiple values, simply
 by repeating the fieldname on a new line with an additional value.
 
 Fields marked with a ! are postponed to be processed after all
-tickets in the same actions are created.  Except for 'Status', those
+tickets in the same actions are Created.  Except for 'Status', those
 field can also take a ticket name within the same action (i.e.
 the identifiers after ==Create-Ticket), instead of raw Ticket ID
 numbers.
@@ -265,7 +265,7 @@ my %LINKTYPEMAP = (
         Type => 'MemberOf',
         Mode => 'Base',
     },
-    HasMember => {
+    has_member => {
         Type => 'MemberOf',
         Mode => 'Base',
     },
@@ -290,24 +290,24 @@ my %LINKTYPEMAP = (
 
 # {{{ Scrip methods (Commit, Prepare)
 
-# {{{ sub Commit
+# {{{ sub commit
 #Do what we need to do and send it out.
-sub Commit {
+sub commit {
     my $self = shift;
 
     # Create all the tickets we care about
     return (1) unless $self->TicketObj->Type eq 'ticket';
 
-    $self->CreateByTemplate( $self->TicketObj );
+    $self->createByTemplate( $self->TicketObj );
     $self->UpdateByTemplate( $self->TicketObj );
     return (1);
 }
 
 # }}}
 
-# {{{ sub Prepare
+# {{{ sub prepare
 
-sub Prepare {
+sub prepare {
     my $self = shift;
 
     unless ( $self->TemplateObj ) {
@@ -336,7 +336,7 @@ sub Prepare {
 
 # }}}
 
-sub CreateByTemplate {
+sub createByTemplate {
     my $self = shift;
     my $top  = shift;
 
@@ -354,12 +354,12 @@ sub CreateByTemplate {
 
     my $ticketargs;
     my ( @links, @postponed );
-    foreach my $template_id ( @{ $self->{'create_tickets'} } ) {
+    foreach my $template_id ( @{ $self->{'CreateTickets'} } ) {
         $RT::Logger->debug("Workflow: processing $template_id of $T::TOP")
             if $T::TOP;
 
         $T::ID    = $template_id;
-        @T::AllID = @{ $self->{'create_tickets'} };
+        @T::AllID = @{ $self->{'CreateTickets'} };
 
         ( $T::Tickets{$template_id}, $ticketargs )
             = $self->ParseLines( $template_id, \@links, \@postponed );
@@ -369,18 +369,18 @@ sub CreateByTemplate {
         # reasonable data and do our thang
 
         my ( $id, $transid, $msg )
-            = $T::Tickets{$template_id}->Create(%$ticketargs);
+            = $T::Tickets{$template_id}->create(%$ticketargs);
 
         foreach my $res ( split( '\n', $msg ) ) {
             push @results,
                 $T::Tickets{$template_id}
-                ->loc( "Ticket [_1]", $T::Tickets{$template_id}->Id ) . ': '
+                ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id ) . ': '
                 . $res;
         }
         if ( !$id ) {
             if ( $self->TicketObj ) {
                 $msg = "Couldn't create related ticket $template_id for "
-                    . $self->TicketObj->Id . " "
+                    . $self->TicketObj->id . " "
                     . $msg;
             } else {
                 $msg = "Couldn't create ticket $template_id " . $msg;
@@ -391,7 +391,7 @@ sub CreateByTemplate {
         }
 
         $RT::Logger->debug("Assigned $template_id with $id");
-        $T::Tickets{$template_id}->SetOriginObj( $self->TicketObj )
+        $T::Tickets{$template_id}->set_OriginObj( $self->TicketObj )
             if $self->TicketObj
             && $T::Tickets{$template_id}->can('SetOriginObj');
 
@@ -445,7 +445,7 @@ sub UpdateByTemplate {
 
         my $id = $template_id;
         $id =~ s/update-(\d+).*/$1/;
-        my ($loaded, $msg) = $T::Tickets{$template_id}->LoadById($id);
+        my ($loaded, $msg) = $T::Tickets{$template_id}->load_by_id($id);
 
         unless ( $loaded ) {
             $RT::Logger->error("Couldn't update ticket $template_id: " . $msg);
@@ -467,7 +467,7 @@ sub UpdateByTemplate {
             if ( $base ne $current ) {
                 push @results,
                     "Could not update ticket "
-                    . $T::Tickets{$template_id}->Id
+                    . $T::Tickets{$template_id}->id
                     . ": Ticket has changed";
                 next;
             }
@@ -478,7 +478,7 @@ sub UpdateByTemplate {
         );
 
         if ( $ticketargs->{'Owner'} ) {
-            ($id, $msg) = $T::Tickets{$template_id}->SetOwner($ticketargs->{'Owner'}, "Force");
+            ($id, $msg) = $T::Tickets{$template_id}->set_Owner($ticketargs->{'Owner'}, "Force");
             push @results, $msg unless $msg eq $self->loc("That user already owns that ticket");
         }
 
@@ -598,7 +598,7 @@ sub _ParseMultilineTemplate {
             if ( $line =~ /^===Create-Ticket: (.*)$/ ) {
                 $template_id = "create-$1";
                 $RT::Logger->debug("****  Create ticket: $template_id");
-                push @{ $self->{'create_tickets'} }, $template_id;
+                push @{ $self->{'CreateTickets'} }, $template_id;
             } elsif ( $line =~ /^===Update-Ticket: (.*)$/ ) {
                 $template_id = "update-$1";
                 $RT::Logger->debug("****  Update ticket: $template_id");
@@ -652,7 +652,7 @@ sub ParseLines {
             "Workflow: evaluating\n$self->{templates}{$template_id}");
 
         my $template = Text::Template->new(
-            TYPE   => 'STRING',
+            type => 'STRING',
             SOURCE => $content
         );
 
@@ -677,7 +677,7 @@ sub ParseLines {
         }
     }
 
-    my $TicketObj ||= RT::Ticket->new( $self->CurrentUser );
+    my $TicketObj ||= RT::Model::Ticket->new( $self->CurrentUser );
 
     my %args;
     my %original_tags;
@@ -726,13 +726,13 @@ sub ParseLines {
         my $dateobj = RT::Date->new( $self->CurrentUser );
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
-            $dateobj->Set( Format => 'unix', Value => $args{$date} );
+            $dateobj->set( Format => 'unix', value => $args{$date} );
         } else {
             eval {
-                $dateobj->Set( Format => 'iso', Value => $args{$date} );
+                $dateobj->set( Format => 'iso', value => $args{$date} );
             };
             if ($@ or $dateobj->Unix <= 0) {
-                $dateobj->Set( Format => 'unknown', Value => $args{$date} );
+                $dateobj->set( Format => 'unknown', value => $args{$date} );
             }
         }
         $args{$date} = $dateobj->ISO;
@@ -779,12 +779,12 @@ sub ParseLines {
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByName( Name => $1, Queue => $ticketargs{Queue} );
+            my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+            $cf->load_by_name( Name => $1, Queue => $ticketargs{Queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByName( Name => $orig_tag, Queue => $ticketargs{Queue} );
+            my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+            $cf->load_by_name( Name => $orig_tag, Queue => $ticketargs{Queue} );
             next unless ($cf->id) ;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
@@ -871,7 +871,7 @@ sub _ParseXSVTemplate {
                     push @{ $self->{'base_tickets'} }, $template_id;
                 } elsif ( $value =~ /\S/ ) {
                     $template_id = 'create-' . $value;
-                    push @{ $self->{'create_tickets'} }, $template_id;
+                    push @{ $self->{'CreateTickets'} }, $template_id;
                 }
             } else {
                 # Some translations
@@ -918,7 +918,7 @@ sub _ParseXSVTemplate {
             $autoid++ while exists $self->{'templates'}->{"create-auto-$autoid"};
             $template_id = "create-auto-$autoid";
             # Also, it's a ticket to create
-            push @{ $self->{'create_tickets'} }, $template_id;
+            push @{ $self->{'CreateTickets'} }, $template_id;
         }
         
         # Save the template we generated
@@ -982,7 +982,7 @@ sub GetUpdateTemplate {
     foreach my $type ( sort keys %LINKTYPEMAP ) {
 
         # don't display duplicates
-        if (   $type eq "HasMember"
+        if (   $type eq "has_member"
             || $type eq "Members"
             || $type eq "MemberOf" )
         {
@@ -994,12 +994,12 @@ sub GetUpdateTemplate {
         my $method = $LINKTYPEMAP{$type}->{Type};
 
         my $links;
-        while ( my $link = $t->$method->Next ) {
+        while ( my $link = $t->$method->next ) {
             $links .= ", " if $links;
 
             my $object = $mode . "Obj";
             my $member = $link->$object;
-            $links .= $member->Id if $member;
+            $links .= $member->id if $member;
         }
         $string .= $links;
         $string .= "\n";
@@ -1060,7 +1060,7 @@ sub GetCreateTemplate {
     foreach my $type ( keys %LINKTYPEMAP ) {
 
         # don't display duplicates
-        if (   $type eq "HasMember"
+        if (   $type eq "has_member"
             || $type eq 'Members'
             || $type eq 'MemberOf' )
         {
@@ -1096,9 +1096,9 @@ sub UpdateWatchers {
                 push @new, $_;
             } else {
                 # It doesn't look like an email address.  Try to load it.
-                my $user = RT::User->new($self->CurrentUser);
-                $user->Load($_);
-                if ($user->Id) {
+                my $user = RT::Model::User->new($self->CurrentUser);
+                $user->load($_);
+                if ($user->id) {
                     push @new, $user->EmailAddress;
                 } else {
                     push @new, $_;
@@ -1119,16 +1119,16 @@ sub UpdateWatchers {
             );
 
             push @results,
-                $ticket->loc( "Ticket [_1]", $ticket->Id ) . ': ' . $msg;
+                $ticket->loc( "Ticket [_1]", $ticket->id ) . ': ' . $msg;
         }
 
         foreach (@delete) {
-            my ( $val, $msg ) = $ticket->DeleteWatcher(
+            my ( $val, $msg ) = $ticket->deleteWatcher(
                 Type  => $type,
                 Email => $_
             );
             push @results,
-                $ticket->loc( "Ticket [_1]", $ticket->Id ) . ': ' . $msg;
+                $ticket->loc( "Ticket [_1]", $ticket->id ) . ': ' . $msg;
         }
     }
     return @results;
@@ -1144,8 +1144,8 @@ sub UpdateCustomFields {
         next unless $arg =~ /^CustomField-(\d+)$/;
         my $cf = $1;
 
-        my $CustomFieldObj = RT::CustomField->new($self->CurrentUser);
-        $CustomFieldObj->LoadById($cf);
+        my $CustomFieldObj = RT::Model::CustomField->new($self->CurrentUser);
+        $CustomFieldObj->load_by_id($cf);
 
         my @values;
         if ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
@@ -1165,8 +1165,8 @@ sub UpdateCustomFields {
         foreach my $value (@values) {
             next unless length($value);
             my ( $val, $msg ) = $ticket->AddCustomFieldValue(
-                Field => $cf,
-                Value => $value
+                column => $cf,
+                value => $value
             );
             push ( @results, $msg );
         }
@@ -1183,7 +1183,7 @@ sub PostProcess {
 
     while ( my $template_id = shift(@$links) ) {
         my $ticket = $T::Tickets{$template_id};
-        $RT::Logger->debug( "Handling links for " . $ticket->Id );
+        $RT::Logger->debug( "Handling links for " . $ticket->id );
         my %args = %{ shift(@$links) };
 
         foreach my $type ( keys %LINKTYPEMAP ) {
@@ -1195,8 +1195,8 @@ sub PostProcess {
 
                 if ( $link =~ /^TOP$/i ) {
                     $RT::Logger->debug( "Building $type link for $link: "
-                            . $T::Tickets{TOP}->Id );
-                    $link = $T::Tickets{TOP}->Id;
+                            . $T::Tickets{TOP}->id );
+                    $link = $T::Tickets{TOP}->id;
 
                 } elsif ( $link !~ m/^\d+$/ ) {
                     my $key = "create-$link";
@@ -1206,8 +1206,8 @@ sub PostProcess {
                         next;
                     }
                     $RT::Logger->debug( "Building $type link for $link: "
-                            . $T::Tickets{$key}->Id );
-                    $link = $T::Tickets{$key}->Id;
+                            . $T::Tickets{$key}->id );
+                    $link = $T::Tickets{$key}->id;
                 } else {
                     $RT::Logger->debug("Building $type link for $link");
                 }
@@ -1232,7 +1232,7 @@ sub PostProcess {
         my $ticket = $T::Tickets{$template_id};
         $RT::Logger->debug( "Handling postponed actions for " . $ticket->id );
         my %args = %{ shift(@$postponed) };
-        $ticket->SetStatus( $args{Status} ) if defined $args{Status};
+        $ticket->set_Status( $args{Status} ) if defined $args{Status};
     }
 
 }

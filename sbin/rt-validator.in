@@ -90,7 +90,7 @@ unless( $opt{'object'} ) {
 my $obj = load_object( $opt{'object'} );
 
 my $shredder = RT::Shredder->new;
-$obj->ValidateRelations( Shredder => $shredder );
+$obj->validate_Relations( Shredder => $shredder );
 
 foreach my $record( values %{ $shredder->{'Cache'} } ) {
 	next unless( $record->{'State'} & INVALID );
@@ -135,7 +135,7 @@ sub load_object
 	die "Couldn't load '$class' module" if $@;
 	my $obj = $class->new( $RT::SystemUser );
 	die "Couldn't construct new '$class' object" unless $obj;
-	$obj->Load( $id );
+	$obj->load( $id );
 	die "Couldn't load '$class' object by id '$id'" unless $obj->id;
 	die "Loaded object has different id" unless( $id eq $obj->id );
 	return $obj;

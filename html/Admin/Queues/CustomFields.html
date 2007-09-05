@@ -54,13 +54,13 @@
     Title => $title
     &>
 
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Queue' &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Model::Queue' &>
 <%INIT>
-my $Object = RT::Queue->new( $session{'CurrentUser'} );
+my $Object = RT::Model::Queue->new( $session{'CurrentUser'} );
 
-$Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
+$Object->load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 my $FriendlySubTypes =
-  RT::CustomField->new( $session{'CurrentUser'} )
+  RT::Model::CustomField->new( $session{'CurrentUser'} )
   ->FriendlyLookupType( $Object->CustomFieldLookupType );
 
 my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );
@@ -68,5 +68,5 @@ my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );
 </%INIT>
 <%ARGS>
 $id => undef
-$SubType => 'RT::Queue-RT::Ticket'
+$SubType => 'RT::Model::Queue-RT::Model::Ticket'
 </%ARGS>

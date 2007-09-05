@@ -28,9 +28,9 @@ msgstr " %1 kaydedildi."
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($TicketObj->Id, $TicketObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket->id, $ticket->Subject)
+#. ($TicketObj->id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr ""
 
@@ -44,7 +44,7 @@ msgid "$prefix %1"
 msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->Id)
+#. ($self->ObjectType, $self->Object->id)
 msgid "%1 #%2"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT sürüm %2 Telif Hakkı: 1996-%3 %4."
 
 #: lib/RT/ScripAction_Overlay.pm:150
-#. ($self->Id)
+#. ($self->id)
 msgid "%1 ScripAction loaded"
 msgstr "ScriptAction %1 yüklendi"
 
@@ -193,7 +193,7 @@ msgstr "%1, durumunu çözülmüş olarak değiştiremiyor. RT' nin veritabanı 
 
 #: lib/RT/Transaction_Overlay.pm:571
 #. ($obj_type)
-msgid "%1 created"
+msgid "%1 Created"
 msgstr "%1 oluşturuldu"
 
 #: lib/RT/Transaction_Overlay.pm:576
@@ -431,7 +431,7 @@ msgid "ACE not found"
 msgstr "ACE bulunamadı"
 
 #: lib/RT/ACE_Overlay.pm:853
-msgid "ACEs can only be created and deleted."
+msgid "ACEs can only be Created and deleted."
 msgstr "ACE' ler sadece oluşturulabilir ve silinebilirler."
 
 #: html/Search/Elements/SelectAndOr:46
@@ -643,19 +643,19 @@ msgid "Approval"
 msgstr "Onaylama"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Onaylama #%1: %2"
 
 #: html/Approvals/index.html:75
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Onaylama #%1: Bir sistem hatası nedeniyle, notlar kaydedilemedi"
 
 #: html/Approvals/index.html:73
-#. ($ticket->Id)
+#. ($ticket->id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Onaylama #%1: Notlar kaydedildi"
 
@@ -713,7 +713,7 @@ msgid "Attachment '%1' could not be loaded"
 msgstr "Eklenti '%1' yüklenemiyor"
 
 #: lib/RT/Transaction_Overlay.pm:489
-msgid "Attachment created"
+msgid "Attachment Created"
 msgstr "Eklenti oluşturuldu"
 
 #: lib/RT/Tickets_Overlay.pm:1945
@@ -1081,7 +1081,7 @@ msgid "Couldn't find that value"
 msgstr "Bu değer bulunamadı"
 
 #: lib/RT/CurrentUser.pm:145
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "%1 değeri, kullanıcı veritabanından yüklenemedi.\\n"
 
@@ -1096,7 +1096,7 @@ msgid "Couldn't load CustomField %1"
 msgstr "Özel bölüm %1 yüklenemedi"
 
 #: lib/RT/Ticket_Overlay.pm:2016
-#. ($self->Id)
+#. ($self->id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr "#%1 numaralı biletin kopyası yüklenemedi"
 
@@ -1143,7 +1143,7 @@ msgstr "'%1' değeri bir URI olarak çözülemiyor"
 msgid "Country"
 msgstr "Ülke"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
 msgid "Create"
 msgstr "Oluştur"
 
@@ -1190,7 +1190,7 @@ msgstr "%1 kuyruğu için yeni bir senet oluştur"
 msgid "Create a template"
 msgstr "Bir şablon oluştur"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
 msgid "Create a ticket"
 msgstr "Yeni bir bilet oluştur"
 
@@ -1680,16 +1680,16 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Queue->AddWatcher için geçilen parametrelerde hata var"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Queue->DeleteWatcher için geçilen parametrelerde hata var"
+msgid "Error in parameters to Queue->deleteWatcher"
+msgstr "Queue->deleteWatcher için geçilen parametrelerde hata var"
 
 #: lib/RT/Ticket_Overlay.pm:1372
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Ticket->AddWatcher için geçilen parametrelerde hata var"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr "Ticket->DeleteWatcher için geçilen parametrelerde hata var"
+msgid "Error in parameters to Ticket->deleteWatcher"
+msgstr "Ticket->deleteWatcher için geçilen parametrelerde hata var"
 
 #: bin/rt-crontool:285
 msgid "Escalate tickets"
@@ -1883,11 +1883,11 @@ msgstr "Grup üyeye sahip"
 
 #: html/Admin/Groups/Modify.html:109
 #. ($create_msg)
-msgid "Group could not be created: %1"
+msgid "Group could not be Created: %1"
 msgstr "Grup oluşturulamıyor: %1"
 
 #: lib/RT/Group_Overlay.pm:521
-msgid "Group created"
+msgid "Group Created"
 msgstr "Grup oluşturuldu"
 
 #: lib/RT/Group_Overlay.pm:1155
@@ -2100,7 +2100,7 @@ msgid "Jan."
 msgstr "Oca."
 
 #: lib/RT/Group_Overlay.pm:166
-msgid "Join or leave this group"
+msgid "join or leave this group"
 msgstr "Bu gruba katılın veya ayrılın"
 
 #: lib/RT/Date.pm:447
@@ -2164,12 +2164,12 @@ msgid "Link already exists"
 msgstr "Bağlantı mevcut"
 
 #: lib/RT/Record.pm:1320
-msgid "Link could not be created"
+msgid "Link could not be Created"
 msgstr "Bağlantı oluşturulamıyor"
 
 #: lib/RT/Record.pm:1326
 #. ($TransString)
-msgid "Link created (%1)"
+msgid "Link Created (%1)"
 msgstr "Bağlantı oulşturuldu (%1)"
 
 #: lib/RT/Record.pm:1387
@@ -2182,7 +2182,7 @@ msgid "Link not found"
 msgstr "Bağlantı bulunamadı"
 
 #: html/Ticket/ModifyLinks.html:46 html/Ticket/ModifyLinks.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Link ticket #%1"
 msgstr "Bileti bağla #%1"
 
@@ -2476,12 +2476,12 @@ msgid "Modify associated objects for %1"
 msgstr "%1 için, ilişkili nesneleri değiştir"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for #%1"
 msgstr "#%1 için tarihleri değiştir"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "Bilet # %1 için, tarihleri değiştir"
 
@@ -2539,7 +2539,7 @@ msgstr "%1 ile ilişkili kişileri değiştir"
 
 #: html/Ticket/ModifyPeople.html:46 html/Ticket/ModifyPeople.html:50 html/Ticket/ModifyPeople.html:57
 #. ($Ticket->id)
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
 msgstr "%1 bileti ile ilişkili kişileri değiştir"
 
@@ -2581,12 +2581,12 @@ msgid "Modify the user %1"
 msgstr "%1 kullanıcısını değiştir"
 
 #: html/Ticket/ModifyAll.html:58
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Modify ticket # %1"
 msgstr "#%1 biletini değiştir"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->Id)
+#. ($TicketObj->id)
 msgid "Modify ticket #%1"
 msgstr "#%1 biletini değiştir"
 
@@ -2759,7 +2759,7 @@ msgstr "Yeni bilet yok"
 msgid "New user"
 msgstr "Yeni kullanıcı"
 
-#: html/Admin/Elements/CreateUserCalled:47
+#: html/Admin/Elements/create_userCalled:47
 msgid "New user called"
 msgstr "Yeni kullanıcı: "
 
@@ -2910,8 +2910,8 @@ msgid "No users matching search criteria found."
 msgstr "Arama kıstaslarıyla örtüşen herhangi bir kullanıcı bulunamadı."
 
 #: lib/RT/Record.pm:946
-msgid "No value sent to _Set!\\n"
-msgstr "_Set için herhangi bir değer gönderilmedi!\\n"
+msgid "No value sent to _set!\\n"
+msgstr "_set için herhangi bir değer gönderilmedi!\\n"
 
 #: html/Elements/QuickCreate:59
 msgid "Nobody"
@@ -3022,7 +3022,7 @@ msgid "OR"
 msgstr "VEYA"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be created"
+msgid "Object could not be Created"
 msgstr "Nesne oluşturulamıyor"
 
 #: lib/RT/Record.pm:123
@@ -3030,7 +3030,7 @@ msgid "Object could not be deleted"
 msgstr "Nesne silinemiyor"
 
 #: lib/RT/Record.pm:341
-msgid "Object created"
+msgid "Object Created"
 msgstr "Nesne oluşturuldu"
 
 #: lib/RT/Record.pm:120
@@ -3109,13 +3109,13 @@ msgid "On Transaction"
 msgstr "Harekette"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
-msgid "Only show approvals for requests created after %1"
+#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+msgid "Only show approvals for requests Created after %1"
 msgstr "Sadece %1 sonrası oluşturulmuş isteklere ait onayları göster"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
-msgid "Only show approvals for requests created before %1"
+#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+msgid "Only show approvals for requests Created before %1"
 msgstr "Sadece %1 öncesi oluşturulmuş isteklere ait onayları göster"
 
 #: html/Admin/CustomFields/index.html:75
@@ -3151,7 +3151,7 @@ msgid "Organization"
 msgstr "Kurum"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->Id, $approving->Subject)
+#. ($approving->id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Kaynak alınan bilet: #%1"
 
@@ -3366,7 +3366,7 @@ msgid "Queue already exists"
 msgstr "Kuyruk halihazırda mevcut"
 
 #: lib/RT/Queue_Overlay.pm:374 lib/RT/Queue_Overlay.pm:380
-msgid "Queue could not be created"
+msgid "Queue could not be Created"
 msgstr "Kuyruk oluşturulamıyor"
 
 #: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
@@ -3374,7 +3374,7 @@ msgid "Queue could not be loaded."
 msgstr "Kuyruk yüklenemiyor."
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:384 lib/RT/StyleGuide.pod:809
-msgid "Queue created"
+msgid "Queue Created"
 msgstr "Kuyruk oluşturuldu"
 
 #: html/SelfService/Display.html:126 lib/RT/CustomField_Overlay.pm:197
@@ -3509,7 +3509,7 @@ msgid "Reminder '%1' reopened"
 msgstr "'%1' hatırlatıcısı tekrar açıldı"
 
 #: html/Ticket/Reminders.html:46
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminder ticket #%1"
 msgstr "Hatırlatıcı bilet  #%1"
 
@@ -3518,7 +3518,7 @@ msgid "Reminders"
 msgstr "Hatırlatıcılar"
 
 #: html/Ticket/Reminders.html:50
-#. ($Ticket->Id)
+#. ($Ticket->id)
 msgid "Reminders for ticket #%1"
 msgstr "#%1 bileti için hatırlatıcılar"
 
@@ -3708,7 +3708,7 @@ msgid "Saved search %1"
 msgstr "Kaydedilmiş arama %1"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
-#. ($scrip->Id)
+#. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
 msgstr "Senet #%1"
@@ -3823,7 +3823,7 @@ msgstr "Bir grubu seç"
 msgid "Select a queue"
 msgstr "Bir kuyruğu seç"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/CreateTicket_in_queue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Yeni biletiniz için bir kuyruk seçin"
 
@@ -4191,7 +4191,7 @@ msgid "Template"
 msgstr "Şablon"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->Id())
+#. ($TemplateObj->id())
 msgid "Template #%1"
 msgstr "Şablon #%1"
 
@@ -4352,29 +4352,29 @@ msgid "Thu."
 msgstr "Per."
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Bilet #%1 Büyük güncelleme: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($link->BaseObj->id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Bilet #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
-#. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
-#. ($ticket->Id)
+#. ($T::Tickets{$template_id}->id)
+#. ($ticket->id)
 msgid "Ticket %1"
 msgstr "Bilet %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->Id, $QueueObj->Name)
-msgid "Ticket %1 created in queue '%2'"
+#. ($self->id, $QueueObj->Name)
+msgid "Ticket %1 Created in queue '%2'"
 msgstr "Bilet %1, '%2' kuyruğunda oluşturuldu"
 
 #: html/Search/Bulk.html:377
-#. ($Ticket->Id, $_)
+#. ($Ticket->id, $_)
 msgid "Ticket %1: %2"
 msgstr "Bilet %1: %2"
 
@@ -4383,7 +4383,7 @@ msgid "Ticket Custom Fields"
 msgstr "Bilet Özel Alanları"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Bilet geçmişi # %1 %2"
 
@@ -4404,7 +4404,7 @@ msgid "Ticket content type"
 msgstr "Bilet içerik türü"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
-msgid "Ticket could not be created due to an internal error"
+msgid "Ticket could not be Created due to an internal error"
 msgstr "Bir iç hata nedeniyle, bilet oluşturulamadı"
 
 #: html/Ticket/Display.html:55
@@ -4415,7 +4415,7 @@ msgstr "Bilet özel bilgisi"
 msgid "Ticket status changed"
 msgstr "Bilet durumu değişti"
 
-#: lib/RT/Search/FromSQL.pm:82
+#: lib/RT/Search/from_sql.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
 msgstr "BiletSQL arama modülü"
@@ -4425,11 +4425,11 @@ msgid "Tickets"
 msgstr "Biletler"
 
 #: html/Tools/Reports/CreatedByDates.html:86
-msgid "Tickets created after"
+msgid "Tickets Created after"
 msgstr "Şundan sonra oluşturulan biletler:"
 
 #: html/Tools/Reports/CreatedByDates.html:88
-msgid "Tickets created before"
+msgid "Tickets Created before"
 msgstr "Şundan önce oluşturulan biletler:"
 
 #: html/Tools/Reports/ResolvedByDates.html:87
@@ -4511,8 +4511,8 @@ msgid "Transaction Custom Fields"
 msgstr "Hareket Özel Alanları"
 
 #: lib/RT/Transaction_Overlay.pm:128
-msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transaction->Create gerçekleştirilemedi, çünkü bir nesne türü ve kimliği belirtmediniz"
+msgid "Transaction->create couldn't, as you didn't specify an object type and id"
+msgstr "Transaction->create gerçekleştirilemedi, çünkü bir nesne türü ve kimliği belirtmediniz"
 
 #: lib/RT/Transaction_Overlay.pm:870
 msgid "Transactions are immutable"
@@ -4545,7 +4545,7 @@ msgid "Unknown field: $key"
 msgstr "Bilinmeyen alan: $key"
 
 #: html/Elements/SelectResultsPerPage:58
-msgid "Unlimited"
+msgid "unlimited"
 msgstr "Sınırsız"
 
 #: html/Search/Elements/SelectSearchesForObjects:64
@@ -4665,11 +4665,11 @@ msgstr "Kullanıcı Hakları"
 
 #: html/Admin/Users/Modify.html:301
 #. ($msg)
-msgid "User could not be created: %1"
+msgid "User could not be Created: %1"
 msgstr "Kullanıcı oluşturulamıyor: %1"
 
 #: lib/RT/User_Overlay.pm:330
-msgid "User created"
+msgid "User Created"
 msgstr "Kullanıcı oluşturuldu"
 
 #: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
@@ -4742,11 +4742,11 @@ msgid "When a ticket has been approved by any approver, add correspondence to th
 msgstr "Bir bilet, herhangi bir onaycı tarafından onaylandığında, özgün bilete cevap yolla"
 
 #: etc/initialdata:146
-msgid "When a ticket is created"
+msgid "When a ticket is Created"
 msgstr "Bir bilet oluşturulduğunda"
 
 #: etc/initialdata:418
-msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgid "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Bir onay bileti oluşturulduğunda, sahibi ve YöneticiKk' yı, nesnenin onaylarını beklediği konusunda uyar"
 
 #: etc/initialdata:151
@@ -5060,7 +5060,7 @@ msgid "ticket #%1 %2"
 msgstr "bilet #%1 %2"
 
 #: lib/RT/Group_Overlay.pm:236
-#. ($self->Id)
+#. ($self->id)
 msgid "undescribed group %1"
 msgstr "betimlenmemiş grup %1"
 

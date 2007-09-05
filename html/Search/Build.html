@@ -119,7 +119,7 @@ use RT::Interface::Web::QueryBuilder::Tree;
 my $title = loc("Query Builder");
 
 my %query;
-for( qw(Query Format OrderBy Order RowsPerPage) ) {
+for( qw(Query Format order_by Order rows_per_page) ) {
     $query{$_} = $ARGS{$_};
 }
 
@@ -137,22 +137,22 @@ if ( $NewQuery ) {
     delete $session{'CurrentSearchHash'};
 
     # ..and the search results.
-    $session{'tickets'}->CleanSlate if defined $session{'tickets'};
+    $session{'tickets'}->clean_slate if defined $session{'tickets'};
 }
 
 { # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = $session{'CurrentSearchHash'};
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
-    my $default = { Query => '', Format => '', OrderBy => 'id', Order => 'ASC', RowsPerPage => 50 };
+    my $default = { Query => '', Format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
 
-    for( qw(Query Format OrderBy Order RowsPerPage) ) {
+    for( qw(Query Format order_by Order rows_per_page) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
-    for( qw(Order OrderBy) ) {
+    for( qw(Order order_by) ) {
         if (ref $query{$_} eq "ARRAY") {
             $query{$_} = join( '|', @{ $query{$_} } );
         }

@@ -55,8 +55,8 @@
     else {
         Abort("Corrupted attachment URL.");
     }
-     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
-     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
+     my $AttachmentObj = new RT::Model::Attachment($session{'CurrentUser'});
+     $AttachmentObj->load($attach) || Abort("Attachment '$attach' could not be loaded");
 
 
      unless ($AttachmentObj->id) {

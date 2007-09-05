@@ -65,8 +65,8 @@ my $re_delim       = qr[$RE{delimited}{-delim=>qq{\'\"}}];
 my $re_value       = qr[\d+|NULL|$re_delim];
 my $re_keyword     = qr[[{}\w\.]+|$re_delim];
 my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
-my $re_open_paren  = qr[\(];
-my $re_close_paren = qr[\)];
+my $reopen_paren  = qr[\(];
+my $reclose_paren = qr[\)];
 
 sub ParseToArray {
     my ($string) = shift;
@@ -75,10 +75,10 @@ sub ParseToArray {
     $node = $tree = [];
 
     my %callback;
-    $callback{'OpenParen'} = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
-    $callback{'CloseParen'} = sub { $node = pop @pnodes };
-    $callback{'EntryAggregator'} = sub { push @$node, $_[0] };
-    $callback{'Condition'} = sub { push @$node, { key => $_[0], op => $_[1], value => $_[2] } };
+    $callback{'open_paren'} = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
+    $callback{'close_paren'} = sub { $node = pop @pnodes };
+    $callback{'entry_aggregator'} = sub { push @$node, $_[0] };
+    $callback{'Condition'} = sub { push @$node, { Key => $_[0], Op => $_[1], Value => $_[2] } };
 
     Parse($string, \%callback);
     return $tree;
@@ -103,8 +103,8 @@ sub Parse {
                         |$re_op
                         |$re_keyword
                         |$re_value
-                        |$re_open_paren
-                        |$re_close_paren
+                        |$reopen_paren
+                        |$reclose_paren
                        )/iogx )
     {
         my $match = $1;
@@ -115,8 +115,8 @@ sub Parse {
         $current = VALUE       if ($want & VALUE)       && $match =~ /^$re_value$/io;
         $current = KEYWORD     if ($want & KEYWORD)     && $match =~ /^$re_keyword$/io;
         $current = AGGREG      if ($want & AGGREG)      && $match =~ /^$re_aggreg$/io;
-        $current = OPEN_PAREN  if ($want & OPEN_PAREN)  && $match =~ /^$re_open_paren$/io;
-        $current = CLOSE_PAREN if ($want & CLOSE_PAREN) && $match =~ /^$re_close_paren$/io;
+        $current = OPEN_PAREN  if ($want & OPEN_PAREN)  && $match =~ /^$reopen_paren$/io;
+        $current = CLOSE_PAREN if ($want & CLOSE_PAREN) && $match =~ /^$reclose_paren$/io;
 
 
         unless ($current && $want & $current) {
@@ -131,18 +131,18 @@ sub Parse {
 
         # Parens are highest priority
         if ( $current & OPEN_PAREN ) {
-            $cb->{'OpenParen'}->();
+            $cb->{'open_paren'}->();
             $depth++;
             $want = KEYWORD | OPEN_PAREN;
         }
         elsif ( $current & CLOSE_PAREN ) {
-            $cb->{'CloseParen'}->();
+            $cb->{'close_paren'}->();
             $depth--;
             $want = AGGREG;
             $want |= CLOSE_PAREN if $depth;
         }
         elsif ( $current & AGGREG ) {
-            $cb->{'EntryAggregator'}->( $match );
+            $cb->{'entry_aggregator'}->( $match );
             $want = KEYWORD | OPEN_PAREN;
         }
         elsif ( $current & KEYWORD ) {

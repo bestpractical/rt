@@ -59,9 +59,9 @@
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% my $Groups = RT::Groups->new($session{'CurrentUser'});
+% my $Groups = RT::Model::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToSystemInternalGroups();
-%	while (my $Group = $Groups->Next()) {
+%	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
 	    <% loc($Group->Type) %>
@@ -75,9 +75,9 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Groups->new($session{'CurrentUser'});
+% $Groups = RT::Model::Groups->new($session{'CurrentUser'});
 % $Groups->LimitToUserDefinedGroups();    
-%	while (my $Group = $Groups->Next()) {
+%	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
 	    <% $Group->Name %>
@@ -100,8 +100,8 @@ if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No CustomField defined"));
 }
 
-my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-$CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
+my $CustomFieldObj = RT::Model::CustomField->new($session{'CurrentUser'});
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
 my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name);
 

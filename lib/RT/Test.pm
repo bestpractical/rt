@@ -48,7 +48,7 @@ Set( \$LogToScreen , "warning");
     close $config;
 
     use RT;
-    RT::LoadConfig;
+    RT::load_config;
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
     # make it another function
@@ -58,7 +58,7 @@ Set( \$LogToScreen , "warning");
         $mailsent++;
         return 1;
     };
-    RT::Config->Set( 'MailCommand' => $mailfunc);
+    RT::Config->set( 'MailCommand' => $mailfunc);
 
     require RT::Handle;
     unless ( $existing_server ) {
@@ -76,15 +76,15 @@ sub bootstrap_db {
 	die "RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'";
    }
     # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->SystemDSN,
+    my $dbh = _get_dbh(RT::Handle->system_dsn,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
 
     RT::Handle->DropDatabase( $dbh, Force => 1 );
-    RT::Handle->CreateDatabase( $dbh );
+    RT::Handle->createDatabase( $dbh );
     $dbh->disconnect;
 
-    $dbh = _get_dbh(RT::Handle->DSN,
+    $dbh = _get_dbh(RT::Handle->dsn,
             $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
     $RT::Handle = new RT::Handle;
@@ -101,18 +101,18 @@ sub bootstrap_db {
     RT->InitSystemObjects;
     $RT::Handle->InsertInitialData;
 
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    Jifty::DBI::Record::Cachable->flush_cache;
     $RT::Handle = new RT::Handle;
     $RT::Handle->dbh( undef );
     RT->Init;
 
-    $RT::Handle->PrintError;
+    $RT::Handle->print_error;
     $RT::Handle->dbh->{PrintError} = 1;
 
     unless ( $args{'nodata'} ) {
         $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    Jifty::DBI::Record::Cachable->flush_cache;
 }
 
 sub started_ok {
@@ -176,22 +176,22 @@ sub mailsent_ok {
 sub load_or_create_user {
     my $self = shift;
     my %args = ( Privileged => 1, Disabled => 0, @_ );
-    my $obj = RT::User->new( $RT::SystemUser );
+    my $obj = RT::Model::User->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
-        $obj->LoadByCols( Name => $args{'Name'} );
+        $obj->load_by_cols( Name => $args{'Name'} );
     } elsif ( $args{'EmailAddress'} ) {
-        $obj->LoadByCols( EmailAddress => $args{'EmailAddress'} );
+        $obj->load_by_cols( EmailAddress => $args{'EmailAddress'} );
     } else {
         die "Name or EmailAddress is required";
     }
     if ( $obj->id ) {
         # cool
-        $obj->SetPrivileged( $args{'Privileged'} || 0 )
+        $obj->set_Privileged( $args{'Privileged'} || 0 )
             if ($args{'Privileged'}||0) != ($obj->Privileged||0);
-        $obj->SetDisabled( $args{'Disabled'} || 0 )
+        $obj->set_Disabled( $args{'Disabled'} || 0 )
             if ($args{'Disabled'}||0) != ($obj->Disabled||0);
     } else {
-        my ($val, $msg) = $obj->Create( %args );
+        my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
     }
 
@@ -205,14 +205,14 @@ sub load_or_create_user {
 sub load_or_create_queue {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::Queue->new( $RT::SystemUser );
+    my $obj = RT::Model::Queue->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
-        $obj->LoadByCols( Name => $args{'Name'} );
+        $obj->load_by_cols( Name => $args{'Name'} );
     } else {
         die "Name is required";
     }
     unless ( $obj->id ) {
-        my ($val, $msg) = $obj->Create( %args );
+        my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
     }
 
@@ -223,15 +223,15 @@ sub set_rights {
     my $self = shift;
     my @list = ref $_[0]? @_: { @_ };
 
-    require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
-    $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
-    while ( my $ace = $acl->Next ) {
+    require RT::Model::ACL;
+    my $acl = RT::Model::ACL->new( $RT::SystemUser );
+    $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
+    while ( my $ace = $acl->next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
             next;
         }
-        $ace->Delete;
+        $ace->delete;
     }
 
     foreach my $e (@list) {
@@ -239,7 +239,7 @@ sub set_rights {
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
-            warn "$msg";
+            warn "$msg" unless $status;
         }
     }
     return 1;
@@ -268,7 +268,7 @@ sub run_mailgate {
     }
     $cmd .= ' 2>&1';
 
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    Jifty::DBI::Record::Cachable->flush_cache;
 
     require IPC::Open2;
     my ($child_out, $child_in);
@@ -305,5 +305,21 @@ sub send_via_mailgate {
     }
     return ($status, $id);
 }
+
+sub import_gnupg_key {
+    my $self = shift;
+    my $key = shift;
+    my $type = shift || 'secret';
+    
+    $key =~ s/\@/-at-/g;
+    $key .= ".$type.key";
+    $key = 't/data/gnupg/keys/'. $key;
+    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
+    
+    require RT::Crypt::GnuPG;
+    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
+}
+
+
 
 1;

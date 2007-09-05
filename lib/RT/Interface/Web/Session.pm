@@ -109,7 +109,7 @@ new session objects.
 
 =cut
 
-sub Attributes {
+sub attributes {
 
     return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
             Handle     => $RT::Handle->dbh,
@@ -128,7 +128,7 @@ Returns array ref with list of the session IDs.
 
 sub Ids {
     my $self = shift || __PACKAGE__;
-    my $attributes = $self->Attributes;
+    my $attributes = $self->attributes;
     if( $attributes->{Directory} ) {
         return $self->_IdsDir( $attributes->{Directory} );
     } else {
@@ -152,7 +152,7 @@ sub _IdsDir {
 
 sub _IdsDB {
     my ($self, $dbh) = @_;
-    my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions ORDER BY LastUpdated DESC");
+    my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions order BY LastUpdated DESC");
     die "couldn't get ids: ". $dbh->errstr if $dbh->errstr;
     return $ids;
 }
@@ -165,7 +165,7 @@ Takes seconds and deletes all sessions that are older.
 
 sub ClearOld {
     my $class = shift || __PACKAGE__;
-    my $attributes = $class->Attributes;
+    my $attributes = $class->attributes;
     if( $attributes->{Directory} ) {
         return $class->_CleariOldDir( $attributes->{Directory}, @_ );
     } else {
@@ -200,9 +200,9 @@ sub _ClearOldDir {
     
     my $now = time;
     my $class = $self->Class;
-    my $attrs = $self->Attributes;
+    my $attrs = $self->attributes;
 
-    foreach my $id( @{ $self->Ids } ) {
+    foreach my $id( @{ $self->ids } ) {
         if( int $older_than ) {
             my $ctime = (stat(File::Spec->catfile($dir,$id)))[9];
             if( $ctime > $now - $older_than ) {
@@ -234,10 +234,10 @@ then leave only the latest one.
 sub ClearByUser {
     my $self = shift || __PACKAGE__;
     my $class = $self->Class;
-    my $attrs = $self->Attributes;
+    my $attrs = $self->attributes;
 
     my %seen = ();
-    foreach my $id( @{ $self->Ids } ) {
+    foreach my $id( @{ $self->ids } ) {
         my %session;
         local $@;
         eval { tie %session, $class, $id, $attrs };
@@ -261,7 +261,7 @@ sub TIEHASH {
     my $id = shift;
 
     my $class = $self->Class;
-    my $attrs = $self->Attributes;
+    my $attrs = $self->attributes;
 
     my %session;
 

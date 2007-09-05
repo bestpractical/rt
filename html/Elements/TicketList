@@ -56,13 +56,13 @@
     Query => $Query,
     Rows => $Rows,
     Page => $Page,
-    OrderBy => $OrderBy , 
+    order_by => $order_by , 
     BaseURL => $BaseURL,
     maxitems => $maxitems &> 
 % }
 <%PERL>
 my $i = 0;
-while ( my $record = $Collection->Next ) {
+while ( my $record = $Collection->next ) {
     $i++;
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless $i % 10;
@@ -90,7 +90,7 @@ my $prev = $m->comp(
     Query   => $Query,
     Format  => $Format,
     Rows    => $Rows,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order   => $Order,
     Page    => ( $Page - 1 )
 );
@@ -99,7 +99,7 @@ my $next = $m->comp(
     Query   => $Query,
     Format  => $Format,
     Rows    => $Rows,
-    OrderBy => $OrderBy,
+    order_by => $order_by,
     Order   => $Order,
     Page    => ( $Page + 1 )
 );
@@ -108,33 +108,32 @@ my $next = $m->comp(
 <a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<a href="<%$BaseURL%><%$next%>"><&|/l&>Next Page</&></a>
+<a href="<%$BaseURL%><%$next%>"><&|/l&>next Page</&></a>
 % }
 % }
 <%INIT>
 unless ($Collection) {
-        $Collection = RT::Tickets->new( $session{'CurrentUser'} );
-        $Collection->FromSQL( $Query );
+        $Collection = RT::Model::Tickets->new( $session{'CurrentUser'} );
+        $Collection->from_sql( $Query );
 }
 
-my $TotalFound =  $Collection->CountAll();
+my $TotalFound =  $Collection->count_all();
 return '' if !$TotalFound && !$ShowEmpty;
 
-if ($OrderBy =~ /\|/) {
+if ($order_by =~ /\|/) {
     # Multiple Sorts
-    my @OrderBy = split /\|/,$OrderBy;
+    my @order_by = split /\|/,$order_by;
     my @Order = split /\|/,$Order;
-    $Collection->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
+    $Collection->order_by(
+        map { { column => $order_by[$_], order => $Order[$_] } }
+        ( 0 .. $#order_by )
     );
 } else {
-    $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+    $Collection->order_by(column => $order_by, order => $Order); 
 }
 
-$Collection->RowsPerPage( $Rows ) if $Rows;
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
-$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+$Collection->set_page_info(per_page => $Rows, current_page => $Page);
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
@@ -168,7 +167,7 @@ $Query => undef
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 $DisplayFormat => undef
 $Order => undef
-$OrderBy => undef
+$order_by => undef
 $Rows => 50
 
 $Page => 1

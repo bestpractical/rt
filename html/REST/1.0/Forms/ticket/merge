@@ -56,26 +56,26 @@ use RT::Interface::REST;
 
 my $into = $args;
 
-my $ticket = new RT::Ticket $session{CurrentUser};
-my $ticket_into = new RT::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket $session{CurrentUser};
+my $ticket_into = new RT::Model::Ticket $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/merge/6  (merges ticket 1 into ticket 6)
 
-$ticket->Load($id);
-if (!$ticket->Id) {
+$ticket->load($id);
+if (!$ticket->id) {
     $e = 1;
     $c = "# Ticket $id does not exist.";
     goto OUTPUT;
 }
-$ticket_into->Load($into);
-if (!$ticket_into->Id) {
+$ticket_into->load($into);
+if (!$ticket_into->id) {
     $e = 1;
     $c = "# Ticket $into does not exist.";
     goto OUTPUT;
 }
 
-if (!$ticket->CurrentUserHasRight('ModifyTicket')) {
+if (!$ticket->current_user_has_right('ModifyTicket')) {
     $e = 1;
     $c = "# You are not allowed to modify ticket $id.";
     goto OUTPUT;

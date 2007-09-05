@@ -59,13 +59,13 @@ Set up the relevant recipients, then call our parent.
 =cut
 
 
-sub Prepare {
+sub prepare {
     my $self = shift;
-    $self->SetRecipients();
-    $self->SUPER::Prepare();
+    $self->set_Recipients();
+    $self->SUPER::prepare();
 }
 
-# {{{ sub SetRecipients
+# {{{ sub set_Recipients
 
 =head2 SetRecipients
 
@@ -74,7 +74,7 @@ Sets the recipients of this message to this ticket's Requestor.
 =cut
 
 
-sub SetRecipients {
+sub set_Recipients {
     my $self=shift;
 
     push(@{$self->{'To'}}, $self->TicketObj->Requestors->MemberEmailAddresses);
@@ -85,7 +85,7 @@ sub SetRecipients {
 # }}}
 
 
-# {{{ sub SetReturnAddress 
+# {{{ sub set_ReturnAddress 
 
 =head2 SetReturnAddress
 
@@ -93,7 +93,7 @@ Set this message\'s return address to the apropriate queue address
 
 =cut
 
-sub SetReturnAddress {
+sub set_ReturnAddress {
     my $self = shift;
     my %args = ( is_comment => 0,
 		 @_
@@ -114,18 +114,18 @@ sub SetReturnAddress {
 	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
 		    $self->TicketObj->QueueObj->Name;
 	    $friendly_name =~ s/"/\\"/g;
-	    $self->SetHeader( 'From',
+	    $self->set_Header( 'From',
 		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 
                 $self->MIMEEncodeString( $friendly_name, RT->Config->Get('EmailOutputEncoding') ), $replyto),
 	    );
 	}
 	else {
-	    $self->SetHeader( 'From', $replyto );
+	    $self->set_Header( 'From', $replyto );
 	}
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-	$self->SetHeader('Reply-To', "$replyto");
+	$self->set_Header('Reply-To', "$replyto");
     }
     
 }

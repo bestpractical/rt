@@ -55,8 +55,8 @@
 
 =head1 DESCRIPTION
 
-  SavedSearch is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a description, and a number of
+  SavedSearch is an object that can belong to either an RT::Model::User or an
+  RT::Model::Group.  It consists of an ID, a description, and a number of
   search parameters.
 
 =head1 METHODS
@@ -67,7 +67,7 @@
 package RT::SavedSearch;
 
 use RT::Base;
-use RT::Attribute;
+use RT::Model::Attribute;
 
 use strict;
 use warnings;
@@ -92,15 +92,15 @@ success.
 
 =cut
 
-sub Load {
+sub load {
     my $self = shift;
     my ($privacy, $id) = @_;
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
-	$self->{'Attribute'} = $object->Attributes->WithId($id);
-	if ($self->{'Attribute'}->Id) {
-	    $self->{'Id'} = $self->{'Attribute'}->Id;
+	$self->{'Attribute'} = $object->attributes->WithId($id);
+	if ($self->{'Attribute'}->id) {
+	    $self->{'Id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 	    return (1, $self->loc("Loaded search [_1]", $self->Name));
@@ -131,7 +131,7 @@ and message, where status is true on success.  Defaults are:
 
 sub Save {
     my $self = shift;
-    my %args = ('Privacy' => 'RT::User-' . $self->CurrentUser->Id,
+    my %args = ('Privacy' => 'RT::Model::User-' . $self->CurrentUser->id,
 		'Type' => 'Ticket',
 		'Name' => 'new search',
 		'SearchParams' => {},
@@ -149,19 +149,19 @@ sub Save {
 
     if ( $object->isa('RT::System') ) {
         return ( 0, $self->loc("No permission to save system-wide searches") )
-            unless $self->CurrentUser->HasRight(
+            unless $self->CurrentUser->has_right(
             Object => $RT::System,
             Right  => 'SuperUser'
         );
     }
 
-    my ( $att_id, $att_msg ) = $object->AddAttribute(
+    my ( $att_id, $att_msg ) = $object->add_attribute(
         'Name'        => 'SavedSearch',
         'Description' => $name,
         'Content'     => \%params
     );
     if ($att_id) {
-        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Attribute'} = $object->attributes->WithId($att_id);
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         $self->{'Type'}      = $type;
@@ -188,12 +188,12 @@ sub Update {
 		'SearchParams' => {},
 		@_);
     
-    return(0, $self->loc("No search loaded")) unless $self->Id;
+    return(0, $self->loc("No search loaded")) unless $self->id;
     return(0, $self->loc("Could not load search attribute"))
-	unless $self->{'Attribute'}->Id;
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$args{'SearchParams'}});
+	unless $self->{'Attribute'}->id;
+    my ($status, $msg) = $self->{'Attribute'}->set_SubValues(%{$args{'SearchParams'}});
     if ($status && $args{'Name'}) {
-	($status, $msg) = $self->{'Attribute'}->SetDescription($args{'Name'});
+	($status, $msg) = $self->{'Attribute'}->set_Description($args{'Name'});
     }
     return ($status, $self->loc("Search update: [_1]", $msg));
 }
@@ -205,10 +205,10 @@ where status is true upon success.
 
 =cut
 
-sub Delete {
+sub delete {
     my $self = shift;
 
-    my ($status, $msg) = $self->{'Attribute'}->Delete;
+    my ($status, $msg) = $self->{'Attribute'}->delete;
     if ($status) {
 	return (1, $self->loc("Deleted search"));
     } else {
@@ -227,7 +227,7 @@ Returns the name of the search.
 
 sub Name {
     my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return unless ref($self->{'Attribute'}) eq 'RT::Model::Attribute';
     return $self->{'Attribute'}->Description();
 }
 
@@ -240,7 +240,7 @@ Returns the given named parameter of the search, e.g. 'Query', 'Format'.
 sub GetParameter {
     my $self = shift;
     my $param = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return unless ref($self->{'Attribute'}) eq 'RT::Model::Attribute';
     return $self->{'Attribute'}->SubValue($param);
 }
 
@@ -250,7 +250,7 @@ Returns the numerical id of this search.
 
 =cut
 
-sub Id {
+sub id {
      my $self = shift;
      return $self->{'Id'};
 }
@@ -258,7 +258,7 @@ sub Id {
 =head2 Privacy
 
 Returns the principal object to whom this search belongs, in a string
-"<class>-<id>", e.g. "RT::Group-16".
+"<class>-<id>", e.g. "RT::Model::Group-16".
 
 =cut
 
@@ -283,12 +283,12 @@ sub Type {
 
 sub _load_privacy_object {
     my ($self, $obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::User' && $obj_id == $self->CurrentUser->Id)  {
+    if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->CurrentUser->id)  {
         return $self->CurrentUser->UserObj;
     }
-    elsif ($obj_type eq 'RT::Group') {
-        my $group = RT::Group->new($self->CurrentUser);
-        $group->Load($obj_id);
+    elsif ($obj_type eq 'RT::Model::Group') {
+        my $group = RT::Model::Group->new($self->CurrentUser);
+        $group->load($obj_id);
         return $group;
     }
     elsif ($obj_type eq 'RT::System') {
@@ -318,13 +318,13 @@ sub _GetObject {
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
-    if ($obj_type eq 'RT::User' 
-	&& $object->Id != $self->CurrentUser->UserObj->Id()) {
+    if ($obj_type eq 'RT::Model::User' 
+	&& $object->id != $self->CurrentUser->UserObj->id()) {
 	$RT::Logger->debug("Permission denied for user other than self");
 	return undef;
     }
-    if ($obj_type eq 'RT::Group' &&
-	!$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
+    if ($obj_type eq 'RT::Model::Group' &&
+	!$object->has_member_recursively($self->CurrentUser->PrincipalObj)) {
 	$RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
 			   " is not a member of group");
 	return undef;

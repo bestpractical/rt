@@ -60,11 +60,11 @@ This happens on every transaction. it's always applicable
 
 =cut
 
-sub Prepare {
+sub prepare {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomPrepareCode;
     if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Prepare failed: ".$@);
+        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
         return (undef);
     }
     return ($retval);
@@ -76,11 +76,11 @@ This happens on every transaction. it's always applicable
 
 =cut
 
-sub Commit {
+sub commit {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomCommitCode;
     if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Commit failed: ".$@);
+        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
         return (undef);
     }
     return ($retval);

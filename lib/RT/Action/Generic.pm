@@ -73,13 +73,13 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->_Init(@_);
+  $self->_init(@_);
   return $self;
 }
 # }}}
 
-# {{{ sub _Init 
-sub _Init  {
+# {{{ sub _init 
+sub _init  {
   my $self = shift;
   my %args = ( Argument => undef,
                CurrentUser => undef,
@@ -166,8 +166,8 @@ sub Type  {
 
 #Do what we need to do and send it out.
 
-# {{{ sub Commit 
-sub Commit  {
+# {{{ sub commit 
+sub commit  {
   my $self = shift;
   return(0, $self->loc("Commit Stubbed"));
 }
@@ -186,8 +186,8 @@ sub Describe  {
 
 #Parse the templates, get things ready to go.
 
-# {{{ sub Prepare 
-sub Prepare  {
+# {{{ sub prepare 
+sub prepare  {
   my $self = shift;
   return (0, $self->loc("Prepare Stubbed"));
 }

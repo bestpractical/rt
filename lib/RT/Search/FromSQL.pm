@@ -88,18 +88,13 @@ is reduced to those tickets matching the SQL query.
 
 =cut
 
-# {{{ sub Prepare
-sub Prepare  {
+# {{{ sub prepare
+sub prepare  {
     my $self = shift;
 
-    $self->TicketsObj->FromSQL($self->Argument);
+    $self->TicketsObj->from_sql($self->Argument);
     return(1);
 }
 # }}}
-
-eval "require RT::Search::FromSQL_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Vendor.pm});
-eval "require RT::Search::FromSQL_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Local.pm});
 
 1;
