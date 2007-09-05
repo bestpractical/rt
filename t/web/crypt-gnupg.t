@@ -1,14 +1,11 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 87;
+use Test::More tests => 80;
 use RT::Test;
 use RT::Action::SendEmail;
 
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
-
-# catch any outgoing emails
-unlink "t/mailbox";
 
 RT::Test->set_mail_catcher;
 
@@ -28,7 +25,6 @@ RT->Config->Set( DefaultSearchResultFormat => qq{
 use File::Spec ();
 use Cwd;
 my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
-mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');
 
@@ -46,27 +42,29 @@ ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
+my $queue = RT::Test->load_or_create_queue(
+    Name              => 'General',
+    CorrespondAddress => 'general@example.com',
+);
+ok $queue && $queue->id, 'loaded or created queue';
+my $qid = $queue->id;
+
+RT::Test->set_rights(
+    Principal => 'Everyone',
+    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
+);
+
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-my $queue_name = 'General';
-my $qid;
-{
-    $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+VALUE="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
-    ok( $qid = $1, "found id of the '$queue_name' queue");
-}
-
-$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
+$m->get_ok("/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => 1);
 $m->submit;
 
-$m->form_name('CreateTicketInQueue');
-$m->field('Queue', $qid);
-$m->submit;
-is($m->status, 200, "request successful");
-$m->content_like(qr/Create a new ticket/, 'ticket create page');
+unlink "t/mailbox";
 
+$m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
@@ -133,14 +131,9 @@ $m->field(Encrypt => undef);
 $m->field(Sign => 1);
 $m->submit;
 
-$m->form_name('CreateTicketInQueue');
-$m->field('Queue', $qid);
-$m->submit;
-is($m->status, 200, "request successful");
-$m->content_like(qr/Create a new ticket/, 'ticket create page');
-
 unlink "t/mailbox";
 
+$m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
@@ -210,14 +203,9 @@ $m->field(Encrypt => 1);
 $m->field(Sign => 1);
 $m->submit;
 
-$m->form_name('CreateTicketInQueue');
-$m->field('Queue', $qid);
-$m->submit;
-is($m->status, 200, "request successful");
-$m->content_like(qr/Create a new ticket/, 'ticket create page');
-
 unlink "t/mailbox";
 
+$m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
@@ -280,14 +268,9 @@ MAIL
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
-$m->form_name('CreateTicketInQueue');
-$m->field('Queue', $qid);
-$m->submit;
-is($m->status, 200, "request successful");
-$m->content_like(qr/Create a new ticket/, 'ticket create page');
-
 unlink "t/mailbox";
 
+$m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Test crypt-off on encrypted queue');
 $m->field('Content', 'Thought you had me figured out didya');
