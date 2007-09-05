@@ -415,11 +415,10 @@ sub import_gnupg_key {
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
-    $key = 't/data/gnupg/keys/'. $key;
-    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
-
     require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
+    return RT::Crypt::GnuPG::ImportKey(
+        RT::Test->file_content([qw(t data gnupg keys), $key])
+    );
 }
 
 1;
