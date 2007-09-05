@@ -69,7 +69,7 @@ $CurrentValue => undef,
 </%ARGS>
 % unless ( $Default ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
-<input type="checkbox" name="<% $Name %>" <% $CurrentValue? 'checked="checked"': '' %> />\
+<input type="checkbox" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
 % } else {
 <input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
 <% loc('Yes') %>
