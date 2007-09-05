@@ -62,7 +62,8 @@ sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
     diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
-    my $mail = RT::Test->file_content($eid);
+    my ($file) = glob("t/data/mails/gnupg-basic-set/$eid-*");
+    my $mail = RT::Test->file_content($file);
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
