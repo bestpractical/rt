@@ -152,6 +152,7 @@
 <%INIT>
 my $CanRespond = 0;
 my $CanComment = 0;
+my $checks_failure = 0;
 my $title;
 
 my $TicketObj = LoadTicket($id);
@@ -239,7 +240,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 # }}}
 
-if ( exists $ARGS{SubmitTicket} ) {
+if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
