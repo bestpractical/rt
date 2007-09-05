@@ -38,15 +38,6 @@ sub first_attach { return first_txn($_[0])->Attachments->First }
 sub count_txns { return $_[0]->Transactions->Count }
 sub count_attachs { return first_txn($_[0])->Attachments->Count }
 
-sub file_content
-{
-    my $path = shift;
-    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
-    local $/;
-    return scalar <$fh>;
-}
-
 # instrument SendEmail to pass us what it's about to send.
 # create a regular ticket
 
@@ -54,7 +45,7 @@ my $parser = RT::EmailParser->new();
 
 
 # Let's test to make sure a multipart/report is processed correctly
-my $content =  file_content("$RT::BasePath/lib/t/data/multipart-report");
+my $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/multipart-report");
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');

@@ -306,7 +306,7 @@ Subject: encrypted message for queue
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
-my $mails = file_content_unlink('t/mailbox');
+my $mails = RT::Test->file_content('t/mailbox', 'unlink' => 1);
 my @mail = grep {/\S/} split /%% split me! %%/, $mails;
 is(@mail, 1, 'caught outgoing mail.');
 }
@@ -327,14 +327,3 @@ sub get_latest_ticket_ok {
     return $tick;
 }
 
-sub file_content_unlink
-{
-    my $path = shift;
-    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
-    local $/;
-    my $content = <$fh>;
-    close $fh;
-    unlink $path;
-    return $content;
-}

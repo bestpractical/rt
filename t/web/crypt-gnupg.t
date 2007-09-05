@@ -87,7 +87,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-my $mails = file_content_unlink('t/mailbox');
+my $mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
 my @mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
 
@@ -162,7 +162,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = file_content_unlink('t/mailbox');
+$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
 @mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
@@ -240,7 +240,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = file_content_unlink('t/mailbox');
+$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
 @mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
@@ -312,7 +312,7 @@ is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
 
-$mails = file_content_unlink('t/mailbox');
+$mails = RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
 @mail = grep {/\S/} split /%% split me! %%/, $mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
@@ -363,18 +363,6 @@ MAIL
 
     like($attachments[0]->Content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
-}
-
-sub file_content_unlink
-{
-    my $path = shift;
-    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-    open my $fh, "<:raw", $path or die "couldn't open file '$path': $!";
-    local $/;
-    my $content = <$fh>;
-    close $fh;
-    unlink $path;
-    return $content;
 }
 
 sub strip_headers
