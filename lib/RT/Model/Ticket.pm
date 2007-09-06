@@ -3247,7 +3247,11 @@ sub _set {
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_value
     my $Old = $self->SUPER::_value($args{'column'});
-    
+   
+    if ($Old && $args{'value'} && $Old eq $args{'value'}) {
+
+        return (0, $self->loc("That is already the current value"));
+    }
     my ($return);
     if ( $args{'UpdateTicket'}  ) {
 
