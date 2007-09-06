@@ -24,7 +24,8 @@ RT->Config->Set( DefaultSearchResultFormat => qq{
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
+use File::Temp qw(tempdir);
+my $homedir = tempdir( CLEANUP => 1 );
 
 use_ok('RT::Crypt::GnuPG');
 
@@ -35,8 +36,14 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'recipient',
-                 'no-permission-warning' => undef);
+                 'no-permission-warning' => undef,
+                 'trust-model' => 'always');
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+
+RT::Test->import_gnupg_key('recipient@example.com', 'public');
+RT::Test->import_gnupg_key('recipient@example.com', 'secret');
+RT::Test->import_gnupg_key('general@example.com', 'public');
+RT::Test->import_gnupg_key('general@example.com', 'secret');
 
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -391,11 +398,11 @@ like($content, qr/OO-root-O/, "original OwnerName untouched");
 like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
 like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
 
-like($content, qr/KO-root-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
+like($content, qr/KO-root \(untrusted!\)-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
 like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for root");
 like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for nobody");
 
-like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
-like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
+like($content, qr/KR-recipient\@example.com \(untrusted!\)-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
+like($content, qr/KR-general\@example.com \(untrusted!\)-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
 like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
