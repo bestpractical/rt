@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 231;
+use Test::More tests => 428;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -107,12 +107,33 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     }
 }
 
+# create a ticket for each combination
 foreach my $queue_set ( @variants ) {
     set_queue_crypt_options( %$queue_set );
     foreach my $ticket_set ( @variants ) {
         create_a_ticket( %$ticket_set );
     }
 }
+
+my $tid;
+{
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my ($tid) = $ticket->Create(
+        Subject   => 'test',
+        Queue     => $queue->id,
+        Requestor => 'rt-test@example.com',
+    );
+    ok $tid, 'ticket created';
+}
+
+# again for each combination add a reply message
+foreach my $queue_set ( @variants ) {
+    set_queue_crypt_options( %$queue_set );
+    foreach my $ticket_set ( @variants ) {
+        create_a_ticket( %$ticket_set );
+    }
+}
+
 
 # ------------------------------------------------------------------------------
 # now delete all keys from the keyring and put back secret/pub pair for rt-test@
@@ -248,6 +269,40 @@ sub create_a_ticket {
     $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
+    check_text_emails( \%args, @mail );
+}
+
+sub update_ticket {
+    my %args = (@_);
+
+    # cleanup mail catcher's storage
+    unlink "t/mailbox";
+
+    $m->goto_ticket( $tid );
+    $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
+    $m->form_number(3);
+    $m->field( UpdateContent => 'Some content' );
+
+    foreach ( qw(Sign Encrypt) ) {
+        if ( $args{ $_ } ) {
+            $m->tick( $_ => 1 );
+        } else {
+            $m->untick( $_ => 1 );
+        }
+    }
+
+    $m->submit;
+    is $m->status, 200, "request successful";
+    $m->get_ok('/'); # ensure that the mail has been processed
+
+    my @mail = RT::Test->fetch_caught_mails;
+    check_text_emails( \%args, @mail );
+}
+
+sub check_text_emails {
+    my %args = %{ shift @_ };
+    my @mail = @_;
+
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
         if ( $args{'Encrypt'} ) {
