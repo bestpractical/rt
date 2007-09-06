@@ -1612,7 +1612,8 @@ sub GetKeysInfo {
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    $RT::Logger->error( "Tried to get $type key '$email'.\n". $res{'logger'} )
+        if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
         return %res;
