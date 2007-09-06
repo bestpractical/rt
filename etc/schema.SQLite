@@ -236,6 +236,7 @@ CREATE TABLE Users (
   Country varchar(50) NULL  ,
   Timezone char(50) NULL  ,
   PGPKey text NULL,
+  PreferredKey text NULL,
 
   Creator integer NULL  ,
   Created DATETIME NULL  ,
